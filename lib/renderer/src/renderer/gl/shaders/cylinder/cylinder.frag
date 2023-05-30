@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 
 //#define SHOW_IMPOSTORS
 
@@ -7,15 +7,9 @@ uniform float u_cylRad;
 uniform uint  u_colorBlendingMode;
 uniform bool  u_isPerspective;
 
-in GsOut
-{
-	smooth vec3 viewImpostorPosition; // Impostor position in view space.
-	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
-	flat vec4	colors[ 2 ];
-	flat uint	vertexSelected[ 2 ];
-	flat uint	vertexId[ 2 ];
-}
-gsIn;
+in
+#include "struct_geometry_shader.glsl"
+dataIn;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -48,9 +42,9 @@ void main()
 	if (u_isPerspective)
 	{
 		// Only consider cylinder body.
-		const vec3 v1v0	  = gsIn.viewVertices[ 1 ] - gsIn.viewVertices[ 0 ];
-		const vec3 v0	  = -gsIn.viewVertices[ 0 ];
-		const vec3 rayDir = normalize( gsIn.viewImpostorPosition );
+		const vec3 v1v0	  = dataIn.viewVertices[ 1 ] - dataIn.viewVertices[ 0 ];
+		const vec3 v0	  = -dataIn.viewVertices[ 0 ];
+		const vec3 rayDir = normalize( dataIn.viewImpostorPosition );
 
 		const float d0 = dot( v1v0, v1v0 );
 		const float d1 = dot( v1v0, rayDir );
@@ -69,16 +63,16 @@ void main()
 			uvec4 colorNormal = uvec4( 0 );
 			// Compress position and normal.
 			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
+			viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpostorPosition.xy );
+			viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpostorPosition.z, -rayDir.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
 
-			gl_FragDepth = computeDepth( gsIn.viewImpostorPosition );
+			gl_FragDepth = computeDepth( dataIn.viewImpostorPosition );
 	#else
 			discard;
 	#endif
@@ -95,17 +89,17 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 				// Compress position and normal.
 				uvec4 viewPositionNormalCompressed;
-				viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
-				viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
+				viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpostorPosition.xy );
+				viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpostorPosition.z, -rayDir.x ) );
 				viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
 				viewPositionNormalCompressed.w
-					= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+					= packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 				// Output data.
 				outViewPositionNormal = viewPositionNormalCompressed;
 				outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
 
-				gl_FragDepth = computeDepth( gsIn.viewImpostorPosition );
+				gl_FragDepth = computeDepth( dataIn.viewImpostorPosition );
 	#else
 				discard;
 	#endif
@@ -120,10 +114,10 @@ void main()
 				gl_FragDepth = computeDepth( hit );
 
 				// Color with good color extremity.			
-				vec4 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
+				vec4 color = dataIn.colors[ int( y > d0 * 0.5f ) ];			
 				if( u_colorBlendingMode == 1 ) // Gradient.
 				{
-					color = mix( gsIn.colors[0], gsIn.colors[1], y / d0 );
+					color = mix( dataIn.colors[0], dataIn.colors[1], y / d0 );
 				}
 
 				// Compress position and normal.
@@ -132,7 +126,7 @@ void main()
 				viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
 				viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
 				viewPositionNormalCompressed.w
-					= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+					= packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 				// Output data.
 				outViewPositionNormal = viewPositionNormalCompressed;
@@ -141,8 +135,8 @@ void main()
 				const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
 				const int selectAtom1 = int(ceil((y / d0) - 0.85f));
 
-				const uint id0 = selectAtom0 * gsIn.vertexId[ 0 ] + selectAtom1 * gsIn.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 0 ];
-				const uint id1 = (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 1 ]; 
+				const uint id0 = selectAtom0 * dataIn.vertexId[ 0 ] + selectAtom1 * dataIn.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *dataIn.vertexId[ 0 ];
+				const uint id1 = (1-(selectAtom0 + selectAtom1)) *dataIn.vertexId[ 1 ]; 
 
 				outId				  = ivec2( id0, id1 );
 			}
@@ -151,8 +145,8 @@ void main()
 	else // Orthographic
 	{ 
 		// Only consider cylinder body.
-		const vec3 v1v0	  = gsIn.viewVertices[ 1 ] - gsIn.viewVertices[ 0 ];
-		const vec3 v0	  = gsIn.viewImpostorPosition - gsIn.viewVertices[ 0 ];
+		const vec3 v1v0	  = dataIn.viewVertices[ 1 ] - dataIn.viewVertices[ 0 ];
+		const vec3 v0	  = dataIn.viewImpostorPosition - dataIn.viewVertices[ 0 ];
 		const vec3 rayDir = vec3(0, 0, -1);
 
 		const float d0 = dot( v1v0, v1v0 );
@@ -172,16 +166,16 @@ void main()
 			uvec4 colorNormal = uvec4( 0 );
 			// Compress position and normal.
 			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
+			viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpostorPosition.xy );
+			viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpostorPosition.z, -rayDir.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
 
-			gl_FragDepth = computeDepthOrtho( gsIn.viewImpostorPosition );
+			gl_FragDepth = computeDepthOrtho( dataIn.viewImpostorPosition );
 	#else
 			discard;
 	#endif
@@ -198,17 +192,17 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 				// Compress position and normal.
 				uvec4 viewPositionNormalCompressed;
-				viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
-				viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
+				viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpostorPosition.xy );
+				viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpostorPosition.z, -rayDir.x ) );
 				viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
 				viewPositionNormalCompressed.w
-					= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+					= packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 				// Output data.
 				outViewPositionNormal = viewPositionNormalCompressed;
 				outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
 
-				gl_FragDepth = computeDepthOrtho( gsIn.viewImpostorPosition );
+				gl_FragDepth = computeDepthOrtho( dataIn.viewImpostorPosition );
 	#else
 				discard;
 	#endif
@@ -216,17 +210,17 @@ void main()
 			else
 			{
 				// Compute hit point and normal (always in view space).
-				const vec3 hit	  = gsIn.viewImpostorPosition + vec3(0, 0, -t);
-				const vec3 normal = normalize( hit - gsIn.viewVertices[ 0 ] - v1v0 * y / d0 );
+				const vec3 hit	  = dataIn.viewImpostorPosition + vec3(0, 0, -t);
+				const vec3 normal = normalize( hit - dataIn.viewVertices[ 0 ] - v1v0 * y / d0 );
 
 				// Fill depth buffer.
 				gl_FragDepth = computeDepthOrtho( hit );
 
 				// Color with good color extremity.			
-				vec4 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
+				vec4 color = dataIn.colors[ int( y > d0 * 0.5f ) ];			
 				if( u_colorBlendingMode == 1 ) // Gradient.
 				{
-					color = mix( gsIn.colors[0], gsIn.colors[1], y / d0 );
+					color = mix( dataIn.colors[0], dataIn.colors[1], y / d0 );
 				}
 
 				// Compress position and normal.
@@ -235,7 +229,7 @@ void main()
 				viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
 				viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
 				viewPositionNormalCompressed.w
-					= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+					= packHalf2x16( vec2( dataIn.vertexSelected[ 0 ] & dataIn.vertexSelected[ 1 ], 0 ) );
 
 				// Output data.
 				outViewPositionNormal = viewPositionNormalCompressed;
@@ -244,8 +238,8 @@ void main()
 				const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
 				const int selectAtom1 = int(ceil((y / d0) - 0.85f));
 
-				const uint id0 = selectAtom0 * gsIn.vertexId[ 0 ] + selectAtom1 * gsIn.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 0 ];
-				const uint id1 = (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 1 ]; 
+				const uint id0 = selectAtom0 * dataIn.vertexId[ 0 ] + selectAtom1 * dataIn.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *dataIn.vertexId[ 0 ];
+				const uint id1 = (1-(selectAtom0 + selectAtom1)) *dataIn.vertexId[ 1 ]; 
 
 				outId				  = ivec2( id0, id1 );
 			}

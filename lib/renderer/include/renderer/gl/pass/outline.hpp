@@ -16,12 +16,12 @@ namespace VTX::Renderer::GL::Pass
 
 		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
-		void render() override;
+		void render( VertexArray & p_vao ) override;
 
 		struct StructIn
 		{
-			Texture2D * texture				  = nullptr;
-			Texture2D * textureLinearizeDepth = nullptr;
+			Texture2D * texture		 = nullptr;
+			Texture2D * textureDepth = nullptr;
 		} in;
 
 		struct StructOut

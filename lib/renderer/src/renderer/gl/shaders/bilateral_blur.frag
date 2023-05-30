@@ -1,13 +1,15 @@
-#version 450
+#version 450 core
 
+#include "global_uniforms.glsl"
+
+// In.
 layout( binding = 0 ) uniform sampler2D inputTexture;
 layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
-layout( location = 0 ) out float blurred;
-
-uniform int	  uBlurSize;
-uniform int	  uBlurSharpness;
 uniform ivec2 uDirection;
+
+// Out.
+layout( location = 0 ) out float blurred;
 
 void main()
 {
@@ -15,7 +17,7 @@ void main()
 
 	const float inputCenter = texelFetch( inputTexture, texCoord, 0 ).x;
 	const float depthCenter = texelFetch( linearDepthTexture, texCoord, 0 ).x;
-	const float blurSigma	= uBlurSize * 0.5f;
+	const float blurSigma	= uniforms.uintData.y * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
 	// Adapt sharpness wrt depth: the deeper the fragment is, the weaker the sharpness is.
@@ -25,7 +27,7 @@ void main()
 	float weight = 1.f;
 
 	// Compute blur contribution on each side in the given direction.
-	for ( int i = 1; i <= uBlurSize; ++i )
+	for ( int i = 1; i <= uniforms.uintData.y; ++i )
 	{
 		const ivec2 uv			 = texCoord + i * uDirection;
 		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;
@@ -38,7 +40,7 @@ void main()
 		res += inputCurrent * w;
 		weight += w;
 	}
-	for ( int i = 1; i <= uBlurSize; ++i )
+	for ( int i = 1; i <= uniforms.uintData.y; ++i )
 	{
 		const ivec2 uv			 = texCoord - i * uDirection;
 		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;

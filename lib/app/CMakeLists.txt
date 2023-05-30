@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.20)
 project(VTX_APP)
 
 # Git dependencies.
-set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES e6177423c015ac6ff1a0307b3c3a67c7850d0fe2)
+set(GIT_URL_CHEMFILES https://github.com/VTX-Molecular-Visualization/chemfiles.git)
+set(GIT_TAG_CHEMFILES d060165971aaf4f62358ff0aed68837f2257ca0c)
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON v3.11.2)
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)

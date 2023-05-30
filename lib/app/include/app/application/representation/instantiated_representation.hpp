@@ -17,10 +17,7 @@
 
 namespace VTX::App::Application::Representation
 {
-	class InstantiatedRepresentation :
-		public Core::Model::BaseModel,
-		public Application::Generic::BaseObjectOverride,
-		public Core::Event::BaseEventReceiverVTX
+	class InstantiatedRepresentation : public Core::Model::BaseModel, public Core::Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 

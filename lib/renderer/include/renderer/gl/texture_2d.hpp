@@ -43,7 +43,11 @@ namespace VTX::Renderer::GL
 						   const GLenum p_type,
 						   const GLint	p_level = 0 ) const
 		{
+#if ( VTX_OPENGL_VERSION == 450 )
 			glClearTexImage( _id, p_level, p_format, p_type, p_data );
+#else
+			glTexImage2D( GL_TEXTURE_2D, p_level, p_format, _width, _height, 0, p_format, p_type, p_data );
+#endif
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height )
@@ -66,10 +70,44 @@ namespace VTX::Renderer::GL
 			const int width	 = p_width == -1 ? _width : p_width;
 			const int height = p_height == -1 ? _height : p_height;
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+#else
+			glTexSubImage2D( GL_TEXTURE_2D, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+#endif
 		}
 
-		inline void bindToUnit( const GLuint p_unit ) const { glBindTextureUnit( p_unit, _id ); }
+		inline void bind( const GLenum p_target )
+		{
+			assert( glIsBuffer( _id ) );
+			assert( _target == 0 );
+			assert( p_target != 0 );
+
+			_target = p_target;
+			glBindTexture( p_target, _id );
+		}
+
+		inline void bind( const GLenum p_target, const GLuint p_index )
+		{
+			assert( glIsBuffer( _id ) );
+			assert( _target == 0 );
+			assert( p_target != 0 );
+
+			_target = p_target;
+#if ( VTX_OPENGL_VERSION == 450 )
+			glBindTextureUnit( p_index, _id );
+#else
+			assert( false );
+#endif
+		}
+
+		inline void unbind()
+		{
+			assert( _target != 0 );
+
+			glBindTexture( _target, 0 );
+			_target = 0;
+		}
 
 		inline void getImage( const GLint	p_level,
 							  const GLenum	p_format,
@@ -77,11 +115,16 @@ namespace VTX::Renderer::GL
 							  const GLsizei p_bufSize,
 							  void * const	p_pixels ) const
 		{
+#if ( VTX_OPENGL_VERSION == 450 )
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
+#else
+			glGetTexImage( GL_TEXTURE_2D, p_level, p_format, p_type, p_pixels );
+#endif
 		}
 
 	  private:
-		GLuint _id = GL_INVALID_INDEX;
+		GLuint _id	   = GL_INVALID_INDEX;
+		GLenum _target = 0;
 
 		GLsizei _width	   = 0;
 		GLsizei _height	   = 0;
@@ -93,12 +136,22 @@ namespace VTX::Renderer::GL
 
 		inline void _create()
 		{
+#if ( VTX_OPENGL_VERSION == 450 )
 			glCreateTextures( GL_TEXTURE_2D, 1, &_id );
 			glTextureParameteri( _id, GL_TEXTURE_WRAP_S, GLint( _wrappingS ) );
 			glTextureParameteri( _id, GL_TEXTURE_WRAP_T, GLint( _wrappingT ) );
 			glTextureParameteri( _id, GL_TEXTURE_MIN_FILTER, GLint( _minFilter ) );
 			glTextureParameteri( _id, GL_TEXTURE_MAG_FILTER, GLint( _magFilter ) );
 			glTextureStorage2D( _id, 1, _format, _width, _height );
+#else
+			glGenTextures( 1, &_id );
+			glBindTexture( GL_TEXTURE_2D, _id );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GLint( _wrappingS ) );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GLint( _wrappingT ) );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GLint( _minFilter ) );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GLint( _magFilter ) );
+			glTexImage2D( GL_TEXTURE_2D, 0, _format, _width, _height, 0, _format, GL_FLOAT, nullptr );
+#endif
 		}
 	};
 } // namespace VTX::Renderer::GL

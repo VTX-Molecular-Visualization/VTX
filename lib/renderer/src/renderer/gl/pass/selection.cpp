@@ -7,73 +7,27 @@ namespace VTX::Renderer::GL::Pass
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
 
 		out.fbo.create();
-		// updateOutputFBO( p_renderer );
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "shading.frag" } );
+		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } );
 		assert( _program != nullptr );
-
-		//_program->use();
-		// const Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
-		//_program->setVec4f( "uLineColor", lineColor );
 	}
 
-	void Selection::resize( const size_t p_width, const size_t p_height )
-	{
-		out.texture.resize( p_width, p_height );
+	void Selection::resize( const size_t p_width, const size_t p_height ) { out.texture.resize( p_width, p_height ); }
 
-		// updateOutputFBO( p_renderer );
-	}
-
-	void Selection::render()
+	void Selection::render( VertexArray & p_vao )
 	{
 		assert( in.textureViewPositionsNormals != nullptr );
 		assert( in.texture != nullptr );
-		assert( in.textureLinearizeDepth != nullptr );
+		assert( in.textureDepth != nullptr );
 
-		/*
-		if ( VTX_SETTING().getAA() )
-		{
-			_fbo.bind();
-		}
-		else
-		{
-			p_renderer.getOutputFramebuffer().bind();
-		}
-		*/
-
-		// in.textureViewPositionsNormals->bindToUnit( 0 );
-
-		/*
-		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
-		{
-			p_renderer.getPassOutline().getTexture().bindToUnit( 1 );
-		}
-		else
-		{
-			p_renderer.getPassShading().getTexture().bindToUnit( 1 );
-		}
-		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
-
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+		in.textureViewPositionsNormals->bind( 0 );
+		in.texture->bind( 1 );
+		in.textureDepth->bind( 2 );
 		_program->use();
-
-		if ( App::VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
-		{
-			/// TODO: let the user define the line color.
-			const Color::Rgba lineColor = Color::Rgba( 45, 243, 26 );
-			_program->setVec4f( "uLineColor", lineColor );
-		}
-
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-		*/
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		out.fbo.unbind();
 	}
 
-	/*
-	void Selection::updateOutputFBO( const GL & p_renderer )
-	{
-		if ( VTX_SETTING().getAA() )
-		{
-			_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
-		}
-	}
-	*/
 } // namespace VTX::Renderer::GL::Pass

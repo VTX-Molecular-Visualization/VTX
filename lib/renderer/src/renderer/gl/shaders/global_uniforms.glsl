@@ -1,33 +1,23 @@
-layout ( std140, binding = 0 ) uniform Uniforms
+layout ( std140, binding = 15 ) uniform Uniforms
 {
-	vec4  matrixView;
-	vec4  matrixProjection;
-	bool  isCameraPerspective;
-	float cameraNear;
-	float cameraFar;
-	vec4  clipInfos;
-
-	bool ssao;
-	uint ssaoIntensity;
-	uint blurSize;
-	// ivec2 blurDirection;
-
+	mat4 matrixView;
+	mat4 matrixProjection;
+	vec4 cameraNearFar; // near, far
+	vec4 cameraClipInfos;
 	vec4 backgroundColor;
-
-	bool  fog;
-	float fogNear;
-	float fogFar;
-	float fogDensity;
-	vec4  fogColor;
-
 	vec4 lightColor;
-
-	bool  outline;
-	vec4  outlineColor;
-	int	  outlineThickness;
-	float outlineSensivity ;
-
+	vec4 fog; // fogNear, fogFar, fogDensity
+	vec4 fogColor;
+	vec4 outlineColor;
 	vec4 selectionColor;
-
-	bool aa;
+	// Compress data into vec4.
+	ivec4 boolData; // isCameraPerspective
+	ivec4 intData; // outlineThickness
+	uvec4 uintData; // ssaoIntensity, blurSize, shadingMode
+	vec4 floatData;  // specularFactor, outlineSensivity
 } uniforms;
+
+layout (std140, binding = 10) buffer Debug
+{
+	vec4[] debug;
+};

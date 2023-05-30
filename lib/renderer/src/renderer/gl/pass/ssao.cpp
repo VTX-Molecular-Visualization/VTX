@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "ssao.frag" } );
+		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "default.vert", "ssao.frag" } );
 		assert( _program != nullptr );
 
 		// generate random ao kernel
@@ -57,17 +57,17 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
-	void SSAO::render()
+	void SSAO::render( VertexArray & p_vao )
 	{
 		assert( in.textureViewPositionsNormals != nullptr );
-		assert( in.textureLinearizeDepth != nullptr );
+		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-
-		in.textureViewPositionsNormals->bindToUnit( 1 );
-		_noiseTexture.bindToUnit( 2 );
-		in.textureLinearizeDepth->bindToUnit( 3 );
+		in.textureViewPositionsNormals->bind( 0 );
+		_noiseTexture.bind( 1 );
+		in.textureDepth->bind( 2 );
 		_program->use();
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();
 	}
 

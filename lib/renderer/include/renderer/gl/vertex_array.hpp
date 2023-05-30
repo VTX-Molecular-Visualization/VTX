@@ -2,6 +2,7 @@
 #define __VTX_GL_VERETX_ARRAY__
 
 #include "renderer/gl/include_opengl.hpp"
+#include <type_traits>
 
 namespace VTX::Renderer::GL
 {
@@ -17,7 +18,11 @@ namespace VTX::Renderer::GL
 		{
 			assert( _id == GL_INVALID_INDEX );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glCreateVertexArrays( 1, &_id );
+#else
+			glGenVertexArrays( 1, &_id );
+#endif
 		}
 		inline void destroy()
 		{
@@ -43,16 +48,29 @@ namespace VTX::Renderer::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
+#else
+			bind();
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, p_elementBuffer.getId() );
+			unbind();
+#endif
 		}
 
 		inline void enableAttribute( const GLuint p_bindingIndex ) const
 		{
 			assert( glIsVertexArray( _id ) );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
+#else
+			bind();
+			glEnableVertexAttribArray( p_bindingIndex );
+			unbind();
+#endif
 		}
 
+		template<typename T>
 		inline void setVertexBuffer( const GLuint	p_bindingIndex,
 									 const Buffer & p_vertexBuffer,
 									 const GLsizei	p_stride,
@@ -60,29 +78,59 @@ namespace VTX::Renderer::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
+#else
+			if ( std::is_same<T, float>::value )
+			{
+				bind();
+				glVertexAttribPointer( p_bindingIndex, p_stride, GL_FLOAT, GL_FALSE, 0, (void *)p_offset );
+				unbind();
+			}
+			else
+			{
+				assert( false );
+				// TODO: handle more types.
+			}
+#endif
 		}
 
+		template<typename T>
 		inline void setAttributeFormat( const GLuint	p_attributeIndex,
 										const GLint		p_size,
-										const GLenum	p_type,
 										const GLuint	p_relativeOffset = 0,
 										const GLboolean p_normalized	 = GL_FALSE ) const
 		{
 			assert( glIsVertexArray( _id ) );
 
-			// TODO: split ? test !
-			if ( p_type == GL_FLOAT )
+			if ( std::is_same<T, float>::value )
 			{
-				glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, p_type, p_normalized, p_relativeOffset );
+#if ( VTX_OPENGL_VERSION == 450 )
+				glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
+#endif
 			}
-			else if ( p_type == GL_DOUBLE )
+			else if ( std::is_same<T, double>::value )
 			{
-				glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, p_type, p_relativeOffset );
+#if ( VTX_OPENGL_VERSION == 450 )
+				glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
+#endif
 			}
-			else // integers
+			else if ( std::is_same<T, int>::value )
 			{
-				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, p_type, p_relativeOffset );
+#if ( VTX_OPENGL_VERSION == 450 )
+				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
+#endif
+			}
+			else if ( std::is_same<T, uint>::value )
+			{
+#if ( VTX_OPENGL_VERSION == 450 )
+				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
+#endif
+			}
+			else
+			{
+				assert( false );
+				// TODO: handle more types.
 			}
 		}
 
@@ -90,7 +138,9 @@ namespace VTX::Renderer::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
+#endif
 		}
 
 		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count )

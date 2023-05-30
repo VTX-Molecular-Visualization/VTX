@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Sequence
 		void updateSelection( const std::vector<App::Component::Chemistry::Residue *> & p_selection )
 		{
 			_moleculeSelection = &p_selection;
-			repaint();
+			update();
 		};
 		QPoint getResiduePos( const App::Component::Chemistry::Residue & p_residue,
 							  const QWidget * const						 p_widgetSpace ) const;

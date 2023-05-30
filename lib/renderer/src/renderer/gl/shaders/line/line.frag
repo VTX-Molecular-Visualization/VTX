@@ -1,11 +1,8 @@
-#version 450
+#version 450 core
 
-in VsOut
-{
-	smooth vec3 viewPosition;
-	smooth vec3 normal;
-}
-vsIn;
+in 
+#include "struct_vertex_shader.glsl"
+dataIn;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -19,9 +16,9 @@ void main()
 {
 	// Compress position and normal.
 	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( vsIn.viewPosition.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( vsIn.viewPosition.z, vsIn.normal.x ) );
-	viewPositionNormalCompressed.z = packHalf2x16( vsIn.normal.yz );
+	viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewPosition.xy );
+	viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewPosition.z, dataIn.normal.x ) );
+	viewPositionNormalCompressed.z = packHalf2x16( dataIn.normal.yz );
 	viewPositionNormalCompressed.w = 0; // Padding.
 
 	outViewPositionNormal = viewPositionNormalCompressed;

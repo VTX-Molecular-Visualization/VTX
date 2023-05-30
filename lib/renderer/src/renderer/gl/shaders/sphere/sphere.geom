@@ -1,52 +1,34 @@
-#version 450
+#version 450 core
 
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
 uniform mat4 u_projMatrix;
 
-in VsOut
-{
-	flat vec3  viewSpherePos; // Sphere position in view space.
-	flat vec4  sphereColor;
-	flat float sphereRadius;
-	flat uint  sphereVisible;
-	flat uint  sphereSelected;
-	flat uint  sphereId;
-	flat vec3  vImpU; // Impostor vectors.
-	flat vec3  vImpV;
-	flat float dotViewSpherePos;
-}
-vsIn[];
+in 
+#include "struct_vertex_shader.glsl"
+dataIn[];
 
-out GsOut
-{
-	smooth vec3 viewImpPos;	   // Impostor position in view space.
-	flat vec3	viewSpherePos; // Sphere position in view space.
-	flat vec4	sphereColor;
-	flat float	sphereRadius;
-	flat float	dotViewSpherePos;
-	flat uint	sphereSelected;
-	flat uint	sphereId;
-}
-gsOut;
+out 
+#include "struct_geometry_shader.glsl"
+dataOut;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	gsOut.viewImpPos = v1;
-	gl_Position		 = u_projMatrix * vec4( gsOut.viewImpPos, 1.f );
+	dataOut.viewImpPos = v1;
+	gl_Position		 = u_projMatrix * vec4( dataOut.viewImpPos, 1.f );
 	EmitVertex();
 
-	gsOut.viewImpPos = v2;
-	gl_Position		 = u_projMatrix * vec4( gsOut.viewImpPos, 1.f );
+	dataOut.viewImpPos = v2;
+	gl_Position		 = u_projMatrix * vec4( dataOut.viewImpPos, 1.f );
 	EmitVertex();
 
-	gsOut.viewImpPos = v3;
-	gl_Position		 = u_projMatrix * vec4( gsOut.viewImpPos, 1.f );
+	dataOut.viewImpPos = v3;
+	gl_Position		 = u_projMatrix * vec4( dataOut.viewImpPos, 1.f );
 	EmitVertex();
 
-	gsOut.viewImpPos = v4;
-	gl_Position		 = u_projMatrix * vec4( gsOut.viewImpPos, 1.f );
+	dataOut.viewImpPos = v4;
+	gl_Position		 = u_projMatrix * vec4( dataOut.viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -55,24 +37,24 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if sphere is not visible.
-	if ( vsIn[ 0 ].sphereVisible == 0 )
+	if ( dataIn[ 0 ].sphereVisible == 0 )
 	{
 		return;
 	}
 
 	// Output data.
-	gsOut.viewSpherePos	   = vsIn[ 0 ].viewSpherePos;
-	gsOut.sphereColor	   = vsIn[ 0 ].sphereColor;
-	gsOut.sphereRadius	   = vsIn[ 0 ].sphereRadius;
-	gsOut.dotViewSpherePos = vsIn[ 0 ].dotViewSpherePos;
-	gsOut.sphereSelected   = vsIn[ 0 ].sphereSelected;
-	gsOut.sphereId		   = vsIn[ 0 ].sphereId;
+	dataOut.viewSpherePos	   = dataIn[ 0 ].viewSpherePos;
+	dataOut.sphereColor	   = dataIn[ 0 ].sphereColor;
+	dataOut.sphereRadius	   = dataIn[ 0 ].sphereRadius;
+	dataOut.dotViewSpherePos = dataIn[ 0 ].dotViewSpherePos;
+	dataOut.sphereSelected   = dataIn[ 0 ].sphereSelected;
+	dataOut.sphereId		   = dataIn[ 0 ].sphereId;
 
 	// Compute impostors vertices.
-	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vsIn[ 0 ].vImpU - vsIn[ 0 ].vImpV;
-	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + vsIn[ 0 ].vImpU - vsIn[ 0 ].vImpV;
-	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vsIn[ 0 ].vImpU + vsIn[ 0 ].vImpV;
-	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vsIn[ 0 ].vImpU + vsIn[ 0 ].vImpV;
+	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - dataIn[ 0 ].vImpU - dataIn[ 0 ].vImpV;
+	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + dataIn[ 0 ].vImpU - dataIn[ 0 ].vImpV;
+	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - dataIn[ 0 ].vImpU + dataIn[ 0 ].vImpV;
+	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + dataIn[ 0 ].vImpU + dataIn[ 0 ].vImpV;
 
 	emitQuad( v1, v2, v3, v4 );
 }

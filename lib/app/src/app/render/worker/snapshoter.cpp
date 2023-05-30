@@ -52,7 +52,8 @@ namespace VTX::App::Render::Worker
 	const void Snapshoter::_takeSnapshotGL() const
 	{
 		//		UI::Widget::Render::RenderWidget & renderWidget
-		//			= UI::VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER
+		//			= UI::VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>(
+		// UI::ID::Window::RENDER
 		//);
 		//
 		//		UI::Widget::Render::OpenGLWidget & glWidget = renderWidget.getOpenGLWidget();
@@ -84,14 +85,14 @@ namespace VTX::App::Render::Worker
 		//		const int height = _exportData.getSize().second;
 		//
 		//		// Create FBO.
-		//		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width, height );
+		//		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width* pixelRatio, height * pixelRatio);
 		//
 		//		// Resize renderer and use new FBO as output.
 		//		App::VTXApp::get().getScene().getCamera().setScreenSize( width, height );
 		//		glWidget.getRenderer().resize( width * pixelRatio, height * pixelRatio, fbo.handle() );
 		//
 		//		// Render.
-		//		_gl->glViewport( 0, 0, width, height );
+		//		_gl->glViewport( 0, 0, width * pixelRatio, height * pixelRatio );
 		//
 		//		// Use Export Data background opacity for the render.
 		//		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();

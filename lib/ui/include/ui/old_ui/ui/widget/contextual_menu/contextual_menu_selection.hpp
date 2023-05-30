@@ -266,7 +266,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _refreshToggleSolventText( QAction & _action ) const;
 		void _refreshToggleIonText( QAction & _action ) const;
 
-		void _refreshFrameListMenuItems( QAction & _action ) const;
+		void _refreshFrameListVisibility( QAction & _action ) const;
+		void _refreshFrameListSubmenu() const;
 
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;

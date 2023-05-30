@@ -1,20 +1,22 @@
-#version 450
+#version 450 core
 
 #include "global_uniforms.glsl"
 
 // Crytek (Crysis) like SSAO
 
-layout( binding = 1 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 2 ) uniform sampler2D noise;
-layout( binding = 3 ) uniform sampler2D linearDepth;
+// In.
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D noise;
+layout( binding = 2 ) uniform sampler2D linearDepth;
 
+uniform vec3  uAoKernel[ 512 ];
+uniform int	  uKernelSize;
+uniform float uNoiseSize;
+
+// Out.
 layout( location = 0 ) out float ambientOcclusion;
 
 const float BIAS = 0.025f;
-
-uniform vec3  uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
-uniform int	  uKernelSize;
-uniform float uNoiseSize;
 
 struct UnpackedData
 {
@@ -69,5 +71,5 @@ void main()
 	}
 
 	ao				 = 1.f - ( ao / uKernelSize );
-	ambientOcclusion = pow( ao, uniforms.ssaoIntensity );
+	ambientOcclusion = pow( ao, uniforms.uintData.x );
 }

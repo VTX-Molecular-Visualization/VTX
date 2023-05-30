@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
 #define __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
 
-#include <app/core/event/vtx_event.hpp>
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
+#include <app/core/event/vtx_event.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -53,6 +53,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _soloSelection() const;
 
 		void _exportSelection() const;
+
+		void _updateFrameSubmenu() const;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

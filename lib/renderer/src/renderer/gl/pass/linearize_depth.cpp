@@ -9,7 +9,8 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "LinearizeDepth", std::vector<FilePath> { "linearize_depth.frag" } );
+		_program
+			= p_pm.createProgram( "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } );
 		assert( _program != nullptr );
 	}
 
@@ -20,13 +21,14 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
-	void LinearizeDepth::render()
+	void LinearizeDepth::render( VertexArray & p_vao )
 	{
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureDepth->bindToUnit( 1 );
+		in.textureDepth->bind( 0 );
 		_program->use();
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

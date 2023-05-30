@@ -22,6 +22,7 @@ namespace VTX::Controller
 		void _onMouseRightClick( const uint p_x, const uint p_y ) override;
 
 		void _performSelection( const Vec2i & p_ids ) const;
+		bool _isTargetSelected( const Vec2i & p_ids ) const;
 
 		void _selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const;
 		void _selectItem( App::Component::Chemistry::Atom & p_atomPicked1,

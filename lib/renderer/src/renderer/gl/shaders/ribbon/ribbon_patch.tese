@@ -3,7 +3,7 @@
 // P. Hermosilla & V. Guallar & A. Vinacua & P.P. V�zquez
 // Eurographics Workshop on Visual Computing for Biology and Medicine (2015)
 
-#version 450
+#version 450 core
 
 layout( quads, fractional_even_spacing ) in;
 
@@ -14,29 +14,13 @@ uniform uint u_maxIndice;
 uniform vec3 u_camPosition;
 uniform uint u_colorBlendingMode;
 
-in TcOut
-{
-	vec3	  position;
-	vec3	  direction;
-	vec3	  normal;
-	flat vec4 color;
-	flat uint ssType;
-	flat uint visibility;
-	flat uint selection;
-	flat uint id;
-}
-tcIn[];
+in 
+#include "struct_tessellation_control_shader.glsl"
+dataIn[];
 
-out TeOut
-{
-	vec3	  viewPosition;
-	vec3	  normal;
-	vec4	  color;
-	flat uint visibility;
-	flat uint selection;
-	flat uint id;
-}
-teOut;
+out 
+#include "struct_tessellation_evaluation_shader.glsl"
+dataOut;
 
 // clang-format off
 const float s = 0.8f;
@@ -87,9 +71,9 @@ void main()
 	const float u02 = u / 2.f;
 
 	// Interpolate position along spline.
-	const vec3 p01 = mix( tcIn[ 0 ].position, tcIn[ 1 ].position, u23 );
-	const vec3 p12 = mix( tcIn[ 1 ].position, tcIn[ 2 ].position, u13 );
-	const vec3 p23 = mix( tcIn[ 2 ].position, tcIn[ 3 ].position, u03 );
+	const vec3 p01 = mix( dataIn[ 0 ].position, dataIn[ 1 ].position, u23 );
+	const vec3 p12 = mix( dataIn[ 1 ].position, dataIn[ 2 ].position, u13 );
+	const vec3 p23 = mix( dataIn[ 2 ].position, dataIn[ 3 ].position, u03 );
 
 	const vec3 p02 = mix( p01, p12, u12 );
 	const vec3 p13 = mix( p12, p23, u02 );
@@ -100,9 +84,9 @@ void main()
 	const vec3 tangent = normalize( p13 - p02 );
 
 	// Interpolate direction along spline.
-	const vec3 d01 = mix( tcIn[ 0 ].direction, tcIn[ 1 ].direction, u23 );
-	const vec3 d12 = mix( tcIn[ 1 ].direction, tcIn[ 2 ].direction, u13 );
-	const vec3 d23 = mix( tcIn[ 2 ].direction, tcIn[ 3 ].direction, u03 );
+	const vec3 d01 = mix( dataIn[ 0 ].direction, dataIn[ 1 ].direction, u23 );
+	const vec3 d12 = mix( dataIn[ 1 ].direction, dataIn[ 2 ].direction, u13 );
+	const vec3 d23 = mix( dataIn[ 2 ].direction, dataIn[ 3 ].direction, u03 );
 
 	const vec3 d02 = mix( d01, d12, u12 );
 	const vec3 d13 = mix( d12, d23, u02 );
@@ -110,18 +94,18 @@ void main()
 	vec3 direction = normalize( mix( d02, d13, u ) );
 
 	// Interpolate normal linearly (only known for the two center control points).
-	const vec3 normal = normalize( mix( tcIn[ 1 ].normal, tcIn[ 2 ].normal, gl_TessCoord.x ) );
+	const vec3 normal = normalize( mix( dataIn[ 1 ].normal, dataIn[ 2 ].normal, gl_TessCoord.x ) );
 
 	// Make direction orthogonal to tangent.
 	direction = cross( normal, tangent );
 
 	// Interpolate direction factor between the two center control points.
 	const float directionFactor
-		= mix( DIRECTION_FACTOR[ tcIn[ 1 ].ssType ], DIRECTION_FACTOR[ tcIn[ 2 ].ssType ], gl_TessCoord.x );
+		= mix( DIRECTION_FACTOR[ dataIn[ 1 ].ssType ], DIRECTION_FACTOR[ dataIn[ 2 ].ssType ], gl_TessCoord.x );
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( tcIn[ 1 ].ssType == 5 ) && ( tcIn[ 1 ].ssType != tcIn[ 2 ].ssType ) )
+	if ( ( dataIn[ 1 ].ssType == 5 ) && ( dataIn[ 1 ].ssType != dataIn[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 	// Move vertex along direction
@@ -132,16 +116,16 @@ void main()
 	const vec3 n = normal * ( directionFactor + arrayOffset ) / directionFactor * RADIUS;
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
-	teOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
-	teOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
-	teOut.color =  tcIn[ 1 ].color;
+	dataOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
+	dataOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
+	dataOut.color =  dataIn[ 1 ].color;
 	if(u_colorBlendingMode == 1) // Gradient.
 	{
-		teOut.color		   = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
+		dataOut.color		   = mix( dataIn[ 1 ].color, dataIn[ 2 ].color, gl_TessCoord.x );
 	}
-	teOut.selection	 = tcIn[ 1 ].selection;
-	teOut.visibility = tcIn[ 1 ].visibility;
-	teOut.id		 = tcIn[ 1 ].id;
+	dataOut.selection	 = dataIn[ 1 ].selection;
+	dataOut.visibility = dataIn[ 1 ].visibility;
+	dataOut.id		 = dataIn[ 1 ].id;
 
-	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );
+	gl_Position = u_projMatrix * vec4( dataOut.viewPosition, 1.f );
 }

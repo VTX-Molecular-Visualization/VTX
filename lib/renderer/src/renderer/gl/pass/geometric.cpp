@@ -1,4 +1,5 @@
 #include "renderer/gl/pass/geometric.hpp"
+#include <util/color/rgba.hpp>
 
 namespace VTX::Renderer::GL::Pass
 {
@@ -37,6 +38,67 @@ namespace VTX::Renderer::GL::Pass
 		assert( _programLine != nullptr );
 		assert( _programTriangle != nullptr );
 		assert( _programVoxel != nullptr );
+
+		///////////////// Triangles test.
+		in.triangles.vboPositions.create();
+		in.triangles.vboNormals.create();
+		in.triangles.vboColors.create();
+		in.triangles.vboVisibilities.create();
+		in.triangles.vboSelections.create();
+		in.triangles.vboIds.create();
+		in.triangles.ibo.create();
+
+		in.triangles.vao.create();
+
+		in.triangles.vao.bindElementBuffer( in.triangles.ibo );
+
+		// Position.
+		in.triangles.vao.enableAttribute( 0 );
+		in.triangles.vao.setVertexBuffer<float>( 0, in.triangles.vboPositions, sizeof( Vec4f ) );
+		in.triangles.vao.setAttributeFormat<float>( 0, 4 );
+		in.triangles.vao.setAttributeBinding( 0, 0 );
+
+		// Normal.
+		in.triangles.vao.enableAttribute( 1 );
+		in.triangles.vao.setVertexBuffer<float>( 1, in.triangles.vboNormals, sizeof( Vec4f ) );
+		in.triangles.vao.setAttributeFormat<float>( 1, 4 );
+		in.triangles.vao.setAttributeBinding( 1, 1 );
+
+		// Color.
+		in.triangles.vao.enableAttribute( 2 );
+		in.triangles.vao.setVertexBuffer<float>( 2, in.triangles.vboColors, sizeof( Util::Color::Rgba ) );
+		in.triangles.vao.setAttributeFormat<float>( 2, 4 );
+		in.triangles.vao.setAttributeBinding( 2, 2 );
+
+		// Visbility.
+		in.triangles.vao.enableAttribute( 3 );
+		in.triangles.vao.setVertexBuffer<uint>( 3, in.triangles.vboVisibilities, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 3, 1 );
+		in.triangles.vao.setAttributeBinding( 3, 3 );
+
+		// Selection.
+		in.triangles.vao.enableAttribute( 4 );
+		in.triangles.vao.setVertexBuffer<uint>( 4, in.triangles.vboSelections, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 4, 1 );
+		in.triangles.vao.setAttributeBinding( 4, 4 );
+
+		// Id.
+		in.triangles.vao.enableAttribute( 5 );
+		in.triangles.vao.setVertexBuffer<uint>( 5, in.triangles.vboIds, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 5, 1 );
+		in.triangles.vao.setAttributeBinding( 5, 5 );
+
+		in.triangles.vboPositions.set( std::vector<Vec4f> {
+			Vec4f( 1.f, 0.f, 0.f, 0.f ), Vec4f( -1.f, 0.f, 0.f, 0.f ), Vec4f( 0.f, 1.f, 0.f, 0.f ) } );
+		in.triangles.vboNormals.set( std::vector<Vec4f> {
+			Vec4f( 0.f, 0.f, 1.f, 0.f ), Vec4f( 0.f, 0.f, 1.f, 0.f ), Vec4f( 0.f, 0.f, 1.f, 0.f ) } );
+		in.triangles.vboColors.set( std::vector<Util::Color::Rgba> { Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
+																	 Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
+																	 Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) } );
+		in.triangles.vboVisibilities.set( std::vector<uint> { 1, 1, 1 } );
+		in.triangles.vboSelections.set( std::vector<uint> { 0, 0, 0 } );
+		in.triangles.vboIds.set( std::vector<uint> { 0, 0, 0 } );
+		in.triangles.ibo.set( std::vector<uint> { 0, 1, 2 } );
 	}
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )
@@ -52,14 +114,18 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 	}
 
-	void Geometric::render()
+	void Geometric::render( VertexArray & p_vao )
 	{
 		glEnable( GL_DEPTH_TEST );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+		_programTriangle->use();
+		in.triangles.vao.drawElement( GL_TRIANGLES, 3, GL_UNSIGNED_INT );
+
 		/*
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
@@ -74,7 +140,7 @@ namespace VTX::Renderer::GL::Pass
 			helper->render( p_scene.getCamera() );
 		}
 		*/
-		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		// glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 		out.fbo.unbind();
 
@@ -86,7 +152,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.bind( GL_READ_FRAMEBUFFER );
 		out.fbo.setReadBuffer( GL_COLOR_ATTACHMENT2 );
 		Vec2i data = Vec2i( INVALID_ID, INVALID_ID );
-		glReadPixels( p_x, p_y, 1, 1, GLenum( GL_RG_INTEGER ), GL_UNSIGNED_INT, &data );
+		glReadPixels( p_x, p_y, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, &data );
 		out.fbo.unbind();
 		return data;
 	}

@@ -20,9 +20,12 @@ namespace VTX::Renderer::GL
 		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 		// Debug infos.
 		glEnable( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( _debugMessageCallback, NULL );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		glDebugMessageCallback( _debugMessageCallback, nullptr );
+#endif
 
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
@@ -41,7 +44,7 @@ namespace VTX::Renderer::GL
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
 		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSSAO.in.textureLinearizeDepth		 = &( _passGeometric.out.textureDepth );
+		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
 
 		_passBlur.in.texture			   = &( _passSSAO.out.texture );
 		_passBlur.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
@@ -50,12 +53,12 @@ namespace VTX::Renderer::GL
 		_passShading.in.texture						= &( _passGeometric.out.textureColors );
 		_passShading.in.textureBlur					= &( _passBlur.out.texture );
 
-		_passOutline.in.texture				  = &( _passShading.out.texture );
-		_passOutline.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+		_passOutline.in.texture		 = &( _passShading.out.texture );
+		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
 		_passSelection.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSelection.in.texture					  = &( _passShading.out.texture );
-		_passSelection.in.textureLinearizeDepth		  = &( _passLinearizeDepth.out.texture );
+		_passSelection.in.texture					  = &( _passOutline.out.texture );
+		_passSelection.in.textureDepth				  = &( _passLinearizeDepth.out.texture );
 
 		_passFXAA.in.texture = &( _passSelection.out.texture );
 	}
@@ -83,12 +86,13 @@ namespace VTX::Renderer::GL
 		_ubo.create();
 
 		_vaoQuad.enableAttribute( 0 );
-		_vaoQuad.setVertexBuffer( 0, _vboQuad, sizeof( Vec2f ) );
-		_vaoQuad.setAttributeFormat( 0, 2, GL_FLOAT );
+		_vaoQuad.setVertexBuffer<float>( 0, _vboQuad, sizeof( Vec2f ) );
+		_vaoQuad.setAttributeFormat<float>( 0, 2 );
 		_vaoQuad.setAttributeBinding( 0, 0 );
 
 		_vboQuad.set( quadVertices );
 
+		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		VTX_INFO( "Renderer initialized" );
@@ -105,67 +109,33 @@ namespace VTX::Renderer::GL
 	void OpenGLRenderer::renderFrame()
 	{
 		_vaoQuad.drawCalls = 0;
+		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			_ubo.bind( GL_UNIFORM_BUFFER, 0 );
-			pass->render();
-			_vaoQuad.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
-			_ubo.unbind();
+			pass->render( _vaoQuad );
 		}
 
-		/*
-		_passGeometric->render( p_scene, *this );
-
-		_passLinearizeDepth->render( p_scene, *this );
-
-		if ( VTX_RENDER_EFFECT().isSSAOEnabled() )
-		{
-			_passSSAO->render( p_scene, *this );
-			_passBlur->render( p_scene, *this );
-		}
-
-		_passShading->render( p_scene, *this );
-
-		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
-		{
-			_passOutline->render( p_scene, *this );
-		}
-
-		_passSelection->render( p_scene, *this );
-
-		if ( VTX_SETTING().getAA() )
-		{
-			_passFXAA->render( p_scene, *this );
-		}
-
-		App::VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
-	*/
+		_ubo.unbind();
 	};
-
-	/*
-	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )
-	{
-		switch ( p_renderSetting )
-		{
-		case RENDER_SETTING::SHADING: _passShading->set(); break;
-		case RENDER_SETTING::SSAO:
-			if ( VTX_RENDER_EFFECT().isSSAOEnabled() == false )
-			{
-				_passBlur->clearTexture();
-			}
-			break;
-		case RENDER_SETTING::OUTLINE: break;
-		case RENDER_SETTING::FOG: break;
-		case RENDER_SETTING::AA: _passSelection->updateOutputFBO( *this ); break;
-		}
-	}
-	*/
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{
 		return _passGeometric.getPickedData( p_x, p_y );
 	}
 
+	void OpenGLRenderer::setCameraMatrix( const Mat4f & p_view, const Mat4f & p_proj )
+	{
+		_ubo.setSub( p_view, 0, sizeof( Mat4f ) );
+		_ubo.setSub( p_proj, sizeof( Mat4f ), sizeof( Mat4f ) );
+	}
+
+	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )
+	{
+		_ubo.setSub( p_color, 10 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
+	}
+
+#if ( VTX_OPENGL_VERSION == 450 )
 	void APIENTRY OpenGLRenderer::_debugMessageCallback( const GLenum	p_source,
 														 const GLenum	p_type,
 														 const GLuint	p_id,
@@ -223,5 +193,6 @@ namespace VTX::Renderer::GL
 		default: break;
 		}
 	}
+#endif
 
 } // namespace VTX::Renderer::GL

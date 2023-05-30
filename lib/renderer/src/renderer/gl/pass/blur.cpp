@@ -18,8 +18,6 @@ namespace VTX::Renderer::GL::Pass
 
 		_program = p_pm.createProgram( "Blur", std::vector<FilePath> { "bilateral_blur.frag" } );
 		assert( _program != nullptr );
-		//_program->use();
-		//_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 	}
 
 	void Blur::resize( const size_t p_width, const size_t p_height )
@@ -33,40 +31,26 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
-	void Blur::render()
+	void Blur::render( VertexArray & p_vao )
 	{
 		assert( in.textureLinearizeDepth != nullptr );
 		assert( in.texture != nullptr );
 
+		// First pass.
 		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
-
-		in.texture->bindToUnit( 0 );
-		in.textureLinearizeDepth->bindToUnit( 1 );
-
-		/*
+		in.texture->bind( 0 );
+		in.textureLinearizeDepth->bind( 1 );
 		_program->use();
-
-		if ( App::VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
-		{
-			_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
-		}
-
 		_program->setVec2i( "uDirection", 1, 0 );
-
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-		*/
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		_fboFirstPass.unbind();
 
+		// Second pass.
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-
-		_textureFirstPass.bindToUnit( 0 );
-		in.textureLinearizeDepth->bindToUnit( 1 );
-
-		/*
+		_textureFirstPass.bind( 0 );
+		in.textureLinearizeDepth->bind( 1 );
 		_program->setVec2i( "uDirection", 0, 1 );
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-		*/
-
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();
 	}
 

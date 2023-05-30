@@ -28,12 +28,15 @@ target_link_libraries(VTX_UTIL PUBLIC glm)
 target_link_libraries(VTX_UTIL PUBLIC spdlog)
 
 # Compiler options.
+target_compile_features(VTX_UTIL PUBLIC cxx_std_17)
+
 if(CMAKE_COMPILER_IS_GNUCC)
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	target_compile_options(VTX_UTIL PUBLIC "-w")
+	target_compile_options(VTX_UTIL PUBLIC "-Wpedantic")
+	target_compile_options(VTX_UTIL PUBLIC "-Wall")
+	#target_compile_options(VTX_UTIL PUBLIC "-Werror")
 elseif(MSVC)
 	# General.
-	target_compile_features(VTX_UTIL PUBLIC cxx_std_17)
 	target_compile_options(VTX_UTIL PUBLIC "/W3")  # Warning level 3.
 	target_compile_options(VTX_UTIL PUBLIC "/WX")  # Warnings as errors.
 	target_compile_options(VTX_UTIL PUBLIC "/MP")  # Multicore compilation.
@@ -44,6 +47,7 @@ elseif(MSVC)
 	# Preprocessor definitions
 	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	#(-DNOMINMAX)
+
 endif()
 
 # Tests.

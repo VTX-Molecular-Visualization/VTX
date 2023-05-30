@@ -8,7 +8,10 @@ namespace VTX::Renderer::GL
 {
 	const std::map<std::string, ENUM_SHADER_TYPE> ProgramManager::_EXTENSIONS
 		= { { ".vert", ENUM_SHADER_TYPE::VERTEX },		 { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
-			{ ".frag", ENUM_SHADER_TYPE::FRAGMENT },	 { ".comp", ENUM_SHADER_TYPE::COMPUTE },
+			{ ".frag", ENUM_SHADER_TYPE::FRAGMENT },
+#if ( VTX_OPENGL_VERSION == 450 )
+			{ ".comp", ENUM_SHADER_TYPE::COMPUTE },
+#endif
 			{ ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL }, { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } };
 
 	ProgramManager::ProgramManager( const FilePath & p_shaderPath ) : _shaderPath( p_shaderPath ) {}
@@ -46,7 +49,14 @@ namespace VTX::Renderer::GL
 		std::vector<FilePath> paths;
 		for ( const auto & file : std::filesystem::directory_iterator { _shaderPath / p_shaders } )
 		{
-			paths.emplace_back( file.path() );
+			try
+			{
+				ProgramManager::getShaderType( file );
+				paths.emplace_back( file.path() );
+			}
+			catch ( const GLException & )
+			{
+			}
 		}
 		return createProgram( p_name, paths, p_toInject, p_suffix );
 	}

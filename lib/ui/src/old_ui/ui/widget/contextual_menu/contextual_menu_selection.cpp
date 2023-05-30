@@ -49,7 +49,7 @@ namespace VTX::UI::Widget::ContextualMenu
 				 &ContextualMenuSelection::_copyFrameAction );
 		SubMenuData * const duplicateFrameSubmenu
 			= new SubMenuData( "Duplicate Frame", TypeMask::MoleculeStructure, this, _frameListMenu );
-		duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListMenuItems );
+		duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListVisibility );
 		moleculeStructureSubmenu->addItemData( duplicateFrameSubmenu );
 
 		moleculeStructureSubmenu->addItemData(
@@ -178,6 +178,11 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		connect(
 			this, &ContextualMenuSelection::aboutToShow, this, &ContextualMenuSelection::_updateActionsWithSelection );
+
+		connect( _frameListMenu,
+				 &CustomWidget::TrajectoryFramesMenu::aboutToShow,
+				 this,
+				 &ContextualMenuSelection::_refreshFrameListSubmenu );
 	}
 
 	void ContextualMenuSelection::localize() {}
@@ -560,11 +565,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		_action.setText( text );
 	}
 
-	void ContextualMenuSelection::_refreshFrameListMenuItems( QAction & _action ) const
+	void ContextualMenuSelection::_refreshFrameListVisibility( QAction & _action ) const
 	{
-		_frameListMenu->updateFrames( *_target );
-		_action.setVisible( _frameListMenu->getFrameCount() >= 2 );
+		_action.setVisible( _frameListMenu->hasToBeDisplayed( *_target ) );
 	}
+	void ContextualMenuSelection::_refreshFrameListSubmenu() const { _frameListMenu->updateFrames( *_target ); }
 
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{

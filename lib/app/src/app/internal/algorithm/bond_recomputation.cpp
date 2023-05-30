@@ -213,7 +213,7 @@ namespace VTX::App::Internal::Algorithm
 	void BondRecomputation::recomputeBonds( chemfiles::Frame &							   p_frame,
 											const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
-		CellList cellList = CellList( p_aabb, VTX::App::Application::Setting::CELL_LIST_CUBE_SIZE );
+		CellList cellList = CellList( p_aabb, App::Application::Setting::CELL_LIST_CUBE_SIZE );
 
 		std::unordered_set<size_t> sulfurAtoms = std::unordered_set<size_t>();
 
@@ -234,17 +234,23 @@ namespace VTX::App::Internal::Algorithm
 						cellList.addCysteineSulfur( atomId, atomPos );
 						sulfurAtoms.emplace( atomId );
 					}
-					else
-					{
-						cellList.addAtom( atomId, atomPos );
-					}
+
+					cellList.addAtom( atomId, atomPos );
 				}
 			}
 			else
 			{
 				for ( const size_t atomId : residue )
 				{
-					const chemfiles::Vector3D & atomPos = p_frame.positions()[ atomId ];
+					const chemfiles::Vector3D & atomPos	 = p_frame.positions()[ atomId ];
+					const bool					isSulfur = p_frame[ atomId ].type() == "S";
+
+					if ( isSulfur )
+					{
+						cellList.addCysteineSulfur( atomId, atomPos );
+						sulfurAtoms.emplace( atomId );
+					}
+
 					cellList.addAtomFromNonStandardResidue( atomId, atomPos );
 				}
 			}
@@ -258,8 +264,6 @@ namespace VTX::App::Internal::Algorithm
 												  const CellList &					 p_cellList,
 												  const std::unordered_set<size_t> & p_sulfurAtoms )
 	{
-		const double maxDistanceForDisulfidesBond = 3.0;
-
 		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
 		{
 			const std::vector<size_t> & neighbours = p_cellList.getNeighbours( p_frame.positions()[ sulfurAtom1 ] );
@@ -273,10 +277,10 @@ namespace VTX::App::Internal::Algorithm
 					if ( sulfurAtom1 <= sulfurAtom2 )
 						continue;
 
-					// TODO : Change with sqrDistance when it will be added in chemfiles library
-					const double dist = p_frame.distance( sulfurAtom1, sulfurAtom2 );
+					const double sqrDist
+						= _sqrDistance( p_frame.positions()[ sulfurAtom1 ], p_frame.positions()[ sulfurAtom2 ] );
 
-					if ( dist < maxDistanceForDisulfidesBond )
+					if ( sqrDist < MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND )
 						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
 				}
 			}
@@ -286,10 +290,9 @@ namespace VTX::App::Internal::Algorithm
 	void BondRecomputation::_recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame,
 																  const CellList &	 p_cellList )
 	{
-		// float cutoff = 8.f;
-		// float	  cutoffPow2		  = cutoff * cutoff;
-		float	  cutoffPow2		  = 8.f;
-		const int hydrogenSymbolValue = int( App::Internal::ChemDB::Atom::SYMBOL::A_H );
+		const double cutoff				 = 3.48 * 2.;
+		const double cutoffPow2			 = cutoff * cutoff;
+		const int	 hydrogenSymbolValue = int( ChemDB::Atom::SYMBOL::A_H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 
@@ -299,14 +302,10 @@ namespace VTX::App::Internal::Algorithm
 
 			for ( size_t nghb = 0; nghb < p_cellList.getNeighbourList()[ cellIndex ].size(); nghb++ )
 			{
-				size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
-				size_t atomNumInCell	 = p_cellList.getCellList()[ neighborCellIndex ].size();
+				const size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
+				const size_t atomNumInCell	   = p_cellList.getCellList()[ neighborCellIndex ].size();
 
-				bool selfCell;
-				if ( cellIndex == neighborCellIndex )
-					selfCell = true;
-				else
-					selfCell = false;
+				const bool selfCell = ( cellIndex == neighborCellIndex );
 
 				for ( size_t i = 0; i < atomsInCell; i++ )
 				{
@@ -318,14 +317,11 @@ namespace VTX::App::Internal::Algorithm
 					{
 						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
 
-						// TODO : Change with frame.sqrDistance when it will be added in chemfiles
-						const float interAtomicDist
-							= float( ( frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ] ).sqrNorm() );
-						// float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
-						// interAtomicDist *= interAtomicDist;
+						const double interAtomicSqrDist
+							= _sqrDistance( frame.positions()[ indexAtom1 ], frame.positions()[ indexAtom2 ] );
 
 						// Perform distance test and ignore atoms with almost the same coordinates
-						if ( ( interAtomicDist > cutoffPow2 ) || ( interAtomicDist < 0.03 ) )
+						if ( ( interAtomicSqrDist > cutoffPow2 ) || ( interAtomicSqrDist < 0.03 ) )
 						{
 							continue;
 						}
@@ -333,11 +329,12 @@ namespace VTX::App::Internal::Algorithm
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
 						const int				symbolAtom2 = int( atom2.atomic_number().value_or( 0 ) );
 
-						const float atom1Radius = App::Internal::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
-						const float atom2Radius = App::Internal::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
-						const float radii		= atom1Radius + atom2Radius;
+						const float atom1Radius		  = ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
+						const float atom2Radius		  = ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
+						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
+						const float radiusSqrDistance = radiusDistance * radiusDistance;
 
-						if ( interAtomicDist < radii )
+						if ( interAtomicSqrDist < radiusSqrDistance )
 						{
 							// Prevent hydrogen atoms from bonding with each other
 							if ( symbolAtom1 != hydrogenSymbolValue || symbolAtom2 != hydrogenSymbolValue )
@@ -351,4 +348,8 @@ namespace VTX::App::Internal::Algorithm
 		}
 	}
 
+	double BondRecomputation::_sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs )
+	{
+		return ( p_rhs - p_lhs ).sqrNorm();
+	}
 } // namespace VTX::App::Internal::Algorithm

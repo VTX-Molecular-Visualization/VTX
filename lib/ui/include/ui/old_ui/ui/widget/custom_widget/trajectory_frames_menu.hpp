@@ -34,6 +34,9 @@ namespace VTX::UI::Widget::CustomWidget
 		void updateFrames( const App::Component::Chemistry::Molecule & p_molecule );
 		void updateFrames( const App::Application::Selection::SelectionModel & p_selection );
 
+		bool hasToBeDisplayed( const App::Component::Chemistry::Molecule & p_molecule ) const;
+		bool hasToBeDisplayed( const App::Application::Selection::SelectionModel & p_selection ) const;
+
 		void setDisplayAllFramesOption( const bool p_displayAllFramesOption );
 
 	  signals:
