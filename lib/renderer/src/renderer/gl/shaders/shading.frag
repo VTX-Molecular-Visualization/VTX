@@ -40,51 +40,25 @@ void main()
 	if ( data.viewPosition.z == 0.f )
 	{
 		if ( uniforms.fog.z != 0.f )
-		{
-			fragColor = vec4( mix( vec3( uniforms.backgroundColor ),  vec3( uniforms.fogColor ), uniforms.fog.z ) *  vec3( uniforms.lightColor ), uniforms.backgroundColor.w );
-		}
+			fragColor
+				= vec4( mix( vec3( uniforms.backgroundColor.xyz ), uniforms.fogColor.xyz, uniforms.fog.z ) * uniforms.lightColor.xyz, uniforms.backgroundColor.w );
 		else
-		{
 			fragColor = uniforms.backgroundColor;
-		}
 		return;
 	}
 
-	// Lighting (on camera).
-	const vec3 lightDir = bool(uniforms.boolData.x) ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	// Light on camera.
+	const vec3 lightDir = bool( uniforms.boolData.x ) ?
+		normalize( -data.viewPosition ) :
+		vec3( 0.f, 0.f, 1.f );
 
-	// FLAT_COLOR.
-	float lighting = 1.f;
-	// DIFFUSE.
-	if( uniforms.uintData.z == 0 )
-	{		
-		lighting = max( dot( data.normal, lightDir ), 0.f );
-	}
-	// GLOSSY.
-	else if( uniforms.uintData.z == GLOSSY )
-	{		
-		const float diffuse = 1.f - uniforms.floatData.x;
-		const vec3	viewDir = normalize( -data.viewPosition );
-		const vec3	h		= normalize( lightDir + viewDir );
-		const float specular = uniforms.floatData.x * pow( max( dot( h, data.normal ), 0.f ), texelFetch( gbColor, texCoord, 0 ).w );
-		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
-		lighting = ( diffuse + specular ) * cosTheta;
-	}
-	// TOON.
-	else if( uniforms.uintData.z == TOON ) 
-	{
-		const float intensity = dot( data.normal, lightDir );		
-
-		if ( intensity < 0.25f ) lighting = 0.2f;
-		else if ( intensity < 0.5f ) lighting = 0.4f;
-		else if ( intensity < 0.75f ) lighting = 0.55f;
-		else if ( intensity < 0.95f ) lighting = 0.7f;
-	}
+	
+	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( uniforms.fog.x, uniforms.fog.y, -data.viewPosition.z ) * uniforms.fog.z;
-	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
+	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * cosTheta * ambientOcclusion;
 
-	fragColor = vec4( mix( color, vec3( uniforms.fogColor ), fogFactor ) * vec3( uniforms.lightColor ), 1.f );
+	fragColor = vec4( mix( color, vec3(uniforms.fogColor), fogFactor ) * vec3(uniforms.lightColor), 1.f );
 }

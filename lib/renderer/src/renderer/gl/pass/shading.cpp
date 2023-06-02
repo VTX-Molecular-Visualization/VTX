@@ -17,7 +17,6 @@ namespace VTX::Renderer::GL::Pass
 	void Shading::resize( const size_t p_width, const size_t p_height )
 	{
 		out.texture.resize( p_width, p_height );
-
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
@@ -28,9 +27,9 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureBlur != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureViewPositionsNormals->bind( 0 );
-		in.texture->bind( 1 );
-		in.textureBlur->bind( 2 );
+		in.textureViewPositionsNormals->bindToUnit( 0 );
+		in.texture->bindToUnit( 1 );
+		in.textureBlur->bindToUnit( 2 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();

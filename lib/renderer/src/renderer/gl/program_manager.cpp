@@ -84,7 +84,7 @@ namespace VTX::Renderer::GL
 
 			program.link();
 
-			VTX_DEBUG( "Program " + std::to_string( _programs[ name ]->getId() ) + " created: " + p_name );
+			VTX_DEBUG( "Program {} created: {}", _programs[ name ]->getId(), p_name );
 		}
 
 		return _programs[ name ].get();
@@ -94,7 +94,7 @@ namespace VTX::Renderer::GL
 	{
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			VTX_WARNING( "Program " + p_name + " does not exists" );
+			VTX_WARNING( "Program {} does not exists", p_name );
 			return;
 		}
 
@@ -108,7 +108,7 @@ namespace VTX::Renderer::GL
 			return _programs.at( p_name ).get();
 		}
 
-		VTX_ERROR( "Program " + p_name + " does not exists" );
+		VTX_ERROR( "Program {} does not exists", p_name );
 		return nullptr;
 	}
 
@@ -176,7 +176,7 @@ namespace VTX::Renderer::GL
 				throw GLException( error );
 			}
 			_shaders.emplace( name, shaderId );
-			VTX_DEBUG( "Shader " + std::to_string( shaderId ) + " created: " + name );
+			VTX_DEBUG( "Shader {} created: {}", shaderId, name );
 		}
 
 		return shaderId;
@@ -250,7 +250,7 @@ namespace VTX::Renderer::GL
 	{
 		if ( _buffers.find( p_name ) == _buffers.end() )
 		{
-			VTX_WARNING( "Buffer " + p_name + " does not exists" );
+			VTX_WARNING( "Buffer {} does not exists", p_name );
 			return;
 		}
 
@@ -264,7 +264,7 @@ namespace VTX::Renderer::GL
 			return _buffers.at( p_name ).get();
 		}
 
-		VTX_ERROR( "Program " + p_name + " does not exists" );
+		VTX_ERROR( "Program {} does not exists", p_name );
 		return nullptr;
 	}
 } // namespace VTX::Renderer::GL

@@ -2,7 +2,15 @@
 #include <fstream>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
+#include <util/logger.hpp>
 #include <util/string.hpp>
+
+// logger.hpp
+TEST_CASE( "Util::Logger", "[logger]" )
+{
+	VTX::VTX_INFO( "info without args" );
+	VTX::VTX_INFO( "info with args: {} {}", "test", 42 );
+}
 
 // string.hpp
 TEST_CASE( "Util::String", "[string]" )

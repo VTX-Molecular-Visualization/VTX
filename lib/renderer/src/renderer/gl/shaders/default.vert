@@ -1,4 +1,6 @@
 #version 450 core
+
+// In.
 layout (location = 0) in vec3 aPos;
 
 void main()

@@ -30,7 +30,7 @@ namespace VTX::Renderer::GL::Pass
 				Buffer		vboVisibilities = Buffer();
 				Buffer		vboSelections	= Buffer();
 				Buffer		vboIds			= Buffer();
-				Buffer		ibo				= Buffer();
+				Buffer		ebo				= Buffer();
 				VertexArray vao				= VertexArray();
 			} triangles;
 		} in;

@@ -13,6 +13,8 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 layout( location = 1 ) out vec4 outColor;
 layout( location = 2 ) out uvec2 outId;
 
+out vec4 fragColor;
+
 void main()
 {
 	// Compress position and normal.
@@ -24,6 +26,6 @@ void main()
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( dataIn.color, 32.f ); // w = specular shininess.
+	outColor			  = vec4( dataIn.color, 32.f ); // w = specular shininess.	
 	outId				  = uvec2( dataIn.id, 0 );
 }

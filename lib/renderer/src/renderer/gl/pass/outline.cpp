@@ -16,7 +16,6 @@ namespace VTX::Renderer::GL::Pass
 	void Outline::resize( const size_t p_width, const size_t p_height )
 	{
 		out.texture.resize( p_width, p_height );
-
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
@@ -26,8 +25,8 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.texture->bind( 0 );
-		in.textureDepth->bind( 1 );
+		in.texture->bindToUnit( 0 );
+		in.textureDepth->bindToUnit( 1 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();

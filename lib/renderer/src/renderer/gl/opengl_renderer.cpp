@@ -46,8 +46,8 @@ namespace VTX::Renderer::GL
 		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
 		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
 
-		_passBlur.in.texture			   = &( _passSSAO.out.texture );
-		_passBlur.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+		_passBlur.in.texture	  = &( _passSSAO.out.texture );
+		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
 		_passShading.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
 		_passShading.in.texture						= &( _passGeometric.out.textureColors );
@@ -78,46 +78,51 @@ namespace VTX::Renderer::GL
 		}
 
 		// Init quad vao/vbo for deferred shading.
-		std::vector<Vec2f> quadVertices
-			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
+		std::vector<Vec2f> quad = { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-		_vboQuad.create();
-		_vaoQuad.create();
+		_vbo.create();
+		_vao.create();
 		_ubo.create();
 
-		_vaoQuad.enableAttribute( 0 );
-		_vaoQuad.setVertexBuffer<float>( 0, _vboQuad, sizeof( Vec2f ) );
-		_vaoQuad.setAttributeFormat<float>( 0, 2 );
-		_vaoQuad.setAttributeBinding( 0, 0 );
+		_vao.enableAttribute( 0 );
+		_vao.setVertexBuffer<float>( 0, _vbo, sizeof( Vec2f ) );
+		_vao.setAttributeFormat<float>( 0, 2 );
+		_vao.setAttributeBinding( 0, 0 );
 
-		_vboQuad.set( quadVertices );
+		_vbo.set( quad );
 
 		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
+
+		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 
 		VTX_INFO( "Renderer initialized" );
 	}
 
 	void OpenGLRenderer::resize( const size_t p_width, const size_t p_height )
 	{
+		_width	= p_width;
+		_height = p_height;
+
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->resize( _width, _height );
 		}
+
+		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
 
 	void OpenGLRenderer::renderFrame()
 	{
-		_vaoQuad.drawCalls = 0;
-		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+		//_vao.drawCalls = 0;
 
+		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			pass->render( _vaoQuad );
+			pass->render( _vao );
 		}
-
 		_ubo.unbind();
-	};
+	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{

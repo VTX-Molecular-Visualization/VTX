@@ -2,6 +2,7 @@
 
 #include "global_uniforms.glsl"
 
+// In.
 layout( binding = 0 ) uniform sampler2D depthTexture;
 
 // Out.
