@@ -11,7 +11,7 @@
 
 namespace VTX::App::Internal::IO::Writer
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	void ChemfilesWriter::writeFile( const FilePath & p_path, const App::Component::Chemistry::Molecule & p_molecule )
 	{

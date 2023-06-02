@@ -14,7 +14,7 @@
 #include <app/application/representation/enum_representation.hpp>
 #include <app/application/selection/enum_selection.hpp>
 #include <app/id.hpp>
-#include <app/internal/chemdb/category.hpp>
+#include <core/chemdb/category.hpp>
 #include <app/util/label.hpp>
 #include <iostream>
 #include <string>
@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Style
 			return res;
 		}
 
-		const QPixmap * const getResidueCategorySymbol( const App::Internal::ChemDB::Category::TYPE & p_category ) const
+		const QPixmap * const getResidueCategorySymbol( const VTX::Core::ChemDB::Category::TYPE & p_category ) const
 		{
 			return &RESIDUE_CATEGORY_ICON;
 		}

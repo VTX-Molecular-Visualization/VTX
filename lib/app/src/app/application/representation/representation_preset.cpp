@@ -1,22 +1,22 @@
 #include "app/application/representation/representation_preset.hpp"
 #include "app/application/representation/representation_data_generator.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
-#include "app/internal/chemdb/residue.hpp"
-#include <util/color/rgba.hpp>
 #include "app/id.hpp"
-#include "app/application/setting.hpp"
 #include "app/vtx_app.hpp"
+#include <core/chemdb/residue.hpp>
+#include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Application::Representation
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	RepresentationPreset::RepresentationPreset() : BaseModel( App::ID::Model::MODEL_REPRESENTATION )
 	{
-		const int randomColorIndex = getId() % int( App::Internal::ChemDB::Residue::SYMBOL::COUNT );
+		const int randomColorIndex = getId() % int( VTX::Core::ChemDB::Residue::SYMBOL::COUNT );
 		_color					   = ChemDB::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 
@@ -25,7 +25,7 @@ namespace VTX::App::Application::Representation
 	{
 		changeRepresentationType( p_type, false );
 
-		const int randomColorIndex = getId() % int( App::Internal::ChemDB::Residue::SYMBOL::COUNT );
+		const int randomColorIndex = getId() % int( VTX::Core::ChemDB::Residue::SYMBOL::COUNT );
 		_color					   = ChemDB::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 

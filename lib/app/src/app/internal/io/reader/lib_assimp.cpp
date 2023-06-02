@@ -148,7 +148,7 @@ namespace VTX::App::Internal::IO::Reader
 				App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueGlobalIdx );
 				residue->setChainPtr( &chain );
 				residue->setIndex( residueGlobalIdx );
-				residue->setSymbol( App::Internal::ChemDB::Residue::SYMBOL::UNKNOWN );
+				residue->setSymbol( VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN );
 				residue->setIndexFirstAtom( atomGlobalIdx );
 				residue->setAtomCount( uint( mesh->mNumVertices ) );
 				residue->setColor( Color::Rgb::randomPastel() );

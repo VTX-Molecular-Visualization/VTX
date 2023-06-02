@@ -21,14 +21,14 @@
 #include "app/core/scene/base_scene_item.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/internal/chemdb/color.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/reader/lib_chemfiles.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/mvc.hpp"
 #include <algorithm>
+#include <core/chemdb/category.hpp>
+#include <core/chemdb/color.hpp>
 #include <magic_enum.hpp>
 #include <map>
 #include <util/types.hpp>
@@ -237,7 +237,7 @@ namespace VTX::App::Internal::IO
 
 	nlohmann::json Serializer::serialize( const Util::Color::Rgba & p_color ) const
 	{
-		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
+		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() }, { "A", p_color.getA() } };
 	}
 
 	nlohmann::json Serializer::serialize( const Internal::Math::Transform & p_transform ) const
@@ -282,12 +282,12 @@ namespace VTX::App::Internal::IO
 				  ->getName();
 
 		std::vector<std::string> defaultRepresentationNamePerCategory = std::vector<std::string>();
-		defaultRepresentationNamePerCategory.resize( int( Internal::ChemDB::Category::TYPE::COUNT ) );
+		defaultRepresentationNamePerCategory.resize( int( VTX::Core::ChemDB::Category::TYPE::COUNT ) );
 
-		for ( int i = 0; i < int( Internal::ChemDB::Category::TYPE::COUNT ); i++ )
+		for ( int i = 0; i < int( VTX::Core::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			const int representationIndex
-				= p_setting.getDefaultRepresentationIndexPerCategory( Internal::ChemDB::Category::TYPE( i ) );
+				= p_setting.getDefaultRepresentationIndexPerCategory( VTX::Core::ChemDB::Category::TYPE( i ) );
 			const Application::Representation::RepresentationPreset * representation
 				= Application::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
 
@@ -635,22 +635,22 @@ namespace VTX::App::Internal::IO
 		}
 		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
 		{
-			p_representation.setCylinderColorBlendingMode( _getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+			p_representation.setCylinderColorBlendingMode( _getEnum<VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE>(
 				p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
 		{
-			p_representation.setRibbonColorMode( _getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+			p_representation.setRibbonColorMode( _getEnum<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
 				p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{
-			p_representation.setRibbonColorBlendingMode( _getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+			p_representation.setRibbonColorBlendingMode( _getEnum<VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE>(
 				p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			p_representation.setColorMode( _getEnum<App::Internal::ChemDB::Color::COLOR_MODE>(
+			p_representation.setColorMode( _getEnum<VTX::Core::ChemDB::Color::COLOR_MODE>(
 				p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR" ) )
@@ -690,19 +690,19 @@ namespace VTX::App::Internal::IO
 			p_representation.getData().setCylinderRadius(
 				_get<float>( p_json, "CYLINDER_RADIUS", Application::Setting::BONDS_RADIUS_DEFAULT ) );
 			p_representation.getData().setCylinderColorBlendingMode(
-				_getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+				_getEnum<VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE>(
 					p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawRibbon() )
 		{
 			p_representation.getData().setRibbonColorMode(
-				_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+				_getEnum<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
 					p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			p_representation.getData().setRibbonColorBlendingMode(
-				_getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+				_getEnum<VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE>(
 					p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
-		p_representation.getData().setColorMode( _getEnum<App::Internal::ChemDB::Color::COLOR_MODE>(
+		p_representation.getData().setColorMode( _getEnum<VTX::Core::ChemDB::Color::COLOR_MODE>(
 			p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 
 		_migrate( p_json, p_version, p_representation );
@@ -757,9 +757,10 @@ namespace VTX::App::Internal::IO
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Util::Color::Rgba & p_color ) const
 	{
-		p_color.setR( _get<float>( p_json, "R" ) );
-		p_color.setG( _get<float>( p_json, "G" ) );
-		p_color.setB( _get<float>( p_json, "B" ) );
+		p_color.setR( _get<float>( p_json, "R", 0.f ) );
+		p_color.setG( _get<float>( p_json, "G", 0.f ) );
+		p_color.setB( _get<float>( p_json, "B", 0.f ) );
+		p_color.setA( _get<float>( p_json, "A", 1.f ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Internal::Math::Transform & p_transform ) const
@@ -821,11 +822,11 @@ namespace VTX::App::Internal::IO
 								  const std::tuple<uint, uint, uint> & p_version,
 								  Application::Setting &			   p_setting ) const
 	{
-		const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode
-			= _get<Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE>(
+		const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode
+			= _get<VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE>(
 				p_json, "SYMBOL_DISPLAY_MODE", Application::Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
-		p_setting.setSymbolDisplayMode( Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE(
-			int( symbolDisplayMode ) % int( Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE::COUNT ) ) );
+		p_setting.setSymbolDisplayMode( VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE(
+			int( symbolDisplayMode ) % int( VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
 		p_setting.setWindowFullscreen(
 			_get<bool>( p_json, "WINDOW_FULLSCREEN", Application::Setting::WINDOW_FULLSCREEN_DEFAULT ) );
@@ -893,12 +894,12 @@ namespace VTX::App::Internal::IO
 											  "DEFAULT_REPRESENTATION_PER_CATEGORY",
 											  Application::Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
 
-		const int categoryCount = int( Internal::ChemDB::Category::TYPE::COUNT );
+		const int categoryCount = int( VTX::Core::ChemDB::Category::TYPE::COUNT );
 		if ( representationNamePerCategory.size() == categoryCount )
 		{
 			for ( int i = 0; i < categoryCount; i++ )
 			{
-				p_setting.setTmpDefaultRepresentationNamePerCategory( Internal::ChemDB::Category::TYPE( i ),
+				p_setting.setTmpDefaultRepresentationNamePerCategory( VTX::Core::ChemDB::Category::TYPE( i ),
 																	  representationNamePerCategory[ i ] );
 			}
 		}
@@ -986,9 +987,8 @@ namespace VTX::App::Internal::IO
 		{
 			if ( p_representation.hasToDrawRibbon() )
 			{
-				p_representation.setRibbonColorMode(
-					_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
-						p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_representation.setRibbonColorMode( _getEnum<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+					p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}
@@ -1003,7 +1003,7 @@ namespace VTX::App::Internal::IO
 			if ( p_representation.getData().hasToDrawRibbon() )
 			{
 				p_representation.getData().setRibbonColorMode(
-					_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+					_getEnum<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
 						p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}

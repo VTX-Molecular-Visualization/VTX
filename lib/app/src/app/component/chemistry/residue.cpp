@@ -9,116 +9,20 @@ namespace VTX::App::Component::Chemistry
 {
 	bool Residue::checkIfStandardFromName( const std::string & p_residueSymbol )
 	{
-		std::string residueSymbol = p_residueSymbol;
-		std::transform( residueSymbol.begin(),
-						residueSymbol.end(),
-						residueSymbol.begin(),
-						[]( unsigned char c ) { return std::toupper( c ); } );
-
-		return std::find(
-				   std::begin( ChemDB::Residue::SYMBOL_STR ), std::end( ChemDB::Residue::SYMBOL_STR ), residueSymbol )
-			   != std::end( ChemDB::Residue::SYMBOL_STR );
+		return VTX::Core::Struct::Residue::checkIfStandardFromName( p_residueSymbol );
+	}
+	const Util::Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
+	{
+		return VTX::Core::Struct::Residue::getResidueColor( p_residue.getResidueStruct() );
 	}
 
 	Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
 	void			 Residue::setChainPtr( Chain * const p_chain )
 	{
 		_chainPtr = p_chain;
+		_residueStruct->setChainPtr( &p_chain->getChainStruct() );
 		initBaseRepresentable( this, _chainPtr, p_chain->getMoleculePtr() );
 	}
-
-	const std::string & Residue::getSymbolStr() const
-	{
-		return _symbol < SYMBOL_COUNT
-				   ? ChemDB::Residue::SYMBOL_STR[ _symbol ]
-				   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolStr;
-	}
-	const std::string & Residue::getSymbolName() const
-	{
-		return _symbol < SYMBOL_COUNT
-				   ? ChemDB::Residue::SYMBOL_NAME[ _symbol ]
-				   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolName;
-	}
-
-	const std::string & Residue::getSymbolShort() const
-	{
-		return _symbol < SYMBOL_COUNT ? ChemDB::Residue::SYMBOL_SHORT_STR[ _symbol ]
-									  : ChemDB::Residue::SYMBOL_SHORT_STR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
-	}
-	void Residue::setSymbol( const ChemDB::Residue::SYMBOL & p_symbol ) { setSymbol( int( p_symbol ) ); }
-	void Residue::setSymbol( const int p_symbolValue )
-	{
-		_symbol = p_symbolValue;
-		BaseModel::setDefaultName( &getSymbolName() );
-	};
-
-	void Residue::setAtomCount( const uint p_count )
-	{
-		_atomCount	   = p_count;
-		_realAtomCount = p_count;
-	}
-	void Residue::removeToAtoms( const uint p_atomIndex )
-	{
-		const Chemistry::Molecule * const moleculePtr = getMoleculePtr();
-		if ( p_atomIndex == _indexFirstAtom )
-		{
-			while ( _atomCount > 0 && moleculePtr->getAtom( _indexFirstAtom ) == nullptr )
-			{
-				_indexFirstAtom++;
-				_atomCount--;
-			}
-		}
-		else
-		{
-			uint lastResidueIndex = _indexFirstAtom + _atomCount - 1;
-			if ( lastResidueIndex == p_atomIndex )
-			{
-				while ( _atomCount > 0 && moleculePtr->getAtom( lastResidueIndex ) == nullptr )
-				{
-					_atomCount--;
-					lastResidueIndex--;
-				}
-			}
-		}
-
-		_realAtomCount--;
-	}
-
-	const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
-	{
-		for ( uint i = 0; i < _atomCount; ++i )
-		{
-			const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
-			if ( atom != nullptr && atom->getName() == p_name )
-			{
-				return atom;
-			}
-		}
-
-		return nullptr;
-	}
-
-	const uint Residue::findBondIndex( const uint p_firstAtomIndex, const uint p_secondAtomIndex ) const
-	{
-		const uint lastBondIndex = getIndexFirstBond() + getBondCount() - 1;
-
-		// Start from the end because this function will mostly be call to find external bonds that are at the end
-		// of bond range.
-		for ( uint i = lastBondIndex; i >= getIndexFirstBond(); i-- )
-		{
-			const Bond * const bond = getMoleculePtr()->getBond( i );
-
-			if ( bond == nullptr )
-				continue;
-
-			if ( bond->getIndexFirstAtom() == p_firstAtomIndex && bond->getIndexSecondAtom() == p_secondAtomIndex )
-				return i;
-		}
-
-		return INVALID_ID;
-	}
-
-	const Atom * const Residue::getAlphaCarbon() const { return findFirstAtomByName( "CA" ); }
 
 	void Residue::setVisible( const bool p_visible )
 	{
@@ -128,8 +32,8 @@ namespace VTX::App::Component::Chemistry
 
 		if ( previousVisibleState != p_visible )
 		{
-			_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
-			getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
+			_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, getIndex() );
+			getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, getIndex() );
 		}
 	}
 
@@ -143,8 +47,8 @@ namespace VTX::App::Component::Chemistry
 		{
 			if ( p_notify )
 			{
-				_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
-				getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
+				_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, getIndex() );
+				getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, getIndex() );
 			}
 		}
 	}
@@ -153,9 +57,9 @@ namespace VTX::App::Component::Chemistry
 	{
 		App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
 
-		for ( uint i = 0; i < _atomCount; ++i )
+		for ( uint i = 0; i < getAtomCount(); ++i )
 		{
-			const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
+			const Atom * const atom = getMoleculePtr()->getAtom( getIndexFirstAtom() + i );
 
 			if ( atom == nullptr )
 				continue;
@@ -185,9 +89,4 @@ namespace VTX::App::Component::Chemistry
 
 	void Residue::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
-	const Util::Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
-	{
-		return p_residue.isStandardResidue() ? ChemDB::Residue::SYMBOL_COLOR[ p_residue._symbol ]
-											 : ChemDB::Residue::SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
-	}
 } // namespace VTX::App::Component::Chemistry

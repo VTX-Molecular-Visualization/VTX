@@ -3,7 +3,7 @@
 
 #include <util/color/rgba.hpp>
 
-namespace VTX::App::Internal::ChemDB::Chain
+namespace VTX::Core::ChemDB::Chain
 {
 	// Never used
 	// enum class CHAIN_TYPE : int
@@ -75,6 +75,6 @@ namespace VTX::App::Internal::ChemDB::Chain
 
 	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Util::Color::Rgba::WHITE;
 
-} // namespace VTX::App::Internal::ChemDB::Chain
+} // namespace VTX::Core::ChemDB::Chain
 
 #endif

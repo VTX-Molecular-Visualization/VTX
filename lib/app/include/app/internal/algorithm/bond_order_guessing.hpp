@@ -2,8 +2,8 @@
 #define __VTX_APP_INTERNAL_ALGORITHM_BOND_ORDER_GUESSING__
 
 #include "app/component/chemistry/_fwd.hpp"
-#include "app/internal/chemdb/bond.hpp"
 #include "app/internal/io/reader/residue_data_reader.hpp"
+#include <core/chemdb/bond.hpp>
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
@@ -78,7 +78,8 @@ namespace VTX::App::Internal::Algorithm
 		static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 		static bool recomputeBondOrdersFromFile( App::Component::Chemistry::Molecule & p_molecule );
 
-		static const std::vector<App::Internal::IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+		static const std::vector<App::Internal::IO::Reader::BondData> & getResidueBonds(
+			const std::string & p_residueSymbol );
 
 	  private:
 		// Guess bond order with topology
@@ -152,15 +153,15 @@ namespace VTX::App::Internal::Algorithm
 								   const chemfiles::Bond::BondOrder p_bondOrder,
 								   const bool						p_force = false );
 
-		static void _setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
-								   const size_t								p_firstAtomIndex,
-								   const size_t								p_secondAtomIndex,
-								   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
-								   const bool								p_force = false );
-		static void _setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
-								   const uint								p_bondIndex,
-								   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
-								   const bool								p_force = false );
+		static void _setBondOrder( App::Component::Chemistry::Molecule & p_molecule,
+								   const size_t							 p_firstAtomIndex,
+								   const size_t							 p_secondAtomIndex,
+								   const VTX::Core::ChemDB::Bond::ORDER	 p_bondOrder,
+								   const bool							 p_force = false );
+		static void _setBondOrder( App::Component::Chemistry::Molecule & p_molecule,
+								   const uint							 p_bondIndex,
+								   const VTX::Core::ChemDB::Bond::ORDER	 p_bondOrder,
+								   const bool							 p_force = false );
 	};
 
 } // namespace VTX::App::Internal::Algorithm

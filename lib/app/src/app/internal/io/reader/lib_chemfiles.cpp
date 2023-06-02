@@ -8,11 +8,11 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/internal/algorithm/bond_order_guessing.hpp"
-#include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemfiles/util.hpp"
 #include "app/mvc.hpp"
 #include "app/util/molecule.hpp"
 #include <algorithm>
+#include <core/chemdb/category.hpp>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
@@ -22,7 +22,7 @@
 
 namespace VTX::App::Internal::IO::Reader
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	LibChemfiles::LibChemfiles( const VTX::App::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
@@ -213,21 +213,14 @@ namespace VTX::App::Internal::IO::Reader
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )
 		{
-			if ( frame[ 0 ].properties() )
+			std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
+			for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties().begin();
+				  it != frame[ 0 ].properties().end();
+				  ++it )
 			{
-				std::string propAtom = std::to_string( frame[ 0 ].properties()->size() ) + " properties in atoms:";
-				for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties()->begin();
-					  it != frame[ 0 ].properties()->end();
-					  ++it )
-				{
-					propAtom += " " + it->first;
-				}
-				_logDebug( propAtom );
+				propAtom += " " + it->first;
 			}
-			else
-			{
-				_logDebug( "No properties in atoms." );
-			}
+			_logDebug( propAtom );
 		}
 
 		if ( residues.size() > 0 )
@@ -272,8 +265,8 @@ namespace VTX::App::Internal::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int									  oldIndexInChain  = INT_MIN;
-		App::Internal::ChemDB::Category::TYPE lastCategoryEnum = App::Internal::ChemDB::Category::TYPE::UNKNOWN;
+		int								  oldIndexInChain  = INT_MIN;
+		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
@@ -284,7 +277,7 @@ namespace VTX::App::Internal::IO::Reader
 			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
 			std::string		  residueSymbol = residue.name();
 
-			const App::Internal::ChemDB::Category::TYPE categoryEnum
+			const VTX::Core::ChemDB::Category::TYPE categoryEnum
 				= Util::App::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
@@ -340,7 +333,7 @@ namespace VTX::App::Internal::IO::Reader
 			else
 			{
 				int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				App::Internal::ChemDB::UnknownResidueData * unknownResidueData;
+				VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
 
 				if ( symbolIndex >= 0 )
 				{
@@ -348,7 +341,7 @@ namespace VTX::App::Internal::IO::Reader
 				}
 				else
 				{
-					unknownResidueData			   = new App::Internal::ChemDB::UnknownResidueData();
+					unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
 					unknownResidueData->symbolStr  = residueSymbol;
 					unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
 
@@ -466,11 +459,7 @@ namespace VTX::App::Internal::IO::Reader
 				const uint				atomId = uint( *it );
 				const chemfiles::Atom & atom   = topology[ atomId ];
 				uint					atomType;
-				atomType = uint( atom.properties()
-									 .value_or( chemfiles::property_map() )
-									 .get( "atom_type" )
-									 .value_or( -1 )
-									 .as_double() );
+				atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 				// Create atom.
 				App::Component::Chemistry::Atom * modelAtom

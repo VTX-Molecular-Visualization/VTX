@@ -10,14 +10,14 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
-#include <app/internal/chemdb/color.hpp>
+#include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	class ColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>>
+		public TMultiDataField<const std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -26,24 +26,24 @@ namespace VTX::UI::Widget::CustomWidget
 		~ColorModeFieldWidget() {};
 		void localize() override;
 
-		const App::Internal::ChemDB::Color::COLOR_MODE & getColorMode() const { return _colorMode; };
-		void setColorMode( const App::Internal::ChemDB::Color::COLOR_MODE p_colorMode );
+		const VTX::Core::ChemDB::Color::COLOR_MODE & getColorMode() const { return _colorMode; };
+		void setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE p_colorMode );
 
 		const Util::Color::Rgba & getColor() { return _color; };
 		void					  setColor( const Util::Color::Rgba & p_color );
 
 		void updateWithNewValue(
-			const std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> & p_value ) override;
+			const std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> & p_value ) override;
 		void resetState() override;
 
 	  signals:
-		void colorModeChanged( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode );
+		void colorModeChanged( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode );
 		void colorChanged( const Util::Color::Rgba & p_color );
 
 	  protected:
 		ColorModeFieldWidget( QWidget * p_parent ) :
 			BaseManualWidget( p_parent ),
-			TMultiDataField<const std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>>() {};
+			TMultiDataField<const std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
@@ -57,11 +57,11 @@ namespace VTX::UI::Widget::CustomWidget
 		// !V0.1
 		// void _openColorSettings();
 
-		bool _hasToDisplayColorButton( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode ) const;
-		bool _hasToDisplaySettingButton( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode ) const;
+		bool _hasToDisplayColorButton( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode ) const;
+		bool _hasToDisplaySettingButton( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode ) const;
 
 	  private:
-		App::Internal::ChemDB::Color::COLOR_MODE _colorMode;
+		VTX::Core::ChemDB::Color::COLOR_MODE _colorMode;
 		Util::Color::Rgba						 _color;
 
 		QHBoxLayout * _layout;

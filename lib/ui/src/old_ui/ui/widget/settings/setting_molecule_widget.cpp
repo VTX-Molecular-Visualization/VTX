@@ -115,16 +115,16 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingMoleculeWidget::_refreshData()
 	{
-		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, App::Internal::ChemDB::Category::TYPE::POLYMER );
-		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE );
-		_refreshRepresentationComboBox( _defaultRepresentationForLigand, App::Internal::ChemDB::Category::TYPE::LIGAND );
-		_refreshRepresentationComboBox( _defaultRepresentationForIon, App::Internal::ChemDB::Category::TYPE::ION );
-		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, App::Internal::ChemDB::Category::TYPE::SOLVENT );
-		_refreshRepresentationComboBox( _defaultRepresentationForWater, App::Internal::ChemDB::Category::TYPE::WATER );
+		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, VTX::Core::ChemDB::Category::TYPE::POLYMER );
+		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE );
+		_refreshRepresentationComboBox( _defaultRepresentationForLigand, VTX::Core::ChemDB::Category::TYPE::LIGAND );
+		_refreshRepresentationComboBox( _defaultRepresentationForIon, VTX::Core::ChemDB::Category::TYPE::ION );
+		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, VTX::Core::ChemDB::Category::TYPE::SOLVENT );
+		_refreshRepresentationComboBox( _defaultRepresentationForWater, VTX::Core::ChemDB::Category::TYPE::WATER );
 	}
 
 	void SettingMoleculeWidget::_refreshRepresentationComboBox( RepresentationLibraryComboBox * const p_comboBox,
-																const App::Internal::ChemDB::Category::TYPE					  p_categoryEnum )
+																const VTX::Core::ChemDB::Category::TYPE					  p_categoryEnum )
 	{
 		p_comboBox->setCurrentIndex( VTX_SETTING().getDefaultRepresentationIndexPerCategory( p_categoryEnum ) );
 	}
@@ -132,30 +132,30 @@ namespace VTX::UI::Widget::Settings
 	void SettingMoleculeWidget::_defaultRepresentationForPolymerChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::POLYMER, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::POLYMER, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForCarbohydrateChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForLigandChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::LIGAND, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::LIGAND, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForIonChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::ION, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::ION, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForSolventChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::SOLVENT, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::SOLVENT, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForWaterChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::WATER, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::WATER, p_index ) );
 	}
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()

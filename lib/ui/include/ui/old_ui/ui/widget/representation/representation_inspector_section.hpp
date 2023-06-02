@@ -24,7 +24,7 @@
 #include <app/application/representation/instantiated_representation.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/internal/chemdb/color.hpp>
+#include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 #include <vector>
 

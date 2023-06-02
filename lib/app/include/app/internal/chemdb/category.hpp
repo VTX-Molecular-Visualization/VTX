@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace VTX::App::Internal::ChemDB::Category
+namespace VTX::Core::ChemDB::Category
 {
 	enum class TYPE : int
 	{
@@ -22,6 +22,6 @@ namespace VTX::App::Internal::ChemDB::Category
 	inline const std::vector<std::string> TYPE_STR
 		= { "Polymer", "Carbohydrate", "Ligand", "Ion", "Solvent", "Water", "Unknown" };
 
-} // namespace VTX::App::Internal::ChemDB::Category
+} // namespace VTX::Core::ChemDB::Category
 
 #endif

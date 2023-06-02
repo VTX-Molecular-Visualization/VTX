@@ -84,15 +84,15 @@ namespace VTX::App::Component::Chemistry
 
 	  public:
 		void copyFromSelection( const App::Application::Selection::SelectionModel & p_selection,
-								const App::Core::Model::ID &				   p_moleculeID,
-								const int									   p_frame = ALL_FRAMES_INDEX );
+								const App::Core::Model::ID &						p_moleculeID,
+								const int											p_frame = ALL_FRAMES_INDEX );
 		void copyFromMolecule( const Chemistry::Molecule & p_molecule, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromChain( const Chemistry::Chain & p_chain, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromResidue( const Chemistry::Residue & p_residue, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromAtom( const Chemistry::Atom & p_atom, const int p_frame = ALL_FRAMES_INDEX );
 
 		void extractFromSelection( const App::Application::Selection::SelectionModel & p_selection,
-								   const App::Core::Model::ID &					  p_moleculeID );
+								   const App::Core::Model::ID &						   p_moleculeID );
 		void extractChain( const Chemistry::Chain & p_chain );
 		void extractResidue( const Chemistry::Residue & p_residue );
 		void extractAtom( const Chemistry::Atom & p_atom );

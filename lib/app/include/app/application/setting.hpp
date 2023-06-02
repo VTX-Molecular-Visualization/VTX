@@ -6,11 +6,11 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/video/enum_path.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/internal/chemdb/color.hpp"
-#include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/render/renderer/enum_renderer.hpp"
+#include <core/chemdb/category.hpp>
+#include <core/chemdb/color.hpp>
+#include <core/chemdb/residue.hpp>
 #include <list>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -22,8 +22,8 @@ namespace VTX::App::Application
 	{
 	  public:
 		// UI.
-		static const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
-		static const bool											WINDOW_FULLSCREEN_DEFAULT;
+		static const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
+		static const bool											 WINDOW_FULLSCREEN_DEFAULT;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
@@ -46,10 +46,10 @@ namespace VTX::App::Application
 		static const float ATOMS_RADIUS_MIN;
 		static const float ATOMS_RADIUS_MAX;
 
-		static const float											   BONDS_RADIUS_DEFAULT;
-		static const float											   BONDS_RADIUS_MIN;
-		static const float											   BONDS_RADIUS_MAX;
-		static const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE BONDS_COLOR_BLENDING_MODE_DEFAULT;
+		static const float										   BONDS_RADIUS_DEFAULT;
+		static const float										   BONDS_RADIUS_MIN;
+		static const float										   BONDS_RADIUS_MAX;
+		static const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE BONDS_COLOR_BLENDING_MODE_DEFAULT;
 
 		static const float ATOMS_RADIUS_ADD_DEFAULT;
 		static const float ATOMS_RADIUS_ADD_MIN;
@@ -57,14 +57,14 @@ namespace VTX::App::Application
 
 		static const bool ATOMS_IS_RADIUS_FIXED_DEFAULT;
 
-		static const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
-		static const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE			  SS_COLOR_BLENDING_MODE_DEFAULT;
+		static const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
+		static const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE			  SS_COLOR_BLENDING_MODE_DEFAULT;
 
 		static const float SES_RESOLUTION_DEFAULT;
 		static const float SES_RESOLUTION_MIN;
 		static const float SES_RESOLUTION_MAX;
 
-		static const App::Internal::ChemDB::Color::COLOR_MODE COLOR_MODE_DEFAULT;
+		static const VTX::Core::ChemDB::Color::COLOR_MODE COLOR_MODE_DEFAULT;
 
 		static const std::vector<std::string> DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
 		static const std::vector<int>		  DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
@@ -317,12 +317,12 @@ namespace VTX::App::Application
 		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
 
-		int	 getDefaultRepresentationIndexPerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum ) const;
-		void setDefaultRepresentationIndexPerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
+		int	 getDefaultRepresentationIndexPerCategory( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum ) const;
+		void setDefaultRepresentationIndexPerCategory( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum,
 													   const int p_representationDefaultIndex );
 		const std::string & getTmpDefaultRepresentationNamePerCategory(
-			const Internal::ChemDB::Category::TYPE & p_categoryEnum );
-		void setTmpDefaultRepresentationNamePerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
+			const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum );
+		void setTmpDefaultRepresentationNamePerCategory( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum,
 														 const std::string & p_representationDefaultName );
 
 		inline Application::Selection::GRANULARITY getSelectionGranularity() const { return selectionGranularity; }
@@ -336,11 +336,11 @@ namespace VTX::App::Application
 		}
 		void setDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_defaultTrajectoryPlayMode );
 
-		inline const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const
+		inline const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const
 		{
 			return symbolDisplayMode;
 		}
-		void setSymbolDisplayMode( const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
+		void setSymbolDisplayMode( const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
 
 		inline const bool getCheckVTXUpdateAtLaunch() const { return checkVTXUpdate; }
 		void			  setCheckVTXUpdateAtLaunch( const bool p_checkVTXUpdate );
@@ -435,9 +435,9 @@ namespace VTX::App::Application
 		int							   defaultTrajectorySpeed	 = DEFAULT_TRAJECTORY_SPEED;
 		Component::Chemistry::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
-		Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode	 = SYMBOL_DISPLAY_MODE_DEFAULT;
-		bool										   checkVTXUpdate		 = CHECK_VTX_UPDATE_DEFAULT;
-		bool										   portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
+		VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode	  = SYMBOL_DISPLAY_MODE_DEFAULT;
+		bool											checkVTXUpdate		  = CHECK_VTX_UPDATE_DEFAULT;
+		bool											portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
 
 		static std::string _getFileInRegisterKey( const std::string & p_key, const std::string & p_default );
 

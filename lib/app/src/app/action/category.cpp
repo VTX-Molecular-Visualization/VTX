@@ -1,5 +1,5 @@
 #include "app/action/category.hpp"
-#include "app/internal/chemdb/category.hpp"
+#include <core/chemdb/category.hpp>
 // #include "app/component/chemistry/chain.hpp"
 // #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
@@ -38,9 +38,9 @@ namespace VTX::App::Action::Category
 	{
 		if ( _mode == VISIBILITY_MODE::SOLO )
 		{
-			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Internal::ChemDB::Category::TYPE>>
+			std::map<App::Component::Chemistry::Molecule *, std::vector<VTX::Core::ChemDB::Category::TYPE>>
 				categoriesPerMolecules
-				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Internal::ChemDB::Category::TYPE>>();
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<VTX::Core::ChemDB::Category::TYPE>>();
 
 			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
@@ -55,7 +55,7 @@ namespace VTX::App::Action::Category
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
 				std::map<App::Component::Chemistry::Molecule *,
-						 std::vector<App::Internal::ChemDB::Category::TYPE>>::iterator it
+						 std::vector<VTX::Core::ChemDB::Category::TYPE>>::iterator it
 					= categoriesPerMolecules.find( molecule );
 
 				if ( it != categoriesPerMolecules.end() )

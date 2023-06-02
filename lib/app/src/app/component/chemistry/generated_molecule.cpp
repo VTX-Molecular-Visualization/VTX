@@ -7,8 +7,8 @@
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/mvc.hpp"
 #include "app/id.hpp"
+#include "app/mvc.hpp"
 #include <map>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>
@@ -617,11 +617,11 @@ namespace VTX::App::Component::Chemistry
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const Internal::ChemDB::UnknownResidueData * const unknownSymbolPtr :
+		for ( const VTX::Core::ChemDB::UnknownResidueData * const unknownSymbolPtr :
 			  p_molecule.getUnknownResidueSymbols() )
 		{
-			Internal::ChemDB::UnknownResidueData * const unknownSymbolCopy
-				= new Internal::ChemDB::UnknownResidueData( *unknownSymbolPtr );
+			VTX::Core::ChemDB::UnknownResidueData * const unknownSymbolCopy
+				= new VTX::Core::ChemDB::UnknownResidueData( *unknownSymbolPtr );
 			addUnknownResidueSymbol( unknownSymbolCopy );
 		}
 
@@ -699,6 +699,7 @@ namespace VTX::App::Component::Chemistry
 		p_atom.setType( p_atomSource.getType() );
 		getBufferAtomRadius().emplace_back( p_atomSource.getVdwRadius() );
 		getBufferAtomIds().emplace_back( p_atom.getId() );
+		getBufferAtomIds().emplace_back( p_atom.getId() );
 	}
 
 	Chemistry::Chain & GeneratedMolecule::_extractFullChain( Chemistry::Molecule & p_fromMolecule, const uint p_index )
@@ -708,7 +709,7 @@ namespace VTX::App::Component::Chemistry
 		const uint					   previousFirstResidueIndex = chain.getIndexFirstResidue();
 		const uint					   indexFirstResidue		 = getResidueCount();
 
-		_addChain( &chain );
+		getMoleculeStruct().addChain( &chain.getChainStruct() );
 
 		// Check contiguous atom ranges
 		uint firstResidueIndex = previousFirstResidueIndex;

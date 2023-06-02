@@ -12,7 +12,6 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/color.hpp"
 #include "app/mvc.hpp"
 #include "app/render/view/cylinder.hpp"
 #include "app/render/view/sphere.hpp"
@@ -20,12 +19,13 @@
 #include "app/util/secondary_structure.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
+#include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	Molecule::Molecule() : Molecule( App::ID::Model::MODEL_MOLECULE ) {}
 	Molecule::Molecule( const VTX::App::VTX_ID & p_typeId ) : BaseModel3D( App::ID::Model::MODEL_MOLECULE )
@@ -45,14 +45,7 @@ namespace VTX::App::Component::Chemistry
 
 	Molecule::~Molecule()
 	{
-		VTX::MVC_MANAGER().deleteAllModels( _atoms );
-		VTX::MVC_MANAGER().deleteAllModels( _bonds );
-		VTX::MVC_MANAGER().deleteAllModels( _residues );
-		VTX::MVC_MANAGER().deleteAllModels( _chains );
-		VTX::MVC_MANAGER().deleteAllModels( _categories );
-
-		for ( const Internal::ChemDB::UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
-			delete unknownResidueSymbol;
+		delete _moleculeStruct;
 
 		if ( _secondaryStructure != nullptr )
 		{
@@ -69,78 +62,34 @@ namespace VTX::App::Component::Chemistry
 	Chain & Molecule::addChain()
 	{
 		Chain * const chain = VTX::MVC_MANAGER().instantiateModel<Chain>();
-		_addChain( chain );
+		_moleculeStruct->addChain();
+
 		return *chain;
-	}
-	void Molecule::_addChain( Chemistry::Chain * const p_chain )
-	{
-		_chains.emplace_back( p_chain );
-		_realChainCount++;
 	}
 
 	Residue & Molecule::addResidue()
 	{
 		Residue * const residue = VTX::MVC_MANAGER().instantiateModel<Residue>();
-		_residues.emplace_back( residue );
+		_moleculeStruct->addResidue();
+
 		return *residue;
 	}
 
 	Atom & Molecule::addAtom()
 	{
 		Atom * const atom = VTX::MVC_MANAGER().instantiateModel<Atom>();
-		_atoms.emplace_back( atom );
+		_moleculeStruct->addAtom();
+
 		return *atom;
 	}
 
 	Bond & Molecule::addBond()
 	{
-		Bond * const bond = VTX::MVC_MANAGER().instantiateModel<Bond>();
-		bond->setMoleculePtr( this );
-		_bonds.emplace_back( bond );
+		Bond * const			  bond	  = VTX::MVC_MANAGER().instantiateModel<Bond>();
+		VTX::Core::Struct::Bond & newBond = _moleculeStruct->addBond();
+		newBond.setMoleculePtr( _moleculeStruct );
+
 		return *bond;
-	}
-
-	int Molecule::getUnknownResidueSymbolIndex( const std::string & p_symbol ) const
-	{
-		int residueIndex;
-
-		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
-		{
-			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
-				return residueIndex;
-		}
-
-		return -1;
-	}
-	Internal::ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol(
-		const uint p_unkownymbolIndex ) const
-	{
-		return _unknownResidueSymbol[ p_unkownymbolIndex ];
-	}
-
-	Internal::ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
-	{
-		for ( int residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
-		{
-			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
-				return _unknownResidueSymbol[ residueIndex ];
-		}
-
-		return nullptr;
-	}
-
-	int Molecule::addUnknownResidueSymbol( Internal::ChemDB::UnknownResidueData * const p_residueData )
-	{
-		int residueIndex;
-
-		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
-		{
-			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_residueData->symbolStr )
-				return residueIndex;
-		}
-
-		_unknownResidueSymbol.emplace_back( p_residueData );
-		return residueIndex;
 	}
 
 	void Molecule::_init()
@@ -148,7 +97,7 @@ namespace VTX::App::Component::Chemistry
 		BaseModel::setDefaultName( &_displayName );
 
 		// Fill buffers.
-		if ( _atomPositionsFrames.size() > 0 )
+		if ( getFrameCount() > 0 )
 		{
 			initBaseRepresentable( this, nullptr, this );
 
@@ -185,7 +134,7 @@ namespace VTX::App::Component::Chemistry
 				_defaultRepresentationIDs.shrink_to_fit();
 			}
 
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
+			_buffer->setAtomPositions( getCurrentAtomPositionFrame(), hasTrajectory() );
 			_buffer->setAtomRadius( _bufferAtomRadius );
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 			_buffer->setAtomSelections( _bufferAtomSelections );
@@ -204,19 +153,6 @@ namespace VTX::App::Component::Chemistry
 		const App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation )
 	{
 		_defaultRepresentationIDs.emplace_back( _instantiatedRepresentation->getId() );
-	}
-
-	bool Molecule::isEmpty()
-	{
-		for ( uint i = 0; i < getChainCount(); i++ )
-		{
-			if ( _chains[ i ] != nullptr )
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	void Molecule::clearDefaultRepresentations()
@@ -250,7 +186,7 @@ namespace VTX::App::Component::Chemistry
 
 	void Molecule::removeChildrenRepresentations()
 	{
-		for ( Chemistry::Chain * const chain : _chains )
+		for ( Chemistry::Chain * const chain : getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -268,7 +204,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		_aabb.invalidate();
 
-		for ( const Chemistry::Atom * const atom : _atoms )
+		for ( const Chemistry::Atom * const atom : getAtoms() )
 		{
 			if ( atom == nullptr )
 				continue;
@@ -276,7 +212,7 @@ namespace VTX::App::Component::Chemistry
 			// Compute AABB on all frames to ensure that all the trajectory may be visible with an orient
 			const uint	atomIndex  = atom->getIndex();
 			const float atomRadius = atom->getVdwRadius();
-			for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
+			for ( const AtomPositionsFrame & frame : getAtomPositionFrames() )
 			{
 				_aabb.extend( frame[ atomIndex ], atomRadius );
 			}
@@ -293,18 +229,18 @@ namespace VTX::App::Component::Chemistry
 
 	void Molecule::resizeBuffers()
 	{
-		_bufferAtomRadius.resize( _atoms.size() );
-		_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-		_bufferAtomColors.resize( _atoms.size(), Util::Color::Rgba::WHITE );
-		_bufferAtomSelections.resize( _atoms.size(), 0u );
-		_bufferAtomIds.resize( _atoms.size() );
+		_bufferAtomRadius.resize( getAtomCount() );
+		_bufferAtomVisibilities.resize( getAtomCount(), 1u );
+		_bufferAtomColors.resize( getAtomCount(), Util::Color::Rgba::WHITE );
+		_bufferAtomSelections.resize( getAtomCount(), 0u );
+		_bufferAtomIds.resize( getAtomCount() );
 	}
 
 	void Molecule::refreshBondsBuffer() { _buffer->setBonds( _bufferBonds ); }
 
 	void Molecule::_fillBufferAtomColors()
 	{
-		_bufferAtomColors.resize( _atoms.size() );
+		_bufferAtomColors.resize( getAtomCount() );
 
 		for ( const Chemistry::Residue * const residue : getResidues() )
 		{
@@ -315,21 +251,21 @@ namespace VTX::App::Component::Chemistry
 			const App::Application::Representation::InstantiatedRepresentation * const currentRepresentation
 				= residue->getRepresentation();
 
-			App::Internal::ChemDB::Color::COLOR_MODE colorMode = currentRepresentation->getColorMode();
+			VTX::Core::ChemDB::Color::COLOR_MODE colorMode = currentRepresentation->getColorMode();
 
-			if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
+			if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::INHERITED )
 			{
-				const App::Internal::ChemDB::Color::COLOR_MODE & chainColorMode
+				const VTX::Core::ChemDB::Color::COLOR_MODE & chainColorMode
 					= residue->getChainPtr()->getRepresentation()->getColorMode();
-				if ( chainColorMode != App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
+				if ( chainColorMode != VTX::Core::ChemDB::Color::COLOR_MODE::INHERITED )
 				{
 					colorMode = chainColorMode;
 				}
 				else
 				{
-					const App::Internal::ChemDB::Color::COLOR_MODE & moleculeColorMode
+					const VTX::Core::ChemDB::Color::COLOR_MODE & moleculeColorMode
 						= getRepresentation()->getColorMode();
-					if ( moleculeColorMode != App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
+					if ( moleculeColorMode != VTX::Core::ChemDB::Color::COLOR_MODE::INHERITED )
 						colorMode = moleculeColorMode;
 					else
 						colorMode = VTX::App::Application::Setting::COLOR_MODE_DEFAULT;
@@ -341,21 +277,21 @@ namespace VTX::App::Component::Chemistry
 
 			switch ( colorMode )
 			{
-			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
-			case App::Internal::ChemDB::Color::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+			case VTX::Core::ChemDB::Color::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
 
-			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
-			case App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN: color = getColor(); break;
+			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+			case VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN: color = getColor(); break;
 
-			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
-			case App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+			case VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
 
-			case App::Internal::ChemDB::Color::COLOR_MODE::RESIDUE:
+			case VTX::Core::ChemDB::Color::COLOR_MODE::RESIDUE:
 				colorCarbon = false;
 				color		= residue->getColor();
 				break;
 
-			case App::Internal::ChemDB::Color::COLOR_MODE::INHERITED:
+			case VTX::Core::ChemDB::Color::COLOR_MODE::INHERITED:
 			default: break;
 			}
 
@@ -387,19 +323,19 @@ namespace VTX::App::Component::Chemistry
 
 		if ( isVisible() == false )
 		{
-			_bufferAtomVisibilities.resize( _atoms.size(), 0u );
+			_bufferAtomVisibilities.resize( getAtomCount(), 0u );
 		}
 		else
 		{
-			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
+			_bufferAtomVisibilities.resize( getAtomCount(), 1u );
 
 			const bool displayHydrogen = showHydrogen();
 			const bool displaySolvent  = showSolvent();
 			const bool displayIons	   = showIon();
 
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+			for ( uint i = 0; i < uint( getAtomCount() ); ++i )
 			{
-				const Atom * const atom = _atoms[ i ];
+				const Atom * const atom = getAtom( i );
 
 				if ( atom == nullptr )
 				{
@@ -452,7 +388,7 @@ namespace VTX::App::Component::Chemistry
 		const App::Application::Selection::SelectionModel::MapChainIds * const p_selection )
 	{
 		_bufferAtomSelections.clear();
-		_bufferAtomSelections.resize( _atoms.size(), 0u );
+		_bufferAtomSelections.resize( getAtomCount(), 0u );
 		if ( p_selection != nullptr )
 		{
 			// Optimize buffer writing for full molecule
@@ -564,7 +500,7 @@ namespace VTX::App::Component::Chemistry
 		_currentFrame = p_frameIdx;
 		if ( _buffer != nullptr )
 		{
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
+			_buffer->setAtomPositions( getCurrentAtomPositionFrame(), getFrameCount() > 1 );
 		}
 		if ( _secondaryStructure != nullptr )
 			_secondaryStructure->refresh();
@@ -762,9 +698,9 @@ namespace VTX::App::Component::Chemistry
 	void Molecule::print() const
 	{
 		// TODO: add more infos in debug (solvents, ions, ss...).
-		VTX_INFO( "Molecule: " + _name );
-		VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: " + std::to_string( _residues.size() )
-				  + " / Atoms: " + std::to_string( _atoms.size() ) + " / Bonds: " + std::to_string( _bonds.size() ) );
+		VTX_INFO( "Molecule: " + getName() );
+		VTX_INFO( "Chains: " + std::to_string( getChainCount() ) + " / Residues: " + std::to_string( getResidueCount() )
+				  + " / Atoms: " + std::to_string( getAtomCount() ) + " / Bonds: " + std::to_string( getBondCount() ) );
 
 		// Display unknown symbols.
 		const std::vector<ChemDB::UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
@@ -790,10 +726,10 @@ namespace VTX::App::Component::Chemistry
 		}
 
 		VTX_DEBUG( "Sizeof molecule: " + std::to_string( sizeof( *this ) ) );
-		VTX_DEBUG( "Sizeof chain: " + std::to_string( sizeof( *_chains[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof residue: " + std::to_string( sizeof( *_residues[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof atom: " + std::to_string( sizeof( *_atoms[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
+		VTX_DEBUG( "Sizeof chain: " + std::to_string( sizeof( *getChain( 0 ) ) ) );
+		VTX_DEBUG( "Sizeof residue: " + std::to_string( sizeof( *getResidue( 0 ) ) ) );
+		VTX_DEBUG( "Sizeof atom: " + std::to_string( sizeof( *getAtom( 0 ) ) ) );
+		VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *getBond( 0 ) ) ) );
 	}
 
 	void Molecule::render( const App::Component::Render::Camera & p_camera ) const
@@ -808,94 +744,6 @@ namespace VTX::App::Component::Chemistry
 		{
 			val->render( p_camera );
 		}
-	}
-
-	bool Molecule::mergeTopology( const Molecule & p_molecule )
-	{
-		if ( p_molecule.getAtomCount() > getAtomCount() )
-		{
-			VTX_ERROR( "Too many atoms in topology model" );
-			return false;
-		}
-		else if ( getAtomCount() > p_molecule.getAtomCount() )
-		{
-			VTX_WARNING( "Topology model has less atoms than dynamic one (maybe solvent not present)" );
-		}
-
-		// Clear topology.
-		VTX::MVC_MANAGER().deleteAllModels( _chains );
-		VTX::MVC_MANAGER().deleteAllModels( _residues );
-
-		// Create models.
-		_chains.resize( p_molecule.getChainCount() );
-		for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
-		{
-			getChains()[ i ] = VTX::MVC_MANAGER().instantiateModel<Chain>();
-		}
-		_residues.resize( p_molecule.getResidueCount() );
-		for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
-		{
-			getResidues()[ i ] = VTX::MVC_MANAGER().instantiateModel<Residue>();
-		}
-
-		setName( p_molecule.getName() );
-		// Loop over other molecule chains.
-		for ( uint chainIndex = 0; chainIndex < p_molecule.getChainCount(); ++chainIndex )
-		{
-			const Chain &	   otherChain = *p_molecule.getChain( chainIndex );
-			Chemistry::Chain & modelChain = *getChain( chainIndex );
-			modelChain.setIndex( otherChain.getIndex() );
-			modelChain.setMoleculePtr( this );
-			modelChain.setName( otherChain.getName() );
-			modelChain.setIndexFirstResidue( otherChain.getIndexFirstResidue() );
-			modelChain.setResidueCount( otherChain.getResidueCount() );
-
-			for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
-			{
-				const Residue * const otherResidue
-					= p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
-				Chemistry::Residue * const modelResidue
-					= getResidue( otherChain.getIndexFirstResidue() + residueIndex );
-
-				modelResidue->setIndex( otherResidue->getIndex() );
-				modelResidue->setChainPtr( &modelChain );
-				modelResidue->setIndexFirstAtom( otherResidue->getIndexFirstAtom() );
-				modelResidue->setAtomCount( otherResidue->getAtomCount() );
-				modelResidue->setSymbol( otherResidue->getSymbol() );
-
-				for ( uint atomIndex = 0; atomIndex < otherResidue->getAtomCount(); ++atomIndex )
-				{
-					const Atom &	  otherAtom = *p_molecule.getAtom( otherResidue->getIndexFirstAtom() + atomIndex );
-					Chemistry::Atom & modelAtom = *getAtom( otherResidue->getIndexFirstAtom() + atomIndex );
-					modelAtom.setIndex( otherAtom.getIndex() );
-					modelAtom.setResiduePtr( modelResidue );
-				}
-			}
-		}
-
-		// Loop over other atoms.
-		if ( getAtomCount() > p_molecule.getAtomCount() )
-		{
-			addChain();
-			addResidue();
-			Chemistry::Chain &	 modelChain	  = *getChain( getChainCount() - 1 );
-			Chemistry::Residue & modelResidue = *getResidue( getResidueCount() - 1 );
-			modelChain.setIndex( getChainCount() - 1 );
-			modelChain.setIndexFirstResidue( getResidueCount() - 1 );
-			modelChain.setResidueCount( 1 );
-			modelResidue.setIndex( getResidueCount() - 1 );
-			modelResidue.setChainPtr( &modelChain );
-			modelResidue.setIndexFirstAtom( p_molecule.getAtomCount() );
-			modelResidue.setAtomCount( getAtomCount() - p_molecule.getAtomCount() );
-
-			for ( uint atomIndex = 0; atomIndex < modelResidue.getAtomCount(); ++atomIndex )
-			{
-				Chemistry::Atom & modelAtom = *getAtom( modelResidue.getIndexFirstAtom() + atomIndex );
-				modelAtom.setResiduePtr( &modelResidue );
-			}
-		}
-
-		return true;
 	}
 
 	void Molecule::createSecondaryStructure()
@@ -1005,142 +853,11 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	Chain * Molecule::getFirstChain()
-	{
-		for ( Chemistry::Chain * const chain : _chains )
-			if ( chain != nullptr )
-				return chain;
-
-		return nullptr;
-	}
-	const Chain * const Molecule::getFirstChain() const
-	{
-		for ( const Chemistry::Chain * const chain : _chains )
-			if ( chain != nullptr )
-				return chain;
-
-		return nullptr;
-	}
-	const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
-	{
-		if ( p_idBaseChain == 0 )
-			return nullptr;
-
-		for ( uint i = p_idBaseChain - 1; i > 0; i-- )
-			if ( _chains[ i ] != nullptr )
-				return _chains[ i ];
-
-		return _chains[ 0 ];
-	}
-	Chain * const Molecule::getPreviousChain( const uint p_idBaseChain )
-	{
-		if ( p_idBaseChain == 0 )
-			return nullptr;
-
-		for ( uint i = p_idBaseChain - 1; i > 0; i-- )
-			if ( _chains[ i ] != nullptr )
-				return _chains[ i ];
-
-		return _chains[ 0 ];
-	}
-	const Chain * const Molecule::getNextChain( const uint p_idBaseChain ) const
-	{
-		for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
-			if ( _chains[ i ] != nullptr )
-				return _chains[ i ];
-		return nullptr;
-	}
-	Chain * const Molecule::getNextChain( const uint p_idBaseChain )
-	{
-		for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
-			if ( _chains[ i ] != nullptr )
-				return _chains[ i ];
-		return nullptr;
-	}
-
-	const Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue ) const
-	{
-		if ( p_idBaseResidue == 0 )
-			return nullptr;
-
-		for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
-			if ( _residues[ i ] != nullptr )
-				return _residues[ i ];
-
-		return _residues[ 0 ];
-	}
-	Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue )
-	{
-		if ( p_idBaseResidue == 0 )
-			return nullptr;
-
-		for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
-			if ( _residues[ i ] != nullptr )
-				return _residues[ i ];
-
-		return _residues[ 0 ];
-	}
-	const Residue * const Molecule::getNextResidue( const uint p_idBaseResidue ) const
-	{
-		for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
-			if ( _residues[ i ] != nullptr )
-				return _residues[ i ];
-		return nullptr;
-	}
-	Residue * const Molecule::getNextResidue( const uint p_idBaseResidue )
-	{
-		for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
-			if ( _residues[ i ] != nullptr )
-				return _residues[ i ];
-		return nullptr;
-	}
-	int Molecule::getRealResidueCount() const
-	{
-		int res = 0;
-
-		for ( int chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
-		{
-			const Chemistry::Chain * const chain = _chains[ chainIdx ];
-			if ( chain == nullptr )
-				continue;
-			res += chain->getRealResidueCount();
-		}
-
-		return res;
-	}
-	int Molecule::getRealAtomCount() const
-	{
-		int res = 0;
-
-		for ( int residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
-		{
-			const Chemistry::Residue * const residue = _residues[ residueIdx ];
-			if ( residue == nullptr )
-				continue;
-			res += residue->getRealAtomCount();
-		}
-
-		return res;
-	}
-
 	void Molecule::removeChain( const uint p_id, const bool p_delete, const bool p_recursive, const bool p_notifyViews )
 	{
-		if ( p_recursive )
-		{
-			// Delete Residues
-			for ( uint residueIndex = _chains[ p_id ]->getIndexFirstResidue();
-				  residueIndex < ( _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount() );
-				  residueIndex++ )
-			{
-				if ( _residues[ residueIndex ] != nullptr )
-					removeResidue( residueIndex, p_delete, p_recursive, false, false );
-			}
-		}
+		Chemistry::Chain * const chainToDelete = getChain( p_id );
 
-		Chemistry::Chain * const chainToDelete = _chains[ p_id ];
-
-		_chains[ p_id ] = nullptr;
-		_realChainCount--;
+		_moleculeStruct->removeChain( p_id, p_delete, p_recursive );
 
 		_invalidateAABB();
 
@@ -1150,7 +867,6 @@ namespace VTX::App::Component::Chemistry
 
 		VTX_EVENT<Chemistry::Chain *>( VTX::App::Event::Global::CHAIN_REMOVED, chainToDelete );
 
-		// Delete chain
 		if ( p_delete )
 			VTX::MVC_MANAGER().deleteModel( chainToDelete );
 	}
@@ -1161,47 +877,15 @@ namespace VTX::App::Component::Chemistry
 								  const bool p_checkParentUpdate,
 								  const bool p_notifyViews )
 	{
-		// Delete Atoms
-		if ( p_recursive )
-		{
-			for ( uint atomIndex = _residues[ p_id ]->getIndexFirstAtom();
-				  atomIndex < _residues[ p_id ]->getIndexFirstAtom() + _residues[ p_id ]->getAtomCount();
-				  atomIndex++ )
-			{
-				if ( _atoms[ atomIndex ] == nullptr )
-					continue;
+		Chemistry::Residue * const residueToDelete = getResidue( p_id );
 
-				removeAtom( atomIndex, p_delete, true, false, false );
-			}
-		}
+		_moleculeStruct->removeResidue( p_id, p_delete, p_recursive, p_checkParentUpdate );
 
-		// Register parent before nullify
-		Chemistry::Residue * const residueToDelete = _residues[ p_id ];
-		Chemistry::Chain * const   parent		   = residueToDelete->getChainPtr();
+		_invalidateAABB();
 
-		_residues[ p_id ] = nullptr;
-
-		// Update parent indexes
-		if ( p_checkParentUpdate )
-		{
-			parent->removeToResidues( p_id );
-
-			if ( parent->getResidueCount() == 0 )
-				removeChain( parent->getIndex(), p_delete, false, false );
-		}
-
-		if ( p_checkParentUpdate && parent->getResidueCount() == 0 )
-		{
-			removeChain( parent->getIndex(), p_delete, true, p_notifyViews );
-		}
-		else
-		{
-			_invalidateAABB();
-
-			// Notify
-			if ( p_notifyViews )
-				notifyStructureChange();
-		}
+		// Notify
+		if ( p_notifyViews )
+			notifyStructureChange();
 
 		VTX_EVENT<Chemistry::Residue *>( VTX::App::Event::Global::RESIDUE_REMOVED, residueToDelete );
 
@@ -1216,86 +900,16 @@ namespace VTX::App::Component::Chemistry
 							   const bool p_checkParentUpdate,
 							   const bool p_notifyViews )
 	{
-		Chemistry::Residue * const parent = _atoms[ p_id ]->getResiduePtr();
+		Chemistry::Atom * const atomToDelete = getAtom( p_id );
 
-		// Delete Bonds
-		if ( p_checkInternalBonds )
-		{
-			for ( uint bondIndex = parent->getIndexFirstBond();
-				  bondIndex < parent->getIndexFirstBond() + parent->getBondCount();
-				  bondIndex++ )
-			{
-				const Bond * const bond = _bonds[ bondIndex ];
-
-				if ( bond != nullptr )
-				{
-					const uint bondFirstAtomIndex  = bond->getIndexFirstAtom();
-					const uint bondSecondAtomIndex = bond->getIndexSecondAtom();
-
-					if ( bondFirstAtomIndex == p_id || bondSecondAtomIndex == p_id )
-					{
-						const Chemistry::Atom * const bondFirstAtom	 = _atoms[ bondFirstAtomIndex ];
-						const Chemistry::Atom * const bondSecondAtom = _atoms[ bondSecondAtomIndex ];
-
-						const Chemistry::Residue * const residueFirstAtomOfBond
-							= bondFirstAtom == nullptr ? nullptr : bondFirstAtom->getResiduePtr();
-
-						const Chemistry::Residue * const residueSecondAtomOfBond
-							= bondSecondAtom == nullptr ? nullptr : bondSecondAtom->getResiduePtr();
-
-						// If external bond => need to remove the bond of the other residue
-						if ( residueFirstAtomOfBond != nullptr && residueSecondAtomOfBond != nullptr
-							 && residueFirstAtomOfBond != residueSecondAtomOfBond )
-						{
-							if ( residueFirstAtomOfBond == parent )
-							{
-								const uint otherBondIndex
-									= residueSecondAtomOfBond->findBondIndex( bondFirstAtomIndex, bondSecondAtomIndex );
-
-								removeBond( bondIndex, p_delete, false );
-								removeBond( otherBondIndex, p_delete, false );
-							}
-							else
-							{
-								const uint otherBondIndex
-									= residueFirstAtomOfBond->findBondIndex( bondFirstAtomIndex, bondSecondAtomIndex );
-
-								removeBond( bondIndex, p_delete, false );
-								removeBond( otherBondIndex, p_delete, false );
-							}
-						}
-						else
-						{
-							removeBond( bondIndex, p_delete, false );
-						}
-					}
-				}
-			}
-		}
-
-		Chemistry::Atom * const atomToDelete = _atoms[ p_id ];
+		_moleculeStruct->removeAtom( p_id, p_delete, p_checkInternalBonds, p_checkParentUpdate );
 
 		_bufferAtomVisibilities[ p_id ] = 0u;
-		_atoms[ p_id ]					= nullptr;
+		_invalidateAABB();
 
-		// Update parent indexes
-		if ( p_checkParentUpdate )
-		{
-			parent->removeToAtoms( p_id );
-		}
-
-		if ( p_checkParentUpdate && parent->getAtomCount() == 0 )
-		{
-			removeResidue( parent->getIndex(), p_delete, true, p_checkParentUpdate, p_notifyViews );
-		}
-		else
-		{
-			_invalidateAABB();
-
-			// Notify
-			if ( p_notifyViews )
-				notifyStructureChange();
-		}
+		// Notify
+		if ( p_notifyViews )
+			notifyStructureChange();
 
 		VTX_EVENT<Chemistry::Atom *>( VTX::App::Event::Global::ATOM_REMOVED, atomToDelete );
 
@@ -1306,13 +920,15 @@ namespace VTX::App::Component::Chemistry
 
 	void Molecule::removeBond( const uint p_id, const bool p_delete, const bool p_notifyViews )
 	{
-		if ( p_delete )
-			VTX::MVC_MANAGER().deleteModel( _bonds[ p_id ] );
+		Chemistry::Bond * const bondToDelete = getBond( p_id );
 
-		_bonds[ p_id ] = nullptr;
+		_moleculeStruct->removeBond( p_id, p_delete );
 
 		_bufferBonds[ p_id * 2u ]	   = 0;
 		_bufferBonds[ p_id * 2u + 1u ] = 0;
+
+		if ( p_delete )
+			VTX::MVC_MANAGER().deleteModel( bondToDelete );
 
 		if ( p_notifyViews )
 			notifyStructureChange();

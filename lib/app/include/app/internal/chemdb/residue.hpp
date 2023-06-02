@@ -4,7 +4,7 @@
 #include <string>
 #include <util/color/rgba.hpp>
 
-namespace VTX::App::Internal::ChemDB::Residue
+namespace VTX::Core::ChemDB::Residue
 {
 	enum class TYPE : int
 	{
@@ -228,6 +228,6 @@ namespace VTX::App::Internal::ChemDB::Residue
 		{ 255, 105, 180 }, // HOH
 	};
 
-} // namespace VTX::App::Internal::ChemDB::Residue
+} // namespace VTX::Core::ChemDB::Residue
 
 #endif

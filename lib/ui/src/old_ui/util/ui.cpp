@@ -60,29 +60,29 @@ namespace VTX::Util::UI
 			secondResidue->getSymbolStr() + " " + std::to_string( secondResidue->getIndexInOriginalChain() ) );
 
 		QString									 linkCountStr;
-		const App::Internal::ChemDB::Bond::ORDER bondOrder = p_bond.getOrder();
+		const VTX::Core::ChemDB::Bond::ORDER bondOrder = p_bond.getOrder();
 
-		if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::SINGLE )
+		if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::SINGLE )
 		{
 			linkCountStr = '1';
 		}
-		else if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::DOUBLE )
+		else if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::DOUBLE )
 		{
 			linkCountStr = '2';
 		}
-		else if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::TRIPLE )
+		else if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::TRIPLE )
 		{
 			linkCountStr = '3';
 		}
-		else if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::QUADRUPLE )
+		else if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::QUADRUPLE )
 		{
 			linkCountStr = '4';
 		}
-		else if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::QUINTUPLET )
+		else if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::QUINTUPLET )
 		{
 			linkCountStr = '5';
 		}
-		else if ( bondOrder == App::Internal::ChemDB::Bond::ORDER::AROMATIC )
+		else if ( bondOrder == VTX::Core::ChemDB::Bond::ORDER::AROMATIC )
 		{
 			linkCountStr = 'A';
 		}

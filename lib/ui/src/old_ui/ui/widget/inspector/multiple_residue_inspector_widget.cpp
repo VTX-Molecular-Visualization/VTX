@@ -229,14 +229,14 @@ namespace VTX::UI::Widget::Inspector
 			{
 				switch ( p_representation.getRibbonData().colorMode )
 				{
-				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
-				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
-				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
 
 				default:
 					VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
@@ -249,17 +249,17 @@ namespace VTX::UI::Widget::Inspector
 			{
 				switch ( p_representation.getColorMode() )
 				{
-				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
-				case App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM:
+				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
+				case VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM:
 					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
-				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
-				case App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
+				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
+				case VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
 
-				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN:
-				case App::Internal::ChemDB::Color::COLOR_MODE::CHAIN:
-				case App::Internal::ChemDB::Color::COLOR_MODE::RESIDUE: break;
+				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN:
+				case VTX::Core::ChemDB::Color::COLOR_MODE::CHAIN:
+				case VTX::Core::ChemDB::Color::COLOR_MODE::RESIDUE: break;
 
 				default:
 					VTX_WARNING( "COLOR_MODE " + std::to_string( int( p_representation.getColorMode() ) )

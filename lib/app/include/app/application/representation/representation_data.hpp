@@ -7,7 +7,7 @@
 #include "app/application/representation/primitive/ribbon.hpp"
 #include "app/application/representation/primitive/ses.hpp"
 #include "app/application/representation/primitive/sphere.hpp"
-#include "app/internal/chemdb/color.hpp"
+#include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::App::Application::Representation
@@ -28,8 +28,8 @@ namespace VTX::App::Application::Representation
 
 		const REPRESENTATION_ENUM & getRepresentationType() const;
 
-		const App::Internal::ChemDB::Color::COLOR_MODE & getColorMode() const;
-		void setColorMode( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode );
+		const VTX::Core::ChemDB::Color::COLOR_MODE & getColorMode() const;
+		void setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode );
 
 		const TARGETED_DATA_FLAG getFlagDataTargeted() const
 		{
@@ -54,29 +54,29 @@ namespace VTX::App::Application::Representation
 			assert( _cylinderData != nullptr );
 			return _cylinderData->radius;
 		};
-		virtual void											  setCylinderRadius( float p_radius );
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & getCylinderColorBlendingMode() const
+		virtual void										  setCylinderRadius( float p_radius );
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & getCylinderColorBlendingMode() const
 		{
 			assert( _cylinderData != nullptr );
 			return _cylinderData->colorBlendingMode;
 		}
-		virtual void setCylinderColorBlendingMode( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & );
+		virtual void setCylinderColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & );
 
 		bool					  hasToDrawRibbon() const { return _ribbonData != nullptr; };
 		const Primitive::Ribbon & getRibbonData() const { return *_ribbonData; };
 		Primitive::Ribbon &		  getRibbonData() { return *_ribbonData; };
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & getRibbonColorMode() const
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & getRibbonColorMode() const
 		{
 			assert( _ribbonData != nullptr );
 			return _ribbonData->colorMode;
 		}
-		virtual void setRibbonColorMode( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & );
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & getRibbonColorBlendingMode() const
+		virtual void setRibbonColorMode( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & );
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & getRibbonColorBlendingMode() const
 		{
 			assert( _ribbonData != nullptr );
 			return _ribbonData->colorBlendingMode;
 		}
-		virtual void setRibbonColorBlendingMode( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & );
+		virtual void setRibbonColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & );
 
 		bool				   hasToDrawSES() const { return _sesData != nullptr; };
 		const Primitive::SES & getSESData() const { return *_sesData; };
@@ -98,7 +98,7 @@ namespace VTX::App::Application::Representation
 		Primitive::Ribbon *	  _ribbonData	= nullptr;
 		Primitive::SES *	  _sesData		= nullptr;
 
-		App::Internal::ChemDB::Color::COLOR_MODE _colorMode = App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
+		VTX::Core::ChemDB::Color::COLOR_MODE _colorMode = VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
 
 		void notifyRepresentationDataChange();
 

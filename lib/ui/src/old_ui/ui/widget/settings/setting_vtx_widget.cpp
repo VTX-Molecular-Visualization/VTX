@@ -17,7 +17,7 @@
 #include <app/application/setting.hpp>
 #include <app/component/chemistry/enum_trajectory.hpp>
 #include <app/event/global.hpp>
-#include <app/internal/chemdb/residue.hpp>
+#include <core/chemdb/residue.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -581,8 +581,8 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE displayMode
-			= App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE( p_displayMode );
+		const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE displayMode
+			= VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE( p_displayMode );
 		if ( VTX_SETTING().getSymbolDisplayMode() != displayMode )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
 

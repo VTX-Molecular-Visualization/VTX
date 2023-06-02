@@ -231,13 +231,13 @@ namespace VTX::UI::Widget::Representation
 
 		bool changeRepresentationColor
 			= p_ssColor
-			  && _dummyRepresentation->getRibbonData().colorMode == App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+			  && _dummyRepresentation->getRibbonData().colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
 
 		changeRepresentationColor
 			= changeRepresentationColor
 			  || ( !p_ssColor
-				   && ( _dummyRepresentation->getColorMode() == App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM
-						|| _dummyRepresentation->getColorMode() == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM ) );
+				   && ( _dummyRepresentation->getColorMode() == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM
+						|| _dummyRepresentation->getColorMode() == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM ) );
 
 		if ( changeRepresentationColor )
 		{

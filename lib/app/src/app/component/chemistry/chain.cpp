@@ -1,82 +1,30 @@
 #include "app/component/chemistry/chain.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/internal/chemdb/chain.hpp"
-#include "app/application/representation/representation_manager.hpp"
+#include <core/chemdb/chain.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
+
+	Util::Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
+	{
+		return VTX::Core::Struct::Chain::getChainIdColor( p_chainId, p_isHetAtm );
+	}
 
 	void Chain::setMoleculePtr( Molecule * const p_molecule )
 	{
 		_moleculePtr = p_molecule;
+		_chainStruct->setMoleculePtr( &_moleculePtr->getMoleculeStruct() );
 
 		initBaseRepresentable( this, p_molecule, p_molecule );
 	}
-
-	void Chain::setResidueCount( const uint p_count )
+	void Chain::setName( const std::string & p_name )
 	{
-		_residueCount	  = p_count;
-		_realResidueCount = p_count;
-	}
-	void Chain::removeToResidues( const uint p_residueIndex )
-	{
-		if ( _indexFirstResidue == p_residueIndex )
-		{
-			while ( _residueCount > 0 && getMoleculePtr()->getResidue( _indexFirstResidue ) == nullptr )
-			{
-				_indexFirstResidue++;
-				_residueCount--;
-			}
-		}
-		else
-		{
-			uint lastResidueIndex = _indexFirstResidue + _residueCount - 1;
-			if ( lastResidueIndex == p_residueIndex )
-			{
-				while ( _residueCount > 0 && getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
-				{
-					_residueCount--;
-					lastResidueIndex--;
-				}
-			}
-		}
-
-		_realResidueCount--;
-	}
-
-	uint Chain::computeRealAtomCount() const
-	{
-		uint realAtomCount = 0;
-
-		for ( uint i = getIndexFirstResidue(); i <= getIndexLastResidue(); i++ )
-		{
-			const Chemistry::Residue * const residue = _moleculePtr->getResidue( i );
-
-			if ( residue == nullptr )
-				continue;
-
-			realAtomCount += residue->getRealAtomCount();
-		}
-
-		return realAtomCount;
-	}
-
-	Util::Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
-	{
-		if ( p_chainId.empty() )
-			return ChemDB::Chain::CHAIN_ID_UNKNOWN_COLOR;
-
-		// chain id should be defined by one char
-		const char c = static_cast<char>( std::toupper( static_cast<unsigned char>( p_chainId[ 0 ] ) ) );
-
-		const int id = int( c ) - 65; // 65 is A
-		if ( id < 0 || id > 26 )
-			return ChemDB::Chain::CHAIN_ID_UNKNOWN_COLOR;
-
-		return p_isHetAtm ? ChemDB::Chain::CHAIN_ID_COLOR_HETATM[ id ] : ChemDB::Chain::CHAIN_ID_COLOR_ATOM[ id ];
+		_chainStruct->setName( p_name );
+		BaseModel::setDefaultName( &_chainStruct->getName() );
 	}
 
 	void Chain::setCategoryEnum( const ChemDB::Category::TYPE & p_categoryEnum )
@@ -86,9 +34,9 @@ namespace VTX::App::Component::Chemistry
 			Chemistry::Molecule * const moleculePtr = getMoleculePtr();
 			if ( moleculePtr != nullptr )
 			{
-				moleculePtr->getCategory( _categoryEnum ).removeChain( _index );
+				moleculePtr->getCategory( _categoryEnum ).removeChain( _chainStruct->getIndex() );
 				_categoryEnum = p_categoryEnum;
-				moleculePtr->getCategory( _categoryEnum ).addChain( _index );
+				moleculePtr->getCategory( _categoryEnum ).addChain( _chainStruct->getIndex() );
 			}
 		}
 	}
@@ -101,8 +49,8 @@ namespace VTX::App::Component::Chemistry
 
 		if ( previousVisibleState != p_visible )
 		{
-			_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
-			_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
+			_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _chainStruct->getIndex() );
+			_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _chainStruct->getIndex() );
 		}
 	}
 
@@ -116,19 +64,20 @@ namespace VTX::App::Component::Chemistry
 		{
 			if ( p_notify )
 			{
-				_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
-				_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
+				_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _chainStruct->getIndex() );
+				_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY,
+														   _chainStruct->getIndex() );
 			}
 		}
 	}
 
 	const App::Component::Object3D::Helper::AABB Chain::getAABB() const
 	{
-	 App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
+		App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
 
-		for ( uint i = 0; i < _residueCount; ++i )
+		for ( uint i = _chainStruct->getIndexFirstResidue(); i <= _chainStruct->getIndexLastResidue(); ++i )
 		{
-			const Residue * const residue = _moleculePtr->getResidue( _indexFirstResidue + i );
+			const Residue * const residue = _moleculePtr->getResidue( i );
 
 			if ( residue == nullptr )
 				continue;
@@ -143,8 +92,8 @@ namespace VTX::App::Component::Chemistry
 		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
 		const App::Internal::Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
-	 App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
-		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();
+		App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
+		std::vector<Vec3f>					   aabbSummits = aabb.getSummits();
 
 		for ( const Vec3f & summit : aabbSummits )
 		{
@@ -157,7 +106,7 @@ namespace VTX::App::Component::Chemistry
 
 	void Chain::removeChildrenRepresentations()
 	{
-		for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
+		for ( uint i = _chainStruct->getIndexFirstResidue(); i <= _chainStruct->getIndexLastResidue(); i++ )
 		{
 			Chemistry::Residue * const residue = getMoleculePtr()->getResidue( i );
 

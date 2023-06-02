@@ -1,7 +1,7 @@
 #ifndef __VTX_REPRESENTATION_TARGET__
 #define __VTX_REPRESENTATION_TARGET__
 
-#include "app/internal/chemdb/category.hpp"
+#include <core/chemdb/category.hpp>
 #include <map>
 #include <util/types.hpp>
 #include <vector>
@@ -44,8 +44,7 @@ namespace VTX::App::Application::Representation
 			return _ribbons;
 		}
 
-		inline const TargetRangeElements & getTrianglesSES(
-			const App::Internal::ChemDB::Category::TYPE p_category ) const
+		inline const TargetRangeElements & getTrianglesSES( const VTX::Core::ChemDB::Category::TYPE p_category ) const
 		{
 			assert( _isGenerated );
 			assert( _trianglesSES.find( p_category ) != _trianglesSES.end() );
@@ -62,9 +61,9 @@ namespace VTX::App::Application::Representation
 			_append( _ribbonsMap, p_indice, p_count );
 		}
 
-		inline void appendTrianglesSES( const App::Internal::ChemDB::Category::TYPE p_category,
-										const uint									p_indice,
-										const uint									p_count )
+		inline void appendTrianglesSES( const VTX::Core::ChemDB::Category::TYPE p_category,
+										const uint								p_indice,
+										const uint								p_count )
 		{
 			assert( _trianglesSESMap.find( p_category ) != _trianglesSESMap.end() );
 			_append( _trianglesSESMap[ p_category ], p_indice, p_count );
@@ -87,19 +86,19 @@ namespace VTX::App::Application::Representation
 		void generate();
 
 	  private:
-		TargetRangeArrays														   _atoms	= TargetRangeArrays();
-		TargetRangeElements														   _bonds	= TargetRangeElements();
-		TargetRangeElements														   _ribbons = TargetRangeElements();
-		std::map<const App::Internal::ChemDB::Category::TYPE, TargetRangeElements> _trianglesSES
-			= { { App::Internal::ChemDB::Category::TYPE::POLYMER, TargetRangeElements() },
-				{ App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE, TargetRangeElements() } };
+		TargetRangeArrays													   _atoms	= TargetRangeArrays();
+		TargetRangeElements													   _bonds	= TargetRangeElements();
+		TargetRangeElements													   _ribbons = TargetRangeElements();
+		std::map<const VTX::Core::ChemDB::Category::TYPE, TargetRangeElements> _trianglesSES
+			= { { VTX::Core::ChemDB::Category::TYPE::POLYMER, TargetRangeElements() },
+				{ VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE, TargetRangeElements() } };
 
-		TargetRangeMap														  _atomsMap	  = TargetRangeMap();
-		TargetRangeMap														  _bondsMap	  = TargetRangeMap();
-		TargetRangeMap														  _ribbonsMap = TargetRangeMap();
-		std::map<const App::Internal::ChemDB::Category::TYPE, TargetRangeMap> _trianglesSESMap
-			= { { App::Internal::ChemDB::Category::TYPE::POLYMER, TargetRangeMap() },
-				{ App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE, TargetRangeMap() } };
+		TargetRangeMap													  _atomsMap	  = TargetRangeMap();
+		TargetRangeMap													  _bondsMap	  = TargetRangeMap();
+		TargetRangeMap													  _ribbonsMap = TargetRangeMap();
+		std::map<const VTX::Core::ChemDB::Category::TYPE, TargetRangeMap> _trianglesSESMap
+			= { { VTX::Core::ChemDB::Category::TYPE::POLYMER, TargetRangeMap() },
+				{ VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE, TargetRangeMap() } };
 
 		bool _isGenerated = false;
 		void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );

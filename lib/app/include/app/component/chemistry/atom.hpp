@@ -6,41 +6,41 @@
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/atom.hpp"
+#include <core/chemdb/atom.hpp>
+#include <core/struct/atom.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	class Atom : public Core::Model::BaseModel, public Component::Generic::BaseVisible
 	{
 		VTX_MODEL
 
 	  public:
-		inline const uint	   getIndex() const { return _index; };
-		inline void			   setIndex( const uint p_index ) { _index = p_index; };
+		inline VTX::Core::Struct::Atom &	   getAtomStruct() { return *_atomStruct; }
+		inline const VTX::Core::Struct::Atom & getAtomStruct() const { return *_atomStruct; }
+
+		inline const uint	   getIndex() const { return _atomStruct->getIndex(); };
+		inline void			   setIndex( const uint p_index ) { _atomStruct->setIndex( p_index ); };
 		Molecule * const	   getMoleculePtr() const;
 		Chain * const		   getChainPtr() const;
 		inline Residue * const getResiduePtr() const { return _residuePtr; }
-		inline void			   setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
+		void				   setResiduePtr( Residue * const p_residue );
 
-		inline const Util::Color::Rgba & getColor() const { return ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ]; };
+		inline const Util::Color::Rgba & getColor() const { return _atomStruct->getColor(); };
 
-		inline const ChemDB::Atom::SYMBOL getSymbol() const { return _symbol; };
-		inline const std::string &		  getSymbolStr() const { return ChemDB::Atom::SYMBOL_STR[ (int)_symbol ]; };
-		inline void						  setSymbol( const ChemDB::Atom::SYMBOL p_symbol )
-		{
-			_symbol = p_symbol;
-			BaseModel::setDefaultName( &getSymbolName() );
-		};
-		inline const std::string & getSymbolName() const { return ChemDB::Atom::SYMBOL_NAME[ (int)_symbol ]; }
-		inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
-		inline const float		   getVdwRadius() const { return ChemDB::Atom::SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-		inline ChemDB::Atom::TYPE  getType() const { return _type; }
-		inline void				   setType( const ChemDB::Atom::TYPE p_type ) { _type = p_type; }
-		inline const std::string & getName() const { return _name; };
-		inline void				   setName( const std::string & p_name ) { _name = p_name; };
+		inline const ChemDB::Atom::SYMBOL getSymbol() const { return _atomStruct->getSymbol(); };
+		inline const std::string &		  getSymbolStr() const { return _atomStruct->getSymbolStr(); };
+		void							  setSymbol( const ChemDB::Atom::SYMBOL p_symbol );
+		inline const std::string &		  getSymbolName() const { return _atomStruct->getSymbolName(); }
+		inline const uint				  getAtomicNumber() const { return _atomStruct->getAtomicNumber(); }
+		inline const float				  getVdwRadius() const { return _atomStruct->getVdwRadius(); }
+		inline ChemDB::Atom::TYPE		  getType() const { return _atomStruct->getType(); }
+		inline void						  setType( const ChemDB::Atom::TYPE p_type ) { _atomStruct->setType( p_type ); }
+		inline const std::string &		  getName() const { return _atomStruct->getName(); };
+		inline void						  setName( const std::string & p_name ) { _atomStruct->setName( p_name ); };
 
 		// Mask BaseVisible::setVisible
 		void setVisible( const bool p_visible );
@@ -51,15 +51,12 @@ namespace VTX::App::Component::Chemistry
 		const App::Component::Object3D::Helper::AABB getAABB() const;
 		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
-	  private:
-		uint				 _index		 = 0;
-		Residue *			 _residuePtr = nullptr;
-		ChemDB::Atom::TYPE	 _type		 = ChemDB::Atom::TYPE::NORMAL;
-		ChemDB::Atom::SYMBOL _symbol	 = ChemDB::Atom::SYMBOL::UNKNOWN;
-		// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
-		std::string _name = "";
-
+	  protected:
 		Atom() : BaseModel( App::ID::Model::MODEL_ATOM ) {}
+
+	  private:
+		VTX::Core::Struct::Atom * _atomStruct = nullptr;
+		Residue *				  _residuePtr = nullptr;
 	};
 
 } // namespace VTX::App::Component::Chemistry

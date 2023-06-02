@@ -10,14 +10,20 @@ namespace VTX::App::Component::Chemistry
 
 		if ( lhsMoleculeID == rhsMoleculeID )
 		{
-			if ( p_lhs._indexFirstAtom == p_rhs._indexFirstAtom )
-				return p_lhs._indexSecondAtom < p_rhs._indexSecondAtom;
+			if ( p_lhs.getIndexFirstAtom() == p_rhs.getIndexFirstAtom() )
+				return p_lhs.getIndexSecondAtom() < p_rhs.getIndexSecondAtom();
 			else
-				return p_lhs._indexFirstAtom < p_rhs._indexFirstAtom;
+				return p_lhs.getIndexFirstAtom() < p_rhs.getIndexFirstAtom();
 		}
 		else
 		{
 			return lhsMoleculeID < rhsMoleculeID;
 		}
+	}
+
+	void Bond::setMoleculePtr( Molecule * const p_molecule )
+	{
+		_moleculePtr = p_molecule;
+		_bondStruct->setMoleculePtr( &_moleculePtr->getMoleculeStruct() );
 	}
 } // namespace VTX::App::Component::Chemistry

@@ -31,8 +31,12 @@ namespace VTX::Controller
 			= mw.getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		const Vec2i ids = mw.getPickedIds( p_x, p_y );
-		_performSelection( ids );
-		_lastClickedIds = ids;
+
+		if ( !_isTargetSelected( ids ) )
+		{
+			_performSelection( ids );
+			_lastClickedIds = ids;
+		}
 
 		App::Application::Selection::SelectionModel & selection
 			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
@@ -131,6 +135,24 @@ namespace VTX::Controller
 		}
 	}
 
+	bool Picker::_isTargetSelected( const Vec2i & p_ids ) const
+	{
+		if ( p_ids.x == App::Core::Model::ID_UNKNOWN )
+			return false;
+
+		bool targetSelected = App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+			MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.x ) );
+
+		if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
+		{
+			targetSelected
+				= targetSelected
+				  && App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+					  MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.y ) );
+		}
+
+		return targetSelected;
+	}
 	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const
 	{
 		App::Application::Selection::SelectionModel & selectionModel

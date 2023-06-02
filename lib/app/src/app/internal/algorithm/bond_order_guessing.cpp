@@ -9,7 +9,7 @@
 
 namespace VTX::App::Internal::Algorithm
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	void BondOrderGuessing::recomputeBondOrders( chemfiles::Frame & p_frame )
 	{
@@ -595,7 +595,7 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 1 && oxygenCountInNeighbours >= 2 )
@@ -615,26 +615,26 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 									// order = 4 in pymol
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   secondOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+												   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 								}
 								else if ( firstOxygenIsValid )
 								{
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 								else if ( secondOxygenIsValid )
 								{
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   secondOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours == 1 )
@@ -648,7 +648,7 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours >= 2 )
@@ -669,12 +669,12 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 									// order = 4 in pymol
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   secondOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+												   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 								}
 								else if ( firstOxygenIsValid )
 								{
@@ -682,14 +682,14 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   firstOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 								else if ( secondOxygenIsValid )
 								{
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   secondOxygenIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+												   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 3 )
@@ -713,12 +713,12 @@ namespace VTX::App::Internal::Algorithm
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n0Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n1Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 									}
 									else if ( n0NeighbourCount == 1 && n1NeighbourCount >= 2 && n2NeighbourCount == 1 )
 									{
@@ -726,12 +726,12 @@ namespace VTX::App::Internal::Algorithm
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n0Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n2Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 									}
 									else if ( n0NeighbourCount >= 2 && n1NeighbourCount == 1 && n2NeighbourCount == 1 )
 									{
@@ -740,12 +740,12 @@ namespace VTX::App::Internal::Algorithm
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n1Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n2Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+													   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 									}
 								}
 							}
@@ -767,12 +767,12 @@ namespace VTX::App::Internal::Algorithm
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n0Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
 										_setBondOrder( p_molecule,
 													   atomIndex,
 													   n1Index,
-													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+													   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 									}
 								}
 							}
@@ -806,7 +806,7 @@ namespace VTX::App::Internal::Algorithm
 						if ( n0DotCross > planerCutoff )
 						{
 							_setBondOrder(
-								p_molecule, atomIndex, n0Index, VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+								p_molecule, atomIndex, n0Index, VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 							if ( neighbourData.nitrogens[ 0 ].getDistance() < 1.24f && neighbourData.carbons.size() > 0
 								 && p_linkedAtomsVector[ n0Index ].size() == 1 )
 							{
@@ -820,7 +820,7 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   n0Index,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::TRIPLE );
+												   VTX::Core::ChemDB::Bond::ORDER::TRIPLE );
 								}
 							}
 						}
@@ -838,7 +838,7 @@ namespace VTX::App::Internal::Algorithm
 							_setBondOrder( p_molecule,
 										   atomIndex,
 										   firstOxygenIndex,
-										   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+										   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 						}
 
 						const size_t secondOxygenIndex = neighbourData.oxygens[ 1 ].getIndex();
@@ -848,7 +848,7 @@ namespace VTX::App::Internal::Algorithm
 							_setBondOrder( p_molecule,
 										   atomIndex,
 										   secondOxygenIndex,
-										   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
+										   VTX::Core::ChemDB::Bond::ORDER::SINGLE );
 						}
 					}
 				}
@@ -864,7 +864,7 @@ namespace VTX::App::Internal::Algorithm
 								_setBondOrder( p_molecule,
 											   atomIndex,
 											   oxygenIndex,
-											   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+											   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 								break;
 							}
 						}
@@ -879,7 +879,7 @@ namespace VTX::App::Internal::Algorithm
 								_setBondOrder( p_molecule,
 											   atomIndex,
 											   oxygenIndex,
-											   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
+											   VTX::Core::ChemDB::Bond::ORDER::DOUBLE );
 							}
 						}
 					}
@@ -905,7 +905,7 @@ namespace VTX::App::Internal::Algorithm
 									_setBondOrder( p_molecule,
 												   atomIndex,
 												   neighbourIndex,
-												   VTX::App::Internal::ChemDB::Bond::ORDER::AROMATIC );
+												   VTX::Core::ChemDB::Bond::ORDER::AROMATIC );
 								}
 							}
 						}
@@ -1210,7 +1210,7 @@ namespace VTX::App::Internal::Algorithm
 	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
 										   const size_t								p_firstAtomIndex,
 										   const size_t								p_secondAtomIndex,
-										   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
+										   const VTX::Core::ChemDB::Bond::ORDER p_bondOrder,
 										   const bool								p_force )
 	{
 		const App::Component::Chemistry::Residue & residueFirstAtom
@@ -1235,12 +1235,12 @@ namespace VTX::App::Internal::Algorithm
 
 	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
 										   const uint								p_bondIndex,
-										   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
+										   const VTX::Core::ChemDB::Bond::ORDER p_bondOrder,
 										   const bool								p_force )
 	{
 		App::Component::Chemistry::Bond * const bond = p_molecule.getBond( p_bondIndex );
 
-		if ( p_force || bond->getOrder() == App::Internal::ChemDB::Bond::ORDER::UNKNOWN )
+		if ( p_force || bond->getOrder() == VTX::Core::ChemDB::Bond::ORDER::UNKNOWN )
 		{
 			bond->setOrder( p_bondOrder );
 		}
@@ -1321,7 +1321,7 @@ namespace VTX::App::Internal::Algorithm
 		const App::Component::Chemistry::Residue * previousResidue		= nullptr;
 		for ( App::Component::Chemistry::Bond * const bond : p_molecule.getBonds() )
 		{
-			if ( bond->getOrder() != App::Internal::ChemDB::Bond::ORDER::UNKNOWN )
+			if ( bond->getOrder() != VTX::Core::ChemDB::Bond::ORDER::UNKNOWN )
 				continue;
 
 			const uint firstAtomIndex  = bond->getIndexFirstAtom();

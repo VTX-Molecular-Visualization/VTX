@@ -18,12 +18,19 @@ QWidget:disabled
 	color: #808080;
 }
 
-/* Window resize area */
+/* Window and dockwidget resize area */
 QMainWindow::separator
 {
-    width: 2px;
-    height: 2px;
+    width: 6px;
+    height: 6px;
 }
+
+/* Highlight resize area on hover (?)
+QMainWindow::separator:hover
+{
+	background: #444444;
+}
+*/
 
 QMenu
 {
