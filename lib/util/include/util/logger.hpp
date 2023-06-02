@@ -22,39 +22,39 @@ namespace VTX
 	} // namespace Util
 
 	template<typename... Args>
-	inline void VTX_TRACE( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::trace, p_fmt, p_args... );
+		spdlog::log( spdlog::level::trace, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
-	inline void VTX_DEBUG( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::debug, p_fmt, p_args... );
+		spdlog::log( spdlog::level::debug, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
-	inline void VTX_INFO( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::info, p_fmt, p_args... );
+		spdlog::log( spdlog::level::info, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
-	inline void VTX_WARNING( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::warn, p_fmt, p_args... );
+		spdlog::log( spdlog::level::warn, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
-	inline void VTX_ERROR( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::err, p_fmt, p_args... );
+		spdlog::log( spdlog::level::err, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
-	inline void VTX_CRITICAL( const std::string & p_fmt, const Args &... p_args )
+	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		spdlog::log( spdlog::level::critical, p_fmt, p_args... );
+		spdlog::log( spdlog::level::critical, p_fmt, std::forward<Args>( p_args )... );
 	}
 } // namespace VTX
 

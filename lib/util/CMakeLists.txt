@@ -28,7 +28,7 @@ target_link_libraries(VTX_UTIL PUBLIC glm)
 target_link_libraries(VTX_UTIL PUBLIC spdlog)
 
 # Compiler options.
-target_compile_features(VTX_UTIL PUBLIC cxx_std_17)
+target_compile_features(VTX_UTIL PUBLIC cxx_std_20)
 
 if(CMAKE_COMPILER_IS_GNUCC)
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
