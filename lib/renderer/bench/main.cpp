@@ -56,17 +56,22 @@ int main( int, char ** )
 		glfwSetFramebufferSizeCallback( window, fun );
 
 		// Camera.
-		Vec3f position	 = Vec3f( 0.f, 0.f, 2.f );
-		Mat4f viewMatrix = Util::Math::lookAt( position, position - VEC3F_Z, VEC3F_Y );
+
 		Mat4f projectionMatrix
 			= Util::Math::perspective( Util::Math::radians( 60.f ), float( WIDTH ) / float( HEIGHT ), 0.0001f, 1e4f );
 
-		renderer.setCameraMatrix( viewMatrix, projectionMatrix );
+		renderer.setMatrixProjection( projectionMatrix );
 		auto bgColor = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
 		// renderer.setBackgroundColor( bgColor );
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
+			float time		 = float( glfwGetTime() );
+			Vec3f position	 = Vec3f( 0.f, 0.f, 2.f + sinf( time ) );
+			Mat4f viewMatrix = Util::Math::lookAt( position, position - VEC3F_Z, VEC3F_Y );
+			// Model matrix (tmp).
+			Mat4f modelMatrix = Util::Math::rotate( Mat4f( 1.f ), time * 0.5f, VEC3F_Y );
+			renderer.setMatrixView( viewMatrix * modelMatrix );
 			renderer.renderFrame();
 			glfwSwapBuffers( window );
 			glfwPollEvents();

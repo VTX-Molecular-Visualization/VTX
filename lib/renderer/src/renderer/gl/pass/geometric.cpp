@@ -90,7 +90,7 @@ namespace VTX::Renderer::GL::Pass
 		in.triangles.vao.setAttributeBinding( 5, 5 );
 
 		in.triangles.vboPositions.set(
-			std::vector<Vec3f> { Vec3f( 1.f, 0.f, 0.f ), Vec3f( -1.f, 0.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) } );
+			std::vector<Vec3f> { Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) } );
 		in.triangles.vboNormals.set(
 			std::vector<Vec3f> { Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) } );
 		in.triangles.vboColors.set( std::vector<Util::Color::Rgba> { Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),

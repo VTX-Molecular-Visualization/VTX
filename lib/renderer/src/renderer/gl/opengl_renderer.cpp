@@ -129,9 +129,10 @@ namespace VTX::Renderer::GL
 		return _passGeometric.getPickedData( p_x, p_y );
 	}
 
-	void OpenGLRenderer::setCameraMatrix( const Mat4f & p_view, const Mat4f & p_proj )
+	void OpenGLRenderer::setMatrixView( const Mat4f & p_view ) { _ubo.setSub( p_view, 0, sizeof( Mat4f ) ); }
+
+	void OpenGLRenderer::setMatrixProjection( const Mat4f & p_proj )
 	{
-		_ubo.setSub( p_view, 0, sizeof( Mat4f ) );
 		_ubo.setSub( p_proj, sizeof( Mat4f ), sizeof( Mat4f ) );
 	}
 

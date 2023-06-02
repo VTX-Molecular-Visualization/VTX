@@ -31,7 +31,8 @@ namespace VTX::Renderer::GL
 
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
-		void setCameraMatrix( const Mat4f & p_view, const Mat4f & p_proj );
+		void setMatrixView( const Mat4f & );
+		void setMatrixProjection( const Mat4f & );
 		void setBackgroundColor( Util::Color::Rgba & );
 
 	  private:
