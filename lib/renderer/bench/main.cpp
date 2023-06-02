@@ -78,7 +78,7 @@ int main( int, char ** )
 	}
 	catch ( const std::exception & p_e )
 	{
-		VTX_ERROR( p_e.what() );
+		VTX_ERROR( "Exception: {}", p_e.what() );
 		glfwDestroyWindow( window );
 		glfwTerminate();
 		return EXIT_FAILURE;
