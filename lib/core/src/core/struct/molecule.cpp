@@ -73,7 +73,7 @@ namespace VTX::Core::Struct
 
 	int Molecule::getUnknownResidueSymbolIndex( const std::string & p_symbol ) const
 	{
-		size_t residueIndex;
+		int residueIndex;
 
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
@@ -90,7 +90,7 @@ namespace VTX::Core::Struct
 
 	ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
 	{
-		for ( size_t residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
+		for ( int residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
 				return _unknownResidueSymbol[ residueIndex ];
@@ -101,7 +101,7 @@ namespace VTX::Core::Struct
 
 	int Molecule::addUnknownResidueSymbol( ChemDB::UnknownResidueData * const p_residueData )
 	{
-		size_t residueIndex;
+		int residueIndex;
 
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
@@ -311,7 +311,7 @@ namespace VTX::Core::Struct
 	{
 		int res = 0;
 
-		for ( size_t chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
+		for ( int chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
 		{
 			const Chain * const chain = _chains[ chainIdx ];
 			if ( chain == nullptr )
@@ -325,7 +325,7 @@ namespace VTX::Core::Struct
 	{
 		int res = 0;
 
-		for ( size_t residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
+		for ( int residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
 		{
 			const Residue * const residue = _residues[ residueIdx ];
 			if ( residue == nullptr )
