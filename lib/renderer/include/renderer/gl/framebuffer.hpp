@@ -88,10 +88,10 @@ namespace VTX::Renderer::GL
 
 #if ( VTX_OPENGL_VERSION == 450 )
 			glNamedFramebufferDrawBuffers(
-				_id, GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
+				_id, GLsizei( p_drawBuffers.size() ), static_cast<const GLenum *>( p_drawBuffers.data() ) );
 #else
 			bind();
-			glDrawBuffers( GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
+			glDrawBuffers( GLsizei( p_drawBuffers.size() ), static_cast<const GLenum *>( p_drawBuffers.data() ) );
 			unbind();
 #endif
 		}

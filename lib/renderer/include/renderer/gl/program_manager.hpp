@@ -15,7 +15,7 @@ namespace VTX
 		class ProgramManager
 		{
 		  public:
-			ProgramManager( const FilePath & p_shaderPath );
+			explicit ProgramManager( const FilePath & p_shaderPath );
 			~ProgramManager();
 
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
