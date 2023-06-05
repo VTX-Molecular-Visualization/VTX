@@ -24,7 +24,7 @@ namespace VTX::App::Internal::Worker
 		for ( const FilePath & path : _paths )
 		{
 			chrono.start();
-			VTX_INFO( "Loading " + path.filename().string() );
+			VTX_INFO( "Loading {}", path.filename().string() );
 
 			App::Core::IO::Reader::SerializedObject<VTXApp> * const reader
 				= new App::Core::IO::Reader::SerializedObject<VTXApp>();
@@ -37,13 +37,13 @@ namespace VTX::App::Internal::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load app: {}", p_e.what() );
 			}
 
 			delete reader;
 
 			chrono.stop();
-			VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_INFO( "File treated in {}", chrono.elapsedTimeStr() );
 		}
 	}
 } // namespace VTX::App::Internal::Worker

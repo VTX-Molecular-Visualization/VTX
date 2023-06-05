@@ -50,7 +50,7 @@ namespace VTX::Network::Request
 					+ " is available at: " + App::Application::VTX_RELEASES_CLICKABLE_URL + "<br>or "
 					+ App::Application::VTX_WEBSITE_CLICKABLE_URL );
 
-				VTX_INFO( consoleMessage );
+				VTX_INFO( "{}", consoleMessage );
 				UI::Dialog::openInformationDialog( "New version available", dialogMessage );
 			}
 			else
@@ -64,7 +64,7 @@ namespace VTX::Network::Request
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 		}
 	}
 } // namespace VTX::Network::Request

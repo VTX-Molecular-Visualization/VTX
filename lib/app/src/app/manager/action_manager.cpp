@@ -2,10 +2,10 @@
 #include "app/action/main.hpp"
 #include "app/action/representable.hpp"
 #include "app/action/setting.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_preset.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/application/representation/representation_preset.hpp"
-#include "app/application/representation/representation_library.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
@@ -40,7 +40,8 @@ namespace VTX::App::Manager
 		//// TODO: map with ids.
 		// try
 		//{
-		//	App::Component::Chemistry::Molecule & molecule = *( *App::VTXApp::get().getScene().getMolecules().begin() ).first;
+		//	App::Component::Chemistry::Molecule & molecule = *( *App::VTXApp::get().getScene().getMolecules().begin()
+		//).first;
 
 		//	if ( command == "snapshot" )
 		//	{
@@ -65,8 +66,10 @@ namespace VTX::App::Manager
 		//	else if ( command == "set_representation_molecule" )
 		//	{
 		//		App::Application::Representation::RepresentationPreset * const representation
-		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-		//		action = new VTX::App::Action::Representable::SetRepresentation( molecule, representation );
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at(
+		// 1
+		//)
+		//); 		action = new VTX::App::Action::Representable::SetRepresentation( molecule, representation );
 		//	}
 		//	else if ( command == "remove_representation_molecule" )
 		//	{
@@ -75,9 +78,11 @@ namespace VTX::App::Manager
 		//	else if ( command == "set_representation_chain" )
 		//	{
 		//		App::Application::Representation::RepresentationPreset * const representation
-		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-		//		const int idChain = std::stoi( words.at( 2 ) );
-		//		action			  = new VTX::App::Action::Representable::SetRepresentation( *molecule.getChains()[
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at(
+		// 1
+		//)
+		//); 		const int idChain = std::stoi( words.at( 2 ) ); 		action			  = new
+		// VTX::App::Action::Representable::SetRepresentation( *molecule.getChains()[
 		// idChain
 		//], 																	   representation );
 		//	}
@@ -89,9 +94,11 @@ namespace VTX::App::Manager
 		//	else if ( command == "set_representation_residue" )
 		//	{
 		//		App::Application::Representation::RepresentationPreset * const representation
-		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-		//		const int indexResidue = std::stoi( words.at( 2 ) );
-		//		action = new VTX::App::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at(
+		// 1
+		//)
+		//); 		const int indexResidue = std::stoi( words.at( 2 ) ); 		action = new
+		// VTX::App::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue
 		//], 																	representation );
 		//	}
 		//	else if ( command == "remove_representation_residue" )
@@ -131,7 +138,7 @@ namespace VTX::App::Manager
 			return;
 		}
 
-		VTX_DEBUG( "Undo (" + std::to_string( _bufferUndo.size() - 1 ) + " more)" );
+		VTX_DEBUG( "Undo ( {} more )", ( _bufferUndo.size() - 1 ) );
 		BaseActionUndonable * const actionToUndo = _bufferUndo.front();
 
 		actionToUndo->undo();
@@ -155,7 +162,7 @@ namespace VTX::App::Manager
 			return;
 		}
 
-		VTX_DEBUG( "Redo (" + std::to_string( _bufferRedo.size() - 1 ) + " more)" );
+		VTX_DEBUG( "Redo ( {} more ).", ( _bufferRedo.size() - 1 ) );
 		BaseActionUndonable * const actionToRedo = _bufferRedo.front();
 		actionToRedo->redo();
 		_bufferUndo.push_front( actionToRedo );
@@ -200,7 +207,7 @@ namespace VTX::App::Manager
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 		}
 
 		// Handle undo.

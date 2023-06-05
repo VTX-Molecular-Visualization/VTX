@@ -2,6 +2,7 @@
 #define __VTX_MODEL_MEASUREMENT_DIHEDRAL_ANGLE__
 
 #include <app/component/chemistry/_fwd.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/component/generic/base_auto_delete.hpp>
 #include <app/component/object3d/label.hpp>
 #include <app/core/event/base_event_receiver_vtx.hpp>

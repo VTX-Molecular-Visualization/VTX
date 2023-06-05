@@ -4,13 +4,13 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/application/representation/representation_preset.hpp>
 #include <app/application/representation/representation_library.hpp>
 #include <app/application/representation/representation_manager.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/core/view/callback_view.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/application/selection/selection_manager.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Representation
@@ -161,8 +161,10 @@ namespace VTX::UI::Widget::Representation
 				_representationWidget, "ses_representation_widget" );
 			break;
 		default:
-			VTX_WARNING( "Widget setting for representation " + std::to_string( int( p_representation ) )
-						 + " not managed in RepresentationInspectorSection::_instantiateRepresentationSettingWidget." );
+			VTX_WARNING(
+				"Widget setting for representation {} not managed in "
+				"RepresentationInspectorSection::_instantiateRepresentationSettingWidget.",
+				int( p_representation ) );
 			_representationSettingWidget = nullptr;
 			break;
 		}
@@ -224,20 +226,22 @@ namespace VTX::UI::Widget::Representation
 
 		emit onRepresentationChange( *_dummyRepresentation, p_flagDataModified );
 	}
-	void RepresentationInspectorSection::_representationColorChange( const Util::Color::Rgba & p_color, const bool p_ssColor )
+	void RepresentationInspectorSection::_representationColorChange( const Util::Color::Rgba & p_color,
+																	 const bool				   p_ssColor )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		bool changeRepresentationColor
-			= p_ssColor
-			  && _dummyRepresentation->getRibbonData().colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+		bool changeRepresentationColor = p_ssColor
+										 && _dummyRepresentation->getRibbonData().colorMode
+												== VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
 
 		changeRepresentationColor
 			= changeRepresentationColor
 			  || ( !p_ssColor
 				   && ( _dummyRepresentation->getColorMode() == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM
-						|| _dummyRepresentation->getColorMode() == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM ) );
+						|| _dummyRepresentation->getColorMode()
+							   == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM ) );
 
 		if ( changeRepresentationColor )
 		{

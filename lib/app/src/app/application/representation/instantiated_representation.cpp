@@ -1,12 +1,12 @@
 #include "app/application/representation/instantiated_representation.hpp"
 #include "app/application/representation/base_representable.hpp"
 #include "app/application/representation/representation_manager.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
-#include "app/application/setting.hpp"
 #include "app/vtx_app.hpp"
 #include <string>
 #include <util/logger.hpp>
@@ -77,15 +77,16 @@ namespace VTX::App::Application::Representation
 
 			if ( _colorMode.isValid() )
 			{
-				useMoleculeColor = useMoleculeColor || _colorMode.getValue() == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
+				useMoleculeColor = useMoleculeColor
+								   || _colorMode.getValue() == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
 								   || _colorMode.getValue() == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN;
 			}
 
 			if ( _ribbonData.isValid() )
 			{
-				useMoleculeColor
-					= useMoleculeColor
-					  || _ribbonData.getValue().colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
+				useMoleculeColor = useMoleculeColor
+								   || _ribbonData.getValue().colorMode
+										  == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
 			}
 
 			if ( useMoleculeColor )
@@ -128,8 +129,8 @@ namespace VTX::App::Application::Representation
 	void InstantiatedRepresentation::setTarget( BaseRepresentable * p_target ) { _target = p_target; }
 
 	void InstantiatedRepresentation::setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode,
-												   const bool				   p_recomputeBuffers,
-												   const bool				   p_notify )
+												   const bool									p_recomputeBuffers,
+												   const bool									p_notify )
 	{
 		_colorMode.setValue( p_colorMode );
 
@@ -141,8 +142,8 @@ namespace VTX::App::Application::Representation
 	}
 
 	void InstantiatedRepresentation::setColor( const Util::Color::Rgba & p_color,
-											   const bool		   p_recomputeBuffers,
-											   const bool		   p_notify )
+											   const bool				 p_recomputeBuffers,
+											   const bool				 p_notify )
 	{
 		_color.setValue( p_color );
 
@@ -238,7 +239,7 @@ namespace VTX::App::Application::Representation
 
 	void InstantiatedRepresentation::setCylinderColorBlendingMode(
 		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
-		const bool							 p_notify )
+		const bool											  p_notify )
 	{
 		_cylinderData.getValue().colorBlendingMode = p_colorBlendingMode;
 
@@ -248,8 +249,9 @@ namespace VTX::App::Application::Representation
 		}
 	}
 
-	void InstantiatedRepresentation::setRibbonColorMode( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
-														 const bool										 p_notify )
+	void InstantiatedRepresentation::setRibbonColorMode(
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+		const bool														 p_notify )
 	{
 		_ribbonData.getValue().colorMode = p_colorMode;
 
@@ -261,7 +263,7 @@ namespace VTX::App::Application::Representation
 
 	void InstantiatedRepresentation::setRibbonColorBlendingMode(
 		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
-		const bool							 p_notify )
+		const bool											  p_notify )
 	{
 		_ribbonData.getValue().colorBlendingMode = p_colorBlendingMode;
 
@@ -368,8 +370,8 @@ namespace VTX::App::Application::Representation
 		case MEMBER_FLAG::ENUM::COLOR_MODE: return _colorMode.isOverrided(); break;
 
 		default:
-			VTX_WARNING( "MEMBER_FLAG " + std::to_string( int( p_member ) )
-						 + " not managed in InstantiatedRepresentation::isMemberOverrided." );
+			VTX_WARNING( "MEMBER_FLAG {}  not managed in InstantiatedRepresentation::isMemberOverrided.",
+						 int( p_member ) );
 			return false;
 		}
 	}

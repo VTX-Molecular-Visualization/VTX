@@ -610,7 +610,7 @@ namespace VTX::App::Component::Chemistry
 		assert( _atomsToTriangles.empty() == false );
 
 		chrono.stop();
-		VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "SES created in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void SolventExcludedSurface::refreshColors()

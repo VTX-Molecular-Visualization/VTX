@@ -7,17 +7,18 @@
 #include "app/component/object3d/label.hpp"
 #include "app/component/video/path.hpp"
 #include "app/mvc.hpp"
-#include "app/vtx_app.hpp"
 #include "app/util/label.hpp"
 #include "app/util/molecule.hpp"
+#include "app/vtx_app.hpp"
 #include <util/chrono.hpp>
 
 namespace VTX::App::Action::Selection
 {
 	void SelectAll::execute()
 	{
-		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules = App::VTXApp::get().getScene().getMolecules();
-		std::vector<App::Component::Chemistry::Molecule *>	 molecules
+		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules
+			= App::VTXApp::get().getScene().getMolecules();
+		std::vector<App::Component::Chemistry::Molecule *> molecules
 			= std::vector<App::Component::Chemistry::Molecule *>();
 		molecules.reserve( sceneMolecules.size() );
 
@@ -353,7 +354,8 @@ namespace VTX::App::Action::Selection
 
 	void ChangeVisibility::solo()
 	{
-		const App::Application::Scene::MapMoleculePtrFloat & moleculesInScene = App::VTXApp::get().getScene().getMolecules();
+		const App::Application::Scene::MapMoleculePtrFloat & moleculesInScene
+			= App::VTXApp::get().getScene().getMolecules();
 		const App::Application::Selection::SelectionModel::MapMoleculeIds & moleculesInSelection
 			= _selection.getMoleculesMap();
 
@@ -615,20 +617,19 @@ namespace VTX::App::Action::Selection
 						   const App::Application::Selection::SelectionModel & p_selection,
 						   const int										   p_frame )
 	{
+		Util::Chrono chrono;
+		chrono.start();
+
 		App::Component::Chemistry::GeneratedMolecule * generatedMolecule
 			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
 
-		Util::Chrono chrono;
-
-		chrono.start();
-
 		generatedMolecule->applyTransform( p_source.getTransform() );
 		App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 
 		chrono.stop();
-		VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
+		VTX_DEBUG( "Molecule {0} copied in {1}.", generatedMolecule->getDisplayName(), chrono.elapsedTimeStr() );
 	}
 
 	void Extract::execute()

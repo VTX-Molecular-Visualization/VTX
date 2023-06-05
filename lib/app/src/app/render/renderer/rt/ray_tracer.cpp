@@ -1,6 +1,5 @@
 #include "app/render/renderer/rt/ray_tracer.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/vtx_app.hpp"
 #include "app/render/renderer/rt/integrators/ao_integrator.hpp"
 #include "app/render/renderer/rt/integrators/direct_lighting_integrator.hpp"
 #include "app/render/renderer/rt/integrators/raycast_integrator.hpp"
@@ -14,6 +13,7 @@
 #include "app/render/renderer/rt/primitives/plane.hpp"
 #include "app/render/renderer/rt/primitives/sphere.hpp"
 #include "app/render/renderer/rt/primitives/triangle_mesh.hpp"
+#include "app/vtx_app.hpp"
 #include <atomic>
 #include <thread>
 #include <util/chrono.hpp>
@@ -202,7 +202,7 @@ namespace VTX::App::Render::Renderer::RT
 		std::vector<std::thread> threadPool;
 		threadPool.reserve( nbThreads );
 
-		// VTX_DEBUG( "Nb threads: " + std::to_string( nbThreads ) );
+		// VTX_DEBUG( "Nb threads: {}", nbThreads );
 
 		// start rendering
 		//_progressBar.start( nbTiles, 50 );
@@ -240,7 +240,7 @@ namespace VTX::App::Render::Renderer::RT
 
 		const float time = chrono.elapsedTime();
 
-		VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
+		VTX_DEBUG( "Rendering time: {} ms.", std::to_string( time * 1000. ) );
 	}
 
 	void RayTracer::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )

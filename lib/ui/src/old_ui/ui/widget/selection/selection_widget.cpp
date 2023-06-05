@@ -6,11 +6,11 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
 #include <app/application/selection/enum_selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/setting.hpp>
+#include <app/event/global.hpp>
+#include <app/mvc.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Selection
@@ -26,7 +26,9 @@ namespace VTX::UI::Widget::Selection
 		if ( p_event.name == VTX::App::Event::Global::SELECTION_ADDED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>( p_event );
+				= dynamic_cast<
+					const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>(
+					p_event );
 			_addSelectionModel( castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SELECTION_REMOVED )
@@ -76,7 +78,7 @@ namespace VTX::UI::Widget::Selection
 
 	void SelectionWidget::_selectionTypeCurrentIndexChanged( const int p_newIndex )
 	{
-		VTX_INFO( std::to_string( p_newIndex ) + " selected." );
+		VTX_INFO( "{} selected.", p_newIndex );
 
 		// TODO: action to change global selection mode.
 	}
@@ -101,8 +103,9 @@ namespace VTX::UI::Widget::Selection
 	{
 		for ( int i = 0; i < (int)VTX::App::Application::Selection::GRANULARITY::COUNT; i++ )
 		{
-			QString							  txt;
-			const VTX::App::Application::Selection::GRANULARITY selectionType = (VTX::App::Application::Selection::GRANULARITY)i;
+			QString												txt;
+			const VTX::App::Application::Selection::GRANULARITY selectionType
+				= (VTX::App::Application::Selection::GRANULARITY)i;
 
 			switch ( selectionType )
 			{
@@ -113,8 +116,7 @@ namespace VTX::UI::Widget::Selection
 			case VTX::App::Application::Selection::GRANULARITY::RESIDUE: txt = "Residue"; break;
 
 			default:
-				VTX_WARNING( "Selection " + std::to_string( i )
-							 + " not managed in SelectionWidget::getSelectionTypeText." );
+				VTX_WARNING( "Selection {} not managed in SelectionWidget::getSelectionTypeText.", i );
 				txt = "Unknown";
 				break;
 			}

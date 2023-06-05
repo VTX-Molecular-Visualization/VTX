@@ -43,7 +43,7 @@ namespace VTX::App::Internal::Network::Request
 												   + "." + std::to_string( revision ) + " is available at:\n"
 												   + Application::VTX_RELEASES_URL + "\nor\n"
 												   + Application::VTX_WEBSITE_URL;
-				VTX_INFO( consoleMessage );
+				VTX_INFO( "{}", consoleMessage );
 
 				// TODO reimplement this out of VTX_APP
 				// const QString dialogMessage = QString::fromStdString(
@@ -63,7 +63,7 @@ namespace VTX::App::Internal::Network::Request
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 		}
 	}
 } // namespace VTX::App::Internal::Network::Request

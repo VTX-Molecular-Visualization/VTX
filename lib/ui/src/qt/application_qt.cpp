@@ -157,7 +157,7 @@ namespace VTX::UI::QT
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 		}
 	}
 
@@ -169,7 +169,7 @@ namespace VTX::UI::QT
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 #ifdef VTX_PRODUCTION
 			UI::Dialog::unhandledException();
 #endif

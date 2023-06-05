@@ -1030,9 +1030,9 @@ namespace VTX::View::UI::Widget
 		// Always show indicator, if the category has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
 	}
-	void MoleculeSceneView::_applyChainDataOnItem( const App::Component::Chemistry::Chain &	   p_chain,
-												   QTreeWidgetItem &						   p_item,
-												   const VTX::Core::ChemDB::Category::TYPE p_category ) const
+	void MoleculeSceneView::_applyChainDataOnItem( const App::Component::Chemistry::Chain & p_chain,
+												   QTreeWidgetItem &						p_item,
+												   const VTX::Core::ChemDB::Category::TYPE	p_category ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
 		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category ) ) );
@@ -1062,8 +1062,8 @@ namespace VTX::View::UI::Widget
 	}
 
 	void MoleculeSceneView::_applyResidueNameOnItem(
-		const App::Component::Chemistry::Residue &					p_residue,
-		QTreeWidgetItem &											p_item,
+		const App::Component::Chemistry::Residue &				p_residue,
+		QTreeWidgetItem &										p_item,
 		const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const
 	{
 		const std::string * text;
@@ -1072,8 +1072,8 @@ namespace VTX::View::UI::Widget
 		case VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE::SHORT: text = &p_residue.getSymbolStr(); break;
 		case VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE::LONG: text = &p_residue.getSymbolName(); break;
 		default:
-			VTX_WARNING( "Symbol style " + std::to_string( int( p_symbolDisplayMode ) )
-						 + " not managed in MoleculeSceneView::_applyResidueNameOnItem." );
+			VTX_WARNING( "Symbol style {} not managed in MoleculeSceneView::_applyResidueNameOnItem.",
+						 int( p_symbolDisplayMode ) );
 
 			text = &p_residue.getSymbolStr();
 			break;
@@ -1376,7 +1376,7 @@ namespace VTX::View::UI::Widget
 		_clearLoadedItems();
 	}
 	void MoleculeSceneView::_refreshSymbolDisplayRecursive(
-		QTreeWidgetItem * const										p_item,
+		QTreeWidgetItem * const									p_item,
 		const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
 		const App::Core::Model::ID & modelId	 = _getModelIDFromItem( *p_item );
@@ -1464,8 +1464,7 @@ namespace VTX::View::UI::Widget
 		return p_item == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model );
 	}
 
-	VTX::Core::ChemDB::Category::TYPE MoleculeSceneView::_getCategoryFromItem(
-		const QTreeWidgetItem & p_item ) const
+	VTX::Core::ChemDB::Category::TYPE MoleculeSceneView::_getCategoryFromItem( const QTreeWidgetItem & p_item ) const
 	{
 		const QVariant & dataID = p_item.data( 0, CATEGORY_ROLE );
 		return VTX::Core::ChemDB::Category::TYPE( dataID.value<int>() );
@@ -1478,8 +1477,7 @@ namespace VTX::View::UI::Widget
 
 		for ( int iCategory = int( p_itemFrom.getCategoryEnum() ) + 1; iCategory < categories.size(); iCategory++ )
 		{
-			p_selection.emplace_back(
-				_model->getCategory( VTX::Core::ChemDB::Category::TYPE( iCategory ) ).getId() );
+			p_selection.emplace_back( _model->getCategory( VTX::Core::ChemDB::Category::TYPE( iCategory ) ).getId() );
 		}
 	}
 	void MoleculeSceneView::_selectAllChainsFrom( std::vector<App::Core::Model::ID> &	   p_selection,
@@ -1525,8 +1523,7 @@ namespace VTX::View::UI::Widget
 
 		for ( int iCategory = 0; iCategory < int( p_itemFrom.getCategoryEnum() ); iCategory++ )
 		{
-			p_selection.emplace_back(
-				_model->getCategory( VTX::Core::ChemDB::Category::TYPE( iCategory ) ).getId() );
+			p_selection.emplace_back( _model->getCategory( VTX::Core::ChemDB::Category::TYPE( iCategory ) ).getId() );
 		}
 	}
 	void MoleculeSceneView::_selectAllChainsTo( std::vector<App::Core::Model::ID> &		 p_selection,

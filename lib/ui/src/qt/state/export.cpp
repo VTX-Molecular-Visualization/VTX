@@ -29,8 +29,7 @@ namespace VTX::UI::QT::State
 			return;
 		}
 
-		VTX_INFO( "Exporting... total: " + std::to_string( _frameCount ) + " frames / " + std::to_string( duration )
-				  + " seconds" );
+		VTX_INFO( "Exporting... total: {} frames / {} seconds.", _frameCount, duration );
 	}
 
 	void Export::exit()
@@ -90,7 +89,7 @@ namespace VTX::UI::QT::State
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( p_e.what() );
+				VTX_ERROR( "{}", std::string( p_e.what()) );
 			}
 
 			App::VTXApp::get().goToState( ID::State::VISUALIZATION );

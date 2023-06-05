@@ -83,8 +83,8 @@ namespace VTX::UI::Widget::MainMenu
 			setContentsMargins( 10, 2, 10, 2 );
 			break;
 		default:
-			VTX_WARNING( "Orientation " + ( std::to_string( p_orientation ) )
-						 + " not managed in BaseMenuToolButtonWidget::updateButtonStyle. Set Default" );
+			VTX_WARNING( "Orientation {} not managed in BaseMenuToolButtonWidget::updateButtonStyle. Apply Default.",
+						 int( p_orientation ) );
 			_updateButtonStyle( Qt::Orientation::Vertical );
 			break;
 		}

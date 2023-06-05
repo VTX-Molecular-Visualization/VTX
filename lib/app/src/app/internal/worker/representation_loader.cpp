@@ -38,8 +38,7 @@ namespace VTX::App::Internal::Worker
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR(
-						"Cannot load representation library {}: {}", file.path().string(), std::string( p_e.what() ) );
+					VTX_ERROR( "Cannot load representation library {} : {}", file.path().string(), p_e.what() );
 					VTX::MVC_MANAGER().deleteModel( representation );
 				}
 			}
@@ -86,7 +85,7 @@ namespace VTX::App::Internal::Worker
 		for ( int i = 0; i < int( VTX::Core::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			const VTX::Core::ChemDB::Category::TYPE categoryEnum = VTX::Core::ChemDB::Category::TYPE( i );
-			const std::string &							representationName
+			const std::string &						representationName
 				= App::VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
 
 			if ( representationName.empty() )
@@ -117,7 +116,7 @@ namespace VTX::App::Internal::Worker
 
 		chrono.stop();
 
-		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "File treated in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void RepresentationLoader::_run()
@@ -143,17 +142,17 @@ namespace VTX::App::Internal::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation at {}: {}", path.string(), std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation at {} : {}", path.string(), p_e.what() );
 				VTX::MVC_MANAGER().deleteModel( representation );
 			}
 
-			VTX_INFO( "Representation " + path.stem().string() + " loaded." );
+			VTX_INFO( "Representation {} loaded.", path.stem().string() );
 		}
 
 		delete reader;
 
 		chrono.stop();
 
-		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "File treated in {}.", chrono.elapsedTimeStr() );
 	}
 } // namespace VTX::App::Internal::Worker

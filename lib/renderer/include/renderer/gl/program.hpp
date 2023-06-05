@@ -27,7 +27,7 @@ namespace VTX::Renderer::GL
 #ifdef _DEBUG
 			/// TODO: handle it
 			// if ( loc == -1 )
-			//	VTX_WARNING( p_name + " is not a uniform variable of GLSL program " + std::to_string( _id ) );
+			//	VTX_WARNING( "{} is not a uniform variable of GLSL program {}", p_name , _id );
 #endif
 			return loc;
 		}
