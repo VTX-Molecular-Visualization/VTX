@@ -104,7 +104,7 @@ namespace VTX::App::Component::Chemistry
 			atomPositions.shrink_to_fit();
 
 		chrono.stop();
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Copy done in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void GeneratedMolecule::copyFromMolecule( const Chemistry::Molecule & p_molecule, const int p_frame )
@@ -121,7 +121,7 @@ namespace VTX::App::Component::Chemistry
 		_validateBuffers();
 
 		chrono.stop();
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Copy done in {}.", chrono.elapsedTimeStr() );
 	}
 	void GeneratedMolecule::copyFromChain( const Chemistry::Chain & p_chain, const int p_frame )
 	{
@@ -142,7 +142,7 @@ namespace VTX::App::Component::Chemistry
 		_validateBuffers();
 
 		chrono.stop();
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Copy done in {}.", chrono.elapsedTimeStr() );
 	}
 	void GeneratedMolecule::copyFromResidue( const Chemistry::Residue & p_residue, const int p_frame )
 	{
@@ -170,7 +170,7 @@ namespace VTX::App::Component::Chemistry
 		_mapAtomIds.clear();
 
 		chrono.stop();
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Copy done in {}.", chrono.elapsedTimeStr() );
 	}
 	void GeneratedMolecule::copyFromAtom( const Chemistry::Atom & p_atom, const int p_frame )
 	{
@@ -199,7 +199,7 @@ namespace VTX::App::Component::Chemistry
 		_validateBuffers();
 
 		chrono.stop();
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Copy done in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void GeneratedMolecule::_copyFullMolecule( const Chemistry::Molecule & p_moleculeSource,
@@ -445,7 +445,7 @@ namespace VTX::App::Component::Chemistry
 
 		chrono.stop();
 
-		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Extract done in {}.", chrono.elapsedTimeStr() );
 
 		molecule.notifyStructureChange();
 		molecule.refreshStructure();
@@ -519,7 +519,7 @@ namespace VTX::App::Component::Chemistry
 
 		chrono.stop();
 
-		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Extract done in {}.", chrono.elapsedTimeStr() );
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
@@ -548,7 +548,7 @@ namespace VTX::App::Component::Chemistry
 
 		chrono.stop();
 
-		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Extract done in {}.", chrono.elapsedTimeStr() );
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
@@ -583,7 +583,7 @@ namespace VTX::App::Component::Chemistry
 
 		chrono.stop();
 
-		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Extract done in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void GeneratedMolecule::_copyMoleculeData( const Chemistry::Molecule & p_molecule,

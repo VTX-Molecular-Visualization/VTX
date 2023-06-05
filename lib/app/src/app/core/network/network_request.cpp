@@ -12,7 +12,7 @@ namespace VTX::App::Core::Network
 	{
 		if ( p_reply->error() )
 		{
-			VTX_ERROR( p_reply->errorString() );
+			VTX_ERROR( "{}", p_reply->errorString() );
 			return false;
 		}
 
@@ -28,8 +28,7 @@ namespace VTX::App::Core::Network
 
 		if ( status != 200 )
 		{
-			VTX_ERROR( "HTTP " + std::to_string( status ) );
-			VTX_ERROR( p_reply->getReason() );
+			VTX_ERROR( "HTTP {} - {}", status, p_reply->getReason() );
 			return false;
 		}
 

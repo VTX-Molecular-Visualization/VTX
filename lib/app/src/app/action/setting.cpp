@@ -10,8 +10,8 @@
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/scene/camera_manager.hpp"
 #include "app/manager/action_manager.hpp"
-#include "app/vtx_app.hpp"
 #include "app/render/renderer/base_renderer.hpp"
+#include "app/vtx_app.hpp"
 #include <exception>
 #include <string>
 #include <util/math.hpp>
@@ -32,11 +32,11 @@ namespace VTX::App::Action::Setting
 		try
 		{
 			reader.readFile( path, VTX_SETTING() );
-			VTX_INFO( "Settings loaded " );
+			VTX_INFO( "Settings loaded." );
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Cannot load settings: " + std::string( p_e.what() ) );
+			VTX_ERROR( "Cannot load settings : {}.", p_e.what() );
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace VTX::App::Action::Setting
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Cannot save settings: " + std::string( p_e.what() ) );
+			VTX_ERROR( "Cannot load settings : {}.", p_e.what() );
 		}
 	}
 

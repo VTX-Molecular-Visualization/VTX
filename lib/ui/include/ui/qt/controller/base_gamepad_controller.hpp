@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Controller
 						 this,
 						 [ & ]( double p_value )
 						 {
-							 VTX_DEBUG( "X: " + std::to_string( p_value ) );
+							 VTX_DEBUG( "X: {}", p_value );
 							 _axisLeft.x = p_value;
 						 } );
 				connect( _gamepad,
@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Controller
 						 this,
 						 [ & ]( double p_value )
 						 {
-							 VTX_DEBUG( "Y: " + std::to_string( p_value ) );
+							 VTX_DEBUG( "Y: {}", p_value );
 							 _axisLeft.y = p_value;
 						 } );
 				connect( _gamepad,
@@ -161,7 +161,7 @@ namespace VTX::UI::QT::Controller
 
 		virtual void _handleButtonChangeEvent( const BUTTON & p_button, const bool p_pressed )
 		{
-			VTX_DEBUG( "button change " + std::to_string( p_button ) );
+			VTX_DEBUG( "button change {}", int( p_button ) );
 			if ( p_pressed )
 			{
 				_handleButtonDownEvent( p_button );

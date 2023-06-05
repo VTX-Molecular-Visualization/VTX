@@ -94,7 +94,7 @@ namespace VTX::App::Render::Renderer::RT
 					 const uint										 p_maxPrimsLeaf,
 					 const SplitMethod								 p_splitMethod )
 	{
-		VTX_INFO( "Building " + std::string( p_splitMethod == SplitMethod::SAH ? "BVH with SAH" : "HLBVH" ) );
+		VTX_INFO( "Building {}", ( p_splitMethod == SplitMethod::SAH ? "BVH with SAH" : "HLBVH" ) );
 		if ( p_prims.empty() )
 		{
 			VTX_ERROR( "Cannot build BVH without primitives !" );
@@ -142,7 +142,8 @@ namespace VTX::App::Render::Renderer::RT
 
 		chrono.stop();
 		_isBuilt = true;
-		VTX_INFO( "BVH built in " + std::to_string( chrono.elapsedTime() ) );
+
+		VTX_INFO( "BVH built in {}.", chrono.elapsedTimeStr() );
 	}
 
 	bool BVH::intersect( const Ray &	p_ray,

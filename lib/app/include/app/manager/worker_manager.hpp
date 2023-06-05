@@ -1,12 +1,12 @@
 #ifndef __VTX_APP_MANAGER_WORKER_MANAGER__
 #define __VTX_APP_MANAGER_WORKER_MANAGER__
 
+#include "app/application/generic/base_updatable.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/base_worker.hpp"
 #include "app/core/worker/callback.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/application/generic/base_updatable.hpp"
 // #include <QMetaType>
 //  #include <QThreadPool>
 #include <string>
@@ -88,7 +88,7 @@ namespace VTX::App::Manager
 		// private slots:
 		void _resultReady( BaseThread * p_worker, const uint p_returnCode )
 		{
-			VTX_DEBUG( "Thread finished: " + std::to_string( p_returnCode ) );
+			VTX_DEBUG( "Thread finished : {}", p_returnCode );
 
 			assert( p_worker != nullptr );
 

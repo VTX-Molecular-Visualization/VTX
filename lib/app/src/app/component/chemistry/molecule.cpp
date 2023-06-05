@@ -492,8 +492,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		if ( p_frameIdx > getFrameCount() )
 		{
-			VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
-						 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+			VTX_WARNING( "Frame {}  does not exists / Count: {}.", p_frameIdx, getFrameCount() );
 			return;
 		}
 
@@ -634,8 +633,7 @@ namespace VTX::App::Component::Chemistry
 		case Component::Chemistry::PlayMode::PingPong:
 		case Component::Chemistry::PlayMode::Stop: res = false; break;
 		default:
-			VTX_WARNING( "PlayMode " + std::to_string( int( _playMode ) )
-						 + "not managed in Molecule::isAtEndOfTrajectoryPlay." );
+			VTX_WARNING( "PlayMode {} not managed in Molecule::isAtEndOfTrajectoryPlay.", int( _playMode ) );
 			res = false;
 			break;
 		}
@@ -654,8 +652,7 @@ namespace VTX::App::Component::Chemistry
 		case Component::Chemistry::PlayMode::RevertOnce:
 		case Component::Chemistry::PlayMode::RevertLoop: frame = getFrameCount() - 1; break;
 		default:
-			VTX_WARNING( "PlayMode " + std::to_string( int( _playMode ) )
-						 + "not managed in Molecule::resetTrajectoryPlay." );
+			VTX_WARNING( "PlayMode {} not managed in Molecule::resetTrajectoryPlay.", int( _playMode ) );
 			frame = 0;
 			break;
 		}
@@ -698,9 +695,12 @@ namespace VTX::App::Component::Chemistry
 	void Molecule::print() const
 	{
 		// TODO: add more infos in debug (solvents, ions, ss...).
-		VTX_INFO( "Molecule: " + getName() );
-		VTX_INFO( "Chains: " + std::to_string( getChainCount() ) + " / Residues: " + std::to_string( getResidueCount() )
-				  + " / Atoms: " + std::to_string( getAtomCount() ) + " / Bonds: " + std::to_string( getBondCount() ) );
+		VTX_INFO( "Molecule: {}.", getName() );
+		VTX_INFO( "Chains: {} / Residues: {} / Atoms: {} / Bonds: {}.",
+				  getChainCount(),
+				  getResidueCount(),
+				  getAtomCount(),
+				  getBondCount() );
 
 		// Display unknown symbols.
 		const std::vector<ChemDB::UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
@@ -711,7 +711,7 @@ namespace VTX::App::Component::Chemistry
 			{
 				unknownResidueSymbolsStr += unknownResidueData->symbolStr + " ";
 			}
-			VTX_INFO( "Unknown residue symbols : " + unknownResidueSymbolsStr );
+			VTX_INFO( "Unknown residue symbols : {}.", unknownResidueSymbolsStr );
 		}
 
 		const std::unordered_set<std::string> & unknownAtomSymbols = getUnknownAtomSymbols();
@@ -722,14 +722,14 @@ namespace VTX::App::Component::Chemistry
 			{
 				unknownAtomSymbolsStr += symbol + " ";
 			}
-			VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
+			VTX_WARNING( "Unknown atom symbols : {}.", unknownAtomSymbolsStr );
 		}
 
-		VTX_DEBUG( "Sizeof molecule: " + std::to_string( sizeof( *this ) ) );
-		VTX_DEBUG( "Sizeof chain: " + std::to_string( sizeof( *getChain( 0 ) ) ) );
-		VTX_DEBUG( "Sizeof residue: " + std::to_string( sizeof( *getResidue( 0 ) ) ) );
-		VTX_DEBUG( "Sizeof atom: " + std::to_string( sizeof( *getAtom( 0 ) ) ) );
-		VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *getBond( 0 ) ) ) );
+		VTX_DEBUG( "Sizeof molecule: {}", sizeof( *this ) );
+		VTX_DEBUG( "Sizeof chain: {}", sizeof( *getChain( 0 ) ) );
+		VTX_DEBUG( "Sizeof residue: {}", sizeof( *getResidue( 0 ) ) );
+		VTX_DEBUG( "Sizeof atom: {}", sizeof( *getAtom( 0 ) ) );
+		VTX_DEBUG( "Sizeof bond: {}", sizeof( *getBond( 0 ) ) );
 	}
 
 	void Molecule::render( const App::Component::Render::Camera & p_camera ) const

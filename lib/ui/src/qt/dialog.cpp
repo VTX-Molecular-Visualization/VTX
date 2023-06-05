@@ -91,7 +91,7 @@ namespace VTX::UI::QT
 		msg += "Please open an issue at \n" + App::Application::VTX_BUG_REPORT_URL
 			   + " \nwith your latest file in the /logs directory.";
 
-		VTX_ERROR( msg );
+		VTX_ERROR( "{}", msg );
 
 		QMessageBox::critical( &QT_APP()->getMainWindow(),
 							   "Error",

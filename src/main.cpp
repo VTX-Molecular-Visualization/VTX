@@ -40,8 +40,8 @@ int main( int p_argc, char * p_argv[] )
 	}
 	catch ( const std::exception & p_e )
 	{
-		std::string error = p_e.what();
-		VTX_ERROR( p_e.what() );
+		const std::string error = p_e.what();
+		VTX_ERROR( "{}", error );
 
 #ifdef VTX_PRODUCTION
 		UI::Dialog::unhandledException();

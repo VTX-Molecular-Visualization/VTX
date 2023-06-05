@@ -44,7 +44,7 @@ namespace VTX::App::Internal::Worker
 		Util::Chrono chrono;
 
 		chrono.start();
-		VTX_INFO( "Saving " + _preset->getName() );
+		VTX_INFO( "Saving {}...", _preset->getName() );
 
 		App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * writer
 			= new App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
@@ -57,13 +57,13 @@ namespace VTX::App::Internal::Worker
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Error saving file" );
-			VTX_ERROR( p_e.what() );
+			VTX_ERROR( "{}", p_e.what() );
 		}
 
 		delete writer;
 
 		chrono.stop();
-		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "File treated in {}.", chrono.elapsedTimeStr() );
 	}
 
 } // namespace VTX::App::Internal::Worker

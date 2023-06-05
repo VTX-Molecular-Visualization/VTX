@@ -33,8 +33,7 @@ namespace VTX::App::Internal::Worker
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR( "Cannot load render effect library " + file.path().string() + ": "
-							   + std::string( p_e.what() ) );
+					VTX_ERROR( "Cannot load render effect library {} : {}", file.path().string(), p_e.what() );
 					VTX::MVC_MANAGER().deleteModel( preset );
 				}
 			}
@@ -50,7 +49,7 @@ namespace VTX::App::Internal::Worker
 
 		chrono.stop();
 
-		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "File treated in {}", chrono.elapsedTimeStr() );
 	}
 
 	void RenderEffectPresetLoader::_run()
@@ -75,17 +74,17 @@ namespace VTX::App::Internal::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load render effect preset at " + path.string() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load render effect preset at {} : {}", path.string(), p_e.what() );
 				VTX::MVC_MANAGER().deleteModel( preset );
 			}
 
-			VTX_INFO( "Render effect preset " + path.stem().string() + " loaded." );
+			VTX_INFO( "Render effect preset {} loaded.", path.stem().string() );
 		}
 
 		delete reader;
 
 		chrono.stop();
 
-		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "File treated in {}", chrono.elapsedTimeStr() );
 	}
 } // namespace VTX::App::Internal::Worker

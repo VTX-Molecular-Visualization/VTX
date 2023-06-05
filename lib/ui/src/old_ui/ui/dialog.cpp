@@ -324,9 +324,9 @@ namespace VTX::UI
 
 	void Dialog::openGLInitializationFail()
 	{
-		std::string msg
+		const std::string msg
 			= "Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility.";
-		VTX_ERROR( msg );
+		VTX_ERROR( "{}", msg );
 
 		QMessageBox::critical( &UI::VTXApp::get().getMainWindow(),
 							   "Error",
@@ -337,9 +337,10 @@ namespace VTX::UI
 	}
 	void Dialog::unhandledException()
 	{
-		std::string msg = "An unhandlded error has occured, please open an issue at \n"
-						  + App::Application::VTX_BUG_REPORT_URL + " \nwith your latest file in the /logs directory.";
-		VTX_ERROR( msg );
+		const std::string msg = "An unhandlded error has occured, please open an issue at \n"
+								+ App::Application::VTX_BUG_REPORT_URL
+								+ " \nwith your latest file in the /logs directory.";
+		VTX_ERROR( "{}", msg );
 
 		QMessageBox::critical( &UI::VTXApp::get().getMainWindow(),
 							   "Error",

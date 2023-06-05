@@ -14,8 +14,8 @@
 #include <app/application/representation/enum_representation.hpp>
 #include <app/application/selection/enum_selection.hpp>
 #include <app/id.hpp>
-#include <core/chemdb/category.hpp>
 #include <app/util/label.hpp>
+#include <core/chemdb/category.hpp>
 #include <iostream>
 #include <string>
 #include <util/logger.hpp>
@@ -101,7 +101,7 @@ namespace VTX::UI::QT::Style
 				res = &SEQUENCE_WINDOW_ICON;
 			else
 			{
-				VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+				VTX_WARNING( "Symbol for model {} not managed in IconConst::getModelSymbol.", p_id );
 				res = nullptr;
 			}
 
@@ -130,7 +130,7 @@ namespace VTX::UI::QT::Style
 			}
 			else
 			{
-				VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+				VTX_WARNING( "Symbol for model {} not managed in IconConst::getModelSymbol.", p_id );
 				res = nullptr;
 			}
 
@@ -170,8 +170,8 @@ namespace VTX::UI::QT::Style
 				break;
 			default:
 
-				VTX_WARNING( "Representation " + std::to_string( int( p_representation ) )
-							 + " not managed in IconConst::getRepresentationIcon." );
+				VTX_WARNING( "Representation {} not managed in IconConst::getRepresentationIcon.",
+							 int( p_representation ) );
 				res = &REPRESENTATION_STICK_ICON;
 				break;
 			}

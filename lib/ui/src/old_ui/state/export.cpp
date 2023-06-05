@@ -32,8 +32,7 @@ namespace VTX
 				return;
 			}
 
-			VTX_INFO( "Exporting... total: " + std::to_string( _frameCount ) + " frames / " + std::to_string( duration )
-					  + " seconds" );
+			VTX_INFO( "Exporting... total: {} frames / {} seconds.", _frameCount, duration );
 		}
 
 		void Export::exit()
@@ -83,7 +82,7 @@ namespace VTX
 			//										App::Internal::IO::Filesystem::getVideosPath( fileName + ".png" ) )
 			//);
 
-			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
+			VTX_INFO( "{}%", ( _frame * uint( 100 ) / _frameCount ) );
 
 			if ( _frame == _frameCount - 1 )
 			{
@@ -93,7 +92,7 @@ namespace VTX
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR( p_e.what() );
+					VTX_ERROR( "{}", p_e.what() );
 				}
 
 				App::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );

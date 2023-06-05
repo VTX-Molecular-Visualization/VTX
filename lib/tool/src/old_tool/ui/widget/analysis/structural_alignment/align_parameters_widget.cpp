@@ -107,8 +107,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		break;
 
 		default:
-			VTX_ERROR( "Alignment method " + std::to_string( int( p_alignParameter.method ) )
-					   + " not managed in AlignParametersWidget::applyParameter." );
+			VTX_ERROR( "Alignment method {} not managed in AlignParametersWidget::applyParameter.",
+					   int( p_alignParameter.method ) );
 			break;
 		}
 	}
@@ -127,8 +127,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			break;
 
 		default:
-			VTX_ERROR( "Alignment method " + std::to_string( int( method ) )
-					   + " not managed in AlignParametersWidget::generateParameters." );
+			VTX_ERROR( "Alignment method {} not managed in AlignParametersWidget::generateParameters.", int( method ) );
 			break;
 		}
 

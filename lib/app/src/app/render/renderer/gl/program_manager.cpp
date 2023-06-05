@@ -21,7 +21,7 @@ namespace VTX::App::Render::Renderer::GL
 			return ProgramManager::EXTENSIONS.at( extension );
 		}
 
-		VTX_WARNING( "Invalid extension: " + extension );
+		VTX_WARNING( "Invalid extension: {}", extension );
 		return SHADER_TYPE::INVALID;
 	}
 
@@ -66,7 +66,7 @@ namespace VTX::App::Render::Renderer::GL
 
 			program.link();
 
-			VTX_DEBUG( "Program " + std::to_string( _programs[ name ]->getId() ) + " created: " + p_name );
+			VTX_DEBUG( "Program {} created: {}.", _programs[ name ]->getId(), p_name );
 		}
 
 		return _programs[ name ];
@@ -76,7 +76,7 @@ namespace VTX::App::Render::Renderer::GL
 	{
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			VTX_WARNING( "Program " + p_name + " does not exists" );
+			VTX_WARNING( "Program {} does not exists.", p_name );
 			return;
 		}
 
@@ -90,7 +90,7 @@ namespace VTX::App::Render::Renderer::GL
 			return _programs.at( p_name );
 		}
 
-		VTX_ERROR( "Program " + p_name + " does not exists" );
+		VTX_ERROR( "Program {} does not exists.", p_name );
 		return nullptr;
 	}
 

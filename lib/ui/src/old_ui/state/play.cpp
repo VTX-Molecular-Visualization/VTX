@@ -22,7 +22,7 @@ namespace VTX
 				return;
 			}
 
-			VTX_INFO( "Playing... total: " + std::to_string( _path->getDuration() ) + " seconds" );
+			VTX_INFO( "Playing... total: {} seconds.", _path->getDuration() );
 
 			_setCamera();
 		}

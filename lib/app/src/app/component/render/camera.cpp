@@ -1,7 +1,7 @@
 #include "app/component/render/camera.hpp"
 #include "app/application/setting.hpp"
-#include "app/vtx_app.hpp"
 #include "app/render/define.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Component::Render
@@ -184,13 +184,13 @@ namespace VTX::App::Component::Render
 
 	void Camera::print() const
 	{
-		VTX_INFO( "Position: " + Util::Math::to_string_fmt( _position ) );
-		VTX_INFO( "Rotation: " + Util::Math::to_string_fmt( _rotation ) );
-		VTX_INFO( "Front: " + Util::Math::to_string_fmt( _front ) );
-		VTX_INFO( "Right: " + Util::Math::to_string_fmt( _right ) );
-		VTX_INFO( "Up: " + Util::Math::to_string_fmt( _up ) );
+		VTX_INFO( "Position: {}", Util::Math::to_string_fmt( _position ) );
+		VTX_INFO( "Rotation: {}", Util::Math::to_string_fmt( _rotation ) );
+		VTX_INFO( "Front: {}", Util::Math::to_string_fmt( _front ) );
+		VTX_INFO( "Right: {}", Util::Math::to_string_fmt( _right ) );
+		VTX_INFO( "Up: {}", Util::Math::to_string_fmt( _up ) );
 
-		VTX_INFO( "Projection: " + std::to_string( int( _projection ) ) );
+		VTX_INFO( "Projection: ", int( _projection ) );
 	}
 
 } // namespace VTX::App::Component::Render

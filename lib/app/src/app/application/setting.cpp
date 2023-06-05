@@ -423,7 +423,7 @@ namespace VTX::App::Application
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Cannot save settings: " + std::string( p_e.what() ) );
+			VTX_ERROR( "Cannot save settings: {}", p_e.what() );
 		}
 	}
 	void Setting::recover()
@@ -436,7 +436,7 @@ namespace VTX::App::Application
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Cannot load settings: " + std::string( p_e.what() ) );
+			VTX_ERROR( "Cannot load settings: {}", p_e.what() );
 		}
 	}
 

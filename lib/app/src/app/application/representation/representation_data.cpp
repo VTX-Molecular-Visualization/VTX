@@ -31,8 +31,8 @@ namespace VTX::App::Application::Representation
 		case REPRESENTATION_ENUM::SES: res = TARGETED_DATA_FLAG( TARGETED_DATA_FLAG::ENUM::SES ); break;
 
 		default:
-			VTX_WARNING( "Representation " + std::to_string( int( p_representation ) )
-						 + " not managed in Representation::getFlagDataTargeted" );
+			VTX_WARNING( "Representation {} not managed in Representation::getFlagDataTargeted.",
+						 int( p_representation ) );
 			break;
 		}
 
@@ -87,7 +87,8 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setCylinderColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
+	void RepresentationData::setCylinderColorBlendingMode(
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
 	{
 		assert( _cylinderData != nullptr );
 
@@ -95,7 +96,8 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setRibbonColorMode( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+	void RepresentationData::setRibbonColorMode(
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		assert( _ribbonData != nullptr );
 
@@ -103,7 +105,8 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setRibbonColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
+	void RepresentationData::setRibbonColorBlendingMode(
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
 	{
 		assert( _ribbonData != nullptr );
 
