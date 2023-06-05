@@ -22,11 +22,11 @@ void main()
 		return;
 	}
 
-	dataOut.viewPosition	= vec3( uniforms.matrixView * uniforms.matrixModel * vec4( aVertexPosition, 1.f ) );
-	dataOut.normal			= vec3( uniforms.matrixNormal * vec4( aVertexNormal, 1.f ) );
+	dataOut.viewPosition	= vec3( getMatrixView() * getMatrixModel() * vec4( aVertexPosition, 1.f ) );
+	dataOut.normal			= vec3( getMatrixNormal() * vec4( aVertexNormal, 1.f ) );
 	dataOut.color			= vec3( aVertexColor );
 	dataOut.selected		= aVertexSelected;
 	dataOut.id				= aVertexId;
 
-	gl_Position = uniforms.matrixProjection * vec4( dataOut.viewPosition, 1.f );
+	gl_Position =  getMatrixProjection() * vec4( dataOut.viewPosition, 1.f );
 }

@@ -58,7 +58,7 @@ void main()
 		const vec3 samplePos = TBN * uAoKernel[ i ] * radius + pos;
 
 		// Project sample position.
-		vec4 offset = uniforms.matrixProjection * vec4( samplePos, 1.f );
+		vec4 offset = getMatrixProjection() * vec4( samplePos, 1.f );
 		offset.xy /= offset.w;
 		offset.xy = offset.xy * 0.5f + 0.5f;
 
@@ -71,5 +71,5 @@ void main()
 	}
 
 	ao				 = 1.f - ( ao / uKernelSize );
-	ambientOcclusion = pow( ao, uniforms.uintData.x );
+	ambientOcclusion = pow( ao, getSSAOIntensity() );
 }

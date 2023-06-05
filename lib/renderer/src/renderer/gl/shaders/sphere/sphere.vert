@@ -1,5 +1,8 @@
 #version 450 core
 
+#include "../global_uniforms.glsl"
+
+// In.
 layout( location = 0 ) in vec3 aSpherePos;
 layout( location = 1 ) in vec4 aSphereColor;
 layout( location = 2 ) in float aSphereRadius;
@@ -14,13 +17,14 @@ uniform float u_radiusFixed	  = 1.f;
 uniform bool  u_isRadiusFixed = false;
 uniform bool  u_isPerspective;
 
+// Out.
 out 
 #include "struct_vertex_shader.glsl"
 dataOut;
 
 void main()
 {
-	if (u_isPerspective)
+	if ( u_isPerspective )
 	{
 		dataOut.viewSpherePos	 = vec3( u_MVMatrix * vec4( aSpherePos, 1.f ) );
 		dataOut.sphereColor	 = aSphereColor;
