@@ -84,7 +84,8 @@ namespace VTX::Renderer::GL
 			if ( std::is_same<T, float>::value )
 			{
 				bind();
-				glVertexAttribPointer( p_bindingIndex, p_stride, GL_FLOAT, GL_FALSE, 0, (void *)p_offset );
+				glVertexAttribPointer(
+					p_bindingIndex, p_stride, GL_FLOAT, GL_FALSE, 0, static_cast<void *>( p_offset ) );
 				unbind();
 			}
 			else

@@ -72,7 +72,7 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	class SingletonTest : public VTX::Util::Generic::BaseStaticSingleton<SingletonTest>
 	{
 	  public:
-		SingletonTest( const StructPrivacyToken & ) {}
+		explicit SingletonTest( const StructPrivacyToken & ) {}
 		SingletonTest( std::initializer_list<int> ) = delete;
 	};
 
