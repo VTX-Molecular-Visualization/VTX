@@ -68,7 +68,7 @@ int main( int, char ** )
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
 			float time		  = float( glfwGetTime() );
-			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time, VEC3F_Y );
+			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 10.f, VEC3F_Y );
 			renderer.setMatrixModelTmp( modelMatrix );
 			renderer.renderFrame();
 			glfwSwapBuffers( window );

@@ -3,19 +3,19 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 0 ) uniform sampler2D colorTexture;
-layout( binding = 1 ) uniform sampler2D linearDepthTexture;
+layout( binding = 0 ) uniform sampler2D inTextureColor;
+layout( binding = 1 ) uniform sampler2D inTextureDepth;
 
 // Out.
-layout( location = 0 ) out vec4 fragColor;
+layout( location = 0 ) out vec4 outFragColor;
 
 void main()
 {
-	const vec2 textSize = vec2( textureSize( linearDepthTexture, 0 ) );
+	const vec2 textSize = vec2( textureSize( inTextureDepth, 0 ) );
 	const vec2 texCoord = gl_FragCoord.xy / textSize;
 
 	// Get current pixel depth.
-	const float depthCenter = texture( linearDepthTexture, texCoord, 0 ).x;
+	const float depthCenter = texture( inTextureDepth, texCoord, 0 ).x;
 
 	//
 	float halfThicknessFloor = floor( getOutlineThickness() * 0.5f );
@@ -27,10 +27,10 @@ void main()
 								 ivec2( halfThicknessCeil, halfThicknessCeil ),
 								 ivec2( halfThicknessCeil, -halfThicknessFloor ) };
 
-	const vec4 depthNeighbours = { texture( linearDepthTexture, texCoord + offsets[ 0 ] / textSize ).x,
-								   texture( linearDepthTexture, texCoord + offsets[ 1 ] / textSize ).x,
-								   texture( linearDepthTexture, texCoord + offsets[ 2 ] / textSize ).x,
-								   texture( linearDepthTexture, texCoord + offsets[ 3 ] / textSize ).x };
+	const vec4 depthNeighbours = { texture( inTextureDepth, texCoord + offsets[ 0 ] / textSize ).x,
+								   texture( inTextureDepth, texCoord + offsets[ 1 ] / textSize ).x,
+								   texture( inTextureDepth, texCoord + offsets[ 2 ] / textSize ).x,
+								   texture( inTextureDepth, texCoord + offsets[ 3 ] / textSize ).x };
 
 	// Compute depth difference in cross: no need abs because squared for edge depth.
 	const float depthDiff0 = depthNeighbours.x - depthNeighbours.z;
@@ -43,5 +43,5 @@ void main()
 	const float depthThreshold = ( 1.f / getOutlineSensivity() ) * depthCenter; // max( 1.f, depthCenter );
 
 	// Apply outline if edge depth is greater than threshold.
-	fragColor = edgeDepth > depthThreshold ? getOutlineColor() : texture( colorTexture, texCoord );
+	outFragColor = edgeDepth > depthThreshold ? getOutlineColor() : texture( inTextureColor, texCoord );
 }

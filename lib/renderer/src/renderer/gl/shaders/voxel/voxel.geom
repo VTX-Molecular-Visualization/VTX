@@ -1,42 +1,41 @@
 #version 450 core
 
-layout( points ) in;
-layout(line_strip, max_vertices = 32) out;
+#include "../global_uniforms.glsl"
 
-uniform mat4 u_MVMatrix;
-uniform mat4 u_projMatrix;
+layout( points ) in;
+layout( line_strip, max_vertices = 32 ) out;
 
 in 
 #include "struct_vertex_shader.glsl"
-dataIn[];
+inData[];
 
 out 
 #include "struct_geometry_shader.glsl"
-dataOut;
+outData;
 
-void AddQuad(vec4 center, vec4 dy, vec4 dx) {
+void addQuad( vec4 p_center, vec4 p_dy, vec4 p_dx ) {
 
-    gl_Position = center + ( dx + dy);
+    gl_Position = p_center + ( p_dx + p_dy );
     EmitVertex();
-    gl_Position = center + ( dx - dy);
+    gl_Position = p_center + ( p_dx - p_dy );
     EmitVertex();
     EndPrimitive();
 
-    gl_Position = center + ( dx + dy);
+    gl_Position = p_center + ( p_dx + p_dy );
     EmitVertex();
-    gl_Position = center + (-dx + dy);
-    EmitVertex();
-    EndPrimitive();
-
-    gl_Position = center + (-dx - dy);
-    EmitVertex();
-    gl_Position = center + (-dx + dy);
+    gl_Position = p_center + ( -p_dx + p_dy );
     EmitVertex();
     EndPrimitive();
 
-    gl_Position = center + (-dx - dy);
+    gl_Position = p_center + ( -p_dx - p_dy );
     EmitVertex();
-    gl_Position = center + ( dx - dy);
+    gl_Position = p_center + ( -p_dx + p_dy );
+    EmitVertex();
+    EndPrimitive();
+
+    gl_Position = p_center + ( -p_dx - p_dy );
+    EmitVertex();
+    gl_Position = p_center + ( p_dx - p_dy );
     EmitVertex();
     EndPrimitive();
 
@@ -44,15 +43,15 @@ void AddQuad(vec4 center, vec4 dy, vec4 dx) {
 
 void main() {
     vec4 center = gl_in[0].gl_Position;
-    dataOut.center= center.xyz;
+    outData.center= center.xyz;
     
-    vec4 dx = (u_projMatrix * u_MVMatrix)[0] * dataIn[0].voxelSize.x;
-    vec4 dy = (u_projMatrix * u_MVMatrix)[1] * dataIn[0].voxelSize.y;
-    vec4 dz = (u_projMatrix * u_MVMatrix)[2] * dataIn[0].voxelSize.z;
+    vec4 dx = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[0] * inData[0].voxelSize.x;
+    vec4 dy = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[1] * inData[0].voxelSize.y;
+    vec4 dz = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[2] * inData[0].voxelSize.z;
 
-    AddQuad(center + dx, dy, dz);
-    AddQuad(center - dx, dy, dz);
+    addQuad( center + dx, dy, dz );
+    addQuad( center - dx, dy, dz );
     
-    AddQuad(center + dy, dz, dx);
-    AddQuad(center - dy, dx, dz);
+    addQuad( center + dy, dz, dx );
+    addQuad( center - dy, dx, dz );
 }

@@ -1,49 +1,46 @@
 #version 450 core
 
+#include "../global_uniforms.glsl"
+#include "../struct_data_packed.glsl"
+
 //#define SHOW_IMPOSTORS
 
-uniform mat4 u_projMatrix;
-uniform bool u_isPerspective;
-
+// In.
 in
 #include "struct_geometry_shader.glsl"
-dataIn;
+inData;
 
-// 3 16 bits for position.
-// 3 16 bits for normal.
-// 1 16 bits for padding.
-// 1 16 bits for selection.
-layout( location = 0 ) out uvec4 outViewPositionNormal;
-// 3 32 bits for color.
-// 1 32 bits for specular.
+ // Out.
+layout( location = 0 ) out PackedData outDataPacked;
 layout( location = 1 ) out vec4 outColor;
 layout( location = 2 ) out uvec2 outId;
 
-float computeDepth( const vec3 v )
+float computeDepth( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( v.z * u_projMatrix[ 2 ].z + u_projMatrix[ 3 ].z ) / -v.z;
+	const float ndcDepth = ( p_v.z * getMatrixProjection()[ 2 ].z + getMatrixProjection()[ 3 ].z ) / -p_v.z;
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
-float computeDepthOrtho( const vec3 v )
+float computeDepthOrtho( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( v.z * u_projMatrix[ 2 ].z + u_projMatrix[ 3 ].z );
+	const float ndcDepth = ( p_v.z * getMatrixProjection()[ 2 ].z + getMatrixProjection()[ 3 ].z );
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
 void main()
 {
-	if (u_isPerspective){
-		const float a = dot( dataIn.viewImpPos, dataIn.viewImpPos );
+	if ( isCameraPerspective() )
+	{
+		const float a = dot( inData.viewImpPos, inData.viewImpPos );
 		// b = -dot(viewImpPos, viewSpherePos);
 		// But '-' is useless since 'b' is squared for 'delta'.
 		// So for 't', '-' is also removed.
-		const float b	  = dot( dataIn.viewImpPos, dataIn.viewSpherePos );
-		const float c	  = dataIn.dotViewSpherePos - dataIn.sphereRadius * dataIn.sphereRadius;
+		const float b	  = dot( inData.viewImpPos, inData.viewSpherePos );
+		const float c	  = inData.dotViewSpherePos - inData.sphereRadius * inData.sphereRadius;
 		const float delta = b * b - a * c;
 
 		if ( delta < 0.f )
@@ -51,18 +48,10 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 			// Show impostors for debugging purpose.
 			uvec4 colorNormal = uvec4( 0 );
-			// Compress position and normal.
-			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpPos.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpPos.z, -dataIn.viewSpherePos.x ) );
-			viewPositionNormalCompressed.z = packHalf2x16( -dataIn.viewSpherePos.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.sphereSelected, 0 ) );
-
-			// Output data.
-			outViewPositionNormal = viewPositionNormalCompressed;
+			packData( inData.viewImpPos, -inData.viewSpherePos, inData.sphereSelected, outDataPacked );
 			outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
 
-			gl_FragDepth = computeDepth( dataIn.viewImpPos );
+			gl_FragDepth = computeDepth( inData.viewImpPos );
 	#else
 			discard;
 	#endif
@@ -74,30 +63,22 @@ void main()
 			const float t = ( b - sqrt( delta ) ) / a;
 
 			// Compute hit point and normal (always in view space).
-			const vec3 hit	  = dataIn.viewImpPos * t;
-			const vec3 normal = normalize( hit - dataIn.viewSpherePos );
+			const vec3 hit	  = inData.viewImpPos * t;
+			const vec3 normal = normalize( hit - inData.viewSpherePos );
 
 			// Fill depth buffer.
 			gl_FragDepth = computeDepth( hit );
 
-			// Compress position and normal.
-			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
-			viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.sphereSelected, 0 ) );
-
-			// Output data.
-			outViewPositionNormal = viewPositionNormalCompressed;
-			outColor			  = vec4( dataIn.sphereColor.xyz, 32.f ); // w = specular shininess.
-			outId				  = uvec2( dataIn.sphereId, 0 );
+			packData( hit, normal, inData.sphereSelected, outDataPacked );
+			outColor			  = vec4( inData.sphereColor.xyz, 32.f ); // w = specular shininess.
+			outId				  = uvec2( inData.sphereId, 0 );
 		}
 	}
 	else // Orthographic
 	{ 
-		const vec3 OmC    = dataIn.viewImpPos - dataIn.viewSpherePos;
+		const vec3 OmC    = inData.viewImpPos - inData.viewSpherePos;
 		const float b	  = OmC.z;
-		const float c	  = dot(OmC, OmC) - dataIn.sphereRadius * dataIn.sphereRadius;
+		const float c	  = dot(OmC, OmC) - inData.sphereRadius * inData.sphereRadius;
 		const float delta = OmC.z * OmC.z - c;
 
 		if ( delta < 0.f )
@@ -105,18 +86,13 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 			// Show impostors for debugging purpose.
 			uvec4 colorNormal = uvec4( 0 );
-			// Compress position and normal.
-			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewImpPos.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewImpPos.z, -dataIn.viewSpherePos.x ) );
-			viewPositionNormalCompressed.z = packHalf2x16( -dataIn.viewSpherePos.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.sphereSelected, 0 ) );
 
 			// Output data.
+			packData( inData.viewImpPos, -inData.viewSpherePos, inData.sphereSelected, outDataPacked );
 			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
 
-			gl_FragDepth = computeDepth( dataIn.viewImpPos );
+			gl_FragDepth = computeDepth( inData.viewImpPos );
 	#else
 			discard;
 	#endif
@@ -126,23 +102,16 @@ void main()
 			const float t = b - sqrt( delta );
 
 			// Compute hit point and normal (always in view space).
-			const vec3 hit	  = dataIn.viewImpPos + vec3(0, 0, -t);
-			const vec3 normal = normalize( hit - dataIn.viewSpherePos );
+			const vec3 hit	  = inData.viewImpPos + vec3(0, 0, -t);
+			const vec3 normal = normalize( hit - inData.viewSpherePos );
 
 			// Fill depth buffer.
 			gl_FragDepth = computeDepthOrtho( hit );
 
-			// Compress position and normal.
-			uvec4 viewPositionNormalCompressed;
-			viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
-			viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
-			viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.sphereSelected, 0 ) );
-
 			// Output data.
-			outViewPositionNormal = viewPositionNormalCompressed;
-			outColor			  = vec4( dataIn.sphereColor.xyz, 32.f ); // w = specular shininess.
-			outId				  = uvec2( dataIn.sphereId, 0 );
+			packData( hit, normal, inData.sphereSelected, outDataPacked );
+			outColor			  = vec4( inData.sphereColor.xyz, 32.f ); // w = specular shininess.
+			outId				  = uvec2( inData.sphereId, 0 );
 		}
 	}
 }

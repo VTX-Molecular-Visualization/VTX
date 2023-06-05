@@ -6,16 +6,16 @@
 // Crytek (Crysis) like SSAO
 
 // In.
-layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 1 ) uniform sampler2D noise;
-layout( binding = 2 ) uniform sampler2D linearDepth;
+layout( binding = 0 ) uniform usampler2D inTexturePackedData;
+layout( binding = 1 ) uniform sampler2D inTextureNoise;
+layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 uniform vec3  uAoKernel[ 512 ];
 uniform int	  uKernelSize;
 uniform float uNoiseSize;
 
 // Out.
-layout( location = 0 ) out float ambientOcclusion;
+layout( location = 0 ) out float outAmbientOcclusion;
 
 const float BIAS = 0.025f;
 
@@ -24,13 +24,13 @@ void main()
 	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackData( gbViewPositionNormal, data, texPos );
+	unpackData( inTexturePackedData, data, texPos );
 	const vec3 pos = data.viewPosition;
 
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
 	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( noise, texPos / uNoiseSize ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / uNoiseSize ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
@@ -49,7 +49,7 @@ void main()
 		offset.xy = offset.xy * 0.5f + 0.5f;
 
 		// Get sample depth.
-		float sampleDepth = -texture( linearDepth, offset.xy ).x;
+		float sampleDepth = -texture( inTextureDepth, offset.xy ).x;
 
 		// Range check: ignore background.
 		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, radius / abs( pos.z - sampleDepth ) );
@@ -57,5 +57,5 @@ void main()
 	}
 
 	ao				 = 1.f - ( ao / uKernelSize );
-	ambientOcclusion = pow( ao, getSSAOIntensity() );
+	outAmbientOcclusion = pow( ao, getSSAOIntensity() );
 }

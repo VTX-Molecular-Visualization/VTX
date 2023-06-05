@@ -3,46 +3,44 @@
 #include "../global_uniforms.glsl"
 
 // In.
-layout( location = 0 ) in vec3 aSpherePos;
-layout( location = 1 ) in vec4 aSphereColor;
-layout( location = 2 ) in float aSphereRadius;
-layout( location = 3 ) in uint aSphereVisible;
-layout( location = 4 ) in uint aSphereSelected;
-layout( location = 5 ) in uint aSphereId;
+layout( location = 0 ) in vec3  inSpherePos;
+layout( location = 1 ) in vec4  inSphereColor;
+layout( location = 2 ) in float inSphereRadius;
+layout( location = 3 ) in uint  inSphereVisible;
+layout( location = 4 ) in uint  inSphereSelected;
+layout( location = 5 ) in uint  inSphereId;
 
-uniform mat4  u_MVMatrix;
-uniform mat4  u_projMatrix;
-uniform float u_radiusAdd	  = 0.f; // TODO: for SAS ?
+
+uniform float u_radiusAdd	  = 0.f;
 uniform float u_radiusFixed	  = 1.f;
 uniform bool  u_isRadiusFixed = false;
-uniform bool  u_isPerspective;
 
 // Out.
 out 
 #include "struct_vertex_shader.glsl"
-dataOut;
+outData;
 
 void main()
 {
-	if ( u_isPerspective )
+	if ( isCameraPerspective() )
 	{
-		dataOut.viewSpherePos	 = vec3( u_MVMatrix * vec4( aSpherePos, 1.f ) );
-		dataOut.sphereColor	 = aSphereColor;
-		dataOut.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : aSphereRadius + u_radiusAdd;
-		dataOut.sphereVisible	 = aSphereVisible;
-		dataOut.sphereSelected = aSphereSelected;
-		dataOut.sphereId		 = aSphereId;
+		outData.viewSpherePos	 = vec3( getMatrixView() * getMatrixModel() * vec4( inSpherePos, 1.f ) );
+		outData.sphereColor		 = inSphereColor;
+		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
+		outData.sphereVisible	 = inSphereVisible;
+		outData.sphereSelected	 = inSphereSelected;
+		outData.sphereId		 = inSphereId;
 
 		// Compute normalized view vector.
-		dataOut.dotViewSpherePos	  = dot( dataOut.viewSpherePos, dataOut.viewSpherePos );
-		const float dSphereCenter = sqrt( dataOut.dotViewSpherePos );
-		const vec3	view		  = dataOut.viewSpherePos / dSphereCenter;
+		outData.dotViewSpherePos	  = dot( outData.viewSpherePos, outData.viewSpherePos );
+		const float dSphereCenter = sqrt( outData.dotViewSpherePos );
+		const vec3	view		  = outData.viewSpherePos / dSphereCenter;
 
 		// Impostor in front of the sphere.
-		vec3 viewImpPos = dataOut.viewSpherePos - dataOut.sphereRadius * view;
+		vec3 viewImpPos = outData.viewSpherePos - outData.sphereRadius * view;
 
 		// Compute impostor size.
-		const float sinAngle = dataOut.sphereRadius / dSphereCenter;
+		const float sinAngle = outData.sphereRadius / dSphereCenter;
 		const float tanAngle = tan( asin( sinAngle ) );
 		const float impSize	 = tanAngle * length( viewImpPos );
 
@@ -50,25 +48,25 @@ void main()
 		// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
 		// But for cross always better doing no calculation.
 		// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-		dataOut.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+		outData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
 		// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-		dataOut.vImpV = cross( dataOut.vImpU, view ) * impSize; // No need to normalize.
-		dataOut.vImpU *= impSize;
+		outData.vImpV = cross( outData.vImpU, view ) * impSize; // No need to normalize.
+		outData.vImpU *= impSize;
 
 		gl_Position = vec4( viewImpPos, 1.f );
 	}
 	else // Orthographic
 	{ 
-		dataOut.viewSpherePos	 = vec3( u_MVMatrix * vec4( aSpherePos, 1.f ) );
-		dataOut.sphereColor	 = aSphereColor;
-		dataOut.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : aSphereRadius + u_radiusAdd;
-		dataOut.sphereVisible	 = aSphereVisible;
-		dataOut.sphereSelected = aSphereSelected;
-		dataOut.sphereId		 = aSphereId;
+		outData.viewSpherePos	 = vec3( getMatrixView() * getMatrixModel() * vec4( inSpherePos, 1.f ) );
+		outData.sphereColor		 = inSphereColor;
+		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
+		outData.sphereVisible	 = inSphereVisible;
+		outData.sphereSelected	 = inSphereSelected;
+		outData.sphereId		 = inSphereId;
 
-		dataOut.vImpU = vec3(-1, 0, 0) * dataOut.sphereRadius;
-		dataOut.vImpV = vec3(0, -1, 0) * dataOut.sphereRadius; 
+		outData.vImpU = vec3(-1, 0, 0) * outData.sphereRadius;
+		outData.vImpV = vec3(0, -1, 0) * outData.sphereRadius; 
 
-		gl_Position = vec4( dataOut.viewSpherePos + vec3(0, 0, dataOut.sphereRadius), 1.f );
+		gl_Position = vec4( outData.viewSpherePos + vec3(0, 0, outData.sphereRadius), 1.f );
 	}
 }

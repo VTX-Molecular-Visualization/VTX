@@ -3,20 +3,20 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 0 ) uniform sampler2D inputTexture;
-layout( binding = 1 ) uniform sampler2D linearDepthTexture;
+layout( binding = 0 ) uniform sampler2D inTexture;
+layout( binding = 1 ) uniform sampler2D inTextureDepth;
 
 uniform ivec2 uDirection;
 
 // Out.
-layout( location = 0 ) out float blurred;
+layout( location = 0 ) out float outFragColor;
 
 void main()
 {
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
-	const float inputCenter = texelFetch( inputTexture, texCoord, 0 ).x;
-	const float depthCenter = texelFetch( linearDepthTexture, texCoord, 0 ).x;
+	const float inputCenter = texelFetch( inTexture, texCoord, 0 ).x;
+	const float depthCenter = texelFetch( inTextureDepth, texCoord, 0 ).x;
 	const float blurSigma	= getBlurSize() * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
@@ -30,8 +30,8 @@ void main()
 	for ( int i = 1; i <= getBlurSize(); ++i )
 	{
 		const ivec2 uv			 = texCoord + i * uDirection;
-		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;
-		const float depthCurrent = texelFetch( linearDepthTexture, uv, 0 ).x;
+		const float inputCurrent = texelFetch( inTexture, uv, 0 ).x;
+		const float depthCurrent = texelFetch( inTextureDepth, uv, 0 ).x;
 
 		const float depthDiff = ( depthCurrent - depthCenter ) * sharpness;
 
@@ -43,8 +43,8 @@ void main()
 	for ( int i = 1; i <= getBlurSize(); ++i )
 	{
 		const ivec2 uv			 = texCoord - i * uDirection;
-		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;
-		const float depthCurrent = texelFetch( linearDepthTexture, uv, 0 ).x;
+		const float inputCurrent = texelFetch( inTexture, uv, 0 ).x;
+		const float depthCurrent = texelFetch( inTextureDepth, uv, 0 ).x;
 
 		const float depthDiff = ( depthCurrent - depthCenter ) * sharpness;
 
@@ -55,5 +55,5 @@ void main()
 	}
 
 	// Apply blur.
-	blurred = res / weight;
+	outFragColor = res / weight;
 }

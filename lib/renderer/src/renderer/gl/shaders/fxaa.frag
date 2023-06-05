@@ -7,10 +7,10 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 0 ) uniform sampler2D image;
+layout( binding = 0 ) uniform sampler2D inTexture;
 
 // Out.
-out vec4 fragColor;
+out vec4 outFragColor;
 
 // the minimum amount of local contrast required to apply algorithm.
 const float EDGE_THRESHOLD
@@ -43,20 +43,20 @@ float	   rgb2luma( const vec3 rgb ) { return dot( rgb, luma ); }
 
 void main()
 {
-	vec2 invTexSize = 1.f / textureSize( image, 0 );
+	vec2 invTexSize = 1.f / textureSize( inTexture, 0 );
 	vec2 texCoord	= gl_FragCoord.xy * invTexSize;
 
 	// =====================================================================================
 	// local contrast check -> where to apply antialiasing ? (edge detection)
 	// =====================================================================================
 	// get current pixel and compute its luma
-	vec3  rgbC	= texture( image, texCoord ).xyz;
+	vec3  rgbC	= texture( inTexture, texCoord ).xyz;
 	float lumaC = rgb2luma( rgbC );
 	// compute luma in north, south, east, west directions
-	float lumaN = rgb2luma( textureOffset( image, texCoord, ivec2( 0, -1 ) ).xyz );
-	float lumaS = rgb2luma( textureOffset( image, texCoord, ivec2( 0, 1 ) ).xyz );
-	float lumaE = rgb2luma( textureOffset( image, texCoord, ivec2( 1, 0 ) ).xyz );
-	float lumaW = rgb2luma( textureOffset( image, texCoord, ivec2( -1, 0 ) ).xyz );
+	float lumaN = rgb2luma( textureOffset( inTexture, texCoord, ivec2( 0, -1 ) ).xyz );
+	float lumaS = rgb2luma( textureOffset( inTexture, texCoord, ivec2( 0, 1 ) ).xyz );
+	float lumaE = rgb2luma( textureOffset( inTexture, texCoord, ivec2( 1, 0 ) ).xyz );
+	float lumaW = rgb2luma( textureOffset( inTexture, texCoord, ivec2( -1, 0 ) ).xyz );
 
 	// determine min and max luma around the pixel
 	float lumaMax = max( lumaC, max( max( lumaN, lumaS ), max( lumaE, lumaW ) ) );
@@ -67,7 +67,7 @@ void main()
 	// threshold is clamped to EDGE_THRESHOLD_MIN to avoid AA in really dark areas
 	if ( lumaRange < max( EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD ) )
 	{
-		fragColor = texture( image, texCoord );
+		outFragColor = texture( inTexture, texCoord );
 		return;
 	}
 	// =====================================================================================
@@ -76,10 +76,10 @@ void main()
 	// vertical/horizontal edge test
 	// =====================================================================================
 	// compute luma in the corners
-	float lumaNW = rgb2luma( textureOffset( image, texCoord, ivec2( -1, -1 ) ).xyz );
-	float lumaSE = rgb2luma( textureOffset( image, texCoord, ivec2( 1, 1 ) ).xyz );
-	float lumaNE = rgb2luma( textureOffset( image, texCoord, ivec2( 1, -1 ) ).xyz );
-	float lumaSW = rgb2luma( textureOffset( image, texCoord, ivec2( -1, 1 ) ).xyz );
+	float lumaNW = rgb2luma( textureOffset( inTexture, texCoord, ivec2( -1, -1 ) ).xyz );
+	float lumaSE = rgb2luma( textureOffset( inTexture, texCoord, ivec2( 1, 1 ) ).xyz );
+	float lumaNE = rgb2luma( textureOffset( inTexture, texCoord, ivec2( 1, -1 ) ).xyz );
+	float lumaSW = rgb2luma( textureOffset( inTexture, texCoord, ivec2( -1, 1 ) ).xyz );
 
 	// combine lumas
 	float lumaNS   = lumaN + lumaS;
@@ -157,8 +157,8 @@ void main()
 	vec2 texCoord1 = currentTexCoord - offset * AA_QUALITY[ 0 ];
 	vec2 texCoord2 = currentTexCoord + offset * AA_QUALITY[ 0 ];
 	// compute luma variation
-	float lumaVar1 = rgb2luma( texture( image, texCoord1 ).xyz ) - lumaAvg;
-	float lumaVar2 = rgb2luma( texture( image, texCoord2 ).xyz ) - lumaAvg;
+	float lumaVar1 = rgb2luma( texture( inTexture, texCoord1 ).xyz ) - lumaAvg;
+	float lumaVar2 = rgb2luma( texture( inTexture, texCoord2 ).xyz ) - lumaAvg;
 	// stop when variation is higher than gradient
 	bool isDone1 = abs( lumaVar1 ) >= gradientScaled;
 	bool isDone2 = abs( lumaVar2 ) >= gradientScaled;
@@ -177,11 +177,11 @@ void main()
 		// compute luma variation with previous step
 		if ( !isDone1 )
 		{
-			lumaVar1 = rgb2luma( texture( image, texCoord1.xy ).xyz ) - lumaAvg;
+			lumaVar1 = rgb2luma( texture( inTexture, texCoord1.xy ).xyz ) - lumaAvg;
 		}
 		if ( !isDone2 )
 		{
-			lumaVar2 = rgb2luma( texture( image, texCoord2.xy ).xyz ) - lumaAvg;
+			lumaVar2 = rgb2luma( texture( inTexture, texCoord2.xy ).xyz ) - lumaAvg;
 		}
 		isDone1 = abs( lumaVar1 ) >= gradientScaled;
 		isDone2 = abs( lumaVar2 ) >= gradientScaled;
@@ -244,5 +244,5 @@ void main()
 	}
 	// =====================================================================================
 
-	fragColor = vec4( texture( image, aaTexCoord ) );
+	outFragColor = vec4( texture( inTexture, aaTexCoord ) );
 }

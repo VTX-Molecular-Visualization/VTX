@@ -4,12 +4,12 @@
 #include "struct_data_packed.glsl"
 
 // In.
-layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 1 ) uniform sampler2D gbColor;
-layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
+layout( binding = 0 ) uniform usampler2D inTexturePackedData;
+layout( binding = 1 ) uniform sampler2D inTextureColor;
+layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
 
 // Out.
-out vec4 fragColor;
+out vec4 outFragColor;
 
 const uint DIFFUSE = 0;
 const uint GLOSSY = 1;
@@ -21,17 +21,17 @@ void main()
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackData( gbViewPositionNormal, data, texCoord );
+	unpackData( inTexturePackedData, data, texCoord );
 
 	if ( data.viewPosition.z == 0.f )
 	{
 		if ( getFogDensity() != 0.f )
 		{
-			fragColor = vec4( mix( vec3( getBackgroundColor() ),  vec3( getFogColor() ), getFogDensity() ) *  vec3( getLightColor() ), getBackgroundColor().w );
+			outFragColor = vec4( mix( vec3( getBackgroundColor() ),  vec3( getFogColor() ), getFogDensity() ) *  vec3( getLightColor() ), getBackgroundColor().w );
 		}
 		else
 		{
-			fragColor = getBackgroundColor();
+			outFragColor = getBackgroundColor();
 		}
 		return;
 	}
@@ -52,7 +52,7 @@ void main()
 		const float diffuse = 1.f - getSpecularFactor();
 		const vec3	viewDir = normalize( -data.viewPosition );
 		const vec3	h		= normalize( lightDir + viewDir );
-		const float specular = getSpecularFactor() * pow( max( dot( h, data.normal ), 0.f ), texelFetch( gbColor, texCoord, 0 ).w );
+		const float specular = getSpecularFactor() * pow( max( dot( h, data.normal ), 0.f ), texelFetch( inTextureColor, texCoord, 0 ).w );
 		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 		lighting = ( diffuse + specular ) * cosTheta;
 	}
@@ -67,10 +67,10 @@ void main()
 		else if ( intensity < 0.95f ) lighting = 0.7f;
 	}
 
-	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
+	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( getFogNear(), getFogFar(), -data.viewPosition.z ) * getFogDensity();
-	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
+	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
 
-	fragColor = vec4( mix( color, vec3( getFogColor() ), fogFactor ) * vec3( getLightColor() ), 1.f );
+	outFragColor = vec4( mix( color, vec3( getFogColor() ), fogFactor ) * vec3( getLightColor() ), 1.f );
 }

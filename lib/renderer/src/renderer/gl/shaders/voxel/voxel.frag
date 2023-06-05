@@ -1,31 +1,22 @@
 #version 450 core
 
-// 3 16 bits for position.
-// 3 16 bits for normal.
-// 1 32 bits for padding.
-layout( location = 0 ) out uvec4 outViewPositionNormal;
-// 3 32 bits for color.
-// 1 32 bits for specular.
-layout( location = 1 ) out vec4 outColor;
+#include "../global_uniforms.glsl"
+#include "../struct_data_packed.glsl"
 
-uniform mat4 u_MVMatrix;
-uniform mat4 u_projMatrix;
-uniform mat4 u_normalMatrix;
-
+// In.
 in
 #include "struct_geometry_shader.glsl"
-dataIn;
+inData;
+
+// Out.
+layout( location = 0 ) out PackedData outDataPacked;
+layout( location = 1 ) out vec4 outColor;
 
 void main()
 {
-	vec3 viewPosition = vec3( u_MVMatrix * vec4( dataIn.center, 1.f ) );
-	vec3	normal	   = normalize( vec3( u_normalMatrix * vec4( dataIn.center, 1.f )) );
-	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( viewPosition.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( viewPosition.z, normal.x ) );
-	viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-	viewPositionNormalCompressed.w = 0; // Padding.
+	vec3 viewPosition = vec3( getMatrixView() * getMatrixModel() * vec4( inData.center, 1.f ) );
+	vec3 normal		  = normalize( vec3( getMatrixNormal() * vec4( inData.center, 1.f ) ) );	
 	
-	outViewPositionNormal = viewPositionNormalCompressed;
+	packData( viewPosition, normal, 0, outDataPacked );
 	outColor = vec4( 0.5f, 0.5f, 0.5f, 32.f );
 }

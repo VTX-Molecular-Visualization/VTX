@@ -5,13 +5,15 @@ struct UnpackedData
 	uint selected;
 };
 
+#define PackedData uvec4
 
-void packData( vec3 p_viewPosition, vec3 p_normal, uint p_selected, out uvec4 p_out )
+void packData( vec3 p_viewPosition, vec3 p_normal, uint p_selected, out PackedData p_out )
 {
 	p_out.x = packHalf2x16( p_viewPosition.xy );
 	p_out.y = packHalf2x16( vec2( p_viewPosition.z, p_normal.x ) );
 	p_out.z = packHalf2x16( p_normal.yz );
 	p_out.w = packHalf2x16( vec2( p_selected, 0 ) );
+	// TODO: add IDs.
 }
 
 void unpackData( usampler2D p_in, out UnpackedData p_out, ivec2 p_px )

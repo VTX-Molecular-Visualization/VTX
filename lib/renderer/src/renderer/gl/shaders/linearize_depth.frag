@@ -3,10 +3,10 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 0 ) uniform sampler2D depthTexture;
+layout( binding = 0 ) uniform sampler2D inTextureDepth;
 
 // Out.
-layout( location = 0 ) out float linearDepth;
+layout( location = 0 ) out float outLinearizedDepth;
 
 float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 {
@@ -24,5 +24,5 @@ float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 
 void main() 
 {
-	linearDepth = linearizeDepth( getCameraClipInfos(), texelFetch( depthTexture, ivec2( gl_FragCoord.xy ), 0 ).x ); 
+	outLinearizedDepth = linearizeDepth( getCameraClipInfos(), texelFetch( inTextureDepth, ivec2( gl_FragCoord.xy ), 0 ).x ); 
 }

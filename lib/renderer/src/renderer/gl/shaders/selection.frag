@@ -4,32 +4,32 @@
 #include "struct_data_packed.glsl"
 
 // In.
-layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 1 ) uniform sampler2D colorTexture;
-layout( binding = 2 ) uniform sampler2D linearDepthTexture;
+layout( binding = 0 ) uniform usampler2D inTexturePackedData;
+layout( binding = 1 ) uniform sampler2D inTextureColor;
+layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 // Out.
-layout( location = 0 ) out vec4 fragColor;
+layout( location = 0 ) out vec4 outFragColor;
 
 void main()
 {
 	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackData( gbViewPositionNormal, data, texPos );
+	unpackData( inTexturePackedData, data, texPos );
 
-	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
+	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( inTextureDepth, 0 ) );
 	if ( data.selected == 0 )
 	{
-		fragColor = texture( colorTexture, texCoord );
+		outFragColor = texture( inTextureColor, texCoord );
 	}
 	else
 	{
 		// Get current pixel depth.
-		const float depthCenter = texture( linearDepthTexture, texCoord, 0 ).x;
+		const float depthCenter = texture( inTextureDepth, texCoord, 0 ).x;
 		// Get cross neighbor depth
 		const ivec2 o[ 4 ]			= { ivec2( -1, -1 ), ivec2( -1, 1 ), ivec2( 1, 1 ), ivec2( 1, -1 ) };
-		const vec4	depthNeighbours = textureGatherOffsets( linearDepthTexture, texCoord, o );
+		const vec4	depthNeighbours = textureGatherOffsets( inTextureDepth, texCoord, o );
 
 		// Compute threshold wrt depth
 		// TODO: allow the user to control it
@@ -43,6 +43,6 @@ void main()
 		const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 );
 
 		// Apply outline if edge depth is greater than threshold.
-		fragColor = edgeDepth > threshold + 0.025 ? getSelectionColor() : texture( colorTexture, texCoord );
+		outFragColor = edgeDepth > threshold + 0.025 ? getSelectionColor() : texture( inTextureColor, texCoord );
 	}
 }
