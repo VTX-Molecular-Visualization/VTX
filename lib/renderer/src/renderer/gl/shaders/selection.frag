@@ -1,6 +1,7 @@
 #version 450 core
 
 #include "global_uniforms.glsl"
+#include "struct_data_packed.glsl"
 
 // In.
 layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
@@ -12,11 +13,13 @@ layout( location = 0 ) out vec4 fragColor;
 
 void main()
 {
-	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, ivec2( gl_FragCoord.xy ), 0 );
-	const uint	selection		   = uint( unpackHalf2x16( viewPositionNormal.w ).x );
+	const ivec2 texPos = ivec2( gl_FragCoord.xy );
+
+	UnpackedData data;
+	unpackData( gbViewPositionNormal, data, texPos );
 
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
-	if ( selection == 0 )
+	if ( data.selected == 0 )
 	{
 		fragColor = texture( colorTexture, texCoord );
 	}

@@ -1,6 +1,7 @@
 #version 450 core
 
 #include "global_uniforms.glsl"
+#include "struct_data_packed.glsl"
 
 // Crytek (Crysis) like SSAO
 
@@ -18,27 +19,12 @@ layout( location = 0 ) out float ambientOcclusion;
 
 const float BIAS = 0.025f;
 
-struct UnpackedData
-{
-	vec3 viewPosition;
-	vec3 normal;
-};
-
-void unpackGBuffers( ivec2 px, out UnpackedData data )
-{
-	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
-
-	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
-	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
-	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
-}
-
 void main()
 {
 	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackGBuffers( texPos, data );
+	unpackData( gbViewPositionNormal, data, texPos );
 	const vec3 pos = data.viewPosition;
 
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.

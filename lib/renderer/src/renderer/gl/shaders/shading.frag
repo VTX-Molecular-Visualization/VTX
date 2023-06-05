@@ -1,6 +1,7 @@
 #version 450 core
 
 #include "global_uniforms.glsl"
+#include "struct_data_packed.glsl"
 
 // In.
 layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
@@ -15,27 +16,12 @@ const uint GLOSSY = 1;
 const uint TOON = 2;
 const uint FLAT_COLOR = 3;
 
-struct UnpackedData
-{
-	vec3 viewPosition;
-	vec3 normal;
-};
-
-void unpackGBuffers( ivec2 px, out UnpackedData data )
-{
-	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
-
-	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
-	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
-	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
-}
-
 void main()
 {
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackGBuffers( texCoord, data );
+	unpackData( gbViewPositionNormal, data, texCoord );
 
 	if ( data.viewPosition.z == 0.f )
 	{
