@@ -1,24 +1,26 @@
 #version 450 core
 
-layout( location = 0 ) in vec4 vao_controlPointPosition;
-layout( location = 1 ) in vec3 vao_controlPointDirection;
-layout( location = 2 ) in uint vao_ssType;
-layout( location = 3 ) in vec4 vao_color;
-layout( location = 4 ) in uint vao_visibility;
-layout( location = 5 ) in uint vao_controlPointSelection;
-layout( location = 6 ) in uint vao_residueId;
+// In.
+layout( location = 0 ) in vec4 inControlPointPosition;
+layout( location = 1 ) in vec3 inControlPointDirection;
+layout( location = 2 ) in uint inType;
+layout( location = 3 ) in vec4 inColor;
+layout( location = 4 ) in uint inVisibility;
+layout( location = 5 ) in uint inControlPointSelection;
+layout( location = 6 ) in uint inResidueId;
 
+// Out.
 out 
 #include "struct_vertex_shader.glsl"
 dataOut;
 
 void main()
 {
-	dataOut.position	 = vao_controlPointPosition;
-	dataOut.direction	 = vao_controlPointDirection;
-	dataOut.color		 = vao_color;
-	dataOut.ssType	 = vao_ssType;
-	dataOut.visibility = vao_visibility;
-	dataOut.selection	 = vao_controlPointSelection;
-	dataOut.id		 = vao_residueId;
+	dataOut.position	 = inControlPointPosition;
+	dataOut.direction	 = inControlPointDirection;
+	dataOut.color		 = inColor;
+	dataOut.ssType	     = inType;
+	dataOut.visibility   = inVisibility;
+	dataOut.selection	 = inControlPointSelection;
+	dataOut.id		     = inResidueId;
 }

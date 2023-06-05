@@ -2,7 +2,7 @@
   flowchart TD
     subgraph Geometric
       subgraph geo.out
-        geo.out.textVPN[textureViewPositionsNormals]
+        geo.out.textDataPacked[textureDataPacked]
         geo.out.textColors[textureColors]
         geo.out.textDepth[textureDepth]
         geo.out.textPicking[texturePicking]
@@ -18,7 +18,7 @@
     end
     subgraph SSAO
       subgraph ssao.in
-        ssao.in.textVPN[textureViewPositionsNormals]
+        ssao.in.textDataPacked[textureDataPacked]
         ssao.in.textDepth[textureDepth]
       end
       subgraph ssao.out
@@ -36,7 +36,7 @@
     end
     subgraph Shading
       subgraph shading.in
-        shading.in.textVPN[textureViewPositionsNormals]
+        shading.in.textDataPacked[textureDataPacked]
         shading.in.text[texture]        
         shading.in.textBlur[textureBlur]     
       end
@@ -55,7 +55,7 @@
     end
     subgraph Selection
       subgraph selection.in
-        selection.in.textVPN[textureViewPositionsNormals]
+        selection.in.textDataPacked[textureDataPacked]
         selection.in.text[texture]
         selection.in.textDepth[textureDepth]
       end
@@ -74,20 +74,20 @@
 
     geo.out.textDepth --> ld.in.text
 
-    geo.out.textVPN --> ssao.in.textVPN
+    geo.out.textDataPacked --> ssao.in.textDataPacked
     ld.out.text --> ssao.in.textDepth
 
     ssao.out.text --> blur.in.text
     ld.out.text --> blur.in.textDepth
 
-    geo.out.textVPN --> shading.in.textVPN
+    geo.out.textDataPacked --> shading.in.textDataPacked
     geo.out.textColors --> shading.in.text   
     blur.out.text --> shading.in.textBlur
 
     ld.out.text --> outline.in.textDepth
     shading.out.text --> outline.in.text
 
-    geo.out.textVPN --> selection.in.textVPN
+    geo.out.textDataPacked --> selection.in.textDataPacked
     outline.out.text --> selection.in.text
     ld.out.text --> selection.in.textDepth
 

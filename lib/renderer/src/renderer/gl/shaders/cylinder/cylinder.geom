@@ -1,36 +1,39 @@
 #version 450 core
 
+#include "../global_uniforms.glsl"
+
 layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-uniform mat4  u_projMatrix;
+// TODO: move that.
 uniform float u_cylRad;
-uniform bool  u_isPerspective;
 
+// In.
 in 
 #include "struct_vertex_shader.glsl"
-dataIn[];
+inData[];
 
+// Out.
 out 
 #include "struct_geometry_shader.glsl"
-dataOut;
+outData;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	dataOut.viewImpostorPosition = v1;
-	gl_Position				   = u_projMatrix * vec4( dataOut.viewImpostorPosition, 1.f );
+	outData.viewImpostorPosition = v1;
+	gl_Position				     = getMatrixProjection() * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	dataOut.viewImpostorPosition = v2;
-	gl_Position				   = u_projMatrix * vec4( dataOut.viewImpostorPosition, 1.f );
+	outData.viewImpostorPosition = v2;
+	gl_Position				     = getMatrixProjection() * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	dataOut.viewImpostorPosition = v3;
-	gl_Position				   = u_projMatrix * vec4( dataOut.viewImpostorPosition, 1.f );
+	outData.viewImpostorPosition = v3;
+	gl_Position				     = getMatrixProjection() * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	dataOut.viewImpostorPosition = v4;
-	gl_Position				   = u_projMatrix * vec4( dataOut.viewImpostorPosition, 1.f );
+	outData.viewImpostorPosition = v4;
+	gl_Position				     = getMatrixProjection() * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -39,35 +42,35 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
-	if ( dataIn[ 0 ].vertexVisible == 0 || dataIn[ 1 ].vertexVisible == 0 )
+	if ( inData[ 0 ].vertexVisible == 0 || inData[ 1 ].vertexVisible == 0 )
 	{
 		return;
 	}
 
 	// Output data.
-	dataOut.viewVertices[ 0 ]	  = gl_in[ 0 ].gl_Position.xyz;
-	dataOut.viewVertices[ 1 ]	  = gl_in[ 1 ].gl_Position.xyz;
-	dataOut.colors[ 0 ]		  = dataIn[ 0 ].vertexColor;
-	dataOut.colors[ 1 ]		  = dataIn[ 1 ].vertexColor;
-	dataOut.vertexSelected[ 0 ] = dataIn[ 0 ].vertexSelected;
-	dataOut.vertexSelected[ 1 ] = dataIn[ 1 ].vertexSelected;
-	dataOut.vertexId[ 0 ]		  = dataIn[ 0 ].vertexId;
-	dataOut.vertexId[ 1 ]		  = dataIn[ 1 ].vertexId;
+	outData.viewVertices[ 0 ]	= gl_in[ 0 ].gl_Position.xyz;
+	outData.viewVertices[ 1 ]	= gl_in[ 1 ].gl_Position.xyz;
+	outData.colors[ 0 ]		    = inData[ 0 ].vertexColor;
+	outData.colors[ 1 ]		    = inData[ 1 ].vertexColor;
+	outData.vertexSelected[ 0 ] = inData[ 0 ].vertexSelected;
+	outData.vertexSelected[ 1 ] = inData[ 1 ].vertexSelected;
+	outData.vertexId[ 0 ]		= inData[ 0 ].vertexId;
+	outData.vertexId[ 1 ]		= inData[ 1 ].vertexId;
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;
-	if ( dataOut.viewVertices[ 0 ].z < dataOut.viewVertices[ 1 ].z )
+	if ( outData.viewVertices[ 0 ].z < outData.viewVertices[ 1 ].z )
 	{
-		viewImpPos0 = dataOut.viewVertices[ 1 ];
-		viewImpPos1 = dataOut.viewVertices[ 0 ];
+		viewImpPos0 = outData.viewVertices[ 1 ];
+		viewImpPos1 = outData.viewVertices[ 0 ];
 	}
 	else
 	{
-		viewImpPos0 = dataOut.viewVertices[ 0 ];
-		viewImpPos1 = dataOut.viewVertices[ 1 ];
+		viewImpPos0 = outData.viewVertices[ 0 ];
+		viewImpPos1 = outData.viewVertices[ 1 ];
 	}
 
-	if (u_isPerspective){
+	if ( isCameraPerspective() ){
 		// Compute normalized view vector to cylinder center.
 		const vec3 view = normalize( ( viewImpPos0 + viewImpPos1 ) * 0.5f );
 

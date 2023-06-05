@@ -5,22 +5,24 @@
 
 #version 450 core
 
+#include "../global_uniforms.glsl"
+
 layout( quads, fractional_even_spacing ) in;
 
-uniform mat4 u_MVMatrix;
-uniform mat4 u_projMatrix;
-uniform mat4 u_normalMatrix;
+// TODO: move that.
 uniform uint u_maxIndice;
 uniform vec3 u_camPosition;
 uniform uint u_colorBlendingMode;
 
+// In.
 in 
 #include "struct_tessellation_control_shader.glsl"
-dataIn[];
+inData[];
 
+// Out.
 out 
 #include "struct_tessellation_evaluation_shader.glsl"
-dataOut;
+outData;
 
 // clang-format off
 const float s = 0.8f;
@@ -71,9 +73,9 @@ void main()
 	const float u02 = u / 2.f;
 
 	// Interpolate position along spline.
-	const vec3 p01 = mix( dataIn[ 0 ].position, dataIn[ 1 ].position, u23 );
-	const vec3 p12 = mix( dataIn[ 1 ].position, dataIn[ 2 ].position, u13 );
-	const vec3 p23 = mix( dataIn[ 2 ].position, dataIn[ 3 ].position, u03 );
+	const vec3 p01 = mix( inData[ 0 ].position, inData[ 1 ].position, u23 );
+	const vec3 p12 = mix( inData[ 1 ].position, inData[ 2 ].position, u13 );
+	const vec3 p23 = mix( inData[ 2 ].position, inData[ 3 ].position, u03 );
 
 	const vec3 p02 = mix( p01, p12, u12 );
 	const vec3 p13 = mix( p12, p23, u02 );
@@ -84,9 +86,9 @@ void main()
 	const vec3 tangent = normalize( p13 - p02 );
 
 	// Interpolate direction along spline.
-	const vec3 d01 = mix( dataIn[ 0 ].direction, dataIn[ 1 ].direction, u23 );
-	const vec3 d12 = mix( dataIn[ 1 ].direction, dataIn[ 2 ].direction, u13 );
-	const vec3 d23 = mix( dataIn[ 2 ].direction, dataIn[ 3 ].direction, u03 );
+	const vec3 d01 = mix( inData[ 0 ].direction, inData[ 1 ].direction, u23 );
+	const vec3 d12 = mix( inData[ 1 ].direction, inData[ 2 ].direction, u13 );
+	const vec3 d23 = mix( inData[ 2 ].direction, inData[ 3 ].direction, u03 );
 
 	const vec3 d02 = mix( d01, d12, u12 );
 	const vec3 d13 = mix( d12, d23, u02 );
@@ -94,18 +96,18 @@ void main()
 	vec3 direction = normalize( mix( d02, d13, u ) );
 
 	// Interpolate normal linearly (only known for the two center control points).
-	const vec3 normal = normalize( mix( dataIn[ 1 ].normal, dataIn[ 2 ].normal, gl_TessCoord.x ) );
+	const vec3 normal = normalize( mix( inData[ 1 ].normal, inData[ 2 ].normal, gl_TessCoord.x ) );
 
 	// Make direction orthogonal to tangent.
 	direction = cross( normal, tangent );
 
 	// Interpolate direction factor between the two center control points.
 	const float directionFactor
-		= mix( DIRECTION_FACTOR[ dataIn[ 1 ].ssType ], DIRECTION_FACTOR[ dataIn[ 2 ].ssType ], gl_TessCoord.x );
+		= mix( DIRECTION_FACTOR[ inData[ 1 ].ssType ], DIRECTION_FACTOR[ inData[ 2 ].ssType ], gl_TessCoord.x );
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( dataIn[ 1 ].ssType == 5 ) && ( dataIn[ 1 ].ssType != dataIn[ 2 ].ssType ) )
+	if ( ( inData[ 1 ].ssType == 5 ) && ( inData[ 1 ].ssType != inData[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 	// Move vertex along direction
@@ -116,16 +118,16 @@ void main()
 	const vec3 n = normal * ( directionFactor + arrayOffset ) / directionFactor * RADIUS;
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
-	dataOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
-	dataOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
-	dataOut.color =  dataIn[ 1 ].color;
+	outData.viewPosition = vec3( getMatrixView() * getMatrixModel() * vec4( position, 1.f ) );
+	outData.normal	   = vec3( getMatrixNormal() * vec4( normal, 1.f ) );
+	outData.color =  inData[ 1 ].color;
 	if(u_colorBlendingMode == 1) // Gradient.
 	{
-		dataOut.color		   = mix( dataIn[ 1 ].color, dataIn[ 2 ].color, gl_TessCoord.x );
+		outData.color = mix( inData[ 1 ].color, inData[ 2 ].color, gl_TessCoord.x );
 	}
-	dataOut.selection	 = dataIn[ 1 ].selection;
-	dataOut.visibility = dataIn[ 1 ].visibility;
-	dataOut.id		 = dataIn[ 1 ].id;
+	outData.selection	 = inData[ 1 ].selection;
+	outData.visibility   = inData[ 1 ].visibility;
+	outData.id		     = inData[ 1 ].id;
 
-	gl_Position = u_projMatrix * vec4( dataOut.viewPosition, 1.f );
+	gl_Position = getMatrixProjection() * vec4( outData.viewPosition, 1.f );
 }

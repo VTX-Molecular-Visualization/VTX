@@ -10,7 +10,7 @@ layout( location = 3 ) in uint  inSphereVisible;
 layout( location = 4 ) in uint  inSphereSelected;
 layout( location = 5 ) in uint  inSphereId;
 
-
+// TODO: move that.
 uniform float u_radiusAdd	  = 0.f;
 uniform float u_radiusFixed	  = 1.f;
 uniform bool  u_isRadiusFixed = false;
