@@ -22,12 +22,12 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::render( VertexArray & p_vao )
 	{
-		assert( in.textureViewPositionsNormals != nullptr );
+		assert( in.textureDataPacked != nullptr );
 		assert( in.texture != nullptr );
 		assert( in.textureBlur != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureViewPositionsNormals->bindToUnit( 0 );
+		in.textureDataPacked->bindToUnit( 0 );
 		in.texture->bindToUnit( 1 );
 		in.textureBlur->bindToUnit( 2 );
 		_program->use();

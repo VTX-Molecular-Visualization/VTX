@@ -20,8 +20,8 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructIn
 		{
-			Texture2D * textureViewPositionsNormals = nullptr;
-			Texture2D * textureDepth				= nullptr;
+			Texture2D * textureDataPacked = nullptr;
+			Texture2D * textureDepth	  = nullptr;
 		} in;
 
 		struct StructOut

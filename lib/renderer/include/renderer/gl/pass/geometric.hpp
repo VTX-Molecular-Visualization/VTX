@@ -37,11 +37,11 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructOut
 		{
-			Framebuffer fbo							= Framebuffer();
-			Texture2D	textureViewPositionsNormals = Texture2D();
-			Texture2D	textureColors				= Texture2D();
-			Texture2D	textureDepth				= Texture2D();
-			Texture2D	texturePicking				= Texture2D();
+			Framebuffer fbo				  = Framebuffer();
+			Texture2D	textureDataPacked = Texture2D();
+			Texture2D	textureColors	  = Texture2D();
+			Texture2D	textureDepth	  = Texture2D();
+			Texture2D	texturePicking	  = Texture2D();
 		} out;
 
 	  private:

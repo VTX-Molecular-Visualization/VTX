@@ -17,12 +17,12 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::render( VertexArray & p_vao )
 	{
-		assert( in.textureViewPositionsNormals != nullptr );
+		assert( in.textureDataPacked != nullptr );
 		assert( in.texture != nullptr );
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureViewPositionsNormals->bindToUnit( 0 );
+		in.textureDataPacked->bindToUnit( 0 );
 		in.texture->bindToUnit( 1 );
 		in.textureDepth->bindToUnit( 2 );
 		_program->use();

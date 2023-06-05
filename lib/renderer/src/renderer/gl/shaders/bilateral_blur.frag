@@ -9,7 +9,7 @@ layout( binding = 1 ) uniform sampler2D inTextureDepth;
 uniform ivec2 uDirection;
 
 // Out.
-layout( location = 0 ) out float outFragColor;
+layout( location = 0 ) out float outBlur;
 
 void main()
 {
@@ -55,5 +55,5 @@ void main()
 	}
 
 	// Apply blur.
-	outFragColor = res / weight;
+	outBlur = res / weight;
 }

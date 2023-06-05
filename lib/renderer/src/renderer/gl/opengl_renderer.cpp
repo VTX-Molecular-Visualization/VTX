@@ -43,22 +43,22 @@ namespace VTX::Renderer::GL
 		// Setup default routing.
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
-		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
+		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
 
 		_passBlur.in.texture	  = &( _passSSAO.out.texture );
 		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
-		_passShading.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passShading.in.texture						= &( _passGeometric.out.textureColors );
-		_passShading.in.textureBlur					= &( _passBlur.out.texture );
+		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passShading.in.texture			  = &( _passGeometric.out.textureColors );
+		_passShading.in.textureBlur		  = &( _passBlur.out.texture );
 
 		_passOutline.in.texture		 = &( _passShading.out.texture );
 		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
-		_passSelection.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSelection.in.texture					  = &( _passOutline.out.texture );
-		_passSelection.in.textureDepth				  = &( _passLinearizeDepth.out.texture );
+		_passSelection.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passSelection.in.texture			= &( _passOutline.out.texture );
+		_passSelection.in.textureDepth		= &( _passLinearizeDepth.out.texture );
 
 		_passFXAA.in.texture = &( _passSelection.out.texture );
 	}

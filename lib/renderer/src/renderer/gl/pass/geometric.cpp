@@ -6,7 +6,7 @@ namespace VTX::Renderer::GL::Pass
 {
 	void Geometric::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
-		out.textureViewPositionsNormals.create(
+		out.textureDataPacked.create(
 			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.textureColors.create(
@@ -19,7 +19,7 @@ namespace VTX::Renderer::GL::Pass
 			p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.fbo.create();
-		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
 		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
 		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
@@ -104,12 +104,12 @@ namespace VTX::Renderer::GL::Pass
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )
 	{
-		out.textureViewPositionsNormals.resize( p_width, p_height );
+		out.textureDataPacked.resize( p_width, p_height );
 		out.textureColors.resize( p_width, p_height );
 		out.textureDepth.resize( p_width, p_height );
 		out.texturePicking.resize( p_width, p_height );
 
-		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
 		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
 		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
