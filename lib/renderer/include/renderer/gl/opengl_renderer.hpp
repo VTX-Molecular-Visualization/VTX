@@ -36,9 +36,13 @@ namespace VTX::Renderer::GL
 		void setMatrixProjection( const Mat4f & );
 		void setBackgroundColor( Util::Color::Rgba & );
 
+		inline void setNeedUpdate( const bool p_needUpdate ) { _needUpdate = p_needUpdate; }
+
 	  private:
 		size_t _width  = 0;
 		size_t _height = 0;
+
+		bool _needUpdate = true;
 
 		VertexArray _vao = VertexArray();
 		Buffer		_vbo = Buffer();

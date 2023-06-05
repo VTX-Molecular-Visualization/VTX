@@ -33,6 +33,16 @@ namespace VTX::Renderer::GL::Pass
 				Buffer		ebo				= Buffer();
 				VertexArray vao				= VertexArray();
 			} triangles;
+
+			struct Atom
+			{
+				// TODO.
+			} atoms;
+
+			struct Bond
+			{
+				// TODO.
+			} bonds;
 		} in;
 
 		struct StructOut

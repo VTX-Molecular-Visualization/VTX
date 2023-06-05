@@ -51,8 +51,13 @@ int main( int, char ** )
 															 std::filesystem::current_path() / "shaders" );
 		renderer.init( WIDTH, HEIGHT );
 
-		GLFWframebuffersizefun fun
-			= []( GLFWwindow * p_window, int p_width, int p_height ) { renderer.resize( p_width, p_height ); };
+		GLFWframebuffersizefun fun = []( GLFWwindow * p_window, int p_width, int p_height )
+		{
+			Mat4f projectionMatrix = Util::Math::perspective(
+				Util::Math::radians( 60.f ), float( p_width ) / float( p_height ), 0.0001f, 1e4f );
+			renderer.setMatrixProjection( projectionMatrix );
+			renderer.resize( p_width, p_height );
+		};
 		glfwSetFramebufferSizeCallback( window, fun );
 
 		// Camera.
@@ -62,8 +67,8 @@ int main( int, char ** )
 		Mat4f projectionMatrix
 			= Util::Math::perspective( Util::Math::radians( 60.f ), float( WIDTH ) / float( HEIGHT ), 0.0001f, 1e4f );
 		renderer.setMatrixProjection( projectionMatrix );
-		auto bgColor = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
-		// renderer.setBackgroundColor( bgColor );
+		auto bgColor = Util::Color::Rgba( 0.9f, 0.9f, 0.9f, 1.f );
+		renderer.setBackgroundColor( bgColor );
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{

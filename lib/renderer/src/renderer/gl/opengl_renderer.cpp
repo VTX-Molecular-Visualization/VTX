@@ -114,14 +114,18 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::renderFrame()
 	{
-		//_vao.drawCalls = 0;
-
-		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
-		for ( Pass::BasePass * const pass : _passes )
+		if ( _needUpdate )
 		{
-			pass->render( _vao );
+			//_vao.drawCalls = 0;
+
+			_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+			for ( Pass::BasePass * const pass : _passes )
+			{
+				pass->render( _vao );
+			}
+			_ubo.unbind();
+			//_needUpdate = false;
 		}
-		_ubo.unbind();
 	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
@@ -147,7 +151,7 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )
 	{
-		_ubo.setSub( p_color, 10 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
+		_ubo.setSub( p_color, 18 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )
