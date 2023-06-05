@@ -22,8 +22,8 @@ void main()
 		return;
 	}
 
-	dataOut.viewPosition	= vec3( uniforms.matrixView * vec4( aVertexPosition, 1.f ) );
-	dataOut.normal			= vec3( uniforms.matrixView * vec4( aVertexNormal, 1.f ) );
+	dataOut.viewPosition	= vec3( uniforms.matrixView * uniforms.matrixModel * vec4( aVertexPosition, 1.f ) );
+	dataOut.normal			= vec3( uniforms.matrixNormal * vec4( aVertexNormal, 1.f ) );
 	dataOut.color			= vec3( aVertexColor );
 	dataOut.selected		= aVertexSelected;
 	dataOut.id				= aVertexId;

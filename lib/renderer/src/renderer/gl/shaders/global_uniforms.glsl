@@ -1,6 +1,8 @@
 layout ( std140, binding = 15 ) uniform Uniforms
 {
-	mat4 matrixView;
+	mat4 matrixModel;
+	mat4 matrixNormal;
+	mat4 matrixView;	
 	mat4 matrixProjection;
 	vec4 cameraNearFar; // near, far
 	vec4 cameraClipInfos;

@@ -129,11 +129,20 @@ namespace VTX::Renderer::GL
 		return _passGeometric.getPickedData( p_x, p_y );
 	}
 
-	void OpenGLRenderer::setMatrixView( const Mat4f & p_view ) { _ubo.setSub( p_view, 0, sizeof( Mat4f ) ); }
+	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
+	{
+		_ubo.setSub( p_model, 0, sizeof( Mat4f ) );
+		_ubo.setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ), 1 * sizeof( Mat4f ), sizeof( Mat4f ) );
+	}
+
+	void OpenGLRenderer::setMatrixView( const Mat4f & p_view )
+	{
+		_ubo.setSub( p_view, 2 * sizeof( Mat4f ), sizeof( Mat4f ) );
+	}
 
 	void OpenGLRenderer::setMatrixProjection( const Mat4f & p_proj )
 	{
-		_ubo.setSub( p_proj, sizeof( Mat4f ), sizeof( Mat4f ) );
+		_ubo.setSub( p_proj, 3 * sizeof( Mat4f ), sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )

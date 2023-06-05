@@ -10,6 +10,8 @@ namespace VTX::Renderer::GL
 	// TODO: model and normal matrix.
 	struct StructGlobalUniforms
 	{
+		Mat4f matrixModel	   = MAT4F_ID; // TODO: will be moved.
+		Mat4f matrixNormal	   = MAT4F_ID; // TODO: will be moved.
 		Mat4f matrixView	   = MAT4F_ID;
 		Mat4f matrixProjection = MAT4F_ID;
 		Vec4f cameraNearFar	   = Vec4f( 0.0001f, 1e4f, 0.f, 0.f ); // near, far
@@ -24,10 +26,10 @@ namespace VTX::Renderer::GL
 		Vec4f outlineColor	   = Util::Color::Rgba::WHITE;
 		Vec4f selectionColor   = Util::Color::Rgba::WHITE;
 		// Compress data into vec4.
-		Vec4i boolData	= { true, false, false, false };			   // isCameraPerspective
-		Vec4i intData	= { 1, 0, 0, 0 };							   // outlineThickness
-		Vec4u uintData	= { 5, 17, uint( ENUM_SHADING::DIFFUSE ), 0 }; // ssaoIntensity, blurSize, shadingMode
-		Vec4f floatData = { 0.4f, 0.4f, 0.f, 0.f };					   // specularFactor, outlineSensivity
+		Vec4i boolData	= { true, false, false, false };			  // isCameraPerspective
+		Vec4i intData	= { 0, 0, 0, 0 };							  // outlineThickness
+		Vec4u uintData	= { 0, 0, uint( ENUM_SHADING::DIFFUSE ), 0 }; // ssaoIntensity, blurSize, shadingMode
+		Vec4f floatData = { 0.4f, 0.f, 0.f, 0.f };					  // specularFactor, outlineSensivity
 	};
 } // namespace VTX::Renderer::GL
 
