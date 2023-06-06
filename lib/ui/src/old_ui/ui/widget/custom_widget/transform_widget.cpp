@@ -95,18 +95,16 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newEuler = _applyVectorWithMask( _transform.getTranslationVector(), p_euler, p_axisMask );
 
 		_transform.setRotation( newEuler );
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
-			= _generateTransformMask( Field::Euler, p_axisMask );
-		emit onValueChange( _transform, mask );
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Euler, p_axisMask );
+		emit												onValueChange( _transform, mask );
 	}
 	void TransformWidget::_onScaleChange( const Vec3f & p_scale, const Vector3Widget::AxisMask & p_axisMask )
 	{
 		Vec3f newScale = _applyVectorWithMask( _transform.getTranslationVector(), p_scale, p_axisMask );
 
 		_transform.setScale( newScale );
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
-			= _generateTransformMask( Field::Scale, p_axisMask );
-		emit onValueChange( _transform, mask );
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Scale, p_axisMask );
+		emit												onValueChange( _transform, mask );
 	}
 
 	void TransformWidget::_onPositionDragged( const Vec3f & p_delta )
@@ -171,8 +169,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const Field &					p_field,
 		const Vector3Widget::AxisMask & p_axis )
 	{
-		App::Internal::Math::TRANSFORM_COMPOSANT_MASK res
-			= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::NONE;
+		App::Internal::Math::TRANSFORM_COMPOSANT_MASK res = App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::NONE;
 
 		switch ( p_field )
 		{
@@ -225,8 +222,7 @@ namespace VTX::UI::Widget::CustomWidget
 			break;
 
 		default:
-			VTX_ERROR( "Unknown transform mask in TransformWidget::_generateTransformMask ("
-					   + std::to_string( int( p_field ) ) + ")." );
+			VTX_ERROR( "Unknown transform mask in TransformWidget::_generateTransformMask ( {} ).", int( p_field ) );
 			break;
 		}
 

@@ -31,7 +31,7 @@ namespace VTX::App::Component::Chemistry
 			*_molecule ) );
 
 		chrono.stop();
-		VTX_DEBUG( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_DEBUG( "Secondary structure created in {}.", chrono.elapsedTimeStr() );
 	}
 
 	void SecondaryStructure::refresh()
@@ -402,9 +402,8 @@ namespace VTX::App::Component::Chemistry
 
 	void SecondaryStructure::print() const
 	{
-		VTX_DEBUG( "Control points: " + std::to_string( _bufferCaPositions.size() )
-				   + " / Indices: " + std::to_string( _bufferIndices.size() ) );
-		VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
+		VTX_DEBUG( "Control points: {} / Indices: {}.", _bufferCaPositions.size(), _bufferIndices.size() );
+		VTX_DEBUG( "Sizeof secondary structure: {}", sizeof( *this ) );
 	}
 
 } // namespace VTX::App::Component::Chemistry

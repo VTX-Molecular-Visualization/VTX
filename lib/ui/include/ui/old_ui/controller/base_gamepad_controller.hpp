@@ -47,7 +47,7 @@ namespace VTX
 							 this,
 							 [ & ]( double p_value )
 							 {
-								 VTX_DEBUG( "X: " + std::to_string( p_value ) );
+								 VTX_DEBUG( "X: {}", p_value );
 								 _axisLeft.x = p_value;
 							 } );
 					connect( _gamepad,
@@ -55,7 +55,7 @@ namespace VTX
 							 this,
 							 [ & ]( double p_value )
 							 {
-								 VTX_DEBUG( "Y: " + std::to_string( p_value ) );
+								 VTX_DEBUG( "Y: {}", p_value );
 								 _axisLeft.y = p_value;
 							 } );
 					connect( _gamepad,

@@ -201,7 +201,7 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 	}
 	void InformationWidget::_displayMovieError( QImageReader::ImageReaderError p_error ) const
 	{
-		VTX_ERROR( "Error when loading video : " + std::to_string( int( p_error ) ) );
+		VTX_ERROR( "Error when loading video : {} .", int( p_error ) );
 	}
 
 	void InformationWidget::_goToWebsite() const

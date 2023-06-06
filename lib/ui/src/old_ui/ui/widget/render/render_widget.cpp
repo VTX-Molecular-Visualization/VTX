@@ -363,8 +363,8 @@ namespace VTX::UI::Widget::Render
 			break;
 
 		default:
-			VTX_ERROR( "Overlay " + std::to_string( int( p_overlayType ) )
-					   + " not managed in RenderWidget::InstantiatedOverlay::instantiateOverlay." );
+			VTX_ERROR( "Overlay {} not managed in RenderWidget::InstantiatedOverlay::instantiateOverlay.",
+					   int( p_overlayType ) );
 			res = nullptr;
 			break;
 		}

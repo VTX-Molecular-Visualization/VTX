@@ -288,15 +288,18 @@ namespace VTX::UI::Widget::Inspector
 					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
-				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
+				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+					_changeMoleculesColor( p_color );
+					break;
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
 
 				default:
-					VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
-								 + std::to_string( int( p_representation.getRibbonData().colorMode ) )
-								 + " not managed in MultipleChainWidget::_onRepresentationColorChange." );
+					VTX_WARNING(
+						"SECONDARY_STRUCTURE_COLOR_MODE {} not managed in "
+						"MultipleChainWidget::_onRepresentationColorChange.",
+						int( p_representation.getRibbonData().colorMode ) );
 					break;
 				}
 			}
@@ -317,8 +320,8 @@ namespace VTX::UI::Widget::Inspector
 				case VTX::Core::ChemDB::Color::COLOR_MODE::RESIDUE: break;
 
 				default:
-					VTX_WARNING( "COLOR_MODE " + std::to_string( int( p_representation.getColorMode() ) )
-								 + " not managed in MultipleChainWidget::_onRepresentationColorChange." );
+					VTX_WARNING( "COLOR_MODE {} not managed in MultipleChainWidget::_onRepresentationColorChange.",
+								 int( p_representation.getColorMode() ) );
 					break;
 				}
 			}

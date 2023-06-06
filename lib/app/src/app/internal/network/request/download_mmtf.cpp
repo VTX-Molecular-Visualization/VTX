@@ -8,7 +8,7 @@ namespace VTX::App::Internal::Network::Request
 	DownloadMMTF::DownloadMMTF( const std::string & p_id ) :
 		NetworkRequest( std::string( Application::API_URL_MMTF + p_id ) ), _id( p_id )
 	{
-		VTX_INFO( "Downloading " + p_id + "..." );
+		VTX_INFO( "Downloading {}...", p_id );
 	}
 
 	void DownloadMMTF::_success( Core::Network::NetworkReply * const p_reply )

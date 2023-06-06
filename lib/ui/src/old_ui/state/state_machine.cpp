@@ -31,7 +31,7 @@ namespace VTX
 
 		void StateMachine::goToState( const App::VTX_ID & p_name, void * const p_arg )
 		{
-			VTX_DEBUG( "Go to state: " + p_name );
+			VTX_DEBUG( "Go to state: {}", p_name );
 			if ( _states.find( p_name ) != _states.end() )
 			{
 				VTX_EVENT<const App::VTX_ID &>( VTX::App::Event::Global::CHANGE_STATE, p_name );

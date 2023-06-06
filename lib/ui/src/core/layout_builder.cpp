@@ -18,7 +18,7 @@ namespace VTX::UI::Core
 
 		if ( tool == nullptr )
 		{
-			VTX_ERROR( "Tool " + p_toolDescriptor.getIdentifier() + " not loaded into VTX." );
+			VTX_ERROR( "Tool {} not loaded into VTX.", p_toolDescriptor.getIdentifier() );
 			return;
 		}
 

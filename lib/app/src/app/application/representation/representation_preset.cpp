@@ -60,8 +60,7 @@ namespace VTX::App::Application::Representation
 
 		if ( newData == nullptr )
 		{
-			VTX_WARNING( "Type " + std::to_string( int( p_newType ) )
-						 + " not managed in Representation::changeRepresentationType." );
+			VTX_WARNING( "Type {} not managed in Representation::changeRepresentationType.", int( p_newType ) );
 			newData = RepresentationDataGenerator::instantiate( REPRESENTATION_ENUM::STICK );
 		}
 

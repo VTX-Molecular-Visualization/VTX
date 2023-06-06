@@ -1,9 +1,9 @@
 #include "tool/analysis/structural_alignment/core/structural_alignment.hpp"
 #include "tool/analysis/structural_alignment/core/method/ce_align.hpp"
+#include <app/component/chemistry/molecule.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -18,8 +18,9 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 	{
 	}
 	StructuralAlignment::AlignmentMethod::AlignmentMethod() {}
-	StructuralAlignment::AlignmentResult::AlignmentResult( const App::Component::Chemistry::Molecule * const p_staticMolecule,
-														   const App::Component::Chemistry::Molecule * const p_mobileMolecule ) :
+	StructuralAlignment::AlignmentResult::AlignmentResult(
+		const App::Component::Chemistry::Molecule * const p_staticMolecule,
+		const App::Component::Chemistry::Molecule * const p_mobileMolecule ) :
 		staticMolecule( p_staticMolecule ),
 		mobileMolecule( p_mobileMolecule )
 	{
@@ -39,9 +40,10 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 		}
 	}
 
-	void StructuralAlignment::computeAlignment( const App::Component::Chemistry::Molecule * const		   p_staticMolecule,
-												const std::vector<App::Component::Chemistry::Molecule *> & p_mobilesMolecules,
-												const AlignmentParameters &			   p_parameters )
+	void StructuralAlignment::computeAlignment(
+		const App::Component::Chemistry::Molecule * const		   p_staticMolecule,
+		const std::vector<App::Component::Chemistry::Molecule *> & p_mobilesMolecules,
+		const AlignmentParameters &								   p_parameters )
 	{
 		Util::Chrono chrono = Util::Chrono();
 
@@ -62,10 +64,10 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 				chrono.start();
 				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
 				chrono.stop();
-				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
+				VTX_INFO( "Alignment computed in {}.", chrono.elapsedTimeStr() );
 
-				const App::Internal::Math::Transform transform
-					= App::Internal::Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
+				const App::Internal::Math::Transform transform = App::Internal::Math::Transform(
+					p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
 

@@ -283,7 +283,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onTransformChange(
-		const App::Internal::Math::Transform &									   p_transform,
+		const App::Internal::Math::Transform &				  p_transform,
 		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & p_mask ) const
 	{
 		if ( !signalsBlocked() )
@@ -370,9 +370,10 @@ namespace VTX::UI::Widget::Inspector
 			case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
 
 			default:
-				VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
-							 + std::to_string( int( p_representation.getRibbonData().colorMode ) )
-							 + " not managed in MultipleMoleculeWidget::_onRepresentationColorChange." );
+				VTX_WARNING(
+					"SECONDARY_STRUCTURE_COLOR_MODE {} not managed in "
+					"MultipleMoleculeWidget::_onRepresentationColorChange.",
+					int( p_representation.getRibbonData().colorMode ) );
 				break;
 			}
 		}
@@ -395,8 +396,8 @@ namespace VTX::UI::Widget::Inspector
 			case VTX::Core::ChemDB::Color::COLOR_MODE::RESIDUE: break;
 
 			default:
-				VTX_WARNING( "COLOR_MODE " + std::to_string( int( p_representation.getColorMode() ) )
-							 + " not managed in MultipleMoleculeWidget::_onRepresentationColorChange." );
+				VTX_WARNING( "COLOR_MODE {} not managed in MultipleMoleculeWidget::_onRepresentationColorChange.",
+							 int( p_representation.getColorMode() ) );
 				break;
 			}
 		}

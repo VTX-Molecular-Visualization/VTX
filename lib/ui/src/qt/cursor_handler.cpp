@@ -40,7 +40,7 @@ namespace VTX::UI::QT
 
 		if ( it != _cursorPixmaps.end() )
 		{
-			VTX_WARNING( "Cursor with key " + p_key + " already exists. It will be overrided." );
+			VTX_WARNING( "Cursor with key {} already exists. It will be overrided.", p_key );
 		}
 
 		_cursorPixmaps[ p_key ] == p_cursor;
@@ -52,7 +52,7 @@ namespace VTX::UI::QT
 
 		if ( it == _cursorPixmaps.end() )
 		{
-			VTX_ERROR( "Cursor " + p_key + " not referenced." );
+			VTX_ERROR( "Cursor {} not referenced.", p_key );
 			return;
 		}
 

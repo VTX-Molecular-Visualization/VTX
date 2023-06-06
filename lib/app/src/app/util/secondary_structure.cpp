@@ -21,7 +21,7 @@ namespace VTX::Util::App::SecondaryStructure
 
 		p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 		chrono.stop();
-		VTX_INFO( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		VTX_INFO( "Secondary structure computed in {}.", chrono.elapsedTime() );
 	}
 
 	void computeStride( VTX::App::Component::Chemistry::Molecule & p_molecule )

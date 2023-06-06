@@ -1,6 +1,6 @@
 #include "app/component/object3d/mesh_triangle.hpp"
-#include "app/mvc.hpp"
 #include "app/id.hpp"
+#include "app/mvc.hpp"
 #include "app/render/view/triangle.hpp"
 #include <numeric>
 #include <util/logger.hpp>
@@ -112,11 +112,13 @@ namespace VTX::App::Component::Object3D
 
 	void MeshTriangle::print() const
 	{
-		VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: "
-				  + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
-				  + " / Indices: " + std::to_string( _indices.size() ) );
+		VTX_INFO( "Faces: {} / Vertices: {} / Normals: {} / Indices: {}.",
+				  ( _indices.size() / 3 ),
+				  _vertices.size(),
+				  _normals.size(),
+				  _indices.size() );
 
-		VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );
+		VTX_DEBUG( "Sizeof mesh triangle: {}", sizeof( *this ) );
 	}
 
 	void MeshTriangle::toIndexed() {}
