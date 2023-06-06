@@ -65,25 +65,24 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+		// Triangles.
 		if ( in.meshes->size > 0 )
 		{
 			_programTriangle->use();
-			in.meshes->vao.drawElement( GL_TRIANGLES, 3, GL_UNSIGNED_INT );
+			in.meshes->vao.drawElement( GL_TRIANGLES, GLsizei( in.meshes->size ), GL_UNSIGNED_INT );
 		}
-		/*
-		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
+		// Spheres.
+		if ( in.molecules->sizeAtoms > 0 )
 		{
-			pair.first->render( p_scene.getCamera() );
+			_programSphere->use();
+			in.molecules->vao.drawArray( GL_POINTS, 0, GLsizei( in.molecules->sizeAtoms ) );
 		}
-		for ( const Object3D::Scene::MeshTrianglePtr & mesh : p_scene.getMeshes() )
+		// Cylinders.
+		if ( in.molecules->sizeBonds > 0 )
 		{
-			mesh->render( p_scene.getCamera() );
+			_programCylinder->use();
+			in.molecules->vao.drawElement( GL_LINES, GLsizei( in.molecules->sizeBonds ), GL_UNSIGNED_INT );
 		}
-		for ( const Object3D::Scene::HelperPtr & helper : p_scene.getHelpers() )
-		{
-			helper->render( p_scene.getCamera() );
-		}
-		*/
 
 		out.fbo.unbind();
 		glDisable( GL_DEPTH_TEST );

@@ -63,13 +63,13 @@ int main( int, char ** )
 		glfwSetFramebufferSizeCallback( window, fun );
 
 		// Camera.
-		Vec3f positionCamera = Vec3f( 0.f, 0.f, 2.f );
+		Vec3f positionCamera = Vec3f( 0.f, 0.f, 5.f );
 		Mat4f matrixView	 = Util::Math::lookAt( positionCamera, positionCamera - VEC3F_Z, VEC3F_Y );
 		renderer.setMatrixView( matrixView );
 		Mat4f projectionMatrix
 			= Util::Math::perspective( Util::Math::radians( 60.f ), float( WIDTH ) / float( HEIGHT ), 0.0001f, 1e4f );
 		renderer.setMatrixProjection( projectionMatrix );
-		auto bgColor = Util::Color::Rgba( 0.9f, 0.9f, 0.9f, 1.f );
+		auto bgColor = Util::Color::Rgba::randomPastel();
 		renderer.setBackgroundColor( bgColor );
 
 		// Sample data.
@@ -77,12 +77,19 @@ int main( int, char ** )
 		auto			 proxyMesh
 			= Renderer::GL::StructProxyMesh { &mesh.tranform,	  &mesh.vertices,	&mesh.normals, &mesh.colors,
 											  &mesh.visibilities, &mesh.selections, &mesh.ids,	   &mesh.indices };
-		renderer.addMesh( proxyMesh );
+		// renderer.addMesh( proxyMesh );
 
+		Core::StructMolecule molecule = Core::DEFAULT_MOLECULE;
+		auto proxyMolecule = Renderer::GL::StructProxyMolecule { &molecule.tranform,		 &molecule.atomPositions,
+																 &molecule.atomColors,		 &molecule.atomRadii,
+																 &molecule.atomVisibilities, &molecule.atomSelections,
+																 &molecule.atomIds,			 &molecule.bonds };
+		renderer.addMolecule( proxyMolecule );
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
-			float time		  = float( glfwGetTime() );
-			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 10.f, VEC3F_Y );
+			float time = float( glfwGetTime() );
+			// TODO: move in a dedicated SSBO.
+			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 2.f, VEC3F_Y );
 			renderer.setMatrixModelTmp( modelMatrix );
 			renderer.renderFrame();
 			glfwSwapBuffers( window );

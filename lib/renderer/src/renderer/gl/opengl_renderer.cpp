@@ -158,7 +158,22 @@ namespace VTX::Renderer::GL
 		_bufferMeshes->size = p_proxy.indices->size();
 	}
 
-	void OpenGLRenderer::addMolecule( const StructProxyMolecule & ) {}
+	void OpenGLRenderer::addMolecule( const StructProxyMolecule & p_proxy )
+	{
+		// TODO: handle multiple molecules.
+		_bufferMolecules->vboPositions.set( *p_proxy.atomPositions );
+		_bufferMolecules->vboColors.set( *p_proxy.atomColors );
+		_bufferMolecules->vboRadii.set( *p_proxy.atomRadii );
+		_bufferMolecules->vboVisibilities.set( *p_proxy.atomVisibilities );
+		_bufferMolecules->vboSelections.set( *p_proxy.atomSelections );
+		_bufferMolecules->vboIds.set( *p_proxy.atomIds );
+		if ( p_proxy.bonds->size() > 0 )
+		{
+			_bufferMolecules->eboBonds.set( *p_proxy.bonds );
+		}
+		_bufferMolecules->sizeAtoms = p_proxy.atomPositions->size();
+		_bufferMolecules->sizeBonds = p_proxy.bonds->size();
+	}
 
 	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
 	{

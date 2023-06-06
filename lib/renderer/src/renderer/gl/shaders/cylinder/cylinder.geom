@@ -6,7 +6,7 @@ layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
 // TODO: move that.
-uniform float u_cylRad;
+uniform float u_cylRad = 0.1f;
 
 // In.
 in 
