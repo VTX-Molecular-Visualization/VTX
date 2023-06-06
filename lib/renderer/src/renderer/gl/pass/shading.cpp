@@ -23,12 +23,12 @@ namespace VTX::Renderer::GL::Pass
 	void Shading::render( VertexArray & p_vao )
 	{
 		assert( in.textureDataPacked != nullptr );
-		assert( in.texture != nullptr );
+		assert( in.textureColor != nullptr );
 		assert( in.textureBlur != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		in.textureDataPacked->bindToUnit( 0 );
-		in.texture->bindToUnit( 1 );
+		in.textureColor->bindToUnit( 1 );
 		in.textureBlur->bindToUnit( 2 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );

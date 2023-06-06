@@ -14,10 +14,10 @@ namespace VTX::Renderer::GL::Pass
 
 	void FXAA::render( VertexArray & p_vao )
 	{
-		assert( in.texture != nullptr );
+		assert( in.textureColor != nullptr );
 
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		in.texture->bindToUnit( 0 );
+		in.textureColor->bindToUnit( 0 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 	}

@@ -13,17 +13,21 @@ namespace VTX::Renderer::GL::Pass
 		assert( _program != nullptr );
 	}
 
-	void Selection::resize( const size_t p_width, const size_t p_height ) { out.texture.resize( p_width, p_height ); }
+	void Selection::resize( const size_t p_width, const size_t p_height )
+	{
+		out.texture.resize( p_width, p_height );
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
+	}
 
 	void Selection::render( VertexArray & p_vao )
 	{
 		assert( in.textureDataPacked != nullptr );
-		assert( in.texture != nullptr );
+		assert( in.textureColor != nullptr );
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		in.textureDataPacked->bindToUnit( 0 );
-		in.texture->bindToUnit( 1 );
+		in.textureColor->bindToUnit( 1 );
 		in.textureDepth->bindToUnit( 2 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );

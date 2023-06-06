@@ -24,7 +24,7 @@ void main()
 		outFragColor = texture( inTextureColor, texCoord );
 	}
 	else
-	{
+	{	
 		// Get current pixel depth.
 		const float depthCenter = texture( inTextureDepth, texCoord, 0 ).x;
 		// Get cross neighbor depth
