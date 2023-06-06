@@ -86,24 +86,38 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	// const SingletonTest consInit( {} );
 }
 
+// C++20 static polymorphism with concepts.
 template<typename T>
-concept MyConcept = requires( T obj ) {
+concept canUse = requires( T t ) {
 	{
-		obj.someMethod()
+		t.use()
 	} -> std::same_as<void>;
-	{
-		obj.anotherMethod()
-	} -> std::same_as<int>;
 };
 
-template<MyConcept C>
-class BaseClass
-{
-};
-
-class DerivedClass : public BaseClass<DerivedClass>
+template<canUse T>
+class BaseClass : public T
 {
   public:
-	void someMethod() {}
-	int	 anotherMethod() { return 42; }
+	void baseMethod() {}
 };
+
+class DerivedClass
+{
+  public:
+	void use() {}
+	void derivedMethod() {}
+};
+
+TEST_CASE( "Concepts usage", "[c++20]" )
+{
+	using MyClass = BaseClass<DerivedClass>;
+	MyClass c;
+	c.use();
+	c.baseMethod();
+	c.derivedMethod();
+
+	DerivedClass d;
+	d.use();
+	// d.baseMethod(); // Forbidden.
+	d.derivedMethod();
+}
