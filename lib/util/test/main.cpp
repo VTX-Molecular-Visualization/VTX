@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <concepts>
 #include <fstream>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
@@ -84,3 +85,25 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	// const SingletonTest consMove( std::move( instance ) );
 	// const SingletonTest consInit( {} );
 }
+
+template<typename T>
+concept MyConcept = requires( T obj ) {
+	{
+		obj.someMethod()
+	} -> std::same_as<void>;
+	{
+		obj.anotherMethod()
+	} -> std::same_as<int>;
+};
+
+template<MyConcept C>
+class BaseClass
+{
+};
+
+class DerivedClass : public BaseClass<DerivedClass>
+{
+  public:
+	void someMethod() {}
+	int	 anotherMethod() { return 42; }
+};
