@@ -2,6 +2,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <renderer/gl/struct_mesh.hpp>
+#include <renderer/gl/struct_molecule.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -69,6 +71,13 @@ int main( int, char ** )
 		renderer.setMatrixProjection( projectionMatrix );
 		auto bgColor = Util::Color::Rgba( 0.9f, 0.9f, 0.9f, 1.f );
 		renderer.setBackgroundColor( bgColor );
+
+		// Sample data.
+		Core::StructMesh mesh = Core::DEFAULT_MESH;
+		auto			 proxyMesh
+			= Renderer::GL::StructProxyMesh { &mesh.tranform,	  &mesh.vertices,	&mesh.normals, &mesh.colors,
+											  &mesh.visibilities, &mesh.selections, &mesh.ids,	   &mesh.indices };
+		renderer.addMesh( proxyMesh );
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{

@@ -30,7 +30,14 @@ namespace VTX::Renderer::GL
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
 
+		// Input buffer data.
+		_bufferMeshes	 = std::make_unique<StructBufferMeshes>();
+		_bufferMolecules = std::make_unique<StructBufferMolecules>();
+
 		// Setup default routing.
+		_passGeometric.in.meshes	= _bufferMeshes.get();
+		_passGeometric.in.molecules = _bufferMolecules.get();
+
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
 		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
@@ -137,6 +144,21 @@ namespace VTX::Renderer::GL
 	{
 		return _passGeometric.getPickedData( p_x, p_y );
 	}
+
+	void OpenGLRenderer::addMesh( const StructProxyMesh & p_proxy )
+	{
+		// TODO: handle multiple meshes.
+		_bufferMeshes->vboPositions.set( *p_proxy.vertices );
+		_bufferMeshes->vboNormals.set( *p_proxy.normals );
+		_bufferMeshes->vboColors.set( *p_proxy.colors );
+		_bufferMeshes->vboVisibilities.set( *p_proxy.visibilities );
+		_bufferMeshes->vboSelections.set( *p_proxy.selections );
+		_bufferMeshes->vboIds.set( *p_proxy.ids );
+		_bufferMeshes->ebo.set( *p_proxy.indices );
+		_bufferMeshes->size = p_proxy.indices->size();
+	}
+
+	void OpenGLRenderer::addMolecule( const StructProxyMolecule & ) {}
 
 	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
 	{
