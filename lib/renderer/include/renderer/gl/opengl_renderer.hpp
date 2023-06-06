@@ -44,23 +44,21 @@ namespace VTX::Renderer::GL
 
 		bool _needUpdate = true;
 
-		VertexArray _vao = VertexArray();
-		Buffer		_vbo = Buffer();
+		VertexArray _vao;
+		Buffer		_vbo;
 
 		// TEST.
-		Buffer				 _ubo			 = Buffer();
-		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
+		Buffer				 _ubo;
+		StructGlobalUniforms _globalUniforms;
 
-		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
-		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
-		Pass::SSAO			 _passSSAO			 = Pass::SSAO();
-		Pass::Blur			 _passBlur			 = Pass::Blur();
-		Pass::Shading		 _passShading		 = Pass::Shading();
-		Pass::Outline		 _passOutline		 = Pass::Outline();
-		Pass::Selection		 _passSelection		 = Pass::Selection();
-		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
-
-		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
+		Pass::PassGeometric		 _passGeometric;
+		Pass::PassLinearizeDepth _passLinearizeDepth;
+		Pass::PassSSAO			 _passSSAO;
+		Pass::PassBlur			 _passBlur;
+		Pass::PassShading		 _passShading;
+		Pass::PassOutline		 _passOutline;
+		Pass::PassSelection		 _passSelection;
+		Pass::PassFXAA			 _passFXAA;
 
 		std::unique_ptr<ProgramManager> _programManager = nullptr;
 

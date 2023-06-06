@@ -4,31 +4,32 @@
 #include "renderer/gl/include_opengl.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "renderer/gl/vertex_array.hpp"
+#include <concepts>
 
 namespace VTX::Renderer::GL::Pass
 {
 
-	class BasePass
+	template<typename T>
+	concept Renderable = requires( T				p_pass,
+								   const size_t		p_width,
+								   const size_t		p_height,
+								   ProgramManager & p_pm,
+								   VertexArray &	p_vao ) {
+		{
+			p_pass.init( p_width, p_height, p_pm )
+		} -> std::same_as<void>;
+		{
+			p_pass.resize( p_width, p_height )
+		} -> std::same_as<void>;
+		{
+			p_pass.render( p_vao )
+		} -> std::same_as<void>;
+	};
+
+	template<Renderable R>
+	class BasePass : public R
 	{
-	  public:
-		BasePass()			= default;
-		virtual ~BasePass() = default;
-
-		virtual void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) {}
-		virtual void resize( const size_t p_width, const size_t p_height ) {}
-		virtual void render( VertexArray & p_vao ) = 0;
-
-		/*
-		struct StructIn
-		{
-			// Input data as raw pointers.
-		} in;
-
-		struct StructOut
-		{
-			// Output data.
-		} out;
-		*/
+		// Shared method for all passes.
 	};
 
 } // namespace VTX::Renderer::GL::Pass

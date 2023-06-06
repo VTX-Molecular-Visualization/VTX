@@ -8,15 +8,12 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	class LinearizeDepth : public BasePass
+	class LinearizeDepth
 	{
 	  public:
-		LinearizeDepth()		  = default;
-		virtual ~LinearizeDepth() = default;
-
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
-		void resize( const size_t p_width, const size_t p_height ) override;
-		void render( VertexArray & p_vao ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		void resize( const size_t p_width, const size_t p_height );
+		void render( VertexArray & p_vao );
 
 		struct StructIn
 		{
@@ -32,6 +29,8 @@ namespace VTX::Renderer::GL::Pass
 	  private:
 		Program * _program = nullptr;
 	};
+
+	using PassLinearizeDepth = BasePass<LinearizeDepth>;
 } // namespace VTX::Renderer::GL::Pass
 
 #endif

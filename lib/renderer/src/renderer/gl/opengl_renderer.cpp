@@ -30,23 +30,13 @@ namespace VTX::Renderer::GL
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
 
-		// Add passes.
-		_passes.emplace_back( &_passGeometric );
-		_passes.emplace_back( &_passLinearizeDepth );
-		_passes.emplace_back( &_passSSAO );
-		_passes.emplace_back( &_passBlur );
-		_passes.emplace_back( &_passShading );
-		_passes.emplace_back( &_passOutline );
-		_passes.emplace_back( &_passSelection );
-		_passes.emplace_back( &_passFXAA );
-
 		// Setup default routing.
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
 		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
 		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
 
-		_passBlur.in.texture	  = &( _passSSAO.out.texture );
+		_passBlur.in.textureColor = &( _passSSAO.out.texture );
 		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
 		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
@@ -72,10 +62,14 @@ namespace VTX::Renderer::GL
 		_height = p_height;
 
 		// Init passes.
-		for ( Pass::BasePass * const pass : _passes )
-		{
-			pass->init( _width, _height, *_programManager );
-		}
+		_passGeometric.init( p_width, p_height, *_programManager );
+		_passLinearizeDepth.init( p_width, p_height, *_programManager );
+		_passSSAO.init( p_width, p_height, *_programManager );
+		_passBlur.init( p_width, p_height, *_programManager );
+		_passShading.init( p_width, p_height, *_programManager );
+		_passOutline.init( p_width, p_height, *_programManager );
+		_passSelection.init( p_width, p_height, *_programManager );
+		_passFXAA.init( p_width, p_height, *_programManager );
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
@@ -104,10 +98,14 @@ namespace VTX::Renderer::GL
 		_width	= p_width;
 		_height = p_height;
 
-		for ( Pass::BasePass * const pass : _passes )
-		{
-			pass->resize( _width, _height );
-		}
+		_passGeometric.resize( _width, _height );
+		_passLinearizeDepth.resize( _width, _height );
+		_passSSAO.resize( _width, _height );
+		_passBlur.resize( _width, _height );
+		_passShading.resize( _width, _height );
+		_passOutline.resize( _width, _height );
+		_passSelection.resize( _width, _height );
+		_passFXAA.resize( _width, _height );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
@@ -119,11 +117,18 @@ namespace VTX::Renderer::GL
 			//_vao.drawCalls = 0;
 
 			_ubo.bind( GL_UNIFORM_BUFFER, 15 );
-			for ( Pass::BasePass * const pass : _passes )
-			{
-				pass->render( _vao );
-			}
+
+			_passGeometric.render( _vao );
+			_passLinearizeDepth.render( _vao );
+			_passSSAO.render( _vao );
+			_passBlur.render( _vao );
+			_passShading.render( _vao );
+			_passOutline.render( _vao );
+			_passSelection.render( _vao );
+			_passFXAA.render( _vao );
+
 			_ubo.unbind();
+
 			//_needUpdate = false;
 		}
 	}

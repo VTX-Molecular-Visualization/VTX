@@ -8,15 +8,12 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	class FXAA : public BasePass
+	class FXAA
 	{
 	  public:
-		FXAA()			= default;
-		virtual ~FXAA() = default;
-
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
-		void resize( const size_t p_width, const size_t p_height ) override;
-		void render( VertexArray & p_vao ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		void resize( const size_t p_width, const size_t p_height );
+		void render( VertexArray & p_vao );
 
 		struct StructIn
 		{
@@ -32,6 +29,8 @@ namespace VTX::Renderer::GL::Pass
 	  private:
 		Program * _program = nullptr;
 	};
+
+	using PassFXAA = BasePass<FXAA>;
 } // namespace VTX::Renderer::GL::Pass
 
 #endif

@@ -8,15 +8,12 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	class Shading : public BasePass
+	class Shading
 	{
 	  public:
-		Shading()		   = default;
-		virtual ~Shading() = default;
-
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
-		void resize( const size_t p_width, const size_t p_height ) override;
-		void render( VertexArray & p_vao ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		void resize( const size_t p_width, const size_t p_height );
+		void render( VertexArray & p_vao );
 
 		struct StructIn
 		{
@@ -37,6 +34,7 @@ namespace VTX::Renderer::GL::Pass
 		Program * _program = nullptr;
 	};
 
+	using PassShading = BasePass<Shading>;
 } // namespace VTX::Renderer::GL::Pass
 
 #endif
