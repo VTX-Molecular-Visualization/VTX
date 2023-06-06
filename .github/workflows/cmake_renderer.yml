@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-20.04, macos-11]
+        os: [windows-latest, ubuntu-latest, macos-latest]
       fail-fast: false
 
     steps:
