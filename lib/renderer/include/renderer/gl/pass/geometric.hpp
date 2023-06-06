@@ -31,15 +31,15 @@ namespace VTX::Renderer::GL::Pass
 				VertexArray vao				= VertexArray();
 			} triangles;
 
-			struct Atom
+			struct Sphere
 			{
 				// TODO.
-			} atoms;
+			} spheres;
 
-			struct Bond
+			struct Cylinder
 			{
 				// TODO.
-			} bonds;
+			} cylinders;
 		} in;
 
 		struct StructOut
