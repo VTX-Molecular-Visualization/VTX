@@ -19,20 +19,6 @@ namespace VTX::Core
 		std::vector<uint>			   ids;
 		std::vector<uint>			   indices;
 	};
-
-	static const StructMesh DEFAULT_MESH = StructMesh {
-		MAT4F_ID,
-		std::vector<Vec3f> { Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
-		std::vector<Vec3f> { Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
-		std::vector<Util::Color::Rgba> { Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
-										 Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
-										 Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) },
-		std::vector<uint> { 1, 1, 1, 1 },
-		std::vector<uint> { 0, 0, 0, 0 },
-		std::vector<uint> { 0, 0, 0, 0 },
-		std::vector<uint> { 0, 1, 2 }
-	};
-
 } // namespace VTX::Core
 
 #endif
