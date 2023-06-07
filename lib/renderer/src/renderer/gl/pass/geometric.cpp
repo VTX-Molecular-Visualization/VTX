@@ -62,6 +62,7 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.molecules != nullptr );
 
 		glEnable( GL_DEPTH_TEST );
+		glDepthFunc( GL_LESS );
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 

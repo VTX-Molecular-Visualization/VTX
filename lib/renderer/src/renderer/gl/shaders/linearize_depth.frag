@@ -12,6 +12,9 @@ float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 {
 	if ( isCameraPerspective() )
 	{
+		//float ndc = p_depth * 2.0 - 1.0; 
+		//return (2.0 * getCameraNear() * getCameraFar()) / (getCameraFar() + getCameraNear() - ndc * (getCameraFar() - getCameraNear()));	
+
 		// Perspective: ( zNear * zFar ) / ( zFar - depth * ( zFar - zNear ) ).	
 		return p_clipInfo[ 0 ] / ( p_clipInfo[ 1 ] - p_depth * p_clipInfo[ 2 ] );
 	}

@@ -27,25 +27,13 @@ set(GIT_TAG_GLFW 3.3.8)
 FetchContent_Declare(glfw GIT_REPOSITORY ${GIT_URL_GLFW} GIT_TAG ${GIT_TAG_GLFW})
 FetchContent_MakeAvailable(glfw)
 
-# Create executable.
-add_executable(VTX_RENDERER_TEST test/main.cpp)
-
-# Link third parties.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(VTX_RENDERER_TEST PRIVATE glfw)
-
-# Link VTX_RENDERER.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
-
-# Catch2.
-include(CTest)
-catch_discover_tests(VTX_RENDERER_TEST)
-
 # Benchmark.
-# Create executable.
-add_executable(VTX_RENDERER_BENCH bench/main.cpp)
+file(GLOB_RECURSE BENCH_FILES bench/*)
+add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
+target_include_directories(VTX_RENDERER_BENCH PUBLIC bench/imgui)
 
 # Link third parties.
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE glfw)
 
 # Link VTX_RENDERER.
