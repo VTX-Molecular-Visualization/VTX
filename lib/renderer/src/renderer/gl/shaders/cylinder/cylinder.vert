@@ -1,26 +1,27 @@
 #version 450 core
 
-layout( location = 0 ) in vec3 aVertexPosition;
-layout( location = 1 ) in vec4 aVertexColor;
-layout( location = 2 ) in float aVertexRad;
-layout( location = 3 ) in uint aVertexVis;
-layout( location = 4 ) in uint aVertexSel;
-layout( location = 5 ) in uint aVertexId;
+#include "../global_uniforms.glsl"
 
-uniform mat4 u_MVMatrix;
-uniform mat4 u_projMatrix;
+// In.
+layout( location = 0 ) in vec3  inVertexPosition;
+layout( location = 1 ) in vec4  inVertexColor;
+layout( location = 2 ) in float inVertexRad;
+layout( location = 3 ) in uint  inVertexVis;
+layout( location = 4 ) in uint  inVertexSel;
+layout( location = 5 ) in uint  inVertexId;
 
+// Out.
 out
 #include "struct_vertex_shader.glsl"
-dataOut;
+outData;
 
 void main()
 {
-	dataOut.vertexColor	 = aVertexColor;
-	dataOut.vertexVisible	 = aVertexVis;
-	dataOut.vertexSelected = aVertexSel;
-	dataOut.vertexId		 = aVertexId;
+	outData.vertexColor	   = inVertexColor;
+	outData.vertexVisible  = inVertexVis;
+	outData.vertexSelected = inVertexSel;
+	outData.vertexId	   = inVertexId;
 
 	// Vertex position in view space.
-	gl_Position = u_MVMatrix * vec4( aVertexPosition, 1.f );
+	gl_Position = getMatrixView() * getMatrixModel() * vec4( inVertexPosition, 1.f );
 }

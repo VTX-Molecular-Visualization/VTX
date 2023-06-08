@@ -34,11 +34,11 @@ namespace VTX::Renderer::GL::Pass
 	void Blur::render( VertexArray & p_vao )
 	{
 		assert( in.textureDepth != nullptr );
-		assert( in.texture != nullptr );
+		assert( in.textureColor != nullptr );
 
 		// First pass.
 		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
-		in.texture->bindToUnit( 0 );
+		in.textureColor->bindToUnit( 0 );
 		in.textureDepth->bindToUnit( 1 );
 		_program->use();
 		_program->setVec2i( "uDirection", 1, 0 );

@@ -10,7 +10,7 @@ namespace VTX::Renderer::GL
 	class Program
 	{
 	  public:
-		Program( const std::vector<FilePath> & p_shaderPaths, const std::string & p_toInject = "" ) :
+		explicit Program( const std::vector<FilePath> & p_shaderPaths, const std::string & p_toInject = "" ) :
 			_shaderPaths( p_shaderPaths ), _toInject( p_toInject )
 		{
 		}
@@ -138,7 +138,8 @@ namespace VTX::Renderer::GL
 
 		inline void setVec3fArray( const std::string & p_name, const uint p_count, const Vec3f * p_array ) const
 		{
-			glUniform3fv( getUniformLocation( p_name ), GLsizei( p_count ), (const GLfloat *)p_array );
+			glUniform3fv(
+				getUniformLocation( p_name ), GLsizei( p_count ), reinterpret_cast<const GLfloat *>( p_array ) );
 		}
 
 		void create( const std::string & );

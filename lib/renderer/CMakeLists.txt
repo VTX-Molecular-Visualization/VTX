@@ -12,7 +12,7 @@ target_include_directories(VTX_RENDERER PUBLIC include)
 
 # Link VTX_UTIL.
 if(NOT TARGET VTX_UTIL)
-	add_subdirectory(../util lib)
+	add_subdirectory(../util lib/util)
 endif()
 target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 
@@ -20,33 +20,26 @@ target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
 add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 
-# Tests.
+# Benchmark.
 set(GIT_URL_GLFW https://github.com/glfw/glfw.git)
 set(GIT_TAG_GLFW 3.3.8)
 
 FetchContent_Declare(glfw GIT_REPOSITORY ${GIT_URL_GLFW} GIT_TAG ${GIT_TAG_GLFW})
 FetchContent_MakeAvailable(glfw)
 
-# Create executable.
-add_executable(VTX_RENDERER_TEST test/main.cpp)
+file(GLOB_RECURSE BENCH_FILES bench/*)
+add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
+target_include_directories(VTX_RENDERER_BENCH PUBLIC bench/imgui)
 
 # Link third parties.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(VTX_RENDERER_TEST PRIVATE glfw)
-
-# Link VTX_RENDERER.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
-
-# Catch2.
-include(CTest)
-catch_discover_tests(VTX_RENDERER_TEST)
-
-# Benchmark.
-# Create executable.
-add_executable(VTX_RENDERER_BENCH bench/main.cpp)
-
-# Link third parties.
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE glfw)
 
 # Link VTX_RENDERER.
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
+
+# Link VTX_CORE.
+if(NOT TARGET VTX_CORE)
+	add_subdirectory(../core lib/core)
+endif()
+target_link_libraries(VTX_RENDERER_BENCH PUBLIC VTX_CORE)

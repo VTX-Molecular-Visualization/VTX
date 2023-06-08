@@ -14,20 +14,20 @@ namespace VTX::Renderer::GL
 		Buffer() = default;
 
 		template<typename T>
-		Buffer( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
+		explicit Buffer( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
 		{
 			create();
 			set<T>( p_vector, p_flags );
 		}
 
 		template<typename T>
-		Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
+		explicit Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
 		{
 			create();
 			set<T>( GLsizei( p_size ), p_data, p_flags );
 		}
 
-		Buffer( const size_t p_size, const GLbitfield p_flags = 0 )
+		explicit Buffer( const size_t p_size, const GLbitfield p_flags = 0 )
 		{
 			create();
 			set( GLsizei( p_size ), p_flags );

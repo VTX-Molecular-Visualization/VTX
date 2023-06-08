@@ -13,7 +13,7 @@ namespace VTX
 		class Logger final : public Generic::BaseStaticSingleton<Logger>
 		{
 		  public:
-			Logger( StructPrivacyToken p_token );
+			explicit Logger( StructPrivacyToken p_token );
 			Logger( std::initializer_list<int> ) = delete;
 
 			void init( const std::filesystem::path & p_logPath = std::filesystem::current_path() );

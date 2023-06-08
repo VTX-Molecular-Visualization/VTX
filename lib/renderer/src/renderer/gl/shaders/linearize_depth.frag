@@ -3,26 +3,29 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 0 ) uniform sampler2D depthTexture;
+layout( binding = 0 ) uniform sampler2D inTextureDepth;
 
 // Out.
-layout( location = 0 ) out float linearDepth;
+layout( location = 0 ) out float outLinearizedDepth;
 
-float linearizeDepth( const vec4 clipInfo, const float depth )
+float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 {
-	if ( bool(uniforms.boolData.x) )
+	if ( isCameraPerspective() )
 	{
+		//float ndc = p_depth * 2.0 - 1.0; 
+		//return (2.0 * getCameraNear() * getCameraFar()) / (getCameraFar() + getCameraNear() - ndc * (getCameraFar() - getCameraNear()));	
+
 		// Perspective: ( zNear * zFar ) / ( zFar - depth * ( zFar - zNear ) ).	
-		return clipInfo[ 0 ] / ( clipInfo[ 1 ] - depth * clipInfo[ 2 ] );
+		return p_clipInfo[ 0 ] / ( p_clipInfo[ 1 ] - p_depth * p_clipInfo[ 2 ] );
 	}
 	else
 	{
 		// Ortho: depth * (zFar - zNear) + zNear.
-		return depth * clipInfo[ 2 ] + clipInfo[ 3 ];
+		return p_depth * p_clipInfo[ 2 ] + p_clipInfo[ 3 ];
 	}
 }
 
 void main() 
 {
-	linearDepth = linearizeDepth( uniforms.cameraClipInfos, texelFetch( depthTexture, ivec2( gl_FragCoord.xy ), 0 ).x ); 
+	outLinearizedDepth = linearizeDepth( getCameraClipInfos(), texelFetch( inTextureDepth, ivec2( gl_FragCoord.xy ), 0 ).x ); 
 }

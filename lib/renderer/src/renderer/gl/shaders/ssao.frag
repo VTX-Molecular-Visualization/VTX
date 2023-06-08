@@ -1,50 +1,36 @@
 #version 450 core
 
 #include "global_uniforms.glsl"
+#include "struct_data_packed.glsl"
 
 // Crytek (Crysis) like SSAO
 
 // In.
-layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 1 ) uniform sampler2D noise;
-layout( binding = 2 ) uniform sampler2D linearDepth;
+layout( binding = 0 ) uniform usampler2D inTexturePackedData;
+layout( binding = 1 ) uniform sampler2D inTextureNoise;
+layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 uniform vec3  uAoKernel[ 512 ];
 uniform int	  uKernelSize;
 uniform float uNoiseSize;
 
 // Out.
-layout( location = 0 ) out float ambientOcclusion;
+layout( location = 0 ) out float outAmbientOcclusion;
 
 const float BIAS = 0.025f;
-
-struct UnpackedData
-{
-	vec3 viewPosition;
-	vec3 normal;
-};
-
-void unpackGBuffers( ivec2 px, out UnpackedData data )
-{
-	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
-
-	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
-	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
-	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
-}
 
 void main()
 {
 	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
-	unpackGBuffers( texPos, data );
+	unpackData( inTexturePackedData, data, texPos );
 	const vec3 pos = data.viewPosition;
 
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
 	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( noise, texPos / uNoiseSize ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / uNoiseSize ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
@@ -58,12 +44,12 @@ void main()
 		const vec3 samplePos = TBN * uAoKernel[ i ] * radius + pos;
 
 		// Project sample position.
-		vec4 offset = uniforms.matrixProjection * vec4( samplePos, 1.f );
+		vec4 offset = getMatrixProjection() * vec4( samplePos, 1.f );
 		offset.xy /= offset.w;
 		offset.xy = offset.xy * 0.5f + 0.5f;
 
 		// Get sample depth.
-		float sampleDepth = -texture( linearDepth, offset.xy ).x;
+		float sampleDepth = -texture( inTextureDepth, offset.xy ).x;
 
 		// Range check: ignore background.
 		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, radius / abs( pos.z - sampleDepth ) );
@@ -71,5 +57,5 @@ void main()
 	}
 
 	ao				 = 1.f - ( ao / uKernelSize );
-	ambientOcclusion = pow( ao, uniforms.uintData.x );
+	outAmbientOcclusion = pow( ao, getSSAOIntensity() );
 }

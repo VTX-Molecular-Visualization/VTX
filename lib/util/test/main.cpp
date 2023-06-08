@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <concepts>
 #include <fstream>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
@@ -72,7 +73,7 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	class SingletonTest : public VTX::Util::Generic::BaseStaticSingleton<SingletonTest>
 	{
 	  public:
-		SingletonTest( const StructPrivacyToken & ) {}
+		explicit SingletonTest( const StructPrivacyToken & ) {}
 		SingletonTest( std::initializer_list<int> ) = delete;
 	};
 
@@ -83,4 +84,40 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	// const SingletonTest consCopy( instance );
 	// const SingletonTest consMove( std::move( instance ) );
 	// const SingletonTest consInit( {} );
+}
+
+// C++20 static polymorphism with concepts.
+template<typename T>
+concept canUse = requires( T t ) {
+	{
+		t.use()
+	} -> std::same_as<void>;
+};
+
+template<canUse T>
+class BaseClass : public T
+{
+  public:
+	void baseMethod() {}
+};
+
+class DerivedClass
+{
+  public:
+	void use() {}
+	void derivedMethod() {}
+};
+
+TEST_CASE( "Concepts usage", "[c++20]" )
+{
+	using MyClass = BaseClass<DerivedClass>;
+	MyClass c;
+	c.use();
+	c.baseMethod();
+	c.derivedMethod();
+
+	DerivedClass d;
+	d.use();
+	// d.baseMethod(); // Forbidden.
+	d.derivedMethod();
 }

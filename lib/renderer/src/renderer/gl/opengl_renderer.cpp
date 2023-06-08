@@ -14,8 +14,8 @@ namespace VTX::Renderer::GL
 			throw GLException( "Failed to initialize GLAD" );
 		}
 
-		const unsigned char * const glVendor   = glGetString( GL_VENDOR );
-		const unsigned char * const glRenderer = glGetString( GL_RENDERER );
+		// const unsigned char * const glVendor   = glGetString( GL_VENDOR );
+		// const unsigned char * const glRenderer = glGetString( GL_RENDERER );
 
 		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
@@ -30,37 +30,34 @@ namespace VTX::Renderer::GL
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
 
-		// Add passes.
-		_passes.emplace_back( &_passGeometric );
-		_passes.emplace_back( &_passLinearizeDepth );
-		_passes.emplace_back( &_passSSAO );
-		_passes.emplace_back( &_passBlur );
-		_passes.emplace_back( &_passShading );
-		_passes.emplace_back( &_passOutline );
-		_passes.emplace_back( &_passSelection );
-		_passes.emplace_back( &_passFXAA );
+		// Input buffer data.
+		_bufferMeshes	 = std::make_unique<StructBufferMeshes>();
+		_bufferMolecules = std::make_unique<StructBufferMolecules>();
 
 		// Setup default routing.
+		_passGeometric.in.meshes	= _bufferMeshes.get();
+		_passGeometric.in.molecules = _bufferMolecules.get();
+
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
-		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
+		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
 
-		_passBlur.in.texture	  = &( _passSSAO.out.texture );
+		_passBlur.in.textureColor = &( _passSSAO.out.texture );
 		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
-		_passShading.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passShading.in.texture						= &( _passGeometric.out.textureColors );
-		_passShading.in.textureBlur					= &( _passBlur.out.texture );
+		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passShading.in.textureColor	  = &( _passGeometric.out.textureColors );
+		_passShading.in.textureBlur		  = &( _passBlur.out.texture );
 
-		_passOutline.in.texture		 = &( _passShading.out.texture );
+		_passOutline.in.textureColor = &( _passShading.out.texture );
 		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
-		_passSelection.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSelection.in.texture					  = &( _passOutline.out.texture );
-		_passSelection.in.textureDepth				  = &( _passLinearizeDepth.out.texture );
+		_passSelection.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passSelection.in.textureColor		= &( _passOutline.out.texture );
+		_passSelection.in.textureDepth		= &( _passLinearizeDepth.out.texture );
 
-		_passFXAA.in.texture = &( _passSelection.out.texture );
+		_passFXAA.in.textureColor = &( _passSelection.out.texture );
 	}
 
 	void OpenGLRenderer::init( const size_t p_width, const size_t p_height )
@@ -72,10 +69,14 @@ namespace VTX::Renderer::GL
 		_height = p_height;
 
 		// Init passes.
-		for ( Pass::BasePass * const pass : _passes )
-		{
-			pass->init( _width, _height, *_programManager );
-		}
+		_passGeometric.init( p_width, p_height, *_programManager );
+		_passLinearizeDepth.init( p_width, p_height, *_programManager );
+		_passSSAO.init( p_width, p_height, *_programManager );
+		_passBlur.init( p_width, p_height, *_programManager );
+		_passShading.init( p_width, p_height, *_programManager );
+		_passOutline.init( p_width, p_height, *_programManager );
+		_passSelection.init( p_width, p_height, *_programManager );
+		_passFXAA.init( p_width, p_height, *_programManager );
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
@@ -104,24 +105,39 @@ namespace VTX::Renderer::GL
 		_width	= p_width;
 		_height = p_height;
 
-		for ( Pass::BasePass * const pass : _passes )
-		{
-			pass->resize( _width, _height );
-		}
+		_passGeometric.resize( _width, _height );
+		_passLinearizeDepth.resize( _width, _height );
+		_passSSAO.resize( _width, _height );
+		_passBlur.resize( _width, _height );
+		_passShading.resize( _width, _height );
+		_passOutline.resize( _width, _height );
+		_passSelection.resize( _width, _height );
+		_passFXAA.resize( _width, _height );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
 
 	void OpenGLRenderer::renderFrame()
 	{
-		//_vao.drawCalls = 0;
-
-		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
-		for ( Pass::BasePass * const pass : _passes )
+		if ( _needUpdate )
 		{
-			pass->render( _vao );
+			//_vao.drawCalls = 0;
+
+			_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+
+			_passGeometric.render( _vao );
+			_passLinearizeDepth.render( _vao );
+			_passSSAO.render( _vao );
+			_passBlur.render( _vao );
+			_passShading.render( _vao );
+			_passOutline.render( _vao );
+			_passSelection.render( _vao );
+			_passFXAA.render( _vao );
+
+			_ubo.unbind();
+
+			//_needUpdate = false;
 		}
-		_ubo.unbind();
 	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
@@ -129,15 +145,55 @@ namespace VTX::Renderer::GL
 		return _passGeometric.getPickedData( p_x, p_y );
 	}
 
-	void OpenGLRenderer::setCameraMatrix( const Mat4f & p_view, const Mat4f & p_proj )
+	void OpenGLRenderer::addMesh( const StructProxyMesh & p_proxy )
 	{
-		_ubo.setSub( p_view, 0, sizeof( Mat4f ) );
-		_ubo.setSub( p_proj, sizeof( Mat4f ), sizeof( Mat4f ) );
+		// TODO: handle multiple meshes.
+		_bufferMeshes->vboPositions.set( *p_proxy.vertices );
+		_bufferMeshes->vboNormals.set( *p_proxy.normals );
+		_bufferMeshes->vboColors.set( *p_proxy.colors );
+		_bufferMeshes->vboVisibilities.set( *p_proxy.visibilities );
+		_bufferMeshes->vboSelections.set( *p_proxy.selections );
+		_bufferMeshes->vboIds.set( *p_proxy.ids );
+		_bufferMeshes->ebo.set( *p_proxy.indices );
+		_bufferMeshes->size = p_proxy.indices->size();
+	}
+
+	void OpenGLRenderer::addMolecule( const StructProxyMolecule & p_proxy )
+	{
+		// TODO: handle multiple molecules.
+		_bufferMolecules->vboPositions.set( *p_proxy.atomPositions );
+		_bufferMolecules->vboColors.set( *p_proxy.atomColors );
+		_bufferMolecules->vboRadii.set( *p_proxy.atomRadii );
+		_bufferMolecules->vboVisibilities.set( *p_proxy.atomVisibilities );
+		_bufferMolecules->vboSelections.set( *p_proxy.atomSelections );
+		_bufferMolecules->vboIds.set( *p_proxy.atomIds );
+		if ( p_proxy.bonds->size() > 0 )
+		{
+			_bufferMolecules->eboBonds.set( *p_proxy.bonds );
+		}
+		_bufferMolecules->sizeAtoms = p_proxy.atomPositions->size();
+		_bufferMolecules->sizeBonds = p_proxy.bonds->size();
+	}
+
+	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
+	{
+		_ubo.setSub( p_model, 0, sizeof( Mat4f ) );
+		_ubo.setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ), 1 * sizeof( Mat4f ), sizeof( Mat4f ) );
+	}
+
+	void OpenGLRenderer::setMatrixView( const Mat4f & p_view )
+	{
+		_ubo.setSub( p_view, 2 * sizeof( Mat4f ), sizeof( Mat4f ) );
+	}
+
+	void OpenGLRenderer::setMatrixProjection( const Mat4f & p_proj )
+	{
+		_ubo.setSub( p_proj, 3 * sizeof( Mat4f ), sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )
 	{
-		_ubo.setSub( p_color, 10 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
+		_ubo.setSub( p_color, 18 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

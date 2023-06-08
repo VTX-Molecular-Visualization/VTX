@@ -12,7 +12,11 @@
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "program_manager.hpp"
+#include "struct_buffer_meshes.hpp"
+#include "struct_buffer_molecules.hpp"
 #include "struct_global_uniforms.hpp"
+#include "struct_proxy_mesh.hpp"
+#include "struct_proxy_molecule.hpp"
 #include "vertex_array.hpp"
 #include <util/types.hpp>
 
@@ -24,38 +28,50 @@ namespace VTX::Renderer::GL
 		OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath );
 		~OpenGLRenderer() = default;
 
+		inline void setNeedUpdate( const bool p_needUpdate ) { _needUpdate = p_needUpdate; }
+
 		void init( const size_t p_width, const size_t p_height );
 		void resize( const size_t p_width, const size_t p_height );
-
 		void renderFrame();
 
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
-		void setCameraMatrix( const Mat4f & p_view, const Mat4f & p_proj );
+		void addMesh( const StructProxyMesh & );
+		void addMolecule( const StructProxyMolecule & );
+
+		void setMatrixModelTmp( const Mat4f & );
+		void setMatrixView( const Mat4f & );
+		void setMatrixProjection( const Mat4f & );
 		void setBackgroundColor( Util::Color::Rgba & );
 
 	  private:
-		size_t _width  = 0;
-		size_t _height = 0;
+		size_t _width	   = 0;
+		size_t _height	   = 0;
+		bool   _needUpdate = true;
 
-		VertexArray _vao = VertexArray();
-		Buffer		_vbo = Buffer();
+		// Quad VAO.
+		VertexArray _vao;
+		Buffer		_vbo;
 
 		// TEST.
-		Buffer				 _ubo			 = Buffer();
-		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
+		Buffer				 _ubo;
+		StructGlobalUniforms _globalUniforms;
 
-		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
-		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
-		Pass::SSAO			 _passSSAO			 = Pass::SSAO();
-		Pass::Blur			 _passBlur			 = Pass::Blur();
-		Pass::Shading		 _passShading		 = Pass::Shading();
-		Pass::Outline		 _passOutline		 = Pass::Outline();
-		Pass::Selection		 _passSelection		 = Pass::Selection();
-		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
+		// Pass.
+		Pass::PassGeometric		 _passGeometric;
+		Pass::PassLinearizeDepth _passLinearizeDepth;
+		Pass::PassSSAO			 _passSSAO;
+		Pass::PassBlur			 _passBlur;
+		Pass::PassShading		 _passShading;
+		Pass::PassOutline		 _passOutline;
+		Pass::PassSelection		 _passSelection;
+		Pass::PassFXAA			 _passFXAA;
 
-		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
+		// Input data.
+		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;
+		std::unique_ptr<StructBufferMolecules> _bufferMolecules;
 
+		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager = nullptr;
 
 		static void APIENTRY _debugMessageCallback( const GLenum   p_source,

@@ -1,5 +1,5 @@
 message("VTX")
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 project(VTX)
 
 # Get headers and sources.
@@ -20,6 +20,14 @@ add_subdirectory(lib/ui)
 target_link_libraries(VTX PRIVATE VTX_UI)
 add_subdirectory(lib/tool)
 target_link_libraries(VTX PRIVATE VTX_TOOL)
+
+# Copy dlls in .exe directory
+if(MSVC)
+	add_custom_command(TARGET VTX POST_BUILD
+	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX> $<TARGET_FILE_DIR:VTX>
+	  COMMAND_EXPAND_LISTS
+	)
+endif()
 
 # TODO: move in corresponding lib.
 if(MSVC)
@@ -43,7 +51,10 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 # TODO: move in corresponding lib.
-#win_deploy_qt(VTX)
+# Get CMake helper functions.
+# list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+# include(qt_helper)
+# win_deploy_qt(VTX)
 
 # Copy render effect presets to build directory.
 #add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory libraries ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
