@@ -1,8 +1,8 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <renderer/gl/struct_mesh.hpp>
-#include <renderer/gl/struct_molecule.hpp>
+#include <core/struct_mesh.hpp>
+#include <core/struct_molecule.hpp>
 #include <util/types.hpp>
 #include <vector>
 
