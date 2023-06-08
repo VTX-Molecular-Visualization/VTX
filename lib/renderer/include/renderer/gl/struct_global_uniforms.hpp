@@ -19,7 +19,7 @@ namespace VTX::Renderer::GL
 										cameraNearFar.y,
 										cameraNearFar.y - cameraNearFar.x,
 										cameraNearFar.x );
-		Vec4f backgroundColor  = Util::Color::Rgba::CYAN;
+		Vec4f backgroundColor  = Util::Color::Rgba::BLACK;
 		Vec4f lightColor	   = Util::Color::Rgba::WHITE;
 		Vec4f fog			   = Vec4f( 30.f, 1000.f, 0.f, 0.f ); // fogNear, fogFar, fogDensity
 		Vec4f fogColor		   = Util::Color::Rgba::WHITE;
