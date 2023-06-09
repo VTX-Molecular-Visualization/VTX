@@ -52,10 +52,17 @@ int main( int, char ** )
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
-		while ( ui.shouldClose() == 0 )
+		while ( ui.shouldClose() == false )
 		{
 			float time = float( ui.getTime() );
+			ui.processInputs();
 
+			Vec3i moveInputs = ui.consumeMoveInputs();
+			if ( moveInputs != VEC3I_ZERO )
+			{
+				Vec3i moveInputs = ui.consumeMoveInputs();
+				camera.translate( moveInputs );
+			}
 			// TODO: move in a dedicated SSBO.
 			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 0.01f, VEC3F_X );
 			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.02f, VEC3F_Y );

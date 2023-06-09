@@ -14,6 +14,14 @@ namespace VTX::Bench
 		Camera() = delete;
 		Camera( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
+		inline void translate( const Vec3f & p_moveInputs )
+		{
+			_position += p_moveInputs * _FRONT;
+			_position += p_moveInputs * _RIGHT;
+			_position += p_moveInputs * _UP;
+			_updateMatrixView();
+		}
+
 		void resize( const size_t p_width, const size_t p_height )
 		{
 			_width	= p_width;

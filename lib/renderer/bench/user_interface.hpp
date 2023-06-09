@@ -7,6 +7,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <util/logger.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Bench
 {
@@ -71,6 +72,13 @@ namespace VTX::Bench
 		inline bool	  shouldClose() const { return glfwWindowShouldClose( _window ); }
 		inline void * getProcAddress() { return reinterpret_cast<void *>( glfwGetProcAddress ); }
 
+		inline Vec3i consumeMoveInputs()
+		{
+			Vec3i deltaMoveInputs = _deltaMoveInputs;
+			_deltaMoveInputs	  = Vec3i( 0, 0, 0 );
+			return deltaMoveInputs;
+		}
+
 		void setCallbackResize( std::function<void( const size_t, const size_t )> p_callback )
 		{
 			_callbackResize = p_callback;
@@ -97,20 +105,32 @@ namespace VTX::Bench
 			glfwPollEvents();
 		}
 
-		void processInput()
+		void processInputs()
 		{
-			if ( glfwGetKey( _window, GLFW_KEY_Z ) == GLFW_PRESS ) {}
-			// cameraPos += cameraSpeed * cameraFront;
-			if ( glfwGetKey( _window, GLFW_KEY_S ) == GLFW_PRESS ) {}
-			// cameraPos -= cameraSpeed * cameraFront;
-			if ( glfwGetKey( _window, GLFW_KEY_Q ) == GLFW_PRESS ) {}
-			// cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-			if ( glfwGetKey( _window, GLFW_KEY_D ) == GLFW_PRESS ) {}
-			// cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			if ( glfwGetKey( _window, GLFW_KEY_W ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.z++;
+			}
+
+			if ( glfwGetKey( _window, GLFW_KEY_S ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.z--;
+			}
+
+			if ( glfwGetKey( _window, GLFW_KEY_A ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.x--;
+			}
+
+			if ( glfwGetKey( _window, GLFW_KEY_D ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.x++;
+			}
 		}
 
 	  private:
 		GLFWwindow * _window;
+		Vec3i		 _deltaMoveInputs;
 
 		static void _glfwErrorCallback( int p_error, const char * p_description )
 		{
