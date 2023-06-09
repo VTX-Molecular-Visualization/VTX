@@ -40,15 +40,15 @@ int main( int, char ** )
 			} );
 
 		// Sample data.
-		Core::StructMesh mesh	   = DEFAULT_MESH;
-		StructProxyMesh	 proxyMesh = { &mesh.tranform,	   &mesh.vertices,	 &mesh.normals, &mesh.colors,
-									   &mesh.visibilities, &mesh.selections, &mesh.ids,		&mesh.indices };
+		Core::Gpu::Mesh mesh	  = DEFAULT_MESH;
+		StructProxyMesh proxyMesh = { &mesh.transform,	  &mesh.vertices,	&mesh.normals, &mesh.colors,
+									  &mesh.visibilities, &mesh.selections, &mesh.ids,	   &mesh.indices };
 		// renderer.addMesh( proxyMesh );
 
-		// Core::StructMolecule molecule = DEFAULT_MOLECULE;
-		Core::StructMolecule molecule = generateAtomGrid( 50 );
-		StructProxyMolecule	 proxyMolecule
-			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
+		// Core::Gpu::Molecule molecule = DEFAULT_MOLECULE;
+		Core::Gpu::Molecule molecule = generateAtomGrid( 50 );
+		StructProxyMolecule proxyMolecule
+			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 

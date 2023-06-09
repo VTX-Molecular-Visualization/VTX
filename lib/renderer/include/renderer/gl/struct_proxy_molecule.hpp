@@ -9,14 +9,14 @@ namespace VTX::Renderer::GL
 {
 	struct StructProxyMolecule
 	{
-		Mat4f *							 tranform;
+		Mat4f *							 transform;
 		std::vector<Vec3f> *			 atomPositions;
 		std::vector<Util::Color::Rgba> * atomColors;
 		std::vector<float> *			 atomRadii;
-		std::vector<uint> *				 atomVisibilities;
-		std::vector<uint> *				 atomSelections;
-		std::vector<uint> *				 atomIds;
-		std::vector<uint> *				 bonds;
+		std::vector<size_t> *			 atomVisibilities;
+		std::vector<size_t> *			 atomSelections;
+		std::vector<size_t> *			 atomIds;
+		std::vector<size_t> *			 bonds;
 	};
 
 } // namespace VTX::Renderer::GL

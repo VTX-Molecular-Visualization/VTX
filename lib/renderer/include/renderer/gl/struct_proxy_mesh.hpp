@@ -13,10 +13,10 @@ namespace VTX::Renderer::GL
 		std::vector<Vec3f> *			 vertices;
 		std::vector<Vec3f> *			 normals;
 		std::vector<Util::Color::Rgba> * colors;
-		std::vector<uint> *				 visibilities;
-		std::vector<uint> *				 selections;
-		std::vector<uint> *				 ids;
-		std::vector<uint> *				 indices;
+		std::vector<size_t> *			 visibilities;
+		std::vector<size_t> *			 selections;
+		std::vector<size_t> *			 ids;
+		std::vector<size_t> *			 indices;
 	};
 
 } // namespace VTX::Renderer::GL

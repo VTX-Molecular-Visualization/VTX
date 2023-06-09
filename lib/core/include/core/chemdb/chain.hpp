@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_CHAIN__
 #define __VTX_CORE_CHEMDB_CHAIN__
 
+#include <string>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Core::ChemDB::Chain
@@ -12,7 +13,7 @@ namespace VTX::Core::ChemDB::Chain
 	//	NON_STANDARD
 	//};
 
-	// one color per chain id + 1 unknown
+	// Chain colors are defined by the first letter of its name
 	const size_t NB_COLORS = 26;
 
 	const Util::Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ] = {
@@ -74,6 +75,21 @@ namespace VTX::Core::ChemDB::Chain
 	};
 
 	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Util::Color::Rgba::WHITE;
+
+	inline Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
+	{
+		if ( p_chainId.empty() )
+			return CHAIN_ID_UNKNOWN_COLOR;
+
+		// chain id should be defined by one char
+		const char c = static_cast<char>( std::toupper( static_cast<unsigned char>( p_chainId[ 0 ] ) ) );
+
+		const int id = int( c ) - 65; // 65 is A
+		if ( id < 0 || id > 26 )
+			return CHAIN_ID_UNKNOWN_COLOR;
+
+		return p_isHetAtm ? CHAIN_ID_COLOR_HETATM[ id ] : CHAIN_ID_COLOR_ATOM[ id ];
+	}
 
 } // namespace VTX::Core::ChemDB::Chain
 
