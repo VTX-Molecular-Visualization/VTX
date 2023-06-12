@@ -78,7 +78,7 @@ namespace VTX::Core::Struct
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
-				return residueIndex;
+				return int( residueIndex );
 		}
 
 		return -1;
@@ -106,11 +106,11 @@ namespace VTX::Core::Struct
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_residueData->symbolStr )
-				return residueIndex;
+				return int( residueIndex );
 		}
 
 		_unknownResidueSymbol.emplace_back( p_residueData );
-		return residueIndex;
+		return int( residueIndex );
 	}
 
 	bool Molecule::isEmpty()
