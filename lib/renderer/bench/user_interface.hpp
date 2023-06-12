@@ -69,6 +69,7 @@ namespace VTX::Bench
 		}
 
 		inline double getTime() const { return glfwGetTime(); }
+		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
 		inline bool	  shouldClose() const { return glfwWindowShouldClose( _window ); }
 		inline void * getProcAddress() { return reinterpret_cast<void *>( glfwGetProcAddress ); }
 
@@ -91,6 +92,7 @@ namespace VTX::Bench
 			ImGui::NewFrame();
 
 			ImGui::Begin( "Render passes" );
+			// TODO.
 
 			ImGui::End();
 
@@ -111,20 +113,25 @@ namespace VTX::Bench
 			{
 				_deltaMoveInputs.z++;
 			}
-
 			if ( glfwGetKey( _window, GLFW_KEY_S ) == GLFW_PRESS )
 			{
 				_deltaMoveInputs.z--;
 			}
-
 			if ( glfwGetKey( _window, GLFW_KEY_A ) == GLFW_PRESS )
 			{
 				_deltaMoveInputs.x--;
 			}
-
 			if ( glfwGetKey( _window, GLFW_KEY_D ) == GLFW_PRESS )
 			{
 				_deltaMoveInputs.x++;
+			}
+			if ( glfwGetKey( _window, GLFW_KEY_R ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.y++;
+			}
+			if ( glfwGetKey( _window, GLFW_KEY_F ) == GLFW_PRESS )
+			{
+				_deltaMoveInputs.y--;
 			}
 		}
 

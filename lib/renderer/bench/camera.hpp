@@ -16,9 +16,9 @@ namespace VTX::Bench
 
 		inline void translate( const Vec3f & p_moveInputs )
 		{
-			_position += p_moveInputs * _FRONT;
-			_position += p_moveInputs * _RIGHT;
-			_position += p_moveInputs * _UP;
+			_position += p_moveInputs * _FRONT * _translationVelocity;
+			_position += p_moveInputs * _RIGHT * _translationVelocity;
+			_position += p_moveInputs * _UP * _translationVelocity;
 			_updateMatrixView();
 		}
 
@@ -51,7 +51,9 @@ namespace VTX::Bench
 		float  _fov		 = 60.f;
 		float  _near	 = 0.0001f;
 		float  _far		 = 1e4f;
-		Vec3f  _position = Vec3f( 0.f, 0.f, 100.f );
+		Vec3f  _position = Vec3f( 0.f, 0.f, 10.f );
+
+		float _translationVelocity = 10.f;
 
 		std::function<void( const Mat4f & )> _callbackMatrixView;
 		std::function<void( const Mat4f & )> _callbackMatrixProjection;

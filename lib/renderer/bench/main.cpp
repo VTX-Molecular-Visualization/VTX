@@ -5,8 +5,16 @@
 #include <renderer/gl/opengl_renderer.hpp>
 #include <util/math.hpp>
 
-constexpr size_t WIDTH	= 1920;
-constexpr size_t HEIGHT = 1200;
+#ifdef _WIN32
+extern "C"
+{
+	__declspec( dllexport ) uint32_t NvOptimusEnablement			 = 0x00000001;
+	__declspec( dllexport ) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
+constexpr size_t WIDTH	= 800;
+constexpr size_t HEIGHT = 600;
 
 int main( int, char ** )
 {
@@ -40,13 +48,13 @@ int main( int, char ** )
 			} );
 
 		// Sample data.
-		Core::StructMesh mesh	   = DEFAULT_MESH;
-		StructProxyMesh	 proxyMesh = { &mesh.tranform,	   &mesh.vertices,	 &mesh.normals, &mesh.colors,
-									   &mesh.visibilities, &mesh.selections, &mesh.ids,		&mesh.indices };
+		// Core::StructMesh mesh	   = DEFAULT_MESH;
+		// StructProxyMesh	 proxyMesh = { &mesh.tranform,	   &mesh.vertices,	 &mesh.normals, &mesh.colors,
+		//							   &mesh.visibilities, &mesh.selections, &mesh.ids,		&mesh.indices };
 		// renderer.addMesh( proxyMesh );
 
 		// Core::StructMolecule molecule = DEFAULT_MOLECULE;
-		Core::StructMolecule molecule = generateAtomGrid( 50 );
+		Core::StructMolecule molecule = generateAtomGrid( 9 );
 		StructProxyMolecule	 proxyMolecule
 			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
@@ -60,8 +68,7 @@ int main( int, char ** )
 			Vec3i moveInputs = ui.consumeMoveInputs();
 			if ( moveInputs != VEC3I_ZERO )
 			{
-				Vec3i moveInputs = ui.consumeMoveInputs();
-				camera.translate( moveInputs );
+				camera.translate( Vec3f( moveInputs ) * ui.getDeltaTime() );
 			}
 			// TODO: move in a dedicated SSBO.
 			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 0.01f, VEC3F_X );

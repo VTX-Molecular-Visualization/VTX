@@ -14,10 +14,10 @@ namespace VTX::Renderer::GL
 			throw GLException( "Failed to initialize GLAD" );
 		}
 
-		// const unsigned char * const glVendor   = glGetString( GL_VENDOR );
-		// const unsigned char * const glRenderer = glGetString( GL_RENDERER );
+		const char * const glVendor	  = reinterpret_cast<const char * const>( glGetString( GL_VENDOR ) );
+		const char * const glRenderer = reinterpret_cast<const char * const>( glGetString( GL_RENDERER ) );
 
-		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
+		VTX_INFO( "Device: {} {}", glVendor, glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
 #if ( VTX_OPENGL_VERSION == 450 )
