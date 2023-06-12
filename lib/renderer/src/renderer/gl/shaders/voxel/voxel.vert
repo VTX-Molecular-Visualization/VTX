@@ -16,5 +16,5 @@ void main()
 	vec3 center = ( inVoxelMin + inVoxelMax ) / 2.f;
 	outData.center = center;
 	outData.voxelSize = inVoxelMax - inVoxelMin;		
-	gl_Position =  getMatrixProjection() * getMatrixView() * getMatrixModel() * vec4( center, 1.f );
+	gl_Position =  uniforms.matrixProjection * uniforms.matrixView * uniforms.matrixModel * vec4( center, 1.f );
 }

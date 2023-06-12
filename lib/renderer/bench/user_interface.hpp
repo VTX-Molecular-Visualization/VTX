@@ -7,6 +7,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <renderer/gl/opengl_renderer.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -86,19 +87,19 @@ namespace VTX::Bench
 			_callbackResize = p_callback;
 		}
 
-		void draw( Camera * const p_camera )
+		void draw( Renderer::GL::OpenGLRenderer * const p_renderer, Camera * const p_camera )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
 			// Camera.
-			float		near		  = p_camera->getNear();
-			float		far			  = p_camera->getFar();
-			float		fov			  = p_camera->getFov();
-			static bool isPerspective = true;
+			static float near = p_camera->getNear();
+			static float far  = p_camera->getFar();
+			static float fov  = p_camera->getFov();
+			// static bool	 isPerspective = true;
 			ImGui::Begin( "Camera" );
-			ImGui::Checkbox( "Perspective", &isPerspective );
+			// ImGui::Checkbox( "Perspective", &isPerspective );
 			if ( ImGui::InputFloat( "Near", &near ) )
 			{
 				p_camera->setNear( near );
@@ -114,23 +115,99 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Passes.
+			static Util::Color::Rgba		  colorBG		   = p_renderer->getColorBackground();
+			static Util::Color::Rgba		  colorLight	   = p_renderer->getColorLight();
+			static Util::Color::Rgba		  colorFog		   = p_renderer->getColorFog();
+			static Util::Color::Rgba		  colorOutline	   = p_renderer->getColorOutline();
+			static Util::Color::Rgba		  colorSelection   = p_renderer->getColorSelection();
+			static float					  specularFactor   = p_renderer->getSpecularFactor();
+			static float					  fogNear		   = p_renderer->getFogNear();
+			static float					  fogFar		   = p_renderer->getFogFar();
+			static float					  fogDensity	   = p_renderer->getFogDensity();
+			static float					  ssaoIntensity	   = p_renderer->getSSAOIntensity();
+			static float					  blurSize		   = p_renderer->getBlurSize();
+			static float					  outlineSensivity = p_renderer->getOutlineSensivity();
+			static float					  outlineThickness = p_renderer->getOutlineThickness();
+			static Renderer::GL::ENUM_SHADING shadingMode	   = p_renderer->getShadingMode();
+
 			ImGui::Begin( "Render passes" );
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "Geometric" ) ) {}
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "Linearize depth" ) ) {}
 			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "SSAO" ) ) {}
+			if ( ImGui::CollapsingHeader( "SSAO + Blur" ) )
+			{
+				if ( ImGui::InputFloat( "Intensity", &ssaoIntensity ) )
+				{
+					p_renderer->setSSAOIntensity( ssaoIntensity );
+				}
+				if ( ImGui::InputFloat( "Blur size", &blurSize ) )
+				{
+					p_renderer->setBlurSize( blurSize );
+				}
+			}
 			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Blur #1" ) ) {}
+			if ( ImGui::CollapsingHeader( "Shading" ) )
+			{
+				const char * shadings[] = { "DIFFUSE", "GLOSSY", "TOON", "FLAT" };
+				if ( ImGui::Combo( "Mode", (int *)( &shadingMode ), shadings, IM_ARRAYSIZE( shadings ) ) )
+				{
+					p_renderer->setShadingMode( shadingMode );
+				}
+				if ( ImGui::InputFloat( "Specular factor", &specularFactor ) )
+				{
+					p_renderer->setSpecularFactor( specularFactor );
+				}
+				if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
+				{
+					p_renderer->setColorBackground( colorBG );
+				}
+				if ( ImGui::ColorEdit4( "Light", (float *)( &colorLight ) ) )
+				{
+					p_renderer->setColorLight( colorLight );
+				}
+				if ( ImGui::InputFloat( "Fog near", &fogNear ) )
+				{
+					p_renderer->setFogNear( fogNear );
+				}
+				if ( ImGui::InputFloat( "Fog far", &fogFar ) )
+				{
+					p_renderer->setFogFar( fogFar );
+				}
+				if ( ImGui::InputFloat( "Fog density", &fogDensity ) )
+				{
+					p_renderer->setFogDensity( fogDensity );
+				}
+				if ( ImGui::ColorEdit4( "Fog color", (float *)( &colorFog ) ) )
+				{
+					p_renderer->setColorFog( colorFog );
+				}
+			}
 			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Blur #2" ) ) {}
+			if ( ImGui::CollapsingHeader( "Outline" ) )
+			{
+				if ( ImGui::InputFloat( "Sensivity", &outlineSensivity ) )
+				{
+					p_renderer->setOutlineSensivity( outlineSensivity );
+				}
+				if ( ImGui::InputFloat( "Thickness", &outlineThickness ) )
+				{
+					p_renderer->setOutlineThickness( outlineThickness );
+				}
+				if ( ImGui::ColorEdit4( "Outline##Color", (float *)( &colorOutline ) ) )
+				{
+					p_renderer->setColorOutline( colorOutline );
+				}
+			}
 			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Shading" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Outline" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Selection" ) ) {}
+			if ( ImGui::CollapsingHeader( "Selection" ) )
+			{
+				if ( ImGui::ColorEdit4( "Selection##Color", (float *)( &colorSelection ) ) )
+				{
+					p_renderer->setColorSelection( colorSelection );
+				}
+			}
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "FXAA" ) ) {}
 

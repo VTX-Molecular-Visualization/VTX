@@ -43,6 +43,6 @@ void main()
 		const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 );
 
 		// Apply outline if edge depth is greater than threshold.
-		outFragColor = edgeDepth > threshold + 0.025 ? getSelectionColor() : texture( inTextureColor, texCoord );
+		outFragColor = edgeDepth > threshold + 0.025 ? uniforms.colorSelection : texture( inTextureColor, texCoord );
 	}
 }

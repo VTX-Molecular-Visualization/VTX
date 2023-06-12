@@ -14,18 +14,27 @@ namespace VTX::Renderer::GL
 		Mat4f matrixNormal = MAT4F_ID; // TODO: will be moved.
 		Mat4f matrixView;
 		Mat4f matrixProjection;
+
 		Vec4f cameraClipInfos; // _near * _far, _far, _far - _near, _near
-		Vec4f backgroundColor = Util::Color::Rgba::BLACK;
-		Vec4f lightColor	  = Util::Color::Rgba::WHITE;
-		Vec4f fog			  = Vec4f( 30.f, 1000.f, 0.f, 0.f ); // fogNear, fogFar, fogDensity
-		Vec4f fogColor		  = Util::Color::Rgba::WHITE;
-		Vec4f outlineColor	  = Util::Color::Rgba::WHITE;
-		Vec4f selectionColor  = Util::Color::Rgba::WHITE;
-		// Compress data into vec4.
-		Vec4i boolData	= { true, false, false, false };			  // isCameraPerspective
-		Vec4i intData	= { 0, 0, 0, 0 };							  // outlineThickness
-		Vec4u uintData	= { 0, 0, uint( ENUM_SHADING::DIFFUSE ), 0 }; // ssaoIntensity, blurSize, shadingMode
-		Vec4f floatData = { 0.4f, 0.f, 0.f, 0.f };					  // specularFactor, outlineSensivity
+
+		Util::Color::Rgba colorBackground = Util::Color::Rgba::BLACK;
+		Util::Color::Rgba colorLight	  = Util::Color::Rgba::WHITE;
+		Util::Color::Rgba colorFog		  = Util::Color::Rgba::WHITE;
+		Util::Color::Rgba colorOutline	  = Util::Color::Rgba::WHITE;
+		Util::Color::Rgba colorSelection  = Util::Color::Rgba::WHITE;
+
+		float specularFactor = 0.4f;
+		float fogNear		 = 30.f;
+		float fogFar		 = 80.f;
+		float fogDensity	 = 0.f;
+
+		float ssaoIntensity	   = 5.f;
+		float blurSize		   = 17.f;
+		float outlineSensivity = 0.4f;
+		float outlineThickness = 1.f;
+
+		ENUM_SHADING shadingMode		 = ENUM_SHADING::DIFFUSE;
+		bool		 isCameraPerspective = true;
 	};
 } // namespace VTX::Renderer::GL
 

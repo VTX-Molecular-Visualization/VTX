@@ -18,19 +18,19 @@ outData;
 void emitQuad( const vec3 p_v1, const vec3 p_v2, const vec3 p_v3, const vec3 p_v4 )
 {
 	outData.viewImpPos = p_v1;
-	gl_Position		   = getMatrixProjection() * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v2;
-	gl_Position		   = getMatrixProjection() * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v3;
-	gl_Position	       = getMatrixProjection() * vec4( outData.viewImpPos, 1.f );
+	gl_Position	       = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v4;
-	gl_Position		   = getMatrixProjection() * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();

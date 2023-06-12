@@ -18,8 +18,8 @@ void main()
 	const float depthCenter = texture( inTextureDepth, texCoord, 0 ).x;
 
 	//
-	float halfThicknessFloor = floor( getOutlineThickness() * 0.5f );
-	float halfThicknessCeil	 = ceil(  getOutlineThickness() * 0.5f );
+	float halfThicknessFloor = floor( uniforms.outlineThickness * 0.5f );
+	float halfThicknessCeil	 = ceil(  uniforms.outlineThickness * 0.5f );
 
 	// Get cross neighbor depth
 	const ivec2 offsets[ 4 ] = { ivec2( -halfThicknessFloor, -halfThicknessFloor ),
@@ -40,8 +40,8 @@ void main()
 	const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 ) * 100.f;
 
 	// Compute threshold.
-	const float depthThreshold = ( 1.f / getOutlineSensivity() ) * depthCenter; // max( 1.f, depthCenter );
+	const float depthThreshold = ( 1.f / uniforms.outlineSensivity ) * depthCenter; // max( 1.f, depthCenter );
 
 	// Apply outline if edge depth is greater than threshold.
-	outFragColor = edgeDepth > depthThreshold ? getOutlineColor() : texture( inTextureColor, texCoord );
+	outFragColor = edgeDepth > depthThreshold ? uniforms.colorOutline : texture( inTextureColor, texCoord );
 }

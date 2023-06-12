@@ -12,7 +12,7 @@ outData;
 
 void main()
 {
-	outData.viewPosition = vec3( getMatrixView() * getMatrixModel() * vec4( inVertexPosition, 1.f ) );
-	outData.normal	     = normalize( vec3( getMatrixNormal() * vec4( inVertexPosition, 1.f ) ) );
-	gl_Position		     = getMatrixProjection() * vec4( outData.viewPosition, 1.f );
+	outData.viewPosition = vec3( uniforms.matrixView *  uniforms.matrixModel * vec4( inVertexPosition, 1.f ) );
+	outData.normal	     = normalize( vec3( uniforms.matrixNormal * vec4( inVertexPosition, 1.f ) ) );
+	gl_Position		     =  uniforms.matrixProjection * vec4( outData.viewPosition, 1.f );
 }

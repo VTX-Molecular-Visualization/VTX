@@ -25,39 +25,39 @@ void main()
 
 	if ( data.viewPosition.z == 0.f )
 	{
-		if ( getFogDensity() != 0.f )
+		if ( uniforms.fogDensity != 0.f )
 		{
-			outFragColor = vec4( mix( vec3( getBackgroundColor() ),  vec3( getFogColor() ), getFogDensity() ) *  vec3( getLightColor() ), getBackgroundColor().w );
+			outFragColor = vec4( mix( vec3( uniforms.colorBackground ),  vec3( uniforms.colorFog ), uniforms.fogDensity ) *  vec3( uniforms.colorLight ), uniforms.colorBackground.w );
 		}
 		else
 		{
-			outFragColor = getBackgroundColor();
+			outFragColor = uniforms.colorBackground;
 		}
 		return;
 	}
 
 	// Lighting (on camera).
-	const vec3 lightDir = isCameraPerspective() ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	const vec3 lightDir = uniforms.isCameraPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
 	// FLAT_COLOR.
 	float lighting = 1.f;
 	// DIFFUSE.
-	if( getShadingMode() == DIFFUSE )
+	if( uniforms.shadingMode == DIFFUSE )
 	{		
 		lighting = max( dot( data.normal, lightDir ), 0.f );
 	}
 	// GLOSSY.
-	else if( getShadingMode() == GLOSSY )
+	else if( uniforms.shadingMode == GLOSSY )
 	{		
-		const float diffuse = 1.f - getSpecularFactor();
+		const float diffuse = 1.f - uniforms.specularFactor;
 		const vec3	viewDir = normalize( -data.viewPosition );
 		const vec3	h		= normalize( lightDir + viewDir );
-		const float specular = getSpecularFactor() * pow( max( dot( h, data.normal ), 0.f ), texelFetch( inTextureColor, texCoord, 0 ).w );
+		const float specular = uniforms.specularFactor * pow( max( dot( h, data.normal ), 0.f ), texelFetch( inTextureColor, texCoord, 0 ).w );
 		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 		lighting = ( diffuse + specular ) * cosTheta;
 	}
 	// TOON.
-	else if( getShadingMode() == TOON ) 
+	else if( uniforms.shadingMode == TOON ) 
 	{
 		const float intensity = dot( data.normal, lightDir );		
 
@@ -69,8 +69,8 @@ void main()
 
 	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
 
-	const float fogFactor = smoothstep( getFogNear(), getFogFar(), -data.viewPosition.z ) * getFogDensity();
+	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
 
-	outFragColor = vec4( mix( color, vec3( getFogColor() ), fogFactor ) * vec3( getLightColor() ), 1.f );
+	outFragColor = vec4( mix( color, vec3( uniforms.colorFog ), fogFactor ) * vec3( uniforms.colorLight ), 1.f );
 }

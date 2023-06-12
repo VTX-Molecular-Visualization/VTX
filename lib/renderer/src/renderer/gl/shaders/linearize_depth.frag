@@ -10,7 +10,7 @@ layout( location = 0 ) out float outLinearizedDepth;
 
 float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 {
-	if ( isCameraPerspective() )
+	if ( uniforms.isCameraPerspective )
 	{
 		//float ndc = p_depth * 2.0 - 1.0; 
 		//return (2.0 * getCameraNear() * getCameraFar()) / (getCameraFar() + getCameraNear() - ndc * (getCameraFar() - getCameraNear()));	
@@ -27,5 +27,5 @@ float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 
 void main() 
 {
-	outLinearizedDepth = linearizeDepth( getCameraClipInfos(), texelFetch( inTextureDepth, ivec2( gl_FragCoord.xy ), 0 ).x ); 
+	outLinearizedDepth = linearizeDepth( uniforms.cameraClipInfos, texelFetch( inTextureDepth, ivec2( gl_FragCoord.xy ), 0 ).x ); 
 }

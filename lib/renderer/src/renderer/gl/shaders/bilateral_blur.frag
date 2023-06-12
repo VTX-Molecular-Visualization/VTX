@@ -17,7 +17,7 @@ void main()
 
 	const float inputCenter = texelFetch( inTextureColor, texCoord, 0 ).x;
 	const float depthCenter = texelFetch( inTextureDepth, texCoord, 0 ).x;
-	const float blurSigma	= getBlurSize() * 0.5f;
+	const float blurSigma	= uniforms.blurSize * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
 	// Adapt sharpness wrt depth: the deeper the fragment is, the weaker the sharpness is.
@@ -27,7 +27,7 @@ void main()
 	float weight = 1.f;
 
 	// Compute blur contribution on each side in the given direction.
-	for ( int i = 1; i <= getBlurSize(); ++i )
+	for ( int i = 1; i <= uniforms.blurSize; ++i )
 	{
 		const ivec2 uv			 = texCoord + i * uDirection;
 		const float inputCurrent = texelFetch( inTextureColor, uv, 0 ).x;
@@ -40,7 +40,7 @@ void main()
 		res += inputCurrent * w;
 		weight += w;
 	}
-	for ( int i = 1; i <= getBlurSize(); ++i )
+	for ( int i = 1; i <= uniforms.blurSize; ++i )
 	{
 		const ivec2 uv			 = texCoord - i * uDirection;
 		const float inputCurrent = texelFetch( inTextureColor, uv, 0 ).x;

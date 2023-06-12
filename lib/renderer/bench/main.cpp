@@ -79,7 +79,7 @@ int main( int, char ** )
 			renderer.setMatrixModelTmp( modelMatrix );
 
 			renderer.renderFrame();
-			ui.draw( &camera );
+			ui.draw( &renderer, &camera );
 		}
 	}
 	catch ( const std::exception & p_e )
