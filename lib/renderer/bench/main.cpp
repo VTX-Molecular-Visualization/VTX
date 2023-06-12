@@ -38,6 +38,8 @@ int main( int, char ** )
 		camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); } );
 		camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
 											{ renderer.setMatrixProjection( p_matrix ); } );
+		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
+									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
 		// Resize.
 		ui.setCallbackResize(
@@ -77,7 +79,7 @@ int main( int, char ** )
 			renderer.setMatrixModelTmp( modelMatrix );
 
 			renderer.renderFrame();
-			ui.draw();
+			ui.draw( &camera );
 		}
 	}
 	catch ( const std::exception & p_e )

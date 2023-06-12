@@ -42,7 +42,9 @@ namespace VTX::Renderer::GL
 		void setMatrixModelTmp( const Mat4f & );
 		void setMatrixView( const Mat4f & );
 		void setMatrixProjection( const Mat4f & );
+		void setCameraClipInfos( const float, const float );
 		void setBackgroundColor( Util::Color::Rgba & );
+		void setLightColor( Util::Color::Rgba & );
 
 	  private:
 		size_t _width	   = 0;

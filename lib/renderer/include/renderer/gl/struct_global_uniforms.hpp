@@ -10,21 +10,17 @@ namespace VTX::Renderer::GL
 	// TODO: model and normal matrix.
 	struct StructGlobalUniforms
 	{
-		Mat4f matrixModel	   = MAT4F_ID; // TODO: will be moved.
-		Mat4f matrixNormal	   = MAT4F_ID; // TODO: will be moved.
-		Mat4f matrixView	   = MAT4F_ID;
-		Mat4f matrixProjection = MAT4F_ID;
-		Vec4f cameraNearFar	   = Vec4f( 0.0001f, 1e4f, 0.f, 0.f ); // near, far
-		Vec4f cameraClipInfos  = Vec4f( cameraNearFar.x * cameraNearFar.y,
-										cameraNearFar.y,
-										cameraNearFar.y - cameraNearFar.x,
-										cameraNearFar.x );
-		Vec4f backgroundColor  = Util::Color::Rgba::BLACK;
-		Vec4f lightColor	   = Util::Color::Rgba::WHITE;
-		Vec4f fog			   = Vec4f( 30.f, 1000.f, 0.f, 0.f ); // fogNear, fogFar, fogDensity
-		Vec4f fogColor		   = Util::Color::Rgba::WHITE;
-		Vec4f outlineColor	   = Util::Color::Rgba::WHITE;
-		Vec4f selectionColor   = Util::Color::Rgba::WHITE;
+		Mat4f matrixModel  = MAT4F_ID; // TODO: will be moved.
+		Mat4f matrixNormal = MAT4F_ID; // TODO: will be moved.
+		Mat4f matrixView;
+		Mat4f matrixProjection;
+		Vec4f cameraClipInfos; // _near * _far, _far, _far - _near, _near
+		Vec4f backgroundColor = Util::Color::Rgba::BLACK;
+		Vec4f lightColor	  = Util::Color::Rgba::WHITE;
+		Vec4f fog			  = Vec4f( 30.f, 1000.f, 0.f, 0.f ); // fogNear, fogFar, fogDensity
+		Vec4f fogColor		  = Util::Color::Rgba::WHITE;
+		Vec4f outlineColor	  = Util::Color::Rgba::WHITE;
+		Vec4f selectionColor  = Util::Color::Rgba::WHITE;
 		// Compress data into vec4.
 		Vec4i boolData	= { true, false, false, false };			  // isCameraPerspective
 		Vec4i intData	= { 0, 0, 0, 0 };							  // outlineThickness

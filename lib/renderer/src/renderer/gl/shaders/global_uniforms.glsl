@@ -4,7 +4,6 @@ layout ( std140, binding = 15 ) uniform Uniforms
 	mat4 matrixNormal;
 	mat4 matrixView;	
 	mat4 matrixProjection;
-	vec4 cameraNearFar; // near, far
 	vec4 cameraClipInfos;
 	vec4 backgroundColor;
 	vec4 lightColor;
@@ -37,16 +36,6 @@ mat4 getMatrixView()
 mat4 getMatrixProjection()
 {
 	return uniforms.matrixProjection;
-}
-
-float getCameraNear()
-{
-	return uniforms.cameraNearFar.x;
-}
-
-float getCameraFar()
-{
-	return uniforms.cameraNearFar.y;
 }
 
 vec4 getCameraClipInfos()

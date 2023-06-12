@@ -191,9 +191,14 @@ namespace VTX::Renderer::GL
 		_ubo.setSub( p_proj, 3 * sizeof( Mat4f ), sizeof( Mat4f ) );
 	}
 
+	void OpenGLRenderer::setCameraClipInfos( const float p_near, const float p_far )
+	{
+		_ubo.setSub( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), 4 * sizeof( Mat4f ), sizeof( Vec4f ) );
+	}
+
 	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )
 	{
-		_ubo.setSub( p_color, 18 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
+		_ubo.setSub( p_color, 14 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

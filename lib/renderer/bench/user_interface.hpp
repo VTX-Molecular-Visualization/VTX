@@ -2,10 +2,11 @@
 #define __VTX_BENCH_USER_INTERFACE__
 
 #define GLFW_INCLUDE_NONE
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "camera.hpp"
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -85,14 +86,53 @@ namespace VTX::Bench
 			_callbackResize = p_callback;
 		}
 
-		void draw()
+		void draw( Camera * const p_camera )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
+			// Camera.
+			float		near		  = p_camera->getNear();
+			float		far			  = p_camera->getFar();
+			float		fov			  = p_camera->getFov();
+			static bool isPerspective = true;
+			ImGui::Begin( "Camera" );
+			ImGui::Checkbox( "Perspective", &isPerspective );
+			if ( ImGui::InputFloat( "Near", &near ) )
+			{
+				p_camera->setNear( near );
+			}
+			if ( ImGui::InputFloat( "Far", &far ) )
+			{
+				p_camera->setFar( far );
+			}
+			if ( ImGui::InputFloat( "Fov", &fov ) )
+			{
+				p_camera->setFov( fov );
+			}
+			ImGui::End();
+
+			// Passes.
 			ImGui::Begin( "Render passes" );
-			// TODO.
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Geometric" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Linearize depth" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "SSAO" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Blur #1" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Blur #2" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Shading" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Outline" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Selection" ) ) {}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "FXAA" ) ) {}
 
 			ImGui::End();
 
