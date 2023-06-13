@@ -13,8 +13,8 @@ extern "C"
 }
 #endif
 
-constexpr size_t WIDTH	= 800;
-constexpr size_t HEIGHT = 600;
+constexpr size_t WIDTH	= 1920;
+constexpr size_t HEIGHT = 1200;
 
 int main( int, char ** )
 {
@@ -73,9 +73,9 @@ int main( int, char ** )
 				camera.translate( Vec3f( moveInputs ) * ui.getDeltaTime() );
 			}
 			// TODO: move in a dedicated SSBO.
-			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 0.01f, VEC3F_X );
-			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.02f, VEC3F_Y );
-			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.005f, VEC3F_Z );
+			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
+			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
+			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
 			renderer.setMatrixModelTmp( modelMatrix );
 
 			renderer.renderFrame();

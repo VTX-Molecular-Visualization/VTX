@@ -40,7 +40,7 @@ namespace VTX::Bench
 			}
 
 			glfwMakeContextCurrent( _window );
-			glfwSwapInterval( 1 );
+			glfwSwapInterval( _vsync );
 
 			// Init ImGui.
 			IMGUI_CHECKVERSION();
@@ -50,7 +50,6 @@ namespace VTX::Bench
 			ImGui_ImplOpenGL3_Init( "#version 450 core" );
 
 			// Resize.
-
 			glfwSetFramebufferSizeCallback( _window,
 											[]( GLFWwindow * p_window, int p_width, int p_height )
 											{
@@ -74,6 +73,11 @@ namespace VTX::Bench
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
 		inline bool	  shouldClose() const { return glfwWindowShouldClose( _window ); }
 		inline void * getProcAddress() { return reinterpret_cast<void *>( glfwGetProcAddress ); }
+		inline void	  setVSync( const bool p_vsync )
+		{
+			_vsync = p_vsync;
+			glfwSwapInterval( _vsync );
+		}
 
 		inline Vec3i consumeMoveInputs()
 		{
@@ -210,7 +214,15 @@ namespace VTX::Bench
 			}
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "FXAA" ) ) {}
+			ImGui::End();
 
+			// Misc.
+			ImGui::Begin( "Misc" );
+			// ImGui::Checkbox( "Perspective", &isPerspective );
+			if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
+			{
+				setVSync( _vsync );
+			}
 			ImGui::End();
 
 			ImGui::Render();
@@ -255,6 +267,7 @@ namespace VTX::Bench
 	  private:
 		GLFWwindow * _window;
 		Vec3i		 _deltaMoveInputs;
+		bool		 _vsync = false;
 
 		static void _glfwErrorCallback( int p_error, const char * p_description )
 		{

@@ -35,12 +35,15 @@ namespace VTX::Bench
 	Core::StructMolecule generateAtomGrid( int p_size )
 	{
 		if ( p_size % 2 == 0 )
+		{
 			++p_size;
+		}
 
 		const size_t realSize = p_size * p_size * p_size;
 
 		std::vector<Vec3f>			   positions( realSize );
 		std::vector<Util::Color::Rgba> colors( realSize );
+		std::vector<uint>			   bonds( ( realSize - 1 ) * 2 );
 
 		size_t		counter = 0;
 		const float offset	= 2.f;
@@ -53,12 +56,19 @@ namespace VTX::Bench
 				{
 					positions[ counter ] = Vec3f( i * offset, j * offset, k * offset );
 					colors[ counter ]	 = Util::Color::Rgba::random();
+					if ( counter < realSize - 1 )
+					{
+						bonds[ counter * 2 ]	 = uint( counter );
+						bonds[ counter * 2 + 1 ] = uint( counter + 1 );
+					}
 					++counter;
 				}
 			}
 		}
 
-		VTX_INFO( "{} atoms generated", realSize );
+		assert( counter == realSize );
+
+		VTX_INFO( "{} atoms and {} bonds generated", realSize, bonds.size() / 2 );
 
 		return { MAT4F_ID,
 				 positions,
@@ -67,7 +77,7 @@ namespace VTX::Bench
 				 std::vector<uint>( realSize, 1 ),
 				 std::vector<uint>( realSize, 0 ),
 				 std::vector<uint>( realSize, 0 ),
-				 {} };
+				 bonds };
 	}
 } // namespace VTX::Bench
 
