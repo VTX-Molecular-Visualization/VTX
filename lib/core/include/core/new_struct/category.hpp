@@ -1,11 +1,11 @@
-#ifndef __VTX_CORE_CATEGORY_CATEGORY__
-#define __VTX_CORE_CATEGORY_CATEGORY__
+#ifndef __VTX_CORE_NEW_STRUCT_CATEGORY__
+#define __VTX_CORE_NEW_STRUCT_CATEGORY__
 
 #include "_fwd.hpp"
 #include "core/chemdb/category.hpp"
 #include <vector>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::NewStruct
 {
 	class Category
 	{
@@ -16,5 +16,5 @@ namespace VTX::Core::Struct
 		Molecule * moleculePtr = nullptr;
 	};
 
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::NewStruct
 #endif

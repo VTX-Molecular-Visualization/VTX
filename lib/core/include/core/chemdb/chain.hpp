@@ -76,7 +76,7 @@ namespace VTX::Core::ChemDB::Chain
 
 	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Util::Color::Rgba::WHITE;
 
-	inline Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
+	inline Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false )
 	{
 		if ( p_chainId.empty() )
 			return CHAIN_ID_UNKNOWN_COLOR;

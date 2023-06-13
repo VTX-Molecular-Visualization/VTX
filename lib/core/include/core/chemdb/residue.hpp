@@ -228,6 +228,11 @@ namespace VTX::Core::ChemDB::Residue
 		{ 255, 105, 180 }, // HOH
 	};
 
+	static const Util::Color::Rgba & getResidueColor( const SYMBOL p_symbol, const bool isStd = true )
+	{
+		return isStd ? SYMBOL_COLOR[ int( p_symbol ) ] : SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
+	}
+
 } // namespace VTX::Core::ChemDB::Residue
 
 #endif

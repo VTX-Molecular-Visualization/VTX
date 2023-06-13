@@ -1,41 +1,86 @@
-#ifndef __VTX_CORE_STRUCT_MOLECULE_DATA__
-#define __VTX_CORE_STRUCT_MOLECULE_DATA__
+#ifndef __VTX_CORE_NEW_STRUCT_MOLECULE__
+#define __VTX_CORE_NEW_STRUCT_MOLECULE__
 
 #include "_fwd.hpp"
 #include "core/chemdb/category.hpp"
 #include "core/gpu/molecule.hpp"
 #include "core/new_struct/trajectory.hpp"
+// #include "define.hpp"
 #include <array>
 #include <util/color/rgba.hpp>
 #include <vector>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::NewStruct
 {
+	template<typename C, typename R, typename A, typename B>
 	class Molecule
 	{
 	  private:
 		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
 
 	  public:
-		// GPU
-		Gpu::Molecule gpuStruct = Gpu::Molecule();
+		void initChains( const size_t p_chainCount )
+		{
+			_chains.resize( p_chainCount, nullptr );
+			std::generate( _chains.begin(), _chains.end(), [ this, n = 0 ]() mutable { return new C( this, n++ ); } );
+		}
+		C * const				 getChain( const size_t p_chainIndex ) { return _chains[ p_chainIndex ]; }
+		const C * const			 getChain( const size_t p_chainIndex ) const { return _chains[ p_chainIndex ]; }
+		std::vector<C *> &		 getChains() { return _chains; }
+		const std::vector<C *> & getChains() const { return _chains; }
+		size_t					 getChainCount() const { return _chains.size(); }
 
+		void initResidues( const size_t p_residueCount )
+		{
+			_residues.resize( p_residueCount, nullptr );
+			std::generate( _residues.begin(), _residues.end(), [ n = 0 ]() mutable { return new R( n++ ); } );
+		}
+		R * const				 getResidue( const size_t p_chainIndex ) { return _residues[ p_chainIndex ]; }
+		const R * const			 getResidue( const size_t p_chainIndex ) const { return _residues[ p_chainIndex ]; }
+		std::vector<R *> &		 getResidues() { return _residues; }
+		const std::vector<R *> & getResidues() const { return _residues; }
+		size_t					 getResidueCount() const { return _residues.size(); }
+
+		void initAtoms( const size_t p_atomCount )
+		{
+			_atoms.resize( p_atomCount, nullptr );
+			std::generate( _atoms.begin(), _atoms.end(), [ this, n = 0 ]() mutable { return new A( this, n++ ); } );
+		}
+		A * const				 getAtom( const size_t p_chainIndex ) { return _atoms[ p_chainIndex ]; }
+		const A * const			 getAtom( const size_t p_chainIndex ) const { return _atoms[ p_chainIndex ]; }
+		std::vector<A *> &		 getAtoms() { return _atoms; }
+		const std::vector<A *> & getAtoms() const { return _atoms; }
+		size_t					 getAtomCount() const { return _atoms.size(); }
+
+		void initBonds( const size_t p_bondCount )
+		{
+			_bonds.resize( p_bondCount, nullptr );
+			std::generate( _bonds.begin(), _bonds.end(), [ this, n = 0 ]() mutable { return new B( this, n++ ); } );
+		}
+		std::vector<B *> &		 getBonds() { return _bonds; }
+		const std::vector<B *> & getBonds() const { return _bonds; }
+		size_t					 getBondCount() const { return _bonds.size(); }
+
+	  protected:
 		// Logic
-		std::string name = "unknown";
+		std::string _name = "unknown";
 
-		std::array<Category *, CATEGORY_COUNT> categories				  = std::array<Category *, CATEGORY_COUNT>();
-		std::vector<Chain *>				   chains					  = std::vector<Chain *>();
-		std::vector<Residue *>				   residues					  = std::vector<Residue *>();
-		std::vector<Atom *>					   atoms					  = std::vector<Atom *>();
-		std::vector<Bond *>					   bonds					  = std::vector<Bond *>();
-		size_t								   indexFirstBondExtraResidue = 0;
+		std::array<Category *, CATEGORY_COUNT> _categories = std::array<Category *, CATEGORY_COUNT>();
 
-		Trajectory trajectory = Trajectory();
+		std::vector<C *> _chains   = std::vector<C *>();
+		std::vector<R *> _residues = std::vector<R *>();
+		std::vector<A *> _atoms	   = std::vector<A *>();
+		std::vector<B *> _bonds	   = std::vector<B *>();
+
+		Trajectory _trajectory = Trajectory();
+
+		// Always usefull ?
+		// size_t								   indexFirstBondExtraResidue = 0;
 
 		// Unused in Core (Move to App ?)
 		// uint _realChainCount = 0;
 	};
 
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::NewStruct
 
 #endif
