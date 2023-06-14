@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <exception>
-#include <app/core/action/base_action.hpp>
+#include <app/old/core/action/base_action.hpp>
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 	namespace UI::QT::Dialog
 	{
 		void openInformationDialog( const QString & p_title, const QString & p_message );
-		void confirmActionDialog( VTX::App::Core::Action::BaseAction * const p_action,
+		void confirmActionDialog( VTX::App::Old::Core::Action::BaseAction * const p_action,
 								  const QString &				  p_title,
 								  const QString &				  p_message );
 
@@ -23,7 +23,7 @@ namespace VTX
 		void unhandledException();
 
 		// static void openAdvancedSettingImageExportDialog();
-		// static bool openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData );
+		// static bool openExportImageDialog( const App::Old::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// static void importRepresentationPresetDialog();
 		// static void importRenderEffectPresetDialog();

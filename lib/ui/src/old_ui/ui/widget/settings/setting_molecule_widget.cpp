@@ -6,29 +6,29 @@
 #include "ui/old_ui/util/ui.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QLabel>
-#include <app/action/main.hpp>
-#include <app/action/setting.hpp>
-#include <app/event/global.hpp>
-#include <app/internal/io/serialization/image_export.hpp>
-#include <app/application/setting.hpp>
-#include <app/component/chemistry/enum_trajectory.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/internal/io/serialization/image_export.hpp>
+#include <app/old/application/setting.hpp>
+#include <app/old/component/chemistry/enum_trajectory.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
 	SettingMoleculeWidget::SettingMoleculeWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SETTINGS_CHANGE );
 	}
 
-	void SettingMoleculeWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void SettingMoleculeWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
-				= static_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> & castedEvent
+				= static_cast<const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
+			if ( castedEvent.get().find( VTX::App::Old::Application::Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
 				 != castedEvent.get().end() )
 			{
 				_refreshData();
@@ -132,36 +132,36 @@ namespace VTX::UI::Widget::Settings
 	void SettingMoleculeWidget::_defaultRepresentationForPolymerChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::POLYMER, p_index ) );
+			new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::POLYMER, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForCarbohydrateChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE, p_index ) );
+			new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForLigandChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::LIGAND, p_index ) );
+			new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::LIGAND, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForIonChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::ION, p_index ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::ION, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForSolventChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::SOLVENT, p_index ) );
+			new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::SOLVENT, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForWaterChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::WATER, p_index ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeDefaultRepresentationPerCategory( VTX::Core::ChemDB::Category::TYPE::WATER, p_index ) );
 	}
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()
 	{
 		UI::Dialog::confirmActionDialog(
-			new App::Action::Setting::RestoreDefaultRepresentationPerCategory(),
+			new App::Old::Action::Setting::RestoreDefaultRepresentationPerCategory(),
 			"Confirm",
 			"Are you sure you want to restore default representation ? All changes will be lost." );
 	}

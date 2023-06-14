@@ -2,10 +2,10 @@
 #include "tool/analysis/rmsd/action.hpp"
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
 
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/event/global.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/event/global.hpp>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>
@@ -13,9 +13,9 @@
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
-	RMSDTool::RMSDTool() : VTX::UI::QT::BaseQtTool(), VTX::App::Core::Event::BaseEventReceiverVTX()
+	RMSDTool::RMSDTool() : VTX::UI::QT::BaseQtTool(), VTX::App::Old::Core::Event::BaseEventReceiverVTX()
 	{
-		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
 	}
 
 	void RMSDTool::instantiateTool()
@@ -26,9 +26,9 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 		// UI::VTXApp::get().getMainWindow().getContextualMenu().getMenu()
 	}
 
-	void RMSDTool::receiveEvent( const App::Core::Event::VTXEvent & p_event )
+	void RMSDTool::receiveEvent( const App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SELECTION_CHANGE )
 			_refreshButton();
 	}
 
@@ -57,15 +57,15 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 	void RMSDTool::_refreshButton() const { _rmsdButton->setEnabled( _checkRMSDEnableSate() ); }
 	bool RMSDTool::_checkRMSDEnableSate() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
 	void RMSDTool::_computeRMSDAction() const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( selection ) );
 	}
 

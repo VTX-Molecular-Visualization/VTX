@@ -4,7 +4,7 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/application/scene.hpp>
+#include <app/old/application/scene.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	  public:
 		~ContextualMenuRender();
 		void localize() override;
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ContextualMenuRender( QWidget * p_parent = nullptr );

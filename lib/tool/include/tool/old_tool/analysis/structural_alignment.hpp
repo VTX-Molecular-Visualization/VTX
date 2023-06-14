@@ -3,7 +3,7 @@
 
 #include "matrix.hpp"
 #include "struct/residue_center_of_mass_data_set.hpp"
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 #include <utility>
@@ -42,11 +42,11 @@ namespace VTX::Analysis
 		class AlignmentResult
 		{
 		  public:
-			AlignmentResult( const App::Component::Chemistry::Molecule * const p_staticMolecule,
-							 const App::Component::Chemistry::Molecule * const p_mobileMolecule );
+			AlignmentResult( const App::Old::Component::Chemistry::Molecule * const p_staticMolecule,
+							 const App::Old::Component::Chemistry::Molecule * const p_mobileMolecule );
 
-			const App::Component::Chemistry::Molecule * const staticMolecule = nullptr;
-			const App::Component::Chemistry::Molecule * const mobileMolecule = nullptr;
+			const App::Old::Component::Chemistry::Molecule * const staticMolecule = nullptr;
+			const App::Old::Component::Chemistry::Molecule * const mobileMolecule = nullptr;
 			size_t											  alignedResidueCount;
 			float											  alignedResiduesRMSD  = -1.f;
 			Mat4f											  transformationMatrix = MAT4F_ID;
@@ -58,16 +58,16 @@ namespace VTX::Analysis
 			AlignmentMethod();
 			~AlignmentMethod() = default;
 
-			virtual AlignmentResult compute( const App::Component::Chemistry::Molecule & p_staticMolecule,
-											 App::Component::Chemistry::Molecule &		 p_mobilesMolecules,
+			virtual AlignmentResult compute( const App::Old::Component::Chemistry::Molecule & p_staticMolecule,
+											 App::Old::Component::Chemistry::Molecule &		 p_mobilesMolecules,
 											 const AlignmentParameters &				 p_parameters )
 				= 0;
 		};
 
 	  public:
 		static AlignmentParameters * instantiateDefaultParameters( const AlignmentMethodEnum & p_methodEnum );
-		static void computeAlignment( const App::Component::Chemistry::Molecule * const			 p_staticMolecule,
-									  const std::vector<App::Component::Chemistry::Molecule *> & p_mobilesMolecules,
+		static void computeAlignment( const App::Old::Component::Chemistry::Molecule * const			 p_staticMolecule,
+									  const std::vector<App::Old::Component::Chemistry::Molecule *> & p_mobilesMolecules,
 									  const AlignmentParameters &								 p_parameters );
 	};
 

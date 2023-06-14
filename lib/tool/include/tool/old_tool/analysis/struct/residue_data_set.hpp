@@ -1,7 +1,7 @@
 #ifndef __VTX_ANALYSIS_STRUCT_RESIDUE_DATA_SET__
 #define __VTX_ANALYSIS_STRUCT_RESIDUE_DATA_SET__
 
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 #include <core/chemdb/residue.hpp>
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@ namespace VTX::Analysis::Struct
 			_nonStandardResidueData = std::map<std::string, T>();
 		}
 
-		const T & get( const App::Component::Chemistry::Residue & p_residue )
+		const T & get( const App::Old::Component::Chemistry::Residue & p_residue )
 		{
 			if ( p_residue.isStandardResidue() )
 			{
@@ -47,7 +47,7 @@ namespace VTX::Analysis::Struct
 		}
 
 	  protected:
-		void registerStandardResidueData( const App::Component::Chemistry::Residue & p_residue )
+		void registerStandardResidueData( const App::Old::Component::Chemistry::Residue & p_residue )
 		{
 			const int symbolIndex = int( p_residue.getSymbol() );
 			const T	  data		  = generateResidueData( p_residue );
@@ -56,7 +56,7 @@ namespace VTX::Analysis::Struct
 			_standardResidueDataRegistered[ symbolIndex ] = true;
 		}
 
-		void registerNonStandardResidueData( const App::Component::Chemistry::Residue & p_residue )
+		void registerNonStandardResidueData( const App::Old::Component::Chemistry::Residue & p_residue )
 		{
 			const std::string symbolName = p_residue.getSymbolName();
 			const T			  data		 = generateResidueData( p_residue );
@@ -64,7 +64,7 @@ namespace VTX::Analysis::Struct
 			_nonStandardResidueData[ symbolName ] = data;
 		}
 
-		virtual T generateResidueData( const App::Component::Chemistry::Residue & p_residue ) const = 0;
+		virtual T generateResidueData( const App::Old::Component::Chemistry::Residue & p_residue ) const = 0;
 
 	  private:
 		std::vector<T>			 _standardResidueData;

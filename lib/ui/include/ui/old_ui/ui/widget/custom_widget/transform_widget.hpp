@@ -1,20 +1,20 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 #define __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 
-#include "app/internal/math/transform.hpp"
+#include "app/old/internal/math/transform.hpp"
 #include "ui/old_ui/ui/multi_data_field.hpp"
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "vector3_widget.hpp"
 #include <QBoxLayout>
 #include <QFrame>
 #include <QSpinBox>
-#include <app/component/generic/base_transformable.hpp>
+#include <app/old/component/generic/base_transformable.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	class TransformWidget :
 		public BaseManualWidget<QFrame>,
-		public TMultiDataField<const App::Internal::Math::Transform>
+		public TMultiDataField<const App::Old::Internal::Math::Transform>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -30,7 +30,7 @@ namespace VTX::UI::Widget::CustomWidget
 	  public:
 		~TransformWidget() {};
 
-		void setData( const App::Internal::Math::Transform & p_data )
+		void setData( const App::Old::Internal::Math::Transform & p_data )
 		{
 			_transform = p_data;
 			_refresh();
@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		// MultiDataField Implementation //////////////////////////////
 		void resetState() override;
-		void updateWithNewValue( const App::Internal::Math::Transform & p_value ) override;
+		void updateWithNewValue( const App::Old::Internal::Math::Transform & p_value ) override;
 		//////////////////////////////////////////////////////////////
 
 		void displayPosition( const bool p_display ) const;
@@ -48,15 +48,15 @@ namespace VTX::UI::Widget::CustomWidget
 		void displayScale( const bool p_display ) const;
 
 	  signals:
-		void onValueChange( const App::Internal::Math::Transform & p_value,
-							const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & ) const;
+		void onValueChange( const App::Old::Internal::Math::Transform & p_value,
+							const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK & ) const;
 		void onPositionDragged( const Vec3f & p_delta ) const;
 		void onRotationDragged( const Vec3f & p_delta ) const;
 		void onScaleDragged( const Vec3f & p_delta ) const;
 
 	  protected:
 		TransformWidget( QWidget * p_parent ) :
-			BaseManualWidget( p_parent ), TMultiDataField<const App::Internal::Math::Transform>() {};
+			BaseManualWidget( p_parent ), TMultiDataField<const App::Old::Internal::Math::Transform>() {};
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
@@ -86,11 +86,11 @@ namespace VTX::UI::Widget::CustomWidget
 									const Vec3f &					p_vector,
 									const Vector3Widget::AxisMask & p_mask );
 
-		App::Internal::Math::TRANSFORM_COMPOSANT_MASK _generateTransformMask(
+		App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK _generateTransformMask(
 			const Field &					p_field,
 			const Vector3Widget::AxisMask & p_axis );
 
-		App::Internal::Math::Transform _transform = App::Internal::Math::Transform();
+		App::Old::Internal::Math::Transform _transform = App::Old::Internal::Math::Transform();
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

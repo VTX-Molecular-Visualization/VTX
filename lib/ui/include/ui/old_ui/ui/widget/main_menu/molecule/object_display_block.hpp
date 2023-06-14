@@ -4,8 +4,8 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
-#include <app/core/event/vtx_event.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		~ObjectDisplayBlock();
 		void localize() override;
 
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ObjectDisplayBlock( QWidget * p_parent );
@@ -34,7 +34,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		void _refreshButtons();
 
-		void _fillContainerWithTarget( std::unordered_set<App::Component::Chemistry::Molecule *> & _container ) const;
+		void _fillContainerWithTarget( std::unordered_set<App::Old::Component::Chemistry::Molecule *> & _container ) const;
 
 		void _displayWaterButton( const bool p_active, const bool p_show );
 		void _displaySolventButton( const bool p_active, const bool p_show );

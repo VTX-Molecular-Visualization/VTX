@@ -1,16 +1,16 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/representation_preset_button.hpp"
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/action/representable.hpp>
-#include <app/application/representation/base_representable.hpp>
-#include <app/application/representation/representation_library.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/application/representation/representation_preset.hpp>
-#include <app/application/scene.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/representable.hpp>
+#include <app/old/application/representation/base_representable.hpp>
+#include <app/old/application/representation/representation_library.hpp>
+#include <app/old/application/representation/representation_manager.hpp>
+#include <app/old/application/representation/representation_preset.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -28,22 +28,22 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void RepresentationPresetButton::_onButtonClicked()
 	{
-		App::Application::Representation::RepresentationPreset * representation
-			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _id );
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Representation::RepresentationPreset * representation
+			= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentation( _id );
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.getMoleculesMap().size() > 0 )
 		{
-			VTX_ACTION( new App::Action::Representable::SetRepresentation( &selection, representation ) );
+			VTX_ACTION( new App::Old::Action::Representable::SetRepresentation( &selection, representation ) );
 		}
 		else
 		{
-			App::Application::Scene::MapMoleculePtrFloat & mapMolFloat = App::VTXApp::get().getScene().getMolecules();
+			App::Old::Application::Scene::MapMoleculePtrFloat & mapMolFloat = App::Old::VTXApp::get().getScene().getMolecules();
 
-			for ( const App::Application::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
+			for ( const App::Old::Application::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{
-				VTX_ACTION( new App::Action::Representable::SetRepresentation( *pair.first, representation ) );
+				VTX_ACTION( new App::Old::Action::Representable::SetRepresentation( *pair.first, representation ) );
 			}
 		}
 	};

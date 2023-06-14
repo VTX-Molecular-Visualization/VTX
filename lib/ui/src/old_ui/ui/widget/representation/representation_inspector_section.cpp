@@ -4,13 +4,13 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/application/representation/representation_library.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/application/representation/representation_preset.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/core/view/callback_view.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
+#include <app/old/application/representation/representation_library.hpp>
+#include <app/old/application/representation/representation_manager.hpp>
+#include <app/old/application/representation/representation_preset.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/core/view/callback_view.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Representation
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Representation
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataField()
 	{
-		_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::App::Old::Event::Global::LATE_UPDATE );
 	}
 
 	RepresentationInspectorSection::~RepresentationInspectorSection()
@@ -29,9 +29,9 @@ namespace VTX::UI::Widget::Representation
 			VTX::MVC_MANAGER().deleteModel( _dummyRepresentation );
 	}
 
-	void RepresentationInspectorSection::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void RepresentationInspectorSection::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::LATE_UPDATE )
+		if ( p_event.name == VTX::App::Old::Event::Global::LATE_UPDATE )
 		{
 			if ( _isDirty )
 			{
@@ -116,47 +116,47 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void RepresentationInspectorSection::_instantiateRepresentationSettingWidget(
-		const App::Application::Representation::REPRESENTATION_ENUM & p_representation )
+		const App::Old::Application::Representation::REPRESENTATION_ENUM & p_representation )
 	{
 		switch ( p_representation )
 		{
-		case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
 			_representationSettingWidget
 				= VTX::UI::WidgetFactory::get().instantiateWidget<BallAndStickRepresentationWidget>(
 					_representationWidget, "ball_and_stick_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
 			_representationSettingWidget
 				= VTX::UI::WidgetFactory::get().instantiateWidget<BallStickAndCartoonRepresentationWidget>(
 					_representationWidget, "ball_stick_and_cartoon_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::CARTOON:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::CARTOON:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CartoonRepresentationWidget>(
 				_representationWidget, "cartoon_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::SAS:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::SAS:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<SasRepresentationWidget>(
 				_representationWidget, "sas_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::STICK:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<StickRepresentationWidget>(
 				_representationWidget, "stick_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
 			_representationSettingWidget
 				= VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
 					_representationWidget, "stick_and_cartoon_representation_widget" );
 			break;
 			// !V0.1
-		// case App::Application::Representation::REPRESENTATION_ENUM::TRACE:
+		// case App::Old::Application::Representation::REPRESENTATION_ENUM::TRACE:
 		//	_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
 		//		_representationWidget, "trace_representation_widget" );
 		//	break;
-		case App::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>(
 				_representationWidget, "vdw_representation_widget" );
 			break;
-		case App::Application::Representation::REPRESENTATION_ENUM::SES:
+		case App::Old::Application::Representation::REPRESENTATION_ENUM::SES:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<SesRepresentationWidget>(
 				_representationWidget, "ses_representation_widget" );
 			break;
@@ -219,7 +219,7 @@ namespace VTX::UI::Widget::Representation
 		emit onRepresentationPresetChange( p_presetIndex );
 	}
 	void RepresentationInspectorSection::_representationDataChange(
-		const App::Application::Representation::MEMBER_FLAG & p_flagDataModified )
+		const App::Old::Application::Representation::MEMBER_FLAG & p_flagDataModified )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -259,7 +259,7 @@ namespace VTX::UI::Widget::Representation
 	{
 		if ( p_deleteViews )
 		{
-			for ( const App::Core::Model::ID & representationID : _representationIDs )
+			for ( const App::Old::Core::Model::ID & representationID : _representationIDs )
 			{
 				if ( VTX::MVC_MANAGER().doesModelExists( representationID ) )
 				{
@@ -302,7 +302,7 @@ namespace VTX::UI::Widget::Representation
 		const bool oldBlockState = blockSignals( true );
 
 		const int baseRepresentationIndex
-			= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
+			= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 				p_representation.getLinkedRepresentation() );
 
 		_titleWidget->updateWithNewValue( p_representation.getName() );
@@ -312,13 +312,13 @@ namespace VTX::UI::Widget::Representation
 		{
 			if ( _dummyRepresentation == nullptr )
 			{
-				_dummyRepresentation = App::Application::Representation::RepresentationManager::get().instantiateDummy(
+				_dummyRepresentation = App::Old::Application::Representation::RepresentationManager::get().instantiateDummy(
 					p_representation );
 
-				VTX::App::Core::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
+				VTX::App::Old::Core::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
 					representationView
 					= VTX::MVC_MANAGER()
-						  .instantiateView<VTX::App::Core::View::CallbackView<InstantiatedRepresentation,
+						  .instantiateView<VTX::App::Old::Core::View::CallbackView<InstantiatedRepresentation,
 																			  RepresentationInspectorSection>>(
 							  _dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
@@ -361,10 +361,10 @@ namespace VTX::UI::Widget::Representation
 		{
 			if ( _representationIDs.find( p_representation.getId() ) == _representationIDs.end() )
 			{
-				VTX::App::Core::View::CallbackView<const InstantiatedRepresentation,
+				VTX::App::Old::Core::View::CallbackView<const InstantiatedRepresentation,
 												   RepresentationInspectorSection> * const viewOnRepresentation
 					= VTX::MVC_MANAGER()
-						  .instantiateView<VTX::App::Core::View::CallbackView<const InstantiatedRepresentation,
+						  .instantiateView<VTX::App::Old::Core::View::CallbackView<const InstantiatedRepresentation,
 																			  RepresentationInspectorSection>>(
 							  &p_representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
@@ -380,9 +380,9 @@ namespace VTX::UI::Widget::Representation
 	void RepresentationInspectorSection::_displayDifferentsDataFeedback() {}
 
 	void RepresentationInspectorSection::_onTargetedRepresentationChange(
-		const VTX::App::Core::Event::VTXEvent * const p_event )
+		const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		resetState( false, p_event->name == VTX::App::Event::Model::REPRESENTATION_TYPE_CHANGE );
+		resetState( false, p_event->name == VTX::App::Old::Event::Model::REPRESENTATION_TYPE_CHANGE );
 		setDirty();
 	}
 
@@ -390,7 +390,7 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_recomputeUi()
 	{
-		for ( const App::Core::Model::ID & representationID : _representationIDs )
+		for ( const App::Old::Core::Model::ID & representationID : _representationIDs )
 		{
 			const InstantiatedRepresentation & representation
 				= VTX::MVC_MANAGER().getModel<InstantiatedRepresentation>( representationID );
@@ -398,7 +398,7 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
-	void RepresentationInspectorSection::_onDummyChange( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void RepresentationInspectorSection::_onDummyChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
 		refresh();
 	}

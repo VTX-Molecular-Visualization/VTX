@@ -4,33 +4,33 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/action/main.hpp>
-#include <app/event/global.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/event/global.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	WindowsBlock::WindowsBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
-		_registerEvent( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE );
-		_registerEvent( VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::MAIN_WINDOW_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 
 	WindowsBlock::~WindowsBlock() {}
 
-	void WindowsBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void WindowsBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::MAIN_WINDOW_MODE_CHANGE )
 		{
 			const WindowMode mode
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<WindowMode> &>( p_event ).get();
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<WindowMode> &>( p_event ).get();
 			_updateFullscreenButton( mode );
 		}
-		else if ( p_event.name == VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
 		{
 			_refreshOverlayVisibilityMenu();
 		}
@@ -101,11 +101,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void WindowsBlock::localize() { setTitle( "Windows" ); }
 	void WindowsBlock::refresh()
 	{
-		for ( const std::pair<const App::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
+		for ( const std::pair<const App::Old::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
 			_refreshButton( *pair.first );
 		_refreshOverlayVisibilityMenu();
 	}
-	void WindowsBlock::_refreshButton( const App::VTX_ID & p_id )
+	void WindowsBlock::_refreshButton( const App::Old::VTX_ID & p_id )
 	{
 		const bool	windowVisibility = UI::VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
 		std::string windowName		 = p_id;
@@ -129,7 +129,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		}
 	}
 
-	void WindowsBlock::_instantiateButton( const App::VTX_ID & p_id,
+	void WindowsBlock::_instantiateButton( const App::Old::VTX_ID & p_id,
 										   void ( WindowsBlock::*p_action )(),
 										   const QKeySequence & p_shortcut )
 	{

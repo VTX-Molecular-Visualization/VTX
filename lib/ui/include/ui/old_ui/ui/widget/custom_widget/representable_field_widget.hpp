@@ -9,7 +9,7 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QWidget>
-#include <app/application/representation/base_representable.hpp>
+#include <app/old/application/representation/base_representable.hpp>
 
 namespace VTX
 {
@@ -28,14 +28,14 @@ namespace VTX
 					~RepresentableFieldWidget() {};
 					void localize() override;
 
-					inline App::Application::Representation::BaseRepresentable * const getPreviousRepresentable() { return _previousValue; };
-					inline const App::Application::Representation::BaseRepresentable * const getPreviousRepresentable() const
+					inline App::Old::Application::Representation::BaseRepresentable * const getPreviousRepresentable() { return _previousValue; };
+					inline const App::Old::Application::Representation::BaseRepresentable * const getPreviousRepresentable() const
 					{
 						return _previousValue;
 					};
-					inline App::Application::Representation::BaseRepresentable * const		getRepresentable() { return _representable; };
-					inline const App::Application::Representation::BaseRepresentable * const getRepresentable() const { return _representable; };
-					inline void setValue( App::Application::Representation::BaseRepresentable * const p_representable )
+					inline App::Old::Application::Representation::BaseRepresentable * const		getRepresentable() { return _representable; };
+					inline const App::Old::Application::Representation::BaseRepresentable * const getRepresentable() const { return _representable; };
+					inline void setValue( App::Old::Application::Representation::BaseRepresentable * const p_representable )
 					{
 						if ( _representable != p_representable )
 						{
@@ -58,8 +58,8 @@ namespace VTX
 					void dropEvent( QDropEvent * event ) override;
 
 				  private:
-					App::Application::Representation::BaseRepresentable * _previousValue = nullptr;
-					App::Application::Representation::BaseRepresentable * _representable = nullptr;
+					App::Old::Application::Representation::BaseRepresentable * _previousValue = nullptr;
+					App::Old::Application::Representation::BaseRepresentable * _representable = nullptr;
 				};
 			} // namespace CustomWidget
 		}	  // namespace Widget

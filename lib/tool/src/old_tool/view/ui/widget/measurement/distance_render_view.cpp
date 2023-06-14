@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/component/chemistry/atom.hpp>
+#include <app/old/component/chemistry/atom.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -17,7 +17,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	DistanceRenderView::DistanceRenderView( Model::Measurement::Distance * const p_model, QWidget * const p_parent ) :
-		App::Core::View::BaseView<Model::Measurement::Distance>( p_model ),
+		App::Old::Core::View::BaseView<Model::Measurement::Distance>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_labelPen	= QPen( VTX::UI::Style::WORLD_LABEL_OUTLINE_COLOR );
@@ -60,7 +60,7 @@ namespace VTX::View::UI::Widget::Measurement
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
 		const Vec3f & secondAtomWorldPos = _model->getSecondAtom().getWorldPosition();
 
-		const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
+		const App::Old::Component::Render::Camera & camera = App::Old::VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::isVisibleToCamera( camera, firstAtomWorldPos )
 							 || Util::UIRender::isVisibleToCamera( camera, secondAtomWorldPos );

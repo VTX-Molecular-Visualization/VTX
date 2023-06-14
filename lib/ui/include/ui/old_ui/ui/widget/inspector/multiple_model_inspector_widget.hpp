@@ -4,25 +4,25 @@
 #include "inspector_item_widget.hpp"
 #include "inspector_section_flag.hpp"
 #include <QWidget>
-#include <app/core/event/vtx_event.hpp>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
-#include <app/event/model.hpp>
-#include <app/core/view/callback_view.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/event/model.hpp>
+#include <app/old/core/view/callback_view.hpp>
 #include <type_traits>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
+	template<typename T, typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, T>::value>>
 	class MultipleModelInspectorWidget : public InspectorItemWidget
 	{
-		using InspectorView = App::Core::View::CallbackView<T, MultipleModelInspectorWidget<T>>;
+		using InspectorView = App::Old::Core::View::CallbackView<T, MultipleModelInspectorWidget<T>>;
 
 	  public:
-		virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override
+		virtual void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override
 		{
-			if ( p_event.name == VTX::App::Event::Global::LATE_UPDATE )
+			if ( p_event.name == VTX::App::Old::Event::Global::LATE_UPDATE )
 				_endOfFrameEvent();
 		}
 		void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override final { _sectionToRefresh |= p_flag; }
@@ -68,45 +68,45 @@ namespace VTX::UI::Widget::Inspector
 		std::unordered_set<T *> &		getTargets() { return _targets; }
 
 	  protected:
-		MultipleModelInspectorWidget( QWidget * p_parent, const App::VTX_ID & p_callbackViewId ) :
+		MultipleModelInspectorWidget( QWidget * p_parent, const App::Old::VTX_ID & p_callbackViewId ) :
 			InspectorItemWidget( p_parent ), _callbackViewId( p_callbackViewId )
 		{
-			_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
+			_registerEvent( VTX::App::Old::Event::Global::LATE_UPDATE );
 		}
 
 		virtual void _resetFieldStates( const SectionFlag & p_section ) = 0;
 		virtual void _onTargetChangeEvent( const T * const								 p_target,
-										   const VTX::App::Core::Event::VTXEvent * const p_event )
+										   const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 		{
-			if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
+			if ( p_event->name == VTX::App::Old::Event::Model::DISPLAY_NAME_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::INFOS;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::DATA_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::INFOS;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::TRANSFORM_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::TRANSFORM_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::TRANSFORM;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::COLOR_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::COLOR_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::INFOS;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::REPRESENTATION_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::REPRESENTATION_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::REPRESENTATION;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::TRAJECTORY_DATA_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::TRAJECTORY_DATA_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::TRAJECTORY;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::TRAJECTORY_FRAME_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::TRAJECTORY_FRAME_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::TRAJECTORY_TIMER;
 			}
-			else if ( p_event->name == VTX::App::Event::Model::AUTO_ROTATE_DATA_CHANGE )
+			else if ( p_event->name == VTX::App::Old::Event::Model::AUTO_ROTATE_DATA_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::AUTO_ROTATE;
 			}
@@ -138,7 +138,7 @@ namespace VTX::UI::Widget::Inspector
 
 		SectionFlag		 _sectionToRefresh = SectionFlag::NONE;
 		bool			 _clearFlag		   = false;
-		const App::VTX_ID _callbackViewId;
+		const App::Old::VTX_ID _callbackViewId;
 	};
 
 } // namespace VTX::UI::Widget::Inspector

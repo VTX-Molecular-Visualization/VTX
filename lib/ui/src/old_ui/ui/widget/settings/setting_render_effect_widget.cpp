@@ -7,7 +7,7 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingRenderEffectWidget::SettingRenderEffectWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent ) {}
 
-	void SettingRenderEffectWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
+	void SettingRenderEffectWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingRenderEffectWidget::_setupUi( const QString & p_name )
 	{
@@ -15,7 +15,7 @@ namespace VTX::UI::Widget::Settings
 
 		_presetLibrary
 			= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::Renderer::RenderEffectPresetLibraryView>(
-				&App::Application::RenderEffect::RenderEffectLibrary::get(),
+				&App::Old::Application::RenderEffect::RenderEffectLibrary::get(),
 				ID::View::UI_RENDER_EFFECT_PRESET_LIBRARY,
 				this,
 				"PresetLibrary" );
@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		BaseManualWidget::showEvent( p_event );
 
-		const int currentPresetUsed = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
+		const int currentPresetUsed = App::Old::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 		_presetLibrary->selectPreset( currentPresetUsed );
 	}
 

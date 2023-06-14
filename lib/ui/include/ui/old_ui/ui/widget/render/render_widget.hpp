@@ -11,10 +11,10 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/core/model/base_model.hpp>
-#include <app/core/view/base_view.hpp>
-#include <app/mvc.hpp>
-#include <app/render/worker/snapshoter.hpp>
+#include <app/old/core/model/base_model.hpp>
+#include <app/old/core/view/base_view.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/render/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_WIDGET
 
-		friend App::Render::Worker::Snapshoter;
+		friend App::Old::Render::Worker::Snapshoter;
 
 	  public:
 		~RenderWidget();
@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Render
 
 		inline bool isOpenGLValid() const { return _openGLWidget->isValid(); }
 		void		updateRender() const;
-		void		updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
+		void		updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING );
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
@@ -41,8 +41,8 @@ namespace VTX::UI::Widget::Render
 		void setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible );
 		void showAllOverlays( const bool p_show );
 
-		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
-		const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::RENDER_WIDGET; }
+		void			 receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
+		const App::Old::VTX_ID getEventFirererId() const override { return UI::ID::Input::RENDER_WIDGET; }
 
 	  protected:
 		RenderWidget( QWidget * p_parent );
@@ -78,10 +78,10 @@ namespace VTX::UI::Widget::Render
 
 		template<typename V,
 				 typename M,
-				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Old::Core::View::BaseView<M>, V>::value>,
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
-		void _removeViewIntegratedWidget( const M * const p_model, const App::VTX_ID & p_viewName )
+		void _removeViewIntegratedWidget( const M * const p_model, const App::Old::VTX_ID & p_viewName )
 		{
 			V * const integratedWidgetView = VTX::MVC_MANAGER().getView<V>( p_model, p_viewName );
 

@@ -5,11 +5,11 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/action/main.hpp>
-#include <app/application/render_effect/render_effect_library.hpp>
-#include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/internal/io/filesystem.hpp>
-#include <app/render/worker/snapshoter.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/application/render_effect/render_effect_library.hpp>
+#include <app/old/application/render_effect/render_effect_preset.hpp>
+#include <app/old/internal/io/filesystem.hpp>
+#include <app/old/render/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -38,9 +38,9 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void SnapshotBlock::_takeSnapshotAction() const
 	{
-		VTX_ACTION( new App::Action::Main::Snapshot(
-			App::Render::Worker::Snapshoter::MODE::GL,
-			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+		VTX_ACTION( new App::Old::Action::Main::Snapshot(
+			App::Old::Render::Worker::Snapshoter::MODE::GL,
+			App::Old::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 

@@ -12,18 +12,18 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/action/instantiated_representation.hpp>
-#include <app/action/molecule.hpp>
-#include <app/action/transformable.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/event/global.hpp>
+#include <app/old/action/instantiated_representation.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/action/transformable.hpp>
+#include <app/old/application/representation/representation_manager.hpp>
+#include <app/old/event/global.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
 	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
 	{
-		_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::App::Old::Event::Global::LATE_UPDATE );
 	};
 
 	MultipleMoleculeWidget::~MultipleMoleculeWidget() {}
@@ -176,17 +176,17 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<App::Component::Chemistry::Molecule *> & targets = getTargets();
+		const std::unordered_set<App::Old::Component::Chemistry::Molecule *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
 			const QString headerTitle = QString::fromStdString( "Molecule (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MOLECULE );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( App::Component::Chemistry::Molecule * molecule : targets )
+			for ( App::Old::Component::Chemistry::Molecule * molecule : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
@@ -197,7 +197,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
 
-					for ( App::Application::Representation::InstantiatedRepresentation * representation :
+					for ( App::Old::Application::Representation::InstantiatedRepresentation * representation :
 						  molecule->getSubRepresentations() )
 					{
 						_subRepresentationWidget->addModel( representation );
@@ -283,12 +283,12 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onTransformChange(
-		const App::Internal::Math::Transform &				  p_transform,
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & p_mask ) const
+		const App::Old::Internal::Math::Transform &				  p_transform,
+		const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK & p_mask ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new App::Action::Transformable::ApplyTransform( getTargets(), p_transform, p_mask ) );
+			VTX_ACTION( new App::Old::Action::Transformable::ApplyTransform( getTargets(), p_transform, p_mask ) );
 		}
 	}
 
@@ -296,60 +296,60 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
+			std::unordered_set<App::Old::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Old::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( App::Component::Chemistry::Molecule * target : getTargets() )
+			for ( App::Old::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
-			VTX_ACTION( new App::Action::Transformable::Translate( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Old::Action::Transformable::Translate( transformableSet, p_delta ) );
 		}
 	}
 	void MultipleMoleculeWidget::_onRotationDragged( const Vec3f & p_delta ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
+			std::unordered_set<App::Old::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Old::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( App::Component::Chemistry::Molecule * target : getTargets() )
+			for ( App::Old::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
-			VTX_ACTION( new App::Action::Transformable::Rotate( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Old::Action::Transformable::Rotate( transformableSet, p_delta ) );
 		}
 	}
 	void MultipleMoleculeWidget::_onScaleDragged( const Vec3f & p_delta ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
+			std::unordered_set<App::Old::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Old::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( App::Component::Chemistry::Molecule * target : getTargets() )
+			for ( App::Old::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
-			VTX_ACTION( new App::Action::Transformable::Scale( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Old::Action::Transformable::Scale( transformableSet, p_delta ) );
 		}
 	}
 
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new App::Action::Molecule::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new App::Old::Action::Molecule::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor ) const
 	{
@@ -358,11 +358,11 @@ namespace VTX::UI::Widget::Inspector
 			switch ( p_representation.getRibbonData().colorMode )
 			{
 			case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Old::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
@@ -383,12 +383,12 @@ namespace VTX::UI::Widget::Inspector
 			{
 			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
 			case VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM:
-				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
 			case VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN:
-				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Old::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN:
@@ -405,15 +405,15 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new App::Action::Molecule::RemoveRepresentation( getTargets() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::RemoveRepresentation( getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new App::Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onMoleculeColorChange( const Util::Color::Rgba & p_color ) const
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 	}
 
 	void MultipleMoleculeWidget::_setInspectorToChain() const

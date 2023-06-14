@@ -6,8 +6,8 @@
 #include <QIcon>
 #include <QWheelEvent>
 #include <QWidget>
-#include <app/core/event/vtx_event.hpp>
-#include <app/id.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/id.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -33,11 +33,11 @@ namespace VTX::UI::Widget::Representation
 		void wheelEvent( QWheelEvent * event ) override;
 
 	  private:
-		void _onRepresentationLibraryChange( const VTX::App::Core::Event::VTXEvent * const p_event );
+		void _onRepresentationLibraryChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event );
 		void _fillItemList();
 		void _updateHighlightDefaultRepresentationFeedback();
 
-		const App::VTX_ID _viewID;
+		const App::Old::VTX_ID _viewID;
 		bool			 _highlightDefault = false;
 	};
 } // namespace VTX::UI::Widget::Representation

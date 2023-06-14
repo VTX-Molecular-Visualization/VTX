@@ -28,7 +28,7 @@ namespace VTX::Controller
 		}
 	}
 
-	void BaseCameraController::orient( const App::Component::Object3D::Helper::AABB & p_aabb )
+	void BaseCameraController::orient( const App::Old::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		_orientTime = 0.f;
 		_computeOrientPositions( p_aabb );

@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QVBoxLayout>
-#include <app/application/representation/representation_library.hpp>
+#include <app/old/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -11,14 +11,14 @@ namespace VTX::UI::Widget::Settings
 	{
 	}
 
-	void SettingRepresentationWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
+	void SettingRepresentationWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
 
 		_presetLibrary = WidgetFactory::get().instantiateViewWidget<RepresentationLibraryView>(
-			&App::Application::Representation::RepresentationLibrary::get(),
+			&App::Old::Application::Representation::RepresentationLibrary::get(),
 			ID::View::UI_REPRESENTATION_PRESET_LIBRARY,
 			this,
 			"PresetLibrary" );

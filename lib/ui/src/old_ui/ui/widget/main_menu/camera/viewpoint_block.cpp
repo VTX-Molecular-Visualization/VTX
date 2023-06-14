@@ -1,31 +1,31 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/viewpoint_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/action/viewpoint.hpp>
-#include <app/event/global.hpp>
-#include <app/component/video/path.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/mvc.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/component/video/path.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/component/render/camera.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	ViewpointBlock::ViewpointBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
 	};
 
-	void ViewpointBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void ViewpointBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == App::Old::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>( p_event );
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Application::Selection::SelectionModel *> &>( p_event );
 
-			const App::Application::Selection::SelectionModel * const selectionModel = castedEvent.get();
-			_enableDeleteButtonState( selectionModel->hasItemOfType( App::ID::Model::MODEL_VIEWPOINT ) );
+			const App::Old::Application::Selection::SelectionModel * const selectionModel = castedEvent.get();
+			_enableDeleteButtonState( selectionModel->hasItemOfType( App::Old::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
 
@@ -58,17 +58,17 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void ViewpointBlock::_createViewpointAction() const { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ViewpointBlock::_deleteViewpointAction() const
 	{
-		std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection = std::vector<App::Component::Object3D::Viewpoint *>();
-		const App::Application::Selection::SelectionModel &		selection = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		std::vector<App::Old::Component::Object3D::Viewpoint *> viewpointsInSelection = std::vector<App::Old::Component::Object3D::Viewpoint *>();
+		const App::Old::Application::Selection::SelectionModel &		selection = VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		viewpointsInSelection.reserve( selection.getItems().size() );
 
-		for ( const App::Core::Model::ID & modelID : selection.getItems() )
+		for ( const App::Old::Core::Model::ID & modelID : selection.getItems() )
 		{
-			const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
-			if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
+			const App::Old::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
+			if ( modelTypeID == App::Old::ID::Model::MODEL_VIEWPOINT )
 			{
-				App::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
+				App::Old::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Old::Component::Object3D::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );
 			}
 		}

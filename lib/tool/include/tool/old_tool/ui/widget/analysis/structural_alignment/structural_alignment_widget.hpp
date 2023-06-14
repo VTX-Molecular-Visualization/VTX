@@ -9,9 +9,9 @@
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/application/selection/_fwd.hpp>
-#include <app/component/chemistry/_fwd.hpp>
-#include <app/core/scene/base_scene_item.hpp>
+#include <app/old/application/selection/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
+#include <app/old/core/scene/base_scene_item.hpp>
 #include <ui/old_ui/ui/layout/attribute_list_layout.hpp>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp>
@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
 
 	  public:
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 		void refresh();
@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		virtual void showEvent( QShowEvent * p_event ) override;
 
-		void _updateTargetedMoleculesWithSelection( const App::Application::Selection::SelectionModel & p_selection );
+		void _updateTargetedMoleculesWithSelection( const App::Old::Application::Selection::SelectionModel & p_selection );
 		void _computeAlign() const;
 		bool _isConcernedByAlignment( const VTX::Analysis::StructuralAlignment::AlignmentResult & p_result ) const;
 

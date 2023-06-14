@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/component/chemistry/atom.hpp>
+#include <app/old/component/chemistry/atom.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -17,7 +17,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	MeasureInProgressRenderView::MeasureInProgressRenderView( Model::Measurement::MeasureInProgress * const p_model,
 															  QWidget * const								p_parent ) :
-		App::Core::View::BaseView<Model::Measurement::MeasureInProgress>( p_model ),
+		App::Old::Core::View::BaseView<Model::Measurement::MeasureInProgress>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_linePen = QPen();
@@ -48,10 +48,10 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() )
 			return;
 
-		const std::vector<const App::Component::Chemistry::Atom *> & atoms		   = _model->getAtoms();
+		const std::vector<const App::Old::Component::Chemistry::Atom *> & atoms		   = _model->getAtoms();
 		std::vector<Vec3f>						 atomPositions = std::vector<Vec3f>();
 		atomPositions.reserve( atoms.size() );
-		for ( const App::Component::Chemistry::Atom * const atom : atoms )
+		for ( const App::Old::Component::Chemistry::Atom * const atom : atoms )
 			atomPositions.emplace_back( atom->getWorldPosition() );
 
 		switch ( _model->getPotentialNextTargetType() )
@@ -66,7 +66,7 @@ namespace VTX::View::UI::Widget::Measurement
 			break;
 		}
 
-		const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
+		const App::Old::Component::Render::Camera & camera = App::Old::VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::anyVisibleToCamera( camera, atomPositions );
 

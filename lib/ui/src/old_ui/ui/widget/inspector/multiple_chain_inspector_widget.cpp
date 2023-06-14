@@ -10,11 +10,11 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/action/chain.hpp>
-#include <app/action/instantiated_representation.hpp>
-#include <app/action/molecule.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/old/action/chain.hpp>
+#include <app/old/action/instantiated_representation.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/application/representation/representation_manager.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -138,14 +138,14 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<App::Component::Chemistry::Chain *> & targets = getTargets();
+		const std::unordered_set<App::Old::Component::Chemistry::Chain *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
 			const QString headerTitle = QString::fromStdString( "Chain (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_CHAIN );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_CHAIN );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			int		currentChainDisplayedCount = 0;
@@ -156,13 +156,13 @@ namespace VTX::UI::Widget::Inspector
 			QString atomCountText			   = QString();
 			QString indexText				   = QString();
 
-			for ( const App::Component::Chemistry::Chain * chain : targets )
+			for ( const App::Old::Component::Chemistry::Chain * chain : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *chain->getRepresentation() );
 
-					for ( App::Application::Representation::InstantiatedRepresentation * representation :
+					for ( App::Old::Application::Representation::InstantiatedRepresentation * representation :
 						  chain->getSubRepresentations() )
 					{
 						_subRepresentationWidget->addModel( representation );
@@ -261,20 +261,20 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new App::Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		VTX_ACTION( new App::Old::Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleChainWidget::_onRepresentationChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const App::Application::Representation::MEMBER_FLAG &				 p_flag )
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag )
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new App::Action::Chain::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new App::Old::Action::Chain::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
 	void MultipleChainWidget::_onRepresentationColorChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor )
 	{
@@ -285,7 +285,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getRibbonData().colorMode )
 				{
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
@@ -309,7 +309,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
 				case VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
@@ -330,24 +330,24 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_changeMoleculesColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 
-		for ( const App::Component::Chemistry::Chain * const item : getTargets() )
+		for ( const App::Old::Component::Chemistry::Chain * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
 
-		VTX_ACTION( new App::Action::Molecule::ChangeColor( molecules, p_color ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeColor( molecules, p_color ) );
 	}
 
 	void MultipleChainWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new App::Action::Chain::RemoveRepresentation( getTargets() ) );
+		VTX_ACTION( new App::Old::Action::Chain::RemoveRepresentation( getTargets() ) );
 	}
 	void MultipleChainWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new App::Action::Chain::RemoveChildrenRepresentations( getTargets() ) );
+		VTX_ACTION( new App::Old::Action::Chain::RemoveChildrenRepresentations( getTargets() ) );
 	}
 
 	void MultipleChainWidget::_setInspectorToMolecule() const

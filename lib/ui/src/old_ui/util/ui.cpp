@@ -1,8 +1,8 @@
 #include "ui/old_ui/util/ui.hpp"
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/bond.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/atom.hpp>
+#include <app/old/component/chemistry/bond.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 
 namespace VTX::Util::UI
 {
@@ -36,12 +36,12 @@ namespace VTX::Util::UI
 		}
 	}
 
-	void appendBondInfo( const App::Component::Chemistry::Bond & p_bond, QString & p_str )
+	void appendBondInfo( const App::Old::Component::Chemistry::Bond & p_bond, QString & p_str )
 	{
-		const App::Component::Chemistry::Molecule * const moleculePtr = p_bond.getMoleculePtr();
+		const App::Old::Component::Chemistry::Molecule * const moleculePtr = p_bond.getMoleculePtr();
 
-		const App::Component::Chemistry::Atom * const firstAtom	 = moleculePtr->getAtom( p_bond.getIndexFirstAtom() );
-		const App::Component::Chemistry::Atom * const secondAtom = moleculePtr->getAtom( p_bond.getIndexSecondAtom() );
+		const App::Old::Component::Chemistry::Atom * const firstAtom	 = moleculePtr->getAtom( p_bond.getIndexFirstAtom() );
+		const App::Old::Component::Chemistry::Atom * const secondAtom = moleculePtr->getAtom( p_bond.getIndexSecondAtom() );
 
 		if ( firstAtom == nullptr || secondAtom == nullptr )
 			return;
@@ -51,8 +51,8 @@ namespace VTX::Util::UI
 		const QString secondAtomStr
 			= QString::fromStdString( secondAtom->getName() + std::to_string( secondAtom->getIndex() ) );
 
-		const App::Component::Chemistry::Residue * const firstResidue  = firstAtom->getResiduePtr();
-		const App::Component::Chemistry::Residue * const secondResidue = secondAtom->getResiduePtr();
+		const App::Old::Component::Chemistry::Residue * const firstResidue  = firstAtom->getResiduePtr();
+		const App::Old::Component::Chemistry::Residue * const secondResidue = secondAtom->getResiduePtr();
 
 		const QString firstResidueStr = QString::fromStdString(
 			firstResidue->getSymbolStr() + " " + std::to_string( firstResidue->getIndexInOriginalChain() ) );

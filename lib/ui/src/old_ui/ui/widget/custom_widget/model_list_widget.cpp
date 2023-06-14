@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include <QLabel>
-#include <app/mvc.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void BaseModelListWidget::_setupSlots() {}
 	void BaseModelListWidget::localize() {}
 
-	void BaseModelListWidget::addModel( App::Core::Model::BaseModel * const p_model )
+	void BaseModelListWidget::addModel( App::Old::Core::Model::BaseModel * const p_model )
 	{
 		if ( getContainsOnlyUniqueModel() && _isModelAlreadyInList( p_model ) )
 			return;
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		emit onModelListChange();
 	}
-	void BaseModelListWidget::insertModel( App::Core::Model::BaseModel * const p_model, const int p_row )
+	void BaseModelListWidget::insertModel( App::Old::Core::Model::BaseModel * const p_model, const int p_row )
 	{
 		bool listHasChanged = false;
 
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( listHasChanged )
 			emit onModelListChange();
 	}
-	void BaseModelListWidget::removeModel( App::Core::Model::BaseModel * const p_model )
+	void BaseModelListWidget::removeModel( App::Old::Core::Model::BaseModel * const p_model )
 	{
 		std::vector<BaseModelFieldLine *>::const_iterator it = _lines.begin();
 
@@ -83,7 +83,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void BaseModelListWidget::swapModels( App::Core::Model::BaseModel * const p_model1, App::Core::Model::BaseModel * const p_model2 ) const
+	void BaseModelListWidget::swapModels( App::Old::Core::Model::BaseModel * const p_model1, App::Old::Core::Model::BaseModel * const p_model2 ) const
 	{
 		bool firstSwapDone = false;
 
@@ -114,7 +114,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	bool BaseModelListWidget::hasModel( const App::Core::Model::BaseModel * const p_model ) const
+	bool BaseModelListWidget::hasModel( const App::Old::Core::Model::BaseModel * const p_model ) const
 	{
 		for ( const BaseModelFieldLine * const line : _lines )
 			if ( line->getModel() == p_model )
@@ -123,9 +123,9 @@ namespace VTX::UI::Widget::CustomWidget
 		return false;
 	}
 	int								BaseModelListWidget::getModelCount() const { return int( _lines.size() ); }
-	std::vector<App::Core::Model::BaseModel *> BaseModelListWidget::getModels() const
+	std::vector<App::Old::Core::Model::BaseModel *> BaseModelListWidget::getModels() const
 	{
-		std::vector<App::Core::Model::BaseModel *> res = std::vector<App::Core::Model::BaseModel *>();
+		std::vector<App::Old::Core::Model::BaseModel *> res = std::vector<App::Old::Core::Model::BaseModel *>();
 		res.reserve( _lines.size() );
 
 		for ( const BaseModelFieldLine * const line : _lines )
@@ -138,9 +138,9 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_containsOnlyUniqueModel = p_containsOnlyUniqueModel;
 	}
-	void BaseModelListWidget::addTypeFilter( const App::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
+	void BaseModelListWidget::addTypeFilter( const App::Old::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
 
-	bool BaseModelListWidget::_isModelAlreadyInList( const App::Core::Model::BaseModel * const p_model ) const
+	bool BaseModelListWidget::_isModelAlreadyInList( const App::Old::Core::Model::BaseModel * const p_model ) const
 	{
 		for ( const BaseModelFieldLine * const line : _lines )
 			if ( line->getModel() == p_model )
@@ -149,7 +149,7 @@ namespace VTX::UI::Widget::CustomWidget
 		return false;
 	}
 
-	void BaseModelListWidget::_addModelInLayout( App::Core::Model::BaseModel * const p_model, const int p_row )
+	void BaseModelListWidget::_addModelInLayout( App::Old::Core::Model::BaseModel * const p_model, const int p_row )
 	{
 		BaseModelFieldLine * const newLine = _instantiateLine();
 		_initLine( newLine, p_model );
@@ -164,7 +164,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_layout->addWidget( p_widget, p_row + 1, p_column );
 	}
 
-	void BaseModelListWidget::_initLine( BaseModelFieldLine * const p_line, App::Core::Model::BaseModel * const p_model ) const
+	void BaseModelListWidget::_initLine( BaseModelFieldLine * const p_line, App::Old::Core::Model::BaseModel * const p_model ) const
 	{
 		p_line->setModel( p_model );
 	}
@@ -182,7 +182,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	BaseModelFieldLine * BaseModelListWidget::_findLineFromModel( const App::Core::Model::BaseModel * const p_model ) const
+	BaseModelFieldLine * BaseModelListWidget::_findLineFromModel( const App::Old::Core::Model::BaseModel * const p_model ) const
 	{
 		for ( BaseModelFieldLine * const line : _lines )
 			if ( line->getModel() == p_model )

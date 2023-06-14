@@ -7,8 +7,8 @@
 #include <QMenu>
 #include <QToolButton>
 #include <QWidget>
-#include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/core/view/callback_view.hpp>
+#include <app/old/application/render_effect/render_effect_preset.hpp>
+#include <app/old/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
@@ -18,13 +18,13 @@ namespace VTX::UI::Widget::Render::Overlay
 		VTX_WIDGET
 
 	  private:
-		using RenderEffectView = App::Core::View::CallbackView<App::Application::RenderEffect::RenderEffectPreset, CameraQuickAccess>;
+		using RenderEffectView = App::Old::Core::View::CallbackView<App::Old::Application::RenderEffect::RenderEffectPreset, CameraQuickAccess>;
 
 	  public:
 		~CameraQuickAccess();
 		void localize() override;
 
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		CameraQuickAccess( QWidget * p_parent );
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		void _attachViewOnAppliedRenderEffect();
 
-		void _onRenderEffectChange( const VTX::App::Core::Event::VTXEvent * const p_event );
+		void _onRenderEffectChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event );
 		void _toggleCameraProjection();
 		void _applyRenderEffectPresetAction( const QAction * const p_action );
 		void _onExportImageClickedAction() const;

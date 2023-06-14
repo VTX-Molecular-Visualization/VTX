@@ -4,10 +4,10 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_wheel.hpp"
-#include <app/application/generic/base_lockable.hpp>
-#include <app/application/generic/base_updatable.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/id.hpp>
+#include <app/old/application/generic/base_lockable.hpp>
+#include <app/old/application/generic/base_updatable.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/id.hpp>
 #include <map>
 #include <queue>
 #include <set>
@@ -19,8 +19,8 @@ namespace VTX::UI::Event
 	class BaseEventFirererInput;
 
 	class EventManager final :
-		public App::Application::Generic::BaseUpdatable,
-		public App::Application::Generic::BaseLockable
+		public App::Old::Application::Generic::BaseUpdatable,
+		public App::Old::Application::Generic::BaseLockable
 	{
 		friend BaseEventFirererInput;
 
@@ -46,9 +46,9 @@ namespace VTX::UI::Event
 		void freezeEvent( const bool p_freeze );
 
 	  private:
-		void fireEventKeyboard( QKeyEvent * const, const App::VTX_ID & );
-		void fireEventMouse( QMouseEvent * const, const App::VTX_ID & );
-		void fireEventWheel( QWheelEvent * const, const App::VTX_ID & );
+		void fireEventKeyboard( QKeyEvent * const, const App::Old::VTX_ID & );
+		void fireEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
+		void fireEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
 
 	  private:
 		// Input events.
@@ -71,9 +71,9 @@ namespace VTX::UI::Event
 		EventManager & operator=( const EventManager & ) = delete;
 		~EventManager();
 
-		void _flushEventKeyboard( QKeyEvent * const, const App::VTX_ID & );
-		void _flushEventMouse( QMouseEvent * const, const App::VTX_ID & );
-		void _flushEventWheel( QWheelEvent * const, const App::VTX_ID & );
+		void _flushEventKeyboard( QKeyEvent * const, const App::Old::VTX_ID & );
+		void _flushEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
+		void _flushEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
 	};
 } // namespace VTX::UI::Event
 #endif

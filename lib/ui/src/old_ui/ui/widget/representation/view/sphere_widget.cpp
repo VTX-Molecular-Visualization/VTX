@@ -9,14 +9,14 @@ namespace VTX::UI::Widget::Representation::View
 		_radiusLabel = new QLabel( this );
 		_radiusLabel->setText( "Balls radius" );
 		_radiusWidget = _addFloatFieldSliderWidgetInLayout(
-			"sphereRadiusWidget", _radiusLabel, VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
+			"sphereRadiusWidget", _radiusLabel, VTX::App::Old::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Old::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_radiusOffsetLabel = new QLabel( this );
 		_radiusOffsetLabel->setText( "Atom offset" );
 		_radiusOffsetWidget = _addFloatFieldSliderWidgetInLayout( "sphereRadiusOffsetWidget",
 																  _radiusOffsetLabel,
-																  VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MIN,
-																  VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MAX );
+																  VTX::App::Old::Application::Setting::ATOMS_RADIUS_ADD_MIN,
+																  VTX::App::Old::Application::Setting::ATOMS_RADIUS_ADD_MAX );
 	}
 
 	void SphereWidget::_setupSlots()
@@ -34,33 +34,33 @@ namespace VTX::UI::Widget::Representation::View
 	void SphereWidget::_onRadiusOffsetChange( const float p_newRadius ) { emit onRadiusOffsetChange( p_newRadius ); }
 
 	void SphereWidget::refresh(
-		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
-		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
+		const App::Old::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Old::Application::Representation::BaseRepresentable *> & p_targets )
 	{
 		Util::UI::setDynamicProperty( _radiusLabel,
 									  Style::WidgetProperty::OVERIDDEN_PARAMETER,
 									  p_representation.isMemberOverrided(
-										  App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
+										  App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
 		Util::UI::setDynamicProperty( _radiusOffsetLabel,
 									  Style::WidgetProperty::OVERIDDEN_PARAMETER,
 									  p_representation.isMemberOverrided(
-										  App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
+										  App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
 
 		_radiusWidget->setValue( p_representation.getSphereData().radiusFixed );
 		_radiusOffsetWidget->setValue( p_representation.getSphereData().radiusAdd );
 	}
 
 	void SphereWidget::updateWithNewValue(
-		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
-		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
+		const App::Old::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Old::Application::Representation::BaseRepresentable *> & p_targets )
 	{
 		_updateLabelOverriddenProperty(
 			_radiusLabel,
 			p_representation.isMemberOverrided(
-				App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
+				App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
 		_updateLabelOverriddenProperty( _radiusOffsetLabel,
 										p_representation.isMemberOverrided(
-											App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
+											App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
 
 		_radiusWidget->updateWithNewValue( p_representation.getSphereData().radiusFixed );
 		_radiusOffsetWidget->updateWithNewValue( p_representation.getSphereData().radiusAdd );

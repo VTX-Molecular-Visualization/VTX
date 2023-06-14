@@ -2,10 +2,10 @@
 #include "ui/qt/state/export.hpp"
 #include "ui/qt/state/play.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/core/event/vtx_event.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/vtx_app.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::UI::QT::State
@@ -19,19 +19,19 @@ namespace VTX::UI::QT::State
 
 	StateMachine::~StateMachine()
 	{
-		for ( const std::pair<const App::VTX_ID, BaseState * const> & pair : _states )
+		for ( const std::pair<const App::Old::VTX_ID, BaseState * const> & pair : _states )
 		{
 			delete pair.second;
 		}
 		_states.clear();
 	}
 
-	void StateMachine::goToState( const App::VTX_ID & p_name, void * const p_arg )
+	void StateMachine::goToState( const App::Old::VTX_ID & p_name, void * const p_arg )
 	{
 		VTX_DEBUG( "Go to state: {}", p_name );
 		if ( _states.find( p_name ) != _states.end() )
 		{
-			VTX_EVENT<const App::VTX_ID &>( VTX::App::Event::Global::CHANGE_STATE, p_name );
+			VTX_EVENT<const App::Old::VTX_ID &>( VTX::App::Old::Event::Global::CHANGE_STATE, p_name );
 			_switchState( _states[ p_name ], p_arg );
 		}
 		else

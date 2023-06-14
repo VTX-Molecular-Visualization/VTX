@@ -2,11 +2,11 @@
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include <QLabel>
-#include <app/action/instantiated_representation.hpp>
-#include <app/action/molecule.hpp>
-#include <app/application/representation/base_representable.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/id.hpp>
+#include <app/old/action/instantiated_representation.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/application/representation/base_representable.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/id.hpp>
 #include <string>
 #include <util/logger.hpp>
 
@@ -116,7 +116,7 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void BaseRepresentationWidget::updateWithNewValue(
-		const App::Application::Representation::InstantiatedRepresentation & p_value )
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_value )
 	{
 		if ( _sphereWidget != nullptr )
 		{
@@ -214,7 +214,7 @@ namespace VTX::UI::Widget::Representation
 		else if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN || colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN )
 		{
 			_colorModeWidget->resetState();
-			for ( const App::Application::Representation::BaseRepresentable * const target : _targets )
+			for ( const App::Old::Application::Representation::BaseRepresentable * const target : _targets )
 			{
 				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
 			}

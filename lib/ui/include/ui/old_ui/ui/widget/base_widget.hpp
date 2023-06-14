@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QWidget>
-#include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/old/core/event/base_event_receiver_vtx.hpp>
 
 namespace VTX
 {
@@ -13,7 +13,7 @@ namespace VTX
 		namespace Widget
 		{
 			template<typename W, typename T, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			class BaseWidget : public W, public T, public VTX::App::Core::Event::BaseEventReceiverVTX
+			class BaseWidget : public W, public T, public VTX::App::Old::Core::Event::BaseEventReceiverVTX
 			{
 			  public:
 				BaseWidget( QWidget * p_parent = 0 ) : W( p_parent ) { T::setupUi( this ); }

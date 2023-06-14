@@ -8,87 +8,87 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QScrollBar>
-#include <app/action/selection.hpp>
-#include <app/action/viewpoint.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
 namespace VTX::View::UI::Widget
 {
-	PathSceneView::PathSceneView( App::Component::Video::Path * const p_model, QWidget * const p_parent ) :
-		App::Core::View::BaseView<App::Component::Video::Path>( p_model ), SceneItemWidget( p_parent )
+	PathSceneView::PathSceneView( App::Old::Component::Video::Path * const p_model, QWidget * const p_parent ) :
+		App::Old::Core::View::BaseView<App::Old::Component::Video::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::VIEWPOINT_ADDED );
-		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::VIEWPOINT_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::VIEWPOINT_REMOVED );
 	}
 	PathSceneView::~PathSceneView() {}
 
-	void PathSceneView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void PathSceneView::notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::App::Old::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == VTX::App::Old::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
 	}
-	void PathSceneView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void PathSceneView::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == VTX::App::Old::Event::Global::VIEWPOINT_ADDED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Viewpoint *> &>(
 					p_event );
 
 			_addViewpoint( castedEvent.get() );
 			topLevelItem( 0 )->setExpanded( true );
 		}
-		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::App::Old::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Viewpoint *> &>(
 					p_event );
 
 			_removeViewpoint( castedEvent.get() );
 		}
 	}
 
-	bool PathSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
+	bool PathSceneView::containsModel( const App::Old::Core::Model::BaseModel & p_model ) const
 	{
-		const VTX::App::VTX_ID &			modelTypeID = p_model.getTypeId();
-		const App::Component::Video::Path * linkedPath;
+		const VTX::App::Old::VTX_ID &			modelTypeID = p_model.getTypeId();
+		const App::Old::Component::Video::Path * linkedPath;
 
-		if ( modelTypeID == App::ID::Model::MODEL_PATH )
-			linkedPath = static_cast<const App::Component::Video::Path *>( &p_model );
-		else if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
-			linkedPath = static_cast<const App::Component::Object3D::Viewpoint *>( &p_model )->getPathPtr();
+		if ( modelTypeID == App::Old::ID::Model::MODEL_PATH )
+			linkedPath = static_cast<const App::Old::Component::Video::Path *>( &p_model );
+		else if ( modelTypeID == App::Old::ID::Model::MODEL_VIEWPOINT )
+			linkedPath = static_cast<const App::Old::Component::Object3D::Viewpoint *>( &p_model )->getPathPtr();
 		else // Not a valid type. Return false.
 			return false;
 
 		return linkedPath == _model;
 	}
 
-	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsFrom(
-		const App::Core::Model::BaseModel & p_model ) const
+	std::vector<App::Old::Core::Model::ID> PathSceneView::getAllItemsFrom(
+		const App::Old::Core::Model::BaseModel & p_model ) const
 	{
-		const App::VTX_ID & typeID = p_model.getTypeId();
+		const App::Old::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == App::ID::Model::MODEL_PATH )
+		if ( typeID == App::Old::ID::Model::MODEL_PATH )
 		{
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<App::Core::Model::ID> res;
+		std::vector<App::Old::Core::Model::ID> res;
 
-		if ( p_model.getTypeId() == App::ID::Model::MODEL_VIEWPOINT )
+		if ( p_model.getTypeId() == App::Old::ID::Model::MODEL_VIEWPOINT )
 		{
 			for ( size_t i = _model->getViewpoints().size() - 1; i <= 0; i-- )
 			{
-				const App::Component::Object3D::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
+				const App::Old::Component::Object3D::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
 				res.emplace_back( viewpoint->getId() );
 
 				if ( viewpoint->getId() == p_model.getId() )
@@ -98,22 +98,22 @@ namespace VTX::View::UI::Widget
 
 		return res;
 	}
-	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
+	std::vector<App::Old::Core::Model::ID> PathSceneView::getAllItemsTo( const App::Old::Core::Model::BaseModel & p_model ) const
 	{
-		const App::VTX_ID & typeID = p_model.getTypeId();
+		const App::Old::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == App::ID::Model::MODEL_PATH )
+		if ( typeID == App::Old::ID::Model::MODEL_PATH )
 		{
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<App::Core::Model::ID> res;
+		std::vector<App::Old::Core::Model::ID> res;
 
-		if ( p_model.getTypeId() == App::ID::Model::MODEL_VIEWPOINT )
+		if ( p_model.getTypeId() == App::Old::ID::Model::MODEL_VIEWPOINT )
 		{
 			for ( int i = 0; i < _model->getViewpoints().size(); i++ )
 			{
-				const App::Component::Object3D::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
+				const App::Old::Component::Object3D::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
 				res.emplace_back( viewpoint->getId() );
 
 				if ( viewpoint->getId() == p_model.getId() )
@@ -137,8 +137,8 @@ namespace VTX::View::UI::Widget
 	void PathSceneView::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
 	{
 		// TODO
-		// App::Application::Selection::SelectionModel & selectionModel =
-		// App::Application::Selection::SelectionManager::get().getSelectionModel(); selectionModel.selectViewpoint(
+		// App::Old::Application::Selection::SelectionModel & selectionModel =
+		// App::Old::Application::Selection::SelectionManager::get().getSelectionModel(); selectionModel.selectViewpoint(
 		// *_model );
 	}
 
@@ -146,7 +146,7 @@ namespace VTX::View::UI::Widget
 	{
 		SceneItemWidget::_setupUi( p_name );
 
-		for ( const App::Component::Object3D::Viewpoint * const viewpoint : _model->getViewpoints() )
+		for ( const App::Old::Component::Object3D::Viewpoint * const viewpoint : _model->getViewpoints() )
 			_addViewpoint( viewpoint );
 	}
 	void PathSceneView::_setupSlots()
@@ -164,15 +164,15 @@ namespace VTX::View::UI::Widget
 		topLevelItem( 0 )->setText( 0, QString::fromStdString( VTX::UI::Style::VIEWPOINT_GROUP_NAME ) );
 	}
 
-	void PathSceneView::_fillItemSelection( const App::Application::Selection::SelectionModel & p_selection,
+	void PathSceneView::_fillItemSelection( const App::Old::Application::Selection::SelectionModel & p_selection,
 											QItemSelection &									p_itemSelection )
 	{
-		std::set<App::Component::Object3D::Viewpoint *> viewpoints = std::set<App::Component::Object3D::Viewpoint *>();
-		p_selection.getItemsOfType( App::ID::Model::MODEL_VIEWPOINT, viewpoints );
+		std::set<App::Old::Component::Object3D::Viewpoint *> viewpoints = std::set<App::Old::Component::Object3D::Viewpoint *>();
+		p_selection.getItemsOfType( App::Old::ID::Model::MODEL_VIEWPOINT, viewpoints );
 
 		bool pathItemAdded = false;
 
-		for ( const App::Component::Object3D::Viewpoint * const viewpoint : viewpoints )
+		for ( const App::Old::Component::Object3D::Viewpoint * const viewpoint : viewpoints )
 		{
 			if ( viewpoint->getPathPtr() != _model )
 				continue;
@@ -195,11 +195,11 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == 0 )
 		{
-			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
-			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::ID::Model::MODEL_VIEWPOINT )
+			const App::Old::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Old::Core::Model::ID>();
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::Old::ID::Model::MODEL_VIEWPOINT )
 			{
-				App::Component::Object3D::Viewpoint & viewpoint
-					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( idTarget );
+				App::Old::Component::Object3D::Viewpoint & viewpoint
+					= VTX::MVC_MANAGER().getModel<App::Old::Component::Object3D::Viewpoint>( idTarget );
 				std::string itemTxt = p_item->text( 0 ).toStdString();
 
 				if ( itemTxt != viewpoint.getDefaultName() )
@@ -212,7 +212,7 @@ namespace VTX::View::UI::Widget
 					}
 					else if ( itemTxt != viewpoint.getDefaultName() )
 					{
-						VTX_ACTION( new App::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
+						VTX_ACTION( new App::Old::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );
@@ -228,12 +228,12 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == 0 )
 		{
-			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
-			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::ID::Model::MODEL_VIEWPOINT )
+			const App::Old::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Old::Core::Model::ID>();
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::Old::ID::Model::MODEL_VIEWPOINT )
 			{
-				App::Component::Object3D::Viewpoint & viewpoint
-					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( idTarget );
-				App::Component::Render::Camera & mainCamera = App::VTXApp::get().getScene().getCamera();
+				App::Old::Component::Object3D::Viewpoint & viewpoint
+					= VTX::MVC_MANAGER().getModel<App::Old::Component::Object3D::Viewpoint>( idTarget );
+				App::Old::Component::Render::Camera & mainCamera = App::Old::VTXApp::get().getScene().getCamera();
 
 				VTX_ACTION( new VTX::UI::QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
 			}
@@ -247,22 +247,22 @@ namespace VTX::View::UI::Widget
 		if ( targetedItem == nullptr )
 			return;
 
-		const App::Core::Model::ID & itemID = _getModelIDFromItem( *targetedItem );
+		const App::Old::Core::Model::ID & itemID = _getModelIDFromItem( *targetedItem );
 
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
-		if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::ID::Model::MODEL_PATH )
+		if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::Old::ID::Model::MODEL_PATH )
 		{
-			App::Component::Video::Path & pathTargeted
-				= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( itemID );
+			App::Old::Component::Video::Path & pathTargeted
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Video::Path>( itemID );
 			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Path, &pathTargeted, globalClicPos );
 		}
-		else if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::ID::Model::MODEL_VIEWPOINT )
+		else if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::Old::ID::Model::MODEL_VIEWPOINT )
 		{
-			App::Component::Object3D::Viewpoint & viewpointTargeted
-				= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( itemID );
-			App::Application::Selection::SelectionModel & selection
-				= App::Application::Selection::SelectionManager::get().getSelectionModel();
+			App::Old::Component::Object3D::Viewpoint & viewpointTargeted
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Object3D::Viewpoint>( itemID );
+			App::Old::Application::Selection::SelectionModel & selection
+				= App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 			if ( selection.isModelSelected( viewpointTargeted ) )
 			{
@@ -282,7 +282,7 @@ namespace VTX::View::UI::Widget
 
 	void PathSceneView::_onItemExpanded( QTreeWidgetItem * const p_item )
 	{
-		_refreshSelection( App::Application::Selection::SelectionManager::get().getSelectionModel() );
+		_refreshSelection( App::Old::Application::Selection::SelectionManager::get().getSelectionModel() );
 		SceneItemWidget::_onItemExpanded( p_item );
 	}
 
@@ -301,14 +301,14 @@ namespace VTX::View::UI::Widget
 			p_name = p_name.substr( 0, VTX::UI::Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
 
-	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const App::Component::Object3D::Viewpoint & p_viewpoint ) const
+	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const App::Old::Component::Object3D::Viewpoint & p_viewpoint ) const
 	{
-		const App::Core::Model::ID & viewpointID = p_viewpoint.getId();
+		const App::Old::Core::Model::ID & viewpointID = p_viewpoint.getId();
 
 		for ( int i = 0; i < topLevelItem( 0 )->childCount(); i++ )
 		{
 			QTreeWidgetItem * const		 item	= topLevelItem( 0 )->child( i );
-			const App::Core::Model::ID & itemID = item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
+			const App::Old::Core::Model::ID & itemID = item->data( 0, MODEL_ID_ROLE ).value<App::Old::Core::Model::ID>();
 			if ( viewpointID == itemID )
 				return item;
 		}
@@ -316,13 +316,13 @@ namespace VTX::View::UI::Widget
 		return nullptr;
 	}
 
-	void PathSceneView::_addViewpoint( const App::Component::Object3D::Viewpoint * const p_viewpoint )
+	void PathSceneView::_addViewpoint( const App::Old::Component::Object3D::Viewpoint * const p_viewpoint )
 	{
 		QTreeWidgetItem * const viewpointItem = new QTreeWidgetItem();
 		viewpointItem->setFlags( viewpointItem->flags() | Qt::ItemFlag::ItemIsEditable );
 
 		viewpointItem->setData(
-			0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Core::Model::ID>( p_viewpoint->getId() ) );
+			0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Old::Core::Model::ID>( p_viewpoint->getId() ) );
 		viewpointItem->setText( 0, QString::fromStdString( p_viewpoint->getDefaultName() ) );
 		viewpointItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
 
@@ -330,7 +330,7 @@ namespace VTX::View::UI::Widget
 
 		_refreshSize();
 	}
-	void PathSceneView::_removeViewpoint( const App::Component::Object3D::Viewpoint * const p_viewpoint )
+	void PathSceneView::_removeViewpoint( const App::Old::Component::Object3D::Viewpoint * const p_viewpoint )
 	{
 		QTreeWidgetItem * const viewpointItem = _itemFromViewpoint( *p_viewpoint );
 		if ( viewpointItem != nullptr )

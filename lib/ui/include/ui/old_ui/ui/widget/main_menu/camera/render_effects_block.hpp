@@ -5,28 +5,28 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "render_effect_preset_button.hpp"
 #include <QWidget>
-#include <app/core/event/vtx_event.hpp>
-#include <app/application/render_effect/render_effect_library.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/application/render_effect/render_effect_library.hpp>
+#include <app/old/core/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	class RenderEffectsBlock :
-		public VTX::App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>,
+		public VTX::App::Old::Core::View::BaseView<App::Old::Application::RenderEffect::RenderEffectLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 		VTX_VIEW
 
 	  public:
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
-		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
-		RenderEffectsBlock( App::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
+		RenderEffectsBlock( App::Old::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
 							QWidget *										   p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

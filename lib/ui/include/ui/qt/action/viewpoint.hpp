@@ -2,20 +2,20 @@
 #define __VTX_UI_QT_ACTION_VIEWPOINT__
 
 #include "ui/qt/controller/base_camera_controller.hpp"
-#include <app/component/object3d/viewpoint.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/component/video/path.hpp>
-#include <app/core/action/base_action.hpp>
+#include <app/old/component/object3d/viewpoint.hpp>
+#include <app/old/component/render/camera.hpp>
+#include <app/old/component/video/path.hpp>
+#include <app/old/core/action/base_action.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Action::Viewpoint
 {
-	class Create : public VTX::App::Core::Action::BaseAction
+	class Create : public VTX::App::Old::Core::Action::BaseAction
 	{
 	  public:
 		explicit Create();
-		explicit Create( App::Component::Video::Path &			  p_path,
-						 const App::Component::Render::Camera &	  p_camera,
+		explicit Create( App::Old::Component::Video::Path &			  p_path,
+						 const App::Old::Component::Render::Camera &	  p_camera,
 						 Controller::BaseCameraController * const p_controller );
 
 		virtual void execute() override;
@@ -23,38 +23,38 @@ namespace VTX::UI::QT::Action::Viewpoint
 	  private:
 		std::string _generateViewpointName() const;
 
-		App::Component::Video::Path & _path;
+		App::Old::Component::Video::Path & _path;
 		const Vec3f					  _position;
 		const Quatf					  _rotation;
 		Vec3f						  _target	  = VEC3F_ZERO;
-	 App::VTX_ID					  _controller = VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT;
+	 App::Old::VTX_ID					  _controller = VTX::App::Old::Application::Setting::CONTROLLER_MODE_DEFAULT;
 	};
 
-	class Delete : public VTX::App::Core::Action::BaseAction
+	class Delete : public VTX::App::Old::Core::Action::BaseAction
 	{
 	  public:
-		explicit Delete( App::Component::Object3D::Viewpoint & p_viewpoint ) : _viewpoints( { &p_viewpoint } )
+		explicit Delete( App::Old::Component::Object3D::Viewpoint & p_viewpoint ) : _viewpoints( { &p_viewpoint } )
 		{
-			_tag = VTX::App::Core::Action::ACTION_TAG( _tag | VTX::App::Core::Action::ACTION_TAG::MODIFY_SCENE );
+			_tag = VTX::App::Old::Core::Action::ACTION_TAG( _tag | VTX::App::Old::Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit Delete( const std::vector<App::Component::Object3D::Viewpoint *> & p_viewpoints ) :
+		explicit Delete( const std::vector<App::Old::Component::Object3D::Viewpoint *> & p_viewpoints ) :
 			_viewpoints( p_viewpoints )
 		{
-			_tag = VTX::App::Core::Action::ACTION_TAG( _tag | VTX::App::Core::Action::ACTION_TAG::MODIFY_SCENE );
+			_tag = VTX::App::Old::Core::Action::ACTION_TAG( _tag | VTX::App::Old::Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override;
 
 	  private:
-		std::vector<App::Component::Object3D::Viewpoint *> _viewpoints;
+		std::vector<App::Old::Component::Object3D::Viewpoint *> _viewpoints;
 	};
 
-	class GoTo : public VTX::App::Core::Action::BaseAction
+	class GoTo : public VTX::App::Old::Core::Action::BaseAction
 	{
 	  public:
-		explicit GoTo( const App::Component::Object3D::Viewpoint & p_viewpoint );
-		explicit GoTo( const App::Component::Object3D::Viewpoint & p_viewpoint,
-					   const App::Component::Render::Camera &	   p_camera ) :
+		explicit GoTo( const App::Old::Component::Object3D::Viewpoint & p_viewpoint );
+		explicit GoTo( const App::Old::Component::Object3D::Viewpoint & p_viewpoint,
+					   const App::Old::Component::Render::Camera &	   p_camera ) :
 			_viewpoint( p_viewpoint ),
 			_camera( p_camera )
 		{
@@ -63,8 +63,8 @@ namespace VTX::UI::QT::Action::Viewpoint
 		virtual void execute() override;
 
 	  private:
-		const App::Component::Object3D::Viewpoint & _viewpoint;
-		const App::Component::Render::Camera &		_camera;
+		const App::Old::Component::Object3D::Viewpoint & _viewpoint;
+		const App::Old::Component::Render::Camera &		_camera;
 	};
 
 } // namespace VTX::UI::QT::Action::Viewpoint

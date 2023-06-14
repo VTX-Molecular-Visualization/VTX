@@ -11,10 +11,10 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
-#include <app/application/representation/enum_representation.hpp>
-#include <app/application/selection/enum_selection.hpp>
-#include <app/id.hpp>
-#include <app/util/label.hpp>
+#include <app/old/application/representation/enum_representation.hpp>
+#include <app/old/application/selection/enum_selection.hpp>
+#include <app/old/id.hpp>
+#include <app/old/util/label.hpp>
 #include <core/chemdb/category.hpp>
 #include <iostream>
 #include <string>
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Style
 
 		const QPixmap TOOLTAB_SEPARATOR;
 
-		const QPixmap * const getWindowIcon( const App::VTX_ID & p_id ) const
+		const QPixmap * const getWindowIcon( const App::Old::VTX_ID & p_id ) const
 		{
 			const QPixmap * res;
 
@@ -108,23 +108,23 @@ namespace VTX::UI::QT::Style
 			return res;
 		}
 
-		const QPixmap * const getModelSymbol( const App::VTX_ID & p_id ) const
+		const QPixmap * const getModelSymbol( const App::Old::VTX_ID & p_id ) const
 		{
 			const QPixmap * res;
 
-			if ( p_id == App::ID::Model::MODEL_MOLECULE )
+			if ( p_id == App::Old::ID::Model::MODEL_MOLECULE )
 				res = &MOLECULE_SYMBOL;
-			else if ( p_id == App::ID::Model::MODEL_CHAIN )
+			else if ( p_id == App::Old::ID::Model::MODEL_CHAIN )
 				res = &CHAIN_SYMBOL;
-			else if ( p_id == App::ID::Model::MODEL_RESIDUE )
+			else if ( p_id == App::Old::ID::Model::MODEL_RESIDUE )
 				res = &RESIDUE_SYMBOL;
-			else if ( p_id == App::ID::Model::MODEL_ATOM )
+			else if ( p_id == App::Old::ID::Model::MODEL_ATOM )
 				res = &ATOM_SYMBOL;
-			else if ( p_id == App::ID::Model::MODEL_PATH )
+			else if ( p_id == App::Old::ID::Model::MODEL_PATH )
 				res = &VIEWPOINT_SYMBOL;
-			else if ( p_id == App::ID::Model::MODEL_VIEWPOINT )
+			else if ( p_id == App::Old::ID::Model::MODEL_VIEWPOINT )
 				res = &VIEWPOINT_SYMBOL;
-			else if ( VTX::Util::App::Label::isLabelType( p_id ) )
+			else if ( VTX::Util::App::Old::Label::isLabelType( p_id ) )
 			{
 				res = &LABEL_SYMBOL;
 			}
@@ -138,34 +138,34 @@ namespace VTX::UI::QT::Style
 		};
 
 		const QPixmap * const getRepresentationIcon(
-			const App::Application::Representation::REPRESENTATION_ENUM & p_representation ) const
+			const App::Old::Application::Representation::REPRESENTATION_ENUM & p_representation ) const
 		{
 			const QPixmap * res;
 
 			switch ( p_representation )
 			{
-			case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
 				res = &REPRESENTATION_BALL_AND_STICK_ICON;
 				break;
-			case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
 				res = &REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
 				break;
-			case App::Application::Representation::REPRESENTATION_ENUM::CARTOON:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::CARTOON:
 				res = &REPRESENTATION_CARTOON_ICON;
 				break;
-			case App::Application::Representation::REPRESENTATION_ENUM::SAS: res = &REPRESENTATION_SAS_ICON; break;
-			case App::Application::Representation::REPRESENTATION_ENUM::STICK: res = &REPRESENTATION_STICK_ICON; break;
-			case App::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::SAS: res = &REPRESENTATION_SAS_ICON; break;
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK: res = &REPRESENTATION_STICK_ICON; break;
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
 				res = &REPRESENTATION_STICK_AND_CARTOON_ICON;
 				break;
-			case App::Application::Representation::REPRESENTATION_ENUM::SES:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::SES:
 				res = &REPRESENTATION_SES_ICON;
 				break;
 
 				// !V0.1
-				// case App::Application::Representation::REPRESENTATION_ENUM::TRACE: res = &REPRESENTATION_TRACE_ICON;
+				// case App::Old::Application::Representation::REPRESENTATION_ENUM::TRACE: res = &REPRESENTATION_TRACE_ICON;
 				// break;
-			case App::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
+			case App::Old::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
 				res = &REPRESENTATION_VDW_ICON;
 				break;
 			default:

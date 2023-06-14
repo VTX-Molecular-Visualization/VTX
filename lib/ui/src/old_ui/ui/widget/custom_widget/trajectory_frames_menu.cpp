@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
-#include <app/action/molecule.hpp>
-#include <app/component/chemistry/generated_molecule.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/component/chemistry/generated_molecule.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/mvc.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_allFramesAction = new UIAction::SelfReferencedAction( "All", this );
 		_allFramesAction->setData(
-			QVariant( App::Component::Chemistry::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX ) );
+			QVariant( App::Old::Component::Chemistry::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX ) );
 		connect( _allFramesAction,
 				 &UIAction::SelfReferencedAction::triggeredSelf,
 				 this,
@@ -41,36 +41,36 @@ namespace VTX::UI::Widget::CustomWidget
 		_updateFrameNames();
 	}
 
-	void TrajectoryFramesMenu::updateFrames( const App::Component::Chemistry::Molecule & p_molecule )
+	void TrajectoryFramesMenu::updateFrames( const App::Old::Component::Chemistry::Molecule & p_molecule )
 	{
 		_adjustFrameActions( p_molecule.getFrameCount() );
 	}
-	void TrajectoryFramesMenu::updateFrames( const App::Application::Selection::SelectionModel & p_selection )
+	void TrajectoryFramesMenu::updateFrames( const App::Old::Application::Selection::SelectionModel & p_selection )
 	{
 		uint maxNbFrame = 1;
 
-		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMolecule :
+		for ( const App::Old::Application::Selection::SelectionModel::PairMoleculeIds & pairMolecule :
 			  p_selection.getMoleculesMap() )
 		{
-			const App::Component::Chemistry::Molecule & molecule
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolecule.first );
+			const App::Old::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Molecule>( pairMolecule.first );
 			maxNbFrame = maxNbFrame < molecule.getFrameCount() ? molecule.getFrameCount() : maxNbFrame;
 		}
 
 		_adjustFrameActions( maxNbFrame );
 	}
 
-	bool TrajectoryFramesMenu::hasToBeDisplayed( const App::Component::Chemistry::Molecule & p_molecule ) const
+	bool TrajectoryFramesMenu::hasToBeDisplayed( const App::Old::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		return p_molecule.getFrameCount() > 1;
 	}
-	bool TrajectoryFramesMenu::hasToBeDisplayed( const App::Application::Selection::SelectionModel & p_selection ) const
+	bool TrajectoryFramesMenu::hasToBeDisplayed( const App::Old::Application::Selection::SelectionModel & p_selection ) const
 	{
-		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMolecule :
+		for ( const App::Old::Application::Selection::SelectionModel::PairMoleculeIds & pairMolecule :
 			  p_selection.getMoleculesMap() )
 		{
-			const App::Component::Chemistry::Molecule & molecule
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolecule.first );
+			const App::Old::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Molecule>( pairMolecule.first );
 
 			if ( hasToBeDisplayed( molecule ) )
 				return true;

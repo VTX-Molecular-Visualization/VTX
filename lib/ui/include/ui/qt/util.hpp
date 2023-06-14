@@ -13,7 +13,7 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <set>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -116,7 +116,7 @@ namespace VTX::UI::QT::Util
 		return QBitmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
 
-	void appendBondInfo( const App::Component::Chemistry::Bond & p_bond, QString & p_str );
+	void appendBondInfo( const App::Old::Component::Chemistry::Bond & p_bond, QString & p_str );
 
 } // namespace VTX::UI::QT::Util
 

@@ -3,14 +3,14 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
-#include <app/action/main.hpp>
-#include <app/application/scene.hpp>
-#include <app/id.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
-#include <app/internal/worker/loader.hpp>
-#include <app/internal/worker/saver.hpp>
-#include <app/internal/worker/scene_loader.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/id.hpp>
+#include <app/old/internal/io/serialization/scene_path_data.hpp>
+#include <app/old/internal/worker/loader.hpp>
+#include <app/old/internal/worker/saver.hpp>
+#include <app/old/internal/worker/scene_loader.hpp>
+#include <app/old/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
@@ -18,12 +18,12 @@ namespace VTX::UI::QT::Tool::Session::Action
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Open::LoadSceneClass::_loadScene()
 	{
-		App::Internal::Worker::SceneLoader * sceneLoader = new App::Internal::Worker::SceneLoader( _paths );
+		App::Old::Internal::Worker::SceneLoader * sceneLoader = new App::Old::Internal::Worker::SceneLoader( _paths );
 		VTX_WORKER( sceneLoader );
 
 		for ( const FilePath & path : _paths )
 		{
-			App::VTXApp::get().getScenePathData().setCurrentPath( path, true );
+			App::Old::VTXApp::get().getScenePathData().setCurrentPath( path, true );
 		}
 	}
 	void Open::execute()
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			if ( _paths.empty() )
 				return;
 
-			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
+			VTX::App::Old::Core::Worker::CallbackThread callback = VTX::App::Old::Core::Worker::CallbackThread(
 				[ this ]( const uint p_code )
 				{
 					if ( p_code )
@@ -59,15 +59,15 @@ namespace VTX::UI::QT::Tool::Session::Action
 	{
 		if ( !_trajectoryTargets.empty() )
 		{
-			VTX_ACTION( new VTX::App::Action::Main::Open( _paths[ 0 ], *_trajectoryTargets[ 0 ] ) );
+			VTX_ACTION( new VTX::App::Old::Action::Main::Open( _paths[ 0 ], *_trajectoryTargets[ 0 ] ) );
 		}
 		else if ( !_buffers.empty() )
 		{
-			VTX_ACTION( new VTX::App::Action::Main::Open( _buffers ) );
+			VTX_ACTION( new VTX::App::Old::Action::Main::Open( _buffers ) );
 		}
 		else
 		{
-			VTX_ACTION( new VTX::App::Action::Main::Open( _paths ) );
+			VTX_ACTION( new VTX::App::Old::Action::Main::Open( _paths ) );
 		}
 	}
 
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			return;
 		}
 
-		VTX_ACTION( new VTX::App::Action::Main::Save( _path, _callback ) );
+		VTX_ACTION( new VTX::App::Old::Action::Main::Save( _path, _callback ) );
 	}
 
 	void ToggleCameraController::execute()

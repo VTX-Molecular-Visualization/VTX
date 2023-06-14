@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_chain.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/chain.hpp"
-#include <app/action/chain.hpp>
-#include <app/action/visible.hpp>
-#include <app/application/representation/representation_library.hpp>
+#include <app/old/action/chain.hpp>
+#include <app/old/action/visible.hpp>
+#include <app/old/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuChain::localize() {}
 
-	void ContextualMenuChain::setTarget( App::Component::Chemistry::Chain * const p_target )
+	void ContextualMenuChain::setTarget( App::Old::Component::Chemistry::Chain * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 
@@ -47,24 +47,24 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuChain::_orientAction() { VTX_ACTION( new QT::Action::Chain::Orient( *_target ) ); }
 	void ContextualMenuChain::_showAction()
 	{
-		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Old::Action::Chain::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuChain::_hideAction()
 	{
-		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Old::Action::Chain::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuChain::_soloAction()
 	{
-		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Old::Action::Chain::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::SOLO ) );
 	}
-	void ContextualMenuChain::_copyAction() { VTX_ACTION( new App::Action::Chain::Copy( *_target ) ); }
-	void ContextualMenuChain::_extractAction() { VTX_ACTION( new App::Action::Chain::Extract( *_target ) ); }
+	void ContextualMenuChain::_copyAction() { VTX_ACTION( new App::Old::Action::Chain::Copy( *_target ) ); }
+	void ContextualMenuChain::_extractAction() { VTX_ACTION( new App::Old::Action::Chain::Extract( *_target ) ); }
 
-	void ContextualMenuChain::_deleteAction() { VTX_ACTION( new App::Action::Chain::Delete( *_target ) ); }
+	void ContextualMenuChain::_deleteAction() { VTX_ACTION( new App::Old::Action::Chain::Delete( *_target ) ); }
 
 	void ContextualMenuChain::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new App::Action::Chain::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new App::Old::Action::Chain::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

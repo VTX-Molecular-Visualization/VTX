@@ -3,7 +3,7 @@
 
 #include "base_manual_widget_initializer.hpp"
 #include <QWidget>
-#include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/old/core/event/base_event_receiver_vtx.hpp>
 #include <type_traits>
 
 namespace VTX
@@ -13,7 +13,7 @@ namespace VTX
 		namespace Widget
 		{
 			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			class BaseManualWidget : public W, public VTX::App::Core::Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
+			class BaseManualWidget : public W, public VTX::App::Old::Core::Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
 			{
 				VTX_WIDGET
 

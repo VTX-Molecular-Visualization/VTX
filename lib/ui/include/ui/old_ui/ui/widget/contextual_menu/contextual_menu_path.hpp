@@ -4,18 +4,18 @@
 #include "contextual_menu_template.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
-#include <app/component/video/path.hpp>
+#include <app/old/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	class ContextualMenuPath : public ContextualMenuTemplate<App::Component::Video::Path>
+	class ContextualMenuPath : public ContextualMenuTemplate<App::Old::Component::Video::Path>
 	{
 		VTX_WIDGET
 
 	  public:
 		~ContextualMenuPath();
 		void localize() override;
-		void setTarget( App::Component::Video::Path * const p_target ) override;
+		void setTarget( App::Old::Component::Video::Path * const p_target ) override;
 
 	  protected:
 		ContextualMenuPath( QWidget * p_parent = nullptr );

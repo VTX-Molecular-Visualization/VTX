@@ -6,23 +6,23 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
-#include <app/action/main.hpp>
-#include <app/action/scene.hpp>
-#include <app/action/setting.hpp>
-#include <app/event/global.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/scene.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/event/global.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) :
 		QT::Widget::ContextualMenu::BaseContextualMenu( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}
@@ -54,13 +54,13 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		QMenu * const selectionGranularityMenu = new QMenu( this );
 		selectionGranularityMenu->setTitle( "Selection target" );
 		selectionGranularityMenu->addAction( "Atom" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	int( VTX::App::Application::Selection::GRANULARITY::ATOM ) );
+																	int( VTX::App::Old::Application::Selection::GRANULARITY::ATOM ) );
 		selectionGranularityMenu->addAction( "Residue" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::RESIDUE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Old::Application::Selection::GRANULARITY::RESIDUE ) );
 		selectionGranularityMenu->addAction( "Chain" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	 int( VTX::App::Application::Selection::GRANULARITY::CHAIN ) );
+																	 int( VTX::App::Old::Application::Selection::GRANULARITY::CHAIN ) );
 		selectionGranularityMenu->addAction( "Molecule" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::MOLECULE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Old::Application::Selection::GRANULARITY::MOLECULE ) );
 		connect(
 			selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
 
@@ -80,10 +80,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		// addMenu( _backgroundColorMenu );
 
 		//_renderSettingPreset = new QMenu( "Apply render settings", this );
-		// for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
+		// for ( int i = 0; i < App::Old::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		//{
-		//	const App::Application::RenderEffect::RenderEffectPreset & preset
-		//		= *App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
+		//	const App::Old::Application::RenderEffect::RenderEffectPreset & preset
+		//		= *App::Old::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 		//	QAction * const action = new QAction( QString::fromStdString( preset.getName() ), _renderSettingPreset );
 		//	action->setData( i );
@@ -131,7 +131,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void ContextualMenuRender::_refreshPickerMode() const
 	{
-		const App::VTX_ID & pickerID = QT_APP()
+		const App::Old::VTX_ID & pickerID = QT_APP()
 										  ->getStateMachine()
 										  .getState<QT::State::Visualization>( ID::State::VISUALIZATION )
 										  ->getCurrentPickerID();
@@ -147,7 +147,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	}
 	void ContextualMenuRender::_showAllMoleculesAction() const
 	{
-		VTX_ACTION( new VTX::App::Action::Scene::ShowAllMolecules() );
+		VTX_ACTION( new VTX::App::Old::Action::Scene::ShowAllMolecules() );
 	}
 	void ContextualMenuRender::_resetCameraAction() const
 	{
@@ -165,16 +165,16 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::App::Application::Selection::GRANULARITY granularity
-			= VTX::App::Application::Selection::GRANULARITY( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
-		VTX_ACTION( new VTX::App::Action::Setting::ChangeSelectionGranularity( granularity ) );
+		const VTX::App::Old::Application::Selection::GRANULARITY granularity
+			= VTX::App::Old::Application::Selection::GRANULARITY( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+		VTX_ACTION( new VTX::App::Old::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 
 	// void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	//{
 	//	const Controller::MeasurementPicker::Mode mode
 	//		= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
-	//	VTX_ACTION( new App::Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
+	//	VTX_ACTION( new App::Old::Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	// }
 
 } // namespace VTX::UI::QT::Tool::Render::Widget

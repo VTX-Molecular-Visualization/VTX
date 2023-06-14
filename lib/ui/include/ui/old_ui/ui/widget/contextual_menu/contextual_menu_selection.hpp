@@ -6,10 +6,10 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
-#include <app/application/selection/selection.hpp>
-#include <app/component/object3d/_fwd.hpp>
-#include <app/component/video/_fwd.hpp>
-#include <app/core/model/base_model.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/component/object3d/_fwd.hpp>
+#include <app/old/component/video/_fwd.hpp>
+#include <app/old/core/model/base_model.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>
@@ -53,7 +53,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		return lhs;
 	}
 
-	class ContextualMenuSelection : public ContextualMenuTemplate<App::Application::Selection::SelectionModel>
+	class ContextualMenuSelection : public ContextualMenuTemplate<App::Old::Application::Selection::SelectionModel>
 	{
 		VTX_WIDGET
 
@@ -169,7 +169,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			void addItemData( ItemData * const _itemData ) { _actions.emplace_back( _itemData ); };
 
-			void refreshWithTarget( const App::Application::Selection::SelectionModel & p_target,
+			void refreshWithTarget( const App::Old::Application::Selection::SelectionModel & p_target,
 									const TypeMask &									p_mask,
 									QMenu * const										p_parent )
 			{
@@ -204,7 +204,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		~ContextualMenuSelection();
 		void localize() override;
 
-		void setFocusedTarget( App::Core::Model::BaseModel * const p_focusedTarget );
+		void setFocusedTarget( App::Old::Core::Model::BaseModel * const p_focusedTarget );
 
 	  protected:
 		ContextualMenuSelection( QWidget * p_parent = nullptr );
@@ -253,12 +253,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
 		CustomWidget::TrajectoryFramesMenu *  _frameListMenu	  = nullptr;
 
-		std::map<App::VTX_ID, int>		_submenusMap = std::map<App::VTX_ID, int>();
+		std::map<App::Old::VTX_ID, int>		_submenusMap = std::map<App::Old::VTX_ID, int>();
 		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
 
-		App::Core::Model::BaseModel * _focusedTarget = nullptr;
+		App::Old::Core::Model::BaseModel * _focusedTarget = nullptr;
 
-		TypeMask _getTypeMaskFromTypeSet( const std::set<App::VTX_ID> & p_typeIds );
+		TypeMask _getTypeMaskFromTypeSet( const std::set<App::Old::VTX_ID> & p_typeIds );
 		void	 _updateCurrentRepresentationFeedback( QAction & _action ) const;
 
 		void _refreshToggleWaterText( QAction & _action ) const;
@@ -275,7 +275,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool _checkApplyAlignementAction() const;
 		bool _checkComputeRMSDAction() const;
 
-		void _getAllLabelTypes( std::unordered_set<App::Component::Object3D::Label *> & p_labels ) const;
+		void _getAllLabelTypes( std::unordered_set<App::Old::Component::Object3D::Label *> & p_labels ) const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

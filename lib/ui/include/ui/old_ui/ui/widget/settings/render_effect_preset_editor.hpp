@@ -18,14 +18,14 @@
 #include <QSpinBox>
 #include <QWidget>
 #include <util/color/rgba.hpp>
-#include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/render_effect/render_effect_preset.hpp>
+#include <app/old/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
 	class RenderEffectPresetEditor :
 		public VTX::UI::Widget::BaseManualWidget<QScrollArea>,
-		View::UI::EditorView<App::Application::RenderEffect::RenderEffectPreset>
+		View::UI::EditorView<App::Old::Application::RenderEffect::RenderEffectPreset>
 	{
 		VTX_WIDGET
 
@@ -42,8 +42,8 @@ namespace VTX::UI::Widget::Settings
 		void localize() override;
 		void refresh();
 
-		const App::Application::RenderEffect::RenderEffectPreset * const getPreset() const { return _preset; };
-		void setPreset( App::Application::RenderEffect::RenderEffectPreset * const p_model, const bool p_updateRender = true );
+		const App::Old::Application::RenderEffect::RenderEffectPreset * const getPreset() const { return _preset; };
+		void setPreset( App::Old::Application::RenderEffect::RenderEffectPreset * const p_model, const bool p_updateRender = true );
 
 	  protected:
 		RenderEffectPresetEditor( QWidget * const p_parent );
@@ -51,10 +51,10 @@ namespace VTX::UI::Widget::Settings
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void _catchModelEvent( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
-		App::Application::RenderEffect::RenderEffectPreset *					  _preset			 = nullptr;
+		App::Old::Application::RenderEffect::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
 
 		Layout::AttributeListLayout * _attributeLayout = nullptr;

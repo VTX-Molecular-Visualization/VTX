@@ -1,10 +1,10 @@
 #include "tool/old_tool/ui/widget/main_menu/tool/menu_tool_measurement_widget.hpp"
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/controller/measurement_picker.hpp"
-#include <app/action/main.hpp>
-#include <app/event/global.hpp>
-#include <app/component/chemistry/atom.hpp>
-#include <app/id.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/component/chemistry/atom.hpp>
+#include <app/old/id.hpp>
 #include <ui/old_ui/action/main.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>
@@ -15,14 +15,14 @@ namespace VTX::UI::Widget::MainMenu::Tool
 {
 	MenuToolMeasurementWidget::MenuToolMeasurementWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MenuToolMeasurementWidget::~MenuToolMeasurementWidget() {}
 
-	void MenuToolMeasurementWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void MenuToolMeasurementWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::PICKER_MODE_CHANGE )
 			_refreshButtons();
 	}
 

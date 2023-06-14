@@ -11,8 +11,8 @@ namespace VTX::Controller
 	  public:
 		MainWindowController() : BaseKeyboardController() {}
 
-		inline App::VTX_ID getTargetWidget() override { return UI::ID::Input::MAIN_WINDOW; }
-		inline bool		   readEventFromInput( const App::VTX_ID & p_id ) override
+		inline App::Old::VTX_ID getTargetWidget() override { return UI::ID::Input::MAIN_WINDOW; }
+		inline bool		   readEventFromInput( const App::Old::VTX_ID & p_id ) override
 		{
 			// This controller events from every target
 			return true;

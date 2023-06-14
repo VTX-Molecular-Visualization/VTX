@@ -1,31 +1,31 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/object_display_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/action/molecule.hpp>
-#include <app/application/scene.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	ObjectDisplayBlock::ObjectDisplayBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::App::Event::Global::MOLECULE_ADDED );
-		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
-		_registerEvent( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
 
 	ObjectDisplayBlock::~ObjectDisplayBlock() {}
 
-	void ObjectDisplayBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void ObjectDisplayBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE
-			 || p_event.name == VTX::App::Event::Global::MOLECULE_ADDED
-			 || p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED
-			 || p_event.name == VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SELECTION_CHANGE
+			 || p_event.name == VTX::App::Old::Event::Global::MOLECULE_ADDED
+			 || p_event.name == VTX::App::Old::Event::Global::MOLECULE_REMOVED
+			 || p_event.name == VTX::App::Old::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
 		{
 			_refreshButtons();
 		}
@@ -76,8 +76,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_refreshButtons()
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		// No molecules, buttons disabled
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 			bool displayShowIon		 = true;
 			bool displayShowHydrogen = true;
 
-			for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
+			for ( const App::Old::Component::Chemistry::Molecule * const molecule : molecules )
 			{
 				displayShowWater	= displayShowWater && !molecule->showWater();
 				displayShowSolvent	= displayShowSolvent && !molecule->showSolvent();
@@ -111,21 +111,21 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 
 	void ObjectDisplayBlock::_fillContainerWithTarget(
-		std::unordered_set<App::Component::Chemistry::Molecule *> & p_container ) const
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> & p_container ) const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			selection.getItemsOfType<App::Component::Chemistry::Molecule>( App::ID::Model::MODEL_MOLECULE,
+			selection.getItemsOfType<App::Old::Component::Chemistry::Molecule>( App::Old::ID::Model::MODEL_MOLECULE,
 																		   p_container );
 		}
 		else
 		{
-			for ( const std::pair<App::Component::Chemistry::Molecule *, float> & molData :
-				  App::VTXApp::get().getScene().getMolecules() )
+			for ( const std::pair<App::Old::Component::Chemistry::Molecule *, float> & molData :
+				  App::Old::VTXApp::get().getScene().getMolecules() )
 			{
 				p_container.emplace( molData.first );
 			}
@@ -163,55 +163,55 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_toggleWaterVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showWater = true;
 
-		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
+		for ( const App::Old::Component::Chemistry::Molecule * const molecule : molecules )
 			showWater = showWater && !molecule->showWater();
 
-		VTX_ACTION( new App::Action::Molecule::ChangeShowWater( molecules, showWater ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowWater( molecules, showWater ) );
 	}
 	void ObjectDisplayBlock::_toggleSolventVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showSolvent = true;
 
-		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
+		for ( const App::Old::Component::Chemistry::Molecule * const molecule : molecules )
 			showSolvent = showSolvent && !molecule->showSolvent();
 
-		VTX_ACTION( new App::Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
 	}
 	void ObjectDisplayBlock::_toggleHydrogenVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showHydrogen = true;
 
-		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
+		for ( const App::Old::Component::Chemistry::Molecule * const molecule : molecules )
 			showHydrogen = showHydrogen && !molecule->showHydrogen();
 
-		VTX_ACTION( new App::Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
 	}
 	void ObjectDisplayBlock::_toggleIonVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showIon = true;
 
-		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
+		for ( const App::Old::Component::Chemistry::Molecule * const molecule : molecules )
 			showIon = showIon && !molecule->showIon();
 
-		VTX_ACTION( new App::Action::Molecule::ChangeShowIon( molecules, showIon ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowIon( molecules, showIon ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Molecule

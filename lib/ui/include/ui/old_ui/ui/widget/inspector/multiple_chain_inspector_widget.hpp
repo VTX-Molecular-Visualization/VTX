@@ -11,12 +11,12 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <app/application/representation/instantiated_representation.hpp>
-#include <app/component/chemistry/chain.hpp>
+#include <app/old/application/representation/instantiated_representation.hpp>
+#include <app/old/component/chemistry/chain.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleChainWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Chain>
+	class MultipleChainWidget : public MultipleModelInspectorWidget<App::Old::Component::Chemistry::Chain>
 	{
 		VTX_WIDGET
 
@@ -58,10 +58,10 @@ namespace VTX::UI::Widget::Inspector
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
-			const App::Application::Representation::MEMBER_FLAG &				 p_flag );
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag );
 		void _onRepresentationColorChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 			const Util::Color::Rgba &													 p_color,
 			const bool															 p_ssColor );
 		void _onRevertRepresentation() const;

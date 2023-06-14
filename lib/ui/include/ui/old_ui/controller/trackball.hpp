@@ -3,14 +3,14 @@
 
 #include "base_camera_controller.hpp"
 #include "ui/id.hpp"
-#include <app/component/render/_fwd.hpp>
+#include <app/old/component/render/_fwd.hpp>
 
 namespace VTX::Controller
 {
 	class Trackball : public BaseCameraController
 	{
 	  public:
-		explicit Trackball( App::Internal::Scene::CameraManager & p_cameraManager,
+		explicit Trackball( App::Old::Internal::Scene::CameraManager & p_cameraManager,
 							const Vec3f							  p_target,
 							const float							  p_distance ) :
 			BaseCameraController( p_cameraManager ),
@@ -19,7 +19,7 @@ namespace VTX::Controller
 			_camera().setTarget( p_target );
 		}
 
-		const App::VTX_ID getID() const override { return UI::ID::Controller::TRACKBALL; }
+		const App::Old::VTX_ID getID() const override { return UI::ID::Controller::TRACKBALL; }
 		void			  setActive( const bool p_active ) override;
 		void			  reset() override;
 
@@ -27,12 +27,12 @@ namespace VTX::Controller
 		void				 setTarget( const Vec3f & p_target );
 		inline void			 setDistanceForced( const float & p_distance ) { _distanceForced = p_distance; }
 
-		Vec3f targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const;
+		Vec3f targetSimulationFromCamera( const App::Old::Component::Render::Camera & p_camera ) const;
 
 	  protected:
 		void _updateInputs( const float & ) override;
 		void _updateOrient( const float & ) override;
-		void _computeOrientPositions( const App::Component::Object3D::Helper::AABB & ) override;
+		void _computeOrientPositions( const App::Old::Component::Object3D::Helper::AABB & ) override;
 		void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) override;
 
 	  private:

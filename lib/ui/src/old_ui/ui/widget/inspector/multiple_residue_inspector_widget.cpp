@@ -11,12 +11,12 @@
 #include <QFont>
 #include <QGridLayout>
 #include <QPixmap>
-#include <app/action/instantiated_representation.hpp>
-#include <app/action/molecule.hpp>
-#include <app/action/residue.hpp>
-#include <app/action/transformable.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/old/action/instantiated_representation.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/action/residue.hpp>
+#include <app/old/action/transformable.hpp>
+#include <app/old/application/representation/representation_manager.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -120,14 +120,14 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<App::Component::Chemistry::Residue *> & targets = getTargets();
+		const std::unordered_set<App::Old::Component::Chemistry::Residue *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
 			const QString headerTitle = QString::fromStdString( "Residue (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_RESIDUE );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_RESIDUE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			int		currentResidueDisplayedCount = 0;
@@ -135,7 +135,7 @@ namespace VTX::UI::Widget::Inspector
 			QString atomCountText				 = QString();
 			QString fullNameText				 = QString();
 
-			for ( const App::Component::Chemistry::Residue * residue : targets )
+			for ( const App::Old::Component::Chemistry::Residue * residue : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
@@ -206,20 +206,20 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new App::Action::Residue::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		VTX_ACTION( new App::Old::Action::Residue::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleResidueWidget::_onRepresentationChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const App::Application::Representation::MEMBER_FLAG &				 p_flag )
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag )
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new App::Action::Residue::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new App::Old::Action::Residue::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
 	void MultipleResidueWidget::_onRepresentationColorChange(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor )
 	{
@@ -230,7 +230,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getRibbonData().colorMode )
 				{
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
@@ -254,7 +254,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
 				case VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Old::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
@@ -275,32 +275,32 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_changeMoleculesColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
-			= std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Old::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Old::Component::Chemistry::Molecule *>();
 
-		for ( const App::Component::Chemistry::Residue * const item : getTargets() )
+		for ( const App::Old::Component::Chemistry::Residue * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
 
-		VTX_ACTION( new App::Action::Molecule::ChangeColor( molecules, p_color ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeColor( molecules, p_color ) );
 	}
 	void MultipleResidueWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new App::Action::Residue::RemoveRepresentation( getTargets() ) );
+		VTX_ACTION( new App::Old::Action::Residue::RemoveRepresentation( getTargets() ) );
 	}
 
-	void MultipleResidueWidget::_appendBondInfo( const App::Component::Chemistry::Residue & p_residue )
+	void MultipleResidueWidget::_appendBondInfo( const App::Old::Component::Chemistry::Residue & p_residue )
 	{
 		if ( _bondInfoCount >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
 			return;
 
 		QString											  bondInfoStr = _bondsLabel->text();
-		const App::Component::Chemistry::Molecule * const moleculePtr = p_residue.getMoleculePtr();
+		const App::Old::Component::Chemistry::Molecule * const moleculePtr = p_residue.getMoleculePtr();
 		for ( uint i = p_residue.getIndexFirstBond(); i < p_residue.getIndexFirstBond() + p_residue.getBondCount();
 			  i++ )
 		{
-			const App::Component::Chemistry::Bond * const bond = moleculePtr->getBond( i );
+			const App::Old::Component::Chemistry::Bond * const bond = moleculePtr->getBond( i );
 
 			if ( bond == nullptr )
 				continue;

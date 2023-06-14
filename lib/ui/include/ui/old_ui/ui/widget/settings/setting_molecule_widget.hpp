@@ -7,7 +7,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <app/internal/io/serialization/image_export.hpp>
+#include <app/old/internal/io/serialization/image_export.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Settings
 		using RepresentationLibraryComboBox = VTX::UI::Widget::Representation::RepresentationLibraryComboBox;
 
 	  public:
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

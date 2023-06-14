@@ -3,34 +3,34 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/application/representation/representation_library.hpp>
+#include <app/old/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	RepresentationBlock::RepresentationBlock(
-		App::Application::Representation::RepresentationLibrary * const _representationLibrary,
+		App::Old::Application::Representation::RepresentationLibrary * const _representationLibrary,
 		QWidget *														p_parent ) :
-		App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>( _representationLibrary ),
+		App::Old::Core::View::BaseView<App::Old::Application::Representation::RepresentationLibrary>( _representationLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 	}
 	RepresentationBlock::~RepresentationBlock() {}
 
-	void RepresentationBlock::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void RepresentationBlock::notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Old::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::App::Event::Model::QUICK_ACCESS_CHANGE )
+		else if ( p_event->name == VTX::App::Old::Event::Model::QUICK_ACCESS_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::App::Old::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_refreshNames();
 		}
-		else if ( p_event->name == VTX::App::Event::Model::REPRESENTATION_TYPE_CHANGE )
+		else if ( p_event->name == VTX::App::Old::Event::Model::REPRESENTATION_TYPE_CHANGE )
 		{
 			_refreshIcons();
 		}
@@ -60,11 +60,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		_buttons.clear();
 
 		int quickAccessRepresentationCount = 0;
-		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+		for ( int i = 0; i < App::Old::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
 			  i++ )
 		{
-			const App::Application::Representation::RepresentationPreset * const representation
-				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Old::Application::Representation::RepresentationPreset * const representation
+				= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;
@@ -96,11 +96,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void RepresentationBlock::_refreshNames()
 	{
-		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+		for ( int i = 0; i < App::Old::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
 			  i++ )
 		{
-			const App::Application::Representation::RepresentationPreset * const representation
-				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Old::Application::Representation::RepresentationPreset * const representation
+				= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;
@@ -110,11 +110,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void RepresentationBlock::_refreshIcons()
 	{
-		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+		for ( int i = 0; i < App::Old::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
 			  i++ )
 		{
-			const App::Application::Representation::RepresentationPreset * const representation
-				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Old::Application::Representation::RepresentationPreset * const representation
+				= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;

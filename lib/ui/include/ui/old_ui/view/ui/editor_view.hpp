@@ -3,10 +3,10 @@
 
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/view/ui/editor_view.hpp"
-#include <app/core/event/vtx_event.hpp>
-#include <app/core/view/base_view.hpp>
-#include <app/core/view/callback_view.hpp>
-#include <app/mvc.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/core/view/base_view.hpp>
+#include <app/old/core/view/callback_view.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::View::UI
 {
@@ -14,7 +14,7 @@ namespace VTX::View::UI
 	class EditorView
 	{
 	  public:
-		EditorView( const App::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
+		EditorView( const App::Old::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
 		virtual ~EditorView()
 		{
 			if ( _view != nullptr && VTX::MVC_MANAGER().hasView( _target, _viewId ) )
@@ -29,16 +29,16 @@ namespace VTX::View::UI
 			_target = p_target;
 
 			_view
-				= VTX::MVC_MANAGER().instantiateView<App::Core::View::CallbackView<T, EditorView>>( p_target, _viewId );
+				= VTX::MVC_MANAGER().instantiateView<App::Old::Core::View::CallbackView<T, EditorView>>( p_target, _viewId );
 			_view->setCallback( this, &EditorView::_catchModelEvent );
 		}
 
 	  protected:
-		virtual void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) = 0;
+		virtual void _catchModelEvent( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) = 0;
 
 	  private:
-		const App::VTX_ID							   _viewId;
-		App::Core::View::CallbackView<T, EditorView> * _view   = nullptr;
+		const App::Old::VTX_ID							   _viewId;
+		App::Old::Core::View::CallbackView<T, EditorView> * _view   = nullptr;
 		const T *									   _target = nullptr;
 	};
 

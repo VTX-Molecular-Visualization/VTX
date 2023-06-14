@@ -3,27 +3,27 @@
 
 #include "tool/analysis/util.hpp"
 #include "core/structural_alignment.hpp"
-#include <app/core/action/base_action.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/application/selection/selection.hpp>
+#include <app/old/core/action/base_action.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/application/selection/selection.hpp>
 
 #include <vector>
 
 namespace VTX::Tool::Analysis::StructuralAlignment::Action
 {
-	class ComputeStructuralAlignment : public VTX::App::Core::Action::BaseAction
+	class ComputeStructuralAlignment : public VTX::App::Old::Core::Action::BaseAction
 	{
 	  public:
 		explicit ComputeStructuralAlignment(
-			const App::Component::Chemistry::Molecule * const								 p_staticMolecule,
-			const std::vector<App::Component::Chemistry::Molecule *> &						 p_mobileMolecules,
+			const App::Old::Component::Chemistry::Molecule * const								 p_staticMolecule,
+			const std::vector<App::Old::Component::Chemistry::Molecule *> &						 p_mobileMolecules,
 			const Core::StructuralAlignment::AlignmentParameters * const p_parameters ) :
 			_staticMolecule( p_staticMolecule ),
 			_mobileMolecules( p_mobileMolecules ), _parameters( p_parameters )
 		{
 		}
 
-		explicit ComputeStructuralAlignment( const App::Application::Selection::SelectionModel & p_selection )
+		explicit ComputeStructuralAlignment( const App::Old::Application::Selection::SelectionModel & p_selection )
 		{
 			Util::Analysis::pickTargetAndComparersFromSelection( p_selection, _staticMolecule, _mobileMolecules );
 
@@ -49,8 +49,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Action
 		}
 
 	  private:
-		const App::Component::Chemistry::Molecule *								   _staticMolecule;
-		std::vector<App::Component::Chemistry::Molecule *>						   _mobileMolecules;
+		const App::Old::Component::Chemistry::Molecule *								   _staticMolecule;
+		std::vector<App::Old::Component::Chemistry::Molecule *>						   _mobileMolecules;
 		const Core::StructuralAlignment::AlignmentParameters * _parameters;
 	};
 

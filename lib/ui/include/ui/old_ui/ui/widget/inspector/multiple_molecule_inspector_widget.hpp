@@ -14,15 +14,15 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <app/application/representation/instantiated_representation.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/generic/base_transformable.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/representation/instantiated_representation.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/generic/base_transformable.hpp>
+#include <app/old/core/view/base_view.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Molecule>
+	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<App::Old::Component::Chemistry::Molecule>
 	{
 		VTX_WIDGET
 
@@ -66,18 +66,18 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
-		void _onTransformChange( const App::Internal::Math::Transform &,
-								 const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & ) const;
+		void _onTransformChange( const App::Old::Internal::Math::Transform &,
+								 const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 		void _onScaleDragged( const Vec3f & ) const;
 
 		void _onRepresentationPresetChange( const int p_presetIndex ) const;
 		void _onRepresentationChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
-			const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const;
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag ) const;
 		void _onRepresentationColorChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 			const Util::Color::Rgba &											 p_color,
 			const bool															 p_ssColor ) const;
 		void _onRevertRepresentation() const;

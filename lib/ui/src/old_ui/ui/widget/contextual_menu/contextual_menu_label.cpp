@@ -7,8 +7,8 @@
 // #include "ui/old_ui/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
 #include "ui/qt/action/label.hpp"
 
-#include <app/action/label.hpp>
-#include <app/component/video/path.hpp>
+#include <app/old/action/label.hpp>
+#include <app/old/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuLabel::localize() {}
 
-	void ContextualMenuLabel::setTarget( App::Component::Object3D::Label * const p_target )
+	void ContextualMenuLabel::setTarget( App::Old::Component::Object3D::Label * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );
@@ -67,6 +67,6 @@ namespace VTX::UI::Widget::ContextualMenu
 			sceneItem->openRenameEditor( _target->getId() );
 		}
 	}
-	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new App::Action::Label::Delete( _target ) ); }
+	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new App::Old::Action::Label::Delete( _target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

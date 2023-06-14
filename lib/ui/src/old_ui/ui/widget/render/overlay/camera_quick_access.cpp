@@ -6,36 +6,36 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QAction>
 #include <QIcon>
-#include <app/action/renderer.hpp>
-#include <app/action/setting.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
-#include <app/id.hpp>
-#include <app/application/setting.hpp>
+#include <app/old/action/renderer.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/id.hpp>
+#include <app/old/application/setting.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
 	CameraQuickAccess::CameraQuickAccess( QWidget * p_parent ) : BaseOverlay( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
-		_registerEvent( VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 	};
 	CameraQuickAccess ::~CameraQuickAccess() {}
 
-	void CameraQuickAccess::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void CameraQuickAccess::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().cend() )
+			if ( castedEvent.get().find( VTX::App::Old::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().cend() )
 				_refreshCameraProjectionButton();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			_refreshIconColors();
 
@@ -103,12 +103,12 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		_renderEffectLibraryMenu->clear();
 
-		const int appliedPresetIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
+		const int appliedPresetIndex = App::Old::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 
-		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Old::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
-			const App::Application::RenderEffect::RenderEffectPreset * const preset
-				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
+			const App::Old::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Old::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			QAction * const action = _renderEffectLibraryMenu->addAction( QString::fromStdString( preset->getName() ) );
 
@@ -135,7 +135,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	void CameraQuickAccess::_toggleCameraProjection()
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void CameraQuickAccess::_applyRenderEffectPresetAction( const QAction * const p_action )
@@ -149,15 +149,15 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		else
 		{
-			App::Application::RenderEffect::RenderEffectPreset * const preset
-				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( renderEffectPreset );
+			App::Old::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Old::Application::RenderEffect::RenderEffectLibrary::get().getPreset( renderEffectPreset );
 
-			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
+			VTX_ACTION( new App::Old::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}
 	void CameraQuickAccess::_onExportImageClickedAction() const { UI::Dialog::openAdvancedSettingImageExportDialog(); }
 
-	void CameraQuickAccess::_onRenderEffectChange( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void CameraQuickAccess::_onRenderEffectChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
 		_refreshIconColors();
 	}

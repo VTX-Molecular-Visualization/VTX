@@ -9,21 +9,21 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QMenu>
 #include <QWidget>
-#include <app/action/setting.hpp>
-#include <app/event/global.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/event/global.hpp>
 #include <list>
 
 namespace VTX::UI::QT::Tool
 {
 	PanelDisplayTool::PanelDisplayTool() : BaseQtTool()
 	{
-		_registerEvent( VTX::App::Event::Global::UI_APPLICATION_INITIALIZED );
-		_registerEvent( VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::UI_APPLICATION_INITIALIZED );
+		_registerEvent( VTX::App::Old::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 	}
 
-	void PanelDisplayTool::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void PanelDisplayTool::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::UI_APPLICATION_INITIALIZED )
+		if ( p_event.name == VTX::App::Old::Event::Global::UI_APPLICATION_INITIALIZED )
 		{
 			QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Tool
 
 			_refreshPanelVisibilityState();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			_refreshPanelVisibilityState();
 		}

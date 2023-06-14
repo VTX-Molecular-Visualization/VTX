@@ -8,13 +8,13 @@
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/application/representation/instantiated_representation.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/representation/instantiated_representation.hpp>
+#include <app/old/component/chemistry/residue.hpp>
+#include <app/old/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleResidueWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Residue>
+	class MultipleResidueWidget : public MultipleModelInspectorWidget<App::Old::Component::Chemistry::Residue>
 	{
 		VTX_WIDGET
 
@@ -50,17 +50,17 @@ namespace VTX::UI::Widget::Inspector
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
-			const App::Application::Representation::MEMBER_FLAG &				 p_flag );
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::MEMBER_FLAG &				 p_flag );
 		void _onRepresentationColorChange(
-			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Old::Application::Representation::InstantiatedRepresentation & p_representation,
 			const Util::Color::Rgba &													 p_color,
 			const bool															 p_ssColor );
 		void _onRevertRepresentation() const;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _changeMoleculesColor( const Util::Color::Rgba & p_color ) const;
-		void _appendBondInfo( const App::Component::Chemistry::Residue & p_residue );
+		void _appendBondInfo( const App::Old::Component::Chemistry::Residue & p_residue );
 	};
 } // namespace VTX::UI::Widget::Inspector
 

@@ -20,10 +20,10 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/application/representation/base_representable.hpp>
-#include <app/application/representation/instantiated_representation.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/representation/base_representable.hpp>
+#include <app/old/application/representation/instantiated_representation.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/core/view/base_view.hpp>
 #include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 #include <vector>
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::Representation
 {
 	class RepresentationInspectorSection :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const App::Application::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const App::Old::Application::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -47,11 +47,11 @@ namespace VTX::UI::Widget::Representation
 			None = 0,
 		};
 
-		using InstantiatedRepresentation = App::Application::Representation::InstantiatedRepresentation;
+		using InstantiatedRepresentation = App::Old::Application::Representation::InstantiatedRepresentation;
 
 	  public:
 		void localize() override;
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 		void refresh();
 
 		void resetState() override;
@@ -66,7 +66,7 @@ namespace VTX::UI::Widget::Representation
 	  signals:
 		void onRepresentationPresetChange( const int p_presetIndex );
 		void onRepresentationChange( const InstantiatedRepresentation &					   p_representation,
-									 const App::Application::Representation::MEMBER_FLAG & p_flag );
+									 const App::Old::Application::Representation::MEMBER_FLAG & p_flag );
 		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
 										  const Util::Color::Rgba &			 p_color,
 										  const bool						 p_ssColor );
@@ -91,28 +91,28 @@ namespace VTX::UI::Widget::Representation
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
-		std::unordered_set<App::Core::Model::ID> _representationIDs = std::unordered_set<App::Core::Model::ID>();
+		std::unordered_set<App::Old::Core::Model::ID> _representationIDs = std::unordered_set<App::Old::Core::Model::ID>();
 
-		App::Application::Representation::InstantiatedRepresentation * _dummyRepresentation		= nullptr;
+		App::Old::Application::Representation::InstantiatedRepresentation * _dummyRepresentation		= nullptr;
 		int															   _baseRepresentationIndex = -1;
 		bool														   _isDirty					= false;
 
 		void _instantiateRepresentationSettingWidget(
-			const App::Application::Representation::REPRESENTATION_ENUM & p_representation );
+			const App::Old::Application::Representation::REPRESENTATION_ENUM & p_representation );
 		void _deleteRepresentationSettingWidget();
 
 		void _toggleSettingDisplay() const;
 		void _setSettingDisplay( const bool p_expand ) const;
 		void _representationPresetChange( const int p_resetIndex );
-		void _representationDataChange( const App::Application::Representation::MEMBER_FLAG & p_flagDataModified );
+		void _representationDataChange( const App::Old::Application::Representation::MEMBER_FLAG & p_flagDataModified );
 		void _representationColorChange( const Util::Color::Rgba & p_color, const bool p_ssColor );
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 
-		void _onTargetedRepresentationChange( const VTX::App::Core::Event::VTXEvent * const p_event );
+		void _onTargetedRepresentationChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event );
 		void _recomputeUi();
 
-		void _onDummyChange( const VTX::App::Core::Event::VTXEvent * const p_event );
+		void _onDummyChange( const VTX::App::Old::Core::Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::UI::Widget::Representation

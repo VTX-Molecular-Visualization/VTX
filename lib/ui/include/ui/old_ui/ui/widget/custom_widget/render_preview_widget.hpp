@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QWidget>
-#include <app/internal/io/serialization/image_export.hpp>
+#include <app/old/internal/io/serialization/image_export.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  public:
 		void localize() override;
-		void takeSnapshot( const App::Internal::IO::Serialization::ImageExport & p_exportData );
+		void takeSnapshot( const App::Old::Internal::IO::Serialization::ImageExport & p_exportData );
 
 	  protected:
 		RenderPreviewWidget( QWidget * p_parent = nullptr );

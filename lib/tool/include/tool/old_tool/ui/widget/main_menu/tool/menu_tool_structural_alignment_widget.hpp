@@ -4,8 +4,8 @@
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include <QString>
 #include <QWidget>
-#include <app/component/chemistry/_fwd.hpp>
-#include <app/core/event/vtx_event.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
+#include <app/old/core/event/vtx_event.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp>
@@ -28,7 +28,7 @@ namespace VTX
 			~MenuToolStructuralAlignmentWidget();
 
 			void localize() override;
-			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 		  protected:
 			MenuToolStructuralAlignmentWidget( QWidget * p_parent );

@@ -5,15 +5,15 @@
 #include "ui/old_ui/ui/widget/custom_widget/model_drop_area.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/id.hpp>
+#include <app/old/id.hpp>
 #include <type_traits>
 
 namespace VTX
 {
-	namespace App::Core::Model
+	namespace App::Old::Core::Model
 	{
 		class BaseModel;
-	} // namespace App::Core::Model
+	} // namespace App::Old::Core::Model
 
 	namespace UI::Widget::CustomWidget
 	{
@@ -24,28 +24,28 @@ namespace VTX
 
 		  public:
 			~ModelFieldWidget() {};
-			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 			void localize() override;
 			void refresh();
 
-			inline App::Core::Model::BaseModel * const		 getModel() { return _model; };
-			inline const App::Core::Model::BaseModel * const getModel() const { return _model; };
-			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
+			inline App::Old::Core::Model::BaseModel * const		 getModel() { return _model; };
+			inline const App::Old::Core::Model::BaseModel * const getModel() const { return _model; };
+			template<typename M, typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, M>::value>>
 			M * const getModel()
 			{
 				return static_cast<M *>( getModel() );
 			}
-			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, M>::value>>
 			const M * const getModel() const
 			{
 				return static_cast<M *>( getModel() );
 			}
 
-			void setModel( App::Core::Model::BaseModel * const p_model );
+			void setModel( App::Old::Core::Model::BaseModel * const p_model );
 
 		  signals:
-			void onModelChanged( App::Core::Model::BaseModel * const p_model );
+			void onModelChanged( App::Old::Core::Model::BaseModel * const p_model );
 
 		  protected:
 			ModelFieldWidget( QWidget * p_parent );
@@ -53,12 +53,12 @@ namespace VTX
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
 
-			void _onModelDropped( App::Core::Model::BaseModel * const p_model );
+			void _onModelDropped( App::Old::Core::Model::BaseModel * const p_model );
 
 			QMimeData * _getDataForDrag() const override;
 
 		  private:
-			App::Core::Model::BaseModel * _model = nullptr;
+			App::Old::Core::Model::BaseModel * _model = nullptr;
 
 			QLabel * _label				  = nullptr;
 			QLabel * _modelTypeIconWidget = nullptr;

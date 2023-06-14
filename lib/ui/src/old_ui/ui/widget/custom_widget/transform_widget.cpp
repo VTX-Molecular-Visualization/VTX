@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
-#include <app/application/setting.hpp>
+#include <app/old/application/setting.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -16,19 +16,19 @@ namespace VTX::UI::Widget::CustomWidget
 		_positionLabel = new QLabel();
 		_positionLabel->setText( "Position" );
 		_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
-		_positionWidget->setMinMax( VTX::App::Application::Setting::MIN_SCENE_POS,
-									VTX::App::Application::Setting::MAX_SCENE_POS );
+		_positionWidget->setMinMax( VTX::App::Old::Application::Setting::MIN_SCENE_POS,
+									VTX::App::Old::Application::Setting::MAX_SCENE_POS );
 
 		_rotationLabel = new QLabel();
 		_rotationLabel->setText( "Rotation" );
 		_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
-		_rotationWidget->setMinMax( VTX::App::Application::Setting::MIN_EULER,
-									VTX::App::Application::Setting::MAX_EULER );
+		_rotationWidget->setMinMax( VTX::App::Old::Application::Setting::MIN_EULER,
+									VTX::App::Old::Application::Setting::MAX_EULER );
 
 		_scaleLabel = new QLabel();
 		_scaleLabel->setText( "Scale" );
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
-		_scaleWidget->setMinMax( VTX::App::Application::Setting::MIN_SCALE, VTX::App::Application::Setting::MAX_SCALE );
+		_scaleWidget->setMinMax( VTX::App::Old::Application::Setting::MIN_SCALE, VTX::App::Old::Application::Setting::MAX_SCALE );
 		_scaleWidget->setDragValueFactor( 0.01f );
 
 		mainLayout->addWidget( _positionLabel, 0, 0 );
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newPosition = _applyVectorWithMask( _transform.getTranslationVector(), p_position, p_axisMask );
 
 		_transform.setTranslation( newPosition );
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
+		const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
 			= _generateTransformMask( Field::Position, p_axisMask );
 		emit onValueChange( _transform, mask );
 	}
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newEuler = _applyVectorWithMask( _transform.getTranslationVector(), p_euler, p_axisMask );
 
 		_transform.setRotation( newEuler );
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Euler, p_axisMask );
+		const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Euler, p_axisMask );
 		emit												onValueChange( _transform, mask );
 	}
 	void TransformWidget::_onScaleChange( const Vec3f & p_scale, const Vector3Widget::AxisMask & p_axisMask )
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newScale = _applyVectorWithMask( _transform.getTranslationVector(), p_scale, p_axisMask );
 
 		_transform.setScale( newScale );
-		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Scale, p_axisMask );
+		const App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK mask = _generateTransformMask( Field::Scale, p_axisMask );
 		emit												onValueChange( _transform, mask );
 	}
 
@@ -132,7 +132,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_scaleWidget->resetState();
 	}
 
-	void TransformWidget::updateWithNewValue( const App::Internal::Math::Transform & p_value )
+	void TransformWidget::updateWithNewValue( const App::Old::Internal::Math::Transform & p_value )
 	{
 		if ( _state == MultiDataField::State::Uninitialized )
 			_transform = p_value;
@@ -165,26 +165,26 @@ namespace VTX::UI::Widget::CustomWidget
 		return res;
 	}
 
-	App::Internal::Math::TRANSFORM_COMPOSANT_MASK TransformWidget::_generateTransformMask(
+	App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK TransformWidget::_generateTransformMask(
 		const Field &					p_field,
 		const Vector3Widget::AxisMask & p_axis )
 	{
-		App::Internal::Math::TRANSFORM_COMPOSANT_MASK res = App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::NONE;
+		App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK res = App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::NONE;
 
 		switch ( p_field )
 		{
 		case Field::Position:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_X;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Y;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Z;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Z;
 			}
 
 			break;
@@ -192,15 +192,15 @@ namespace VTX::UI::Widget::CustomWidget
 		case Field::Euler:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_X;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Y;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Z;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Z;
 			}
 
 			break;
@@ -208,15 +208,15 @@ namespace VTX::UI::Widget::CustomWidget
 		case Field::Scale:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_X;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Y;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Z;
+				res |= App::Old::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Z;
 			}
 
 			break;

@@ -7,8 +7,8 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-#include <app/core/model/base_model.hpp>
-#include <app/application/representation/instantiated_representation.hpp>
+#include <app/old/core/model/base_model.hpp>
+#include <app/old/application/representation/instantiated_representation.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
@@ -33,8 +33,8 @@ namespace VTX::UI::Widget::Representation
 			QPushButton * getRemoveButton() const { return _removeButton; }
 			QPushButton * getModelButton() const { return _modelButton; }
 
-			virtual App::Core::Model::BaseModel * const getModel() const { return _instantiatedRepresentation; }
-			void							 setModel( App::Core::Model::BaseModel * const p_model ) override;
+			virtual App::Old::Core::Model::BaseModel * const getModel() const { return _instantiatedRepresentation; }
+			void							 setModel( App::Old::Core::Model::BaseModel * const p_model ) override;
 
 		  protected:
 			void _onModelButtonClicked();
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::Representation
 
 		  private:
 			InstantiatedRepresentationListWidget * const		_owner						= nullptr;
-			App::Application::Representation::InstantiatedRepresentation * _instantiatedRepresentation = nullptr;
+			App::Old::Application::Representation::InstantiatedRepresentation * _instantiatedRepresentation = nullptr;
 
 			QPushButton * _modelButton	= nullptr;
 			QPushButton * _removeButton = nullptr;

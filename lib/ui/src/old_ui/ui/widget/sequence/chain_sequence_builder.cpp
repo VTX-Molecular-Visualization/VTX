@@ -6,7 +6,7 @@
 
 namespace VTX::UI::Widget::Sequence
 {
-	ChainSequenceBuilder::ChainSequenceBuilder( const App::Component::Chemistry::Chain & p_chain ) : _chain( p_chain ) {};
+	ChainSequenceBuilder::ChainSequenceBuilder( const App::Old::Component::Chemistry::Chain & p_chain ) : _chain( p_chain ) {};
 	ChainSequenceBuilder ::~ChainSequenceBuilder() { clear(); }
 
 	void ChainSequenceBuilder::generate()
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::Sequence
 
 		for ( uint localResidueIndex = 0; localResidueIndex < residueCount; localResidueIndex++ )
 		{
-			App::Component::Chemistry::Residue * const residue = _getResidue( localResidueIndex );
+			App::Old::Component::Chemistry::Residue * const residue = _getResidue( localResidueIndex );
 
 			if ( residue == nullptr )
 			{
@@ -161,7 +161,7 @@ namespace VTX::UI::Widget::Sequence
 		_currentCharPos += missingResidueSet->getStringSize();
 	}
 
-	App::Component::Chemistry::Residue * const ChainSequenceBuilder::_getResidue( const uint p_localResidueIndex ) const
+	App::Old::Component::Chemistry::Residue * const ChainSequenceBuilder::_getResidue( const uint p_localResidueIndex ) const
 	{
 		const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
 		return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );

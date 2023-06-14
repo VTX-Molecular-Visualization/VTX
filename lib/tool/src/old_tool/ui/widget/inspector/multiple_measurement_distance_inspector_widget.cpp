@@ -1,8 +1,8 @@
 #include "tool/old_tool/ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/action/atom.hpp>
-#include <app/action/label.hpp>
+#include <app/old/action/atom.hpp>
+#include <app/old/action/label.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 #include <ui/qt/action/atom.hpp>
 
@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::Inspector
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap
-				= Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MEASUREMENT_DISTANCE );
+				= Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_MEASUREMENT_DISTANCE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Measurement::Distance * distanceModel : targets )
@@ -124,7 +124,7 @@ namespace VTX::UI::Widget::Inspector
 					_distanceLabelWidget->updateWithNewValue( distanceStr );
 					_colorWidget->updateWithNewValue( distanceModel->getColor() );
 
-					if ( distanceModel->getTypeId() == App::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+					if ( distanceModel->getTypeId() == App::Old::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 					{
 						if ( goToAtomButtonsVisible )
 						{
@@ -158,32 +158,32 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentDistanceWidget::_renameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Distance * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
+		VTX_ACTION( new App::Old::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
 	void MultipleMeasurmentDistanceWidget::_setLabelColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Distance * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new App::Action::Label::ChangeColor( labelTargets, p_color ) );
+		VTX_ACTION( new App::Old::Action::Label::ChangeColor( labelTargets, p_color ) );
 	}
 
 	void MultipleMeasurmentDistanceWidget::_setAutoNameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Distance * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
+		VTX_ACTION( new App::Old::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	}
 
 	void MultipleMeasurmentDistanceWidget::_resetFieldStates( const SectionFlag & p_flag )

@@ -1,10 +1,10 @@
 #include "ui/old_ui/util/ui_render.hpp"
-#include <app/component/render/camera.hpp>
+#include <app/old/component/render/camera.hpp>
 
 namespace VTX::Util::UIRender
 {
 	QPoint worldToScreenQPoint( const Vec3f &								p_worldPos,
-								const VTX::App::Component::Render::Camera & p_camera,
+								const VTX::App::Old::Component::Render::Camera & p_camera,
 								const QRect &								p_renderRect )
 	{
 		const QPoint renderPos = QPoint( p_renderRect.width() / 2, p_renderRect.height() / 2 );
@@ -30,7 +30,7 @@ namespace VTX::Util::UIRender
 		return screenPointPos;
 	}
 	Vec3f worldToScreenVec3f( const Vec3f &								  p_worldPos,
-							  const VTX::App::Component::Render::Camera & p_camera,
+							  const VTX::App::Old::Component::Render::Camera & p_camera,
 							  const QRect &								  p_renderRect )
 	{
 		const QPoint renderPos = QPoint( p_renderRect.width() / 2, p_renderRect.height() / 2 );
@@ -58,7 +58,7 @@ namespace VTX::Util::UIRender
 	}
 
 	Vec3f screenToWorldVector( const QPoint &							   p_screenPos,
-							   const VTX::App::Component::Render::Camera & p_camera,
+							   const VTX::App::Old::Component::Render::Camera & p_camera,
 							   const QRect &							   p_renderRect )
 	{
 		const Vec3f	  worldRayStart = p_camera.getPosition();
@@ -76,7 +76,7 @@ namespace VTX::Util::UIRender
 	bool isInSphere( const Vec3f &								 p_worldSphereCenter,
 					 const float								 p_sphereRadius,
 					 const QPoint &								 p_screenPos,
-					 const VTX::App::Component::Render::Camera & p_camera,
+					 const VTX::App::Old::Component::Render::Camera & p_camera,
 					 const QRect &								 p_renderRect )
 	{
 		const Vec3f pointRay		  = screenToWorldVector( p_screenPos, p_camera, p_renderRect );
@@ -90,7 +90,7 @@ namespace VTX::Util::UIRender
 
 	void fillScreenPositions( const std::vector<Vec3f> &				  p_worldPositions,
 							  std::vector<QPoint> &						  p_screenPositions,
-							  const VTX::App::Component::Render::Camera & p_camera,
+							  const VTX::App::Old::Component::Render::Camera & p_camera,
 							  const QRect &								  p_renderRect )
 	{
 		p_screenPositions.resize( p_worldPositions.size() );
@@ -102,7 +102,7 @@ namespace VTX::Util::UIRender
 	}
 	void fillScreenPositions( const std::vector<Vec3f> &				  p_worldPositions,
 							  std::vector<Vec3f> &						  p_screenPositions,
-							  const VTX::App::Component::Render::Camera & p_camera,
+							  const VTX::App::Old::Component::Render::Camera & p_camera,
 							  const QRect &								  p_renderRect )
 	{
 		p_screenPositions.resize( p_worldPositions.size() );
@@ -147,7 +147,7 @@ namespace VTX::Util::UIRender
 		}
 	}
 
-	bool isVisibleToCamera( const VTX::App::Component::Render::Camera & p_camera, const Vec3f & p_worldPos )
+	bool isVisibleToCamera( const VTX::App::Old::Component::Render::Camera & p_camera, const Vec3f & p_worldPos )
 	{
 		const Vec3f & cameraForward = p_camera.getFront();
 		const Vec3f	  clipPos		= p_camera.getPosition() + cameraForward;
@@ -156,7 +156,7 @@ namespace VTX::Util::UIRender
 		return Util::Math::dot( cameraForward, cameraToPos ) > 0;
 	}
 
-	bool anyVisibleToCamera( const VTX::App::Component::Render::Camera & p_camera,
+	bool anyVisibleToCamera( const VTX::App::Old::Component::Render::Camera & p_camera,
 							 const std::vector<Vec3f> &					 p_worldPositions )
 	{
 		for ( const Vec3f & position : p_worldPositions )
@@ -168,7 +168,7 @@ namespace VTX::Util::UIRender
 		return false;
 	}
 
-	float distanceToCamera( const VTX::App::Component::Render::Camera & p_camera, const Vec3f & p_worldPos )
+	float distanceToCamera( const VTX::App::Old::Component::Render::Camera & p_camera, const Vec3f & p_worldPos )
 	{
 		return Util::Math::distance( p_camera.getPosition(), p_worldPos );
 	}

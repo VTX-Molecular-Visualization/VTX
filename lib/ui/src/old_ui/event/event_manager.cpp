@@ -37,7 +37,7 @@ namespace VTX::UI::Event
 		_receiversWheel.erase( p_receiver );
 	}
 
-	void EventManager::fireEventKeyboard( QKeyEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::fireEventKeyboard( QKeyEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 #ifdef DELAY_EVENTS_QT
 		_eventQueueKeyboard.emplace( p_event );
@@ -46,7 +46,7 @@ namespace VTX::UI::Event
 #endif
 	}
 
-	void EventManager::fireEventMouse( QMouseEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::fireEventMouse( QMouseEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 #ifdef DELAY_EVENTS_QT
 		_eventQueueMouse.emplace( p_event );
@@ -55,7 +55,7 @@ namespace VTX::UI::Event
 #endif
 	}
 
-	void EventManager::fireEventWheel( QWheelEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::fireEventWheel( QWheelEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 #ifdef DELAY_EVENTS_QT
 		_eventQueueWheel.emplace( p_event );
@@ -91,7 +91,7 @@ namespace VTX::UI::Event
 #endif
 	}
 
-	void EventManager::_flushEventKeyboard( QKeyEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::_flushEventKeyboard( QKeyEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 		if ( !_freeze )
 		{
@@ -105,7 +105,7 @@ namespace VTX::UI::Event
 		}
 	} // namespace Event
 
-	void EventManager::_flushEventMouse( QMouseEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::_flushEventMouse( QMouseEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 		if ( !_freeze )
 		{
@@ -119,7 +119,7 @@ namespace VTX::UI::Event
 		}
 	}
 
-	void EventManager::_flushEventWheel( QWheelEvent * const p_event, const App::VTX_ID & p_firerer )
+	void EventManager::_flushEventWheel( QWheelEvent * const p_event, const App::Old::VTX_ID & p_firerer )
 	{
 		if ( !_freeze )
 		{

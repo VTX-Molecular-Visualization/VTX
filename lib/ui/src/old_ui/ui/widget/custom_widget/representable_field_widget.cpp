@@ -1,10 +1,10 @@
 #include "ui/old_ui/ui/widget/custom_widget/representable_field_widget.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/core/model/base_model.hpp>
-#include <app/id.hpp>
-#include <app/mvc.hpp>
+#include <app/old/component/chemistry/chain.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/core/model/base_model.hpp>
+#include <app/old/id.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX
 {
@@ -36,10 +36,10 @@ namespace VTX
 					{
 						const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-						const bool isRepresentable = ( modelData.getTypeID() == App::ID::Model::MODEL_ATOM )
-													 || ( modelData.getTypeID() == App::ID::Model::MODEL_RESIDUE )
-													 || ( modelData.getTypeID() == App::ID::Model::MODEL_CHAIN )
-													 || ( modelData.getTypeID() == App::ID::Model::MODEL_MOLECULE );
+						const bool isRepresentable = ( modelData.getTypeID() == App::Old::ID::Model::MODEL_ATOM )
+													 || ( modelData.getTypeID() == App::Old::ID::Model::MODEL_RESIDUE )
+													 || ( modelData.getTypeID() == App::Old::ID::Model::MODEL_CHAIN )
+													 || ( modelData.getTypeID() == App::Old::ID::Model::MODEL_MOLECULE );
 
 						if ( isRepresentable )
 						{
@@ -51,18 +51,18 @@ namespace VTX
 				{
 					const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-					App::Core::Model::BaseModel * const representableModel
-						= &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() ) );
+					App::Old::Core::Model::BaseModel * const representableModel
+						= &( VTX::MVC_MANAGER().getModel<App::Old::Core::Model::BaseModel>( modelData.getModelID() ) );
 
-					App::Application::Representation::BaseRepresentable * representable = nullptr;
-					const VTX::App::VTX_ID &							  modelTypeID = representableModel->getTypeId();
+					App::Old::Application::Representation::BaseRepresentable * representable = nullptr;
+					const VTX::App::Old::VTX_ID &							  modelTypeID = representableModel->getTypeId();
 
-					if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
-						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
-							static_cast<App::Component::Chemistry::Molecule *>( representableModel ) );
-					else if ( modelTypeID == App::ID::Model::MODEL_CHAIN )
-						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
-							static_cast<App::Component::Chemistry::Chain *>( representableModel ) );
+					if ( modelTypeID == App::Old::ID::Model::MODEL_MOLECULE )
+						representable = static_cast<App::Old::Application::Representation::BaseRepresentable *>(
+							static_cast<App::Old::Component::Chemistry::Molecule *>( representableModel ) );
+					else if ( modelTypeID == App::Old::ID::Model::MODEL_CHAIN )
+						representable = static_cast<App::Old::Application::Representation::BaseRepresentable *>(
+							static_cast<App::Old::Component::Chemistry::Chain *>( representableModel ) );
 
 					p_event->acceptProposedAction();
 

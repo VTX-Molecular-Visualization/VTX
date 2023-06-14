@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-#include <app/core/model/base_model.hpp>
+#include <app/old/core/model/base_model.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/model_list_component.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/model_list_widget.hpp>
 #include <vector>
@@ -37,8 +37,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			CustomWidget::ModelFieldWidget * getModelField() const { return _modelField; }
 			QLabel *						 getRMSDLabel() const { return _rmsdLabel; }
 
-			virtual App::Core::Model::BaseModel * const getModel() const { return _modelField->getModel(); }
-			void							 setModel( App::Core::Model::BaseModel * const p_model ) override;
+			virtual App::Old::Core::Model::BaseModel * const getModel() const { return _modelField->getModel(); }
+			void							 setModel( App::Old::Core::Model::BaseModel * const p_model ) override;
 
 			bool isTicked() const;
 			void setTickState( const bool p_ticked ) const;
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		  protected:
 			void _callRemoveAction();
-			void _checkModelChange( App::Core::Model::BaseModel * const p_model );
+			void _checkModelChange( App::Old::Core::Model::BaseModel * const p_model );
 
 		  private:
 			StructuralAlignmentModelListWidget * const _owner = nullptr;
@@ -63,14 +63,14 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		};
 
 	  public:
-		App::Core::Model::BaseModel * const getTickedModel() const;
+		App::Old::Core::Model::BaseModel * const getTickedModel() const;
 		template<typename T>
 		T * const getTickedModel() const
 		{
 			return static_cast<T *>( getTickedModel() );
 		}
 
-		std::vector<App::Core::Model::BaseModel *> getNotTickedModels() const;
+		std::vector<App::Old::Core::Model::BaseModel *> getNotTickedModels() const;
 		template<typename T>
 		std::vector<T *> const getNotTickedModels() const
 		{
@@ -89,8 +89,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			return res;
 		}
 
-		void setRMSD( const App::Core::Model::BaseModel * const p_model, const float p_rmsd, const size_t p_residueCount ) const;
-		void resetRMSD( const App::Core::Model::BaseModel * const p_model ) const;
+		void setRMSD( const App::Old::Core::Model::BaseModel * const p_model, const float p_rmsd, const size_t p_residueCount ) const;
+		void resetRMSD( const App::Old::Core::Model::BaseModel * const p_model ) const;
 
 	  protected:
 		StructuralAlignmentModelListWidget( QWidget * p_parent = nullptr );
@@ -98,7 +98,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		void _initColumns() override;
 
 		CustomWidget::BaseModelFieldLine * const _instantiateLine();
-		void _initLine( CustomWidget::BaseModelFieldLine * const p_line, App::Core::Model::BaseModel * const p_model ) const;
+		void _initLine( CustomWidget::BaseModelFieldLine * const p_line, App::Old::Core::Model::BaseModel * const p_model ) const;
 		void _addLineInLayout( CustomWidget::BaseModelFieldLine * const p_line, const int p_row );
 
 		void _onLineWillBeRemoved( CustomWidget::BaseModelFieldLine * const p_line ) override;
