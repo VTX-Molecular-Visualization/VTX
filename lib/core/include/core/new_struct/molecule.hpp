@@ -2,23 +2,40 @@
 #define __VTX_CORE_NEW_STRUCT_MOLECULE__
 
 #include "_fwd.hpp"
+#include "concept.hpp"
 #include "core/chemdb/category.hpp"
 #include "core/gpu/molecule.hpp"
+#include "core/new_struct/category.hpp"
 #include "core/new_struct/trajectory.hpp"
-// #include "define.hpp"
 #include <array>
 #include <util/color/rgba.hpp>
 #include <vector>
 
 namespace VTX::Core::NewStruct
 {
-	template<typename C, typename R, typename A, typename B>
+	template<ConceptChain C, ConceptResidue R, ConceptAtom A, ConceptBond B>
 	class Molecule
 	{
 	  private:
 		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
 
 	  public:
+		Molecule()
+		{
+			for ( size_t i = 0; i < CATEGORY_COUNT; i++ )
+			{
+				_categories[ i ] = new Category( ChemDB::Category::TYPE( i ) );
+			}
+		}
+
+		~Molecule()
+		{
+			for ( size_t i = 0; i < CATEGORY_COUNT; i++ )
+			{
+				delete _categories[ i ];
+			}
+		}
+
 		void initChains( const size_t p_chainCount )
 		{
 			_chains.resize( p_chainCount, nullptr );
@@ -61,6 +78,15 @@ namespace VTX::Core::NewStruct
 		const std::vector<B *> & getBonds() const { return _bonds; }
 		size_t					 getBondCount() const { return _bonds.size(); }
 
+		Category & getCategory( const ChemDB::Category::TYPE p_categoryEnum )
+		{
+			return *( _categories[ int( p_categoryEnum ) ] );
+		}
+		const Category & getCategory( const ChemDB::Category::TYPE p_categoryEnum ) const
+		{
+			return *( _categories[ int( p_categoryEnum ) ] );
+		}
+
 	  protected:
 		// Logic
 		std::string _name = "unknown";
@@ -77,7 +103,7 @@ namespace VTX::Core::NewStruct
 		// Always usefull ?
 		// size_t								   indexFirstBondExtraResidue = 0;
 
-		// Unused in Core (Move to App ?)
+		// Unused in Core (Move to App::Old ?)
 		// uint _realChainCount = 0;
 	};
 

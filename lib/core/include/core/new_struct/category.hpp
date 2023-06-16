@@ -10,10 +10,21 @@ namespace VTX::Core::NewStruct
 	class Category
 	{
 	  public:
-		ChemDB::Category::TYPE category		= ChemDB::Category::TYPE::UNKNOWN;
-		std::vector<size_t>	   linkedChains = std::vector<size_t>();
+		Category() {}
+		Category( const ChemDB::Category::TYPE & p_type ) : _categoryEnum( p_type ) {}
 
-		Molecule * moleculePtr = nullptr;
+		void referenceChain( const size_t p_chainIndex ) { _linkedChains.emplace_back( p_chainIndex ); }
+		void removeChain( const size_t p_chainIndex )
+		{
+			_linkedChains.erase( std::find( _linkedChains.begin(), _linkedChains.end(), p_chainIndex ) );
+		}
+
+		const ChemDB::Category::TYPE & getCategory() { return _categoryEnum; }
+		const std::vector<size_t> &	   getLinkedChains() { return _linkedChains; }
+
+	  private:
+		ChemDB::Category::TYPE _categoryEnum = ChemDB::Category::TYPE::UNKNOWN;
+		std::vector<size_t>	   _linkedChains = std::vector<size_t>();
 	};
 
 } // namespace VTX::Core::NewStruct

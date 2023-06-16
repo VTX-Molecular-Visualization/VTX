@@ -1,13 +1,14 @@
 #ifndef __VTX_CORE_NEW_STRUCT_CHAIN__
 #define __VTX_CORE_NEW_STRUCT_CHAIN__
 
+#include "concept.hpp"
 #include "core/define.hpp"
 #include "define.hpp"
 #include <string>
 
 namespace VTX::Core::NewStruct
 {
-	template<typename M>
+	template<ConceptMolecule M>
 	class Chain
 	{
 	  public:
@@ -19,6 +20,9 @@ namespace VTX::Core::NewStruct
 
 		const std::string & getName() const { return _name; }
 		void				setName( const std::string & p_name ) { _name = p_name; }
+
+		const size_t getIndex() const { return _internalIndex; }
+		void		 setIndex( const size_t p_index ) const { _internalIndex = p_index; }
 
 		M * const		getMoleculePtr() const { return _molecule; };
 		const M * const getConstMoleculePtr() const { return _molecule; };

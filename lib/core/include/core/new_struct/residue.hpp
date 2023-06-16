@@ -8,7 +8,7 @@
 
 namespace VTX::Core::NewStruct
 {
-	template<typename M, typename C>
+	template<ConceptMolecule M, ConceptChain C>
 	class Residue
 	{
 	  public:

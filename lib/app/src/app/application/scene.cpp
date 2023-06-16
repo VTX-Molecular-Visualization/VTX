@@ -1,0 +1,285 @@
+#include "app/application/scene.hpp"
+#include "app/ecs/component/aabb_component.hpp"
+#include "app/ecs/component/updatable.hpp"
+#include "app/old/internal/scene/camera_manager.hpp"
+
+namespace VTX::App::Application
+{
+	auto Scene::getAllSceneItems() const
+	{
+		return ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent>();
+	}
+
+	Scene::Scene()
+	{
+		_cameraManager = new Old::Internal::Scene::CameraManager();
+		_createDefaultPath();
+	}
+
+	Scene::~Scene() { delete _cameraManager; }
+
+	bool   Scene::isEmpty() const { return getItemCount() == 0; }
+	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
+
+	const ECS::Core::BaseEntity Scene::getItem( const size_t p_index ) const
+	{
+		size_t count = 0;
+
+		for ( const entt::entity entity : getAllSceneItems() )
+		{
+			if ( count == p_index )
+				return entity;
+
+			count++;
+		}
+
+		return ECS::INVALID_ENTITY;
+	}
+	const ECS::Core::BaseEntity Scene::getItem( const std::string & p_name ) const
+	{
+		auto group = getAllSceneItems();
+		for ( const entt::entity entity : group )
+		{
+			const ECS::Component::SceneItemComponent & sceneItem
+				= group.get<ECS::Component::SceneItemComponent>( entity );
+
+			if ( sceneItem.getName() == p_name )
+				return entity;
+		}
+
+		return ECS::INVALID_ENTITY;
+	}
+
+	void Scene::clear() { ECS::MAIN_REGISTRY().deleteAll<ECS::Component::SceneItemComponent>(); }
+
+	void Scene::reset()
+	{
+		clear();
+		_createDefaultPath();
+	}
+
+	ECS::Core::BaseEntity Scene::createItem()
+	{
+		ECS::Core::BaseEntity entity = ECS::MAIN_REGISTRY().createEntity();
+		ECS::MAIN_REGISTRY().addComponent<ECS::Component::SceneItemComponent>( entity );
+
+		return entity;
+	}
+
+	void Scene::changeItemIndex( const ECS::Component::SceneItemComponent & p_item, const int p_position )
+	{
+		// const ECS::Component::SceneItemComponent * itemPtr = &p_item;
+
+		// if ( _itemOrder[ p_position ] == itemPtr )
+		//	return;
+
+		// bool changeHasStarted = false;
+
+		// for ( size_t i = 0; i < p_position; i++ )
+		//{
+		//	if ( _itemOrder[ i ] == itemPtr )
+		//		changeHasStarted = true;
+
+		//	if ( changeHasStarted )
+		//	{
+		//		_itemOrder[ i ] = _itemOrder[ i + 1 ];
+		//	}
+		//}
+
+		// if ( changeHasStarted )
+		//{
+		//	_itemOrder[ p_position ] = itemPtr;
+		// }
+		// else
+		//{
+		//	for ( int i = int( _itemOrder.size() - 1 ); i > p_position; i-- )
+		//	{
+		//		if ( _itemOrder[ i ] == itemPtr )
+		//			changeHasStarted = true;
+
+		//		if ( changeHasStarted )
+		//			_itemOrder[ i ] = _itemOrder[ i - 1 ];
+		//	}
+
+		//	_itemOrder[ p_position ] = itemPtr;
+		//}
+
+		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+	}
+	void Scene::changeItemsIndex( const std::vector<const ECS::Component::SceneItemComponent *> & p_items,
+								  const int														  p_position )
+	{
+		// std::vector<const Core::Scene::BaseSceneItem *> movedItems = std::vector<const Core::Scene::BaseSceneItem
+		// *>(); movedItems.resize( p_items.size() );
+
+		// size_t indexMovedItemsBeforePosition = 0;
+
+		// for ( size_t i = 0; i < p_position; i++ )
+		//{
+		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+		//	if ( hasToMoveItem )
+		//	{
+		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+		//		indexMovedItemsBeforePosition++;
+
+		//		_itemOrder[ i ] = nullptr;
+		//	}
+		//	else if ( indexMovedItemsBeforePosition > 0 )
+		//	{
+		//		_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+		//	}
+		//}
+
+		// size_t itemMovedCounter = 0;
+
+		// for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
+		//{
+		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+		//	if ( hasToMoveItem )
+		//	{
+		//		const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
+		//		movedItems[ movedItemsIndex ] = _itemOrder[ i ];
+		//		itemMovedCounter++;
+		//		_itemOrder[ i ] = nullptr;
+		//	}
+		//	else if ( itemMovedCounter > 0 )
+		//	{
+		//		_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
+		//	}
+		//}
+
+		// if ( p_position < _itemOrder.size() )
+		//{
+		//	const bool hasToMoveItem
+		//		= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
+		//	if ( hasToMoveItem )
+		//	{
+		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
+		//		_itemOrder[ p_position ]					= nullptr;
+		//	}
+		//	else
+		//	{
+		//		_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
+		//	}
+		// }
+
+		// for ( size_t i = 0; i < movedItems.size(); i++ )
+		//{
+		//	_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
+		// }
+
+		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+	}
+	void Scene::sortItemsBySceneIndex( std::vector<ECS::Component::SceneItemComponent *> & p_molecules ) const
+	{
+		// for ( int i = 0; i < p_molecules.size(); i++ )
+		//{
+		//	int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
+		//	int indexInVector		= i;
+
+		//	for ( int j = i + 1; j < p_molecules.size(); j++ )
+		//	{
+		//		const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
+		//		if ( currentIndexInScene < smallerIndexInScene )
+		//		{
+		//			smallerIndexInScene = currentIndexInScene;
+		//			indexInVector		= j;
+		//		}
+		//	}
+
+		//	Component::Chemistry::Molecule * const tmp = p_molecules[ i ];
+		//	p_molecules[ i ]						   = p_molecules[ indexInVector ];
+		//	p_molecules[ indexInVector ]			   = tmp;
+		//}
+	}
+
+	const Util::Math::AABB & Scene::getAABB()
+	{
+		if ( !_aabb.isValid() )
+			_computeAABB();
+
+		return _aabb;
+	}
+	void Scene::_computeAABB()
+	{
+		const entt::basic_view view
+			= ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent, ECS::Component::AABB>();
+
+		_aabb.invalidate();
+
+		for ( const entt::entity entity : view )
+		{
+			const ECS::Component::AABB & aabbComponent = view.get<ECS::Component::AABB>( entity );
+			_aabb.extend( aabbComponent.getWorldAABB() );
+		}
+	}
+
+	void Scene::update( const float & p_deltaTime )
+	{
+		// TOCHECK: do that in state or in scene?
+		// (let that here instead of doing the exact same things in all states for the moment)
+
+		const entt::basic_view view
+			= ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent, ECS::Component::Updatable>();
+
+		for ( entt::entity entity : view )
+		{
+			const ECS::Component::Updatable & updatableComponent = view.get<ECS::Component::Updatable>( entity );
+			updatableComponent.update( p_deltaTime );
+		}
+
+		// Dynamic.
+		// for ( PairMoleculePtrFloat & pair : _molecules )
+		//{
+		//	MoleculePtr const molecule = pair.first;
+		//	molecule->updateTrajectory( p_deltaTime );
+		//}
+
+		// for ( const PairMoleculePtrFloat & pair : _molecules )
+		//{
+		//	if ( pair.first->isAutoRotationPlaying() )
+		//	{
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
+		//		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//	}
+		// }
+
+		// for ( const MeshTrianglePtr & mesh : _meshes )
+		//{
+		//	if ( mesh->isAutoRotationPlaying() )
+		//	{
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
+		//		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//	}
+		// }
+	}
+
+	void Scene::_applySceneID( ECS::Component::SceneItemComponent & p_item )
+	{
+		// if ( p_item.hasPersistentSceneID() )
+		//{
+		//	_persistentIDCounter = _persistentIDCounter > p_item.getPersistentSceneID()
+		//							   ? _persistentIDCounter
+		//							   : p_item.getPersistentSceneID() + 1;
+		// }
+		// else
+		//{
+		//	p_item.setPersistentSceneID( _persistentIDCounter++ );
+		// }
+	}
+
+	void Scene::_createDefaultPath()
+	{
+		// Component::Video::Path * const path = VTX::MVC_MANAGER().instantiateModel<Component::Video::Path>();
+		//_defaultPath						= path;
+
+		// addPath( path );
+	}
+
+} // namespace VTX::App::Application

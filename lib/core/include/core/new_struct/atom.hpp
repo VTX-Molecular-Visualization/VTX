@@ -4,13 +4,12 @@
 #include "_fwd.hpp"
 #include "core/chemdb/atom.hpp"
 #include "core/define.hpp"
-#include "define.hpp"
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::Core::NewStruct
 {
-	template<typename M, typename R>
+	template<ConceptMolecule M, ConceptResidue R>
 	class Atom
 	{
 	  public:

@@ -1,18 +1,20 @@
+#include "concept.hpp"
+
 namespace VTX::Core::NewStruct
 {
-	template<typename M, typename R>
+	template<ConceptMolecule M, ConceptResidue R>
 	class Atom;
 
-	template<typename M>
+	template<ConceptMolecule M>
 	class Bond;
 
-	template<typename M, typename C>
+	template<ConceptMolecule M, ConceptChain C>
 	class Residue;
 
-	template<typename M>
+	template<ConceptMolecule M>
 	class Chain;
 
-	template<typename C, typename R, typename A, typename B>
+	template<ConceptChain C, ConceptResidue R, ConceptAtom A, ConceptBond B>
 	class Molecule;
 
 	class Category;

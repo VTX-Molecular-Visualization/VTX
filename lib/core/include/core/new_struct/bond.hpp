@@ -7,7 +7,7 @@
 
 namespace VTX::Core::NewStruct
 {
-	template<typename M>
+	template<ConceptMolecule M>
 	class Bond
 	{
 	  public:
