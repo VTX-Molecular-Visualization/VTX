@@ -1,5 +1,6 @@
 message("VTX_APP")
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_CXX_STANDARD 20)
 project(VTX_APP)
 
 # Git dependencies.
@@ -49,3 +50,22 @@ target_link_libraries(VTX_APP PUBLIC chemfiles)
 target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
 target_link_libraries(VTX_APP PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_APP PUBLIC magic_enum)
+
+
+
+# Test.
+# Create executable.
+add_executable(VTX_APP_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(VTX_APP_TEST PRIVATE glfw)
+
+# Link VTX_APP.
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_APP)
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_RENDERER)
+
+# Catch2.
+include(CTest)
+catch_discover_tests(VTX_APP_TEST)
