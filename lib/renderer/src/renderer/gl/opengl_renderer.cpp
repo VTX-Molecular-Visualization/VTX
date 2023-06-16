@@ -35,29 +35,7 @@ namespace VTX::Renderer::GL
 		_bufferMolecules = std::make_unique<StructBufferMolecules>();
 
 		// Setup default routing.
-		_passGeometric.in.meshes	= _bufferMeshes.get();
-		_passGeometric.in.molecules = _bufferMolecules.get();
-
-		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
-
-		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
-
-		_passBlur.in.textureColor = &( _passSSAO.out.texture );
-		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
-
-		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passShading.in.textureColor	  = &( _passGeometric.out.textureColors );
-		_passShading.in.textureBlur		  = &( _passBlur.out.texture );
-
-		_passOutline.in.textureColor = &( _passShading.out.texture );
-		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
-
-		_passSelection.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passSelection.in.textureColor		= &( _passOutline.out.texture );
-		_passSelection.in.textureDepth		= &( _passLinearizeDepth.out.texture );
-
-		_passFXAA.in.textureColor = &( _passSelection.out.texture );
+		_setupRouting();
 	}
 
 	void OpenGLRenderer::init( const size_t p_width, const size_t p_height )
@@ -127,13 +105,21 @@ namespace VTX::Renderer::GL
 
 			_passGeometric.render( _vao );
 			_passLinearizeDepth.render( _vao );
-			_passSSAO.render( _vao );
-			_passBlur.render( _vao );
+			if ( _activeSSAO )
+			{
+				_passSSAO.render( _vao );
+				_passBlur.render( _vao );
+			}
 			_passShading.render( _vao );
-			_passOutline.render( _vao );
+			if ( _activeOutline )
+			{
+				_passOutline.render( _vao );
+			}
 			_passSelection.render( _vao );
-			_passFXAA.render( _vao );
-
+			if ( _activeFXAA )
+			{
+				_passFXAA.render( _vao );
+			}
 			_ubo.unbind();
 
 			//_needUpdate = false;
@@ -173,6 +159,25 @@ namespace VTX::Renderer::GL
 		}
 		_bufferMolecules->sizeAtoms = p_proxy.atomPositions->size();
 		_bufferMolecules->sizeBonds = p_proxy.bonds->size();
+	}
+
+	void OpenGLRenderer::setActiveSSAO( const bool p_active )
+	{
+		_activeSSAO = p_active;
+		_passBlur.clearTexture();
+		_setupRouting();
+	}
+
+	void OpenGLRenderer::setActiveOutline( const bool p_active )
+	{
+		_activeOutline = p_active;
+		_setupRouting();
+	}
+
+	void OpenGLRenderer::setActiveFXAA( const bool p_active )
+	{
+		_activeFXAA = p_active;
+		_setupRouting();
 	}
 
 	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
@@ -284,6 +289,41 @@ namespace VTX::Renderer::GL
 	{
 		_globalUniforms.shadingMode = p_shading;
 		_ubo.setSub( p_shading, offsetof( StructGlobalUniforms, shadingMode ), sizeof( ENUM_SHADING ) );
+	}
+
+	void OpenGLRenderer::_setupRouting()
+	{
+		_passGeometric.in.meshes	= _bufferMeshes.get();
+		_passGeometric.in.molecules = _bufferMolecules.get();
+
+		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
+
+		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
+
+		_passBlur.in.textureColor = &( _passSSAO.out.texture );
+		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
+
+		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+		_passShading.in.textureColor	  = &( _passGeometric.out.textureColors );
+		_passShading.in.textureBlur		  = &( _passBlur.out.texture );
+
+		_passOutline.in.textureColor = &( _passShading.out.texture );
+		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
+
+		_passSelection.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
+
+		if ( _activeOutline )
+		{
+			_passSelection.in.textureColor = &( _passOutline.out.texture );
+		}
+		else
+		{
+			_passSelection.in.textureColor = &( _passShading.out.texture );
+		}
+		_passSelection.in.textureDepth = &( _passLinearizeDepth.out.texture );
+
+		_passFXAA.in.textureColor = &( _passSelection.out.texture );
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

@@ -119,6 +119,9 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Passes.
+			static bool						  activeSSAO	   = p_renderer->isActiveSSAO();
+			static bool						  activeOutline	   = p_renderer->isActiveOutline();
+			static bool						  activeFXAA	   = p_renderer->isActiveFXAA();
 			static Util::Color::Rgba		  colorBG		   = p_renderer->getColorBackground();
 			static Util::Color::Rgba		  colorLight	   = p_renderer->getColorLight();
 			static Util::Color::Rgba		  colorFog		   = p_renderer->getColorFog();
@@ -142,6 +145,10 @@ namespace VTX::Bench
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "SSAO + Blur" ) )
 			{
+				if ( ImGui::Checkbox( "Active##SSAO", &activeSSAO ) )
+				{
+					p_renderer->setActiveSSAO( activeSSAO );
+				}
 				if ( ImGui::InputFloat( "Intensity", &ssaoIntensity ) )
 				{
 					p_renderer->setSSAOIntensity( ssaoIntensity );
@@ -191,6 +198,10 @@ namespace VTX::Bench
 			ImGui::SetNextItemOpen( true );
 			if ( ImGui::CollapsingHeader( "Outline" ) )
 			{
+				if ( ImGui::Checkbox( "Active##Outline", &activeOutline ) )
+				{
+					p_renderer->setActiveOutline( activeOutline );
+				}
 				if ( ImGui::InputFloat( "Sensivity", &outlineSensivity ) )
 				{
 					p_renderer->setOutlineSensivity( outlineSensivity );
@@ -213,7 +224,13 @@ namespace VTX::Bench
 				}
 			}
 			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "FXAA" ) ) {}
+			if ( ImGui::CollapsingHeader( "FXAA" ) )
+			{
+				if ( ImGui::Checkbox( "Active##FXAA", &activeFXAA ) )
+				{
+					p_renderer->setActiveFXAA( activeFXAA );
+				}
+			}
 			ImGui::End();
 
 			// Misc.
@@ -267,7 +284,7 @@ namespace VTX::Bench
 	  private:
 		GLFWwindow * _window;
 		Vec3i		 _deltaMoveInputs;
-		bool		 _vsync = false;
+		bool		 _vsync = true;
 
 		static void _glfwErrorCallback( int p_error, const char * p_description )
 		{

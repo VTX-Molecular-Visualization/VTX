@@ -39,6 +39,13 @@ namespace VTX::Renderer::GL
 		void addMesh( const StructProxyMesh & );
 		void addMolecule( const StructProxyMolecule & );
 
+		inline bool isActiveSSAO() const { return _activeSSAO; }
+		void		setActiveSSAO( const bool p_active );
+		inline bool isActiveOutline() const { return _activeOutline; }
+		void		setActiveOutline( const bool p_active );
+		inline bool isActiveFXAA() const { return _activeFXAA; }
+		void		setActiveFXAA( const bool p_active );
+
 		void							 setMatrixModelTmp( const Mat4f & );
 		void							 setMatrixView( const Mat4f & );
 		void							 setMatrixProjection( const Mat4f & );
@@ -95,6 +102,10 @@ namespace VTX::Renderer::GL
 		Pass::PassSelection		 _passSelection;
 		Pass::PassFXAA			 _passFXAA;
 
+		bool _activeSSAO	= true;
+		bool _activeOutline = true;
+		bool _activeFXAA	= true;
+
 		// Input data.
 		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;
 		std::unique_ptr<StructBufferMolecules> _bufferMolecules;
@@ -102,6 +113,8 @@ namespace VTX::Renderer::GL
 		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager;
 
+		void _setupRouting();
+#if ( VTX_OPENGL_VERSION == 450 )
 		static void APIENTRY _debugMessageCallback( const GLenum   p_source,
 													const GLenum   p_type,
 													const GLuint   p_id,
@@ -109,6 +122,7 @@ namespace VTX::Renderer::GL
 													const GLsizei  p_length,
 													const GLchar * p_msg,
 													const void *   p_data );
+#endif
 	};
 } // namespace VTX::Renderer::GL
 
