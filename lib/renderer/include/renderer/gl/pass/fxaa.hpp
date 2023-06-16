@@ -22,8 +22,8 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructOut
 		{
-			// Framebuffer fbo		= Framebuffer();
-			Texture2D texture = Texture2D();
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
 		} out;
 
 	  private:

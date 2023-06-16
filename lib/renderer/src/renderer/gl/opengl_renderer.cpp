@@ -165,7 +165,6 @@ namespace VTX::Renderer::GL
 	{
 		_activeSSAO = p_active;
 		_passBlur.clearTexture();
-		_setupRouting();
 	}
 
 	void OpenGLRenderer::setActiveOutline( const bool p_active )

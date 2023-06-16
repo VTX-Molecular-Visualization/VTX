@@ -106,6 +106,9 @@ namespace VTX::Renderer::GL
 		bool _activeOutline = true;
 		bool _activeFXAA	= true;
 
+		// Output.
+		Framebuffer _fbo;
+
 		// Input data.
 		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;
 		std::unique_ptr<StructBufferMolecules> _bufferMolecules;
