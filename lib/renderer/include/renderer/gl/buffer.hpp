@@ -11,43 +11,31 @@ namespace VTX::Renderer::GL
 	class Buffer
 	{
 	  public:
-		Buffer() = default;
+		Buffer() { _create(); }
 
 		template<typename T>
 		explicit Buffer( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
 		{
-			create();
+			_create();
 			set<T>( p_vector, p_flags );
 		}
 
 		template<typename T>
 		explicit Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
 		{
-			create();
+			_create();
 			set<T>( GLsizei( p_size ), p_data, p_flags );
 		}
 
 		explicit Buffer( const size_t p_size, const GLbitfield p_flags = 0 )
 		{
-			create();
+			_create();
 			set( GLsizei( p_size ), p_flags );
 		}
 
 		~Buffer() { destroy(); }
 
 		inline GLuint getId() const { return _id; }
-
-		inline void create()
-		{
-			assert( _id == GL_INVALID_INDEX );
-
-#if ( VTX_OPENGL_VERSION == 450 )
-			glCreateBuffers( 1, &_id );
-#else
-			glGenBuffers( 1, &_id );
-#endif
-			assert( glIsBuffer( _id ) );
-		}
 
 		inline void destroy()
 		{
@@ -237,6 +225,18 @@ namespace VTX::Renderer::GL
 	  private:
 		GLuint _id	   = GL_INVALID_INDEX;
 		GLenum _target = 0;
+
+		inline void _create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+#if ( VTX_OPENGL_VERSION == 450 )
+			glCreateBuffers( 1, &_id );
+#else
+			glGenBuffers( 1, &_id );
+#endif
+			assert( glIsBuffer( _id ) );
+		}
 	};
 } // namespace VTX::Renderer::GL
 

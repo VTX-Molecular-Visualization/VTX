@@ -11,7 +11,7 @@ namespace VTX::Renderer::GL::Pass
 	class Blur
 	{
 	  public:
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		Blur( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
@@ -28,16 +28,16 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructOut
 		{
-			Framebuffer fbo		= Framebuffer();
-			Texture2D	texture = Texture2D();
+			std::unique_ptr<Framebuffer> fbo;
+			std::unique_ptr<Texture2D>	 texture;
 
 		} out;
 
 	  private:
 		Program * _program = nullptr;
 
-		Framebuffer _fboFirstPass	  = Framebuffer();
-		Texture2D	_textureFirstPass = Texture2D();
+		std::unique_ptr<Framebuffer> _fboFirstPass;
+		std::unique_ptr<Texture2D>	 _textureFirstPass;
 	};
 
 	using PassBlur = BasePass<Blur>;

@@ -9,12 +9,7 @@ namespace VTX::Renderer::GL
 	class VertexArray
 	{
 	  public:
-		VertexArray() = default;
-		~VertexArray() { destroy(); }
-
-		// int drawCalls = 0;
-
-		inline void create()
+		VertexArray()
 		{
 			assert( _id == GL_INVALID_INDEX );
 
@@ -24,7 +19,8 @@ namespace VTX::Renderer::GL
 			glGenVertexArrays( 1, &_id );
 #endif
 		}
-		inline void destroy()
+
+		~VertexArray()
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
@@ -32,6 +28,8 @@ namespace VTX::Renderer::GL
 				_id = GL_INVALID_INDEX;
 			}
 		}
+
+		// int drawCalls = 0;
 
 		inline GLuint getId() const { return _id; }
 

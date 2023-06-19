@@ -11,7 +11,7 @@ namespace VTX::Renderer::GL::Pass
 	class LinearizeDepth
 	{
 	  public:
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		LinearizeDepth( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
@@ -22,8 +22,8 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructOut
 		{
-			Framebuffer fbo		= Framebuffer();
-			Texture2D	texture = Texture2D();
+			std::unique_ptr<Framebuffer> fbo;
+			std::unique_ptr<Texture2D>	 texture;
 		} out;
 
 	  private:

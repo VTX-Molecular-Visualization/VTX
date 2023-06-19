@@ -11,7 +11,7 @@ namespace VTX::Renderer::GL::Pass
 	class Shading
 	{
 	  public:
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		Shading( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
@@ -19,14 +19,13 @@ namespace VTX::Renderer::GL::Pass
 		{
 			Texture2D * textureDataPacked = nullptr;
 			Texture2D * textureColor	  = nullptr;
-			// TODO:check why 2 textures are needed.
-			Texture2D * textureBlur = nullptr;
+			Texture2D * textureBlur		  = nullptr;
 		} in;
 
 		struct StructOut
 		{
-			Framebuffer fbo		= Framebuffer();
-			Texture2D	texture = Texture2D();
+			std::unique_ptr<Framebuffer> fbo;
+			std::unique_ptr<Texture2D>	 texture;
 
 		} out;
 

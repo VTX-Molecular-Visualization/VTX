@@ -40,23 +40,14 @@ namespace VTX::Renderer::GL
 		_bufferMolecules = std::make_unique<StructBufferMolecules>();
 
 		// Passes.
-		_passGeometric		= std::make_unique<Pass::PassGeometric>();
-		_passLinearizeDepth = std::make_unique<Pass::PassLinearizeDepth>();
-		_passSSAO			= std::make_unique<Pass::PassSSAO>();
-		_passBlur			= std::make_unique<Pass::PassBlur>();
-		_passShading		= std::make_unique<Pass::PassShading>();
-		_passOutline		= std::make_unique<Pass::PassOutline>();
-		_passSelection		= std::make_unique<Pass::PassSelection>();
-		_passFXAA			= std::make_unique<Pass::PassFXAA>();
-
-		_passGeometric->init( p_width, p_height, *_programManager );
-		_passLinearizeDepth->init( p_width, p_height, *_programManager );
-		_passSSAO->init( p_width, p_height, *_programManager );
-		_passBlur->init( p_width, p_height, *_programManager );
-		_passShading->init( p_width, p_height, *_programManager );
-		_passOutline->init( p_width, p_height, *_programManager );
-		_passSelection->init( p_width, p_height, *_programManager );
-		_passFXAA->init( p_width, p_height, *_programManager );
+		_passGeometric		= std::make_unique<Pass::PassGeometric>( p_width, p_height, *_programManager );
+		_passLinearizeDepth = std::make_unique<Pass::PassLinearizeDepth>( p_width, p_height, *_programManager );
+		_passSSAO			= std::make_unique<Pass::PassSSAO>( p_width, p_height, *_programManager );
+		_passBlur			= std::make_unique<Pass::PassBlur>( p_width, p_height, *_programManager );
+		_passShading		= std::make_unique<Pass::PassShading>( p_width, p_height, *_programManager );
+		_passOutline		= std::make_unique<Pass::PassOutline>( p_width, p_height, *_programManager );
+		_passSelection		= std::make_unique<Pass::PassSelection>( p_width, p_height, *_programManager );
+		_passFXAA			= std::make_unique<Pass::PassFXAA>( p_width, p_height, *_programManager );
 
 		// Setup default routing.
 		_setupRouting();
@@ -67,10 +58,6 @@ namespace VTX::Renderer::GL
 		_vbo = std::make_unique<Buffer>();
 		_vao = std::make_unique<VertexArray>();
 		_ubo = std::make_unique<Buffer>();
-
-		_vbo->create();
-		_vao->create();
-		_ubo->create();
 
 		_vao->enableAttribute( 0 );
 		_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
@@ -132,7 +119,7 @@ namespace VTX::Renderer::GL
 
 			// Copy to output (temp).
 			glBindFramebuffer( GL_READ_FRAMEBUFFER,
-							   _activeFXAA ? _passFXAA->out.fbo.getId() : _passSelection->out.fbo.getId() );
+							   _activeFXAA ? _passFXAA->out.fbo->getId() : _passSelection->out.fbo->getId() );
 			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
 			glBlitFramebuffer( 0,
 							   0,
@@ -321,34 +308,34 @@ namespace VTX::Renderer::GL
 		_passGeometric->in.meshes	 = _bufferMeshes.get();
 		_passGeometric->in.molecules = _bufferMolecules.get();
 
-		_passLinearizeDepth->in.textureDepth = &( _passGeometric->out.textureDepth );
+		_passLinearizeDepth->in.textureDepth = _passGeometric->out.textureDepth.get();
 
-		_passSSAO->in.textureDataPacked = &( _passGeometric->out.textureDataPacked );
-		_passSSAO->in.textureDepth		= &( _passLinearizeDepth->out.texture );
+		_passSSAO->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passSSAO->in.textureDepth		= _passLinearizeDepth->out.texture.get();
 
-		_passBlur->in.textureColor = &( _passSSAO->out.texture );
-		_passBlur->in.textureDepth = &( _passLinearizeDepth->out.texture );
+		_passBlur->in.textureColor = _passSSAO->out.texture.get();
+		_passBlur->in.textureDepth = _passLinearizeDepth->out.texture.get();
 
-		_passShading->in.textureDataPacked = &( _passGeometric->out.textureDataPacked );
-		_passShading->in.textureColor	   = &( _passGeometric->out.textureColors );
-		_passShading->in.textureBlur	   = &( _passBlur->out.texture );
+		_passShading->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passShading->in.textureColor	   = _passGeometric->out.textureColors.get();
+		_passShading->in.textureBlur	   = _passBlur->out.texture.get();
 
-		_passOutline->in.textureColor = &( _passShading->out.texture );
-		_passOutline->in.textureDepth = &( _passLinearizeDepth->out.texture );
+		_passOutline->in.textureColor = _passShading->out.texture.get();
+		_passOutline->in.textureDepth = _passLinearizeDepth->out.texture.get();
 
-		_passSelection->in.textureDataPacked = &( _passGeometric->out.textureDataPacked );
+		_passSelection->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
 
 		if ( _activeOutline )
 		{
-			_passSelection->in.textureColor = &( _passOutline->out.texture );
+			_passSelection->in.textureColor = _passOutline->out.texture.get();
 		}
 		else
 		{
-			_passSelection->in.textureColor = &( _passShading->out.texture );
+			_passSelection->in.textureColor = _passShading->out.texture.get();
 		}
-		_passSelection->in.textureDepth = &( _passLinearizeDepth->out.texture );
+		_passSelection->in.textureDepth = _passLinearizeDepth->out.texture.get();
 
-		_passFXAA->in.textureColor = &( _passSelection->out.texture );
+		_passFXAA->in.textureColor = _passSelection->out.texture.get();
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )
