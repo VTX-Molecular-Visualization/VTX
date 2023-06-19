@@ -29,7 +29,21 @@ namespace VTX::Renderer::GL::Pass
 	template<Renderable R>
 	class BasePass : public R
 	{
-		// Shared method for all passes.
+	  public:
+		GLuint queryStart;
+		GLuint queryEnd;
+
+		BasePass()
+		{
+			glGenQueries( 1, &queryStart );
+			glGenQueries( 1, &queryEnd );
+		}
+
+		~BasePass()
+		{
+			glDeleteQueries( 1, &queryStart );
+			glDeleteQueries( 1, &queryEnd );
+		}
 	};
 
 } // namespace VTX::Renderer::GL::Pass

@@ -19,19 +19,19 @@ constexpr size_t HEIGHT = 1200;
 int main( int, char ** )
 {
 	using namespace VTX;
-	Util::Logger::get().init( std::filesystem::current_path() / "logs" );
+	using namespace Util;
+	using namespace Bench;
+	using namespace Renderer::GL;
+
+	Logger::get().init( std::filesystem::current_path() / "logs" );
 
 	try
 	{
-		using namespace VTX::Bench;
-		using namespace VTX::Renderer::GL;
-
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		OpenGLRenderer renderer( ui.getProcAddress(), std::filesystem::current_path() / "shaders" );
-		renderer.init( WIDTH, HEIGHT );
+		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, std::filesystem::current_path() / "shaders" );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
@@ -73,9 +73,9 @@ int main( int, char ** )
 				camera.translate( Vec3f( moveInputs ) * ui.getDeltaTime() );
 			}
 			// TODO: move in a dedicated SSBO.
-			Mat4f modelMatrix = Util::Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
-			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
-			modelMatrix		  = Util::Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
+			Mat4f modelMatrix = Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
+			modelMatrix		  = Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
+			modelMatrix		  = Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
 			renderer.setMatrixModelTmp( modelMatrix );
 
 			renderer.renderFrame();

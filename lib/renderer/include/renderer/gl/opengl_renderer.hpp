@@ -26,10 +26,9 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath );
+		OpenGLRenderer( void * p_proc, const size_t p_width, const size_t p_height, const FilePath & p_shaderPath );
 		~OpenGLRenderer() = default;
 
-		void init( const size_t p_width, const size_t p_height );
 		void resize( const size_t p_width, const size_t p_height );
 		void renderFrame();
 
@@ -85,29 +84,29 @@ namespace VTX::Renderer::GL
 		bool   _needUpdate = true;
 
 		// Quad VAO.
-		VertexArray _vao;
-		Buffer		_vbo;
+		std::unique_ptr<VertexArray> _vao;
+		std::unique_ptr<Buffer>		 _vbo;
 
 		// Uniforms.
-		Buffer				 _ubo;
-		StructGlobalUniforms _globalUniforms;
+		std::unique_ptr<Buffer> _ubo;
+		StructGlobalUniforms	_globalUniforms;
 
 		// Pass.
-		Pass::PassGeometric		 _passGeometric;
-		Pass::PassLinearizeDepth _passLinearizeDepth;
-		Pass::PassSSAO			 _passSSAO;
-		Pass::PassBlur			 _passBlur;
-		Pass::PassShading		 _passShading;
-		Pass::PassOutline		 _passOutline;
-		Pass::PassSelection		 _passSelection;
-		Pass::PassFXAA			 _passFXAA;
+		std::unique_ptr<Pass::PassGeometric>	  _passGeometric;
+		std::unique_ptr<Pass::PassLinearizeDepth> _passLinearizeDepth;
+		std::unique_ptr<Pass::PassSSAO>			  _passSSAO;
+		std::unique_ptr<Pass::PassBlur>			  _passBlur;
+		std::unique_ptr<Pass::PassShading>		  _passShading;
+		std::unique_ptr<Pass::PassOutline>		  _passOutline;
+		std::unique_ptr<Pass::PassSelection>	  _passSelection;
+		std::unique_ptr<Pass::PassFXAA>			  _passFXAA;
 
 		bool _activeSSAO	= true;
 		bool _activeOutline = true;
 		bool _activeFXAA	= true;
 
 		// Output.
-		Framebuffer _fbo;
+		GLuint _fboOutputId = 0;
 
 		// Input data.
 		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;

@@ -53,6 +53,7 @@ namespace VTX::Renderer::GL
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( glIsFramebuffer( _id ) );
+			assert( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 			assert( _target == 0 );
 			assert( p_target != 0 );
 
