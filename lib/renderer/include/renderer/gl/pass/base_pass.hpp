@@ -30,21 +30,8 @@ namespace VTX::Renderer::GL::Pass
 	class BasePass : public R
 	{
 	  public:
-		GLuint queryStart;
-		GLuint queryEnd;
-
 		BasePass() = delete;
-		BasePass( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) : R( p_width, p_height, p_pm )
-		{
-			glGenQueries( 1, &queryStart );
-			glGenQueries( 1, &queryEnd );
-		}
-
-		~BasePass()
-		{
-			glDeleteQueries( 1, &queryStart );
-			glDeleteQueries( 1, &queryEnd );
-		}
+		BasePass( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) : R( p_width, p_height, p_pm ) {}
 	};
 
 } // namespace VTX::Renderer::GL::Pass

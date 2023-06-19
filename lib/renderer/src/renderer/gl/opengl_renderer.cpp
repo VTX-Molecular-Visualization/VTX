@@ -1,4 +1,5 @@
 #include "renderer/gl/opengl_renderer.hpp"
+#include "renderer/gl/chrono.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
@@ -99,22 +100,44 @@ namespace VTX::Renderer::GL
 
 			_ubo->bind( GL_UNIFORM_BUFFER, 15 );
 
+			static auto chrono = Chrono();
+			_benchTimes.fill( 0.f );
+			chrono.start();
 			_passGeometric->render( *_vao );
+			_benchTimes[ 0 ] = chrono.stop();
+			chrono.start();
 			_passLinearizeDepth->render( *_vao );
+			_benchTimes[ 1 ] = chrono.stop();
+
 			if ( _activeSSAO )
 			{
+				chrono.start();
 				_passSSAO->render( *_vao );
+				_benchTimes[ 2 ] = chrono.stop();
+				chrono.start();
 				_passBlur->render( *_vao );
+				_benchTimes[ 3 ] = chrono.stop();
 			}
+			chrono.start();
 			_passShading->render( *_vao );
+			_benchTimes[ 4 ] = chrono.stop();
+
 			if ( _activeOutline )
 			{
+				chrono.start();
 				_passOutline->render( *_vao );
+				_benchTimes[ 5 ] = chrono.stop();
 			}
+
+			chrono.start();
 			_passSelection->render( *_vao );
+			_benchTimes[ 6 ] = chrono.stop();
+
 			if ( _activeFXAA )
 			{
+				chrono.start();
 				_passFXAA->render( *_vao );
+				_benchTimes[ 7 ] = chrono.stop();
 			}
 
 			// Copy to output (temp).

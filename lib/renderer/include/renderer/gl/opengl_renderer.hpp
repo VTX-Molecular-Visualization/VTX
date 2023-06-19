@@ -19,6 +19,7 @@
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include "vertex_array.hpp"
+#include <array>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -78,6 +79,8 @@ namespace VTX::Renderer::GL
 		inline ENUM_SHADING				 getShadingMode() const { return _globalUniforms.shadingMode; }
 		void							 setShadingMode( ENUM_SHADING & );
 
+		inline std::array<float, 8> & getBenchTimes() { return _benchTimes; }
+
 	  private:
 		size_t _width	   = 0;
 		size_t _height	   = 0;
@@ -114,6 +117,9 @@ namespace VTX::Renderer::GL
 
 		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager;
+
+		// Bench.
+		std::array<float, 8> _benchTimes;
 
 		void _setupRouting();
 #if ( VTX_OPENGL_VERSION == 450 )

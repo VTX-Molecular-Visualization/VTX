@@ -242,6 +242,21 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 
+			// Times.
+			static std::array<float, 8> & times = p_renderer->getBenchTimes();
+			static const char *			  labels[]
+				= { "Geometric", "Linearize depth", "SSAO", "Blur", "Shading", "Outline", "Selection", "FXAA" };
+			ImGui::Begin( "Times" );
+			ImGui::PlotHistogram( "",
+								  times.data(),
+								  8,
+								  0,
+								  "Passes",
+								  0.0f,
+								  *std::max_element( times.begin(), times.end() ),
+								  ImVec2( 0, 80 ) );
+			ImGui::End();
+
 			ImGui::Render();
 			glfwSetWindowTitle(
 				_window,
