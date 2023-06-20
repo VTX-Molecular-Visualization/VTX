@@ -96,24 +96,11 @@ namespace VTX::Bench
 
 		inline double getTime() const { return SDL_GetTicks(); }
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
-		inline bool	  shouldClose() const { return false; }
 		inline void * getProcAddress() { return reinterpret_cast<void *>( SDL_GL_GetProcAddress ); }
 		inline void	  setVSync( const bool p_vsync )
 		{
 			_vsync = p_vsync;
 			SDL_GL_SetSwapInterval( _vsync );
-		}
-
-		inline Vec3i consumeMoveInputs()
-		{
-			Vec3i deltaMoveInputs = _deltaMoveInputs;
-			_deltaMoveInputs	  = Vec3i( 0, 0, 0 );
-			return deltaMoveInputs;
-		}
-
-		void setCallbackResize( std::function<void( const size_t, const size_t )> p_callback )
-		{
-			//_callbackResize = p_callback;
 		}
 
 		void draw( Renderer::GL::OpenGLRenderer * const p_renderer, Camera * const p_camera )
@@ -275,8 +262,15 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Misc.
+			static const uint64_t sdlFrequency = SDL_GetPerformanceFrequency();
+			const uint64_t		  now		   = SDL_GetPerformanceCounter();
+			const float			  deltaTime	   = float( double( now - _lastTime ) / sdlFrequency );
+			_lastTime						   = now;
 			ImGui::Begin( "Misc" );
 			// ImGui::Checkbox( "Perspective", &isPerspective );
+			ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+			ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
 			if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
 			{
 				setVSync( _vsync );
@@ -298,14 +292,9 @@ namespace VTX::Bench
 								  ImVec2( 0, 80 ) );
 			ImGui::End();
 
+			// Render.
 			ImGui::Render();
-			SDL_SetWindowTitle(
-				_window,
-				( std::string( "VTX_RENDERER_BENCH " ) + std::to_string( int( ImGui::GetIO().Framerate ) ) + "FPS" )
-					.c_str() );
-
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-
 			SDL_GL_SwapWindow( _window );
 		}
 
@@ -319,49 +308,12 @@ namespace VTX::Bench
 			return hasEvent;
 		}
 
-		// TODO: use callback or switch to SDL3.
-		void processInputs()
-		{
-			/*
-			if ( glfwGetKey( _window, GLFW_KEY_W ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.z++;
-			}
-			if ( glfwGetKey( _window, GLFW_KEY_S ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.z--;
-			}
-			if ( glfwGetKey( _window, GLFW_KEY_A ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.x--;
-			}
-			if ( glfwGetKey( _window, GLFW_KEY_D ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.x++;
-			}
-			if ( glfwGetKey( _window, GLFW_KEY_R ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.y++;
-			}
-			if ( glfwGetKey( _window, GLFW_KEY_F ) == GLFW_PRESS )
-			{
-				_deltaMoveInputs.y--;
-			}
-			*/
-		}
-
 	  private:
 		SDL_Window *	_window	   = nullptr;
 		SDL_GLContext	_glContext = nullptr;
 		SDL_DisplayMode _displayMode;
-
-		Vec3i _deltaMoveInputs;
-		bool  _vsync = true;
-
-		static void _glfwErrorCallback( int p_error, const char * p_description )
-		{
-			VTX::VTX_ERROR( "GLFW Error {}: {}", p_error, p_description );
-		}
+		bool			_vsync	  = true;
+		uint64_t		_lastTime = 0;
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench
 #endif

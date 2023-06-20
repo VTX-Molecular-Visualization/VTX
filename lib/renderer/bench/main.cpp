@@ -41,37 +41,17 @@ int main( int, char ** )
 		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
-		// Resize.
-		ui.setCallbackResize(
-			[ &renderer, &camera ]( size_t p_width, size_t p_height )
-			{
-				renderer.resize( p_width, p_height );
-				camera.resize( p_width, p_height );
-			} );
-
-		// Sample data.
-		// Core::StructMesh mesh	   = DEFAULT_MESH;
-		// StructProxyMesh	 proxyMesh = { &mesh.tranform,	   &mesh.vertices,	 &mesh.normals, &mesh.colors,
-		//							   &mesh.visibilities, &mesh.selections, &mesh.ids,		&mesh.indices };
-		// renderer.addMesh( proxyMesh );
-
-		// Core::StructMolecule molecule = DEFAULT_MOLECULE;
 		Core::StructMolecule molecule = generateAtomGrid( 9 );
 		StructProxyMolecule	 proxyMolecule
 			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
-		while ( ui.shouldClose() == false )
+		static bool isRunning = true;
+		while ( isRunning )
 		{
-			float time = float( ui.getTime() );
-			ui.processInputs();
+			float time = float( ui.getTime() ) * 1e-3f;
 
-			Vec3i moveInputs = ui.consumeMoveInputs();
-			if ( moveInputs != VEC3I_ZERO )
-			{
-				camera.translate( Vec3f( moveInputs ) * ui.getDeltaTime() );
-			}
 			// TODO: move in a dedicated SSBO.
 			Mat4f modelMatrix = Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
@@ -80,6 +60,64 @@ int main( int, char ** )
 
 			renderer.renderFrame();
 			ui.draw( &renderer, &camera );
+
+			// Events.
+			SDL_Event	event;
+			static bool keys[ 322 ] = { false };
+			while ( ui.getEvent( event ) )
+			{
+				switch ( event.type )
+				{
+				case SDL_QUIT: isRunning = false; break;
+				case SDL_KEYDOWN: keys[ event.key.keysym.sym ] = true; break;
+				case SDL_KEYUP: keys[ event.key.keysym.sym ] = false; break;
+				case SDL_WINDOWEVENT:
+					switch ( event.window.event )
+					{
+					case SDL_WINDOWEVENT_RESIZED:
+						const size_t width	= event.window.data1;
+						const size_t height = event.window.data2;
+						renderer.resize( width, height );
+						camera.resize( width, height );
+						break;
+					}
+					break;
+				default: break;
+				}
+			}
+
+			// Move.
+			Vec3i deltaMoveInputs = Vec3i( 0, 0, 0 );
+
+			if ( keys[ SDLK_z ] )
+			{
+				deltaMoveInputs.z++;
+			}
+			if ( keys[ SDLK_s ] )
+			{
+				deltaMoveInputs.z--;
+			}
+			if ( keys[ SDLK_q ] )
+			{
+				deltaMoveInputs.x--;
+			}
+			if ( keys[ SDLK_d ] )
+			{
+				deltaMoveInputs.x++;
+			}
+			if ( keys[ SDLK_r ] )
+			{
+				deltaMoveInputs.y++;
+			}
+			if ( keys[ SDLK_f ] )
+			{
+				deltaMoveInputs.y--;
+			}
+
+			if ( deltaMoveInputs != VEC3I_ZERO )
+			{
+				camera.translate( Vec3f( deltaMoveInputs ) * ui.getDeltaTime() );
+			}
 		}
 	}
 	catch ( const std::exception & p_e )

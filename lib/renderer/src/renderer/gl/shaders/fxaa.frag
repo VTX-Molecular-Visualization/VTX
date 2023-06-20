@@ -244,6 +244,6 @@ void main()
 	}
 	// =====================================================================================
 
-	//outFragColor = vec4( texture( inTexture, aaTexCoord ) );
-	outFragColor = vec4( 1.f, 1.f, 1.f, 1.f );
+	outFragColor = vec4( texture( inTexture, aaTexCoord ) );
+	//outFragColor = vec4( 1.f, 1.f, 1.f, 1.f );
 }
