@@ -291,6 +291,8 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 
+			// ImGui::ShowDemoWindow();
+
 			// Render.
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );

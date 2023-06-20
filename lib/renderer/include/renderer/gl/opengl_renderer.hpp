@@ -128,7 +128,6 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<ProgramManager> _programManager;
 
 		// Bench.
-
 		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
 
 		using Task										= std::function<void()>;
