@@ -265,7 +265,7 @@ namespace VTX::Bench
 				{
 					p_renderer->setActivePixelize( activePixelize );
 				}
-				if ( ImGui::InputInt( "Pixel size", &pixelSize, 2 ) )
+				if ( ImGui::SliderInt( "Pixel size", &pixelSize, 1, 151 ) )
 				{
 					p_renderer->setPixelSize( pixelSize );
 				}

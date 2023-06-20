@@ -20,7 +20,7 @@ void main()
 
 	if ( uniforms.pixelizeBackground == false && data.viewPosition.z == 0.f )
 	{
-		outFragColor = texelFetch( inTextureColor, texCoord, 0 );
+		outFragColor = texture( inTextureColor, texCoord / texSize );
 		return;
 	}
 	else
