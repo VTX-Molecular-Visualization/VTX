@@ -19,7 +19,7 @@ namespace VTX::Bench
 		UserInterface( const size_t p_width, const size_t p_height )
 		{
 			// Init SDL2.
-			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER ) != 0 )
+			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
 			{
 				throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 			}
@@ -29,10 +29,6 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
-			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
-
-			SDL_GetCurrentDisplayMode( 0, &_displayMode );
 
 			_window = SDL_CreateWindow(
 				"VTX_RENDERER_BENCH",
@@ -261,11 +257,28 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 
+			// Times.
+			static std::array<float, 8> & times = p_renderer->getBenchTimes();
+			static const char *			  labels[]
+				= { "Geometric", "Linearize depth", "SSAO", "Blur", "Shading", "Outline", "Selection", "FXAA" };
+			ImGui::Begin( "Times" );
+			ImGui::PlotHistogram( "",
+								  (float *)times.data(),
+								  8,
+								  0,
+								  "Passes",
+								  0.0f,
+								  float( *std::max_element( times.begin(), times.end() ) ),
+								  ImVec2( 0, 80 ) );
+			ImGui::End();
+
 			// Misc.
 			static const uint64_t sdlFrequency = SDL_GetPerformanceFrequency();
+			static uint64_t		  lastTime	   = 0;
 			const uint64_t		  now		   = SDL_GetPerformanceCounter();
-			const float			  deltaTime	   = float( double( now - _lastTime ) / sdlFrequency );
-			_lastTime						   = now;
+			const float			  deltaTime	   = float( double( now - lastTime ) / sdlFrequency );
+			lastTime						   = now;
+
 			ImGui::Begin( "Misc" );
 			// ImGui::Checkbox( "Perspective", &isPerspective );
 			ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
@@ -275,21 +288,6 @@ namespace VTX::Bench
 			{
 				setVSync( _vsync );
 			}
-			ImGui::End();
-
-			// Times.
-			static std::array<float, 8> & times = p_renderer->getBenchTimes();
-			static const char *			  labels[]
-				= { "Geometric", "Linearize depth", "SSAO", "Blur", "Shading", "Outline", "Selection", "FXAA" };
-			ImGui::Begin( "Times" );
-			ImGui::PlotHistogram( "",
-								  times.data(),
-								  8,
-								  0,
-								  "Passes",
-								  0.0f,
-								  *std::max_element( times.begin(), times.end() ),
-								  ImVec2( 0, 80 ) );
 			ImGui::End();
 
 			// Render.
@@ -309,11 +307,9 @@ namespace VTX::Bench
 		}
 
 	  private:
-		SDL_Window *	_window	   = nullptr;
-		SDL_GLContext	_glContext = nullptr;
-		SDL_DisplayMode _displayMode;
-		bool			_vsync	  = true;
-		uint64_t		_lastTime = 0;
+		SDL_Window *  _window	 = nullptr;
+		SDL_GLContext _glContext = nullptr;
+		bool		  _vsync	 = false;
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench
 #endif

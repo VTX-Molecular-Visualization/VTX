@@ -26,7 +26,7 @@ namespace VTX::Renderer::GL
 
 		inline void start() { glQueryCounter( _queryStart, GL_TIMESTAMP ); }
 
-		inline float stop()
+		inline double stop()
 		{
 			glQueryCounter( _queryEnd, GL_TIMESTAMP );
 
@@ -40,7 +40,7 @@ namespace VTX::Renderer::GL
 			glGetQueryObjectui64v( _queryStart, GL_QUERY_RESULT, &startTime );
 			glGetQueryObjectui64v( _queryEnd, GL_QUERY_RESULT, &endTime );
 
-			return float( ( endTime - startTime ) * 1e-6 );
+			return ( endTime - startTime ) * 1e-6;
 		}
 
 	  private:

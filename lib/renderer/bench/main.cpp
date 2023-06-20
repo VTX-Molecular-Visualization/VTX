@@ -41,36 +41,30 @@ int main( int, char ** )
 		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
+		// Model.
 		Core::StructMolecule molecule = generateAtomGrid( 9 );
 		StructProxyMolecule	 proxyMolecule
 			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
+		// Main loop.
 		static bool isRunning = true;
 		while ( isRunning )
 		{
-			float time = float( ui.getTime() ) * 1e-3f;
-
-			// TODO: move in a dedicated SSBO.
-			Mat4f modelMatrix = Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
-			modelMatrix		  = Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
-			modelMatrix		  = Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
-			renderer.setMatrixModelTmp( modelMatrix );
-
 			renderer.renderFrame();
 			ui.draw( &renderer, &camera );
 
 			// Events.
 			SDL_Event	event;
-			static bool keys[ 322 ] = { false };
+			static bool keys[ SDL_NUM_SCANCODES ] = { false };
 			while ( ui.getEvent( event ) )
 			{
 				switch ( event.type )
 				{
 				case SDL_QUIT: isRunning = false; break;
-				case SDL_KEYDOWN: keys[ event.key.keysym.sym ] = true; break;
-				case SDL_KEYUP: keys[ event.key.keysym.sym ] = false; break;
+				case SDL_KEYDOWN: keys[ event.key.keysym.scancode ] = true; break;
+				case SDL_KEYUP: keys[ event.key.keysym.scancode ] = false; break;
 				case SDL_WINDOWEVENT:
 					switch ( event.window.event )
 					{
@@ -89,27 +83,27 @@ int main( int, char ** )
 			// Move.
 			Vec3i deltaMoveInputs = Vec3i( 0, 0, 0 );
 
-			if ( keys[ SDLK_z ] )
+			if ( keys[ SDL_SCANCODE_W ] )
 			{
 				deltaMoveInputs.z++;
 			}
-			if ( keys[ SDLK_s ] )
+			if ( keys[ SDL_SCANCODE_S ] )
 			{
 				deltaMoveInputs.z--;
 			}
-			if ( keys[ SDLK_q ] )
+			if ( keys[ SDL_SCANCODE_A ] )
 			{
 				deltaMoveInputs.x--;
 			}
-			if ( keys[ SDLK_d ] )
+			if ( keys[ SDL_SCANCODE_D ] )
 			{
 				deltaMoveInputs.x++;
 			}
-			if ( keys[ SDLK_r ] )
+			if ( keys[ SDL_SCANCODE_R ] )
 			{
 				deltaMoveInputs.y++;
 			}
-			if ( keys[ SDLK_f ] )
+			if ( keys[ SDL_SCANCODE_F ] )
 			{
 				deltaMoveInputs.y--;
 			}

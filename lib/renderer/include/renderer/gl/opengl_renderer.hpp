@@ -13,6 +13,7 @@
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "program_manager.hpp"
+#include "renderer/gl/chrono.hpp"
 #include "struct_buffer_meshes.hpp"
 #include "struct_buffer_molecules.hpp"
 #include "struct_global_uniforms.hpp"
@@ -20,6 +21,7 @@
 #include "struct_proxy_molecule.hpp"
 #include "vertex_array.hpp"
 #include <array>
+#include <functional>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -126,6 +128,15 @@ namespace VTX::Renderer::GL
 
 		// Bench.
 		std::array<float, 8> _benchTimes;
+
+		using Task										= std::function<void()>;
+		std::function<float( const Task & )> _funChrono = []( const Task & p_task )
+		{
+			Chrono chrono;
+			chrono.start();
+			p_task();
+			return float( chrono.stop() );
+		};
 
 		void _setupRouting();
 #if ( VTX_OPENGL_VERSION == 450 )
