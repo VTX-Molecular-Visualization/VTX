@@ -81,6 +81,12 @@ namespace VTX::Renderer::GL
 
 		inline std::array<float, 8> & getBenchTimes() { return _benchTimes; }
 
+		inline void compileShaders()
+		{
+			_programManager->compileShaders();
+			_passSSAO->refreshKernel();
+		}
+
 	  private:
 		size_t _width	   = 0;
 		size_t _height	   = 0;

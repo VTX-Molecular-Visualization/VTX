@@ -31,7 +31,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, std::filesystem::current_path() / "shaders" );
+		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, std::filesystem::current_path() / "shaders" / "" );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );

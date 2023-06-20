@@ -15,6 +15,8 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
+		void refreshKernel();
+
 		struct StructIn
 		{
 			Texture2D * textureDataPacked = nullptr;

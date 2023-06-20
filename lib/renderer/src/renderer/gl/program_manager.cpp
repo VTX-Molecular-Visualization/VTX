@@ -173,7 +173,10 @@ namespace VTX::Renderer::GL
 				glDeleteShader( shaderId );
 				throw GLException( error );
 			}
+
+			assert( _shaders.find( name ) == _shaders.end() );
 			_shaders.emplace( name, shaderId );
+
 			VTX_DEBUG( "Shader {} created: {}", shaderId, name );
 		}
 
@@ -203,7 +206,7 @@ namespace VTX::Renderer::GL
 		return std::string( log.begin(), log.end() );
 	}
 
-	void ProgramManager::refreshShaders()
+	void ProgramManager::compileShaders()
 	{
 		for ( const auto & pair : _programs )
 		{
@@ -217,6 +220,11 @@ namespace VTX::Renderer::GL
 		}
 
 		_shaders.clear();
+
+		// Copy folder.
+		// TODO: get path from app.
+		Util::Filesystem::copyDirectory(
+			_shaderPath.parent_path().parent_path() / "src" / "renderer" / " gl" / "shaders" / "", _shaderPath );
 
 		// Then recreate them.
 		for ( const auto & pair : _programs )

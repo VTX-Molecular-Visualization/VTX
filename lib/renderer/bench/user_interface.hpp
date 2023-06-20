@@ -1,82 +1,107 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
-#define GLFW_INCLUDE_NONE
 #include "camera.hpp"
-#include <GLFW/glfw3.h>
+#include <SDL.h>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl2.h>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Bench
 {
-	// TODO: dirty.
-	static std::function<void( const size_t, const size_t )> _callbackResize;
 
 	class UserInterface
 	{
 	  public:
 		UserInterface( const size_t p_width, const size_t p_height )
 		{
-			// Init GLFW.
-			glfwSetErrorCallback( _glfwErrorCallback );
-			if ( glfwInit() == 0 )
+			// Init SDL2.
+			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER ) != 0 )
 			{
-				throw std::runtime_error( "Failed to init GLFW" );
+				throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 			}
 
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
-			glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
+			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
-			_window = glfwCreateWindow( int( p_width ), int( p_height ), "VTX_RENDERER_BENCH", nullptr, nullptr );
+			SDL_GetCurrentDisplayMode( 0, &_displayMode );
+
+			_window = SDL_CreateWindow(
+				"VTX_RENDERER_BENCH",
+				SDL_WINDOWPOS_CENTERED,
+				SDL_WINDOWPOS_CENTERED,
+				int( p_width ),
+				int( p_height ),
+				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
 
 			if ( _window == nullptr )
 			{
-				throw std::runtime_error( "Failed to create GLFW window" );
+				throw std::runtime_error( "Failed to create SDL2 window" );
 			}
 
-			glfwMakeContextCurrent( _window );
-			glfwSwapInterval( _vsync );
+			_glContext = SDL_GL_CreateContext( _window );
+			if ( _glContext == nullptr )
+			{
+				throw std::runtime_error( "Failed to coreate GL context: " + std::string( SDL_GetError() ) );
+			}
+
+			SDL_GL_MakeCurrent( _window, _glContext );
+			SDL_GL_SetSwapInterval( _vsync );
 
 			// Init ImGui.
-			IMGUI_CHECKVERSION();
+			if ( !IMGUI_CHECKVERSION() )
+			{
+				throw std::runtime_error( "IMGUI_CHECKVERSION() failed" );
+			}
+
 			ImGui::CreateContext();
 			ImGui::StyleColorsDark();
-			ImGui_ImplGlfw_InitForOpenGL( _window, true );
-			ImGui_ImplOpenGL3_Init( "#version 450 core" );
 
-			// Resize.
-			glfwSetFramebufferSizeCallback( _window,
-											[]( GLFWwindow * p_window, int p_width, int p_height )
-											{
-												if ( _callbackResize )
-												{
-													_callbackResize( p_width, p_height );
-												}
-											} );
+			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
+			{
+				throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
+			}
+			if ( ImGui_ImplOpenGL3_Init( "#version 450 core" ) == false )
+			{
+				throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
+			}
 		}
 
 		~UserInterface()
 		{
 			ImGui_ImplOpenGL3_Shutdown();
-			ImGui_ImplGlfw_Shutdown();
-			ImGui::DestroyContext();
-			glfwDestroyWindow( _window );
-			glfwTerminate();
+			ImGui_ImplSDL2_Shutdown();
+			if ( ImGui::GetCurrentContext() != nullptr )
+			{
+				ImGui::DestroyContext();
+			}
+			if ( _glContext )
+			{
+				SDL_GL_DeleteContext( _glContext );
+			}
+			if ( _window )
+			{
+				SDL_DestroyWindow( _window );
+			}
+			SDL_Quit();
 		}
 
-		inline double getTime() const { return glfwGetTime(); }
+		inline double getTime() const { return SDL_GetTicks(); }
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
-		inline bool	  shouldClose() const { return glfwWindowShouldClose( _window ); }
-		inline void * getProcAddress() { return reinterpret_cast<void *>( glfwGetProcAddress ); }
+		inline bool	  shouldClose() const { return false; }
+		inline void * getProcAddress() { return reinterpret_cast<void *>( SDL_GL_GetProcAddress ); }
 		inline void	  setVSync( const bool p_vsync )
 		{
 			_vsync = p_vsync;
-			glfwSwapInterval( _vsync );
+			SDL_GL_SetSwapInterval( _vsync );
 		}
 
 		inline Vec3i consumeMoveInputs()
@@ -88,14 +113,30 @@ namespace VTX::Bench
 
 		void setCallbackResize( std::function<void( const size_t, const size_t )> p_callback )
 		{
-			_callbackResize = p_callback;
+			//_callbackResize = p_callback;
 		}
 
 		void draw( Renderer::GL::OpenGLRenderer * const p_renderer, Camera * const p_camera )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
+			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
+
+			// Menu bar.
+			if ( ImGui::BeginMainMenuBar() )
+			{	  // Main menu.
+				if ( ImGui::BeginMenu( "Menu" ) )
+				{ // Quit.
+					if ( ImGui::MenuItem( "Compile shaders" ) )
+					{
+						p_renderer->compileShaders();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMainMenuBar();
+			}
 
 			// Camera.
 			static float near = p_camera->getNear();
@@ -258,18 +299,30 @@ namespace VTX::Bench
 			ImGui::End();
 
 			ImGui::Render();
-			glfwSetWindowTitle(
+			SDL_SetWindowTitle(
 				_window,
 				( std::string( "VTX_RENDERER_BENCH " ) + std::to_string( int( ImGui::GetIO().Framerate ) ) + "FPS" )
 					.c_str() );
 
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-			glfwSwapBuffers( _window );
-			glfwPollEvents();
+
+			SDL_GL_SwapWindow( _window );
 		}
 
+		bool getEvent( SDL_Event & p_event ) const
+		{
+			bool hasEvent = SDL_PollEvent( &p_event );
+			if ( hasEvent )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &p_event );
+			}
+			return hasEvent;
+		}
+
+		// TODO: use callback or switch to SDL3.
 		void processInputs()
 		{
+			/*
 			if ( glfwGetKey( _window, GLFW_KEY_W ) == GLFW_PRESS )
 			{
 				_deltaMoveInputs.z++;
@@ -294,12 +347,16 @@ namespace VTX::Bench
 			{
 				_deltaMoveInputs.y--;
 			}
+			*/
 		}
 
 	  private:
-		GLFWwindow * _window;
-		Vec3i		 _deltaMoveInputs;
-		bool		 _vsync = true;
+		SDL_Window *	_window	   = nullptr;
+		SDL_GLContext	_glContext = nullptr;
+		SDL_DisplayMode _displayMode;
+
+		Vec3i _deltaMoveInputs;
+		bool  _vsync = true;
 
 		static void _glfwErrorCallback( int p_error, const char * p_description )
 		{

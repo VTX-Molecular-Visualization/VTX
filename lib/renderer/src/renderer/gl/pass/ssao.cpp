@@ -13,6 +13,31 @@ namespace VTX::Renderer::GL::Pass
 		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "default.vert", "ssao.frag" } );
 		assert( _program != nullptr );
 
+		refreshKernel();
+	}
+
+	void SSAO::resize( const size_t p_width, const size_t p_height )
+	{
+		out.texture->resize( p_width, p_height );
+		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
+	}
+
+	void SSAO::render( VertexArray & p_vao )
+	{
+		assert( in.textureDataPacked != nullptr );
+		assert( in.textureDepth != nullptr );
+
+		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
+		in.textureDataPacked->bindToUnit( 0 );
+		_noiseTexture->bindToUnit( 1 );
+		in.textureDepth->bindToUnit( 2 );
+		_program->use();
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		out.fbo->unbind();
+	}
+
+	void SSAO::refreshKernel()
+	{
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );
 
@@ -50,26 +75,6 @@ namespace VTX::Renderer::GL::Pass
 		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
-	}
-
-	void SSAO::resize( const size_t p_width, const size_t p_height )
-	{
-		out.texture->resize( p_width, p_height );
-		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
-	}
-
-	void SSAO::render( VertexArray & p_vao )
-	{
-		assert( in.textureDataPacked != nullptr );
-		assert( in.textureDepth != nullptr );
-
-		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
-		in.textureDataPacked->bindToUnit( 0 );
-		_noiseTexture->bindToUnit( 1 );
-		in.textureDepth->bindToUnit( 2 );
-		_program->use();
-		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
-		out.fbo->unbind();
 	}
 
 } // namespace VTX::Renderer::GL::Pass
