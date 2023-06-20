@@ -274,16 +274,29 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Misc.
-			static const uint64_t sdlFrequency = SDL_GetPerformanceFrequency();
-			static uint64_t		  lastTime	   = 0;
-			const uint64_t		  now		   = SDL_GetPerformanceCounter();
-			const float			  deltaTime	   = float( double( now - lastTime ) / sdlFrequency );
-			lastTime						   = now;
+			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
+			static uint64_t		  lastTime						= 0;
+			const uint64_t		  now							= SDL_GetPerformanceCounter();
+			const float			  deltaTime						= float( double( now - lastTime ) / sdlFrequency );
+			lastTime											= now;
+			const Renderer::GL::StructOpenglInfos & openglInfos = p_renderer->getOpenglInfos();
 
 			ImGui::Begin( "Misc" );
 			// ImGui::Checkbox( "Perspective", &isPerspective );
 			ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 			ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
+			ImGui::ProgressBar( float( ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+										 - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ) )
+									/ openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
+								ImVec2( 0.f, 0.f ),
+								fmt::format( "{} / {}",
+											 ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+											   - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
+											 openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX )
+									.c_str() );
+			ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+			ImGui::Text( "GPU memory" );
 
 			if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
 			{

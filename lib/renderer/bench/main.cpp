@@ -56,8 +56,10 @@ int main( int, char ** )
 			ui.draw( &renderer, &camera );
 
 			// Events.
-			SDL_Event	event;
-			static bool keys[ SDL_NUM_SCANCODES ] = { false };
+			SDL_Event	 event;
+			static bool	 keys[ SDL_NUM_SCANCODES ] = { false };
+			static bool	 mouseButtons[ 3 ]		   = { false };
+			static Vec2i deltaMouse;
 			while ( ui.getEvent( event ) )
 			{
 				switch ( event.type )
@@ -65,6 +67,15 @@ int main( int, char ** )
 				case SDL_QUIT: isRunning = false; break;
 				case SDL_KEYDOWN: keys[ event.key.keysym.scancode ] = true; break;
 				case SDL_KEYUP: keys[ event.key.keysym.scancode ] = false; break;
+				case SDL_MOUSEBUTTONDOWN: mouseButtons[ event.button.button - 1 ] = true; break;
+				case SDL_MOUSEBUTTONUP: mouseButtons[ event.button.button - 1 ] = false; break;
+				case SDL_MOUSEMOTION:
+					if ( mouseButtons[ 0 ] )
+					{
+						deltaMouse.x += event.motion.xrel;
+						deltaMouse.y += event.motion.yrel;
+					}
+					break;
 				case SDL_WINDOWEVENT:
 					switch ( event.window.event )
 					{
@@ -111,6 +122,11 @@ int main( int, char ** )
 			if ( deltaMoveInputs != VEC3I_ZERO )
 			{
 				camera.translate( Vec3f( deltaMoveInputs ) * ui.getDeltaTime() );
+			}
+			if ( deltaMouse != VEC2I_ZERO )
+			{
+				// camera.rotate( Vec2f( deltaMouse ) * ui.getDeltaTime() );
+				deltaMouse = VEC2I_ZERO;
 			}
 		}
 	}

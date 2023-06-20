@@ -19,10 +19,9 @@ namespace VTX::Renderer::GL
 			throw GLException( "Failed to initialize GLAD" );
 		}
 
-		const char * const glVendor	  = reinterpret_cast<const char * const>( glGetString( GL_VENDOR ) );
-		const char * const glRenderer = reinterpret_cast<const char * const>( glGetString( GL_RENDERER ) );
+		_getOpenglInfos();
 
-		VTX_INFO( "Device: {} {}", glVendor, glRenderer );
+		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
 #if ( VTX_OPENGL_VERSION == 450 )
@@ -135,6 +134,11 @@ namespace VTX::Renderer::GL
 									   GL_LINEAR );
 					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 				} );
+
+#if ( GL_NVX_gpu_memory_info == 1 )
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+#endif
 
 			_ubo->unbind();
 
@@ -304,6 +308,36 @@ namespace VTX::Renderer::GL
 	{
 		_globalUniforms.shadingMode = p_shading;
 		_ubo->setSub( p_shading, offsetof( StructGlobalUniforms, shadingMode ), sizeof( ENUM_SHADING ) );
+	}
+
+	void OpenGLRenderer::_getOpenglInfos()
+	{
+		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
+		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );
+		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
+		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+
+		glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_openglInfos.glMaxTextureSize );
+		glGetIntegerv( GL_MAX_PATCH_VERTICES, &_openglInfos.glMaxPatchVertices );
+		glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &_openglInfos.glMaxTessGenLevel );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &_openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &_openglInfos.glMaxComputeWorkGroupCount[ 1 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &_openglInfos.glMaxComputeWorkGroupCount[ 2 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &_openglInfos.glMaxComputeWorkGroupSize[ 0 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &_openglInfos.glMaxComputeWorkGroupSize[ 1 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &_openglInfos.glMaxComputeWorkGroupSize[ 2 ] );
+		glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
+		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
+
+#if ( GL_NVX_gpu_memory_info == 1 )
+		glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
+		glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX,
+					   &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX );
+		glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+					   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+#endif
 	}
 
 	void OpenGLRenderer::_setupRouting()

@@ -18,6 +18,7 @@
 #include "struct_buffer_meshes.hpp"
 #include "struct_buffer_molecules.hpp"
 #include "struct_global_uniforms.hpp"
+#include "struct_opengl_infos.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include "vertex_array.hpp"
@@ -84,6 +85,8 @@ namespace VTX::Renderer::GL
 
 		inline std::array<float, ENUM_TIME_ITEM::COUNT> & getTimes() { return _times; }
 
+		inline const StructOpenglInfos & getOpenglInfos() const { return _openglInfos; }
+
 		inline void compileShaders()
 		{
 			_programManager->compileShaders();
@@ -139,6 +142,10 @@ namespace VTX::Renderer::GL
 			return float( chrono.stop() );
 		};
 
+		// Specs.
+		StructOpenglInfos _openglInfos;
+
+		void _getOpenglInfos();
 		void _setupRouting();
 #if ( VTX_OPENGL_VERSION == 450 )
 		static void APIENTRY _debugMessageCallback( const GLenum   p_source,

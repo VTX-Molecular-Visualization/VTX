@@ -92,7 +92,7 @@ namespace VTX::Bench
 		std::function<void( const Mat4f & )>			_callbackMatrixProjection;
 		std::function<void( const float, const float )> _callbackClipInfos;
 
-		void _updateMatrixView()
+		inline void _updateMatrixView()
 		{
 			if ( _callbackMatrixView )
 			{
@@ -100,7 +100,7 @@ namespace VTX::Bench
 			}
 		}
 
-		void _updateMatrixProjection()
+		inline void _updateMatrixProjection()
 		{
 			if ( _callbackMatrixProjection )
 			{
@@ -109,7 +109,7 @@ namespace VTX::Bench
 			}
 		}
 
-		void _updateClipInfos()
+		inline void _updateClipInfos()
 		{
 			if ( _callbackClipInfos )
 			{
