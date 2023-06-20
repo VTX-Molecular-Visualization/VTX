@@ -99,37 +99,42 @@ namespace VTX::Renderer::GL
 
 			_ubo->bind( GL_UNIFORM_BUFFER, 15 );
 
-			_benchTimes.fill( 0.f );
-			_benchTimes[ 0 ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
-			_benchTimes[ 1 ] = _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
+			_times.fill( 0.f );
+			_times[ ENUM_TIME_ITEM::GEOMETRIC ]		  = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
+			_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ] = _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
 			if ( _activeSSAO )
 			{
-				_benchTimes[ 2 ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
-				_benchTimes[ 3 ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::SSAO ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::BLUR ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
 			}
-			_benchTimes[ 4 ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
+			_times[ ENUM_TIME_ITEM::SHADING ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
 			if ( _activeOutline )
 			{
-				_benchTimes[ 5 ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
 			}
-			_benchTimes[ 6 ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
-			_benchTimes[ 7 ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
+			_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
+			_times[ ENUM_TIME_ITEM::FXAA ]		= _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
 
 			// Copy to output (temp).
-			glBindFramebuffer( GL_READ_FRAMEBUFFER,
-							   _activeFXAA ? _passFXAA->out.fbo->getId() : _passSelection->out.fbo->getId() );
-			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
-			glBlitFramebuffer( 0,
-							   0,
-							   GLint( _width ),
-							   GLint( _height ),
-							   0,
-							   0,
-							   GLint( _width ),
-							   GLint( _height ),
-							   GL_COLOR_BUFFER_BIT,
-							   GL_LINEAR );
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
+				[ & ]()
+				{
+					glBindFramebuffer( GL_READ_FRAMEBUFFER,
+									   _activeFXAA ? _passFXAA->out.fbo->getId() : _passSelection->out.fbo->getId() );
+					glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
+					glBlitFramebuffer( 0,
+									   0,
+									   GLint( _width ),
+									   GLint( _height ),
+									   0,
+									   0,
+									   GLint( _width ),
+									   GLint( _height ),
+									   GL_COLOR_BUFFER_BIT,
+									   GL_LINEAR );
+					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				} );
 
 			_ubo->unbind();
 

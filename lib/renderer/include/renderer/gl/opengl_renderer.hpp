@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GL_OPENGL_RENDERER__
 
 #include "buffer.hpp"
+#include "enum_bench_item.hpp"
 #include "enum_shading.hpp"
 #include "include_opengl.hpp"
 #include "pass/blur.hpp"
@@ -81,7 +82,7 @@ namespace VTX::Renderer::GL
 		inline ENUM_SHADING				 getShadingMode() const { return _globalUniforms.shadingMode; }
 		void							 setShadingMode( ENUM_SHADING & );
 
-		inline std::array<float, 8> & getBenchTimes() { return _benchTimes; }
+		inline std::array<float, ENUM_TIME_ITEM::COUNT> & getTimes() { return _times; }
 
 		inline void compileShaders()
 		{
@@ -127,7 +128,8 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<ProgramManager> _programManager;
 
 		// Bench.
-		std::array<float, 8> _benchTimes;
+
+		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
 
 		using Task										= std::function<void()>;
 		std::function<float( const Task & )> _funChrono = []( const Task & p_task )

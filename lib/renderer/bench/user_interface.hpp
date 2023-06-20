@@ -258,18 +258,19 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Times.
-			static std::array<float, 8> & times = p_renderer->getBenchTimes();
-			static const char *			  labels[]
-				= { "Geometric", "Linearize depth", "SSAO", "Blur", "Shading", "Outline", "Selection", "FXAA" };
-			ImGui::Begin( "Times" );
-			ImGui::PlotHistogram( "",
-								  (float *)times.data(),
-								  8,
-								  0,
-								  "Passes",
-								  0.0f,
-								  float( *std::max_element( times.begin(), times.end() ) ),
-								  ImVec2( 0, 80 ) );
+			auto &				times	 = p_renderer->getTimes();
+			static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	"Shading",
+											 "Outline",	  "Selection",		 "FXAA", "Blit FBO" };
+			ImGui::Begin( "Times (ms)" );
+
+			const float max = *std::max_element( times.begin(), times.end() );
+			for ( size_t i = 0; i < times.size(); ++i )
+			{
+				ImGui::ProgressBar( times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
+				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+				ImGui::Text( labels[ i ] );
+			}
+
 			ImGui::End();
 
 			// Misc.
