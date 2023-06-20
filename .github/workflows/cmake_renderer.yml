@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-20.04, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
       fail-fast: false
 
     steps:
@@ -27,7 +27,7 @@ jobs:
     
     - uses: knicknic/os-specific-run@v1
       with:
-        linux: sudo apt-get install -y gcc-10 g++-10 cpp-10 libglu1-mesa-dev xorg-dev && sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
+        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
