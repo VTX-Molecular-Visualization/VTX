@@ -122,9 +122,9 @@ namespace VTX::Bench
 			}
 
 			// Camera.
-			static float near = p_camera->getNear();
-			static float far  = p_camera->getFar();
-			static float fov  = p_camera->getFov();
+			float near = p_camera->getNear();
+			float far  = p_camera->getFar();
+			float fov  = p_camera->getFov();
 			// static bool	 isPerspective = true;
 			ImGui::Begin( "Camera" );
 			// ImGui::Checkbox( "Perspective", &isPerspective );
@@ -143,23 +143,26 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Passes.
-			static bool						  activeSSAO	   = p_renderer->isActiveSSAO();
-			static bool						  activeOutline	   = p_renderer->isActiveOutline();
-			static bool						  activeFXAA	   = p_renderer->isActiveFXAA();
-			static Util::Color::Rgba		  colorBG		   = p_renderer->getColorBackground();
-			static Util::Color::Rgba		  colorLight	   = p_renderer->getColorLight();
-			static Util::Color::Rgba		  colorFog		   = p_renderer->getColorFog();
-			static Util::Color::Rgba		  colorOutline	   = p_renderer->getColorOutline();
-			static Util::Color::Rgba		  colorSelection   = p_renderer->getColorSelection();
-			static float					  specularFactor   = p_renderer->getSpecularFactor();
-			static float					  fogNear		   = p_renderer->getFogNear();
-			static float					  fogFar		   = p_renderer->getFogFar();
-			static float					  fogDensity	   = p_renderer->getFogDensity();
-			static float					  ssaoIntensity	   = p_renderer->getSSAOIntensity();
-			static float					  blurSize		   = p_renderer->getBlurSize();
-			static float					  outlineSensivity = p_renderer->getOutlineSensivity();
-			static float					  outlineThickness = p_renderer->getOutlineThickness();
-			static Renderer::GL::ENUM_SHADING shadingMode	   = p_renderer->getShadingMode();
+			bool					   activeSSAO			= p_renderer->isActiveSSAO();
+			bool					   activeOutline		= p_renderer->isActiveOutline();
+			bool					   activeFXAA			= p_renderer->isActiveFXAA();
+			bool					   activePixelize		= p_renderer->isActivePixelize();
+			Util::Color::Rgba		   colorBG				= p_renderer->getColorBackground();
+			Util::Color::Rgba		   colorLight			= p_renderer->getColorLight();
+			Util::Color::Rgba		   colorFog				= p_renderer->getColorFog();
+			Util::Color::Rgba		   colorOutline			= p_renderer->getColorOutline();
+			Util::Color::Rgba		   colorSelection		= p_renderer->getColorSelection();
+			float					   specularFactor		= p_renderer->getSpecularFactor();
+			float					   fogNear				= p_renderer->getFogNear();
+			float					   fogFar				= p_renderer->getFogFar();
+			float					   fogDensity			= p_renderer->getFogDensity();
+			float					   ssaoIntensity		= p_renderer->getSSAOIntensity();
+			float					   blurSize				= p_renderer->getBlurSize();
+			float					   outlineSensivity		= p_renderer->getOutlineSensivity();
+			float					   outlineThickness		= p_renderer->getOutlineThickness();
+			Renderer::GL::ENUM_SHADING shadingMode			= p_renderer->getShadingMode();
+			int						   pixelSize			= p_renderer->getPixelSize();
+			bool					   pixelarizeBackground = p_renderer->isPixelizeBackground();
 
 			ImGui::Begin( "Render passes" );
 			ImGui::SetNextItemOpen( true );
@@ -255,12 +258,28 @@ namespace VTX::Bench
 					p_renderer->setActiveFXAA( activeFXAA );
 				}
 			}
+			ImGui::SetNextItemOpen( true );
+			if ( ImGui::CollapsingHeader( "Pixelize" ) )
+			{
+				if ( ImGui::Checkbox( "Active##Pixelize", &activePixelize ) )
+				{
+					p_renderer->setActivePixelize( activePixelize );
+				}
+				if ( ImGui::InputInt( "Pixel size", &pixelSize, 2 ) )
+				{
+					p_renderer->setPixelSize( pixelSize );
+				}
+				if ( ImGui::Checkbox( "Background?", &pixelarizeBackground ) )
+				{
+					p_renderer->setPixelizeBackground( pixelarizeBackground );
+				}
+			}
 			ImGui::End();
 
 			// Times.
 			auto &				times	 = p_renderer->getTimes();
-			static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	"Shading",
-											 "Outline",	  "Selection",		 "FXAA", "Blit FBO" };
+			static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
+											 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
 			ImGui::Begin( "Times (ms)" );
 
 			const float max = *std::max_element( times.begin(), times.end() );

@@ -10,6 +10,7 @@
 #include "pass/geometric.hpp"
 #include "pass/linearize_depth.hpp"
 #include "pass/outline.hpp"
+#include "pass/pixelize.hpp"
 #include "pass/selection.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
@@ -49,6 +50,8 @@ namespace VTX::Renderer::GL
 		void		setActiveOutline( const bool p_active );
 		inline bool isActiveFXAA() const { return _activeFXAA; }
 		void		setActiveFXAA( const bool p_active );
+		inline bool isActivePixelize() const { return _activePixelize; }
+		void		setActivePixelize( const bool p_active );
 
 		void							 setMatrixModelTmp( const Mat4f & );
 		void							 setMatrixView( const Mat4f & );
@@ -80,8 +83,12 @@ namespace VTX::Renderer::GL
 		void							 setOutlineSensivity( float );
 		inline float					 getOutlineThickness() const { return _globalUniforms.outlineThickness; }
 		void							 setOutlineThickness( float );
-		inline ENUM_SHADING				 getShadingMode() const { return _globalUniforms.shadingMode; }
-		void							 setShadingMode( ENUM_SHADING & );
+		inline ENUM_SHADING				 getShadingMode() const { return ENUM_SHADING( _globalUniforms.shadingMode ); }
+		void							 setShadingMode( const ENUM_SHADING );
+		inline uint						 getPixelSize() const { return _globalUniforms.pixelSize; }
+		void							 setPixelSize( const uint );
+		inline bool						 isPixelizeBackground() const { return _globalUniforms.pixelizeBackground; }
+		void							 setPixelizeBackground( const bool );
 
 		inline std::array<float, ENUM_TIME_ITEM::COUNT> & getTimes() { return _times; }
 
@@ -115,10 +122,12 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<Pass::PassOutline>		  _passOutline;
 		std::unique_ptr<Pass::PassSelection>	  _passSelection;
 		std::unique_ptr<Pass::PassFXAA>			  _passFXAA;
+		std::unique_ptr<Pass::PassPixelize>		  _passPixelize;
 
-		bool _activeSSAO	= true;
-		bool _activeOutline = true;
-		bool _activeFXAA	= true;
+		bool _activeSSAO	 = true;
+		bool _activeOutline	 = false;
+		bool _activeFXAA	 = true;
+		bool _activePixelize = false;
 
 		// Output.
 		GLuint _fboOutputId = 0;

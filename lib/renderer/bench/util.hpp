@@ -46,7 +46,7 @@ namespace VTX::Bench
 		std::vector<uint>			   bonds( ( realSize - 1 ) * 2 );
 
 		size_t		counter = 0;
-		const float offset	= 10.f;
+		const float offset	= 2.f;
 
 		for ( int i = -p_size / 2; i <= p_size / 2; ++i )
 		{

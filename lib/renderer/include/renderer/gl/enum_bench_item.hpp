@@ -13,6 +13,7 @@ namespace VTX::Renderer::GL
 		OUTLINE,
 		SELECTION,
 		FXAA,
+		PIXELIZE,
 		BLIT,
 		COUNT
 	};

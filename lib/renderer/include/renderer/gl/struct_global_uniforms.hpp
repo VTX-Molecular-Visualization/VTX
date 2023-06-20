@@ -35,6 +35,8 @@ namespace VTX::Renderer::GL
 
 		ENUM_SHADING shadingMode		 = ENUM_SHADING::DIFFUSE;
 		bool		 isCameraPerspective = true;
+		uint		 pixelSize			 = 5;
+		bool		 pixelizeBackground	 = true;
 	};
 } // namespace VTX::Renderer::GL
 

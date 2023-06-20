@@ -47,6 +47,7 @@ namespace VTX::Renderer::GL
 		_passOutline		= std::make_unique<Pass::PassOutline>( p_width, p_height, *_programManager );
 		_passSelection		= std::make_unique<Pass::PassSelection>( p_width, p_height, *_programManager );
 		_passFXAA			= std::make_unique<Pass::PassFXAA>( p_width, p_height, *_programManager );
+		_passPixelize		= std::make_unique<Pass::PassPixelize>( p_width, p_height, *_programManager );
 
 		// Setup default routing.
 		_setupRouting();
@@ -86,6 +87,7 @@ namespace VTX::Renderer::GL
 		_passOutline->resize( _width, _height );
 		_passSelection->resize( _width, _height );
 		_passFXAA->resize( _width, _height );
+		_passPixelize->resize( _width, _height );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
@@ -112,15 +114,23 @@ namespace VTX::Renderer::GL
 				_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
 			}
 			_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
-			_times[ ENUM_TIME_ITEM::FXAA ]		= _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
 
+			if ( _activeFXAA )
+			{
+				_times[ ENUM_TIME_ITEM::FXAA ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
+			}
+			if ( _activePixelize )
+			{
+				_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChrono( [ & ]() { _passPixelize->render( *_vao ); } );
+			}
 			// Copy to output (temp).
-
 			_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
 				[ & ]()
 				{
 					glBindFramebuffer( GL_READ_FRAMEBUFFER,
-									   _activeFXAA ? _passFXAA->out.fbo->getId() : _passSelection->out.fbo->getId() );
+									   _activePixelize ? _passPixelize->out.fbo->getId()
+									   : _activeFXAA   ? _passFXAA->out.fbo->getId()
+													   : _passSelection->out.fbo->getId() );
 					glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
 					glBlitFramebuffer( 0,
 									   0,
@@ -196,6 +206,12 @@ namespace VTX::Renderer::GL
 	void OpenGLRenderer::setActiveFXAA( const bool p_active )
 	{
 		_activeFXAA = p_active;
+		_setupRouting();
+	}
+
+	void OpenGLRenderer::setActivePixelize( const bool p_active )
+	{
+		_activePixelize = p_active;
 		_setupRouting();
 	}
 
@@ -304,10 +320,26 @@ namespace VTX::Renderer::GL
 		_ubo->setSub( p_thickness, offsetof( StructGlobalUniforms, outlineThickness ), sizeof( float ) );
 	}
 
-	void OpenGLRenderer::setShadingMode( ENUM_SHADING & p_shading )
+	void OpenGLRenderer::setShadingMode( const ENUM_SHADING p_shading )
 	{
 		_globalUniforms.shadingMode = p_shading;
 		_ubo->setSub( p_shading, offsetof( StructGlobalUniforms, shadingMode ), sizeof( ENUM_SHADING ) );
+	}
+
+	void OpenGLRenderer::setPixelSize( const uint p_size )
+	{
+		_globalUniforms.pixelSize = p_size;
+		if ( _globalUniforms.pixelSize % 2 == 0 )
+		{
+			_globalUniforms.pixelSize++;
+		}
+		_ubo->setSub( _globalUniforms.pixelSize, offsetof( StructGlobalUniforms, pixelSize ), sizeof( uint ) );
+	}
+
+	void OpenGLRenderer::setPixelizeBackground( const bool p_active )
+	{
+		_globalUniforms.pixelizeBackground = p_active;
+		_ubo->setSub( p_active, offsetof( StructGlobalUniforms, pixelizeBackground ), sizeof( bool ) );
 	}
 
 	void OpenGLRenderer::_getOpenglInfos()
@@ -362,17 +394,15 @@ namespace VTX::Renderer::GL
 
 		_passSelection->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
 
-		if ( _activeOutline )
-		{
-			_passSelection->in.textureColor = _passOutline->out.texture.get();
-		}
-		else
-		{
-			_passSelection->in.textureColor = _passShading->out.texture.get();
-		}
+		_passSelection->in.textureColor
+			= _activeOutline ? _passOutline->out.texture.get() : _passShading->out.texture.get();
+
 		_passSelection->in.textureDepth = _passLinearizeDepth->out.texture.get();
 
 		_passFXAA->in.textureColor = _passSelection->out.texture.get();
+
+		_passPixelize->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passPixelize->in.textureColor = _activeFXAA ? _passFXAA->out.texture.get() : _passSelection->out.texture.get();
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

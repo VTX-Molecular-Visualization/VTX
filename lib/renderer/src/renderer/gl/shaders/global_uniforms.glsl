@@ -25,4 +25,7 @@ layout ( std140, binding = 15 ) uniform Uniforms
 
 	int shadingMode;
 	bool isCameraPerspective;
+	uint pixelSize;
+	bool pixelizeBackground;	
+	
 } uniforms;

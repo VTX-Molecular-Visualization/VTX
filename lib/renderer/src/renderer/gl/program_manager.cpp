@@ -221,11 +221,6 @@ namespace VTX::Renderer::GL
 
 		_shaders.clear();
 
-		// Copy folder.
-		// TODO: get path from app.
-		Util::Filesystem::copyDirectory(
-			_shaderPath.parent_path().parent_path() / "src" / "renderer" / " gl" / "shaders" / "", _shaderPath );
-
 		// Then recreate them.
 		for ( const auto & pair : _programs )
 		{
