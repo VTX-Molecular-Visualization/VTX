@@ -17,7 +17,6 @@ constexpr size_t WIDTH	= 1920;
 constexpr size_t HEIGHT = 1200;
 
 int main( int, char ** )
-
 {
 	using namespace VTX;
 	using namespace Util;
