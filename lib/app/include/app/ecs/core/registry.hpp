@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ECS_CORE_REGISTRY__
 #define __VTX_APP_ECS_CORE_REGISTRY__
 
+#include "app/ecs/core/base_component.hpp"
 #include "app/ecs/core/base_entity.hpp"
 #include <concepts>
 #include <entt/entt.hpp>

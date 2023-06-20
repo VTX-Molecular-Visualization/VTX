@@ -1,11 +1,9 @@
 #include "app/ecs/action/ecs.hpp"
 #include "app/application/scene.hpp"
+#include "app/ecs/building/entity_director.hpp"
 #include "app/ecs/entity/scene/molecule_entity.hpp"
 #include "app/ecs/registry_manager.hpp"
 #include "app/vtx_app.hpp"
-#include <app/internal/io/reader/molecule_loader.hpp>
-#include <app/render/proxy_builder.hpp>
-#include <renderer/gl/struct_proxy_molecule.hpp>
 
 namespace VTX::App::ECS::Action
 {
@@ -35,24 +33,15 @@ namespace VTX::App::ECS::Action
 
 			for ( const FilePath & moleculePath : _paths )
 			{
-				ECS::Core::BaseEntity moleculeEntity = ECS::Entity::Scene::generateMoleculeEntity( scene );
+				ECS::Building::EntityBuilder * const entityBuilder
+					= ECS::Building::EntityDirector::generateBuilder( "Molecule" );
 
-				// Load molecule
-				Internal::IO::Reader::MoleculeLoader libChemfiles = Internal::IO::Reader::MoleculeLoader();
-				Model::Chemistry::Molecule &		 moleculeComponent
-					= ECS::MAIN_REGISTRY().getComponent<Model::Chemistry::Molecule>( moleculeEntity );
+				// Possibility to thread build function
+				entityBuilder->getData()[ "scene" ]	   = VTXVariant( &scene );
+				entityBuilder->getData()[ "filepath" ] = VTXVariant( moleculePath.string() );
+				entityBuilder->build();
 
-				libChemfiles.readFile( moleculePath, moleculeComponent );
-
-				ECS::Component::SceneItemComponent & sceneComponent
-					= ECS::MAIN_REGISTRY().getComponent<ECS::Component::SceneItemComponent>( moleculeEntity );
-				sceneComponent.setName( moleculeComponent.getPdbIdCode() );
-
-				// Setup GPU Proxy
-				Renderer::GL::StructProxyMolecule & gpuProxyComponent
-					= ECS::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
-
-				Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
+				delete entityBuilder;
 			}
 		}
 	}

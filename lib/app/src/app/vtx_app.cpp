@@ -1,6 +1,8 @@
 #include "app/vtx_app.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/io/scene_file_info.hpp"
+#include "app/ecs/building/entity_director.hpp"
+#include "app/ecs/building/setup_entity_director.hpp"
 #include "app/ecs/entity/application/scene_entity.hpp"
 #include "app/ecs/registry_manager.hpp"
 #include "app/old/internal/io/filesystem.hpp"
@@ -38,11 +40,13 @@ namespace VTX::App
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
+		ECS::Building::setupEntityDirector();
+
 		// Create scene.
-		ECS::Core::BaseEntity sceneEntity = ECS::Entity::Application::generateSceneEntity();
+		ECS::Core::BaseEntity sceneEntity
+			= ECS::Building::EntityDirector::launchBuilder( ECS::Building::SCENE_ENTITY_ID );
 
 		_scene = &( ECS::MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
-		ECS::MAIN_REGISTRY().addComponent<Component::IO::SceneFileInfo>( sceneEntity );
 
 		//_tickTimer.start();
 
