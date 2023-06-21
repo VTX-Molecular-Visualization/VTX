@@ -4,6 +4,8 @@
 #include <iostream>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <util/math.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #ifdef _WIN32
 extern "C"
@@ -47,6 +49,30 @@ int main( int, char ** )
 			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
+
+		// Skybox.
+		const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
+		const std::array<FilePath, 6> pathImages
+			= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
+				pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
+		std::array<unsigned char *, 6> images;
+		int							   width, height, nrChannels;
+		try
+		{
+			for ( size_t i = 0; i < pathImages.size(); ++i )
+			{
+				images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
+			}
+			renderer.loadSkybox( images, width, height );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Skybox not found: {}", p_e.what() );
+		}
+		for ( size_t i = 0; i < images.size(); ++i )
+		{
+			stbi_image_free( images[ i ] );
+		}
 
 		// Main loop.
 		static bool isRunning = true;

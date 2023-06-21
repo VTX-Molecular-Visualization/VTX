@@ -100,51 +100,59 @@ namespace VTX::Renderer::GL
 
 			_ubo->bind( GL_UNIFORM_BUFFER, 15 );
 
-			_times.fill( 0.f );
-			_times[ ENUM_TIME_ITEM::GEOMETRIC ]		  = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
-			_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ] = _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
-			if ( _activeSSAO )
+			if ( _skybox )
 			{
-				_times[ ENUM_TIME_ITEM::SSAO ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
-				_times[ ENUM_TIME_ITEM::BLUR ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
+				_skybox->render();
 			}
-			_times[ ENUM_TIME_ITEM::SHADING ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
-			if ( _activeOutline )
-			{
-				_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
-			}
-			_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
 
-			if ( _activeFXAA )
+			if ( false )
 			{
-				_times[ ENUM_TIME_ITEM::FXAA ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
-			}
-			if ( _activePixelize )
-			{
-				_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChrono( [ & ]() { _passPixelize->render( *_vao ); } );
-			}
-			// Copy to output (temp).
-			_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
-				[ & ]()
+				_times.fill( 0.f );
+				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
+					= _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
+				if ( _activeSSAO )
 				{
-					glBindFramebuffer( GL_READ_FRAMEBUFFER,
-									   _activePixelize ? _passPixelize->out.fbo->getId()
-									   : _activeFXAA   ? _passFXAA->out.fbo->getId()
-													   : _passSelection->out.fbo->getId() );
-					glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
-					glBlitFramebuffer( 0,
-									   0,
-									   GLint( _width ),
-									   GLint( _height ),
-									   0,
-									   0,
-									   GLint( _width ),
-									   GLint( _height ),
-									   GL_COLOR_BUFFER_BIT,
-									   GL_LINEAR );
-					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-				} );
+					_times[ ENUM_TIME_ITEM::SSAO ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::BLUR ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
+				}
+				_times[ ENUM_TIME_ITEM::SHADING ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
+				if ( _activeOutline )
+				{
+					_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
+				}
+				_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
 
+				if ( _activeFXAA )
+				{
+					_times[ ENUM_TIME_ITEM::FXAA ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
+				}
+				if ( _activePixelize )
+				{
+					_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChrono( [ & ]() { _passPixelize->render( *_vao ); } );
+				}
+				// Copy to output (temp).
+				_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
+					[ & ]()
+					{
+						glBindFramebuffer( GL_READ_FRAMEBUFFER,
+										   _activePixelize ? _passPixelize->out.fbo->getId()
+										   : _activeFXAA   ? _passFXAA->out.fbo->getId()
+														   : _passSelection->out.fbo->getId() );
+						glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
+						glBlitFramebuffer( 0,
+										   0,
+										   GLint( _width ),
+										   GLint( _height ),
+										   0,
+										   0,
+										   GLint( _width ),
+										   GLint( _height ),
+										   GL_COLOR_BUFFER_BIT,
+										   GL_LINEAR );
+						glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+					} );
+			}
 #if ( GL_NVX_gpu_memory_info == 1 )
 			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
 						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
@@ -340,6 +348,13 @@ namespace VTX::Renderer::GL
 	{
 		_globalUniforms.pixelizeBackground = p_active;
 		_ubo->setSub( p_active, offsetof( StructGlobalUniforms, pixelizeBackground ), sizeof( bool ) );
+	}
+
+	void OpenGLRenderer::loadSkybox( const std::array<unsigned char *, 6> & p_textures,
+									 const size_t							p_width,
+									 const size_t							p_height )
+	{
+		_skybox = std::make_unique<Cubemap>( p_width, p_height, p_textures, *_programManager );
 	}
 
 	void OpenGLRenderer::_getOpenglInfos()

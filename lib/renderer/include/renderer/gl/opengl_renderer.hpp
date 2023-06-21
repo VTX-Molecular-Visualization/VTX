@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GL_OPENGL_RENDERER__
 
 #include "buffer.hpp"
+#include "cubemap.hpp"
 #include "enum_bench_item.hpp"
 #include "enum_shading.hpp"
 #include "include_opengl.hpp"
@@ -100,6 +101,10 @@ namespace VTX::Renderer::GL
 			_passSSAO->refreshKernel();
 		}
 
+		void loadSkybox( const std::array<unsigned char *, 6> & p_textures,
+						 const size_t							p_width,
+						 const size_t							p_height );
+
 	  private:
 		size_t _width	   = 0;
 		size_t _height	   = 0;
@@ -138,6 +143,9 @@ namespace VTX::Renderer::GL
 
 		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager;
+
+		// Skybox.
+		std::unique_ptr<Cubemap> _skybox;
 
 		// Bench.
 		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
