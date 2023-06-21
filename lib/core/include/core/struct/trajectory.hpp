@@ -4,7 +4,7 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Core::NewStruct
+namespace VTX::Core::Struct
 {
 	using Frame = std::vector<Vec3f>;
 	class Trajectory
@@ -14,6 +14,6 @@ namespace VTX::Core::NewStruct
 		size_t			   currentFrameIndex = 0;
 	};
 
-} // namespace VTX::Core::NewStruct
+} // namespace VTX::Core::Struct
 
 #endif

@@ -86,7 +86,7 @@ namespace VTX::App::Old::Component::Chemistry
 	Bond & Molecule::addBond()
 	{
 		Bond * const			  bond	  = VTX::MVC_MANAGER().instantiateModel<Bond>();
-		VTX::Core::Struct::Bond & newBond = _moleculeStruct->addBond();
+		VTX::Core::Old::Struct::Bond & newBond = _moleculeStruct->addBond();
 		newBond.setMoleculePtr( _moleculeStruct );
 
 		return *bond;

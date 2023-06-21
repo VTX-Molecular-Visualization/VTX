@@ -18,7 +18,7 @@
 #include "app/old/render/buffer/molecule.hpp"
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/unknown_residue_data.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/old/struct/molecule.hpp>
 #include <iostream>
 #include <map>
 #include <string>
@@ -41,7 +41,7 @@ namespace VTX::App::Old::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		using AtomPositionsFrame  = VTX::Core::Struct::Molecule::AtomPositionsFrame;
+		using AtomPositionsFrame  = VTX::Core::Old::Struct::Molecule::AtomPositionsFrame;
 		using RepresentationState = std::map<const Application::Representation::InstantiatedRepresentation *,
 											 Application::Representation::RepresentationTarget>;
 
@@ -56,8 +56,8 @@ namespace VTX::App::Old::Component::Chemistry
 		inline static std::vector<Bond *> TMP_BOND_VECTOR = std::vector<Bond *>();
 
 	  public:
-		inline VTX::Core::Struct::Molecule &	   getMoleculeStruct() { return *_moleculeStruct; };
-		inline const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return *_moleculeStruct; };
+		inline VTX::Core::Old::Struct::Molecule &	   getMoleculeStruct() { return *_moleculeStruct; };
+		inline const VTX::Core::Old::Struct::Molecule & getMoleculeStruct() const { return *_moleculeStruct; };
 
 		// Configuration.
 		inline const Component::IO::MoleculeConfiguration & getConfiguration() const { return _configuration; }
@@ -449,7 +449,7 @@ namespace VTX::App::Old::Component::Chemistry
 		virtual ~Molecule();
 
 	  private:
-		VTX::Core::Struct::Molecule * _moleculeStruct = nullptr;
+		VTX::Core::Old::Struct::Molecule * _moleculeStruct = nullptr;
 		std::string					  _displayName;
 
 		// Configuration.

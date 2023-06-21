@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
-#include <core/new_struct/trajectory.hpp>
+#include <core/struct/trajectory.hpp>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
@@ -70,7 +70,7 @@ namespace VTX::App::Internal::IO::Reader
 											  const size_t						p_moleculeFrameIndex,
 											  const std::vector<Vec3f> &		p_atomPositions )
 	{
-		VTX::Core::NewStruct::Trajectory & moleculeTrajectory = p_molecule.getTrajectory();
+		VTX::Core::Struct::Trajectory & moleculeTrajectory = p_molecule.getTrajectory();
 		moleculeTrajectory.frames[ p_moleculeFrameIndex ].resize( p_atomPositions.size() );
 
 		std::copy(
@@ -117,7 +117,7 @@ namespace VTX::App::Internal::IO::Reader
 		for ( const std::pair<App::Model::Chemistry::Molecule *, size_t> & pairMoleculeFirstFrame : p_targets )
 		{
 			App::Model::Chemistry::Molecule &  molecule	  = *( pairMoleculeFirstFrame.first );
-			VTX::Core::NewStruct::Trajectory & trajectory = molecule.getTrajectory();
+			VTX::Core::Struct::Trajectory & trajectory = molecule.getTrajectory();
 			if ( trajectory.frames.back().size() == 0 )
 			{
 				do
@@ -258,7 +258,7 @@ namespace VTX::App::Internal::IO::Reader
 		p_molecule.initResidues( topology.residues().size() );
 		p_molecule.initAtoms( frame.size() );
 		// p_molecule.resizeBuffers();
-		VTX::Core::NewStruct::Frame & modelFrame = p_molecule.getTrajectory().frames[ 0 ];
+		VTX::Core::Struct::Frame & modelFrame = p_molecule.getTrajectory().frames[ 0 ];
 		modelFrame.resize( frame.size() );
 
 		App::Model::Chemistry::Chain * modelChain				= nullptr;

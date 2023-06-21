@@ -7,7 +7,7 @@
 #include "app/old/core/model/base_model.hpp"
 #include "app/old/id.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/struct/atom.hpp>
+#include <core/old/struct/atom.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Old::Component::Chemistry
@@ -19,8 +19,8 @@ namespace VTX::App::Old::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		inline VTX::Core::Struct::Atom &	   getAtomStruct() { return *_atomStruct; }
-		inline const VTX::Core::Struct::Atom & getAtomStruct() const { return *_atomStruct; }
+		inline VTX::Core::Old::Struct::Atom &	   getAtomStruct() { return *_atomStruct; }
+		inline const VTX::Core::Old::Struct::Atom & getAtomStruct() const { return *_atomStruct; }
 
 		inline const uint	   getIndex() const { return _atomStruct->getIndex(); };
 		inline void			   setIndex( const uint p_index ) { _atomStruct->setIndex( p_index ); };
@@ -55,7 +55,7 @@ namespace VTX::App::Old::Component::Chemistry
 		Atom() : BaseModel( App::Old::ID::Model::MODEL_ATOM ) {}
 
 	  private:
-		VTX::Core::Struct::Atom * _atomStruct = nullptr;
+		VTX::Core::Old::Struct::Atom * _atomStruct = nullptr;
 		Residue *				  _residuePtr = nullptr;
 	};
 

@@ -1,9 +1,9 @@
-#include "core/struct/chain.hpp"
+#include "core/old/struct/chain.hpp"
 #include "core/chemdb/chain.hpp"
-#include "core/struct/molecule.hpp"
-#include "core/struct/residue.hpp"
+#include "core/old/struct/molecule.hpp"
+#include "core/old/struct/residue.hpp"
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	Util::Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 	{
@@ -70,4 +70,4 @@ namespace VTX::Core::Struct
 		return realAtomCount;
 	}
 
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct

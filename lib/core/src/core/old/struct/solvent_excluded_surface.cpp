@@ -1,6 +1,6 @@
-#include "core/struct/solvent_excluded_surface.hpp"
+#include "core/old/struct/solvent_excluded_surface.hpp"
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	SolventExcludedSurface::SolventExcludedSurface() {}
 
@@ -9,4 +9,4 @@ namespace VTX::Core::Struct
 		_atomsToTriangles.emplace_back( p_range );
 		_indiceCount += p_range.getCount();
 	}
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct

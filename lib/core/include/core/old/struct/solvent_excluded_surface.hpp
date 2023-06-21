@@ -6,7 +6,7 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	class SolventExcludedSurface
 	{
@@ -23,6 +23,6 @@ namespace VTX::Core::Struct
 		std::vector<Range> _atomsToTriangles = std::vector<Range>();
 		uint			   _indiceCount		 = 0;
 	};
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct
 
 #endif

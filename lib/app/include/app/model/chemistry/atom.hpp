@@ -4,7 +4,7 @@
 #include "_fwd.hpp"
 #include "define.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/new_struct/atom.hpp>
+#include <core/struct/atom.hpp>
 
 namespace VTX::App::Model::Chemistry
 {

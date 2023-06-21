@@ -1,9 +1,9 @@
-#include "core/struct/atom.hpp"
-#include "core/struct/chain.hpp"
-#include "core/struct/molecule.hpp"
-#include "core/struct/residue.hpp"
+#include "core/old/struct/atom.hpp"
+#include "core/old/struct/chain.hpp"
+#include "core/old/struct/molecule.hpp"
+#include "core/old/struct/residue.hpp"
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	Molecule * const Atom::getMoleculePtr() const { return _residuePtr->getChainPtr()->getMoleculePtr(); };
 	Chain * const	 Atom::getChainPtr() const { return _residuePtr->getChainPtr(); }
@@ -13,4 +13,4 @@ namespace VTX::Core::Struct
 	{
 		return getMoleculePtr()->getAtomPositionFrame( p_frameIndex )[ _index ];
 	}
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct

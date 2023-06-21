@@ -3,7 +3,7 @@
 
 #include <concepts>
 
-namespace VTX::Core::NewStruct
+namespace VTX::Core::Struct
 {
 	template<typename M>
 	concept ConceptMolecule = requires() { true; };
@@ -19,5 +19,5 @@ namespace VTX::Core::NewStruct
 
 	template<typename B>
 	concept ConceptBond = requires() { true; };
-} // namespace VTX::Core::NewStruct
+} // namespace VTX::Core::Struct
 #endif

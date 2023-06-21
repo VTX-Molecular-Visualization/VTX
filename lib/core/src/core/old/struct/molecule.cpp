@@ -1,14 +1,14 @@
-#include "core/struct/molecule.hpp"
+#include "core/old/struct/molecule.hpp"
 #include "core/chemdb/color.hpp"
-#include "core/struct/atom.hpp"
-#include "core/struct/bond.hpp"
-#include "core/struct/chain.hpp"
-#include "core/struct/residue.hpp"
+#include "core/old/struct/atom.hpp"
+#include "core/old/struct/bond.hpp"
+#include "core/old/struct/chain.hpp"
+#include "core/old/struct/residue.hpp"
 #include <algorithm>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	Molecule::Molecule() {}
 	Molecule::~Molecule()
@@ -493,4 +493,4 @@ namespace VTX::Core::Struct
 
 		_bonds[ p_id ] = nullptr;
 	}
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct

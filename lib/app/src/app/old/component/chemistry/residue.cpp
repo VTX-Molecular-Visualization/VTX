@@ -9,11 +9,11 @@ namespace VTX::App::Old::Component::Chemistry
 {
 	bool Residue::checkIfStandardFromName( const std::string & p_residueSymbol )
 	{
-		return VTX::Core::Struct::Residue::checkIfStandardFromName( p_residueSymbol );
+		return VTX::Core::Old::Struct::Residue::checkIfStandardFromName( p_residueSymbol );
 	}
 	const Util::Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
 	{
-		return VTX::Core::Struct::Residue::getResidueColor( p_residue.getResidueStruct() );
+		return VTX::Core::Old::Struct::Residue::getResidueColor( p_residue.getResidueStruct() );
 	}
 
 	Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };

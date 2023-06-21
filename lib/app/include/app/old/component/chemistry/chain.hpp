@@ -9,7 +9,7 @@
 #include "app/old/core/model/base_model.hpp"
 #include "app/old/id.hpp"
 #include <core/chemdb/category.hpp>
-#include <core/struct/chain.hpp>
+#include <core/old/struct/chain.hpp>
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
@@ -30,8 +30,8 @@ namespace VTX::App::Old::Component::Chemistry
 		static Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 	  public:
-		inline VTX::Core::Struct::Chain &		getChainStruct() { return *_chainStruct; };
-		inline const VTX::Core::Struct::Chain & getChainStruct() const { return *_chainStruct; };
+		inline VTX::Core::Old::Struct::Chain &		getChainStruct() { return *_chainStruct; };
+		inline const VTX::Core::Old::Struct::Chain & getChainStruct() const { return *_chainStruct; };
 
 		// inline CHAIN_TYPE	getType() const { return _chainStruct->getType(); }
 		// inline void			setType( const CHAIN_TYPE p_type ) { _chainStruct->setType( p_type ); }
@@ -74,7 +74,7 @@ namespace VTX::App::Old::Component::Chemistry
 		void _onRepresentationChange() override;
 
 	  private:
-		VTX::Core::Struct::Chain * _chainStruct = nullptr;
+		VTX::Core::Old::Struct::Chain * _chainStruct = nullptr;
 		Molecule *				   _moleculePtr = nullptr;
 
 		ChemDB::Category::TYPE _categoryEnum = ChemDB::Category::TYPE::UNKNOWN;

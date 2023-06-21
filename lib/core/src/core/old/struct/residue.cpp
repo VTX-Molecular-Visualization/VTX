@@ -1,11 +1,11 @@
-#include "core/struct/residue.hpp"
-#include "core/struct/atom.hpp"
-#include "core/struct/bond.hpp"
-#include "core/struct/chain.hpp"
-#include "core/struct/molecule.hpp"
+#include "core/old/struct/residue.hpp"
+#include "core/old/struct/atom.hpp"
+#include "core/old/struct/bond.hpp"
+#include "core/old/struct/chain.hpp"
+#include "core/old/struct/molecule.hpp"
 #include <algorithm>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	bool Residue::checkIfStandardFromName( const std::string & p_residueSymbol )
 	{
@@ -126,4 +126,4 @@ namespace VTX::Core::Struct
 		return p_residue.isStandardResidue() ? ChemDB::Residue::SYMBOL_COLOR[ p_residue._symbol ]
 											 : ChemDB::Residue::SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
 	}
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct

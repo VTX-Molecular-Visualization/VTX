@@ -5,7 +5,7 @@
 #include "core/chemdb/category.hpp"
 #include <vector>
 
-namespace VTX::Core::NewStruct
+namespace VTX::Core::Struct
 {
 	class Category
 	{
@@ -27,5 +27,5 @@ namespace VTX::Core::NewStruct
 		std::vector<size_t>	   _linkedChains = std::vector<size_t>();
 	};
 
-} // namespace VTX::Core::NewStruct
+} // namespace VTX::Core::Struct
 #endif

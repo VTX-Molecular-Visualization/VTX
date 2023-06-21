@@ -11,7 +11,7 @@
 #include "atom.hpp"
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <core/struct/residue.hpp>
+#include <core/old/struct/residue.hpp>
 #include <map>
 #include <string>
 #include <util/constants.hpp>
@@ -36,8 +36,8 @@ namespace VTX::App::Old::Component::Chemistry
 		static const Util::Color::Rgba getResidueColor( const Chemistry::Residue & p_residue );
 
 	  public:
-		inline VTX::Core::Struct::Residue &		  getResidueStruct() { return *_residueStruct; }
-		inline const VTX::Core::Struct::Residue & getResidueStruct() const { return *_residueStruct; }
+		inline VTX::Core::Old::Struct::Residue &		  getResidueStruct() { return *_residueStruct; }
+		inline const VTX::Core::Old::Struct::Residue & getResidueStruct() const { return *_residueStruct; }
 
 		inline bool isStandardResidue() const { return _residueStruct->isStandardResidue(); }
 		inline bool isWater() const { return _residueStruct->isWater(); }
@@ -88,7 +88,7 @@ namespace VTX::App::Old::Component::Chemistry
 		};
 		inline const Atom * const findFirstAtomByName( const std::string & p_name ) const
 		{
-			const VTX::Core::Struct::Atom * const atomStruct = _residueStruct->findFirstAtomByName( p_name );
+			const VTX::Core::Old::Struct::Atom * const atomStruct = _residueStruct->findFirstAtomByName( p_name );
 			return nullptr;
 		}
 		inline const uint findBondIndex( const uint p_firstAtomIndex, const uint p_secondAtomIndex ) const
@@ -98,7 +98,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 		const Atom * const getAlphaCarbon() const
 		{
-			const VTX::Core::Struct::Atom * const atomStruct = _residueStruct->getAlphaCarbon();
+			const VTX::Core::Old::Struct::Atom * const atomStruct = _residueStruct->getAlphaCarbon();
 			return nullptr;
 		}
 
@@ -114,7 +114,7 @@ namespace VTX::App::Old::Component::Chemistry
 		void _onRepresentationChange() override;
 
 	  private:
-		VTX::Core::Struct::Residue * _residueStruct = nullptr;
+		VTX::Core::Old::Struct::Residue * _residueStruct = nullptr;
 		Chain *						 _chainPtr		= nullptr;
 	};
 

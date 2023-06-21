@@ -3,7 +3,7 @@
 
 #include "app/model/chemistry/molecule.hpp"
 #include "app/old/core/action/base_action.hpp"
-#include <core/struct/molecule.hpp>
+#include <core/old/struct/molecule.hpp>
 #include <map>
 #include <string>
 #include <util/types.hpp>

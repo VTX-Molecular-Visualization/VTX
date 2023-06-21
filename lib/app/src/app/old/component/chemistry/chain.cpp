@@ -11,7 +11,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 	Util::Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 	{
-		return VTX::Core::Struct::Chain::getChainIdColor( p_chainId, p_isHetAtm );
+		return VTX::Core::Old::Struct::Chain::getChainIdColor( p_chainId, p_isHetAtm );
 	}
 
 	void Chain::setMoleculePtr( Molecule * const p_molecule )

@@ -21,7 +21,7 @@ namespace VTX::App::Model::Chemistry
 		friend Bond;
 
 	  public:
-		VTX::Core::NewStruct::Trajectory & getTrajectory() { return _trajectory; }
+		VTX::Core::Struct::Trajectory & getTrajectory() { return _trajectory; }
 
 		void initAtoms( const size_t p_atomCount );
 		void initBonds( const size_t p_bondCount );

@@ -7,7 +7,7 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Old::Struct
 {
 	class SecondaryStructure
 	{
@@ -46,5 +46,5 @@ namespace VTX::Core::Struct
 		std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
 	};
 
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Old::Struct
 #endif
