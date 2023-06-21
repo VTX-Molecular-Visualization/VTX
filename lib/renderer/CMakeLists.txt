@@ -16,6 +16,16 @@ if(NOT TARGET VTX_UTIL)
 endif()
 target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 
+# TEST
+#FetchContent_Declare(rps  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders.git GIT_TAG main)
+#FetchContent_MakeAvailable(rps)
+#set(RpsRootSolutionFolder ${rps_SOURCE_DIR})
+#target_include_directories(VTX_RENDERER PUBLIC ${rps_SOURCE_DIR}/include)
+#target_link_libraries(VTX_RENDERER PRIVATE rps_core )
+#target_link_libraries(VTX_RENDERER PRIVATE rps_frontend )
+#target_link_libraries(VTX_RENDERER PRIVATE rps_runtime )
+#target_link_libraries(VTX_RENDERER PRIVATE rps_runtime_vk )
+
 # Copy shaders.
 add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
 add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
@@ -29,9 +39,9 @@ FetchContent_MakeAvailable(SDL2)
 
 file(GLOB_RECURSE BENCH_FILES bench/*)
 add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
-target_include_directories(VTX_RENDERER_BENCH PUBLIC bench/imgui)
-target_include_directories(VTX_RENDERER_BENCH PUBLIC bench/stb)
-target_include_directories(VTX_RENDERER_BENCH PUBLIC ${SDL2_SOURCE_DIR}/include)
+target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
+target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
+target_include_directories(VTX_RENDERER_BENCH PRIVATE ${SDL2_SOURCE_DIR}/include)
 
 # Link third parties.
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2)
@@ -44,7 +54,7 @@ target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
 if(NOT TARGET VTX_CORE)
 	add_subdirectory(../core lib/core)
 endif()
-target_link_libraries(VTX_RENDERER_BENCH PUBLIC VTX_CORE)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_CORE)
 
 # Copy DLLs.
 add_custom_command(TARGET VTX_RENDERER_BENCH POST_BUILD

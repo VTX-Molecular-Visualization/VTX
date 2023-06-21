@@ -1,11 +1,13 @@
 #include "camera.hpp"
+#include "input_manager.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <iostream>
 #include <renderer/gl/opengl_renderer.hpp>
+#include <renderer/render_graph.hpp>
 #include <util/math.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+// #define STB_IMAGE_IMPLEMENTATION
+// #include <stb_image.h>
 
 #ifdef _WIN32
 extern "C"
@@ -25,6 +27,7 @@ int main( int, char ** )
 	using namespace Bench;
 	using namespace Renderer::GL;
 
+	bool isRunning = true;
 	Logger::get().init( std::filesystem::current_path() / "logs" );
 
 	try
@@ -43,6 +46,22 @@ int main( int, char ** )
 		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
+		// Input manager.
+		InputManager inputManager;
+		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
+		inputManager.setCallbackResize(
+			[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+			{
+				renderer.resize( p_width, p_height );
+				camera.resize( p_width, p_height );
+			} );
+		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
+										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
+
+		inputManager.setCallbackRotate(
+			[ &camera, &ui ]( const Vec2i & p_delta )
+			{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); } );
+
 		// Model.
 		Core::StructMolecule molecule = generateAtomGrid( 9 );
 		StructProxyMolecule	 proxyMolecule
@@ -50,32 +69,7 @@ int main( int, char ** )
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
-		// Skybox.
-		const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
-		const std::array<FilePath, 6> pathImages
-			= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
-				pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
-		std::array<unsigned char *, 6> images;
-		int							   width, height, nrChannels;
-		try
-		{
-			for ( size_t i = 0; i < pathImages.size(); ++i )
-			{
-				images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
-			}
-			renderer.loadSkybox( images, width, height );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Skybox not found: {}", p_e.what() );
-		}
-		for ( size_t i = 0; i < images.size(); ++i )
-		{
-			stbi_image_free( images[ i ] );
-		}
-
 		// Main loop.
-		static bool isRunning = true;
 		while ( isRunning )
 		{
 			float time = float( ui.getTime() ) * 1e-3f;
@@ -86,82 +80,20 @@ int main( int, char ** )
 			// 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
 			// 			renderer.setMatrixModelTmp( modelMatrix );
 
+			// Renderer.
 			renderer.renderFrame();
+
+			// UI.
 			ui.draw( &renderer, &camera );
 
 			// Events.
-			SDL_Event	 event;
-			static bool	 keys[ SDL_NUM_SCANCODES ] = { false };
-			static bool	 mouseButtons[ 3 ]		   = { false };
-			static Vec2i deltaMouse;
+			SDL_Event event;
 			while ( ui.getEvent( event ) )
 			{
-				switch ( event.type )
-				{
-				case SDL_QUIT: isRunning = false; break;
-				case SDL_KEYDOWN: keys[ event.key.keysym.scancode ] = true; break;
-				case SDL_KEYUP: keys[ event.key.keysym.scancode ] = false; break;
-				case SDL_MOUSEBUTTONDOWN: mouseButtons[ event.button.button - 1 ] = true; break;
-				case SDL_MOUSEBUTTONUP: mouseButtons[ event.button.button - 1 ] = false; break;
-				case SDL_MOUSEMOTION:
-					if ( mouseButtons[ 0 ] )
-					{
-						deltaMouse.x += event.motion.xrel;
-						deltaMouse.y += event.motion.yrel;
-					}
-					break;
-				case SDL_WINDOWEVENT:
-					switch ( event.window.event )
-					{
-					case SDL_WINDOWEVENT_RESIZED:
-						const size_t width	= event.window.data1;
-						const size_t height = event.window.data2;
-						renderer.resize( width, height );
-						camera.resize( width, height );
-						break;
-					}
-					break;
-				default: break;
-				}
+				inputManager.handle( event );
 			}
-
-			// Move.
-			Vec3i deltaMoveInputs = Vec3i( 0, 0, 0 );
-
-			if ( keys[ SDL_SCANCODE_W ] )
-			{
-				deltaMoveInputs.z++;
-			}
-			if ( keys[ SDL_SCANCODE_S ] )
-			{
-				deltaMoveInputs.z--;
-			}
-			if ( keys[ SDL_SCANCODE_A ] )
-			{
-				deltaMoveInputs.x--;
-			}
-			if ( keys[ SDL_SCANCODE_D ] )
-			{
-				deltaMoveInputs.x++;
-			}
-			if ( keys[ SDL_SCANCODE_R ] )
-			{
-				deltaMoveInputs.y++;
-			}
-			if ( keys[ SDL_SCANCODE_F ] )
-			{
-				deltaMoveInputs.y--;
-			}
-
-			if ( deltaMoveInputs != VEC3I_ZERO )
-			{
-				camera.translate( Vec3f( deltaMoveInputs ) * ui.getDeltaTime() );
-			}
-			if ( deltaMouse != VEC2I_ZERO )
-			{
-				camera.rotate( Vec3f( -deltaMouse.y, -deltaMouse.x, 0.f ) * ui.getDeltaTime() );
-				deltaMouse = VEC2I_ZERO;
-			}
+			inputManager.update();
+			inputManager.consumeInputs();
 		}
 	}
 	catch ( const std::exception & p_e )

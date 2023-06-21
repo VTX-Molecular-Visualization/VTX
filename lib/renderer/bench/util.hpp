@@ -79,6 +79,30 @@ namespace VTX::Bench
 				 std::vector<uint>( realSize, 0 ),
 				 bonds };
 	}
+
+	// Skybox.
+	// 		const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
+	// 		const std::array<FilePath, 6> pathImages
+	// 			= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
+	// 				pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
+	// 		std::array<unsigned char *, 6> images;
+	// 		int							   width, height, nrChannels;
+	// 		try
+	// 		{
+	// 			for ( size_t i = 0; i < pathImages.size(); ++i )
+	// 			{
+	// 				images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
+	// 			}
+	// 			renderer.loadSkybox( images, width, height );
+	// 		}
+	// 		catch ( const std::exception & p_e )
+	// 		{
+	// 			VTX_ERROR( "Skybox not found: {}", p_e.what() );
+	// 		}
+	// 		for ( size_t i = 0; i < images.size(); ++i )
+	// 		{
+	// 			stbi_image_free( images[ i ] );
+	// 		}
 } // namespace VTX::Bench
 
 #endif

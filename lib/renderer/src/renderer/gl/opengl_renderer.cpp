@@ -102,10 +102,10 @@ namespace VTX::Renderer::GL
 
 			if ( _skybox )
 			{
-				_skybox->render();
+				//_skybox->render();
 			}
 
-			if ( false )
+			if ( true )
 			{
 				_times.fill( 0.f );
 				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
