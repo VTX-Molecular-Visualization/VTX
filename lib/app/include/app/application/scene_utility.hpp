@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_ECS_SCENE_UTILITY__
-#define __VTX_APP_ECS_SCENE_UTILITY__
+#ifndef __VTX_APP_APPLICATION_SCENE_UTILITY__
+#define __VTX_APP_APPLICATION_SCENE_UTILITY__
 
 #include <functional>
 
-namespace VTX::App::ECS::SceneUtility
+namespace VTX::App::Application::SceneUtility
 {
 	using UpdateCallback = std::function<void( float )>;
-} // namespace VTX::App::ECS::Sceneutility
+} // namespace VTX::App::Application::SceneUtility
 #endif

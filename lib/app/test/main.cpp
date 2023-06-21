@@ -1,9 +1,9 @@
 // #include <app/ecs/component/molecule_component.hpp>
+#include <app/application/registry_manager.hpp>
 #include <app/application/scene.hpp>
-#include <app/ecs/action/ecs.hpp>
-#include <app/ecs/entity/scene/molecule_entity.hpp>
-#include <app/ecs/registry_manager.hpp>
-#include <app/model/chemistry/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/entity/scene/molecule_entity.hpp>
+#include <app/internal/action/ecs.hpp>
 #include <app/old/action.hpp>
 #include <app/old/internal/io/filesystem.hpp>
 #include <app/vtx_app.hpp>
@@ -53,8 +53,8 @@ TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
 		auto view = registry.view<VTX::Core::Old::Struct::Atom>();
 		for ( entity_t entity : view )
 		{
-			VTX::Core::Old::Struct::Atom & atom		   = registry.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int				  randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+			VTX::Core::Old::Struct::Atom & atom			= registry.get<VTX::Core::Old::Struct::Atom>( entity );
+			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
 			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
 
 			// VTX::Core::Old::Struct::setVisible( atom, true );
@@ -66,8 +66,8 @@ TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
 		auto tmpGroup = registry.group<VTX::Core::Old::Struct::Atom>( entt::get<Position> );
 		for ( entity_t entity : tmpGroup )
 		{
-			VTX::Core::Old::Struct::Atom & atom		   = tmpGroup.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int				  randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+			VTX::Core::Old::Struct::Atom & atom			= tmpGroup.get<VTX::Core::Old::Struct::Atom>( entity );
+			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
 			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
 
 			// VTX::Core::Old::Struct::setVisible( atom, true );
@@ -78,8 +78,8 @@ TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
 	{
 		for ( entity_t entity : atomGroup )
 		{
-			VTX::Core::Old::Struct::Atom & atom		   = atomGroup.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int				  randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+			VTX::Core::Old::Struct::Atom & atom			= atomGroup.get<VTX::Core::Old::Struct::Atom>( entity );
+			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
 			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
 
 			// VTX::Core::Old::Struct::setVisible( atom, true );
@@ -134,25 +134,25 @@ TEST_CASE( "VTX_APP - Full sequence", "[.] [integration]" )
 
 	// Create MoleculeEntity
 	const FilePath moleculePath = Old::Internal::IO::Filesystem::getInternalDataDir() / moleculePathname;
-	VTX_ACTION<ECS::Action::Open>( moleculePath );
+	VTX_ACTION<Internal::Action::ECS::Open>( moleculePath );
 
 	// Pick first Molecule
 	REQUIRE( scene.getItemCount() == 1 );
 
-	ECS::Core::BaseEntity moleculeEntity = scene.getItem( 0 );
-	REQUIRE( ECS::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
+	REQUIRE( Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = scene.getItem( 1 );
-	REQUIRE( !ECS::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( !Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = scene.getItem( moleculeName );
-	REQUIRE( ECS::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
 
-	entt::basic_view view = scene.getAllSceneItemsOftype<Model::Chemistry::Molecule>();
+	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
 	REQUIRE( view.size_hint() == 1 );
 
 	Renderer::GL::StructProxyMolecule & gpuProxyComponent
-		= ECS::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+		= Application::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == size_t( 2 ) );
@@ -173,14 +173,14 @@ TEST_CASE( "VTX_APP - Benchamrk", "[perfs]" )
 	// Create MoleculeEntity
 	const FilePath moleculePath = Old::Internal::IO::Filesystem::getInternalDataDir() / moleculePathname;
 
-	BENCHMARK( "Open molecules" ) { VTX_ACTION<ECS::Action::Open>( moleculePath ); };
+	BENCHMARK( "Open molecules" ) { VTX_ACTION<Internal::Action::ECS::Open>( moleculePath ); };
 
 	int i = 0;
 	BENCHMARK( "Get" )
 	{
-		ECS::Core::BaseEntity moleculeEntity = scene.getItem( i );
+		App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( i );
 		i++;
 	};
 
-	BENCHMARK( "View all" ) { entt::basic_view view = scene.getAllSceneItemsOftype<Model::Chemistry::Molecule>(); };
+	BENCHMARK( "View all" ) { entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>(); };
 }

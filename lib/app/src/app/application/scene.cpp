@@ -1,13 +1,13 @@
 #include "app/application/scene.hpp"
-#include "app/ecs/component/aabb_component.hpp"
-#include "app/ecs/component/updatable.hpp"
+#include "app/component/scene/aabb_component.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/old/internal/scene/camera_manager.hpp"
 
 namespace VTX::App::Application
 {
 	auto Scene::getAllSceneItems() const
 	{
-		return ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent>();
+		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
@@ -21,11 +21,11 @@ namespace VTX::App::Application
 	bool   Scene::isEmpty() const { return getItemCount() == 0; }
 	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
 
-	const ECS::Core::BaseEntity Scene::getItem( const size_t p_index ) const
+	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const
 	{
 		size_t count = 0;
 
-		for ( const ECS::Core::BaseEntity entity : getAllSceneItems() )
+		for ( const entt::entity entity : getAllSceneItems() )
 		{
 			if ( count == p_index )
 				return entity;
@@ -33,24 +33,24 @@ namespace VTX::App::Application
 			count++;
 		}
 
-		return ECS::INVALID_ENTITY;
+		return Core::ECS::INVALID_ENTITY;
 	}
-	const ECS::Core::BaseEntity Scene::getItem( const std::string & p_name ) const
+	const Core::ECS::BaseEntity Scene::getItem( const std::string & p_name ) const
 	{
 		auto group = getAllSceneItems();
-		for ( const ECS::Core::BaseEntity entity : group )
+		for ( const entt::entity entity : group )
 		{
-			const ECS::Component::SceneItemComponent & sceneItem
-				= group.get<ECS::Component::SceneItemComponent>( entity );
+			const Component::Scene::SceneItemComponent & sceneItem
+				= group.get<Component::Scene::SceneItemComponent>( entity );
 
 			if ( sceneItem.getName() == p_name )
 				return entity;
 		}
 
-		return ECS::INVALID_ENTITY;
+		return Core::ECS::INVALID_ENTITY;
 	}
 
-	void Scene::clear() { ECS::MAIN_REGISTRY().deleteAll<ECS::Component::SceneItemComponent>(); }
+	void Scene::clear() { MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
 
 	void Scene::reset()
 	{
@@ -58,15 +58,15 @@ namespace VTX::App::Application
 		_createDefaultPath();
 	}
 
-	ECS::Core::BaseEntity Scene::createItem()
+	Core::ECS::BaseEntity Scene::createItem()
 	{
-		ECS::Core::BaseEntity entity = ECS::MAIN_REGISTRY().createEntity();
-		ECS::MAIN_REGISTRY().addComponent<ECS::Component::SceneItemComponent>( entity );
+		Core::ECS::BaseEntity entity = MAIN_REGISTRY().createEntity();
+		Application::MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( entity );
 
 		return entity;
 	}
 
-	void Scene::changeItemIndex( const ECS::Component::SceneItemComponent & p_item, const int p_position )
+	void Scene::changeItemIndex( const Component::Scene::SceneItemComponent & p_item, const int p_position )
 	{
 		// const ECS::Component::SceneItemComponent * itemPtr = &p_item;
 
@@ -106,8 +106,8 @@ namespace VTX::App::Application
 
 		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
-	void Scene::changeItemsIndex( const std::vector<const ECS::Component::SceneItemComponent *> & p_items,
-								  const int														  p_position )
+	void Scene::changeItemsIndex( const std::vector<const Component::Scene::SceneItemComponent *> & p_items,
+								  const int															p_position )
 	{
 		// std::vector<const Core::Scene::BaseSceneItem *> movedItems = std::vector<const Core::Scene::BaseSceneItem
 		// *>(); movedItems.resize( p_items.size() );
@@ -172,7 +172,7 @@ namespace VTX::App::Application
 
 		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
-	void Scene::sortItemsBySceneIndex( std::vector<ECS::Component::SceneItemComponent *> & p_molecules ) const
+	void Scene::sortItemsBySceneIndex( std::vector<Component::Scene::SceneItemComponent *> & p_molecules ) const
 	{
 		// for ( int i = 0; i < p_molecules.size(); i++ )
 		//{
@@ -205,13 +205,13 @@ namespace VTX::App::Application
 	void Scene::_computeAABB()
 	{
 		const entt::basic_view view
-			= ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent, ECS::Component::AABB>();
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
-		for ( const ECS::Core::BaseEntity entity : view )
+		for ( const entt::entity entity : view )
 		{
-			const ECS::Component::AABB & aabbComponent = view.get<ECS::Component::AABB>( entity );
+			const Component::Scene::AABB & aabbComponent = view.get<Component::Scene::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
 	}
@@ -222,11 +222,11 @@ namespace VTX::App::Application
 		// (let that here instead of doing the exact same things in all states for the moment)
 
 		const entt::basic_view view
-			= ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent, ECS::Component::Updatable>();
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
-		for ( const ECS::Core::BaseEntity entity : view )
+		for ( entt::entity entity : view )
 		{
-			const ECS::Component::Updatable & updatableComponent = view.get<ECS::Component::Updatable>( entity );
+			const Component::Scene::Updatable & updatableComponent = view.get<Component::Scene::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );
 		}
 
@@ -260,7 +260,7 @@ namespace VTX::App::Application
 		// }
 	}
 
-	void Scene::_applySceneID( ECS::Component::SceneItemComponent & p_item )
+	void Scene::_applySceneID( Component::Scene::SceneItemComponent & p_item )
 	{
 		// if ( p_item.hasPersistentSceneID() )
 		//{

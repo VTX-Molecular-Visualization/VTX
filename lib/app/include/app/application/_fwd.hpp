@@ -5,4 +5,5 @@ namespace VTX::App::Application
 {
 	// class Setting;
 	class Scene;
+	class RegistryManager;
 } // namespace VTX::App::Application

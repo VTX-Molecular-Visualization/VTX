@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_RENDER_PROXY_BUILDER__
 #define __VTX_APP_RENDER_PROXY_BUILDER__
 
-#include "app/model/chemistry/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include <renderer/gl/struct_proxy_molecule.hpp>
 
 namespace VTX::App::Render
@@ -9,7 +9,7 @@ namespace VTX::App::Render
 	class GPUProxyBuilder
 	{
 	  public:
-		static void fillProxy( Model::Chemistry::Molecule &				p_molecule,
+		static void fillProxy( Component::Chemistry::Molecule &			p_molecule,
 							   VTX::Renderer::GL::StructProxyMolecule & p_proxy )
 		{
 			p_proxy.transform		 = &( p_molecule._transform );

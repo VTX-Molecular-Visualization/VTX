@@ -1,10 +1,10 @@
 #include "app/vtx_app.hpp"
+#include "app/application/ecs/building/entity_director.hpp"
+#include "app/application/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/io/scene_file_info.hpp"
-#include "app/ecs/building/entity_director.hpp"
-#include "app/ecs/building/setup_entity_director.hpp"
-#include "app/ecs/entity/application/scene_entity.hpp"
-#include "app/ecs/registry_manager.hpp"
+#include "app/entity/application/scene_entity.hpp"
+#include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/old/internal/io/filesystem.hpp"
 #include <exception>
 #include <util/logger.hpp>
@@ -40,13 +40,13 @@ namespace VTX::App
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
-		ECS::Building::setupEntityDirector();
+		Internal::ECS::setupEntityDirector();
 
 		// Create scene.
-		ECS::Core::BaseEntity sceneEntity
-			= ECS::Building::EntityDirector::launchBuilder( ECS::Building::SCENE_ENTITY_ID );
+		Core::ECS::BaseEntity sceneEntity
+			= Application::ECS::Building::EntityDirector::launchBuilder( Internal::ECS::SCENE_ENTITY_ID );
 
-		_scene = &( ECS::MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
+		_scene = &( Application::MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
 
 		//_tickTimer.start();
 
@@ -145,7 +145,11 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
 		Old::Application::Selection::SelectionManager::get().deleteModel();
-		ECS::MAIN_REGISTRY().clear();
+
+		// if ( _scene != nullptr )
+		//{
+		//	delete _scene;
+		// }
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg ) {}
