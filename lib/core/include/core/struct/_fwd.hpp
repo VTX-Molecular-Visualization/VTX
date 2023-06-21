@@ -1,6 +1,6 @@
 #include "concept.hpp"
 
-namespace VTX::Core::NewStruct
+namespace VTX::Core::Struct
 {
 	template<ConceptMolecule M, ConceptResidue R>
 	class Atom;
@@ -23,4 +23,4 @@ namespace VTX::Core::NewStruct
 	class SecondaryStructure;
 	class SolventExcludedSurface;
 
-} // namespace VTX::Core::NewStruct
+} // namespace VTX::Core::Struct

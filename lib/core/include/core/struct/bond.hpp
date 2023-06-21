@@ -35,5 +35,5 @@ namespace VTX::Core::Struct
 		ChemDB::Bond::ORDER _order		 = ChemDB::Bond::ORDER::UNKNOWN;
 	};
 
-} // namespace VTX::Core::NewStruct
+} // namespace VTX::Core::Struct
 #endif
