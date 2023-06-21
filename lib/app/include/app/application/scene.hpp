@@ -59,8 +59,8 @@ namespace VTX::App::Application
 		void _createDefaultPath();
 
 	  private:
-		Old::Internal::Scene::CameraManager * _cameraManager = nullptr;
-		Util::Math::AABB					  _aabb;
+		std::unique_ptr<Old::Internal::Scene::CameraManager> _cameraManager;
+		Util::Math::AABB									 _aabb;
 
 		void _applySceneID( ECS::Component::SceneItemComponent & p_item );
 	};

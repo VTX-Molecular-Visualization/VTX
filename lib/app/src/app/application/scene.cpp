@@ -12,11 +12,11 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		_cameraManager = new Old::Internal::Scene::CameraManager();
+		_cameraManager = std::make_unique<Old::Internal::Scene::CameraManager>();
 		_createDefaultPath();
 	}
 
-	Scene::~Scene() { delete _cameraManager; }
+	Scene::~Scene() {}
 
 	bool   Scene::isEmpty() const { return getItemCount() == 0; }
 	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
@@ -25,7 +25,7 @@ namespace VTX::App::Application
 	{
 		size_t count = 0;
 
-		for ( const entt::entity entity : getAllSceneItems() )
+		for ( const ECS::Core::BaseEntity entity : getAllSceneItems() )
 		{
 			if ( count == p_index )
 				return entity;
@@ -38,7 +38,7 @@ namespace VTX::App::Application
 	const ECS::Core::BaseEntity Scene::getItem( const std::string & p_name ) const
 	{
 		auto group = getAllSceneItems();
-		for ( const entt::entity entity : group )
+		for ( const ECS::Core::BaseEntity entity : group )
 		{
 			const ECS::Component::SceneItemComponent & sceneItem
 				= group.get<ECS::Component::SceneItemComponent>( entity );
@@ -209,7 +209,7 @@ namespace VTX::App::Application
 
 		_aabb.invalidate();
 
-		for ( const entt::entity entity : view )
+		for ( const ECS::Core::BaseEntity entity : view )
 		{
 			const ECS::Component::AABB & aabbComponent = view.get<ECS::Component::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
@@ -224,7 +224,7 @@ namespace VTX::App::Application
 		const entt::basic_view view
 			= ECS::MAIN_REGISTRY().getComponents<ECS::Component::SceneItemComponent, ECS::Component::Updatable>();
 
-		for ( entt::entity entity : view )
+		for ( const ECS::Core::BaseEntity entity : view )
 		{
 			const ECS::Component::Updatable & updatableComponent = view.get<ECS::Component::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );

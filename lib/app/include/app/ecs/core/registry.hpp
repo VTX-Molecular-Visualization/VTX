@@ -92,6 +92,8 @@ namespace VTX::App::ECS::Core
 			_enttRegistry.destroy( view.begin(), view.end() );
 		}
 
+		void clear() { _enttRegistry.clear(); }
+
 	  private:
 		entt::registry _enttRegistry = entt::registry();
 	};

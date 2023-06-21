@@ -145,11 +145,7 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
 		Old::Application::Selection::SelectionManager::get().deleteModel();
-
-		// if ( _scene != nullptr )
-		//{
-		//	delete _scene;
-		// }
+		ECS::MAIN_REGISTRY().clear();
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg ) {}

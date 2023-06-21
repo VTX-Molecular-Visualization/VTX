@@ -14,20 +14,18 @@ namespace VTX::App::ECS::Building
 	class EntityDirector
 	{
 	  public:
-		inline static EntityBuilder * generateBuilder( const EntityDirectorID & p_directorID )
+		inline static std::unique_ptr<EntityBuilder> generateBuilder( const EntityDirectorID & p_directorID )
 		{
-			EntityBuilder * const builderPtr = new EntityBuilder( _mapDirectors[ p_directorID ] );
+			std::unique_ptr<EntityBuilder> builderPtr
+				= std::make_unique<EntityBuilder>( _mapDirectors[ p_directorID ] );
 			return builderPtr;
 		}
 		inline static Core::BaseEntity launchBuilder( const EntityDirectorID & p_directorID )
 		{
-			EntityBuilder * const builder = generateBuilder( p_directorID );
-			builder->build();
-			const Core::BaseEntity entity = builder->getEntity();
+			std::unique_ptr<EntityBuilder> builderPtr = generateBuilder( p_directorID );
+			builderPtr->build();
 
-			delete builder;
-
-			return entity;
+			return builderPtr->getEntity();
 		}
 
 		inline static void addBuildStep( const EntityDirectorID & p_directorID, const EntityBuildStep & p_buildStep )

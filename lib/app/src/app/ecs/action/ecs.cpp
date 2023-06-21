@@ -22,10 +22,8 @@ namespace VTX::App::ECS::Action
 
 		//	App::VTXApp::get().getScene().clear();
 
-		//	LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
+		//	const std::unique_ptr<LoadSceneClass> sceneClassPtr = std::make_unique<LoadSceneClass>( _paths );
 		//	sceneClass->_loadScene();
-
-		//	delete sceneClass;
 		//}
 		// else
 		{
@@ -33,15 +31,13 @@ namespace VTX::App::ECS::Action
 
 			for ( const FilePath & moleculePath : _paths )
 			{
-				ECS::Building::EntityBuilder * const entityBuilder
+				std::unique_ptr<ECS::Building::EntityBuilder> entityBuilder
 					= ECS::Building::EntityDirector::generateBuilder( "Molecule" );
 
 				// Possibility to thread build function
 				entityBuilder->getData()[ "scene" ]	   = VTXVariant( &scene );
 				entityBuilder->getData()[ "filepath" ] = VTXVariant( moleculePath.string() );
 				entityBuilder->build();
-
-				delete entityBuilder;
 			}
 		}
 	}
