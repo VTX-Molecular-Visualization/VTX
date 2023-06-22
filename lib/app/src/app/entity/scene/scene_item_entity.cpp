@@ -7,7 +7,7 @@ namespace VTX::App::Entity::Scene
 	{
 		Application::Scene * const scenePtr = p_extraData.at( "scene" ).getPtr<Application::Scene>();
 
-		Application::MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( p_entity );
 	}
 
 	void SceneItemEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData ) {}

@@ -1,8 +1,9 @@
 #include "app/vtx_app.hpp"
-#include "app/application/ecs/building/entity_director.hpp"
-#include "app/application/registry_manager.hpp"
+#include "app/application/ecs/entity_director.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/io/scene_file_info.hpp"
+#include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/old/internal/io/filesystem.hpp"
@@ -43,10 +44,9 @@ namespace VTX::App
 		Internal::ECS::setupEntityDirector();
 
 		// Create scene.
-		Core::ECS::BaseEntity sceneEntity
-			= Application::ECS::Building::EntityDirector::launchBuilder( Internal::ECS::SCENE_ENTITY_ID );
+		Core::ECS::BaseEntity sceneEntity = Application::ECS::EntityDirector::build( Entity::SCENE_ENTITY_ID );
 
-		_scene = &( Application::MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
+		_scene = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
 
 		//_tickTimer.start();
 

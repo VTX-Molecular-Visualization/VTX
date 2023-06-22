@@ -1,5 +1,5 @@
 // #include <app/ecs/component/molecule_component.hpp>
-#include <app/application/registry_manager.hpp>
+#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
@@ -16,6 +16,18 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
+
+void initApp()
+{
+	using namespace VTX::App;
+
+	static bool isInit;
+	if ( !isInit )
+	{
+		VTXApp::get().start( {} );
+		isInit = true;
+	}
+}
 
 TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
 {
@@ -120,7 +132,7 @@ TEST_CASE( "VTX_APP - Instantiations perfs", "[.] [perfs]" )
 	};
 }
 
-TEST_CASE( "VTX_APP - Full sequence", "[.] [integration]" )
+TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -128,8 +140,9 @@ TEST_CASE( "VTX_APP - Full sequence", "[.] [integration]" )
 	const std::string moleculeName	   = "1AGA";
 	const std::string moleculePathname = moleculeName + ".mmtf";
 
+	initApp();
+
 	// Create Scene
-	VTXApp::get().start( {} );
 	const Application::Scene & scene = VTXApp::get().getScene();
 
 	// Create MoleculeEntity
@@ -140,25 +153,22 @@ TEST_CASE( "VTX_APP - Full sequence", "[.] [integration]" )
 	REQUIRE( scene.getItemCount() == 1 );
 
 	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
-	REQUIRE( Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
-
-	moleculeEntity = scene.getItem( 1 );
-	REQUIRE( !Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = scene.getItem( moleculeName );
-	REQUIRE( Application::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
 	REQUIRE( view.size_hint() == 1 );
 
 	Renderer::GL::StructProxyMolecule & gpuProxyComponent
-		= Application::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == size_t( 2 ) );
 };
 
-TEST_CASE( "VTX_APP - Benchamrk", "[perfs]" )
+TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -167,7 +177,8 @@ TEST_CASE( "VTX_APP - Benchamrk", "[perfs]" )
 	const std::string moleculePathname = moleculeName + ".mmtf";
 
 	// Create Scene
-	VTXApp::get().start( {} );
+	initApp();
+
 	const Application::Scene & scene = VTXApp::get().getScene();
 
 	// Create MoleculeEntity

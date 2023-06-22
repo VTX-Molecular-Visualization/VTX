@@ -61,7 +61,7 @@ namespace VTX::App::Application
 	Core::ECS::BaseEntity Scene::createItem()
 	{
 		Core::ECS::BaseEntity entity = MAIN_REGISTRY().createEntity();
-		Application::MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( entity );
 
 		return entity;
 	}

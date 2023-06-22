@@ -1,5 +1,5 @@
 #include "app/entity/scene/molecule_entity.hpp"
-#include "app/application/registry_manager.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/aabb_component.hpp"
@@ -19,27 +19,27 @@ namespace VTX::App::Entity::Scene
 	{
 		SceneItemEntityBuilder::addComponent( p_entity, p_extraData );
 
-		Application::MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
-		Application::MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
-		Application::MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		Application::MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
+		MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
 	{
 		SceneItemEntityBuilder::setup( p_entity, p_extraData );
 
 		Component::Chemistry::Molecule & moleculeComponent
-			= Application::MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
+			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
 
 		_load( moleculeComponent, p_extraData );
 
 		Component::Scene::SceneItemComponent & sceneComponent
-			= Application::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
+			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
 		sceneComponent.setName( moleculeComponent.getPdbIdCode() );
 
 		// Setup GPU Proxy
 		Renderer::GL::StructProxyMolecule & gpuProxyComponent
-			= Application::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
+			= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 	}

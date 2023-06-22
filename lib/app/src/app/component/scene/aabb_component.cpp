@@ -1,5 +1,5 @@
 #include "app/component/scene/aabb_component.hpp"
-#include "app/application/registry_manager.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/old/internal/math/transform.hpp"
@@ -17,14 +17,14 @@ namespace VTX::App::Component::Scene
 	{
 		if ( !_worldAabb.isValid() )
 		{
-			Core::ECS::BaseEntity entity = Application::MAIN_REGISTRY().getEntity( *this );
+			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
 			Old::Internal::Math::Transform transform;
 
-			if ( Application::MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
+			if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
 			{
 				Component::Scene::Transform & transformComponent
-					= Application::MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
+					= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
 				const Old::Internal::Math::Transform & transform = transformComponent.getTransform();
 
 				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_APPLICATION_SCENE__
 #define __VTX_APP_APPLICATION_SCENE__
 
-#include "app/application/registry_manager.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/old/application/generic/base_updatable.hpp"

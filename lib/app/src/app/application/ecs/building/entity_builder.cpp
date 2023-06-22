@@ -1,5 +1,5 @@
 #include "app/application/ecs/building/entity_builder.hpp"
-#include "app/application/registry_manager.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 
 namespace VTX::App::Application::ECS::Building
 {
