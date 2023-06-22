@@ -11,6 +11,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/old/struct/atom.hpp>
 #include <entt/entt.hpp>
+#include <functional>
 #include <renderer/gl/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
@@ -157,6 +158,24 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 
 	moleculeEntity = scene.getItem( moleculeName );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+
+	Component::Scene::SceneItemComponent & sceneItem
+		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
+
+	class CallbackReceiver
+	{
+	  public:
+		bool called = false;
+	};
+
+	CallbackReceiver receiver = CallbackReceiver();
+
+	sceneItem.onNameChange().addCallback( &receiver,
+										  [ &receiver ]( const std::string & p_name ) { receiver.called = true; } );
+	sceneItem.setName( "Zouzou" );
+
+	REQUIRE( sceneItem.getName() == "Zouzou" );
+	REQUIRE( receiver.called );
 
 	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
 	REQUIRE( view.size_hint() == 1 );
