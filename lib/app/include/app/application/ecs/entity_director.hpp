@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_APPLICATION_ECS_ENTITY_DIRECTOR__
 #define __VTX_APP_APPLICATION_ECS_ENTITY_DIRECTOR__
 
-#include "app/application/ecs/building/entity_build_step.hpp"
 #include "app/application/ecs/building/entity_builder.hpp"
 #include <map>
 #include <string>
@@ -28,15 +27,16 @@ namespace VTX::App::Application::ECS
 			return builderPtr->getEntity();
 		}
 
-		inline static void addBuildStep( const EntityDirectorID &		   p_directorID,
-										 const Building::EntityBuildStep & p_buildStep )
+		inline static void addBuildStep( const EntityDirectorID &	 p_directorID,
+										 const Building::PASS_ENUM & p_pass,
+										 const Building::Step &		 p_buildStep )
 		{
-			_mapDirectors[ p_directorID ].emplace_back( p_buildStep );
+			_mapDirectors[ p_directorID ][ int( p_pass ) ].emplace_back( p_buildStep );
 		}
 
 	  private:
-		inline static std::map<EntityDirectorID, std::vector<Building::EntityBuildStep>> _mapDirectors
-			= std::map<EntityDirectorID, std::vector<Building::EntityBuildStep>>();
+		inline static std::map<EntityDirectorID, Building::BuildInstruction> _mapDirectors
+			= std::map<EntityDirectorID, Building::BuildInstruction>();
 	};
 } // namespace VTX::App::Application::ECS
 #endif

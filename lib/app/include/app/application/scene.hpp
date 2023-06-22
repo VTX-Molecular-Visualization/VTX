@@ -3,6 +3,7 @@
 
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/scene_item_component.hpp"
+#include "app/core/callback_event.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/old/application/generic/base_updatable.hpp"
 #include "app/old/component/render/camera.hpp"
@@ -32,7 +33,7 @@ namespace VTX::App::Application
 			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
-		Core::ECS::BaseEntity createItem();
+		void referenceItem( Component::Scene::SceneItemComponent & p_item );
 
 		const Core::ECS::BaseEntity getItem( const size_t p_index ) const;
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
@@ -52,6 +53,12 @@ namespace VTX::App::Application
 							   const int														 p_position );
 		void sortItemsBySceneIndex( std::vector<Component::Scene::SceneItemComponent *> & p_items ) const;
 
+		// Callbacks
+		Core::CallbackRegister<Component::Scene::SceneItemComponent &> onSceneItemAddedCallback()
+		{
+			return _onSceneItemAddedCallback;
+		}
+
 	  private:
 		int _persistentIDCounter = 0;
 
@@ -62,7 +69,13 @@ namespace VTX::App::Application
 		std::unique_ptr<Old::Internal::Scene::CameraManager> _cameraManager = nullptr;
 		Util::Math::AABB									 _aabb;
 
+		void _onSceneItemIsConstruct( Component::Scene::SceneItemComponent & p_sceneItemComponent );
+
 		void _applySceneID( Component::Scene::SceneItemComponent & p_item );
+
+		// Callbacks
+		Core::CallbackEmitter<Component::Scene::SceneItemComponent &> _onSceneItemAddedCallback
+			= Core::CallbackEmitter<Component::Scene::SceneItemComponent &>();
 	};
 } // namespace VTX::App::Application
 #endif

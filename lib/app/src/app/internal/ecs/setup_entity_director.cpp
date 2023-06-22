@@ -7,16 +7,20 @@ namespace VTX::App::Internal::ECS
 {
 	void setupEntityDirector()
 	{
-		using EntityDirector  = Application::ECS::EntityDirector;
-		using EntityBuildStep = Application::ECS::Building::EntityBuildStep;
+		using namespace App::Application::ECS;
+		using namespace App::Application::ECS::Building;
 
-		EntityDirector::addBuildStep( Entity::SCENE_ENTITY_ID,
-									  EntityBuildStep( &Entity::Application::SceneEntityBuilder::addComponent,
-													   &Entity::Application::SceneEntityBuilder::setup ) );
+		// Scene entity
+		EntityDirector::addBuildStep(
+			Entity::SCENE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Application::SceneEntityBuilder::addComponent );
 
-		EntityDirector::addBuildStep( Entity::MOLECULE_ENTITY_ID,
-									  EntityBuildStep( &Entity::Scene::MoleculeEntityBuilder::addComponent,
-													   &Entity::Scene::MoleculeEntityBuilder::setup ) );
+		// Molecule entity
+		EntityDirector::addBuildStep(
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::MoleculeEntityBuilder::addComponent );
+		EntityDirector::addBuildStep(
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::MoleculeEntityBuilder::setup );
+		EntityDirector::addBuildStep(
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::POST_SETUP, &Entity::Scene::MoleculeEntityBuilder::postSetup );
 	}
 
 } // namespace VTX::App::Internal::ECS

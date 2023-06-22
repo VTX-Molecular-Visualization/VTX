@@ -43,6 +43,10 @@ namespace VTX::App::Entity::Scene
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 	}
+	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	{
+		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
+	}
 
 	void MoleculeEntityBuilder::_load( Component::Chemistry::Molecule & p_moleculeComponent,
 									   const VariantMap &				p_extraData )

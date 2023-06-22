@@ -21,6 +21,11 @@ namespace VTX::App::Application
 	bool   Scene::isEmpty() const { return getItemCount() == 0; }
 	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
 
+	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
+	{
+		_onSceneItemAddedCallback.emit( p_item );
+	}
+
 	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const
 	{
 		size_t count = 0;
@@ -56,14 +61,6 @@ namespace VTX::App::Application
 	{
 		clear();
 		_createDefaultPath();
-	}
-
-	Core::ECS::BaseEntity Scene::createItem()
-	{
-		Core::ECS::BaseEntity entity = MAIN_REGISTRY().createEntity();
-		MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( entity );
-
-		return entity;
 	}
 
 	void Scene::changeItemIndex( const Component::Scene::SceneItemComponent & p_item, const int p_position )

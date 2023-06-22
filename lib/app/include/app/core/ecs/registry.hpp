@@ -14,6 +14,13 @@ namespace VTX::App::Core::ECS
 	template<typename C>
 	concept ECS_Component = requires( C p_component ) { std::derived_from<C, Core::ECS::BaseComponent>; };
 
+	enum class SIGNAL : int
+	{
+		CONSTRUCT,
+		UPDATE,
+		DESTROY
+	};
+
 	class Registry // :: public Application::Generic::BaseLockable
 	{
 	  public:
@@ -83,6 +90,17 @@ namespace VTX::App::Core::ECS
 		{
 			entt::observer observer { _enttRegistry, entt::collector.update<C>() };
 			return observer;
+		}
+
+		template<ECS_Component C, auto Func, typename Receiver>
+		void connectSignal( const SIGNAL p_signal, Receiver * const p_receiver )
+		{
+			switch ( p_signal )
+			{
+			case SIGNAL::CONSTRUCT: _enttRegistry.on_construct<C>().connect<Func>( p_receiver ); break;
+			case SIGNAL::UPDATE: _enttRegistry.on_update<C>().connect<Func>( p_receiver ); break;
+			case SIGNAL::DESTROY: _enttRegistry.on_destroy<C>().connect<Func>( p_receiver ); break;
+			}
 		}
 
 		template<ECS_Component C>

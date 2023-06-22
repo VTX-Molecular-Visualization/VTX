@@ -7,14 +7,12 @@ namespace VTX::App::Application::ECS::Building
 	{
 		_entity = MAIN_REGISTRY().createEntity();
 
-		for ( const EntityBuildStep & buildStep : _buildSteps )
+		for ( const BuildPass & pass : _instruction )
 		{
-			buildStep.addComponentFunc( _entity, _extraData );
-		}
-
-		for ( const EntityBuildStep & buildStep : _buildSteps )
-		{
-			buildStep.setupFunc( _entity, _extraData );
+			for ( const Step & step : pass )
+			{
+				step( _entity, _extraData );
+			}
 		}
 	}
 
