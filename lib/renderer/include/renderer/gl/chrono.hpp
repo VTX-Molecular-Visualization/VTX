@@ -11,8 +11,8 @@ namespace VTX::Renderer::GL
 	  public:
 		Chrono()
 		{
-			glCreateQueries( GL_TIME_ELAPSED, 1, &_queryStart );
-			glCreateQueries( GL_TIME_ELAPSED, 1, &_queryEnd );
+			glCreateQueries( GL_TIMESTAMP, 1, &_queryStart );
+			glCreateQueries( GL_TIMESTAMP, 1, &_queryEnd );
 
 			assert( glIsQuery( _queryStart ) );
 			assert( glIsQuery( _queryEnd ) );
