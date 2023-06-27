@@ -2,6 +2,12 @@
 
 namespace VTX::Renderer::GL
 {
+	enum ENUM_GL_EXTENSIONS
+	{
+		NVX_gpu_memory_info = 0,
+		EXTENSIONS_COUNT
+	};
+
 	struct StructOpenglInfos
 	{
 		std::string glVendor;
@@ -22,5 +28,7 @@ namespace VTX::Renderer::GL
 		int gpuMemoryInfoDedicatedVidmemNVX;
 		int gpuMemoryInfoTotalAvailableMemoryNVX;
 		int gpuMemoryInfoCurrentAvailableVidMemNVX;
+
+		std::array<bool, ENUM_GL_EXTENSIONS::EXTENSIONS_COUNT> glExtensions = { false };
 	};
 } // namespace VTX::Renderer::GL

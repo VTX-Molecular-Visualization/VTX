@@ -98,8 +98,6 @@ namespace VTX::Renderer::GL
 		{
 			//_vao.drawCalls = 0;
 
-			_ubo->bind( GL_UNIFORM_BUFFER, 15 );
-
 			if ( _skybox )
 			{
 				//_skybox->render();
@@ -107,6 +105,8 @@ namespace VTX::Renderer::GL
 
 			if ( true )
 			{
+				_ubo->bind( GL_UNIFORM_BUFFER, 15 );
+
 				_times.fill( 0.f );
 				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
 				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
@@ -153,15 +153,19 @@ namespace VTX::Renderer::GL
 						glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 					} );
 			}
-#if ( GL_NVX_gpu_memory_info == 1 )
-			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
-						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
-#endif
 
 			_ubo->unbind();
 
 			//_needUpdate = false;
 		}
+
+#if ( GL_NVX_gpu_memory_info == 1 )
+		if ( _openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+		{
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+		}
+#endif
 	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
@@ -378,12 +382,29 @@ namespace VTX::Renderer::GL
 		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
 		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
 
+		// Extensions.
+		GLint numExtensions = 0;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
+		for ( GLint i = 0; i < numExtensions; ++i )
+		{
+			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
+			if ( strcmp( "NVX_gpu_memory_info", extension ) == 0 )
+			{
+				_openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
+				VTX_INFO( "OpenGL extension NVX_gpu_memory_info found." );
+			}
+		}
+
+// NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
-		glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
-		glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX,
-					   &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX );
-		glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
-					   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+		if ( _openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+		{
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX,
+						   &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+		}
 #endif
 	}
 
