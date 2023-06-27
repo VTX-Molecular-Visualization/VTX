@@ -31,7 +31,7 @@ namespace VTX::Renderer::GL
 			glQueryCounter( _queryEnd, GL_TIMESTAMP );
 
 			GLint available = 0;
-			while ( !available )
+			while ( available != GL_TRUE )
 			{
 				glGetQueryObjectiv( _queryEnd, GL_QUERY_RESULT_AVAILABLE, &available );
 			}

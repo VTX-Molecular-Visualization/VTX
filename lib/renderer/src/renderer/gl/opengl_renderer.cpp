@@ -391,7 +391,6 @@ namespace VTX::Renderer::GL
 			if ( strcmp( "NVX_gpu_memory_info", extension ) == 0 )
 			{
 				_openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
-				VTX_INFO( "OpenGL extension NVX_gpu_memory_info found." );
 			}
 		}
 
