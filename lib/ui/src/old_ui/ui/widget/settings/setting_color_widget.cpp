@@ -4,7 +4,7 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingColorWidget::SettingColorWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent ) {}
 
-	void SettingColorWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
+	void SettingColorWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingColorWidget::_setupUi( const QString & p_name ) {}
 

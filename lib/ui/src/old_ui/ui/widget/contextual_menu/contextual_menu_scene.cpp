@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/action/main.hpp>
-#include <app/action/scene.hpp>
-#include <app/action/viewpoint.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/scene.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/internal/io/serialization/scene_path_data.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -37,14 +37,14 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuScene::_saveSessionAction()
 	{
-		VTX_ACTION( new App::Action::Main::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new App::Old::Action::Main::Save( App::Old::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void ContextualMenuScene::_saveAsSessionAction() { Dialog::openSaveSessionDialog(); }
 	void ContextualMenuScene::_showAllMoleculesAction() const
 	{
-		VTX_ACTION( new App::Action::Scene::ShowAllMolecules() );
+		VTX_ACTION( new App::Old::Action::Scene::ShowAllMolecules() );
 	}
 	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
-	void ContextualMenuScene::_clearAction() { VTX_ACTION( new App::Action::Scene::ResetScene() ); }
+	void ContextualMenuScene::_clearAction() { VTX_ACTION( new App::Old::Action::Scene::ResetScene() ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

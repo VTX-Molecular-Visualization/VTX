@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 
-#include <app/action/representable.hpp>
+#include <app/old/action/representable.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

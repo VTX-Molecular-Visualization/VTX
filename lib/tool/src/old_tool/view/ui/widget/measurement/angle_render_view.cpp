@@ -6,8 +6,8 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/component/chemistry/atom.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/component/chemistry/atom.hpp>
+#include <app/old/vtx_app.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -17,7 +17,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	AngleRenderView::AngleRenderView( Model::Measurement::Angle * const p_model, QWidget * const p_parent ) :
-		App::Core::View::BaseView<Model::Measurement::Angle>( p_model ),
+		App::Old::Core::View::BaseView<Model::Measurement::Angle>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_labelPen	= QPen( VTX::UI::Style::WORLD_LABEL_OUTLINE_COLOR );
@@ -59,13 +59,13 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
-		const std::vector<const App::Component::Chemistry::Atom *> & atoms		   = _model->getAtoms();
+		const std::vector<const App::Old::Component::Chemistry::Atom *> & atoms		   = _model->getAtoms();
 		std::vector<Vec3f>						 atomPositions = std::vector<Vec3f>();
 		atomPositions.reserve( atoms.size() );
-		for ( const App::Component::Chemistry::Atom * const atom : atoms )
+		for ( const App::Old::Component::Chemistry::Atom * const atom : atoms )
 			atomPositions.emplace_back( atom->getWorldPosition() );
 
-		const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
+		const App::Old::Component::Render::Camera & camera = App::Old::VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::anyVisibleToCamera( camera, atomPositions );
 		setVisible( visible );

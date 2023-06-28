@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_STATE_PLAY__
 
 #include "base_state.hpp"
-#include <app/component/video/_fwd.hpp>
+#include <app/old/component/video/_fwd.hpp>
 
 namespace VTX::UI::QT::State
 {
@@ -16,7 +16,7 @@ namespace VTX::UI::QT::State
 		virtual void update( const float & ) override;
 
 	  private:
-		const App::Component::Video::Path * _path	= nullptr;
+		const App::Old::Component::Video::Path * _path	= nullptr;
 		const std::vector<std::string> *	   _actions = nullptr;
 		float								   _time	= 0.f;
 

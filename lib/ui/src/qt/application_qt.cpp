@@ -10,13 +10,13 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
-#include <app/event/global.hpp>
+#include <app/old/event/global.hpp>
 // #include <exception>
 #include <util/logger.hpp>
-// #include <app/action/main.hpp>
-#include <app/event.hpp>
-#include <app/vtx_app.hpp>
-// #include <app/vtx_app.hpp>
+// #include <app/old/action/main.hpp>
+#include <app/old/event.hpp>
+#include <app/old/vtx_app.hpp>
+// #include <app/old/vtx_app.hpp>
 
 namespace VTX::UI::QT
 {
@@ -44,7 +44,7 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
-		VTX_EVENT( VTX::App::Event::Global::UI_APPLICATION_INITIALIZED );
+		VTX_EVENT( VTX::App::Old::Event::Global::UI_APPLICATION_INITIALIZED );
 
 		_returnCode = exec();
 	}
@@ -118,7 +118,7 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::renderScene() const
 	{
-		if ( VTX_SETTING().getActivateRenderer() && App::VTXApp::get().MASK )
+		if ( VTX_SETTING().getActivateRenderer() && App::Old::VTXApp::get().MASK )
 		{
 			_mainWindow->updateRender();
 		}

@@ -3,7 +3,7 @@
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
-	SequenceDisplayDataset_Residue::SequenceDisplayDataset_Residue( const App::Component::Chemistry::Chain & p_chain,
+	SequenceDisplayDataset_Residue::SequenceDisplayDataset_Residue( const App::Old::Component::Chemistry::Chain & p_chain,
 																	const uint			 p_startIndexChar,
 																	const uint			 p_startResidueIndex,
 																	const uint			 p_endResidueIndex ) :
@@ -15,12 +15,12 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		const uint size			  = _endResidueIndex - _startResidueIndex + 1;
 		QString	   sequenceString = QString( size, ' ' );
 
-		const App::Component::Chemistry::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
+		const App::Old::Component::Chemistry::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
 		const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
 
 		for ( uint i = 0; i < size; i++ )
 		{
-			const App::Component::Chemistry::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
+			const App::Old::Component::Chemistry::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
 			sequenceString[ i ]					 = residue->getSymbolShort()[ 0 ];
 		}
 
@@ -71,7 +71,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		}
 
 		const uint							  endIndex = _endResidueIndex - _startResidueIndex;
-		const std::vector<App::Component::Chemistry::Residue *> & residues = _linkedChain.getMoleculePtr()->getResidues();
+		const std::vector<App::Old::Component::Chemistry::Residue *> & residues = _linkedChain.getMoleculePtr()->getResidues();
 		const uint residueIndexOffset				   = _linkedChain.getIndexFirstResidue() + _startResidueIndex;
 		for ( ; currentLocalIndexResidue <= endIndex; currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
 		{
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		}
 	}
 
-	App::Component::Chemistry::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex( const uint p_charIndex )
+	App::Old::Component::Chemistry::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex( const uint p_charIndex )
 	{
 		const uint residueIndex
 			= _linkedChain.getIndexFirstResidue() + _startResidueIndex + ( p_charIndex - _startIndexChar );

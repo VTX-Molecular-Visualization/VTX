@@ -5,10 +5,10 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>
-#include <app/action/main.hpp>
-#include <app/internal/io/serialization/image_export.hpp>
-#include <app/application/setting.hpp>
-#include <app/render/spec.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/internal/io/serialization/image_export.hpp>
+#include <app/old/application/setting.hpp>
+#include <app/old/render/spec.hpp>
 
 namespace VTX::UI::Widget::Dialog
 {
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Dialog
 		QGridLayout * const parametersLayout = new QGridLayout( parameters );
 
 		_resolutionWidget = new QComboBox( parameters );
-		for ( const std::string & resolutionStr : App::Internal::IO::Serialization::ImageExport::RESOLUTION_STR )
+		for ( const std::string & resolutionStr : App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION_STR )
 			_resolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
 		_addWidget( "Resolution", _resolutionWidget, parametersLayout );
 
@@ -47,11 +47,11 @@ namespace VTX::UI::Widget::Dialog
 		_customResolutionLabel->setText( "Custom Resolution" );
 		_resolutionWidthWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
 			_customResolutionWidget, "ResolutionWidth" );
-		const std::pair<int, int> widthRange = App::Internal::IO::Serialization::ImageExport::getSnapshotWidthRange();
+		const std::pair<int, int> widthRange = App::Old::Internal::IO::Serialization::ImageExport::getSnapshotWidthRange();
 		_resolutionWidthWidget->setMinMax( widthRange.first, widthRange.second );
 		_resolutionHeightWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
 			_customResolutionWidget, "ResolutionHeight" );
-		const std::pair<int, int> heightRange = App::Internal::IO::Serialization::ImageExport::getSnapshotHeightRange();
+		const std::pair<int, int> heightRange = App::Old::Internal::IO::Serialization::ImageExport::getSnapshotHeightRange();
 		_resolutionHeightWidget->setMinMax( heightRange.first, heightRange.second );
 
 		QLabel * widthLabel = new QLabel( _customResolutionWidget );
@@ -143,12 +143,12 @@ namespace VTX::UI::Widget::Dialog
 		_qualitySlider->setValue( VTX_SETTING().getSnapshotQuality() );
 
 		const bool displayCustomResolution
-			= VTX_SETTING().getSnapshotResolution() == App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
+			= VTX_SETTING().getSnapshotResolution() == App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
 		_customResolutionLabel->setVisible( displayCustomResolution );
 		_customResolutionWidget->setVisible( displayCustomResolution );
 
 		std::pair<int, int> freeResolution
-			= App::Internal::IO::Serialization::ImageExport::getSize( App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free );
+			= App::Old::Internal::IO::Serialization::ImageExport::getSize( App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION::Free );
 		_resolutionWidthWidget->setValue( freeResolution.first );
 		_resolutionHeightWidget->setValue( freeResolution.second );
 
@@ -157,22 +157,22 @@ namespace VTX::UI::Widget::Dialog
 
 	void ImageExporter::_refreshPreview()
 	{
-		const App::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
-			= App::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+		const App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
+			= App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
 
 		std::pair<int, int> resolutionSize;
 
-		if ( resolution == App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free )
+		if ( resolution == App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION::Free )
 		{
 			resolutionSize.first  = _resolutionWidthWidget->getValue();
 			resolutionSize.second = _resolutionHeightWidget->getValue();
 		}
 		else
 		{
-			resolutionSize = App::Internal::IO::Serialization::ImageExport::getSize( resolution );
+			resolutionSize = App::Old::Internal::IO::Serialization::ImageExport::getSize( resolution );
 		}
 
-		const App::Internal::IO::Serialization::ImageExport previewExportData = App::Internal::IO::Serialization::ImageExport(
+		const App::Old::Internal::IO::Serialization::ImageExport previewExportData = App::Old::Internal::IO::Serialization::ImageExport(
 			resolutionSize, _backgroundOpacitySlider->getValue(), _qualitySlider->getValue() );
 
 		_previewWidget->takeSnapshot( previewExportData );
@@ -200,10 +200,10 @@ namespace VTX::UI::Widget::Dialog
 
 	void ImageExporter::_resolutionChange( const int p_resolutionIndex )
 	{
-		const App::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
-			= App::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+		const App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
+			= App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
 
-		const bool displayCustomResolution = resolution == App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
+		const bool displayCustomResolution = resolution == App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
 		_customResolutionLabel->setVisible( displayCustomResolution );
 		_customResolutionWidget->setVisible( displayCustomResolution );
 
@@ -217,15 +217,15 @@ namespace VTX::UI::Widget::Dialog
 	void ImageExporter::cancelAction() { close(); }
 	void ImageExporter::saveAction()
 	{
-		App::Internal::IO::Serialization::ImageExport exportData
-			= App::Internal::IO::Serialization::ImageExport( App::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() ),
+		App::Old::Internal::IO::Serialization::ImageExport exportData
+			= App::Old::Internal::IO::Serialization::ImageExport( App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() ),
 									   _backgroundOpacitySlider->getValue(),
 									   _qualitySlider->getValue() );
 
-		const App::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
-			= App::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+		const App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION resolution
+			= App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
 
-		if ( resolution == App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free )
+		if ( resolution == App::Old::Internal::IO::Serialization::ImageExport::RESOLUTION::Free )
 		{
 			std::pair<int, int> resolutionSize;
 

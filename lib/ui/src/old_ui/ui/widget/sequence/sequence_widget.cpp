@@ -4,25 +4,25 @@
 #include <QLayout>
 #include <QScrollBar>
 #include <QWidget>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
 	SequenceWidget::SequenceWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::MOLECULE_ADDED );
-		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::MOLECULE_REMOVED );
 	}
 
-	void SequenceWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void SequenceWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
+		if ( p_event.name == VTX::App::Old::Event::Global::MOLECULE_ADDED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> &>( p_event );
 			View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
 				= VTX::MVC_MANAGER().instantiateViewWidget<View::UI::Widget::MoleculeSequenceView>(
 					castedEvent.get(), ID::View::UI_MOLECULE_SEQUENCE, this );
@@ -30,10 +30,10 @@ namespace VTX::UI::Widget::Sequence
 			_moleculeWidgets.emplace( widget );
 			_layout->insertWidget( _layout->count() - 1, widget );
 		}
-		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Old::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> &>( p_event );
 			View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
 				= VTX::MVC_MANAGER().getView<View::UI::Widget::MoleculeSequenceView>(
 					castedEvent.get(), ID::View::UI_MOLECULE_SEQUENCE );

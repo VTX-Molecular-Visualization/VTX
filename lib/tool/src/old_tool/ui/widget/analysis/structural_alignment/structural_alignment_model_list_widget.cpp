@@ -2,7 +2,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <app/mvc.hpp>
+#include <app/old/mvc.hpp>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/ui_action/self_referenced_action.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		_modelField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>( _owner, "modelField" );
 
-		for ( const App::VTX_ID & typeID : _owner->getFilters() )
+		for ( const App::Old::VTX_ID & typeID : _owner->getFilters() )
 			_modelField->addTypeFilter( typeID );
 
 		connect(
@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_rmsdLabel = nullptr;
 	}
 
-	void StructuralAlignmentModelListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
+	void StructuralAlignmentModelListWidget::ModelFieldLine::setModel( App::Old::Core::Model::BaseModel * const p_model )
 	{
 		_modelField->setModel( p_model );
 		resetRMSD();
@@ -80,11 +80,11 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentModelListWidget::ModelFieldLine::_callRemoveAction()
 	{
-		App::Core::Model::BaseModel * const model = _modelField->getModel();
+		App::Old::Core::Model::BaseModel * const model = _modelField->getModel();
 		_owner->removeModel( model );
 	}
 	void StructuralAlignmentModelListWidget::ModelFieldLine::_checkModelChange(
-		App::Core::Model::BaseModel * const p_model )
+		App::Old::Core::Model::BaseModel * const p_model )
 	{
 		if ( _owner->getContainsOnlyUniqueModel() && _owner->hasModel( p_model ) )
 			_owner->swapModels( _modelField->getModel(), p_model );
@@ -116,7 +116,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		}
 	}
 
-	App::Core::Model::BaseModel * const StructuralAlignmentModelListWidget::getTickedModel() const
+	App::Old::Core::Model::BaseModel * const StructuralAlignmentModelListWidget::getTickedModel() const
 	{
 		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
 		{
@@ -127,9 +127,9 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		return nullptr;
 	}
-	std::vector<App::Core::Model::BaseModel *> StructuralAlignmentModelListWidget::getNotTickedModels() const
+	std::vector<App::Old::Core::Model::BaseModel *> StructuralAlignmentModelListWidget::getNotTickedModels() const
 	{
-		std::vector<App::Core::Model::BaseModel *> res = std::vector<App::Core::Model::BaseModel *>();
+		std::vector<App::Old::Core::Model::BaseModel *> res = std::vector<App::Old::Core::Model::BaseModel *>();
 		res.reserve( _getLines().size() );
 
 		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
@@ -144,13 +144,13 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return res;
 	}
 
-	void StructuralAlignmentModelListWidget::setRMSD( const App::Core::Model::BaseModel * const p_model,
+	void StructuralAlignmentModelListWidget::setRMSD( const App::Old::Core::Model::BaseModel * const p_model,
 													  const float								p_rmsd,
 													  const size_t								p_residueCount ) const
 	{
 		_findLineFromModel<ModelFieldLine>( p_model )->setRMSD( p_rmsd, p_residueCount );
 	}
-	void StructuralAlignmentModelListWidget::resetRMSD( const App::Core::Model::BaseModel * const p_model ) const
+	void StructuralAlignmentModelListWidget::resetRMSD( const App::Old::Core::Model::BaseModel * const p_model ) const
 	{
 		_findLineFromModel<ModelFieldLine>( p_model )->resetRMSD();
 	}
@@ -169,7 +169,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return newLine;
 	}
 	void StructuralAlignmentModelListWidget::_initLine( CustomWidget::BaseModelFieldLine * const p_line,
-														App::Core::Model::BaseModel * const		 p_model ) const
+														App::Old::Core::Model::BaseModel * const		 p_model ) const
 	{
 		CustomWidget::BaseModelListWidget::_initLine( p_line, p_model );
 

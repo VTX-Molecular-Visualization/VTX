@@ -2,9 +2,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/action/viewpoint.hpp>
+#include <app/old/action/viewpoint.hpp>
 
-#include <app/component/video/path.hpp>
+#include <app/old/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuViewpoint::localize() {}
 
-	void ContextualMenuViewpoint::setTarget( App::Component::Object3D::Viewpoint * const p_target )
+	void ContextualMenuViewpoint::setTarget( App::Old::Component::Object3D::Viewpoint * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );
@@ -40,6 +40,6 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuViewpoint::_deleteAction() { VTX_ACTION( new QT::Action::Viewpoint::Delete( *_target ) ); }
 	void ContextualMenuViewpoint::_gotoAction() { VTX_ACTION( new QT::Action::Viewpoint::GoTo( *_target ) ); }
-	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new App::Action::Viewpoint::Relocate( *_target ) ); }
+	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new App::Old::Action::Viewpoint::Relocate( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

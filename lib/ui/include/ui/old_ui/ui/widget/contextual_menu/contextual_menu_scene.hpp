@@ -2,11 +2,11 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_SCENE__
 
 #include "contextual_menu_template.hpp"
-#include <app/application/scene.hpp>
+#include <app/old/application/scene.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	class ContextualMenuScene : public ContextualMenuTemplate<App::Application::Scene>
+	class ContextualMenuScene : public ContextualMenuTemplate<App::Old::Application::Scene>
 	{
 		VTX_WIDGET
 

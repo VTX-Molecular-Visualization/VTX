@@ -4,48 +4,48 @@
 #include "ui/old_ui/view/ui/widget/renderer/render_effect_preset_view.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/action/renderer.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/id.hpp>
-#include <app/application/setting.hpp>
+#include <app/old/action/renderer.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/application/render_effect/render_effect_preset.hpp>
+#include <app/old/id.hpp>
+#include <app/old/application/setting.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
 	RenderEffectPresetLibraryView::RenderEffectPresetLibraryView(
-		App::Application::RenderEffect::RenderEffectLibrary * const p_model,
+		App::Old::Application::RenderEffect::RenderEffectLibrary * const p_model,
 		QWidget * const									   p_parent ) :
-		App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>( p_model ),
+		App::Old::Core::View::BaseView<App::Old::Application::RenderEffect::RenderEffectLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::RENDER_EFFECT_ADDED );
-		_registerEvent( VTX::App::Event::Global::RENDER_EFFECT_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::RENDER_EFFECT_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::RENDER_EFFECT_REMOVED );
 	}
 
-	void RenderEffectPresetLibraryView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void RenderEffectPresetLibraryView::notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::App::Event::Model::APPLIED_PRESET_CHANGE )
+		if ( p_event->name == VTX::App::Old::Event::Model::APPLIED_PRESET_CHANGE )
 		{
 			_presetList->setCurrentIndex( _model->getAppliedPresetIndex() );
 		}
 	}
 
-	void RenderEffectPresetLibraryView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void RenderEffectPresetLibraryView::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::RENDER_EFFECT_ADDED )
+		if ( p_event.name == VTX::App::Old::Event::Global::RENDER_EFFECT_ADDED )
 		{
 			const int representationIndex
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<int> &>( p_event ).get();
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<int> &>( p_event ).get();
 
 			_refreshDeletePresetButton();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::RENDER_EFFECT_REMOVED )
+		else if ( p_event.name == VTX::App::Old::Event::Global::RENDER_EFFECT_REMOVED )
 		{
 			_refreshPresetDisplayed( true );
 			_refreshDeletePresetButton();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
+		else if ( p_event.name == VTX::App::Old::Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
 		{
 			const bool previousSignalState = blockSignals( true );
 			_presetList->setCurrentIndex( -1 );
@@ -131,11 +131,11 @@ namespace VTX::View::UI::Widget::Renderer
 
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )
 	{
-		App::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
+		App::Old::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
 
 		if ( currentPreset != nullptr )
 		{
-			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
+			VTX_ACTION( new App::Old::Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
 			_refreshPresetDisplayed( false );
 		}
 	}
@@ -143,16 +143,16 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onAddPreset() const
 	{
 		VTX_ACTION(
-			new App::Action::Renderer::AddNewPresetInLibrary( VTX::App::Application::Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
+			new App::Old::Action::Renderer::AddNewPresetInLibrary( VTX::App::Old::Application::Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
 	}
 	void RenderEffectPresetLibraryView::_onCopyPreset() const
 	{
-		VTX_ACTION( new App::Action::Renderer::CopyPresetInLibrary( _presetList->currentIndex() ) );
+		VTX_ACTION( new App::Old::Action::Renderer::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
 	void RenderEffectPresetLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
+			new App::Old::Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure you want to delete this preset ?" );
 	}
@@ -161,14 +161,14 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Renderer::ReloadPresets(),
+			new App::Old::Action::Renderer::ReloadPresets(),
 			"Confirm",
 			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RenderEffectPresetLibraryView::_onResetToDefaultLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Renderer::ResetPresets(),
+			new App::Old::Action::Renderer::ResetPresets(),
 			"Confirm",
 			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}
@@ -177,7 +177,7 @@ namespace VTX::View::UI::Widget::Renderer
 	{
 		const int currentIndex = _presetList->currentIndex();
 
-		App::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( currentIndex );
+		App::Old::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( currentIndex );
 		_renderPresetEditor->setPreset( currentPreset, p_updateRenderer );
 	}
 	void RenderEffectPresetLibraryView::_refreshDeletePresetButton()

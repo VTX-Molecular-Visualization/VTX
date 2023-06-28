@@ -1,6 +1,6 @@
 #include "tool/old_tool/ui/widget/main_menu/extensions/menu_extensions_all_widget.hpp"
-#include <app/action/main.hpp>
-#include <app/internal/io/filesystem.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/internal/io/filesystem.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 
 namespace VTX

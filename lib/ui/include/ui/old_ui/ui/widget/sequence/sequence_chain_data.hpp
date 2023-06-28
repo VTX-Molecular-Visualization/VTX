@@ -4,7 +4,7 @@
 #include "chain_sequence_builder.hpp"
 #include "dataset/sequence_dataset.hpp"
 #include <QString>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Sequence
@@ -12,7 +12,7 @@ namespace VTX::UI::Widget::Sequence
 	class SequenceChainData
 	{
 	  public:
-		SequenceChainData( const App::Component::Chemistry::Chain & p_chain );
+		SequenceChainData( const App::Old::Component::Chemistry::Chain & p_chain );
 		~SequenceChainData();
 
 		const QString & getSequenceString() const { return _strSequence; };
@@ -20,12 +20,12 @@ namespace VTX::UI::Widget::Sequence
 
 		inline uint getResidueCount() const { return _chain.getResidueCount(); };
 		inline uint getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
-		inline App::Component::Chemistry::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
+		inline App::Old::Component::Chemistry::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
 		inline uint										   getChainIndex() const { return _chain.getIndex(); };
-		inline const App::Component::Chemistry::Chain &	   getChain() const { return _chain; };
+		inline const App::Old::Component::Chemistry::Chain &	   getChain() const { return _chain; };
 
-		App::Component::Chemistry::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
-		App::Component::Chemistry::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex,
+		App::Old::Component::Chemistry::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
+		App::Old::Component::Chemistry::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex,
 																				   const bool takeForward ) const;
 		uint									   getCharIndex( const uint p_residueIndex ) const;
 		uint									   getPaintCharIndex( const uint p_residueIndex ) const;
@@ -33,12 +33,12 @@ namespace VTX::UI::Widget::Sequence
 		inline uint getCharCount() const { return _chainSequenceBuilder.getCharCount(); };
 
 	  private:
-		const App::Component::Chemistry::Molecule & _molecule;
-		const App::Component::Chemistry::Chain &	_chain;
+		const App::Old::Component::Chemistry::Molecule & _molecule;
+		const App::Old::Component::Chemistry::Chain &	_chain;
 		const uint									_fromResidue;
 		const uint									_toResidue;
 
-		App::Component::Chemistry::Residue * const _getResidue( const uint p_localResidueIndex ) const;
+		App::Old::Component::Chemistry::Residue * const _getResidue( const uint p_localResidueIndex ) const;
 
 		Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
 		Dataset::SequenceDisplayDataset * const getDataset_recursive(

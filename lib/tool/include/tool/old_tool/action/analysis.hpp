@@ -4,10 +4,10 @@
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include "tool/old_tool/util/analysis.hpp"
-#include <app/action.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/core/action/base_action.hpp>
+#include <app/old/action.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/core/action/base_action.hpp>
 #include <cmath>
 #include <string>
 #include <util/chrono.hpp>
@@ -16,7 +16,7 @@
 
 namespace VTX::Action::Analysis
 {
-	class ComputeRMSD : public App::Core::Action::BaseAction
+	class ComputeRMSD : public App::Old::Core::Action::BaseAction
 	{
 	  private:
 		enum class MODE : int
@@ -28,32 +28,32 @@ namespace VTX::Action::Analysis
 		union RMSDTarget
 		{
 			RMSDTarget() {};
-			RMSDTarget( const App::Component::Chemistry::Molecule *				 p_target,
-						std::vector<const App::Component::Chemistry::Molecule *> p_others ) :
+			RMSDTarget( const App::Old::Component::Chemistry::Molecule *				 p_target,
+						std::vector<const App::Old::Component::Chemistry::Molecule *> p_others ) :
 				moleculeData { p_target, p_others }
 			{
 			}
-			RMSDTarget( const App::Application::Selection::SelectionModel * const p_selection ) :
+			RMSDTarget( const App::Old::Application::Selection::SelectionModel * const p_selection ) :
 				selectionData( p_selection )
 			{
 			}
 			~RMSDTarget() {};
 
-			const std::pair<const App::Component::Chemistry::Molecule *,
-							std::vector<const App::Component::Chemistry::Molecule *>>
+			const std::pair<const App::Old::Component::Chemistry::Molecule *,
+							std::vector<const App::Old::Component::Chemistry::Molecule *>>
 																	  moleculeData;
-			const App::Application::Selection::SelectionModel * const selectionData;
+			const App::Old::Application::Selection::SelectionModel * const selectionData;
 		};
 
 	  public:
-		explicit ComputeRMSD( const App::Component::Chemistry::Molecule * const			 p_target,
-							  std::vector<const App::Component::Chemistry::Molecule *> & p_others,
+		explicit ComputeRMSD( const App::Old::Component::Chemistry::Molecule * const			 p_target,
+							  std::vector<const App::Old::Component::Chemistry::Molecule *> & p_others,
 							  const bool												 p_considerTransform = true ) :
 			_mode( MODE::MOLECULE ),
 			_target( p_target, p_others ), _considerTransform( p_considerTransform )
 		{
 		}
-		explicit ComputeRMSD( const App::Application::Selection::SelectionModel & p_selection,
+		explicit ComputeRMSD( const App::Old::Application::Selection::SelectionModel & p_selection,
 							  const bool										  p_considerTransform = true ) :
 			_mode( MODE::SELECTION ),
 			_target( &p_selection ), _considerTransform( p_considerTransform )
@@ -66,7 +66,7 @@ namespace VTX::Action::Analysis
 			{
 			case MODE::MOLECULE:
 			{
-				for ( const App::Component::Chemistry::Molecule * const molecule : _target.moleculeData.second )
+				for ( const App::Old::Component::Chemistry::Molecule * const molecule : _target.moleculeData.second )
 				{
 					VTX::Analysis::RMSD::callRMSDComputation(
 						_target.moleculeData.first, molecule, _considerTransform );
@@ -81,7 +81,7 @@ namespace VTX::Action::Analysis
 			break;
 			}
 
-			App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+			App::Old::VTXApp::get().MASK |= App::Old::Render::VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
@@ -91,19 +91,19 @@ namespace VTX::Action::Analysis
 		const bool			   _considerTransform;
 	};
 
-	class ComputeStructuralAlignment : public App::Core::Action::BaseAction
+	class ComputeStructuralAlignment : public App::Old::Core::Action::BaseAction
 	{
 	  public:
 		explicit ComputeStructuralAlignment(
-			const App::Component::Chemistry::Molecule * const					  p_staticMolecule,
-			const std::vector<App::Component::Chemistry::Molecule *> &			  p_mobileMolecules,
+			const App::Old::Component::Chemistry::Molecule * const					  p_staticMolecule,
+			const std::vector<App::Old::Component::Chemistry::Molecule *> &			  p_mobileMolecules,
 			const VTX::Analysis::StructuralAlignment::AlignmentParameters * const p_parameters ) :
 			_staticMolecule( p_staticMolecule ),
 			_mobileMolecules( p_mobileMolecules ), _parameters( p_parameters )
 		{
 		}
 
-		explicit ComputeStructuralAlignment( const App::Application::Selection::SelectionModel & p_selection )
+		explicit ComputeStructuralAlignment( const App::Old::Application::Selection::SelectionModel & p_selection )
 		{
 			Util::Analysis::pickTargetAndComparersFromSelection( p_selection, _staticMolecule, _mobileMolecules );
 
@@ -118,7 +118,7 @@ namespace VTX::Action::Analysis
 			try
 			{
 				VTX::Analysis::StructuralAlignment::computeAlignment( _staticMolecule, _mobileMolecules, *_parameters );
-				App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+				App::Old::VTXApp::get().MASK |= App::Old::Render::VTX_MASK_3D_MODEL_UPDATED;
 			}
 			catch ( std::exception & e )
 			{
@@ -130,8 +130,8 @@ namespace VTX::Action::Analysis
 		}
 
 	  private:
-		const App::Component::Chemistry::Molecule *						_staticMolecule;
-		std::vector<App::Component::Chemistry::Molecule *>				_mobileMolecules;
+		const App::Old::Component::Chemistry::Molecule *						_staticMolecule;
+		std::vector<App::Old::Component::Chemistry::Molecule *>				_mobileMolecules;
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * _parameters;
 	};
 

@@ -1,10 +1,10 @@
 #include "ui/old_ui/state/play.hpp"
 #include "ui/id.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/object3d/viewpoint.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/component/video/path.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/component/object3d/viewpoint.hpp>
+#include <app/old/component/render/camera.hpp>
+#include <app/old/component/video/path.hpp>
+#include <app/old/vtx_app.hpp>
 #include <util/math.hpp>
 
 namespace VTX
@@ -13,12 +13,12 @@ namespace VTX
 	{
 		void Play::enter( void * const p_arg )
 		{
-			_path = (App::Component::Video::Path *)p_arg;
-			// App::VTXApp::get().getSetting().backup();
+			_path = (App::Old::Component::Video::Path *)p_arg;
+			// App::Old::VTXApp::get().getSetting().backup();
 
 			if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 			{
-				App::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
+				App::Old::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 				return;
 			}
 
@@ -33,7 +33,7 @@ namespace VTX
 			_path	 = nullptr;
 			_actions = nullptr;
 			_time	 = 0.f;
-			// App::VTXApp::get().getSetting().recover();
+			// App::Old::VTXApp::get().getSetting().recover();
 		}
 
 		void Play::update( const float & p_deltaTime )
@@ -51,33 +51,33 @@ namespace VTX
 				{
 					_time	 = 0.f;
 					_actions = nullptr;
-					// App::VTXApp::get().getSetting().recover();
+					// App::Old::VTXApp::get().getSetting().recover();
 				}
 				else
 				{
-					App::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
+					App::Old::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 					return;
 				}
 			}
 
 			_setCamera();
 			_executeActions( _time );
-			App::VTXApp::get().getScene().update( p_deltaTime );
-			App::VTXApp::get().renderScene();
+			App::Old::VTXApp::get().getScene().update( p_deltaTime );
+			App::Old::VTXApp::get().renderScene();
 
 		} // namespace State
 
 		void Play::_setCamera() const
 		{
-			App::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
+			App::Old::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 			if ( viewpoint.getController() == UI::ID::Controller::TRACKBALL )
 			{
-				App::VTXApp::get().getScene().getCamera().setRotationAround(
+				App::Old::VTXApp::get().getScene().getCamera().setRotationAround(
 					Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 			}
 			else
 			{
-				App::VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+				App::Old::VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 			}
 		}
 

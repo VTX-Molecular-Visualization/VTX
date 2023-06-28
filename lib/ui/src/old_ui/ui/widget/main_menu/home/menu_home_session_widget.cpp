@@ -4,11 +4,11 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
-#include <app/action/main.hpp>
-#include <app/action/setting.hpp>
-#include <app/event/global.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
-#include <app/application/setting.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/internal/io/serialization/scene_path_data.hpp>
+#include <app/old/application/setting.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -16,14 +16,14 @@ namespace VTX::UI::Widget::MainMenu::Home
 {
 	MenuHomeSessionWidget::MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::RECENT_FILES_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::RECENT_FILES_CHANGE );
 	}
 
 	MenuHomeSessionWidget::~MenuHomeSessionWidget() {}
 
-	void MenuHomeSessionWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void MenuHomeSessionWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::RECENT_FILES_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::RECENT_FILES_CHANGE )
 			_refreshRecentFiles();
 	}
 
@@ -84,7 +84,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const FilePath & recentFile : VTX::App::Application::Setting::recentLoadingPath )
+		for ( const FilePath & recentFile : VTX::App::Old::Application::Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
@@ -107,20 +107,20 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() const { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		VTX_ACTION( new App::Action::Main::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new App::Old::Action::Main::Save( App::Old::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const FilePath * const recentPath = VTX::App::Application::Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const FilePath * const recentPath = VTX::App::Old::Application::Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{
 			return;
 		}
 
-		VTX_ACTION( new App::Action::Main::Open( *recentPath ) );
+		VTX_ACTION( new App::Old::Action::Main::Open( *recentPath ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Home

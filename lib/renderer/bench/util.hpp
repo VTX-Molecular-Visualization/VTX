@@ -1,14 +1,14 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <core/struct_mesh.hpp>
-#include <core/struct_molecule.hpp>
+#include <core/gpu/mesh.hpp>
+#include <core/gpu/molecule.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Bench
 {
-	const Core::StructMesh DEFAULT_MESH
+	const Core::Gpu::Mesh DEFAULT_MESH
 		= { MAT4F_ID,
 			{ Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
 			{ Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
@@ -20,7 +20,7 @@ namespace VTX::Bench
 			{ 0, 0, 0, 0 },
 			{ 0, 1, 2 } };
 
-	const Core::StructMolecule DEFAULT_MOLECULE
+	const Core::Gpu::Molecule DEFAULT_MOLECULE
 		= { MAT4F_ID,
 			{ Vec3f( -2.f, 0.f, 0.f ), Vec3f( 2.f, 0.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) },
 			{ Util::Color::Rgba::random(), Util::Color::Rgba::random(), Util::Color::Rgba::random() },
@@ -32,7 +32,7 @@ namespace VTX::Bench
 
 		  };
 
-	Core::StructMolecule generateAtomGrid( int p_size )
+	Core::Gpu::Molecule generateAtomGrid( int p_size )
 	{
 		if ( p_size % 2 == 0 )
 		{
@@ -74,10 +74,10 @@ namespace VTX::Bench
 				 positions,
 				 colors,
 				 std::vector<float>( realSize, 0.5f ),
-				 std::vector<uint>( realSize, 1 ),
-				 std::vector<uint>( realSize, 0 ),
-				 std::vector<uint>( realSize, 0 ),
-				 bonds };
+				 std::vector<size_t>( realSize, 1 ),
+				 std::vector<size_t>( realSize, 0 ),
+				 std::vector<size_t>( realSize, 0 ),
+				 {} };
 	}
 
 	// Skybox.

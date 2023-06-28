@@ -1,14 +1,14 @@
 #ifndef __VTX_BASE_CONTROLLER__
 #define __VTX_BASE_CONTROLLER__
 
-#include <app/application/generic/base_updatable.hpp>
+#include <app/old/application/generic/base_updatable.hpp>
 #include <util/types.hpp>
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController : public App::Application::Generic::BaseUpdatable
+		class BaseController : public App::Old::Application::Generic::BaseUpdatable
 		{
 		  public:
 			BaseController()		  = default;

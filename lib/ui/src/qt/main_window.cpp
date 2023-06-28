@@ -10,53 +10,53 @@
 #include "ui/qt/tool/session/dialog.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/action/dev.hpp>
-#include <app/action/main.hpp>
-#include <app/action/selection.hpp>
-#include <app/action/setting.hpp>
-#include <app/application/define.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/application/setting.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/internal/io/filesystem.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
+#include <app/old/action/dev.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/application/define.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/application/setting.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/internal/io/filesystem.hpp>
+#include <app/old/internal/io/serialization/scene_path_data.hpp>
 
 namespace VTX::UI::QT
 {
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::CHANGE_STATE );
-		_registerEvent( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
-		_registerEvent( VTX::App::Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::CHANGE_STATE );
+		_registerEvent( VTX::App::Old::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SCENE_PATH_CHANGE );
 
-		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MainWindow::~MainWindow() {}
 
-	void MainWindow::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void MainWindow::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::CHANGE_STATE )
+		if ( p_event.name == VTX::App::Old::Event::Global::CHANGE_STATE )
 		{
-			const App::VTX_ID & state
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const App::VTX_ID &> &>( p_event ).get();
+			const App::Old::VTX_ID & state
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<const App::Old::VTX_ID &> &>( p_event ).get();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::SCENE_PATH_CHANGE
-				  || p_event.name == VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == VTX::App::Old::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
 		}
-		// else if ( p_event.name == VTX::App::Event::Global::RMSD_COMPUTED )
+		// else if ( p_event.name == VTX::App::Old::Event::Global::RMSD_COMPUTED )
 		//{
-		//	const VTX::App::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
-		//		= dynamic_cast<const VTX::App::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>(
+		//	const VTX::App::Old::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
+		//		= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>(
 		// p_event );
 
 		//	const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
@@ -67,10 +67,10 @@ namespace VTX::UI::QT
 
 	void MainWindow::closeEvent( QCloseEvent * p_closeEvent )
 	{
-		if ( App::VTXApp::get().hasAnyModifications() )
+		if ( App::Old::VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
+			VTX::App::Old::Core::Worker::CallbackThread callback = VTX::App::Old::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )
@@ -136,7 +136,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( App::Internal::IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
+		_loadStyleSheet( App::Old::Internal::IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 
 	void MainWindow::initWindowLayout()
@@ -293,56 +293,56 @@ namespace VTX::UI::QT
 	{
 		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
 		{
-			// VTX_ACTION( new App::Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
+			// VTX_ACTION( new App::Old::Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
 		}
 		else
 		{
-			// VTX_ACTION( new App::Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
+			// VTX_ACTION( new App::Old::Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
 		}
 	}
 	void MainWindow::_onShortcutClearSelection() const
 	{
-		if ( !App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		if ( !App::Old::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
-			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
-				VTX::App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Old::Action::Selection::ClearSelection(
+				VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
-	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::App::Action::Dev::CompileShaders() ); }
+	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::App::Old::Action::Dev::CompileShaders() ); }
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
 		const bool rendererIsActive = VTX_SETTING().getActivateRenderer();
-		VTX_ACTION( new VTX::App::Action::Setting::ActiveRenderer( !rendererIsActive ) );
+		VTX_ACTION( new VTX::App::Old::Action::Setting::ActiveRenderer( !rendererIsActive ) );
 	}
 	void MainWindow::_onShortcutDelete() const
 	{
-		if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		if ( App::Old::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION( new VTX::App::Action::Selection::Delete(
-				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Old::Action::Selection::Delete(
+				App::Old::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutOrient() const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::UI::QT::Action::Selection::Orient( selection ) );
 	}
-	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Action::Selection::SelectAll() ); }
+	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Old::Action::Selection::SelectAll() ); }
 	void MainWindow::_onShortcutCopy() const
 	{
-		App::Application::Selection::SelectionModel & selectionModel
-			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Selection::SelectionModel & selectionModel
+			= App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
+			VTX_ACTION( new VTX::App::Old::Action::Selection::Copy( selectionModel ) );
 	}
 	void MainWindow::_onShortcutExtract() const
 	{
-		App::Application::Selection::SelectionModel & selectionModel
-			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Selection::SelectionModel & selectionModel
+			= App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
+			VTX_ACTION( new VTX::App::Old::Action::Selection::Extract( selectionModel ) );
 	}
 	void MainWindow::_onShortcutSetSelectionPicker() const
 	{
@@ -356,10 +356,10 @@ namespace VTX::UI::QT
 	void		MainWindow::refreshWindowTitle() { setWindowTitle( QString::fromStdString( _getWindowTitle() ) ); }
 	std::string MainWindow::_getWindowTitle() const
 	{
-		std::string title = App::Application::VTX_PROJECT_NAME + " v"
-							+ std::to_string( App::Application::VTX_VERSION_MAJOR ) + "."
-							+ std::to_string( App::Application::VTX_VERSION_MINOR ) + "."
-							+ std::to_string( App::Application::VTX_VERSION_REVISION ) + " (BETA)";
+		std::string title = App::Old::Application::VTX_PROJECT_NAME + " v"
+							+ std::to_string( App::Old::Application::VTX_VERSION_MAJOR ) + "."
+							+ std::to_string( App::Old::Application::VTX_VERSION_MINOR ) + "."
+							+ std::to_string( App::Old::Application::VTX_VERSION_REVISION ) + " (BETA)";
 #ifndef VTX_PRODUCTION
 		title += " - DEV";
 #ifdef _DEBUG
@@ -368,13 +368,13 @@ namespace VTX::UI::QT
 		title += " - RELEASE";
 #endif
 #endif
-		const FilePath & currentSessionFilepath = App::VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = App::Old::VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
 			title += " - " + currentSessionFilepath.filename().string();
 
-			if ( App::VTXApp::get().getScenePathData().sceneHasModifications() )
+			if ( App::Old::VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
 				title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
 			}
@@ -518,7 +518,7 @@ namespace VTX::UI::QT
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			Core::WindowMode newMode = _getWindowModeFromWindowState( windowState() );
-			VTX_EVENT( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE );
+			VTX_EVENT( VTX::App::Old::Event::Global::MAIN_WINDOW_MODE_CHANGE );
 		}
 	}
 
@@ -556,7 +556,7 @@ namespace VTX::UI::QT
 				_paths.emplace_back( FilePath( url.toLocalFile().toStdString() ) );
 			}
 
-			VTX_ACTION( new VTX::App::Action::Main::Open( _paths ) );
+			VTX_ACTION( new VTX::App::Old::Action::Main::Open( _paths ) );
 		}
 	}
 
@@ -587,7 +587,7 @@ namespace VTX::UI::QT
 		return *widget;
 	}
 
-	void MainWindow::showWidget( const App::VTX_ID & p_winId, const bool p_show ) const
+	void MainWindow::showWidget( const App::Old::VTX_ID & p_winId, const bool p_show ) const
 	{
 		QWidget & widget = getWidget( p_winId );
 
@@ -601,7 +601,7 @@ namespace VTX::UI::QT
 			widget.hide();
 		}
 	}
-	void MainWindow::toggleWidget( const App::VTX_ID & p_winId ) const
+	void MainWindow::toggleWidget( const App::Old::VTX_ID & p_winId ) const
 	{
 		showWidget( p_winId, !getWidget( p_winId ).isVisible() );
 	}
@@ -625,7 +625,7 @@ namespace VTX::UI::QT
 			break;
 		}
 
-		VTX_EVENT<UI::Core::WindowMode>( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode );
+		VTX_EVENT<UI::Core::WindowMode>( VTX::App::Old::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode );
 	}
 	void MainWindow::toggleWindowState()
 	{
@@ -638,7 +638,7 @@ namespace VTX::UI::QT
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
+		QSettings  settings( QString::fromStdString( App::Old::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -647,7 +647,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Old::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -674,7 +674,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Old::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -687,7 +687,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Old::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -696,12 +696,12 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Old::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}
 
-	bool MainWindow::getWidgetVisibility( const App::VTX_ID & p_winId ) const
+	bool MainWindow::getWidgetVisibility( const App::Old::VTX_ID & p_winId ) const
 	{
 		return getWidget( p_winId ).isVisible();
 	};
@@ -713,7 +713,7 @@ namespace VTX::UI::QT
 	//	_settingWidget->raise();
 	// }
 
-	void MainWindow::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
+	void MainWindow::updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		//_renderWidget->updateRenderSetting( p_setting );
 	}
@@ -768,7 +768,7 @@ namespace VTX::UI::QT
 		// const QT::State::Visualization * const visualizationState
 		//	= QT_APP()->getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-		// const App::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
+		// const App::Old::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
 
 		// if ( pickerID == ID::Controller::PICKER )
 		//{

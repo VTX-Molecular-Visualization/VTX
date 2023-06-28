@@ -12,8 +12,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QScrollArea>
-#include <app/application/representation/enum_representation.hpp>
-#include <app/application/representation/representation_preset.hpp>
+#include <app/old/application/representation/enum_representation.hpp>
+#include <app/old/application/representation/representation_preset.hpp>
 #include <util/color/rgba.hpp>
 #include <type_traits>
 #include <vector>
@@ -22,12 +22,12 @@ namespace VTX::UI::Widget::Settings
 {
 	class RepresentationPresetEditor :
 		public VTX::UI::Widget::BaseManualWidget<QScrollArea>,
-		View::UI::EditorView<App::Application::Representation::RepresentationPreset>
+		View::UI::EditorView<App::Old::Application::Representation::RepresentationPreset>
 	{
 		VTX_WIDGET
 
 	  private:
-		using Representation = App::Application::Representation::RepresentationPreset;
+		using Representation = App::Old::Application::Representation::RepresentationPreset;
 
 		enum class OPTIONAL_PARAMETER : int
 		{
@@ -47,8 +47,8 @@ namespace VTX::UI::Widget::Settings
 		void localize() override;
 		void refresh();
 
-		const App::Application::Representation::RepresentationPreset * const getPreset() const { return _preset; };
-		void setPreset( App::Application::Representation::RepresentationPreset * const p_model,
+		const App::Old::Application::Representation::RepresentationPreset * const getPreset() const { return _preset; };
+		void setPreset( App::Old::Application::Representation::RepresentationPreset * const p_model,
 						const bool													   p_updateRender = true );
 
 	  protected:
@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::Settings
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
-		void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void _catchModelEvent( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		Representation * _preset = nullptr;
@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::Settings
 		void _refreshSESRepresentation();
 
 		void _refreshOptionalParametersVisibility(
-			const App::Application::Representation::REPRESENTATION_ENUM & p_representationEnum );
+			const App::Old::Application::Representation::REPRESENTATION_ENUM & p_representationEnum );
 
 		void _onRepresentationNameChange();
 		void _onQuickAccessChange( const int p_state );

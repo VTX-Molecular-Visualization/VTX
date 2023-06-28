@@ -4,9 +4,6 @@ namespace VTX::App::Component::Chemistry
 	class Bond;
 	class Category;
 	class Chain;
-	class GeneratedMolecule;
 	class Molecule;
 	class Residue;
-	class SecondaryStructure;
-	class SolventExcludedSurface;
-} // namespace VTX::App::Component::Chemistry
+} // namespace VTX::App::Model::Chemistry

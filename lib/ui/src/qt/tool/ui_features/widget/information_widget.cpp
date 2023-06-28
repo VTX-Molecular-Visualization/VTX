@@ -6,8 +6,8 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <app/application/define.hpp>	  // Get VTX version
-#include <app/internal/io/filesystem.hpp> // Read license file
+#include <app/old/application/define.hpp>	  // Get VTX version
+#include <app/old/internal/io/filesystem.hpp> // Read license file
 #include <string>
 
 namespace VTX::UI::QT::Tool::UIFeatures::Widget
@@ -182,9 +182,9 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 
 	QString InformationWidget::_getVersionText() const
 	{
-		const QString majorVersion = QString::fromStdString( std::to_string( App::Application::VTX_VERSION_MAJOR ) );
-		const QString minorVersion = QString::fromStdString( std::to_string( App::Application::VTX_VERSION_MINOR ) );
-		const QString revision	   = QString::fromStdString( std::to_string( App::Application::VTX_VERSION_REVISION ) );
+		const QString majorVersion = QString::fromStdString( std::to_string( App::Old::Application::VTX_VERSION_MAJOR ) );
+		const QString minorVersion = QString::fromStdString( std::to_string( App::Old::Application::VTX_VERSION_MINOR ) );
+		const QString revision	   = QString::fromStdString( std::to_string( App::Old::Application::VTX_VERSION_REVISION ) );
 
 		return majorVersion + '.' + minorVersion + '.' + revision;
 	}
@@ -192,7 +192,7 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
 		p_txt = QString::fromStdString(
-			VTX::Util::Filesystem::readPath( App::Internal::IO::Filesystem::getLicenseFile() ) );
+			VTX::Util::Filesystem::readPath( App::Old::Internal::IO::Filesystem::getLicenseFile() ) );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )
@@ -206,19 +206,19 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 
 	void InformationWidget::_goToWebsite() const
 	{
-		QDesktopServices::openUrl( QString::fromStdString( App::Application::VTX_WEBSITE_URL ) );
+		QDesktopServices::openUrl( QString::fromStdString( App::Old::Application::VTX_WEBSITE_URL ) );
 	}
 	void InformationWidget::_goToGit() const
 	{
-		QDesktopServices::openUrl( QString::fromStdString( App::Application::VTX_GIT_URL ) );
+		QDesktopServices::openUrl( QString::fromStdString( App::Old::Application::VTX_GIT_URL ) );
 	}
 	void InformationWidget::_goToDocumentation() const
 	{
-		QDesktopServices::openUrl( QString::fromStdString( App::Application::VTX_DOCUMENTATION_URL ) );
+		QDesktopServices::openUrl( QString::fromStdString( App::Old::Application::VTX_DOCUMENTATION_URL ) );
 	}
 	void InformationWidget::_goToBugReport() const
 	{
-		QDesktopServices::openUrl( QString::fromStdString( App::Application::VTX_BUG_REPORT_URL ) );
+		QDesktopServices::openUrl( QString::fromStdString( App::Old::Application::VTX_BUG_REPORT_URL ) );
 	}
 	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new QT::Action::Main::CheckForUpdate( true ) ); }
 

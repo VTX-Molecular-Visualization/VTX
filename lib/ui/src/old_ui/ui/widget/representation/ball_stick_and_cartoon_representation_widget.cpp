@@ -2,8 +2,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
-#include <app/action/instantiated_representation.hpp>
-#include <app/application/setting.hpp>
+#include <app/old/action/instantiated_representation.hpp>
+#include <app/old/application/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -27,8 +27,8 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange( App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
-						   | App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
+		emit onDataChange( App::Old::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
+						   | App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 	void BallStickAndCartoonRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
 	{
@@ -37,8 +37,8 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange( App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
-						   | App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
+		emit onDataChange( App::Old::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
+						   | App::Old::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 
 } // namespace VTX::UI::Widget::Representation

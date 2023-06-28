@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_STATE_EXPORT__
 
 #include "base_state.hpp"
-#include <app/component/video/_fwd.hpp>
+#include <app/old/component/video/_fwd.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::State
@@ -18,7 +18,7 @@ namespace VTX::UI::QT::State
 
 	  private:
 		std::string							   _directoryName;
-		const App::Component::Video::Path * _path;
+		const App::Old::Component::Video::Path * _path;
 		const std::vector<std::string> *	   _actions	   = nullptr;
 		uint								   _frame	   = 0u;
 		uint								   _frameCount = 0u;

@@ -8,8 +8,8 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/action/main.hpp>
-#include <app/event/global.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/event/global.hpp>
 #include <iostream>
 #include <util/logger.hpp>
 
@@ -17,16 +17,16 @@ namespace VTX::UI::Widget::Console
 {
 	ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::LOG_CONSOLE );
-		_registerEvent( VTX::App::Event::Global::CLEAR_CONSOLE );
+		_registerEvent( VTX::App::Old::Event::Global::LOG_CONSOLE );
+		_registerEvent( VTX::App::Old::Event::Global::CLEAR_CONSOLE );
 	}
 
-	void ConsoleWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void ConsoleWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::LOG_CONSOLE )
+		if ( p_event.name == VTX::App::Old::Event::Global::LOG_CONSOLE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<std::string, std::string, std::string> & event
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<std::string, std::string, std::string> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<std::string, std::string, std::string> & event
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<std::string, std::string, std::string> &>(
 					p_event );
 
 			const std::string logLevel	 = event.get<0>();
@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::Console
 
 			_listWidget->scrollToBottom();
 		}
-		else if ( p_event.name == VTX::App::Event::Global::CLEAR_CONSOLE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::CLEAR_CONSOLE )
 		{
 			_listWidget->clear();
 		}

@@ -1,25 +1,25 @@
 #ifndef __VTX_UI_ACTION_MAIN__
 #define __VTX_UI_ACTION_MAIN__
 
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/chemistry/secondary_structure.hpp>
-#include <app/component/chemistry/solvent_excluded_surface.hpp>
-#include <app/component/video/path.hpp>
-#include <app/core/action/base_action.hpp>
-#include <app/core/event/vtx_event.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/internal/io/serialization/image_export.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/secondary_structure.hpp>
+#include <app/old/component/chemistry/solvent_excluded_surface.hpp>
+#include <app/old/component/video/path.hpp>
+#include <app/old/core/action/base_action.hpp>
+#include <app/old/core/event/vtx_event.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/internal/io/serialization/image_export.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Action::Main
 {
-	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
+	class ChangeSelectionGranularity : public App::Old::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSelectionGranularity( const VTX::App::Application::Selection::GRANULARITY & p_granularity ) :
+		explicit ChangeSelectionGranularity( const VTX::App::Old::Application::Selection::GRANULARITY & p_granularity ) :
 			_granularity( p_granularity )
 		{
 		}
@@ -27,12 +27,12 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const VTX::App::Application::Selection::GRANULARITY _granularity;
+		const VTX::App::Old::Application::Selection::GRANULARITY _granularity;
 	};
-	class ChangePicker : public App::Core::Action::BaseAction
+	class ChangePicker : public App::Old::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangePicker( const App::VTX_ID & p_pickerController, const int p_mode = -1 ) :
+		explicit ChangePicker( const App::Old::VTX_ID & p_pickerController, const int p_mode = -1 ) :
 			_pickerController( p_pickerController ), _mode( p_mode )
 		{
 		}
@@ -40,16 +40,16 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const App::VTX_ID & _pickerController;
+		const App::Old::VTX_ID & _pickerController;
 		const int			_mode;
 	};
 
-	class ClearConsoleInterface : public App::Core::Action::BaseAction
+	class ClearConsoleInterface : public App::Old::Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearConsoleInterface() {}
 
-		virtual void execute() override { VTX_EVENT( VTX::App::Event::Global::CLEAR_CONSOLE ); };
+		virtual void execute() override { VTX_EVENT( VTX::App::Old::Event::Global::CLEAR_CONSOLE ); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 

@@ -5,14 +5,14 @@
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
-#include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/render/renderer/gl/gl.hpp>
-#include <app/render/renderer/gl/program_manager.hpp>
-#include <app/render/renderer/rt/ray_tracer.hpp>
-#include <app/render/spec.hpp>
-#include <app/util/opengl.hpp>
+#include <app/old/application/render_effect/render_effect_preset.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/component/render/camera.hpp>
+#include <app/old/render/renderer/gl/gl.hpp>
+#include <app/old/render/renderer/gl/program_manager.hpp>
+#include <app/old/render/renderer/rt/ray_tracer.hpp>
+#include <app/old/render/spec.hpp>
+#include <app/old/util/opengl.hpp>
 
 namespace VTX::UI::Widget::Render
 {
@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::Render
 			delete _rendererGL;
 		}
 
-		App::Render::Renderer::GL::ProgramManager::get().dispose();
+		App::Old::Render::Renderer::GL::ProgramManager::get().dispose();
 
 		doneCurrent();
 	}
@@ -102,7 +102,7 @@ namespace VTX::UI::Widget::Render
 
 		_timer.start();
 
-		getRenderer().renderFrame( App::VTXApp::get().getScene() );
+		getRenderer().renderFrame( App::Old::VTXApp::get().getScene() );
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
@@ -126,7 +126,7 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
-		App::VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
+		App::Old::VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 
 		if ( _renderer != nullptr )
 		{
@@ -149,26 +149,26 @@ namespace VTX::UI::Widget::Render
 		return pickedIds;
 	}
 
-	void OpenGLWidget::_switchRenderer( const App::Render::Renderer::MODE p_mode )
+	void OpenGLWidget::_switchRenderer( const App::Old::Render::Renderer::MODE p_mode )
 	{
 		bool needInit = false;
 
 		switch ( p_mode )
 		{
-		case App::Render::Renderer::MODE::GL:
+		case App::Old::Render::Renderer::MODE::GL:
 			assert( _gl != nullptr );
 			if ( _rendererGL == nullptr )
 			{
-				_rendererGL = new App::Render::Renderer::GL::GL();
+				_rendererGL = new App::Old::Render::Renderer::GL::GL();
 				needInit	= true;
 			}
 			_renderer = _rendererGL;
 			break;
-		case App::Render::Renderer::MODE::RT_CPU:
+		case App::Old::Render::Renderer::MODE::RT_CPU:
 			assert( _gl != nullptr );
 			if ( _rendererRT == nullptr )
 			{
-				_rendererRT = new App::Render::Renderer::RT::RayTracer();
+				_rendererRT = new App::Old::Render::Renderer::RT::RayTracer();
 				needInit	= true;
 			}
 			_renderer = _rendererRT;

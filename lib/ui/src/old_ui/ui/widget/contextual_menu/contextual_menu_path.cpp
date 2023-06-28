@@ -3,9 +3,9 @@
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 
-#include <app/action/path.hpp>
-#include <app/action/viewpoint.hpp>
-#include <app/component/video/path.hpp>
+#include <app/old/action/path.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -22,13 +22,13 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuPath::localize() {}
 
-	void ContextualMenuPath::setTarget( App::Component::Video::Path * const p_target )
+	void ContextualMenuPath::setTarget( App::Old::Component::Video::Path * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );
 	}
 
 	void ContextualMenuPath::_addViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
-	void ContextualMenuPath::_clearViewpoints() { VTX_ACTION( new App::Action::Path::Clear( *_target ) ); }
+	void ContextualMenuPath::_clearViewpoints() { VTX_ACTION( new App::Old::Action::Path::Clear( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

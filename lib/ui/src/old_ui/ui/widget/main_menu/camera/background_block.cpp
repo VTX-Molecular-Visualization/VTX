@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/background_block.hpp"
 #include "ui/old_ui/ui/widget/renderer/default_background.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/action/renderer.hpp>
-#include <app/id.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/action/renderer.hpp>
+#include <app/old/id.hpp>
+#include <app/old/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -53,7 +53,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void BackgroundBlock::_setBackgroundColor( const Util::Color::Rgba & p_color ) const
 	{
-		VTX_ACTION( new App::Action::Renderer::ChangeBackgroundColor( VTX_RENDER_EFFECT(), p_color ) );
+		VTX_ACTION( new App::Old::Action::Renderer::ChangeBackgroundColor( VTX_RENDER_EFFECT(), p_color ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

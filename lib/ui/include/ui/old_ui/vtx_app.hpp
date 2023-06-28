@@ -4,11 +4,11 @@
 #include "ui/old_ui/state/state_machine.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include <QApplication>
-#include <app/vtx_app.hpp>
+#include <app/old/vtx_app.hpp>
 
 namespace VTX::UI
 {
-	class VTXApp : public ::VTX::App::VTXApp
+	class VTXApp : public ::VTX::App::Old::VTXApp
 	{
 	  public:
 		inline static VTXApp & get()
@@ -29,7 +29,7 @@ namespace VTX::UI
 		void quit();
 
 	  private:
-		VTXApp() : ::VTX::App::VTXApp() {};
+		VTXApp() : ::VTX::App::Old::VTXApp() {};
 		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp() {}
@@ -37,15 +37,15 @@ namespace VTX::UI
 } // namespace VTX::UI
 
 //
-//// #include <app/application/setting.hpp>
+//// #include <app/old/application/setting.hpp>
 // #include "state/state_machine.hpp"
 // #include <QElapsedTimer>
 // #include <QInputMethod>
 // #include <QTimer>
-// #include <app/internal/define.hpp>
-// #include <app/component/generic/base_auto_delete.hpp>
-// #include <app/render/spec.hpp>
-// #include <app/old_app/stat.hpp>
+// #include <app/old/internal/define.hpp>
+// #include <app/old/component/generic/base_auto_delete.hpp>
+// #include <app/old/render/spec.hpp>
+// #include <app/old/old_app/stat.hpp>
 // #include <util/exceptions.hpp>
 //
 // namespace VTX
@@ -88,11 +88,11 @@ namespace VTX::UI
 //		void renderScene() const;
 //		void stop();
 //
-//		inline App::Internal::IO::Serialization::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
-//		inline const App::Internal::IO::Serialization::ScenePathData & getScenePathData() const { return
+//		inline App::Old::Internal::IO::Serialization::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
+//		inline const App::Old::Internal::IO::Serialization::ScenePathData & getScenePathData() const { return
 //*_pathSceneData;
-//}; 		inline App::Application::Scene &				 getScene() { return *_scene; } 		inline const
-// App::Application::Scene &			 getScene() const { return *_scene; }
+//}; 		inline App::Old::Application::Scene &				 getScene() { return *_scene; } 		inline const
+// App::Old::Application::Scene &			 getScene() const { return *_scene; }
 //
 //		// TODO remove this. Must be In UI Module
 //		inline const UI::MainWindow &	   getMainWindow() const { throw NotImplementedException(); }
@@ -106,16 +106,16 @@ namespace VTX::UI
 //		// inline const Stat &									  getStat() const { return _stat; }
 //		// inline Spec &										  getSpec() { return _spec; }
 //		// inline const Spec &									  getSpec() const { return _spec; }
-//		inline App::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
+//		inline App::Old::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
 //		{
 //			return *_representationLibrary;
 //		}
-//		inline const App::Application::Representation::RepresentationLibrary & getRepresentationLibrary() const
+//		inline const App::Old::Application::Representation::RepresentationLibrary & getRepresentationLibrary() const
 //		{
 //			return *_representationLibrary;
 //		}
-//		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() { return
-//*_renderEffectLibrary; } 		inline const App::Application::RenderEffect::RenderEffectLibrary &
+//		inline App::Old::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() { return
+//*_renderEffectLibrary; } 		inline const App::Old::Application::RenderEffect::RenderEffectLibrary &
 // getRenderEffectLibrary() const
 //		{
 //			return *_renderEffectLibrary;
@@ -142,10 +142,10 @@ namespace VTX::UI
 //		// Spec										   _spec				  = Spec();
 //		UI::MainWindow *							   _mainWindow			  = nullptr;
 //		State::StateMachine *						   _stateMachine		  = nullptr;
-//		App::Application::Scene *							   _scene				  = nullptr;
-//		App::Internal::IO::Serialization::ScenePathData *					   _pathSceneData		  = nullptr;
-//		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
-//		App::Application::RenderEffect::RenderEffectLibrary *   _renderEffectLibrary	  = nullptr;
+//		App::Old::Application::Scene *							   _scene				  = nullptr;
+//		App::Old::Internal::IO::Serialization::ScenePathData *					   _pathSceneData		  = nullptr;
+//		App::Old::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
+//		App::Old::Application::RenderEffect::RenderEffectLibrary *   _renderEffectLibrary	  = nullptr;
 //
 //		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
 //			= std::vector<const Generic::BaseAutoDelete *>();
@@ -163,10 +163,10 @@ namespace VTX::UI
 //		void _applyEndOfFrameDeletes();
 //	};
 //
-//	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
-//	//  inline Setting &					  VTX_SETTING() { return App::VTXApp::get().getSetting(); }
-//	//  inline Stat & VTX_STAT() { return App::VTXApp::get().getStat(); }
-//	//  inline Spec & VTX_SPEC() { return App::VTXApp::get().getSpec(); }
+//	// App::Old::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
+//	//  inline Setting &					  VTX_SETTING() { return App::Old::VTXApp::get().getSetting(); }
+//	//  inline Stat & VTX_STAT() { return App::Old::VTXApp::get().getStat(); }
+//	//  inline Spec & VTX_SPEC() { return App::Old::VTXApp::get().getSpec(); }
 //
 // } // namespace VTX
 //

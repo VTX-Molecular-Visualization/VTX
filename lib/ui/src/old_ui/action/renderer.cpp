@@ -1,47 +1,47 @@
 #include "ui/old_ui/action/renderer.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-#include <app/action/renderer.hpp>
+#include <app/old/action/renderer.hpp>
 
 namespace VTX::UI::Action::Renderer
 {
 	void ChangeShading::execute()
 	{
-		VTX_ACTION( new App::Action::Renderer::ChangeShading( _preset, _shading ) );
+		VTX_ACTION( new App::Old::Action::Renderer::ChangeShading( _preset, _shading ) );
 
-		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Old::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SHADING );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::SHADING );
 		}
 	};
 
 	void EnableSSAO::execute()
 	{
-		VTX_ACTION( new App::Action::Renderer::EnableSSAO( _preset, _enable ) );
+		VTX_ACTION( new App::Old::Action::Renderer::EnableSSAO( _preset, _enable ) );
 
-		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Old::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SSAO );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::SSAO );
 		}
 	};
 
 	void EnableOutline::execute()
 	{
-		VTX_ACTION( new App::Action::Renderer::EnableOutline( _preset, _enable ) );
+		VTX_ACTION( new App::Old::Action::Renderer::EnableOutline( _preset, _enable ) );
 
-		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Old::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::OUTLINE );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::OUTLINE );
 		}
 	};
 
 	void EnableFog::execute()
 	{
-		VTX_ACTION( new App::Action::Renderer::EnableFog( _preset, _enable ) );
+		VTX_ACTION( new App::Old::Action::Renderer::EnableFog( _preset, _enable ) );
 
-		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Old::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::FOG );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::FOG );
 		}
 	};
 } // namespace VTX::UI::Action::Renderer

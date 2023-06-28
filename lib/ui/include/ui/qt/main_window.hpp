@@ -18,8 +18,8 @@
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
-#include <app/id.hpp>
-#include <app/render/renderer/enum_renderer.hpp>
+#include <app/old/id.hpp>
+#include <app/old/render/renderer/enum_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -54,9 +54,9 @@ namespace VTX::UI::QT
 
 		bool isOpenGLValid() const;
 		void updateRender() const;
-		void updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
+		void updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING );
 
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
@@ -79,9 +79,9 @@ namespace VTX::UI::QT
 		ContextualMenu &	   getContextualMenu() { return *_contextualMenu; }
 		CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
-		bool getWidgetVisibility( const App::VTX_ID & p_winId ) const;
-		void showWidget( const App::VTX_ID & p_winId, const bool p_show ) const;
-		void toggleWidget( const App::VTX_ID & p_winId ) const;
+		bool getWidgetVisibility( const App::Old::VTX_ID & p_winId ) const;
+		void showWidget( const App::Old::VTX_ID & p_winId, const bool p_show ) const;
+		void toggleWidget( const App::Old::VTX_ID & p_winId ) const;
 		// void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 		Core::WindowMode getWindowMode();
@@ -106,16 +106,16 @@ namespace VTX::UI::QT
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
-		QWidget & getWidget( const App::VTX_ID & p_winId ) const;
+		QWidget & getWidget( const App::Old::VTX_ID & p_winId ) const;
 		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		W & getWidget( const App::VTX_ID & p_winId ) const
+		W & getWidget( const App::Old::VTX_ID & p_winId ) const
 		{
 			return static_cast<W &>( getWidget( p_winId ) );
 		}
 
 		void appendStylesheet( const char * p_stylesheetPath );
 
-		const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
+		const App::Old::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
 
 	  protected:
 		void _setupUi( const QString & p_name ) override;

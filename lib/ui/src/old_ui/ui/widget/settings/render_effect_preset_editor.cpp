@@ -6,9 +6,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <app/action/renderer.hpp>
-#include <app/application/setting.hpp>
-#include <app/core/view/callback_view.hpp>
+#include <app/old/action/renderer.hpp>
+#include <app/old/application/setting.hpp>
+#include <app/old/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -35,31 +35,31 @@ namespace VTX::UI::Widget::Settings
 
 		_ssaoIntensity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoIntensity" );
-		_ssaoIntensity->setMinMax( VTX::App::Application::Setting::AO_INTENSITY_MIN,
-								   VTX::App::Application::Setting::AO_INTENSITY_MAX );
+		_ssaoIntensity->setMinMax( VTX::App::Old::Application::Setting::AO_INTENSITY_MIN,
+								   VTX::App::Old::Application::Setting::AO_INTENSITY_MAX );
 		_ssaoBlurSize
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoBlurSize" );
-		_ssaoBlurSize->setMinMax( VTX::App::Application::Setting::AO_BLUR_SIZE_MIN,
-								  VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
+		_ssaoBlurSize->setMinMax( VTX::App::Old::Application::Setting::AO_BLUR_SIZE_MIN,
+								  VTX::App::Old::Application::Setting::AO_BLUR_SIZE_MAX );
 
 		_enableOutline = new QCheckBox( viewport );
 		_outlineThickness
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "outlineThickness" );
-		_outlineThickness->setMinMax( VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN,
-									  VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
+		_outlineThickness->setMinMax( VTX::App::Old::Application::Setting::OUTLINE_THICKNESS_MIN,
+									  VTX::App::Old::Application::Setting::OUTLINE_THICKNESS_MAX );
 		_outlineSensivity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "outlineSensivity" );
-		_outlineSensivity->setMinMax( VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN,
-									  VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
+		_outlineSensivity->setMinMax( VTX::App::Old::Application::Setting::OUTLINE_SENSIVITY_MIN,
+									  VTX::App::Old::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "outlineColor" );
 
 		_enableFog = new QCheckBox( viewport );
 		_nearFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "nearFog" );
-		_nearFog->setMinMax( VTX::App::Application::Setting::FOG_NEAR_MIN,
-							 VTX::App::Application::Setting::FOG_NEAR_MAX );
+		_nearFog->setMinMax( VTX::App::Old::Application::Setting::FOG_NEAR_MIN,
+							 VTX::App::Old::Application::Setting::FOG_NEAR_MAX );
 		_nearFog->setLabel( "Near" );
 		_farFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "farFog" );
-		_farFog->setMinMax( VTX::App::Application::Setting::FOG_FAR_MIN, VTX::App::Application::Setting::FOG_FAR_MAX );
+		_farFog->setMinMax( VTX::App::Old::Application::Setting::FOG_FAR_MIN, VTX::App::Old::Application::Setting::FOG_FAR_MAX );
 		_farFog->setLabel( "Far" );
 		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
@@ -178,7 +178,7 @@ namespace VTX::UI::Widget::Settings
 
 	void RenderEffectPresetEditor::localize() {}
 
-	void RenderEffectPresetEditor::_catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void RenderEffectPresetEditor::_catchModelEvent( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
 		refresh();
 	}
@@ -222,7 +222,7 @@ namespace VTX::UI::Widget::Settings
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
 	}
 
-	void RenderEffectPresetEditor::setPreset( App::Application::RenderEffect::RenderEffectPreset * const p_model,
+	void RenderEffectPresetEditor::setPreset( App::Old::Application::RenderEffect::RenderEffectPreset * const p_model,
 											  const bool p_updateRender )
 	{
 		if ( _preset == p_model )
@@ -248,17 +248,17 @@ namespace VTX::UI::Widget::Settings
 		}
 
 		if ( !signalsBlocked() && _preset->getName() != strName )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeName( *_preset, strName ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeName( *_preset, strName ) );
 	}
 	void RenderEffectPresetEditor::_onQuickAccessChanged( const bool p_quickAccess ) const
 	{
 		if ( !signalsBlocked() && _preset->hasQuickAccess() != p_quickAccess )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeQuickAccess( *_preset, p_quickAccess ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeQuickAccess( *_preset, p_quickAccess ) );
 	}
 
 	void RenderEffectPresetEditor::_onShadingChange( const int p_newIndex ) const
 	{
-		const App::Render::Renderer::SHADING shading = App::Render::Renderer::SHADING( p_newIndex );
+		const App::Old::Render::Renderer::SHADING shading = App::Old::Render::Renderer::SHADING( p_newIndex );
 		if ( !signalsBlocked() && shading != _preset->getShading() )
 			VTX_ACTION( new VTX::UI::Action::Renderer::ChangeShading( *_preset, shading ) );
 	}
@@ -272,12 +272,12 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onSSAOIntensityChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getSSAOIntensity() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onSSAOBlurSizeChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getSSAOBlurSize() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
 	}
 
 	void RenderEffectPresetEditor::_onOutlineStateChanged( const int p_state ) const
@@ -289,17 +289,17 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const uint p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineThickness() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineSensivityChanged( const float p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineSensivity() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getOutlineColor() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
 	}
 
 	void RenderEffectPresetEditor::_onFogStateChanged( const int p_state ) const
@@ -311,31 +311,31 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onFogNearChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogNear() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogNear( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeFogNear( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogFarChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogFar() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogFar( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeFogFar( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogDensityChanged( const float p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogDensity() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
-			VTX_ACTION( new VTX::App::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Old::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
 	}
 } // namespace VTX::UI::Widget::Settings

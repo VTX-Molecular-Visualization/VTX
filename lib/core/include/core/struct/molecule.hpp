@@ -1,162 +1,107 @@
-#ifndef __VTX_CORE_STRUCT_MOLECULE__
-#define __VTX_CORE_STRUCT_MOLECULE__
+#ifndef __VTX_CORE_NEW_STRUCT_MOLECULE__
+#define __VTX_CORE_NEW_STRUCT_MOLECULE__
 
 #include "_fwd.hpp"
-#include "core/chemdb/unknown_residue_data.hpp"
-#include <map>
-#include <string>
-#include <unordered_set>
+#include "concept.hpp"
+#include "core/chemdb/category.hpp"
+#include "core/gpu/molecule.hpp"
+#include "core/struct/category.hpp"
+#include "core/struct/trajectory.hpp"
+#include <array>
 #include <util/color/rgba.hpp>
-#include <util/types.hpp>
-#include <utility>
 #include <vector>
 
 namespace VTX::Core::Struct
 {
+	template<ConceptChain C, ConceptResidue R, ConceptAtom A, ConceptBond B>
 	class Molecule
 	{
-	  public:
-		using AtomPositionsFrame = std::vector<Vec3f>;
+	  private:
+		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
 
 	  public:
-		Molecule();
-		virtual ~Molecule();
-
-		// Models.
-		inline const std::string & getName() const { return _name; }
-		inline void				   setName( const std::string & p_name ) { _name = p_name; }
-
-		Chain &								addChain();
-		void								addChain( Chain * const p_chain );
-		inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
-		inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
-		Chain *								getFirstChain();
-		const Chain * const					getFirstChain() const;
-		const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
-		Chain * const						getPreviousChain( const uint p_idBaseChain );
-		const Chain * const					getNextChain( const uint p_idBaseChain ) const;
-		Chain * const						getNextChain( const uint p_idBaseChain );
-		inline std::vector<Chain *> &		getChains() { return _chains; }
-		inline const std::vector<Chain *> & getChains() const { return _chains; }
-		uint								getRealChainCount() const { return _realChainCount; };
-		void removeChain( const uint p_id, const bool p_delete = true, const bool p_recursive = true );
-
-		Residue &							  addResidue();
-		inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
-		inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
-		const Residue * const				  getPreviousResidue( const uint p_idBaseResidue ) const;
-		Residue * const						  getPreviousResidue( const uint p_idBaseResidue );
-		const Residue * const				  getNextResidue( const uint p_idBaseResidue ) const;
-		Residue * const						  getNextResidue( const uint p_idBaseResidue );
-		inline std::vector<Residue *> &		  getResidues() { return _residues; }
-		inline const std::vector<Residue *> & getResidues() const { return _residues; }
-		int									  getRealResidueCount() const;
-		void								  removeResidue( const uint p_id,
-															 const bool p_delete			= true,
-															 const bool p_recursive			= true,
-															 const bool p_checkParentUpdate = true );
-
-		Atom &							   addAtom();
-		inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
-		inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
-		inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
-		inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
-		int								   getRealAtomCount() const;
-		void							   removeAtom( const uint p_id,
-													   const bool p_delete			  = true,
-													   const bool p_checkBonds		  = true,
-													   const bool p_checkParentUpdate = true );
-
-		Bond &							   addBond();
-		inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
-		inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
-		inline std::vector<Bond *> &	   getBonds() { return _bonds; }
-		inline const std::vector<Bond *> & getBonds() const { return _bonds; }
-		void							   removeBond( const uint p_id, const bool p_delete = true );
-
-		bool isEmpty();
-
-		inline const std::vector<ChemDB::UnknownResidueData *> & getUnknownResidueSymbols() const
+		Molecule()
 		{
-			return _unknownResidueSymbol;
-		}
-		inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
-
-		int								   getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
-		ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
-		ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
-		int								   addUnknownResidueSymbol( ChemDB::UnknownResidueData * const p_data );
-		inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
-
-		inline AtomPositionsFrame & addAtomPositionFrame()
-		{
-			_atomPositionsFrames.emplace_back();
-			return _atomPositionsFrames.back();
-		}
-		inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
-		{
-			_atomPositionsFrames.emplace_back( p_frame );
+			for ( size_t i = 0; i < CATEGORY_COUNT; i++ )
+			{
+				_categories[ i ] = std::make_unique<Category>( ChemDB::Category::TYPE( i ) );
+			}
 		}
 
-		inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
+		~Molecule() {}
+
+		void initChains( const size_t p_chainCount )
 		{
-			_atomPositionsFrames.clear();
-			_atomPositionsFrames = p_frame;
+			_chains.resize( p_chainCount, nullptr );
+			std::generate( _chains.begin(), _chains.end(), [ this, n = 0 ]() mutable { return new C( this, n++ ); } );
 		}
+		C * const				 getChain( const size_t p_chainIndex ) { return _chains[ p_chainIndex ]; }
+		const C * const			 getChain( const size_t p_chainIndex ) const { return _chains[ p_chainIndex ]; }
+		std::vector<C *> &		 getChains() { return _chains; }
+		const std::vector<C *> & getChains() const { return _chains; }
+		size_t					 getChainCount() const { return _chains.size(); }
 
-		inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
+		void initResidues( const size_t p_residueCount )
 		{
-			return _atomPositionsFrames[ p_frame ];
+			_residues.resize( p_residueCount, nullptr );
+			std::generate( _residues.begin(), _residues.end(), [ n = 0 ]() mutable { return new R( n++ ); } );
 		}
-		inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
+		R * const				 getResidue( const size_t p_chainIndex ) { return _residues[ p_chainIndex ]; }
+		const R * const			 getResidue( const size_t p_chainIndex ) const { return _residues[ p_chainIndex ]; }
+		std::vector<R *> &		 getResidues() { return _residues; }
+		const std::vector<R *> & getResidues() const { return _residues; }
+		size_t					 getResidueCount() const { return _residues.size(); }
+
+		void initAtoms( const size_t p_atomCount )
 		{
-			return _atomPositionsFrames[ p_frame ];
+			_atoms.resize( p_atomCount, nullptr );
+			std::generate( _atoms.begin(), _atoms.end(), [ this, n = 0 ]() mutable { return new A( this, n++ ); } );
 		}
-		inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
-		inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
+		A * const				 getAtom( const size_t p_chainIndex ) { return _atoms[ p_chainIndex ]; }
+		const A * const			 getAtom( const size_t p_chainIndex ) const { return _atoms[ p_chainIndex ]; }
+		std::vector<A *> &		 getAtoms() { return _atoms; }
+		const std::vector<A *> & getAtoms() const { return _atoms; }
+		size_t					 getAtomCount() const { return _atoms.size(); }
 
-		inline const uint getChainCount() const { return uint( _chains.size() ); }
-		inline const uint getResidueCount() const { return uint( _residues.size() ); }
-		inline const uint getAtomCount() const { return uint( _atoms.size() ); }
-		inline const uint getBondCount() const { return uint( _bonds.size() ); }
+		void initBonds( const size_t p_bondCount )
+		{
+			_bonds.resize( p_bondCount, nullptr );
+			std::generate( _bonds.begin(), _bonds.end(), [ this, n = 0 ]() mutable { return new B( this, n++ ); } );
+		}
+		std::vector<B *> &		 getBonds() { return _bonds; }
+		const std::vector<B *> & getBonds() const { return _bonds; }
+		size_t					 getBondCount() const { return _bonds.size(); }
 
-		inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
-		inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
-		inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
-		inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-
-		// At least one residue
-		inline bool hasTopology() const { return getResidueCount() > 1; }
-		inline bool hasDynamic() const { return getFrameCount() > 1; }
-
-		bool mergeTopology( const Molecule & );
+		Category & getCategory( const ChemDB::Category::TYPE p_categoryEnum )
+		{
+			return *( _categories[ int( p_categoryEnum ) ] );
+		}
+		const Category & getCategory( const ChemDB::Category::TYPE p_categoryEnum ) const
+		{
+			return *( _categories[ int( p_categoryEnum ) ] );
+		}
 
 	  protected:
-	  private:
-		// Models.
-		std::string						_name						= "unknown";
-		std::vector<Chain *>			_chains						= std::vector<Chain *>();
-		std::vector<Residue *>			_residues					= std::vector<Residue *>();
-		std::vector<Atom *>				_atoms						= std::vector<Atom *>();
-		std::vector<Bond *>				_bonds						= std::vector<Bond *>();
-		std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
-		uint							_indexFirstBondExtraResidue = 0;
+		// Logic
+		std::string _name = "unknown";
 
-		uint _realChainCount = 0;
+		std::array<std::unique_ptr<Category>, CATEGORY_COUNT> _categories
+			= std::array<std::unique_ptr<Category>, CATEGORY_COUNT>();
 
-		// Missing symbols.
-		std::vector<ChemDB::UnknownResidueData *> _unknownResidueSymbol = std::vector<ChemDB::UnknownResidueData *>();
-		std::unordered_set<std::string>			  _unknownAtomSymbol	= std::unordered_set<std::string>();
+		std::vector<C *> _chains   = std::vector<C *>();
+		std::vector<R *> _residues = std::vector<R *>();
+		std::vector<A *> _atoms	   = std::vector<A *>();
+		std::vector<B *> _bonds	   = std::vector<B *>();
 
-#ifdef _DEBUG
-	  public:
-		// Validation.
-		uint chainCount	  = 0;
-		uint residueCount = 0;
-		uint atomCount	  = 0;
-		uint bondCount	  = 0;
-#endif
+		Trajectory _trajectory = Trajectory();
+
+		// Always usefull ?
+		// size_t								   indexFirstBondExtraResidue = 0;
+
+		// Unused in Core (Move to App::Old ?)
+		// uint _realChainCount = 0;
 	};
+
 } // namespace VTX::Core::Struct
 
 #endif

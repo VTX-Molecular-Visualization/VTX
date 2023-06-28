@@ -1,27 +1,27 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/action/selection.hpp>
-#include <app/action/visible.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/action/visible.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	SelectionActionBlock::SelectionActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
 	};
 
-	void SelectionActionBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void SelectionActionBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == App::Old::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> & castedEvent
+			const VTX::App::Old::Core::Event::VTXEventArg<const App::Old::Application::Selection::SelectionModel *> & castedEvent
 				= dynamic_cast<
-					const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> &>(
+					const VTX::App::Old::Core::Event::VTXEventArg<const App::Old::Application::Selection::SelectionModel *> &>(
 					p_event );
 
 			const bool enableSelection = castedEvent.get()->getMoleculeSelectedCount() > 0;
@@ -101,50 +101,50 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void SelectionActionBlock::_copySelection() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new App::Action::Selection::Copy( selectionModel ) );
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new App::Old::Action::Selection::Copy( selectionModel ) );
 	}
 	void SelectionActionBlock::_copyFrameSelection( const int p_frame ) const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new App::Action::Selection::Copy( selectionModel, p_frame ) );
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new App::Old::Action::Selection::Copy( selectionModel, p_frame ) );
 	}
 
 	void SelectionActionBlock::_extractSelection() const
 	{
-		App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new App::Action::Selection::Extract( selectionModel ) );
+		App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new App::Old::Action::Selection::Extract( selectionModel ) );
 	}
 	void SelectionActionBlock::_deleteSelection() const
 	{
-		App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new App::Action::Selection::Delete( selectionModel ) );
+		App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new App::Old::Action::Selection::Delete( selectionModel ) );
 	}
 
 	void SelectionActionBlock::_showSelection() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
-			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SHOW ) );
+			new App::Old::Action::Selection::ChangeVisibility( selectionModel, App::Old::Action::VISIBILITY_MODE::SHOW ) );
 	}
 	void SelectionActionBlock::_hideSelection() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
-			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::HIDE ) );
+			new App::Old::Action::Selection::ChangeVisibility( selectionModel, App::Old::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void SelectionActionBlock::_soloSelection() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
-			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SOLO ) );
+			new App::Old::Action::Selection::ChangeVisibility( selectionModel, App::Old::Action::VISIBILITY_MODE::SOLO ) );
 	}
 
 	void SelectionActionBlock::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
@@ -161,7 +161,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void SelectionActionBlock::_updateFrameSubmenu() const
 	{
-		_copyFrameSubmenu->updateFrames( App::Application::Selection::SelectionManager::get().getSelectionModel() );
+		_copyFrameSubmenu->updateFrames( App::Old::Application::Selection::SelectionManager::get().getSelectionModel() );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Molecule

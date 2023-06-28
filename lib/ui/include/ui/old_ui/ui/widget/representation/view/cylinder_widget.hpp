@@ -11,10 +11,10 @@ namespace VTX::UI::Widget::Representation::View
 		VTX_WIDGET
 
 	  public:
-		void refresh( const App::Application::Representation::InstantiatedRepresentation &		 p_representation,
-					  const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets ) override;
-		void updateWithNewValue( const App::Application::Representation::InstantiatedRepresentation &		p_representation,
-								 const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets ) override;
+		void refresh( const App::Old::Application::Representation::InstantiatedRepresentation &		 p_representation,
+					  const std::unordered_set<const App::Old::Application::Representation::BaseRepresentable *> & p_targets ) override;
+		void updateWithNewValue( const App::Old::Application::Representation::InstantiatedRepresentation &		p_representation,
+								 const std::unordered_set<const App::Old::Application::Representation::BaseRepresentable *> & p_targets ) override;
 		void resetState() override;
 
 	  signals:

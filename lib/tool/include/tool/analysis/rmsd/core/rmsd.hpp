@@ -1,8 +1,8 @@
 #ifndef __VTX_TOOL_ANALYSIS_RMSD_CORE_RMSD__
 #define __VTX_TOOL_ANALYSIS_RMSD_CORE_RMSD__
 
-#include <app/application/selection/_fwd.hpp>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/application/selection/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
@@ -15,14 +15,14 @@ namespace VTX::Tool::Analysis::RMSD::Core
 	  public:
 		RMSDData() {};
 
-		const App::Component::Chemistry::Molecule * getFirstMolecule() const { return _firstMolecule; }
-		void setFirstMolecule( const App::Component::Chemistry::Molecule * const p_firstMolecule )
+		const App::Old::Component::Chemistry::Molecule * getFirstMolecule() const { return _firstMolecule; }
+		void setFirstMolecule( const App::Old::Component::Chemistry::Molecule * const p_firstMolecule )
 		{
 			_firstMolecule = p_firstMolecule;
 		}
 
-		const App::Component::Chemistry::Molecule * getSecondMolecule() const { return _secondMolecule; }
-		void setSecondMolecule( const App::Component::Chemistry::Molecule * const p_secondMolecule )
+		const App::Old::Component::Chemistry::Molecule * getSecondMolecule() const { return _secondMolecule; }
+		void setSecondMolecule( const App::Old::Component::Chemistry::Molecule * const p_secondMolecule )
 		{
 			_secondMolecule = p_secondMolecule;
 		}
@@ -39,23 +39,23 @@ namespace VTX::Tool::Analysis::RMSD::Core
 		void   setRMSD( const double p_rmsd ) { _rmsd = p_rmsd; }
 
 	  private:
-		const App::Component::Chemistry::Molecule * _firstMolecule	= nullptr;
-		const App::Component::Chemistry::Molecule * _secondMolecule = nullptr;
+		const App::Old::Component::Chemistry::Molecule * _firstMolecule	= nullptr;
+		const App::Old::Component::Chemistry::Molecule * _secondMolecule = nullptr;
 		uint										_residueCount	= 0;
 		uint										_atomCount		= 0;
 
 		double _rmsd = -1.;
 	};
 
-	void callRMSDComputation( const App::Component::Chemistry::Molecule * const p_firstMolecule,
-							  const App::Component::Chemistry::Molecule * const p_secondMolecule,
+	void callRMSDComputation( const App::Old::Component::Chemistry::Molecule * const p_firstMolecule,
+							  const App::Old::Component::Chemistry::Molecule * const p_secondMolecule,
 							  const bool										p_considerTransform = true );
 
-	void callRMSDComputation( const App::Application::Selection::SelectionModel & p_selection,
+	void callRMSDComputation( const App::Old::Application::Selection::SelectionModel & p_selection,
 							  const bool									 p_considerTransform = true );
 
-	double computeRMSD( const App::Component::Chemistry::Molecule & p_firstMolecule,
-						const App::Component::Chemistry::Molecule & p_secondMolecule,
+	double computeRMSD( const App::Old::Component::Chemistry::Molecule & p_firstMolecule,
+						const App::Old::Component::Chemistry::Molecule & p_secondMolecule,
 						const bool									p_considerTransform = true );
 
 	double computeRMSD( const std::vector<Vec3f> & p_vectorPositionsA,

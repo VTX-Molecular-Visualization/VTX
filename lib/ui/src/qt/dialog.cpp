@@ -1,12 +1,12 @@
 #include "ui/qt/dialog.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-// #include <app/action/main.hpp>
-#include <app/application/define.hpp>
+// #include <app/old/action/main.hpp>
+#include <app/old/application/define.hpp>
 #include <util/logger.hpp>
-// #include <app/internal/io/serialization/image_export.hpp>
-// #include <app/internal/io/serialization/scene_path_data.hpp>
-// #include <app/application/selection/selection_manager.hpp>
+// #include <app/old/internal/io/serialization/image_export.hpp>
+// #include <app/old/internal/io/serialization/scene_path_data.hpp>
+// #include <app/old/application/selection/selection_manager.hpp>
 // #include "ui/qt/widget/dialog/download_molecule_dialog.hpp"
 // #include "ui/old_ui/ui/widget/dialog/image_exporter.hpp"
 // #include "ui/old_ui/util/ui.hpp"
@@ -24,10 +24,10 @@ namespace VTX::UI::QT
 	//{
 	//  UI::Widget::Dialog::ImageExporter::openDialog();
 	//}
-	// bool Dialog::openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData )
+	// bool Dialog::openExportImageDialog( const App::Old::Internal::IO::Serialization::ImageExport & p_exportData )
 	//{
 	// QString * const defaultFilter = new QString( Util::Filesystem::getImageExportDefaultFilter().c_str() );
-	// const QString	defaultPath	  = VTX::App::Application::Setting::getLastExportedImageFolder();
+	// const QString	defaultPath	  = VTX::App::Old::Application::Setting::getLastExportedImageFolder();
 
 	// const QString filepath = QFileDialog::getSaveFileName(
 	//	_getMainWindow(), "Export image", defaultPath, Util::Filesystem::IMAGE_EXPORT_EXTENSIONS, defaultFilter );
@@ -37,9 +37,9 @@ namespace VTX::UI::QT
 	//	const FilePath path		   = FilePath( filepath.toStdString() );
 	//	const FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-	//	VTX::App::Application::Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
+	//	VTX::App::Old::Application::Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
 	//	VTX_ACTION(
-	//		new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
+	//		new App::Old::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
 
 	//	return true;
 	//}
@@ -62,7 +62,7 @@ namespace VTX::UI::QT
 	//	for ( const QString & qstr : filenames )
 	//		filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
-	//	VTX_ACTION( new App::Action::Main::ImportRepresentationPreset( filepathes ) );
+	//	VTX_ACTION( new App::Old::Action::Main::ImportRepresentationPreset( filepathes ) );
 	//}
 	//}
 	// void Dialog::importRenderEffectPresetDialog()
@@ -79,7 +79,7 @@ namespace VTX::UI::QT
 	//	for ( const QString & qstr : filenames )
 	//		filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
-	//	VTX_ACTION( new App::Action::Main::ImportRenderEffectPreset( filepathes ) );
+	//	VTX_ACTION( new App::Old::Action::Main::ImportRenderEffectPreset( filepathes ) );
 	//}
 	//}
 
@@ -88,7 +88,7 @@ namespace VTX::UI::QT
 		std::string msg = "Exception : " + std::string( e.what() );
 		msg += '\n';
 
-		msg += "Please open an issue at \n" + App::Application::VTX_BUG_REPORT_URL
+		msg += "Please open an issue at \n" + App::Old::Application::VTX_BUG_REPORT_URL
 			   + " \nwith your latest file in the /logs directory.";
 
 		VTX_ERROR( "{}", msg );

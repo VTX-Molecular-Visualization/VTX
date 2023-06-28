@@ -1,55 +1,49 @@
-#ifndef __VTX_CORE_STRUCT_CHAIN__
-#define __VTX_CORE_STRUCT_CHAIN__
+#ifndef __VTX_CORE_NEW_STRUCT_CHAIN__
+#define __VTX_CORE_NEW_STRUCT_CHAIN__
 
-#include "_fwd.hpp"
+#include "concept.hpp"
+#include "core/define.hpp"
+#include "define.hpp"
 #include <string>
-#include <util/color/rgba.hpp>
-#include <util/types.hpp>
 
 namespace VTX::Core::Struct
 {
+	template<ConceptMolecule M>
 	class Chain
 	{
 	  public:
-		static Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
+		Chain() = default;
+		Chain( M * const p_molecule, const size_t p_internalIndex ) :
+			_molecule( p_molecule ), _internalIndex( p_internalIndex )
+		{
+		}
 
-	  public:
-		Chain() {}
+		const std::string & getName() const { return _name; }
+		void				setName( const std::string & p_name ) { _name = p_name; }
 
-		// inline CHAIN_TYPE	getType() const { return _type; }
-		// inline void			setType( const CHAIN_TYPE p_type ) { _type = p_type; }
-		inline uint				getIndex() const { return _index; };
-		inline void				setIndex( const uint p_index ) { _index = p_index; };
-		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-		void					setMoleculePtr( Molecule * const p_molecule );
+		const size_t getIndex() const { return _internalIndex; }
+		void		 setIndex( const size_t p_index ) const { _internalIndex = p_index; }
 
-		const std::string & getOriginalChainID() const { return _originalChainID; };
-		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; };
+		M * const		getMoleculePtr() const { return _molecule; };
+		const M * const getConstMoleculePtr() const { return _molecule; };
+		void			setMoleculePtr( M * const p_molecule ) { _molecule = p_molecule; };
 
-		inline const std::string & getName() const { return _name; };
-		inline void				   setName( const std::string & p_name ) { _name = p_name; };
-		inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
-		inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
-		inline uint				   getResidueCount() const { return _residueCount; };
-		void					   setResidueCount( const uint p_count );
-		uint					   getRealResidueCount() const { return _realResidueCount; };
-		void					   removeToResidue( const uint p_residueIndex );
+		const size_t getIndexFirstResidue() const { return _indexFirstResidue; };
+		void		 setIndexFirstResidue( const size_t p_residueIndex ) { _indexFirstResidue = p_residueIndex; };
 
-		uint computeRealAtomCount() const;
+		const size_t getResidueCount() const { return _residueCount; };
+		void		 setResidueCount( const size_t p_residueCount ) { _residueCount = p_residueCount; };
 
-		inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
-
-	  private:
-		// CHAIN_TYPE	   _type		= CHAIN_TYPE::STANDARD;
-
-		uint		_index			 = 0;
-		Molecule *	_moleculePtr	 = nullptr;
-		std::string _originalChainID = "";
+	  protected:
+		size_t _internalIndex = INVALID_INDEX;
+		M *	   _molecule;
 
 		std::string _name			   = "unknown";
-		uint		_indexFirstResidue = 0;
-		uint		_residueCount	   = 0;
-		uint		_realResidueCount  = 0;
+		size_t		_indexFirstResidue = 0;
+		size_t		_residueCount	   = 0;
+
+		// std::string _originalChainID = "";
+		// uint		_realResidueCount  = 0;
 	};
 
 } // namespace VTX::Core::Struct

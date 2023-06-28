@@ -11,7 +11,7 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

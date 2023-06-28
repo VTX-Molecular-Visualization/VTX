@@ -1,8 +1,8 @@
 #include "tool/old_tool/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
-#include <app/action/label.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/label.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/mvc.hpp>
 #include <ui/old_ui/ui/contextual_menu.hpp>
 #include <ui/old_ui/ui/mime_type.hpp>
 #include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_label.hpp>
@@ -13,15 +13,15 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	DistanceToCycleSceneView::DistanceToCycleSceneView( Model::Measurement::DistanceToCycle * const p_model,
 														QWidget * const								p_parent ) :
-		App::Core::View::BaseView<Model::Measurement::DistanceToCycle>( p_model ),
+		App::Old::Core::View::BaseView<Model::Measurement::DistanceToCycle>( p_model ),
 		SceneItemWidget( p_parent )
 	{
 	}
 
-	void DistanceToCycleSceneView::notify( const App::Core::Event::VTXEvent * const p_event )
+	void DistanceToCycleSceneView::notify( const App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == App::Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == App::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == App::Old::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == App::Old::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
@@ -43,7 +43,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 			if ( newName != _model->getDefaultName() )
 			{
-				VTX_ACTION( new App::Action::Label::Rename( *_model, newName ) );
+				VTX_ACTION( new App::Old::Action::Label::Rename( *_model, newName ) );
 			}
 		}
 	}
@@ -57,15 +57,15 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 	}
 
-	void DistanceToCycleSceneView::_fillItemSelection( const App::Application::Selection::SelectionModel & p_selection,
+	void DistanceToCycleSceneView::_fillItemSelection( const App::Old::Application::Selection::SelectionModel & p_selection,
 													   QItemSelection & p_itemSelection )
 	{
-		std::set<App::Component::Object3D::Label *> selectedLabels = std::set<App::Component::Object3D::Label *>();
-		p_selection.getItemsOfType( App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, selectedLabels );
+		std::set<App::Old::Component::Object3D::Label *> selectedLabels = std::set<App::Old::Component::Object3D::Label *>();
+		p_selection.getItemsOfType( App::Old::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, selectedLabels );
 
 		bool pathItemAdded = false;
 
-		for ( const App::Component::Object3D::Label * const label : selectedLabels )
+		for ( const App::Old::Component::Object3D::Label * const label : selectedLabels )
 		{
 			if ( label == _model )
 			{
@@ -86,8 +86,8 @@ namespace VTX::View::UI::Widget::Measurement
 			return;
 
 		const QPoint								  globalClicPos = mapToGlobal( p_clicPos );
-		App::Application::Selection::SelectionModel & selection
-			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Selection::SelectionModel & selection
+			= App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.isModelSelected( *_model ) )
 		{
@@ -99,7 +99,7 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 		else
 		{
-			VTX::UI::ContextualMenu::pop<App::Component::Object3D::Label>(
+			VTX::UI::ContextualMenu::pop<App::Old::Component::Object3D::Label>(
 				VTX::UI::ContextualMenu::Menu::Label, _model, globalClicPos );
 		}
 	}

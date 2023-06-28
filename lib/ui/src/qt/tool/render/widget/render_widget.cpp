@@ -4,29 +4,29 @@
 #include "ui/qt/tool/render/widget/base_integrated_widget.hpp"
 #include "ui/qt/tool/render/widget/overlay/visualization_quick_access.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/action/main.hpp>
-#include <app/action/setting.hpp>
-#include <app/action/viewpoint.hpp>
-#include <app/event.hpp>
-#include <app/internal/io/filesystem.hpp>
-// #include <app/component/object3d/label.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/event.hpp>
+#include <app/old/internal/io/filesystem.hpp>
+// #include <app/old/component/object3d/label.hpp>
 // #include <app/model/measurement/angle.hpp>
 // #include <app/model/measurement/dihedral_angle.hpp>
 // #include <app/model/measurement/distance.hpp>
 // #include <app/model/measurement/measure_in_progress.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/object3d/mesh_triangle.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/object3d/mesh_triangle.hpp>
 // #include "ui/state/state_machine.hpp"
 // #include "ui/state/visualization.hpp"
 #include "ui/qt/style.hpp"
-#include <app/event/global.hpp>
+#include <app/old/event/global.hpp>
 #include <util/logger.hpp>
 // #include "ui/view/ui/widget/measurement/angle_render_view.hpp"
 // #include "ui/view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 // #include "ui/view/ui/widget/measurement/distance_render_view.hpp"
 // #include "ui/view/ui/widget/measurement/measure_in_progress_render_view.hpp"
 #include <QShortcut>
-#include <app/vtx_app.hpp>
+#include <app/old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -37,31 +37,31 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		visibleByDefault  = true;
 		referenceInPanels = false;
 
-		_registerEvent( VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
-		_registerEvent( VTX::App::Event::Global::LABEL_ADDED );
-		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
-		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::LABEL_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	RenderWidget::~RenderWidget() {}
 
-	void RenderWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void RenderWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
-			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SHADING );
-			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SSAO );
-			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::OUTLINE );
-			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::FOG );
-			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::AA );
+			updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::SHADING );
+			updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::SSAO );
+			updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::OUTLINE );
+			updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::FOG );
+			updateRenderSetting( App::Old::Render::Renderer::RENDER_SETTING::AA );
 		}
 
-		// if ( p_event.name == VTX::App::Event::Global::LABEL_ADDED )
+		// if ( p_event.name == VTX::App::Old::Event::Global::LABEL_ADDED )
 		//{
-		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
-		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
+		//	const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label*> & castedEvent
+		//		= dynamic_cast<const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label*> &>( p_event );
 
-		//	const App::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
+		//	const App::Old::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
 		//	BaseIntegratedWidget * integratedWidget = nullptr;
 
@@ -104,12 +104,12 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//		_addIntegratedWidget( integratedWidget );
 		//	}
 		//}
-		// else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
+		// else if ( p_event.name == VTX::App::Old::Event::Global::LABEL_REMOVED )
 		//{
-		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
-		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
+		//	const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label*> & castedEvent
+		//		= dynamic_cast<const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label*> &>( p_event );
 
-		//	const App::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
+		//	const App::Old::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
 		//	if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 		//	{
@@ -135,7 +135,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//			model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
 		//	}
 		//}
-		// else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
+		// else if ( p_event.name == VTX::App::Old::Event::Global::PICKER_MODE_CHANGE )
 		//{
 		//	State::Visualization * const state
 		//		= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
@@ -238,19 +238,19 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
-			App::Render::Worker::Snapshoter::MODE::GL,
-			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+		VTX_ACTION( new VTX::App::Old::Action::Main::Snapshot(
+			App::Old::Render::Worker::Snapshoter::MODE::GL,
+			App::Old::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new VTX::App::Action::Setting::ChangeRenderMode( App::Render::Renderer::MODE(
-			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
+		VTX_ACTION( new VTX::App::Old::Action::Setting::ChangeRenderMode( App::Old::Render::Renderer::MODE(
+			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Old::Render::Renderer::MODE::COUNT ) ) );
 	}
 
-	void RenderWidget::_onShortcutPrintCameraInfos() { App::VTXApp::get().getScene().getCamera().print(); }
+	void RenderWidget::_onShortcutPrintCameraInfos() { App::Old::VTXApp::get().getScene().getCamera().print(); }
 
 	void RenderWidget::_addIntegratedWidget( BaseIntegratedWidget * const p_widget )
 	{
@@ -264,7 +264,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			integratedWidget->updatePosition();
 	}
 
-	void RenderWidget::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
+	void RenderWidget::updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		_openGLWidget->updateRenderSetting( p_setting );
 	}

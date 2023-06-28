@@ -4,26 +4,26 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
 #include "ui/qt/action/selection.hpp"
-#include <app/action/main.hpp>
-#include <app/action/selection.hpp>
-#include <app/action/setting.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/event/global.hpp>
-#include <app/id.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	CameraNavigationActionBlock::CameraNavigationActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::CONTROLLER_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::CONTROLLER_CHANGE );
 	};
 
 	CameraNavigationActionBlock::~CameraNavigationActionBlock() {}
 
-	void CameraNavigationActionBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void CameraNavigationActionBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::CONTROLLER_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::CONTROLLER_CHANGE )
 		{
 			_updateCameraModeFeedback();
 		}
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void CameraNavigationActionBlock::_updateCameraModeFeedback()
 	{
-		const App::VTX_ID currentControllerID = UI::VTXApp::get()
+		const App::Old::VTX_ID currentControllerID = UI::VTXApp::get()
 													.getStateMachine()
 													.getState<State::Visualization>( ID::State::VISUALIZATION )
 													->getCurrentCameraControllerID();
@@ -100,7 +100,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void CameraNavigationActionBlock::_toggleCameraProjection() const
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void CameraNavigationActionBlock::_recenterCamera() const
@@ -109,8 +109,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	}
 	void CameraNavigationActionBlock::_orientCamera() const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 

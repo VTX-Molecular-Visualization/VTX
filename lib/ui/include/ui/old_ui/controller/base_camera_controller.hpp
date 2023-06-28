@@ -6,10 +6,10 @@
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "ui/id.hpp"
-#include <app/component/object3d/helper/aabb.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/id.hpp>
-#include <app/internal/scene/camera_manager.hpp>
+#include <app/old/component/object3d/helper/aabb.hpp>
+#include <app/old/component/render/camera.hpp>
+#include <app/old/id.hpp>
+#include <app/old/internal/scene/camera_manager.hpp>
 
 namespace VTX
 {
@@ -25,14 +25,14 @@ namespace VTX
 			inline static const float ORIENT_THRESHOLD = 1e-4f;
 
 		  public:
-			explicit BaseCameraController( App::Internal::Scene::CameraManager & p_cameraManager ) :
+			explicit BaseCameraController( App::Old::Internal::Scene::CameraManager & p_cameraManager ) :
 				_cameraManager( p_cameraManager )
 			{
 			}
 			virtual ~BaseCameraController() = default;
 
-			virtual const App::VTX_ID getID() const = 0;
-			inline App::VTX_ID		  getTargetWidget() override { return UI::ID::Input::RENDER_WIDGET; }
+			virtual const App::Old::VTX_ID getID() const = 0;
+			inline App::Old::VTX_ID		  getTargetWidget() override { return UI::ID::Input::RENDER_WIDGET; }
 
 			inline const bool	 isOrienting() const { return _isOrienting; }
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }
@@ -42,11 +42,11 @@ namespace VTX
 
 			virtual void reset() { _isOrienting = false; }
 
-			virtual void orient( const App::Component::Object3D::Helper::AABB & p_aabb );
+			virtual void orient( const App::Old::Component::Object3D::Helper::AABB & p_aabb );
 			virtual void orient( const Vec3f & p_position, const Quatf & p_orientation );
 
 		  protected:
-			App::Internal::Scene::CameraManager & _cameraManager;
+			App::Old::Internal::Scene::CameraManager & _cameraManager;
 
 			bool  _isOrienting			  = false;
 			float _orientTime			  = 0.f;
@@ -55,10 +55,10 @@ namespace VTX
 			Quatf _orientStartingRotation = QUATF_ID;
 			Quatf _orientTargetRotation	  = QUATF_ID;
 
-			inline App::Component::Render::Camera & _camera() const { return *_cameraManager.getCamera(); }
+			inline App::Old::Component::Render::Camera & _camera() const { return *_cameraManager.getCamera(); }
 
 			virtual void _updateInputs( const float & )													  = 0;
-			virtual void _computeOrientPositions( const App::Component::Object3D::Helper::AABB & p_aabb ) = 0;
+			virtual void _computeOrientPositions( const App::Old::Component::Object3D::Helper::AABB & p_aabb ) = 0;
 			virtual void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) = 0;
 			virtual void _updateOrient( const float & )													  = 0;
 		};

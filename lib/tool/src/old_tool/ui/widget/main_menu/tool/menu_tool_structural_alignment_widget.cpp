@@ -3,12 +3,12 @@
 #include "tool/old_tool/util/analysis.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/application/scene.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
-#include <app/id.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/id.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 #include <ui/old_ui/vtx_app.hpp>
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	MenuToolStructuralAlignmentWidget::MenuToolStructuralAlignmentWidget( QWidget * p_parent ) :
 		MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
 	}
 
 	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget()
@@ -27,9 +27,9 @@ namespace VTX::UI::Widget::MainMenu::Tool
 			delete _alignmentParameter;
 	}
 
-	void MenuToolStructuralAlignmentWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void MenuToolStructuralAlignmentWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SELECTION_CHANGE )
 			_refreshButtons();
 	}
 
@@ -73,14 +73,14 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	bool MenuToolStructuralAlignmentWidget::_checkRMSDEnableSate() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 	bool MenuToolStructuralAlignmentWidget::_checkStructuralAlignmentEnableSate() const
 	{
-		const App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
@@ -92,8 +92,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Analysis::ComputeRMSD( selection ) );
 	}
 
@@ -110,11 +110,11 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_launchStructuralAlignmentAction() const
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
-		const App::Component::Chemistry::Molecule *		   staticMolecule;
-		std::vector<App::Component::Chemistry::Molecule *> mobileMolecules;
+		const App::Old::Component::Chemistry::Molecule *		   staticMolecule;
+		std::vector<App::Old::Component::Chemistry::Molecule *> mobileMolecules;
 		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
 		VTX_ACTION(

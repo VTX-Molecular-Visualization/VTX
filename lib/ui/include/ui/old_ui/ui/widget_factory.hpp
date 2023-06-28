@@ -6,7 +6,7 @@
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>
-#include <app/mvc.hpp>
+#include <app/old/mvc.hpp>
 #include <string>
 #include <type_traits>
 
@@ -50,11 +50,11 @@ namespace VTX
 
 			template<typename V,
 					 typename M,
-					 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
-					 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
+					 typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<App::Old::Core::View::BaseView<M>, V>::value>,
 					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, V>::value>>
 			V * const instantiateViewWidget( M * const			 p_model,
-											 const App::VTX_ID &	 p_id,
+											 const App::Old::VTX_ID &	 p_id,
 											 QWidget * const	 p_parent,
 											 const std::string & p_name ) const
 			{

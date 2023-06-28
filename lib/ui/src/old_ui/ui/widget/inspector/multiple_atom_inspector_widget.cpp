@@ -9,31 +9,31 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/component/chemistry/bond.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/bond.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	MultipleAtomWidget::MoleculeView::MoleculeView( const App::Component::Chemistry::Molecule * p_molecule )
+	MultipleAtomWidget::MoleculeView::MoleculeView( const App::Old::Component::Chemistry::Molecule * p_molecule )
 	{
 		_view = VTX::MVC_MANAGER()
 					.instantiateView<
-						App::Core::View::CallbackView<const App::Component::Chemistry::Molecule, MultipleAtomWidget>>(
+						App::Old::Core::View::CallbackView<const App::Old::Component::Chemistry::Molecule, MultipleAtomWidget>>(
 						p_molecule, ID::View::UI_INSPECTOR_ATOM );
 	}
 	MultipleAtomWidget::MoleculeView::~MoleculeView()
 	{
 		VTX::MVC_MANAGER()
-			.deleteView<App::Core::View::CallbackView<const App::Component::Chemistry::Molecule, MultipleAtomWidget>,
-						const App::Component::Chemistry::Molecule>( _view, ID::View::UI_INSPECTOR_ATOM );
+			.deleteView<App::Old::Core::View::CallbackView<const App::Old::Component::Chemistry::Molecule, MultipleAtomWidget>,
+						const App::Old::Component::Chemistry::Molecule>( _view, ID::View::UI_INSPECTOR_ATOM );
 	}
 
 	void MultipleAtomWidget::MoleculeViewContainer::addViewOnMolecule(
-		const App::Component::Chemistry::Molecule * p_molecule )
+		const App::Old::Component::Chemistry::Molecule * p_molecule )
 	{
-		std::map<const App::Component::Chemistry::Molecule *, MoleculeView *>::const_iterator it
+		std::map<const App::Old::Component::Chemistry::Molecule *, MoleculeView *>::const_iterator it
 			= _mapMolecules.find( p_molecule );
 
 		if ( it == _mapMolecules.end() )
@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::Inspector
 			it->second->addViewer();
 	}
 	void MultipleAtomWidget::MoleculeViewContainer::removeViewOnMolecule(
-		const App::Component::Chemistry::Molecule * p_molecule )
+		const App::Old::Component::Chemistry::Molecule * p_molecule )
 	{
 		_mapMolecules[ p_molecule ]->removeViewer();
 
@@ -58,7 +58,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 	void MultipleAtomWidget::MoleculeViewContainer::clear()
 	{
-		for ( const std::pair<const App::Component::Chemistry::Molecule *, MoleculeView *> & pair : _mapMolecules )
+		for ( const std::pair<const App::Old::Component::Chemistry::Molecule *, MoleculeView *> & pair : _mapMolecules )
 		{
 			delete ( pair.second );
 		}
@@ -139,17 +139,17 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<App::Component::Chemistry::Atom *> & targets = getTargets();
+		const std::unordered_set<App::Old::Component::Chemistry::Atom *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
 			const QString headerTitle = QString::fromStdString( "Atom (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_ATOM );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_ATOM );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const App::Component::Chemistry::Atom * atom : targets )
+			for ( const App::Old::Component::Chemistry::Atom * atom : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRAJECTORY_TIMER ) )
 				{
@@ -187,22 +187,22 @@ namespace VTX::UI::Widget::Inspector
 		std::set<uint> pendingBondIDs = std::set<uint>();
 
 		auto comparer
-			= []( const App::Component::Chemistry::Bond * p_lhs, const App::Component::Chemistry::Bond * p_rhs )
-		{ return App::Component::Chemistry::Bond::comparer( *p_lhs, *p_rhs ); };
+			= []( const App::Old::Component::Chemistry::Bond * p_lhs, const App::Old::Component::Chemistry::Bond * p_rhs )
+		{ return App::Old::Component::Chemistry::Bond::comparer( *p_lhs, *p_rhs ); };
 
-		std::set<const App::Component::Chemistry::Bond *, decltype( comparer )> fullBonds( comparer );
+		std::set<const App::Old::Component::Chemistry::Bond *, decltype( comparer )> fullBonds( comparer );
 
-		for ( const App::Component::Chemistry::Atom * const atom : getTargets() )
+		for ( const App::Old::Component::Chemistry::Atom * const atom : getTargets() )
 		{
 			const uint										  atomIndex		 = atom->getIndex();
-			const App::Component::Chemistry::Residue * const  residue		 = atom->getResiduePtr();
-			const App::Component::Chemistry::Molecule * const moleculeParent = residue->getMoleculePtr();
+			const App::Old::Component::Chemistry::Residue * const  residue		 = atom->getResiduePtr();
+			const App::Old::Component::Chemistry::Molecule * const moleculeParent = residue->getMoleculePtr();
 
 			for ( uint bondIndex = residue->getIndexFirstBond();
 				  bondIndex < ( residue->getIndexFirstBond() + residue->getBondCount() );
 				  bondIndex++ )
 			{
-				const App::Component::Chemistry::Bond * const bond = moleculeParent->getBond( bondIndex );
+				const App::Old::Component::Chemistry::Bond * const bond = moleculeParent->getBond( bondIndex );
 
 				if ( bond == nullptr )
 					continue;
@@ -229,7 +229,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 
 		QString bondInfoStr;
-		for ( const App::Component::Chemistry::Bond * const bond : fullBonds )
+		for ( const App::Old::Component::Chemistry::Bond * const bond : fullBonds )
 		{
 			Util::UI::appendBondInfo( *bond, bondInfoStr );
 		}
@@ -245,9 +245,9 @@ namespace VTX::UI::Widget::Inspector
 		_transformSection->localize();
 	}
 
-	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::App::Core::Event::VTXEvent * const p_event )
+	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::App::Old::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::App::Event::Model::TRAJECTORY_FRAME_CHANGE )
+		if ( p_event->name == VTX::App::Old::Event::Model::TRAJECTORY_FRAME_CHANGE )
 			_onTargetChangeEvent( nullptr, p_event );
 	}
 
@@ -256,12 +256,12 @@ namespace VTX::UI::Widget::Inspector
 		MultipleModelInspectorWidget::clearTargets();
 		_moleculeViewerContainer.clear();
 	}
-	void MultipleAtomWidget::addTarget( App::Component::Chemistry::Atom * const p_target )
+	void MultipleAtomWidget::addTarget( App::Old::Component::Chemistry::Atom * const p_target )
 	{
 		MultipleModelInspectorWidget::addTarget( p_target );
 		_moleculeViewerContainer.addViewOnMolecule( p_target->getMoleculePtr() );
 	}
-	void MultipleAtomWidget::removeTarget( App::Component::Chemistry::Atom * const p_target )
+	void MultipleAtomWidget::removeTarget( App::Old::Component::Chemistry::Atom * const p_target )
 	{
 		MultipleModelInspectorWidget::removeTarget( p_target );
 		_moleculeViewerContainer.removeViewOnMolecule( p_target->getMoleculePtr() );

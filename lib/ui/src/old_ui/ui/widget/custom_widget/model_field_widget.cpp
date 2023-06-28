@@ -3,24 +3,24 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
-#include <app/core/scene/base_scene_item.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/core/scene/base_scene_item.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	ModelFieldWidget::ModelFieldWidget( QWidget * p_parent ) :
 		CustomWidget::ModelDropArea( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::SCENE_ITEM_REMOVED );
 	}
 
-	void ModelFieldWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void ModelFieldWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
+		if ( p_event.name == VTX::App::Old::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> &>( p_event );
+			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Core::Scene::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Core::Scene::BaseSceneItem *> &>( p_event );
 
 			if ( castedEvent.get()->getModelID() == _model->getId() )
 				setModel( nullptr );
@@ -62,7 +62,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ModelFieldWidget::refresh()
 	{
-		const App::Core::Model::BaseModel * const model = getModel();
+		const App::Old::Core::Model::BaseModel * const model = getModel();
 
 		if ( model == nullptr )
 		{
@@ -81,7 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 		adjustSize();
 	}
 
-	void ModelFieldWidget::setModel( App::Core::Model::BaseModel * const p_model )
+	void ModelFieldWidget::setModel( App::Old::Core::Model::BaseModel * const p_model )
 	{
 		if ( _model != p_model )
 		{
@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void ModelFieldWidget::_onModelDropped( App::Core::Model::BaseModel * const p_model ) { setModel( p_model ); }
+	void ModelFieldWidget::_onModelDropped( App::Old::Core::Model::BaseModel * const p_model ) { setModel( p_model ); }
 
 	QMimeData * ModelFieldWidget::_getDataForDrag() const
 	{

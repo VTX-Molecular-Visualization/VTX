@@ -6,8 +6,8 @@
 #include <QObject>
 #include <QString>
 #include <QWidget>
-#include <app/core/model/base_model.hpp>
-#include <app/id.hpp>
+#include <app/old/core/model/base_model.hpp>
+#include <app/old/id.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -21,8 +21,8 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseModelFieldLine( BaseModelListWidget * p_parent );
 		virtual ~BaseModelFieldLine() = default;
 
-		virtual App::Core::Model::BaseModel * const getModel() const										= 0;
-		virtual void								setModel( App::Core::Model::BaseModel * const p_model ) = 0;
+		virtual App::Old::Core::Model::BaseModel * const getModel() const										= 0;
+		virtual void								setModel( App::Old::Core::Model::BaseModel * const p_model ) = 0;
 
 		virtual bool blockSignals( const bool p_block ) { return QObject::blockSignals( p_block ); };
 	};
@@ -42,25 +42,25 @@ namespace VTX::UI::Widget::CustomWidget
 	  public:
 		void localize() override;
 
-		void addModel( App::Core::Model::BaseModel * const p_model );
-		void insertModel( App::Core::Model::BaseModel * const p_model, const int p_row );
-		void removeModel( App::Core::Model::BaseModel * const p_model );
+		void addModel( App::Old::Core::Model::BaseModel * const p_model );
+		void insertModel( App::Old::Core::Model::BaseModel * const p_model, const int p_row );
+		void removeModel( App::Old::Core::Model::BaseModel * const p_model );
 		void clearModels();
-		void swapModels( App::Core::Model::BaseModel * const p_model1,
-						 App::Core::Model::BaseModel * const p_model2 ) const;
+		void swapModels( App::Old::Core::Model::BaseModel * const p_model1,
+						 App::Old::Core::Model::BaseModel * const p_model2 ) const;
 
-		bool									   hasModel( const App::Core::Model::BaseModel * const p_model ) const;
+		bool									   hasModel( const App::Old::Core::Model::BaseModel * const p_model ) const;
 		int										   getModelCount() const;
-		std::vector<App::Core::Model::BaseModel *> getModels() const;
+		std::vector<App::Old::Core::Model::BaseModel *> getModels() const;
 
-		template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
+		template<typename M, typename = std::enable_if<std::is_base_of<App::Old::Core::Model::BaseModel, M>::value>>
 		std::vector<M *> getModels() const
 		{
 			std::vector<M *>								 res		= std::vector<M *>();
-			const std::vector<App::Core::Model::BaseModel *> baseModels = getModels();
+			const std::vector<App::Old::Core::Model::BaseModel *> baseModels = getModels();
 			res.reserve( baseModels.size() );
 
-			for ( const App::Core::Model::BaseModel * const model : baseModels )
+			for ( const App::Old::Core::Model::BaseModel * const model : baseModels )
 				res.emplace_back( static_cast<M *>( model ) );
 
 			return res;
@@ -69,8 +69,8 @@ namespace VTX::UI::Widget::CustomWidget
 		bool		 getContainsOnlyUniqueModel() const { return _containsOnlyUniqueModel; }
 		virtual void setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel );
 
-		const std::vector<App::VTX_ID> & getFilters() const { return _filters; }
-		virtual void					 addTypeFilter( const App::VTX_ID & p_typeID );
+		const std::vector<App::Old::VTX_ID> & getFilters() const { return _filters; }
+		virtual void					 addTypeFilter( const App::Old::VTX_ID & p_typeID );
 
 	  signals:
 		void onModelListChange();
@@ -83,9 +83,9 @@ namespace VTX::UI::Widget::CustomWidget
 		virtual void _initColumns() = 0;
 		void		 _initColumn( const int p_columnIndex, const std::string p_title, const int p_stretch );
 
-		void _addModelInLayout( App::Core::Model::BaseModel * const p_model, const int p_row );
+		void _addModelInLayout( App::Old::Core::Model::BaseModel * const p_model, const int p_row );
 		virtual BaseModelFieldLine * const _instantiateLine() = 0;
-		virtual void _initLine( BaseModelFieldLine * const p_line, App::Core::Model::BaseModel * const p_model ) const;
+		virtual void _initLine( BaseModelFieldLine * const p_line, App::Old::Core::Model::BaseModel * const p_model ) const;
 		virtual void _addLineInLayout( BaseModelFieldLine * const p_line, const int p_row ) = 0;
 
 		void _addWidgetInColumn( QWidget * p_widget, const int p_row, const int p_column );
@@ -96,11 +96,11 @@ namespace VTX::UI::Widget::CustomWidget
 		std::vector<BaseModelFieldLine *> &		  _getLines() { return _lines; }
 		const std::vector<BaseModelFieldLine *> & _getLines() const { return _lines; }
 
-		bool				 _isModelAlreadyInList( const App::Core::Model::BaseModel * const p_model ) const;
-		BaseModelFieldLine * _findLineFromModel( const App::Core::Model::BaseModel * const p_model ) const;
+		bool				 _isModelAlreadyInList( const App::Old::Core::Model::BaseModel * const p_model ) const;
+		BaseModelFieldLine * _findLineFromModel( const App::Old::Core::Model::BaseModel * const p_model ) const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<BaseModelFieldLine, T>::value>>
-		T * _findLineFromModel( const App::Core::Model::BaseModel * const p_model ) const
+		T * _findLineFromModel( const App::Old::Core::Model::BaseModel * const p_model ) const
 		{
 			return dynamic_cast<T *>( _findLineFromModel( p_model ) );
 		}
@@ -112,7 +112,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		std::vector<BaseModelFieldLine *> _lines				   = std::vector<BaseModelFieldLine *>();
 		bool							  _containsOnlyUniqueModel = true;
-		std::vector<App::VTX_ID>		  _filters				   = std::vector<App::VTX_ID>();
+		std::vector<App::Old::VTX_ID>		  _filters				   = std::vector<App::Old::VTX_ID>();
 	};
 
 } // namespace VTX::UI::Widget::CustomWidget

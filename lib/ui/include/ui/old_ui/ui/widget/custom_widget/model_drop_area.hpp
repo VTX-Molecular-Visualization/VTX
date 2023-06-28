@@ -7,15 +7,15 @@
 #include <QFrame>
 #include <QString>
 #include <QWidget>
-#include <app/id.hpp>
+#include <app/old/id.hpp>
 #include <vector>
 
 namespace VTX
 {
-	namespace App::Core::Model
+	namespace App::Old::Core::Model
 	{
 		class BaseModel;
-	} // namespace App::Core::Model
+	} // namespace App::Old::Core::Model
 
 	namespace UI::Widget::CustomWidget
 	{
@@ -34,13 +34,13 @@ namespace VTX
 			bool isAcceptingGroup() const { return _acceptGroup; }
 			void setAcceptGroup( const bool p_accept );
 
-			void addTypeFilter( const VTX::App::VTX_ID & p_modelID );
-			bool matchFilter( const VTX::App::VTX_ID & p_type ) const;
-			bool matchFilter( const App::Core::Model::BaseModel & p_model ) const;
+			void addTypeFilter( const VTX::App::Old::VTX_ID & p_modelID );
+			bool matchFilter( const VTX::App::Old::VTX_ID & p_type ) const;
+			bool matchFilter( const App::Old::Core::Model::BaseModel & p_model ) const;
 
 		  signals:
-			void onModelDropped( App::Core::Model::BaseModel * const p_model );
-			void onModelsDropped( std::vector<App::Core::Model::BaseModel *> p_models );
+			void onModelDropped( App::Old::Core::Model::BaseModel * const p_model );
+			void onModelsDropped( std::vector<App::Old::Core::Model::BaseModel *> p_models );
 
 		  protected:
 			ModelDropArea( QWidget * p_parent );
@@ -54,7 +54,7 @@ namespace VTX
 			void dropEvent( QDropEvent * event ) override;
 
 		  private:
-			std::vector<VTX::App::VTX_ID> _filters	  = std::vector<VTX::App::VTX_ID>();
+			std::vector<VTX::App::Old::VTX_ID> _filters	  = std::vector<VTX::App::Old::VTX_ID>();
 			bool						 _acceptGroup = false;
 		};
 	} // namespace UI::Widget::CustomWidget

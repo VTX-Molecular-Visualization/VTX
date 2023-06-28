@@ -8,11 +8,11 @@
 #include <QLabel>
 #include <QPoint>
 #include <QString>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
-	class ChainSequenceWidget : public ViewItemWidget<App::Component::Chemistry::Chain>
+	class ChainSequenceWidget : public ViewItemWidget<App::Old::Component::Chemistry::Chain>
 	{
 		VTX_WIDGET
 
@@ -22,17 +22,17 @@ namespace VTX::UI::Widget::Sequence
 		void refresh() override;
 		void localize() override;
 
-		App::Component::Chemistry::Residue * const getResidueAtPos( const QPoint & p_pos ) const;
-		App::Component::Chemistry::Residue * const getFirstResidue() const;
-		App::Component::Chemistry::Residue * const getLastResidue() const;
+		App::Old::Component::Chemistry::Residue * const getResidueAtPos( const QPoint & p_pos ) const;
+		App::Old::Component::Chemistry::Residue * const getFirstResidue() const;
+		App::Old::Component::Chemistry::Residue * const getLastResidue() const;
 
-		QPoint getResiduePos( const App::Component::Chemistry::Residue & p_residue,
+		QPoint getResiduePos( const App::Old::Component::Chemistry::Residue & p_residue,
 							  const QWidget * const						 p_widgetSpace ) const
 		{
 			return _sequenceDisplayWidget->getResiduePos( p_residue, p_widgetSpace );
 		}
 
-		App::Component::Chemistry::Residue & getClosestResidueFromPos( const QPoint & p_pos,
+		App::Old::Component::Chemistry::Residue & getClosestResidueFromPos( const QPoint & p_pos,
 																	   const bool	  p_takeForward ) const;
 		int getSequenceXmin() const { return pos().x() + _sequenceDisplayWidget->pos().x(); };
 		int getSequenceXmax() const

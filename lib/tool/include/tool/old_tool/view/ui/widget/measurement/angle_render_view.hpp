@@ -9,8 +9,8 @@
 #include <QPen>
 #include <QPoint>
 #include <QSize>
-#include <app/id.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/id.hpp>
+#include <app/old/core/view/base_view.hpp>
 #include <string>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>
@@ -19,7 +19,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	class AngleRenderView :
-		public App::Core::View::BaseView<VTX::Model::Measurement::Angle>,
+		public App::Old::Core::View::BaseView<VTX::Model::Measurement::Angle>,
 		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET

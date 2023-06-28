@@ -5,14 +5,14 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "representation_preset_button.hpp"
 #include <QWidget>
-#include <app/application/representation/representation_library.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/representation/representation_library.hpp>
+#include <app/old/core/view/base_view.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	class RepresentationBlock :
-		public VTX::App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>,
+		public VTX::App::Old::Core::View::BaseView<App::Old::Application::Representation::RepresentationLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void localize() override;
 
 	  protected:
-		RepresentationBlock( App::Application::Representation::RepresentationLibrary * const _representationLibrary,
+		RepresentationBlock( App::Old::Application::Representation::RepresentationLibrary * const _representationLibrary,
 							 QWidget *											  p_parent );
 		~RepresentationBlock();
 		void _setupUi( const QString & p_name ) override;
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _refreshIcons();
 		void _refreshView() override;
 
-		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		std::map<int, RepresentationPresetButton *> _buttons   = std::map<int, RepresentationPresetButton *>();

@@ -1,33 +1,38 @@
-#ifndef __VTX_CORE_STRUCT_BOND__
-#define __VTX_CORE_STRUCT_BOND__
+#ifndef __VTX_CORE_NEW_STRUCT_BOND__
+#define __VTX_CORE_NEW_STRUCT_BOND__
 
 #include "_fwd.hpp"
 #include "core/chemdb/bond.hpp"
-#include <util/types.hpp>
+#include "core/define.hpp"
 
 namespace VTX::Core::Struct
 {
+	template<ConceptMolecule M>
 	class Bond
 	{
 	  public:
-		Bond() {};
+		Bond() {}
+		Bond( M * const p_moleculePtr ) : _moleculePtr( p_moleculePtr ) {}
+		Bond( M * const p_moleculePtr, const size_t p_internalIndex ) :
+			_moleculePtr( p_moleculePtr ), _internalIndex( p_internalIndex )
+		{
+		}
 
-		inline uint getIndexFirstAtom() const { return _indexFirstAtom; }
-		inline void setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; }
-		inline uint getIndexSecondAtom() const { return _indexSecondAtom; }
-		inline void setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; }
+		size_t getIndex() const { return _internalIndex; };
+		void   setIndex( const size_t p_index ) { _internalIndex = p_index; };
 
-		inline ChemDB::Bond::ORDER getOrder() const { return _order; }
-		inline void				   setOrder( const ChemDB::Bond::ORDER p_order ) { _order = p_order; }
+		M *		  getMoleculePtr() const { return _moleculePtr; };
+		const M * getConstMoleculePtr() const { return _moleculePtr; };
+		void	  setMoleculePtr( M * const p_moleculePtr ) { _moleculePtr = p_moleculePtr; };
 
-		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-		inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+		ChemDB::Bond::ORDER getOrder() const { return _order; };
+		void				setOrder( const ChemDB::Bond::ORDER p_order ) { _order = p_order; };
 
-	  private:
-		uint				_indexFirstAtom	 = 0;
-		uint				_indexSecondAtom = 0;
-		Molecule *			_moleculePtr	 = nullptr;
-		ChemDB::Bond::ORDER _order			 = ChemDB::Bond::ORDER::UNKNOWN;
+	  protected:
+		size_t _internalIndex = INVALID_INDEX;
+
+		M *					_moleculePtr = nullptr;
+		ChemDB::Bond::ORDER _order		 = ChemDB::Bond::ORDER::UNKNOWN;
 	};
 
 } // namespace VTX::Core::Struct

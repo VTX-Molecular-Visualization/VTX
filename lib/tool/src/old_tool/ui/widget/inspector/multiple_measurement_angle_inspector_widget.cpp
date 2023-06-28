@@ -1,8 +1,8 @@
 #include "tool/old_tool/ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
 #include "tool/old_tool/model/measurement/angle.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/action/atom.hpp>
-#include <app/action/label.hpp>
+#include <app/old/action/atom.hpp>
+#include <app/old/action/label.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 #include <ui/qt/action/atom.hpp>
 #include <ui/qt/action/label.hpp>
@@ -112,7 +112,7 @@ namespace VTX::UI::Widget::Inspector
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap
-				= Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MEASUREMENT_ANGLE );
+				= Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_MEASUREMENT_ANGLE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Measurement::Angle * angleModel : targets )
@@ -127,7 +127,7 @@ namespace VTX::UI::Widget::Inspector
 					_angleLabelWidget->updateWithNewValue( angleStr );
 					_colorWidget->updateWithNewValue( angleModel->getColor() );
 
-					if ( angleModel->getTypeId() == App::ID::Model::MODEL_MEASUREMENT_ANGLE )
+					if ( angleModel->getTypeId() == App::Old::ID::Model::MODEL_MEASUREMENT_ANGLE )
 					{
 						if ( goToAtomButtonsVisible )
 						{
@@ -171,32 +171,32 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentAngleWidget::_renameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 
-		VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
+		VTX_ACTION( new App::Old::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_setLabelColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new App::Action::Label::ChangeColor( labelTargets, p_color ) );
+		VTX_ACTION( new App::Old::Action::Label::ChangeColor( labelTargets, p_color ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_setAutoNameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets
-			= std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Old::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Old::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 
-		VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
+		VTX_ACTION( new App::Old::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_resetFieldStates( const SectionFlag & p_flag )

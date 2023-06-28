@@ -40,7 +40,7 @@ function(win_deploy_qt target)
 	
 	# TODO : Check if usefull ?	
 	if(!MSVC)
-		qt_import_plugins(VTX INCLUDE Qt::QMinimalIntegrationPlugin)
+		qt_import_plugins(${target} INCLUDE Qt::QMinimalIntegrationPlugin)
 	endif()
 	
     )

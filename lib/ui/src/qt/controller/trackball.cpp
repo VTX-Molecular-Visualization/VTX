@@ -1,7 +1,7 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/style.hpp"
-#include <app/application/scene.hpp>
-#include <app/application/selection/selection_manager.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Controller
 		}
 	}
 
-	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
+	Vec3f Trackball::targetSimulationFromCamera( const App::Old::Component::Render::Camera & p_camera ) const
 	{
 		return p_camera.getPosition() + p_camera.getFront() * _distanceForced;
 	}
@@ -178,7 +178,7 @@ namespace VTX::UI::QT::Controller
 
 			Vec3f::bool_type res
 				= VTX::Util::Math::lessThan( VTX::Util::Math::abs( _velocity ),
-											 Vec3f( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+											 Vec3f( VTX::App::Old::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 			if ( !_mouseLeftPressed && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;
@@ -191,11 +191,11 @@ namespace VTX::UI::QT::Controller
 		BaseCameraController::reset();
 
 		_needUpdate = true;
-		_target		= App::VTXApp::get().getScene().getAABB().centroid();
+		_target		= App::Old::VTXApp::get().getScene().getAABB().centroid();
 		_velocity	= VEC3F_ZERO;
 	}
 
-	void Trackball::_computeOrientPositions( const App::Component::Object3D::Helper::AABB & p_aabb )
+	void Trackball::_computeOrientPositions( const App::Old::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		_orientStartingPosition = _target;
 		_orientTargetPosition	= p_aabb.centroid();

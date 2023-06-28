@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
-#include <app/core/event/vtx_event.hpp>
+#include <app/old/core/event/vtx_event.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		~CameraNavigationActionBlock();
 		void localize() override;
 
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		CameraNavigationActionBlock( QWidget * p_parent );

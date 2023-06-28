@@ -5,8 +5,8 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/molecule/windows_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/application/render_effect/render_effect_library.hpp>
-#include <app/application/representation/representation_library.hpp>
+#include <app/old/application/render_effect/render_effect_library.hpp>
+#include <app/old/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		addToolBlock<SelectionActionBlock>( "selectionBlock" );
 		RepresentationBlock * const representationBlock
 			= WidgetFactory::get().instantiateViewWidget<RepresentationBlock>(
-				&App::Application::Representation::RepresentationLibrary::get(),
+				&App::Old::Application::Representation::RepresentationLibrary::get(),
 				UI::ID::View::UI_MENU_VISUALIZATION_REPRESENTATION_LIBRARY,
 				this,
 				"representationBlock" );

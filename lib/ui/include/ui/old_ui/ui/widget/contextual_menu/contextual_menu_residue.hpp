@@ -4,18 +4,18 @@
 #include "contextual_menu_template.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	class ContextualMenuResidue : public ContextualMenuTemplate<App::Component::Chemistry::Residue>
+	class ContextualMenuResidue : public ContextualMenuTemplate<App::Old::Component::Chemistry::Residue>
 	{
 		VTX_WIDGET
 
 	  public:
 		~ContextualMenuResidue();
 		void localize() override;
-		void setTarget( App::Component::Chemistry::Residue * const p_target ) override;
+		void setTarget( App::Old::Component::Chemistry::Residue * const p_target ) override;
 
 	  protected:
 		ContextualMenuResidue( QWidget * p_parent = nullptr );

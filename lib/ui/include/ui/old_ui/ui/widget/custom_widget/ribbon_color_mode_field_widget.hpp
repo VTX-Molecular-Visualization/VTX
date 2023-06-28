@@ -9,7 +9,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
-#include <app/component/chemistry/secondary_structure.hpp>
+#include <app/old/component/chemistry/secondary_structure.hpp>
 #include <core/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
 

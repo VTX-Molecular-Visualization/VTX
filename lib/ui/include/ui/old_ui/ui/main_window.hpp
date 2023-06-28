@@ -4,8 +4,8 @@
 #include "contextual_menu.hpp"
 #include "cursor_handler.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
-#include <app/core/event/base_event_receiver_vtx.hpp>
-#include <app/core/event/vtx_event.hpp>
+#include <app/old/core/event/base_event_receiver_vtx.hpp>
+#include <app/old/core/event/vtx_event.hpp>
 // #include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -31,7 +31,7 @@ namespace VTX
 	{
 		class MainWindow :
 			public QMainWindow,
-			public VTX::App::Core::Event::BaseEventReceiverVTX,
+			public VTX::App::Old::Core::Event::BaseEventReceiverVTX,
 			public VTX::UI::Event::BaseEventFirererInput
 		{
 			Q_OBJECT
@@ -49,17 +49,17 @@ namespace VTX
 
 			inline bool isOpenGLValid() const { return _renderWidget->isOpenGLValid(); }
 			inline void updateRender() const { _renderWidget->updateRender(); }
-			void		updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
+			void		updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING );
 			const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
-			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
-			bool getWidgetVisibility( const App::VTX_ID & p_winId ) const;
-			void showWidget( const App::VTX_ID & p_winId, const bool p_show ) const;
-			void toggleWidget( const App::VTX_ID & p_winId ) const;
+			bool getWidgetVisibility( const App::Old::VTX_ID & p_winId ) const;
+			void showWidget( const App::Old::VTX_ID & p_winId, const bool p_show ) const;
+			void toggleWidget( const App::Old::VTX_ID & p_winId ) const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 			WindowMode getWindowMode();
@@ -72,14 +72,14 @@ namespace VTX
 			void deleteLayoutSaveFile() const;
 			void restoreDefaultLayout();
 
-			QWidget & getWidget( const App::VTX_ID & p_winId ) const;
+			QWidget & getWidget( const App::Old::VTX_ID & p_winId ) const;
 			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			W & getWidget( const App::VTX_ID & p_winId ) const
+			W & getWidget( const App::Old::VTX_ID & p_winId ) const
 			{
 				return static_cast<W &>( getWidget( p_winId ) );
 			}
 
-			const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
+			const App::Old::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
 
 		  protected:
 			void resizeEvent( QResizeEvent * ) override;

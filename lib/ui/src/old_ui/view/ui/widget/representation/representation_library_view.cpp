@@ -3,20 +3,20 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/action/representation.hpp>
-#include <app/application/representation/representation_preset.hpp>
-#include <app/event/global.hpp>
-#include <app/id.hpp>
+#include <app/old/action/representation.hpp>
+#include <app/old/application/representation/representation_preset.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/id.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
 	RepresentationLibraryView::RepresentationLibraryView(
-		App::Application::Representation::RepresentationLibrary * const p_model,
+		App::Old::Application::Representation::RepresentationLibrary * const p_model,
 		QWidget * const													p_parent ) :
-		App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>( p_model ),
+		App::Old::Core::View::BaseView<App::Old::Application::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::REPRESENTATION_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::REPRESENTATION_ADDED );
 	}
 
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
@@ -86,12 +86,12 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _resetLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onResetLibrary );
 	}
 
-	void RepresentationLibraryView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void RepresentationLibraryView::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::REPRESENTATION_ADDED )
+		if ( p_event.name == VTX::App::Old::Event::Global::REPRESENTATION_ADDED )
 		{
 			const int representationIndex
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<int> &>( p_event ).get();
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<int> &>( p_event ).get();
 
 			_presetList->setCurrentIndex( representationIndex );
 		}
@@ -106,16 +106,16 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onAddPreset() const
 	{
 		VTX_ACTION(
-			new App::Action::Representation::AddNewPresetInLibrary( VTX::App::Application::Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+			new App::Old::Action::Representation::AddNewPresetInLibrary( VTX::App::Old::Application::Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{
-		VTX_ACTION( new App::Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
+		VTX_ACTION( new App::Old::Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
 	void RepresentationLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
+			new App::Old::Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure you want to delete this preset ?" );
 	}
@@ -123,14 +123,14 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Representation::ReloadPresets(),
+			new App::Old::Action::Representation::ReloadPresets(),
 			"Confirm",
 			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RepresentationLibraryView::_onResetLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new App::Action::Representation::ResetPresetsToDefault(),
+			new App::Old::Action::Representation::ResetPresetsToDefault(),
 			"Confirm",
 			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}
@@ -139,7 +139,7 @@ namespace VTX::View::UI::Widget::Representation
 	{
 		const int currentIndex = _presetList->currentIndex();
 
-		App::Application::Representation::RepresentationPreset * const representation
+		App::Old::Application::Representation::RepresentationPreset * const representation
 			= _model->getRepresentation( currentIndex );
 
 		_representationPresetEditor->setPreset( representation, p_applyPreset );

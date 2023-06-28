@@ -1,11 +1,11 @@
 #include "ui/old_ui/ui/widget/sequence/dataset/sequence_dataset_unknown_residue.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
 	SequenceDisplayDataset_UnknownResidue::SequenceDisplayDataset_UnknownResidue(
-		const App::Component::Chemistry::Chain & p_chain,
+		const App::Old::Component::Chemistry::Chain & p_chain,
 		const uint								 p_startIndexChar,
 		const uint								 p_residueFirstIndex,
 		const uint								 p_residueLastIndex,
@@ -25,11 +25,11 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		uint currentCharLength			= 0;
 		uint firstResidueOfCurrentCount = _residueFirstIndex;
 
-		const App::Component::Chemistry::Molecule * const molecule = _chain->getMoleculePtr();
+		const App::Old::Component::Chemistry::Molecule * const molecule = _chain->getMoleculePtr();
 
 		for ( uint i = _residueFirstIndex; i <= _residueLastIndex; i++ )
 		{
-			const App::Component::Chemistry::Residue * const residue
+			const App::Old::Component::Chemistry::Residue * const residue
 				= molecule->getResidue( _chain->getIndexFirstResidue() + i );
 			const uint residueSymbolStrLength = uint( residue->getSymbolStr().length() );
 
@@ -73,20 +73,20 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		if ( _spaceBefore )
 			str.append( ' ' );
 
-		const App::Component::Chemistry::Molecule & p_molecule = *_chain->getMoleculePtr();
+		const App::Old::Component::Chemistry::Molecule & p_molecule = *_chain->getMoleculePtr();
 
 		const uint residueFirstIndexInMolecule = _chain->getIndexFirstResidue() + _residueFirstIndex;
 		const uint residueLastIndexInMolecule  = _chain->getIndexFirstResidue() + _residueLastIndex;
 		for ( uint i = residueFirstIndexInMolecule; i < residueLastIndexInMolecule; i++ )
 		{
-			const App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( i );
+			const App::Old::Component::Chemistry::Residue * const residue = p_molecule.getResidue( i );
 			const std::string &								 symbol	 = residue->getSymbolStr();
 
 			str.append( QString::fromStdString( symbol ) );
 			str.append( ' ' );
 		}
 
-		const App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueLastIndexInMolecule );
+		const App::Old::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueLastIndexInMolecule );
 		const std::string &								 symbol	 = residue->getSymbolStr();
 
 		str.append( QString::fromStdString( symbol ) );
@@ -101,8 +101,8 @@ namespace VTX::UI::Widget::Sequence::Dataset
 															   uint &	 p_lastIndexCharWritten,
 															   bool		 p_startBloc ) const
 	{
-		const App::Component::Chemistry::Molecule & molecule = *_chain->getMoleculePtr();
-		const App::Component::Chemistry::Residue *	residue
+		const App::Old::Component::Chemistry::Molecule & molecule = *_chain->getMoleculePtr();
+		const App::Old::Component::Chemistry::Residue *	residue
 			= molecule.getResidue( _chain->getIndexFirstResidue() + _residueFirstIndex );
 		uint		residueSymbolStrLength = uint( residue->getSymbolStr().length() );
 		std::string residueIndexStr		   = std::to_string( residue->getIndexInOriginalChain() );
@@ -175,7 +175,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		return charOffset;
 	};
 
-	App::Component::Chemistry::Residue * const SequenceDisplayDataset_UnknownResidue::getResidueAtCharIndex(
+	App::Old::Component::Chemistry::Residue * const SequenceDisplayDataset_UnknownResidue::getResidueAtCharIndex(
 		const uint p_charIndex )
 	{
 		uint charOffset	  = _startIndexChar + ( _spaceBefore ? 1 : 0 );
@@ -204,7 +204,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 	{
 		uint res = _charCount;
 		res -= _spaceAfter ? 1 : 0;
-		const App::Component::Chemistry::Residue * const lastResidue
+		const App::Old::Component::Chemistry::Residue * const lastResidue
 			= _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueLastIndex );
 		const uint lastIndexStrLength = uint( std::to_string( lastResidue->getIndexInOriginalChain() ).size() );
 

@@ -2,46 +2,22 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_BOND__
 
 #include "_fwd.hpp"
-#include "app/core/model/base_model.hpp"
-#include "app/id.hpp"
-#include <core/chemdb/bond.hpp>
-#include <core/struct/bond.hpp>
-#include <string>
-#include <util/types.hpp>
+#include "define.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = VTX::Core::ChemDB;
-
-	class Bond : public App::Core::Model::BaseModel
+	class Bond : public BondCore
 	{
-		VTX_MODEL
-
 	  public:
-		static bool comparer( const Bond & p_lhs, const Bond & p_rhs );
+		Bond() : BondCore() {}
+		Bond( Molecule * const p_moleculePtr ) : BondCore( p_moleculePtr ) {}
+		Bond( Molecule * const p_moleculePtr, const size_t p_index ) : BondCore( p_moleculePtr, p_index ) {}
 
-		inline VTX::Core::Struct::Bond &	   getBondStruct() { return *_bondStruct; }
-		inline const VTX::Core::Struct::Bond & getBondStruct() const { return *_bondStruct; }
+		size_t getIndexFirstAtom() const;
+		void   setIndexFirstAtom( const size_t p_atomIndex );
 
-		inline uint getIndexFirstAtom() const { return _bondStruct->getIndexFirstAtom(); }
-		inline void setIndexFirstAtom( const uint p_index ) { _bondStruct->setIndexFirstAtom( p_index ); }
-		inline uint getIndexSecondAtom() const { return _bondStruct->getIndexSecondAtom(); }
-		inline void setIndexSecondAtom( const uint p_index ) { _bondStruct->setIndexSecondAtom( p_index ); }
-
-		inline ChemDB::Bond::ORDER getOrder() const { return _bondStruct->getOrder(); }
-		inline void				   setOrder( const ChemDB::Bond::ORDER p_order ) { _bondStruct->setOrder( p_order ); }
-
-		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-		void					setMoleculePtr( Molecule * const p_molecule );
-
-	  protected:
-		Bond() : BaseModel( App::ID::Model::MODEL_BOND ) {};
-
-	  private:
-		VTX::Core::Struct::Bond * _bondStruct = nullptr;
-
-		// TODO manage access to Model::Molecule from Struct::Molecule with EnTT.
-		Molecule * _moleculePtr = nullptr;
+		size_t getIndexSecondAtom() const;
+		void   setIndexSecondAtom( const size_t p_atomIndex );
 	};
 
 } // namespace VTX::App::Component::Chemistry

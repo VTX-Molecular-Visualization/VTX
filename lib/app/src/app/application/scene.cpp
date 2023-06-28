@@ -1,65 +1,61 @@
 #include "app/application/scene.hpp"
-#include "app/action/main.hpp"
-#include "app/component/chemistry/molecule.hpp"
-#include "app/component/object3d/helper/base_helper.hpp"
-#include "app/component/object3d/label.hpp"
-#include "app/component/object3d/mesh_triangle.hpp"
-#include "app/component/video/path.hpp"
-#include "app/event.hpp"
-#include "app/event/global.hpp"
-#include "app/internal/scene/camera_manager.hpp"
-#include "app/mvc.hpp"
-#include "app/internal/math/transform.hpp"
-#include <algorithm>
+#include "app/component/scene/aabb_component.hpp"
+#include "app/component/scene/updatable.hpp"
+#include "app/old/internal/scene/camera_manager.hpp"
 
 namespace VTX::App::Application
 {
+	auto Scene::getAllSceneItems() const
+	{
+		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
+	}
+
 	Scene::Scene()
 	{
-		_cameraManager = new Internal::Scene::CameraManager();
+		_cameraManager = std::make_unique<Old::Internal::Scene::CameraManager>();
 		_createDefaultPath();
 	}
 
-	Scene::~Scene()
+	Scene::~Scene() {}
+
+	bool   Scene::isEmpty() const { return getItemCount() == 0; }
+	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
+
+	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
-		clear();
-		delete _cameraManager;
+		_onSceneItemAddedCallback.emit( p_item );
 	}
 
-	bool Scene::isEmpty() const
+	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const
 	{
-		return _molecules.size() == 0 && _meshes.size() == 0
-			   && ( _paths.size() <= 0 || _paths[ 0 ]->getViewpoints().size() == 0 );
-	}
+		size_t count = 0;
 
-	void Scene::clear()
-	{
-		while ( _molecules.size() > 0 )
+		for ( const entt::entity entity : getAllSceneItems() )
 		{
-			MoleculePtr const molecule = _molecules.begin()->first;
-			removeMolecule( molecule );
-			VTX::MVC_MANAGER().deleteModel( molecule );
+			if ( count == p_index )
+				return entity;
+
+			count++;
 		}
 
-		_molecules.clear();
-
-		VTX::MVC_MANAGER().deleteAllModels( _meshes );
-		_meshes.clear();
-
-		VTX::MVC_MANAGER().deleteAllModels( _labels );
-		_labels.clear();
-
-		_helpers.clear();
-
-		while ( _paths.size() > 0 )
+		return Core::ECS::INVALID_ENTITY;
+	}
+	const Core::ECS::BaseEntity Scene::getItem( const std::string & p_name ) const
+	{
+		auto group = getAllSceneItems();
+		for ( const entt::entity entity : group )
 		{
-			PathPtr const path = *_paths.begin();
-			removePath( path );
-			VTX::MVC_MANAGER().deleteModel( path );
+			const Component::Scene::SceneItemComponent & sceneItem
+				= group.get<Component::Scene::SceneItemComponent>( entity );
+
+			if ( sceneItem.getName() == p_name )
+				return entity;
 		}
 
-		_paths.clear();
+		return Core::ECS::INVALID_ENTITY;
 	}
+
+	void Scene::clear() { MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
 
 	void Scene::reset()
 	{
@@ -67,240 +63,136 @@ namespace VTX::App::Application
 		_createDefaultPath();
 	}
 
-	Component::Render::Camera &		  Scene::getCamera() { return *_cameraManager->getCamera(); }
-	const Component::Render::Camera & Scene::getCamera() const { return *_cameraManager->getCamera(); }
-
-	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
+	void Scene::changeItemIndex( const Component::Scene::SceneItemComponent & p_item, const int p_position )
 	{
-		p_molecule->init();
-		p_molecule->print();
-		_molecules.emplace( p_molecule, 0.f );
-		_itemOrder.emplace_back( p_molecule );
-		_applySceneID( *p_molecule );
+		// const ECS::Component::SceneItemComponent * itemPtr = &p_item;
 
-		if ( _aabb.isValid() )
-			_aabb.extend( p_molecule->getWorldAABB() );
+		// if ( _itemOrder[ p_position ] == itemPtr )
+		//	return;
 
-		p_molecule->referenceLinkedAABB( &_aabb );
+		// bool changeHasStarted = false;
 
-		if ( p_sendEvent )
-		{
-			VTX_EVENT<Core::Scene::BaseSceneItem *>( Event::Global::SCENE_ITEM_ADDED, p_molecule );
-			VTX_EVENT<Component::Chemistry::Molecule *>( Event::Global::MOLECULE_ADDED, p_molecule );
-		}
+		// for ( size_t i = 0; i < p_position; i++ )
+		//{
+		//	if ( _itemOrder[ i ] == itemPtr )
+		//		changeHasStarted = true;
 
-		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		//	if ( changeHasStarted )
+		//	{
+		//		_itemOrder[ i ] = _itemOrder[ i + 1 ];
+		//	}
+		//}
+
+		// if ( changeHasStarted )
+		//{
+		//	_itemOrder[ p_position ] = itemPtr;
+		// }
+		// else
+		//{
+		//	for ( int i = int( _itemOrder.size() - 1 ); i > p_position; i-- )
+		//	{
+		//		if ( _itemOrder[ i ] == itemPtr )
+		//			changeHasStarted = true;
+
+		//		if ( changeHasStarted )
+		//			_itemOrder[ i ] = _itemOrder[ i - 1 ];
+		//	}
+
+		//	_itemOrder[ p_position ] = itemPtr;
+		//}
+
+		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+	}
+	void Scene::changeItemsIndex( const std::vector<const Component::Scene::SceneItemComponent *> & p_items,
+								  const int															p_position )
+	{
+		// std::vector<const Core::Scene::BaseSceneItem *> movedItems = std::vector<const Core::Scene::BaseSceneItem
+		// *>(); movedItems.resize( p_items.size() );
+
+		// size_t indexMovedItemsBeforePosition = 0;
+
+		// for ( size_t i = 0; i < p_position; i++ )
+		//{
+		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+		//	if ( hasToMoveItem )
+		//	{
+		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+		//		indexMovedItemsBeforePosition++;
+
+		//		_itemOrder[ i ] = nullptr;
+		//	}
+		//	else if ( indexMovedItemsBeforePosition > 0 )
+		//	{
+		//		_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+		//	}
+		//}
+
+		// size_t itemMovedCounter = 0;
+
+		// for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
+		//{
+		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+		//	if ( hasToMoveItem )
+		//	{
+		//		const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
+		//		movedItems[ movedItemsIndex ] = _itemOrder[ i ];
+		//		itemMovedCounter++;
+		//		_itemOrder[ i ] = nullptr;
+		//	}
+		//	else if ( itemMovedCounter > 0 )
+		//	{
+		//		_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
+		//	}
+		//}
+
+		// if ( p_position < _itemOrder.size() )
+		//{
+		//	const bool hasToMoveItem
+		//		= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
+		//	if ( hasToMoveItem )
+		//	{
+		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
+		//		_itemOrder[ p_position ]					= nullptr;
+		//	}
+		//	else
+		//	{
+		//		_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
+		//	}
+		// }
+
+		// for ( size_t i = 0; i < movedItems.size(); i++ )
+		//{
+		//	_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
+		// }
+
+		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+	}
+	void Scene::sortItemsBySceneIndex( std::vector<Component::Scene::SceneItemComponent *> & p_molecules ) const
+	{
+		// for ( int i = 0; i < p_molecules.size(); i++ )
+		//{
+		//	int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
+		//	int indexInVector		= i;
+
+		//	for ( int j = i + 1; j < p_molecules.size(); j++ )
+		//	{
+		//		const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
+		//		if ( currentIndexInScene < smallerIndexInScene )
+		//		{
+		//			smallerIndexInScene = currentIndexInScene;
+		//			indexInVector		= j;
+		//		}
+		//	}
+
+		//	Component::Chemistry::Molecule * const tmp = p_molecules[ i ];
+		//	p_molecules[ i ]						   = p_molecules[ indexInVector ];
+		//	p_molecules[ indexInVector ]			   = tmp;
+		//}
 	}
 
-	void Scene::removeMolecule( MoleculePtr const p_molecule )
-	{
-		_remove( p_molecule, _molecules, Event::Global::MOLECULE_REMOVED, ModelCharacteristicsFlag::MOLECULE );
-	}
-
-	void Scene::addPath( PathPtr const p_path )
-	{
-		_add( p_path, _paths );
-
-		VTX_EVENT<Core::Scene::BaseSceneItem *>( Event::Global::SCENE_ITEM_ADDED, p_path );
-		VTX_EVENT<Component::Video::Path *>( Event::Global::PATH_ADDED, p_path );
-	}
-
-	void Scene::removePath( PathPtr const p_path )
-	{
-		_remove( p_path, _paths, Event::Global::PATH_REMOVED, ModelCharacteristicsFlag::NONE );
-	}
-
-	void Scene::addMesh( MeshTrianglePtr const p_mesh )
-	{
-		p_mesh->init();
-		p_mesh->print();
-		_add( p_mesh, _meshes );
-
-		if ( _aabb.isValid() )
-			_aabb.extend( p_mesh->getWorldAABB() );
-
-		p_mesh->referenceLinkedAABB( &_aabb );
-		VTX_EVENT<MeshTrianglePtr>( Event::Global::MESH_ADDED, p_mesh );
-		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
-	}
-
-	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
-	{
-		_remove( p_mesh, _meshes, Event::Global::MESH_REMOVED, ModelCharacteristicsFlag::MESH );
-	}
-
-	void Scene::addLabel( LabelPtr const p_label )
-	{
-		_add( p_label, _labels );
-		VTX_EVENT<LabelPtr>( Event::Global::LABEL_ADDED, p_label );
-	}
-	void Scene::removeLabel( LabelPtr const p_label )
-	{
-		_remove( p_label, _labels, Event::Global::LABEL_REMOVED, ModelCharacteristicsFlag::LABEL );
-	}
-
-	void Scene::addHelper( HelperPtr const p_helper )
-	{
-		p_helper->generate();
-		_helpers.emplace_back( p_helper );
-		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
-	}
-
-	void Scene::removeHelper( HelperPtr const p_helper )
-	{
-		_helpers.erase( std::find( _helpers.begin(), _helpers.end(), p_helper ) );
-		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
-	}
-
-	void Scene::_updateGraphicMask() const { App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE; }
-
-	const Core::Scene::BaseSceneItem * const Scene::getItemAtPosition( const int p_index ) const
-	{
-		if ( 0 <= p_index && p_index < _itemOrder.size() )
-			return _itemOrder[ p_index ];
-		return nullptr;
-	}
-	int Scene::getItemPosition( const Core::Scene::BaseSceneItem & p_item ) const
-	{
-		for ( int i = 0; i < _itemOrder.size(); i++ )
-		{
-			if ( &p_item == _itemOrder[ i ] )
-				return i;
-		}
-		return -1;
-	}
-	void Scene::changeModelPosition( const Core::Scene::BaseSceneItem & p_item, const int p_position )
-	{
-		const Core::Scene::BaseSceneItem * itemPtr = &p_item;
-
-		if ( _itemOrder[ p_position ] == itemPtr )
-			return;
-
-		bool changeHasStarted = false;
-
-		for ( size_t i = 0; i < p_position; i++ )
-		{
-			if ( _itemOrder[ i ] == itemPtr )
-				changeHasStarted = true;
-
-			if ( changeHasStarted )
-			{
-				_itemOrder[ i ] = _itemOrder[ i + 1 ];
-			}
-		}
-
-		if ( changeHasStarted )
-		{
-			_itemOrder[ p_position ] = itemPtr;
-		}
-		else
-		{
-			for ( int i = int( _itemOrder.size() - 1 ); i > p_position; i-- )
-			{
-				if ( _itemOrder[ i ] == itemPtr )
-					changeHasStarted = true;
-
-				if ( changeHasStarted )
-					_itemOrder[ i ] = _itemOrder[ i - 1 ];
-			}
-
-			_itemOrder[ p_position ] = itemPtr;
-		}
-
-		VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
-	}
-
-	void Scene::changeModelsPosition( const std::vector<const Core::Scene::BaseSceneItem *> & p_items,
-									  const int												  p_position )
-	{
-		std::vector<const Core::Scene::BaseSceneItem *> movedItems = std::vector<const Core::Scene::BaseSceneItem *>();
-		movedItems.resize( p_items.size() );
-
-		size_t indexMovedItemsBeforePosition = 0;
-
-		for ( size_t i = 0; i < p_position; i++ )
-		{
-			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
-
-			if ( hasToMoveItem )
-			{
-				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
-				indexMovedItemsBeforePosition++;
-
-				_itemOrder[ i ] = nullptr;
-			}
-			else if ( indexMovedItemsBeforePosition > 0 )
-			{
-				_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
-			}
-		}
-
-		size_t itemMovedCounter = 0;
-
-		for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
-		{
-			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
-
-			if ( hasToMoveItem )
-			{
-				const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
-				movedItems[ movedItemsIndex ] = _itemOrder[ i ];
-				itemMovedCounter++;
-				_itemOrder[ i ] = nullptr;
-			}
-			else if ( itemMovedCounter > 0 )
-			{
-				_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
-			}
-		}
-
-		if ( p_position < _itemOrder.size() )
-		{
-			const bool hasToMoveItem
-				= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
-			if ( hasToMoveItem )
-			{
-				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
-				_itemOrder[ p_position ]					= nullptr;
-			}
-			else
-			{
-				_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
-			}
-		}
-
-		for ( size_t i = 0; i < movedItems.size(); i++ )
-		{
-			_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
-		}
-
-		VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
-	}
-
-	void Scene::sortMoleculesBySceneIndex( std::vector<Component::Chemistry::Molecule *> & p_molecules ) const
-	{
-		for ( int i = 0; i < p_molecules.size(); i++ )
-		{
-			int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
-			int indexInVector		= i;
-
-			for ( int j = i + 1; j < p_molecules.size(); j++ )
-			{
-				const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
-				if ( currentIndexInScene < smallerIndexInScene )
-				{
-					smallerIndexInScene = currentIndexInScene;
-					indexInVector		= j;
-				}
-			}
-
-			Component::Chemistry::Molecule * const tmp = p_molecules[ i ];
-			p_molecules[ i ]						   = p_molecules[ indexInVector ];
-			p_molecules[ indexInVector ]			   = tmp;
-		}
-	}
-
-	const Component::Object3D::Helper::AABB & Scene::getAABB()
+	const Util::Math::AABB & Scene::getAABB()
 	{
 		if ( !_aabb.isValid() )
 			_computeAABB();
@@ -309,14 +201,15 @@ namespace VTX::App::Application
 	}
 	void Scene::_computeAABB()
 	{
+		const entt::basic_view view
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+
 		_aabb.invalidate();
-		for ( const PairMoleculePtrFloat & mol : _molecules )
+
+		for ( const entt::entity entity : view )
 		{
-			_aabb.extend( mol.first->getWorldAABB() );
-		}
-		for ( const MeshTrianglePtr & mesh : _meshes )
-		{
-			_aabb.extend( mesh->getWorldAABB() );
+			const Component::Scene::AABB & aabbComponent = view.get<Component::Scene::AABB>( entity );
+			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
 	}
 
@@ -325,56 +218,65 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
+		const entt::basic_view view
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+
+		for ( entt::entity entity : view )
+		{
+			const Component::Scene::Updatable & updatableComponent = view.get<Component::Scene::Updatable>( entity );
+			updatableComponent.update( p_deltaTime );
+		}
+
 		// Dynamic.
-		for ( PairMoleculePtrFloat & pair : _molecules )
-		{
-			MoleculePtr const molecule = pair.first;
-			molecule->updateTrajectory( p_deltaTime );
-		}
+		// for ( PairMoleculePtrFloat & pair : _molecules )
+		//{
+		//	MoleculePtr const molecule = pair.first;
+		//	molecule->updateTrajectory( p_deltaTime );
+		//}
 
-		for ( const PairMoleculePtrFloat & pair : _molecules )
-		{
-			if ( pair.first->isAutoRotationPlaying() )
-			{
-				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
-				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
-				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
-				App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
-			}
-		}
+		// for ( const PairMoleculePtrFloat & pair : _molecules )
+		//{
+		//	if ( pair.first->isAutoRotationPlaying() )
+		//	{
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
+		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
+		//		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//	}
+		// }
 
-		for ( const MeshTrianglePtr & mesh : _meshes )
-		{
-			if ( mesh->isAutoRotationPlaying() )
-			{
-				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
-				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
-				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
-				App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
-			}
-		}
+		// for ( const MeshTrianglePtr & mesh : _meshes )
+		//{
+		//	if ( mesh->isAutoRotationPlaying() )
+		//	{
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
+		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
+		//		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//	}
+		// }
 	}
 
-	void Scene::_applySceneID( Core::Scene::BaseSceneItem & p_item )
+	void Scene::_applySceneID( Component::Scene::SceneItemComponent & p_item )
 	{
-		if ( p_item.hasPersistentSceneID() )
-		{
-			_persistentIDCounter = _persistentIDCounter > p_item.getPersistentSceneID()
-									   ? _persistentIDCounter
-									   : p_item.getPersistentSceneID() + 1;
-		}
-		else
-		{
-			p_item.setPersistentSceneID( _persistentIDCounter++ );
-		}
+		// if ( p_item.hasPersistentSceneID() )
+		//{
+		//	_persistentIDCounter = _persistentIDCounter > p_item.getPersistentSceneID()
+		//							   ? _persistentIDCounter
+		//							   : p_item.getPersistentSceneID() + 1;
+		// }
+		// else
+		//{
+		//	p_item.setPersistentSceneID( _persistentIDCounter++ );
+		// }
 	}
 
 	void Scene::_createDefaultPath()
 	{
-		Component::Video::Path * const path = VTX::MVC_MANAGER().instantiateModel<Component::Video::Path>();
-		_defaultPath						= path;
+		// Component::Video::Path * const path = VTX::MVC_MANAGER().instantiateModel<Component::Video::Path>();
+		//_defaultPath						= path;
 
-		addPath( path );
+		// addPath( path );
 	}
 
 } // namespace VTX::App::Application

@@ -19,10 +19,10 @@ namespace VTX::UI
 //// #include "ui/action/action_manager.hpp"
 //// #include "ui/action/main.hpp"
 //// #include "ui/action/setting.hpp"
-//// #include <app/core/event/vtx_event.hpp>
+//// #include <app/old/core/event/vtx_event.hpp>
 //// #include "ui/event/event_manager.hpp"
 //// #include "ui/io/struct/scene_path_data.hpp"
-//// #include <app/mvc.hpp>
+//// #include <app/old/mvc.hpp>
 //// #include "ui/renderer/gl/program_manager.hpp"
 //// #include "ui/selection/selection_manager.hpp"
 //// #include <app/model/renderer/render_effect_preset.hpp"
@@ -48,35 +48,35 @@ namespace VTX::UI
 //
 //	void VTXApp::start( const std::vector<std::string> & p_args )
 //	{
-//		// VTX_INFO( "Starting application: {}", App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+//		// VTX_INFO( "Starting application: {}", App::Old::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 //
 //		//		// Load settings.
-//		//		VTX_ACTION( new App::Action::Setting::Load() );
+//		//		VTX_ACTION( new App::Old::Action::Setting::Load() );
 //		//		_setting.loadRecentPaths();
 //		//
 //		//		// Create singletons.
 //		//		VTX::MVC_MANAGER();
 //		//		Action::ActionManager::get();
 //		//		Event::EventManager::get();
-//		//		App::Application::Selection::SelectionManager::get();
+//		//		App::Old::Application::Selection::SelectionManager::get();
 //		//		Worker::WorkerManager::get();
 //		//
 //		//		// Create Databases
 //		//		_representationLibrary
-//		//			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
+//		//			= VTX::MVC_MANAGER().instantiateModel<App::Old::Application::Representation::RepresentationLibrary>();
 //		//		_renderEffectLibrary =
-//		// VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectLibrary>();
+//		// VTX::MVC_MANAGER().instantiateModel<App::Old::Application::RenderEffect::RenderEffectLibrary>();
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 //		//
 //		//		// Create scene.
-//		//		_scene = new App::Application::Scene();
+//		//		_scene = new App::Old::Application::Scene();
 //		//		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 //		//
-//		//		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
+//		//		_pathSceneData = new App::Old::Internal::IO::Serialization::ScenePathData();
 //		//
 //		//		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 //		//		{
-//		//			VTX_ACTION( new App::Action::Main::CheckForUpdate() );
+//		//			VTX_ACTION( new App::Old::Action::Main::CheckForUpdate() );
 //		//		}
 //		//
 //		//		// Start timers.
@@ -92,11 +92,11 @@ namespace VTX::UI
 //		//		if ( p_args.size() == 0 )
 //		//		{
 //		//			// VTX_ACTION(
-//		//			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
+//		//			//	 new App::Old::Action::Main::Open( App::Old::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
 //).absolute() ) );
-//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
-//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
-//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
+//		//			// VTX_ACTION( new App::Old::Action::Main::OpenApi( "1aon" ) );
+//		//			// VTX_ACTION( new App::Old::Action::Main::OpenApi( "4hhb" ) );
+//		//			// VTX_ACTION( new App::Old::Action::Main::OpenApi( "1aga" ) );
 //		//		}
 //		// #endif
 //	}
@@ -133,11 +133,11 @@ namespace VTX::UI
 //		//	}
 //		// }
 //
-//		// VTX_ACTION( new App::Action::Main::Open( files ) );
+//		// VTX_ACTION( new App::Old::Action::Main::Open( files ) );
 //
 //		// for ( const std::string & pdbId : pdbIds )
 //		//{
-//		//	VTX_ACTION( new App::Action::Main::OpenApi( pdbId ) );
+//		//	VTX_ACTION( new App::Old::Action::Main::OpenApi( pdbId ) );
 //		// }
 //	}
 //
@@ -149,7 +149,7 @@ namespace VTX::UI
 //
 //		//// Useless: nothing is delayed.
 //		//// Event manager.
-//		//// VTX::App::Core::Event::EventManager::get().update( elapsed );
+//		//// VTX::App::Old::Core::Event::EventManager::get().update( elapsed );
 //
 //		//// Action manager.
 //		//// Action::ActionManager::get().update( elapsed );
@@ -157,7 +157,7 @@ namespace VTX::UI
 //		//_applyEndOfFrameDeletes();
 //
 //		//// Call late update event for processes at end of frame
-//		// VTX_EVENT( new VTX::App::Core::Event::VTXEvent( VTX::App::Event::Global::LATE_UPDATE ) );
+//		// VTX_EVENT( new VTX::App::Old::Core::Event::VTXEvent( VTX::App::Old::Event::Global::LATE_UPDATE ) );
 //
 //		//// Tickrate.
 //		//_tickCounter++;
@@ -193,7 +193,7 @@ namespace VTX::UI
 //		//	delete _timer;
 //		// }
 //		//// Prevent events throw for nothing when quitting app
-//		// VTX::App::Core::Event::EventManager::get().freezeEvent( true );
+//		// VTX::App::Old::Core::Event::EventManager::get().freezeEvent( true );
 //		// Worker::WorkerManager::get().stopAll();
 //
 //		//_setting.backup();
@@ -201,7 +201,7 @@ namespace VTX::UI
 //		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 //		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 //
-//		// App::Application::Selection::SelectionManager::get().deleteModel();
+//		// App::Old::Application::Selection::SelectionManager::get().deleteModel();
 //
 //		// if ( _scene != nullptr )
 //		//{
@@ -238,9 +238,9 @@ namespace VTX::UI
 //		// QApplication::quit();
 //	}
 //
-//	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT()
+//	// App::Old::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT()
 //	//{
-//	//	// return App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPreset();
+//	//	// return App::Old::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPreset();
 //	// }
 //
 //	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )

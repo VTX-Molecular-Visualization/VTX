@@ -3,9 +3,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/molecule_scene_view.hpp"
 #include "ui/qt/action/molecule.hpp"
-#include <app/action/molecule.hpp>
-#include <app/action/visible.hpp>
-#include <app/application/representation/representation_library.hpp>
+#include <app/old/action/molecule.hpp>
+#include <app/old/action/visible.hpp>
+#include <app/old/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -55,13 +55,13 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuMolecule::localize() {}
 
-	void ContextualMenuMolecule::setTarget( App::Component::Chemistry::Molecule * const p_target )
+	void ContextualMenuMolecule::setTarget( App::Old::Component::Chemistry::Molecule * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getPdbIdCode() ) );
 
 		const int representationIndex
-			= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
+			= App::Old::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 				p_target->getRepresentation()->getLinkedRepresentation() );
 
 		_toggleWaterAction->setText( p_target->showWater() ? "Hide waters" : "Show waters" );
@@ -85,25 +85,25 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuMolecule::_toggleWatersVisibilityAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeShowWater( *_target, !_target->showWater() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowWater( *_target, !_target->showWater() ) );
 	}
 	void ContextualMenuMolecule::_toggleHydrogensVisibilityAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeShowHydrogen( *_target, !_target->showHydrogen() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowHydrogen( *_target, !_target->showHydrogen() ) );
 	}
 	void ContextualMenuMolecule::_toggleSolventVisibilityAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeShowSolvent( *_target, !_target->showSolvent() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowSolvent( *_target, !_target->showSolvent() ) );
 	}
 	void ContextualMenuMolecule::_toggleIonVisibilityAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeShowIon( *_target, !_target->showIon() ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeShowIon( *_target, !_target->showIon() ) );
 	}
 
 	void ContextualMenuMolecule::_toggleTrajectoryPlayingActions()
 	{
 		const bool newIsPlaying = !_target->isPlaying();
-		VTX_ACTION( new App::Action::Molecule::ChangeIsPlaying( *_target, newIsPlaying ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeIsPlaying( *_target, newIsPlaying ) );
 	}
 
 	void ContextualMenuMolecule::_orientAction()
@@ -112,23 +112,23 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuMolecule::_showAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuMolecule::_hideAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuMolecule::_soloAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeVisibility( *_target, App::Old::Action::VISIBILITY_MODE::SOLO ) );
 	}
 
-	void ContextualMenuMolecule::_copyAction() { VTX_ACTION( new App::Action::Molecule::Copy( *_target ) ); }
-	void ContextualMenuMolecule::_deleteAction() { VTX_ACTION( new App::Action::Molecule::Delete( *_target ) ); }
+	void ContextualMenuMolecule::_copyAction() { VTX_ACTION( new App::Old::Action::Molecule::Copy( *_target ) ); }
+	void ContextualMenuMolecule::_deleteAction() { VTX_ACTION( new App::Old::Action::Molecule::Delete( *_target ) ); }
 
 	void ContextualMenuMolecule::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new App::Old::Action::Molecule::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 	void ContextualMenuMolecule::_exportAction() { Dialog::openExportMoleculeDialog(); }

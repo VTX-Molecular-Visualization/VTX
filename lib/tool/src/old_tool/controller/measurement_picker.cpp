@@ -2,15 +2,15 @@
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
-#include <app/action/selection.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/component/chemistry/atom.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/residue.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>
 #include <ui/old_ui/ui/cursor_handler.hpp>
@@ -45,8 +45,8 @@ namespace VTX::Controller
 
 		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
-		App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.isEmpty() )
 		{
@@ -78,17 +78,17 @@ namespace VTX::Controller
 
 		const Vec2i ids = UI::VTXApp::get().getMainWindow().getPickedIds( p_event.pos().x(), p_event.pos().y() );
 
-		if ( ids.x != App::Core::Model::ID_UNKNOWN )
+		if ( ids.x != App::Old::Core::Model::ID_UNKNOWN )
 		{
-			if ( ids.y != App::Core::Model::ID_UNKNOWN )
+			if ( ids.y != App::Old::Core::Model::ID_UNKNOWN )
 			{
 				// Bond clicked => set atom pair to next target
 				if ( _currentMode == Mode::DISTANCE && _currentMeasureModel->getAtomCount() == 0 )
 				{
-					const App::Component::Chemistry::Atom & firstAtom
-						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.x );
-					const App::Component::Chemistry::Atom & secondAtom
-						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.y );
+					const App::Old::Component::Chemistry::Atom & firstAtom
+						= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Atom>( ids.x );
+					const App::Old::Component::Chemistry::Atom & secondAtom
+						= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Atom>( ids.y );
 
 					_currentMeasureModel->setPotentialNextTarget( firstAtom, secondAtom );
 					hasFindTarget = true;
@@ -96,14 +96,14 @@ namespace VTX::Controller
 			}
 			else
 			{
-				const App::VTX_ID &	 typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
-				App::Core::Model::ID atomID;
+				const App::Old::VTX_ID &	 typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
+				App::Old::Core::Model::ID atomID;
 
 				// If residue => select alpha carbon
-				if ( typeId == App::ID::Model::MODEL_RESIDUE )
+				if ( typeId == App::Old::ID::Model::MODEL_RESIDUE )
 				{
-					const App::Component::Chemistry::Residue & residue
-						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( ids.x );
+					const App::Old::Component::Chemistry::Residue & residue
+						= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Residue>( ids.x );
 					atomID = residue.getAlphaCarbon()->getId();
 				}
 				else // => Atom
@@ -112,8 +112,8 @@ namespace VTX::Controller
 				}
 
 				// Atom picked
-				const App::Component::Chemistry::Atom & atom
-					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( atomID );
+				const App::Old::Component::Chemistry::Atom & atom
+					= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Atom>( atomID );
 				if ( !_currentMeasureModel->contains( atom ) )
 				{
 					_currentMeasureModel->setPotentialNextTarget( atom );
@@ -139,7 +139,7 @@ namespace VTX::Controller
 		{
 			_currentMeasureModel->clearAtoms();
 
-			// App::VTXApp::get()
+			// App::Old::VTXApp::get()
 			//	.getStateMachine()
 			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
 			//	->setPickerController( ID::Controller::PICKER );
@@ -190,8 +190,8 @@ namespace VTX::Controller
 		{
 		case Mode::DISTANCE:
 		{
-			const App::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
-			const App::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
+			const App::Old::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const App::Old::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 
 			VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
 		}
@@ -199,9 +199,9 @@ namespace VTX::Controller
 
 		case Mode::ANGLE:
 		{
-			const App::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
-			const App::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
-			const App::Component::Chemistry::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
+			const App::Old::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const App::Old::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
+			const App::Old::Component::Chemistry::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 
 			VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
 		}
@@ -209,10 +209,10 @@ namespace VTX::Controller
 
 		case Mode::DIHEDRAL_ANGLE:
 		{
-			const App::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
-			const App::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
-			const App::Component::Chemistry::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
-			const App::Component::Chemistry::Atom * const fourthAtom = _currentMeasureModel->getAtom( 3 );
+			const App::Old::Component::Chemistry::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const App::Old::Component::Chemistry::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
+			const App::Old::Component::Chemistry::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
+			const App::Old::Component::Chemistry::Atom * const fourthAtom = _currentMeasureModel->getAtom( 3 );
 
 			VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
 				*firstAtom, *secondAtom, *thirdAtom, *fourthAtom ) );
@@ -230,7 +230,7 @@ namespace VTX::Controller
 			_currentMeasureModel->clearAtoms();
 			_currentMode = p_mode;
 
-			VTX_EVENT( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+			VTX_EVENT( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 		}
 	}
 } // namespace VTX::Controller

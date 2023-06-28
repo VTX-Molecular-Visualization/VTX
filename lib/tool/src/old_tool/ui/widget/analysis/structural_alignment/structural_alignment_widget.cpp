@@ -2,13 +2,13 @@
 #include "tool/old_tool/action/analysis.hpp"
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
-#include <app/application/scene.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/event/global.hpp>
-#include <app/mvc.hpp>
-#include <app/vtx_app.hpp>
+#include <app/old/application/scene.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/mvc.hpp>
+#include <app/old/vtx_app.hpp>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 
@@ -16,14 +16,14 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
 	StructuralAlignmentWidget::StructuralAlignmentWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
+		_registerEvent( VTX::App::Old::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
 	}
-	void StructuralAlignmentWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void StructuralAlignmentWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
+		if ( p_event.name == VTX::App::Old::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
 		{
 			const VTX::Analysis::StructuralAlignment::AlignmentResult & alignmentResult
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<
 					const VTX::Analysis::StructuralAlignment::AlignmentResult &> &>( p_event )
 					  .get();
 
@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	{
 		bool staticMoleculeIsTicked = _moleculeList->getTickedModel() == p_result.staticMolecule;
 
-		const std::vector<App::Core::Model::BaseModel *> notTickedModels = _moleculeList->getNotTickedModels();
+		const std::vector<App::Old::Core::Model::BaseModel *> notTickedModels = _moleculeList->getNotTickedModels();
 		bool											 mobileMoleculeIsInList
 			= std::find( notTickedModels.begin(), notTickedModels.end(), p_result.mobileMolecule )
 			  != notTickedModels.end();
@@ -94,7 +94,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_alignmentParametersWidget = WidgetFactory::get().instantiateWidget<AlignParametersWidget>(
 			attributeWidget, "alignmentParametersWidget" );
 		_moleculesComponent->setFoldState( true );
-		_moleculesComponent->addTypeFilter( App::ID::Model::MODEL_MOLECULE );
+		_moleculesComponent->addTypeFilter( App::Old::ID::Model::MODEL_MOLECULE );
 		_moleculesComponent->setContainsOnlyUniqueModel( true );
 
 		CustomWidget::FoldingButton * const parametersFoldingButton
@@ -140,8 +140,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentWidget::showEvent( QShowEvent * p_event )
 	{
-		const App::Application::Selection::SelectionModel & selection
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Old::Application::Selection::SelectionModel & selection
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 		_updateTargetedMoleculesWithSelection( selection );
 
 		refresh();
@@ -154,21 +154,21 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	}
 
 	void StructuralAlignmentWidget::_updateTargetedMoleculesWithSelection(
-		const App::Application::Selection::SelectionModel & p_selection )
+		const App::Old::Application::Selection::SelectionModel & p_selection )
 	{
-		std::vector<App::Component::Chemistry::Molecule *> selectedMolecules
-			= std::vector<App::Component::Chemistry::Molecule *>();
+		std::vector<App::Old::Component::Chemistry::Molecule *> selectedMolecules
+			= std::vector<App::Old::Component::Chemistry::Molecule *>();
 		selectedMolecules.reserve( p_selection.getMoleculesMap().size() );
 
-		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMolIDs :
+		for ( const App::Old::Application::Selection::SelectionModel::PairMoleculeIds & pairMolIDs :
 			  p_selection.getMoleculesMap() )
 		{
-			App::Component::Chemistry::Molecule & molecule
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolIDs.first );
+			App::Old::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Molecule>( pairMolIDs.first );
 			selectedMolecules.emplace_back( &molecule );
 		}
 
-		App::VTXApp::get().getScene().sortMoleculesBySceneIndex( selectedMolecules );
+		App::Old::VTXApp::get().getScene().sortMoleculesBySceneIndex( selectedMolecules );
 
 		for ( int i = 0; i < selectedMolecules.size(); i++ )
 			_moleculesComponent->addModel( selectedMolecules[ i ] );
@@ -176,10 +176,10 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentWidget::_computeAlign() const
 	{
-		const App::Component::Chemistry::Molecule * const staticMolecule
-			= _moleculeList->getTickedModel<App::Component::Chemistry::Molecule>();
-		std::vector<App::Component::Chemistry::Molecule *> mobilesMolecules
-			= _moleculeList->getNotTickedModels<App::Component::Chemistry::Molecule>();
+		const App::Old::Component::Chemistry::Molecule * const staticMolecule
+			= _moleculeList->getTickedModel<App::Old::Component::Chemistry::Molecule>();
+		std::vector<App::Old::Component::Chemistry::Molecule *> mobilesMolecules
+			= _moleculeList->getNotTickedModels<App::Old::Component::Chemistry::Molecule>();
 
 		// TODO : Display error message here (red text under empty field ?)
 		if ( staticMolecule == nullptr || mobilesMolecules.size() == 0 )

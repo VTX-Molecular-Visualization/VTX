@@ -4,9 +4,9 @@
 #include "ui/old_ui/style.hpp"
 #include "sequence_dataset.hpp"
 #include <QString>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/chemistry/residue.hpp>
+#include <app/old/component/chemistry/chain.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

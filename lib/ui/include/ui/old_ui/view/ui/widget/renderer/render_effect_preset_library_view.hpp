@@ -7,13 +7,13 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <app/application/render_effect/render_effect_library.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/render_effect/render_effect_library.hpp>
+#include <app/old/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
 	class RenderEffectPresetLibraryView :
-		public App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>,
+		public App::Old::Core::View::BaseView<App::Old::Application::RenderEffect::RenderEffectLibrary>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
@@ -24,13 +24,13 @@ namespace VTX::View::UI::Widget::Renderer
 
 	  public:
 		void localize() override;
-		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
-		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Old::Core::Event::VTXEvent * const p_event ) override;
 
 		void selectPreset( const int p_presetIndex );
 
 	  protected:
-		RenderEffectPresetLibraryView( App::Application::RenderEffect::RenderEffectLibrary * const p_model,
+		RenderEffectPresetLibraryView( App::Old::Application::RenderEffect::RenderEffectLibrary * const p_model,
 									   QWidget * const									  p_parent );
 
 		void _setupUi( const QString & ) override;

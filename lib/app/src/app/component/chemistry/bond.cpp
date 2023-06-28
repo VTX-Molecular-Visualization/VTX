@@ -3,27 +3,14 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	bool Bond::comparer( const Bond & p_lhs, const Bond & p_rhs )
+	size_t Bond::getIndexFirstAtom() const { return _moleculePtr->_bondAtomPairIds[ _internalIndex * 2 ]; }
+	void   Bond::setIndexFirstAtom( const size_t p_atomIndex )
 	{
-		const uint lhsMoleculeID = p_lhs.getMoleculePtr()->getId();
-		const uint rhsMoleculeID = p_rhs.getMoleculePtr()->getId();
-
-		if ( lhsMoleculeID == rhsMoleculeID )
-		{
-			if ( p_lhs.getIndexFirstAtom() == p_rhs.getIndexFirstAtom() )
-				return p_lhs.getIndexSecondAtom() < p_rhs.getIndexSecondAtom();
-			else
-				return p_lhs.getIndexFirstAtom() < p_rhs.getIndexFirstAtom();
-		}
-		else
-		{
-			return lhsMoleculeID < rhsMoleculeID;
-		}
+		_moleculePtr->_bondAtomPairIds[ _internalIndex * 2 ] = p_atomIndex;
 	}
-
-	void Bond::setMoleculePtr( Molecule * const p_molecule )
+	size_t Bond::getIndexSecondAtom() const { return _moleculePtr->_bondAtomPairIds[ _internalIndex * 2 + 1 ]; }
+	void   Bond::setIndexSecondAtom( const size_t p_atomIndex )
 	{
-		_moleculePtr = p_molecule;
-		_bondStruct->setMoleculePtr( &_moleculePtr->getMoleculeStruct() );
+		_moleculePtr->_bondAtomPairIds[ _internalIndex * 2 + 1 ] = p_atomIndex;
 	}
 } // namespace VTX::App::Component::Chemistry

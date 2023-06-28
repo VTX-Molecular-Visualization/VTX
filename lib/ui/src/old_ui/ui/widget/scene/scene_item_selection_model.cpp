@@ -2,27 +2,27 @@
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/ui/widget/scene/scene_item_widget.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/action/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/component/chemistry/category.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/video/path.hpp>
-#include <app/mvc.hpp>
+#include <app/old/action/selection.hpp>
+#include <app/old/application/selection/selection_manager.hpp>
+#include <app/old/component/chemistry/category.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/video/path.hpp>
+#include <app/old/mvc.hpp>
 
 namespace VTX::UI::Widget::Scene
 {
 	void SceneItemSelectionModel::select( const QItemSelection &			  selection,
 										  QItemSelectionModel::SelectionFlags command )
 	{
-		std::vector<App::Core::Model::ID> selectionIds = std::vector<App::Core::Model::ID>();
+		std::vector<App::Old::Core::Model::ID> selectionIds = std::vector<App::Old::Core::Model::ID>();
 		_fillVectorWithItemIds( selection, selectionIds );
 
-		App::Application::Selection::SelectionModel & selectionModel
-			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		App::Old::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( command == QItemSelectionModel::NoUpdate )
 		{
-			std::vector<App::Core::Model::ID>::const_iterator it = selectionIds.begin();
+			std::vector<App::Old::Core::Model::ID>::const_iterator it = selectionIds.begin();
 
 			while ( it != selectionIds.end() )
 			{
@@ -34,7 +34,7 @@ namespace VTX::UI::Widget::Scene
 
 			if ( selectionIds.size() > 0 )
 			{
-				VTX_ACTION( new App::Action::Selection::SelectModels( selectionModel, selectionIds, false ) );
+				VTX_ACTION( new App::Old::Action::Selection::SelectModels( selectionModel, selectionIds, false ) );
 			}
 			else
 			{
@@ -50,13 +50,13 @@ namespace VTX::UI::Widget::Scene
 
 				assert( sceneWidget.getSceneItemWidgets().size() > 0 );
 
-				const App::Core::Model::BaseModel * firstSceneItem
+				const App::Old::Core::Model::BaseModel * firstSceneItem
 					= _getModel( *sceneWidget.getSceneItemWidgets()[ 0 ] );
 
 				if ( selectionModel.getCurrentObject() != nullptr )
 				{
-					const App::Core::Model::BaseModel * const currentObject = selectionModel.getCurrentObject();
-					const App::Core::Model::BaseModel *		  newCurrentSelectedItem
+					const App::Old::Core::Model::BaseModel * const currentObject = selectionModel.getCurrentObject();
+					const App::Old::Core::Model::BaseModel *		  newCurrentSelectedItem
 						= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
 
 					const SceneItemWidget * const currentSceneItemObject
@@ -64,8 +64,8 @@ namespace VTX::UI::Widget::Scene
 					const SceneItemWidget * const newSceneItemObject
 						= sceneWidget.getSceneItemWidgetFromModel( *newCurrentSelectedItem );
 
-					const App::Core::Model::ID & firstObjectId	= currentSceneItemObject->getModelID();
-					const App::Core::Model::ID & secondObjectId = newSceneItemObject->getModelID();
+					const App::Old::Core::Model::ID & firstObjectId	= currentSceneItemObject->getModelID();
+					const App::Old::Core::Model::ID & secondObjectId = newSceneItemObject->getModelID();
 
 					if ( firstObjectId != secondObjectId )
 					{
@@ -74,7 +74,7 @@ namespace VTX::UI::Widget::Scene
 						bool startAddToSelection = false;
 						for ( const SceneItemWidget * const sceneWidget : sceneWidget.getSceneItemWidgets() )
 						{
-							const App::Core::Model::ID & itemId = sceneWidget->getModelID();
+							const App::Old::Core::Model::ID & itemId = sceneWidget->getModelID();
 
 							if ( itemId == firstObjectId )
 							{
@@ -119,11 +119,11 @@ namespace VTX::UI::Widget::Scene
 			{
 				const bool appendToSelection = !( command & QItemSelectionModel::Clear );
 				VTX_ACTION(
-					new App::Action::Selection::SelectModels( selectionModel, selectionIds, appendToSelection ) );
+					new App::Old::Action::Selection::SelectModels( selectionModel, selectionIds, appendToSelection ) );
 			}
 			else if ( command & QItemSelectionModel::Deselect )
 			{
-				VTX_ACTION( new App::Action::Selection::UnselectModels( selectionModel, selectionIds ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectModels( selectionModel, selectionIds ) );
 			}
 		}
 	}
@@ -135,9 +135,9 @@ namespace VTX::UI::Widget::Scene
 		}
 		else
 		{
-			const App::Core::Model::ID & modelId = index.data( Qt::UserRole ).value<VTX::App::Core::Model::ID>();
-			App::Application::Selection::SelectionModel & selectionModel
-				= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+			const App::Old::Core::Model::ID & modelId = index.data( Qt::UserRole ).value<VTX::App::Old::Core::Model::ID>();
+			App::Old::Application::Selection::SelectionModel & selectionModel
+				= VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel();
 
 			if ( command & QItemSelectionModel::Select )
 			{
@@ -162,10 +162,10 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemSelectionModel::_appendAllSubitemsBeforeObjectInSelectionVector(
 		const SceneItemWidget &				p_sceneItemWidget,
-		const App::Core::Model::BaseModel & p_itemFrom,
-		std::vector<App::Core::Model::ID> & p_selectionVector ) const
+		const App::Old::Core::Model::BaseModel & p_itemFrom,
+		std::vector<App::Old::Core::Model::ID> & p_selectionVector ) const
 	{
-		const std::vector<App::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsTo( p_itemFrom );
+		const std::vector<App::Old::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsTo( p_itemFrom );
 
 		const size_t startIndex = p_selectionVector.size();
 		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
@@ -174,10 +174,10 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemSelectionModel::_appendAllSubitemsAfterObjectInSelectionVector(
 		const SceneItemWidget &				p_sceneItemWidget,
-		const App::Core::Model::BaseModel & p_itemFrom,
-		std::vector<App::Core::Model::ID> & p_selectionVector ) const
+		const App::Old::Core::Model::BaseModel & p_itemFrom,
+		std::vector<App::Old::Core::Model::ID> & p_selectionVector ) const
 	{
-		const std::vector<App::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsFrom( p_itemFrom );
+		const std::vector<App::Old::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsFrom( p_itemFrom );
 
 		const size_t startIndex = p_selectionVector.size();
 		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
@@ -185,7 +185,7 @@ namespace VTX::UI::Widget::Scene
 	}
 
 	void SceneItemSelectionModel::_fillVectorWithItemIds( const QItemSelection &			  p_selection,
-														  std::vector<App::Core::Model::ID> & p_vectorId ) const
+														  std::vector<App::Old::Core::Model::ID> & p_vectorId ) const
 	{
 		for ( const QItemSelectionRange & modelRange : p_selection )
 		{
@@ -193,18 +193,18 @@ namespace VTX::UI::Widget::Scene
 
 			for ( const QModelIndex & modelIndex : modelRange.indexes() )
 			{
-				const App::Core::Model::ID & modelId
-					= modelIndex.data( Qt::UserRole ).value<VTX::App::Core::Model::ID>();
+				const App::Old::Core::Model::ID & modelId
+					= modelIndex.data( Qt::UserRole ).value<VTX::App::Old::Core::Model::ID>();
 
-				if ( VTX::MVC_MANAGER().getModelTypeID( modelId ) == App::ID::Model::MODEL_CATEGORY )
+				if ( VTX::MVC_MANAGER().getModelTypeID( modelId ) == App::Old::ID::Model::MODEL_CATEGORY )
 				{
-					const App::Component::Chemistry::Category & category
-						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
-					const App::Component::Chemistry::Molecule * const molecule = category.getMoleculePtr();
+					const App::Old::Component::Chemistry::Category & category
+						= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Category>( modelId );
+					const App::Old::Component::Chemistry::Molecule * const molecule = category.getMoleculePtr();
 
 					for ( const uint chainIndex : category.getChains() )
 					{
-						const App::Component::Chemistry::Chain * const chainPtr = molecule->getChain( chainIndex );
+						const App::Old::Component::Chemistry::Chain * const chainPtr = molecule->getChain( chainIndex );
 
 						if ( chainPtr != nullptr )
 							p_vectorId.emplace_back( chainPtr->getId() );
@@ -218,110 +218,110 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
-	void SceneItemSelectionModel::_selectModelAction( App::Application::Selection::SelectionModel & p_selectionModel,
-													  const App::Core::Model::ID &					p_modelId,
+	void SceneItemSelectionModel::_selectModelAction( App::Old::Application::Selection::SelectionModel & p_selectionModel,
+													  const App::Old::Core::Model::ID &					p_modelId,
 													  const bool p_appendToSelection ) const
 	{
-		const App::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
+		const App::Old::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::Old::ID::Model::MODEL_MOLECULE )
 		{
-			App::Component::Chemistry::Molecule & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( p_modelId );
+			App::Old::Component::Chemistry::Molecule & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Molecule>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isMoleculeFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::UnselectMolecule( p_selectionModel, model ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 			else
 				VTX_ACTION(
-					new App::Action::Selection::SelectMolecule( p_selectionModel, model, p_appendToSelection ) );
+					new App::Old::Action::Selection::SelectMolecule( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_CATEGORY )
 		{
-			App::Component::Chemistry::Category & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( p_modelId );
+			App::Old::Component::Chemistry::Category & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Category>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isCategoryFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::UnselectCategory( p_selectionModel, model ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectCategory( p_selectionModel, model ) );
 			else
 				VTX_ACTION(
-					new App::Action::Selection::SelectCategory( p_selectionModel, model, p_appendToSelection ) );
+					new App::Old::Action::Selection::SelectCategory( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_CHAIN )
 		{
-			App::Component::Chemistry::Chain & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( p_modelId );
+			App::Old::Component::Chemistry::Chain & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Chain>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isChainFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::UnselectChain( p_selectionModel, model ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectChain( p_selectionModel, model ) );
 			else
-				VTX_ACTION( new App::Action::Selection::SelectChain( p_selectionModel, model, p_appendToSelection ) );
+				VTX_ACTION( new App::Old::Action::Selection::SelectChain( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_RESIDUE )
 		{
-			App::Component::Chemistry::Residue & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_modelId );
+			App::Old::Component::Chemistry::Residue & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Residue>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isResidueFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::UnselectResidue( p_selectionModel, model ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectResidue( p_selectionModel, model ) );
 			else
-				VTX_ACTION( new App::Action::Selection::SelectResidue( p_selectionModel, model, p_appendToSelection ) );
+				VTX_ACTION( new App::Old::Action::Selection::SelectResidue( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_ATOM )
 		{
-			App::Component::Chemistry::Atom & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_modelId );
+			App::Old::Component::Chemistry::Atom & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Atom>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isAtomSelected( model ) )
-				VTX_ACTION( new App::Action::Selection::UnselectAtom( p_selectionModel, model ) );
+				VTX_ACTION( new App::Old::Action::Selection::UnselectAtom( p_selectionModel, model ) );
 			else
-				VTX_ACTION( new App::Action::Selection::SelectAtom( p_selectionModel, model, p_appendToSelection ) );
+				VTX_ACTION( new App::Old::Action::Selection::SelectAtom( p_selectionModel, model, p_appendToSelection ) );
 		}
 	}
 
-	void SceneItemSelectionModel::_unselectModelAction( App::Application::Selection::SelectionModel & p_selectionModel,
-														const App::Core::Model::ID &				  p_modelId ) const
+	void SceneItemSelectionModel::_unselectModelAction( App::Old::Application::Selection::SelectionModel & p_selectionModel,
+														const App::Old::Core::Model::ID &				  p_modelId ) const
 	{
-		const App::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
+		const App::Old::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::Old::ID::Model::MODEL_MOLECULE )
 		{
-			App::Component::Chemistry::Molecule & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( p_modelId );
-			VTX_ACTION( new App::Action::Selection::UnselectMolecule( p_selectionModel, model ) );
+			App::Old::Component::Chemistry::Molecule & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Molecule>( p_modelId );
+			VTX_ACTION( new App::Old::Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_CATEGORY )
 		{
-			App::Component::Chemistry::Category & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( p_modelId );
-			VTX_ACTION( new App::Action::Selection::UnselectCategory( p_selectionModel, model ) );
+			App::Old::Component::Chemistry::Category & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Category>( p_modelId );
+			VTX_ACTION( new App::Old::Action::Selection::UnselectCategory( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_CHAIN )
 		{
-			App::Component::Chemistry::Chain & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( p_modelId );
-			VTX_ACTION( new App::Action::Selection::UnselectChain( p_selectionModel, model ) );
+			App::Old::Component::Chemistry::Chain & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Chain>( p_modelId );
+			VTX_ACTION( new App::Old::Action::Selection::UnselectChain( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_RESIDUE )
 		{
-			App::Component::Chemistry::Residue & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_modelId );
-			VTX_ACTION( new App::Action::Selection::UnselectResidue( p_selectionModel, model ) );
+			App::Old::Component::Chemistry::Residue & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Residue>( p_modelId );
+			VTX_ACTION( new App::Old::Action::Selection::UnselectResidue( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::Old::ID::Model::MODEL_ATOM )
 		{
-			App::Component::Chemistry::Atom & model
-				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_modelId );
-			VTX_ACTION( new App::Action::Selection::UnselectAtom( p_selectionModel, model ) );
+			App::Old::Component::Chemistry::Atom & model
+				= VTX::MVC_MANAGER().getModel<App::Old::Component::Chemistry::Atom>( p_modelId );
+			VTX_ACTION( new App::Old::Action::Selection::UnselectAtom( p_selectionModel, model ) );
 		}
 	}
 
-	App::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
+	App::Old::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
 	{
-		const VTX::App::Core::Model::ID & modelId
-			= p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::App::Core::Model::ID>();
-		App::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelId );
+		const VTX::App::Old::Core::Model::ID & modelId
+			= p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::App::Old::Core::Model::ID>();
+		App::Old::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Old::Core::Model::BaseModel>( modelId );
 
 		return &model;
 	}
-	App::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
+	App::Old::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
 	{
-		const VTX::App::Core::Model::ID & modelId = p_sceneItem.getModelID();
-		App::Core::Model::BaseModel &	  model	  = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelId );
+		const VTX::App::Old::Core::Model::ID & modelId = p_sceneItem.getModelID();
+		App::Old::Core::Model::BaseModel &	  model	  = VTX::MVC_MANAGER().getModel<App::Old::Core::Model::BaseModel>( modelId );
 
 		return &model;
 	}

@@ -16,40 +16,40 @@
 #include "ui/qt/action/main.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QShortcut>
-#include <app/action/main.hpp>
-#include <app/action/setting.hpp>
-#include <app/action/viewpoint.hpp>
-#include <app/component/object3d/label.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
-#include <app/internal/io/filesystem.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/action/viewpoint.hpp>
+#include <app/old/component/object3d/label.hpp>
+#include <app/old/event.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/internal/io/filesystem.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
 // #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/object3d/mesh_triangle.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
+#include <app/old/component/object3d/mesh_triangle.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render
 {
 	RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::LABEL_ADDED );
-		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
-		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::LABEL_ADDED );
+		_registerEvent( VTX::App::Old::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Old::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	RenderWidget::~RenderWidget() {}
 
-	void RenderWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void RenderWidget::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::LABEL_ADDED )
+		if ( p_event.name == VTX::App::Old::Event::Global::LABEL_ADDED )
 		{
-			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
+			const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label *> &>( p_event );
 
-			const App::VTX_ID & labeltype = castedEvent.get()->getTypeId();
+			const App::Old::VTX_ID & labeltype = castedEvent.get()->getTypeId();
 
 			BaseIntegratedWidget * integratedWidget = nullptr;
 
@@ -92,12 +92,12 @@ namespace VTX::UI::Widget::Render
 				_addIntegratedWidget( integratedWidget );
 			}
 		}
-		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::App::Old::Event::Global::LABEL_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
+			const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Old::Core::Event::VTXEventArg<App::Old::Component::Object3D::Label *> &>( p_event );
 
-			const App::VTX_ID & labelTypeID = castedEvent.get()->getTypeId();
+			const App::Old::VTX_ID & labelTypeID = castedEvent.get()->getTypeId();
 
 			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			//{
@@ -123,7 +123,7 @@ namespace VTX::UI::Widget::Render
 			//		model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
 			// }
 		}
-		else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::App::Old::Event::Global::PICKER_MODE_CHANGE )
 		{
 			State::Visualization * const state
 				= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
@@ -224,26 +224,26 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::_onShortcutToggleCamera()
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTX_ACTION( new App::Action::Main::Snapshot(
-			App::Render::Worker::Snapshoter::MODE::GL,
-			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+		VTX_ACTION( new App::Old::Action::Main::Snapshot(
+			App::Old::Render::Worker::Snapshoter::MODE::GL,
+			App::Old::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeRenderMode( App::Render::Renderer::MODE(
-			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeRenderMode( App::Old::Render::Renderer::MODE(
+			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Old::Render::Renderer::MODE::COUNT ) ) );
 	}
 
-	void RenderWidget::_onShortcutPrintCameraInfos() { App::VTXApp::get().getScene().getCamera().print(); }
+	void RenderWidget::_onShortcutPrintCameraInfos() { App::Old::VTXApp::get().getScene().getCamera().print(); }
 
 	void RenderWidget::_onShortcutToggleAllOverlays()
 	{
@@ -278,7 +278,7 @@ namespace VTX::UI::Widget::Render
 			integratedWidget->updatePosition();
 	}
 
-	void RenderWidget::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
+	void RenderWidget::updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		_openGLWidget->updateRenderSetting( p_setting );
 	}
@@ -313,7 +313,7 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible )
 	{
 		_overlays[ p_overlay ]->setVisible( p_visible );
-		VTX_EVENT( VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		VTX_EVENT( VTX::App::Old::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 	void RenderWidget::showAllOverlays( const bool p_show )
 	{
@@ -322,7 +322,7 @@ namespace VTX::UI::Widget::Render
 			pairIdOverlay.second->setVisible( p_show );
 		}
 
-		VTX_EVENT( VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		VTX_EVENT( VTX::App::Old::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 
 	Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay )

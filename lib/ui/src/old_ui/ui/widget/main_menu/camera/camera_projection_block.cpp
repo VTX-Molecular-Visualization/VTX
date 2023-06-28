@@ -1,29 +1,29 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/camera_projection_block.hpp"
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/action/main.hpp>
-#include <app/action/setting.hpp>
-#include <app/event/global.hpp>
-#include <app/id.hpp>
+#include <app/old/action/main.hpp>
+#include <app/old/action/setting.hpp>
+#include <app/old/event/global.hpp>
+#include <app/old/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	CameraProjectionBlock::CameraProjectionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Old::Event::Global::SETTINGS_CHANGE );
 	};
 
 	CameraProjectionBlock::~CameraProjectionBlock() {}
 
-	void CameraProjectionBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
+	void CameraProjectionBlock::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::App::Old::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
+			const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Old::Core::Event::VTXEventArg<const std::set<VTX::App::Old::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Old::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
 			{
 				_refreshCameraProjectionButton();
 			}
@@ -70,7 +70,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void CameraProjectionBlock::_toggleCameraProjection() const
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Old::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

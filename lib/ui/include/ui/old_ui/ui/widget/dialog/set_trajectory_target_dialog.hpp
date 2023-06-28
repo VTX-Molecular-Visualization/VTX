@@ -11,15 +11,15 @@
 #include <QLabel>
 #include <QRadioButton>
 #include <QShowEvent>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <vector>
 
 namespace VTX
 {
-	namespace App::Core::Model
+	namespace App::Old::Core::Model
 	{
 		class BaseModel;
-	} // namespace App::Core::Model
+	} // namespace App::Old::Core::Model
 
 	namespace UI::Widget::Dialog
 	{
@@ -40,10 +40,10 @@ namespace VTX
 				ModelFieldLine( CustomWidget::BaseModelListWidget * const p_parent );
 				~ModelFieldLine();
 
-				App::Core::Model::BaseModel * const getModel() const;
-				void								setModel( App::Core::Model::BaseModel * const p_model );
+				App::Old::Core::Model::BaseModel * const getModel() const;
+				void								setModel( App::Old::Core::Model::BaseModel * const p_model );
 
-				App::Component::Chemistry::Molecule * const getMolecule() const { return _linkedMolecule; }
+				App::Old::Component::Chemistry::Molecule * const getMolecule() const { return _linkedMolecule; }
 
 				QCheckBox * getCheckBox() const { return _checkBox; }
 				QLabel *	getModelLabel() const { return _modelLabel; }
@@ -55,12 +55,12 @@ namespace VTX
 				QCheckBox * _checkBox	= nullptr;
 				QLabel *	_modelLabel = nullptr;
 
-				App::Component::Chemistry::Molecule * _linkedMolecule = nullptr;
+				App::Old::Component::Chemistry::Molecule * _linkedMolecule = nullptr;
 			};
 
 		  public:
-			std::vector<App::Component::Chemistry::Molecule *> getTickedMolecules() const;
-			void tickMolecule( App::Component::Chemistry::Molecule * const p_molecule, const bool p_ticked );
+			std::vector<App::Old::Component::Chemistry::Molecule *> getTickedMolecules() const;
+			void tickMolecule( App::Old::Component::Chemistry::Molecule * const p_molecule, const bool p_ticked );
 
 		  protected:
 			MoleculeListWidget( QWidget * p_parent = nullptr );

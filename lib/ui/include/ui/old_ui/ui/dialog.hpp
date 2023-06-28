@@ -3,15 +3,15 @@
 
 #include <QString>
 #include <QWidget>
-#include <app/component/chemistry/_fwd.hpp>
-#include <app/core/action/base_action.hpp>
-#include <app/core/worker/callback.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
+#include <app/old/core/action/base_action.hpp>
+#include <app/old/core/worker/callback.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX
 {
-	namespace App::Internal::IO::Serialization
+	namespace App::Old::Internal::IO::Serialization
 	{
 		class ImageExport;
 	}
@@ -22,7 +22,7 @@ namespace VTX
 		{
 		  public:
 			static void openInformationDialog( const QString & p_title, const QString & p_message );
-			static void confirmActionDialog( VTX::App::Core::Action::BaseAction * const p_action,
+			static void confirmActionDialog( VTX::App::Old::Core::Action::BaseAction * const p_action,
 											 const QString &							p_title,
 											 const QString &							p_message );
 
@@ -32,20 +32,20 @@ namespace VTX
 			static void openLoadMoleculeDialog();
 			static void openExportMoleculeDialog();
 			static void openLoadTrajectoryDialog();
-			static void openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target );
+			static void openLoadTrajectoryDialog( App::Old::Component::Chemistry::Molecule & p_target );
 
 			static void openSetTrajectoryTargetsDialog( const FilePath & p_trajectoryFilePath );
 			static void openSetTrajectoryTargetsDialog( const std::vector<FilePath> & p_trajectoryFilePaths );
 
 			static void createNewSessionDialog();
 
-			static void leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callbackSucceed );
+			static void leavingSessionDialog( VTX::App::Old::Core::Worker::CallbackThread & p_callbackSucceed );
 
 			static void openLoadSessionDialog();
-			static void openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback = nullptr );
+			static void openSaveSessionDialog( VTX::App::Old::Core::Worker::CallbackThread * const p_callback = nullptr );
 
 			static void openAdvancedSettingImageExportDialog();
-			static bool openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData );
+			static bool openExportImageDialog( const App::Old::Internal::IO::Serialization::ImageExport & p_exportData );
 
 			static void importRepresentationPresetDialog();
 			static void importRenderEffectPresetDialog();

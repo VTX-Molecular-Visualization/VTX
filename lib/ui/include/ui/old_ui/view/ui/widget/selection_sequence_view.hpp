@@ -2,8 +2,8 @@
 #define __VTX_VIEW_UI_WIDGET_SELECTION_SEQUENCE_VIEW__
 
 #include "ui/old_ui/ui/widget/sequence/sequence_widget.hpp"
-#include <app/application/selection/selection.hpp>
-#include <app/core/view/base_view.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/core/view/base_view.hpp>
 
 namespace VTX
 {
@@ -13,7 +13,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class SelectionSequenceView : public App::Core::View::BaseView<App::Application::Selection::SelectionModel>
+				class SelectionSequenceView : public App::Old::Core::View::BaseView<App::Old::Application::Selection::SelectionModel>
 				{
 					VTX_VIEW
 
@@ -23,8 +23,8 @@ namespace VTX
 				  private:
 					const VTX::UI::Widget::Sequence::SequenceWidget * const _linkedSequenceWidget;
 
-					SelectionSequenceView( App::Application::Selection::SelectionModel * const p_model, QWidget * const p_sequenceWidget ) :
-						App::Core::View::BaseView<App::Application::Selection::SelectionModel>( p_model ),
+					SelectionSequenceView( App::Old::Application::Selection::SelectionModel * const p_model, QWidget * const p_sequenceWidget ) :
+						App::Old::Core::View::BaseView<App::Old::Application::Selection::SelectionModel>( p_model ),
 						_linkedSequenceWidget(
 							dynamic_cast<VTX::UI::Widget::Sequence::SequenceWidget * const>( p_sequenceWidget ) )
 					{

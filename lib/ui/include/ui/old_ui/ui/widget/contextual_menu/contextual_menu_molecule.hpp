@@ -4,18 +4,18 @@
 #include "contextual_menu_template.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/old/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	class ContextualMenuMolecule : public ContextualMenuTemplate<App::Component::Chemistry::Molecule>
+	class ContextualMenuMolecule : public ContextualMenuTemplate<App::Old::Component::Chemistry::Molecule>
 	{
 		VTX_WIDGET
 
 	  public:
 		~ContextualMenuMolecule();
 		void localize() override;
-		void setTarget( App::Component::Chemistry::Molecule * const p_target ) override;
+		void setTarget( App::Old::Component::Chemistry::Molecule * const p_target ) override;
 
 	  protected:
 		ContextualMenuMolecule( QWidget * p_parent = nullptr );

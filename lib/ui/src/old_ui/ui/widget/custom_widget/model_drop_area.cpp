@@ -1,15 +1,15 @@
 #include "ui/old_ui/ui/widget/custom_widget/model_drop_area.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
-#include <app/application/selection/selection.hpp>
-#include <app/id.hpp>
-#include <app/mvc.hpp>
+#include <app/old/application/selection/selection.hpp>
+#include <app/old/id.hpp>
+#include <app/old/mvc.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	void ModelDropArea::copyTypeFilters( const ModelDropArea & p_from, ModelDropArea & p_to )
 	{
-		for ( const App::VTX_ID & id : p_from._filters )
+		for ( const App::Old::VTX_ID & id : p_from._filters )
 		{
 			p_to.addTypeFilter( id );
 		}
@@ -30,13 +30,13 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ModelDropArea::setAcceptGroup( const bool p_accept ) { _acceptGroup = p_accept; }
 
-	void ModelDropArea::addTypeFilter( const VTX::App::VTX_ID & p_modelID ) { _filters.emplace_back( p_modelID ); }
+	void ModelDropArea::addTypeFilter( const VTX::App::Old::VTX_ID & p_modelID ) { _filters.emplace_back( p_modelID ); }
 	bool ModelDropArea::_hasFiltersToCheck() const { return _filters.size() > 0; }
-	bool ModelDropArea::matchFilter( const VTX::App::VTX_ID & p_type ) const
+	bool ModelDropArea::matchFilter( const VTX::App::Old::VTX_ID & p_type ) const
 	{
 		return !_hasFiltersToCheck() || std::find( _filters.begin(), _filters.end(), p_type ) != _filters.end();
 	}
-	bool ModelDropArea::matchFilter( const App::Core::Model::BaseModel & p_model ) const
+	bool ModelDropArea::matchFilter( const App::Old::Core::Model::BaseModel & p_model ) const
 	{
 		return matchFilter( p_model.getTypeId() );
 	}
@@ -53,31 +53,31 @@ namespace VTX::UI::Widget::CustomWidget
 			if ( _hasFiltersToCheck() )
 			{
 				const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
-				const App::VTX_ID &			  typeId	= modelData.getTypeID();
+				const App::Old::VTX_ID &			  typeId	= modelData.getTypeID();
 
 				// For a selection, accept drop only if all models of the selection are accepted by the filter
-				if ( typeId == App::ID::Model::MODEL_SELECTION )
+				if ( typeId == App::Old::ID::Model::MODEL_SELECTION )
 				{
-					const App::Application::Selection::SelectionModel & selection
-						= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>(
+					const App::Old::Application::Selection::SelectionModel & selection
+						= VTX::MVC_MANAGER().getModel<App::Old::Application::Selection::SelectionModel>(
 							modelData.getModelID() );
 
 					if ( _acceptGroup )
 					{
-						std::set<App::VTX_ID> selectionTypeIDs = std::set<App::VTX_ID>();
+						std::set<App::Old::VTX_ID> selectionTypeIDs = std::set<App::Old::VTX_ID>();
 						selection.getItemTypes( selectionTypeIDs );
 
-						for ( const App::VTX_ID & typeId : selectionTypeIDs )
+						for ( const App::Old::VTX_ID & typeId : selectionTypeIDs )
 						{
 							accept = accept && matchFilter( typeId );
 						}
 					}
 					else if ( selection.getItems().size() == 1 )
 					{
-						std::set<App::VTX_ID> selectionTypeIDs = std::set<App::VTX_ID>();
+						std::set<App::Old::VTX_ID> selectionTypeIDs = std::set<App::Old::VTX_ID>();
 						selection.getItemTypes( selectionTypeIDs );
 
-						for ( const App::VTX_ID & typeId : selectionTypeIDs )
+						for ( const App::Old::VTX_ID & typeId : selectionTypeIDs )
 						{
 							accept = accept && matchFilter( typeId );
 						}
@@ -100,31 +100,31 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelDropArea::dropEvent( QDropEvent * p_event )
 	{
 		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
-		App::Core::Model::BaseModel & model
-			= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() );
+		App::Old::Core::Model::BaseModel & model
+			= VTX::MVC_MANAGER().getModel<App::Old::Core::Model::BaseModel>( modelData.getModelID() );
 
 		p_event->acceptProposedAction();
 
-		if ( model.getTypeId() == App::ID::Model::MODEL_SELECTION )
+		if ( model.getTypeId() == App::Old::ID::Model::MODEL_SELECTION )
 		{
-			const App::Application::Selection::SelectionModel & selection
-				= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>( modelData.getModelID() );
+			const App::Old::Application::Selection::SelectionModel & selection
+				= VTX::MVC_MANAGER().getModel<App::Old::Application::Selection::SelectionModel>( modelData.getModelID() );
 
-			std::set<App::VTX_ID> types = std::set<App::VTX_ID>();
+			std::set<App::Old::VTX_ID> types = std::set<App::Old::VTX_ID>();
 			selection.getItemTypes( types );
 
-			std::set<App::Core::Model::BaseModel *> droppedModels = std::set<App::Core::Model::BaseModel *>();
+			std::set<App::Old::Core::Model::BaseModel *> droppedModels = std::set<App::Old::Core::Model::BaseModel *>();
 
-			for ( const App::VTX_ID & typeID : types )
+			for ( const App::Old::VTX_ID & typeID : types )
 			{
 				if ( matchFilter( typeID ) )
 				{
-					selection.getItemsOfType<App::Core::Model::BaseModel>( typeID, droppedModels );
+					selection.getItemsOfType<App::Old::Core::Model::BaseModel>( typeID, droppedModels );
 				}
 			}
 
-			std::vector<App::Core::Model::BaseModel *> droppedModelsVector
-				= std::vector<App::Core::Model::BaseModel *>();
+			std::vector<App::Old::Core::Model::BaseModel *> droppedModelsVector
+				= std::vector<App::Old::Core::Model::BaseModel *>();
 			droppedModelsVector.resize( droppedModels.size() );
 			std::move( droppedModels.begin(), droppedModels.end(), droppedModelsVector.begin() );
 

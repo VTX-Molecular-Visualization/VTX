@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 
-#include <app/action/viewpoint.hpp>
+#include <app/old/action/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -66,7 +66,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<App::Component::Object3D::Viewpoint *> & targets = getTargets();
+		const std::unordered_set<App::Old::Component::Object3D::Viewpoint *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -74,17 +74,17 @@ namespace VTX::UI::Widget::Inspector
 				= QString::fromStdString( "Viewpoint (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_VIEWPOINT );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::Old::ID::Model::MODEL_VIEWPOINT );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const App::Component::Object3D::Viewpoint * viewpoint : targets )
+			for ( const App::Old::Component::Object3D::Viewpoint * viewpoint : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
 					if ( !_transformWidget->hasDifferentData() )
 					{
-					 App::Internal::Math::Transform viewpointTransform
-							= App::Internal::Math::Transform( viewpoint->getPosition(), viewpoint->getRotation(), VEC3F_XYZ );
+					 App::Old::Internal::Math::Transform viewpointTransform
+							= App::Old::Internal::Math::Transform( viewpoint->getPosition(), viewpoint->getRotation(), VEC3F_XYZ );
 						_transformWidget->updateWithNewValue( viewpointTransform );
 					}
 				}
@@ -93,8 +93,8 @@ namespace VTX::UI::Widget::Inspector
 				{
 					CustomWidget::EmbeddedDataPushButton * const gotoButton
 						= new CustomWidget::EmbeddedDataPushButton( this );
-					const App::Core::Model::ID & id = viewpoint->getId();
-					gotoButton->setData( QVariant::fromValue<App::Core::Model::ID>( id ) );
+					const App::Old::Core::Model::ID & id = viewpoint->getId();
+					gotoButton->setData( QVariant::fromValue<App::Old::Core::Model::ID>( id ) );
 
 					QString gotoButtonTxt;
 
@@ -118,17 +118,17 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleViewpointWidget::_onTransformChange( const App::Internal::Math::Transform & p_transform ) const
+	void MultipleViewpointWidget::_onTransformChange( const App::Old::Internal::Math::Transform & p_transform ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			std::vector<App::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Component::Object3D::Viewpoint *>();
+			std::vector<App::Old::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Old::Component::Object3D::Viewpoint *>();
 			viewpointsVector.reserve( getTargets().size() );
 
-			for ( App::Component::Object3D::Viewpoint * target : getTargets() )
+			for ( App::Old::Component::Object3D::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsVector, p_transform ) );
+			VTX_ACTION( new App::Old::Action::Viewpoint::Relocate( viewpointsVector, p_transform ) );
 		}
 	}
 
@@ -136,33 +136,33 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::vector<App::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Component::Object3D::Viewpoint *>();
+			std::vector<App::Old::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Old::Component::Object3D::Viewpoint *>();
 			viewpointsVector.reserve( getTargets().size() );
 
-			for ( App::Component::Object3D::Viewpoint * target : getTargets() )
+			for ( App::Old::Component::Object3D::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new App::Action::Viewpoint::Translate( viewpointsVector, p_delta ) );
+			VTX_ACTION( new App::Old::Action::Viewpoint::Translate( viewpointsVector, p_delta ) );
 		}
 	}
 	void MultipleViewpointWidget::_onRotationDragged( const Vec3f & p_delta ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<App::Component::Object3D::Viewpoint *> viewpointsVector = std::unordered_set<App::Component::Object3D::Viewpoint *>();
+			std::unordered_set<App::Old::Component::Object3D::Viewpoint *> viewpointsVector = std::unordered_set<App::Old::Component::Object3D::Viewpoint *>();
 			viewpointsVector.reserve( getTargets().size() );
 
-			for ( App::Component::Object3D::Viewpoint * target : getTargets() )
+			for ( App::Old::Component::Object3D::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace( target );
 
-			VTX_ACTION( new App::Action::Viewpoint::Rotate( viewpointsVector, p_delta ) );
+			VTX_ACTION( new App::Old::Action::Viewpoint::Rotate( viewpointsVector, p_delta ) );
 		}
 	}
 
 	void MultipleViewpointWidget::_goToAction( const QVariant & p_viewpointIndex ) const
 	{
-		const App::Core::Model::ID &		 modelID   = p_viewpointIndex.value<App::Core::Model::ID>();
-		const App::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
+		const App::Old::Core::Model::ID &		 modelID   = p_viewpointIndex.value<App::Old::Core::Model::ID>();
+		const App::Old::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Old::Component::Object3D::Viewpoint>( modelID );
 
 		VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint ) );
 	}
@@ -171,13 +171,13 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::vector<App::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Component::Object3D::Viewpoint *>();
+			std::vector<App::Old::Component::Object3D::Viewpoint *> viewpointsVector = std::vector<App::Old::Component::Object3D::Viewpoint *>();
 			viewpointsVector.reserve( getTargets().size() );
 
-			for ( App::Component::Object3D::Viewpoint * target : getTargets() )
+			for ( App::Old::Component::Object3D::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsVector ) );
+			VTX_ACTION( new App::Old::Action::Viewpoint::Relocate( viewpointsVector ) );
 		}
 	}
 

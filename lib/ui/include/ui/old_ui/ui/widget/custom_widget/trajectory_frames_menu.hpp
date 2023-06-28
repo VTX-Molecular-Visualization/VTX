@@ -6,8 +6,8 @@
 #include <QAction>
 #include <QMenu>
 #include <QString>
-#include <app/application/selection/_fwd.hpp>
-#include <app/component/chemistry/_fwd.hpp>
+#include <app/old/application/selection/_fwd.hpp>
+#include <app/old/component/chemistry/_fwd.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -31,11 +31,11 @@ namespace VTX::UI::Widget::CustomWidget
 		void setFrameDisplayString( const std::string & p_str );
 		void setDisplayAllOptionName( const std::string & p_name );
 
-		void updateFrames( const App::Component::Chemistry::Molecule & p_molecule );
-		void updateFrames( const App::Application::Selection::SelectionModel & p_selection );
+		void updateFrames( const App::Old::Component::Chemistry::Molecule & p_molecule );
+		void updateFrames( const App::Old::Application::Selection::SelectionModel & p_selection );
 
-		bool hasToBeDisplayed( const App::Component::Chemistry::Molecule & p_molecule ) const;
-		bool hasToBeDisplayed( const App::Application::Selection::SelectionModel & p_selection ) const;
+		bool hasToBeDisplayed( const App::Old::Component::Chemistry::Molecule & p_molecule ) const;
+		bool hasToBeDisplayed( const App::Old::Application::Selection::SelectionModel & p_selection ) const;
 
 		void setDisplayAllFramesOption( const bool p_displayAllFramesOption );
 
