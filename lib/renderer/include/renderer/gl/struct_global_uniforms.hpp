@@ -8,6 +8,7 @@ namespace VTX::Renderer::GL
 {
 	// TODO: split in ubo per pass?
 	// TODO: model and normal matrix.
+	// TODO: min/max values.
 	struct StructGlobalUniforms
 	{
 		Mat4f matrixModel  = MAT4F_ID; // TODO: will be moved.

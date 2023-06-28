@@ -98,7 +98,7 @@ int main( int, char ** )
 	}
 	catch ( const std::exception & p_e )
 	{
-		VTX_ERROR( "{}", p_e.what() );
+		VTX_ERROR( "Unhandled exception: {}", p_e.what() );
 		return EXIT_FAILURE;
 	}
 

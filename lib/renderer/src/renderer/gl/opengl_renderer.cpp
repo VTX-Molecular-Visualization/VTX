@@ -388,7 +388,7 @@ namespace VTX::Renderer::GL
 		for ( GLint i = 0; i < numExtensions; ++i )
 		{
 			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
-			if ( strcmp( "NVX_gpu_memory_info", extension ) == 0 )
+			if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
 			{
 				_openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
 			}
