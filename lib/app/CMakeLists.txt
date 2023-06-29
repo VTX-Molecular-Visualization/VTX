@@ -51,6 +51,8 @@ target_link_libraries(VTX_APP PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_APP PUBLIC magic_enum)
 
 # Test.
+include(CTest)
+
 # Create executable.
 add_executable(VTX_APP_TEST test/main.cpp)
 
