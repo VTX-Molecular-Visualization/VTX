@@ -57,7 +57,6 @@ namespace VTX::Renderer::GL
 
 		_vbo = std::make_unique<Buffer>();
 		_vao = std::make_unique<VertexArray>();
-		_ubo = std::make_unique<Buffer>();
 
 		_vao->enableAttribute( 0 );
 		_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
@@ -66,8 +65,8 @@ namespace VTX::Renderer::GL
 
 		_vbo->set( quad );
 
-		// Global uniforms buffer.
-		_ubo->set( _globalUniforms, GL_DYNAMIC_DRAW );
+		// Camera uniforms buffer.
+		_uboCamera = std::make_unique<Buffer>( _uniformsCamera, GL_DYNAMIC_DRAW );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 
@@ -105,7 +104,7 @@ namespace VTX::Renderer::GL
 
 			if ( true )
 			{
-				_ubo->bind( GL_UNIFORM_BUFFER, 15 );
+				_uboCamera->bind( GL_UNIFORM_BUFFER, 15 );
 
 				_times.fill( 0.f );
 				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
@@ -154,7 +153,7 @@ namespace VTX::Renderer::GL
 					} );
 			}
 
-			_ubo->unbind();
+			_uboCamera->unbind( 15 );
 
 			//_needUpdate = false;
 		}
@@ -229,129 +228,70 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
 	{
-		_ubo->setSub( p_model, offsetof( StructGlobalUniforms, matrixModel ), sizeof( Mat4f ) );
-		_ubo->setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ),
-					  offsetof( StructGlobalUniforms, matrixNormal ),
-					  sizeof( Mat4f ) );
+		_uboCamera->setSub( p_model, offsetof( StructUniformsCamera, matrixModel ), sizeof( Mat4f ) );
+		_uboCamera->setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ),
+							offsetof( StructUniformsCamera, matrixNormal ),
+							sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setMatrixView( const Mat4f & p_view )
 	{
-		_globalUniforms.matrixView = p_view;
-		_ubo->setSub( p_view, offsetof( StructGlobalUniforms, matrixView ), sizeof( Mat4f ) );
+		_uniformsCamera.matrixView = p_view;
+		_uboCamera->setSub( p_view, offsetof( StructUniformsCamera, matrixView ), sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setMatrixProjection( const Mat4f & p_proj )
 	{
-		_globalUniforms.matrixProjection = p_proj;
-		_ubo->setSub( p_proj, offsetof( StructGlobalUniforms, matrixProjection ), sizeof( Mat4f ) );
+		_uniformsCamera.matrixProjection = p_proj;
+		_uboCamera->setSub( p_proj, offsetof( StructUniformsCamera, matrixProjection ), sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setCameraClipInfos( const float p_near, const float p_far )
 	{
-		_globalUniforms.cameraClipInfos = Vec4f( p_near * p_far, p_far, p_far - p_near, p_near );
-		_ubo->setSub(
-			_globalUniforms.cameraClipInfos, offsetof( StructGlobalUniforms, cameraClipInfos ), sizeof( Vec4f ) );
+		_uniformsCamera.cameraClipInfos = Vec4f( p_near * p_far, p_far, p_far - p_near, p_near );
+		_uboCamera->setSub(
+			_uniformsCamera.cameraClipInfos, offsetof( StructUniformsCamera, cameraClipInfos ), sizeof( Vec4f ) );
 	}
 
-	void OpenGLRenderer::setColorBackground( Util::Color::Rgba & p_color )
+	void OpenGLRenderer::setBlurSize( const float p_size ) { _passBlur->setSize( p_size ); }
+
+	void OpenGLRenderer::setSSAOIntensity( const float p_intensity ) { _passSSAO->setIntensity( p_intensity ); }
+
+	void OpenGLRenderer::setShadingMode( const ENUM_SHADING p_shading ) { _passShading->setMode( p_shading ); }
+
+	void OpenGLRenderer::setSpecularFactor( const float p_specularFactor )
 	{
-		_globalUniforms.colorBackground = p_color;
-		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorBackground ), sizeof( Util::Color::Rgba ) );
+		_passShading->setSpecularFactor( p_specularFactor );
 	}
 
-	void OpenGLRenderer::setColorLight( Util::Color::Rgba & p_color )
+	void OpenGLRenderer::setColorBackground( const Util::Color::Rgba & p_color )
 	{
-		_globalUniforms.colorLight = p_color;
-		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorLight ), sizeof( Util::Color::Rgba ) );
+		_passShading->setColorBackground( p_color );
 	}
 
-	void OpenGLRenderer::setColorFog( Util::Color::Rgba & p_color )
-	{
-		_globalUniforms.colorFog = p_color;
-		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorFog ), sizeof( Util::Color::Rgba ) );
-	}
+	void OpenGLRenderer::setColorLight( const Util::Color::Rgba & p_color ) { _passShading->setColorLight( p_color ); }
 
-	void OpenGLRenderer::setColorOutline( Util::Color::Rgba & p_color )
-	{
-		_globalUniforms.colorOutline = p_color;
-		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorOutline ), sizeof( Util::Color::Rgba ) );
-	}
+	void OpenGLRenderer::setColorFog( const Util::Color::Rgba & p_color ) { _passShading->setColorFog( p_color ); }
 
-	void OpenGLRenderer::setColorSelection( Util::Color::Rgba & p_color )
-	{
-		_globalUniforms.colorSelection = p_color;
-		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorSelection ), sizeof( Util::Color::Rgba ) );
-	}
+	void OpenGLRenderer::setFogNear( const float p_near ) { _passShading->setFogNear( p_near ); }
 
-	void OpenGLRenderer::setSpecularFactor( float p_factor )
-	{
-		_globalUniforms.specularFactor = p_factor;
-		_ubo->setSub( p_factor, offsetof( StructGlobalUniforms, specularFactor ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setFogFar( const float p_far ) { _passShading->setFogFar( p_far ); }
 
-	void OpenGLRenderer::setFogNear( float p_near )
-	{
-		_globalUniforms.fogNear = p_near;
-		_ubo->setSub( p_near, offsetof( StructGlobalUniforms, fogNear ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setFogDensity( const float p_density ) { _passShading->setFogDensity( p_density ); }
 
-	void OpenGLRenderer::setFogFar( float p_far )
-	{
-		_globalUniforms.fogFar = p_far;
-		_ubo->setSub( p_far, offsetof( StructGlobalUniforms, fogFar ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setOutlineSensivity( const float p_sensivity ) { _passOutline->setSensivity( p_sensivity ); }
 
-	void OpenGLRenderer::setFogDensity( float p_density )
-	{
-		_globalUniforms.fogDensity = p_density;
-		_ubo->setSub( p_density, offsetof( StructGlobalUniforms, fogDensity ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setOutlineThickness( const float p_thickness ) { _passOutline->setThickness( p_thickness ); }
 
-	void OpenGLRenderer::setSSAOIntensity( float p_intensity )
-	{
-		_globalUniforms.ssaoIntensity = p_intensity;
-		_ubo->setSub( p_intensity, offsetof( StructGlobalUniforms, ssaoIntensity ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setColorOutline( const Util::Color::Rgba & p_color ) { _passOutline->setColor( p_color ); }
 
-	void OpenGLRenderer::setBlurSize( float p_size )
-	{
-		_globalUniforms.blurSize = p_size;
-		_ubo->setSub( p_size, offsetof( StructGlobalUniforms, blurSize ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setColorSelection( const Util::Color::Rgba & p_color ) { _passSelection->setColor( p_color ); }
 
-	void OpenGLRenderer::setOutlineSensivity( float p_sensivity )
-	{
-		_globalUniforms.outlineSensivity = p_sensivity;
-		_ubo->setSub( p_sensivity, offsetof( StructGlobalUniforms, outlineSensivity ), sizeof( float ) );
-	}
+	void OpenGLRenderer::setPixelSize( const uint p_size ) { _passPixelize->setSize( p_size ); }
 
-	void OpenGLRenderer::setOutlineThickness( float p_thickness )
+	void OpenGLRenderer::setPixelizeBackground( const bool p_background )
 	{
-		_globalUniforms.outlineThickness = p_thickness;
-		_ubo->setSub( p_thickness, offsetof( StructGlobalUniforms, outlineThickness ), sizeof( float ) );
-	}
-
-	void OpenGLRenderer::setShadingMode( const ENUM_SHADING p_shading )
-	{
-		_globalUniforms.shadingMode = p_shading;
-		_ubo->setSub( p_shading, offsetof( StructGlobalUniforms, shadingMode ), sizeof( ENUM_SHADING ) );
-	}
-
-	void OpenGLRenderer::setPixelSize( const uint p_size )
-	{
-		_globalUniforms.pixelSize = p_size;
-		if ( _globalUniforms.pixelSize % 2 == 0 )
-		{
-			_globalUniforms.pixelSize++;
-		}
-		_ubo->setSub( _globalUniforms.pixelSize, offsetof( StructGlobalUniforms, pixelSize ), sizeof( uint ) );
-	}
-
-	void OpenGLRenderer::setPixelizeBackground( const bool p_active )
-	{
-		_globalUniforms.pixelizeBackground = p_active;
-		_ubo->setSub( p_active, offsetof( StructGlobalUniforms, pixelizeBackground ), sizeof( bool ) );
+		_passPixelize->setBackground( p_background );
 	}
 
 	void OpenGLRenderer::loadSkybox( const std::array<unsigned char *, 6> & p_textures,

@@ -5,6 +5,7 @@
 #include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
+#include <array>
 
 namespace VTX::Renderer::GL::Pass
 {
@@ -15,6 +16,7 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
+		void setIntensity( const float );
 		void refreshKernel();
 
 		struct StructIn
@@ -30,13 +32,18 @@ namespace VTX::Renderer::GL::Pass
 
 		} out;
 
-	  private:
-		Program * _program = nullptr;
+		struct StructUniforms
+		{
+			float				   intensity		= 5.f;
+			std::array<Vec3f, 512> aoKernel			= std::array<Vec3f, 512>();
+			uint32_t			   kernelSize		= 16;
+			uint32_t			   noiseTextureSize = 64;
+		} uniforms;
 
-		uint					   _kernelSize		 = 16;
-		uint					   _noiseTextureSize = 64;
-		std::vector<Vec3f>		   _aoKernel		 = std::vector<Vec3f>();
+	  private:
+		std::unique_ptr<Buffer>	   _ubo;
 		std::unique_ptr<Texture2D> _noiseTexture;
+		Program *				   _program = nullptr;
 	};
 
 	using PassSSAO = BasePass<SSAO>;

@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inSpherePos;
@@ -22,9 +22,9 @@ outData;
 
 void main()
 {
-	if ( uniforms.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective )
 	{
-		outData.viewSpherePos	 = vec3( uniforms.matrixView *  uniforms.matrixModel * vec4( inSpherePos, 1.f ) );
+		outData.viewSpherePos	 = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
 		outData.sphereColor		 = inSphereColor;
 		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 		outData.sphereVisible	 = inSphereVisible;
@@ -57,7 +57,7 @@ void main()
 	}
 	else // Orthographic
 	{ 
-		outData.viewSpherePos	 = vec3( uniforms.matrixView *  uniforms.matrixModel * vec4( inSpherePos, 1.f ) );
+		outData.viewSpherePos	 = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
 		outData.sphereColor		 = inSphereColor;
 		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 		outData.sphereVisible	 = inSphereVisible;

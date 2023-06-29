@@ -15,6 +15,9 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
+		void setSize( const uint );
+		void setBackground( const bool );
+
 		struct StructIn
 		{
 			Texture2D * textureDataPacked = nullptr;
@@ -27,8 +30,15 @@ namespace VTX::Renderer::GL::Pass
 			std::unique_ptr<Texture2D>	 texture;
 		} out;
 
+		struct StructUniforms
+		{
+			uint32_t size		= 5;
+			bool	 background = true;
+		} uniforms;
+
 	  private:
-		Program * _program = nullptr;
+		std::unique_ptr<Buffer> _ubo;
+		Program *				_program = nullptr;
 	};
 
 	using PassPixelize = BasePass<Pixelize>;

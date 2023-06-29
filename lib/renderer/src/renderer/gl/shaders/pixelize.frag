@@ -1,11 +1,16 @@
 #version 450 core
 
-#include "global_uniforms.glsl"
 #include "struct_data_packed.glsl"
 
 // In.
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureColor;
+
+layout ( std140, binding = 2 ) uniform Uniforms
+{
+	uint size;
+	bool background;
+} uniforms;
 
 // Out.
 layout( location = 0 ) out vec4 outFragColor;
@@ -18,18 +23,18 @@ void main()
 	UnpackedData data;
 	unpackData( inTexturePackedData, data, texCoord );
 
-	if ( uniforms.pixelizeBackground == false && data.viewPosition.z == 0.f )
+	if ( uniforms.background == false && data.viewPosition.z == 0.f )
 	{
 		outFragColor = texture( inTextureColor, texCoord / texSize );
 		return;
 	}
 	else
 	{
-		float x = int( gl_FragCoord.x ) % uniforms.pixelSize;
-		float y = int( gl_FragCoord.y ) % uniforms.pixelSize;
+		float x = int( gl_FragCoord.x ) % uniforms.size;
+		float y = int( gl_FragCoord.y ) % uniforms.size;
 
-		x = floor( uniforms.pixelSize / 2.0 ) - x;
-		y = floor( uniforms.pixelSize / 2.0 ) - y;
+		x = floor( uniforms.size / 2.0 ) - x;
+		y = floor( uniforms.size / 2.0 ) - y;
 
 		x = gl_FragCoord.x + x;
 		y = gl_FragCoord.y + y;

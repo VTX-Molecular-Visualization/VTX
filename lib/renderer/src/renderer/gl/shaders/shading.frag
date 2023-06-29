@@ -1,12 +1,24 @@
 #version 450 core
 
-#include "global_uniforms.glsl"
+#include "layout_uniforms_camera.glsl"
 #include "struct_data_packed.glsl"
 
 // In.
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureColor;
 layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
+
+layout ( std140, binding = 3 ) uniform Uniforms
+{
+	int shadingMode;
+	float specularFactor;
+	vec4 colorBackground;
+	vec4 colorLight;	
+	vec4 colorFog;		
+	float fogNear;
+	float fogFar;
+	float fogDensity;
+} uniforms;
 
 // Out.
 out vec4 outFragColor;
@@ -37,7 +49,7 @@ void main()
 	}
 
 	// Lighting (on camera).
-	const vec3 lightDir = uniforms.isCameraPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	const vec3 lightDir = uniformsCamera.isCameraPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
 	// FLAT_COLOR.
 	float lighting = 1.f;

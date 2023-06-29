@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 layout( points ) in;
 layout( line_strip, max_vertices = 32 ) out;
@@ -45,9 +45,9 @@ void main() {
     vec4 center = gl_in[0].gl_Position;
     outData.center= center.xyz;
     
-    vec4 dx = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[0] * inData[0].voxelSize.x;
-    vec4 dy = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[1] * inData[0].voxelSize.y;
-    vec4 dz = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[2] * inData[0].voxelSize.z;
+    vec4 dx = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[0] * inData[0].voxelSize.x;
+    vec4 dy = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[1] * inData[0].voxelSize.y;
+    vec4 dz = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[2] * inData[0].voxelSize.z;
 
     addQuad( center + dx, dy, dz );
     addQuad( center - dx, dy, dz );

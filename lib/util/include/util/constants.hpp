@@ -34,14 +34,15 @@ namespace VTX
 
 	constexpr Quatf QUATF_ID = Quatf( 1.f, { 0.f, 0.f, 0.f } );
 
-	constexpr float PIf		   = glm::pi<float>();
-	constexpr float PI_2f	   = glm::half_pi<float>();
-	constexpr float PI_4f	   = glm::quarter_pi<float>();
-	constexpr float PI_32f	   = glm::three_over_two_pi<float>();
-	constexpr float TWO_PIf	   = glm::two_pi<float>();
-	constexpr float INV_PIf	   = glm::one_over_pi<float>();
-	constexpr float INV_2PIf   = glm::one_over_two_pi<float>();
-	constexpr uint	INVALID_ID = UNSIGNED_INT_MAX;
+	constexpr float PIf		 = glm::pi<float>();
+	constexpr float PI_2f	 = glm::half_pi<float>();
+	constexpr float PI_4f	 = glm::quarter_pi<float>();
+	constexpr float PI_32f	 = glm::three_over_two_pi<float>();
+	constexpr float TWO_PIf	 = glm::two_pi<float>();
+	constexpr float INV_PIf	 = glm::one_over_pi<float>();
+	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
+
+	constexpr uint INVALID_ID = UNSIGNED_INT_MAX;
 
 } // namespace VTX
 

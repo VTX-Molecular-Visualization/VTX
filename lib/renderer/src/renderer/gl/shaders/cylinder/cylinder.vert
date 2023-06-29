@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inVertexPosition;
@@ -23,5 +23,5 @@ void main()
 	outData.vertexId	   = inVertexId;
 
 	// Vertex position in view space.
-	gl_Position = uniforms.matrixView *  uniforms.matrixModel * vec4( inVertexPosition, 1.f );
+	gl_Position = uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inVertexPosition, 1.f );
 }

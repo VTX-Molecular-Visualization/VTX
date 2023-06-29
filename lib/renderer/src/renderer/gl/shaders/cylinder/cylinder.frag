@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 #include "../struct_data_packed.glsl"
 
 //#define SHOW_IMPOSTORS
@@ -22,7 +22,7 @@ layout( location = 2 ) out uvec2 outId;
 float computeDepth( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1]).
-	const float ndcDepth = ( p_v.z *uniforms.matrixProjection[ 2 ].z +uniforms.matrixProjection[ 3 ].z ) / -p_v.z;
+	const float ndcDepth = ( p_v.z *uniformsCamera.matrixProjection[ 2 ].z +uniformsCamera.matrixProjection[ 3 ].z ) / -p_v.z;
 	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
@@ -30,14 +30,14 @@ float computeDepth( const vec3 p_v )
 float computeDepthOrtho( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1]).
-	const float ndcDepth = ( p_v.z *uniforms.matrixProjection[ 2 ].z +uniforms.matrixProjection[ 3 ].z );
+	const float ndcDepth = ( p_v.z *uniformsCamera.matrixProjection[ 2 ].z +uniformsCamera.matrixProjection[ 3 ].z );
 	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
 void main()
 {
-	if ( uniforms.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective )
 	{
 		// Only consider cylinder body.
 		const vec3 v1v0	  = inData.viewVertices[ 1 ] - inData.viewVertices[ 0 ];

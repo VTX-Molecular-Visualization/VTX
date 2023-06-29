@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
@@ -21,19 +21,19 @@ outData;
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
 	outData.viewImpostorPosition = v1;
-	gl_Position				     = uniforms.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	outData.viewImpostorPosition = v2;
-	gl_Position				     = uniforms.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	outData.viewImpostorPosition = v3;
-	gl_Position				     = uniforms.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	outData.viewImpostorPosition = v4;
-	gl_Position				     = uniforms.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -70,7 +70,7 @@ void main()
 		viewImpPos1 = outData.viewVertices[ 1 ];
 	}
 
-	if ( uniforms.isCameraPerspective ){
+	if ( uniformsCamera.isCameraPerspective ){
 		// Compute normalized view vector to cylinder center.
 		const vec3 view = normalize( ( viewImpPos0 + viewImpPos1 ) * 0.5f );
 
