@@ -74,10 +74,10 @@ namespace VTX::Bench
 				 positions,
 				 colors,
 				 std::vector<float>( realSize, 0.5f ),
-				 std::vector<size_t>( realSize, 1 ),
-				 std::vector<size_t>( realSize, 0 ),
-				 std::vector<size_t>( realSize, 0 ),
-				 {} };
+				 std::vector<uint>( realSize, 1 ),
+				 std::vector<uint>( realSize, 0 ),
+				 std::vector<uint>( realSize, 0 ),
+				 bonds };
 	}
 
 	// Skybox.

@@ -6,8 +6,6 @@
 #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/render_graph.hpp>
 #include <util/math.hpp>
-// #define STB_IMAGE_IMPLEMENTATION
-// #include <stb_image.h>
 
 #ifdef _WIN32
 extern "C"
@@ -63,9 +61,9 @@ int main( int, char ** )
 			{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); } );
 
 		// Model.
-		Core::StructMolecule molecule = generateAtomGrid( 9 );
-		StructProxyMolecule	 proxyMolecule
-			= { &molecule.tranform,			&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
+		Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
+		StructProxyMolecule proxyMolecule
+			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
