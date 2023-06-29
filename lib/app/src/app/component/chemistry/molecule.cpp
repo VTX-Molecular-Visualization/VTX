@@ -13,12 +13,12 @@ namespace VTX::App::Component::Chemistry
 
 		_atomColors.resize( p_atomCount );
 		_atomRadii.resize( p_atomCount, 0.f );
-		_atomIds.resize( p_atomCount );
+		_atomIds.resize( p_atomCount, INVALID_ID );
 
 		std::generate( _atomIds.begin(), _atomIds.end(), [ n = 0 ]() mutable { return n++; } );
 
-		_atomVisibilities.resize( p_atomCount, size_t( true ) );
-		_atomSelections.resize( p_atomCount, size_t( false ) );
+		_atomVisibilities.resize( p_atomCount, 1 );
+		_atomSelections.resize( p_atomCount, 0 );
 	}
 
 	void Molecule::initBonds( const size_t p_bondCount )
