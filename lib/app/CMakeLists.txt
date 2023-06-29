@@ -34,7 +34,7 @@ target_include_directories(VTX_APP PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
-target_link_libraries(VTX_APP PRIVATE VTX_UTIL)
+target_link_libraries(VTX_APP PUBLIC VTX_UTIL)
 
 # Link VTX_CORE.
 add_subdirectory(../core lib/core)
@@ -42,8 +42,7 @@ target_link_libraries(VTX_APP PUBLIC VTX_CORE)
 
 # Link VTX_RENDERER.
 add_subdirectory(../renderer lib/renderer)
-target_link_libraries(VTX_APP PRIVATE VTX_RENDERER)
-
+target_link_libraries(VTX_APP PUBLIC VTX_RENDERER)
 
 # Link third parties.
 target_link_libraries(VTX_APP PUBLIC chemfiles)
@@ -51,21 +50,19 @@ target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
 target_link_libraries(VTX_APP PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_APP PUBLIC magic_enum)
 
-
-
 # Test.
 # Create executable.
 add_executable(VTX_APP_TEST test/main.cpp)
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(VTX_APP_TEST PRIVATE glfw)
 
 # Link VTX_APP.
-target_link_libraries(VTX_APP_TEST PRIVATE VTX_UTIL)
 target_link_libraries(VTX_APP_TEST PRIVATE VTX_APP)
-target_link_libraries(VTX_APP_TEST PRIVATE VTX_RENDERER)
 
 # Catch2.
-include(CTest)
 catch_discover_tests(VTX_APP_TEST)
+
+# Copy data.
+add_custom_target(VTX_APP_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_APP_TEST>/data)
+add_dependencies(VTX_APP_TEST VTX_APP_TEST_COPY_DATA)
