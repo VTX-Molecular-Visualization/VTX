@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_CONSTANTS__
 #define __VTX_UTIL_CONSTANTS__
 
-#include <climits>
+#include <limits>
 #include <util/types.hpp>
 
 namespace VTX
@@ -9,7 +9,12 @@ namespace VTX
 	constexpr float FLOAT_MIN = std::numeric_limits<float>::lowest();
 	constexpr float FLOAT_MAX = std::numeric_limits<float>::max();
 	constexpr float FLOAT_INF = std::numeric_limits<float>::infinity();
-	constexpr float EPSILON	  = 1e-4f;
+
+	constexpr uint UNSIGNED_INT_MIN = std::numeric_limits<uint>::lowest();
+	constexpr uint UNSIGNED_INT_MAX = std::numeric_limits<uint>::max();
+	constexpr uint UNSIGNED_INT_INF = std::numeric_limits<uint>::infinity();
+
+	constexpr float EPSILON = 1e-4f;
 
 	constexpr Vec2i VEC2I_ZERO = Vec2i( 0, 0 );
 	constexpr Vec3i VEC3I_ZERO = Vec3i( 0, 0, 0 );
@@ -37,7 +42,8 @@ namespace VTX
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
 
-	constexpr uint INVALID_ID = UINT_MAX;
+	constexpr uint INVALID_ID = UNSIGNED_INT_MAX;
+
 } // namespace VTX
 
 #endif

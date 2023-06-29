@@ -47,11 +47,11 @@ namespace VTX::App::Component::Chemistry
 		// std::vector<Vec3f>			   _atomPositions; // Link frame in trajectory
 		std::vector<Util::Color::Rgba> _atomColors;
 		std::vector<float>			   _atomRadii;
-		std::vector<size_t>			   _atomIds;
-		std::vector<size_t>			   _bondAtomPairIds;
+		std::vector<uint>			   _atomIds;
+		std::vector<uint>			   _bondAtomPairIds;
 
-		std::vector<size_t> _atomVisibilities;
-		std::vector<size_t> _atomSelections;
+		std::vector<uint> _atomVisibilities;
+		std::vector<uint> _atomSelections;
 
 		// App data
 		std::string		  _pdbIdCode = "";
