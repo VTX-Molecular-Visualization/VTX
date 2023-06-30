@@ -55,10 +55,11 @@ int main( int, char ** )
 			} );
 		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
 										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-
 		inputManager.setCallbackRotate(
 			[ &camera, &ui ]( const Vec2i & p_delta )
 			{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); } );
+		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
+									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		// Model.
 		Core::Gpu::Molecule molecule = generateAtomGrid( 9 );

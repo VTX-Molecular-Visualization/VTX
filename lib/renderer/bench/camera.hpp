@@ -64,6 +64,12 @@ namespace VTX::Bench
 			_updateMatrixView();
 		}
 
+		inline void zoom( const float p_delta )
+		{
+			_fov += p_delta * _zoomVelocity;
+			_updateMatrixProjection();
+		}
+
 		// Callbacks.
 		inline void setCallbackMatrixView( const std::function<void( const Mat4f & )> & p_callback )
 		{
@@ -104,6 +110,7 @@ namespace VTX::Bench
 
 		float _translationVelocity = 10.f;
 		float _rotationVelocity	   = 1.f;
+		float _zoomVelocity		   = 100.f;
 
 		std::function<void( const Mat4f & )>			_callbackMatrixView;
 		std::function<void( const Mat4f & )>			_callbackMatrixProjection;
