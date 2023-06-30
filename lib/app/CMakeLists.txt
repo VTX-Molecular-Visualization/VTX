@@ -4,23 +4,17 @@ set(CMAKE_CXX_STANDARD 20)
 project(VTX_APP)
 
 # Git dependencies.
-set(GIT_URL_CHEMFILES https://github.com/VTX-Molecular-Visualization/chemfiles.git)
-set(GIT_TAG_CHEMFILES d060165971aaf4f62358ff0aed68837f2257ca0c)
 set(GIT_URL_ENTT https://github.com/skypjack/entt.git)
 set(GIT_TAG_ENTT fef921132cae7588213d0f9bcd2fb9c8ffd8b7fc)
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON v3.11.2)
-set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
-set(GIT_TAG_MAGIC_ENUM v0.8.2)
 
 # Fetch third parties.
 include(FetchContent)
-FetchContent_Declare(chemfiles GIT_REPOSITORY ${GIT_URL_CHEMFILES} GIT_TAG ${GIT_TAG_CHEMFILES})
 FetchContent_Declare(EnTT GIT_REPOSITORY ${GIT_URL_ENTT} GIT_TAG ${GIT_TAG_ENTT})
 FetchContent_Declare(nlohmann_json GIT_REPOSITORY ${GIT_URL_JSON} GIT_TAG ${GIT_TAG_JSON})
-FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
 
-FetchContent_MakeAvailable(chemfiles EnTT nlohmann_json magic_enum)
+FetchContent_MakeAvailable(EnTT nlohmann_json)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
@@ -36,20 +30,18 @@ if(NOT TARGET VTX_UTIL)
 endif()
 target_link_libraries(VTX_APP PRIVATE VTX_UTIL)
 
-# Link VTX_CORE.
-add_subdirectory(../core lib/core)
-target_link_libraries(VTX_APP PUBLIC VTX_CORE)
+# Link VTX_IO.
+add_subdirectory(../io lib/io)
+target_link_libraries(VTX_APP PUBLIC VTX_IO)
 
 # Link VTX_RENDERER.
 add_subdirectory(../renderer lib/renderer)
-target_link_libraries(VTX_APP PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_APP PUBLIC VTX_RENDERER)
 
 
 # Link third parties.
-target_link_libraries(VTX_APP PUBLIC chemfiles)
 target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
 target_link_libraries(VTX_APP PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(VTX_APP PUBLIC magic_enum)
 
 
 

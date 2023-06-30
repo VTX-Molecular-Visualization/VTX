@@ -4,6 +4,7 @@
 // #include "app/old/core/io/reader/base_reader.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/io/molecule_metadata.hpp"
+#include <io/reader/chemfiles.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <utility>
@@ -28,10 +29,9 @@ namespace VTX::App::Internal::IO::Reader
 												const std::vector<Vec3f> &			  p_atomPositions );
 
 	  private:
-		void			  _readTrajectory( chemfiles::Trajectory &,
-										   const FilePath &,
-										   App::Component::Chemistry::Molecule &,
-										   const bool p_recomputeBonds = false );
+		void			  _fillStructure( VTX::IO::Reader::Chemfiles & p_chemfilesReader,
+										  App::Component::Chemistry::Molecule &,
+										  const bool p_recomputeBonds = false );
 		const std::string _getFormat( const FilePath & );
 		const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 

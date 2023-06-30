@@ -5,3 +5,4 @@
 /RELEASE/
 /.vscode/
 *.code-workspace
+**/out/

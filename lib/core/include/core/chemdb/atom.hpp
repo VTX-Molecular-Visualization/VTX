@@ -627,6 +627,7 @@ namespace VTX::Core::ChemDB::Atom
 		{ 255, 255, 255 }  // UUO			= 118,
 	};
 
+	SYMBOL getSymbolFromString( const std::string & p_symbolStr );
 } // namespace VTX::Core::ChemDB::Atom
 
 #endif

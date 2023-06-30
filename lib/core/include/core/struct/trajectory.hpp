@@ -10,6 +10,14 @@ namespace VTX::Core::Struct
 	class Trajectory
 	{
 	  public:
+		void fillFrame( const size_t p_moleculeFrameIndex, const std::vector<Vec3f> & p_atomPositions )
+		{
+			Frame & frame = frames[ p_moleculeFrameIndex ];
+			frame.resize( p_atomPositions.size() );
+
+			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
+		}
+
 		std::vector<Frame> frames;
 		size_t			   currentFrameIndex = 0;
 	};
