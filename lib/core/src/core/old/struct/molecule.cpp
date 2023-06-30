@@ -73,12 +73,12 @@ namespace VTX::Core::Old::Struct
 
 	int Molecule::getUnknownResidueSymbolIndex( const std::string & p_symbol ) const
 	{
-		int residueIndex;
+		size_t residueIndex;
 
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
-				return residueIndex;
+				return int( residueIndex );
 		}
 
 		return -1;
@@ -90,7 +90,7 @@ namespace VTX::Core::Old::Struct
 
 	ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
 	{
-		for ( int residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
+		for ( size_t residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
 				return _unknownResidueSymbol[ residueIndex ];
@@ -101,16 +101,16 @@ namespace VTX::Core::Old::Struct
 
 	int Molecule::addUnknownResidueSymbol( ChemDB::UnknownResidueData * const p_residueData )
 	{
-		int residueIndex;
+		size_t residueIndex;
 
 		for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
 			if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_residueData->symbolStr )
-				return residueIndex;
+				return int( residueIndex );
 		}
 
 		_unknownResidueSymbol.emplace_back( p_residueData );
-		return residueIndex;
+		return int( residueIndex );
 	}
 
 	bool Molecule::isEmpty()
@@ -311,7 +311,7 @@ namespace VTX::Core::Old::Struct
 	{
 		int res = 0;
 
-		for ( int chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
+		for ( size_t chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
 		{
 			const Chain * const chain = _chains[ chainIdx ];
 			if ( chain == nullptr )
@@ -325,7 +325,7 @@ namespace VTX::Core::Old::Struct
 	{
 		int res = 0;
 
-		for ( int residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
+		for ( size_t residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
 		{
 			const Residue * const residue = _residues[ residueIdx ];
 			if ( residue == nullptr )

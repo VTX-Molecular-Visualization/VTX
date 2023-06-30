@@ -43,6 +43,12 @@ elseif(MSVC)
 	target_compile_options(VTX_UTIL PUBLIC "/sdl") # Additional Security Checks.	
 	target_compile_options(VTX_UTIL PUBLIC "/utf-8")
 	target_compile_options(VTX_UTIL PUBLIC "/fp:fast") # Floating Point Model.
+	
+	# Optimization.
+	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/O2>")
+	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Ob2>")
+	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Ot>")
+	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Oi>")
 		
 	# Preprocessor definitions
 	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -51,18 +57,16 @@ elseif(MSVC)
 endif()
 
 # Tests.
-if(NOT TARGET Catch2)
-	set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
-	set(GIT_TAG_CATCH2 v3.3.2)
+set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
+set(GIT_TAG_CATCH2 v3.3.2)
 
-	FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
-	FetchContent_MakeAvailable(Catch2)
+FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
+FetchContent_MakeAvailable(Catch2)
 
-	# Catch2 configuration.
-	list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-	include(CTest)
-	include(Catch)
-endif()
+# Catch2 configuration.
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+include(CTest)
+include(Catch)
 
 # Create executable.
 add_executable(VTX_UTIL_TEST test/main.cpp)

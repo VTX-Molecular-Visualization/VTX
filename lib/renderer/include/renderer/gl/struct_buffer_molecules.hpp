@@ -21,16 +21,6 @@ namespace VTX::Renderer::GL
 
 		StructBufferMolecules()
 		{
-			vboPositions.create();
-			vboColors.create();
-			vboRadii.create();
-			vboVisibilities.create();
-			vboSelections.create();
-			vboIds.create();
-			eboBonds.create();
-
-			vao.create();
-
 			vao.bindElementBuffer( eboBonds );
 
 			// Position.

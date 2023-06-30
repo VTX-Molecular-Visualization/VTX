@@ -11,11 +11,7 @@ namespace VTX::Renderer::GL
 	class Framebuffer
 	{
 	  public:
-		Framebuffer() = default;
-
-		~Framebuffer() { destroy(); }
-
-		inline void create()
+		Framebuffer()
 		{
 			assert( _id == GL_INVALID_INDEX );
 
@@ -28,7 +24,7 @@ namespace VTX::Renderer::GL
 			assert( glIsFramebuffer( _id ) );
 		}
 
-		inline void destroy()
+		~Framebuffer()
 		{
 			assert( _target == 0 );
 
@@ -53,6 +49,7 @@ namespace VTX::Renderer::GL
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( glIsFramebuffer( _id ) );
+			assert( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 			assert( _target == 0 );
 			assert( p_target != 0 );
 

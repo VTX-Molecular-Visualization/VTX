@@ -35,12 +35,15 @@ namespace VTX::Bench
 	Core::Gpu::Molecule generateAtomGrid( int p_size )
 	{
 		if ( p_size % 2 == 0 )
+		{
 			++p_size;
+		}
 
 		const size_t realSize = p_size * p_size * p_size;
 
 		std::vector<Vec3f>			   positions( realSize );
 		std::vector<Util::Color::Rgba> colors( realSize );
+		std::vector<uint>			   bonds( ( realSize - 1 ) * 2 );
 
 		size_t		counter = 0;
 		const float offset	= 2.f;
@@ -53,22 +56,53 @@ namespace VTX::Bench
 				{
 					positions[ counter ] = Vec3f( i * offset, j * offset, k * offset );
 					colors[ counter ]	 = Util::Color::Rgba::random();
+					if ( counter < realSize - 1 )
+					{
+						bonds[ counter * 2 ]	 = uint( counter );
+						bonds[ counter * 2 + 1 ] = uint( counter + 1 );
+					}
 					++counter;
 				}
 			}
 		}
 
-		VTX_INFO( "{} atoms generated", realSize );
+		assert( counter == realSize );
+
+		VTX_INFO( "{} atoms and {} bonds generated", realSize, bonds.size() / 2 );
 
 		return { MAT4F_ID,
 				 positions,
 				 colors,
 				 std::vector<float>( realSize, 0.5f ),
-				 std::vector<size_t>( realSize, 1 ),
-				 std::vector<size_t>( realSize, 0 ),
-				 std::vector<size_t>( realSize, 0 ),
-				 {} };
+				 std::vector<uint>( realSize, 1 ),
+				 std::vector<uint>( realSize, 0 ),
+				 std::vector<uint>( realSize, 0 ),
+				 bonds };
 	}
+
+	// Skybox.
+	// 		const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
+	// 		const std::array<FilePath, 6> pathImages
+	// 			= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
+	// 				pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
+	// 		std::array<unsigned char *, 6> images;
+	// 		int							   width, height, nrChannels;
+	// 		try
+	// 		{
+	// 			for ( size_t i = 0; i < pathImages.size(); ++i )
+	// 			{
+	// 				images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
+	// 			}
+	// 			renderer.loadSkybox( images, width, height );
+	// 		}
+	// 		catch ( const std::exception & p_e )
+	// 		{
+	// 			VTX_ERROR( "Skybox not found: {}", p_e.what() );
+	// 		}
+	// 		for ( size_t i = 0; i < images.size(); ++i )
+	// 		{
+	// 			stbi_image_free( images[ i ] );
+	// 		}
 } // namespace VTX::Bench
 
 #endif

@@ -15,7 +15,7 @@ namespace VTX::Renderer::GL
 		class Geometric
 		{
 		  public:
-			void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+			Geometric( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 			void resize( const size_t p_width, const size_t p_height );
 			void render( VertexArray & p_vao );
 
@@ -29,11 +29,11 @@ namespace VTX::Renderer::GL
 
 			struct StructOut
 			{
-				Framebuffer fbo				  = Framebuffer();
-				Texture2D	textureDataPacked = Texture2D();
-				Texture2D	textureColors	  = Texture2D();
-				Texture2D	textureDepth	  = Texture2D();
-				Texture2D	texturePicking	  = Texture2D();
+				std::unique_ptr<Framebuffer> fbo;
+				std::unique_ptr<Texture2D>	 textureDataPacked;
+				std::unique_ptr<Texture2D>	 textureColors;
+				std::unique_ptr<Texture2D>	 textureDepth;
+				std::unique_ptr<Texture2D>	 texturePicking;
 			} out;
 
 		  private:

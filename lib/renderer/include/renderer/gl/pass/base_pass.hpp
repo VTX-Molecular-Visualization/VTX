@@ -16,8 +16,8 @@ namespace VTX::Renderer::GL::Pass
 								   ProgramManager & p_pm,
 								   VertexArray &	p_vao ) {
 		{
-			p_pass.init( p_width, p_height, p_pm )
-		} -> std::same_as<void>;
+			T( p_width, p_height, p_pm )
+		} -> std::same_as<T>;
 		{
 			p_pass.resize( p_width, p_height )
 		} -> std::same_as<void>;
@@ -29,7 +29,9 @@ namespace VTX::Renderer::GL::Pass
 	template<Renderable R>
 	class BasePass : public R
 	{
-		// Shared method for all passes.
+	  public:
+		BasePass() = delete;
+		BasePass( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) : R( p_width, p_height, p_pm ) {}
 	};
 
 } // namespace VTX::Renderer::GL::Pass

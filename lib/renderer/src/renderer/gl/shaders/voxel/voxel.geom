@@ -45,9 +45,9 @@ void main() {
     vec4 center = gl_in[0].gl_Position;
     outData.center= center.xyz;
     
-    vec4 dx = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[0] * inData[0].voxelSize.x;
-    vec4 dy = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[1] * inData[0].voxelSize.y;
-    vec4 dz = ( getMatrixProjection() * getMatrixView() * getMatrixModel() )[2] * inData[0].voxelSize.z;
+    vec4 dx = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[0] * inData[0].voxelSize.x;
+    vec4 dy = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[1] * inData[0].voxelSize.y;
+    vec4 dz = ( uniforms.matrixProjection *  uniforms.matrixView *  uniforms.matrixModel )[2] * inData[0].voxelSize.z;
 
     addQuad( center + dx, dy, dz );
     addQuad( center - dx, dy, dz );

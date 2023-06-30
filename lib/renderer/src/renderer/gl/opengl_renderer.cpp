@@ -4,7 +4,12 @@
 
 namespace VTX::Renderer::GL
 {
-	OpenGLRenderer::OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath )
+	OpenGLRenderer::OpenGLRenderer( void *			 p_proc,
+									const size_t	 p_width,
+									const size_t	 p_height,
+									const FilePath & p_shaderPath ) :
+		_width( p_width ),
+		_height( p_height )
 	{
 		VTX_INFO( "Creating renderer..." );
 
@@ -14,10 +19,9 @@ namespace VTX::Renderer::GL
 			throw GLException( "Failed to initialize GLAD" );
 		}
 
-		// const unsigned char * const glVendor   = glGetString( GL_VENDOR );
-		// const unsigned char * const glRenderer = glGetString( GL_RENDERER );
+		_getOpenglInfos();
 
-		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
+		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
 #if ( VTX_OPENGL_VERSION == 450 )
@@ -34,66 +38,36 @@ namespace VTX::Renderer::GL
 		_bufferMeshes	 = std::make_unique<StructBufferMeshes>();
 		_bufferMolecules = std::make_unique<StructBufferMolecules>();
 
+		// Passes.
+		_passGeometric		= std::make_unique<Pass::PassGeometric>( p_width, p_height, *_programManager );
+		_passLinearizeDepth = std::make_unique<Pass::PassLinearizeDepth>( p_width, p_height, *_programManager );
+		_passSSAO			= std::make_unique<Pass::PassSSAO>( p_width, p_height, *_programManager );
+		_passBlur			= std::make_unique<Pass::PassBlur>( p_width, p_height, *_programManager );
+		_passShading		= std::make_unique<Pass::PassShading>( p_width, p_height, *_programManager );
+		_passOutline		= std::make_unique<Pass::PassOutline>( p_width, p_height, *_programManager );
+		_passSelection		= std::make_unique<Pass::PassSelection>( p_width, p_height, *_programManager );
+		_passFXAA			= std::make_unique<Pass::PassFXAA>( p_width, p_height, *_programManager );
+		_passPixelize		= std::make_unique<Pass::PassPixelize>( p_width, p_height, *_programManager );
+
 		// Setup default routing.
-		_passGeometric.in.meshes	= _bufferMeshes.get();
-		_passGeometric.in.molecules = _bufferMolecules.get();
-
-		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
-
-		_passSSAO.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passSSAO.in.textureDepth	   = &( _passLinearizeDepth.out.texture );
-
-		_passBlur.in.textureColor = &( _passSSAO.out.texture );
-		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
-
-		_passShading.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passShading.in.textureColor	  = &( _passGeometric.out.textureColors );
-		_passShading.in.textureBlur		  = &( _passBlur.out.texture );
-
-		_passOutline.in.textureColor = &( _passShading.out.texture );
-		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
-
-		_passSelection.in.textureDataPacked = &( _passGeometric.out.textureDataPacked );
-		_passSelection.in.textureColor		= &( _passOutline.out.texture );
-		_passSelection.in.textureDepth		= &( _passLinearizeDepth.out.texture );
-
-		_passFXAA.in.textureColor = &( _passSelection.out.texture );
-	}
-
-	void OpenGLRenderer::init( const size_t p_width, const size_t p_height )
-	{
-		VTX_INFO( "Initializing renderer..." );
-
-		// Set size.
-		_width	= p_width;
-		_height = p_height;
-
-		// Init passes.
-		_passGeometric.init( p_width, p_height, *_programManager );
-		_passLinearizeDepth.init( p_width, p_height, *_programManager );
-		_passSSAO.init( p_width, p_height, *_programManager );
-		_passBlur.init( p_width, p_height, *_programManager );
-		_passShading.init( p_width, p_height, *_programManager );
-		_passOutline.init( p_width, p_height, *_programManager );
-		_passSelection.init( p_width, p_height, *_programManager );
-		_passFXAA.init( p_width, p_height, *_programManager );
+		_setupRouting();
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-		_vbo.create();
-		_vao.create();
-		_ubo.create();
+		_vbo = std::make_unique<Buffer>();
+		_vao = std::make_unique<VertexArray>();
+		_ubo = std::make_unique<Buffer>();
 
-		_vao.enableAttribute( 0 );
-		_vao.setVertexBuffer<float>( 0, _vbo, sizeof( Vec2f ) );
-		_vao.setAttributeFormat<float>( 0, 2 );
-		_vao.setAttributeBinding( 0, 0 );
+		_vao->enableAttribute( 0 );
+		_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
+		_vao->setAttributeFormat<float>( 0, 2 );
+		_vao->setAttributeBinding( 0, 0 );
 
-		_vbo.set( quad );
+		_vbo->set( quad );
 
 		// Global uniforms buffer.
-		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
+		_ubo->set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 
@@ -105,14 +79,15 @@ namespace VTX::Renderer::GL
 		_width	= p_width;
 		_height = p_height;
 
-		_passGeometric.resize( _width, _height );
-		_passLinearizeDepth.resize( _width, _height );
-		_passSSAO.resize( _width, _height );
-		_passBlur.resize( _width, _height );
-		_passShading.resize( _width, _height );
-		_passOutline.resize( _width, _height );
-		_passSelection.resize( _width, _height );
-		_passFXAA.resize( _width, _height );
+		_passGeometric->resize( _width, _height );
+		_passLinearizeDepth->resize( _width, _height );
+		_passSSAO->resize( _width, _height );
+		_passBlur->resize( _width, _height );
+		_passShading->resize( _width, _height );
+		_passOutline->resize( _width, _height );
+		_passSelection->resize( _width, _height );
+		_passFXAA->resize( _width, _height );
+		_passPixelize->resize( _width, _height );
 
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
@@ -123,26 +98,79 @@ namespace VTX::Renderer::GL
 		{
 			//_vao.drawCalls = 0;
 
-			_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+			if ( _skybox )
+			{
+				//_skybox->render();
+			}
 
-			_passGeometric.render( _vao );
-			_passLinearizeDepth.render( _vao );
-			_passSSAO.render( _vao );
-			_passBlur.render( _vao );
-			_passShading.render( _vao );
-			_passOutline.render( _vao );
-			_passSelection.render( _vao );
-			_passFXAA.render( _vao );
+			if ( true )
+			{
+				_ubo->bind( GL_UNIFORM_BUFFER, 15 );
 
-			_ubo.unbind();
+				_times.fill( 0.f );
+				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
+					= _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
+				if ( _activeSSAO )
+				{
+					_times[ ENUM_TIME_ITEM::SSAO ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::BLUR ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
+				}
+				_times[ ENUM_TIME_ITEM::SHADING ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
+				if ( _activeOutline )
+				{
+					_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
+				}
+				_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
+
+				if ( _activeFXAA )
+				{
+					_times[ ENUM_TIME_ITEM::FXAA ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
+				}
+				if ( _activePixelize )
+				{
+					_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChrono( [ & ]() { _passPixelize->render( *_vao ); } );
+				}
+				// Copy to output (temp).
+				_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
+					[ & ]()
+					{
+						glBindFramebuffer( GL_READ_FRAMEBUFFER,
+										   _activePixelize ? _passPixelize->out.fbo->getId()
+										   : _activeFXAA   ? _passFXAA->out.fbo->getId()
+														   : _passSelection->out.fbo->getId() );
+						glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
+						glBlitFramebuffer( 0,
+										   0,
+										   GLint( _width ),
+										   GLint( _height ),
+										   0,
+										   0,
+										   GLint( _width ),
+										   GLint( _height ),
+										   GL_COLOR_BUFFER_BIT,
+										   GL_LINEAR );
+						glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+					} );
+			}
+
+			_ubo->unbind();
 
 			//_needUpdate = false;
 		}
+
+#if ( GL_NVX_gpu_memory_info == 1 )
+		if ( _openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+		{
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+		}
+#endif
 	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{
-		return _passGeometric.getPickedData( p_x, p_y );
+		return _passGeometric->getPickedData( p_x, p_y );
 	}
 
 	void OpenGLRenderer::addMesh( const StructProxyMesh & p_proxy )
@@ -175,25 +203,241 @@ namespace VTX::Renderer::GL
 		_bufferMolecules->sizeBonds = p_proxy.bonds->size();
 	}
 
+	void OpenGLRenderer::setActiveSSAO( const bool p_active )
+	{
+		_activeSSAO = p_active;
+		_passBlur->clearTexture();
+	}
+
+	void OpenGLRenderer::setActiveOutline( const bool p_active )
+	{
+		_activeOutline = p_active;
+		_setupRouting();
+	}
+
+	void OpenGLRenderer::setActiveFXAA( const bool p_active )
+	{
+		_activeFXAA = p_active;
+		_setupRouting();
+	}
+
+	void OpenGLRenderer::setActivePixelize( const bool p_active )
+	{
+		_activePixelize = p_active;
+		_setupRouting();
+	}
+
 	void OpenGLRenderer::setMatrixModelTmp( const Mat4f & p_model )
 	{
-		_ubo.setSub( p_model, 0, sizeof( Mat4f ) );
-		_ubo.setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ), 1 * sizeof( Mat4f ), sizeof( Mat4f ) );
+		_ubo->setSub( p_model, offsetof( StructGlobalUniforms, matrixModel ), sizeof( Mat4f ) );
+		_ubo->setSub( Util::Math::transpose( Util::Math::inverse( p_model ) ),
+					  offsetof( StructGlobalUniforms, matrixNormal ),
+					  sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setMatrixView( const Mat4f & p_view )
 	{
-		_ubo.setSub( p_view, 2 * sizeof( Mat4f ), sizeof( Mat4f ) );
+		_globalUniforms.matrixView = p_view;
+		_ubo->setSub( p_view, offsetof( StructGlobalUniforms, matrixView ), sizeof( Mat4f ) );
 	}
 
 	void OpenGLRenderer::setMatrixProjection( const Mat4f & p_proj )
 	{
-		_ubo.setSub( p_proj, 3 * sizeof( Mat4f ), sizeof( Mat4f ) );
+		_globalUniforms.matrixProjection = p_proj;
+		_ubo->setSub( p_proj, offsetof( StructGlobalUniforms, matrixProjection ), sizeof( Mat4f ) );
 	}
 
-	void OpenGLRenderer::setBackgroundColor( Util::Color::Rgba & p_color )
+	void OpenGLRenderer::setCameraClipInfos( const float p_near, const float p_far )
 	{
-		_ubo.setSub( p_color, 18 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
+		_globalUniforms.cameraClipInfos = Vec4f( p_near * p_far, p_far, p_far - p_near, p_near );
+		_ubo->setSub(
+			_globalUniforms.cameraClipInfos, offsetof( StructGlobalUniforms, cameraClipInfos ), sizeof( Vec4f ) );
+	}
+
+	void OpenGLRenderer::setColorBackground( Util::Color::Rgba & p_color )
+	{
+		_globalUniforms.colorBackground = p_color;
+		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorBackground ), sizeof( Util::Color::Rgba ) );
+	}
+
+	void OpenGLRenderer::setColorLight( Util::Color::Rgba & p_color )
+	{
+		_globalUniforms.colorLight = p_color;
+		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorLight ), sizeof( Util::Color::Rgba ) );
+	}
+
+	void OpenGLRenderer::setColorFog( Util::Color::Rgba & p_color )
+	{
+		_globalUniforms.colorFog = p_color;
+		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorFog ), sizeof( Util::Color::Rgba ) );
+	}
+
+	void OpenGLRenderer::setColorOutline( Util::Color::Rgba & p_color )
+	{
+		_globalUniforms.colorOutline = p_color;
+		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorOutline ), sizeof( Util::Color::Rgba ) );
+	}
+
+	void OpenGLRenderer::setColorSelection( Util::Color::Rgba & p_color )
+	{
+		_globalUniforms.colorSelection = p_color;
+		_ubo->setSub( p_color, offsetof( StructGlobalUniforms, colorSelection ), sizeof( Util::Color::Rgba ) );
+	}
+
+	void OpenGLRenderer::setSpecularFactor( float p_factor )
+	{
+		_globalUniforms.specularFactor = p_factor;
+		_ubo->setSub( p_factor, offsetof( StructGlobalUniforms, specularFactor ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setFogNear( float p_near )
+	{
+		_globalUniforms.fogNear = p_near;
+		_ubo->setSub( p_near, offsetof( StructGlobalUniforms, fogNear ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setFogFar( float p_far )
+	{
+		_globalUniforms.fogFar = p_far;
+		_ubo->setSub( p_far, offsetof( StructGlobalUniforms, fogFar ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setFogDensity( float p_density )
+	{
+		_globalUniforms.fogDensity = p_density;
+		_ubo->setSub( p_density, offsetof( StructGlobalUniforms, fogDensity ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setSSAOIntensity( float p_intensity )
+	{
+		_globalUniforms.ssaoIntensity = p_intensity;
+		_ubo->setSub( p_intensity, offsetof( StructGlobalUniforms, ssaoIntensity ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setBlurSize( float p_size )
+	{
+		_globalUniforms.blurSize = p_size;
+		_ubo->setSub( p_size, offsetof( StructGlobalUniforms, blurSize ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setOutlineSensivity( float p_sensivity )
+	{
+		_globalUniforms.outlineSensivity = p_sensivity;
+		_ubo->setSub( p_sensivity, offsetof( StructGlobalUniforms, outlineSensivity ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setOutlineThickness( float p_thickness )
+	{
+		_globalUniforms.outlineThickness = p_thickness;
+		_ubo->setSub( p_thickness, offsetof( StructGlobalUniforms, outlineThickness ), sizeof( float ) );
+	}
+
+	void OpenGLRenderer::setShadingMode( const ENUM_SHADING p_shading )
+	{
+		_globalUniforms.shadingMode = p_shading;
+		_ubo->setSub( p_shading, offsetof( StructGlobalUniforms, shadingMode ), sizeof( ENUM_SHADING ) );
+	}
+
+	void OpenGLRenderer::setPixelSize( const uint p_size )
+	{
+		_globalUniforms.pixelSize = p_size;
+		if ( _globalUniforms.pixelSize % 2 == 0 )
+		{
+			_globalUniforms.pixelSize++;
+		}
+		_ubo->setSub( _globalUniforms.pixelSize, offsetof( StructGlobalUniforms, pixelSize ), sizeof( uint ) );
+	}
+
+	void OpenGLRenderer::setPixelizeBackground( const bool p_active )
+	{
+		_globalUniforms.pixelizeBackground = p_active;
+		_ubo->setSub( p_active, offsetof( StructGlobalUniforms, pixelizeBackground ), sizeof( bool ) );
+	}
+
+	void OpenGLRenderer::loadSkybox( const std::array<unsigned char *, 6> & p_textures,
+									 const size_t							p_width,
+									 const size_t							p_height )
+	{
+		_skybox = std::make_unique<Cubemap>( p_width, p_height, p_textures, *_programManager );
+	}
+
+	void OpenGLRenderer::_getOpenglInfos()
+	{
+		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
+		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );
+		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
+		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+
+		glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_openglInfos.glMaxTextureSize );
+		glGetIntegerv( GL_MAX_PATCH_VERTICES, &_openglInfos.glMaxPatchVertices );
+		glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &_openglInfos.glMaxTessGenLevel );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &_openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &_openglInfos.glMaxComputeWorkGroupCount[ 1 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &_openglInfos.glMaxComputeWorkGroupCount[ 2 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &_openglInfos.glMaxComputeWorkGroupSize[ 0 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &_openglInfos.glMaxComputeWorkGroupSize[ 1 ] );
+		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &_openglInfos.glMaxComputeWorkGroupSize[ 2 ] );
+		glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
+		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
+
+		// Extensions.
+		GLint numExtensions = 0;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
+		for ( GLint i = 0; i < numExtensions; ++i )
+		{
+			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
+			if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
+			{
+				_openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
+			}
+		}
+
+// NVX_gpu_memory_info
+#if ( GL_NVX_gpu_memory_info == 1 )
+		if ( _openglInfos.glExtensions[ ENUM_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+		{
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX,
+						   &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+						   &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX );
+		}
+#endif
+	}
+
+	void OpenGLRenderer::_setupRouting()
+	{
+		_passGeometric->in.meshes	 = _bufferMeshes.get();
+		_passGeometric->in.molecules = _bufferMolecules.get();
+
+		_passLinearizeDepth->in.textureDepth = _passGeometric->out.textureDepth.get();
+
+		_passSSAO->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passSSAO->in.textureDepth		= _passLinearizeDepth->out.texture.get();
+
+		_passBlur->in.textureColor = _passSSAO->out.texture.get();
+		_passBlur->in.textureDepth = _passLinearizeDepth->out.texture.get();
+
+		_passShading->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passShading->in.textureColor	   = _passGeometric->out.textureColors.get();
+		_passShading->in.textureBlur	   = _passBlur->out.texture.get();
+
+		_passOutline->in.textureColor = _passShading->out.texture.get();
+		_passOutline->in.textureDepth = _passLinearizeDepth->out.texture.get();
+
+		_passSelection->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+
+		_passSelection->in.textureColor
+			= _activeOutline ? _passOutline->out.texture.get() : _passShading->out.texture.get();
+
+		_passSelection->in.textureDepth = _passLinearizeDepth->out.texture.get();
+
+		_passFXAA->in.textureColor = _passSelection->out.texture.get();
+
+		_passPixelize->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
+		_passPixelize->in.textureColor = _activeFXAA ? _passFXAA->out.texture.get() : _passSelection->out.texture.get();
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

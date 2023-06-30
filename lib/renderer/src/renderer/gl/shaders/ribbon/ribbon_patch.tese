@@ -118,8 +118,8 @@ void main()
 	const vec3 n = normal * ( directionFactor + arrayOffset ) / directionFactor * RADIUS;
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
-	outData.viewPosition = vec3( getMatrixView() * getMatrixModel() * vec4( position, 1.f ) );
-	outData.normal	   = vec3( getMatrixNormal() * vec4( normal, 1.f ) );
+	outData.viewPosition = vec3( uniforms.matrixView * uniforms.matrixModel * vec4( position, 1.f ) );
+	outData.normal	   = vec3( uniforms.matrixNormal * vec4( normal, 1.f ) );
 	outData.color =  inData[ 1 ].color;
 	if(u_colorBlendingMode == 1) // Gradient.
 	{
@@ -129,5 +129,5 @@ void main()
 	outData.visibility   = inData[ 1 ].visibility;
 	outData.id		     = inData[ 1 ].id;
 
-	gl_Position = getMatrixProjection() * vec4( outData.viewPosition, 1.f );
+	gl_Position = uniforms.matrixProjection * vec4( outData.viewPosition, 1.f );
 }

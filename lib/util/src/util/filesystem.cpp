@@ -37,7 +37,27 @@ namespace VTX::Util::Filesystem
 
 	void removeAll( const FilePath & p_filePath )
 	{
-		std::filesystem::remove_all( p_filePath.has_filename() ? p_filePath.parent_path() : p_filePath );
+		try
+		{
+			std::filesystem::remove_all( p_filePath.has_filename() ? p_filePath.parent_path() : p_filePath );
+		}
+		catch ( const std::filesystem::filesystem_error & p_e )
+		{
+			throw IOException( p_e.what() );
+		}
+	}
+
+	void copyDirectory( const FilePath & p_filePathSrc, const FilePath & p_filePathDestination )
+	{
+		try
+		{
+			removeAll( p_filePathDestination );
+			std::filesystem::copy( p_filePathSrc, p_filePathDestination, std::filesystem::copy_options::recursive );
+		}
+		catch ( const std::filesystem::filesystem_error & p_e )
+		{
+			throw IOException( p_e.what() );
+		}
 	}
 
 } // namespace VTX::Util::Filesystem

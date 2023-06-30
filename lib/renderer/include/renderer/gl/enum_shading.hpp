@@ -3,7 +3,7 @@
 
 namespace VTX::Renderer::GL
 {
-	enum class ENUM_SHADING : unsigned int
+	enum ENUM_SHADING
 	{
 		DIFFUSE,
 		GLOSSY,

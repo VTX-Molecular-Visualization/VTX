@@ -18,7 +18,7 @@ layout( location = 2 ) out uvec2 outId;
 float computeDepth( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( p_v.z * getMatrixProjection()[ 2 ].z + getMatrixProjection()[ 3 ].z ) / -p_v.z;
+	const float ndcDepth = ( p_v.z * uniforms.matrixProjection[ 2 ].z + uniforms.matrixProjection[ 3 ].z ) / -p_v.z;
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
@@ -26,14 +26,14 @@ float computeDepth( const vec3 p_v )
 float computeDepthOrtho( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( p_v.z * getMatrixProjection()[ 2 ].z + getMatrixProjection()[ 3 ].z );
+	const float ndcDepth = ( p_v.z * uniforms.matrixProjection[ 2 ].z + uniforms.matrixProjection[ 3 ].z );
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
 void main()
 {
-	if ( isCameraPerspective() )
+	if ( uniforms.isCameraPerspective )
 	{
 		const float a = dot( inData.viewImpPos, inData.viewImpPos );
 		// b = -dot(viewImpPos, viewSpherePos);

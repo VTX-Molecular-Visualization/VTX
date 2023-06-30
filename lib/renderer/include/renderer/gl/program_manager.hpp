@@ -30,7 +30,7 @@ namespace VTX
 										   const std::string &			 p_suffix	= "" );
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & p_name );
-			void			refreshShaders();
+			void			compileShaders();
 			GLuint			getShader( const std::string & p_name ) const;
 
 			Buffer * const createBuffer( const std::string & p_name );

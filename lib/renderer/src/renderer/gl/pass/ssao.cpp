@@ -2,16 +2,42 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void SSAO::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
+	SSAO::SSAO( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
-		out.texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+		out.fbo		= std::make_unique<Framebuffer>();
+		out.texture = std::make_unique<Texture2D>(
+			p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		out.fbo.create();
-		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "default.vert", "ssao.frag" } );
 		assert( _program != nullptr );
 
+		refreshKernel();
+	}
+
+	void SSAO::resize( const size_t p_width, const size_t p_height )
+	{
+		out.texture->resize( p_width, p_height );
+		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
+	}
+
+	void SSAO::render( VertexArray & p_vao )
+	{
+		assert( in.textureDataPacked != nullptr );
+		assert( in.textureDepth != nullptr );
+
+		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
+		in.textureDataPacked->bindToUnit( 0 );
+		_noiseTexture->bindToUnit( 1 );
+		in.textureDepth->bindToUnit( 2 );
+		_program->use();
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		out.fbo->unbind();
+	}
+
+	void SSAO::refreshKernel()
+	{
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );
 
@@ -40,35 +66,15 @@ namespace VTX::Renderer::GL::Pass
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
 
-		_noiseTexture.create(
+		_noiseTexture = std::make_unique<Texture2D>(
 			_noiseTextureSize, _noiseTextureSize, GL_RGB16F, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST );
 
-		_noiseTexture.fill( noise.data() );
+		_noiseTexture->fill( noise.data() );
 
 		_program->use();
 		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
-	}
-
-	void SSAO::resize( const size_t p_width, const size_t p_height )
-	{
-		out.texture.resize( p_width, p_height );
-		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
-	}
-
-	void SSAO::render( VertexArray & p_vao )
-	{
-		assert( in.textureDataPacked != nullptr );
-		assert( in.textureDepth != nullptr );
-
-		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureDataPacked->bindToUnit( 0 );
-		_noiseTexture.bindToUnit( 1 );
-		in.textureDepth->bindToUnit( 2 );
-		_program->use();
-		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
-		out.fbo.unbind();
 	}
 
 } // namespace VTX::Renderer::GL::Pass

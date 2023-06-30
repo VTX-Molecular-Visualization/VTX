@@ -6,27 +6,27 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Geometric::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
+	Geometric::Geometric( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
-		out.textureDataPacked.create(
+		out.fbo				  = std::make_unique<Framebuffer>();
+		out.textureDataPacked = std::make_unique<Texture2D>(
 			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		out.textureColors.create(
+		out.textureColors = std::make_unique<Texture2D>(
 			p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		out.textureDepth.create(
+		out.textureDepth = std::make_unique<Texture2D>(
 			p_width, p_height, GL_DEPTH_COMPONENT32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		out.texturePicking.create(
+		out.texturePicking = std::make_unique<Texture2D>(
 			p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		out.fbo.create();
-		out.fbo.attachTexture( out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
-		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
-		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
-		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
+		out.fbo->attachTexture( *out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
+		out.fbo->attachTexture( *out.textureColors, GL_COLOR_ATTACHMENT1 );
+		out.fbo->attachTexture( *out.textureDepth, GL_DEPTH_ATTACHMENT );
+		out.fbo->attachTexture( *out.texturePicking, GL_COLOR_ATTACHMENT2 );
 
-		out.fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
+		out.fbo->setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
 
 		_programSphere	 = p_pm.createProgram( "Sphere", FilePath( "sphere" ) );
 		_programCylinder = p_pm.createProgram( "Cylinder", FilePath( "cylinder" ) );
@@ -45,15 +45,15 @@ namespace VTX::Renderer::GL::Pass
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )
 	{
-		out.textureDataPacked.resize( p_width, p_height );
-		out.textureColors.resize( p_width, p_height );
-		out.textureDepth.resize( p_width, p_height );
-		out.texturePicking.resize( p_width, p_height );
+		out.textureDataPacked->resize( p_width, p_height );
+		out.textureColors->resize( p_width, p_height );
+		out.textureDepth->resize( p_width, p_height );
+		out.texturePicking->resize( p_width, p_height );
 
-		out.fbo.attachTexture( out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
-		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
-		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
-		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
+		out.fbo->attachTexture( *out.textureDataPacked, GL_COLOR_ATTACHMENT0 );
+		out.fbo->attachTexture( *out.textureColors, GL_COLOR_ATTACHMENT1 );
+		out.fbo->attachTexture( *out.textureDepth, GL_DEPTH_ATTACHMENT );
+		out.fbo->attachTexture( *out.texturePicking, GL_COLOR_ATTACHMENT2 );
 	}
 
 	void Geometric::render( VertexArray & p_vao )
@@ -63,8 +63,8 @@ namespace VTX::Renderer::GL::Pass
 
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LESS );
-		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
+		out.fbo->clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		// Triangles.
 		if ( in.meshes->size > 0 )
@@ -85,17 +85,17 @@ namespace VTX::Renderer::GL::Pass
 			in.molecules->vao.drawElement( GL_LINES, GLsizei( in.molecules->sizeBonds ), GL_UNSIGNED_INT );
 		}
 
-		out.fbo.unbind();
+		out.fbo->unbind();
 		glDisable( GL_DEPTH_TEST );
 	}
 
 	Vec2i Geometric::getPickedData( const uint p_x, const uint p_y )
 	{
-		out.fbo.bind( GL_READ_FRAMEBUFFER );
-		out.fbo.setReadBuffer( GL_COLOR_ATTACHMENT2 );
+		out.fbo->bind( GL_READ_FRAMEBUFFER );
+		out.fbo->setReadBuffer( GL_COLOR_ATTACHMENT2 );
 		Vec2i data = Vec2i( INVALID_ID, INVALID_ID );
 		glReadPixels( p_x, p_y, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, &data );
-		out.fbo.unbind();
+		out.fbo->unbind();
 		return data;
 	}
 

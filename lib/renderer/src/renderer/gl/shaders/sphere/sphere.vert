@@ -22,9 +22,9 @@ outData;
 
 void main()
 {
-	if ( isCameraPerspective() )
+	if ( uniforms.isCameraPerspective )
 	{
-		outData.viewSpherePos	 = vec3( getMatrixView() * getMatrixModel() * vec4( inSpherePos, 1.f ) );
+		outData.viewSpherePos	 = vec3( uniforms.matrixView *  uniforms.matrixModel * vec4( inSpherePos, 1.f ) );
 		outData.sphereColor		 = inSphereColor;
 		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 		outData.sphereVisible	 = inSphereVisible;
@@ -57,7 +57,7 @@ void main()
 	}
 	else // Orthographic
 	{ 
-		outData.viewSpherePos	 = vec3( getMatrixView() * getMatrixModel() * vec4( inSpherePos, 1.f ) );
+		outData.viewSpherePos	 = vec3( uniforms.matrixView *  uniforms.matrixModel * vec4( inSpherePos, 1.f ) );
 		outData.sphereColor		 = inSphereColor;
 		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 		outData.sphereVisible	 = inSphereVisible;
