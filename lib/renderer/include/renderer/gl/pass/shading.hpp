@@ -42,11 +42,11 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			int32_t			  shadingMode	  = ENUM_SHADING::DIFFUSE;
-			float			  specularFactor  = 0.4f;
 			Util::Color::Rgba colorBackground = Util::Color::Rgba::BLACK;
 			Util::Color::Rgba colorLight	  = Util::Color::Rgba::WHITE;
 			Util::Color::Rgba colorFog		  = Util::Color::Rgba::WHITE;
+			int32_t			  shadingMode	  = ENUM_SHADING::DIFFUSE;
+			float			  specularFactor  = 0.4f;
 			float			  fogNear		  = 30.f;
 			float			  fogFar		  = 80.f;
 			float			  fogDensity	  = 0.f;

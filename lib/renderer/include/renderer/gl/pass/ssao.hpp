@@ -34,10 +34,9 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			float				   intensity		= 5.f;
-			std::array<Vec3f, 512> aoKernel			= std::array<Vec3f, 512>();
-			uint32_t			   kernelSize		= 16;
-			uint32_t			   noiseTextureSize = 64;
+			float	 intensity		  = 5.f;
+			uint32_t kernelSize		  = 16;
+			uint32_t noiseTextureSize = 64;
 		} uniforms;
 
 	  private:

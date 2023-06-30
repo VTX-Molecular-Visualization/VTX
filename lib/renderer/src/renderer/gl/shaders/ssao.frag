@@ -12,11 +12,12 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 layout ( std140, binding = 3 ) uniform Uniforms
 {
-	float intensity;
-	vec3 aoKernel[ 512 ];
+	float intensity;	
 	int	kernelSize;
-	float noiseSize;
+	int noiseTextureSize;
 } uniforms;
+
+uniform vec3 uAoKernel[ 512 ];
 
 // Out.
 layout( location = 0 ) out float outAmbientOcclusion;
@@ -34,7 +35,7 @@ void main()
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
 	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / uniforms.noiseSize ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( uniforms.noiseTextureSize ) ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
@@ -45,7 +46,7 @@ void main()
 	for ( int i = 0; i < uniforms.kernelSize; ++i )
 	{
 		// Compute sample position.
-		const vec3 samplePos = TBN * uniforms.aoKernel[ i ] * radius + pos;
+		const vec3 samplePos = TBN * uAoKernel[ i ] * radius + pos;
 
 		// Project sample position.
 		vec4 offset = uniformsCamera.matrixProjection * vec4( samplePos, 1.f );

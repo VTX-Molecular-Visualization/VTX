@@ -34,9 +34,10 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
+			Util::Color::Rgba color		= Util::Color::Rgba::WHITE;
 			float			  sensivity = 0.4f;
 			float			  thickness = 1.f;
-			Util::Color::Rgba color		= Util::Color::Rgba::WHITE;
+
 		} uniforms;
 
 	  private:

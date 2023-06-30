@@ -10,11 +10,11 @@ layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
 
 layout ( std140, binding = 3 ) uniform Uniforms
 {
-	int shadingMode;
-	float specularFactor;
 	vec4 colorBackground;
 	vec4 colorLight;	
-	vec4 colorFog;		
+	vec4 colorFog;	
+	int shadingMode;
+	float specularFactor;		
 	float fogNear;
 	float fogFar;
 	float fogDensity;

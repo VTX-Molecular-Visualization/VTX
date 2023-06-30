@@ -6,9 +6,9 @@ layout( binding = 1 ) uniform sampler2D inTextureDepth;
 
 layout ( std140, binding = 2 ) uniform Uniforms
 {	
-	float sensivity;
-	float thickness;
 	vec4 color;
+	float sensivity;
+	float thickness;	
 } uniforms;
 
 // Out.

@@ -7,10 +7,10 @@ layout( binding = 1 ) uniform sampler2D inTextureDepth;
 layout ( std140, binding = 2 ) uniform Uniforms
 {
 	float size;	
-	ivec2 direction;
-	
 } uniforms;
  
+uniform ivec2 uDirection;
+
 // Out.
 layout( location = 0 ) out float outBlur;
 
@@ -32,7 +32,7 @@ void main()
 	// Compute blur contribution on each side in the given direction.
 	for ( int i = 1; i <= uniforms.size; ++i )
 	{
-		const ivec2 uv			 = texCoord + i * uniforms.direction;
+		const ivec2 uv			 = texCoord + i * uDirection;
 		const float inputCurrent = texelFetch( inTextureColor, uv, 0 ).x;
 		const float depthCurrent = texelFetch( inTextureDepth, uv, 0 ).x;
 
@@ -45,7 +45,7 @@ void main()
 	}
 	for ( int i = 1; i <= uniforms.size; ++i )
 	{
-		const ivec2 uv			 = texCoord - i * uniforms.direction;
+		const ivec2 uv			 = texCoord - i * uDirection;
 		const float inputCurrent = texelFetch( inTextureColor, uv, 0 ).x;
 		const float depthCurrent = texelFetch( inTextureDepth, uv, 0 ).x;
 

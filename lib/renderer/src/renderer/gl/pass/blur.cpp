@@ -44,8 +44,9 @@ namespace VTX::Renderer::GL::Pass
 		in.textureColor->bindToUnit( 0 );
 		in.textureDepth->bindToUnit( 1 );
 		_ubo->bind( GL_UNIFORM_BUFFER, 2 );
-		_ubo->setSub( Vec2i( 1, 0 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
+		//_ubo->setSub( Vec2i( 1, 0 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
 		_program->use();
+		_program->setVec2i( "uDirection", 1, 0 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		in.textureColor->unbindFromUnit( 0 );
 		_fboFirstPass->unbind();
@@ -53,7 +54,8 @@ namespace VTX::Renderer::GL::Pass
 		// Second pass.
 		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
 		_textureFirstPass->bindToUnit( 0 );
-		_ubo->setSub( Vec2i( 0, 1 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
+		_program->setVec2i( "uDirection", 0, 1 );
+		//_ubo->setSub( Vec2i( 0, 1 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		_textureFirstPass->unbindFromUnit( 0 );
 		in.textureDepth->unbindFromUnit( 1 );

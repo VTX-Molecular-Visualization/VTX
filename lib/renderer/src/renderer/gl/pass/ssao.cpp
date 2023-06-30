@@ -28,6 +28,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		assert( in.textureDataPacked != nullptr );
 		assert( in.textureDepth != nullptr );
+		assert( _noiseTexture != nullptr );
 
 		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
 		in.textureDataPacked->bindToUnit( 0 );
@@ -51,6 +52,8 @@ namespace VTX::Renderer::GL::Pass
 
 	void SSAO::refreshKernel()
 	{
+		std::vector<Vec3f> aoKernel = std::vector<Vec3f>( uniforms.kernelSize );
+
 		// generate random ao kernel
 		for ( uint i = 0; i < uniforms.kernelSize; i++ )
 		{
@@ -63,7 +66,7 @@ namespace VTX::Renderer::GL::Pass
 			float scale = float( i ) / float( uniforms.kernelSize );
 			scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
 			v *= scale;
-			uniforms.aoKernel[ i ] = v;
+			aoKernel[ i ] = v;
 		}
 
 		// generate noise texture
@@ -88,6 +91,9 @@ namespace VTX::Renderer::GL::Pass
 		_noiseTexture->fill( noise.data() );
 
 		_ubo->setSub( uniforms, 0, sizeof( StructUniforms ) );
+
+		_program->use();
+		_program->setVec3fArray( "uAoKernel", uniforms.kernelSize, aoKernel.data() );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

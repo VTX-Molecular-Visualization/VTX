@@ -35,7 +35,6 @@ namespace VTX::Renderer::GL::Pass
 		struct StructUniforms
 		{
 			float size = 17.f;
-			Vec2i direction;
 		} uniforms;
 
 	  private:
