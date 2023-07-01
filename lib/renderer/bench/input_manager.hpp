@@ -36,7 +36,7 @@ namespace VTX::Bench
 			case SDL_MOUSEBUTTONDOWN: _mouseButtons[ p_event.button.button - 1 ] = true; break;
 			case SDL_MOUSEBUTTONUP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_MOUSEMOTION:
-				if ( _mouseButtons[ 0 ] )
+				if ( _mouseButtons[ 2 ] )
 				{
 					_deltaMouse.x += p_event.motion.xrel;
 					_deltaMouse.y += p_event.motion.yrel;
