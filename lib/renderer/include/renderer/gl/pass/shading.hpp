@@ -13,6 +13,23 @@ namespace VTX::Renderer::GL::Pass
 	class Shading
 	{
 	  public:
+		static const Util::Color::Rgba COLOR_BACKGROUND_DEFAULT;
+		static const Util::Color::Rgba COLOR_LIGHT_DEFAULT;
+		static const Util::Color::Rgba COLOR_FOG_DEFAULT;
+		static const ENUM_SHADING	   SHADING_MODE_DEFAULT;
+		static const float			   SPECULAR_FACTOR_DEFAULT;
+		static const float			   SPECULAR_FACTOR_MIN;
+		static const float			   SPECULAR_FACTOR_MAX;
+		static const float			   FOG_NEAR_DEFAULT;
+		static const float			   FOG_NEAR_MIN;
+		static const float			   FOG_NEAR_MAX;
+		static const float			   FOG_FAR_DEFAULT;
+		static const float			   FOG_FAR_MIN;
+		static const float			   FOG_FAR_MAX;
+		static const float			   FOG_DENSITY_DEFAULT;
+		static const float			   FOG_DENSITY_MIN;
+		static const float			   FOG_DENSITY_MAX;
+
 		Shading( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
@@ -42,14 +59,14 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			Util::Color::Rgba colorBackground = Util::Color::Rgba::BLACK;
-			Util::Color::Rgba colorLight	  = Util::Color::Rgba::WHITE;
-			Util::Color::Rgba colorFog		  = Util::Color::Rgba::WHITE;
-			int32_t			  shadingMode	  = ENUM_SHADING::DIFFUSE;
-			float			  specularFactor  = 0.4f;
-			float			  fogNear		  = 30.f;
-			float			  fogFar		  = 80.f;
-			float			  fogDensity	  = 0.f;
+			Util::Color::Rgba colorBackground = COLOR_BACKGROUND_DEFAULT;
+			Util::Color::Rgba colorLight	  = COLOR_LIGHT_DEFAULT;
+			Util::Color::Rgba colorFog		  = COLOR_FOG_DEFAULT;
+			int32_t			  shadingMode	  = SHADING_MODE_DEFAULT;
+			float			  specularFactor  = SPECULAR_FACTOR_DEFAULT;
+			float			  fogNear		  = FOG_NEAR_DEFAULT;
+			float			  fogFar		  = FOG_FAR_DEFAULT;
+			float			  fogDensity	  = FOG_DENSITY_DEFAULT;
 		} uniforms;
 
 	  private:

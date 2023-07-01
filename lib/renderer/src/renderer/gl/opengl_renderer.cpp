@@ -281,7 +281,7 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::setOutlineSensivity( const float p_sensivity ) { _passOutline->setSensivity( p_sensivity ); }
 
-	void OpenGLRenderer::setOutlineThickness( const float p_thickness ) { _passOutline->setThickness( p_thickness ); }
+	void OpenGLRenderer::setOutlineThickness( const uint p_thickness ) { _passOutline->setThickness( p_thickness ); }
 
 	void OpenGLRenderer::setColorOutline( const Util::Color::Rgba & p_color ) { _passOutline->setColor( p_color ); }
 

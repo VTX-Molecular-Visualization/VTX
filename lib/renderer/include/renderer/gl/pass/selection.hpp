@@ -33,8 +33,10 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			Util::Color::Rgba color = Util::Color::Rgba::WHITE;
+			Util::Color::Rgba color = COLOR_SELECTION_DEFAULT;
 		} uniforms;
+
+		inline static const Util::Color::Rgba COLOR_SELECTION_DEFAULT = Util::Color::Rgba::WHITE;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;

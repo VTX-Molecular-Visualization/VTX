@@ -162,7 +162,7 @@ namespace VTX::Bench
 
 			Util::Color::Rgba colorOutline	   = p_renderer->getColorOutline();
 			float			  outlineSensivity = p_renderer->getOutlineSensivity();
-			float			  outlineThickness = p_renderer->getOutlineThickness();
+			uint			  outlineThickness = p_renderer->getOutlineThickness();
 
 			Util::Color::Rgba colorSelection = p_renderer->getColorSelection();
 
@@ -238,7 +238,7 @@ namespace VTX::Bench
 				{
 					p_renderer->setOutlineSensivity( outlineSensivity );
 				}
-				if ( ImGui::InputFloat( "Thickness", &outlineThickness ) )
+				if ( ImGui::InputInt( "Thickness", (int *)( &outlineThickness ) ) )
 				{
 					p_renderer->setOutlineThickness( outlineThickness );
 				}

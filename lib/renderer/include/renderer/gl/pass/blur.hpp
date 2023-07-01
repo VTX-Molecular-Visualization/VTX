@@ -34,8 +34,12 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			float size = 17.f;
+			float size = BLUR_SIZE_DEFAULT;
 		} uniforms;
+
+		inline static const float BLUR_SIZE_DEFAULT = 17.f;
+		inline static const float BLUR_SIZE_MIN		= 1.f;
+		inline static const float BLUR_SIZE_MAX		= 99.f;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;

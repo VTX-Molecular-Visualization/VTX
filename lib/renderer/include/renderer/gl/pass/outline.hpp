@@ -17,7 +17,7 @@ namespace VTX::Renderer::GL::Pass
 		void render( VertexArray & p_vao );
 
 		void setSensivity( const float );
-		void setThickness( const float );
+		void setThickness( const uint );
 		void setColor( const Util::Color::Rgba & );
 
 		struct StructIn
@@ -34,11 +34,19 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			Util::Color::Rgba color		= Util::Color::Rgba::WHITE;
-			float			  sensivity = 0.4f;
-			float			  thickness = 1.f;
+			Util::Color::Rgba color		= OUTLINE_COLOR_DEFAULT;
+			float			  sensivity = OUTLINE_SENSIVITY_DEFAULT;
+			uint32_t		  thickness = OUTLINE_THICKNESS_DEFAULT;
 
 		} uniforms;
+
+		inline static const Util::Color::Rgba OUTLINE_COLOR_DEFAULT		= Util::Color::Rgba::WHITE;
+		inline static const float			  OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+		inline static const float			  OUTLINE_SENSIVITY_MIN		= 0.01f;
+		inline static const float			  OUTLINE_SENSIVITY_MAX		= 1.f;
+		inline static const uint			  OUTLINE_THICKNESS_DEFAULT = 1;
+		inline static const uint			  OUTLINE_THICKNESS_MIN		= 1;
+		inline static const uint			  OUTLINE_THICKNESS_MAX		= 5;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;

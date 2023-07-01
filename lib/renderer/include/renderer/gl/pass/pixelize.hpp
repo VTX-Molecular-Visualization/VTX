@@ -32,9 +32,12 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructUniforms
 		{
-			uint32_t size		= 5;
-			bool	 background = true;
+			uint32_t size		= PIXEL_SIZE_DEFAULT;
+			bool	 background = PIXELIZE_BG_DEFAULT;
 		} uniforms;
+
+		inline static const uint PIXEL_SIZE_DEFAULT	 = 5;
+		inline static const bool PIXELIZE_BG_DEFAULT = true;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;

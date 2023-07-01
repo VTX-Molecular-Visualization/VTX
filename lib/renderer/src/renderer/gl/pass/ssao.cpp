@@ -2,6 +2,10 @@
 
 namespace VTX::Renderer::GL::Pass
 {
+	const float SSAO::AO_INTENSITY_DEFAULT = 5.f;
+	const float SSAO::AO_INTENSITY_MIN	   = 1.f;
+	const float SSAO::AO_INTENSITY_MAX	   = 20.f;
+
 	SSAO::SSAO( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.fbo		= std::make_unique<Framebuffer>();

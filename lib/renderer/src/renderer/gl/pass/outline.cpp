@@ -39,16 +39,16 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo->unbind();
 	}
 
-	void Outline::setSensivity( float p_sensivity )
+	void Outline::setSensivity( const float p_sensivity )
 	{
 		uniforms.sensivity = p_sensivity;
 		_ubo->setSub( p_sensivity, offsetof( StructUniforms, sensivity ), sizeof( float ) );
 	}
 
-	void Outline::setThickness( float p_thickness )
+	void Outline::setThickness( const uint p_thickness )
 	{
 		uniforms.thickness = p_thickness;
-		_ubo->setSub( p_thickness, offsetof( StructUniforms, thickness ), sizeof( float ) );
+		_ubo->setSub( p_thickness, offsetof( StructUniforms, thickness ), sizeof( uint32_t ) );
 	}
 
 	void Outline::setColor( const Util::Color::Rgba & p_color )

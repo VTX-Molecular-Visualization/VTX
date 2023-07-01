@@ -90,8 +90,8 @@ namespace VTX::Renderer::GL
 		// Outline uniforms.
 		inline float					 getOutlineSensivity() const { return _passOutline->uniforms.sensivity; }
 		void							 setOutlineSensivity( const float p_sensivity );
-		inline float					 getOutlineThickness() const { return _passOutline->uniforms.thickness; }
-		void							 setOutlineThickness( const float p_thickness );
+		inline uint						 getOutlineThickness() const { return _passOutline->uniforms.thickness; }
+		void							 setOutlineThickness( const uint p_thickness );
 		inline const Util::Color::Rgba & getColorOutline() const { return _passOutline->uniforms.color; }
 		void							 setColorOutline( const Util::Color::Rgba & p_color );
 
@@ -121,6 +121,11 @@ namespace VTX::Renderer::GL
 		void loadSkybox( const std::array<unsigned char *, 6> & p_textures,
 						 const size_t							p_width,
 						 const size_t							p_height );
+
+		inline static const bool ACTIVE_SSAO_DEFAULT	 = true;
+		inline static const bool ACTIVE_OUTLINE_DEFAULT	 = false;
+		inline static const bool ACTIVE_FXAA_DEFAULT	 = true;
+		inline static const bool ACTIVE_PIXELIZE_DEFAULT = false;
 
 	  private:
 		size_t _width	   = 0;
@@ -163,10 +168,10 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<Pass::PassFXAA>			  _passFXAA;
 		std::unique_ptr<Pass::PassPixelize>		  _passPixelize;
 
-		bool _activeSSAO	 = true;
-		bool _activeOutline	 = false;
-		bool _activeFXAA	 = true;
-		bool _activePixelize = false;
+		bool _activeSSAO	 = ACTIVE_SSAO_DEFAULT;
+		bool _activeOutline	 = ACTIVE_OUTLINE_DEFAULT;
+		bool _activeFXAA	 = ACTIVE_FXAA_DEFAULT;
+		bool _activePixelize = ACTIVE_PIXELIZE_DEFAULT;
 
 		// Output.
 		GLuint _fboOutputId = 0;
