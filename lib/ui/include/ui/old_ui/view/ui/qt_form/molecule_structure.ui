@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>MoleculeStructure</class>
-  <widget class="QTreeWidget" name="treeWidget">
-  </widget>
- <resources/>
- <connections/>
-</ui>

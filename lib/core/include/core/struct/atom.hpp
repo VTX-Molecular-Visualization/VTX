@@ -3,8 +3,8 @@
 
 #include "_fwd.hpp"
 #include "core/chemdb/atom.hpp"
-#include "core/define.hpp"
 #include <string>
+#include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Core::Struct
@@ -64,7 +64,7 @@ namespace VTX::Core::Struct
 		std::string			 _name	 = "";
 		ChemDB::Atom::SYMBOL _symbol = ChemDB::Atom::SYMBOL::UNKNOWN; // Move this in GPU dataset ?
 
-		// public:
+																	  // public:
 		//  Move this
 		//  ChemDB::Atom::TYPE _type = ChemDB::Atom::TYPE::NORMAL;
 

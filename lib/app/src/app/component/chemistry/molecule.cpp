@@ -2,7 +2,6 @@
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include <algorithm>
-#include <core/define.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -13,7 +12,7 @@ namespace VTX::App::Component::Chemistry
 
 		_atomColors.resize( p_atomCount );
 		_atomRadii.resize( p_atomCount, 0.f );
-		_atomIds.resize( p_atomCount, INVALID_ID );
+		_atomIds.resize( p_atomCount, INVALID_MODEL_ID );
 
 		std::generate( _atomIds.begin(), _atomIds.end(), [ n = 0 ]() mutable { return n++; } );
 

@@ -3,7 +3,6 @@
 
 #include "_fwd.hpp"
 #include "core/chemdb/bond.hpp"
-#include "core/define.hpp"
 #include <util/exceptions.hpp>
 
 namespace VTX::Core::Struct

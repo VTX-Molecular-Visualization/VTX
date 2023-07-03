@@ -2,7 +2,6 @@
 #define __VTX_CORE_NEW_STRUCT_CHAIN__
 
 #include "concept.hpp"
-#include "core/define.hpp"
 #include <string>
 
 namespace VTX::Core::Struct
@@ -38,7 +37,7 @@ namespace VTX::Core::Struct
 		M *	   _molecule;
 
 		std::string _name			   = "unknown";
-		size_t		_indexFirstResidue = 0;
+		size_t		_indexFirstResidue = INVALID_INDEX;
 		size_t		_residueCount	   = 0;
 
 		// std::string _originalChainID = "";
