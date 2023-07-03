@@ -3,7 +3,7 @@
 
 namespace VTX::App::Application
 {
-	// class Setting;
+	struct Setting;
 	class Scene;
 	class RegistryManager;
 } // namespace VTX::App::Application

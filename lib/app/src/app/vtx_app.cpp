@@ -2,29 +2,27 @@
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
-#include "app/old/internal/io/filesystem.hpp"
 #include <exception>
+#include <io/internal/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App
 {
-	// int ZERO = 0;
-	VTXApp::VTXApp( StructPrivacyToken ) // : QApplication( ZERO, nullptr )
-	{
-		// connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
-	}
+	VTXApp::VTXApp( StructPrivacyToken ) {}
 
 	VTXApp::~VTXApp() {}
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: {}", Old::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Starting application: {}", IO::Internal::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
-		//// Load settings.
+		// Load settings.
+		_setting = std::make_unique<Application::Setting>();
 		// VTX_ACTION<Action::Setting::Load>();
 		//_setting.loadRecentPaths();
 
@@ -104,8 +102,8 @@ namespace VTX::App
 		// Action manager.
 		// Action::ActionManager::get().update( elapsed );
 
-		// Call late update event for processes at end of frame
-		VTX_EVENT( Old::Event::Global::LATE_UPDATE );
+		//// Call late update event for processes at end of frame
+		// VTX_EVENT( Old::Event::Global::LATE_UPDATE );
 
 		// TODO Reimplement this without Qt
 		//// Tickrate.
@@ -135,16 +133,16 @@ namespace VTX::App
 
 	void VTXApp::_stop()
 	{
-		// Prevent events throw for nothing when quitting app
-		Old::Manager::EventManager::get().freezeEvent( true );
-		// Manager::WorkerManager::get().stopAll();
+		//// Prevent events throw for nothing when quitting app
+		// Old::Manager::EventManager::get().freezeEvent( true );
+		//  Manager::WorkerManager::get().stopAll();
 
 		//_setting.backup();
 
 		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		Old::Application::Selection::SelectionManager::get().deleteModel();
+		// Old::Application::Selection::SelectionManager::get().deleteModel();
 
 		// if ( _scene != nullptr )
 		//{

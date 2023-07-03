@@ -6,8 +6,6 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/entity/scene/scene_item_entity.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
-#include "app/old/event.hpp"
-#include "app/old/event/global.hpp"
 #include "app/render/proxy_builder.hpp"
 #include <renderer/gl/struct_proxy_molecule.hpp>
 #include <string>

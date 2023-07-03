@@ -4,8 +4,6 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old/application/setting.hpp"
-#include "app/old/core/worker/base_thread.hpp"
 #include "app/old/util/molecule.hpp"
 #include <algorithm>
 #include <core/chemdb/category.hpp>
@@ -16,6 +14,7 @@
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
+#include <util/chrono.hpp>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 

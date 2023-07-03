@@ -28,8 +28,12 @@ namespace VTX::App
 		inline Application::Scene &		  getScene() { return *_scene; }
 		inline const Application::Scene & getScene() const { return *_scene; }
 
+		inline Application::Setting &		getSettings() { return *_setting; }
+		inline const Application::Setting & getSettings() const { return *_setting; }
+
 	  private:
-		Application::Scene * _scene = nullptr;
+		Application::Scene *				  _scene   = nullptr;
+		std::unique_ptr<Application::Setting> _setting = nullptr;
 
 		void _handleArgs( const std::vector<std::string> & );
 		void _update();

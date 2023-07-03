@@ -2,14 +2,10 @@
 #define __VTX_APP_APPLICATION_SCENE__
 
 #include "app/application/ecs/registry_manager.hpp"
+#include "app/component/render/_fwd.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/old/application/generic/base_updatable.hpp"
-#include "app/old/component/render/camera.hpp"
-#include "app/old/event/global.hpp"
-#include "app/old/internal/scene/camera_manager.hpp"
-#include "app/old/manager/event_manager.hpp"
 #include <concepts>
 #include <string>
 #include <util/math/aabb.hpp>
@@ -19,7 +15,7 @@ namespace VTX::App::Application
 	template<typename T>
 	concept SceneItem = requires( T sceneItem ) { std::derived_from<T, Component::Scene::SceneItemComponent>; };
 
-	class Scene : public Old::Application::Generic::BaseUpdatable
+	class Scene
 	{
 	  public:
 		Scene();
@@ -40,7 +36,7 @@ namespace VTX::App::Application
 		bool						isEmpty() const;
 		size_t						getItemCount() const;
 
-		virtual void update( const float & ) override;
+		virtual void update( const float & );
 
 		void clear();
 		void reset();
@@ -66,8 +62,8 @@ namespace VTX::App::Application
 		void _createDefaultPath();
 
 	  private:
-		std::unique_ptr<Old::Internal::Scene::CameraManager> _cameraManager = nullptr;
-		Util::Math::AABB									 _aabb;
+		Component::Render::Camera * _camera = nullptr;
+		Util::Math::AABB			_aabb	= Util::Math::AABB();
 
 		void _onSceneItemIsConstruct( Component::Scene::SceneItemComponent & p_sceneItemComponent );
 
