@@ -15,8 +15,7 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
 
-		void someMethod() {}
-		int	 anotherMethod() { return 42; }
+		void setSize( const float );
 
 		void clearTexture();
 
@@ -33,8 +32,18 @@ namespace VTX::Renderer::GL::Pass
 
 		} out;
 
+		struct StructUniforms
+		{
+			float size = BLUR_SIZE_DEFAULT;
+		} uniforms;
+
+		inline static const float BLUR_SIZE_DEFAULT = 17.f;
+		inline static const float BLUR_SIZE_MIN		= 1.f;
+		inline static const float BLUR_SIZE_MAX		= 99.f;
+
 	  private:
-		Program * _program = nullptr;
+		std::unique_ptr<Buffer> _ubo;
+		Program *				_program = nullptr;
 
 		std::unique_ptr<Framebuffer> _fboFirstPass;
 		std::unique_ptr<Texture2D>	 _textureFirstPass;

@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 // In.
 layout( location = 0 ) in vec3 inVoxelMin;
@@ -16,5 +16,5 @@ void main()
 	vec3 center = ( inVoxelMin + inVoxelMax ) / 2.f;
 	outData.center = center;
 	outData.voxelSize = inVoxelMax - inVoxelMin;		
-	gl_Position =  uniforms.matrixProjection * uniforms.matrixView * uniforms.matrixModel * vec4( center, 1.f );
+	gl_Position =  uniformsCamera.matrixProjection * uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( center, 1.f );
 }

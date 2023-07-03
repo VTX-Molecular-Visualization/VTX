@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 // In.
 layout (location = 0) in vec3 inPosition;
 
@@ -10,5 +10,5 @@ out vec3 texCoord;
 void main()
 {
     texCoord = inPosition;
-    gl_Position = uniforms.matrixProjection * uniforms.matrixView * vec4( inPosition * 1000.f, 1.0 );
+    gl_Position = uniformsCamera.matrixProjection * uniformsCamera.matrixView * vec4( inPosition * 1000.f, 1.0 );
 }

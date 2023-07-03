@@ -1,12 +1,16 @@
 #version 450 core
 
-#include "global_uniforms.glsl"
 #include "struct_data_packed.glsl"
 
 // In.
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureColor;
 layout( binding = 2 ) uniform sampler2D inTextureDepth;
+
+layout ( std140, binding = 3 ) uniform Uniforms
+{
+	vec4 color;
+} uniforms;
 
 // Out.
 layout( location = 0 ) out vec4 outFragColor;
@@ -43,6 +47,6 @@ void main()
 		const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 );
 
 		// Apply outline if edge depth is greater than threshold.
-		outFragColor = edgeDepth > threshold + 0.025 ? uniforms.colorSelection : texture( inTextureColor, texCoord );
+		outFragColor = edgeDepth > threshold + 0.025 ? uniforms.color : texture( inTextureColor, texCoord );
 	}
 }

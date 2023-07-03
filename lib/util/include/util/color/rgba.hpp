@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_COLOR_RGBA__
 #define __VTX_UTIL_COLOR_RGBA__
 
-#include "util/math.hpp"
 #include "util/types.hpp"
 #include <iomanip>
 #include <sstream>
@@ -177,47 +176,17 @@ namespace VTX::Util::Color
 		inline void	 setB( const float p_b ) { z = p_b; }
 		inline void	 setA( const float p_a ) { w = p_a; }
 
-		inline void saturate()
-		{
-			x = Util::Math::clamp( x, 0.f, 1.f );
-			y = Util::Math::clamp( y, 0.f, 1.f );
-			z = Util::Math::clamp( z, 0.f, 1.f );
-		}
-
-		inline void applyGamma( const float & pyamma )
-		{
-			x = powf( x, pyamma );
-			y = powf( y, pyamma );
-			z = powf( z, pyamma );
-		}
-
-		inline void oppose()
-		{
-			x = 1.f - x;
-			y = 1.f - y;
-			z = 1.f - z;
-		}
-
 		inline const float brightness() const { return ( x * 0.299f ) + ( y * 0.587f ) + ( z * 0.114f ); }
 
 		friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c );
 
-		static const Rgba BLACK;
-		static const Rgba WHITE;
-		static const Rgba GREY;
-		static const Rgba RED;
-		static const Rgba GREEN;
-		static const Rgba BLUE;
-		static const Rgba YELLOW;
-		static const Rgba MAGENTA;
-		static const Rgba CYAN;
-
-		static inline Rgba random()
-		{
-			return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
-		}
-
 		static inline Rgba randomPastel() { return random() * 0.5f + 0.5f; }
+
+		static Rgba random();
+
+		void saturate();
+		void applyGamma( const float & pyamma );
+		void oppose();
 	};
 } // namespace VTX::Util::Color
 

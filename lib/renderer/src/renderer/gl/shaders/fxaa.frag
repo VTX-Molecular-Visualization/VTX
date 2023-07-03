@@ -4,8 +4,6 @@
 // adapted from: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
 // and Timothy Lottes' code (NVidia)
 
-#include "global_uniforms.glsl"
-
 // In.
 layout( binding = 0 ) uniform sampler2D inTexture;
 

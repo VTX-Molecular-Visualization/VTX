@@ -21,6 +21,13 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
+		explicit Buffer( const T & p_data, const GLbitfield p_flags = 0 )
+		{
+			_create();
+			set<T>( p_data, p_flags );
+		}
+
+		template<typename T>
 		explicit Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
 		{
 			_create();
@@ -73,6 +80,14 @@ namespace VTX::Renderer::GL
 			assert( _target != 0 );
 
 			glBindBuffer( _target, 0 );
+			_target = 0;
+		}
+
+		inline void unbind( const GLuint p_index )
+		{
+			assert( _target != 0 );
+
+			glBindBufferBase( _target, p_index, 0 );
 			_target = 0;
 		}
 

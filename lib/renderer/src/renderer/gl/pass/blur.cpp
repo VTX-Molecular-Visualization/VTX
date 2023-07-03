@@ -10,6 +10,8 @@ namespace VTX::Renderer::GL::Pass
 
 		_fboFirstPass->attachTexture( *_textureFirstPass, GL_COLOR_ATTACHMENT0 );
 
+		_ubo = std::make_unique<Buffer>( uniforms, GL_DYNAMIC_DRAW );
+
 		out.fbo		= std::make_unique<Framebuffer>();
 		out.texture = std::make_unique<Texture2D>(
 			p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
@@ -41,17 +43,23 @@ namespace VTX::Renderer::GL::Pass
 		_fboFirstPass->bind( GL_DRAW_FRAMEBUFFER );
 		in.textureColor->bindToUnit( 0 );
 		in.textureDepth->bindToUnit( 1 );
+		_ubo->bind( GL_UNIFORM_BUFFER, 2 );
+		//_ubo->setSub( Vec2i( 1, 0 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
 		_program->use();
 		_program->setVec2i( "uDirection", 1, 0 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		in.textureColor->unbindFromUnit( 0 );
 		_fboFirstPass->unbind();
 
 		// Second pass.
 		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
 		_textureFirstPass->bindToUnit( 0 );
-		in.textureDepth->bindToUnit( 1 );
 		_program->setVec2i( "uDirection", 0, 1 );
+		//_ubo->setSub( Vec2i( 0, 1 ), offsetof( StructUniforms, direction ), sizeof( Vec2i ) );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		_textureFirstPass->unbindFromUnit( 0 );
+		in.textureDepth->unbindFromUnit( 1 );
+		_ubo->unbind( 2 );
 		out.fbo->unbind();
 	}
 
@@ -59,6 +67,12 @@ namespace VTX::Renderer::GL::Pass
 	{
 		const float value = 1.f;
 		out.texture->clear( &value, GL_RED, GL_FLOAT );
+	}
+
+	void Blur::setSize( const float p_size )
+	{
+		uniforms.size = p_size;
+		_ubo->setSub( p_size, offsetof( StructUniforms, size ), sizeof( float ) );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

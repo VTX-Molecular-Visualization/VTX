@@ -2,7 +2,7 @@
 #define __VTX_CORE_CHEMDB_CHAIN__
 
 #include <string>
-#include <util/color/rgba.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::Core::ChemDB::Chain
 {
@@ -74,7 +74,7 @@ namespace VTX::Core::ChemDB::Chain
 		{ 194, 50, 50 },   // Z, z
 	};
 
-	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Util::Color::Rgba::WHITE;
+	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = COLOR_WHITE;
 
 	inline Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false )
 	{

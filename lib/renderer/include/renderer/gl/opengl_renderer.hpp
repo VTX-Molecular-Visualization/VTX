@@ -19,7 +19,6 @@
 #include "renderer/gl/chrono.hpp"
 #include "struct_buffer_meshes.hpp"
 #include "struct_buffer_molecules.hpp"
-#include "struct_global_uniforms.hpp"
 #include "struct_opengl_infos.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
@@ -42,9 +41,11 @@ namespace VTX::Renderer::GL
 		inline void setNeedUpdate( const bool p_needUpdate ) { _needUpdate = p_needUpdate; }
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
+		// Data.
 		void addMesh( const StructProxyMesh & );
 		void addMolecule( const StructProxyMolecule & );
 
+		// Active passes.
 		inline bool isActiveSSAO() const { return _activeSSAO; }
 		void		setActiveSSAO( const bool p_active );
 		inline bool isActiveOutline() const { return _activeOutline; }
@@ -54,47 +55,63 @@ namespace VTX::Renderer::GL
 		inline bool isActivePixelize() const { return _activePixelize; }
 		void		setActivePixelize( const bool p_active );
 
-		void							 setMatrixModelTmp( const Mat4f & );
-		void							 setMatrixView( const Mat4f & );
-		void							 setMatrixProjection( const Mat4f & );
-		void							 setCameraClipInfos( const float, const float );
-		inline const Util::Color::Rgba & getColorBackground() const { return _globalUniforms.colorBackground; }
-		void							 setColorBackground( Util::Color::Rgba & );
-		inline const Util::Color::Rgba & getColorLight() const { return _globalUniforms.colorLight; }
-		void							 setColorLight( Util::Color::Rgba & );
-		inline const Util::Color::Rgba & getColorFog() const { return _globalUniforms.colorFog; }
-		void							 setColorFog( Util::Color::Rgba & );
-		inline const Util::Color::Rgba & getColorOutline() const { return _globalUniforms.colorOutline; }
-		void							 setColorOutline( Util::Color::Rgba & );
-		inline const Util::Color::Rgba & getColorSelection() const { return _globalUniforms.colorSelection; }
-		void							 setColorSelection( Util::Color::Rgba & );
-		inline float					 getSpecularFactor() const { return _globalUniforms.specularFactor; }
-		void							 setSpecularFactor( float );
-		inline float					 getFogNear() const { return _globalUniforms.fogNear; }
-		void							 setFogNear( float );
-		inline float					 getFogFar() const { return _globalUniforms.fogFar; }
-		void							 setFogFar( float );
-		inline float					 getFogDensity() const { return _globalUniforms.fogDensity; }
-		void							 setFogDensity( float );
-		inline float					 getSSAOIntensity() const { return _globalUniforms.ssaoIntensity; }
-		void							 setSSAOIntensity( float );
-		inline float					 getBlurSize() const { return _globalUniforms.blurSize; }
-		void							 setBlurSize( float );
-		inline float					 getOutlineSensivity() const { return _globalUniforms.outlineSensivity; }
-		void							 setOutlineSensivity( float );
-		inline float					 getOutlineThickness() const { return _globalUniforms.outlineThickness; }
-		void							 setOutlineThickness( float );
-		inline ENUM_SHADING				 getShadingMode() const { return ENUM_SHADING( _globalUniforms.shadingMode ); }
-		void							 setShadingMode( const ENUM_SHADING );
-		inline uint						 getPixelSize() const { return _globalUniforms.pixelSize; }
-		void							 setPixelSize( const uint );
-		inline bool						 isPixelizeBackground() const { return _globalUniforms.pixelizeBackground; }
-		void							 setPixelizeBackground( const bool );
+		// Camera uniforms.
+		void setMatrixModelTmp( const Mat4f & );
+		void setMatrixView( const Mat4f & );
+		void setMatrixProjection( const Mat4f & );
+		void setCameraClipInfos( const float, const float );
 
+		// Blur uniforms.
+		inline float getBlurSize() const { return _passBlur->uniforms.size; }
+		void		 setBlurSize( const float p_size );
+
+		// SSAO uniforms.
+		inline float getSSAOIntensity() const { return _passSSAO->uniforms.intensity; }
+		void		 setSSAOIntensity( const float p_intensity );
+
+		// Shading uniforms.
+		inline ENUM_SHADING getShadingMode() const { return ENUM_SHADING( _passShading->uniforms.shadingMode ); }
+		void				setShadingMode( const ENUM_SHADING p_shading );
+		inline float		getSpecularFactor() const { return _passShading->uniforms.specularFactor; }
+		void				setSpecularFactor( const float p_specularFactor );
+		inline const Util::Color::Rgba & getColorBackground() const { return _passShading->uniforms.colorBackground; }
+		void							 setColorBackground( const Util::Color::Rgba & p_color );
+		inline const Util::Color::Rgba & getColorLight() const { return _passShading->uniforms.colorLight; }
+		void							 setColorLight( const Util::Color::Rgba & p_color );
+		inline const Util::Color::Rgba & getColorFog() const { return _passShading->uniforms.colorFog; }
+		void							 setColorFog( const Util::Color::Rgba & p_color );
+		inline float					 getFogNear() const { return _passShading->uniforms.fogNear; }
+		void							 setFogNear( const float p_near );
+		inline float					 getFogFar() const { return _passShading->uniforms.fogFar; }
+		void							 setFogFar( const float p_far );
+		inline float					 getFogDensity() const { return _passShading->uniforms.fogDensity; }
+		void							 setFogDensity( const float p_density );
+
+		// Outline uniforms.
+		inline float					 getOutlineSensivity() const { return _passOutline->uniforms.sensivity; }
+		void							 setOutlineSensivity( const float p_sensivity );
+		inline uint						 getOutlineThickness() const { return _passOutline->uniforms.thickness; }
+		void							 setOutlineThickness( const uint p_thickness );
+		inline const Util::Color::Rgba & getColorOutline() const { return _passOutline->uniforms.color; }
+		void							 setColorOutline( const Util::Color::Rgba & p_color );
+
+		// Selection uniforms.
+		inline const Util::Color::Rgba & getColorSelection() const { return _passSelection->uniforms.color; }
+		void							 setColorSelection( const Util::Color::Rgba & p_color );
+
+		// Pixelize uniforms.
+		inline uint getPixelSize() const { return _passPixelize->uniforms.size; }
+		void		setPixelSize( const uint p_size );
+		inline bool isPixelizeBackground() const { return _passPixelize->uniforms.background; }
+		void		setPixelizeBackground( const bool p_background );
+
+		// Times.
 		inline std::array<float, ENUM_TIME_ITEM::COUNT> & getTimes() { return _times; }
 
+		// Opengl infos.
 		inline const StructOpenglInfos & getOpenglInfos() const { return _openglInfos; }
 
+		// Shaders hot reload.
 		inline void compileShaders()
 		{
 			_programManager->compileShaders();
@@ -104,6 +121,11 @@ namespace VTX::Renderer::GL
 		void loadSkybox( const std::array<unsigned char *, 6> & p_textures,
 						 const size_t							p_width,
 						 const size_t							p_height );
+
+		inline static const bool ACTIVE_SSAO_DEFAULT	 = true;
+		inline static const bool ACTIVE_OUTLINE_DEFAULT	 = false;
+		inline static const bool ACTIVE_FXAA_DEFAULT	 = true;
+		inline static const bool ACTIVE_PIXELIZE_DEFAULT = false;
 
 	  private:
 		size_t _width	   = 0;
@@ -115,8 +137,25 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<Buffer>		 _vbo;
 
 		// Uniforms.
-		std::unique_ptr<Buffer> _ubo;
-		StructGlobalUniforms	_globalUniforms;
+		std::unique_ptr<Buffer> _uboCamera;
+		std::unique_ptr<Buffer> _uboModels;
+
+		struct StructUniformsCamera
+		{
+			Mat4f matrixModel  = MAT4F_ID;
+			Mat4f matrixNormal = MAT4F_ID;
+			Mat4f matrixView;
+			Mat4f matrixProjection;
+			// _near * _far, _far, _far - _near, _near
+			Vec4f cameraClipInfos;
+			bool  isCameraPerspective = true;
+		} _uniformsCamera;
+
+		struct StructUniformsModels
+		{
+			Mat4f matrixModel  = MAT4F_ID;
+			Mat4f matrixNormal = MAT4F_ID;
+		} _uniformsModels;
 
 		// Pass.
 		std::unique_ptr<Pass::PassGeometric>	  _passGeometric;
@@ -129,10 +168,10 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<Pass::PassFXAA>			  _passFXAA;
 		std::unique_ptr<Pass::PassPixelize>		  _passPixelize;
 
-		bool _activeSSAO	 = true;
-		bool _activeOutline	 = false;
-		bool _activeFXAA	 = true;
-		bool _activePixelize = false;
+		bool _activeSSAO	 = ACTIVE_SSAO_DEFAULT;
+		bool _activeOutline	 = ACTIVE_OUTLINE_DEFAULT;
+		bool _activeFXAA	 = ACTIVE_FXAA_DEFAULT;
+		bool _activePixelize = ACTIVE_PIXELIZE_DEFAULT;
 
 		// Output.
 		GLuint _fboOutputId = 0;

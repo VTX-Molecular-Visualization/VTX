@@ -100,6 +100,15 @@ namespace VTX::Renderer::GL
 			_target = 0;
 		}
 
+		inline void unbindFromUnit( const GLuint p_index )
+		{
+#if ( VTX_OPENGL_VERSION == 450 )
+			glBindTextureUnit( p_index, 0 );
+#else
+			assert( false );
+#endif
+		}
+
 		inline void getImage( const GLint	p_level,
 							  const GLenum	p_format,
 							  const GLenum	p_type,

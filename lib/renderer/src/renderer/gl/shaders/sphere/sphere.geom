@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "../global_uniforms.glsl"
+#include "../layout_uniforms_camera.glsl"
 
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
@@ -18,19 +18,19 @@ outData;
 void emitQuad( const vec3 p_v1, const vec3 p_v2, const vec3 p_v3, const vec3 p_v4 )
 {
 	outData.viewImpPos = p_v1;
-	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniformsCamera.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v2;
-	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniformsCamera.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v3;
-	gl_Position	       = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
+	gl_Position	       = uniformsCamera.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	outData.viewImpPos = p_v4;
-	gl_Position		   = uniforms.matrixProjection * vec4( outData.viewImpPos, 1.f );
+	gl_Position		   = uniformsCamera.matrixProjection * vec4( outData.viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();

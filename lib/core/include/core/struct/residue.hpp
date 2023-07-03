@@ -3,7 +3,6 @@
 
 #include "_fwd.hpp"
 #include "core/chemdb/residue.hpp"
-#include "core/define.hpp"
 
 namespace VTX::Core::Struct
 {
@@ -41,12 +40,12 @@ namespace VTX::Core::Struct
 
 	  protected:
 		C *	   _chainPtr	  = nullptr;
-		size_t _internalIndex = INVALID_ID;
+		size_t _internalIndex = INVALID_INDEX;
 
 		ChemDB::Residue::SYMBOL _symbol			= ChemDB::Residue::SYMBOL::UNKNOWN;
-		size_t					_indexFirstAtom = INVALID_ID;
+		size_t					_indexFirstAtom = INVALID_INDEX;
 		size_t					_atomCount		= 0;
-		size_t					_indexFirstBond = INVALID_ID;
+		size_t					_indexFirstBond = INVALID_INDEX;
 		size_t					_bondCount		= 0;
 
 		// ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;

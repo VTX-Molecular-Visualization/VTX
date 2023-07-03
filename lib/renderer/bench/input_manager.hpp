@@ -15,11 +15,13 @@ namespace VTX::Bench
 		using CallbackResize	= std::function<void( const size_t, const size_t )>;
 		using CallbackTranslate = std::function<void( const Vec3i & )>;
 		using CallbackRotate	= std::function<void( const Vec2i & )>;
+		using CallbackZoom		= std::function<void( const int )>;
 
 		inline void setCallbackClose( const CallbackClose & p_cb ) { _callbackClose = p_cb; }
 		inline void setCallbackResize( const CallbackResize & p_cb ) { _callbackResize = p_cb; }
 		inline void setCallbackTranslate( const CallbackTranslate & p_cb ) { _callbackTranslate = p_cb; }
 		inline void setCallbackRotate( const CallbackRotate & p_cb ) { _callbackRotate = p_cb; }
+		inline void setCallbackZoom( const CallbackZoom & p_cb ) { _callbackZoom = p_cb; }
 
 		inline bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
 		inline bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
@@ -34,12 +36,13 @@ namespace VTX::Bench
 			case SDL_MOUSEBUTTONDOWN: _mouseButtons[ p_event.button.button - 1 ] = true; break;
 			case SDL_MOUSEBUTTONUP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_MOUSEMOTION:
-				if ( _mouseButtons[ 0 ] )
+				if ( _mouseButtons[ 2 ] )
 				{
 					_deltaMouse.x += p_event.motion.xrel;
 					_deltaMouse.y += p_event.motion.yrel;
 				}
 				break;
+			case SDL_MOUSEWHEEL: _deltaWheel += p_event.wheel.y; break;
 			case SDL_WINDOWEVENT:
 				switch ( p_event.window.event )
 				{
@@ -94,8 +97,14 @@ namespace VTX::Bench
 				_callbackRotate( _deltaMouse );
 			}
 
+			if ( _deltaWheel != 0 && _callbackZoom )
+			{
+				_callbackZoom( _deltaWheel );
+			}
+
 			_deltaMoveInputs = { 0, 0, 0 };
 			_deltaMouse		 = { 0, 0 };
+			_deltaWheel		 = 0;
 		}
 
 	  private:
@@ -104,11 +113,13 @@ namespace VTX::Bench
 
 		Vec3i _deltaMoveInputs = { 0, 0, 0 };
 		Vec2i _deltaMouse	   = { 0, 0 };
+		int	  _deltaWheel	   = 0;
 
 		CallbackClose	  _callbackClose;
 		CallbackResize	  _callbackResize;
 		CallbackTranslate _callbackTranslate;
 		CallbackRotate	  _callbackRotate;
+		CallbackZoom	  _callbackZoom;
 
 		inline void _onClose()
 		{

@@ -143,26 +143,31 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Passes.
-			bool					   activeSSAO			= p_renderer->isActiveSSAO();
-			bool					   activeOutline		= p_renderer->isActiveOutline();
-			bool					   activeFXAA			= p_renderer->isActiveFXAA();
-			bool					   activePixelize		= p_renderer->isActivePixelize();
-			Util::Color::Rgba		   colorBG				= p_renderer->getColorBackground();
-			Util::Color::Rgba		   colorLight			= p_renderer->getColorLight();
-			Util::Color::Rgba		   colorFog				= p_renderer->getColorFog();
-			Util::Color::Rgba		   colorOutline			= p_renderer->getColorOutline();
-			Util::Color::Rgba		   colorSelection		= p_renderer->getColorSelection();
-			float					   specularFactor		= p_renderer->getSpecularFactor();
-			float					   fogNear				= p_renderer->getFogNear();
-			float					   fogFar				= p_renderer->getFogFar();
-			float					   fogDensity			= p_renderer->getFogDensity();
-			float					   ssaoIntensity		= p_renderer->getSSAOIntensity();
-			float					   blurSize				= p_renderer->getBlurSize();
-			float					   outlineSensivity		= p_renderer->getOutlineSensivity();
-			float					   outlineThickness		= p_renderer->getOutlineThickness();
-			Renderer::GL::ENUM_SHADING shadingMode			= p_renderer->getShadingMode();
-			int						   pixelSize			= p_renderer->getPixelSize();
-			bool					   pixelarizeBackground = p_renderer->isPixelizeBackground();
+			bool activeSSAO		= p_renderer->isActiveSSAO();
+			bool activeOutline	= p_renderer->isActiveOutline();
+			bool activeFXAA		= p_renderer->isActiveFXAA();
+			bool activePixelize = p_renderer->isActivePixelize();
+
+			float ssaoIntensity = p_renderer->getSSAOIntensity();
+			float blurSize		= p_renderer->getBlurSize();
+
+			Renderer::GL::ENUM_SHADING shadingMode	  = p_renderer->getShadingMode();
+			float					   specularFactor = p_renderer->getSpecularFactor();
+			Util::Color::Rgba		   colorBG		  = p_renderer->getColorBackground();
+			Util::Color::Rgba		   colorLight	  = p_renderer->getColorLight();
+			Util::Color::Rgba		   colorFog		  = p_renderer->getColorFog();
+			float					   fogNear		  = p_renderer->getFogNear();
+			float					   fogFar		  = p_renderer->getFogFar();
+			float					   fogDensity	  = p_renderer->getFogDensity();
+
+			Util::Color::Rgba colorOutline	   = p_renderer->getColorOutline();
+			float			  outlineSensivity = p_renderer->getOutlineSensivity();
+			uint			  outlineThickness = p_renderer->getOutlineThickness();
+
+			Util::Color::Rgba colorSelection = p_renderer->getColorSelection();
+
+			int	 pixelSize			  = p_renderer->getPixelSize();
+			bool pixelarizeBackground = p_renderer->isPixelizeBackground();
 
 			ImGui::Begin( "Render passes" );
 			ImGui::SetNextItemOpen( true );
@@ -233,7 +238,7 @@ namespace VTX::Bench
 				{
 					p_renderer->setOutlineSensivity( outlineSensivity );
 				}
-				if ( ImGui::InputFloat( "Thickness", &outlineThickness ) )
+				if ( ImGui::InputInt( "Thickness", (int *)( &outlineThickness ) ) )
 				{
 					p_renderer->setOutlineThickness( outlineThickness );
 				}

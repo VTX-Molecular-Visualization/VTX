@@ -1,10 +1,15 @@
 #version 450 core
 
-#include "global_uniforms.glsl"
-
 // In.
 layout( binding = 0 ) uniform sampler2D inTextureColor;
 layout( binding = 1 ) uniform sampler2D inTextureDepth;
+
+layout ( std140, binding = 2 ) uniform Uniforms
+{	
+	vec4 color;
+	float sensivity;
+	uint thickness;	
+} uniforms;
 
 // Out.
 layout( location = 0 ) out vec4 outFragColor;
@@ -18,8 +23,8 @@ void main()
 	const float depthCenter = texture( inTextureDepth, texCoord, 0 ).x;
 
 	//
-	float halfThicknessFloor = floor( uniforms.outlineThickness * 0.5f );
-	float halfThicknessCeil	 = ceil(  uniforms.outlineThickness * 0.5f );
+	float halfThicknessFloor = floor( uniforms.thickness * 0.5f );
+	float halfThicknessCeil	 = ceil(  uniforms.thickness * 0.5f );
 
 	// Get cross neighbor depth
 	const ivec2 offsets[ 4 ] = { ivec2( -halfThicknessFloor, -halfThicknessFloor ),
@@ -40,8 +45,8 @@ void main()
 	const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 ) * 100.f;
 
 	// Compute threshold.
-	const float depthThreshold = ( 1.f / uniforms.outlineSensivity ) * depthCenter; // max( 1.f, depthCenter );
+	const float depthThreshold = ( 1.f / uniforms.sensivity ) * depthCenter; // max( 1.f, depthCenter );
 
 	// Apply outline if edge depth is greater than threshold.
-	outFragColor = edgeDepth > depthThreshold ? uniforms.colorOutline : texture( inTextureColor, texCoord );
+	outFragColor = edgeDepth > depthThreshold ? uniforms.color : texture( inTextureColor, texCoord );
 }

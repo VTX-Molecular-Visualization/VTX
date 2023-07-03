@@ -10,6 +10,8 @@ namespace VTX::Renderer::GL::Pass
 
 		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
 
+		_ubo = std::make_unique<Buffer>( uniforms, GL_STATIC_DRAW );
+
 		_program = p_pm.createProgram( "Selection", std::vector<FilePath> { "default.vert", "selection.frag" } );
 		assert( _program != nullptr );
 	}
@@ -30,9 +32,20 @@ namespace VTX::Renderer::GL::Pass
 		in.textureDataPacked->bindToUnit( 0 );
 		in.textureColor->bindToUnit( 1 );
 		in.textureDepth->bindToUnit( 2 );
+		_ubo->bind( GL_UNIFORM_BUFFER, 3 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+		in.textureDataPacked->unbindFromUnit( 0 );
+		in.textureColor->unbindFromUnit( 1 );
+		in.textureDepth->unbindFromUnit( 2 );
+		_ubo->unbind( 3 );
 		out.fbo->unbind();
+	}
+
+	void Selection::setColor( const Util::Color::Rgba & p_color )
+	{
+		uniforms.color = p_color;
+		_ubo->setSub( p_color, offsetof( StructUniforms, color ), sizeof( Util::Color::Rgba ) );
 	}
 
 } // namespace VTX::Renderer::GL::Pass
