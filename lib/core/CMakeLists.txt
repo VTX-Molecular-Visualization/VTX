@@ -9,7 +9,6 @@ set(GIT_TAG_MAGIC_ENUM v0.8.2)
 # Fetch third parties.
 include(FetchContent)
 FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
-
 FetchContent_MakeAvailable(magic_enum)
 
 # Get headers and sources.

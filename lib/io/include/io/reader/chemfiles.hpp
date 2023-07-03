@@ -70,21 +70,18 @@ namespace VTX::IO::Reader
 			_currentResidue = &( ( *_residues )[ p_residueIndex ] );
 		}
 
-		template<>
-		const bool getCurrentResidueProperty<bool>( const std::string & p_property, const bool & p_defaultValue ) const
+		const bool getCurrentResidueProperty( const std::string & p_property, const bool & p_defaultValue ) const
 		{
 			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
 		}
 
-		template<>
-		const std::string getCurrentResidueProperty<std::string>( const std::string & p_property,
-																  const std::string & p_defaultValue ) const
+		const std::string getCurrentResidueProperty( const std::string & p_property,
+													 const std::string & p_defaultValue ) const
 		{
 			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_string();
 		}
-		template<>
-		const double getCurrentResidueProperty<double>( const std::string & p_property,
-														const double &		p_defaultValue ) const
+
+		const double getCurrentResidueProperty( const std::string & p_property, const double & p_defaultValue ) const
 		{
 			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 		}
@@ -102,21 +99,18 @@ namespace VTX::IO::Reader
 			_currentAtomIndex = p_index;
 		}
 
-		template<>
-		const bool getCurrentAtomProperty<bool>( const std::string & p_property, const bool & p_defaultValue ) const
+		const bool getCurrentAtomProperty( const std::string & p_property, const bool & p_defaultValue ) const
 		{
 			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
 		}
 
-		template<>
-		const std::string getCurrentAtomProperty<std::string>( const std::string & p_property,
-															   const std::string & p_defaultValue ) const
+		const std::string getCurrentAtomProperty( const std::string & p_property,
+												  const std::string & p_defaultValue ) const
 		{
 			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_string();
 		}
-		template<>
-		const double getCurrentAtomProperty<double>( const std::string & p_property,
-													 const double &		 p_defaultValue ) const
+
+		const double getCurrentAtomProperty( const std::string & p_property, const double & p_defaultValue ) const
 		{
 			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 		}

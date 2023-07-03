@@ -38,7 +38,7 @@ add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 FetchContent_Declare(SDL2 GIT_REPOSITORY ${GIT_URL_SDL} GIT_TAG ${GIT_TAG_SDL})
 FetchContent_MakeAvailable(SDL2)
 
-file(GLOB_RECURSE BENCH_FILES bench/*)
+file(GLOB_RECURSE BENCH_FILES bench/*.h bench/*.hpp bench/*.c bench/*.cpp)
 add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
