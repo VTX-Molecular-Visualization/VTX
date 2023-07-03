@@ -4,7 +4,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old/util/molecule.hpp"
+#include "app/internal/util/molecule.hpp"
 #include <algorithm>
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
@@ -74,7 +74,7 @@ namespace VTX::App::Internal::IO::Reader
 		const size_t																  p_trajectoryFrameStart )
 	{
 		// Fill other frames.
-		Util::Chrono timeReadingFrames;
+		VTX::Util::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		size_t startingFrame   = 1;
 		size_t validFrameCount = 0;
@@ -174,7 +174,7 @@ namespace VTX::App::Internal::IO::Reader
 			std::string		  residueSymbol = residue.name();
 
 			const VTX::Core::ChemDB::Category::TYPE categoryEnum
-				= Util::App::Old::Molecule::getResidueCategory( residueSymbol );
+				= App::Internal::Util::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
 										chainName != lastChainName ||	   // New chain ID
@@ -455,7 +455,7 @@ namespace VTX::App::Internal::IO::Reader
 			_readTrajectoryFrames( trajectory, { pairMoleculeFirstFrame }, 1 );
 		}
 
-		Util::Chrono bondComputationChrono = Util::Chrono();
+		VTX::Util::Chrono bondComputationChrono = VTX::Util::Chrono();
 		if ( p_recomputeBonds )
 		{
 			bondComputationChrono.start();
