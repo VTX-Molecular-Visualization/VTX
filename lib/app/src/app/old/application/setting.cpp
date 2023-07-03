@@ -18,7 +18,7 @@
 #include <core/chemdb/category.hpp>
 #include <exception>
 #include <string>
-#include <util/types.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::App::Old::Application
 {
@@ -34,7 +34,7 @@ namespace VTX::App::Old::Application
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Util::Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	= Util::Color::Rgba::BLACK;
+	const Util::Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	= COLOR_BLACK;
 	const float				Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
 	const float				Setting::SNAPSHOT_QUALITY_DEFAULT	= 1.0f;
 
@@ -112,7 +112,7 @@ namespace VTX::App::Old::Application
 	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
 	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 0.01f;
 	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 1.f;
-	const Util::Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	   = Util::Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	   = COLOR_WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
 	const float				Setting::FOG_NEAR_DEFAULT		   = 30;
 	const float				Setting::FOG_NEAR_MIN			   = 0.f;
@@ -121,9 +121,9 @@ namespace VTX::App::Old::Application
 	const float				Setting::FOG_FAR_MIN			   = 0.f;
 	const float				Setting::FOG_FAR_MAX			   = 1000.f;
 	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
-	const Util::Color::Rgba Setting::FOG_COLOR_DEFAULT		   = Util::Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::FOG_COLOR_DEFAULT		   = COLOR_WHITE;
 	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
-	const Util::Color::Rgba Setting::LIGHT_COLOR_DEFAULT	   = Util::Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::LIGHT_COLOR_DEFAULT	   = COLOR_WHITE;
 
 	// Scene.
 	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );

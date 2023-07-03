@@ -26,8 +26,8 @@ namespace VTX::App::Old::Component::Chemistry
 	GeneratedMolecule::GeneratedMolecule() : Chemistry::Molecule( App::Old::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
 	void GeneratedMolecule::copyFromSelection( const App::Old::Application::Selection::SelectionModel & p_selection,
-											   const VTX::App::Old::Core::Model::ID &				   p_moleculeID,
-											   const int										   p_frame )
+											   const VTX::App::Old::Core::Model::ID &					p_moleculeID,
+											   const int												p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
@@ -94,7 +94,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 		_computeBonds( molecule );
 
-		getBufferAtomColors().resize( getAtomCount(), Util::Color::Rgba::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), COLOR_BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -377,7 +377,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 	void GeneratedMolecule::_validateBuffers()
 	{
-		getBufferAtomColors().resize( getAtomCount(), Util::Color::Rgba::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), COLOR_BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -390,7 +390,7 @@ namespace VTX::App::Old::Component::Chemistry
 	}
 
 	void GeneratedMolecule::extractFromSelection( const App::Old::Application::Selection::SelectionModel & p_selection,
-												  const VTX::App::Old::Core::Model::ID &					  p_moleculeID )
+												  const VTX::App::Old::Core::Model::ID & p_moleculeID )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();

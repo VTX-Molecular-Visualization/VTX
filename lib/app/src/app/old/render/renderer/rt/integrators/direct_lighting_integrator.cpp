@@ -10,7 +10,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Integrator
 	{
 		// TODO: for now only the same as RaycastIntegrator
 		Intersection	  intersection;
-		Util::Color::Rgba Li = Util::Color::Rgba::BLACK;
+		Util::Color::Rgba Li = COLOR_BLACK;
 
 		if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 		{
@@ -21,7 +21,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Integrator
 			{
 				const uint nbLightSamples = light->isSurface() ? 32 : 1;
 
-				Util::Color::Rgba lightContrib = Util::Color::Rgba::BLACK;
+				Util::Color::Rgba lightContrib = COLOR_BLACK;
 				for ( uint i = 0; i < nbLightSamples; ++i )
 				{
 					const Light::LightSample ls = light->sample( intersection._point );

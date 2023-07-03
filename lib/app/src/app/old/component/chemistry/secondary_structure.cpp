@@ -27,8 +27,9 @@ namespace VTX::App::Old::Component::Chemistry
 		VTX_DEBUG( "Creating secondary structure..." );
 
 		refresh();
-		refreshSelection( VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap(
-			*_molecule ) );
+		refreshSelection(
+			VTX::App::Old::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap(
+				*_molecule ) );
 
 		chrono.stop();
 		VTX_DEBUG( "Secondary structure created in {}.", chrono.elapsedTimeStr() );
@@ -50,13 +51,13 @@ namespace VTX::App::Old::Component::Chemistry
 		const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
 		// Temporary vectors, merged with buffers is SS is constructed.
-		std::vector<Vec4f>				  caPositions;
-		std::vector<Vec3f>				  caODirections;
-		std::vector<uint>				  ssTypes;
-		std::vector<Util::Color::Rgba>	  colors;
-		std::vector<uint>				  visibilities;
+		std::vector<Vec4f>					   caPositions;
+		std::vector<Vec3f>					   caODirections;
+		std::vector<uint>					   ssTypes;
+		std::vector<Util::Color::Rgba>		   colors;
+		std::vector<uint>					   visibilities;
 		std::vector<App::Old::Core::Model::ID> ids;
-		std::vector<uint>				  residueIndex;
+		std::vector<uint>					   residueIndex;
 
 		for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 		{
@@ -164,7 +165,7 @@ namespace VTX::App::Old::Component::Chemistry
 					case VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
 						colors.emplace_back( residue->getColor() );
 						break;
-					default: colors.emplace_back( Util::Color::Rgba::WHITE ); break;
+					default: colors.emplace_back( COLOR_WHITE ); break;
 					}
 				}
 				else
@@ -220,13 +221,13 @@ namespace VTX::App::Old::Component::Chemistry
 		_buffer->setIndices( _bufferIndices );
 	}
 
-	void SecondaryStructure::_tryConstruct( const uint								  p_chainIdx,
-											const std::vector<uint> &				  p_residueIndex,
-											const std::vector<Vec4f> &				  p_caPositions,
-											std::vector<Vec3f> &					  p_caODirections,
-											const std::vector<uint> &				  p_ssTypes,
-											const std::vector<Util::Color::Rgba> &	  p_colors,
-											const std::vector<uint> &				  p_visibilities,
+	void SecondaryStructure::_tryConstruct( const uint									   p_chainIdx,
+											const std::vector<uint> &					   p_residueIndex,
+											const std::vector<Vec4f> &					   p_caPositions,
+											std::vector<Vec3f> &						   p_caODirections,
+											const std::vector<uint> &					   p_ssTypes,
+											const std::vector<Util::Color::Rgba> &		   p_colors,
+											const std::vector<uint> &					   p_visibilities,
 											const std::vector<App::Old::Core::Model::ID> & p_ids )
 	{
 		if ( p_caPositions.size() >= 4 )
@@ -332,7 +333,7 @@ namespace VTX::App::Old::Component::Chemistry
 					_bufferColors.emplace_back( residue->getColor() );
 					break;
 
-				default: _bufferColors.emplace_back( Util::Color::Rgba::WHITE ); break;
+				default: _bufferColors.emplace_back( COLOR_WHITE ); break;
 				}
 			}
 		}

@@ -10,7 +10,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Integrator
 										const float	  p_tMax ) const
 	{
 		Intersection	  intersection;
-		Util::Color::Rgba Li = Util::Color::Rgba::BLACK;
+		Util::Color::Rgba Li = COLOR_BLACK;
 
 		if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 		{

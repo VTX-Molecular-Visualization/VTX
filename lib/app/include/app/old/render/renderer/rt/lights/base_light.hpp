@@ -2,7 +2,7 @@
 #define __VTX_APP_OLD_RENDER_RENDERER_RT_BASE_LIGHT__
 
 #include "light_sample.hpp"
-#include <util/types.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::App::Old::Render::Renderer::RT::Light
 {
@@ -22,7 +22,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Light
 		const bool isSurface() const { return _isSurface; }
 
 	  protected:
-		Util::Color::Rgba _color = Util::Color::Rgba::WHITE;
+		Util::Color::Rgba _color = COLOR_WHITE;
 		// TODO: keep it ?
 		float _power = 1.f;
 

@@ -32,8 +32,8 @@ namespace VTX::App::Old::Render::Renderer::RT::Material
 		}
 
 	  private:
-		Util::Color::Rgba _kd		 = Util::Color::Rgba::WHITE * 0.5f;
-		Util::Color::Rgba _ks		 = Util::Color::Rgba::WHITE * 0.5f;
+		Util::Color::Rgba _kd		 = COLOR_WHITE * 0.5f;
+		Util::Color::Rgba _ks		 = COLOR_WHITE * 0.5f;
 		float			  _shininess = 8.f;
 	};
 } // namespace VTX::App::Old::Render::Renderer::RT::Material

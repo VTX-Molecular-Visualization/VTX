@@ -7,9 +7,9 @@
 #include "app/old/internal/worker/render_effect_loader.hpp"
 #include "app/old/manager/action_manager.hpp"
 #include "app/old/mvc.hpp"
-#include "app/old/vtx_app.hpp"
 #include "app/old/render/renderer/base_renderer.hpp"
 #include "app/old/render/renderer/gl/gl.hpp"
+#include "app/old/vtx_app.hpp"
 #include "app/old/worker.hpp"
 
 namespace VTX::App::Old::Application::RenderEffect
@@ -125,7 +125,8 @@ namespace VTX::App::Old::Application::RenderEffect
 
 		if ( 0 <= p_index && p_index < _presets.size() )
 		{
-			VTX::MVC_MANAGER().deleteView( _presets[ p_index ], VTX::App::Old::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+			VTX::MVC_MANAGER().deleteView( _presets[ p_index ],
+										   VTX::App::Old::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
 
@@ -328,9 +329,9 @@ namespace VTX::App::Old::Application::RenderEffect
 		presetSketch->setShading( Render::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );
 		presetSketch->enableOutline( true );
-		presetSketch->setOutlineColor( Util::Color::Rgba::BLACK );
+		presetSketch->setOutlineColor( COLOR_BLACK );
 		presetSketch->enableFog( false );
-		presetSketch->setBackgroundColor( Util::Color::Rgba::WHITE );
+		presetSketch->setBackgroundColor( COLOR_WHITE );
 		setQuickAccessToPreset( *presetSketch, true );
 		addPreset( presetSketch, true, false );
 

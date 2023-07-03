@@ -24,9 +24,12 @@ namespace VTX::App::Old::Render::Renderer::RT
 	class RayTracer::CameraRayTracing
 	{
 	  public:
-		CameraRayTracing( const App::Old::Component::Render::Camera & p_camera, const uint p_width, const uint p_height ) :
-			_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
-			_right( p_camera.getRight() ), _width( p_width ), _height( p_height )
+		CameraRayTracing( const App::Old::Component::Render::Camera & p_camera,
+						  const uint								  p_width,
+						  const uint								  p_height ) :
+			_pos( p_camera.getPosition() ),
+			_front( p_camera.getFront() ), _up( p_camera.getUp() ), _right( p_camera.getRight() ), _width( p_width ),
+			_height( p_height )
 		{
 			//
 			//
@@ -175,7 +178,8 @@ namespace VTX::App::Old::Render::Renderer::RT
 						 App::Old::Render::Renderer::GL::Texture2D::Filter::NEAREST,
 						 App::Old::Render::Renderer::GL::Texture2D::Filter::NEAREST );
 
-		getOutputFramebuffer().attachTexture( _texture, App::Old::Render::Renderer::GL::Framebuffer::Attachment::COLOR0 );
+		getOutputFramebuffer().attachTexture( _texture,
+											  App::Old::Render::Renderer::GL::Framebuffer::Attachment::COLOR0 );
 
 		VTX_INFO( "Ray tracer initialized" );
 	}
@@ -259,7 +263,8 @@ namespace VTX::App::Old::Render::Renderer::RT
 		// #define RIBBON_TEST
 
 #ifdef RIBBON_TEST
-		for ( const std::pair<const App::Old::Component::Chemistry::Molecule *, float> & pairMol : p_scene.getMolecules() )
+		for ( const std::pair<const App::Old::Component::Chemistry::Molecule *, float> & pairMol :
+			  p_scene.getMolecules() )
 		{
 			_scene.addObject( new TriangleMesh( pairMol.first ) );
 		}
@@ -372,13 +377,13 @@ namespace VTX::App::Old::Render::Renderer::RT
 				new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );*/
 
 		// 6VSB
-		_scene.addLight( new Light::PointLight( Vec3f( 150.f, -200.f, 90.f ), Util::Color::Rgba::WHITE, 1000000.f ) );
-		_scene.addLight( new Light::PointLight( Vec3f( 150.f, -200.f, 300.f ), Util::Color::Rgba::WHITE, 1000000.f ) );
-		_scene.addLight( new Light::PointLight( Vec3f( -450.f, -200.f, -38.f ), Util::Color::Rgba::WHITE, 1000000.f ) );
+		_scene.addLight( new Light::PointLight( Vec3f( 150.f, -200.f, 90.f ), COLOR_WHITE, 1000000.f ) );
+		_scene.addLight( new Light::PointLight( Vec3f( 150.f, -200.f, 300.f ), COLOR_WHITE, 1000000.f ) );
+		_scene.addLight( new Light::PointLight( Vec3f( -450.f, -200.f, -38.f ), COLOR_WHITE, 1000000.f ) );
 		_scene.addLight( new Light::QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											   Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											   -Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
-											   Util::Color::Rgba::WHITE,
+											   COLOR_WHITE,
 											   200.f ) );
 	}
 
@@ -407,7 +412,7 @@ namespace VTX::App::Old::Render::Renderer::RT
 				{
 					Util::Color::Rgba color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 					color.applyGamma( _gamma );
-					color = Util::Color::Rgba::BLUE;
+					color = COLOR_BLUE;
 
 					// TODO: fill buffer in the correct order and revert snapshot with stb.
 					const uint pixelId	   = ( x + ( _height - y - 1 ) * _width ) * 3;
@@ -427,7 +432,7 @@ namespace VTX::App::Old::Render::Renderer::RT
 											   const float				p_y,
 											   const uint				p_nbPixelSamples )
 	{
-		Util::Color::Rgba color = Util::Color::Rgba::BLACK;
+		Util::Color::Rgba color = COLOR_BLACK;
 
 		// sampling ray within a pixel for anti-aliasing
 		for ( uint s = 0; s < p_nbPixelSamples; s++ )

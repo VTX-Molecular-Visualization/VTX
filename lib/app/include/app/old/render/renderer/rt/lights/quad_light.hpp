@@ -35,7 +35,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Light
 
 			const float				cosDir	 = Util::Math::dot( _invNormal, direction );
 			const float				pdf		 = _pdf * ( dist * dist ) / fabsf( cosDir );
-			const Util::Color::Rgba radiance = cosDir > 0.f ? _color * _power / pdf : Util::Color::Rgba::BLACK;
+			const Util::Color::Rgba radiance = cosDir > 0.f ? _color * _power / pdf : COLOR_BLACK;
 
 			return LightSample( direction, dist, radiance, pdf );
 		}

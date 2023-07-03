@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QRect>
 #include <string>
+#include <util/constants.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -104,7 +105,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const QRect paintedRect = colorRect.intersected( p_paintEvent->rect() );
 
 		const Util::Color::Rgba displayedColorRGB = isEnabled() ? _color : ( _color / 2 );
-		const QColor	  displayedColor	= _getQColorFromRgbColor( displayedColorRGB );
+		const QColor			displayedColor	  = _getQColorFromRgbColor( displayedColorRGB );
 
 		painter.fillRect( paintedRect, displayedColor );
 		// painter.drawText( rect, text() );
@@ -122,7 +123,7 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 	void ColorFieldButton::_displayDifferentsDataFeedback()
 	{
-		setColor( Util::Color::Rgba::BLACK );
+		setColor( COLOR_BLACK );
 		setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 	}
 

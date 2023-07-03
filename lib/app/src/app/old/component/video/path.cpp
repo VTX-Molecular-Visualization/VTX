@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <util/exceptions.hpp>
+#include <util/math.hpp>
 
 namespace VTX::App::Old::Component::Video
 {
@@ -71,10 +72,11 @@ namespace VTX::App::Old::Component::Video
 			Object3D::Viewpoint * const p1	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 			float						value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
-			VTX::App::Old::VTX_ID controller = p0->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-												  && p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-											  ? VTX::App::Old::ID::Controller::TRACKBALL
-											  : VTX::App::Old::ID::Controller::FREEFLY;
+			VTX::App::Old::VTX_ID controller
+				= p0->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+						  && p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+					  ? VTX::App::Old::ID::Controller::TRACKBALL
+					  : VTX::App::Old::ID::Controller::FREEFLY;
 
 			// Lerp.
 			viewpoint.setController( controller );
@@ -95,10 +97,11 @@ namespace VTX::App::Old::Component::Video
 			Object3D::Viewpoint * const p3	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 			float						value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-			VTX::App::Old::VTX_ID controller = p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-												  && p2->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-											  ? VTX::App::Old::ID::Controller::TRACKBALL
-											  : VTX::App::Old::ID::Controller::FREEFLY;
+			VTX::App::Old::VTX_ID controller
+				= p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+						  && p2->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+					  ? VTX::App::Old::ID::Controller::TRACKBALL
+					  : VTX::App::Old::ID::Controller::FREEFLY;
 
 			viewpoint.setController( controller );
 			viewpoint.setRotation( Util::Math::catmullRomInterpolation(
@@ -122,10 +125,11 @@ namespace VTX::App::Old::Component::Video
 			Object3D::Viewpoint * const p3	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 			float						value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-			VTX::App::Old::VTX_ID controller = p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-												  && p2->getController() == VTX::App::Old::ID::Controller::TRACKBALL
-											  ? VTX::App::Old::ID::Controller::TRACKBALL
-											  : VTX::App::Old::ID::Controller::FREEFLY;
+			VTX::App::Old::VTX_ID controller
+				= p1->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+						  && p2->getController() == VTX::App::Old::ID::Controller::TRACKBALL
+					  ? VTX::App::Old::ID::Controller::TRACKBALL
+					  : VTX::App::Old::ID::Controller::FREEFLY;
 
 			viewpoint.setController( controller );
 			viewpoint.setRotation( Util::Math::cubicInterpolation(

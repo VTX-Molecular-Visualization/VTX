@@ -8,13 +8,13 @@ namespace VTX::App::Old::Render::Renderer::RT::Integrator
 											 const float   p_tMax ) const
 	{
 		Intersection	  intersection;
-		Util::Color::Rgba Li = Util::Color::Rgba::BLACK;
+		Util::Color::Rgba Li = COLOR_BLACK;
 
 		if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 		{
 			// shade primitive
 			// point light on camera
-			Light::LightSample ls( -p_ray.getDirection(), 1.f, Util::Color::Rgba::WHITE, 1.f );
+			Light::LightSample ls( -p_ray.getDirection(), 1.f, COLOR_WHITE, 1.f );
 
 			const float cosTheta = Util::Math::dot( intersection._normal, ls._dir );
 

@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
 
 	  private:
-		Util::Color::Rgba	  _color				= Util::Color::Rgba::WHITE;
+		Util::Color::Rgba	  _color				= COLOR_WHITE;
 		int					  _indexInOriginalChain = 0;
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
 		char				  _insertionCode		= ' ';

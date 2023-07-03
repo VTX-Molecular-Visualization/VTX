@@ -5,7 +5,7 @@
 #include "app/old/component/video/_fwd.hpp"
 #include "app/old/core/model/base_model.hpp"
 #include "app/old/id.hpp"
-#include <util/types.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::App::Old::Component::Object3D
 {

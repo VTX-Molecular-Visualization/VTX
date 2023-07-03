@@ -20,7 +20,7 @@
 #include "app/old/vtx_app.hpp"
 #include <algorithm>
 #include <core/chemdb/color.hpp>
-#include <util/color/rgba.hpp>
+#include <util/constants.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Old::Component::Chemistry
@@ -85,7 +85,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 	Bond & Molecule::addBond()
 	{
-		Bond * const			  bond	  = VTX::MVC_MANAGER().instantiateModel<Bond>();
+		Bond * const				   bond	   = VTX::MVC_MANAGER().instantiateModel<Bond>();
 		VTX::Core::Old::Struct::Bond & newBond = _moleculeStruct->addBond();
 		newBond.setMoleculePtr( _moleculeStruct );
 
@@ -125,8 +125,8 @@ namespace VTX::App::Old::Component::Chemistry
 
 						const App::Old::Application::Representation::InstantiatedRepresentation * const
 							defaultInstantiatedRepresentation
-							= App::Old::Application::Representation::RepresentationManager::get().instantiateRepresentation(
-								defaultRepresentation, *chain, false, false );
+							= App::Old::Application::Representation::RepresentationManager::get()
+								  .instantiateRepresentation( defaultRepresentation, *chain, false, false );
 
 						_markRepresentationAsDefault( defaultInstantiatedRepresentation );
 					}
@@ -221,17 +221,17 @@ namespace VTX::App::Old::Component::Chemistry
 
 	void Molecule::_instantiate3DViews()
 	{
-		_addRenderable(
-			VTX::MVC_MANAGER().instantiateView<App::Old::Render::View::Sphere>( this, VTX::App::Old::ID::View::D3_SPHERE ) );
-		_addRenderable(
-			VTX::MVC_MANAGER().instantiateView<App::Old::Render::View::Cylinder>( this, VTX::App::Old::ID::View::D3_CYLINDER ) );
+		_addRenderable( VTX::MVC_MANAGER().instantiateView<App::Old::Render::View::Sphere>(
+			this, VTX::App::Old::ID::View::D3_SPHERE ) );
+		_addRenderable( VTX::MVC_MANAGER().instantiateView<App::Old::Render::View::Cylinder>(
+			this, VTX::App::Old::ID::View::D3_CYLINDER ) );
 	}
 
 	void Molecule::resizeBuffers()
 	{
 		_bufferAtomRadius.resize( getAtomCount() );
 		_bufferAtomVisibilities.resize( getAtomCount(), 1u );
-		_bufferAtomColors.resize( getAtomCount(), Util::Color::Rgba::WHITE );
+		_bufferAtomColors.resize( getAtomCount(), COLOR_WHITE );
 		_bufferAtomSelections.resize( getAtomCount(), 0u );
 		_bufferAtomIds.resize( getAtomCount() );
 	}

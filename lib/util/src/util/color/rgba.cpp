@@ -9,21 +9,21 @@ namespace VTX::Util::Color
 		return p_os;
 	}
 
-	inline void Rgba::saturate()
+	void Rgba::saturate()
 	{
 		x = Util::Math::clamp( x, 0.f, 1.f );
 		y = Util::Math::clamp( y, 0.f, 1.f );
 		z = Util::Math::clamp( z, 0.f, 1.f );
 	}
 
-	inline void Rgba::applyGamma( const float & pyamma )
+	void Rgba::applyGamma( const float & pyamma )
 	{
 		x = powf( x, pyamma );
 		y = powf( y, pyamma );
 		z = powf( z, pyamma );
 	}
 
-	inline void Rgba::oppose()
+	void Rgba::oppose()
 	{
 		x = 1.f - x;
 		y = 1.f - y;

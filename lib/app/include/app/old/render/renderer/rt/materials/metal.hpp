@@ -43,7 +43,7 @@ namespace VTX::App::Old::Render::Renderer::RT::Material
 		}
 
 	  private:
-		Util::Color::Rgba _f0		 = Util::Color::Rgba::WHITE;
+		Util::Color::Rgba _f0		 = COLOR_WHITE;
 		float			  _shininess = 64.f;
 	};
 } // namespace VTX::App::Old::Render::Renderer::RT::Material
