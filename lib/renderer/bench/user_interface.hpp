@@ -170,12 +170,12 @@ namespace VTX::Bench
 			bool pixelarizeBackground = p_renderer->isPixelizeBackground();
 
 			ImGui::Begin( "Render passes" );
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Geometric" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Linearize depth" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "SSAO + Blur" ) )
+			static bool isOpenGeometric;
+			if ( isOpenGeometric = ImGui::CollapsingHeader( "Geometric" ) ) {}
+			static bool isOpenLinearizeDepth;
+			if ( isOpenLinearizeDepth = ImGui::CollapsingHeader( "Linearize depth" ) ) {}
+			static bool isOpenSSAO;
+			if ( isOpenSSAO = ImGui::CollapsingHeader( "SSAO + Blur", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				if ( ImGui::Checkbox( "Active##SSAO", &activeSSAO ) )
 				{
@@ -196,8 +196,8 @@ namespace VTX::Bench
 					p_renderer->setBlurSize( blurSize );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Shading" ) )
+			static bool isOpenShading;
+			if ( isOpenShading = ImGui::CollapsingHeader( "Shading", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				const char * shadings[] = { "DIFFUSE", "GLOSSY", "TOON", "FLAT" };
 				if ( ImGui::Combo( "Mode", (int *)( &shadingMode ), shadings, IM_ARRAYSIZE( shadings ) ) )
@@ -245,8 +245,8 @@ namespace VTX::Bench
 					p_renderer->setColorFog( colorFog );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Outline" ) )
+			static bool isOpenOutline;
+			if ( isOpenOutline = ImGui::CollapsingHeader( "Outline", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				if ( ImGui::Checkbox( "Active##Outline", &activeOutline ) )
 				{
@@ -271,24 +271,24 @@ namespace VTX::Bench
 					p_renderer->setColorOutline( colorOutline );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Selection" ) )
+			static bool isOpenSelection;
+			if ( isOpenSelection = ImGui::CollapsingHeader( "Selection" ) )
 			{
 				if ( ImGui::ColorEdit4( "Color##Selection", (float *)( &colorSelection ) ) )
 				{
 					p_renderer->setColorSelection( colorSelection );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "FXAA" ) )
+			static bool isOpenFXAA;
+			if ( isOpenFXAA = ImGui::CollapsingHeader( "FXAA" ) )
 			{
 				if ( ImGui::Checkbox( "Active##FXAA", &activeFXAA ) )
 				{
 					p_renderer->setActiveFXAA( activeFXAA );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Pixelize" ) )
+			static bool isOpenPixelize;
+			if ( isOpenPixelize = ImGui::CollapsingHeader( "Pixelize" ) )
 			{
 				if ( ImGui::Checkbox( "Active##Pixelize", &activePixelize ) )
 				{
@@ -351,8 +351,6 @@ namespace VTX::Bench
 				setVSync( _vsync );
 			}
 			ImGui::End();
-
-			// ImGui::ShowDemoWindow();
 
 			// Render.
 			ImGui::Render();
