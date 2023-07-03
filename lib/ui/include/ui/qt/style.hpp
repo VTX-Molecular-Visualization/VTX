@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_QT_STYLE__
 #define __VTX_UI_QT_STYLE__
 
-#include "ui/id.hpp"
 #include "ui/qt/util.hpp"
 #include <QBitmap>
 #include <QChar>
@@ -11,11 +10,6 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
-#include <app/old/application/representation/enum_representation.hpp>
-#include <app/old/application/selection/enum_selection.hpp>
-#include <app/old/id.hpp>
-#include <app/old/util/label.hpp>
-#include <core/chemdb/category.hpp>
 #include <iostream>
 #include <string>
 #include <util/logger.hpp>
@@ -79,110 +73,6 @@ namespace VTX::UI::QT::Style
 		const QBitmap DIHEDRAL_ANGLE_RENDER_ICON_MASK;
 
 		const QPixmap TOOLTAB_SEPARATOR;
-
-		const QPixmap * const getWindowIcon( const App::Old::VTX_ID & p_id ) const
-		{
-			const QPixmap * res;
-
-			if ( p_id == UI::ID::Window::SCENE )
-				res = &SCENE_WINDOW_ICON;
-			else if ( p_id == UI::ID::Window::RENDER )
-				res = &RENDER_WINDOW_ICON;
-			else if ( p_id == UI::ID::Window::INSPECTOR )
-				res = &INSPECTOR_WINDOW_ICON;
-			else if ( p_id == UI::ID::Window::CONSOLE )
-				res = &CONSOLE_WINDOW_ICON;
-			else if ( p_id == UI::ID::Window::SETTINGS )
-				res = &SETTING_WINDOW_ICON;
-			// !V0.1
-			// else if ( p_id == UI::ID::Window::SELECTION )
-			//	res = &SELECTION_WINDOW_ICON;
-			else if ( p_id == UI::ID::Window::SEQUENCE )
-				res = &SEQUENCE_WINDOW_ICON;
-			else
-			{
-				VTX_WARNING( "Symbol for model {} not managed in IconConst::getModelSymbol.", p_id );
-				res = nullptr;
-			}
-
-			return res;
-		}
-
-		const QPixmap * const getModelSymbol( const App::Old::VTX_ID & p_id ) const
-		{
-			const QPixmap * res;
-
-			if ( p_id == App::Old::ID::Model::MODEL_MOLECULE )
-				res = &MOLECULE_SYMBOL;
-			else if ( p_id == App::Old::ID::Model::MODEL_CHAIN )
-				res = &CHAIN_SYMBOL;
-			else if ( p_id == App::Old::ID::Model::MODEL_RESIDUE )
-				res = &RESIDUE_SYMBOL;
-			else if ( p_id == App::Old::ID::Model::MODEL_ATOM )
-				res = &ATOM_SYMBOL;
-			else if ( p_id == App::Old::ID::Model::MODEL_PATH )
-				res = &VIEWPOINT_SYMBOL;
-			else if ( p_id == App::Old::ID::Model::MODEL_VIEWPOINT )
-				res = &VIEWPOINT_SYMBOL;
-			else if ( VTX::Util::App::Old::Label::isLabelType( p_id ) )
-			{
-				res = &LABEL_SYMBOL;
-			}
-			else
-			{
-				VTX_WARNING( "Symbol for model {} not managed in IconConst::getModelSymbol.", p_id );
-				res = nullptr;
-			}
-
-			return res;
-		};
-
-		const QPixmap * const getRepresentationIcon(
-			const App::Old::Application::Representation::REPRESENTATION_ENUM & p_representation ) const
-		{
-			const QPixmap * res;
-
-			switch ( p_representation )
-			{
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
-				res = &REPRESENTATION_BALL_AND_STICK_ICON;
-				break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
-				res = &REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
-				break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::CARTOON:
-				res = &REPRESENTATION_CARTOON_ICON;
-				break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::SAS: res = &REPRESENTATION_SAS_ICON; break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK: res = &REPRESENTATION_STICK_ICON; break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
-				res = &REPRESENTATION_STICK_AND_CARTOON_ICON;
-				break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::SES:
-				res = &REPRESENTATION_SES_ICON;
-				break;
-
-				// !V0.1
-				// case App::Old::Application::Representation::REPRESENTATION_ENUM::TRACE: res = &REPRESENTATION_TRACE_ICON;
-				// break;
-			case App::Old::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
-				res = &REPRESENTATION_VDW_ICON;
-				break;
-			default:
-
-				VTX_WARNING( "Representation {} not managed in IconConst::getRepresentationIcon.",
-							 int( p_representation ) );
-				res = &REPRESENTATION_STICK_ICON;
-				break;
-			}
-
-			return res;
-		}
-
-		const QPixmap * const getResidueCategorySymbol( const VTX::Core::ChemDB::Category::TYPE & p_category ) const
-		{
-			return &RESIDUE_CATEGORY_ICON;
-		}
 
 	  private:
 		IconConst() :

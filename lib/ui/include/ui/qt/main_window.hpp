@@ -5,10 +5,6 @@
 #include "ui/core/base_panel.hpp"
 #include "ui/core/define.hpp"
 #include "ui/core/layout_descriptor.hpp"
-#include "ui/id.hpp"
-#include "ui/old_ui/event/base_event_firerer_input.hpp"
-#include "ui/qt/contextual_menu.hpp"
-#include "ui/qt/cursor_handler.hpp"
 #include "ui/qt/qt_panel.hpp"
 #include "ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
@@ -18,8 +14,6 @@
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
-#include <app/old/id.hpp>
-#include <app/old/render/renderer/enum_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -30,10 +24,7 @@ namespace VTX::UI::QT
 		class RenderWidget;
 	}
 
-	class MainWindow :
-		public VTX::UI::QT::Widget::BaseManualWidget<QMainWindow>,
-		public VTX::UI::Core::BaseMainWindow,
-		public VTX::UI::Event::BaseEventFirererInput
+	class MainWindow : public VTX::UI::QT::Widget::BaseManualWidget<QMainWindow>, public VTX::UI::Core::BaseMainWindow
 	{
 		Q_OBJECT
 
@@ -52,11 +43,7 @@ namespace VTX::UI::QT
 		QT::Tool::Render::Widget::RenderWidget *			 getRender();
 		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
 
-		bool isOpenGLValid() const;
 		void updateRender() const;
-		void updateRenderSetting( const App::Old::Render::Renderer::RENDER_SETTING );
-
-		void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
@@ -75,24 +62,9 @@ namespace VTX::UI::QT
 			_shortcuts.emplace( p_shortcut );
 		}
 
-		const ContextualMenu & getContextualMenu() const { return *_contextualMenu; }
-		ContextualMenu &	   getContextualMenu() { return *_contextualMenu; }
-		CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
-
-		bool getWidgetVisibility( const App::Old::VTX_ID & p_winId ) const;
-		void showWidget( const App::Old::VTX_ID & p_winId, const bool p_show ) const;
-		void toggleWidget( const App::Old::VTX_ID & p_winId ) const;
-		// void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
-
 		Core::WindowMode getWindowMode();
 		void			 setWindowMode( const Core::WindowMode & p_mode );
 		void			 toggleWindowState();
-
-		bool hasValidLayoutSave() const;
-		void loadLastLayout();
-		void saveLayout() const;
-		void deleteLayoutSaveFile() const;
-		void restoreDefaultLayout();
 
 		void addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
 									  Qt::DockWidgetArea  p_area,
@@ -106,53 +78,16 @@ namespace VTX::UI::QT
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
-		QWidget & getWidget( const App::Old::VTX_ID & p_winId ) const;
-		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		W & getWidget( const App::Old::VTX_ID & p_winId ) const
-		{
-			return static_cast<W &>( getWidget( p_winId ) );
-		}
-
 		void appendStylesheet( const char * p_stylesheetPath );
-
-		const App::Old::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
 
 	  protected:
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void resizeEvent( QResizeEvent * ) override;
-		void showEvent( QShowEvent * ) override;
-		void dragEnterEvent( QDragEnterEvent * ) override;
-		void dropEvent( QDropEvent * ) override;
-		void closeEvent( QCloseEvent * ) override;
-		void changeEvent( QEvent * p_event ) override;
-
-		void keyPressEvent( QKeyEvent * const p_event ) override { _fireEventInput( p_event ); }
-		void keyReleaseEvent( QKeyEvent * const p_event ) override { _fireEventInput( p_event ); }
-
-		virtual bool eventFilter( QObject * const p_watched, QEvent * const p_event ) override;
-
 	  private:
 		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
 		std::unordered_set<std::string> _shortcuts = std::unordered_set<std::string>();
-
-		// Widget::Render::RenderWidget *			 _renderWidget		= nullptr;
-		// Widget::Scene::SceneWidget *			 _sceneWidget		= nullptr;
-		// Widget::Inspector::InspectorWidget *	 _inspectorWidget	= nullptr;
-		// Widget::Console::ConsoleWidget *		 _consoleWidget		= nullptr;
-		// Widget::Sequence::SequenceWidget *		 _sequenceWidget	= nullptr;
-		// Widget::Selection::SelectionWidget *	 _selectionWidget	= nullptr;
-		// Widget::Settings::SettingWidget *		 _settingWidget		= nullptr;
-		// Widget::Information::InformationWidget * _informationWidget = nullptr;
-
-		// Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget * _structuralAlignmentWidget = nullptr;
-
-		ContextualMenu * _contextualMenu = nullptr;
-		CursorHandler *	 _cursorHandler	 = nullptr;
-
-		// Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
 		// Actions.
 		void _onDockWindowVisibilityChange( bool p_visible );
@@ -161,21 +96,6 @@ namespace VTX::UI::QT
 
 		// Functions.
 		void _loadStyleSheet( const char * p_stylesheetPath );
-		void _restoreDockWidget( QDockWidget * const p_dockWidget );
-
-		// Shortcuts.
-		void _onShortcutFullscreen() const;
-		void _onShortcutClearSelection() const;
-		void _onShortcutRestoreLayout() const;
-		void _onShortcutCompileShaders() const;
-		void _onShortcutActiveRenderer() const;
-		void _onShortcutDelete() const;
-		void _onShortcutOrient() const;
-		void _onShortcutSelectAll() const;
-		void _onShortcutCopy() const;
-		void _onShortcutExtract() const;
-		void _onShortcutSetSelectionPicker() const;
-		void _onShortcutSetMeasurementPicker() const;
 
 		Core::WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 		std::string		 _getWindowTitle() const;

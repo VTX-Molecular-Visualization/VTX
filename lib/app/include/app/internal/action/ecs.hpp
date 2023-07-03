@@ -2,8 +2,6 @@
 #define __VTX_APP_INTERNAL_ACTION_ECS__
 
 #include "app/component/chemistry/molecule.hpp"
-#include "app/old/core/action/base_action.hpp"
-#include <core/old/struct/molecule.hpp>
 #include <map>
 #include <string>
 #include <util/types.hpp>
@@ -11,7 +9,7 @@
 
 namespace VTX::App::Internal::Action::ECS
 {
-	class Open : public App::Old::Core::Action::BaseAction
+	class Open // : public App::Old::Core::Action::BaseAction
 	{
 	  private:
 		// class LoadSceneClass
@@ -40,7 +38,8 @@ namespace VTX::App::Internal::Action::ECS
 		//	_paths.emplace_back( p_trajectoryPath );
 		// }
 
-		virtual void execute() override;
+		// virtual void execute() override;
+		void execute();
 
 	  private:
 		std::vector<FilePath>			  _paths = std::vector<FilePath>();

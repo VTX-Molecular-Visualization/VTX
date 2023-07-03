@@ -2,7 +2,6 @@
 #define __VTX_APP_COMPONENT_SCENE_AABB__
 
 #include "app/core/ecs/base_component.hpp"
-#include "app/old/internal/math/transform.hpp"
 #include <functional>
 #include <util/math/aabb.hpp>
 

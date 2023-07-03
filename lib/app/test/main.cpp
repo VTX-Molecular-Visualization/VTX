@@ -4,14 +4,13 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
 #include <app/internal/action/ecs.hpp>
-#include <app/old/action.hpp>
-#include <app/old/internal/io/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/old/struct/atom.hpp>
+// #include <core/old/struct/atom.hpp>
 #include <entt/entt.hpp>
 #include <functional>
+#include <io/internal/filesystem.hpp>
 #include <renderer/gl/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
@@ -30,108 +29,108 @@ void initApp()
 	}
 }
 
-TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
-{
-	// using entity_t = uint64_t;
-	// using registry_t = entt::basic_registry<entity_t>;
-	using entity_t	 = entt::entity;
-	using registry_t = entt::registry;
-
-	using Position = VTX::Vec3f;
-
-	const VTX::uint atomCount = 1000000;
-
-	BENCHMARK( "Populate registry" )
-	{
-		registry_t registry = registry_t();
-
-		for ( VTX::uint i = 0; i < atomCount; i++ )
-		{
-			const entity_t entity = registry.create();
-			registry.emplace<VTX::Core::Old::Struct::Atom>( entity );
-		}
-	};
-
-	registry_t		  registry	= registry_t();
-	entt::basic_group atomGroup = registry.group<VTX::Core::Old::Struct::Atom>( entt::get<Position> );
-
-	for ( VTX::uint i = 0; i < atomCount; i++ )
-	{
-		const entity_t entity = registry.create();
-		registry.emplace<VTX::Core::Old::Struct::Atom>( entity );
-	}
-
-	BENCHMARK( "Browse all atoms with view" )
-	{
-		auto view = registry.view<VTX::Core::Old::Struct::Atom>();
-		for ( entity_t entity : view )
-		{
-			VTX::Core::Old::Struct::Atom & atom			= registry.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
-			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
-
-			// VTX::Core::Old::Struct::setVisible( atom, true );
-		}
-	};
-
-	BENCHMARK( "Browse all atoms with group" )
-	{
-		auto tmpGroup = registry.group<VTX::Core::Old::Struct::Atom>( entt::get<Position> );
-		for ( entity_t entity : tmpGroup )
-		{
-			VTX::Core::Old::Struct::Atom & atom			= tmpGroup.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
-			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
-
-			// VTX::Core::Old::Struct::setVisible( atom, true );
-		}
-	};
-
-	BENCHMARK( "Browse all atoms with prepared group" )
-	{
-		for ( entity_t entity : atomGroup )
-		{
-			VTX::Core::Old::Struct::Atom & atom			= atomGroup.get<VTX::Core::Old::Struct::Atom>( entity );
-			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
-			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
-
-			// VTX::Core::Old::Struct::setVisible( atom, true );
-		}
-	};
-}
-
-TEST_CASE( "VTX_APP - Instantiations perfs", "[.] [perfs]" )
-{
-	const VTX::uint atomCount = 1000000;
-
-	BENCHMARK( "Populate vector" )
-	{
-		std::vector<VTX::Core::Old::Struct::Atom> atoms = std::vector<VTX::Core::Old::Struct::Atom>();
-		atoms.resize( atomCount );
-
-		for ( VTX::uint i = 0; i < atomCount; i++ )
-		{
-			atoms[ i ] = VTX::Core::Old::Struct::Atom();
-		}
-	};
-
-	std::vector<VTX::Core::Old::Struct::Atom> atoms = std::vector<VTX::Core::Old::Struct::Atom>();
-	atoms.resize( atomCount );
-
-	for ( int i = 0; i < atomCount; i++ )
-	{
-		atoms[ i ] = VTX::Core::Old::Struct::Atom();
-	}
-
-	BENCHMARK( "Browse all atoms" )
-	{
-		for ( VTX::uint i = 0; i < atomCount; i++ )
-		{
-			const int randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
-			atoms[ i ].setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
-		}
-	};
-}
+// TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
+//{
+//	// using entity_t = uint64_t;
+//	// using registry_t = entt::basic_registry<entity_t>;
+//	using entity_t	 = entt::entity;
+//	using registry_t = entt::registry;
+//
+//	using Position = VTX::Vec3f;
+//
+//	const VTX::uint atomCount = 1000000;
+//
+//	BENCHMARK( "Populate registry" )
+//	{
+//		registry_t registry = registry_t();
+//
+//		for ( VTX::uint i = 0; i < atomCount; i++ )
+//		{
+//			const entity_t entity = registry.create();
+//			registry.emplace<VTX::Core::Old::Struct::Atom>( entity );
+//		}
+//	};
+//
+//	registry_t		  registry	= registry_t();
+//	entt::basic_group atomGroup = registry.group<VTX::Core::Old::Struct::Atom>( entt::get<Position> );
+//
+//	for ( VTX::uint i = 0; i < atomCount; i++ )
+//	{
+//		const entity_t entity = registry.create();
+//		registry.emplace<VTX::Core::Old::Struct::Atom>( entity );
+//	}
+//
+//	BENCHMARK( "Browse all atoms with view" )
+//	{
+//		auto view = registry.view<VTX::Core::Old::Struct::Atom>();
+//		for ( entity_t entity : view )
+//		{
+//			VTX::Core::Old::Struct::Atom & atom			= registry.get<VTX::Core::Old::Struct::Atom>( entity );
+//			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+//			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
+//
+//			// VTX::Core::Old::Struct::setVisible( atom, true );
+//		}
+//	};
+//
+//	BENCHMARK( "Browse all atoms with group" )
+//	{
+//		auto tmpGroup = registry.group<VTX::Core::Old::Struct::Atom>( entt::get<Position> );
+//		for ( entity_t entity : tmpGroup )
+//		{
+//			VTX::Core::Old::Struct::Atom & atom			= tmpGroup.get<VTX::Core::Old::Struct::Atom>( entity );
+//			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+//			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
+//
+//			// VTX::Core::Old::Struct::setVisible( atom, true );
+//		}
+//	};
+//
+//	BENCHMARK( "Browse all atoms with prepared group" )
+//	{
+//		for ( entity_t entity : atomGroup )
+//		{
+//			VTX::Core::Old::Struct::Atom & atom			= atomGroup.get<VTX::Core::Old::Struct::Atom>( entity );
+//			const int					   randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+//			atom.setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
+//
+//			// VTX::Core::Old::Struct::setVisible( atom, true );
+//		}
+//	};
+// }
+//
+// TEST_CASE( "VTX_APP - Instantiations perfs", "[.] [perfs]" )
+//{
+//	const VTX::uint atomCount = 1000000;
+//
+//	BENCHMARK( "Populate vector" )
+//	{
+//		std::vector<VTX::Core::Old::Struct::Atom> atoms = std::vector<VTX::Core::Old::Struct::Atom>();
+//		atoms.resize( atomCount );
+//
+//		for ( VTX::uint i = 0; i < atomCount; i++ )
+//		{
+//			atoms[ i ] = VTX::Core::Old::Struct::Atom();
+//		}
+//	};
+//
+//	std::vector<VTX::Core::Old::Struct::Atom> atoms = std::vector<VTX::Core::Old::Struct::Atom>();
+//	atoms.resize( atomCount );
+//
+//	for ( int i = 0; i < atomCount; i++ )
+//	{
+//		atoms[ i ] = VTX::Core::Old::Struct::Atom();
+//	}
+//
+//	BENCHMARK( "Browse all atoms" )
+//	{
+//		for ( VTX::uint i = 0; i < atomCount; i++ )
+//		{
+//			const int randomSymbol = std::rand() % int( VTX::Core::ChemDB::Atom::SYMBOL::COUNT );
+//			atoms[ i ].setSymbol( VTX::Core::ChemDB::Atom::SYMBOL( randomSymbol ) );
+//		}
+//	};
+// }
 
 TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 {
@@ -158,8 +157,9 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
 
 	// Create MoleculeEntity
-	const FilePath moleculePath = Old::Internal::IO::Filesystem::getInternalDataDir() / moleculePathname;
-	VTX_ACTION<Internal::Action::ECS::Open>( moleculePath );
+	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
+	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );
 
@@ -208,9 +208,11 @@ TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
 	const Application::Scene & scene = VTXApp::get().getScene();
 
 	// Create MoleculeEntity
-	const FilePath moleculePath = Old::Internal::IO::Filesystem::getInternalDataDir() / moleculePathname;
+	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
 
-	BENCHMARK( "Open molecules" ) { VTX_ACTION<Internal::Action::ECS::Open>( moleculePath ); };
+	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
+
+	BENCHMARK( "Open molecules" ) { openAction.execute(); };
 
 	int i = 0;
 	BENCHMARK( "Get" )

@@ -1,16 +1,12 @@
 #ifndef __VTX_APP_COMPONENT_IO_SCENE_FILE_INFO__
 #define __VTX_APP_COMPONENT_IO_SCENE_FILE_INFO__
 
-// #include "app/old/component/chemistry/_fwd.hpp"
-#include "app/old/core/event/base_event_receiver_vtx.hpp"
-// #include "app/old/core/event/vtx_event.hpp"
-// #include "app/old/internal/io/writer/writer_chemfiles.hpp"
 // #include <map>
-// #include <util/types.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::IO
 {
-	class SceneFileInfo : public App::Old::Core::Event::BaseEventReceiverVTX
+	class SceneFileInfo // : public App::Old::Core::Event::BaseEventReceiverVTX
 	{
 	  public:
 		// Copy of function in VTXApp that must be here
@@ -72,11 +68,11 @@ namespace VTX::App::Component::IO
 		// void	   forceSceneModifications();
 		// void	   resetSceneModifications();
 
-		// private:
-		// FilePath													_currentFilePath = FilePath();
+	  private:
+		FilePath _currentFilePath = FilePath();
 		// std::map<const App::Component::Chemistry::Molecule *, Data> _mapMoleculePath;
-		// int															_sceneModificationsCount = 0;
-		// bool														_forceSceneModifications = false;
+		int	 _sceneModificationsCount = 0;
+		bool _forceSceneModifications = false;
 	};
 } // namespace VTX::App::Component::IO
 #endif

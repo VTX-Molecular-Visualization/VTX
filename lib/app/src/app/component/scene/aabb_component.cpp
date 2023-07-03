@@ -2,7 +2,7 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/old/internal/math/transform.hpp"
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Component::Scene
 {
@@ -19,13 +19,11 @@ namespace VTX::App::Component::Scene
 		{
 			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-			Old::Internal::Math::Transform transform;
-
 			if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
 			{
 				Component::Scene::Transform & transformComponent
 					= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
-				const Old::Internal::Math::Transform & transform = transformComponent.getTransform();
+				const Util::Math::Transform & transform = transformComponent.getTransform();
 
 				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();
 

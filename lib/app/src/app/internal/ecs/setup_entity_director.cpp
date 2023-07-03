@@ -1,6 +1,7 @@
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
+#include "app/entity/scene/camera_entity.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
 
 namespace VTX::App::Internal::ECS
@@ -13,6 +14,10 @@ namespace VTX::App::Internal::ECS
 		// Scene entity
 		EntityDirector::addBuildStep(
 			Entity::SCENE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Application::SceneEntityBuilder::addComponent );
+
+		// Camera entity
+		EntityDirector::addBuildStep(
+			Entity::CAMERA_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::CameraEntityBuilder::addComponent );
 
 		// Molecule entity
 		EntityDirector::addBuildStep(

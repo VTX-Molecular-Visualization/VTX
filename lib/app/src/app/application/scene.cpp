@@ -1,7 +1,10 @@
 #include "app/application/scene.hpp"
+#include "app/application/ecs/entity_director.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
-#include "app/old/internal/scene/camera_manager.hpp"
+#include "app/core/ecs/base_entity.hpp"
+#include "app/entity/all_entities.hpp"
 
 namespace VTX::App::Application
 {
@@ -12,7 +15,9 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		_cameraManager = std::make_unique<Old::Internal::Scene::CameraManager>();
+		App::Core::ECS::BaseEntity cameraEntity = ECS::EntityDirector::build( Entity::CAMERA_ENTITY_ID );
+		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+
 		_createDefaultPath();
 	}
 

@@ -35,13 +35,10 @@ namespace VTX::UI::QT
 		void stop() override;
 		void quit() override;
 
-		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
-		inline MainWindow &				   getMainWindow() { return *_mainWindow; }
-		inline const MainWindow &		   getMainWindow() const { return *_mainWindow; }
-		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }
-		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
+		inline MainWindow &		  getMainWindow() { return *_mainWindow; }
+		inline const MainWindow & getMainWindow() const { return *_mainWindow; }
 
 		bool notify( QObject * const, QEvent * const ) override;
 
@@ -54,8 +51,6 @@ namespace VTX::UI::QT
 
 	  private:
 		MainWindow * _mainWindow = nullptr;
-
-		State::StateMachine * _stateMachine = nullptr;
 
 		QTimer *	  _timer		= nullptr;
 		QElapsedTimer _elapsedTimer = QElapsedTimer();
