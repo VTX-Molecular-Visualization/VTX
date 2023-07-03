@@ -123,8 +123,8 @@ namespace VTX::IO::Reader
 
 		Vec3f getCurrentAtomPosition() const;
 
-		const std::string &		   getCurrentAtomName() const { return _currentAtom->name(); }
-		Core::ChemDB::Atom::SYMBOL getCurrentAtomSymbol() const;
+		const std::string &				getCurrentAtomName() const { return _currentAtom->name(); }
+		VTX::Core::ChemDB::Atom::SYMBOL getCurrentAtomSymbol() const;
 		int getCurrentAtomType() const { return int( getCurrentAtomProperty<double>( "atom_type", -1. ) ); }
 
 		// Bonds
@@ -134,12 +134,12 @@ namespace VTX::IO::Reader
 			_currentBondIndex = p_bondIndex;
 		}
 
-		size_t							getCurrentBondFirstAtomIndex() const { return ( *_currentBond )[ 0 ]; }
-		size_t							getCurrentBondSecondAtomIndex() const { return ( *_currentBond )[ 1 ]; }
-		const Core::ChemDB::Bond::ORDER getCurrentBondOrder()
+		size_t								 getCurrentBondFirstAtomIndex() const { return ( *_currentBond )[ 0 ]; }
+		size_t								 getCurrentBondSecondAtomIndex() const { return ( *_currentBond )[ 1 ]; }
+		const VTX::Core::ChemDB::Bond::ORDER getCurrentBondOrder()
 		{
 			const chemfiles::Bond::BondOrder & bondOrder = _topology.bond_orders()[ _currentBondIndex ];
-			return Core::ChemDB::Bond::ORDER( int( bondOrder ) );
+			return VTX::Core::ChemDB::Bond::ORDER( int( bondOrder ) );
 		}
 
 	  protected:

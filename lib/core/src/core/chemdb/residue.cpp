@@ -25,4 +25,17 @@ namespace VTX::Core::ChemDB::Residue
 
 		return symbol.value_or( SYMBOL::UNKNOWN );
 	}
+
+	bool checkIfStandardFromName( const std::string & p_residueSymbol )
+	{
+		std::string residueSymbol = p_residueSymbol;
+		std::transform( residueSymbol.begin(),
+						residueSymbol.end(),
+						residueSymbol.begin(),
+						[]( unsigned char c ) { return std::toupper( c ); } );
+
+		return std::find(
+				   std::begin( ChemDB::Residue::SYMBOL_STR ), std::end( ChemDB::Residue::SYMBOL_STR ), residueSymbol )
+			   != std::end( ChemDB::Residue::SYMBOL_STR );
+	}
 } // namespace VTX::Core::ChemDB::Residue

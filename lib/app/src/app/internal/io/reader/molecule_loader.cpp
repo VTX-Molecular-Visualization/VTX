@@ -6,13 +6,12 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/old/application/setting.hpp"
 #include "app/old/core/worker/base_thread.hpp"
-#include "app/old/internal/algorithm/bond_order_guessing.hpp"
-#include "app/old/internal/chemfiles/util.hpp"
 #include "app/old/util/molecule.hpp"
 #include <algorithm>
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/struct/trajectory.hpp>
+#include <io/util/chemfiles.hpp>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
@@ -467,21 +466,6 @@ namespace VTX::App::Internal::IO::Reader
 			VTX_DEBUG( "recomputeBonds : {}", bondComputationChrono.elapsedTimeStr() );
 		}
 
-		if ( VTX::App::Old::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
-		{
-			bondComputationChrono.start();
-			const bool allBondsRecomputed = Old::Internal::Chemfiles::Util::recomputeBondOrdersFromFile( frame );
-
-			if ( !allBondsRecomputed )
-			{
-				VTX_DEBUG( "recomputeBondOrders with algorithm." );
-				Old::Internal::Chemfiles::Util::recomputeBondOrders( frame );
-			}
-
-			bondComputationChrono.stop();
-			VTX_DEBUG( "recomputeBondOrders : {}", bondComputationChrono.elapsedTimeStr() );
-		}
-
 		// Bonds.
 		// Sort by residus.
 		// Map with residue index to keep the order.
@@ -558,19 +542,16 @@ namespace VTX::App::Internal::IO::Reader
 			}
 		}
 
-		// if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
-		//{
-		//	bondComputationChrono.start();
-		//	const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
+		// bondComputationChrono.start();
+		// const bool allBondsRecomputed = Util::App::Old::Molecule::recomputeBondOrdersFromFile( p_molecule );
 
-		//	if ( !allBondsRecomputed )
-		//	{
-		//		VTX_INFO( "recomputeBondOrders with algorithm." );
-		//		Util::App::Molecule::recomputeBondOrders( p_molecule );
-		//	}
-		//	bondComputationChrono.stop();
-		//	VTX_INFO( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
-		//}
+		// if ( !allBondsRecomputed )
+		//{
+		//	VTX_INFO( "recomputeBondOrders with algorithm." );
+		//	Util::App::Molecule::recomputeBondOrders( p_molecule );
+		// }
+		// bondComputationChrono.stop();
+		// VTX_INFO( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
 
 		assert( counter == counterOld );
 	}

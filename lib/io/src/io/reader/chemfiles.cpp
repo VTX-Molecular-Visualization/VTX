@@ -184,7 +184,7 @@ namespace VTX::IO::Reader
 		return res;
 	}
 
-	Core::ChemDB::Atom::SYMBOL Chemfiles::getCurrentAtomSymbol() const
+	VTX::Core::ChemDB::Atom::SYMBOL Chemfiles::getCurrentAtomSymbol() const
 	{
 		return VTX::Core::ChemDB::Atom::getSymbolFromString( _currentAtom->type() );
 	}

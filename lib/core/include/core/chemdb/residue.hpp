@@ -232,6 +232,8 @@ namespace VTX::Core::ChemDB::Residue
 
 	const SYMBOL getSymbolFromName( const std::string & p_residueName );
 
+	bool checkIfStandardFromName( const std::string & p_residueSymbol );
+
 } // namespace VTX::Core::ChemDB::Residue
 
 #endif
