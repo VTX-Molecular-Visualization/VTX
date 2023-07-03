@@ -50,11 +50,11 @@ target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2main)
 # Link VTX_RENDERER.
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
 
-# Link VTX_CORE.
-if(NOT TARGET VTX_CORE)
-	add_subdirectory(../core lib/core)
+# Link VTX_IO.
+if(NOT TARGET VTX_IO)
+	add_subdirectory(../io lib/io)
 endif()
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_CORE)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_IO)
 
 # Copy DLLs.
 add_custom_command(TARGET VTX_RENDERER_BENCH POST_BUILD

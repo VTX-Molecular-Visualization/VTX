@@ -20,7 +20,7 @@ namespace VTX::Util::Math
 		void invalidate()
 		{
 			data.minMax.min = VEC3F_MAX;
-			data.minMax.max = VEC3F_MIN;
+			data.minMax.max = VEC3F_LOWEST;
 		}
 
 		bool isValid() const
@@ -103,7 +103,7 @@ namespace VTX::Util::Math
 				Vec3f min;
 				Vec3f max;
 			} minMax;
-			Vec3f limits[ 2 ] = { VEC3F_MAX, VEC3F_MIN };
+			Vec3f limits[ 2 ] = { VEC3F_MAX, VEC3F_LOWEST };
 		} data;
 
 	  private:

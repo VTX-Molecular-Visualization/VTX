@@ -72,12 +72,6 @@ int main( int, char ** )
 		while ( isRunning )
 		{
 			float time = float( ui.getTime() ) * 1e-3f;
-			//
-			// 			// TODO: move in a dedicated SSBO.
-			// 			Mat4f modelMatrix = Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
-			// 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
-			// 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
-			// 			renderer.setMatrixModelTmp( modelMatrix );
 
 			// Renderer.
 			renderer.renderFrame();

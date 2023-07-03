@@ -204,12 +204,15 @@ namespace VTX::Bench
 				{
 					p_renderer->setShadingMode( shadingMode );
 				}
-				if ( ImGui::SliderFloat( "Specular factor",
-										 &specularFactor,
-										 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
-										 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX ) )
+				if ( shadingMode == Renderer::GL::ENUM_SHADING::GLOSSY )
 				{
-					p_renderer->setSpecularFactor( specularFactor );
+					if ( ImGui::SliderFloat( "Specular factor",
+											 &specularFactor,
+											 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
+											 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX ) )
+					{
+						p_renderer->setSpecularFactor( specularFactor );
+					}
 				}
 				if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
 				{
