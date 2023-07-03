@@ -25,13 +25,13 @@ target_include_directories(VTX_IO PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
-target_link_libraries(VTX_IO PUBLIC VTX_UTIL)
+target_link_libraries(VTX_IO PRIVATE VTX_UTIL)
 
 # Link VTX_CORE.
 if(NOT TARGET VTX_CORE)
 	add_subdirectory(../core lib/core)
 endif()
-target_link_libraries(VTX_IO PUBLIC VTX_CORE)
+target_link_libraries(VTX_IO PRIVATE VTX_CORE)
 
 # Link third parties.
 target_link_libraries(VTX_IO PUBLIC chemfiles)

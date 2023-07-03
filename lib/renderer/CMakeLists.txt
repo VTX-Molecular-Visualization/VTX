@@ -2,6 +2,10 @@ message("VTX_RENDERER")
 cmake_minimum_required(VERSION 3.21)
 project(VTX_RENDERER)
 
+# Git dependencies.
+set(GIT_URL_SDL https://github.com/libsdl-org/SDL.git)
+set(GIT_TAG_SDL release-2.26.5)
+
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -14,7 +18,7 @@ target_include_directories(VTX_RENDERER PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
-target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
+target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
 
 # TEST
 #FetchContent_Declare(rps  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders.git GIT_TAG main)
@@ -31,9 +35,6 @@ add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy
 add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 
 # Benchmark.
-set(GIT_URL_SDL https://github.com/libsdl-org/SDL.git)
-set(GIT_TAG_SDL release-2.26.5)
-
 FetchContent_Declare(SDL2 GIT_REPOSITORY ${GIT_URL_SDL} GIT_TAG ${GIT_TAG_SDL})
 FetchContent_MakeAvailable(SDL2)
 
@@ -43,18 +44,21 @@ target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE ${SDL2_SOURCE_DIR}/include)
 
-# Link third parties.
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2)
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2main)
-
-# Link VTX_RENDERER.
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
-
-# Link VTX_IO.
+# Link VTX modules.
+if(NOT TARGET VTX_CORE)
+	add_subdirectory(../io lib/core)
+endif()
 if(NOT TARGET VTX_IO)
 	add_subdirectory(../io lib/io)
 endif()
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_UTIL)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_CORE)
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_IO)
+
+# Link third parties.
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2main)
 
 # Copy DLLs.
 add_custom_command(TARGET VTX_RENDERER_BENCH POST_BUILD

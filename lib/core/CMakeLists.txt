@@ -2,6 +2,7 @@ message("VTX_CORE")
 cmake_minimum_required(VERSION 3.20)
 project(VTX_CORE)
 
+# Git dependencies.
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM v0.8.2)
 

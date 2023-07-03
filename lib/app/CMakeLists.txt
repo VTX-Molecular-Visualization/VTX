@@ -24,26 +24,23 @@ file(GLOB_RECURSE SOURCES src/*)
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
 target_include_directories(VTX_APP PUBLIC include)
 
-# Link VTX_UTIL.
+# Link VTX modules.
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
-target_link_libraries(VTX_APP PUBLIC VTX_UTIL)
-
-# Link VTX_IO.
-add_subdirectory(../io lib/io)
-target_link_libraries(VTX_APP PUBLIC VTX_IO)
-
-# Link VTX_RENDERER.
-add_subdirectory(../renderer lib/renderer)
-target_link_libraries(VTX_APP PUBLIC VTX_RENDERER)
-
+if(NOT TARGET VTX_IO)
+	add_subdirectory(../io lib/io)
+endif()
+if(NOT TARGET VTX_RENDERER)
+	add_subdirectory(../renderer lib/renderer)
+endif()
+target_link_libraries(VTX_APP PRIVATE VTX_UTIL)
+target_link_libraries(VTX_APP PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_APP PRIVATE VTX_IO)
 
 # Link third parties.
-target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
-target_link_libraries(VTX_APP PUBLIC nlohmann_json::nlohmann_json)
-
-
+target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
+target_link_libraries(VTX_APP PRIVATE nlohmann_json::nlohmann_json)
 
 # Test.
 include(CTest)
