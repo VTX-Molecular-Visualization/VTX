@@ -40,6 +40,13 @@ namespace VTX::Core::Struct
 		std::vector<C *> &		 getChains() { return _chains; }
 		const std::vector<C *> & getChains() const { return _chains; }
 		size_t					 getChainCount() const { return _chains.size(); }
+		C * const				 appendNewChain()
+		{
+			C * const res = new C( this, _chains.size() );
+			_chains.emplace_back( res );
+
+			return res;
+		}
 
 		void initResidues( const size_t p_residueCount )
 		{
@@ -80,6 +87,8 @@ namespace VTX::Core::Struct
 		{
 			return *( _categories[ int( p_categoryEnum ) ] );
 		}
+
+		Trajectory & getTrajectory() { return _trajectory; }
 
 	  protected:
 		// Logic

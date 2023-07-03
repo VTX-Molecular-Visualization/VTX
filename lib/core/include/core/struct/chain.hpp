@@ -3,7 +3,6 @@
 
 #include "concept.hpp"
 #include "core/define.hpp"
-#include "define.hpp"
 #include <string>
 
 namespace VTX::Core::Struct

@@ -6,13 +6,12 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/old/application/setting.hpp"
 #include "app/old/core/worker/base_thread.hpp"
-#include "app/old/internal/algorithm/bond_order_guessing.hpp"
-#include "app/old/internal/chemfiles/util.hpp"
 #include "app/old/util/molecule.hpp"
 #include <algorithm>
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/struct/trajectory.hpp>
+#include <io/util/chemfiles.hpp>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
@@ -26,27 +25,20 @@ namespace VTX::App::Internal::IO::Reader
 
 	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
 	{
-		Util::Chrono chrono = Util::Chrono();
-		chrono.start();
+		std::unique_ptr<VTX::IO::Reader::Chemfiles> chemfilesReader = VTX::IO::Reader::Chemfiles::readFile( p_path );
 
-		chemfiles::warning_callback_t callback = [ & ]( const std::string & p_log ) { _warningCallback( p_log ); };
-		chemfiles::set_warning_callback( callback );
-
-		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
-		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
-		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
-
-		chrono.stop();
-		VTX_INFO( "readFile : {}", chrono.elapsedTimeStr() );
+		const bool recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
+		_fillStructure( *chemfilesReader, p_molecule, recomputeBonds );
 	}
 
 	void MoleculeLoader::readBuffer( const std::string &				   p_buffer,
 									 const FilePath &					   p_path,
 									 App::Component::Chemistry::Molecule & p_molecule )
 	{
-		chemfiles::Trajectory trajectory
-			= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), _getFormat( p_path ) );
-		_readTrajectory( trajectory, p_path, p_molecule );
+		std::unique_ptr<VTX::IO::Reader::Chemfiles> chemfilesReader
+			= VTX::IO::Reader::Chemfiles::readBuffer( p_buffer, p_path );
+
+		_fillStructure( *chemfilesReader, p_molecule );
 	}
 
 	std::vector<Vec3f> MoleculeLoader::readTrajectoryFrame( chemfiles::Trajectory & p_trajectory )
@@ -130,76 +122,16 @@ namespace VTX::App::Internal::IO::Reader
 		}
 	}
 
-	void MoleculeLoader::_readTrajectory( chemfiles::Trajectory &				p_trajectory,
-										  const FilePath &						p_path,
-										  App::Component::Chemistry::Molecule & p_molecule,
-										  const bool							p_recomputeBonds )
+	void MoleculeLoader::_fillStructure( VTX::IO::Reader::Chemfiles &		   p_chemfilesReader,
+										 App::Component::Chemistry::Molecule & p_molecule,
+										 const bool							   p_recomputeBonds )
 	{
-		VTX_INFO( "{} frames found.", p_trajectory.nsteps() );
-
-		if ( p_trajectory.nsteps() == 0 )
-		{
-			throw IOException( "Trajectory is empty" );
-		}
-
-		// If opening a DCD file check if a topology file is present in the same folder.
-		if ( p_path.extension() == "dcd" )
-		{
-			const std::string			   stem			  = p_path.stem().string();
-			const std::vector<std::string> topExtensions  = { ".xyz", ".pdb", ".mol2" };
-			std::string					   foundExtension = "";
-			for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
-			{
-				std::fstream topFile;
-				topFile.open( stem + topExtensions[ ext ] );
-				if ( topFile.is_open() )
-				{
-					topFile.close();
-					foundExtension = topExtensions[ ext ];
-					break;
-				}
-			}
-			if ( foundExtension != "" )
-			{
-				chemfiles::Trajectory topolgy_file( stem + foundExtension, 'r' );
-				p_trajectory.set_topology( stem + foundExtension );
-			}
-		}
-
-		Util::Chrono chrono;
-		chrono.start();
-		chemfiles::Frame frame = p_trajectory.read();
-		chrono.stop();
-
-		VTX_INFO( "Trajectory read in: {}", chrono.elapsedTimeStr() );
-
-		const chemfiles::Topology &				topology = frame.topology();
-		const std::vector<chemfiles::Residue> & residues = topology.residues();
-		const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
-
-		// Reset metadata
-		_metaData	   = Component::IO::MoleculeMetadata();
-		_metaData.path = p_path;
-		// App::Component::IO::MoleculeConfiguration & config	 = p_molecule.getConfiguration();
-		// p_molecule.setPath( p_path );
-
-		if ( topology.residues().size() == 0 )
-		{
-			// If no residue, create a fake one.
-			// TODO: check file format instead of residue count?
-			VTX_INFO( "No residues found" );
-			chemfiles::Residue residue = chemfiles::Residue( "UNK", 0 );
-			for ( size_t i = 0; i < frame.size(); ++i )
-			{
-				residue.add_atom( i );
-			}
-			frame.add_residue( residue );
-		}
-
-		if ( frame.size() != topology.size() )
-		{
-			throw IOException( "Data count missmatch" );
-		}
+		const FilePath &						path	   = p_chemfilesReader.getPath();
+		chemfiles::Trajectory &					trajectory = p_chemfilesReader.getTrajectory();
+		chemfiles::Frame &						frame	   = p_chemfilesReader.getCurrentFrame();
+		chemfiles::Topology						topology   = frame.topology();
+		const std::vector<chemfiles::Residue> & residues   = topology.residues();
+		const std::vector<chemfiles::Bond> &	bonds	   = topology.bonds();
 
 		// Set molecule properties.
 		if ( frame.get( "name" ) )
@@ -210,51 +142,12 @@ namespace VTX::App::Internal::IO::Reader
 		{
 			p_molecule.setPdbIdCode( frame.get( "pdb_idcode" )->as_string() );
 		}
+
 		// Initialized in Molecule model
 		// p_molecule.setColor( Util::Color::Rgba::randomPastel() );
 
-		// Check properties, same for all atoms/residues?
-		if ( frame.size() > 0 )
-		{
-			std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
-			for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties().begin();
-				  it != frame[ 0 ].properties().end();
-				  ++it )
-			{
-				propAtom += " " + it->first;
-			}
-			VTX_DEBUG( "{}", propAtom );
-		}
-
-		if ( residues.size() > 0 )
-		{
-			std::string propResidue = std::to_string( residues[ 0 ].properties().size() ) + " properties in residues:";
-			for ( chemfiles::property_map::const_iterator it = residues[ 0 ].properties().begin();
-				  it != residues[ 0 ].properties().end();
-				  ++it )
-			{
-				propResidue += " " + it->first;
-			}
-			VTX_DEBUG( "{}", propResidue );
-		}
-
-		// If no residue, create a fake one.
-		// TODO: check file format instead of residue count?
-		bool hasTopology = true;
-		if ( residues.size() == 0 )
-		{
-			hasTopology = false;
-			VTX_INFO( "No residues found" );
-			chemfiles::Residue residue = chemfiles::Residue( "UNK" );
-			for ( size_t i = 0; i < frame.size(); ++i )
-			{
-				residue.add_atom( i );
-			}
-			frame.add_residue( residue );
-		}
-
 		// Create models.
-		p_molecule.getTrajectory().frames.resize( p_trajectory.nsteps() );
+		p_molecule.getTrajectory().frames.resize( trajectory.nsteps() );
 		p_molecule.initResidues( topology.residues().size() );
 		p_molecule.initAtoms( frame.size() );
 		// p_molecule.resizeBuffers();
@@ -384,7 +277,7 @@ namespace VTX::App::Internal::IO::Reader
 
 			// PDB only.
 			// TODO: modify chemfiles to load handedness!
-			if ( p_path.extension() == "pdb" )
+			if ( path.extension() == "pdb" )
 			{
 				std::string secondaryStructure
 					= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
@@ -481,8 +374,6 @@ namespace VTX::App::Internal::IO::Reader
 								atomSymbol.begin(),
 								[]( unsigned char c ) { return std::toupper( c ); } );
 
-				// VTX_INFO( atom.name() + " " + atom.type() );
-
 				const std::optional symbol = magic_enum::enum_cast<ChemDB::Atom::SYMBOL>( "A_" + atomSymbol );
 
 				// Manage unknown value in App::ChemDB::Residue and App::ChemDB::Atom
@@ -490,8 +381,6 @@ namespace VTX::App::Internal::IO::Reader
 				//				   : p_molecule.addUnknownAtomSymbol( atom.type() );
 				if ( symbol.has_value() )
 					modelAtom->setSymbol( symbol.value() );
-
-				modelAtom->setName( atom.name() );
 
 				const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 				const chemfiles::Vector3D &					 position  = positions[ atomId ];
@@ -557,14 +446,14 @@ namespace VTX::App::Internal::IO::Reader
 			modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 		}
 
-		if ( p_trajectory.nsteps() > 1 )
+		if ( trajectory.nsteps() > 1 )
 		{
 			// TODO: launch the filling of trajectory frames in another thread
 			// std::thread fillFrames(
-			//	&MoleculeLoader::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
+			//	&MoleculeLoader::fillTrajectoryFrames, this, std::ref( trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
 			std::pair<App::Component::Chemistry::Molecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
-			_readTrajectoryFrames( p_trajectory, { pairMoleculeFirstFrame }, 1 );
+			_readTrajectoryFrames( trajectory, { pairMoleculeFirstFrame }, 1 );
 		}
 
 		Util::Chrono bondComputationChrono = Util::Chrono();
@@ -575,21 +464,6 @@ namespace VTX::App::Internal::IO::Reader
 			// Internal::Chemfiles::Util::recomputeBonds( frame, p_molecule.getAABB() );
 			bondComputationChrono.stop();
 			VTX_DEBUG( "recomputeBonds : {}", bondComputationChrono.elapsedTimeStr() );
-		}
-
-		if ( VTX::App::Old::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
-		{
-			bondComputationChrono.start();
-			const bool allBondsRecomputed = Old::Internal::Chemfiles::Util::recomputeBondOrdersFromFile( frame );
-
-			if ( !allBondsRecomputed )
-			{
-				VTX_DEBUG( "recomputeBondOrders with algorithm." );
-				Old::Internal::Chemfiles::Util::recomputeBondOrders( frame );
-			}
-
-			bondComputationChrono.stop();
-			VTX_DEBUG( "recomputeBondOrders : {}", bondComputationChrono.elapsedTimeStr() );
 		}
 
 		// Bonds.
@@ -668,19 +542,16 @@ namespace VTX::App::Internal::IO::Reader
 			}
 		}
 
-		// if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
-		//{
-		//	bondComputationChrono.start();
-		//	const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
+		// bondComputationChrono.start();
+		// const bool allBondsRecomputed = Util::App::Old::Molecule::recomputeBondOrdersFromFile( p_molecule );
 
-		//	if ( !allBondsRecomputed )
-		//	{
-		//		VTX_INFO( "recomputeBondOrders with algorithm." );
-		//		Util::App::Molecule::recomputeBondOrders( p_molecule );
-		//	}
-		//	bondComputationChrono.stop();
-		//	VTX_INFO( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
-		//}
+		// if ( !allBondsRecomputed )
+		//{
+		//	VTX_INFO( "recomputeBondOrders with algorithm." );
+		//	Util::App::Molecule::recomputeBondOrders( p_molecule );
+		// }
+		// bondComputationChrono.stop();
+		// VTX_INFO( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
 
 		assert( counter == counterOld );
 	}

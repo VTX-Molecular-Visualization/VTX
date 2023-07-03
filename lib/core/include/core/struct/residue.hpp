@@ -4,7 +4,6 @@
 #include "_fwd.hpp"
 #include "core/chemdb/residue.hpp"
 #include "core/define.hpp"
-#include "define.hpp"
 
 namespace VTX::Core::Struct
 {

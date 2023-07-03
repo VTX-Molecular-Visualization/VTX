@@ -4,6 +4,7 @@
 #include "_fwd.hpp"
 #include "core/chemdb/bond.hpp"
 #include "core/define.hpp"
+#include <util/exceptions.hpp>
 
 namespace VTX::Core::Struct
 {
@@ -27,6 +28,19 @@ namespace VTX::Core::Struct
 
 		ChemDB::Bond::ORDER getOrder() const { return _order; };
 		void				setOrder( const ChemDB::Bond::ORDER p_order ) { _order = p_order; };
+
+		size_t getIndexFirstAtom() const
+		{ /*throw NotImplementedException();*/
+		}
+		void setIndexFirstAtom( const size_t p_atomIndex )
+		{ /*throw NotImplementedException();*/
+		}
+		size_t getIndexSecondAtom() const
+		{ /*throw NotImplementedException();*/
+		}
+		void setIndexSecondAtom( const size_t p_atomIndex )
+		{ /*throw NotImplementedException();*/
+		}
 
 	  protected:
 		size_t _internalIndex = INVALID_INDEX;

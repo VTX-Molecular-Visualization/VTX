@@ -19,7 +19,7 @@ namespace VTX::App::Old::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		inline VTX::Core::Old::Struct::Atom &	   getAtomStruct() { return *_atomStruct; }
+		inline VTX::Core::Old::Struct::Atom &		getAtomStruct() { return *_atomStruct; }
 		inline const VTX::Core::Old::Struct::Atom & getAtomStruct() const { return *_atomStruct; }
 
 		inline const uint	   getIndex() const { return _atomStruct->getIndex(); };
@@ -46,8 +46,8 @@ namespace VTX::App::Old::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
-		const Vec3f &								 getLocalPosition() const;
-		const Vec3f									 getWorldPosition() const;
+		const Vec3f &									  getLocalPosition() const;
+		const Vec3f										  getWorldPosition() const;
 		const App::Old::Component::Object3D::Helper::AABB getAABB() const;
 		const App::Old::Component::Object3D::Helper::AABB getWorldAABB() const;
 
@@ -56,7 +56,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 	  private:
 		VTX::Core::Old::Struct::Atom * _atomStruct = nullptr;
-		Residue *				  _residuePtr = nullptr;
+		Residue *					   _residuePtr = nullptr;
 	};
 
 } // namespace VTX::App::Old::Component::Chemistry
