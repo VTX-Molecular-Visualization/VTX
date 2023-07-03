@@ -2,22 +2,6 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	const Util::Color::Rgba Shading::COLOR_BACKGROUND_DEFAULT = Util::Color::Rgba::BLACK;
-	const Util::Color::Rgba Shading::COLOR_LIGHT_DEFAULT	  = Util::Color::Rgba::WHITE;
-	const Util::Color::Rgba Shading::COLOR_FOG_DEFAULT		  = Util::Color::Rgba::WHITE;
-	const ENUM_SHADING		Shading::SHADING_MODE_DEFAULT	  = ENUM_SHADING::DIFFUSE;
-	const float				Shading::SPECULAR_FACTOR_DEFAULT  = 0.4f;
-	const float				Shading::SPECULAR_FACTOR_MIN	  = 0.f;
-	const float				Shading::SPECULAR_FACTOR_MAX	  = 1.f;
-	const float				Shading::FOG_NEAR_DEFAULT		  = 30;
-	const float				Shading::FOG_NEAR_MIN			  = 0.f;
-	const float				Shading::FOG_NEAR_MAX			  = 1000.f;
-	const float				Shading::FOG_FAR_DEFAULT		  = 80.f;
-	const float				Shading::FOG_FAR_MIN			  = 0.f;
-	const float				Shading::FOG_FAR_MAX			  = 1000.f;
-	const float				Shading::FOG_DENSITY_DEFAULT	  = 0.f;
-	const float				Shading::FOG_DENSITY_MIN		  = 0.f;
-	const float				Shading::FOG_DENSITY_MAX		  = 1.f;
 
 	Shading::Shading( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{

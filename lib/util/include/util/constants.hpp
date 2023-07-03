@@ -1,8 +1,9 @@
 #ifndef __VTX_UTIL_CONSTANTS__
 #define __VTX_UTIL_CONSTANTS__
 
+#include "util/color/rgba.hpp"
+#include "util/types.hpp"
 #include <limits>
-#include <util/types.hpp>
 
 namespace VTX
 {
@@ -41,6 +42,16 @@ namespace VTX
 	constexpr float TWO_PIf	 = glm::two_pi<float>();
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
+
+	const Util::Color::Rgba COLOR_BLACK	  = Util::Color::Rgba( 0.f, 0.f, 0.f, 1.f );
+	const Util::Color::Rgba COLOR_WHITE	  = Util::Color::Rgba( 1.f, 1.f, 1.f, 1.f );
+	const Util::Color::Rgba COLOR_GREY	  = Util::Color::Rgba( 0.5f, 0.5f, 0.5f, 1.f );
+	const Util::Color::Rgba COLOR_RED	  = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
+	const Util::Color::Rgba COLOR_GREEN	  = Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f );
+	const Util::Color::Rgba COLOR_BLUE	  = Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f );
+	const Util::Color::Rgba COLOR_YELLOW  = Util::Color::Rgba( 1.f, 1.f, 0.f, 1.f );
+	const Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
+	const Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
 
 	constexpr uint INVALID_ID = UNSIGNED_INT_MAX;
 

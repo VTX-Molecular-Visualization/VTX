@@ -12,10 +12,6 @@ namespace VTX::Renderer::GL::Pass
 	class SSAO
 	{
 	  public:
-		static const float AO_INTENSITY_DEFAULT;
-		static const float AO_INTENSITY_MIN;
-		static const float AO_INTENSITY_MAX;
-
 		SSAO( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		void resize( const size_t p_width, const size_t p_height );
 		void render( VertexArray & p_vao );
@@ -42,6 +38,10 @@ namespace VTX::Renderer::GL::Pass
 			uint32_t kernelSize		  = 16;
 			uint32_t noiseTextureSize = 64;
 		} uniforms;
+
+		inline static const float AO_INTENSITY_DEFAULT = 5.f;
+		inline static const float AO_INTENSITY_MIN	   = 1.f;
+		inline static const float AO_INTENSITY_MAX	   = 20.f;
 
 	  private:
 		std::unique_ptr<Buffer>	   _ubo;

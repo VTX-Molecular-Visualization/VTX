@@ -36,7 +36,7 @@ namespace VTX::Renderer::GL::Pass
 			Util::Color::Rgba color = COLOR_SELECTION_DEFAULT;
 		} uniforms;
 
-		inline static const Util::Color::Rgba COLOR_SELECTION_DEFAULT = Util::Color::Rgba::WHITE;
+		inline static const Util::Color::Rgba COLOR_SELECTION_DEFAULT = COLOR_WHITE;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;

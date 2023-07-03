@@ -40,7 +40,7 @@ namespace VTX::Renderer::GL::Pass
 
 		} uniforms;
 
-		inline static const Util::Color::Rgba OUTLINE_COLOR_DEFAULT		= Util::Color::Rgba::WHITE;
+		inline static const Util::Color::Rgba OUTLINE_COLOR_DEFAULT		= COLOR_WHITE;
 		inline static const float			  OUTLINE_SENSIVITY_DEFAULT = 0.4f;
 		inline static const float			  OUTLINE_SENSIVITY_MIN		= 0.01f;
 		inline static const float			  OUTLINE_SENSIVITY_MAX		= 1.f;

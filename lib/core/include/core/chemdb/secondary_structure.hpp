@@ -1,7 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_SECONDARY_STRUCTURE__
 #define __VTX_CORE_CHEMDB_SECONDARY_STRUCTURE__
 
-#include <util/color/rgba.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::Core::ChemDB::SecondaryStructure
 {
@@ -25,7 +25,7 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 															Util::Color::Rgba( 0.37f, 0.f, 0.5f ), // HELIX_PI
 															Util::Color::Rgba( 1.f, 0.78f, 0.f ),  // STRAND
 															Util::Color::Rgba( 0.37f, 0.5f, 1.f ), // TURN
-															Util::Color::Rgba::WHITE };			   // COIL
+															COLOR_WHITE };						   // COIL
 } // namespace VTX::Core::ChemDB::SecondaryStructure
 
 #endif
