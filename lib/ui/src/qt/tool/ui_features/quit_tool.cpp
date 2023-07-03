@@ -1,11 +1,9 @@
 #include "ui/qt/tool/ui_features/quit_tool.hpp"
-#include "ui/qt/action/main.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
-
 
 namespace VTX::UI::QT::Tool::UIFeatures
 {
@@ -27,5 +25,9 @@ namespace VTX::UI::QT::Tool::UIFeatures
 		toolBlock.pushButton( *quitButton );
 	}
 
-	void QuitTool::_quit() { VTX_ACTION( new Action::Main::Quit() ); }
+	void QuitTool::_quit()
+	{
+		QT_APP()->closeAllWindows();
+		// VTX_ACTION( new Action::Main::Quit() );
+	}
 } // namespace VTX::UI::QT::Tool::UIFeatures

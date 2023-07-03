@@ -1,7 +1,5 @@
 #include "ui/qt/application_qt.hpp"
-// #include "ui/dialog.hpp"
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/dialog.hpp"
 #include "ui/qt/widget_factory.hpp"
@@ -10,13 +8,7 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
-#include <app/old/event/global.hpp>
-// #include <exception>
 #include <util/logger.hpp>
-// #include <app/old/action/main.hpp>
-#include <app/old/event.hpp>
-#include <app/old/vtx_app.hpp>
-// #include <app/old/vtx_app.hpp>
 
 namespace VTX::UI::QT
 {
@@ -43,9 +35,6 @@ namespace VTX::UI::QT
 		Core::BaseUIApplication::start( p_args );
 
 		_handleArgs( p_args );
-
-		VTX_EVENT( VTX::App::Old::Event::Global::UI_APPLICATION_INITIALIZED );
-
 		_returnCode = exec();
 	}
 
@@ -55,17 +44,12 @@ namespace VTX::UI::QT
 		_elapsedTimer.restart();
 
 		Core::BaseUIApplication::update();
-		_stateMachine->update( elapsed );
 	}
 
 	void ApplicationQt::quit() { QApplication::quit(); };
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
-		// Create statemachine.
-		_stateMachine = new State::StateMachine();
-		goToState( ID::State::VISUALIZATION );
-
 		// Create UI.
 		_initQt();
 
@@ -108,36 +92,17 @@ namespace VTX::UI::QT
 
 		_mainWindow->show();
 		_mainWindow->initWindowLayout();
-
-		if ( !_mainWindow->isOpenGLValid() )
-		{
-			UI::QT::Tool::Render::Dialog::openGLInitializationFail();
-			return;
-		}
 	}
 
-	void ApplicationQt::renderScene() const
-	{
-		if ( VTX_SETTING().getActivateRenderer() && App::Old::VTXApp::get().MASK )
-		{
-			_mainWindow->updateRender();
-		}
-	}
+	void ApplicationQt::renderScene() const { _mainWindow->updateRender(); }
 
 	void ApplicationQt::stop()
 	{
-		_mainWindow->saveLayout();
-
 		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
 		if ( _timer != nullptr )
 		{
 			_timer->stop();
 			delete _timer;
-		}
-
-		if ( _stateMachine != nullptr )
-		{
-			delete _stateMachine;
 		}
 
 		// TODO BaseUIApplication::stop() called here because some model are strongly linked to _gl
@@ -146,18 +111,6 @@ namespace VTX::UI::QT
 		if ( _mainWindow != nullptr )
 		{
 			delete _mainWindow;
-		}
-	}
-
-	void ApplicationQt::goToState( const std::string & p_name, void * const p_arg )
-	{
-		try
-		{
-			_stateMachine->goToState( p_name, p_arg );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "{}", p_e.what() );
 		}
 	}
 

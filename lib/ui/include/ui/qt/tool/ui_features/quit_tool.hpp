@@ -3,13 +3,12 @@
 
 #include "ui/core/tool_registration.hpp"
 #include "ui/qt/base_qt_tool.hpp"
-#include "ui/qt/tool/keys.hpp"
 
 namespace VTX::UI::QT::Tool::UIFeatures
 {
 	class QuitTool : public BaseQtTool
 	{
-		REGISTER_TOOL( QuitTool, UI_FEATURE_QUIT );
+		REGISTER_TOOL( QuitTool, "UI_FEATURE_QUIT" );
 
 	  public:
 		QuitTool();
