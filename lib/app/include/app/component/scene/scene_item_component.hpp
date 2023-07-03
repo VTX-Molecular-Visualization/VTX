@@ -36,7 +36,7 @@ namespace VTX::App::Component::Scene
 
 	  private:
 		int			_persistentId = -1;
-		std::string _name;
+		std::string _name		  = "";
 
 		// Callbacks
 		Core::CallbackEmitter<std::string &> _onNameChange = Core::CallbackEmitter<std::string &>();

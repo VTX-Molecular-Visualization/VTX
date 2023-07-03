@@ -54,7 +54,7 @@ namespace VTX::App::Application
 		void sortItemsBySceneIndex( std::vector<Component::Scene::SceneItemComponent *> & p_items ) const;
 
 		// Callbacks
-		Core::CallbackRegister<Component::Scene::SceneItemComponent &> onSceneItemAddedCallback()
+		Core::CallbackRegister<Component::Scene::SceneItemComponent &> & onSceneItemAddedCallback()
 		{
 			return _onSceneItemAddedCallback;
 		}

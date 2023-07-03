@@ -138,17 +138,30 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const std::string moleculeName	   = "1AGA";
+	class CallbackTest
+	{
+	  public:
+		bool checked = false;
+	};
+
+	const std::string moleculeName	   = "8OIT";
 	const std::string moleculePathname = moleculeName + ".mmtf";
 
 	initApp();
 
 	// Create Scene
-	const Application::Scene & scene = VTXApp::get().getScene();
+	Application::Scene & scene			  = VTXApp::get().getScene();
+	CallbackTest		 addSceneItemTest = CallbackTest();
+	scene.onSceneItemAddedCallback().addCallback(
+		&addSceneItemTest,
+		[ &addSceneItemTest ]( Component::Scene::SceneItemComponent & p_sceneItem )
+		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
 
 	// Create MoleculeEntity
 	const FilePath moleculePath = Old::Internal::IO::Filesystem::getInternalDataDir() / moleculePathname;
 	VTX_ACTION<Internal::Action::ECS::Open>( moleculePath );
+
+	REQUIRE( addSceneItemTest.checked );
 
 	// Pick first Molecule
 	REQUIRE( scene.getItemCount() == 1 );
@@ -162,20 +175,14 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 	Component::Scene::SceneItemComponent & sceneItem
 		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
 
-	class CallbackReceiver
-	{
-	  public:
-		bool called = false;
-	};
+	CallbackTest renameTest = CallbackTest();
 
-	CallbackReceiver receiver = CallbackReceiver();
-
-	sceneItem.onNameChange().addCallback( &receiver,
-										  [ &receiver ]( const std::string & p_name ) { receiver.called = true; } );
+	sceneItem.onNameChange().addCallback(
+		&renameTest, [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; } );
 	sceneItem.setName( "Zouzou" );
 
 	REQUIRE( sceneItem.getName() == "Zouzou" );
-	REQUIRE( receiver.called );
+	REQUIRE( renameTest.checked );
 
 	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
 	REQUIRE( view.size_hint() == 1 );

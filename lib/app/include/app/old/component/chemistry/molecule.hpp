@@ -56,7 +56,7 @@ namespace VTX::App::Old::Component::Chemistry
 		inline static std::vector<Bond *> TMP_BOND_VECTOR = std::vector<Bond *>();
 
 	  public:
-		inline VTX::Core::Old::Struct::Molecule &	   getMoleculeStruct() { return *_moleculeStruct; };
+		inline VTX::Core::Old::Struct::Molecule &		getMoleculeStruct() { return *_moleculeStruct; };
 		inline const VTX::Core::Old::Struct::Molecule & getMoleculeStruct() const { return *_moleculeStruct; };
 
 		// Configuration.
@@ -440,7 +440,8 @@ namespace VTX::App::Old::Component::Chemistry
 		void _instantiate3DViews() override;
 
 		void _markRepresentationAsDefault(
-			const App::Old::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
+			const App::Old::Application::Representation::InstantiatedRepresentation * const
+				_instantiatedRepresentation );
 
 		void _onRepresentationChange() override;
 
@@ -450,7 +451,7 @@ namespace VTX::App::Old::Component::Chemistry
 
 	  private:
 		VTX::Core::Old::Struct::Molecule * _moleculeStruct = nullptr;
-		std::string					  _displayName;
+		std::string						   _displayName = "";
 
 		// Configuration.
 		Component::IO::MoleculeConfiguration _configuration = Component::IO::MoleculeConfiguration();
