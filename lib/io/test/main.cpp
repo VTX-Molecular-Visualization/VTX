@@ -1,8 +1,8 @@
+#include "define.hpp"
+#include "fill_molecule.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <io/reader/chemfiles.hpp>
-#include <io/test/define.hpp>
-#include <io/test/fill_molecule.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 

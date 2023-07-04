@@ -36,7 +36,8 @@ target_link_libraries(VTX_IO PUBLIC chemfiles)
 
 # Test.
 # Create executable.
-add_executable(VTX_IO_TEST test/main.cpp)
+file(GLOB_RECURSE TEST_FILES test/*)
+add_executable(VTX_IO_TEST ${TEST_FILES})
 
 # Link Catch2.
 target_link_libraries(VTX_IO_TEST PRIVATE Catch2::Catch2WithMain)
