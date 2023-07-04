@@ -22,7 +22,6 @@ namespace VTX::IO::Internal::Filesystem
 		TRAJECTORY,
 		MESH,
 		UNKNOWN,
-
 		COUNT
 	};
 
