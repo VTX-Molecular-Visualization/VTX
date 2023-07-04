@@ -49,44 +49,51 @@ namespace VTX::IO::Reader
 		void			   readNextFrame();
 		std::vector<Vec3f> getCurrentFrameAtomPosition() const;
 
-		template<typename T>
-		const T getCurrentResidueProperty( const std::string & p_property, const T & p_defaultValue = T() ) const
+		const std::string getCurrentResidueStringProperty( const std::string & p_property,
+														   const std::string & p_defaultValue = "" ) const
 		{
-			throw VTXException( "Incorrect type for chemfiles residue property." );
+			// Seems to be faster that way than using value_or function for string&.
+			const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
+				= _currentResidue->properties().get( p_property );
+			return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
 		}
-		template<typename T>
-		const T getCurrentAtomProperty( const std::string & p_property, const T & p_defaultValue = T() ) const
+		const double getCurrentResidueDoubleProperty( const std::string & p_property,
+													  const double		  p_defaultValue = 0. ) const
 		{
-			throw VTXException( "Incorrect type for chemfiles atom property." );
+			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
+		}
+		const bool getCurrentResidueBoolProperty( const std::string & p_property,
+												  const bool		  p_defaultValue = false ) const
+		{
+			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
+		}
+
+		const std::string & getCurrentAtomStringProperty( const std::string & p_property,
+														  const std::string & p_defaultValue = "" ) const
+		{
+			// Seems to be faster that way than using value_or function for string&.
+			const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
+				= _currentAtom->properties().get( p_property );
+			return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
+		}
+		const double getCurrentAtomDoubleProperty( const std::string & p_property,
+												   const double		   p_defaultValue = 0. ) const
+		{
+			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
+		}
+		const bool getCurrentAtomBoolProperty( const std::string & p_property, const bool p_defaultValue = false ) const
+		{
+			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
 		}
 
 		// Chain
-		const std::string getCurrentChainName() const { return getCurrentResidueProperty<std::string>( "chainname" ); }
-		const std::string getCurrentChainID() const { return getCurrentResidueProperty<std::string>( "chainid" ); }
+		const std::string getCurrentChainName() const { return getCurrentResidueStringProperty( "chainname" ); }
+		const std::string getCurrentChainID() const { return getCurrentResidueStringProperty( "chainid" ); }
 
 		// Residue
 		void setCurrentResidue( const size_t p_residueIndex )
 		{
 			_currentResidue = &( ( *_residues )[ p_residueIndex ] );
-		}
-
-		template<>
-		const bool getCurrentResidueProperty<bool>( const std::string & p_property, const bool & p_defaultValue ) const
-		{
-			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
-		}
-
-		template<>
-		const std::string getCurrentResidueProperty<std::string>( const std::string & p_property,
-																  const std::string & p_defaultValue ) const
-		{
-			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_string();
-		}
-		template<>
-		const double getCurrentResidueProperty<double>( const std::string & p_property,
-														const double &		p_defaultValue ) const
-		{
-			return _currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 		}
 		const std::string & getCurrentResidueName() const { return _currentResidue->name(); }
 		const size_t		getCurrentResidueFirstAtomIndex() const { return *_currentResidue->begin(); }
@@ -102,30 +109,11 @@ namespace VTX::IO::Reader
 			_currentAtomIndex = p_index;
 		}
 
-		template<>
-		const bool getCurrentAtomProperty<bool>( const std::string & p_property, const bool & p_defaultValue ) const
-		{
-			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
-		}
-
-		template<>
-		const std::string getCurrentAtomProperty<std::string>( const std::string & p_property,
-															   const std::string & p_defaultValue ) const
-		{
-			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_string();
-		}
-		template<>
-		const double getCurrentAtomProperty<double>( const std::string & p_property,
-													 const double &		 p_defaultValue ) const
-		{
-			return _currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
-		}
-
 		Vec3f getCurrentAtomPosition() const;
 
 		const std::string &				getCurrentAtomName() const { return _currentAtom->name(); }
 		VTX::Core::ChemDB::Atom::SYMBOL getCurrentAtomSymbol() const;
-		int getCurrentAtomType() const { return int( getCurrentAtomProperty<double>( "atom_type", -1. ) ); }
+		int getCurrentAtomType() const { return int( getCurrentAtomDoubleProperty( "atom_type", -1. ) ); }
 
 		// Bonds
 		void setCurrentBond( const size_t p_bondIndex )
