@@ -101,6 +101,7 @@ namespace VTX::Renderer::GL
 										const GLboolean p_normalized	 = GL_FALSE ) const
 		{
 			assert( glIsVertexArray( _id ) );
+
 			assert( false );
 		}
 
@@ -166,6 +167,7 @@ namespace VTX::Renderer::GL
 														const GLboolean p_normalized ) const
 	{
 		assert( glIsVertexArray( _id ) );
+
 		glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
 	}
 
@@ -176,6 +178,7 @@ namespace VTX::Renderer::GL
 														 const GLboolean p_normalized ) const
 	{
 		assert( glIsVertexArray( _id ) );
+
 		glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
 	}
 
@@ -186,6 +189,7 @@ namespace VTX::Renderer::GL
 													   const GLboolean p_normalized ) const
 	{
 		assert( glIsVertexArray( _id ) );
+
 		glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
 	}
 
@@ -196,6 +200,7 @@ namespace VTX::Renderer::GL
 													  const GLboolean p_normalized ) const
 	{
 		assert( glIsVertexArray( _id ) );
+
 		glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
 	}
 } // namespace VTX::Renderer::GL
