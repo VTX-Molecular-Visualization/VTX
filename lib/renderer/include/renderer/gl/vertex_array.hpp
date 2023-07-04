@@ -104,46 +104,6 @@ namespace VTX::Renderer::GL
 			assert( false );
 		}
 
-		template<>
-		inline void setAttributeFormat<float>( const GLuint	   p_attributeIndex,
-											   const GLint	   p_size,
-											   const GLuint	   p_relativeOffset,
-											   const GLboolean p_normalized ) const
-		{
-			assert( glIsVertexArray( _id ) );
-			glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
-		}
-
-		template<>
-		inline void setAttributeFormat<double>( const GLuint	p_attributeIndex,
-												const GLint		p_size,
-												const GLuint	p_relativeOffset,
-												const GLboolean p_normalized ) const
-		{
-			assert( glIsVertexArray( _id ) );
-			glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
-		}
-
-		template<>
-		inline void setAttributeFormat<uint>( const GLuint	  p_attributeIndex,
-											  const GLint	  p_size,
-											  const GLuint	  p_relativeOffset,
-											  const GLboolean p_normalized ) const
-		{
-			assert( glIsVertexArray( _id ) );
-			glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
-		}
-
-		template<>
-		inline void setAttributeFormat<int>( const GLuint	 p_attributeIndex,
-											 const GLint	 p_size,
-											 const GLuint	 p_relativeOffset,
-											 const GLboolean p_normalized ) const
-		{
-			assert( glIsVertexArray( _id ) );
-			glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
-		}
-
 		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const
 		{
 			assert( glIsVertexArray( _id ) );
@@ -198,6 +158,46 @@ namespace VTX::Renderer::GL
 	  private:
 		GLuint _id = GL_INVALID_INDEX;
 	};
+
+	template<>
+	inline void VertexArray::setAttributeFormat<float>( const GLuint	p_attributeIndex,
+														const GLint		p_size,
+														const GLuint	p_relativeOffset,
+														const GLboolean p_normalized ) const
+	{
+		assert( glIsVertexArray( _id ) );
+		glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
+	}
+
+	template<>
+	inline void VertexArray::setAttributeFormat<double>( const GLuint	 p_attributeIndex,
+														 const GLint	 p_size,
+														 const GLuint	 p_relativeOffset,
+														 const GLboolean p_normalized ) const
+	{
+		assert( glIsVertexArray( _id ) );
+		glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
+	}
+
+	template<>
+	inline void VertexArray::setAttributeFormat<uint>( const GLuint	   p_attributeIndex,
+													   const GLint	   p_size,
+													   const GLuint	   p_relativeOffset,
+													   const GLboolean p_normalized ) const
+	{
+		assert( glIsVertexArray( _id ) );
+		glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
+	}
+
+	template<>
+	inline void VertexArray::setAttributeFormat<int>( const GLuint	  p_attributeIndex,
+													  const GLint	  p_size,
+													  const GLuint	  p_relativeOffset,
+													  const GLboolean p_normalized ) const
+	{
+		assert( glIsVertexArray( _id ) );
+		glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
+	}
 } // namespace VTX::Renderer::GL
 
 #endif // __VTX_GL_VERETX_ARRAY__
