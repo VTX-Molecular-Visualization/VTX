@@ -13,12 +13,18 @@ endif()
 add_executable(VTX ${HEADERS} ${SOURCES} ${RESOURCES})
 target_include_directories(VTX PUBLIC include)
 
-# Link libs.
-add_subdirectory(lib/util)
+# Link VTX modules.
+if(NOT TARGET VTX_UTIL)
+	add_subdirectory(lib/util)
+endif()
+if(NOT TARGET VTX_UI)
+	add_subdirectory(lib/ui)
+endif()
+if(NOT TARGET VTX_TOOL)
+	add_subdirectory(lib/tool)
+endif()
 target_link_libraries(VTX PRIVATE VTX_UTIL)
-add_subdirectory(lib/ui)
 target_link_libraries(VTX PRIVATE VTX_UI)
-add_subdirectory(lib/tool)
 target_link_libraries(VTX PRIVATE VTX_TOOL)
 
 # Copy dlls in .exe directory

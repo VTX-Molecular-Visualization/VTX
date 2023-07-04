@@ -5,9 +5,15 @@
 #include "util/types.hpp"
 #include <limits>
 
+#ifdef __APPLE__
+#undef SIZE_T_MIN
+#undef SIZE_T_MAX
+#endif
+
 namespace VTX
 {
 	constexpr float FLOAT_LOWEST = std::numeric_limits<float>::lowest();
+	constexpr float FLOAT_MIN	 = std::numeric_limits<float>::min();
 	constexpr float FLOAT_MAX	 = std::numeric_limits<float>::max();
 
 	constexpr uint UNSIGNED_INT_MIN = std::numeric_limits<uint>::min();
@@ -18,15 +24,15 @@ namespace VTX
 
 	constexpr float EPSILON = 1e-4f;
 
-	constexpr Vec2i VEC2I_ZERO = Vec2i( 0, 0 );
-	constexpr Vec3i VEC3I_ZERO = Vec3i( 0, 0, 0 );
-	constexpr Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
-	constexpr Vec3f VEC3F_X	   = Vec3f( 1.f, 0.f, 0.f );
-	constexpr Vec3f VEC3F_Y	   = Vec3f( 0.f, 1.f, 0.f );
-	constexpr Vec3f VEC3F_Z	   = Vec3f( 0.f, 0.f, 1.f );
-	constexpr Vec3f VEC3F_XYZ  = Vec3f( 1.f, 1.f, 1.f );
-	constexpr Vec3f VEC3F_MIN  = Vec3f( FLOAT_LOWEST );
-	constexpr Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
+	constexpr Vec2i VEC2I_ZERO	 = Vec2i( 0, 0 );
+	constexpr Vec3i VEC3I_ZERO	 = Vec3i( 0, 0, 0 );
+	constexpr Vec3f VEC3F_ZERO	 = Vec3f( 0.f, 0.f, 0.f );
+	constexpr Vec3f VEC3F_X		 = Vec3f( 1.f, 0.f, 0.f );
+	constexpr Vec3f VEC3F_Y		 = Vec3f( 0.f, 1.f, 0.f );
+	constexpr Vec3f VEC3F_Z		 = Vec3f( 0.f, 0.f, 1.f );
+	constexpr Vec3f VEC3F_XYZ	 = Vec3f( 1.f, 1.f, 1.f );
+	constexpr Vec3f VEC3F_LOWEST = Vec3f( FLOAT_LOWEST );
+	constexpr Vec3f VEC3F_MAX	 = Vec3f( FLOAT_MAX );
 
 	constexpr Vec4f VEC4F_ZERO = Vec4f( 0.f, 0.f, 0.f, 0.f );
 	constexpr Vec4f VEC4F_XYZW = Vec4f( 1.f, 1.f, 1.f, 1.f );

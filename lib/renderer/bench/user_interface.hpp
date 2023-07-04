@@ -170,37 +170,49 @@ namespace VTX::Bench
 			bool pixelarizeBackground = p_renderer->isPixelizeBackground();
 
 			ImGui::Begin( "Render passes" );
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Geometric" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Linearize depth" ) ) {}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "SSAO + Blur" ) )
+			static bool isOpenGeometric;
+			if ( isOpenGeometric = ImGui::CollapsingHeader( "Geometric" ) ) {}
+			static bool isOpenLinearizeDepth;
+			if ( isOpenLinearizeDepth = ImGui::CollapsingHeader( "Linearize depth" ) ) {}
+			static bool isOpenSSAO;
+			if ( isOpenSSAO = ImGui::CollapsingHeader( "SSAO + Blur", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				if ( ImGui::Checkbox( "Active##SSAO", &activeSSAO ) )
 				{
 					p_renderer->setActiveSSAO( activeSSAO );
 				}
-				if ( ImGui::InputFloat( "Intensity", &ssaoIntensity ) )
+				if ( ImGui::SliderFloat( "Intensity",
+										 &ssaoIntensity,
+										 Renderer::GL::Pass::SSAO::AO_INTENSITY_MIN,
+										 Renderer::GL::Pass::SSAO::AO_INTENSITY_MAX ) )
 				{
 					p_renderer->setSSAOIntensity( ssaoIntensity );
 				}
-				if ( ImGui::InputFloat( "Blur size", &blurSize ) )
+				if ( ImGui::SliderFloat( "Blur size",
+										 &blurSize,
+										 Renderer::GL::Pass::Blur::BLUR_SIZE_MIN,
+										 Renderer::GL::Pass::Blur::BLUR_SIZE_MAX ) )
 				{
 					p_renderer->setBlurSize( blurSize );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Shading" ) )
+			static bool isOpenShading;
+			if ( isOpenShading = ImGui::CollapsingHeader( "Shading", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				const char * shadings[] = { "DIFFUSE", "GLOSSY", "TOON", "FLAT" };
 				if ( ImGui::Combo( "Mode", (int *)( &shadingMode ), shadings, IM_ARRAYSIZE( shadings ) ) )
 				{
 					p_renderer->setShadingMode( shadingMode );
 				}
-				if ( ImGui::InputFloat( "Specular factor", &specularFactor ) )
+				if ( shadingMode == Renderer::GL::ENUM_SHADING::GLOSSY )
 				{
-					p_renderer->setSpecularFactor( specularFactor );
+					if ( ImGui::SliderFloat( "Specular factor",
+											 &specularFactor,
+											 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
+											 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX ) )
+					{
+						p_renderer->setSpecularFactor( specularFactor );
+					}
 				}
 				if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
 				{
@@ -210,15 +222,24 @@ namespace VTX::Bench
 				{
 					p_renderer->setColorLight( colorLight );
 				}
-				if ( ImGui::InputFloat( "Fog near", &fogNear ) )
+				if ( ImGui::SliderFloat( "Fog near",
+										 &fogNear,
+										 Renderer::GL::Pass::Shading::FOG_NEAR_MIN,
+										 Renderer::GL::Pass::Shading::FOG_NEAR_MAX ) )
 				{
 					p_renderer->setFogNear( fogNear );
 				}
-				if ( ImGui::InputFloat( "Fog far", &fogFar ) )
+				if ( ImGui::SliderFloat( "Fog far",
+										 &fogFar,
+										 Renderer::GL::Pass::Shading::FOG_FAR_MIN,
+										 Renderer::GL::Pass::Shading::FOG_FAR_MAX ) )
 				{
 					p_renderer->setFogFar( fogFar );
 				}
-				if ( ImGui::InputFloat( "Fog density", &fogDensity ) )
+				if ( ImGui::SliderFloat( "Fog density",
+										 &fogDensity,
+										 Renderer::GL::Pass::Shading::FOG_DENSITY_MIN,
+										 Renderer::GL::Pass::Shading::FOG_DENSITY_MAX ) )
 				{
 					p_renderer->setFogDensity( fogDensity );
 				}
@@ -227,44 +248,50 @@ namespace VTX::Bench
 					p_renderer->setColorFog( colorFog );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Outline" ) )
+			static bool isOpenOutline;
+			if ( isOpenOutline = ImGui::CollapsingHeader( "Outline", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				if ( ImGui::Checkbox( "Active##Outline", &activeOutline ) )
 				{
 					p_renderer->setActiveOutline( activeOutline );
 				}
-				if ( ImGui::InputFloat( "Sensivity", &outlineSensivity ) )
+				if ( ImGui::SliderFloat( "Sensivity",
+										 &outlineSensivity,
+										 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MIN,
+										 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MAX ) )
 				{
 					p_renderer->setOutlineSensivity( outlineSensivity );
 				}
-				if ( ImGui::InputInt( "Thickness", (int *)( &outlineThickness ) ) )
+				if ( ImGui::SliderInt( "Thickness",
+									   (int *)( &outlineThickness ),
+									   Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MIN,
+									   Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MAX ) )
 				{
 					p_renderer->setOutlineThickness( outlineThickness );
 				}
-				if ( ImGui::ColorEdit4( "Outline##Color", (float *)( &colorOutline ) ) )
+				if ( ImGui::ColorEdit4( "Color##Outline", (float *)( &colorOutline ) ) )
 				{
 					p_renderer->setColorOutline( colorOutline );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Selection" ) )
+			static bool isOpenSelection;
+			if ( isOpenSelection = ImGui::CollapsingHeader( "Selection" ) )
 			{
-				if ( ImGui::ColorEdit4( "Selection##Color", (float *)( &colorSelection ) ) )
+				if ( ImGui::ColorEdit4( "Color##Selection", (float *)( &colorSelection ) ) )
 				{
 					p_renderer->setColorSelection( colorSelection );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "FXAA" ) )
+			static bool isOpenFXAA;
+			if ( isOpenFXAA = ImGui::CollapsingHeader( "FXAA" ) )
 			{
 				if ( ImGui::Checkbox( "Active##FXAA", &activeFXAA ) )
 				{
 					p_renderer->setActiveFXAA( activeFXAA );
 				}
 			}
-			ImGui::SetNextItemOpen( true );
-			if ( ImGui::CollapsingHeader( "Pixelize" ) )
+			static bool isOpenPixelize;
+			if ( isOpenPixelize = ImGui::CollapsingHeader( "Pixelize" ) )
 			{
 				if ( ImGui::Checkbox( "Active##Pixelize", &activePixelize ) )
 				{
@@ -327,8 +354,6 @@ namespace VTX::Bench
 				setVSync( _vsync );
 			}
 			ImGui::End();
-
-			// ImGui::ShowDemoWindow();
 
 			// Render.
 			ImGui::Render();

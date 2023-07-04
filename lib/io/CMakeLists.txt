@@ -5,7 +5,7 @@ project(VTX_IO)
 
 # Git dependencies
 set(GIT_URL_CHEMFILES https://github.com/VTX-Molecular-Visualization/chemfiles.git)
-set(GIT_TAG_CHEMFILES d060165971aaf4f62358ff0aed68837f2257ca0c)
+set(GIT_TAG_CHEMFILES master)
 
 # Fetch third parties.
 include(FetchContent)
@@ -28,8 +28,10 @@ endif()
 target_link_libraries(VTX_IO PRIVATE VTX_UTIL)
 
 # Link VTX_CORE.
-add_subdirectory(../core lib/core)
-target_link_libraries(VTX_IO PUBLIC VTX_CORE)
+if(NOT TARGET VTX_CORE)
+	add_subdirectory(../core lib/core)
+endif()
+target_link_libraries(VTX_IO PRIVATE VTX_CORE)
 
 # Link third parties.
 target_link_libraries(VTX_IO PUBLIC chemfiles)

@@ -2,6 +2,7 @@
 #include "input_manager.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
+#include <io/reader/chemfiles.hpp>
 #include <iostream>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/render_graph.hpp>
@@ -22,8 +23,9 @@ int main( int, char ** )
 {
 	using namespace VTX;
 	using namespace Util;
-	using namespace Bench;
+	using namespace IO;
 	using namespace Renderer::GL;
+	using namespace Bench;
 
 	bool isRunning = true;
 	Logger::get().init( std::filesystem::current_path() / "logs" );
@@ -67,17 +69,16 @@ int main( int, char ** )
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
+		// 		const std::string				   moleculeName		= "4v6x";
+		// 		const std::string				   moleculePathname = moleculeName + ".mmtf";
+		// 		const FilePath					   moleculePath		= std::filesystem::current_path() /
+		// moleculePathname; 		std::unique_ptr<Reader::Chemfiles> chemfileReader	= Reader::Chemfiles::readFile(
+		// moleculePath );
 
 		// Main loop.
 		while ( isRunning )
 		{
 			float time = float( ui.getTime() ) * 1e-3f;
-			//
-			// 			// TODO: move in a dedicated SSBO.
-			// 			Mat4f modelMatrix = Math::rotate( MAT4F_ID, time * 0.1f, VEC3F_X );
-			// 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.2f, VEC3F_Y );
-			// 			modelMatrix		  = Math::rotate( modelMatrix, time * 0.05f, VEC3F_Z );
-			// 			renderer.setMatrixModelTmp( modelMatrix );
 
 			// Renderer.
 			renderer.renderFrame();

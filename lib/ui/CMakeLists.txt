@@ -36,14 +36,14 @@ file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
 target_include_directories(VTX_UI PUBLIC include)
 
-# Link VTX_UTIL.
+# Link VTX modules.
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
+if(NOT TARGET VTX_APPL)
+    add_subdirectory(../app lib/app)
+endif()
 target_link_libraries(VTX_UI PRIVATE VTX_UTIL)
-
-# Link VTX_APP.
-add_subdirectory(../app lib/app)
 target_link_libraries(VTX_UI PRIVATE VTX_APP)
 
 # Link third parties.
