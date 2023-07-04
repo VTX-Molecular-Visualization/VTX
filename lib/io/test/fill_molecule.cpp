@@ -1,5 +1,5 @@
-#include "io/test/fill_molecule.hpp"
-#include "io/test/define.hpp"
+#include "fill_molecule.hpp"
+#include "define.hpp"
 #include <magic_enum.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
