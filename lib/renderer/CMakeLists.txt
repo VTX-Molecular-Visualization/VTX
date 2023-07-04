@@ -2,10 +2,6 @@ message("VTX_RENDERER")
 cmake_minimum_required(VERSION 3.21)
 project(VTX_RENDERER)
 
-# Git dependencies.
-set(GIT_URL_SDL https://github.com/libsdl-org/SDL.git)
-set(GIT_TAG_SDL release-2.26.5)
-
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -35,6 +31,8 @@ add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy
 add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 
 # Benchmark.
+set(GIT_URL_SDL https://github.com/libsdl-org/SDL.git)
+set(GIT_TAG_SDL release-2.26.5)
 FetchContent_Declare(SDL2 GIT_REPOSITORY ${GIT_URL_SDL} GIT_TAG ${GIT_TAG_SDL})
 FetchContent_MakeAvailable(SDL2)
 

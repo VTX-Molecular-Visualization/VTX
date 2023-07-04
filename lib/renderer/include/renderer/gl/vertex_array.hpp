@@ -101,36 +101,47 @@ namespace VTX::Renderer::GL
 										const GLboolean p_normalized	 = GL_FALSE ) const
 		{
 			assert( glIsVertexArray( _id ) );
+			assert( false );
+		}
 
-			if ( std::is_same<T, float>::value )
-			{
-#if ( VTX_OPENGL_VERSION == 450 )
-				glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
-#endif
-			}
-			else if ( std::is_same<T, double>::value )
-			{
-#if ( VTX_OPENGL_VERSION == 450 )
-				glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
-#endif
-			}
-			else if ( std::is_same<T, int>::value )
-			{
-#if ( VTX_OPENGL_VERSION == 450 )
-				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
-#endif
-			}
-			else if ( std::is_same<T, uint>::value )
-			{
-#if ( VTX_OPENGL_VERSION == 450 )
-				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
-#endif
-			}
-			else
-			{
-				assert( false );
-				// TODO: handle more types.
-			}
+		template<>
+		inline void setAttributeFormat<float>( const GLuint	   p_attributeIndex,
+											   const GLint	   p_size,
+											   const GLuint	   p_relativeOffset,
+											   const GLboolean p_normalized ) const
+		{
+			assert( glIsVertexArray( _id ) );
+			glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, GL_FLOAT, p_normalized, p_relativeOffset );
+		}
+
+		template<>
+		inline void setAttributeFormat<double>( const GLuint	p_attributeIndex,
+												const GLint		p_size,
+												const GLuint	p_relativeOffset,
+												const GLboolean p_normalized ) const
+		{
+			assert( glIsVertexArray( _id ) );
+			glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, GL_DOUBLE, p_relativeOffset );
+		}
+
+		template<>
+		inline void setAttributeFormat<uint>( const GLuint	  p_attributeIndex,
+											  const GLint	  p_size,
+											  const GLuint	  p_relativeOffset,
+											  const GLboolean p_normalized ) const
+		{
+			assert( glIsVertexArray( _id ) );
+			glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_UNSIGNED_INT, p_relativeOffset );
+		}
+
+		template<>
+		inline void setAttributeFormat<int>( const GLuint	 p_attributeIndex,
+											 const GLint	 p_size,
+											 const GLuint	 p_relativeOffset,
+											 const GLboolean p_normalized ) const
+		{
+			assert( glIsVertexArray( _id ) );
+			glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, GL_INT, p_relativeOffset );
 		}
 
 		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const
