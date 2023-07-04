@@ -5,6 +5,7 @@
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
+#include <vector>
 
 namespace VTX::IO::Internal::Filesystem
 {
