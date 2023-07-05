@@ -53,7 +53,7 @@ target_link_libraries(VTX_TOOL PRIVATE VTX_APP)
 target_link_libraries(VTX_TOOL PRIVATE VTX_UI)
 
 # Link third parties.
-target_link_libraries(VTX_TOOL PUBLIC Eigen3::Eigen)
+target_link_libraries(VTX_TOOL PRIVATE Eigen3::Eigen)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Core)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Gui)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Widgets)

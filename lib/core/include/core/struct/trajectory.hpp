@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_NEW_STRUCT_TRAJECTORY__
-#define __VTX_CORE_NEW_STRUCT_TRAJECTORY__
+#ifndef __VTX_CORE_STRUCT_TRAJECTORY__
+#define __VTX_CORE_STRUCT_TRAJECTORY__
 
 #include <util/types.hpp>
 #include <vector>

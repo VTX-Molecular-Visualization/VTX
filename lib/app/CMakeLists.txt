@@ -28,14 +28,18 @@ target_include_directories(VTX_APP PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
 endif()
-if(NOT TARGET VTX_IO)
-	add_subdirectory(../io lib/io)
+if(NOT TARGET VTX_CORE)
+	add_subdirectory(../core lib/core)
 endif()
 if(NOT TARGET VTX_RENDERER)
 	add_subdirectory(../renderer lib/renderer)
 endif()
+if(NOT TARGET VTX_IO)
+	add_subdirectory(../io lib/io)
+endif()
 target_link_libraries(VTX_APP PRIVATE VTX_UTIL)
 target_link_libraries(VTX_APP PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_APP PRIVATE VTX_CORE)
 target_link_libraries(VTX_APP PRIVATE VTX_IO)
 
 # Link third parties.
@@ -50,8 +54,13 @@ add_executable(VTX_APP_TEST test/main.cpp)
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(VTX_APP_TEST PRIVATE EnTT::EnTT)
 
 # Link VTX_APP.
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_CORE)
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_IO)
+target_link_libraries(VTX_APP_TEST PRIVATE VTX_RENDERER)
 target_link_libraries(VTX_APP_TEST PRIVATE VTX_APP)
 
 # Catch2.
