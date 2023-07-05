@@ -64,16 +64,16 @@ int main( int, char ** )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		// Model.
-		Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
-		StructProxyMolecule proxyMolecule
-			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
-				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
-		renderer.addMolecule( proxyMolecule );
-		// 		const std::string				   moleculeName		= "4v6x";
-		// 		const std::string				   moleculePathname = moleculeName + ".mmtf";
-		// 		const FilePath					   moleculePath		= std::filesystem::current_path() /
-		// moleculePathname; 		std::unique_ptr<Reader::Chemfiles> chemfileReader	= Reader::Chemfiles::readFile(
-		// moleculePath );
+		// 		Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
+		// 		StructProxyMolecule proxyMolecule
+		// 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
+		// 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
+		// 		renderer.addMolecule( proxyMolecule );
+		// const std::string moleculeName	   = "4v6x";
+		// const std::string moleculePathname = moleculeName + ".mmtf";
+		// const FilePath	  moleculePath	   = std::filesystem::current_path() / moleculePathname;
+
+		// std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
 
 		// Main loop.
 		while ( isRunning )
