@@ -1,9 +1,9 @@
-#ifndef __VTX_CORE_NEW_STRUCT_CONCEPT__
-#define __VTX_CORE_NEW_STRUCT_CONCEPT__
+#ifndef __VTX_CORE_TEMPLATE_CONCEPT__
+#define __VTX_CORE_TEMPLATE_CONCEPT__
 
 #include <concepts>
 
-namespace VTX::Core::Struct
+namespace VTX::Core::Template
 {
 	template<typename M>
 	concept ConceptMolecule = requires() { true; };
@@ -19,5 +19,5 @@ namespace VTX::Core::Struct
 
 	template<typename B>
 	concept ConceptBond = requires() { true; };
-} // namespace VTX::Core::Struct
+} // namespace VTX::Core::Template
 #endif

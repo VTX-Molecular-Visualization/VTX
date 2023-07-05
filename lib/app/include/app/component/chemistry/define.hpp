@@ -10,11 +10,11 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	using AtomCore	   = VTX::Core::Struct::Atom<Molecule, Residue>;
-	using BondCore	   = VTX::Core::Struct::Bond<Molecule>;
-	using ResidueCore  = VTX::Core::Struct::Residue<Molecule, Chain>;
-	using ChainCore	   = VTX::Core::Struct::Chain<Molecule>;
-	using MoleculeCore = VTX::Core::Struct::Molecule<Chain, Residue, Atom, Bond>;
+	using AtomCore	   = VTX::Core::Template::Atom<Molecule, Residue>;
+	using BondCore	   = VTX::Core::Template::Bond<Molecule>;
+	using ResidueCore  = VTX::Core::Template::Residue<Molecule, Chain>;
+	using ChainCore	   = VTX::Core::Template::Chain<Molecule>;
+	using MoleculeCore = VTX::Core::Template::Molecule<Chain, Residue, Atom, Bond>;
 } // namespace VTX::App::Component::Chemistry
 
 #endif

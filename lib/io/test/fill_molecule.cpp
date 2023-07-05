@@ -1,5 +1,11 @@
 #include "fill_molecule.hpp"
 #include "define.hpp"
+#include <core/struct/atom.hpp>
+#include <core/struct/bond.hpp>
+#include <core/struct/chain.hpp>
+#include <core/struct/molecule.hpp>
+#include <core/struct/residue.hpp>
+#include <core/struct/trajectory.hpp>
 #include <magic_enum.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -7,14 +13,14 @@
 namespace VTX::IO::Test
 {
 	namespace ChemDB = VTX::Core::ChemDB;
-	void fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, CustomMolecule & p_molecule )
+	void fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, Core::Struct::Molecule & p_molecule )
 	{
 		const std::string fileExtension = p_chemfileStruct.getPath().extension().string();
 
-		CustomChain * modelChain			   = nullptr;
-		std::string	  lastChainName			   = "";
-		size_t		  chainModelId			   = -1;
-		size_t		  currentChainResidueCount = 0;
+		Core::Struct::Chain * modelChain			   = nullptr;
+		std::string			  lastChainName			   = "";
+		size_t				  chainModelId			   = -1;
+		size_t				  currentChainResidueCount = 0;
 
 		std::map<size_t, std::vector<size_t>> mapResidueBonds	   = std::map<size_t, std::vector<size_t>>();
 		std::map<size_t, std::vector<size_t>> mapResidueExtraBonds = std::map<size_t, std::vector<size_t>>();
@@ -71,7 +77,7 @@ namespace VTX::IO::Test
 			currentChainResidueCount++;
 
 			// Setup residue.
-			CustomResidue * modelResidue = p_molecule.getResidues()[ residueIdx ];
+			Core::Struct::Residue * modelResidue = p_molecule.getResidues()[ residueIdx ];
 
 			const size_t atomCount = p_chemfileStruct.getCurrentResidueAtomCount();
 			if ( atomCount == 0 )
@@ -129,7 +135,7 @@ namespace VTX::IO::Test
 				p_chemfileStruct.setCurrentAtom( atomId );
 
 				// Create atom.
-				CustomAtom * modelAtom = p_molecule.getAtoms()[ atomId ];
+				Core::Struct::Atom * modelAtom = p_molecule.getAtoms()[ atomId ];
 				modelAtom->setResiduePtr( modelResidue );
 				modelAtom->setName( p_chemfileStruct.getCurrentAtomName() );
 				modelAtom->setSymbol( p_chemfileStruct.getCurrentAtomSymbol() );
@@ -160,7 +166,7 @@ namespace VTX::IO::Test
 			// std::thread fillFrames(
 			//	&MoleculeLoader::fillTrajectoryFrames, this, std::ref( trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
-			std::pair<CustomMolecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
+			std::pair<Core::Struct::Molecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
 			_readTrajectoryFrames( p_chemfileStruct, { pairMoleculeFirstFrame }, 1 );
 		}
 
@@ -175,9 +181,9 @@ namespace VTX::IO::Test
 		{
 			p_chemfileStruct.setCurrentBond( boundIdx );
 
-			CustomResidue * residueStart
+			Core::Struct::Residue * residueStart
 				= p_molecule.getAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() )->getResiduePtr();
-			CustomResidue * residueEnd
+			Core::Struct::Residue * residueEnd
 				= p_molecule.getAtom( p_chemfileStruct.getCurrentBondSecondAtomIndex() )->getResiduePtr();
 
 			if ( residueStart == residueEnd )
@@ -202,9 +208,9 @@ namespace VTX::IO::Test
 		counter					= 0;
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
 		{
-			CustomResidue * const		residue			 = p_molecule.getResidue( residueIdx );
-			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
-			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
+			Core::Struct::Residue * const residue		   = p_molecule.getResidue( residueIdx );
+			const std::vector<size_t> &	  vectorBonds	   = mapResidueBonds[ residueIdx ];
+			const std::vector<size_t> &	  vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
 			residue->setIndexFirstBond( counter );
 			residue->setBondCount( vectorBonds.size() + vectorExtraBonds.size() );
@@ -212,7 +218,7 @@ namespace VTX::IO::Test
 			for ( size_t i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorBonds[ i ] );
-				CustomBond * modelBond = p_molecule.getBonds()[ counter ];
+				Core::Struct::Bond * modelBond = p_molecule.getBonds()[ counter ];
 				modelBond->setIndex( i );
 
 				modelBond->setIndexFirstAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() );
@@ -223,7 +229,7 @@ namespace VTX::IO::Test
 			for ( size_t i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorExtraBonds[ i ] );
-				CustomBond * modelBond = p_molecule.getBonds()[ counter ];
+				Core::Struct::Bond * modelBond = p_molecule.getBonds()[ counter ];
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() );
@@ -248,9 +254,9 @@ namespace VTX::IO::Test
 
 		assert( counter == counterOld );
 	}
-	void _readTrajectoryFrames( IO::Reader::Chemfiles &									 p_chemfileStruct,
-								const std::vector<std::pair<CustomMolecule *, size_t>> & p_targets,
-								const size_t											 p_trajectoryFrameStart )
+	void _readTrajectoryFrames( IO::Reader::Chemfiles &											 p_chemfileStruct,
+								const std::vector<std::pair<Core::Struct::Molecule *, size_t>> & p_targets,
+								const size_t p_trajectoryFrameStart )
 	{
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
@@ -265,10 +271,10 @@ namespace VTX::IO::Test
 			if ( atomPositions.size() <= 0 )
 				continue;
 
-			for ( const std::pair<CustomMolecule *, size_t> & pairMoleculeStartFrame : p_targets )
+			for ( const std::pair<Core::Struct::Molecule *, size_t> & pairMoleculeStartFrame : p_targets )
 			{
-				CustomMolecule & molecule	= *pairMoleculeStartFrame.first;
-				const size_t	 frameIndex = pairMoleculeStartFrame.second + validFrameCount;
+				Core::Struct::Molecule & molecule	= *pairMoleculeStartFrame.first;
+				const size_t			 frameIndex = pairMoleculeStartFrame.second + validFrameCount;
 				molecule.getTrajectory().fillFrame( frameIndex, atomPositions );
 
 				validFrameCount++;
@@ -287,9 +293,9 @@ namespace VTX::IO::Test
 		VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
 		// Erase supernumeraries frames
-		for ( const std::pair<CustomMolecule *, size_t> & pairMoleculeFirstFrame : p_targets )
+		for ( const std::pair<Core::Struct::Molecule *, size_t> & pairMoleculeFirstFrame : p_targets )
 		{
-			CustomMolecule &				molecule   = *( pairMoleculeFirstFrame.first );
+			Core::Struct::Molecule &		molecule   = *( pairMoleculeFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = molecule.getTrajectory();
 			if ( trajectory.frames.back().size() == 0 )
 			{
