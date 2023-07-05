@@ -15,11 +15,11 @@ TEST_CASE( "VTX_IO - Test", "[integration]" )
 	const std::string moleculePathname = moleculeName + ".mmtf";
 	const FilePath	  moleculePath	   = std::filesystem::current_path() / "data" / moleculePathname;
 
-	BENCHMARK( "Open molecules" )
-	{
-		std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
-		Core::Struct::Molecule			   molecule		  = Core::Struct::Molecule();
+	// BENCHMARK( "Open molecules" )
+	//{
+	std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
+	Core::Struct::Molecule			   molecule		  = Core::Struct::Molecule();
 
-		Test::fillStructure( *chemfileReader, molecule );
-	};
+	Test::fillStructure( *chemfileReader, molecule );
+	//};
 }
