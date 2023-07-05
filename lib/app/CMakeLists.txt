@@ -47,8 +47,6 @@ target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
 target_link_libraries(VTX_APP PRIVATE nlohmann_json::nlohmann_json)
 
 # Test.
-include(CTest)
-
 # Create executable.
 add_executable(VTX_APP_TEST test/main.cpp)
 
@@ -64,7 +62,10 @@ target_link_libraries(VTX_APP_TEST PRIVATE VTX_RENDERER)
 target_link_libraries(VTX_APP_TEST PRIVATE VTX_APP)
 
 # Catch2.
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)	
 catch_discover_tests(VTX_APP_TEST)
+endif()
 
 # Copy data.
 add_custom_target(VTX_APP_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_APP_TEST>/data)

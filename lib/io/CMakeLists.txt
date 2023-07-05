@@ -55,7 +55,9 @@ target_link_libraries(VTX_IO_TEST PRIVATE magic_enum)
 
 # Catch2.
 include(CTest)
-catch_discover_tests(VTX_IO_TEST)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+	catch_discover_tests(VTX_IO_TEST)
+endif()
 
 # Copy data.
 add_custom_target(VTX_IO_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_IO_TEST>/data)
