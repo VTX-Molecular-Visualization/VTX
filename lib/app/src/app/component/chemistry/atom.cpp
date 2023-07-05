@@ -6,15 +6,18 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	Atom::Atom() : AtomCore() {}
-	Atom::Atom( Residue * const p_residue ) : AtomCore( p_residue ) {};
-	Atom::Atom( Molecule * const p_molecule ) : AtomCore( p_molecule ) {};
-	Atom::Atom( Molecule * const p_molecule, const size_t p_index ) : AtomCore( p_molecule, p_index ) {};
+	Atom::Atom() : Core::Struct::Atom() {}
+	Atom::Atom( Residue * const p_residue ) : Core::Struct::Atom( p_residue ) {};
+	Atom::Atom( Molecule * const p_molecule ) : Core::Struct::Atom( p_molecule ) {};
+	Atom::Atom( Molecule * const p_molecule, const size_t p_index ) : Core::Struct::Atom( p_molecule, p_index ) {};
+
+	const Molecule * const Atom::getMoleculePtr() const { return static_cast<const Molecule *>( _moleculePtr ); }
+	Molecule * const	   Atom::getMoleculePtr() { return static_cast<Molecule *>( _moleculePtr ); }
 
 	void Atom::updateData()
 	{
-		_moleculePtr->setAtomRadius( _internalIndex, VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _symbol ) ] );
-		_moleculePtr->setAtomColor( _internalIndex, ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ] );
+		getMoleculePtr()->setAtomRadius( _internalIndex, VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _symbol ) ] );
+		getMoleculePtr()->setAtomColor( _internalIndex, ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ] );
 	}
 
 } // namespace VTX::App::Component::Chemistry

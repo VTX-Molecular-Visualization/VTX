@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
-#include "define.hpp"
+#include <core/struct/molecule.hpp>
 #include <util/math/aabb.hpp>
 
 namespace VTX::App::Render
@@ -12,7 +12,7 @@ namespace VTX::App::Render
 
 namespace VTX::App::Component::Chemistry
 {
-	class Molecule : public MoleculeCore
+	class Molecule : public VTX::Core::Struct::Molecule
 	{
 		friend App::Render::GPUProxyBuilder;
 		friend Chain;

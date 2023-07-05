@@ -35,6 +35,7 @@ namespace VTX::Core::Template
 			_chains.resize( p_chainCount, nullptr );
 			std::generate( _chains.begin(), _chains.end(), [ this, n = 0 ]() mutable { return new C( this, n++ ); } );
 		}
+
 		C * const				 getChain( const size_t p_chainIndex ) { return _chains[ p_chainIndex ]; }
 		const C * const			 getChain( const size_t p_chainIndex ) const { return _chains[ p_chainIndex ]; }
 		std::vector<C *> &		 getChains() { return _chains; }
@@ -75,6 +76,8 @@ namespace VTX::Core::Template
 			_bonds.resize( p_bondCount, nullptr );
 			std::generate( _bonds.begin(), _bonds.end(), [ this, n = 0 ]() mutable { return new B( this, n++ ); } );
 		}
+		B * const				 getBond( const size_t p_index ) { return _bonds[ p_index ]; }
+		const B * const			 getBond( const size_t p_index ) const { return _bonds[ p_index ]; }
 		std::vector<B *> &		 getBonds() { return _bonds; }
 		const std::vector<B *> & getBonds() const { return _bonds; }
 		size_t					 getBondCount() const { return _bonds.size(); }

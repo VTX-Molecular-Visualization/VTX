@@ -29,15 +29,23 @@ namespace VTX::Core::Template
 		ChemDB::Bond::ORDER getOrder() const { return _order; };
 		void				setOrder( const ChemDB::Bond::ORDER p_order ) { _order = p_order; };
 
-		size_t getIndexFirstAtom() const { return _moleculePtr->gpuStruct.bonds[ _internalIndex * 2 ]; }
-		void   setIndexFirstAtom( const size_t p_atomIndex )
+		size_t getIndexFirstAtom() const
 		{
-			_moleculePtr->gpuStruct.bonds[ _internalIndex * 2 ] = p_atomIndex;
+			return INVALID_INDEX;
+			// return _moleculePtr->gpuStruct.bonds[ _internalIndex * 2 ];
 		}
-		size_t getIndexSecondAtom() const { return _moleculePtr->gpuStruct.bonds[ ( _internalIndex * 2 ) + 1 ]; }
-		void   setIndexSecondAtom( const size_t p_atomIndex )
+		void setIndexFirstAtom( const size_t p_atomIndex )
 		{
-			_moleculePtr->gpuStruct.bonds[ ( _internalIndex * 2 ) + 1 ] = p_atomIndex;
+			//_moleculePtr->gpuStruct.bonds[ _internalIndex * 2 ] = p_atomIndex;
+		}
+		size_t getIndexSecondAtom() const
+		{
+			return INVALID_INDEX;
+			// return _moleculePtr->gpuStruct.bonds[ ( _internalIndex * 2 ) + 1 ];
+		}
+		void setIndexSecondAtom( const size_t p_atomIndex )
+		{
+			//_moleculePtr->gpuStruct.bonds[ ( _internalIndex * 2 ) + 1 ] = p_atomIndex;
 		}
 
 	  protected:

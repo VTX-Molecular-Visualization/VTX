@@ -2,7 +2,6 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_ATOM__
 
 #include "_fwd.hpp"
-#include "define.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/struct/atom.hpp>
 
@@ -10,13 +9,16 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Atom : public AtomCore
+	class Atom : public Core::Struct::Atom
 	{
 	  public:
 		Atom();
 		Atom( Residue * const p_residue );
 		Atom( Molecule * const p_molecule );
 		Atom( Molecule * const p_molecule, const size_t p_index );
+
+		const Molecule * const getMoleculePtr() const;
+		Molecule * const	   getMoleculePtr();
 
 		void updateData();
 

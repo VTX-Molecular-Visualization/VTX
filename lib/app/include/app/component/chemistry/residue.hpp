@@ -2,15 +2,15 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
-#include "define.hpp"
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
+#include <core/struct/residue.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Residue : public ResidueCore
+	class Residue : public Core::Struct::Residue
 	{
 	  public:
 		Residue() = default;
