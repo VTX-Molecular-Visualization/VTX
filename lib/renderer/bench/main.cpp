@@ -69,11 +69,18 @@ int main( int, char ** )
 		// 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 		// 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		// 		renderer.addMolecule( proxyMolecule );
-		// const std::string moleculeName	   = "4v6x";
-		// const std::string moleculePathname = moleculeName + ".mmtf";
-		// const FilePath	  moleculePath	   = std::filesystem::current_path() / moleculePathname;
+		try
+		{
+			const std::string moleculeName	   = "4v6x";
+			const std::string moleculePathname = moleculeName + ".mmtf";
+			const FilePath	  moleculePath	   = std::filesystem::current_path() / moleculePathname;
 
-		// std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
+			std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+		}
 
 		// Main loop.
 		while ( isRunning )

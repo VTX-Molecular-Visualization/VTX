@@ -1,7 +1,6 @@
 #ifndef __VTX_IO_TEST_FILL_MOLECULE__
 #define __VTX_IO_TEST_FILL_MOLECULE__
 
-#include "_fwd.hpp"
 #include "io/reader/chemfiles.hpp"
 #include <core/chemdb/category.hpp>
 #include <core/struct/_fwd.hpp>

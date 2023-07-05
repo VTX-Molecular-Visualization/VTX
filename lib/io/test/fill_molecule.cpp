@@ -1,5 +1,4 @@
 #include "fill_molecule.hpp"
-#include "define.hpp"
 #include <core/struct/atom.hpp>
 #include <core/struct/bond.hpp>
 #include <core/struct/chain.hpp>
