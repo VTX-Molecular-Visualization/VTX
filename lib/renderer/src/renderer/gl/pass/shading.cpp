@@ -56,6 +56,12 @@ namespace VTX::Renderer::GL::Pass
 		_ubo->setSub( p_factor, offsetof( StructUniforms, specularFactor ), sizeof( float ) );
 	}
 
+	void Shading::setToonSteps( uint p_steps )
+	{
+		uniforms.toonSteps = p_steps;
+		_ubo->setSub( p_steps, offsetof( StructUniforms, toonSteps ), sizeof( uint ) );
+	}
+
 	void Shading::setColorBackground( const Util::Color::Rgba & p_color )
 	{
 		uniforms.colorBackground = p_color;

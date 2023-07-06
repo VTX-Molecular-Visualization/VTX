@@ -2,8 +2,11 @@
 #include "input_manager.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
-#include <io/reader/chemfiles.hpp>
+#include <core/chemdb/atom.hpp>
+#include <core/flat_struct/molecule.hpp>
+#include <io/reader/flat_molecule.hpp>
 #include <iostream>
+#include <numeric>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/render_graph.hpp>
 #include <util/math.hpp>
@@ -64,18 +67,66 @@ int main( int, char ** )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		// Model.
-		// 		Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
+		// Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
 		// 		StructProxyMolecule proxyMolecule
 		// 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 		// 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		// 		renderer.addMolecule( proxyMolecule );
 		try
 		{
-			const std::string moleculeName	   = "4v6x";
-			const std::string moleculePathname = moleculeName + ".mmtf";
-			const FilePath	  moleculePath	   = std::filesystem::current_path() / moleculePathname;
+			const std::string name = "4v6x.mmtf";
+			const FilePath	  path = std::filesystem::current_path() / name;
 
-			std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
+			// Read model file.
+			Reader::FlatMolecule			reader;
+			VTX::Core::FlatStruct::Molecule molecule;
+			reader.readFile( path, molecule );
+
+			// Proxify.
+			// Move or maybe redo.
+			float timeProxify = Util::CHRONO_CPU(
+				[ & ]()
+				{
+					size_t										   size	   = molecule.trajectory.frames.front().size();
+					std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
+					std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
+					std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
+					std::vector<float> radii( size );
+					std::generate( radii.begin(),
+								   radii.end(),
+								   [ &symbols ]
+								   {
+									   static int i = 0;
+									   return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
+								   } );
+					std::vector<uint> visibilities = std::vector<uint>( size, 1 );
+					std::vector<uint> selections   = std::vector<uint>( size, 0 );
+					std::vector<uint> ids( size );
+					std::iota( ids.begin(), ids.end(), 0 );
+					size_t			  bondsCount = molecule.bondOrders.size();
+					std::vector<uint> bondsIndex( bondsCount * 2 );
+					for ( uint i = 0; i < bondsCount; ++i )
+					{
+						bondsIndex[ i * 2 + 0 ] = uint( molecule.bondFirstAtomIndexes[ i ] );
+						bondsIndex[ i * 2 + 1 ] = uint( molecule.bondSecondAtomIndexes[ i ] );
+					}
+
+					// TODO:
+					// Use struct ssbo for atom infos by symbol (like radius).
+					// Setup color ssbo and layout.
+					// Setup representation ssbo and layout.
+					// Persisted data in CPU cache with smart ptr?
+					StructProxyMolecule proxyMolecule = { &molecule.transform,
+														  &molecule.trajectory.frames.front(),
+														  &colors,
+														  &radii,
+														  &visibilities,
+														  &selections,
+														  &ids,
+														  &bondsIndex };
+					renderer.addMolecule( proxyMolecule );
+				} );
+			VTX_INFO( "Proxify time: {}", timeProxify );
 		}
 		catch ( const std::exception & p_e )
 		{

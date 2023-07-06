@@ -19,6 +19,7 @@ namespace VTX::Renderer::GL::Pass
 
 		void setMode( const ENUM_SHADING );
 		void setSpecularFactor( const float );
+		void setToonSteps( const uint );
 		void setColorBackground( const Util::Color::Rgba & );
 		void setColorLight( const Util::Color::Rgba & );
 		void setColorFog( const Util::Color::Rgba & );
@@ -47,6 +48,7 @@ namespace VTX::Renderer::GL::Pass
 			Util::Color::Rgba colorFog		  = COLOR_FOG_DEFAULT;
 			int32_t			  shadingMode	  = SHADING_MODE_DEFAULT;
 			float			  specularFactor  = SPECULAR_FACTOR_DEFAULT;
+			uint			  toonSteps		  = TOON_STEPS_DEFAULT;
 			float			  fogNear		  = FOG_NEAR_DEFAULT;
 			float			  fogFar		  = FOG_FAR_DEFAULT;
 			float			  fogDensity	  = FOG_DENSITY_DEFAULT;
@@ -57,17 +59,21 @@ namespace VTX::Renderer::GL::Pass
 		inline static const Util::Color::Rgba COLOR_FOG_DEFAULT		   = COLOR_WHITE;
 		inline static const ENUM_SHADING	  SHADING_MODE_DEFAULT	   = ENUM_SHADING::DIFFUSE;
 		inline static const float			  SPECULAR_FACTOR_DEFAULT  = 0.4f;
-		inline static const float			  SPECULAR_FACTOR_MIN	   = 0.f;
-		inline static const float			  SPECULAR_FACTOR_MAX	   = 1.f;
-		inline static const float			  FOG_NEAR_DEFAULT		   = 30;
-		inline static const float			  FOG_NEAR_MIN			   = 0.f;
-		inline static const float			  FOG_NEAR_MAX			   = 1000.f;
-		inline static const float			  FOG_FAR_DEFAULT		   = 80.f;
-		inline static const float			  FOG_FAR_MIN			   = 0.f;
-		inline static const float			  FOG_FAR_MAX			   = 1000.f;
-		inline static const float			  FOG_DENSITY_DEFAULT	   = 0.f;
-		inline static const float			  FOG_DENSITY_MIN		   = 0.f;
-		inline static const float			  FOG_DENSITY_MAX		   = 1.f;
+
+		inline static const float SPECULAR_FACTOR_MIN = 0.f;
+		inline static const float SPECULAR_FACTOR_MAX = 1.f;
+		inline static const uint  TOON_STEPS_DEFAULT  = 4;
+		inline static const uint  TOON_STEPS_MIN	  = 1;
+		inline static const uint  TOON_STEPS_MAX	  = 15;
+		inline static const float FOG_NEAR_DEFAULT	  = 30;
+		inline static const float FOG_NEAR_MIN		  = 0.f;
+		inline static const float FOG_NEAR_MAX		  = 1000.f;
+		inline static const float FOG_FAR_DEFAULT	  = 80.f;
+		inline static const float FOG_FAR_MIN		  = 0.f;
+		inline static const float FOG_FAR_MAX		  = 1000.f;
+		inline static const float FOG_DENSITY_DEFAULT = 0.f;
+		inline static const float FOG_DENSITY_MIN	  = 0.f;
+		inline static const float FOG_DENSITY_MAX	  = 1.f;
 
 	  private:
 		std::unique_ptr<Buffer> _ubo;
