@@ -15,10 +15,10 @@ namespace VTX::App::Component::Chemistry
 	class Molecule : public VTX::Core::Struct::Molecule
 	{
 		friend App::Render::GPUProxyBuilder;
-		friend Chain;
-		friend Residue;
-		friend Atom;
-		friend Bond;
+		friend Component::Chemistry::Chain;
+		friend Component::Chemistry::Residue;
+		friend Component::Chemistry::Atom;
+		friend Component::Chemistry::Bond;
 
 	  public:
 		void initAtoms( const size_t p_atomCount );

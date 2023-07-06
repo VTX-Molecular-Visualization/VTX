@@ -1,8 +1,7 @@
-#include "fill_molecule.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/molecule.hpp>
-#include <io/reader/chemfiles.hpp>
+#include <io/reader/molecule.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -17,9 +16,9 @@ TEST_CASE( "VTX_IO - Test", "[integration]" )
 
 	BENCHMARK( "Open molecules" )
 	{
-		std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( moleculePath );
-		Core::Struct::Molecule			   molecule		  = Core::Struct::Molecule();
+		VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+		IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
 
-		Test::fillStructure( *chemfileReader, molecule );
+		moleculeReader.readFile( moleculePath, molecule );
 	};
 }

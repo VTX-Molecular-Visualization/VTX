@@ -23,8 +23,8 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
 
-		int	 getIndexInOriginalChain() { return _indexInOriginalChain; };
-		void setIndexInOriginalChain( const int p_indexInOriginalChain )
+		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
+		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
 		{
 			_indexInOriginalChain = p_indexInOriginalChain;
 		};
@@ -37,7 +37,7 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
-		int					  _indexInOriginalChain = 0;
+		size_t				  _indexInOriginalChain = INVALID_INDEX;
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
 		char				  _insertionCode		= ' ';
 

@@ -1,4 +1,5 @@
 #include "io/reader/chemfiles.hpp"
+#include "io/internal/chemfiles_reading_data.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -41,26 +42,26 @@ namespace VTX::IO::Reader
 		return chemfilesReader;
 	}
 
-	Chemfiles::Chemfiles( const FilePath & p_path ) :
-		_path( p_path ), _trajectory( chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) ) )
+	Chemfiles::Chemfiles( const FilePath & p_path )
 	{
+		_readingData = std::make_unique<Internal::ChemfilesReadingData>( p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
-	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) :
-		_path( p_path ),
-		_trajectory( chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), _getFormat( p_path ) ) )
+	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) : _path( p_path )
 	{
+		_readingData = std::make_unique<Internal::ChemfilesReadingData>( p_buffer, p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
+	Chemfiles ::~Chemfiles() = default;
 
 	void Chemfiles::_readTrajectory()
 	{
-		if ( _trajectory.nsteps() == 0 )
+		if ( _readingData->_trajectory.nsteps() == 0 )
 		{
 			throw IOException( "Trajectory is empty" );
 		}
 
-		VTX_INFO( "{} frames found.", _trajectory.nsteps() );
+		VTX_INFO( "{} frames found.", _readingData->_trajectory.nsteps() );
 
 		Util::Chrono chrono;
 
@@ -104,20 +105,14 @@ namespace VTX::IO::Reader
 			{
 				// usefull ?
 				// chemfiles::Trajectory topolgy_file( stem + foundExtension, 'r' );
-				_trajectory.set_topology( stem + foundExtension );
+				_readingData->_trajectory.set_topology( stem + foundExtension );
 			}
 		}
 	}
-	void Chemfiles::_read()
-	{
-		_currentFrame = _trajectory.read();
-		_topology	  = _currentFrame.topology();
-		_residues	  = &( _topology.residues() );
-		_bonds		  = &( _topology.bonds() );
-	}
+	void Chemfiles::_read() { _readingData->read(); }
 	void Chemfiles::_postRead()
 	{
-		const std::vector<chemfiles::Residue> & residues = _topology.residues();
+		const std::vector<chemfiles::Residue> & residues = *( _readingData->_residues );
 
 		if ( residues.size() == 0 )
 		{
@@ -125,24 +120,25 @@ namespace VTX::IO::Reader
 			// TODO: check file format instead of residue count?
 			VTX_INFO( "No residues found" );
 			chemfiles::Residue residue = chemfiles::Residue( "UNK", 0 );
-			for ( size_t i = 0; i < _currentFrame.size(); ++i )
+			for ( size_t i = 0; i < _readingData->_currentFrame.size(); ++i )
 			{
 				residue.add_atom( i );
 			}
-			_currentFrame.add_residue( residue );
+			_readingData->_currentFrame.add_residue( residue );
 		}
 
-		if ( _currentFrame.size() != _topology.size() )
+		if ( _readingData->_currentFrame.size() != _readingData->_topology.size() )
 		{
 			throw IOException( "Data count missmatch" );
 		}
 
 		// Check properties, same for all atoms/residues?
-		if ( _currentFrame.size() > 0 )
+		if ( _readingData->_currentFrame.size() > 0 )
 		{
-			std::string propAtom = std::to_string( _currentFrame[ 0 ].properties().size() ) + " properties in atoms:";
-			for ( chemfiles::property_map::const_iterator it = _currentFrame[ 0 ].properties().begin();
-				  it != _currentFrame[ 0 ].properties().end();
+			std::string propAtom
+				= std::to_string( _readingData->_currentFrame[ 0 ].properties().size() ) + " properties in atoms:";
+			for ( chemfiles::property_map::const_iterator it = _readingData->_currentFrame[ 0 ].properties().begin();
+				  it != _readingData->_currentFrame[ 0 ].properties().end();
 				  ++it )
 			{
 				propAtom += " " + it->first;
@@ -165,13 +161,100 @@ namespace VTX::IO::Reader
 		}
 	}
 
-	void Chemfiles::readNextFrame() { _currentFrame = _trajectory.read(); }
+	void Chemfiles::readNextFrame() { _readingData->readNextFrame(); }
 
-	std::vector<Vec3f> Chemfiles::getCurrentFrameAtomPosition() const
+	// Trajectory //////////////////////////////////
+	size_t Chemfiles::getFrameCount() const { return _readingData->_trajectory.nsteps(); }
+	size_t Chemfiles::getResidueCount() const { return _readingData->_residues->size(); }
+	size_t Chemfiles::getAtomCount() const { return _readingData->_currentFrame.size(); }
+	size_t Chemfiles::getBondCount() const { return _readingData->_currentFrame.topology().bonds().size(); }
+
+	// Frame //////////////////////////////////
+	const std::string Chemfiles::getFrameName() const
+	{
+		return _readingData->_currentFrame.get( "name" ) ? _readingData->_currentFrame.get( "name" )->as_string() : "";
+	}
+	const std::string Chemfiles::getPdbIdCode() const
+	{
+		return _readingData->_currentFrame.get( "pdb_idcode" )
+				   ? _readingData->_currentFrame.get( "pdb_idcode" )->as_string()
+				   : "";
+	}
+
+	// Residues //////////////////////////////////
+	void Chemfiles::setCurrentResidue( const size_t p_residueIndex )
+	{
+		_readingData->_currentResidue = &( ( *_readingData->_residues )[ p_residueIndex ] );
+	}
+	const std::string Chemfiles::getCurrentResidueStringProperty( const std::string & p_property,
+																  const std::string & p_defaultValue ) const
+	{
+		// Seems to be faster that way than using value_or function for string&.
+		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
+			= _readingData->_currentResidue->properties().get( p_property );
+		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
+	}
+	const double Chemfiles::getCurrentResidueDoubleProperty( const std::string & p_property,
+															 const double		 p_defaultValue ) const
+	{
+		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
+	}
+	const bool Chemfiles::getCurrentResidueBoolProperty( const std::string & p_property,
+														 const bool			 p_defaultValue ) const
+	{
+		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
+	}
+
+	const std::string & Chemfiles::getCurrentResidueName() const { return _readingData->_currentResidue->name(); }
+	const size_t		Chemfiles::getCurrentResidueId() const
+	{
+		return _readingData->_currentResidue->id().value_or( INVALID_INDEX );
+	}
+	const size_t Chemfiles::getCurrentResidueFirstAtomIndex() const
+	{
+		return *( _readingData->_currentResidue->begin() );
+	}
+	const size_t Chemfiles::getCurrentResidueAtomCount() const { return _readingData->_currentResidue->size(); }
+
+	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorBegin() const
+	{
+		return _readingData->_currentResidue->cbegin();
+	}
+	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorEnd() const
+	{
+		return _readingData->_currentResidue->cend();
+	}
+
+	// Atom //////////////////////////////////////
+	void Chemfiles::setCurrentAtom( const size_t p_index )
+	{
+		_readingData->_currentAtom		= &( _readingData->_currentFrame[ p_index ] );
+		_readingData->_currentAtomIndex = p_index;
+	}
+	const std::string Chemfiles::getCurrentAtomStringProperty( const std::string & p_property,
+															   const std::string & p_defaultValue ) const
+	{
+		// Seems to be faster that way than using value_or function for string&.
+		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
+			= _readingData->_currentAtom->properties().get( p_property );
+		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
+	}
+	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property,
+														  const double		  p_defaultValue ) const
+	{
+		return _readingData->_currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
+	}
+	const bool Chemfiles::getCurrentAtomBoolProperty( const std::string & p_property, const bool p_defaultValue ) const
+	{
+		return _readingData->_currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
+	}
+
+	const std::string & Chemfiles::getCurrentAtomName() const { return _readingData->_currentAtom->name(); }
+	std::vector<Vec3f>	Chemfiles::getCurrentFrameAtomPosition() const
 	{
 		std::vector<Vec3f> res = std::vector<Vec3f>();
 
-		const std::vector<chemfiles::Vector3D> & positions = _currentFrame.positions();
+		const chemfiles::span<chemfiles::Vector3D> & positions = _readingData->_currentFrame.positions();
 
 		res.resize( positions.size() );
 
@@ -183,18 +266,35 @@ namespace VTX::IO::Reader
 
 		return res;
 	}
-
 	VTX::Core::ChemDB::Atom::SYMBOL Chemfiles::getCurrentAtomSymbol() const
 	{
-		return VTX::Core::ChemDB::Atom::getSymbolFromString( _currentAtom->type() );
+		return VTX::Core::ChemDB::Atom::getSymbolFromString( _readingData->_currentAtom->type() );
 	}
+	int Chemfiles::getCurrentAtomType() const { return int( getCurrentAtomDoubleProperty( "atom_type", -1. ) ); }
 
 	Vec3f Chemfiles::getCurrentAtomPosition() const
 	{
-		const std::vector<chemfiles::Vector3D> & positions = _currentFrame.positions();
-		const chemfiles::Vector3D &				 position  = positions[ _currentAtomIndex ];
+		const chemfiles::span<chemfiles::Vector3D> & positions = _readingData->_currentFrame.positions();
+		const chemfiles::Vector3D &					 position  = positions[ _readingData->_currentAtomIndex ];
 
 		return Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
+	}
+
+	// Bonds /////////////////////////////////////////
+	void Chemfiles::setCurrentBond( const size_t p_bondIndex )
+	{
+		_readingData->_currentBond		= &( ( *_readingData->_bonds )[ p_bondIndex ] );
+		_readingData->_currentBondIndex = p_bondIndex;
+	}
+
+	size_t Chemfiles::getCurrentBondFirstAtomIndex() const { return ( *_readingData->_currentBond )[ 0 ]; }
+	size_t Chemfiles::getCurrentBondSecondAtomIndex() const { return ( *_readingData->_currentBond )[ 1 ]; }
+
+	const VTX::Core::ChemDB::Bond::ORDER Chemfiles::getCurrentBondOrder() const
+	{
+		const chemfiles::Bond::BondOrder & bondOrder
+			= _readingData->_topology.bond_orders()[ _readingData->_currentBondIndex ];
+		return VTX::Core::ChemDB::Bond::ORDER( int( bondOrder ) );
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats

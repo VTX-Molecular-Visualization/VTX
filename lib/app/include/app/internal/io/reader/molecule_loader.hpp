@@ -20,7 +20,7 @@ namespace VTX::App::Internal::IO::Reader
 		void readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule ) override;
 		void readBuffer( const std::string &, const FilePath &, App::Component::Chemistry::Molecule & ) override;
 
-		std::vector<Vec3f> readTrajectoryFrame( chemfiles::Trajectory & p_trajectory );
+		std::vector<Vec3f> readTrajectoryFrame( VTX::IO::Reader::Chemfiles & p_chemfilesReader );
 		void			   fillTrajectoryFrame( App::Component::Chemistry::Molecule & p_molecule,
 												const size_t						  p_moleculeFrameIndex,
 												const std::vector<Vec3f> &			  p_atomPositions );
@@ -33,7 +33,7 @@ namespace VTX::App::Internal::IO::Reader
 		const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 
 		void _readTrajectoryFrames(
-			chemfiles::Trajectory &														  p_trajectory,
+			VTX::IO::Reader::Chemfiles &												  p_chemfilesReader,
 			const std::vector<std::pair<App::Component::Chemistry::Molecule *, size_t>> & p_targets,
 			const size_t																  p_trajectoryFrameStart = 0 );
 
