@@ -106,6 +106,8 @@ namespace VTX::Renderer::GL
 		void		setPixelizeBackground( const bool p_background );
 
 		// Times.
+		inline bool isTimersEnabled() const { return _enableTimers; }
+		void		setTimersEnabled( const bool p_enable ) { _enableTimers = p_enable; }
 		inline std::array<float, ENUM_TIME_ITEM::COUNT> & getTimes() { return _times; }
 
 		// Opengl infos.
@@ -187,15 +189,24 @@ namespace VTX::Renderer::GL
 		std::unique_ptr<Cubemap> _skybox;
 
 		// Bench.
+		bool									 _enableTimers = true;
 		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
 
 		using Task										= std::function<void()>;
-		std::function<float( const Task & )> _funChrono = []( const Task & p_task )
+		std::function<float( const Task & )> _funChrono = [ this ]( const Task & p_task )
 		{
-			Chrono chrono;
-			chrono.start();
-			p_task();
-			return float( chrono.stop() );
+			if ( _enableTimers )
+			{
+				Chrono chrono;
+				chrono.start();
+				p_task();
+				return float( chrono.stop() );
+			}
+			else
+			{
+				p_task();
+				return 0.f;
+			}
 		};
 
 		// Specs.

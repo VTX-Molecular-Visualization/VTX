@@ -65,7 +65,6 @@ FetchContent_MakeAvailable(Catch2)
 
 # Catch2 configuration.
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-include(CTest)
 include(Catch)
 
 # Create executable.
@@ -78,4 +77,7 @@ target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(VTX_UTIL_TEST PRIVATE VTX_UTIL)
 
 # Catch2.
-catch_discover_tests(VTX_UTIL_TEST)
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+	catch_discover_tests(VTX_UTIL_TEST)
+endif()

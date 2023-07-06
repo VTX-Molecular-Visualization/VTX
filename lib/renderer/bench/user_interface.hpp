@@ -309,22 +309,27 @@ namespace VTX::Bench
 			ImGui::End();
 
 			// Times.
-			auto &				times	 = p_renderer->getTimes();
-			static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
-											 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
-			ImGui::Begin( "Times (ms)" );
-
-			const float max = *std::max_element( times.begin(), times.end() );
-			for ( size_t i = 0; i < times.size(); ++i )
+			bool isTimersEnabled = p_renderer->isTimersEnabled();
+			if ( isTimersEnabled )
 			{
-				ImGui::ProgressBar( times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
-				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-				ImGui::Text( labels[ i ] );
+				auto &				times	 = p_renderer->getTimes();
+				static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
+												 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
+				ImGui::Begin( "Times (ms)" );
+
+				const float max = *std::max_element( times.begin(), times.end() );
+				for ( size_t i = 0; i < times.size(); ++i )
+				{
+					ImGui::ProgressBar( times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
+					ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+					ImGui::Text( labels[ i ] );
+				}
+
+				ImGui::End();
 			}
 
-			ImGui::End();
-
 			// Misc.
+
 			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
 			static uint64_t		  lastTime						= 0;
 			const uint64_t		  now							= SDL_GetPerformanceCounter();
@@ -352,6 +357,10 @@ namespace VTX::Bench
 			if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
 			{
 				setVSync( _vsync );
+			}
+			if ( ImGui::Checkbox( "Enable timvers", &isTimersEnabled ) )
+			{
+				p_renderer->setTimersEnabled( isTimersEnabled );
 			}
 			ImGui::End();
 
