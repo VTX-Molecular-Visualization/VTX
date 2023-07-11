@@ -25,6 +25,7 @@
 #include "vertex_array.hpp"
 #include <array>
 #include <functional>
+#include <util/chrono.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -74,6 +75,8 @@ namespace VTX::Renderer::GL
 		void				setShadingMode( const ENUM_SHADING p_shading );
 		inline float		getSpecularFactor() const { return _passShading->uniforms.specularFactor; }
 		void				setSpecularFactor( const float p_specularFactor );
+		inline uint			getToonSteps() const { return _passShading->uniforms.toonSteps; }
+		void				setToonSteps( const uint p_steps );
 		inline const Util::Color::Rgba & getColorBackground() const { return _passShading->uniforms.colorBackground; }
 		void							 setColorBackground( const Util::Color::Rgba & p_color );
 		inline const Util::Color::Rgba & getColorLight() const { return _passShading->uniforms.colorLight; }
@@ -192,8 +195,7 @@ namespace VTX::Renderer::GL
 		bool									 _enableTimers = true;
 		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
 
-		using Task										= std::function<void()>;
-		std::function<float( const Task & )> _funChrono = [ this ]( const Task & p_task )
+		std::function<float( const Util::Chrono::Task & )> _funChronoGPU = [ this ]( const Util::Chrono::Task & p_task )
 		{
 			if ( _enableTimers )
 			{

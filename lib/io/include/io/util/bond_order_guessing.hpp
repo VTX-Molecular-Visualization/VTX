@@ -99,12 +99,12 @@ namespace VTX::IO::Util
 
 		static float _computeAverageRingDotCross( const chemfiles::Frame &	  p_frame,
 												  const std::vector<size_t> & p_atoms,
-												  const int					  p_atomCount,
+												  const size_t				  p_atomCount,
 												  chemfiles::Vector3D &		  dir );
 
 		static bool _verifyPlanarBonds( const chemfiles::Frame &				 p_frame,
 										const std::vector<size_t> &				 p_atoms,
-										const int								 p_atomCount,
+										const size_t							 p_atomCount,
 										const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 										const chemfiles::Vector3D &				 dir,
 										const float								 cutoff );
