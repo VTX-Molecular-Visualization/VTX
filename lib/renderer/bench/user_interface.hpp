@@ -153,6 +153,7 @@ namespace VTX::Bench
 
 			Renderer::GL::ENUM_SHADING shadingMode	  = p_renderer->getShadingMode();
 			float					   specularFactor = p_renderer->getSpecularFactor();
+			int						   toonSteps	  = p_renderer->getToonSteps();
 			Util::Color::Rgba		   colorBG		  = p_renderer->getColorBackground();
 			Util::Color::Rgba		   colorLight	  = p_renderer->getColorLight();
 			Util::Color::Rgba		   colorFog		  = p_renderer->getColorFog();
@@ -212,6 +213,16 @@ namespace VTX::Bench
 											 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX ) )
 					{
 						p_renderer->setSpecularFactor( specularFactor );
+					}
+				}
+				else if ( shadingMode == Renderer::GL::ENUM_SHADING::TOON )
+				{
+					if ( ImGui::SliderInt( "Steps",
+										   &toonSteps,
+										   Renderer::GL::Pass::Shading::TOON_STEPS_MIN,
+										   Renderer::GL::Pass::Shading::TOON_STEPS_MAX ) )
+					{
+						p_renderer->setToonSteps( toonSteps );
 					}
 				}
 				if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
@@ -358,7 +369,7 @@ namespace VTX::Bench
 			{
 				setVSync( _vsync );
 			}
-			if ( ImGui::Checkbox( "Enable timvers", &isTimersEnabled ) )
+			if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
 			{
 				p_renderer->setTimersEnabled( isTimersEnabled );
 			}

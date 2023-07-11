@@ -15,6 +15,7 @@ layout ( std140, binding = 3 ) uniform Uniforms
 	vec4 colorFog;	
 	int shadingMode;
 	float specularFactor;		
+	uint toonSteps;
 	float fogNear;
 	float fogFar;
 	float fogDensity;
@@ -53,6 +54,7 @@ void main()
 
 	// FLAT_COLOR.
 	float lighting = 1.f;
+
 	// DIFFUSE.
 	if( uniforms.shadingMode == DIFFUSE )
 	{		
@@ -73,10 +75,17 @@ void main()
 	{
 		const float intensity = dot( data.normal, lightDir );		
 
-		if ( intensity < 0.25f ) lighting = 0.2f;
-		else if ( intensity < 0.5f ) lighting = 0.4f;
-		else if ( intensity < 0.75f ) lighting = 0.55f;
-		else if ( intensity < 0.95f ) lighting = 0.7f;
+		// TODO: move to CPU.
+		// Set ligting base on intensity and toon steps.
+		for( uint i = 0; i < uniforms.toonSteps; ++i )
+		{
+			const float range = float( i + 1 ) / float( uniforms.toonSteps );
+			if ( intensity < range )
+			{
+				lighting = range;
+				break;
+			}
+		}
 	}
 
 	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;

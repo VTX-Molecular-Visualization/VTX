@@ -107,31 +107,31 @@ namespace VTX::Renderer::GL
 				_uboCamera->bind( GL_UNIFORM_BUFFER, 15 );
 
 				_times.fill( 0.f );
-				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChrono( [ & ]() { _passGeometric->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChronoGPU( [ & ]() { _passGeometric->render( *_vao ); } );
 				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
-					= _funChrono( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
+					= _funChronoGPU( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
 				if ( _activeSSAO )
 				{
-					_times[ ENUM_TIME_ITEM::SSAO ] = _funChrono( [ & ]() { _passSSAO->render( *_vao ); } );
-					_times[ ENUM_TIME_ITEM::BLUR ] = _funChrono( [ & ]() { _passBlur->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::SSAO ] = _funChronoGPU( [ & ]() { _passSSAO->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::BLUR ] = _funChronoGPU( [ & ]() { _passBlur->render( *_vao ); } );
 				}
-				_times[ ENUM_TIME_ITEM::SHADING ] = _funChrono( [ & ]() { _passShading->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::SHADING ] = _funChronoGPU( [ & ]() { _passShading->render( *_vao ); } );
 				if ( _activeOutline )
 				{
-					_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChrono( [ & ]() { _passOutline->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChronoGPU( [ & ]() { _passOutline->render( *_vao ); } );
 				}
-				_times[ ENUM_TIME_ITEM::SELECTION ] = _funChrono( [ & ]() { _passSelection->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::SELECTION ] = _funChronoGPU( [ & ]() { _passSelection->render( *_vao ); } );
 
 				if ( _activeFXAA )
 				{
-					_times[ ENUM_TIME_ITEM::FXAA ] = _funChrono( [ & ]() { _passFXAA->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::FXAA ] = _funChronoGPU( [ & ]() { _passFXAA->render( *_vao ); } );
 				}
 				if ( _activePixelize )
 				{
-					_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChrono( [ & ]() { _passPixelize->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChronoGPU( [ & ]() { _passPixelize->render( *_vao ); } );
 				}
 				// Copy to output (temp).
-				_times[ ENUM_TIME_ITEM::BLIT ] = _funChrono(
+				_times[ ENUM_TIME_ITEM::BLIT ] = _funChronoGPU(
 					[ & ]()
 					{
 						glBindFramebuffer( GL_READ_FRAMEBUFFER,
@@ -263,6 +263,8 @@ namespace VTX::Renderer::GL
 	{
 		_passShading->setSpecularFactor( p_specularFactor );
 	}
+
+	void OpenGLRenderer::setToonSteps( const uint p_steps ) { _passShading->setToonSteps( p_steps ); }
 
 	void OpenGLRenderer::setColorBackground( const Util::Color::Rgba & p_color )
 	{

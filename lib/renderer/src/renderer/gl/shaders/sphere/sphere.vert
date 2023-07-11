@@ -12,8 +12,8 @@ layout( location = 5 ) in uint  inSphereId;
 
 // TODO: move that.
 uniform float u_radiusAdd	  = 0.f;
-uniform float u_radiusFixed	  = 1.f;
-uniform bool  u_isRadiusFixed = false;
+uniform float u_radiusFixed	  = 0.4f;
+uniform bool  u_isRadiusFixed = true;
 
 // Out.
 out 

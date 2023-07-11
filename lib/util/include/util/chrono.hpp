@@ -2,6 +2,7 @@
 #define __VTX_UTIL_CHRONO__
 
 #include <chrono>
+#include <functional>
 #include <string>
 
 namespace VTX::Util
@@ -9,6 +10,8 @@ namespace VTX::Util
 	class Chrono
 	{
 	  public:
+		using Task = std::function<void()>;
+
 		static long long getTimestamp();
 
 		void		start();
@@ -26,6 +29,15 @@ namespace VTX::Util
 		Clock::time_point _begin;
 		Clock::time_point _interval;
 		Clock::time_point _end;
+	};
+
+	static std::function<float( const Chrono::Task & )> CHRONO_CPU = []( const Chrono::Task & p_task )
+	{
+		static Chrono c;
+		c.start();
+		p_task();
+		c.stop();
+		return c.elapsedTime();
 	};
 } // namespace VTX::Util
 #endif
