@@ -1,7 +1,10 @@
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
+#include <app/component/chemistry/flat/molecule.hpp>
+#include <app/component/chemistry/flat/residue.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
 #include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
@@ -17,6 +20,10 @@
 #include <util/types.hpp>
 #include <vector>
 
+// std::string MOLECULE_TEST_NAME = "1AGA";
+std::string MOLECULE_TEST_NAME = "8OIT";
+// std::string MOLECULE_TEST_NAME = "7Y7A";
+
 void initApp()
 {
 	using namespace VTX::App;
@@ -27,6 +34,8 @@ void initApp()
 		VTXApp::get().start( {} );
 		isInit = true;
 	}
+
+	VTXApp::get().getScene().reset();
 }
 
 // TEST_CASE( "VTX_APP - EnTT perfs", "[.] [perfs]" )
@@ -132,7 +141,7 @@ void initApp()
 //	};
 // }
 
-TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
+TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -143,8 +152,7 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 		bool checked = false;
 	};
 
-	const std::string moleculeName	   = "8OIT";
-	const std::string moleculePathname = moleculeName + ".mmtf";
+	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
 
 	initApp();
 
@@ -169,7 +177,7 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
-	moleculeEntity = scene.getItem( moleculeName );
+	moleculeEntity = scene.getItem( MOLECULE_TEST_NAME );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
@@ -194,13 +202,12 @@ TEST_CASE( "VTX_APP - Full sequence", " [integration]" )
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == size_t( 2 ) );
 };
 
-TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
+TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const std::string moleculeName	   = "8OIT";
-	const std::string moleculePathname = moleculeName + ".mmtf";
+	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
 
 	// Create Scene
 	initApp();
@@ -211,7 +218,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
 	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
 
 	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
-
+	openAction.execute();
 	BENCHMARK( "Open molecules" ) { openAction.execute(); };
 
 	int i = 0;
@@ -221,5 +228,124 @@ TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
 		i++;
 	};
 
+	App::Core::ECS::BaseEntity			   moleculeEntity = scene.getItem( 0 );
+	const Component::Chemistry::Molecule & molecule
+		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
+
+	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
+
+	size_t sumAtomCount = 0;
+	BENCHMARK( "Data access" )
+	{
+		for ( int i = 0; i < 100000; i++ )
+			sumAtomCount += residue.getAtomCount();
+	};
+
 	BENCHMARK( "View all" ) { entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>(); };
+}
+
+TEST_CASE( "VTX_APP - Flat Structure - Full sequence", "[integration]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	class CallbackTest
+	{
+	  public:
+		bool checked = false;
+	};
+
+	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
+
+	initApp();
+
+	// Create Scene
+	Application::Scene & scene			  = VTXApp::get().getScene();
+	CallbackTest		 addSceneItemTest = CallbackTest();
+	scene.onSceneItemAddedCallback().addCallback(
+		&addSceneItemTest,
+		[ &addSceneItemTest ]( Component::Scene::SceneItemComponent & p_sceneItem )
+		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
+
+	// Create MoleculeEntity
+	const FilePath					moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	Internal::Action::ECS::OpenFlat openAction	 = Internal::Action::ECS::OpenFlat( moleculePath );
+	openAction.execute();
+
+	REQUIRE( addSceneItemTest.checked );
+
+	// Pick first Molecule
+	REQUIRE( scene.getItemCount() == 1 );
+
+	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+
+	moleculeEntity = scene.getItem( MOLECULE_TEST_NAME );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+
+	Component::Scene::SceneItemComponent & sceneItem
+		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
+
+	CallbackTest renameTest = CallbackTest();
+
+	sceneItem.onNameChange().addCallback(
+		&renameTest, [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; } );
+	sceneItem.setName( "Zouzou" );
+
+	REQUIRE( sceneItem.getName() == "Zouzou" );
+	REQUIRE( renameTest.checked );
+
+	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Flat::Molecule>();
+	REQUIRE( view.size_hint() == 1 );
+
+	Renderer::GL::StructProxyMolecule & gpuProxyComponent
+		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+
+	REQUIRE( gpuProxyComponent.atomIds != nullptr );
+	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );
+}
+
+TEST_CASE( "VTX_APP - Flat Structure -  Benchmark", "[.][perfs]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
+
+	// Create Scene
+	initApp();
+
+	const Application::Scene & scene = VTXApp::get().getScene();
+
+	// Create MoleculeEntity
+	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+
+	Internal::Action::ECS::OpenFlat openAction = Internal::Action::ECS::OpenFlat( moleculePath );
+	openAction.execute();
+	BENCHMARK( "Open molecules" ) { openAction.execute(); };
+
+	int i = 0;
+	BENCHMARK( "Get" )
+	{
+		App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( i );
+		i++;
+	};
+
+	App::Core::ECS::BaseEntity					 moleculeEntity = scene.getItem( 0 );
+	const Component::Chemistry::Flat::Molecule & molecule
+		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Flat::Molecule>( moleculeEntity );
+
+	const Component::Chemistry::Flat::Residue & residue = *molecule.getResidue( 0 );
+
+	size_t sumAtomCount = 0;
+	BENCHMARK( "Data access" )
+	{
+		for ( int i = 0; i < 100000; i++ )
+			sumAtomCount += residue.getAtomCount();
+	};
+
+	BENCHMARK( "View all" )
+	{
+		entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Flat::Molecule>();
+	};
 }

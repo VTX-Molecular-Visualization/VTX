@@ -43,4 +43,20 @@ namespace VTX::App::Internal::Action::ECS
 		}
 	}
 
+	void OpenFlat::execute()
+	{
+		Application::Scene & scene = VTXApp::get().getScene();
+
+		for ( const FilePath & moleculePath : _paths )
+		{
+			const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
+				= Application::ECS::EntityDirector::generateBuilder( Entity::FLAT_MOLECULE_ENTITY_ID );
+
+			// Possibility to thread build function
+			entityBuilder->getData()[ "scene" ]	   = VTXVariant( &scene );
+			entityBuilder->getData()[ "filepath" ] = VTXVariant( moleculePath.string() );
+			entityBuilder->build();
+		}
+	}
+
 } // namespace VTX::App::Internal::Action::ECS
