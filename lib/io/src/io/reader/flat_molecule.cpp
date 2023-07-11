@@ -219,18 +219,20 @@ namespace VTX::IO::Reader
 			{
 				p_chemfileStruct.setCurrentBond( vectorBonds[ i ] );
 
-				p_molecule.bondFirstAtomIndexes[ counter ]	= p_chemfileStruct.getCurrentBondFirstAtomIndex();
-				p_molecule.bondSecondAtomIndexes[ counter ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
-				p_molecule.bondOrders[ counter ]			= p_chemfileStruct.getCurrentBondOrder();
+				p_molecule.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_molecule.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
+
+				p_molecule.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
 			}
 
 			for ( size_t i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorExtraBonds[ i ] );
 
-				p_molecule.bondFirstAtomIndexes[ counter ]	= p_chemfileStruct.getCurrentBondFirstAtomIndex();
-				p_molecule.bondSecondAtomIndexes[ counter ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
-				p_molecule.bondOrders[ counter ]			= p_chemfileStruct.getCurrentBondOrder();
+				p_molecule.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_molecule.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
+
+				p_molecule.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
 			}
 		}
 

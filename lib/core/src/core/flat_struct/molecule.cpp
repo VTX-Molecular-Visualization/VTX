@@ -56,8 +56,7 @@ namespace VTX::Core::FlatStruct
 	void Molecule::initBonds( const size_t p_count )
 	{
 		bondOrders.resize( p_count, ChemDB::Bond::ORDER::UNKNOWN );
-		bondFirstAtomIndexes.resize( p_count, INVALID_INDEX );
-		bondSecondAtomIndexes.resize( p_count, INVALID_INDEX );
+		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
 	}
 	size_t Molecule::getBondCount() const { return bondOrders.size(); }
 

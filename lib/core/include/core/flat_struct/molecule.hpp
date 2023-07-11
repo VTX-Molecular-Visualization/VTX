@@ -61,9 +61,8 @@ namespace VTX::Core::FlatStruct
 		size_t getAtomCount() const;
 
 		// Bond data
-		std::vector<ChemDB::Bond::ORDER> bondOrders			   = std::vector<ChemDB::Bond::ORDER>();
-		std::vector<size_t>				 bondFirstAtomIndexes  = std::vector<size_t>();
-		std::vector<size_t>				 bondSecondAtomIndexes = std::vector<size_t>();
+		std::vector<ChemDB::Bond::ORDER> bondOrders			 = std::vector<ChemDB::Bond::ORDER>();
+		std::vector<size_t>				 bondPairAtomIndexes = std::vector<size_t>();
 
 		void   initBonds( const size_t p_count );
 		size_t getBondCount() const;
