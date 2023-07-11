@@ -208,7 +208,7 @@ namespace VTX::IO::Reader
 	const std::string & Chemfiles::getCurrentResidueName() const { return _readingData->_currentResidue->name(); }
 	const size_t		Chemfiles::getCurrentResidueId() const
 	{
-		return _readingData->_currentResidue->id().value_or( INVALID_INDEX );
+		return size_t( _readingData->_currentResidue->id().value_or( INVALID_INDEX ) );
 	}
 	const size_t Chemfiles::getCurrentResidueFirstAtomIndex() const
 	{

@@ -435,7 +435,7 @@ namespace VTX::IO::Util
 		std::vector<chemfiles::Vector3D> positions = std::vector<chemfiles::Vector3D>();
 		positions.resize( atomCount + 1 );
 
-		for ( int i = 0; i < atomCount; i++ )
+		for ( size_t i = 0; i < atomCount; i++ )
 			positions[ i ] = p_frame.positions()[ p_atoms[ i ] ];
 
 		positions[ atomCount ] = positions[ 1 ];
@@ -443,7 +443,7 @@ namespace VTX::IO::Util
 		std::vector<chemfiles::Vector3D> crossProducts = std::vector<chemfiles::Vector3D>();
 		crossProducts.resize( atomCount + 1 );
 
-		for ( int i = 1; i < atomCount; i++ )
+		for ( size_t i = 1; i < atomCount; i++ )
 		{
 			chemfiles::Vector3D vec0 = positions[ i ] - positions[ 0 ];
 			_normalizeVector( vec0 );
@@ -459,7 +459,7 @@ namespace VTX::IO::Util
 		crossProducts[ atomCount ] = crossProducts[ 1 ];
 
 		float avg = 0.f;
-		for ( int i = 1; i < atomCount; i++ )
+		for ( size_t i = 1; i < atomCount; i++ )
 		{
 			avg += float( chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] ) );
 		}
@@ -468,7 +468,7 @@ namespace VTX::IO::Util
 	}
 	float BondOrderGuessing::_computeAverageRingDotCross( const chemfiles::Frame &	  p_frame,
 														  const std::vector<size_t> & p_atoms,
-														  const int					  p_atomCount,
+														  const size_t				  p_atomCount,
 														  chemfiles::Vector3D &		  dir )
 	{
 		float							 result	   = 0.f;
@@ -476,7 +476,7 @@ namespace VTX::IO::Util
 		std::vector<chemfiles::Vector3D> positions = std::vector<chemfiles::Vector3D>();
 		positions.resize( p_atomCount + 2 );
 
-		for ( int i = 0; i < p_atomCount; i++ )
+		for ( size_t i = 0; i < p_atomCount; i++ )
 			positions[ i ] = p_frame.positions()[ p_atoms[ i ] ];
 
 		std::vector<chemfiles::Vector3D> crossProducts = std::vector<chemfiles::Vector3D>();
@@ -487,7 +487,7 @@ namespace VTX::IO::Util
 		positions[ p_atomCount ]	 = positions[ 0 ];
 		positions[ p_atomCount + 1 ] = positions[ 1 ];
 
-		for ( int i = 0; i < p_atomCount; i++ )
+		for ( size_t i = 0; i < p_atomCount; i++ )
 		{
 			chemfiles::Vector3D vec0 = positions[ i ] - positions[ i + 1 ];
 			_normalizeVector( vec0 );
@@ -505,7 +505,7 @@ namespace VTX::IO::Util
 
 		crossProducts[ p_atomCount ] = crossProducts[ 0 ];
 
-		for ( int i = 0; i < p_atomCount; i++ )
+		for ( size_t i = 0; i < p_atomCount; i++ )
 		{
 			avg += float( chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] ) );
 		}
@@ -515,12 +515,12 @@ namespace VTX::IO::Util
 	}
 	bool BondOrderGuessing::_verifyPlanarBonds( const chemfiles::Frame &				 p_frame,
 												const std::vector<size_t> &				 p_atoms,
-												const int								 p_atomCount,
+												const size_t							 p_atomCount,
 												const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 												const chemfiles::Vector3D &				 dir,
 												const float								 cutoff )
 	{
-		for ( int i = 0; i < p_atomCount; i++ )
+		for ( size_t i = 0; i < p_atomCount; i++ )
 		{
 			const size_t atomIndex = p_atoms[ i ];
 
@@ -568,7 +568,7 @@ namespace VTX::IO::Util
 	{
 		bool res = true;
 
-		int						   bondDataCurrentIndex = 0;
+		size_t					   bondDataCurrentIndex = 0;
 		const chemfiles::Residue * previousResidue		= nullptr;
 
 		for ( size_t iBond = 0; iBond < p_frame.topology().bonds().size(); iBond++ )
