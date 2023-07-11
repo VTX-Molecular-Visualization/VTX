@@ -2,15 +2,15 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include "define.hpp"
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <core/struct/residue.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Residue : public Core::Struct::Residue
+	class Residue : public ResidueCore
 	{
 	  public:
 		Residue() = default;
@@ -23,8 +23,8 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
 
-		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
-		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
+		int	 getIndexInOriginalChain() { return _indexInOriginalChain; };
+		void setIndexInOriginalChain( const int p_indexInOriginalChain )
 		{
 			_indexInOriginalChain = p_indexInOriginalChain;
 		};
@@ -37,7 +37,7 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
-		size_t				  _indexInOriginalChain = INVALID_INDEX;
+		int					  _indexInOriginalChain = 0;
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
 		char				  _insertionCode		= ' ';
 
