@@ -1,10 +1,11 @@
 #ifndef __VTX_IO_READER_CHEMFILES__
 #define __VTX_IO_READER_CHEMFILES__
 
-#include "io/internal/_fwd.hpp"
+#include "io/internal/chemfiles_reading_data.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
 #include <core/chemdb/residue.hpp>
+#include <memory>
 #include <string>
 #include <util/constants.hpp>
 #include <util/exceptions.hpp>
