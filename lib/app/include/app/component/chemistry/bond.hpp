@@ -2,19 +2,16 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_BOND__
 
 #include "_fwd.hpp"
-#include <core/struct/bond.hpp>
+#include "define.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
-	class Bond : public Core::Struct::Bond
+	class Bond : public BondCore
 	{
 	  public:
-		Bond() : Core::Struct::Bond() {}
-		Bond( Molecule * const p_moleculePtr );
-		Bond( Molecule * const p_moleculePtr, const size_t p_index );
-
-		const Molecule * const getMoleculePtr() const;
-		Molecule * const	   getMoleculePtr();
+		Bond() : BondCore() {}
+		Bond( Molecule * const p_moleculePtr ) : BondCore( p_moleculePtr ) {}
+		Bond( Molecule * const p_moleculePtr, const size_t p_index ) : BondCore( p_moleculePtr, p_index ) {}
 
 		size_t getIndexFirstAtom() const;
 		void   setIndexFirstAtom( const size_t p_atomIndex );

@@ -184,13 +184,12 @@ namespace VTX::App::Internal::IO::Reader
 			}
 			else
 			{
-				modelChain = static_cast<Component::Chemistry::Chain *>( p_molecule.getChain( chainModelId ) );
+				modelChain = p_molecule.getChain( chainModelId );
 			}
 			currentChainResidueCount++;
 
 			// Setup residue.
-			Component::Chemistry::Residue * modelResidue
-				= static_cast<Component::Chemistry::Residue *>( p_molecule.getResidue( residueIdx ) );
+			Component::Chemistry::Residue * modelResidue = p_molecule.getResidue( residueIdx );
 
 			modelResidue->setChainPtr( modelChain );
 			modelResidue->setIndexFirstAtom( p_chemfilesReader.getCurrentResidueFirstAtomIndex() );
@@ -238,7 +237,7 @@ namespace VTX::App::Internal::IO::Reader
 			// Check residue index in chain.
 			const size_t indexInChain = p_chemfilesReader.getCurrentResidueId();
 			// assert( oldIndexInChain <= indexInChain );
-			modelResidue->setIndexInOriginalChain( indexInChain );
+			modelResidue->setIndexInOriginalChain( int( indexInChain ) );
 
 			const std::string insertionCodeStr
 				= p_chemfilesReader.getCurrentResidueStringProperty( "insertion_code", " " );
@@ -340,9 +339,9 @@ namespace VTX::App::Internal::IO::Reader
 				p_chemfilesReader.setCurrentAtom( atomId );
 
 				// Create atom.
-				Component::Chemistry::Atom * modelAtom
-					= static_cast<Component::Chemistry::Atom *>( p_molecule.getAtom( atomId ) );
+				Component::Chemistry::Atom * modelAtom = p_molecule.getAtom( atomId );
 
+				modelAtom->setResiduePtr( modelResidue );
 				modelAtom->setName( p_chemfilesReader.getCurrentAtomName() );
 				modelAtom->setSymbol( p_chemfilesReader.getCurrentAtomSymbol() );
 				modelFrame[ atomId ] = p_chemfilesReader.getCurrentAtomPosition();
@@ -435,10 +434,10 @@ namespace VTX::App::Internal::IO::Reader
 		{
 			p_chemfilesReader.setCurrentBond( bondIdx );
 
-			App::Component::Chemistry::Residue * residueStart = static_cast<Component::Chemistry::Residue *>(
-				p_molecule.getAtom( p_chemfilesReader.getCurrentBondFirstAtomIndex() )->getResiduePtr() );
-			App::Component::Chemistry::Residue * residueEnd = static_cast<Component::Chemistry::Residue *>(
-				p_molecule.getAtom( p_chemfilesReader.getCurrentBondSecondAtomIndex() )->getResiduePtr() );
+			App::Component::Chemistry::Residue * residueStart
+				= p_molecule.getAtom( p_chemfilesReader.getCurrentBondFirstAtomIndex() )->getResiduePtr();
+			App::Component::Chemistry::Residue * residueEnd
+				= p_molecule.getAtom( p_chemfilesReader.getCurrentBondSecondAtomIndex() )->getResiduePtr();
 
 			if ( residueStart == residueEnd )
 			{
@@ -463,10 +462,9 @@ namespace VTX::App::Internal::IO::Reader
 		counter					= 0;
 		for ( size_t residueIdx = 0; residueIdx < p_chemfilesReader.getResidueCount(); ++residueIdx )
 		{
-			Component::Chemistry::Residue * const residue
-				= static_cast<Component::Chemistry::Residue *>( p_molecule.getResidue( residueIdx ) );
-			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
-			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
+			Component::Chemistry::Residue * const residue		   = p_molecule.getResidue( residueIdx );
+			const std::vector<size_t> &			  vectorBonds	   = mapResidueBonds[ residueIdx ];
+			const std::vector<size_t> &			  vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
 			residue->setIndexFirstBond( counter );
 			residue->setBondCount( vectorBonds.size() + vectorExtraBonds.size() );
@@ -474,8 +472,7 @@ namespace VTX::App::Internal::IO::Reader
 			for ( size_t i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				p_chemfilesReader.setCurrentBond( i );
-				Component::Chemistry::Bond * modelBond
-					= static_cast<Component::Chemistry::Bond *>( p_molecule.getBond( counter ) );
+				Component::Chemistry::Bond * modelBond = p_molecule.getBond( counter );
 				modelBond->setIndex( i );
 
 				modelBond->setIndexFirstAtom( p_chemfilesReader.getCurrentBondFirstAtomIndex() );
@@ -489,8 +486,7 @@ namespace VTX::App::Internal::IO::Reader
 			for ( size_t i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				p_chemfilesReader.setCurrentBond( i );
-				App::Component::Chemistry::Bond * modelBond
-					= static_cast<Component::Chemistry::Bond *>( p_molecule.getBond( counter ) );
+				App::Component::Chemistry::Bond * modelBond = p_molecule.getBond( counter );
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( p_chemfilesReader.getCurrentBondFirstAtomIndex() );

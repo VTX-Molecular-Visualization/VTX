@@ -18,6 +18,9 @@ namespace VTX::Core::Struct
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
 		}
 
+		const Frame & getCurrentFrame() const { return frames[ currentFrameIndex ]; }
+		Frame &		  getCurrentFrame() { return frames[ currentFrameIndex ]; }
+
 		std::vector<Frame> frames;
 		size_t			   currentFrameIndex = 0;
 	};

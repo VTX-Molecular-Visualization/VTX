@@ -5,8 +5,9 @@
 
 namespace VTX::App::Entity
 {
-	inline const App::Application::ECS::EntityDirectorID SCENE_ENTITY_ID	= "Scene";
-	inline const App::Application::ECS::EntityDirectorID CAMERA_ENTITY_ID	= "Camera";
-	inline const App::Application::ECS::EntityDirectorID MOLECULE_ENTITY_ID = "Molecule";
+	inline const App::Application::ECS::EntityDirectorID SCENE_ENTITY_ID		 = "Scene";
+	inline const App::Application::ECS::EntityDirectorID CAMERA_ENTITY_ID		 = "Camera";
+	inline const App::Application::ECS::EntityDirectorID MOLECULE_ENTITY_ID		 = "Molecule";
+	inline const App::Application::ECS::EntityDirectorID FLAT_MOLECULE_ENTITY_ID = "FlatMolecule";
 } // namespace VTX::App::Entity
 #endif

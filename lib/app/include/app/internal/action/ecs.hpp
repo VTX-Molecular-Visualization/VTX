@@ -49,5 +49,19 @@ namespace VTX::App::Internal::Action::ECS
 			= std::vector<Component::Chemistry::Molecule *>();
 	};
 
+	class OpenFlat
+	{
+	  public:
+		explicit OpenFlat( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		void execute();
+
+	  private:
+		std::vector<FilePath>			  _paths = std::vector<FilePath>();
+		std::map<FilePath, std::string *> _buffers;
+
+		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
+			= std::vector<Component::Chemistry::Molecule *>();
+	};
+
 } // namespace VTX::App::Internal::Action::ECS
 #endif
