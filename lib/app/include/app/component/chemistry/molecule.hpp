@@ -28,7 +28,8 @@ namespace VTX::App::Component::Chemistry
 		Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct );
 		~Molecule();
 
-		void setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
+		const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return _moleculeStruct; };
+		void								setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
 
 		void						 initChains( const size_t p_chainCount );
 		Chain *						 getChain( const size_t p_chainIndex ) { return _chains[ p_chainIndex ]; }

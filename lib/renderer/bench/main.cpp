@@ -104,8 +104,16 @@ int main( int, char ** )
 					std::vector<uint> ids( size );
 					std::iota( ids.begin(), ids.end(), 0 );
 
-					std::vector<uint> bondsIndex( molecule.bondPairAtomIndexes.size() );
-					std::copy( bondsIndex.begin(), bondsIndex.end(), molecule.bondPairAtomIndexes.begin() );
+					std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
+					const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
+
+					std::generate( bondsIndex.begin(),
+								   bondsIndex.end(),
+								   [ &bondPairAtomIndexes ]
+								   {
+									   static size_t i = 0;
+									   return uint( bondPairAtomIndexes[ i++ ] );
+								   } );
 
 					// TODO:
 					// Use struct ssbo for atom infos by symbol (like radius).
