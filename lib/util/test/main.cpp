@@ -4,6 +4,8 @@
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
 #include <util/logger.hpp>
+#include <util/math/range.hpp>
+#include <util/math/range_list.hpp>
 #include <util/string.hpp>
 
 // logger.hpp
@@ -86,13 +88,116 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	// const SingletonTest consInit( {} );
 }
 
+TEST_CASE( "Util::Math::Range", "[math]" )
+{
+	using namespace VTX;
+
+	Util::Math::Range<size_t> range;
+	REQUIRE( !range.isValid() );
+
+	range = Util::Math::Range<size_t>( 6 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 6 );
+	REQUIRE( range.getCount() == 1 );
+	REQUIRE( range.getLast() == 6 );
+
+	range = Util::Math::Range<size_t>( 50, 5 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 50 );
+	REQUIRE( range.getCount() == 5 );
+	REQUIRE( range.getLast() == 54 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 10 );
+	REQUIRE( range.getCount() == 11 );
+	REQUIRE( range.getLast() == 20 );
+
+	range.add( 3 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 10 );
+	REQUIRE( range.getLast() == 23 );
+
+	range.remove( 8 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 10 );
+	REQUIRE( range.getLast() == 15 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	range.setFirst( 15 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 15 );
+	REQUIRE( range.getLast() == 20 );
+
+	range.setLast( 15 );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 15 );
+	REQUIRE( range.getLast() == 15 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	range.merge( Util::Math::Range<size_t>::createFirstLast( 5, 12 ) );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 5 );
+	REQUIRE( range.getLast() == 20 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	range.merge( Util::Math::Range<size_t>::createFirstLast( 19, 27 ) );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 10 );
+	REQUIRE( range.getLast() == 27 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	range.merge( Util::Math::Range<size_t>::createFirstLast( 5, 25 ) );
+	REQUIRE( range.isValid() );
+	REQUIRE( range.getFirst() == 5 );
+	REQUIRE( range.getLast() == 25 );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	range.merge( Util::Math::Range<size_t>::createFirstLast( 25, 35 ) );
+	REQUIRE( !range.isValid() );
+};
+TEST_CASE( "Util::Math::RangeList", "[math]" )
+{
+	using namespace VTX;
+
+	Util::Math::RangeList<size_t> rangeList
+		= Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+										   Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
+										   Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+
+	rangeList.addRange( Util::Math::Range<size_t>::createFirstLast( 9, 10 ) );
+	rangeList.addRange( Util::Math::Range<size_t>::createFirstLast( 8, 14 ) );
+	rangeList.addRange( Util::Math::Range<size_t>::createFirstLast( 51, 55 ) );
+	rangeList.addRange( Util::Math::Range<size_t>::createFirstLast( 6, 7 ) );
+
+	int itemCount = 0;
+	for ( size_t index : rangeList )
+		itemCount++;
+
+	REQUIRE( itemCount == 22 );
+
+	rangeList = Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+												 Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
+												 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+	rangeList.removeRange( Util::Math::Range<size_t>::createFirstLast( 1, 4 ) );
+	rangeList.removeRange( Util::Math::Range<size_t>::createFirstLast( 10, 14 ) );
+	rangeList.removeRange( Util::Math::Range<size_t>::createFirstLast( 6, 7 ) );
+	rangeList.removeRange( Util::Math::Range<size_t>::createFirstLast( 1, 18 ) );
+
+	itemCount = 0;
+	for ( size_t index : rangeList )
+		itemCount++;
+
+	REQUIRE( itemCount == 3 );
+};
+
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-	{
-		t.use()
-	} -> std::same_as<void>;
-};
+					 {
+						 t.use()
+						 } -> std::same_as<void>;
+				 };
 
 template<canUse T>
 class BaseClass : public T
