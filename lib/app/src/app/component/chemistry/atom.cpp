@@ -6,15 +6,27 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	Atom::Atom() : AtomCore() {}
-	Atom::Atom( Residue * const p_residue ) : AtomCore( p_residue ) {};
-	Atom::Atom( Molecule * const p_molecule ) : AtomCore( p_molecule ) {};
-	Atom::Atom( Molecule * const p_molecule, const size_t p_index ) : AtomCore( p_molecule, p_index ) {};
+	Atom::Atom( Residue * const p_residue ) : Atom( p_residue->getMoleculePtr() ) {};
 
-	void Atom::updateData()
+	float Atom::getVdwRadius() const { return _moleculePtr->_atomRadii[ _index ]; }
+
+	const Vec3f & Atom::getLocalPosition() const
 	{
-		_moleculePtr->setAtomRadius( _internalIndex, VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _symbol ) ] );
-		_moleculePtr->setAtomColor( _internalIndex, ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ] );
+		return getLocalPosition( _moleculePtr->_moleculeStruct.trajectory.currentFrameIndex );
+	}
+	const Vec3f & Atom::getLocalPosition( const size_t & p_frameIndex ) const
+	{
+		return _moleculePtr->getTrajectory().frames[ p_frameIndex ][ _index ];
+	}
+	Vec3f Atom::getWorldPosition() const
+	{
+		return Vec3f( Vec4f( getLocalPosition(), 0 ) * _moleculePtr->getTransform().get() );
+	}
+	Vec3f Atom::getWorldPosition( const size_t & p_frameIndex ) const
+	{
+		return Vec3f( Vec4f( getLocalPosition( p_frameIndex ), 0 ) * _moleculePtr->getTransform().get() );
 	}
 
+	bool Atom::isVisible() { return _moleculePtr->_atomVisibilities[ _index ]; }
+	void Atom::setVisible( const bool p_visible ) { _moleculePtr->_atomVisibilities[ _index ] = p_visible; }
 } // namespace VTX::App::Component::Chemistry

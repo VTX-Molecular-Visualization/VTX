@@ -8,10 +8,7 @@
 #include <core/struct/molecule.hpp>
 #include <map>
 #include <string>
-#include <util/logger.hpp>
 #include <util/types.hpp>
-// #include <utility>
-// #include <vector>
 
 namespace VTX::IO::Reader
 {
@@ -22,16 +19,18 @@ namespace VTX::IO::Reader
 
 		void readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
 		{
-			std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readFile( p_path );
-			_fillStructure( *chemfileReader, p_molecule );
+			_chemfilesReader = Reader::Chemfiles::readFile( p_path );
+			_fillStructure( *_chemfilesReader, p_molecule );
 		}
 		void readBuffer( const std::string &		   p_buffer,
 						 const FilePath &			   p_path,
 						 VTX::Core::Struct::Molecule & p_molecule )
 		{
-			std::unique_ptr<Reader::Chemfiles> chemfileReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
-			_fillStructure( *chemfileReader, p_molecule );
+			_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
+			_fillStructure( *_chemfilesReader, p_molecule );
 		}
+
+		const Reader::Chemfiles & getChemfilesReader() { return *_chemfilesReader; }
 
 	  private:
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule );
@@ -44,6 +43,8 @@ namespace VTX::IO::Reader
 		void _readTrajectoryFrames( IO::Reader::Chemfiles & p_chemfileStruct,
 									const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
 									const size_t p_trajectoryFrameStart );
+
+		std::unique_ptr<Reader::Chemfiles> _chemfilesReader = nullptr;
 	};
 } // namespace VTX::IO::Reader
 #endif

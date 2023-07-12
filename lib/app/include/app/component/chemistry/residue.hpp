@@ -2,7 +2,6 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
-#include "define.hpp"
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
 
@@ -10,12 +9,32 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Residue : public ResidueCore
+	class Residue
 	{
 	  public:
 		Residue() = default;
-		Residue( const size_t p_index );
-		Residue( Chain * const p_chain, const size_t p_index );
+		Residue( Molecule * const p_molecule, const size_t p_index ) : _index( p_index ), _moleculePtr( p_molecule ) {}
+
+		const Chain * const getConstChainPtr() const;
+		Chain * const		getChainPtr() const;
+		void				setChainPtr( Chain * const p_chainPtr );
+
+		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; }
+		Molecule * const	   getMoleculePtr() const { return _moleculePtr; }
+
+		size_t getIndex() const { return _index; }
+		void   setIndex( const size_t p_index ) { _index = p_index; }
+
+		const size_t			getIndexFirstAtom() const;
+		void					setIndexFirstAtom( const size_t p_indexFirstAtom );
+		const size_t			getAtomCount() const;
+		void					setAtomCount( const size_t p_atomCount );
+		const size_t			getIndexFirstBond() const;
+		void					setIndexFirstBond( const size_t p_indexFirstBond );
+		const size_t			getBondCount() const;
+		void					setBondCount( const size_t p_bondCount );
+		ChemDB::Residue::SYMBOL getSymbol() const;
+		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );
 
 		const Util::Color::Rgba & getColor() const { return _color; };
 		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
@@ -23,8 +42,8 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
 
-		int	 getIndexInOriginalChain() { return _indexInOriginalChain; };
-		void setIndexInOriginalChain( const int p_indexInOriginalChain )
+		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
+		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
 		{
 			_indexInOriginalChain = p_indexInOriginalChain;
 		};
@@ -36,8 +55,11 @@ namespace VTX::App::Component::Chemistry
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
 
 	  private:
+		Molecule * _moleculePtr = nullptr;
+		size_t	   _index		= INVALID_INDEX;
+
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
-		int					  _indexInOriginalChain = 0;
+		size_t				  _indexInOriginalChain = INVALID_INDEX;
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
 		char				  _insertionCode		= ' ';
 

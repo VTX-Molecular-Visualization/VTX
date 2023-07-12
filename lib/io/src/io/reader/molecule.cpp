@@ -1,26 +1,24 @@
 #include "io/reader/molecule.hpp"
-#include <core/struct/atom.hpp>
-#include <core/struct/bond.hpp>
-#include <core/struct/chain.hpp>
 #include <core/struct/molecule.hpp>
-#include <core/struct/residue.hpp>
 #include <core/struct/trajectory.hpp>
 #include <magic_enum.hpp>
 #include <map>
 #include <util/chrono.hpp>
+#include <util/constants.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::IO::Reader
 {
 	namespace ChemDB = VTX::Core::ChemDB;
+
 	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule )
 	{
 		const std::string fileExtension = p_chemfileStruct.getPath().extension().string();
 
-		VTX::Core::Struct::Chain * modelChain				= nullptr;
-		std::string				   lastChainName			= "";
-		size_t					   chainModelId				= -1;
-		size_t					   currentChainResidueCount = 0;
+		size_t		currentChainIndex		 = INVALID_INDEX;
+		std::string lastChainName			 = "";
+		size_t		chainModelId			 = -1;
+		size_t		currentChainResidueCount = 0;
 
 		std::map<size_t, std::vector<size_t>> mapResidueBonds	   = std::map<size_t, std::vector<size_t>>();
 		std::map<size_t, std::vector<size_t>> mapResidueExtraBonds = std::map<size_t, std::vector<size_t>>();
@@ -28,11 +26,11 @@ namespace VTX::IO::Reader
 		int								  oldIndexInChain  = INT_MIN;
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
-		p_molecule.getTrajectory().frames.resize( p_chemfileStruct.getFrameCount() );
+		p_molecule.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
 		p_molecule.initResidues( p_chemfileStruct.getResidueCount() );
 		p_molecule.initAtoms( p_chemfileStruct.getAtomCount() );
 
-		VTX::Core::Struct::Frame & modelFrame = p_molecule.getTrajectory().frames[ 0 ];
+		VTX::Core::Struct::Frame & modelFrame = p_molecule.trajectory.frames[ 0 ];
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
@@ -52,22 +50,21 @@ namespace VTX::IO::Reader
 
 			if ( createNewChain )
 			{
-				if ( modelChain != nullptr )
+				if ( currentChainIndex != INVALID_INDEX )
 				{
-					modelChain->setResidueCount( currentChainResidueCount );
+					p_molecule.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
 				}
 
 				// Create chain.
-				modelChain = p_molecule.appendNewChain();
+				p_molecule.appendNewChain();
+				currentChainIndex++;
 
-				if ( chainName != "" )
-				{
-					modelChain->setName( chainName );
-				}
-				modelChain->setIndexFirstResidue( residueIdx );
+				p_molecule.chainNames[ currentChainIndex ]		   = chainName;
+				p_molecule.chainFirstResidues[ currentChainIndex ] = residueIdx;
+
 				currentChainResidueCount = 0;
 
-				p_molecule.getCategory( categoryEnum ).referenceChain( modelChain->getIndex() );
+				p_molecule.getCategory( categoryEnum ).referenceChain( currentChainIndex );
 
 				lastChainName	 = chainName;
 				lastCategoryEnum = categoryEnum;
@@ -77,17 +74,15 @@ namespace VTX::IO::Reader
 			currentChainResidueCount++;
 
 			// Setup residue.
-			VTX::Core::Struct::Residue * modelResidue = p_molecule.getResidues()[ residueIdx ];
-
 			const size_t atomCount = p_chemfileStruct.getCurrentResidueAtomCount();
 			if ( atomCount == 0 )
 			{
 				VTX_WARNING( "Empty residue found" );
 			}
 
-			modelResidue->setChainPtr( modelChain );
-			modelResidue->setIndexFirstAtom( p_chemfileStruct.getCurrentResidueFirstAtomIndex() );
-			modelResidue->setAtomCount( atomCount );
+			p_molecule.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
+			p_molecule.residueFirstAtomIndexes[ residueIdx ] = ( p_chemfileStruct.getCurrentResidueFirstAtomIndex() );
+			p_molecule.residueAtomCounts[ residueIdx ]		 = atomCount;
 
 			ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 
@@ -119,10 +114,10 @@ namespace VTX::IO::Reader
 				symbolValue = int( residueSymbol );
 			}
 
-			modelResidue->setSymbol( residueSymbol );
+			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
 
-			mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<size_t>() );
-			mapResidueExtraBonds.emplace( modelResidue->getIndex(), std::vector<size_t>() );
+			mapResidueBonds.emplace( residueIdx, std::vector<size_t>() );
+			mapResidueExtraBonds.emplace( residueIdx, std::vector<size_t>() );
 
 			size_t solventCounter = 0;
 			size_t ionCounter	  = 0;
@@ -131,16 +126,14 @@ namespace VTX::IO::Reader
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
 				  ++it )
 			{
-				const size_t atomId = *it;
-				p_chemfileStruct.setCurrentAtom( atomId );
+				const size_t atomIndex = *it;
+				p_chemfileStruct.setCurrentAtom( atomIndex );
 
-				// Create atom.
-				VTX::Core::Struct::Atom * modelAtom = p_molecule.getAtoms()[ atomId ];
-				modelAtom->setResiduePtr( modelResidue );
-				modelAtom->setName( p_chemfileStruct.getCurrentAtomName() );
-				modelAtom->setSymbol( p_chemfileStruct.getCurrentAtomSymbol() );
+				p_molecule.atomResidueIndexes[ atomIndex ] = residueIdx;
+				p_molecule.atomNames[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomName();
+				p_molecule.atomSymbols[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomSymbol();
 
-				modelFrame[ atomId ] = p_chemfileStruct.getCurrentAtomPosition();
+				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
 			}
 
 			//// Check residue full of solvent/ion.
@@ -158,7 +151,8 @@ namespace VTX::IO::Reader
 
 		if ( currentChainResidueCount != 0 )
 		{
-			modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
+			p_molecule.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
+			currentChainResidueCount						   = 0;
 		}
 
 		if ( p_chemfileStruct.getFrameCount() > 1 )
@@ -182,22 +176,23 @@ namespace VTX::IO::Reader
 		{
 			p_chemfileStruct.setCurrentBond( boundIdx );
 
-			VTX::Core::Struct::Residue * residueStart
-				= p_molecule.getAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() )->getResiduePtr();
-			VTX::Core::Struct::Residue * residueEnd
-				= p_molecule.getAtom( p_chemfileStruct.getCurrentBondSecondAtomIndex() )->getResiduePtr();
+			const size_t firstAtomIndex = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+			const size_t residueStart	= p_molecule.atomResidueIndexes[ firstAtomIndex ];
+
+			const size_t secondAtomIndex = p_chemfileStruct.getCurrentBondSecondAtomIndex();
+			const size_t residueEnd		 = p_molecule.atomResidueIndexes[ secondAtomIndex ];
 
 			if ( residueStart == residueEnd )
 			{
 				// Intra bonds.
-				mapResidueBonds[ residueStart->getIndex() ].emplace_back( boundIdx );
+				mapResidueBonds[ residueStart ].emplace_back( boundIdx );
 				counter++;
 			}
 			else
 			{
 				// Extra bonds.
-				mapResidueExtraBonds[ residueStart->getIndex() ].emplace_back( boundIdx );
-				mapResidueExtraBonds[ residueEnd->getIndex() ].emplace_back( boundIdx );
+				mapResidueExtraBonds[ residueStart ].emplace_back( boundIdx );
+				mapResidueExtraBonds[ residueEnd ].emplace_back( boundIdx );
 				counter += 2;
 			}
 		}
@@ -209,33 +204,30 @@ namespace VTX::IO::Reader
 		counter					= 0;
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
 		{
-			VTX::Core::Struct::Residue * const residue			= p_molecule.getResidue( residueIdx );
-			const std::vector<size_t> &		   vectorBonds		= mapResidueBonds[ residueIdx ];
-			const std::vector<size_t> &		   vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
+			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
+			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
-			residue->setIndexFirstBond( counter );
-			residue->setBondCount( vectorBonds.size() + vectorExtraBonds.size() );
+			p_molecule.residueFirstBondIndexes[ residueIdx ] = counter;
+			p_molecule.residueBondCounts[ residueIdx ]		 = vectorBonds.size() + vectorExtraBonds.size();
 
 			for ( size_t i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorBonds[ i ] );
-				VTX::Core::Struct::Bond * modelBond = p_molecule.getBonds()[ counter ];
-				modelBond->setIndex( i );
 
-				modelBond->setIndexFirstAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() );
-				modelBond->setIndexSecondAtom( p_chemfileStruct.getCurrentBondSecondAtomIndex() );
-				modelBond->setOrder( p_chemfileStruct.getCurrentBondOrder() );
+				p_molecule.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_molecule.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
+
+				p_molecule.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
 			}
 
 			for ( size_t i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorExtraBonds[ i ] );
-				VTX::Core::Struct::Bond * modelBond = p_molecule.getBonds()[ counter ];
 
-				modelBond->setMoleculePtr( &p_molecule );
-				modelBond->setIndexFirstAtom( p_chemfileStruct.getCurrentBondFirstAtomIndex() );
-				modelBond->setIndexSecondAtom( p_chemfileStruct.getCurrentBondSecondAtomIndex() );
-				modelBond->setOrder( p_chemfileStruct.getCurrentBondOrder() );
+				p_molecule.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_molecule.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
+
+				p_molecule.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
 			}
 		}
 
@@ -255,6 +247,7 @@ namespace VTX::IO::Reader
 
 		assert( counter == counterOld );
 	}
+
 	void Molecule::_readTrajectoryFrames(
 		IO::Reader::Chemfiles &												  p_chemfileStruct,
 		const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
@@ -277,7 +270,7 @@ namespace VTX::IO::Reader
 			{
 				VTX::Core::Struct::Molecule & molecule	 = *pairMoleculeStartFrame.first;
 				const size_t				  frameIndex = pairMoleculeStartFrame.second + validFrameCount;
-				molecule.getTrajectory().fillFrame( frameIndex, atomPositions );
+				molecule.trajectory.fillFrame( frameIndex, atomPositions );
 
 				validFrameCount++;
 			}
@@ -298,7 +291,7 @@ namespace VTX::IO::Reader
 		for ( const std::pair<VTX::Core::Struct::Molecule *, size_t> & pairMoleculeFirstFrame : p_targets )
 		{
 			VTX::Core::Struct::Molecule &	molecule   = *( pairMoleculeFirstFrame.first );
-			VTX::Core::Struct::Trajectory & trajectory = molecule.getTrajectory();
+			VTX::Core::Struct::Trajectory & trajectory = molecule.trajectory;
 			if ( trajectory.frames.back().size() == 0 )
 			{
 				do

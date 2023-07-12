@@ -49,20 +49,20 @@ namespace VTX::App::Entity::Scene
 	void MoleculeEntityBuilder::_load( Component::Chemistry::Molecule & p_moleculeComponent,
 									   const VariantMap &				p_extraData )
 	{
+		Internal::IO::Reader::MoleculeLoader loader = Internal::IO::Reader::MoleculeLoader();
+		const FilePath						 path	= FilePath( p_extraData.at( "filepath" ).get<std::string>() );
+
 		if ( p_extraData.find( "buffer" ) != p_extraData.end() )
 		{
-			const FilePath	  path	 = FilePath( p_extraData.at( "filepath" ).get<std::string>() );
 			const std::string buffer = p_extraData.at( "buffer" ).get<std::string>();
-
-			Internal::IO::Reader::MoleculeLoader libChemfiles = Internal::IO::Reader::MoleculeLoader();
-			libChemfiles.readBuffer( buffer, path, p_moleculeComponent );
+			loader.readBuffer( buffer, path, p_moleculeComponent );
 		}
 		else if ( p_extraData.find( "filepath" ) != p_extraData.end() )
 		{
-			const FilePath path = FilePath( p_extraData.at( "filepath" ).get<std::string>() );
-
-			Internal::IO::Reader::MoleculeLoader libChemfiles = Internal::IO::Reader::MoleculeLoader();
-			libChemfiles.readFile( path, p_moleculeComponent );
+			loader.readFile( path, p_moleculeComponent );
 		}
+
+		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
+		p_moleculeComponent.setPdbIdCode( chemfilesReader.getPdbIdCode() );
 	}
 } // namespace VTX::App::Entity::Scene

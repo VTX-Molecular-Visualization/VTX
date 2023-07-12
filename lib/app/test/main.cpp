@@ -1,8 +1,6 @@
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/flat/molecule.hpp>
-#include <app/component/chemistry/flat/residue.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
@@ -268,8 +266,8 @@ TEST_CASE( "VTX_APP - Flat Structure - Full sequence", "[integration]" )
 		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
 
 	// Create MoleculeEntity
-	const FilePath					moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
-	Internal::Action::ECS::OpenFlat openAction	 = Internal::Action::ECS::OpenFlat( moleculePath );
+	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );
@@ -295,7 +293,7 @@ TEST_CASE( "VTX_APP - Flat Structure - Full sequence", "[integration]" )
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );
 
-	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Flat::Molecule>();
+	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
 	REQUIRE( view.size_hint() == 1 );
 
 	Renderer::GL::StructProxyMolecule & gpuProxyComponent
@@ -320,7 +318,7 @@ TEST_CASE( "VTX_APP - Flat Structure -  Benchmark", "[.][perfs]" )
 	// Create MoleculeEntity
 	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
 
-	Internal::Action::ECS::OpenFlat openAction = Internal::Action::ECS::OpenFlat( moleculePath );
+	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 	BENCHMARK( "Open molecules" ) { openAction.execute(); };
 
@@ -331,11 +329,11 @@ TEST_CASE( "VTX_APP - Flat Structure -  Benchmark", "[.][perfs]" )
 		i++;
 	};
 
-	App::Core::ECS::BaseEntity					 moleculeEntity = scene.getItem( 0 );
-	const Component::Chemistry::Flat::Molecule & molecule
-		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Flat::Molecule>( moleculeEntity );
+	App::Core::ECS::BaseEntity			   moleculeEntity = scene.getItem( 0 );
+	const Component::Chemistry::Molecule & molecule
+		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
 
-	const Component::Chemistry::Flat::Residue & residue = *molecule.getResidue( 0 );
+	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
 
 	size_t sumAtomCount = 0;
 	BENCHMARK( "Data access" )
@@ -344,8 +342,5 @@ TEST_CASE( "VTX_APP - Flat Structure -  Benchmark", "[.][perfs]" )
 			sumAtomCount += residue.getAtomCount();
 	};
 
-	BENCHMARK( "View all" )
-	{
-		entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Flat::Molecule>();
-	};
+	BENCHMARK( "View all" ) { entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>(); };
 }

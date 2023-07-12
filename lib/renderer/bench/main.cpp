@@ -3,8 +3,8 @@
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/flat_struct/molecule.hpp>
-#include <io/reader/flat_molecule.hpp>
+#include <core/struct/molecule.hpp>
+#include <io/reader/molecule.hpp>
 #include <iostream>
 #include <numeric>
 #include <renderer/gl/opengl_renderer.hpp>
@@ -78,8 +78,8 @@ int main( int, char ** )
 			const FilePath	  path = std::filesystem::current_path() / name;
 
 			// Read model file.
-			Reader::FlatMolecule			reader;
-			VTX::Core::FlatStruct::Molecule molecule;
+			Reader::Molecule			reader;
+			VTX::Core::Struct::Molecule molecule;
 			reader.readFile( path, molecule );
 
 			// Proxify.
@@ -103,13 +103,9 @@ int main( int, char ** )
 					std::vector<uint> selections   = std::vector<uint>( size, 0 );
 					std::vector<uint> ids( size );
 					std::iota( ids.begin(), ids.end(), 0 );
-					size_t			  bondsCount = molecule.bondOrders.size();
-					std::vector<uint> bondsIndex( bondsCount * 2 );
-					for ( uint i = 0; i < bondsCount; ++i )
-					{
-						bondsIndex[ i * 2 + 0 ] = uint( molecule.bondFirstAtomIndexes[ i ] );
-						bondsIndex[ i * 2 + 1 ] = uint( molecule.bondSecondAtomIndexes[ i ] );
-					}
+
+					std::vector<uint> bondsIndex( molecule.bondPairAtomIndexes.size() );
+					std::copy( bondsIndex.begin(), bondsIndex.end(), molecule.bondPairAtomIndexes.begin() );
 
 					// TODO:
 					// Use struct ssbo for atom infos by symbol (like radius).

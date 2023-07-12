@@ -1,7 +1,6 @@
 #ifndef __VTX_CORE_STRUCT_CATEGORY__
 #define __VTX_CORE_STRUCT_CATEGORY__
 
-#include "_fwd.hpp"
 #include "core/chemdb/category.hpp"
 #include <vector>
 
