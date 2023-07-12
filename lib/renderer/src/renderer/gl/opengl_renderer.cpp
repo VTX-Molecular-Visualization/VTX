@@ -97,60 +97,65 @@ namespace VTX::Renderer::GL
 		{
 			//_vao.drawCalls = 0;
 
-			if ( _skybox )
-			{
-				//_skybox->render();
-			}
+			// if ( _skybox )
+			//{
+			//_skybox->render();
+			//}
 
-			if ( true )
-			{
-				_uboCamera->bind( GL_UNIFORM_BUFFER, 15 );
+			_uboCamera->bind( GL_UNIFORM_BUFFER, 15 );
 
+			// Passes.
+			if ( _enableTimers )
+			{
 				_times.fill( 0.f );
-				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = _funChronoGPU( [ & ]() { _passGeometric->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = CHRONO_GPU( [ & ]() { _passGeometric->render( *_vao ); } );
 				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
-					= _funChronoGPU( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
+					= CHRONO_GPU( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
 				if ( _activeSSAO )
 				{
-					_times[ ENUM_TIME_ITEM::SSAO ] = _funChronoGPU( [ & ]() { _passSSAO->render( *_vao ); } );
-					_times[ ENUM_TIME_ITEM::BLUR ] = _funChronoGPU( [ & ]() { _passBlur->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::SSAO ] = CHRONO_GPU( [ & ]() { _passSSAO->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::BLUR ] = CHRONO_GPU( [ & ]() { _passBlur->render( *_vao ); } );
 				}
-				_times[ ENUM_TIME_ITEM::SHADING ] = _funChronoGPU( [ & ]() { _passShading->render( *_vao ); } );
+				_times[ ENUM_TIME_ITEM::SHADING ] = CHRONO_GPU( [ & ]() { _passShading->render( *_vao ); } );
 				if ( _activeOutline )
 				{
-					_times[ ENUM_TIME_ITEM::OUTLINE ] = _funChronoGPU( [ & ]() { _passOutline->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::OUTLINE ] = CHRONO_GPU( [ & ]() { _passOutline->render( *_vao ); } );
 				}
-				_times[ ENUM_TIME_ITEM::SELECTION ] = _funChronoGPU( [ & ]() { _passSelection->render( *_vao ); } );
-
+				_times[ ENUM_TIME_ITEM::SELECTION ] = CHRONO_GPU( [ & ]() { _passSelection->render( *_vao ); } );
 				if ( _activeFXAA )
 				{
-					_times[ ENUM_TIME_ITEM::FXAA ] = _funChronoGPU( [ & ]() { _passFXAA->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::FXAA ] = CHRONO_GPU( [ & ]() { _passFXAA->render( *_vao ); } );
 				}
 				if ( _activePixelize )
 				{
-					_times[ ENUM_TIME_ITEM::PIXELIZE ] = _funChronoGPU( [ & ]() { _passPixelize->render( *_vao ); } );
+					_times[ ENUM_TIME_ITEM::PIXELIZE ] = CHRONO_GPU( [ & ]() { _passPixelize->render( *_vao ); } );
 				}
-				// Copy to output (temp).
-				_times[ ENUM_TIME_ITEM::BLIT ] = _funChronoGPU(
-					[ & ]()
-					{
-						glBindFramebuffer( GL_READ_FRAMEBUFFER,
-										   _activePixelize ? _passPixelize->out.fbo->getId()
-										   : _activeFXAA   ? _passFXAA->out.fbo->getId()
-														   : _passSelection->out.fbo->getId() );
-						glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
-						glBlitFramebuffer( 0,
-										   0,
-										   GLint( _width ),
-										   GLint( _height ),
-										   0,
-										   0,
-										   GLint( _width ),
-										   GLint( _height ),
-										   GL_COLOR_BUFFER_BIT,
-										   GL_LINEAR );
-						glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-					} );
+				_times[ ENUM_TIME_ITEM::BLIT ] = CHRONO_GPU( [ & ]() { _blitToOutput(); } );
+			}
+			else
+			{
+				_passGeometric->render( *_vao );
+				_passLinearizeDepth->render( *_vao );
+				if ( _activeSSAO )
+				{
+					_passSSAO->render( *_vao );
+					_passBlur->render( *_vao );
+				}
+				_passShading->render( *_vao );
+				if ( _activeOutline )
+				{
+					_passOutline->render( *_vao );
+				}
+				_passSelection->render( *_vao );
+				if ( _activeFXAA )
+				{
+					_passFXAA->render( *_vao );
+				}
+				if ( _activePixelize )
+				{
+					_passPixelize->render( *_vao );
+				}
+				_blitToOutput();
 			}
 
 			_uboCamera->unbind( 15 );
@@ -380,6 +385,26 @@ namespace VTX::Renderer::GL
 
 		_passPixelize->in.textureDataPacked = _passGeometric->out.textureDataPacked.get();
 		_passPixelize->in.textureColor = _activeFXAA ? _passFXAA->out.texture.get() : _passSelection->out.texture.get();
+	}
+
+	void OpenGLRenderer::_blitToOutput()
+	{
+		glBindFramebuffer( GL_READ_FRAMEBUFFER,
+						   _activePixelize ? _passPixelize->out.fbo->getId()
+						   : _activeFXAA   ? _passFXAA->out.fbo->getId()
+										   : _passSelection->out.fbo->getId() );
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fboOutputId );
+		glBlitFramebuffer( 0,
+						   0,
+						   GLint( _width ),
+						   GLint( _height ),
+						   0,
+						   0,
+						   GLint( _width ),
+						   GLint( _height ),
+						   GL_COLOR_BUFFER_BIT,
+						   GL_LINEAR );
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 
 #if ( VTX_OPENGL_VERSION == 450 )

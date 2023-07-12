@@ -156,11 +156,13 @@ namespace VTX::Renderer::GL
 			bool  isCameraPerspective = true;
 		} _uniformsCamera;
 
+		/*
 		struct StructUniformsModels
 		{
 			Mat4f matrixModel  = MAT4F_ID;
 			Mat4f matrixNormal = MAT4F_ID;
 		} _uniformsModels;
+		*/
 
 		// Pass.
 		std::unique_ptr<Pass::PassGeometric>	  _passGeometric;
@@ -195,27 +197,13 @@ namespace VTX::Renderer::GL
 		bool									 _enableTimers = true;
 		std::array<float, ENUM_TIME_ITEM::COUNT> _times;
 
-		std::function<float( const Util::Chrono::Task & )> _funChronoGPU = [ this ]( const Util::Chrono::Task & p_task )
-		{
-			if ( _enableTimers )
-			{
-				Chrono chrono;
-				chrono.start();
-				p_task();
-				return float( chrono.stop() );
-			}
-			else
-			{
-				p_task();
-				return 0.f;
-			}
-		};
-
 		// Specs.
 		StructOpenglInfos _openglInfos;
 
 		void _getOpenglInfos();
 		void _setupRouting();
+		void _blitToOutput();
+
 #if ( VTX_OPENGL_VERSION == 450 )
 		static void APIENTRY _debugMessageCallback( const GLenum   p_source,
 													const GLenum   p_type,
@@ -225,7 +213,17 @@ namespace VTX::Renderer::GL
 													const GLchar * p_msg,
 													const void *   p_data );
 #endif
+
+		inline static const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
+		{
+			static Chrono c;
+			c.start();
+			p_task();
+			c.stop();
+			return float( c.stop() );
+		};
 	};
+
 } // namespace VTX::Renderer::GL
 
 #endif
