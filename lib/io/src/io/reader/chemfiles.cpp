@@ -59,17 +59,16 @@ namespace VTX::IO::Reader
 		chemfiles::Residue::const_iterator it;
 	};
 
-	Chemfiles::ResidueIt::ResidueIt() = default;
-	Chemfiles::ResidueIt::ResidueIt( const ResidueIt & p_source )
-	{
-		_internalIterator = std::make_unique<InternalResidueIt>( *p_source._internalIterator );
-	};
+	Chemfiles::ResidueIt::ResidueIt() : _internalIterator( nullptr ) {};
+	Chemfiles::ResidueIt::ResidueIt( const ResidueIt & p_source ) :
+		_internalIterator( std::make_unique<InternalResidueIt>( *p_source._internalIterator ) ) {};
 
-	Chemfiles::ResidueIt::ResidueIt( InternalResidueIt & p_internalIt )
+	Chemfiles::ResidueIt::ResidueIt( InternalResidueIt & p_internalIt ) :
+		_internalIterator( std::make_unique<InternalResidueIt>( p_internalIt ) )
 	{
-		_internalIterator = std::make_unique<InternalResidueIt>( p_internalIt );
 	}
-	Chemfiles::ResidueIt::~ResidueIt() {};
+
+	Chemfiles::ResidueIt::~ResidueIt() = default;
 
 	size_t Chemfiles::ResidueIt::operator*() const { return *( _internalIterator->it ); }
 	size_t Chemfiles::ResidueIt::operator->() const { return *( _internalIterator->it ); }

@@ -28,6 +28,7 @@ namespace VTX::IO::Reader
 		  public:
 			ResidueIt();
 			ResidueIt( const ResidueIt & p_source );
+
 			~ResidueIt();
 
 			size_t operator*() const;
@@ -46,7 +47,7 @@ namespace VTX::IO::Reader
 			struct InternalResidueIt;
 
 			ResidueIt( InternalResidueIt & p_internalIt );
-			std::unique_ptr<InternalResidueIt> _internalIterator = nullptr;
+			std::unique_ptr<InternalResidueIt> _internalIterator;
 		};
 
 	  private:
