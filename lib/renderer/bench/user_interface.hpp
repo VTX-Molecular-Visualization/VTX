@@ -122,24 +122,47 @@ namespace VTX::Bench
 			}
 
 			// Camera.
-			float near = p_camera->getNear();
-			float far  = p_camera->getFar();
-			float fov  = p_camera->getFov();
+			float near				  = p_camera->getNear();
+			float far				  = p_camera->getFar();
+			float fov				  = p_camera->getFov();
+			float velocityTranslation = p_camera->getVelocityTranslation();
+			float velocityRotation	  = p_camera->getVelocityRotation();
+			float velocityZoom		  = p_camera->getVelocityZoom();
 			// static bool	 isPerspective = true;
 			ImGui::Begin( "Camera" );
 			// ImGui::Checkbox( "Perspective", &isPerspective );
-			if ( ImGui::InputFloat( "Near", &near ) )
+			if ( ImGui::SliderFloat( "Near", &near, Camera::NEAR_MIN, Camera::NEAR_MAX ) )
 			{
 				p_camera->setNear( near );
 			}
-			if ( ImGui::InputFloat( "Far", &far ) )
+			if ( ImGui::SliderFloat( "Far", &far, Camera::FAR_MIN, Camera::FAR_MAX ) )
 			{
 				p_camera->setFar( far );
 			}
-			if ( ImGui::InputFloat( "Fov", &fov ) )
+			if ( ImGui::SliderFloat( "Fov", &fov, Camera::FOV_MIN, Camera::FOV_MAX ) )
 			{
 				p_camera->setFov( fov );
 			}
+			if ( ImGui::SliderFloat( "Velocity translation",
+									 &velocityTranslation,
+									 Camera::VELOCITY_TRANSLATION_MIN,
+									 Camera::VELOCITY_TRANSLATION_MAX ) )
+			{
+				p_camera->setVelocityTranslation( velocityTranslation );
+			}
+			if ( ImGui::SliderFloat( "Velocity rotation",
+									 &velocityRotation,
+									 Camera::VELOCITY_ROTATION_MIN,
+									 Camera::VELOCITY_ROTATION_MAX ) )
+			{
+				p_camera->setVelocityRotation( velocityRotation );
+			}
+			if ( ImGui::SliderFloat(
+					 "Velocity zoom", &velocityZoom, Camera::VELOCITY_ZOOM_MIN, Camera::VELOCITY_ZOOM_MAX ) )
+			{
+				p_camera->setVelocityZoom( velocityZoom );
+			}
+
 			ImGui::End();
 
 			// Passes.

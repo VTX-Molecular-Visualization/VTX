@@ -118,6 +118,10 @@ int main( int, char ** )
 					// TODO:
 					// Use struct ssbo for atom infos by symbol (like radius).
 					// Setup color ssbo and layout.
+
+					// Use relationnal bdd system,
+					// or fill data at cpu side then push to gpu in compressed data?
+
 					// Setup representation ssbo and layout.
 					// Persisted data in CPU cache with smart ptr?
 					StructProxyMolecule proxyMolecule = { &molecule.transform,
