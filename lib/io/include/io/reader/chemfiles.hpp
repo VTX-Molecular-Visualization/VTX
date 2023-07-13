@@ -135,7 +135,7 @@ namespace VTX::IO::Reader
 		FilePath _path;
 
 		struct ReadingData;
-		std::unique_ptr<ReadingData> _readingData = nullptr;
+		std::unique_ptr<ReadingData> _readingData;
 	};
 } // namespace VTX::IO::Reader
 #endif

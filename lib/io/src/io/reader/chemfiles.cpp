@@ -129,14 +129,14 @@ namespace VTX::IO::Reader
 		return chemfilesReader;
 	}
 
-	Chemfiles::Chemfiles( const FilePath & p_path )
+	Chemfiles::Chemfiles( const FilePath & p_path ) :
+		_readingData( std::make_unique<ReadingData>( p_path, _getFormat( p_path ) ) )
 	{
-		_readingData = std::make_unique<ReadingData>( p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
-	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) : _path( p_path )
+	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) :
+		_path( p_path ), _readingData( std::make_unique<ReadingData>( p_path, _getFormat( p_path ) ) )
 	{
-		_readingData = std::make_unique<ReadingData>( p_buffer, p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
 	Chemfiles ::~Chemfiles() = default;

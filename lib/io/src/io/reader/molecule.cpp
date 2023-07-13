@@ -17,13 +17,11 @@ namespace VTX::IO::Reader
 
 		size_t		currentChainIndex		 = INVALID_INDEX;
 		std::string lastChainName			 = "";
-		size_t		chainModelId			 = -1;
 		size_t		currentChainResidueCount = 0;
 
 		std::map<size_t, std::vector<size_t>> mapResidueBonds	   = std::map<size_t, std::vector<size_t>>();
 		std::map<size_t, std::vector<size_t>> mapResidueExtraBonds = std::map<size_t, std::vector<size_t>>();
 
-		int								  oldIndexInChain  = INT_MIN;
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		p_molecule.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
@@ -68,7 +66,6 @@ namespace VTX::IO::Reader
 
 				lastChainName	 = chainName;
 				lastCategoryEnum = categoryEnum;
-				oldIndexInChain	 = INT_MIN;
 			}
 
 			currentChainResidueCount++;
@@ -86,41 +83,41 @@ namespace VTX::IO::Reader
 
 			ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 
-			int symbolValue;
+			// int symbolValue;
 
-			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
-			{
-				const int symbolIndex = 0;
-				// int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				//  VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
+			// if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+			//{
+			//	const int symbolIndex = 0;
+			//	// int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
+			//	//  VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
 
-				// if ( symbolIndex >= 0 )
-				//{
-				//	unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
-				// }
-				// else
-				//{
-				//	unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
-				//	unknownResidueData->symbolStr  = residueSymbol;
-				//	unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
+			//	// if ( symbolIndex >= 0 )
+			//	//{
+			//	//	unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
+			//	// }
+			//	// else
+			//	//{
+			//	//	unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
+			//	//	unknownResidueData->symbolStr  = residueSymbol;
+			//	//	unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
 
-				//	symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
-				//}
+			//	//	symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
+			//	//}
 
-				symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
-			}
-			else
-			{
-				symbolValue = int( residueSymbol );
-			}
+			//	symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
+			//}
+			// else
+			//{
+			//	symbolValue = int( residueSymbol );
+			//}
 
 			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
 
 			mapResidueBonds.emplace( residueIdx, std::vector<size_t>() );
 			mapResidueExtraBonds.emplace( residueIdx, std::vector<size_t>() );
 
-			size_t solventCounter = 0;
-			size_t ionCounter	  = 0;
+			// size_t solventCounter = 0;
+			// size_t ionCounter	  = 0;
 
 			for ( Chemfiles::ResidueIt it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
@@ -164,8 +161,6 @@ namespace VTX::IO::Reader
 			std::pair<VTX::Core::Struct::Molecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
 			_readTrajectoryFrames( p_chemfileStruct, { pairMoleculeFirstFrame }, 1 );
 		}
-
-		Util::Chrono bondComputationChrono = Util::Chrono();
 
 		// Bonds.
 		// Sort by residus.
@@ -231,7 +226,8 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		// if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
+		// Util::Chrono bondComputationChrono = Util::Chrono();
+		//  if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		//{
 		//	bondComputationChrono.start();
 		//	const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
