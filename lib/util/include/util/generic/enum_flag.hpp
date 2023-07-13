@@ -24,9 +24,9 @@ namespace VTX
 		  public:
 			using ENUM = T;
 
-			EnumFlag<T>() {}
+			EnumFlag<T>() : EnumFlag<T>( 0 ) {}
 			EnumFlag<T>( const ENUM & p_enum ) : EnumFlag<T>( int( p_enum ) ) {}
-			EnumFlag<T>( const int p_value ) { _enum = p_value; }
+			EnumFlag<T>( const int p_value ) : _enum( p_value ) {}
 
 			explicit operator bool() const { return bool( _enum ); }
 			explicit operator int() const { return _enum; }

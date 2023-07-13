@@ -17,7 +17,7 @@ namespace VTX::Util::Math
 			using ListIt = typename std::list<Range<T>>::iterator;
 
 		  public:
-			Iterator( const ListIt & it ) { _listIterator = it; }
+			Iterator( const ListIt & p_it ) : _listIterator( p_it ) {}
 
 			T operator*() const { return _getRangeIterator(); }
 
@@ -28,12 +28,12 @@ namespace VTX::Util::Math
 
 				if ( rangeIterator == _listIterator->getLast() )
 				{
-					_listIterator++;
+					++_listIterator;
 					_initialized = false;
 				}
 				else
 				{
-					rangeIterator++;
+					++rangeIterator;
 				}
 
 				return *this;
@@ -47,11 +47,11 @@ namespace VTX::Util::Math
 
 				if ( rangeIterator == _listIterator.getLast() )
 				{
-					_listIterator++;
+					++_listIterator;
 				}
 				else
 				{
-					rangeIterator++;
+					++rangeIterator;
 				}
 
 				return tmp;
