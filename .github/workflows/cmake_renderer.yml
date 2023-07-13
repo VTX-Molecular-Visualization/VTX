@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - uses: knicknic/os-specific-run@v1
+    - uses: knicknic/os-specific-run@v1.0.3
       with:
         linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
 
@@ -38,7 +38,7 @@ jobs:
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Build your program with the given configuration
-      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_RENDERER VTX_RENDERER_BENCH
 
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
