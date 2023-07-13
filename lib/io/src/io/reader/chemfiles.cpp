@@ -1,5 +1,4 @@
 #include "io/reader/chemfiles.hpp"
-#include "io/internal/chemfiles_reading_data.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -9,8 +8,96 @@
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
+#pragma warning( push, 0 )
+#include <chemfiles.hpp>
+#pragma warning( pop )
+
 namespace VTX::IO::Reader
 {
+	struct Chemfiles::ReadingData
+	{
+		ReadingData( const FilePath & p_path, const std::string & p_format ) :
+			_trajectory( chemfiles::Trajectory( p_path.string(), 'r', p_format ) )
+		{
+		}
+
+		ReadingData( const std::string & p_buffer, const FilePath & p_path, const std::string & p_format ) :
+			_trajectory( chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), p_format ) )
+		{
+		}
+
+		chemfiles::Trajectory					_trajectory;
+		chemfiles::Frame						_currentFrame = chemfiles::Frame();
+		chemfiles::Topology						_topology	  = chemfiles::Topology();
+		const std::vector<chemfiles::Residue> * _residues	  = nullptr;
+		const std::vector<chemfiles::Bond> *	_bonds		  = nullptr;
+
+		const chemfiles::Residue * _currentResidue	 = nullptr;
+		const chemfiles::Atom *	   _currentAtom		 = nullptr;
+		size_t					   _currentAtomIndex = -1;
+		const chemfiles::Bond *	   _currentBond		 = nullptr;
+		size_t					   _currentBondIndex = -1;
+
+		void read()
+		{
+			_currentFrame = _trajectory.read();
+			_topology	  = _currentFrame.topology();
+			_residues	  = &( _topology.residues() );
+			_bonds		  = &( _topology.bonds() );
+		}
+
+		void readNextFrame() { _currentFrame = _trajectory.read(); }
+	};
+	struct Chemfiles::ResidueIt::InternalResidueIt
+	{
+		InternalResidueIt()							   = default;
+		InternalResidueIt( const InternalResidueIt & ) = default;
+
+		InternalResidueIt( chemfiles::Residue::const_iterator p_it ) : it( p_it ) {}
+		~InternalResidueIt() = default;
+
+		chemfiles::Residue::const_iterator it;
+	};
+
+	Chemfiles::ResidueIt::ResidueIt() = default;
+	Chemfiles::ResidueIt::ResidueIt( const ResidueIt & p_source )
+	{
+		_internalIterator = std::make_unique<InternalResidueIt>( *p_source._internalIterator );
+	};
+
+	Chemfiles::ResidueIt::ResidueIt( InternalResidueIt & p_internalIt )
+	{
+		_internalIterator = std::make_unique<InternalResidueIt>( p_internalIt );
+	}
+	Chemfiles::ResidueIt::~ResidueIt() {};
+
+	size_t Chemfiles::ResidueIt::operator*() const { return *( _internalIterator->it ); }
+	size_t Chemfiles::ResidueIt::operator->() const { return *( _internalIterator->it ); }
+
+	// Prefix increment
+	Chemfiles::ResidueIt & Chemfiles::ResidueIt::operator++()
+	{
+		++_internalIterator->it;
+		return *this;
+	}
+
+	// Postfix increment
+	Chemfiles::ResidueIt Chemfiles::ResidueIt::operator++( int )
+	{
+		Chemfiles::ResidueIt oldIt = *this;
+		_internalIterator->it++;
+		return oldIt;
+	}
+
+	bool operator==( const Chemfiles::ResidueIt & p_lhs, const Chemfiles::ResidueIt & p_rhs )
+	{
+		return p_lhs._internalIterator->it == p_rhs._internalIterator->it;
+	}
+	bool operator!=( const Chemfiles::ResidueIt & p_lhs, const Chemfiles::ResidueIt & p_rhs )
+	{
+		return p_lhs._internalIterator->it != p_rhs._internalIterator->it;
+	}
+
 	std::unique_ptr<Chemfiles> Chemfiles::readFile( const FilePath & p_path )
 	{
 		Util::Chrono chrono = Util::Chrono();
@@ -44,12 +131,12 @@ namespace VTX::IO::Reader
 
 	Chemfiles::Chemfiles( const FilePath & p_path )
 	{
-		_readingData = std::make_unique<Internal::ChemfilesReadingData>( p_path, _getFormat( p_path ) );
+		_readingData = std::make_unique<ReadingData>( p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
 	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) : _path( p_path )
 	{
-		_readingData = std::make_unique<Internal::ChemfilesReadingData>( p_buffer, p_path, _getFormat( p_path ) );
+		_readingData = std::make_unique<ReadingData>( p_buffer, p_path, _getFormat( p_path ) );
 		_readTrajectory();
 	}
 	Chemfiles ::~Chemfiles() = default;
@@ -218,11 +305,13 @@ namespace VTX::IO::Reader
 
 	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorBegin() const
 	{
-		return _readingData->_currentResidue->cbegin();
+		ResidueIt::InternalResidueIt itBegin = ResidueIt::InternalResidueIt( _readingData->_currentResidue->cbegin() );
+		return Chemfiles::ResidueIt( itBegin );
 	}
 	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorEnd() const
 	{
-		return _readingData->_currentResidue->cend();
+		ResidueIt::InternalResidueIt itEnd = ResidueIt::InternalResidueIt( _readingData->_currentResidue->cend() );
+		return Chemfiles::ResidueIt( itEnd );
 	}
 
 	// Atom //////////////////////////////////////

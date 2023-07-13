@@ -122,7 +122,7 @@ namespace VTX::IO::Reader
 			size_t solventCounter = 0;
 			size_t ionCounter	  = 0;
 
-			for ( chemfiles::Residue::const_iterator it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
+			for ( Chemfiles::ResidueIt it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
 				  ++it )
 			{

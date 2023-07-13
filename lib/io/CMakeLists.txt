@@ -34,7 +34,7 @@ endif()
 target_link_libraries(VTX_IO PRIVATE VTX_CORE)
 
 # Link third parties.
-target_link_libraries(VTX_IO PUBLIC chemfiles)
+target_link_libraries(VTX_IO PRIVATE chemfiles)
 
 # Test.
 # Create executable.

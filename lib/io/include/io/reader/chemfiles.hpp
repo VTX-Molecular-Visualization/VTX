@@ -1,7 +1,6 @@
 #ifndef __VTX_IO_READER_CHEMFILES__
 #define __VTX_IO_READER_CHEMFILES__
 
-#include "io/internal/chemfiles_reading_data.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
 #include <core/chemdb/residue.hpp>
@@ -13,10 +12,6 @@
 #include <utility>
 #include <vector>
 
-#pragma warning( push, 0 )
-#include <chemfiles.hpp>
-#pragma warning( pop )
-
 namespace VTX::IO::Reader
 {
 	class Chemfiles
@@ -25,7 +20,34 @@ namespace VTX::IO::Reader
 		static std::unique_ptr<Chemfiles> readFile( const FilePath & p_path );
 		static std::unique_ptr<Chemfiles> readBuffer( const std::string & p_buffer, const FilePath & p_path );
 
-		using ResidueIt = chemfiles::Residue::const_iterator;
+		struct ResidueIt
+		{
+		  private:
+			friend Chemfiles;
+
+		  public:
+			ResidueIt();
+			ResidueIt( const ResidueIt & p_source );
+			~ResidueIt();
+
+			size_t operator*() const;
+			size_t operator->() const;
+
+			// Prefix increment
+			ResidueIt & operator++();
+
+			// Postfix increment
+			ResidueIt operator++( int );
+
+			friend bool operator==( const ResidueIt & p_lhs, const ResidueIt & p_rhs );
+			friend bool operator!=( const ResidueIt & p_lhs, const ResidueIt & p_rhs );
+
+		  private:
+			struct InternalResidueIt;
+
+			ResidueIt( InternalResidueIt & p_internalIt );
+			std::unique_ptr<InternalResidueIt> _internalIterator = nullptr;
+		};
 
 	  private:
 		static void _warningCallback( const std::string & p_log );
@@ -75,8 +97,8 @@ namespace VTX::IO::Reader
 		const size_t		getCurrentResidueFirstAtomIndex() const;
 		const size_t		getCurrentResidueAtomCount() const;
 
-		chemfiles::Residue::const_iterator getCurrentResidueAtomIteratorBegin() const;
-		chemfiles::Residue::const_iterator getCurrentResidueAtomIteratorEnd() const;
+		ResidueIt getCurrentResidueAtomIteratorBegin() const;
+		ResidueIt getCurrentResidueAtomIteratorEnd() const;
 
 		// Atom
 		void setCurrentAtom( const size_t p_index );
@@ -110,8 +132,10 @@ namespace VTX::IO::Reader
 
 		const std::string _getFormat( const FilePath & );
 
-		FilePath										_path;
-		std::unique_ptr<Internal::ChemfilesReadingData> _readingData = nullptr;
+		FilePath _path;
+
+		struct ReadingData;
+		std::unique_ptr<ReadingData> _readingData = nullptr;
 	};
 } // namespace VTX::IO::Reader
 #endif
