@@ -14,10 +14,10 @@ namespace VTX::Util::Math
 	  public:
 		struct Iterator
 		{
-			using listIt = std::list<Range<T>>::iterator;
+			using ListIt = typename std::list<Range<T>>::iterator;
 
 		  public:
-			Iterator( const listIt & it ) { _listIterator = it; }
+			Iterator( const ListIt & it ) { _listIterator = it; }
 
 			T operator*() const { return _getRangeIterator(); }
 
@@ -80,7 +80,8 @@ namespace VTX::Util::Math
 
 				return _rangeIterator;
 			}
-			std::list<Range<T>>::iterator _listIterator;
+
+			ListIt _listIterator;
 
 			mutable T	 _rangeIterator;
 			mutable bool _initialized = false;
@@ -155,6 +156,8 @@ namespace VTX::Util::Math
 						it = _ranges.erase( it );
 					}
 					break;
+
+					default: break;
 					}
 
 					if ( addState == ADD_STATE::DONE )
