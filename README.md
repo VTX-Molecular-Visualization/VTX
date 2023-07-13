@@ -123,14 +123,14 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - C++17 compiler (MSVC or GCC)
 - Git
 - CMake
-- Qt 6.2.2
+- Qt 6.4.2
 
 ### Windows
 
 - Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
-- Install Qt 6.2.2 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 64-bit" is needed)
+- Install Qt 6.4.2 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 64-bit" is needed)
 - Add CMake to your "Path" environment variable: \<dir\>/CMake/bin
-- Create an environment variable "CMAKE_PREFIX_PATH" with value: \<dir\>/Qt/6.2.2/msvc2019_64/lib/cmake
+- Create an environment variable "CMAKE_PREFIX_PATH" with value: \<dir\>/Qt/6.4.2/msvc2019_64/lib/cmake
 
 #### Create Visual Studio solution with CMake
 
