@@ -1,6 +1,7 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
+#include <util/math/range.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -54,6 +55,38 @@ namespace VTX::App::Component::Chemistry
 	void Residue::setSymbol( const ChemDB::Residue::SYMBOL p_symbol )
 	{
 		_moleculePtr->_moleculeStruct.residueSymbols[ _index ] = p_symbol;
+	}
+
+	ChemDB::Atom::TYPE Residue::getAtomType() const
+	{
+		Util::Math::Range<size_t> atomRange = Util::Math::Range<size_t>( getIndexFirstAtom(), getAtomCount() );
+
+		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( atomRange ) )
+			return ChemDB::Atom::TYPE::SOLVENT;
+		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( atomRange ) )
+			return ChemDB::Atom::TYPE::ION;
+
+		return ChemDB::Atom::TYPE::NORMAL;
+	}
+	void Residue::setAtomType( const ChemDB::Atom::TYPE p_type )
+	{
+		Util::Math::Range<size_t> atomRange = Util::Math::Range<size_t>( getIndexFirstAtom(), getAtomCount() );
+
+		switch ( p_type )
+		{
+		case ChemDB::Atom::TYPE::SOLVENT:
+			_moleculePtr->_moleculeStruct.atomSolvents.addRange( atomRange );
+			_moleculePtr->_moleculeStruct.atomIons.removeRange( atomRange );
+			break;
+		case ChemDB::Atom::TYPE::ION:
+			_moleculePtr->_moleculeStruct.atomSolvents.removeRange( atomRange );
+			_moleculePtr->_moleculeStruct.atomIons.addRange( atomRange );
+			break;
+		case ChemDB::Atom::TYPE::NORMAL:
+			_moleculePtr->_moleculeStruct.atomSolvents.removeRange( atomRange );
+			_moleculePtr->_moleculeStruct.atomIons.removeRange( atomRange );
+			break;
+		}
 	}
 
 } // namespace VTX::App::Component::Chemistry

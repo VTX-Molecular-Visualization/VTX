@@ -4,6 +4,8 @@
 #include "io/core/reader/base_reader.hpp"
 #include "io/metadata/molecule.hpp"
 #include "io/reader/chemfiles.hpp"
+#include "io/struct/_fwd.hpp"
+#include <core/chemdb/atom.hpp>
 #include <core/chemdb/category.hpp>
 #include <core/struct/molecule.hpp>
 #include <map>
@@ -12,22 +14,21 @@
 
 namespace VTX::IO::Reader
 {
+	namespace ChemDB = VTX::Core::ChemDB;
+
 	class Molecule : public IO::Core::Reader::BaseReader<VTX::Core::Struct::Molecule>
 	{
 	  public:
 		Molecule() {};
 
-		void readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
-		{
-			_chemfilesReader = Reader::Chemfiles::readFile( p_path );
-			_fillStructure( *_chemfilesReader, p_molecule );
-		}
+		void readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule );
 		void readBuffer( const std::string &		   p_buffer,
 						 const FilePath &			   p_path,
-						 VTX::Core::Struct::Molecule & p_molecule )
+						 VTX::Core::Struct::Molecule & p_molecule );
+
+		void setConfiguration( const Struct::MoleculeConfiguration & p_configuration )
 		{
-			_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
-			_fillStructure( *_chemfilesReader, p_molecule );
+			_configuration = &p_configuration;
 		}
 
 		const Reader::Chemfiles & getChemfilesReader() { return *_chemfilesReader; }
@@ -44,7 +45,10 @@ namespace VTX::IO::Reader
 									const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
 									const size_t p_trajectoryFrameStart );
 
-		std::unique_ptr<Reader::Chemfiles> _chemfilesReader = nullptr;
+		ChemDB::Atom::TYPE _getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const;
+
+		std::unique_ptr<Reader::Chemfiles>	  _chemfilesReader = nullptr;
+		const Struct::MoleculeConfiguration * _configuration   = nullptr;
 	};
 } // namespace VTX::IO::Reader
 #endif

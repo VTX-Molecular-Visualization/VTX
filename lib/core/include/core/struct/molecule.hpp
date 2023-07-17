@@ -10,6 +10,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <util/math/range_list.hpp>
 #include <vector>
 
 namespace VTX::Core::Struct
@@ -68,6 +69,8 @@ namespace VTX::Core::Struct
 		size_t getBondCount() const;
 
 		// TODO Manage Atom types and residue types with sparse_set
+		Util::Math::RangeList<size_t> atomSolvents = Util::Math::RangeList<size_t>();
+		Util::Math::RangeList<size_t> atomIons	   = Util::Math::RangeList<size_t>();
 	};
 } // namespace VTX::Core::Struct
 #endif

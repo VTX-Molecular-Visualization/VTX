@@ -226,6 +226,69 @@ namespace VTX::Util::Math
 		Iterator begin() { return Iterator( _ranges.begin() ); }
 		Iterator end() { return Iterator( _ranges.end() ); }
 
+		bool contains( const T p_value ) const
+		{
+			for ( const Range<T> & range : _ranges )
+			{
+				if ( range.contains( p_value ) )
+					return true;
+			}
+
+			return false;
+		}
+		bool contains( const std::vector<T> & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				bool res = false;
+
+				for ( const Range<T> & range : _ranges )
+				{
+					if ( range.contains( value ) )
+					{
+						res = true;
+						break;
+					}
+				}
+
+				if ( !res )
+					return false;
+			}
+
+			return true;
+		}
+		bool contains( const Range<T> p_range ) const
+		{
+			for ( const Range<T> & range : _ranges )
+			{
+				if ( range.contains( p_range ) )
+					return true;
+			}
+
+			return false;
+		}
+		bool contains( const std::vector<Range<T>> p_ranges ) const
+		{
+			for ( const Range<T> & rangeToFind : p_ranges )
+			{
+				bool res = false;
+
+				for ( const Range<T> & range : _ranges )
+				{
+					if ( range.contains( rangeToFind ) )
+					{
+						res = true;
+						break;
+					}
+				}
+
+				if ( !res )
+					return false;
+			}
+
+			return true;
+		}
+
 	  private:
 		std::list<Range<T>> _ranges = std::list<Range<T>>();
 	};

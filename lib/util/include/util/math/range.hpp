@@ -19,12 +19,38 @@ namespace VTX::Util::Math
 		}
 
 	  public:
-		Range() : Range( ZERO, ZERO ) {}
-		Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
+		explicit Range() : Range( ZERO, ZERO ) {}
+		explicit Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
 
 		T getFirst() const { return _start; };
 		T getLast() const { return _start + _count - ONE; };
 		T getCount() const { return _count; };
+
+		bool contains( const T p_value ) const { return ( p_value >= _start ) && ( p_value < ( _start + _count ) ); }
+		bool contains( const std::vector<T> & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
+					return false;
+			}
+
+			return true;
+		}
+		bool contains( const Range<T> p_range ) const
+		{
+			return ( p_range._start >= _start ) && ( p_range.getLast() <= getLast() );
+		}
+		bool contains( const std::vector<Range<T>> p_ranges ) const
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				if ( !contains( range ) )
+					return false;
+			}
+
+			return true;
+		}
 
 		void add( const T p_count = ONE ) { _count += p_count; };
 		void remove( const T p_count = ONE ) { _count -= p_count; };

@@ -6,12 +6,12 @@ namespace VTX::App::Internal::Util::Molecule
 	void loadResidueData( const std::string & p_residueSymbol )
 	{
 		VTX::IO::Reader::ResidueDataReader reader = IO::Reader::ResidueDataReader();
-		VTX::IO::Reader::ResidueData	   residueData;
+		VTX::IO::Struct::ResidueData	   residueData;
 
 		if ( reader.readResidueData( p_residueSymbol, residueData ) )
 			mapLoadedResidueData.emplace( p_residueSymbol, residueData );
 		else
-			mapLoadedResidueData.emplace( p_residueSymbol, IO::Reader::ResidueData::DEFAULT );
+			mapLoadedResidueData.emplace( p_residueSymbol, IO::Struct::ResidueData::DEFAULT );
 	}
 
 	const std::string & getResidueFullName( const std::string & p_residueSymbol )
@@ -22,7 +22,7 @@ namespace VTX::App::Internal::Util::Molecule
 		return mapLoadedResidueData[ p_residueSymbol ].fullname;
 	}
 
-	const std::vector<VTX::IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol )
+	const std::vector<VTX::IO::Struct::BondData> & getResidueBonds( const std::string & p_residueSymbol )
 	{
 		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
 			loadResidueData( p_residueSymbol );

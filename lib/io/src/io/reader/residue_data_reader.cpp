@@ -1,12 +1,11 @@
 #include "io/reader/residue_data_reader.hpp"
 #include "io/internal/filesystem.hpp"
+#include "io/struct/bond_data.hpp"
 #include <util/filesystem.hpp>
 
 namespace VTX::IO::Reader
 {
-	const ResidueData ResidueData::DEFAULT = ResidueData( "Unknown", std::vector<BondData>() );
-
-	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
+	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, Struct::ResidueData & p_residueData )
 	{
 		const FilePath filepath = Internal::Filesystem::getResidueDataFilePath( p_residueSymbol );
 
@@ -35,7 +34,7 @@ namespace VTX::IO::Reader
 
 			std::stringstream streamLine = std::stringstream( line );
 
-			BondData bondData = BondData();
+			Struct::BondData bondData = Struct::BondData();
 
 			std::getline( streamLine, bondData.atom1, ',' );
 			std::getline( streamLine, bondData.atom2, ',' );

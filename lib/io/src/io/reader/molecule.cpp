@@ -1,4 +1,5 @@
 #include "io/reader/molecule.hpp"
+#include "io/struct/molecule_configuration.hpp"
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
 #include <magic_enum.hpp>
@@ -9,7 +10,18 @@
 
 namespace VTX::IO::Reader
 {
-	namespace ChemDB = VTX::Core::ChemDB;
+	void Molecule::readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
+	{
+		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
+		_fillStructure( *_chemfilesReader, p_molecule );
+	}
+	void Molecule::readBuffer( const std::string &			 p_buffer,
+							   const FilePath &				 p_path,
+							   VTX::Core::Struct::Molecule & p_molecule )
+	{
+		_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
+		_fillStructure( *_chemfilesReader, p_molecule );
+	}
 
 	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule )
 	{
@@ -118,6 +130,8 @@ namespace VTX::IO::Reader
 
 			// size_t solventCounter = 0;
 			// size_t ionCounter	  = 0;
+			Util::Math::RangeList<size_t> atomSolvents = Util::Math::RangeList<size_t>();
+			Util::Math::RangeList<size_t> atomIons	   = Util::Math::RangeList<size_t>();
 
 			for ( Chemfiles::ResidueIt it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
@@ -129,6 +143,15 @@ namespace VTX::IO::Reader
 				p_molecule.atomResidueIndexes[ atomIndex ] = residueIdx;
 				p_molecule.atomNames[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomName();
 				p_molecule.atomSymbols[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomSymbol();
+
+				const ChemDB::Atom::TYPE atomType = _getTypeInConfiguration( p_chemfileStruct );
+				switch ( atomType )
+				{
+				case ChemDB::Atom::TYPE::NORMAL: break;
+				case ChemDB::Atom::TYPE::ION: p_molecule.atomSolvents.addValue( atomIndex ); break;
+				case ChemDB::Atom::TYPE::SOLVENT: p_molecule.atomIons.addValue( atomIndex ); break;
+				default: break;
+				}
 
 				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
 			}
@@ -316,6 +339,50 @@ namespace VTX::IO::Reader
 		}
 
 		return res;
+	}
+
+	ChemDB::Atom::TYPE Molecule::_getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const
+	{
+		if ( _configuration == nullptr )
+			return ChemDB::Atom::TYPE::NORMAL;
+
+		const int atomType = p_chemfileStruct.getCurrentAtomType();
+
+		// Check better way to manage this
+		// Check PRM.
+		if ( atomType != -1 )
+		{
+			if ( std::find( _configuration->solventAtomIds.begin(), _configuration->solventAtomIds.end(), atomType )
+				 != _configuration->solventAtomIds.end() )
+			{
+				return ChemDB::Atom::TYPE::SOLVENT;
+			}
+			else if ( std::find( _configuration->ionAtomIds.begin(), _configuration->ionAtomIds.end(), atomType )
+					  != _configuration->ionAtomIds.end() )
+			{
+				return ChemDB::Atom::TYPE::ION;
+			}
+		}
+
+		const std::string residueSymbol = p_chemfileStruct.getCurrentResidueName();
+
+		// Check PSF.
+		if ( std::find( _configuration->solventResidueSymbols.begin(),
+						_configuration->solventResidueSymbols.end(),
+						residueSymbol )
+			 != _configuration->solventResidueSymbols.end() )
+		{
+			return ChemDB::Atom::TYPE::SOLVENT;
+		}
+		else if ( std::find( _configuration->ionResidueSymbols.begin(),
+							 _configuration->ionResidueSymbols.end(),
+							 residueSymbol )
+				  != _configuration->ionResidueSymbols.end() )
+		{
+			return ChemDB::Atom::TYPE::ION;
+		}
+
+		return ChemDB::Atom::TYPE::NORMAL;
 	}
 
 } // namespace VTX::IO::Reader

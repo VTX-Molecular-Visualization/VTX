@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
 
@@ -41,6 +42,9 @@ namespace VTX::App::Component::Chemistry
 
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
+
+		ChemDB::Atom::TYPE getAtomType() const;
+		void			   setAtomType( const ChemDB::Atom::TYPE p_type );
 
 		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
 		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
