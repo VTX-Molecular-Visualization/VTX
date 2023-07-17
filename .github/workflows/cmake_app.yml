@@ -27,7 +27,7 @@ jobs:
     
     - uses: knicknic/os-specific-run@v1.0.3
       with:
-        linux: sudo apt-get install -y libxrandr
+        linux: sudo apt-get install -y libxrandr-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
