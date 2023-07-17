@@ -19,7 +19,7 @@ namespace VTX::Util::Math
 		}
 
 	  public:
-		explicit Range() : Range( ZERO, ZERO ) {}
+		Range() : Range( ZERO, ZERO ) {}
 		explicit Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
 
 		T getFirst() const { return _start; };

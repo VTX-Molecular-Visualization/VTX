@@ -97,7 +97,7 @@ namespace VTX::Util::Math
 
 	  public:
 		RangeList() {}
-		RangeList( const std::vector<Range<T>> & p_ranges )
+		explicit RangeList( const std::vector<Range<T>> & p_ranges )
 		{
 			for ( const Range<T> & range : p_ranges )
 			{
