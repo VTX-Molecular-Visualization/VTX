@@ -19,7 +19,7 @@ namespace VTX::Util::Filesystem
 
 		return std::filesystem::path { szPath }.parent_path() / ""; // to finish the folder path with (back)slash
 #else
-		return std::filesystem::current_path()
+		return std::filesystem::current_path();
 #endif
 	}
 
