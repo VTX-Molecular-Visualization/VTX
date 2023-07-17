@@ -3,6 +3,7 @@
 
 #include "app/application/_fwd.hpp"
 // #include <QElapsedTimer>
+#include <memory>
 #include <string>
 #include <util/exceptions.hpp>
 #include <util/generic/base_static_singleton.hpp>
