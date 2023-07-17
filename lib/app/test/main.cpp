@@ -163,8 +163,10 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
 
 	// Create MoleculeEntity
-	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
-	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
+	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	VTX_INFO( "Molecule path : {}", moleculePath.string() );
+
+	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );

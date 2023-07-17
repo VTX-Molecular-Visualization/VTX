@@ -38,7 +38,7 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 	const std::string moleculePathname = moleculeName + ".mmtf";
 	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
 
-	VTX_INFO( "Benchmark on {}.", moleculePath.string() );
+	VTX_INFO( "Benchmark on {}", moleculePath.string() );
 
 	BENCHMARK( "Open molecules" )
 	{
