@@ -85,12 +85,12 @@ namespace VTX::App::Core::ECS
 		bool   isEmpty() const { return _enttRegistry.size() == 0; }
 		size_t size() const { return _enttRegistry.size(); }
 
-		template<ECS_Component C>
-		entt::observer getUpdateObserver()
-		{
-			entt::observer observer { _enttRegistry, entt::collector.update<C>() };
-			return observer;
-		}
+		// template<ECS_Component C>
+		// entt::observer & getObservers()
+		//{
+		//	entt::observer observer { _enttRegistry, entt::collector.update<C>() };
+		//	return std::forward( observer );
+		// }
 
 		template<ECS_Component C, auto Func, typename Receiver>
 		void connectSignal( const SIGNAL p_signal, Receiver * const p_receiver )
