@@ -138,7 +138,7 @@ namespace VTX::IO::Reader
 	{
 		_readTrajectory();
 	}
-	Chemfiles ::~Chemfiles() = default;
+	Chemfiles::~Chemfiles() = default;
 
 	void Chemfiles::_readTrajectory()
 	{

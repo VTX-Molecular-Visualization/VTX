@@ -32,8 +32,8 @@ namespace VTX::App
 		inline const Application::Setting & getSettings() const { return *_setting; }
 
 	  private:
-		Application::Scene *				  _scene   = nullptr;
-		std::unique_ptr<Application::Setting> _setting = nullptr;
+		Application::Scene *				  _scene = nullptr;
+		std::unique_ptr<Application::Setting> _setting;
 
 		void _handleArgs( const std::vector<std::string> & );
 		void _update();
