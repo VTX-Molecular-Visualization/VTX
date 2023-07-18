@@ -65,3 +65,36 @@ target_link_libraries(VTX_UI PUBLIC Qt6::Svg)
 
 # Qt options
 apply_qt_options(VTX_UI)
+
+# Test.
+# Create executable.
+add_executable(VTX_UI_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_UI_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX Modules.
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_CORE)
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_IO)
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_APP)
+target_link_libraries(VTX_UI_TEST PRIVATE VTX_UI)
+
+# Catch2.
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)	
+catch_discover_tests(VTX_UI_TEST)
+endif()
+
+# Copy dlls in .exe directory
+if(MSVC)
+	add_custom_command(TARGET VTX_UI_TEST POST_BUILD
+	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX_UI_TEST> $<TARGET_FILE_DIR:VTX_UI_TEST>
+	  COMMAND_EXPAND_LISTS
+	)
+endif()
+
+# Copy data.
+add_custom_target(VTX_UI_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_UI_TEST>/data)
+add_dependencies(VTX_UI_TEST VTX_UI_TEST_COPY_DATA)
