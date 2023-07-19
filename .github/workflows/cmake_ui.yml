@@ -38,7 +38,7 @@ jobs:
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Build your program with the given configuration
-      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_UI VTX_UI_TEST
+      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.Qt6_Dir}}" --target VTX_UI VTX_UI_TEST
 
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
