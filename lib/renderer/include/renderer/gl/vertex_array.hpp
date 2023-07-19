@@ -55,6 +55,19 @@ namespace VTX::Renderer::GL
 #endif
 		}
 
+		inline void unbindElementBuffer() const
+		{
+			assert( glIsVertexArray( _id ) );
+
+#if ( VTX_OPENGL_VERSION == 450 )
+			glVertexArrayElementBuffer( _id, 0 );
+#else
+			bind();
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			unbind();
+#endif
+		}
+
 		inline void enableAttribute( const GLuint p_bindingIndex ) const
 		{
 			assert( glIsVertexArray( _id ) );

@@ -147,8 +147,8 @@ namespace VTX::Renderer::GL
 
 		struct StructUniformsCamera
 		{
-			Mat4f matrixModel  = MAT4F_ID;
-			Mat4f matrixNormal = MAT4F_ID;
+			Mat4f matrixModel  = MAT4F_ID; // To delete.
+			Mat4f matrixNormal = MAT4F_ID; // To delete.
 			Mat4f matrixView;
 			Mat4f matrixProjection;
 			// _near * _far, _far, _far - _near, _near
@@ -186,6 +186,7 @@ namespace VTX::Renderer::GL
 		// Input data.
 		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;
 		std::unique_ptr<StructBufferMolecules> _bufferMolecules;
+		std::vector<uint>					   selectionIndexes;
 
 		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager;

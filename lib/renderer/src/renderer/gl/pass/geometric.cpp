@@ -79,11 +79,14 @@ namespace VTX::Renderer::GL::Pass
 			in.molecules->vao.drawArray( GL_POINTS, 0, GLsizei( in.molecules->sizeAtoms ) );
 		}
 		// Cylinders.
+		in.molecules->bindBonds();
 		if ( in.molecules->sizeBonds > 0 )
 		{
 			_programCylinder->use();
 			in.molecules->vao.drawElement( GL_LINES, GLsizei( in.molecules->sizeBonds ), GL_UNSIGNED_INT );
 		}
+		in.molecules->vao.unbindElementBuffer();
+		// TODO: Ribbons.
 
 		out.fbo->unbind();
 		glDisable( GL_DEPTH_TEST );
