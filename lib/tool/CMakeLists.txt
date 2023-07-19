@@ -1,5 +1,5 @@
 message("VTX_TOOL")
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 project(VTX_TOOL)
 
 # Git dependencies.
@@ -28,8 +28,14 @@ file(GLOB_RECURSE SOURCES src/*)
 # Fetch third parties.
 include(FetchContent)
 FetchContent_Declare(Eigen3 GIT_REPOSITORY ${GIT_URL_EIGEN} GIT_TAG ${GIT_TAG_EIGEN})
-FetchContent_MakeAvailable(Eigen3)
 
+block()
+set (BUILD_TESTING OFF) #"Avoid making Eigen test projects"
+set (EIGEN_BUILD_DOC OFF ) #"Avoid making Eigen doc projects"
+FetchContent_MakeAvailable(Eigen3)
+endblock()
+
+	
 # Get QT forms and resources
 file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
 file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
@@ -58,5 +64,27 @@ target_link_libraries(VTX_TOOL PRIVATE Qt6::Core)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Gui)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Widgets)
 
+
 # Qt options
 apply_qt_options(VTX_TOOL)
+
+# Test.
+# Create executable.
+add_executable(VTX_TOOL_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_TOOL_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX Modules.
+target_link_libraries(VTX_TOOL_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_TOOL_TEST PRIVATE VTX_UI)
+
+# Link Third parties.
+target_link_libraries(VTX_TOOL_TEST PRIVATE Eigen3::Eigen)
+
+# Catch2.
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)	
+catch_discover_tests(VTX_TOOL_TEST)
+endif()
+
