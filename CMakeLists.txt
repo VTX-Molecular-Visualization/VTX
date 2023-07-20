@@ -29,23 +29,14 @@ target_link_libraries(VTX PRIVATE VTX_TOOL)
 
 # Copy dlls in .exe directory
 if(MSVC)
-	file(GENERATE OUTPUT "tmp-vge.log" CONTENT $<TARGET_RUNTIME_DLLS:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD
-	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX> $<TARGET_FILE_DIR:VTX>
-	  COMMAND_EXPAND_LISTS
-	)
-	get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-	get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-	add_custom_command(TARGET VTX POST_BUILD
-        COMMAND "${_qt_bin_dir}/windeployqt.exe"         
-                --verbose 1
-                --release
-                --no-angle
-                --no-compiler-runtime
-                --no-system-d3d-compiler
-                \"$<TARGET_FILE:VTX>\"
-    )
+ 	add_custom_command(TARGET VTX POST_BUILD
+ 	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX> $<TARGET_FILE_DIR:VTX>
+ 	  COMMAND_EXPAND_LISTS
+ 	)
 endif()
+
+# Copy Qt plugin DLLs into target dir
+win_deploy_qt(VTX)
 
 # TODO: move in corresponding lib.
 if(MSVC)
