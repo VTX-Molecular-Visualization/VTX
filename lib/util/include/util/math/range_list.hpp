@@ -14,10 +14,10 @@ namespace VTX::Util::Math
 	  public:
 		struct Iterator
 		{
-			using listIt = std::list<Range<T>>::iterator;
+			using ListIt = typename std::list<Range<T>>::iterator;
 
 		  public:
-			Iterator( const listIt & it ) { _listIterator = it; }
+			Iterator( const ListIt & p_it ) : _listIterator( p_it ) {}
 
 			T operator*() const { return _getRangeIterator(); }
 
@@ -28,12 +28,12 @@ namespace VTX::Util::Math
 
 				if ( rangeIterator == _listIterator->getLast() )
 				{
-					_listIterator++;
+					++_listIterator;
 					_initialized = false;
 				}
 				else
 				{
-					rangeIterator++;
+					++rangeIterator;
 				}
 
 				return *this;
@@ -47,11 +47,11 @@ namespace VTX::Util::Math
 
 				if ( rangeIterator == _listIterator.getLast() )
 				{
-					_listIterator++;
+					++_listIterator;
 				}
 				else
 				{
-					rangeIterator++;
+					++rangeIterator;
 				}
 
 				return tmp;
@@ -80,7 +80,8 @@ namespace VTX::Util::Math
 
 				return _rangeIterator;
 			}
-			std::list<Range<T>>::iterator _listIterator;
+
+			ListIt _listIterator;
 
 			mutable T	 _rangeIterator;
 			mutable bool _initialized = false;
@@ -96,7 +97,7 @@ namespace VTX::Util::Math
 
 	  public:
 		RangeList() {}
-		RangeList( const std::vector<Range<T>> & p_ranges )
+		explicit RangeList( const std::vector<Range<T>> & p_ranges )
 		{
 			for ( const Range<T> & range : p_ranges )
 			{
@@ -155,6 +156,8 @@ namespace VTX::Util::Math
 						it = _ranges.erase( it );
 					}
 					break;
+
+					default: break;
 					}
 
 					if ( addState == ADD_STATE::DONE )
@@ -222,6 +225,69 @@ namespace VTX::Util::Math
 
 		Iterator begin() { return Iterator( _ranges.begin() ); }
 		Iterator end() { return Iterator( _ranges.end() ); }
+
+		bool contains( const T p_value ) const
+		{
+			for ( const Range<T> & range : _ranges )
+			{
+				if ( range.contains( p_value ) )
+					return true;
+			}
+
+			return false;
+		}
+		bool contains( const std::vector<T> & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				bool res = false;
+
+				for ( const Range<T> & range : _ranges )
+				{
+					if ( range.contains( value ) )
+					{
+						res = true;
+						break;
+					}
+				}
+
+				if ( !res )
+					return false;
+			}
+
+			return true;
+		}
+		bool contains( const Range<T> p_range ) const
+		{
+			for ( const Range<T> & range : _ranges )
+			{
+				if ( range.contains( p_range ) )
+					return true;
+			}
+
+			return false;
+		}
+		bool contains( const std::vector<Range<T>> p_ranges ) const
+		{
+			for ( const Range<T> & rangeToFind : p_ranges )
+			{
+				bool res = false;
+
+				for ( const Range<T> & range : _ranges )
+				{
+					if ( range.contains( rangeToFind ) )
+					{
+						res = true;
+						break;
+					}
+				}
+
+				if ( !res )
+					return false;
+			}
+
+			return true;
+		}
 
 	  private:
 		std::list<Range<T>> _ranges = std::list<Range<T>>();

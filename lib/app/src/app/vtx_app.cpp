@@ -13,16 +13,15 @@
 
 namespace VTX::App
 {
-	VTXApp::VTXApp( StructPrivacyToken ) {}
+	VTXApp::VTXApp( StructPrivacyToken ) : _setting( std::make_unique<Application::Setting>() ) {}
 
-	VTXApp::~VTXApp() {}
+	VTXApp::~VTXApp() {};
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
 		VTX_INFO( "Starting application: {}", IO::Internal::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
-		_setting = std::make_unique<Application::Setting>();
 		// VTX_ACTION<Action::Setting::Load>();
 		//_setting.loadRecentPaths();
 

@@ -155,6 +155,29 @@ TEST_CASE( "Util::Math::Range", "[math]" )
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.merge( Util::Math::Range<size_t>::createFirstLast( 25, 35 ) );
 	REQUIRE( !range.isValid() );
+
+	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
+	REQUIRE( range.contains( 10 ) );
+	REQUIRE( range.contains( 15 ) );
+	REQUIRE( range.contains( 20 ) );
+	REQUIRE( !range.contains( 9 ) );
+	REQUIRE( !range.contains( 21 ) );
+
+	REQUIRE( range.contains( { 10, 12, 18 } ) );
+	REQUIRE( !range.contains( { 10, 12, 18, 22 } ) );
+
+	REQUIRE( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 20 ) ) );
+	REQUIRE( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 15 ) ) );
+	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 9, 24 ) ) );
+	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 1, 5 ) ) );
+	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 12, 24 ) ) );
+	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 500, 5000 ) ) );
+
+	REQUIRE( range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
+							   Util::Math::Range<size_t>::createFirstLast( 14, 18 ) } ) );
+	REQUIRE( !range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
+								Util::Math::Range<size_t>::createFirstLast( 14, 18 ),
+								Util::Math::Range<size_t>::createFirstLast( 19, 22 ) } ) );
 };
 TEST_CASE( "Util::Math::RangeList", "[math]" )
 {
@@ -189,6 +212,28 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 		itemCount++;
 
 	REQUIRE( itemCount == 3 );
+
+	rangeList = Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+												 Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
+												 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+
+	REQUIRE( rangeList.contains( 7 ) );
+	REQUIRE( !rangeList.contains( 10 ) );
+
+	REQUIRE( rangeList.contains( { 7, 13, 50 } ) );
+	REQUIRE( !rangeList.contains( { 7, 13, 50, 52 } ) );
+
+	REQUIRE( rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 20 ) ) );
+	REQUIRE( !rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 50 ) ) );
+
+	REQUIRE( rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+								   Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+								   Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
+								   Util::Math::Range<size_t>::createFirstLast( 18, 20 ) } ) );
+
+	REQUIRE( !rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+									Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+									Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
 };
 
 // C++20 static polymorphism with concepts.

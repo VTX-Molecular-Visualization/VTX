@@ -2,6 +2,7 @@
 #define __VTX_IO_UTIL_BOND_ORDER_GUESSING__
 
 #include "io/reader/residue_data_reader.hpp"
+#include "io/struct/bond_data.hpp"
 #include <core/chemdb/bond.hpp>
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -74,7 +75,7 @@ namespace VTX::IO::Util
 		static void recomputeBondOrders( chemfiles::Frame & p_frame );
 		static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 
-		static const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+		static const std::vector<Struct::BondData> & getResidueBonds( const std::string & p_residueSymbol );
 
 	  private:
 		// Guess bond order with topology

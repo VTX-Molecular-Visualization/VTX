@@ -9,7 +9,7 @@
 
 namespace VTX::IO::Internal::Filesystem
 {
-	static FilePath EXECUTABLE_ABSOLUTE_PATH = std::filesystem::current_path();
+	static FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
 	// JSon save fail when size > 192
 	static const int		 MAX_FILE_LENGTH	  = 180;
 	static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";

@@ -3,6 +3,7 @@
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <util/chrono.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 TEST_CASE( "VTX_IO - Test", "[integration]" )
@@ -12,7 +13,9 @@ TEST_CASE( "VTX_IO - Test", "[integration]" )
 
 	const std::string moleculeName	   = "8OIT";
 	const std::string moleculePathname = moleculeName + ".mmtf";
-	const FilePath	  moleculePath	   = std::filesystem::current_path() / "data" / moleculePathname;
+	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+
+	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
 	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
@@ -32,7 +35,9 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 
 	const std::string moleculeName	   = "8OIT";
 	const std::string moleculePathname = moleculeName + ".mmtf";
-	const FilePath	  moleculePath	   = std::filesystem::current_path() / "data" / moleculePathname;
+	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+
+	VTX_INFO( "Benchmark on {}.", moleculeName );
 
 	BENCHMARK( "Open molecules" )
 	{

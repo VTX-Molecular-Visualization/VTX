@@ -1,4 +1,5 @@
 #include "io/reader/molecule.hpp"
+#include "io/struct/molecule_configuration.hpp"
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
 #include <magic_enum.hpp>
@@ -9,7 +10,18 @@
 
 namespace VTX::IO::Reader
 {
-	namespace ChemDB = VTX::Core::ChemDB;
+	void Molecule::readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
+	{
+		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
+		_fillStructure( *_chemfilesReader, p_molecule );
+	}
+	void Molecule::readBuffer( const std::string &			 p_buffer,
+							   const FilePath &				 p_path,
+							   VTX::Core::Struct::Molecule & p_molecule )
+	{
+		_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
+		_fillStructure( *_chemfilesReader, p_molecule );
+	}
 
 	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule )
 	{
@@ -17,13 +29,11 @@ namespace VTX::IO::Reader
 
 		size_t		currentChainIndex		 = INVALID_INDEX;
 		std::string lastChainName			 = "";
-		size_t		chainModelId			 = -1;
 		size_t		currentChainResidueCount = 0;
 
 		std::map<size_t, std::vector<size_t>> mapResidueBonds	   = std::map<size_t, std::vector<size_t>>();
 		std::map<size_t, std::vector<size_t>> mapResidueExtraBonds = std::map<size_t, std::vector<size_t>>();
 
-		int								  oldIndexInChain  = INT_MIN;
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		p_molecule.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
@@ -68,7 +78,6 @@ namespace VTX::IO::Reader
 
 				lastChainName	 = chainName;
 				lastCategoryEnum = categoryEnum;
-				oldIndexInChain	 = INT_MIN;
 			}
 
 			currentChainResidueCount++;
@@ -86,43 +95,45 @@ namespace VTX::IO::Reader
 
 			ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 
-			int symbolValue;
+			// int symbolValue;
 
-			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
-			{
-				const int symbolIndex = 0;
-				// int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				//  VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
+			// if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+			//{
+			//	const int symbolIndex = 0;
+			//	// int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
+			//	//  VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
 
-				// if ( symbolIndex >= 0 )
-				//{
-				//	unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
-				// }
-				// else
-				//{
-				//	unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
-				//	unknownResidueData->symbolStr  = residueSymbol;
-				//	unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
+			//	// if ( symbolIndex >= 0 )
+			//	//{
+			//	//	unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
+			//	// }
+			//	// else
+			//	//{
+			//	//	unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
+			//	//	unknownResidueData->symbolStr  = residueSymbol;
+			//	//	unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
 
-				//	symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
-				//}
+			//	//	symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
+			//	//}
 
-				symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
-			}
-			else
-			{
-				symbolValue = int( residueSymbol );
-			}
+			//	symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
+			//}
+			// else
+			//{
+			//	symbolValue = int( residueSymbol );
+			//}
 
 			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
 
 			mapResidueBonds.emplace( residueIdx, std::vector<size_t>() );
 			mapResidueExtraBonds.emplace( residueIdx, std::vector<size_t>() );
 
-			size_t solventCounter = 0;
-			size_t ionCounter	  = 0;
+			// size_t solventCounter = 0;
+			// size_t ionCounter	  = 0;
+			Util::Math::RangeList<size_t> atomSolvents = Util::Math::RangeList<size_t>();
+			Util::Math::RangeList<size_t> atomIons	   = Util::Math::RangeList<size_t>();
 
-			for ( chemfiles::Residue::const_iterator it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
+			for ( Chemfiles::ResidueIt it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
 				  ++it )
 			{
@@ -132,6 +143,15 @@ namespace VTX::IO::Reader
 				p_molecule.atomResidueIndexes[ atomIndex ] = residueIdx;
 				p_molecule.atomNames[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomName();
 				p_molecule.atomSymbols[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomSymbol();
+
+				const ChemDB::Atom::TYPE atomType = _getTypeInConfiguration( p_chemfileStruct );
+				switch ( atomType )
+				{
+				case ChemDB::Atom::TYPE::NORMAL: break;
+				case ChemDB::Atom::TYPE::ION: p_molecule.atomSolvents.addValue( atomIndex ); break;
+				case ChemDB::Atom::TYPE::SOLVENT: p_molecule.atomIons.addValue( atomIndex ); break;
+				default: break;
+				}
 
 				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
 			}
@@ -164,8 +184,6 @@ namespace VTX::IO::Reader
 			std::pair<VTX::Core::Struct::Molecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
 			_readTrajectoryFrames( p_chemfileStruct, { pairMoleculeFirstFrame }, 1 );
 		}
-
-		Util::Chrono bondComputationChrono = Util::Chrono();
 
 		// Bonds.
 		// Sort by residus.
@@ -231,7 +249,8 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		// if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
+		// Util::Chrono bondComputationChrono = Util::Chrono();
+		//  if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		//{
 		//	bondComputationChrono.start();
 		//	const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
@@ -320,6 +339,50 @@ namespace VTX::IO::Reader
 		}
 
 		return res;
+	}
+
+	ChemDB::Atom::TYPE Molecule::_getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const
+	{
+		if ( _configuration == nullptr )
+			return ChemDB::Atom::TYPE::NORMAL;
+
+		const int atomType = p_chemfileStruct.getCurrentAtomType();
+
+		// Check better way to manage this
+		// Check PRM.
+		if ( atomType != -1 )
+		{
+			if ( std::find( _configuration->solventAtomIds.begin(), _configuration->solventAtomIds.end(), atomType )
+				 != _configuration->solventAtomIds.end() )
+			{
+				return ChemDB::Atom::TYPE::SOLVENT;
+			}
+			else if ( std::find( _configuration->ionAtomIds.begin(), _configuration->ionAtomIds.end(), atomType )
+					  != _configuration->ionAtomIds.end() )
+			{
+				return ChemDB::Atom::TYPE::ION;
+			}
+		}
+
+		const std::string residueSymbol = p_chemfileStruct.getCurrentResidueName();
+
+		// Check PSF.
+		if ( std::find( _configuration->solventResidueSymbols.begin(),
+						_configuration->solventResidueSymbols.end(),
+						residueSymbol )
+			 != _configuration->solventResidueSymbols.end() )
+		{
+			return ChemDB::Atom::TYPE::SOLVENT;
+		}
+		else if ( std::find( _configuration->ionResidueSymbols.begin(),
+							 _configuration->ionResidueSymbols.end(),
+							 residueSymbol )
+				  != _configuration->ionResidueSymbols.end() )
+		{
+			return ChemDB::Atom::TYPE::ION;
+		}
+
+		return ChemDB::Atom::TYPE::NORMAL;
 	}
 
 } // namespace VTX::IO::Reader

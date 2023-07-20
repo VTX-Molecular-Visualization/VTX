@@ -1,9 +1,27 @@
 #include "util/filesystem.hpp"
 #include "util/exceptions.hpp"
+#include <filesystem>
 #include <fstream>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace VTX::Util::Filesystem
 {
+	// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
+	std::filesystem::path getExecutableDir()
+	{
+#ifdef _WIN32
+		// Windows specific
+		wchar_t szPath[ MAX_PATH ];
+		GetModuleFileNameW( NULL, szPath, MAX_PATH );
+
+		return std::filesystem::path { szPath }.parent_path() / ""; // to finish the folder path with (back)slash
+#else
+		return std::filesystem::current_path();
+#endif
+	}
 
 	const std::string readPath( const FilePath & p_filePath )
 	{

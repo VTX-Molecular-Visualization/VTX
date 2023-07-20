@@ -30,6 +30,9 @@ namespace VTX::App::Component::Chemistry
 		const ChemDB::Atom::SYMBOL & getSymbol() const;
 		void						 setSymbol( const ChemDB::Atom::SYMBOL & p_symbol );
 
+		ChemDB::Atom::TYPE getType() const;
+		void			   setType( const ChemDB::Atom::TYPE p_type );
+
 		float getVdwRadius() const;
 
 		const Vec3f & getLocalPosition() const;

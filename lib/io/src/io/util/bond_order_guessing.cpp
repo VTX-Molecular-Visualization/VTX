@@ -600,7 +600,7 @@ namespace VTX::IO::Util
 
 			const chemfiles::Residue & residue = firstResidue.value();
 
-			const std::vector<IO::Reader::BondData> & bondsData = getResidueBonds( residue.name() );
+			const std::vector<Struct::BondData> & bondsData = getResidueBonds( residue.name() );
 
 			if ( previousResidue != &residue )
 			{
@@ -617,7 +617,7 @@ namespace VTX::IO::Util
 
 			for ( bondDataCurrentIndex; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
 			{
-				const IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
+				const Struct::BondData & bondData = bondsData[ bondDataCurrentIndex ];
 
 				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
 				{
@@ -631,7 +631,7 @@ namespace VTX::IO::Util
 		return res;
 	}
 
-	const std::vector<IO::Reader::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
+	const std::vector<Struct::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
 	{
 		throw NotImplementedException();
 		// return Util::App::Old::Molecule::getResidueBonds( p_residueSymbol );
