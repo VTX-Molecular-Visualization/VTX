@@ -1,8 +1,10 @@
 **/out/
 **/.vs/
+**/.vscode/
 /data/
 /external_project/
 /RELEASE/
 /.vscode/
 *.code-workspace
 **/out/
+**/CMakePresets.json

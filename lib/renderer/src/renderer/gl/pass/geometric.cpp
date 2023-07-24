@@ -69,24 +69,31 @@ namespace VTX::Renderer::GL::Pass
 		// Triangles.
 		if ( in.meshes->size > 0 )
 		{
+			in.meshes->vao.bind();
 			_programTriangle->use();
 			in.meshes->vao.drawElement( GL_TRIANGLES, GLsizei( in.meshes->size ), GL_UNSIGNED_INT );
+			in.meshes->vao.unbind();
 		}
+
 		// Spheres.
+		in.molecules->vao.bind();
 		if ( in.molecules->sizeAtoms > 0 )
 		{
 			_programSphere->use();
 			in.molecules->vao.drawArray( GL_POINTS, 0, GLsizei( in.molecules->sizeAtoms ) );
 		}
+
 		// Cylinders.
-		in.molecules->bindBonds();
 		if ( in.molecules->sizeBonds > 0 )
 		{
+			in.molecules->bindBonds();
 			_programCylinder->use();
 			in.molecules->vao.drawElement( GL_LINES, GLsizei( in.molecules->sizeBonds ), GL_UNSIGNED_INT );
+			in.molecules->vao.unbindElementBuffer();
 		}
-		in.molecules->vao.unbindElementBuffer();
-		// TODO: Ribbons.
+		in.molecules->vao.unbind();
+
+		//  TODO: Ribbons.
 
 		out.fbo->unbind();
 		glDisable( GL_DEPTH_TEST );
