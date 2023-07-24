@@ -14,15 +14,7 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Creating renderer..." );
 
 		// Load OpenGL.
-		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
-		{
-			throw GLException( "Failed to load OpenGL" );
-		}
-		else if ( gladLoadGL() == 0 )
-		{
-			throw GLException( "Failed to initialize GLAD" );
-		}
-
+		loadOpenGL( p_proc );
 		_getOpenglInfos();
 
 		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
