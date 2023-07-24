@@ -8,3 +8,4 @@
 *.code-workspace
 **/out/
 **/CMakePresets.json
+**/CMakeSettings.json
