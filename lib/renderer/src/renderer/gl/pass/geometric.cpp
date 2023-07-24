@@ -74,6 +74,7 @@ namespace VTX::Renderer::GL::Pass
 			in.meshes->vao.drawElement( GL_TRIANGLES, GLsizei( in.meshes->size ), GL_UNSIGNED_INT );
 			in.meshes->vao.unbind();
 		}
+
 		// Spheres.
 		in.molecules->vao.bind();
 		if ( in.molecules->sizeAtoms > 0 )
@@ -81,8 +82,8 @@ namespace VTX::Renderer::GL::Pass
 			_programSphere->use();
 			in.molecules->vao.drawArray( GL_POINTS, 0, GLsizei( in.molecules->sizeAtoms ) );
 		}
-		// Cylinders.
 
+		// Cylinders.
 		if ( in.molecules->sizeBonds > 0 )
 		{
 			in.molecules->bindBonds();
@@ -90,8 +91,8 @@ namespace VTX::Renderer::GL::Pass
 			in.molecules->vao.drawElement( GL_LINES, GLsizei( in.molecules->sizeBonds ), GL_UNSIGNED_INT );
 			in.molecules->vao.unbindElementBuffer();
 		}
-
 		in.molecules->vao.unbind();
+
 		//  TODO: Ribbons.
 
 		out.fbo->unbind();

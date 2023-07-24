@@ -40,7 +40,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "" );
+		OpenGLRenderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "" );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );

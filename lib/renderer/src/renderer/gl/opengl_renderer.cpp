@@ -4,17 +4,21 @@
 
 namespace VTX::Renderer::GL
 {
-	OpenGLRenderer::OpenGLRenderer( void *			 p_proc,
-									const size_t	 p_width,
+	OpenGLRenderer::OpenGLRenderer( const size_t	 p_width,
 									const size_t	 p_height,
-									const FilePath & p_shaderPath ) :
+									const FilePath & p_shaderPath,
+									void *			 p_proc ) :
 		_width( p_width ),
 		_height( p_height )
 	{
 		VTX_INFO( "Creating renderer..." );
 
 		// Load OpenGL.
-		if ( gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		{
+			throw GLException( "Failed to load OpenGL" );
+		}
+		else if ( gladLoadGL() == 0 )
 		{
 			throw GLException( "Failed to initialize GLAD" );
 		}

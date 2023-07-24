@@ -33,7 +33,10 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer( void * p_proc, const size_t p_width, const size_t p_height, const FilePath & p_shaderPath );
+		OpenGLRenderer( const size_t	 p_width,
+						const size_t	 p_height,
+						const FilePath & p_shaderPath,
+						void *			 p_proc = nullptr );
 		~OpenGLRenderer() = default;
 
 		void resize( const size_t p_width, const size_t p_height );
