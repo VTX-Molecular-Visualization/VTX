@@ -151,7 +151,7 @@ namespace VTX::Renderer::GL
 			Mat4f matrixNormal = MAT4F_ID; // To delete.
 			Mat4f matrixView;
 			Mat4f matrixProjection;
-			// _near * _far, _far, _far - _near, _near
+			// { _near * _far, _far, _far - _near, _near }
 			Vec4f cameraClipInfos;
 			bool  isCameraPerspective = true;
 		} _uniformsCamera;
