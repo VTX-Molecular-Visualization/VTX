@@ -9,6 +9,7 @@
 #include <numeric>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/render_graph.hpp>
+#include <util/filesystem.hpp>
 #include <util/math.hpp>
 
 #ifdef _WIN32
@@ -19,8 +20,8 @@ extern "C"
 }
 #endif
 
-constexpr size_t WIDTH	= 1920;
-constexpr size_t HEIGHT = 1200;
+constexpr size_t WIDTH	= 800;
+constexpr size_t HEIGHT = 600;
 
 int main( int, char ** )
 {
@@ -31,7 +32,7 @@ int main( int, char ** )
 	using namespace Bench;
 
 	bool isRunning = true;
-	Logger::get().init( std::filesystem::current_path() / "logs" );
+	Logger::get().init( Filesystem::getExecutableDir() / "logs" );
 
 	try
 	{
@@ -39,7 +40,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, std::filesystem::current_path() / "shaders" / "" );
+		OpenGLRenderer renderer( ui.getProcAddress(), WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "" );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
@@ -74,8 +75,8 @@ int main( int, char ** )
 		// 		renderer.addMolecule( proxyMolecule );
 		try
 		{
-			const std::string name = "4v6x.mmtf";
-			const FilePath	  path = std::filesystem::current_path() / name;
+			const std::string name = "1AGA.mmtf";
+			const FilePath	  path = Filesystem::getExecutableDir() / name;
 
 			// Read model file.
 			Reader::Molecule			reader;
@@ -138,7 +139,7 @@ int main( int, char ** )
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "{}", p_e.what() );
+			VTX_ERROR( "Loading failed: {}", p_e.what() );
 		}
 
 		// Main loop.
