@@ -58,8 +58,8 @@ namespace VTX::Renderer::GL
 			assert( glIsVertexArray( _id ) );
 
 #if ( VTX_OPENGL_VERSION == 450 )
-// Fail on Intel chipset.
-// glVertexArrayElementBuffer( _id, 0 );
+			// 2023-07-25: Fail on Intel HD Graphics 520.
+			// glVertexArrayElementBuffer( _id, 0 );
 #else
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 #endif

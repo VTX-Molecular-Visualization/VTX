@@ -58,8 +58,8 @@ namespace VTX::Renderer
 		void setup() {}
 		void render() {}
 
-		Ctx *				context;
-		std::vector<Handle> resources;
+		std::unique_ptr<Ctx> context;
+		std::vector<Handle>	 resources;
 	};
 } // namespace VTX::Renderer
 #endif

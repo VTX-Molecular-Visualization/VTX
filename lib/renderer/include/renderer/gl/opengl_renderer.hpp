@@ -25,7 +25,6 @@
 #include "vertex_array.hpp"
 #include <array>
 #include <functional>
-#include <util/chrono.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -217,15 +216,6 @@ namespace VTX::Renderer::GL
 													const GLchar * p_msg,
 													const void *   p_data );
 #endif
-
-		inline static const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
-		{
-			static Chrono c;
-			c.start();
-			p_task();
-			c.stop();
-			return float( c.stop() );
-		};
 	};
 
 } // namespace VTX::Renderer::GL

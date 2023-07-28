@@ -3,6 +3,7 @@
 
 #include "renderer/gl/include_opengl.hpp"
 #include <cassert>
+#include <util/chrono.hpp>
 
 namespace VTX::Renderer::GL
 {
@@ -46,6 +47,15 @@ namespace VTX::Renderer::GL
 	  private:
 		GLuint _queryStart = 0;
 		GLuint _queryEnd   = 0;
+	};
+
+	inline const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
+	{
+		static Chrono c;
+		c.start();
+		p_task();
+		c.stop();
+		return float( c.stop() );
 	};
 } // namespace VTX::Renderer::GL
 

@@ -3,6 +3,7 @@
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
 #include <ui/ui_generator.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -27,7 +28,7 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		const FilePath logDir = std::filesystem::current_path();
+		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
 		Util::Logger::get().init( logDir );
 		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
 		VTX::UI::Environment::get().setUIApp( vtxApplication );

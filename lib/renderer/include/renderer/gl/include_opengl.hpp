@@ -21,9 +21,9 @@ namespace VTX::Renderer::GL
 	{
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
-			throw GLException( "Failed to load OpenGL" );
+			throw GLException( "Failed to load OpenGL with process" );
 		}
-		else if ( gladLoadGL() == 0 )
+		if ( gladLoadGL() == 0 )
 		{
 			throw GLException( "Failed to load OpenGL" );
 		}
