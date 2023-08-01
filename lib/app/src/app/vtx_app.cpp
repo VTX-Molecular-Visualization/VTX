@@ -151,8 +151,6 @@ namespace VTX::App
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg ) {}
 
-	void VTXApp::renderScene() const {}
-
 	// void VTXApp::deleteAtEndOfFrame( const Component::Generic::BaseAutoDelete * const p_object )
 	//{
 	//	_deleteAtEndOfFrameObjects.emplace_back( p_object );

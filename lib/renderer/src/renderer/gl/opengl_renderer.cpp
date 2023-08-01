@@ -88,7 +88,7 @@ namespace VTX::Renderer::GL
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
 
-	void OpenGLRenderer::renderFrame()
+	void OpenGLRenderer::renderFrame( const double p_time )
 	{
 		if ( _needUpdate )
 		{

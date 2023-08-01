@@ -8,7 +8,7 @@
 #include <iostream>
 #include <numeric>
 #include <renderer/gl/opengl_renderer.hpp>
-#include <renderer/render_graph.hpp>
+#include <renderer/renderer.hpp>
 #include <util/filesystem.hpp>
 #include <util/math.hpp>
 
@@ -20,8 +20,8 @@ extern "C"
 }
 #endif
 
-constexpr size_t WIDTH	= 800;
-constexpr size_t HEIGHT = 600;
+constexpr size_t WIDTH	= 1920;
+constexpr size_t HEIGHT = 1200;
 
 int main( int, char ** )
 {
@@ -36,6 +36,9 @@ int main( int, char ** )
 
 	try
 	{
+		// Renderer with graph test.
+		Renderer::Renderer r;
+
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
@@ -75,7 +78,7 @@ int main( int, char ** )
 		// 		renderer.addMolecule( proxyMolecule );
 		try
 		{
-			const std::string name = "1AGA.mmtf";
+			const std::string name = "4v6x.mmtf";
 			const FilePath	  path = Filesystem::getExecutableDir() / name;
 
 			// Read model file.
@@ -145,10 +148,10 @@ int main( int, char ** )
 		// Main loop.
 		while ( isRunning )
 		{
-			float time = float( ui.getTime() ) * 1e-3f;
+			// float time = float( ui.getTime() ) * 1e-3f;
 
 			// Renderer.
-			renderer.renderFrame();
+			renderer.renderFrame( ui.getTime() );
 
 			// UI.
 			ui.draw( &renderer, &camera );

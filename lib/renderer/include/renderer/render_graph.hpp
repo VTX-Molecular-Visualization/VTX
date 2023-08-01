@@ -1,65 +1,59 @@
 #ifndef __VTX_RENDERER_RENDER_GRAPH__
 #define __VTX_RENDERER_RENDER_GRAPH__
 
-#include <functional>
-#include <util/types.hpp>
-#include <vector>
+#include "context/concept_context.hpp"
+#include "scheduler/concept_scheduler.hpp"
 
 namespace VTX::Renderer
 {
-	enum HandleType
+	enum struct E_FORMAT
 	{
-		Attachment,
-		Storage,
-		// ...?
+		RGBA16F,
+		RGBA32UI,
 	};
 
-	enum PassType
+	enum struct E_ACCESS
 	{
-		Graphic,
-		Compute,
-		// ...?
+		READ,
+		WRITE,
+		READ_WRITE,
 	};
 
-	struct Handle
+	// Descriptors.
+	struct StructDescTexture
 	{
-		size_t	   id;
-		HandleType type;
+		E_FORMAT format;
 	};
 
-	struct Resource
+	// Render graph.
+	template<Context::Concept C, Scheduler::Concept S>
+	class RenderGraph
 	{
-		const Handle handle;
-	};
-
-	struct ResourceMutable
-	{
-		Handle handle;
-	};
-
-	struct Builder
-	{
-	};
-
-	using CallbakcPassSetup	 = std::function<void>( Builder &, Resource, ResourceMutable );
-	using CallbakcPassRender = std::function<void>();
-
-	template<class Ctx>
-	struct RenderGraph
-	{
-		template<class Data>
-		void addPass( std::string & p_name, CallbakcPassSetup, CallbakcPassRender )
+	  public:
+		RenderGraph()
 		{
+			_context   = std::make_unique<C>();
+			_scheduler = std::make_unique<S>();
 		}
 
-		void addAttachment() {}
-		void addStorage() {}
+		void addPass( const StructRenderPass & p_pass ) {}
 
-		void setup() {}
+		bool connect( const StructResource & p_from, const StructResource & p_to ) { return true; }
+
+		// void addAttachment() {}
+		// void addStorage() {}
+
+		void setup() { _commandList = _scheduler->schedule( _passes ); }
 		void render() {}
 
-		std::unique_ptr<Ctx> context;
-		std::vector<Handle>	 resources;
+	  private:
+		std::unique_ptr<C> _context;
+		std::unique_ptr<S> _scheduler;
+		ListRessources	   _resources;
+		ListPasses		   _passes;
+
+		Scheduler::ListCommand _commandList;
 	};
+
 } // namespace VTX::Renderer
 #endif

@@ -4,10 +4,10 @@
 #include "app/application/_fwd.hpp"
 // #include <QElapsedTimer>
 #include <memory>
+// #include <renderer/gl/opengl_renderer.hpp>
 #include <string>
 #include <util/exceptions.hpp>
 #include <util/generic/base_static_singleton.hpp>
-#include <vector>
 
 namespace VTX::App
 {
@@ -23,7 +23,6 @@ namespace VTX::App
 		void start( const std::vector<std::string> & );
 		void update();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const;
 		void stop();
 
 		inline Application::Scene &		  getScene() { return *_scene; }
@@ -33,7 +32,8 @@ namespace VTX::App
 		inline const Application::Setting & getSettings() const { return *_setting; }
 
 	  private:
-		Application::Scene *				  _scene = nullptr;
+		Application::Scene * _scene = nullptr;
+		// std::unique_ptr<Renderer::GL::OpenGLRenderer> _renderer;
 		std::unique_ptr<Application::Setting> _setting;
 
 		void _handleArgs( const std::vector<std::string> & );

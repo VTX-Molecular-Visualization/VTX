@@ -39,7 +39,7 @@ namespace VTX::Renderer::GL
 		~OpenGLRenderer() = default;
 
 		void resize( const size_t p_width, const size_t p_height );
-		void renderFrame();
+		void renderFrame( const double p_time );
 
 		inline void setNeedUpdate( const bool p_needUpdate ) { _needUpdate = p_needUpdate; }
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
