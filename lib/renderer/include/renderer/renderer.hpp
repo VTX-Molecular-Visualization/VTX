@@ -34,7 +34,7 @@ namespace VTX::Renderer
 		}
 
 		// Debug purposes only.
-		RenderGraphOpenGL45 & getRenderGraph() { return _renderGraph; }
+		inline RenderGraphOpenGL45 & getRenderGraph() { return _renderGraph; }
 
 	  private:
 		RenderGraphOpenGL45 _renderGraph;

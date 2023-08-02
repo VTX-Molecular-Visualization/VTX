@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_SCHEDULER_CONCEPT__
 #define __VTX_RENDERER_SCHEDULER_CONCEPT__
 
-#include "renderer/struct_render_pass.hpp"
+#include "renderer/struct_pass.hpp"
 #include <concepts>
 #include <vector>
 

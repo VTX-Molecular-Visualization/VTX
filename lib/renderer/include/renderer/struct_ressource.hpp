@@ -13,13 +13,12 @@ namespace VTX::Renderer
 		// ...?
 	};
 
-	struct StructResource
+	struct Resource
 	{
 		E_HANDLE_TYPE type;
 		size_t		  id;
 	};
 
-	using Resource	 = StructResource;
 	using Ressources = std::vector<Resource>;
 } // namespace VTX::Renderer
 

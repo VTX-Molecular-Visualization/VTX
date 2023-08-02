@@ -3,9 +3,13 @@
 
 #include "context/concept_context.hpp"
 #include "scheduler/concept_scheduler.hpp"
+#include "struct_link.hpp"
+#include "struct_pass.hpp"
+#include "struct_ressource.hpp"
 
 namespace VTX::Renderer
 {
+
 	template<Context::Concept C, Scheduler::Concept S>
 	class RenderGraph
 	{
@@ -29,30 +33,21 @@ namespace VTX::Renderer
 			Pass & passOut = _passes[ p_passOut ];
 			Pass & passIn  = _passes[ p_passIn ];
 
-			// Check input exist and free.
+			// Check input exists and is free.
 			assert( passIn.inputs.contains( p_channel ) );
-			assert( passIn.inputs[ p_channel ].source == nullptr );
+
+			// Check link exists?
 
 			// Check descriptor compatibility.
 
 			// Create link.
-			passIn.inputs[ p_channel ].source = &passOut.output;
-
-			// Update adjacent map.
-			// 			if ( _adjacentMap.find( &passOut ) == _adjacentMap.end() )
-			// 			{
-			// 				_adjacentMap[ &passOut ] = std::vector<Pass *>();
-			// 			}
-			// 			_adjacentMap[ &passOut ].push_back( &passIn );
+			_links.push_back( { &passOut, &passIn, p_channel } );
 
 			return true;
 		}
 
-		inline void setup()
+		void setup()
 		{
-			// Build ajdacent map.
-			std::map<const Pass * const, std::vector<Pass *>> adjacentMap;
-
 			// Topological sort with adjacent map.
 
 			// Queue.
@@ -62,7 +57,8 @@ namespace VTX::Renderer
 		}
 
 		// Debug purposes only.
-		const Passes & getPasses() const { return _passes; }
+		inline const Passes & getPasses() const { return _passes; }
+		inline const Links &  getLinks() const { return _links; }
 
 	  private:
 		std::unique_ptr<C> _context;
@@ -70,9 +66,7 @@ namespace VTX::Renderer
 
 		Ressources _resources;
 		Passes	   _passes;
-
-		// 		using AdjacentMap = std::map<const Pass * const, std::vector<Pass *>>;
-		// 		AdjacentMap _adjacentMap;
+		Links	   _links;
 	};
 
 } // namespace VTX::Renderer
