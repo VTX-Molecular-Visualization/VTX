@@ -11,7 +11,6 @@ namespace VTX::Renderer
 		Pass *			destination;
 		E_INPUT_CHANNEL channel;
 	};
-
 	using Links = std::vector<Link>;
 } // namespace VTX::Renderer
 

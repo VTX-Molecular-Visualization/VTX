@@ -19,7 +19,7 @@ namespace VTX::Renderer::Context
 	};
 
 	// Descriptors.
-	struct StructDescTexture
+	struct Texture
 	{
 		E_FORMAT format;
 	};

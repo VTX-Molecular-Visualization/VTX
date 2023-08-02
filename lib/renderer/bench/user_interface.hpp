@@ -450,9 +450,9 @@ namespace VTX::Bench
 				ImNodes::BeginNodeEditor();
 
 				// Passes.
-				uint											   id = 0;
-				std::map<const Renderer::PassInput * const, uint>  mapInputId;
-				std::map<const Renderer::PassOutput * const, uint> mapOutputId;
+				uint												 id = 0;
+				std::map<const Renderer::Pass::Input * const, uint>	 mapInputId;
+				std::map<const Renderer::Pass::Output * const, uint> mapOutputId;
 				for ( const auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );

@@ -18,7 +18,6 @@ namespace VTX::Renderer
 		E_HANDLE_TYPE type;
 		size_t		  id;
 	};
-
 	using Ressources = std::vector<Resource>;
 } // namespace VTX::Renderer
 

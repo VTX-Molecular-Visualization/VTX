@@ -48,7 +48,10 @@ namespace VTX::Renderer
 
 		void setup()
 		{
-			// Topological sort with adjacent map.
+			// Create adjacent list.
+			std::map<Pass *, std::map<E_INPUT_CHANNEL, Pass *>> adjacentList;
+
+			// Topological sort.
 
 			// Queue.
 			Scheduler::RenderQueue queue = _scheduler->schedule( _passes );

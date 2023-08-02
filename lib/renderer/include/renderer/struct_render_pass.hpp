@@ -27,9 +27,12 @@ namespace VTX::Renderer
 
 	struct Pass
 	{
+		using CallbackSetup	 = std::function<void>();
+		using CallbackRender = std::function<void>();
+
 		struct Input
 		{
-			// TODO: descriptor.
+			// TODO: descriptorr.
 			std::string name;
 		};
 		using Inputs = std::map<const E_INPUT_CHANNEL, Input>;
@@ -46,11 +49,8 @@ namespace VTX::Renderer
 		Inputs inputs;
 		Output output;
 		// Callbacks.
-		// PassCallbackPassSetup  cbSetup;
-		// PassCallbackPassRender cbRender;
-
-		using CallbackSetup	 = std::function<void>();
-		using CallbackRender = std::function<void>();
+		// CallbackSetup  cbSetup;
+		// CallbackRender cbRender;
 	};
 
 	using Passes = std::map<const std::string, Pass>;
