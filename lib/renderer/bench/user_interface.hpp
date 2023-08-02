@@ -6,7 +6,9 @@
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
+#include <imnodes.h>
 #include <renderer/gl/opengl_renderer.hpp>
+#include <renderer/renderer.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -69,6 +71,9 @@ namespace VTX::Bench
 			{
 				throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
 			}
+
+			// ImGui plugins.
+			ImNodes::CreateContext();
 		}
 
 		~UserInterface()
@@ -77,6 +82,7 @@ namespace VTX::Bench
 			ImGui_ImplSDL2_Shutdown();
 			if ( ImGui::GetCurrentContext() != nullptr )
 			{
+				ImNodes::DestroyContext();
 				ImGui::DestroyContext();
 			}
 			if ( _glContext )
@@ -99,7 +105,9 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Renderer::GL::OpenGLRenderer * const p_renderer, Camera * const p_camera )
+		void draw( Renderer::GL::OpenGLRenderer * const p_renderer,
+				   Camera * const						p_camera,
+				   Renderer::Renderer * const			p_newRenderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -398,6 +406,54 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 
+			// Node editor.
+			ImGui::Begin( "Render graph" );
+			ImNodes::BeginNodeEditor();
+
+			// Passes.
+			uint											   id = 0;
+			std::map<const Renderer::PassInput * const, uint>  mapInputId;
+			std::map<const Renderer::PassOutput * const, uint> mapOutputId;
+			for ( const auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
+			{
+				ImNodes::BeginNode( id++ );
+				ImNodes::BeginNodeTitleBar();
+				ImGui::TextUnformatted( name.c_str() );
+				ImNodes::EndNodeTitleBar();
+
+				// Inputs.
+				for ( const auto & [ channel, input ] : pass.inputs )
+				{
+					mapInputId.emplace( &input, id );
+					ImNodes::BeginInputAttribute( id++ );
+					ImGui::Text( std::to_string( uint( channel ) ).c_str() );
+					ImNodes::EndInputAttribute();
+				}
+
+				// Output.
+				mapOutputId.emplace( &pass.output, id );
+				ImNodes::BeginOutputAttribute( id++ );
+				ImGui::Text( "out" );
+				ImNodes::EndOutputAttribute();
+				ImNodes::EndNode();
+			}
+
+			// Links.
+			for ( const auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
+			{
+				for ( const auto & [ channel, input ] : pass.inputs )
+				{
+					if ( input.source )
+					{
+						ImNodes::Link( id++, mapOutputId.at( input.source ), mapInputId.at( &input ) );
+					}
+				}
+			}
+
+			ImNodes::MiniMap();
+			ImNodes::EndNodeEditor();
+			ImGui::End();
+
 			// Render.
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
@@ -418,6 +474,7 @@ namespace VTX::Bench
 		SDL_Window *  _window	 = nullptr;
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = false;
+
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench
 #endif

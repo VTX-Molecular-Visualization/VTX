@@ -9,7 +9,7 @@ namespace VTX::Renderer::Scheduler
 	class DepthFirstSearch
 	{
 	  public:
-		ListCommand schedule( const Renderer::ListPasses & p_passes ) { return {}; }
+		RenderQueue schedule( const Renderer::Passes & p_passes ) { return {}; }
 
 	  private:
 	};

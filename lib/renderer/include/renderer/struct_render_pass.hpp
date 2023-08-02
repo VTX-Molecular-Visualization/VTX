@@ -4,6 +4,7 @@
 #include "struct_ressource.hpp"
 #include <functional>
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace VTX::Renderer
@@ -24,22 +25,43 @@ namespace VTX::Renderer
 		DEPTH,
 	};
 
-	using Inputs			 = std::map<E_INPUT_CHANNEL, StructResource * const>;
-	using Output			 = StructResource;
-	using CallbackPassSetup	 = std::function<void>();
-	using CallbackPassRender = std::function<void>();
+	struct StructRenderPassOutput
+	{
+		// GPU data.
+		std::unique_ptr<Resource> resource;
+	};
+
+	using PassOutput = StructRenderPassOutput;
+
+	struct StructRenderPassInput
+	{
+		// TODO: descriptor.
+		std::string name;
+
+		// Pointed resource.
+		PassOutput * source = nullptr;
+	};
+
+	using PassInput	 = StructRenderPassInput;
+	using PassInputs = std::map<const E_INPUT_CHANNEL, StructRenderPassInput>;
+
+	using PassCallbackPassSetup	 = std::function<void>();
+	using PassCallbackPassRender = std::function<void>();
 
 	struct StructRenderPass
 	{
-		E_PASS_TYPE		   type;
-		Inputs			   inputs;
-		Output			   output;
-		CallbackPassSetup  cbSetup;
-		CallbackPassRender cbRender;
+		// Type.
+		// E_PASS_TYPE type;
+		// In/Out.
+		PassInputs inputs;
+		PassOutput output;
+		// Callbacks.
+		// PassCallbackPassSetup  cbSetup;
+		// PassCallbackPassRender cbRender;
 	};
 
-	using ListPasses = std::vector<StructRenderPass>;
-
+	using Pass	 = StructRenderPass;
+	using Passes = std::map<const std::string, Pass>;
 } // namespace VTX::Renderer
 
 #endif

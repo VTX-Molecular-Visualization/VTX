@@ -7,13 +7,13 @@
 
 namespace VTX::Renderer::Scheduler
 {
-	using ListCommand = std::vector<void *>;
+	using RenderQueue = std::vector<Renderer::Pass *>;
 
 	template<typename S>
-	concept Concept = requires( S p_scheduler, Renderer::ListPasses p_passes ) {
+	concept Concept = requires( S p_scheduler, Renderer::Passes p_passes ) {
 		{
 			p_scheduler.schedule( p_passes )
-		} -> std::same_as<ListCommand>;
+		} -> std::same_as<RenderQueue>;
 	};
 } // namespace VTX::Renderer::Scheduler
 

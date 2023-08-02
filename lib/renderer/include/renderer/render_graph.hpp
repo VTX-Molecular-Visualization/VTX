@@ -6,26 +6,6 @@
 
 namespace VTX::Renderer
 {
-	enum struct E_FORMAT
-	{
-		RGBA16F,
-		RGBA32UI,
-	};
-
-	enum struct E_ACCESS
-	{
-		READ,
-		WRITE,
-		READ_WRITE,
-	};
-
-	// Descriptors.
-	struct StructDescTexture
-	{
-		E_FORMAT format;
-	};
-
-	// Render graph.
 	template<Context::Concept C, Scheduler::Concept S>
 	class RenderGraph
 	{
@@ -36,23 +16,63 @@ namespace VTX::Renderer
 			_scheduler = std::make_unique<S>();
 		}
 
-		void addPass( const StructRenderPass & p_pass ) {}
+		inline void addPass( const std::string p_name, Pass p_pass ) { _passes.emplace( p_name, std::move( p_pass ) ); }
 
-		bool connect( const StructResource & p_from, const StructResource & p_to ) { return true; }
+		bool addLink( const std::string &	  p_passOut,
+					  const std::string &	  p_passIn,
+					  const E_INPUT_CHANNEL & p_channel = E_INPUT_CHANNEL::COLOR_0 )
+		{
+			// Check pass exists.
+			assert( _passes.contains( p_passOut ) );
+			assert( _passes.contains( p_passIn ) );
 
-		// void addAttachment() {}
-		// void addStorage() {}
+			Pass & passOut = _passes[ p_passOut ];
+			Pass & passIn  = _passes[ p_passIn ];
 
-		void setup() { _commandList = _scheduler->schedule( _passes ); }
-		void render() {}
+			// Check input exist and free.
+			assert( passIn.inputs.contains( p_channel ) );
+			assert( passIn.inputs[ p_channel ].source == nullptr );
+
+			// Check descriptor compatibility.
+
+			// Create link.
+			passIn.inputs[ p_channel ].source = &passOut.output;
+
+			// Update adjacent map.
+			// 			if ( _adjacentMap.find( &passOut ) == _adjacentMap.end() )
+			// 			{
+			// 				_adjacentMap[ &passOut ] = std::vector<Pass *>();
+			// 			}
+			// 			_adjacentMap[ &passOut ].push_back( &passIn );
+
+			return true;
+		}
+
+		inline void setup()
+		{
+			// Build ajdacent map.
+			std::map<const Pass * const, std::vector<Pass *>> adjacentMap;
+
+			// Topological sort with adjacent map.
+
+			// Queue.
+			Scheduler::RenderQueue queue = _scheduler->schedule( _passes );
+
+			// TODO: create resources.
+		}
+
+		// Debug purposes only.
+		const Passes & getPasses() const { return _passes; }
 
 	  private:
 		std::unique_ptr<C> _context;
 		std::unique_ptr<S> _scheduler;
-		ListRessources	   _resources;
-		ListPasses		   _passes;
 
-		Scheduler::ListCommand _commandList;
+		Ressources _resources;
+		Passes	   _passes;
+
+		// 		using AdjacentMap = std::map<const Pass * const, std::vector<Pass *>>;
+		// 		AdjacentMap _adjacentMap;
 	};
 
 } // namespace VTX::Renderer

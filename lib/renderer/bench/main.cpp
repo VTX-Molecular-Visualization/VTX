@@ -37,7 +37,7 @@ int main( int, char ** )
 	try
 	{
 		// Renderer with graph test.
-		Renderer::Renderer r;
+		Renderer::Renderer newRenderer;
 
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
@@ -78,16 +78,17 @@ int main( int, char ** )
 		// 		renderer.addMolecule( proxyMolecule );
 		try
 		{
-			const std::string name = "4v6x.mmtf";
-			const FilePath	  path = Filesystem::getExecutableDir() / name;
+			// const std::string name = "4v6x.mmtf";
+			// const FilePath	  path = Filesystem::getExecutableDir() / name;
 
 			// Read model file.
-			Reader::Molecule			reader;
-			VTX::Core::Struct::Molecule molecule;
-			reader.readFile( path, molecule );
+			// Reader::Molecule			reader;
+			// VTX::Core::Struct::Molecule molecule;
+			// reader.readFile( path, molecule );
 
 			// Proxify.
 			// Move or maybe redo.
+			/*
 			float timeProxify = Util::CHRONO_CPU(
 				[ & ]()
 				{
@@ -139,6 +140,7 @@ int main( int, char ** )
 					renderer.addMolecule( proxyMolecule );
 				} );
 			VTX_INFO( "Proxify time: {}", timeProxify );
+			*/
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -154,7 +156,7 @@ int main( int, char ** )
 			renderer.renderFrame( ui.getTime() );
 
 			// UI.
-			ui.draw( &renderer, &camera );
+			ui.draw( &renderer, &camera, &newRenderer );
 
 			// Events.
 			SDL_Event event;

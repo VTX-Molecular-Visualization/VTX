@@ -15,11 +15,12 @@ namespace VTX::Renderer
 
 	struct StructResource
 	{
-		size_t		  id;
 		E_HANDLE_TYPE type;
+		size_t		  id;
 	};
 
-	using ListRessources = std::vector<StructResource>;
+	using Resource	 = StructResource;
+	using Ressources = std::vector<Resource>;
 } // namespace VTX::Renderer
 
 #endif

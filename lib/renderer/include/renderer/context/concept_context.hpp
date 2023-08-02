@@ -5,6 +5,24 @@
 
 namespace VTX::Renderer::Context
 {
+	enum struct E_FORMAT
+	{
+		RGBA16F,
+		RGBA32UI,
+	};
+
+	enum struct E_ACCESS
+	{
+		READ,
+		WRITE,
+		READ_WRITE,
+	};
+
+	// Descriptors.
+	struct StructDescTexture
+	{
+		E_FORMAT format;
+	};
 
 	template<typename C>
 	concept Concept = requires( C p_context ) {
