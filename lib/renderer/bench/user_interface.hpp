@@ -453,7 +453,7 @@ namespace VTX::Bench
 				uint												 id = 0;
 				std::map<const Renderer::Pass::Input * const, uint>	 mapInputId;
 				std::map<const Renderer::Pass::Output * const, uint> mapOutputId;
-				for ( const auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
+				for ( auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();

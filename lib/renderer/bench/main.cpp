@@ -36,9 +36,6 @@ int main( int, char ** )
 
 	try
 	{
-		// Renderer with graph test.
-		Renderer::Renderer newRenderer;
-
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
@@ -146,6 +143,9 @@ int main( int, char ** )
 		{
 			VTX_ERROR( "Loading failed: {}", p_e.what() );
 		}
+
+		// Renderer with graph test.
+		Renderer::Renderer newRenderer;
 
 		// Main loop.
 		while ( isRunning )

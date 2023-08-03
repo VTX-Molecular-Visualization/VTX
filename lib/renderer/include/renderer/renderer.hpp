@@ -16,12 +16,12 @@ namespace VTX::Renderer
 		Renderer()
 		{
 			// Passes.
-			_renderGraph.addPass( "Geometric", {} );
-			_renderGraph.addPass( "Depth", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Geometric" } } } } );
 			_renderGraph.addPass( "Shading",
 								  { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Geometric" } },
 												   { E_INPUT_CHANNEL::DEPTH, { "Depth" } } } } );
+			_renderGraph.addPass( "Geometric", {} );
 			_renderGraph.addPass( "FXAA", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Shading" } } } } );
+			_renderGraph.addPass( "Depth", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Geometric" } } } } );
 
 			// Links.
 			_renderGraph.addLink( "Geometric", "Depth", E_INPUT_CHANNEL::COLOR_0 );

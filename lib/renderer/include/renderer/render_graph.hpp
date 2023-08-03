@@ -20,7 +20,10 @@ namespace VTX::Renderer
 			_scheduler = std::make_unique<S>();
 		}
 
-		inline void addPass( const std::string p_name, Pass p_pass ) { _passes.emplace( p_name, std::move( p_pass ) ); }
+		inline void addPass( const std::string & p_name, Pass p_pass )
+		{
+			_passes.emplace( p_name, std::move( p_pass ) );
+		}
 
 		bool addLink( const std::string &	  p_passOut,
 					  const std::string &	  p_passIn,
@@ -48,13 +51,8 @@ namespace VTX::Renderer
 
 		void setup()
 		{
-			// Create adjacent list.
-			std::map<Pass *, std::map<E_INPUT_CHANNEL, Pass *>> adjacentList;
-
-			// Topological sort.
-
 			// Queue.
-			Scheduler::RenderQueue queue = _scheduler->schedule( _passes );
+			Scheduler::RenderQueue queue = _scheduler->schedule( _passes, _links );
 
 			// TODO: create resources.
 		}
