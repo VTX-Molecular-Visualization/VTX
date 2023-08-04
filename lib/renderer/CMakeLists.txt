@@ -67,3 +67,21 @@ add_custom_command(TARGET VTX_RENDERER_BENCH POST_BUILD
 # Copy assets.
 add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/assets)
 add_dependencies(VTX_RENDERER_BENCH VTX_RENDERER_COPY_ASSETS)
+
+# Tests.
+
+# Create executable.
+add_executable(VTX_RENDERER_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX.
+target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
+
+# Catch2.
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+	catch_discover_tests(VTX_RENDERER_TEST)
+endif()

@@ -14,10 +14,10 @@ namespace VTX::Renderer::Scheduler
 			// Build adjacent list.
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );
+			size_t							 i = 0;
 			for ( auto & [ name, pass ] : p_passes )
 			{
-				static size_t i = 0;
-				passes[ i++ ]	= &pass;
+				passes[ i++ ] = &pass;
 			}
 
 			for ( const Link & link : p_links )
@@ -40,7 +40,7 @@ namespace VTX::Renderer::Scheduler
 					_depthFirstSearch( p_passes, adjacentList, index, visited, onStack, isCyclic, sorted );
 					if ( isCyclic )
 					{
-						throw std::runtime_error( "Cyclic graph" );
+						throw std::runtime_error( "cyclic graph" );
 					}
 				}
 			}

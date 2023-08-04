@@ -6,6 +6,7 @@
 #include "struct_link.hpp"
 #include "struct_pass.hpp"
 #include "struct_ressource.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Renderer
 {
@@ -49,12 +50,21 @@ namespace VTX::Renderer
 			return true;
 		}
 
-		void setup()
+		bool setup()
 		{
 			// Queue.
-			Scheduler::RenderQueue queue = _scheduler->schedule( _passes, _links );
-
+			try
+			{
+				Scheduler::RenderQueue queue = _scheduler->schedule( _passes, _links );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not build render graph: {}", p_e.what() );
+				return false;
+			}
 			// TODO: create resources.
+
+			return true;
 		}
 
 		// Debug purposes only.
