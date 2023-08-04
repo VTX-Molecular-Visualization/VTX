@@ -31,9 +31,6 @@ namespace VTX::Renderer
 
 			// Setup.
 			_renderGraph.setup();
-
-			_renderGraph.addLink( "FXAA", "Depth", E_INPUT_CHANNEL::COLOR_0 );
-			_renderGraph.setup();
 		}
 
 		// Debug purposes only.
