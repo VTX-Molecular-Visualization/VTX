@@ -9,12 +9,16 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 	using namespace VTX::Renderer;
 	RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch> graph;
 
-	graph.addPass(
-		"Shading",
-		{ Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Geometric" } }, { E_INPUT_CHANNEL::DEPTH, { "Depth" } } } } );
+	// Passes.
+	graph.addPass( "Shading",
+				   { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "G" } },
+
+									{ E_INPUT_CHANNEL::DEPTH, { "D" } } } } );
 	graph.addPass( "Geometric", {} );
-	graph.addPass( "FXAA", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Shading" } } } } );
-	graph.addPass( "Depth", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "Geometric" } } } } );
+	graph.addPass( "FXAA", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "S" } } } } );
+
+	graph.addPass( "Depth",
+				   { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "G" } }, { E_INPUT_CHANNEL::COLOR_1, { "T" } } } } );
 
 	// Links.
 	graph.addLink( "Geometric", "Depth", E_INPUT_CHANNEL::COLOR_0 );
@@ -28,7 +32,7 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 	REQUIRE_FALSE( graph.addLink( "Geometric", "FXAA", E_INPUT_CHANNEL::COLOR_0 ) );
 
 	// Add cyclic link.
-	graph.addLink( "FXAA", "Depth", E_INPUT_CHANNEL::COLOR_0 );
+	graph.addLink( "FXAA", "Depth", E_INPUT_CHANNEL::COLOR_1 );
 
 	REQUIRE_FALSE( graph.setup() );
 }
