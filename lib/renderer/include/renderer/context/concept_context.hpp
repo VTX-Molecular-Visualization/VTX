@@ -2,6 +2,8 @@
 #define __VTX_RENDERER_CONTEXT_CONCEPT__
 
 #include <concepts>
+#include <util/types.hpp>
+#include <variant>
 
 namespace VTX::Renderer::Context
 {
@@ -17,6 +19,7 @@ namespace VTX::Renderer::Context
 		UINT,
 		INT,
 		FLOAT,
+		DOUBLE,
 		VEC2UI,
 		VEC3UI,
 		VEC4uI,
@@ -26,6 +29,8 @@ namespace VTX::Renderer::Context
 		VEC2F,
 		VEC3F,
 		VEC4F,
+		MAT3F,
+		MAT4F,
 	};
 
 	enum struct E_ACCESS
@@ -51,7 +56,14 @@ namespace VTX::Renderer::Context
 
 	struct DescProgram
 	{
+		std::string									  name;
+		std::variant<FilePath, std::vector<FilePath>> shaders;
+		std::string									  toInject;
+		std::string									  suffix;
 	};
+
+	template<typename T>
+	using ElementOrVector = std::conditional<std::is_same_v<T, E_TYPE>, T, std::vector<T>>;
 
 	using DescIO = union
 	{

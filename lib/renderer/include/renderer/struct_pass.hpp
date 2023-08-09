@@ -3,8 +3,8 @@
 
 #include "struct_ressource.hpp"
 #include <functional>
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace VTX::Renderer
@@ -31,7 +31,7 @@ namespace VTX::Renderer
 			Context::DescIO desc;
 		};
 
-		using Inputs = std::map<const E_INPUT_CHANNEL, Input>;
+		using Inputs = std::unordered_map<E_INPUT_CHANNEL, Input>;
 
 		struct Output
 		{
@@ -56,7 +56,7 @@ namespace VTX::Renderer
 		using CallbackRender = std::function<void>();
 	};
 
-	using Passes = std::map<const std::string, Pass>;
+	using Passes = std::unordered_map<std::string, Pass>;
 } // namespace VTX::Renderer
 
 #endif
