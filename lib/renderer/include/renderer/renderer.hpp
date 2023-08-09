@@ -13,7 +13,7 @@ namespace VTX::Renderer
 	  public:
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
 
-		Renderer()
+		Renderer( const size_t p_width, const size_t p_height )
 		{
 			// Passes.
 			_renderGraph.addPass(
@@ -21,6 +21,7 @@ namespace VTX::Renderer
 				{ Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "G" } }, { E_INPUT_CHANNEL::DEPTH, { "D" } } } } );
 			_renderGraph.addPass( "Geometric", {} );
 			_renderGraph.addPass( "FXAA", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "S" } } } } );
+
 			_renderGraph.addPass( "Depth", { Pass::Inputs { { E_INPUT_CHANNEL::COLOR_0, { "G" } } } } );
 
 			// Links.
@@ -29,9 +30,13 @@ namespace VTX::Renderer
 			_renderGraph.addLink( "Depth", "Shading", E_INPUT_CHANNEL::DEPTH );
 			_renderGraph.addLink( "Shading", "FXAA", E_INPUT_CHANNEL::COLOR_0 );
 
+			_renderGraph.addLink( "Geometric", "FXAA", E_INPUT_CHANNEL::COLOR_0 );
+
 			// Setup.
 			_renderGraph.setup();
 		}
+
+		void resize( const size_t p_width, const size_t p_height ) {}
 
 		// Debug purposes only.
 		inline RenderGraphOpenGL45 & getRenderGraph() { return _renderGraph; }

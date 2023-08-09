@@ -12,8 +12,6 @@ namespace VTX::Renderer
 	enum struct E_PASS_TYPE
 	{
 		GRAPHIC,
-		// GEOMETRIC?
-		// COMPUTE,
 		// ...?
 	};
 
@@ -29,15 +27,16 @@ namespace VTX::Renderer
 	{
 		struct Input
 		{
-			// TODO: descriptor.
-			std::string name;
+			std::string		name;
+			Context::DescIO desc;
 		};
+
 		using Inputs = std::map<const E_INPUT_CHANNEL, Input>;
 
 		struct Output
 		{
-			// GPU data.
-			std::unique_ptr<Resource> resource;
+			Resource *		resource;
+			Context::DescIO desc;
 		};
 
 		// Type.
@@ -45,6 +44,10 @@ namespace VTX::Renderer
 		// In/Out.
 		Inputs inputs;
 		Output output;
+
+		// Program.
+		Context::DescProgram program;
+
 		// Callbacks.
 		// PassCallbackPassSetup  cbSetup;
 		// PassCallbackPassRender cbRender;

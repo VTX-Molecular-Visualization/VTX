@@ -24,6 +24,9 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 
 	REQUIRE( graph.setup() );
 
+	// Connect channel already in used.
+	REQUIRE_FALSE( graph.addLink( "Geometric", "FXAA", E_INPUT_CHANNEL::COLOR_0 ) );
+
 	// Add cyclic link.
 	graph.addLink( "FXAA", "Depth", E_INPUT_CHANNEL::COLOR_0 );
 

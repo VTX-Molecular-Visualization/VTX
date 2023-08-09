@@ -8,8 +8,9 @@ namespace VTX::Renderer::Context
 	class OpenGL45
 	{
 	  public:
-		void addTruc() {}
-		void removeTruc() {}
+		void add( const DescAttachment & p_desc ) {}
+		void add( const DescStorage & p_desc ) {}
+		void add( const DescProgram & p_desc ) {}
 
 	  private:
 	};

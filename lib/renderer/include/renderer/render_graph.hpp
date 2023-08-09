@@ -37,12 +37,25 @@ namespace VTX::Renderer
 			Pass & passOut = _passes[ p_passOut ];
 			Pass & passIn  = _passes[ p_passIn ];
 
-			// Check input exists and is free.
+			// Check input existence.
 			assert( passIn.inputs.contains( p_channel ) );
 
-			// Check link exists?
+			// Check input is free.
+			if ( std::find_if( _links.begin(),
+							   _links.end(),
+							   [ & ]( const Link & p_element )
+							   { return p_element.destination == &passIn && p_element.channel == p_channel; } )
+				 != _links.end() )
+			{
+				VTX_WARNING( "Channel {} from pass {} is already used", uint( p_channel ), p_passIn );
+				return false;
+			}
 
-			// Check descriptor compatibility.
+			// Check descriptors compatibility.
+			// 			if ( passIn.inputs[ p_channel ].desc != passOut.output.desc )
+			// 			{
+			// 				return false;
+			// 			}
 
 			// Create link.
 			_links.push_back( { &passOut, &passIn, p_channel } );
@@ -75,9 +88,9 @@ namespace VTX::Renderer
 		std::unique_ptr<C> _context;
 		std::unique_ptr<S> _scheduler;
 
-		Ressources _resources;
-		Passes	   _passes;
-		Links	   _links;
+		// Ressources _resources;
+		Passes _passes;
+		Links  _links;
 	};
 
 } // namespace VTX::Renderer
