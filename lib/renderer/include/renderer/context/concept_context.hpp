@@ -11,7 +11,10 @@ namespace VTX::Renderer::Context
 	{
 		RGBA16F,
 		RGBA32UI,
-		R32F
+		RGBA32F,
+		RG32UI,
+		R32F,
+		DEPTH_COMPONENT32F
 	};
 
 	enum struct E_TYPE
@@ -40,10 +43,33 @@ namespace VTX::Renderer::Context
 		READ_WRITE,
 	};
 
+	enum struct E_WRAPPING
+	{
+		REPEAT,
+		MIRRORED_REPEAT,
+		CLAMP_TO_EDGE,
+		CLAMP_TO_BORDER,
+		MIRROR_CLAMP_TO_EDGE,
+	};
+
+	enum struct E_FILTERING
+	{
+		NEAREST,
+		LINEAR,
+		NEAREST_MIPMAP_NEAREST,
+		LINEAR_MIPMAP_NEAREST,
+		NEAREST_MIPMAP_LINEAR,
+		LINEAR_MIPMAP_LINEAR,
+	};
+
 	// Descriptors.
 	struct DescAttachment
 	{
-		E_FORMAT format;
+		E_FORMAT	format		 = E_FORMAT::RGBA16F;
+		E_WRAPPING	wrappingS	 = E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING	wrappingT	 = E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING filteringMin = E_FILTERING::NEAREST;
+		E_FILTERING filteringMag = E_FILTERING::NEAREST;
 	};
 
 	struct DescStorage
@@ -62,14 +88,7 @@ namespace VTX::Renderer::Context
 		std::string									  suffix;
 	};
 
-	template<typename T>
-	using ElementOrVector = std::conditional<std::is_same_v<T, E_TYPE>, T, std::vector<T>>;
-
-	using DescIO = union
-	{
-		DescAttachment attachment;
-		DescStorage	   storage;
-	};
+	using DescIO = std::variant<DescAttachment, DescStorage>;
 
 	// using Id = size_t;
 

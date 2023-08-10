@@ -465,15 +465,19 @@ namespace VTX::Bench
 					{
 						mapInputId.emplace( &input, id );
 						ImNodes::BeginInputAttribute( id++ );
-						ImGui::Text( std::to_string( uint( channel ) ).c_str() );
+						ImGui::Text( input.name.c_str() );
 						ImNodes::EndInputAttribute();
 					}
 
-					// Output.
-					mapOutputId.emplace( &pass.output, id );
-					ImNodes::BeginOutputAttribute( id++ );
-					ImGui::Text( "out" );
-					ImNodes::EndOutputAttribute();
+					// Outputs.
+					for ( const auto & [ channel, output ] : pass.outputs )
+					{
+						mapOutputId.emplace( &output, id );
+						ImNodes::BeginOutputAttribute( id++ );
+						ImGui::Text( output.name.c_str() );
+						ImNodes::EndOutputAttribute();
+					}
+
 					ImNodes::EndNode();
 				}
 
@@ -481,8 +485,8 @@ namespace VTX::Bench
 				for ( const auto & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
 					ImNodes::Link( id++,
-								   mapOutputId[ &( link.source->output ) ],
-								   mapInputId[ &( link.destination->inputs[ link.channel ] ) ] );
+								   mapOutputId[ &( link.src->outputs[ link.channelSrc ] ) ],
+								   mapInputId[ &( link.dest->inputs[ link.channelDest ] ) ] );
 				}
 
 				ImNodes::MiniMap();

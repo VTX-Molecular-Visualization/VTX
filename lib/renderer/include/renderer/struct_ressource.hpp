@@ -27,7 +27,7 @@ namespace VTX::Renderer
 
 	struct Attachement : public Resource
 	{
-		Context::DescAttachment text;
+		Context::DescAttachment desc;
 	};
 
 	struct Storage : public Resource

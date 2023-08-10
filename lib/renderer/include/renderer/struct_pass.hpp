@@ -15,7 +15,7 @@ namespace VTX::Renderer
 		// ...?
 	};
 
-	enum struct E_INPUT_CHANNEL
+	enum struct E_CHANNEL
 	{
 		COLOR_0,
 		COLOR_1,
@@ -31,22 +31,18 @@ namespace VTX::Renderer
 			Context::DescIO desc;
 		};
 
-		using Inputs = std::unordered_map<E_INPUT_CHANNEL, Input>;
-
-		struct Output
+		struct Output : public Input
 		{
-			Resource *		resource;
-			Context::DescIO desc;
+			Resource * resource;
 		};
 
-		// Type.
-		// E_PASS_TYPE type;
-		// In/Out.
-		Inputs inputs;
-		Output output;
+		using Inputs   = std::unordered_map<E_CHANNEL, Input>;
+		using Outputs  = std::unordered_map<E_CHANNEL, Output>;
+		using Programs = std::vector<Context::DescProgram>;
 
-		// Program.
-		Context::DescProgram program;
+		Inputs	 inputs;
+		Outputs	 outputs;
+		Programs programs;
 
 		// Callbacks.
 		// PassCallbackPassSetup  cbSetup;

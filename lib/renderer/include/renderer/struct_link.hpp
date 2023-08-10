@@ -7,9 +7,10 @@ namespace VTX::Renderer
 {
 	struct Link
 	{
-		Pass *			source;
-		Pass *			destination;
-		E_INPUT_CHANNEL channel;
+		Pass *	  src;
+		Pass *	  dest;
+		E_CHANNEL channelSrc  = E_CHANNEL::COLOR_0;
+		E_CHANNEL channelDest = E_CHANNEL::COLOR_0;
 	};
 	using Links = std::vector<Link>;
 } // namespace VTX::Renderer

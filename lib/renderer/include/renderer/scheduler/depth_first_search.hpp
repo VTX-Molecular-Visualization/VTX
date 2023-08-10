@@ -22,9 +22,8 @@ namespace VTX::Renderer::Scheduler
 
 			for ( const Link & link : p_links )
 			{
-				adjacentList[ std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.source ) ) ]
-					.push_back(
-						std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.destination ) ) );
+				adjacentList[ std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.src ) ) ]
+					.push_back( std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.dest ) ) );
 			}
 
 			// Topological sort.
@@ -45,9 +44,15 @@ namespace VTX::Renderer::Scheduler
 				}
 			}
 
+			// Render queue.
 			std::reverse( sorted.begin(), sorted.end() );
+			RenderQueue renderQueue( sorted.size() );
+			for ( size_t index = 0; index < sorted.size(); ++index )
+			{
+				renderQueue[ index ] = passes[ sorted[ index ] ];
+			}
 
-			return {};
+			return renderQueue;
 		}
 
 	  private:
