@@ -1,25 +1,16 @@
 #ifndef __VTX_RENDERER_RESSOURCE__
 #define __VTX_RENDERER_RESSOURCE__
 
-#include "context/concept_context.hpp"
+// #include "context/concept_context.hpp"
 #include <vector>
 
 namespace VTX::Renderer
 {
-	enum struct E_HANDLE_TYPE
-	{
-		ATTACHMENT,
-		STORAGE,
-		// UNIFORM,
-		PROGRAM,
-		// ...?
-	};
-
 	// template<typename D>
 	struct Resource
 	{
-		E_HANDLE_TYPE type;
-		size_t		  id;
+		// E_HANDLE_TYPE type;
+		Context::Handle id;
 		// D			  desc;
 	};
 
@@ -27,7 +18,7 @@ namespace VTX::Renderer
 
 	struct Attachement : public Resource
 	{
-		Context::DescAttachment desc;
+		Context::DescAttachment * desc;
 	};
 
 	struct Storage : public Resource

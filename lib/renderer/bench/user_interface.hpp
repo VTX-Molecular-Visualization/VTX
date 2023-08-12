@@ -105,9 +105,9 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Renderer::GL::OpenGLRenderer * const p_renderer,
-				   Camera * const						p_camera,
-				   Renderer::Renderer * const			p_newRenderer )
+		void draw( // Renderer::GL::OpenGLRenderer * const p_renderer,
+			Camera * const			   p_camera,
+			Renderer::Renderer * const p_newRenderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -120,7 +120,7 @@ namespace VTX::Bench
 				{ // Quit.
 					if ( ImGui::MenuItem( "Compile shaders" ) )
 					{
-						p_renderer->compileShaders();
+						// p_renderer->compileShaders();
 					}
 
 					ImGui::EndMenu();
@@ -133,16 +133,16 @@ namespace VTX::Bench
 			_drawCamera( p_camera );
 
 			// Passes.
-			_drawPasses( p_renderer );
+			//_drawPasses( p_renderer );
 
 			// Times.
-			_drawTimes( p_renderer );
+			//_drawTimes( p_renderer );
 
 			// Misc.
-			_drawMisc( p_renderer );
+			//_drawMisc( p_renderer );
 
 			// Node editor.
-			_drawNodeEditor( p_renderer, p_newRenderer );
+			_drawNodeEditor( p_newRenderer );
 
 			// Render.
 			ImGui::Render();
@@ -198,6 +198,7 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
+		/*
 		void _drawPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 		{
 			if ( ImGui::Begin( "Render passes" ) )
@@ -378,72 +379,76 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
+		*/
 
-		void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
-		{
-			bool isTimersEnabled = p_renderer->isTimersEnabled();
-			if ( isTimersEnabled )
-			{
-				auto &				times	 = p_renderer->getTimes();
-				static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
-												 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
-				if ( ImGui::Begin( "Times (ms)" ) )
+		/*
+				void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 				{
-					const float max = *std::max_element( times.begin(), times.end() );
-					for ( size_t i = 0; i < times.size(); ++i )
+					bool isTimersEnabled = p_renderer->isTimersEnabled();
+					if ( isTimersEnabled )
 					{
-						ImGui::ProgressBar(
-							times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
-						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-						ImGui::Text( labels[ i ] );
+						auto &				times	 = p_renderer->getTimes();
+						static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
+														 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO"
+		   }; if ( ImGui::Begin( "Times (ms)" ) )
+						{
+							const float max = *std::max_element( times.begin(), times.end() );
+							for ( size_t i = 0; i < times.size(); ++i )
+							{
+								ImGui::ProgressBar(
+									times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
+								ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+								ImGui::Text( labels[ i ] );
+							}
+						}
+						ImGui::End();
 					}
 				}
-				ImGui::End();
-			}
-		}
+				*/
 
-		void _drawMisc( Renderer::GL::OpenGLRenderer * const p_renderer )
-		{
-			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
-			static uint64_t		  lastTime						= 0;
-			const uint64_t		  now							= SDL_GetPerformanceCounter();
-			const float			  deltaTime						= float( double( now - lastTime ) / sdlFrequency );
-			lastTime											= now;
-			const Renderer::GL::StructOpenglInfos & openglInfos = p_renderer->getOpenglInfos();
-
-			if ( ImGui::Begin( "Misc" ) )
-			{
-				// ImGui::Checkbox( "Perspective", &isPerspective );
-				bool isTimersEnabled = p_renderer->isTimersEnabled();
-				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
-				ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
-
-				ImGui::ProgressBar( float( ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-											 - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ) )
-										/ openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
-									ImVec2( 0.f, 0.f ),
-									fmt::format( "{} / {}",
-												 ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-												   - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
-												 openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX )
-										.c_str() );
-				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-				ImGui::Text( "GPU memory" );
-
-				if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
+		/*
+				void _drawMisc( Renderer::GL::OpenGLRenderer * const p_renderer )
 				{
-					setVSync( _vsync );
-				}
-				if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
-				{
-					p_renderer->setTimersEnabled( isTimersEnabled );
-				}
-			}
-			ImGui::End();
-		}
+					static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
+					static uint64_t		  lastTime						= 0;
+					const uint64_t		  now							= SDL_GetPerformanceCounter();
+					const float			  deltaTime						= float( double( now - lastTime ) / sdlFrequency
+		   ); lastTime											= now; const Renderer::GL::StructOpenglInfos &
+		   openglInfos = p_renderer->getOpenglInfos();
 
-		void _drawNodeEditor( Renderer::GL::OpenGLRenderer * const p_renderer,
-							  Renderer::Renderer * const		   p_newRenderer ) const
+					if ( ImGui::Begin( "Misc" ) )
+					{
+						// ImGui::Checkbox( "Perspective", &isPerspective );
+						bool isTimersEnabled = p_renderer->isTimersEnabled();
+						ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+						ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
+						ImGui::ProgressBar( float( ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+													 - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ) )
+												/ openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
+											ImVec2( 0.f, 0.f ),
+											fmt::format( "{} / {}",
+														 ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+														   - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
+														 openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX )
+												.c_str() );
+						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+						ImGui::Text( "GPU memory" );
+
+						if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
+						{
+							setVSync( _vsync );
+						}
+						if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
+						{
+							p_renderer->setTimersEnabled( isTimersEnabled );
+						}
+					}
+					ImGui::End();
+				}
+				*/
+
+		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
 		{
 			if ( ImGui::Begin( "Render graph" ) )
 			{

@@ -15,12 +15,6 @@ namespace VTX::Renderer
 	class RenderGraph
 	{
 	  public:
-		RenderGraph()
-		{
-			//_context   = std::make_unique<C>();
-			//_scheduler = std::make_unique<S>();
-		}
-
 		inline void addPass( const std::string & p_name, Pass p_pass )
 		{
 			_passes.emplace( p_name, std::move( p_pass ) );
@@ -38,14 +32,14 @@ namespace VTX::Renderer
 			Pass & passSrc	= _passes[ p_passSrc ];
 			Pass & passDest = _passes[ p_passDest ];
 
-			// Check IO existence.
+			// Check I/O existence.
 			assert( passSrc.outputs.contains( p_channelSrc ) );
 			assert( passDest.inputs.contains( p_channelDest ) );
 
 			// Check input is free.
 			if ( std::find_if( _links.begin(),
 							   _links.end(),
-							   [ & ]( const Link & p_element )
+							   [ &passDest, &p_channelDest ]( const Link & p_element )
 							   { return p_element.dest == &passDest && p_element.channelDest == p_channelDest; } )
 				 != _links.end() )
 			{
@@ -65,34 +59,111 @@ namespace VTX::Renderer
 			return true;
 		}
 
-		bool setup()
+		// 		template<class... Ts>
+		// 		struct overloaded : Ts...
+		// 		{
+		// 			using Ts::operator()...;
+		// 		};
+
+		bool setup( const size_t	 p_width,
+					const size_t	 p_height,
+					const FilePath & p_shaderPath,
+					void *			 p_proc = nullptr )
 		{
-			// Queue.
+			VTX_DEBUG( "{}", "Building render graph..." );
+
+			// Compute queue with scheduler.
+			Scheduler::RenderQueue queue;
 			try
 			{
-				Scheduler::RenderQueue queue = _scheduler.schedule( _passes, _links );
+				S scheduler;
+				scheduler.schedule( _passes, _links, queue );
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Can not build render graph: {}", p_e.what() );
+				VTX_ERROR( "Can not build render queue: {}", p_e.what() );
 				return false;
 			}
-			// TODO: create resources.
+
+			// Create resources.
+			// 			struct VisitorDescIO
+			// 			{
+			// 				void operator()( const DescAttachment & p_desc ) const { _context.create( p_desc ); }
+			// 				void operator()( const DescStorage p_desc ) const { _context.create( p_desc ); }
+			// 			};
+
+			// Clean all?
+
+			// Create context.
+			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
+			try
+			{
+				VTX_DEBUG( "{}", "Creating resources..." );
+				_createResources( queue );
+				VTX_DEBUG( "{}", "Creating resources... done" );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not create resources: {}", p_e.what() );
+				return false;
+			}
+
+			VTX_DEBUG( "{}", "Building render graph... done" );
 
 			return true;
 		}
+
+		void resize( const size_t p_width, const size_t p_height ) {}
 
 		// Debug purposes only.
 		inline const Passes & getPasses() const { return _passes; }
 		inline const Links &  getLinks() const { return _links; }
 
 	  private:
-		C _context;
-		S _scheduler;
+		using Instruction  = std::function<void()>;
+		using Instructions = std::vector<Instruction>;
 
-		// Ressources _resources;
-		Passes _passes;
-		Links  _links;
+		std::unique_ptr<C> _context;
+
+		Passes		 _passes;
+		Links		 _links;
+		Ressources	 _resources;
+		Instructions _instructions;
+
+		void _createResources( const Scheduler::RenderQueue & p_queue )
+		{
+			using namespace Context;
+
+			for ( const Pass * const pass : p_queue )
+			{
+				// Outputs.
+				for ( const auto & [ channel, output ] : pass->outputs )
+				{
+					const DescIO & desc = output.desc;
+
+					Handle id;
+					if ( std::holds_alternative<DescAttachment>( desc ) )
+					{
+						_context->create( std::get<DescAttachment>( desc ), id );
+					}
+					else if ( std::holds_alternative<DescStorage>( desc ) )
+					{
+						_context->create( std::get<DescStorage>( desc ), id );
+					}
+					else
+					{
+						throw std::runtime_error( "descriptor type nont handled" );
+					}
+				}
+
+				// Programs.
+				for ( const auto & program : pass->programs )
+				{
+					Handle id;
+					_context->create( program, id );
+				}
+			}
+		}
 	};
 
 } // namespace VTX::Renderer

@@ -38,7 +38,6 @@ namespace VTX::Renderer::GL
 
 		_shaders.clear();
 		_programs.clear();
-		_buffers.clear();
 	}
 
 	Program * const ProgramManager::createProgram( const std::string & p_name,
@@ -237,35 +236,35 @@ namespace VTX::Renderer::GL
 		}
 	}
 
-	Buffer * const ProgramManager::createBuffer( const std::string & p_name )
-	{
-		if ( _buffers.find( p_name ) == _buffers.end() )
-		{
-			_buffers[ p_name ] = std::make_unique<Buffer>();
-		}
-
-		return _buffers[ p_name ].get();
-	}
-
-	void ProgramManager::deleteBuffer( const std::string & p_name )
-	{
-		if ( _buffers.find( p_name ) == _buffers.end() )
-		{
-			VTX_WARNING( "Buffer {} does not exists", p_name );
-			return;
-		}
-
-		_buffers.erase( p_name );
-	}
-
-	Buffer * const ProgramManager::getBuffer( const std::string & p_name )
-	{
-		if ( _buffers.find( p_name ) != _buffers.end() )
-		{
-			return _buffers.at( p_name ).get();
-		}
-
-		VTX_ERROR( "Program {} does not exists", p_name );
-		return nullptr;
-	}
+	// 	Buffer * const ProgramManager::createBuffer( const std::string & p_name )
+	// 	{
+	// 		if ( _buffers.find( p_name ) == _buffers.end() )
+	// 		{
+	// 			_buffers[ p_name ] = std::make_unique<Buffer>();
+	// 		}
+	//
+	// 		return _buffers[ p_name ].get();
+	// 	}
+	//
+	// 	void ProgramManager::deleteBuffer( const std::string & p_name )
+	// 	{
+	// 		if ( _buffers.find( p_name ) == _buffers.end() )
+	// 		{
+	// 			VTX_WARNING( "Buffer {} does not exists", p_name );
+	// 			return;
+	// 		}
+	//
+	// 		_buffers.erase( p_name );
+	// 	}
+	//
+	// 	Buffer * const ProgramManager::getBuffer( const std::string & p_name )
+	// 	{
+	// 		if ( _buffers.find( p_name ) != _buffers.end() )
+	// 		{
+	// 			return _buffers.at( p_name ).get();
+	// 		}
+	//
+	// 		VTX_ERROR( "Program {} does not exists", p_name );
+	// 		return nullptr;
+	// 	}
 } // namespace VTX::Renderer::GL

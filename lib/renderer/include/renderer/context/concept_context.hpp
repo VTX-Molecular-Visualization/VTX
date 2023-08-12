@@ -7,12 +7,24 @@
 
 namespace VTX::Renderer::Context
 {
+	enum struct E_HANDLE_TYPE
+	{
+		ATTACHMENT,
+		STORAGE,
+		// UNIFORM,
+		PROGRAM,
+		// ...?
+	};
+
+	using Handle = uint;
+
 	enum struct E_FORMAT
 	{
 		RGBA16F,
 		RGBA32UI,
 		RGBA32F,
 		RG32UI,
+		R16F,
 		R32F,
 		DEPTH_COMPONENT32F
 	};
@@ -82,29 +94,35 @@ namespace VTX::Renderer::Context
 
 	struct DescProgram
 	{
-		std::string									  name;
-		std::variant<FilePath, std::vector<FilePath>> shaders;
-		std::string									  toInject;
-		std::string									  suffix;
+		std::string			  name;
+		std::vector<FilePath> shaders;
+		std::string			  toInject;
+		std::string			  suffix;
 	};
 
 	using DescIO = std::variant<DescAttachment, DescStorage>;
 
-	// using Id = size_t;
+	struct BaseContext
+	{
+		size_t	 width;
+		size_t	 height;
+		FilePath shaderPath;
+	};
 
 	template<typename C>
 	concept Concept = requires( C					   p_context,
-								const DescAttachment & p_descTexture,
+								const DescAttachment & p_descAttachment,
 								const DescStorage &	   p_descStorage,
-								const DescProgram &	   p_descProgram ) {
+								const DescProgram &	   p_descProgram,
+								Handle &			   p_handle ) {
 		{
-			p_context.add( p_descTexture )
+			p_context.create( p_descAttachment, p_handle )
 		} -> std::same_as<void>;
 		{
-			p_context.add( p_descStorage )
+			p_context.create( p_descStorage, p_handle )
 		} -> std::same_as<void>;
 		{
-			p_context.add( p_descProgram )
+			p_context.create( p_descProgram, p_handle )
 		} -> std::same_as<void>;
 	};
 
