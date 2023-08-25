@@ -21,10 +21,10 @@ namespace VTX::App::Application
 		Scene();
 		~Scene();
 
-		auto getAllSceneItems() const;
+		Core::ECS::View<Component::Scene::SceneItemComponent> getAllSceneItems() const;
 
 		template<SceneItem T>
-		auto getAllSceneItemsOftype() const
+		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
 			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
 		}

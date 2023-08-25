@@ -3,16 +3,18 @@
 
 #include "app/core/ecs/base_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/core/ecs/view.hpp"
 #include <concepts>
-#include <entt/entt.hpp>
+#include <entt/entity/helper.hpp>
+#include <entt/entity/registry.hpp>
 #include <map>
 
 namespace VTX::App::Core::ECS
 {
 	template<typename E>
-	concept ECS_Entity = requires( E p_component ) { std::derived_from<E, Core::ECS::BaseEntity>; };
+	concept ECS_Entity = requires( E p_component ) { std::derived_from<E, BaseEntity>; };
 	template<typename C>
-	concept ECS_Component = requires( C p_component ) { std::derived_from<C, Core::ECS::BaseComponent>; };
+	concept ECS_Component = requires( C p_component ) { true; };
 
 	enum class SIGNAL : int
 	{
@@ -21,63 +23,57 @@ namespace VTX::App::Core::ECS
 		DESTROY
 	};
 
-	class Registry // :: public Application::Generic::BaseLockable
+	class Registry
 	{
 	  public:
 		Registry() = default;
 
-		Core::ECS::BaseEntity createEntity() { return Core::ECS::BaseEntity( _enttRegistry.create() ); }
+		BaseEntity createEntity() { return BaseEntity( _enttRegistry.create() ); }
 
 		template<ECS_Component C>
-		inline Core::ECS::BaseEntity getEntity( const C & p_component ) const
+		inline BaseEntity getEntity( const C & p_component ) const
 		{
 			return entt::to_entity( _enttRegistry, p_component );
 		}
 
-		bool isValid( const Core::ECS::BaseEntity p_entity ) { return p_entity != INVALID_ENTITY; }
+		bool isValid( const BaseEntity p_entity ) { return p_entity != INVALID_ENTITY; }
 
 		template<ECS_Component C>
-		C & addComponent( const Core::ECS::BaseEntity & p_entity )
+		C & addComponent( const BaseEntity & p_entity )
 		{
 			return _enttRegistry.emplace<C>( p_entity );
 		}
 		template<ECS_Component C, typename... Args>
-		C & addComponent( const Core::ECS::BaseEntity & p_entity, Args &&... p_args )
+		C & addComponent( const BaseEntity & p_entity, Args &&... p_args )
 		{
 			return _enttRegistry.emplace<C>( p_entity, std::forward<Args>( p_args )... );
 		}
 
 		template<ECS_Component C>
-		void removeComponent( const Core::ECS::BaseEntity & p_entity )
+		void removeComponent( const BaseEntity & p_entity )
 		{
 			_enttRegistry.remove<C>( p_entity );
 		}
 
 		template<ECS_Component C>
-		C & getComponent( const Core::ECS::BaseEntity & p_entity )
+		C & getComponent( const BaseEntity & p_entity )
 		{
 			return _enttRegistry.get<C>( p_entity );
 		}
 		template<ECS_Component C>
-		const C & getComponent( const Core::ECS::BaseEntity & p_entity ) const
+		const C & getComponent( const BaseEntity & p_entity ) const
 		{
 			return _enttRegistry.get<const C>( p_entity );
 		}
 
-		// template<ECS_Component C, ECS_Component... Other>
-		// entt::basic_view<entt::type_list<C>, entt::type_list<Other...>, void> getTypedComponents()
-		//{
-		//	return _enttRegistry.view<C, Other..., void>();
-		// }
-
-		template<ECS_Component... C>
-		auto getComponents() const
+		template<typename Type, typename... Other>
+		View<Type, Other...> getComponents() const
 		{
-			return _enttRegistry.view<C...>();
+			return View<Type, Other...>( _enttRegistry );
 		}
 
 		template<ECS_Component C>
-		bool hasComponent( Core::ECS::BaseEntity & p_entity )
+		bool hasComponent( BaseEntity & p_entity )
 		{
 			return _enttRegistry.all_of<C>( p_entity );
 		}

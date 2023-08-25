@@ -8,7 +8,7 @@
 
 namespace VTX::App::Application
 {
-	auto Scene::getAllSceneItems() const
+	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
 		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
 	}
@@ -35,7 +35,7 @@ namespace VTX::App::Application
 	{
 		size_t count = 0;
 
-		for ( const entt::entity entity : getAllSceneItems() )
+		for ( const Core::ECS::BaseEntity entity : getAllSceneItems() )
 		{
 			if ( count == p_index )
 				return entity;
@@ -47,11 +47,12 @@ namespace VTX::App::Application
 	}
 	const Core::ECS::BaseEntity Scene::getItem( const std::string & p_name ) const
 	{
-		auto group = getAllSceneItems();
-		for ( const entt::entity entity : group )
+		const Core::ECS::View view = getAllSceneItems();
+
+		for ( const Core::ECS::BaseEntity entity : view )
 		{
 			const Component::Scene::SceneItemComponent & sceneItem
-				= group.get<Component::Scene::SceneItemComponent>( entity );
+				= view.getComponent<Component::Scene::SceneItemComponent>( entity );
 
 			if ( sceneItem.getName() == p_name )
 				return entity;
@@ -206,14 +207,14 @@ namespace VTX::App::Application
 	}
 	void Scene::_computeAABB()
 	{
-		const entt::basic_view view
+		const Core::ECS::View view
 			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
-		for ( const entt::entity entity : view )
+		for ( const Core::ECS::BaseEntity entity : view )
 		{
-			const Component::Scene::AABB & aabbComponent = view.get<Component::Scene::AABB>( entity );
+			const Component::Scene::AABB & aabbComponent = view.getComponent<Component::Scene::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
 	}
@@ -223,12 +224,13 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
-		const entt::basic_view view
+		const Core::ECS::View view
 			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
-		for ( entt::entity entity : view )
+		for ( const Core::ECS::BaseEntity entity : view )
 		{
-			const Component::Scene::Updatable & updatableComponent = view.get<Component::Scene::Updatable>( entity );
+			const Component::Scene::Updatable & updatableComponent
+				= view.getComponent<Component::Scene::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );
 		}
 

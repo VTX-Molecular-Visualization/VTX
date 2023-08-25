@@ -19,7 +19,8 @@
 #include <vector>
 
 // std::string MOLECULE_TEST_NAME = "1AGA";
-std::string MOLECULE_TEST_NAME = "8OIT";
+static const std::string MOLECULE_TEST_NAME		= "8OIT";
+static const std::string MOLECULE_TEST_NAME_EXT = MOLECULE_TEST_NAME + ".mmtf";
 // std::string MOLECULE_TEST_NAME = "7Y7A";
 
 void initApp()
@@ -35,6 +36,42 @@ void initApp()
 
 	VTXApp::get().getScene().reset();
 }
+
+void loadTestMolecule()
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	Application::Scene & scene = VTXApp::get().getScene();
+
+	// Create MoleculeEntity
+	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / MOLECULE_TEST_NAME_EXT;
+	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
+	openAction.execute();
+}
+
+TEST_CASE( "VTX_APP - Views", "[integration]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	initApp();
+	loadTestMolecule();
+
+	Application::Scene & scene = VTXApp::get().getScene();
+
+	App::Core::ECS::View allMolecules = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	REQUIRE( allMolecules.size() == 1 );
+
+	App::Core::ECS::BaseEntity molEntity = allMolecules.front();
+	REQUIRE( molEntity != App::Core::ECS::INVALID_ENTITY );
+	REQUIRE( scene.getAllSceneItems().find( molEntity ) != scene.getAllSceneItems().end() );
+
+	App::Core::ECS::ViewIterator findFailIt = scene.getAllSceneItems().find( App::Core::ECS::BaseEntity( 666 ) );
+	REQUIRE( findFailIt == scene.getAllSceneItems().end() );
+
+	scene.update( 0.015f );
+};
 
 TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 {
@@ -87,8 +124,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );
 
-	entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>();
-	REQUIRE( view.size_hint() == 1 );
+	App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	REQUIRE( view.size() == 1 );
 
 	Renderer::GL::StructProxyMolecule & gpuProxyComponent
 		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
@@ -136,5 +173,8 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 			sumAtomCount += residue.getAtomCount();
 	};
 
-	BENCHMARK( "View all" ) { entt::basic_view view = scene.getAllSceneItemsOftype<Component::Chemistry::Molecule>(); };
+	BENCHMARK( "View all" )
+	{
+		App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	};
 }
