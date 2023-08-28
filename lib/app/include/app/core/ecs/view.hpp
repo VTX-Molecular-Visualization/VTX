@@ -27,8 +27,10 @@ namespace VTX::App::Core::ECS
 			sizeof...( Other ),
 			0>;
 
-		using entt_iterator_t = view_type::iterator;
-		using iterator_t	  = ViewIterator<entt_iterator_t>;
+		// using typedef instead of using to complile on macOS
+		typedef view_type::iterator entt_iterator_t;
+
+		using iterator_t = ViewIterator<entt_iterator_t>;
 
 	  public:
 		View( const entt::registry & p_registry ) : _view( p_registry.view<Type, Other...>() ) {}
