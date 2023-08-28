@@ -22,10 +22,10 @@ namespace VTX::App::Core::ECS
 		template<typename... Types>
 		using internal_view = entt::basic_view<entt::type_list<single_storage<Types>...>, entt::type_list<>, void>;
 
-		using view_type = typename internal_view<Type, Other...>;
+		using view_type = internal_view<Type, Other...>;
 
 		using entt_iterator_t = typename view_type::iterator;
-		using iterator_t	  = typename ViewIterator<entt_iterator_t>;
+		using iterator_t	  = ViewIterator<entt_iterator_t>;
 
 	  public:
 		View( const entt::registry & p_registry ) : _view( p_registry.view<Type, Other...>() ) {}
