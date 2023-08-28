@@ -61,13 +61,13 @@ namespace VTX::IO::Util
 
 			const float _cubeSize;
 
-			const uint _width;
-			const uint _height;
-			const uint _depth;
-
 			const float _xStart;
 			const float _yStart;
 			const float _zStart;
+
+			const uint _width;
+			const uint _height;
+			const uint _depth;
 
 			size_t _getIndexFromPosition( const chemfiles::Vector3D & p_position ) const;
 			void   _generateNeighbourList();

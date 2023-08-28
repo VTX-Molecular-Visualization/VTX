@@ -303,7 +303,7 @@ namespace VTX::IO::Util
 				const size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
 				const size_t atomNumInCell	   = p_cellList.getCellList()[ neighborCellIndex ].size();
 
-				const bool selfCell = ( cellIndex == neighborCellIndex );
+				// const bool selfCell = ( cellIndex == neighborCellIndex );
 
 				for ( size_t i = 0; i < atomsInCell; i++ )
 				{

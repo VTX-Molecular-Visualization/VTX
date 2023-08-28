@@ -315,7 +315,7 @@ namespace VTX::IO::Util
 							atomsForPlanarity.resize( 4 );
 							atomsForPlanarity[ 0 ] = n0Index;
 
-							for ( int i = 0; i <= 3; i++ )
+							for ( size_t i = 0; i <= 3; i++ )
 							{
 								atomsForPlanarity[ i + 1 ] = p_linkedAtomsVector[ n0Index ][ i ];
 							}
@@ -615,7 +615,7 @@ namespace VTX::IO::Util
 			const std::string firstAtomName	 = p_frame[ firstAtomIndex ].name();
 			const std::string secondAtomName = p_frame[ secondAtomIndex ].name();
 
-			for ( bondDataCurrentIndex; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
+			for ( ; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
 			{
 				const Struct::BondData & bondData = bondsData[ bondDataCurrentIndex ];
 
