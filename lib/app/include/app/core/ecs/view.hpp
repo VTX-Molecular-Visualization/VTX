@@ -2,7 +2,9 @@
 #define __VTX_APP_CORE_ECS_VIEW__
 
 #include <entt/entity/registry.hpp>
+#include <entt/entity/view.hpp>
 #include <limits>
+#include <memory>
 
 namespace VTX::App::Core::ECS
 {
@@ -20,17 +22,10 @@ namespace VTX::App::Core::ECS
 		template<typename... Types>
 		using internal_view = entt::basic_view<entt::type_list<single_storage<Types>...>, entt::type_list<>, void>;
 
-		using view_type = internal_view<Type, Other...>;
+		using view_type = typename internal_view<Type, Other...>;
 
-		using iterator2_t = entt::internal::view_iterator<
-			entt::basic_sparse_set<enum entt::entity, std::allocator<enum entt::entity>>,
-			sizeof...( Other ),
-			0>;
-
-		// using typedef instead of using to complile on macOS
-		typedef view_type::iterator entt_iterator_t;
-
-		using iterator_t = ViewIterator<entt_iterator_t>;
+		using entt_iterator_t = typename view_type::iterator;
+		using iterator_t	  = typename ViewIterator<entt_iterator_t>;
 
 	  public:
 		View( const entt::registry & p_registry ) : _view( p_registry.view<Type, Other...>() ) {}
