@@ -39,7 +39,7 @@ namespace VTX::App::Core::ECS
 		size_t size_hint() { return _view.size_hint(); }
 
 		template<typename T>
-		T getComponent( const BaseEntity & p_entity ) const
+		const T & getComponent( const BaseEntity & p_entity ) const
 		{
 			return _view.get<T>( p_entity );
 		}

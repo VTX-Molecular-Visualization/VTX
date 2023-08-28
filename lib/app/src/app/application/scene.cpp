@@ -224,13 +224,13 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
-		const Core::ECS::View view
+		Core::ECS::View view
 			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
 		for ( const Core::ECS::BaseEntity entity : view )
 		{
 			const Component::Scene::Updatable & updatableComponent
-				= view.getComponent<Component::Scene::Updatable>( entity );
+				= view.getComponent<const Component::Scene::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );
 		}
 

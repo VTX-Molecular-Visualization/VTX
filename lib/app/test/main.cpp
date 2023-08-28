@@ -60,6 +60,13 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 
 	Application::Scene & scene = VTXApp::get().getScene();
 
+	App::Core::ECS::View view1Element = scene.getAllSceneItems();
+	REQUIRE( view1Element.size() == 1 );
+
+	const App::Component::Scene::SceneItemComponent & sceneItemComponent
+		= view1Element.getComponent<App::Component::Scene::SceneItemComponent>( view1Element.front() );
+	REQUIRE( sceneItemComponent.getName() == MOLECULE_TEST_NAME );
+
 	App::Core::ECS::View allMolecules = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( allMolecules.size() == 1 );
 
