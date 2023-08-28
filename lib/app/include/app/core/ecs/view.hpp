@@ -32,13 +32,13 @@ namespace VTX::App::Core::ECS
 
 		const view_type & getView() const { return _view; };
 
-		size_t size() { return _view.storage<0>().size(); }
+		size_t size() { return _view.template storage<0>().size(); }
 		size_t size_hint() { return _view.size_hint(); }
 
 		template<typename T>
 		const T & getComponent( const BaseEntity & p_entity ) const
 		{
-			return _view.get<T>( p_entity );
+			return _view.template get<T>( p_entity );
 		}
 
 		iterator_t begin() const { return iterator_t( _view.begin() ); }
