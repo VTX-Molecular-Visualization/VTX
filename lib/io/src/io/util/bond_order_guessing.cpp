@@ -315,7 +315,7 @@ namespace VTX::IO::Util
 							atomsForPlanarity.resize( 4 );
 							atomsForPlanarity[ 0 ] = n0Index;
 
-							for ( size_t i = 0; i <= 3; i++ )
+							for ( size_t i = 0; i < 3; i++ )
 							{
 								atomsForPlanarity[ i + 1 ] = p_linkedAtomsVector[ n0Index ][ i ];
 							}
@@ -472,7 +472,6 @@ namespace VTX::IO::Util
 														  chemfiles::Vector3D &		  dir )
 	{
 		float							 result	   = 0.f;
-		const size_t					 atomCount = p_atomCount;
 		std::vector<chemfiles::Vector3D> positions = std::vector<chemfiles::Vector3D>();
 		positions.resize( p_atomCount + 2 );
 
