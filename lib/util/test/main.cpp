@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <concepts>
 #include <fstream>
+#include <util/enum.hpp>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
 #include <util/logger.hpp>
@@ -236,13 +237,28 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 									Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
 };
 
+// enum.hpp
+enum struct E_EXAMPLE
+{
+	FIRST,
+	SECOND
+};
+
+TEST_CASE( "Util::Enum", "[enum]" )
+{
+	using namespace VTX::Util;
+
+	REQUIRE( Enum::enumName( E_EXAMPLE::FIRST ).compare( "FIRST" ) == 0 );
+	REQUIRE( Enum::enumCast<E_EXAMPLE>( "SECOND" ) == E_EXAMPLE::SECOND );
+}
+
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-					 {
-						 t.use()
-						 } -> std::same_as<void>;
-				 };
+	{
+		t.use()
+	} -> std::same_as<void>;
+};
 
 template<canUse T>
 class BaseClass : public T
