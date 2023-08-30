@@ -7,16 +7,6 @@
 
 namespace VTX::Renderer::Context
 {
-	enum struct E_HANDLE_TYPE
-	{
-		ATTACHMENT,
-		STORAGE,
-		// UNIFORM,
-		PROGRAM,
-		// ...?
-	};
-
-	using Handle = uint;
 
 	enum struct E_FORMAT
 	{
@@ -28,6 +18,17 @@ namespace VTX::Renderer::Context
 		R32F,
 		DEPTH_COMPONENT32F
 	};
+
+	enum struct E_HANDLE_TYPE
+	{
+		ATTACHMENT,
+		STORAGE,
+		// UNIFORM,
+		PROGRAM,
+		// ...?
+	};
+
+	using Handle = uint;
 
 	enum struct E_TYPE
 	{
@@ -74,6 +75,15 @@ namespace VTX::Renderer::Context
 		LINEAR_MIPMAP_LINEAR,
 	};
 
+	// Base context.
+	//template<typename F>
+	struct BaseContext
+	{
+		size_t	 width;
+		size_t	 height;
+		FilePath shaderPath;
+	};
+
 	// Descriptors.
 	struct DescAttachment
 	{
@@ -101,13 +111,6 @@ namespace VTX::Renderer::Context
 	};
 
 	using DescIO = std::variant<DescAttachment, DescStorage>;
-
-	struct BaseContext
-	{
-		size_t	 width;
-		size_t	 height;
-		FilePath shaderPath;
-	};
 
 	template<typename C>
 	concept Concept = requires( C					   p_context,

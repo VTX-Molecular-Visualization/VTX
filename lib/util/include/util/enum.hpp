@@ -1,8 +1,8 @@
 #ifndef __VTX_UTIL_ENUM__
 #define __VTX_UTIL_ENUM__
 
-#define MAGIC_ENUM_RANGE_MIN 0
-#define MAGIC_ENUM_RANGE_MAX ( std::numeric_limits<uint16_t>::max() - 2 )
+// #define MAGIC_ENUM_RANGE_MIN 0
+// #define MAGIC_ENUM_RANGE_MAX ( std::numeric_limits<uint16_t>::max() - 2 )
 
 #include "exceptions.hpp"
 #include <magic_enum.hpp>

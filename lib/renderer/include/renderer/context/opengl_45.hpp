@@ -4,10 +4,12 @@
 #include "concept_context.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include <glad/glad.h>
+#include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::Renderer::Context
 {
+
 	class OpenGL45 : public BaseContext
 	{
 	  public:
@@ -37,14 +39,23 @@ namespace VTX::Renderer::Context
 		// I/O.
 		inline void create( const DescAttachment & p_desc, Handle & p_handle )
 		{
-			// TODO: m>ap enums.
-			// 			glCreateTextures( GL_TEXTURE_2D, 1, &p_handle );
-			// 			assert( glIsTexture( p_handle ) );
-			// 			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_S, GLint( p_desc.wrappingS ) );
-			// 			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_T, GLint( p_desc.wrappingT ) );
-			// 			glTextureParameteri( p_handle, GL_TEXTURE_MIN_FILTER, GLint( p_desc.filteringMin ) );
-			// 			glTextureParameteri( p_handle, GL_TEXTURE_MAG_FILTER, GLint( p_desc.filteringMag ) );
-			// 			glTextureStorage2D( p_handle, 1, GLenum( p_desc.format ), GLsizei( width ), GLsizei( height ) );
+			std::cout << Util::Enum::enumName( p_desc.format ) << std::endl;
+
+			std::cout << Util::Enum::toInt( p_desc.format ) << std::endl;
+
+			auto dsdqsd = Util::Enum::enumToAnother<E_FORMAT, _E_FORMAT>( p_desc.format );
+
+			std::cout << Util::Enum::toInt( dsdqsd ) << std::endl;
+
+			//  TODO: map enums.
+			//  			glCreateTextures( GL_TEXTURE_2D, 1, &p_handle );
+			//  			assert( glIsTexture( p_handle ) );
+			//  			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_S, GLint( p_desc.wrappingS ) );
+			//  			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_T, GLint( p_desc.wrappingT ) );
+			//  			glTextureParameteri( p_handle, GL_TEXTURE_MIN_FILTER, GLint( p_desc.filteringMin ) );
+			//  			glTextureParameteri( p_handle, GL_TEXTURE_MAG_FILTER, GLint( p_desc.filteringMag ) );
+			//  			glTextureStorage2D( p_handle, 1, GLenum( p_desc.format ), GLsizei( width ), GLsizei( height
+			//  ) );
 		}
 
 		inline void create( const DescStorage & p_desc, Handle & p_handle ) {}
@@ -56,7 +67,7 @@ namespace VTX::Renderer::Context
 		}
 
 	  private:
-		enum struct _E_FORMAT : GLenum
+		enum _E_FORMAT : GLenum
 		{
 			RGBA16F			   = GL_RGBA16F,
 			RGBA32UI		   = GL_RGBA32UI,
