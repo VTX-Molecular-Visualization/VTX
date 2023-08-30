@@ -458,6 +458,9 @@ namespace VTX::Bench
 				uint												 id = 0;
 				std::map<const Renderer::Pass::Input * const, uint>	 mapInputId;
 				std::map<const Renderer::Pass::Output * const, uint> mapOutputId;
+				std::map<const uint, Renderer::E_CHANNEL>			 mapIdChannel;
+				std::map<const uint, std::string>					 mapIdPassName;
+
 				for ( auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
@@ -469,6 +472,8 @@ namespace VTX::Bench
 					for ( const auto & [ channel, input ] : pass.inputs )
 					{
 						mapInputId.emplace( &input, id );
+						mapIdChannel.emplace( id, channel );
+						mapIdPassName.emplace( id, name );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
 						ImNodes::EndInputAttribute();
@@ -478,6 +483,8 @@ namespace VTX::Bench
 					for ( const auto & [ channel, output ] : pass.outputs )
 					{
 						mapOutputId.emplace( &output, id );
+						mapIdChannel.emplace( id, channel );
+						mapIdPassName.emplace( id, name );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
 						ImNodes::EndOutputAttribute();
@@ -496,6 +503,16 @@ namespace VTX::Bench
 
 				ImNodes::MiniMap();
 				ImNodes::EndNodeEditor();
+
+				// Check new links.
+				int newLinkStartId, newLinkEndtId;
+				if ( ImNodes::IsLinkCreated( &newLinkStartId, &newLinkEndtId ) )
+				{
+					p_newRenderer->getRenderGraph().addLink( mapIdPassName[ newLinkStartId ],
+															 mapIdPassName[ newLinkEndtId ],
+															 mapIdChannel[ newLinkStartId ],
+															 mapIdChannel[ newLinkEndtId ] );
+				}
 			}
 			ImGui::End();
 		}

@@ -57,9 +57,9 @@ namespace VTX::Renderer
 
 			// Links.
 			_renderGraph->addLink( "Geometric", "Linearize depth", E_CHANNEL::DEPTH );
-			_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_0 );
+			_renderGraph->addLink( "Geometric", "Shading" );
 			_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
-			_renderGraph->addLink( "Shading", "FXAA", E_CHANNEL::COLOR_0 );
+			_renderGraph->addLink( "Shading", "FXAA" );
 
 			// Setup.
 			_renderGraph->setup( p_width, p_height, p_shaderPath, p_proc );

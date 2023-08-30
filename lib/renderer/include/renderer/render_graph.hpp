@@ -152,7 +152,7 @@ namespace VTX::Renderer
 					}
 					else
 					{
-						throw std::runtime_error( "descriptor type nont handled" );
+						throw std::runtime_error( "descriptor type not handled" );
 					}
 				}
 

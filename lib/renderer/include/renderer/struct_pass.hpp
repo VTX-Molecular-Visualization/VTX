@@ -12,6 +12,7 @@ namespace VTX::Renderer
 	enum struct E_PASS_TYPE
 	{
 		GRAPHIC,
+		// COMPUTE,
 		// ...?
 	};
 
