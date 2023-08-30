@@ -238,9 +238,16 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 };
 
 // enum.hpp
-enum struct E_EXAMPLE
+enum struct E_EXAMPLE_1
 {
 	FIRST,
+	SECOND
+};
+
+enum struct E_EXAMPLE_2
+{
+	FIRST = 42,
+	OTHER,
 	SECOND
 };
 
@@ -248,8 +255,10 @@ TEST_CASE( "Util::Enum", "[enum]" )
 {
 	using namespace VTX::Util;
 
-	REQUIRE( Enum::enumName( E_EXAMPLE::FIRST ).compare( "FIRST" ) == 0 );
-	REQUIRE( Enum::enumCast<E_EXAMPLE>( "SECOND" ) == E_EXAMPLE::SECOND );
+	REQUIRE( Enum::enumName( E_EXAMPLE_1::FIRST ).compare( "FIRST" ) == 0 );
+	REQUIRE( Enum::enumCast<E_EXAMPLE_1>( "SECOND" ) == E_EXAMPLE_1::SECOND );
+	REQUIRE( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) == E_EXAMPLE_2::SECOND );
+	REQUIRE( Enum::toInt( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
 }
 
 // C++20 static polymorphism with concepts.
