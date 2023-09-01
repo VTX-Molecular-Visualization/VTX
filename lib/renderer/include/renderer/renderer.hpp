@@ -13,7 +13,12 @@ namespace VTX::Renderer
 	  public:
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
 
-		Renderer( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr )
+		Renderer( const size_t	   p_width,
+				  const size_t	   p_height,
+				  const FilePath & p_shaderPath,
+				  void *		   p_proc = nullptr ) :
+			_width( p_width ),
+			_height( p_height ), _shaderPath( p_shaderPath ), _proc( p_proc )
 		{
 			using namespace Context;
 
@@ -60,17 +65,20 @@ namespace VTX::Renderer
 			_renderGraph->addLink( "Geometric", "Shading" );
 			_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
 			_renderGraph->addLink( "Shading", "FXAA" );
-
-			// Setup.
-			_renderGraph->setup( p_width, p_height, p_shaderPath, p_proc );
 		}
 
 		void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
+
+		void build() { _renderGraph->setup( _width, _height, _shaderPath, _proc ); }
 
 		// Debug purposes only.
 		inline RenderGraphOpenGL45 & getRenderGraph() { return *_renderGraph; }
 
 	  private:
+		size_t								 _width;
+		size_t								 _height;
+		FilePath							 _shaderPath;
+		void *								 _proc;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 	};
 } // namespace VTX::Renderer

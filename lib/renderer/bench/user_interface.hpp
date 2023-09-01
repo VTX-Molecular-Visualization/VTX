@@ -450,8 +450,16 @@ namespace VTX::Bench
 
 		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
 		{
-			if ( ImGui::Begin( "Render graph" ) )
+			static bool isOpen = true;
+			if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
 			{
+				ImGui::BeginMenuBar();
+				if ( ImGui::Button( "Build" ) )
+				{
+					p_newRenderer->build();
+				}
+				ImGui::EndMenuBar();
+
 				ImNodes::BeginNodeEditor();
 
 				// Passes.
