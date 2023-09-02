@@ -108,6 +108,9 @@ namespace VTX::Renderer
 				return false;
 			}
 
+			// Generate instructions.
+			// TODO.
+
 			VTX_DEBUG( "{}", "Building render graph... done" );
 
 			return true;

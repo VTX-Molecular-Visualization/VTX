@@ -258,7 +258,7 @@ TEST_CASE( "Util::Enum", "[enum]" )
 	REQUIRE( Enum::enumName( E_EXAMPLE_1::FIRST ).compare( "FIRST" ) == 0 );
 	REQUIRE( Enum::enumCast<E_EXAMPLE_1>( "SECOND" ) == E_EXAMPLE_1::SECOND );
 	REQUIRE( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) == E_EXAMPLE_2::SECOND );
-	REQUIRE( Enum::toInt( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
+	REQUIRE( Enum::enumInteger( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
 }
 
 // C++20 static polymorphism with concepts.
