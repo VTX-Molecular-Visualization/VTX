@@ -39,23 +39,13 @@ namespace VTX::Renderer::Context
 		// I/O.
 		inline void create( const DescAttachment & p_desc, Handle & p_handle )
 		{
-			std::cout << Util::Enum::enumName( p_desc.format ) << std::endl;
-
-			std::cout << Util::Enum::toInt( p_desc.format ) << std::endl;
-
-			auto dsdqsd = Util::Enum::enumToAnother<E_FORMAT, _E_FORMAT>( p_desc.format );
-
-			std::cout << Util::Enum::toInt( dsdqsd ) << std::endl;
-
-			//  TODO: map enums.
-			//  			glCreateTextures( GL_TEXTURE_2D, 1, &p_handle );
-			//  			assert( glIsTexture( p_handle ) );
-			//  			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_S, GLint( p_desc.wrappingS ) );
-			//  			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_T, GLint( p_desc.wrappingT ) );
-			//  			glTextureParameteri( p_handle, GL_TEXTURE_MIN_FILTER, GLint( p_desc.filteringMin ) );
-			//  			glTextureParameteri( p_handle, GL_TEXTURE_MAG_FILTER, GLint( p_desc.filteringMag ) );
-			//  			glTextureStorage2D( p_handle, 1, GLenum( p_desc.format ), GLsizei( width ), GLsizei( height
-			//  ) );
+			glCreateTextures( GL_TEXTURE_2D, 1, &p_handle );
+			assert( glIsTexture( p_handle ) );
+			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_S, _mapWrapping[ p_desc.wrappingS ] );
+			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_T, _mapWrapping[ p_desc.wrappingT ] );
+			glTextureParameteri( p_handle, GL_TEXTURE_MIN_FILTER, _mapFiltering[ p_desc.filteringMin ] );
+			glTextureParameteri( p_handle, GL_TEXTURE_MAG_FILTER, _mapFiltering[ p_desc.filteringMag ] );
+			glTextureStorage2D( p_handle, 1, _mapFormat[ p_desc.format ], GLsizei( width ), GLsizei( height ) );
 		}
 
 		inline void create( const DescStorage & p_desc, Handle & p_handle ) {}
@@ -67,34 +57,31 @@ namespace VTX::Renderer::Context
 		}
 
 	  private:
-		enum _E_FORMAT : GLenum
-		{
-			RGBA16F			   = GL_RGBA16F,
-			RGBA32UI		   = GL_RGBA32UI,
-			RGBA32F			   = GL_RGBA32F,
-			RG32UI			   = GL_RG32UI,
-			R16F			   = GL_R16F,
-			R32F			   = GL_R32F,
-			DEPTH_COMPONENT32F = GL_DEPTH_COMPONENT32F
+		std::map<E_FORMAT, GLenum> _mapFormat = {
+			{ E_FORMAT::RGBA16F, GL_RGBA16F },
+			{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
+			{ E_FORMAT::RGBA32F, GL_RGBA32F },
+			{ E_FORMAT::RG32UI, GL_RG32UI },
+			{ E_FORMAT::R16F, GL_R16F },
+			{ E_FORMAT::R32F, GL_R32F },
+			{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },
 		};
 
-		enum struct _E_WRAPPING : GLint
-		{
-			REPEAT				 = GL_REPEAT,
-			MIRRORED_REPEAT		 = GL_MIRRORED_REPEAT,
-			CLAMP_TO_EDGE		 = GL_CLAMP_TO_EDGE,
-			CLAMP_TO_BORDER		 = GL_CLAMP_TO_BORDER,
-			MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
+		std::map<E_WRAPPING, GLint> _mapWrapping = {
+			{ E_WRAPPING::REPEAT, GL_REPEAT },
+			{ E_WRAPPING::MIRRORED_REPEAT, GL_MIRRORED_REPEAT },
+			{ E_WRAPPING::CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE },
+			{ E_WRAPPING::CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER },
+			{ E_WRAPPING::MIRROR_CLAMP_TO_EDGE, GL_MIRROR_CLAMP_TO_EDGE },
 		};
 
-		enum struct _E_FILTERING : GLint
-		{
-			NEAREST				   = GL_NEAREST,
-			LINEAR				   = GL_LINEAR,
-			NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
-			LINEAR_MIPMAP_NEAREST  = GL_LINEAR_MIPMAP_NEAREST,
-			NEAREST_MIPMAP_LINEAR  = GL_NEAREST_MIPMAP_LINEAR,
-			LINEAR_MIPMAP_LINEAR   = GL_LINEAR_MIPMAP_LINEAR,
+		std::map<E_FILTERING, GLint> _mapFiltering = {
+			{ E_FILTERING::NEAREST, GL_NEAREST },
+			{ E_FILTERING::LINEAR, GL_LINEAR },
+			{ E_FILTERING::NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_NEAREST },
+			{ E_FILTERING::LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST },
+			{ E_FILTERING::NEAREST_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_LINEAR },
+			{ E_FILTERING::LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR },
 		};
 
 		std::unique_ptr<GL::ProgramManager> _programManager;

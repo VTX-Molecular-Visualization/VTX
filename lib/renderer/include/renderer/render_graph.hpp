@@ -43,7 +43,7 @@ namespace VTX::Renderer
 							   { return p_element.dest == &passDest && p_element.channelDest == p_channelDest; } )
 				 != _links.end() )
 			{
-				VTX_WARNING( "Channel {} from pass {} is already used", uint( p_channelDest ), p_passDest );
+				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest );
 				return false;
 			}
 
@@ -152,7 +152,7 @@ namespace VTX::Renderer
 					}
 					else
 					{
-						throw std::runtime_error( "descriptor type not handled" );
+						throw std::runtime_error( "unknown descriptor type" );
 					}
 				}
 
