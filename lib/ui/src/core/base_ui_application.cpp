@@ -12,8 +12,6 @@ namespace VTX::UI::Core
 	void BaseUIApplication::init() {}
 	void BaseUIApplication::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: {}", VTX::IO::Internal::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
-
 		_initVTXApp( p_args );
 		_initUI( p_args );
 		_buildUI();

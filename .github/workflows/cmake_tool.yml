@@ -25,6 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - uses: knicknic/os-specific-run@v1.0.3
+      with:
+        linux: sudo apt-get install -y libxrandr-dev
+
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -34,7 +38,7 @@ jobs:
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Build your program with the given configuration
-      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_TOOL VTX_TOOL_TEST
 
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}

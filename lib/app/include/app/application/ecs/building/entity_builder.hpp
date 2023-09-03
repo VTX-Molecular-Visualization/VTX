@@ -2,6 +2,8 @@
 #define __VTX_APP_APPLICATION_ECS_BUILDING_ENTITY_BUILDER__
 
 #include "app/core/ecs/base_entity.hpp"
+#include <array>
+#include <functional>
 #include <util/variant.hpp>
 #include <vector>
 

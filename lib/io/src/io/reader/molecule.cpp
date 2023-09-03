@@ -275,7 +275,12 @@ namespace VTX::IO::Reader
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
 		timeReadingFrames.start();
-		size_t startingFrame   = 1;
+
+#ifdef _DEBUG
+		// Frame count for debug
+		size_t startingFrame = 1;
+#endif
+
 		size_t validFrameCount = 0;
 		for ( size_t frameIdx = 0; frameIdx < p_chemfileStruct.getFrameCount() - p_trajectoryFrameStart; ++frameIdx )
 		{
