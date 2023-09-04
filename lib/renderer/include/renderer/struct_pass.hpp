@@ -26,6 +26,7 @@ namespace VTX::Renderer
 
 	struct Pass
 	{
+		std::string name;
 		struct Input
 		{
 			std::string		name;
@@ -53,7 +54,7 @@ namespace VTX::Renderer
 		using CallbackRender = std::function<void>();
 	};
 
-	using Passes = std::unordered_map<std::string, Pass>;
+	using Passes = std::vector<Pass>;
 } // namespace VTX::Renderer
 
 #endif

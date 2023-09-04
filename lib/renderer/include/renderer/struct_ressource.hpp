@@ -6,32 +6,31 @@
 
 namespace VTX::Renderer
 {
-	// template<typename D>
+
 	struct Resource
 	{
-		// E_HANDLE_TYPE type;
 		Context::Handle id;
-		// D			  desc;
+		Context::Desc	desc;
 	};
 
 	// using Attachment = Resource<Context::DescTexture>;
 
-	struct Attachement : public Resource
-	{
-		Context::DescAttachment * desc;
-	};
-
-	struct Storage : public Resource
-	{
-	};
+	// 	struct Attachement : public Resource
+	// 	{
+	// 		Context::DescAttachment * desc;
+	// 	};
+	//
+	// 	struct Storage : public Resource
+	// 	{
+	// 	};
 
 	// 	struct Uniform : public Resource
 	// 	{
 	// 	};
 
-	struct Program : public Resource
-	{
-	};
+	// 	struct Program : public Resource
+	// 	{
+	// 	};
 
 	using Ressources = std::vector<Resource>;
 } // namespace VTX::Renderer

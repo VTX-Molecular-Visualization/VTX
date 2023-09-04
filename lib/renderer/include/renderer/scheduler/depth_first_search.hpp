@@ -9,13 +9,13 @@ namespace VTX::Renderer::Scheduler
 	class DepthFirstSearch
 	{
 	  public:
-		void schedule( Passes & p_passes, const Links & p_links, RenderQueue & p_queue )
+		RenderQueue schedule( Passes & p_passes, const Links & p_links )
 		{
 			// Build adjacent list.
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );
 			size_t							 i = 0;
-			for ( auto & [ name, pass ] : p_passes )
+			for ( Pass & pass : p_passes )
 			{
 				passes[ i++ ] = &pass;
 			}
@@ -46,11 +46,13 @@ namespace VTX::Renderer::Scheduler
 
 			// Render queue.
 			std::reverse( sorted.begin(), sorted.end() );
-			p_queue.resize( sorted.size() );
+			RenderQueue queue( sorted.size() );
 			for ( size_t index = 0; index < sorted.size(); ++index )
 			{
-				p_queue[ index ] = passes[ sorted[ index ] ];
+				queue[ index ] = passes[ sorted[ index ] ];
 			}
+
+			return queue;
 		}
 
 	  private:

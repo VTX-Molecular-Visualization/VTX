@@ -11,10 +11,10 @@ namespace VTX::Renderer::Scheduler
 	using RenderQueue = std::vector<Pass *>;
 
 	template<typename S>
-	concept Concept = requires( S p_scheduler, Passes & p_passes, const Links & p_links, RenderQueue & p_queue ) {
+	concept Concept = requires( S p_scheduler, Passes & p_passes, const Links & p_links ) {
 		{
-			p_scheduler.schedule( p_passes, p_links, p_queue )
-		} -> std::same_as<void>;
+			p_scheduler.schedule( p_passes, p_links )
+		} -> std::same_as<RenderQueue>;
 	};
 } // namespace VTX::Renderer::Scheduler
 

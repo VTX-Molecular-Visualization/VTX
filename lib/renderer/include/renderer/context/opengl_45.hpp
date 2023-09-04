@@ -48,12 +48,23 @@ namespace VTX::Renderer::Context
 			glTextureStorage2D( p_handle, 1, _mapFormat[ p_desc.format ], GLsizei( width ), GLsizei( height ) );
 		}
 
+		inline void destroy( const DescAttachment & p_desc, const Handle & p_handle )
+		{
+			glDeleteTextures( 1, &p_handle );
+		}
+
 		inline void create( const DescStorage & p_desc, Handle & p_handle ) {}
 
 		// Program.
 		inline void create( const DescProgram & p_desc, Handle & p_handle )
 		{
 			_programManager->createProgram( p_desc.name, p_desc.shaders, p_desc.toInject, p_desc.suffix );
+		}
+
+		inline void destroy( const DescProgram & p_desc, const Handle & p_handle )
+		{
+			/// TODO
+			//
 		}
 
 	  private:

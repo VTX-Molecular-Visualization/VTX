@@ -30,8 +30,8 @@ namespace VTX::Renderer
 			DescAttachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
 			// Geometric.
-			_renderGraph->addPass( "Geometric",
-								   { Pass::Inputs {},
+			_renderGraph->addPass( { "Geometric",
+									 Pass::Inputs {},
 									 Pass::Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
 													 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
 													 { E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
@@ -40,31 +40,33 @@ namespace VTX::Renderer
 
 			// Depth.
 			_renderGraph->addPass(
-				"Linearize depth",
-				{ Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
+
+				{ "Linearize depth",
+				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
 				  Pass::Programs { { "LinearizeDepth", { "default.vert", "linearize_depth.frag" } } } } );
 
 			// Shading.
 			_renderGraph->addPass(
-				"Shading",
-				{ Pass::Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
+
+				{ "Shading",
+				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
 								 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
 								 { E_CHANNEL::COLOR_2, { "Blur", DescAttachment { E_FORMAT::R16F } } } },
 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
 				  Pass::Programs { { "Shading", { "default.vert", "shading.frag" } } } } );
 
 			// FXAA.
-			_renderGraph->addPass( "FXAA",
-								   { Pass::Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
+			_renderGraph->addPass( { "FXAA",
+									 Pass::Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
 									 Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
 									 Pass::Programs {} } );
 
 			// Links.
-			_renderGraph->addLink( "Geometric", "Linearize depth", E_CHANNEL::DEPTH );
-			_renderGraph->addLink( "Geometric", "Shading" );
-			_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
-			_renderGraph->addLink( "Shading", "FXAA" );
+			//_renderGraph->addLink( "Geometric", "Linearize depth", E_CHANNEL::DEPTH );
+			//_renderGraph->addLink( "Geometric", "Shading" );
+			//_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
+			//_renderGraph->addLink( "Shading", "FXAA" );
 		}
 
 		void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

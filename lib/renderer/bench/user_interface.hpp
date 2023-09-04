@@ -144,6 +144,11 @@ namespace VTX::Bench
 			// Node editor.
 			_drawNodeEditor( p_newRenderer );
 
+			// Render queue.
+			_drawRenderQueue( p_newRenderer );
+
+			// ImGui::ShowDemoWindow();
+
 			// Render.
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
@@ -456,26 +461,26 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				// Passes.
+				// Pass nodes.
 				uint												 id = 0;
-				std::map<const Renderer::Pass::Input * const, uint>	 mapInputId;
-				std::map<const Renderer::Pass::Output * const, uint> mapOutputId;
-				std::map<const uint, Renderer::E_CHANNEL>			 mapIdChannel;
-				std::map<const uint, std::string>					 mapIdPassName;
+				std::map<const Renderer::Pass::Input * const, uint>	 mapIdInput;
+				std::map<const Renderer::Pass::Output * const, uint> mapIdOutput;
+				std::map<const uint, const Renderer::E_CHANNEL>		 mapIdChannel;
+				std::map<const uint, Renderer::Pass *>				 mapIdPass;
 
-				for ( auto & [ name, pass ] : p_newRenderer->getRenderGraph().getPasses() )
+				for ( Renderer::Pass & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
-					ImGui::TextUnformatted( name.c_str() );
+					ImGui::TextUnformatted( pass.name.c_str() );
 					ImNodes::EndNodeTitleBar();
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass.inputs )
 					{
-						mapInputId.emplace( &input, id );
+						mapIdInput.emplace( &input, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPassName.emplace( id, name );
+						mapIdPass.emplace( id, &pass );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
 						ImNodes::EndInputAttribute();
@@ -484,9 +489,9 @@ namespace VTX::Bench
 					// Outputs.
 					for ( const auto & [ channel, output ] : pass.outputs )
 					{
-						mapOutputId.emplace( &output, id );
+						mapIdOutput.emplace( &output, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPassName.emplace( id, name );
+						mapIdPass.emplace( id, &pass );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
 						ImNodes::EndOutputAttribute();
@@ -495,12 +500,33 @@ namespace VTX::Bench
 					ImNodes::EndNode();
 				}
 
+				// Final output node.
+				uint idFinalOuput = 0;
+				ImNodes::PushColorStyle( ImNodesCol_TitleBar, IM_COL32( 133, 78, 27, 255 ) );
+				ImNodes::BeginNode( id++ );
+				ImNodes::BeginNodeTitleBar();
+				ImGui::TextUnformatted( "Ouput" );
+				ImNodes::EndNodeTitleBar();
+				ImNodes::BeginInputAttribute( id );
+				ImGui::Text( "out" );
+				ImNodes::EndInputAttribute();
+				ImNodes::EndNode();
+				ImNodes::PopColorStyle();
+
+				idFinalOuput = id;
+
 				// Links.
-				for ( const auto & link : p_newRenderer->getRenderGraph().getLinks() )
+				for ( Renderer::Link & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
 					ImNodes::Link( id++,
-								   mapOutputId[ &( link.src->outputs[ link.channelSrc ] ) ],
-								   mapInputId[ &( link.dest->inputs[ link.channelDest ] ) ] );
+								   mapIdOutput[ &( link.src->outputs[ link.channelSrc ] ) ],
+								   mapIdInput[ &( link.dest->inputs[ link.channelDest ] ) ] );
+				}
+
+				// Output.
+				if ( p_newRenderer->getRenderGraph().getOutput() )
+				{
+					ImNodes::Link( id++, mapIdOutput[ p_newRenderer->getRenderGraph().getOutput() ], idFinalOuput );
 				}
 
 				ImNodes::MiniMap();
@@ -510,10 +536,43 @@ namespace VTX::Bench
 				int newLinkStartId, newLinkEndtId;
 				if ( ImNodes::IsLinkCreated( &newLinkStartId, &newLinkEndtId ) )
 				{
-					p_newRenderer->getRenderGraph().addLink( mapIdPassName[ newLinkStartId ],
-															 mapIdPassName[ newLinkEndtId ],
-															 mapIdChannel[ newLinkStartId ],
-															 mapIdChannel[ newLinkEndtId ] );
+					// Output.
+					if ( newLinkEndtId == idFinalOuput )
+					{
+						for ( auto & it : mapIdOutput )
+						{
+							if ( it.second == newLinkStartId )
+							{
+								p_newRenderer->getRenderGraph().setOutput( it.first );
+							}
+						}
+					}
+
+					// Link.
+					else
+					{
+						p_newRenderer->getRenderGraph().addLink( *mapIdPass[ newLinkStartId ],
+																 *mapIdPass[ newLinkEndtId ],
+																 mapIdChannel[ newLinkStartId ],
+																 mapIdChannel[ newLinkEndtId ] );
+					}
+				}
+			}
+			ImGui::End();
+		}
+
+		void _drawRenderQueue( Renderer::Renderer * const p_newRenderer ) const
+		{
+			if ( p_newRenderer->getRenderGraph().getRenderQueue().empty() )
+			{
+				return;
+			}
+
+			if ( ImGui::Begin( "Render queue" ) )
+			{
+				for ( const Renderer::Pass * const pass : p_newRenderer->getRenderGraph().getRenderQueue() )
+				{
+					ImGui::TextUnformatted( pass->name.c_str() );
 				}
 			}
 			ImGui::End();

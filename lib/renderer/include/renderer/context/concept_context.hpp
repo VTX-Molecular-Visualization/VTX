@@ -76,7 +76,7 @@ namespace VTX::Renderer::Context
 	};
 
 	// Base context.
-	//template<typename F>
+	// template<typename F>
 	struct BaseContext
 	{
 		size_t	 width;
@@ -112,6 +112,8 @@ namespace VTX::Renderer::Context
 
 	using DescIO = std::variant<DescAttachment, DescStorage>;
 
+	using Desc = std::variant<DescAttachment, DescStorage, DescProgram>;
+
 	template<typename C>
 	concept Concept = requires( C					   p_context,
 								const DescAttachment & p_descAttachment,
@@ -122,10 +124,16 @@ namespace VTX::Renderer::Context
 			p_context.create( p_descAttachment, p_handle )
 		} -> std::same_as<void>;
 		{
+			p_context.destroy( p_descAttachment, p_handle )
+		} -> std::same_as<void>;
+		{
 			p_context.create( p_descStorage, p_handle )
 		} -> std::same_as<void>;
 		{
 			p_context.create( p_descProgram, p_handle )
+		} -> std::same_as<void>;
+		{
+			p_context.destroy( p_descProgram, p_handle )
 		} -> std::same_as<void>;
 	};
 
