@@ -55,11 +55,13 @@ namespace VTX::Renderer
 			return true;
 		}
 
-		// 		template<class... Ts>
-		// 		struct overloaded : Ts...
-		// 		{
-		// 			using Ts::operator()...;
-		// 		};
+		void removeLink( const Link * const p_link )
+		{
+			_links.erase(
+				std::remove_if(
+					_links.begin(), _links.end(), [ &p_link ]( const Link & p_e ) { return &p_e == p_link; } ),
+				_links.end() );
+		}
 
 		bool setup( const size_t	 p_width,
 					const size_t	 p_height,
@@ -72,11 +74,11 @@ namespace VTX::Renderer
 			VTX_DEBUG( "{}", "Building render graph..." );
 
 			// Check ouptut.
-			if ( _output == nullptr )
-			{
-				VTX_ERROR( "{}", "No output defined" );
-				return false;
-			}
+			// 			if ( _output == nullptr )
+			// 			{
+			// 				VTX_ERROR( "{}", "No output defined" );
+			// 				return false;
+			// 			}
 
 			// Compute queue with scheduler.
 			try
@@ -170,6 +172,7 @@ namespace VTX::Renderer
 		}
 
 		//////////////////////////
+		// TODO: move to Util
 		template<class... Args>
 		struct variant_cast_proxy
 		{

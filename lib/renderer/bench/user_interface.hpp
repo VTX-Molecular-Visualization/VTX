@@ -467,6 +467,7 @@ namespace VTX::Bench
 				std::map<const Renderer::Pass::Output * const, uint> mapIdOutput;
 				std::map<const uint, const Renderer::E_CHANNEL>		 mapIdChannel;
 				std::map<const uint, Renderer::Pass *>				 mapIdPass;
+				std::map<const uint, Renderer::Link *>				 mapIdLink;
 
 				for ( Renderer::Pass & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{
@@ -481,9 +482,11 @@ namespace VTX::Bench
 						mapIdInput.emplace( &input, id );
 						mapIdChannel.emplace( id, channel );
 						mapIdPass.emplace( id, &pass );
+						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
 						ImNodes::EndInputAttribute();
+						ImNodes::PopAttributeFlag();
 					}
 
 					// Outputs.
@@ -501,31 +504,34 @@ namespace VTX::Bench
 				}
 
 				// Final output node.
-				uint idFinalOuput = 0;
 				ImNodes::PushColorStyle( ImNodesCol_TitleBar, IM_COL32( 133, 78, 27, 255 ) );
 				ImNodes::BeginNode( id++ );
 				ImNodes::BeginNodeTitleBar();
 				ImGui::TextUnformatted( "Ouput" );
 				ImNodes::EndNodeTitleBar();
-				ImNodes::BeginInputAttribute( id );
+				ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
+				uint idFinalOuput = id;
+				ImNodes::BeginInputAttribute( id++ );
 				ImGui::Text( "out" );
 				ImNodes::EndInputAttribute();
+				ImNodes::PopAttributeFlag();
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
-
-				idFinalOuput = id;
 
 				// Links.
 				for ( Renderer::Link & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
+					mapIdLink.emplace( id, &link );
 					ImNodes::Link( id++,
 								   mapIdOutput[ &( link.src->outputs[ link.channelSrc ] ) ],
 								   mapIdInput[ &( link.dest->inputs[ link.channelDest ] ) ] );
 				}
 
 				// Output.
+				uint idFinalLink = -1;
 				if ( p_newRenderer->getRenderGraph().getOutput() )
 				{
+					idFinalLink = id;
 					ImNodes::Link( id++, mapIdOutput[ p_newRenderer->getRenderGraph().getOutput() ], idFinalOuput );
 				}
 
@@ -555,6 +561,23 @@ namespace VTX::Bench
 																 *mapIdPass[ newLinkEndtId ],
 																 mapIdChannel[ newLinkStartId ],
 																 mapIdChannel[ newLinkEndtId ] );
+					}
+				}
+
+				// Check deleted links.
+				int deletedLinkId;
+				if ( ImNodes::IsLinkDestroyed( &deletedLinkId ) )
+				{
+					// Output.
+					if ( deletedLinkId == idFinalLink )
+					{
+						p_newRenderer->getRenderGraph().setOutput( nullptr );
+					}
+
+					// Link.
+					else
+					{
+						p_newRenderer->getRenderGraph().removeLink( mapIdLink[ deletedLinkId ] );
 					}
 				}
 			}
