@@ -63,8 +63,7 @@ namespace VTX::Renderer::Context
 
 		inline void destroy( const DescProgram & p_desc, const Handle & p_handle )
 		{
-			/// TODO
-			//
+			_programManager->deleteProgram( p_desc.name );
 		}
 
 	  private:

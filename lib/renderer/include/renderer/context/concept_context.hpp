@@ -110,9 +110,8 @@ namespace VTX::Renderer::Context
 		std::string			  suffix;
 	};
 
+	using Desc	 = std::variant<DescAttachment, DescStorage, DescProgram>;
 	using DescIO = std::variant<DescAttachment, DescStorage>;
-
-	using Desc = std::variant<DescAttachment, DescStorage, DescProgram>;
 
 	template<typename C>
 	concept Concept = requires( C					   p_context,

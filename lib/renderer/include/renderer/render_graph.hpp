@@ -15,6 +15,8 @@ namespace VTX::Renderer
 	class RenderGraph
 	{
 	  public:
+		~RenderGraph() { _clear(); }
+
 		inline Scheduler::RenderQueue & getRenderQueue() { return _renderQueue; }
 		inline const Pass::Output *		getOutput() { return _output; }
 		inline void						setOutput( const Pass::Output * const p_output ) { _output = p_output; }
@@ -88,15 +90,13 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Create resources.
-			// 			struct VisitorDescIO
-			// 			{
-			// 				void operator()( const DescAttachment & p_desc ) const { _context.create( p_desc ); }
-			// 				void operator()( const DescStorage p_desc ) const { _context.create( p_desc ); }
-			// 			};
-
 			// Create context.
-			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
+			if ( _context == nullptr )
+			{
+				_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
+			}
+
+			// Create resources.
 			try
 			{
 				VTX_DEBUG( "{}", "Creating resources..." );
@@ -133,7 +133,7 @@ namespace VTX::Renderer
 		const Pass::Output * _output;
 		Passes				 _passes;
 		Links				 _links;
-		Ressources			 _resources;
+		Resources			 _resources;
 		Instructions		 _instructions;
 
 		void _createResources( const Scheduler::RenderQueue & p_queue )
@@ -152,45 +152,65 @@ namespace VTX::Renderer
 					{
 						_context->create( std::get<DescAttachment>( desc ), id );
 					}
-					else if ( std::holds_alternative<DescStorage>( desc ) )
-					{
-						_context->create( std::get<DescStorage>( desc ), id );
-					}
 					else
 					{
 						throw std::runtime_error( "unknown descriptor type" );
 					}
-
-					//_resources.emplace( { id, desc } );
+					_resources.push_back( Resource { id, variant_cast( desc ) } );
 				}
 
 				// Programs.
-				for ( const auto & program : pass->programs )
+				for ( const DescProgram & desc : pass->programs )
 				{
 					Handle id;
-					_context->create( program, id );
+					_context->create( desc, id );
+					_resources.push_back( Resource { id, desc } );
 				}
 			}
 		}
 
+		//////////////////////////
+		template<class... Args>
+		struct variant_cast_proxy
+		{
+			std::variant<Args...> v;
+
+			template<class... ToArgs>
+			operator std::variant<ToArgs...>() const
+			{
+				return std::visit( []( auto && arg ) -> std::variant<ToArgs...> { return arg; }, v );
+			}
+		};
+
+		template<class... Args>
+		auto variant_cast( const std::variant<Args...> & v ) -> variant_cast_proxy<Args...>
+		{
+			return { v };
+		}
+		//////////////////////////
+
 		void _clear()
 		{
+			using namespace Context;
+
 			_renderQueue.clear();
-			// 			for ( const Resource & resource : _resources )
-			// 			{
-			// 				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
-			// 				{
-			// 					_context->destroy( std::get<DescAttachment>( resource.desc ), resource.id );
-			// 				}
-			// 				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
-			// 				{
-			// 					_context->destroy( std::get<DescProgram>( resource.desc ), resource.id );
-			// 				}
-			// 				else
-			// 				{
-			// 					throw std::runtime_error( "unknown descriptor type" );
-			// 				}
-			// 			}
+			for ( const Resource & resource : _resources )
+			{
+				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
+				{
+					_context->destroy( std::get<DescAttachment>( resource.desc ), resource.id );
+				}
+				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
+				{
+					_context->destroy( std::get<DescProgram>( resource.desc ), resource.id );
+				}
+				else
+				{
+					throw std::runtime_error( "unknown descriptor type" );
+				}
+			}
+
+			_resources.clear();
 		}
 	};
 

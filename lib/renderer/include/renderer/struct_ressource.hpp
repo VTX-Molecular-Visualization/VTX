@@ -32,7 +32,7 @@ namespace VTX::Renderer
 	// 	{
 	// 	};
 
-	using Ressources = std::vector<Resource>;
+	using Resources = std::vector<Resource>;
 } // namespace VTX::Renderer
 
 #endif
