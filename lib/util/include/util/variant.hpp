@@ -8,39 +8,64 @@
 
 namespace VTX
 {
-	class VTXVariant
+	namespace Util
 	{
-	  private:
-		using variant_t = std::variant<int, uint, float, std::string, Vec3f, Vec4f, void *>;
-
-	  public:
-		VTXVariant() : _variant() {}
-
-		template<typename T>
-		VTXVariant( const T & p_value ) : _variant( p_value )
+		namespace Variant
 		{
-		}
-		template<typename T>
-		VTXVariant( T * const p_ptr ) : _variant( static_cast<void * const>( p_ptr ) )
+			template<class... Args>
+			struct VariantCastProxy
+			{
+				std::variant<Args...> v;
+
+				template<class... ToArgs>
+				operator std::variant<ToArgs...>() const
+				{
+					return std::visit( []( auto && arg ) -> std::variant<ToArgs...> { return arg; }, v );
+				}
+			};
+
+			template<class... Args>
+			auto variantCast( const std::variant<Args...> & p_v ) -> VariantCastProxy<Args...>
+			{
+				return { p_v };
+			}
+		} // namespace Variant
+
+		class VTXVariant
 		{
-		}
+		  private:
+			using variant_t = std::variant<int, uint, float, std::string, Vec3f, Vec4f, void *>;
 
-		template<typename T>
-		T get() const
-		{
-			return std::get<T>( _variant );
-		}
+		  public:
+			VTXVariant() : _variant() {}
 
-		template<typename T>
-		T * getPtr() const
-		{
-			return static_cast<T *>( std::get<void *>( _variant ) );
-		}
+			template<typename T>
+			VTXVariant( const T & p_value ) : _variant( p_value )
+			{
+			}
+			template<typename T>
+			VTXVariant( T * const p_ptr ) : _variant( static_cast<void * const>( p_ptr ) )
+			{
+			}
 
-	  private:
-		variant_t _variant;
-	};
+			template<typename T>
+			T get() const
+			{
+				return std::get<T>( _variant );
+			}
 
-	using VariantMap = std::map<std::string, VTXVariant>;
+			template<typename T>
+			T * getPtr() const
+			{
+				return static_cast<T *>( std::get<void *>( _variant ) );
+			}
+
+		  private:
+			variant_t _variant;
+		};
+
+	} // namespace Util
+
+	using VariantMap = std::map<std::string, Util::VTXVariant>;
 } // namespace VTX
 #endif

@@ -7,6 +7,7 @@
 #include "struct_pass.hpp"
 #include "struct_ressource.hpp"
 #include <util/logger.hpp>
+#include <util/variant.hpp>
 
 namespace VTX::Renderer
 {
@@ -57,10 +58,7 @@ namespace VTX::Renderer
 
 		void removeLink( const Link * const p_link )
 		{
-			_links.erase(
-				std::remove_if(
-					_links.begin(), _links.end(), [ &p_link ]( const Link & p_e ) { return &p_e == p_link; } ),
-				_links.end() );
+			std::erase_if( _links, [ &p_link ]( const Link & p_e ) { return &p_e == p_link; } );
 		}
 
 		bool setup( const size_t	 p_width,
@@ -74,11 +72,11 @@ namespace VTX::Renderer
 			VTX_DEBUG( "{}", "Building render graph..." );
 
 			// Check ouptut.
-			// 			if ( _output == nullptr )
-			// 			{
-			// 				VTX_ERROR( "{}", "No output defined" );
-			// 				return false;
-			// 			}
+			if ( _output == nullptr )
+			{
+				VTX_ERROR( "{}", "No output defined" );
+				return false;
+			}
 
 			// Compute queue with scheduler.
 			try
@@ -112,7 +110,17 @@ namespace VTX::Renderer
 			}
 
 			// Generate instructions.
-			// TODO.
+			try
+			{
+				VTX_DEBUG( "{}", "Generating instructions..." );
+				// TODO.
+				VTX_DEBUG( "{}", "Generating instructions... done" );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				return false;
+			}
 
 			VTX_DEBUG( "{}", "Building render graph... done" );
 
@@ -158,7 +166,7 @@ namespace VTX::Renderer
 					{
 						throw std::runtime_error( "unknown descriptor type" );
 					}
-					_resources.push_back( Resource { id, variant_cast( desc ) } );
+					_resources.push_back( Resource { id, Util::Variant::variantCast( desc ) } );
 				}
 
 				// Programs.
@@ -170,27 +178,6 @@ namespace VTX::Renderer
 				}
 			}
 		}
-
-		//////////////////////////
-		// TODO: move to Util
-		template<class... Args>
-		struct variant_cast_proxy
-		{
-			std::variant<Args...> v;
-
-			template<class... ToArgs>
-			operator std::variant<ToArgs...>() const
-			{
-				return std::visit( []( auto && arg ) -> std::variant<ToArgs...> { return arg; }, v );
-			}
-		};
-
-		template<class... Args>
-		auto variant_cast( const std::variant<Args...> & v ) -> variant_cast_proxy<Args...>
-		{
-			return { v };
-		}
-		//////////////////////////
 
 		void _clear()
 		{
