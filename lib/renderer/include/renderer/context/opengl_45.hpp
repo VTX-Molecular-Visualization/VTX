@@ -2,7 +2,9 @@
 #define __VTX_RENDERER_CONTEXT_OPENGL_45__
 
 #include "concept_context.hpp"
-#include "renderer/gl/program_manager.hpp"
+#include "gl/buffer.hpp"
+#include "gl/program_manager.hpp"
+#include "gl/vertex_array.hpp"
 #include <glad/glad.h>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
@@ -20,6 +22,8 @@ namespace VTX::Renderer::Context
 				  void *		   p_proc = nullptr ) :
 			BaseContext { p_width, p_height, p_shaderPath }
 		{
+			VTX_DEBUG( "{}", "Create context opengl 4.5" );
+
 			if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 			{
 				throw GLException( "Failed to load OpenGL with process" );
@@ -35,6 +39,8 @@ namespace VTX::Renderer::Context
 
 			_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 		}
+
+		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
 
 		// I/O.
 		inline void create( const DescAttachment & p_desc, Handle & p_handle )
@@ -67,6 +73,7 @@ namespace VTX::Renderer::Context
 		}
 
 	  private:
+		// TODO: find a better solution (magic enum explodes compile time)
 		std::map<E_FORMAT, GLenum> _mapFormat = {
 			{ E_FORMAT::RGBA16F, GL_RGBA16F },
 			{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
@@ -94,7 +101,12 @@ namespace VTX::Renderer::Context
 			{ E_FILTERING::LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR },
 		};
 
+		// Program manager.
 		std::unique_ptr<GL::ProgramManager> _programManager;
+
+		// Quad VAO.
+		GL::VertexArray _vao;
+		GL::Buffer		_vbo;
 	};
 } // namespace VTX::Renderer::Context
 

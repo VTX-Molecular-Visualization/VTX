@@ -1,0 +1,44 @@
+#version 450 core
+#include "include/helper.glsl"
+
+#ifndef LOCAL_SIZE_X
+	#define LOCAL_SIZE_X 1
+#endif
+#ifndef LOCAL_SIZE_Y
+	#define LOCAL_SIZE_Y 1
+#endif
+#ifndef LOCAL_SIZE_Z
+	#define LOCAL_SIZE_Z 1
+#endif
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z = LOCAL_SIZE_Z) in;
+
+// Uniforms.
+uniform uint uSize;
+
+// SSBO.
+layout (std140, binding = 0) writeonly buffer Colors
+{
+	vec4[] colors;
+};
+
+layout (std430, binding = 1) readonly buffer Counters
+{
+	uint[] counters;
+};
+
+layout (std140, binding = 2) readonly buffer ColorsUint
+{
+	uvec4[] colorsUint;
+};
+
+void main()
+{
+	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
+
+	if( hash >= uSize )
+	{
+		return;
+	}
+
+	colors[ hash ] = colorsUint[ hash ] / counters[ hash ] / 255.f;
+}

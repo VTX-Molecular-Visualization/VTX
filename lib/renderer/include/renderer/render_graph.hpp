@@ -91,10 +91,7 @@ namespace VTX::Renderer
 			}
 
 			// Create context.
-			if ( _context == nullptr )
-			{
-				_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
-			}
+			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
 
 			// Create resources.
 			try
@@ -201,6 +198,7 @@ namespace VTX::Renderer
 			}
 
 			_resources.clear();
+			_context.reset( nullptr );
 		}
 	};
 
