@@ -104,10 +104,10 @@ namespace VTX::Renderer::Context
 
 	struct DescProgram
 	{
-		std::string			  name;
-		std::vector<FilePath> shaders;
-		std::string			  toInject;
-		std::string			  suffix;
+		std::string									  name;
+		std::variant<FilePath, std::vector<FilePath>> shaders;
+		std::string									  toInject;
+		std::string									  suffix;
 	};
 
 	using Desc	 = std::variant<DescAttachment, DescStorage, DescProgram>;

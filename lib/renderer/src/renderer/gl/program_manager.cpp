@@ -40,37 +40,38 @@ namespace VTX::Renderer::GL
 		_programs.clear();
 	}
 
-	Program * const ProgramManager::createProgram( const std::string & p_name,
-												   const FilePath &	   p_shaders,
-												   const std::string & p_toInject,
-												   const std::string & p_suffix )
+	Program * const ProgramManager::createProgram( const std::string &									 p_name,
+												   const std::variant<FilePath, std::vector<FilePath>> & p_shaders,
+												   const std::string &									 p_toInject,
+												   const std::string &									 p_suffix )
 	{
 		std::vector<FilePath> paths;
-		for ( const auto & file : std::filesystem::directory_iterator { _shaderPath / p_shaders } )
+		if ( std::holds_alternative<FilePath>( p_shaders ) )
 		{
-			// Filter only supported extensions.
-			if ( _EXTENSIONS.find( file.path().extension().string() ) != _EXTENSIONS.end() )
+			for ( const auto & file :
+				  std::filesystem::directory_iterator { _shaderPath / std::get<FilePath>( p_shaders ) } )
 			{
-				ProgramManager::getShaderType( file );
-				paths.emplace_back( file.path() );
+				// Filter only supported extensions.
+				if ( _EXTENSIONS.find( file.path().extension().string() ) != _EXTENSIONS.end() )
+				{
+					ProgramManager::getShaderType( file );
+					paths.emplace_back( file.path() );
+				}
 			}
 		}
-		return createProgram( p_name, paths, p_toInject, p_suffix );
-	}
+		else
+		{
+			paths = std::get<std::vector<FilePath>>( p_shaders );
+		}
 
-	Program * const ProgramManager::createProgram( const std::string &			 p_name,
-												   const std::vector<FilePath> & p_shaders,
-												   const std::string &			 p_toInject,
-												   const std::string &			 p_suffix )
-	{
 		const std::string name = p_name + p_suffix;
 		if ( _programs.find( name ) == _programs.end() )
 		{
-			_programs[ name ] = std::make_unique<Program>( p_shaders, p_toInject );
+			_programs[ name ] = std::make_unique<Program>( paths, p_toInject );
 			Program & program = *_programs[ name ];
 			program.create( name );
 
-			for ( const FilePath & shader : p_shaders )
+			for ( const FilePath & shader : paths )
 			{
 				GLuint id = _createShader( shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )

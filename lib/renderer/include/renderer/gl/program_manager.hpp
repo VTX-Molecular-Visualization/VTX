@@ -5,6 +5,7 @@
 #include "enum_shader_type.hpp"
 #include "program.hpp"
 #include <map>
+#include <variant>
 #include <vector>
 
 namespace VTX
@@ -21,13 +22,10 @@ namespace VTX
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
 
 			Program * const createProgram( const std::string & p_name,
-										   const FilePath &	   p_shaders,
+										   const std::variant<FilePath, std::vector<FilePath>> &,
 										   const std::string & p_toInject = "",
 										   const std::string & p_suffix	  = "" );
-			Program * const createProgram( const std::string &			 p_name,
-										   const std::vector<FilePath> & p_shaders,
-										   const std::string &			 p_toInject = "",
-										   const std::string &			 p_suffix	= "" );
+
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & p_name );
 			void			compileShaders();

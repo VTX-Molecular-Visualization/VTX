@@ -36,15 +36,15 @@ namespace VTX::Renderer
 													 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
 													 { E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
 													 { E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
-									 Pass::Programs { /*{ "Sphere", {"sphere"} }, {"Cylinder", {"cylinder"}} */ } } );
+									 Pass::Programs { { "Sphere", "sphere" }, { "Cylinder", "cylinder" } } } );
 
 			// Depth.
-			_renderGraph->addPass(
-
-				{ "Linearize depth",
-				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
-				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
-				  Pass::Programs { { "LinearizeDepth", { "default.vert", "linearize_depth.frag" } } } } );
+			// 			_renderGraph->addPass(
+			//
+			// 				{ "Linearize depth",
+			// 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
+			// 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
+			// 				  Pass::Programs { { "LinearizeDepth", { "default.vert", "linearize_depth.frag" } } } } );
 
 			// Shading.
 			_renderGraph->addPass(
@@ -54,7 +54,7 @@ namespace VTX::Renderer
 								 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
 								 { E_CHANNEL::COLOR_2, { "Blur", DescAttachment { E_FORMAT::R16F } } } },
 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
-				  Pass::Programs { { "Shading", { "default.vert", "shading.frag" } } } } );
+				  Pass::Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } } } } );
 
 			// FXAA.
 			_renderGraph->addPass( { "FXAA",
