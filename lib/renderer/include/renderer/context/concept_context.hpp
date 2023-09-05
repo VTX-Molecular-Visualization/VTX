@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_CONCEPT__
 
 #include <concepts>
+#include <functional>
 #include <util/types.hpp>
 #include <variant>
 
@@ -110,18 +111,30 @@ namespace VTX::Renderer::Context
 		std::string									  suffix;
 	};
 
-	using Desc	 = std::variant<DescAttachment, DescStorage, DescProgram>;
-	using DescIO = std::variant<DescAttachment, DescStorage>;
+	using Desc		   = std::variant<DescAttachment, DescStorage, DescProgram>;
+	using DescIO	   = std::variant<DescAttachment, DescStorage>;
+	using Instruction  = std::function<void()>;
+	using Instructions = std::vector<Instruction>;
 
 	template<typename C>
 	concept Concept = requires( C					   p_context,
 								const DescAttachment & p_descAttachment,
 								const DescStorage &	   p_descStorage,
 								const DescProgram &	   p_descProgram,
-								Handle &			   p_handle ) {
+								const size_t		   p_width,
+								const size_t		   p_height,
+								Handle &			   p_handle,
+								Instructions &		   p_outInstructions ) {
+		{
+			p_context.build( p_outInstructions )
+		} -> std::same_as<void>;
+		{
+			p_context.resize( p_width, p_height )
+		} -> std::same_as<void>;
 		{
 			p_context.create( p_descAttachment, p_handle )
 		} -> std::same_as<void>;
+
 		{
 			p_context.destroy( p_descAttachment, p_handle )
 		} -> std::same_as<void>;

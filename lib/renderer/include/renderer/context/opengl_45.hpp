@@ -24,6 +24,7 @@ namespace VTX::Renderer::Context
 		{
 			VTX_DEBUG( "{}", "Create context opengl 4.5" );
 
+			// Load opengl 4.5.
 			if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 			{
 				throw GLException( "Failed to load OpenGL with process" );
@@ -37,10 +38,36 @@ namespace VTX::Renderer::Context
 				throw GLException( "OpenGL 4.5 or higher is required" );
 			}
 
+			// Program manager.
 			_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
+
+			// Init quad vao/vbo for deferred shading.
+			std::vector<Vec2f> quad
+				= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
+
+			_vbo = std::make_unique<GL::Buffer>();
+			_vao = std::make_unique<GL::VertexArray>();
+
+			_vao->bind();
+			_vao->enableAttribute( 0 );
+			_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
+			_vao->setAttributeFormat<float>( 0, 2 );
+			_vao->setAttributeBinding( 0, 0 );
+			_vbo->set( quad );
+			_vao->unbind();
+
+			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 		}
 
 		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
+
+		void build( Instructions & p_outInstructions )
+		{
+			p_outInstructions.clear();
+			p_outInstructions.push_back( []() { glClear( GL_COLOR_BUFFER_BIT ); } );
+		}
+
+		void resize( const size_t p_width, const size_t p_height ) {}
 
 		// I/O.
 		inline void create( const DescAttachment & p_desc, Handle & p_handle )
@@ -105,8 +132,8 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager> _programManager;
 
 		// Quad VAO.
-		GL::VertexArray _vao;
-		GL::Buffer		_vbo;
+		std::unique_ptr<GL::VertexArray> _vao;
+		std::unique_ptr<GL::Buffer>		 _vbo;
 	};
 } // namespace VTX::Renderer::Context
 

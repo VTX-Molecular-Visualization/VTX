@@ -82,7 +82,7 @@ namespace VTX::Renderer
 			try
 			{
 				S scheduler;
-				_renderQueue = scheduler.schedule( _passes, _links );
+				scheduler.schedule( _passes, _links, _renderQueue );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -110,7 +110,7 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				// TODO.
+				_context->build( _instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -126,22 +126,29 @@ namespace VTX::Renderer
 
 		void resize( const size_t p_width, const size_t p_height ) {}
 
+		void render()
+		{
+			// TODO: Move to renderer?
+			// Execute instructions.
+			for ( Context::Instruction & instruction : _instructions )
+			{
+				instruction();
+			}
+		}
+
 		// Debug purposes only.
 		inline Passes & getPasses() { return _passes; }
 		inline Links &	getLinks() { return _links; }
 
 	  private:
-		using Instruction  = std::function<void()>;
-		using Instructions = std::vector<Instruction>;
-
 		Scheduler::RenderQueue _renderQueue;
 		std::unique_ptr<C>	   _context;
 
-		const Pass::Output * _output;
-		Passes				 _passes;
-		Links				 _links;
-		Resources			 _resources;
-		Instructions		 _instructions;
+		const Pass::Output *  _output;
+		Passes				  _passes;
+		Links				  _links;
+		Resources			  _resources;
+		Context::Instructions _instructions;
 
 		void _createResources( const Scheduler::RenderQueue & p_queue )
 		{
@@ -180,7 +187,6 @@ namespace VTX::Renderer
 		{
 			using namespace Context;
 
-			_renderQueue.clear();
 			for ( const Resource & resource : _resources )
 			{
 				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
@@ -198,6 +204,8 @@ namespace VTX::Renderer
 			}
 
 			_resources.clear();
+			_renderQueue.clear();
+			_instructions.clear();
 			_context.reset( nullptr );
 		}
 	};

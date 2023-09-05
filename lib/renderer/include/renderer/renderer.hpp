@@ -69,9 +69,11 @@ namespace VTX::Renderer
 			//_renderGraph->addLink( "Shading", "FXAA" );
 		}
 
-		void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
+		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
 
-		void build() { _renderGraph->setup( _width, _height, _shaderPath, _proc ); }
+		inline void build() { _renderGraph->setup( _width, _height, _shaderPath, _proc ); }
+
+		inline void render() { _renderGraph->render(); }
 
 		// Debug purposes only.
 		inline RenderGraphOpenGL45 & getRenderGraph() { return *_renderGraph; }

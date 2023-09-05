@@ -160,6 +160,8 @@ int main( int, char ** )
 			// Renderer.
 			// renderer.renderFrame( ui.getTime() );
 
+			newRenderer.render();
+
 			// UI.
 			ui.draw( /*&renderer,*/ &camera, &newRenderer );
 
