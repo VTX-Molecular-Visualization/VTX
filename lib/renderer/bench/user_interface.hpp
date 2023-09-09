@@ -105,9 +105,9 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( // Renderer::GL::OpenGLRenderer * const p_renderer,
-			Camera * const			   p_camera,
-			Renderer::Renderer * const p_newRenderer )
+		void draw( Renderer::GL::OpenGLRenderer * const p_renderer,
+				   Camera * const						p_camera,
+				   Renderer::Renderer * const			p_newRenderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -133,13 +133,13 @@ namespace VTX::Bench
 			_drawCamera( p_camera );
 
 			// Passes.
-			//_drawPasses( p_renderer );
+			_drawPasses( p_renderer );
 
 			// Times.
-			//_drawTimes( p_renderer );
+			_drawTimes( p_renderer );
 
 			// Misc.
-			//_drawMisc( p_renderer );
+			_drawMisc( p_renderer );
 
 			// Node editor.
 			_drawNodeEditor( p_newRenderer );

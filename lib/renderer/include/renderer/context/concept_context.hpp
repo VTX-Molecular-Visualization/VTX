@@ -29,8 +29,6 @@ namespace VTX::Renderer::Context
 		// ...?
 	};
 
-	using Handle = uint;
-
 	enum struct E_TYPE
 	{
 		UINT,
@@ -111,6 +109,7 @@ namespace VTX::Renderer::Context
 		std::string									  suffix;
 	};
 
+	using Handle	   = uint;
 	using Desc		   = std::variant<DescAttachment, DescStorage, DescProgram>;
 	using DescIO	   = std::variant<DescAttachment, DescStorage>;
 	using Instruction  = std::function<void()>;
@@ -134,7 +133,6 @@ namespace VTX::Renderer::Context
 		{
 			p_context.create( p_descAttachment, p_handle )
 		} -> std::same_as<void>;
-
 		{
 			p_context.destroy( p_descAttachment, p_handle )
 		} -> std::same_as<void>;
