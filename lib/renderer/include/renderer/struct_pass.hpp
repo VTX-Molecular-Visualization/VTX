@@ -35,7 +35,8 @@ namespace VTX::Renderer
 
 		struct Output : public Input
 		{
-			Resource * resource;
+			// TOREDO.
+			// Resource * resource;
 		};
 
 		using Inputs   = std::unordered_map<E_CHANNEL, Input>;
@@ -54,7 +55,7 @@ namespace VTX::Renderer
 		using CallbackRender = std::function<void>();
 	};
 
-	using Passes = std::vector<Pass>;
+	using Passes = std::vector<std::unique_ptr<Pass>>;
 } // namespace VTX::Renderer
 
 #endif

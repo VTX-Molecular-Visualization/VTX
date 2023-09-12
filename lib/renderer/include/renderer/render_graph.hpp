@@ -16,31 +16,38 @@ namespace VTX::Renderer
 	class RenderGraph
 	{
 	  public:
+		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
 		inline Scheduler::RenderQueue & getRenderQueue() { return _renderQueue; }
 		inline const Pass::Output *		getOutput() { return _output; }
 		inline void						setOutput( const Pass::Output * const p_output ) { _output = p_output; }
 
-		inline void addPass( const Pass & p_pass ) { _passes.push_back( p_pass ); }
+		inline Pass * const addPass( const Pass & p_pass )
+		{
+			_passes.emplace_back( std::make_unique<Pass>( p_pass ) );
+			return _passes.back().get();
+		}
 
-		bool addLink( Pass &			p_passSrc,
-					  Pass &			p_passDest,
+		bool addLink( Pass *			p_passSrc,
+					  Pass *			p_passDest,
 					  const E_CHANNEL & p_channelSrc  = E_CHANNEL::COLOR_0,
 					  const E_CHANNEL & p_channelDest = E_CHANNEL::COLOR_0 )
 		{
 			// Check I/O existence.
-			assert( p_passSrc.outputs.contains( p_channelSrc ) );
-			assert( p_passDest.inputs.contains( p_channelDest ) );
+			assert( p_passSrc->outputs.contains( p_channelSrc ) );
+			assert( p_passDest->inputs.contains( p_channelDest ) );
 
 			// Check input is free.
 			if ( std::find_if( _links.begin(),
 							   _links.end(),
-							   [ &p_passDest, &p_channelDest ]( const Link & p_element )
-							   { return p_element.dest == &p_passDest && p_element.channelDest == p_channelDest; } )
+							   [ &p_passDest, &p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
+								   return p_element.get()->dest == p_passDest
+										  && p_element.get()->channelDest == p_channelDest;
+							   } )
 				 != _links.end() )
 			{
-				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest.name );
+				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
 				return false;
 			}
 
@@ -51,14 +58,15 @@ namespace VTX::Renderer
 			// 			}
 
 			// Create link.
-			_links.push_back( { &p_passSrc, &p_passDest, p_channelSrc, p_channelDest } );
+			_links.emplace_back(
+				std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
 
 			return true;
 		}
 
 		void removeLink( const Link * const p_link )
 		{
-			std::erase_if( _links, [ &p_link ]( const Link & p_e ) { return &p_e == p_link; } );
+			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
 		bool setup( const size_t	 p_width,

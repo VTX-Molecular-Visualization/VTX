@@ -12,7 +12,7 @@ namespace VTX::Renderer
 		E_CHANNEL channelSrc  = E_CHANNEL::COLOR_0;
 		E_CHANNEL channelDest = E_CHANNEL::COLOR_0;
 	};
-	using Links = std::vector<Link>;
+	using Links = std::vector<std::unique_ptr<Link>>;
 } // namespace VTX::Renderer
 
 #endif

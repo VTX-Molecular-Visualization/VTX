@@ -449,6 +449,8 @@ namespace VTX::Bench
 
 		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
 		{
+			using namespace Renderer;
+
 			static bool isOpen = true;
 			if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
 			{
@@ -462,26 +464,26 @@ namespace VTX::Bench
 				ImNodes::BeginNodeEditor();
 
 				// Pass nodes.
-				uint												 id = 0;
-				std::map<const Renderer::Pass::Input * const, uint>	 mapIdInput;
-				std::map<const Renderer::Pass::Output * const, uint> mapIdOutput;
-				std::map<const uint, const Renderer::E_CHANNEL>		 mapIdChannel;
-				std::map<const uint, Renderer::Pass *>				 mapIdPass;
-				std::map<const uint, Renderer::Link *>				 mapIdLink;
+				uint									   id = 0;
+				std::map<const Pass::Input * const, uint>  mapIdInput;
+				std::map<const Pass::Output * const, uint> mapIdOutput;
+				std::map<const uint, const E_CHANNEL>	   mapIdChannel;
+				std::map<const uint, Pass *>			   mapIdPass;
+				std::map<const uint, Link *>			   mapIdLink;
 
-				for ( Renderer::Pass & pass : p_newRenderer->getRenderGraph().getPasses() )
+				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
-					ImGui::TextUnformatted( pass.name.c_str() );
+					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
 
 					// Inputs.
-					for ( const auto & [ channel, input ] : pass.inputs )
+					for ( const auto & [ channel, input ] : pass->inputs )
 					{
 						mapIdInput.emplace( &input, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPass.emplace( id, &pass );
+						mapIdPass.emplace( id, pass.get() );
 						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
@@ -490,11 +492,11 @@ namespace VTX::Bench
 					}
 
 					// Outputs.
-					for ( const auto & [ channel, output ] : pass.outputs )
+					for ( const auto & [ channel, output ] : pass->outputs )
 					{
 						mapIdOutput.emplace( &output, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPass.emplace( id, &pass );
+						mapIdPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
 						ImNodes::EndOutputAttribute();
@@ -519,12 +521,12 @@ namespace VTX::Bench
 				ImNodes::PopColorStyle();
 
 				// Links.
-				for ( Renderer::Link & link : p_newRenderer->getRenderGraph().getLinks() )
+				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
-					mapIdLink.emplace( id, &link );
+					mapIdLink.emplace( id, link.get() );
 					ImNodes::Link( id++,
-								   mapIdOutput[ &( link.src->outputs[ link.channelSrc ] ) ],
-								   mapIdInput[ &( link.dest->inputs[ link.channelDest ] ) ] );
+								   mapIdOutput[ &( link->src->outputs[ link->channelSrc ] ) ],
+								   mapIdInput[ &( link->dest->inputs[ link->channelDest ] ) ] );
 				}
 
 				// Output.
@@ -557,8 +559,8 @@ namespace VTX::Bench
 					// Link.
 					else
 					{
-						p_newRenderer->getRenderGraph().addLink( *mapIdPass[ newLinkStartId ],
-																 *mapIdPass[ newLinkEndtId ],
+						p_newRenderer->getRenderGraph().addLink( mapIdPass[ newLinkStartId ],
+																 mapIdPass[ newLinkEndtId ],
 																 mapIdChannel[ newLinkStartId ],
 																 mapIdChannel[ newLinkEndtId ] );
 					}

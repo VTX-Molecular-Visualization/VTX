@@ -30,24 +30,25 @@ namespace VTX::Renderer
 			DescAttachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
 			// Geometric.
-			_renderGraph->addPass( { "Geometric",
-									 Pass::Inputs {},
-									 Pass::Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
-													 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
-													 { E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
-													 { E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
-									 Pass::Programs { { "Sphere", "sphere" }, { "Cylinder", "cylinder" } } } );
+			Pass * const geo
+				= _renderGraph->addPass( { "Geometric",
+										   Pass::Inputs {},
+										   Pass::Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
+														   { E_CHANNEL::COLOR_1, { "Color", imageColor } },
+														   { E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
+														   { E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
+										   Pass::Programs { { "Sphere", "sphere" }, { "Cylinder", "cylinder" } } } );
 
 			// Depth.
-			// 			_renderGraph->addPass(
-			//
-			// 				{ "Linearize depth",
-			// 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
-			// 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
-			// 				  Pass::Programs { { "LinearizeDepth", { "default.vert", "linearize_depth.frag" } } } } );
+			Pass * const depth = _renderGraph->addPass(
+				{ "Linearize depth",
+				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
+				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
+				  Pass::Programs {
+					  { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } } );
 
 			// Shading.
-			_renderGraph->addPass(
+			Pass * const shading = _renderGraph->addPass(
 
 				{ "Shading",
 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
@@ -57,16 +58,16 @@ namespace VTX::Renderer
 				  Pass::Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } } } } );
 
 			// FXAA.
-			_renderGraph->addPass( { "FXAA",
-									 Pass::Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
-									 Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
-									 Pass::Programs {} } );
+			Pass * const fxaa
+				= _renderGraph->addPass( { "FXAA",
+										   Pass::Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
+										   Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
+										   Pass::Programs {} } );
 
 			// Links.
-			//_renderGraph->addLink( "Geometric", "Linearize depth", E_CHANNEL::DEPTH );
-			//_renderGraph->addLink( "Geometric", "Shading" );
-			//_renderGraph->addLink( "Geometric", "Shading", E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
-			//_renderGraph->addLink( "Shading", "FXAA" );
+			//_renderGraph->addLink( *geo, *depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
+			//_renderGraph->addLink( geo, shading );
+			//_renderGraph->addLink( shading, fxaa );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

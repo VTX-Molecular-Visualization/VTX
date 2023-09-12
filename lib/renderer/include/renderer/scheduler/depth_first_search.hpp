@@ -15,15 +15,16 @@ namespace VTX::Renderer::Scheduler
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );
 			size_t							 i = 0;
-			for ( Pass & pass : p_passes )
+			for ( auto & pass : p_passes )
 			{
-				passes[ i++ ] = &pass;
+				passes[ i++ ] = pass.get();
 			}
 
-			for ( const Link & link : p_links )
+			for ( auto & link : p_links )
 			{
-				adjacentList[ std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.src ) ) ]
-					.push_back( std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link.dest ) ) );
+				adjacentList[ std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link->src ) ) ]
+					.push_back(
+						std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link->dest ) ) );
 			}
 
 			// Topological sort.
