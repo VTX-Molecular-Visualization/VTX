@@ -224,22 +224,15 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
-		Core::ECS::View view
+		Core::ECS::View updatables
 			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
-		for ( const Core::ECS::BaseEntity entity : view )
+		for ( const Core::ECS::BaseEntity entity : updatables )
 		{
 			const Component::Scene::Updatable & updatableComponent
-				= view.getComponent<const Component::Scene::Updatable>( entity );
+				= updatables.getComponent<const Component::Scene::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );
 		}
-
-		// Dynamic.
-		// for ( PairMoleculePtrFloat & pair : _molecules )
-		//{
-		//	MoleculePtr const molecule = pair.first;
-		//	molecule->updateTrajectory( p_deltaTime );
-		//}
 
 		// for ( const PairMoleculePtrFloat & pair : _molecules )
 		//{

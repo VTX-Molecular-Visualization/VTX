@@ -66,6 +66,19 @@ namespace VTX::App::Core::ECS
 			return _enttRegistry.get<const C>( p_entity );
 		}
 
+		template<ECS_Component C, ECS_Component CFrom>
+		C & getComponent( const CFrom & p_component )
+		{
+			BaseEntity entity = getEntity( p_component );
+			return _enttRegistry.get<C>( entity );
+		}
+		template<ECS_Component C, ECS_Component CFrom>
+		const C & getComponent( const CFrom & p_component ) const
+		{
+			BaseEntity entity = getEntity( p_component );
+			return _enttRegistry.get<C>( entity );
+		}
+
 		template<typename Type, typename... Other>
 		View<Type, Other...> getComponents() const
 		{

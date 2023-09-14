@@ -58,6 +58,7 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getName() { return _moleculeStruct.name; }
 		void				setName( const std::string & p_name ) { _moleculeStruct.name = p_name; }
 
+		bool							hasTrajectory() { return _moleculeStruct.trajectory.frames.size() >= 2; }
 		VTX::Core::Struct::Trajectory & getTrajectory() { return _moleculeStruct.trajectory; }
 
 		const Util::Math::Transform & getTransform() const { return _transform; }

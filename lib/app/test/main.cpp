@@ -3,6 +3,8 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/trajectory.hpp>
+#include <app/core/trajectory_player/loop.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
 #include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
@@ -21,6 +23,9 @@
 // std::string MOLECULE_TEST_NAME = "1AGA";
 static const std::string MOLECULE_TEST_NAME		= "8OIT";
 static const std::string MOLECULE_TEST_NAME_EXT = MOLECULE_TEST_NAME + ".mmtf";
+
+static const std::string MOLECULE_TRAJECTORY_TEST_NAME	   = "1NIM";
+static const std::string MOLECULE_TRAJECTORY_TEST_NAME_EXT = MOLECULE_TRAJECTORY_TEST_NAME + ".mmtf";
 // std::string MOLECULE_TEST_NAME = "7Y7A";
 
 void initApp()
@@ -49,6 +54,46 @@ void loadTestMolecule()
 	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 }
+
+void loadTestTrajectoryMolecule()
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	Application::Scene & scene = VTXApp::get().getScene();
+
+	// Create MoleculeEntity
+	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / MOLECULE_TRAJECTORY_TEST_NAME_EXT;
+	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
+	openAction.execute();
+}
+
+TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	initApp();
+	loadTestTrajectoryMolecule();
+
+	Application::Scene &	   scene	 = VTXApp::get().getScene();
+	App::Core::ECS::BaseEntity molEntity = scene.getItem( MOLECULE_TRAJECTORY_TEST_NAME );
+
+	std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> loopPlayer
+		= std::make_unique<App::Core::TrajectoryPlayer::Loop>();
+
+	App::Component::Chemistry::Trajectory & trajectoryComponent
+		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
+
+	trajectoryComponent.setPlayer( loopPlayer );
+	trajectoryComponent.getPlayer().setFPS( 1 );
+
+	REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
+
+	scene.update( 1.f );
+
+	REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
+};
 
 TEST_CASE( "VTX_APP - Views", "[integration]" )
 {
@@ -131,10 +176,10 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );
 
-	App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	const App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
-	Renderer::GL::StructProxyMolecule & gpuProxyComponent
+	const Renderer::GL::StructProxyMolecule & gpuProxyComponent
 		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );

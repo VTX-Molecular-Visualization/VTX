@@ -32,12 +32,12 @@ namespace VTX::App::Core::ECS
 
 		const view_type & getView() const { return _view; };
 
-		size_t size()
+		size_t size() const
 		{
 			// Template disambiguator necessary in this case because calling a template function
 			return _view.template storage<0>().size();
 		}
-		size_t size_hint() { return _view.size_hint(); }
+		size_t size_hint() const { return _view.size_hint(); }
 
 		template<typename T>
 		const T & getComponent( const BaseEntity & p_entity ) const

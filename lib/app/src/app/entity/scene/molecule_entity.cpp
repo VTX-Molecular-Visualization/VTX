@@ -2,6 +2,7 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/entity/scene/scene_item_entity.hpp"
@@ -40,6 +41,11 @@ namespace VTX::App::Entity::Scene
 			= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
+
+		if ( moleculeComponent.hasTrajectory() )
+		{
+			MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
+		}
 	}
 	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
 	{
