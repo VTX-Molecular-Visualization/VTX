@@ -118,7 +118,7 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _instructions );
+				_instructions.emplace_back( [ & ]() { _context->clear(); } );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -138,7 +138,7 @@ namespace VTX::Renderer
 		{
 			// TODO: Move to renderer?
 			// Execute instructions.
-			for ( Context::Instruction & instruction : _instructions )
+			for ( Instruction & instruction : _instructions )
 			{
 				instruction();
 			}
@@ -149,14 +149,17 @@ namespace VTX::Renderer
 		inline Links &	getLinks() { return _links; }
 
 	  private:
+		using Instruction  = std::function<void()>;
+		using Instructions = std::vector<Instruction>;
+
 		Scheduler::RenderQueue _renderQueue;
 		std::unique_ptr<C>	   _context;
 
-		const Pass::Output *  _output;
-		Passes				  _passes;
-		Links				  _links;
-		Resources			  _resources;
-		Context::Instructions _instructions;
+		const Pass::Output * _output;
+		Passes				 _passes;
+		Links				 _links;
+		Resources			 _resources;
+		Instructions		 _instructions;
 
 		void _createResources( const Scheduler::RenderQueue & p_queue )
 		{

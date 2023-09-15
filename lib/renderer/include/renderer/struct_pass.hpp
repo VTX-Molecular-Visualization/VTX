@@ -35,8 +35,6 @@ namespace VTX::Renderer
 
 		struct Output : public Input
 		{
-			// TOREDO.
-			// Resource * resource;
 		};
 
 		using Inputs   = std::unordered_map<E_CHANNEL, Input>;

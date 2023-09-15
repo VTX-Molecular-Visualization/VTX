@@ -56,16 +56,13 @@ namespace VTX::Renderer::Context
 			_vbo->set( quad );
 			_vao->unbind();
 
+			glClearColor( 1.f, 0.f, 0.f, 1.f );
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 		}
 
 		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
 
-		void build( Instructions & p_outInstructions )
-		{
-			p_outInstructions.clear();
-			p_outInstructions.push_back( []() { glClear( GL_COLOR_BUFFER_BIT ); } );
-		}
+		inline void clear() { glClear( GL_COLOR_BUFFER_BIT ); }
 
 		void resize( const size_t p_width, const size_t p_height ) {}
 

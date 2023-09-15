@@ -109,11 +109,9 @@ namespace VTX::Renderer::Context
 		std::string									  suffix;
 	};
 
-	using Handle	   = uint;
-	using Desc		   = std::variant<DescAttachment, DescStorage, DescProgram>;
-	using DescIO	   = std::variant<DescAttachment, DescStorage>;
-	using Instruction  = std::function<void()>;
-	using Instructions = std::vector<Instruction>;
+	using Handle = uint;
+	using Desc	 = std::variant<DescAttachment, DescStorage, DescProgram>;
+	using DescIO = std::variant<DescAttachment, DescStorage>;
 
 	template<typename C>
 	concept Concept = requires( C					   p_context,
@@ -122,10 +120,9 @@ namespace VTX::Renderer::Context
 								const DescProgram &	   p_descProgram,
 								const size_t		   p_width,
 								const size_t		   p_height,
-								Handle &			   p_handle,
-								Instructions &		   p_outInstructions ) {
+								Handle &			   p_handle ) {
 		{
-			p_context.build( p_outInstructions )
+			p_context.clear()
 		} -> std::same_as<void>;
 		{
 			p_context.resize( p_width, p_height )
