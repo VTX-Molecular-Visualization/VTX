@@ -11,7 +11,7 @@
 namespace VTX::App::Core
 {
 	template<typename T>
-	concept DisplayableName = requires( T p_t, std::string p_name ) { p_name = p_t.getName(); };
+	concept DisplayableName = requires( T & p_t, std::string p_name ) { p_name = p_t.getName(); };
 
 	template<typename T>
 	concept Collectionable = DisplayableName<T>;
