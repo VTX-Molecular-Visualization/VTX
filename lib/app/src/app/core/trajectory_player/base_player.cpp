@@ -5,12 +5,21 @@ namespace VTX::App::Core::TrajectoryPlayer
 {
 	void BasePlayer::setTrajectory( VTX::Core::Struct::Trajectory & p_trajectory ) { _trajectoryPtr = &p_trajectory; }
 
-	size_t BasePlayer::getCurrentFrameIndex() const { return _trajectoryPtr->currentFrameIndex; }
-	void   BasePlayer::setCurrentFrameIndex( const size_t p_frameIndex )
+	size_t BasePlayer::getCurrentFrameIndex() const
 	{
+		assert( isLinkedToTrajectory() );
+		return _trajectoryPtr->currentFrameIndex;
+	}
+	void BasePlayer::setCurrentFrameIndex( const size_t p_frameIndex )
+	{
+		assert( isLinkedToTrajectory() );
 		_trajectoryPtr->currentFrameIndex = p_frameIndex;
 	}
-	size_t BasePlayer::getFrameCount() const { return _trajectoryPtr->frames.size(); }
+	size_t BasePlayer::getFrameCount() const
+	{
+		assert( isLinkedToTrajectory() );
+		return _trajectoryPtr->frames.size();
+	}
 
 	void BasePlayer::play() { _isPlaying = true; }
 	void BasePlayer::pause() { _isPlaying = false; }

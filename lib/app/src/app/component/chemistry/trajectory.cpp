@@ -17,8 +17,13 @@ namespace VTX::App::Component::Chemistry
 
 	void Trajectory::setPlayer( std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> & p_player )
 	{
+		const bool resetPlayer = _player == nullptr;
+
 		_player = std::move( p_player );
 		_player->setTrajectory( _moleculePtr->getTrajectory() );
+
+		if ( resetPlayer )
+			_player->reset();
 	}
 
 	void Trajectory::_update( const float p_deltaTime )
