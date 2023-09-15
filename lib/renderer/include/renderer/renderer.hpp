@@ -65,9 +65,11 @@ namespace VTX::Renderer
 										   Pass::Programs {} } );
 
 			// Links.
-			//_renderGraph->addLink( *geo, *depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
-			//_renderGraph->addLink( geo, shading );
-			//_renderGraph->addLink( shading, fxaa );
+			_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
+			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );
+			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
+			_renderGraph->addLink( shading, fxaa, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL::COLOR_0 ] );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

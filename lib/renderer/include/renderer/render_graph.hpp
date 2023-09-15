@@ -29,8 +29,8 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
-		bool addLink( Pass *			p_passSrc,
-					  Pass *			p_passDest,
+		bool addLink( Pass * const		p_passSrc,
+					  Pass * const		p_passDest,
 					  const E_CHANNEL & p_channelSrc  = E_CHANNEL::COLOR_0,
 					  const E_CHANNEL & p_channelDest = E_CHANNEL::COLOR_0 )
 		{
