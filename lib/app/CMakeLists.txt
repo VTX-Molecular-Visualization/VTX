@@ -48,7 +48,8 @@ target_link_libraries(VTX_APP PRIVATE nlohmann_json::nlohmann_json)
 
 # Test.
 # Create executable.
-add_executable(VTX_APP_TEST test/main.cpp)
+file(GLOB_RECURSE TEST_SOURCES test/*)
+add_executable(VTX_APP_TEST ${TEST_SOURCES})
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
