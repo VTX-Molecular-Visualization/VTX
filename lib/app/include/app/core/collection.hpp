@@ -84,7 +84,7 @@ namespace VTX::App::Core
 		class Registration
 		{
 		  public:
-			Registration() { App::Core::Collection<T>::get().addItem<T2>(); }
+			Registration() { App::Core::Collection<T>::get().template addItem<T2>(); }
 		};
 	};
 
