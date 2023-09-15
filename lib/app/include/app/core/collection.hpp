@@ -20,7 +20,7 @@ namespace VTX::App::Core
 	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>
 	{
 	  public:
-		Collection( Collection<T>::StructPrivacyToken ) {};
+		Collection( typename Util::Generic::BaseStaticSingleton<Collection<T>>::StructPrivacyToken ) {};
 
 		template<typename T2>
 		void addItem()
