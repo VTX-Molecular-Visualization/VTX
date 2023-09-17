@@ -8,6 +8,7 @@
 #include <string>
 #include <util/exceptions.hpp>
 #include <util/generic/base_static_singleton.hpp>
+#include <vector>
 
 namespace VTX::App
 {
