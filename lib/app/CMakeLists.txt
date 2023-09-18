@@ -1,5 +1,6 @@
 message("VTX_APP")
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.27)
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API aa1f7df0-828a-4fcd-9afc-2dc80491aca7)
 set(CMAKE_CXX_STANDARD 20)
 project(VTX_APP)
 
@@ -48,8 +49,20 @@ target_link_libraries(VTX_APP PRIVATE nlohmann_json::nlohmann_json)
 
 # Test.
 # Create executable.
-file(GLOB_RECURSE TEST_SOURCES test/*)
-add_executable(VTX_APP_TEST ${TEST_SOURCES})
+add_executable(VTX_APP_TEST test/main.cpp)
+
+# Build modules
+file(GLOB_RECURSE MODULE_FILES test/tests/*)
+target_sources(VTX_APP_TEST PRIVATE
+  FILE_SET all_my_modules TYPE CXX_MODULES
+  BASE_DIRS
+    ${PROJECT_SOURCE_DIR}
+  FILES
+    ${MODULE_FILES}
+)
+
+#target_link_libraries(VTX_APP_TEST PRIVATE VTX_APP_TEST_MODULE)
+
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
