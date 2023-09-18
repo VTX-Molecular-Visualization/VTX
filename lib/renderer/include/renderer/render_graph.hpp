@@ -118,7 +118,9 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
+
 				_instructions.emplace_back( [ & ]() { _context->clear(); } );
+
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
