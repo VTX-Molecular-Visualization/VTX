@@ -46,12 +46,25 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
       
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v3   
+      if: runner.os == 'Windows'
       with:
-        name: VTX_RENDERER_BENCH
+        name: VTX_RENDERER_BENCH_WIN
         path: |
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH.exe
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/SDL2.dll
+      if: runner.os == 'Linux'
+      with:
+        name: VTX_RENDERER_BENCH_LINUX
+        path: |
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
+      if: runner.os == 'macOS'
+      with:
+        name: VTX_RENDERER_BENCH_MAC
+        path: |
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
         
       
