@@ -3,7 +3,7 @@ name: CMake Ui
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/ui/**']
+    paths: ['lib/ui/**', '.github/workflows/cmake_ui.yml']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

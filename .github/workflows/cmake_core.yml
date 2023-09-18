@@ -3,7 +3,7 @@ name: CMake Core
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/core/**']
+    paths: ['lib/core/**', '.github/workflows/cmake_core.yml']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

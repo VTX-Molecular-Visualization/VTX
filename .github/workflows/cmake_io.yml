@@ -3,7 +3,7 @@ name: CMake IO
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/io/**']
+    paths: ['lib/io/**', '.github/workflows/cmake_io.yml']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

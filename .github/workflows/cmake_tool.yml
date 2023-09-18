@@ -3,7 +3,7 @@ name: CMake Tool
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/tool/**']
+    paths: ['lib/tool/**', '.github/workflows/cmake_tool.yml']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
