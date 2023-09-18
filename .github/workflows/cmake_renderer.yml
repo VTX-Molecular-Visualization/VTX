@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - uses: knicknic/os-specific-run@v1.0.3
+    - uses: knicknic/os-specific-run@v1.0.4
       with:
         linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
 
