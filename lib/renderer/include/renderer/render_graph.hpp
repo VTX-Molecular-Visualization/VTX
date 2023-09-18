@@ -181,7 +181,7 @@ namespace VTX::Renderer
 					{
 						throw std::runtime_error( "unknown descriptor type" );
 					}
-					_resources.push_back( Resource { id, Util::Variant::variantCast( desc ) } );
+					_resources.push_back( Resource { id, Util::Variant::cast( desc ) } );
 				}
 
 				// Programs.

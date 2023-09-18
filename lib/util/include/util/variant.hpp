@@ -13,7 +13,7 @@ namespace VTX
 		namespace Variant
 		{
 			template<class... Args>
-			struct VariantCastProxy
+			struct StructCastProxy
 			{
 				std::variant<Args...> v;
 
@@ -25,7 +25,7 @@ namespace VTX
 			};
 
 			template<class... Args>
-			auto variantCast( const std::variant<Args...> & p_v ) -> VariantCastProxy<Args...>
+			StructCastProxy<Args...> cast( const std::variant<Args...> & p_v )
 			{
 				return { p_v };
 			}
