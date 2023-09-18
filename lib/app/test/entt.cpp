@@ -1,5 +1,4 @@
-module;
-
+#include "test_utils.hpp"
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
@@ -20,17 +19,13 @@ module;
 #include <util/types.hpp>
 #include <vector>
 
-export module Test.Entt;
-
-import Test.Utils;
-
 TEST_CASE( "VTX_APP - Views", "[integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
 
-	initApp();
-	loadTestMolecule();
+	Test::Util::initApp();
+	Test::Util::loadTestMolecule();
 
 	Application::Scene & scene = VTXApp::get().getScene();
 
@@ -39,7 +34,7 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 
 	const App::Component::Scene::SceneItemComponent & sceneItemComponent
 		= view1Element.getComponent<App::Component::Scene::SceneItemComponent>( view1Element.front() );
-	REQUIRE( sceneItemComponent.getName() == MOLECULE_TEST_NAME );
+	REQUIRE( sceneItemComponent.getName() == App::Test::Util::MOLECULE_TEST_NAME );
 
 	App::Core::ECS::View allMolecules = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( allMolecules.size() == 1 );
@@ -65,9 +60,9 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 		bool checked = false;
 	};
 
-	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
+	const std::string moleculePathname = App::Test::Util::MOLECULE_TEST_NAME + ".mmtf";
 
-	initApp();
+	Test::Util::initApp();
 
 	// Create Scene
 	Application::Scene & scene			  = VTXApp::get().getScene();
@@ -90,7 +85,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
-	moleculeEntity = scene.getItem( MOLECULE_TEST_NAME );
+	moleculeEntity = scene.getItem( App::Test::Util::MOLECULE_TEST_NAME );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
@@ -115,15 +110,15 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );
 }
 
-TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
+TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const std::string moleculePathname = MOLECULE_TEST_NAME + ".mmtf";
+	const std::string moleculePathname = App::Test::Util::MOLECULE_TEST_NAME + ".mmtf";
 
 	// Create Scene
-	initApp();
+	Test::Util::initApp();
 
 	const Application::Scene & scene = VTXApp::get().getScene();
 

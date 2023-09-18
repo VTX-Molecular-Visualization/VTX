@@ -1,5 +1,4 @@
-module;
-
+#include "test_utils.hpp"
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/trajectory.hpp>
@@ -13,20 +12,16 @@ module;
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-export module Test.Trajectories;
-
-import Test.Utils;
-
 TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
 
-	initApp();
-	loadTestTrajectoryMolecule();
+	Test::Util::initApp();
+	Test::Util::loadTestTrajectoryMolecule();
 
 	Application::Scene &					scene	  = VTXApp::get().getScene();
-	App::Core::ECS::BaseEntity				molEntity = scene.getItem( MOLECULE_TRAJECTORY_TEST_NAME );
+	App::Core::ECS::BaseEntity				molEntity = scene.getItem( App::Test::Util::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Trajectory & trajectoryComponent
 		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
