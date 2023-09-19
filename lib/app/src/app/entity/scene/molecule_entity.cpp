@@ -68,7 +68,7 @@ namespace VTX::App::Entity::Scene
 
 		if ( p_extraData.find( "buffer" ) != p_extraData.end() )
 		{
-			const VTXVariant buffer = p_extraData.at( "buffer" ).get<std::string>();
+			const Util::VTXVariant buffer = p_extraData.at( "buffer" ).get<std::string>();
 
 			if ( !buffer.is<std::string>() )
 			{

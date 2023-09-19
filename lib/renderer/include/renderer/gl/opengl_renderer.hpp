@@ -25,7 +25,6 @@
 #include "vertex_array.hpp"
 #include <array>
 #include <functional>
-#include <util/chrono.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -33,11 +32,14 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer( void * p_proc, const size_t p_width, const size_t p_height, const FilePath & p_shaderPath );
+		OpenGLRenderer( const size_t	 p_width,
+						const size_t	 p_height,
+						const FilePath & p_shaderPath,
+						void *			 p_proc = nullptr );
 		~OpenGLRenderer() = default;
 
 		void resize( const size_t p_width, const size_t p_height );
-		void renderFrame();
+		void renderFrame( const double p_time );
 
 		inline void setNeedUpdate( const bool p_needUpdate ) { _needUpdate = p_needUpdate; }
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
@@ -147,11 +149,11 @@ namespace VTX::Renderer::GL
 
 		struct StructUniformsCamera
 		{
-			Mat4f matrixModel  = MAT4F_ID;
-			Mat4f matrixNormal = MAT4F_ID;
+			Mat4f matrixModel  = MAT4F_ID; // To delete.
+			Mat4f matrixNormal = MAT4F_ID; // To delete.
 			Mat4f matrixView;
 			Mat4f matrixProjection;
-			// _near * _far, _far, _far - _near, _near
+			// { _near * _far, _far, _far - _near, _near }
 			Vec4f cameraClipInfos;
 			bool  isCameraPerspective = true;
 		} _uniformsCamera;
@@ -186,6 +188,7 @@ namespace VTX::Renderer::GL
 		// Input data.
 		std::unique_ptr<StructBufferMeshes>	   _bufferMeshes;
 		std::unique_ptr<StructBufferMolecules> _bufferMolecules;
+		std::vector<uint>					   selectionIndexes;
 
 		// Program manager.
 		std::unique_ptr<ProgramManager> _programManager;
@@ -213,15 +216,6 @@ namespace VTX::Renderer::GL
 													const GLchar * p_msg,
 													const void *   p_data );
 #endif
-
-		inline static const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
-		{
-			static Chrono c;
-			c.start();
-			p_task();
-			c.stop();
-			return float( c.stop() );
-		};
 	};
 
 } // namespace VTX::Renderer::GL

@@ -6,7 +6,7 @@
 
 namespace VTX::Util::Filesystem
 {
-	std::filesystem::path getExecutableDir();
+	FilePath getExecutableDir();
 
 	const std::string readPath( const FilePath & p_filePath );
 	void			  removeAll( const FilePath & p_filePath );

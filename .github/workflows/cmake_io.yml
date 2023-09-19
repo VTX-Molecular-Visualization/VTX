@@ -3,7 +3,7 @@ name: CMake IO
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/io/**']
+    paths: ['lib/io/**', '.github/workflows/cmake_io.yml']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - uses: knicknic/os-specific-run@v1.0.3
+    - uses: knicknic/os-specific-run@v1.0.4
       with:
         linux: sudo apt-get install -y libxrandr-dev
 

@@ -6,15 +6,12 @@ project(VTX_APP)
 # Git dependencies.
 set(GIT_URL_ENTT https://github.com/skypjack/entt.git)
 set(GIT_TAG_ENTT fef921132cae7588213d0f9bcd2fb9c8ffd8b7fc)
-set(GIT_URL_JSON https://github.com/nlohmann/json.git)
-set(GIT_TAG_JSON v3.11.2)
 
 # Fetch third parties.
 include(FetchContent)
 FetchContent_Declare(EnTT GIT_REPOSITORY ${GIT_URL_ENTT} GIT_TAG ${GIT_TAG_ENTT})
-FetchContent_Declare(nlohmann_json GIT_REPOSITORY ${GIT_URL_JSON} GIT_TAG ${GIT_TAG_JSON})
 
-FetchContent_MakeAvailable(EnTT nlohmann_json)
+FetchContent_MakeAvailable(EnTT)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
@@ -44,7 +41,6 @@ target_link_libraries(VTX_APP PRIVATE VTX_IO)
 
 # Link third parties.
 target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
-target_link_libraries(VTX_APP PRIVATE nlohmann_json::nlohmann_json)
 
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)

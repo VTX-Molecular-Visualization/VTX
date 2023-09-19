@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <concepts>
 #include <fstream>
+#include <util/enum.hpp>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
 #include <util/logger.hpp>
@@ -236,13 +237,37 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 									Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
 };
 
+// enum.hpp
+enum struct E_EXAMPLE_1
+{
+	FIRST,
+	SECOND
+};
+
+enum struct E_EXAMPLE_2
+{
+	FIRST = 42,
+	OTHER,
+	SECOND
+};
+
+TEST_CASE( "Util::Enum", "[enum]" )
+{
+	using namespace VTX::Util;
+
+	REQUIRE( Enum::enumName( E_EXAMPLE_1::FIRST ).compare( "FIRST" ) == 0 );
+	REQUIRE( Enum::enumCast<E_EXAMPLE_1>( "SECOND" ) == E_EXAMPLE_1::SECOND );
+	REQUIRE( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) == E_EXAMPLE_2::SECOND );
+	REQUIRE( Enum::enumInteger( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
+}
+
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-					 {
-						 t.use()
-						 } -> std::same_as<void>;
-				 };
+	{
+		t.use()
+	} -> std::same_as<void>;
+};
 
 template<canUse T>
 class BaseClass : public T

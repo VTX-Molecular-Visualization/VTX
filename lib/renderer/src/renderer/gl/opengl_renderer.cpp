@@ -4,21 +4,17 @@
 
 namespace VTX::Renderer::GL
 {
-	OpenGLRenderer::OpenGLRenderer( void *			 p_proc,
-									const size_t	 p_width,
+	OpenGLRenderer::OpenGLRenderer( const size_t	 p_width,
 									const size_t	 p_height,
-									const FilePath & p_shaderPath ) :
+									const FilePath & p_shaderPath,
+									void *			 p_proc ) :
 		_width( p_width ),
 		_height( p_height )
 	{
 		VTX_INFO( "Creating renderer..." );
 
 		// Load OpenGL.
-		if ( gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
-		{
-			throw GLException( "Failed to initialize GLAD" );
-		}
-
+		loadOpenGL( p_proc );
 		_getOpenglInfos();
 
 		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
@@ -58,12 +54,13 @@ namespace VTX::Renderer::GL
 		_vbo = std::make_unique<Buffer>();
 		_vao = std::make_unique<VertexArray>();
 
+		_vao->bind();
 		_vao->enableAttribute( 0 );
 		_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
 		_vao->setAttributeFormat<float>( 0, 2 );
 		_vao->setAttributeBinding( 0, 0 );
-
 		_vbo->set( quad );
+		_vao->unbind();
 
 		// Camera uniforms buffer.
 		_uboCamera = std::make_unique<Buffer>( _uniformsCamera, GL_DYNAMIC_DRAW );
@@ -91,7 +88,7 @@ namespace VTX::Renderer::GL
 		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
 
-	void OpenGLRenderer::renderFrame()
+	void OpenGLRenderer::renderFrame( const double p_time )
 	{
 		if ( _needUpdate )
 		{
@@ -109,6 +106,7 @@ namespace VTX::Renderer::GL
 			{
 				_times.fill( 0.f );
 				_times[ ENUM_TIME_ITEM::GEOMETRIC ] = CHRONO_GPU( [ & ]() { _passGeometric->render( *_vao ); } );
+				_vao->bind();
 				_times[ ENUM_TIME_ITEM::LINEARIZE_DEPTH ]
 					= CHRONO_GPU( [ & ]() { _passLinearizeDepth->render( *_vao ); } );
 				if ( _activeSSAO )
@@ -130,11 +128,13 @@ namespace VTX::Renderer::GL
 				{
 					_times[ ENUM_TIME_ITEM::PIXELIZE ] = CHRONO_GPU( [ & ]() { _passPixelize->render( *_vao ); } );
 				}
+				_vao->unbind();
 				_times[ ENUM_TIME_ITEM::BLIT ] = CHRONO_GPU( [ & ]() { _blitToOutput(); } );
 			}
 			else
 			{
 				_passGeometric->render( *_vao );
+				_vao->bind();
 				_passLinearizeDepth->render( *_vao );
 				if ( _activeSSAO )
 				{
@@ -155,6 +155,7 @@ namespace VTX::Renderer::GL
 				{
 					_passPixelize->render( *_vao );
 				}
+				_vao->unbind();
 				_blitToOutput();
 			}
 

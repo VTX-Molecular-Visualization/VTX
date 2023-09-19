@@ -1,65 +1,225 @@
 #ifndef __VTX_RENDERER_RENDER_GRAPH__
 #define __VTX_RENDERER_RENDER_GRAPH__
 
-#include <functional>
-#include <util/types.hpp>
-#include <vector>
+#include "context/concept_context.hpp"
+#include "scheduler/concept_scheduler.hpp"
+#include "struct_link.hpp"
+#include "struct_pass.hpp"
+#include "struct_ressource.hpp"
+#include <util/logger.hpp>
+#include <util/variant.hpp>
 
 namespace VTX::Renderer
 {
-	enum HandleType
-	{
-		Attachment,
-		Storage,
-		// ...?
-	};
 
-	enum PassType
+	template<Context::Concept C, Scheduler::Concept S>
+	class RenderGraph
 	{
-		Graphic,
-		Compute,
-		// ...?
-	};
+	  public:
+		RenderGraph() = default;
+		~RenderGraph() { _clear(); }
 
-	struct Handle
-	{
-		size_t	   id;
-		HandleType type;
-	};
+		inline Scheduler::RenderQueue & getRenderQueue() { return _renderQueue; }
+		inline const Pass::Output *		getOutput() { return _output; }
+		inline void						setOutput( const Pass::Output * const p_output ) { _output = p_output; }
 
-	struct Resource
-	{
-		const Handle handle;
-	};
-
-	struct ResourceMutable
-	{
-		Handle handle;
-	};
-
-	struct Builder
-	{
-	};
-
-	using CallbakcPassSetup	 = std::function<void>( Builder &, Resource, ResourceMutable );
-	using CallbakcPassRender = std::function<void>();
-
-	template<class Ctx>
-	struct RenderGraph
-	{
-		template<class Data>
-		void addPass( std::string & p_name, CallbakcPassSetup, CallbakcPassRender )
+		inline Pass * const addPass( const Pass & p_pass )
 		{
+			_passes.emplace_back( std::make_unique<Pass>( p_pass ) );
+			return _passes.back().get();
 		}
 
-		void addAttachment() {}
-		void addStorage() {}
+		bool addLink( Pass * const		p_passSrc,
+					  Pass * const		p_passDest,
+					  const E_CHANNEL & p_channelSrc  = E_CHANNEL::COLOR_0,
+					  const E_CHANNEL & p_channelDest = E_CHANNEL::COLOR_0 )
+		{
+			// Check I/O existence.
+			assert( p_passSrc->outputs.contains( p_channelSrc ) );
+			assert( p_passDest->inputs.contains( p_channelDest ) );
 
-		void setup() {}
-		void render() {}
+			// Check input is free.
+			if ( std::find_if( _links.begin(),
+							   _links.end(),
+							   [ &p_passDest, &p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
+								   return p_element.get()->dest == p_passDest
+										  && p_element.get()->channelDest == p_channelDest;
+							   } )
+				 != _links.end() )
+			{
+				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
+				return false;
+			}
 
-		Ctx *				context;
-		std::vector<Handle> resources;
+			// Check descriptors compatibility.
+			// 			if ( passIn.inputs[ p_channel ].desc != passOut.output.desc )
+			// 			{
+			// 				return false;
+			// 			}
+
+			// Create link.
+			_links.emplace_back(
+				std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
+
+			return true;
+		}
+
+		void removeLink( const Link * const p_link )
+		{
+			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
+		}
+
+		bool setup( const size_t	 p_width,
+					const size_t	 p_height,
+					const FilePath & p_shaderPath,
+					void *			 p_proc = nullptr )
+		{
+			// Clean all.
+			_clear();
+
+			VTX_DEBUG( "{}", "Building render graph..." );
+
+			// Check ouptut.
+			if ( _output == nullptr )
+			{
+				VTX_ERROR( "{}", "No output defined" );
+				return false;
+			}
+
+			// Compute queue with scheduler.
+			try
+			{
+				S scheduler;
+				scheduler.schedule( _passes, _links, _renderQueue );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not build render queue: {}", p_e.what() );
+				return false;
+			}
+
+			// Create context.
+			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
+
+			// Create resources.
+			try
+			{
+				VTX_DEBUG( "{}", "Creating resources..." );
+				_createResources( _renderQueue );
+				VTX_DEBUG( "{}", "Creating resources... done" );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not create resources: {}", p_e.what() );
+				return false;
+			}
+
+			// Generate instructions.
+			try
+			{
+				VTX_DEBUG( "{}", "Generating instructions..." );
+				_instructions.emplace_back( [ & ]() { _context->clear(); } );
+				VTX_DEBUG( "{}", "Generating instructions... done" );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				return false;
+			}
+
+			VTX_DEBUG( "{}", "Building render graph... done" );
+
+			return true;
+		}
+
+		void resize( const size_t p_width, const size_t p_height ) {}
+
+		void render()
+		{
+			// TODO: Move to renderer?
+			// Execute instructions.
+			for ( Instruction & instruction : _instructions )
+			{
+				instruction();
+			}
+		}
+
+		// Debug purposes only.
+		inline Passes & getPasses() { return _passes; }
+		inline Links &	getLinks() { return _links; }
+
+	  private:
+		using Instruction  = std::function<void()>;
+		using Instructions = std::vector<Instruction>;
+
+		Scheduler::RenderQueue _renderQueue;
+		std::unique_ptr<C>	   _context;
+
+		const Pass::Output * _output;
+		Passes				 _passes;
+		Links				 _links;
+		Resources			 _resources;
+		Instructions		 _instructions;
+
+		void _createResources( const Scheduler::RenderQueue & p_queue )
+		{
+			using namespace Context;
+
+			for ( const Pass * const pass : p_queue )
+			{
+				// Outputs.
+				for ( const auto & [ channel, output ] : pass->outputs )
+				{
+					const DescIO & desc = output.desc;
+
+					Handle id;
+					if ( std::holds_alternative<DescAttachment>( desc ) )
+					{
+						_context->create( std::get<DescAttachment>( desc ), id );
+					}
+					else
+					{
+						throw std::runtime_error( "unknown descriptor type" );
+					}
+					_resources.push_back( Resource { id, Util::Variant::cast( desc ) } );
+				}
+
+				// Programs.
+				for ( const DescProgram & desc : pass->programs )
+				{
+					Handle id;
+					_context->create( desc, id );
+					_resources.push_back( Resource { id, desc } );
+				}
+			}
+		}
+
+		void _clear()
+		{
+			using namespace Context;
+
+			for ( const Resource & resource : _resources )
+			{
+				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
+				{
+					_context->destroy( std::get<DescAttachment>( resource.desc ), resource.id );
+				}
+				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
+				{
+					_context->destroy( std::get<DescProgram>( resource.desc ), resource.id );
+				}
+				else
+				{
+					throw std::runtime_error( "unknown descriptor type" );
+				}
+			}
+
+			_resources.clear();
+			_renderQueue.clear();
+			_instructions.clear();
+			_context.reset( nullptr );
+		}
 	};
+
 } // namespace VTX::Renderer
 #endif

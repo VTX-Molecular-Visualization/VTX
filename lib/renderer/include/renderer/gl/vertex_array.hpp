@@ -49,9 +49,19 @@ namespace VTX::Renderer::GL
 #if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
 #else
-			bind();
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, p_elementBuffer.getId() );
-			unbind();
+#endif
+		}
+
+		inline void unbindElementBuffer() const
+		{
+			assert( glIsVertexArray( _id ) );
+
+#if ( VTX_OPENGL_VERSION == 450 )
+			// 2023-07-25: Fail on Intel HD Graphics 520.
+			// glVertexArrayElementBuffer( _id, 0 );
+#else
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 #endif
 		}
 
@@ -62,9 +72,7 @@ namespace VTX::Renderer::GL
 #if ( VTX_OPENGL_VERSION == 450 )
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
 #else
-			bind();
 			glEnableVertexAttribArray( p_bindingIndex );
-			unbind();
 #endif
 		}
 
@@ -81,10 +89,8 @@ namespace VTX::Renderer::GL
 #else
 			if ( std::is_same<T, float>::value )
 			{
-				bind();
 				glVertexAttribPointer(
 					p_bindingIndex, p_stride, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void *>( p_offset ) );
-				unbind();
 			}
 			else
 			{
@@ -116,10 +122,8 @@ namespace VTX::Renderer::GL
 
 		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count )
 		{
-			bind();
 			glDrawArrays( p_mode, p_first, p_count );
 			// drawCalls++;
-			unbind();
 		}
 
 		inline void multiDrawArray( const GLenum		  p_mode,
@@ -127,10 +131,8 @@ namespace VTX::Renderer::GL
 									const GLsizei * const p_count,
 									const GLsizei		  p_primcount )
 		{
-			bind();
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
 			// drawCalls++;
-			unbind();
 		}
 
 		inline void drawElement( const GLenum		  p_mode,
@@ -138,10 +140,8 @@ namespace VTX::Renderer::GL
 								 const GLenum		  p_type,
 								 const GLvoid * const p_offset = 0 )
 		{
-			bind();
 			glDrawElements( p_mode, p_count, p_type, p_offset );
 			// drawCalls++;
-			unbind();
 		}
 
 		inline void multiDrawElement( const GLenum				   p_mode,
@@ -150,10 +150,8 @@ namespace VTX::Renderer::GL
 									  const GLvoid * const * const p_offset,
 									  const GLsizei				   p_primcount )
 		{
-			bind();
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
 			// drawCalls++;
-			unbind();
 		}
 
 	  private:
