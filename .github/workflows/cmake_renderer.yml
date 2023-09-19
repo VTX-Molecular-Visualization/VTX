@@ -41,30 +41,28 @@ jobs:
       run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_RENDERER VTX_RENDERER_BENCH VTX_RENDERER_TEST
 
     - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
+      
+    - name: Install
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: cmake --install . --config ${{env.BUILD_TYPE}}
       
     - uses: actions/upload-artifact@v3   
       if: runner.os == 'Windows'
       with:
         name: VTX_RENDERER_BENCH_WIN
-        path: |
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH.exe
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
+        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
     - uses: actions/upload-artifact@v3
       if: runner.os == 'Linux'
       with:
         name: VTX_RENDERER_BENCH_LINUX
-        path: |
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/VTX_RENDERER_BENCH
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/shaders/
+        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
     - uses: actions/upload-artifact@v3
       if: runner.os == 'macOS'
       with:
         name: VTX_RENDERER_BENCH_MAC
-        path: |
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/VTX_RENDERER_BENCH
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/shaders/
+        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
       
