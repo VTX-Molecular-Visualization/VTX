@@ -15,7 +15,8 @@
 
 namespace VTX::App::Entity::Scene
 {
-	void MoleculeEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	void MoleculeEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity,
+											  const Util::VariantMap &		p_extraData )
 	{
 		SceneItemEntityBuilder::addComponent( p_entity, p_extraData );
 
@@ -24,7 +25,7 @@ namespace VTX::App::Entity::Scene
 		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
 		MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
 	}
-	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
 	{
 		SceneItemEntityBuilder::setup( p_entity, p_extraData );
 
@@ -48,15 +49,16 @@ namespace VTX::App::Entity::Scene
 			MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
 		}
 	}
-	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity,
+										   const Util::VariantMap &		 p_extraData )
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
 	}
 
 	void MoleculeEntityBuilder::_load( Component::Chemistry::Molecule & p_moleculeComponent,
-									   const VariantMap &				p_extraData )
+									   const Util::VariantMap &			p_extraData )
 	{
-		const VariantMap::const_iterator filepathProperty = p_extraData.find( "filepath" );
+		const Util::VariantMap::const_iterator filepathProperty = p_extraData.find( "filepath" );
 		if ( filepathProperty == p_extraData.end() || !filepathProperty->second.is<std::string>() )
 		{
 			VTX_ERROR( "Missing property \"filepath\" in loading data." );

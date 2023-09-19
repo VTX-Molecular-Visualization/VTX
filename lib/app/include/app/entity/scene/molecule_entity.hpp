@@ -10,12 +10,12 @@ namespace VTX::App::Entity::Scene
 	class MoleculeEntityBuilder
 	{
 	  public:
-		static void addComponent( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData );
-		static void setup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData );
-		static void postSetup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData );
+		static void addComponent( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
+		static void setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
+		static void postSetup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
 
 	  private:
-		static void _load( Component::Chemistry::Molecule & moleculeComponent, const VariantMap & p_extraData );
+		static void _load( Component::Chemistry::Molecule & moleculeComponent, const Util::VariantMap & p_extraData );
 	};
 
 } // namespace VTX::App::Entity::Scene
