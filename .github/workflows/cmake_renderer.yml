@@ -52,18 +52,20 @@ jobs:
         name: VTX_RENDERER_BENCH_WIN
         path: |
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH.exe
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/SDL2.dll
     - uses: actions/upload-artifact@v3
       if: runner.os == 'Linux'
       with:
         name: VTX_RENDERER_BENCH_LINUX
         path: |
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/shaders/
     - uses: actions/upload-artifact@v3
       if: runner.os == 'macOS'
       with:
         name: VTX_RENDERER_BENCH_MAC
         path: |
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/VTX_RENDERER_BENCH
+          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/shaders/
       
