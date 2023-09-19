@@ -110,7 +110,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );
 }
 
-TEST_CASE( "VTX_APP - Benchmark", "[perfs]" )
+TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
