@@ -32,6 +32,12 @@ namespace VTX
 		}
 
 		template<typename T>
+		bool is() const
+		{
+			return std::holds_alternative<T>( _variant );
+		}
+
+		template<typename T>
 		T * getPtr() const
 		{
 			return static_cast<T *>( std::get<void *>( _variant ) );

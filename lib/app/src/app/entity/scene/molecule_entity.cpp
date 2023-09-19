@@ -10,6 +10,7 @@
 #include "app/render/proxy_builder.hpp"
 #include <renderer/gl/struct_proxy_molecule.hpp>
 #include <string>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Entity::Scene
@@ -55,15 +56,29 @@ namespace VTX::App::Entity::Scene
 	void MoleculeEntityBuilder::_load( Component::Chemistry::Molecule & p_moleculeComponent,
 									   const VariantMap &				p_extraData )
 	{
+		const VariantMap::const_iterator filepathProperty = p_extraData.find( "filepath" );
+		if ( filepathProperty == p_extraData.end() || !filepathProperty->second.is<std::string>() )
+		{
+			VTX_ERROR( "Missing property \"filepath\" in loading data." );
+			return;
+		}
+
 		Internal::IO::Reader::MoleculeLoader loader = Internal::IO::Reader::MoleculeLoader();
-		const FilePath						 path	= FilePath( p_extraData.at( "filepath" ).get<std::string>() );
+		const FilePath						 path	= FilePath( filepathProperty->second.get<std::string>() );
 
 		if ( p_extraData.find( "buffer" ) != p_extraData.end() )
 		{
-			const std::string buffer = p_extraData.at( "buffer" ).get<std::string>();
-			loader.readBuffer( buffer, path, p_moleculeComponent );
+			const VTXVariant buffer = p_extraData.at( "buffer" ).get<std::string>();
+
+			if ( !buffer.is<std::string>() )
+			{
+				VTX_ERROR( "Invalid buffer." );
+				return;
+			}
+
+			loader.readBuffer( buffer.get<std::string>(), path, p_moleculeComponent );
 		}
-		else if ( p_extraData.find( "filepath" ) != p_extraData.end() )
+		else // Filepath
 		{
 			loader.readFile( path, p_moleculeComponent );
 		}
