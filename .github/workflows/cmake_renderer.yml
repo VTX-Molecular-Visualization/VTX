@@ -53,7 +53,6 @@ jobs:
         path: |
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH.exe
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders/
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/SDL2.dll
     - uses: actions/upload-artifact@v3
       if: runner.os == 'Linux'
       with:
