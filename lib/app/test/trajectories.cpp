@@ -1,4 +1,4 @@
-#include "test_utils.hpp"
+#include "util/app.hpp"
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/trajectory.hpp>
@@ -17,11 +17,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::initApp();
-	Test::Util::loadTestTrajectoryMolecule();
+	Test::Util::App::initApp();
+	Test::Util::App::loadTestTrajectoryMolecule();
 
-	Application::Scene &					scene	  = VTXApp::get().getScene();
-	App::Core::ECS::BaseEntity				molEntity = scene.getItem( App::Test::Util::MOLECULE_TRAJECTORY_TEST_NAME );
+	Application::Scene &	   scene	 = VTXApp::get().getScene();
+	App::Core::ECS::BaseEntity molEntity = scene.getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Trajectory & trajectoryComponent
 		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
