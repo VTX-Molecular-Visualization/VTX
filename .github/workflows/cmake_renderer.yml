@@ -60,13 +60,10 @@ jobs:
         name: VTX_RENDERER_BENCH_LINUX
         path: |
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders
     - uses: actions/upload-artifact@v3
       if: runner.os == 'macOS'
       with:
         name: VTX_RENDERER_BENCH_MAC
         path: |
           ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/VTX_RENDERER_BENCH
-          ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}/${{env.BUILD_TYPE}}/shaders
-        
       
