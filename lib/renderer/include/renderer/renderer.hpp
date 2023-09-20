@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERE_RENDERER__
-#define __VTX_RENDERE_RENDERER__
+#ifndef __VTX_RENDERER_RENDERER__
+#define __VTX_RENDERER_RENDERER__
 
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"

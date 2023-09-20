@@ -5,10 +5,13 @@ project(VTX_RENDERER)
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
+file(GLOB_RECURSE VENDORS vendor/*)
 
 # Create library.
-add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})
+add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES} ${VENDORS})
 target_include_directories(VTX_RENDERER PUBLIC include)
+# TODO: PRIVATE
+target_include_directories(VTX_RENDERER PUBLIC vendor)
 
 # Link VTX_UTIL.
 if(NOT TARGET VTX_UTIL)

@@ -3,7 +3,6 @@
 #include <renderer/render_graph.hpp>
 #include <renderer/scheduler/depth_first_search.hpp>
 
-// filesystem.hpp
 TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 {
 	// 	using namespace VTX::Renderer;
