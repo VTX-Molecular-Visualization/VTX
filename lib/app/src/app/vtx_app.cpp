@@ -9,6 +9,8 @@
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
+#include <renderer/renderer.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App
@@ -60,7 +62,12 @@ namespace VTX::App
 			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
+
+		_renderer
+			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
+		_renderer->build();
 	}
+
 	void VTXApp::update() { _update(); }
 	void VTXApp::stop() { _stop(); }
 
@@ -116,6 +123,8 @@ namespace VTX::App
 		//	_tickCounter = 0;
 		//	_tickTimer.restart();
 		//}
+
+		//_renderer->render();
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

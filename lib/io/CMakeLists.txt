@@ -53,7 +53,6 @@ target_link_libraries(VTX_IO_TEST PRIVATE VTX_IO)
 
 # Link third parties.
 target_link_libraries(VTX_IO_TEST PRIVATE chemfiles)
-target_link_libraries(VTX_IO_TEST PRIVATE magic_enum)
 
 # Catch2.
 include(CTest)
