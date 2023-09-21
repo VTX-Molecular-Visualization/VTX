@@ -3,11 +3,6 @@ cmake_minimum_required(VERSION 3.20)
 include(../util/cmake/configure-target.cmake)
 project(VTX_CORE)
 
-# Fetch third parties.
-include(FetchContent)
-FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
-FetchContent_MakeAvailable(magic_enum)
-
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
