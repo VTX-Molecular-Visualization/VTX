@@ -65,7 +65,7 @@ namespace VTX::App
 
 		_renderer
 			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
-		_renderer->build();
+		//_renderer->build();
 	}
 
 	void VTXApp::update() { _update(); }

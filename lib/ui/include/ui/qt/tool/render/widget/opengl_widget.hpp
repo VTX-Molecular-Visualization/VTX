@@ -2,19 +2,23 @@
 #define __VTX_UI_QT_WIDGET_OPENGL__
 
 #include "ui/qt/widget/base_manual_widget.hpp"
+#include <QOpenGLWidget>
 #include <QWidget>
 
 namespace VTX
 {
 	namespace UI::QT::Tool::Render::Widget
 	{
-		class OpenGLWidget : public QT::Widget::BaseManualWidget<QWidget>
+		class OpenGLWidget : public QT::Widget::BaseManualWidget<QOpenGLWidget>
 		{
 			NEW_ARCHI_VTX_WIDGET
 
 		  public:
 			~OpenGLWidget();
 
+			void initializeGL() override;
+			void paintGL() override;
+			void resizeGL( int, int ) override;
 			void localize() override {}
 
 		  protected:

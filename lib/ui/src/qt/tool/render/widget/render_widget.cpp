@@ -36,6 +36,4 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_setupSlots() {}
 
-	void RenderWidget::updateRender() const { _openGLWidget->update(); }
-
 } // namespace VTX::UI::QT::Tool::Render::Widget

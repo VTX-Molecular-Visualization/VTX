@@ -22,8 +22,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		PANEL_TYPE getPanelType() const override { return PANEL_TYPE::CENTRAL_WIDGET; };
 
-		void updateRender() const;
-
 	  protected:
 		RenderWidget( QWidget * p_parent );
 

@@ -20,7 +20,7 @@ find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6QGifPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-if(MSVC)
+if(WIN32)
     find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
     find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 endif()

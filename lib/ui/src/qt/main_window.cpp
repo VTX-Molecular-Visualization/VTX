@@ -87,7 +87,6 @@ namespace VTX::UI::QT
 	{
 		return getPanel<QT::Tool::Render::Widget::RenderWidget>( "RENDER_WINDOW_KEY" );
 	}
-	void MainWindow::updateRender() const { getRender()->updateRender(); }
 
 	void		MainWindow::refreshWindowTitle() { setWindowTitle( QString::fromStdString( _getWindowTitle() ) ); }
 	std::string MainWindow::_getWindowTitle() const
