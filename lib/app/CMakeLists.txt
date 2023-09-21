@@ -43,9 +43,9 @@ target_link_libraries(VTX_APP PRIVATE VTX_IO)
 # Link third parties.
 target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
 
-# Test.
-# Create executable.
-add_executable(VTX_APP_TEST test/main.cpp)
+## Test.
+file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
+add_executable(VTX_APP_TEST ${TEST_SOURCES})
 configureTarget(VTX_APP_TEST)
 
 # Link third parties.

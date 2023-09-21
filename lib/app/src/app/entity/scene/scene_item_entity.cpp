@@ -3,13 +3,17 @@
 
 namespace VTX::App::Entity::Scene
 {
-	void SceneItemEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	void SceneItemEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity,
+											   const Util::VariantMap &		 p_extraData )
 	{
 		MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( p_entity );
 	}
 
-	void SceneItemEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData ) {}
-	void SceneItemEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData )
+	void SceneItemEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
+	{
+	}
+	void SceneItemEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity,
+											const Util::VariantMap &	  p_extraData )
 	{
 		Application::Scene * const			   scene = p_extraData.at( "scene" ).getPtr<Application::Scene>();
 		Component::Scene::SceneItemComponent & sceneItemComponent

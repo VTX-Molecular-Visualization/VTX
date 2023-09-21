@@ -9,7 +9,7 @@ namespace VTX::App::Entity::Application
 	class SceneEntityBuilder
 	{
 	  public:
-		static void addComponent( const Core::ECS::BaseEntity & p_entity, const VariantMap & p_extraData );
+		static void addComponent( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
 	};
 
 } // namespace VTX::App::Entity::Application
