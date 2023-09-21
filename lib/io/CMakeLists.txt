@@ -1,6 +1,6 @@
 message("VTX_IO")
 cmake_minimum_required(VERSION 3.20)
-set(CMAKE_CXX_STANDARD 20)
+include(../util/cmake/configure-target.cmake)
 project(VTX_IO)
 
 # Git dependencies
@@ -19,6 +19,7 @@ file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_IO STATIC ${HEADERS} ${SOURCES})
+configureTarget(VTX_IO)
 target_include_directories(VTX_IO PUBLIC include)
 
 # Link VTX_UTIL.
@@ -40,6 +41,7 @@ target_link_libraries(VTX_IO PRIVATE chemfiles)
 # Create executable.
 file(GLOB_RECURSE TEST_FILES test/*)
 add_executable(VTX_IO_TEST ${TEST_FILES})
+configureTarget(VTX_IO_TEST)
 
 # Link Catch2.
 target_link_libraries(VTX_IO_TEST PRIVATE Catch2::Catch2WithMain)

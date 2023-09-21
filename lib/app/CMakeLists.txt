@@ -1,6 +1,6 @@
 message("VTX_APP")
 cmake_minimum_required(VERSION 3.20)
-set(CMAKE_CXX_STANDARD 20)
+include(../util/cmake/configure-target.cmake)
 project(VTX_APP)
 
 # Git dependencies.
@@ -19,6 +19,7 @@ file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
+configureTarget(VTX_APP)
 target_include_directories(VTX_APP PUBLIC include)
 
 # Link VTX modules.
@@ -45,6 +46,7 @@ target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
 # Test.
 # Create executable.
 add_executable(VTX_APP_TEST test/main.cpp)
+configureTarget(VTX_APP_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)

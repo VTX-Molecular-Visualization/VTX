@@ -1,5 +1,6 @@
 message("VTX_RENDERER")
 cmake_minimum_required(VERSION 3.21)
+include(../util/cmake/configure-target.cmake)
 project(VTX_RENDERER)
 
 # Get headers and sources.
@@ -9,6 +10,7 @@ file(GLOB_RECURSE VENDORS vendor/*)
 
 # Create library.
 add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES} ${VENDORS})
+configureTarget(VTX_RENDERER)
 target_include_directories(VTX_RENDERER PUBLIC include)
 # TODO: PRIVATE
 target_include_directories(VTX_RENDERER PUBLIC vendor)
@@ -41,6 +43,7 @@ FetchContent_MakeAvailable(SDL2)
 
 file(GLOB_RECURSE BENCH_FILES bench/*.h bench/*.hpp bench/*.c bench/*.cpp)
 add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
+configureTarget(VTX_RENDERER_BENCH)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE ${SDL2_SOURCE_DIR}/include)
@@ -75,6 +78,7 @@ install(DIRECTORY $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/shaders DESTINATION ${IN
 
 # Create executable.
 add_executable(VTX_RENDERER_TEST test/main.cpp)
+configureTarget(VTX_RENDERER_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)

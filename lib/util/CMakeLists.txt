@@ -1,5 +1,6 @@
 message("VTX_UTIL")
 cmake_minimum_required(VERSION 3.20)
+include(cmake/configure-target.cmake)
 project(VTX_UTIL)
 
 # Git dependencies.
@@ -27,6 +28,7 @@ file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_UTIL STATIC ${HEADERS} ${SOURCES})
+configureTarget(VTX_UTIL)
 target_include_directories(VTX_UTIL PUBLIC include)
 
 # Link third parties.
@@ -34,35 +36,6 @@ target_link_libraries(VTX_UTIL PUBLIC glm::glm)
 target_link_libraries(VTX_UTIL PUBLIC spdlog::spdlog)
 target_link_libraries(VTX_UTIL PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_UTIL PUBLIC magic_enum::magic_enum)
-
-# Compiler options.
-target_compile_features(VTX_UTIL PUBLIC cxx_std_20)
-
-if(CMAKE_COMPILER_IS_GNUCC)
-	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	target_compile_options(VTX_UTIL PUBLIC "-Wpedantic")
-	target_compile_options(VTX_UTIL PUBLIC "-Wall")
-	#target_compile_options(VTX_UTIL PUBLIC "-Werror")
-elseif(MSVC)
-	# General.
-	target_compile_options(VTX_UTIL PUBLIC "/W3")  # Warning level 3.
-	target_compile_options(VTX_UTIL PUBLIC "/WX")  # Warnings as errors.
-	target_compile_options(VTX_UTIL PUBLIC "/MP")  # Multicore compilation.
-	target_compile_options(VTX_UTIL PUBLIC "/sdl") # Additional Security Checks.	
-	target_compile_options(VTX_UTIL PUBLIC "/utf-8")
-	target_compile_options(VTX_UTIL PUBLIC "/fp:fast") # Floating Point Model.
-	
-	# Optimization.
-	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/O2>")
-	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Ob2>")
-	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Ot>")
-	target_compile_options(VTX_UTIL PUBLIC "$<$<CONFIG:Release>:/Oi>")
-		
-	# Preprocessor definitions
-	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-	#(-DNOMINMAX)
-
-endif()
 
 # Tests.
 set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
@@ -77,6 +50,7 @@ include(Catch)
 
 # Create executable.
 add_executable(VTX_UTIL_TEST test/main.cpp)
+configureTarget(VTX_UTIL_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
