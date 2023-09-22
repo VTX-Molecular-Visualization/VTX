@@ -34,6 +34,9 @@ namespace VTX
 			inline Application::Scene &		  getScene() { return *_scene; }
 			inline const Application::Scene & getScene() const { return *_scene; }
 
+			inline Renderer::Renderer &		  getRenderer() { return *_renderer; }
+			inline const Renderer::Renderer & getRenderer() const { return *_renderer; }
+
 			inline Application::Setting &		getSettings() { return *_setting; }
 			inline const Application::Setting & getSettings() const { return *_setting; }
 
