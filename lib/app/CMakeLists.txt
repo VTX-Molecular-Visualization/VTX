@@ -48,7 +48,7 @@ add_executable(VTX_APP_TEST ${TEST_SOURCES})
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(VTX_APP_TEST PRIVATE EnTT::EnTT)
+target_link_libraries(VTX_APP_TEST PUBLIC EnTT::EnTT)
 
 # Link VTX_APP.
 target_link_libraries(VTX_APP_TEST PRIVATE VTX_UTIL)

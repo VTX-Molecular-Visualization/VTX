@@ -1,0 +1,65 @@
+message("VTX_PYTHON_BINDING")
+cmake_minimum_required(VERSION 3.20)
+project(VTX_PYTHON_BINDING)
+
+# Git dependencies.
+set(GIT_URL_PYBIND11 https://github.com/pybind/pybind11.git)
+set(GIT_TAG_PYBIND11 v2.11.1)
+
+# Fetch third parties.
+include(FetchContent)
+FetchContent_Declare(pybind11 GIT_REPOSITORY ${GIT_URL_PYBIND11} GIT_TAG ${GIT_TAG_PYBIND11})
+
+FetchContent_MakeAvailable(pybind11)
+
+# Get headers and sources.
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
+
+# Create library.
+add_library(VTX_PYTHON_BINDING STATIC ${HEADERS} ${SOURCES})
+target_include_directories(VTX_PYTHON_BINDING PUBLIC include)
+
+# Link VTX modules.
+if(NOT TARGET VTX_UTIL)
+	add_subdirectory(../util lib/util)
+endif()
+if(NOT TARGET VTX_CORE)
+	add_subdirectory(../core lib/core)
+endif()
+if(NOT TARGET VTX_APP)
+	add_subdirectory(../app lib/app)
+endif()
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_UTIL)
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_CORE)
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
+
+# Link third parties.
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::pybind11 pybind11::embed)
+pybind11_add_module(PyTX "src/python_binding/global/load_module.cpp")
+
+
+## Test.
+file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
+add_executable(VTX_PYTHON_BINDING_TEST ${TEST_SOURCES})
+
+# Link third parties.
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX_APP.
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_UTIL)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_IO)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_CORE)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_APP)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_PYTHON_BINDING)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE EnTT::EnTT)
+
+# Catch2.
+include(CTest)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)	
+	catch_discover_tests(VTX_PYTHON_BINDING_TEST)
+endif()
+
+# Copy data.
+add_custom_target(VTX_PYTHON_BINDING_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_PYTHON_BINDING_TEST>/data)
+add_dependencies(VTX_PYTHON_BINDING_TEST VTX_PYTHON_BINDING_TEST_COPY_DATA)
