@@ -7,6 +7,6 @@
 
 namespace VTX::App::Application
 {
-	System::System()  = default;
+	System::System() : setting( nullptr ), registryManager( nullptr ), entityDirector( nullptr ), scene( nullptr ) {}
 	System::~System() = default;
 } // namespace VTX::App::Application

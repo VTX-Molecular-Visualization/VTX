@@ -24,17 +24,18 @@ namespace VTX::App
 
 	namespace Application
 	{
-		class System // : public std::enable_shared_from_this<System>
+		class System
 		{
 		  public:
 			System();
 			~System();
 
-			// std::unique_ptr<Renderer::GL::OpenGLRenderer> _renderer;
-			std::unique_ptr<Application::Setting>			   setting		   = nullptr;
-			std::unique_ptr<Application::ECS::RegistryManager> registryManager = nullptr;
-			std::unique_ptr<Application::ECS::EntityDirector>  entityDirector  = nullptr;
-			Application::Scene *							   scene		   = nullptr;
+			std::unique_ptr<Application::Setting>			   setting;
+			std::unique_ptr<Application::ECS::RegistryManager> registryManager;
+			std::unique_ptr<Application::ECS::EntityDirector>  entityDirector;
+
+			// TODO better way to manage this
+			Application::Scene * scene;
 		};
 	} // namespace Application
 } // namespace VTX::App
