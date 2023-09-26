@@ -69,10 +69,11 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup( const size_t	 p_width,
+		bool setup( void * const	 p_loader,
+					const size_t	 p_width,
 					const size_t	 p_height,
 					const FilePath & p_shaderPath,
-					void *			 p_proc = nullptr )
+					const uint		 p_output = 0 )
 		{
 			// Clean all.
 			_clear();
@@ -99,7 +100,7 @@ namespace VTX::Renderer
 			}
 
 			// Create context.
-			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
+			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
 
 			// Create resources.
 			try
@@ -132,7 +133,21 @@ namespace VTX::Renderer
 			return true;
 		}
 
-		void resize( const size_t p_width, const size_t p_height ) {}
+		void resize( const size_t p_width, const size_t p_height )
+		{
+			using namespace Context;
+
+			assert( _context != nullptr );
+			_context->resize( p_width, p_height );
+
+			for ( Resource & resource : _resources )
+			{
+				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
+				{
+					_context->resize( resource.id, std::get<DescAttachment>( resource.desc ) );
+				}
+			}
+		}
 
 		void render()
 		{
@@ -172,15 +187,16 @@ namespace VTX::Renderer
 				{
 					const DescIO & desc = output.desc;
 
-					Handle id;
+					Handle id = -1;
 					if ( std::holds_alternative<DescAttachment>( desc ) )
 					{
-						_context->create( std::get<DescAttachment>( desc ), id );
+						_context->create( id, std::get<DescAttachment>( desc ) );
 					}
 					else
 					{
 						throw std::runtime_error( "unknown descriptor type" );
 					}
+					assert( id != -1 );
 					_resources.push_back( Resource { id, Util::Variant::cast( desc ) } );
 				}
 
@@ -188,7 +204,7 @@ namespace VTX::Renderer
 				for ( const DescProgram & desc : pass->programs )
 				{
 					Handle id;
-					_context->create( desc, id );
+					_context->create( id, desc );
 					_resources.push_back( Resource { id, desc } );
 				}
 			}
@@ -198,15 +214,15 @@ namespace VTX::Renderer
 		{
 			using namespace Context;
 
-			for ( const Resource & resource : _resources )
+			for ( Resource & resource : _resources )
 			{
 				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
 				{
-					_context->destroy( std::get<DescAttachment>( resource.desc ), resource.id );
+					_context->destroy( resource.id, std::get<DescAttachment>( resource.desc ) );
 				}
 				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
 				{
-					_context->destroy( std::get<DescProgram>( resource.desc ), resource.id );
+					_context->destroy( resource.id, std::get<DescProgram>( resource.desc ) );
 				}
 				else
 				{

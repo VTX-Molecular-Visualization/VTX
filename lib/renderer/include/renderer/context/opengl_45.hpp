@@ -4,6 +4,7 @@
 #include "concept_context.hpp"
 #include "gl/buffer.hpp"
 #include "gl/program_manager.hpp"
+#include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
 #include <glad/glad.h>
 #include <util/enum.hpp>
@@ -27,7 +28,7 @@ namespace VTX::Renderer::Context
 			// Load opengl 4.5.
 			if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 			{
-				throw GLException( "Failed to load OpenGL with process" );
+				throw GLException( "Failed to load OpenGL" );
 			}
 			else if ( gladLoadGL() == 0 )
 			{
@@ -45,53 +46,66 @@ namespace VTX::Renderer::Context
 			std::vector<Vec2f> quad
 				= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-			_vbo = std::make_unique<GL::Buffer>();
-			_vao = std::make_unique<GL::VertexArray>();
-
-			_vao->bind();
-			_vao->enableAttribute( 0 );
-			_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
-			_vao->setAttributeFormat<float>( 0, 2 );
-			_vao->setAttributeBinding( 0, 0 );
-			_vbo->set( quad );
-			_vao->unbind();
+			GL::Buffer::create( &_vbo );
+			GL::VertexArray::create( &_vao );
+			GL::VertexArray::bind( _vao );
+			GL::VertexArray::enableAttribute( _vao, 0 );
+			GL::VertexArray::setVertexBuffer<float>( _vao, 0, _vbo, sizeof( Vec2f ) );
+			GL::VertexArray::setAttributeFormat<float>( _vao, 0, 2 );
+			GL::VertexArray::setAttributeBinding( _vao, 0, 0 );
+			GL::Buffer::setData( _vbo, quad, GL_STATIC_DRAW );
+			GL::VertexArray::unbind();
 
 			glClearColor( 1.f, 0.f, 0.f, 1.f );
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 		}
 
-		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
+		~OpenGL45()
+		{
+			VTX_DEBUG( "{}", "Delete context opengl 4.5" );
+
+			GL::Buffer::destroy( &_vbo );
+			GL::VertexArray::destroy( &_vao );
+		}
 
 		inline void clear() { glClear( GL_COLOR_BUFFER_BIT ); }
 
-		void resize( const size_t p_width, const size_t p_height ) {}
+		void resize( const size_t p_width, const size_t p_height )
+		{
+			width  = p_width;
+			height = p_height;
+		}
 
 		// I/O.
-		inline void create( const DescAttachment & p_desc, Handle & p_handle )
+		inline void create( Handle & p_handle, const DescAttachment & p_desc )
 		{
-			glCreateTextures( GL_TEXTURE_2D, 1, &p_handle );
-			assert( glIsTexture( p_handle ) );
-			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_S, _mapWrapping[ p_desc.wrappingS ] );
-			glTextureParameteri( p_handle, GL_TEXTURE_WRAP_T, _mapWrapping[ p_desc.wrappingT ] );
-			glTextureParameteri( p_handle, GL_TEXTURE_MIN_FILTER, _mapFiltering[ p_desc.filteringMin ] );
-			glTextureParameteri( p_handle, GL_TEXTURE_MAG_FILTER, _mapFiltering[ p_desc.filteringMag ] );
-			glTextureStorage2D( p_handle, 1, _mapFormat[ p_desc.format ], GLsizei( width ), GLsizei( height ) );
+			GL::Texture2D::create( &p_handle,
+								   GLsizei( width ),
+								   GLsizei( height ),
+								   _mapFormat[ p_desc.format ],
+								   _mapWrapping[ p_desc.wrappingS ],
+								   _mapWrapping[ p_desc.wrappingT ],
+								   _mapFiltering[ p_desc.filteringMin ],
+								   _mapFiltering[ p_desc.filteringMag ] );
 		}
 
-		inline void destroy( const DescAttachment & p_desc, const Handle & p_handle )
+		inline void resize( Handle & p_handle, const DescAttachment & p_desc )
 		{
-			glDeleteTextures( 1, &p_handle );
+			destroy( p_handle, p_desc );
+			create( p_handle, p_desc );
 		}
 
-		inline void create( const DescStorage & p_desc, Handle & p_handle ) {}
+		inline void destroy( Handle & p_handle, const DescAttachment & p_desc ) { GL::Texture2D::destroy( &p_handle ); }
+
+		inline void create( Handle & p_handle, const DescStorage & p_desc ) {}
 
 		// Program.
-		inline void create( const DescProgram & p_desc, Handle & p_handle )
+		inline void create( Handle & p_handle, const DescProgram & p_desc )
 		{
 			_programManager->createProgram( p_desc.name, p_desc.shaders, p_desc.toInject, p_desc.suffix );
 		}
 
-		inline void destroy( const DescProgram & p_desc, const Handle & p_handle )
+		inline void destroy( Handle & p_handle, const DescProgram & p_desc )
 		{
 			_programManager->deleteProgram( p_desc.name );
 		}
@@ -129,8 +143,8 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager> _programManager;
 
 		// Quad VAO.
-		std::unique_ptr<GL::VertexArray> _vao;
-		std::unique_ptr<GL::Buffer>		 _vbo;
+		GLuint _vao;
+		GLuint _vbo;
 	};
 } // namespace VTX::Renderer::Context
 

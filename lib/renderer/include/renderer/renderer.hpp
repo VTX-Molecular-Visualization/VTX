@@ -16,9 +16,9 @@ namespace VTX::Renderer
 		Renderer( const size_t	   p_width,
 				  const size_t	   p_height,
 				  const FilePath & p_shaderPath,
-				  void *		   p_proc = nullptr ) :
+				  void *		   p_loader = nullptr ) :
 			_width( p_width ),
-			_height( p_height ), _shaderPath( p_shaderPath ), _proc( p_proc )
+			_height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
 			using namespace Context;
 
@@ -74,7 +74,10 @@ namespace VTX::Renderer
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
 
-		inline void build() { _renderGraph->setup( _width, _height, _shaderPath, _proc ); }
+		inline void build( const uint p_output = 0 )
+		{
+			_renderGraph->setup( _loader, _width, _height, _shaderPath, p_output );
+		}
 
 		inline void render() { _renderGraph->render(); }
 
@@ -82,10 +85,11 @@ namespace VTX::Renderer
 		inline RenderGraphOpenGL45 & getRenderGraph() { return *_renderGraph; }
 
 	  private:
+		void * _loader = nullptr;
+
 		size_t								 _width;
 		size_t								 _height;
 		FilePath							 _shaderPath;
-		void *								 _proc;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 	};
 } // namespace VTX::Renderer

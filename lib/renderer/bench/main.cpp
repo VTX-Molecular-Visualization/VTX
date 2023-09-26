@@ -148,7 +148,8 @@ int main( int, char ** )
 		}
 
 		// Renderer with graph test.
-		Renderer::Renderer newRenderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "" );
+		Renderer::Renderer newRenderer(
+			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress() );
 
 		// Main loop.
 		while ( isRunning )

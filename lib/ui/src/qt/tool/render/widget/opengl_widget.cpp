@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//	_cbInitGL();
 		// }
 
-		VTX::App::VTXApp::get().getRenderer().build();
+		VTX::App::VTXApp::get().getRenderer().build( defaultFramebufferObject() );
 	}
 
 	void OpenGLWidget::paintGL()
