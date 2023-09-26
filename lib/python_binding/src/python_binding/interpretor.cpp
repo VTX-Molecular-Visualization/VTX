@@ -2,6 +2,7 @@
 // #include <app/application/ecs/registry_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <pybind11/embed.h>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::PythonBinding
@@ -29,16 +30,23 @@ namespace VTX::PythonBinding
 
 	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 
-	bool Interpretor::runCommand( const std::string & p_line )
+	void Interpretor::runCommand( const std::string & p_line )
 	{
-		pybind11::exec( "import PyTX" );
-		pybind11::exec( p_line );
+		try
+		{
+			pybind11::exec( "import PyTX" );
+			pybind11::exec( p_line );
+		}
+		catch ( pybind11::error_already_set error )
+		{
+			VTX_ERROR( "Error when running command {} : {}", p_line, error.what() );
+			throw( VTX::CommandException( p_line, error.what() ) );
+		}
 
-		return true;
 		// const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
 		// VTX_INFO( "Run command {} with result {}", p_line, result );
 	}
-	bool Interpretor::runTest()
+	void Interpretor::runTest()
 	{
 		try
 		{
@@ -48,7 +56,7 @@ namespace VTX::PythonBinding
 		catch ( pybind11::error_already_set error )
 		{
 			VTX_ERROR( "Error when running command {} : {}", "test", error.what() );
-			return false;
+			return;
 		}
 
 		const std::string path
@@ -62,10 +70,8 @@ namespace VTX::PythonBinding
 		catch ( pybind11::error_already_set error )
 		{
 			VTX_ERROR( "Error when running command {} : {}", "openFile", error.what() );
-			return false;
+			return;
 		}
-
-		return true;
 	}
 
 } // namespace VTX::PythonBinding

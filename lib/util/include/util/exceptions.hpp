@@ -42,6 +42,15 @@ namespace VTX
 		explicit LibException( const std::string & p_err ) : std::runtime_error( "[LIB] " + p_err ) {}
 	};
 
+	class CommandException : public std::runtime_error
+	{
+	  public:
+		explicit CommandException( const std::string & p_command, const std::string & p_err ) :
+			std::runtime_error( "[Command] " + p_command + " : " + p_err )
+		{
+		}
+	};
+
 	class NotImplementedException : public std::runtime_error
 	{
 	  public:
