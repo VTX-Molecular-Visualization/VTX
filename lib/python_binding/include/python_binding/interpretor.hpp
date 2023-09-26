@@ -14,6 +14,7 @@ namespace VTX::PythonBinding
 
 		void print( const std::string & p_line );
 		void runCommand( const std::string & p_line );
+		void runTest();
 
 	  private:
 		struct Impl;

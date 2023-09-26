@@ -1,7 +1,7 @@
 #ifndef ___VTX_APP_VTX_APP___
 #define ___VTX_APP_VTX_APP___
 
-#include "app/application/_fwd.hpp"
+#include "app/application/system.hpp"
 // #include <QElapsedTimer>
 #include <memory>
 // #include <renderer/gl/opengl_renderer.hpp>
@@ -26,20 +26,29 @@ namespace VTX::App
 		void goToState( const std::string &, void * const = nullptr );
 		void stop();
 
-		inline Application::Scene &		  getScene() { return *_scene; }
-		inline const Application::Scene & getScene() const { return *_scene; }
+		inline const Application::System &			getSystem() const { return *_system; };
+		inline std::shared_ptr<Application::System> getSystemPtr() { return _system; };
 
-		inline Application::Setting &		getSettings() { return *_setting; }
-		inline const Application::Setting & getSettings() const { return *_setting; }
+		inline void referenceSystem( std::shared_ptr<Application::System> p_system ) { _system = p_system; };
+
+		inline Application::Scene &		  getScene() { return *( _system->scene ); }
+		inline const Application::Scene & getScene() const { return *( _system->scene ); }
+
+		inline Application::Setting &		getSettings() { return *( _system->setting ); }
+		inline const Application::Setting & getSettings() const { return *( _system->setting ); }
+
+		inline Application::ECS::EntityDirector & getEntityDirector() { return *( _system->entityDirector ); }
 
 	  private:
-		Application::Scene * _scene = nullptr;
-		// std::unique_ptr<Renderer::GL::OpenGLRenderer> _renderer;
-		std::unique_ptr<Application::Setting> _setting;
+		std::shared_ptr<Application::System> _system = nullptr;
 
 		void _handleArgs( const std::vector<std::string> & );
 		void _update();
 		void _stop();
+
+		// Convenient accessors
+	  public:
+		static Core::ECS::Registry & MAIN_REGISTRY();
 	};
 } // namespace VTX::App
 

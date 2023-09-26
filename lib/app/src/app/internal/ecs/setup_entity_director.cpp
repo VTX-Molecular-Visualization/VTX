@@ -3,6 +3,7 @@
 #include "app/entity/application/scene_entity.hpp"
 #include "app/entity/scene/camera_entity.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Internal::ECS
 {
@@ -11,20 +12,22 @@ namespace VTX::App::Internal::ECS
 		using namespace App::Application::ECS;
 		using namespace App::Application::ECS::Building;
 
+		EntityDirector & entityDirector = *( VTXApp::get().getSystem().entityDirector );
+
 		// Scene entity
-		EntityDirector::addBuildStep(
+		entityDirector.addBuildStep(
 			Entity::SCENE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Application::SceneEntityBuilder::addComponent );
 
 		// Camera entity
-		EntityDirector::addBuildStep(
+		entityDirector.addBuildStep(
 			Entity::CAMERA_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::CameraEntityBuilder::addComponent );
 
 		// Molecule entity
-		EntityDirector::addBuildStep(
+		entityDirector.addBuildStep(
 			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::MoleculeEntityBuilder::addComponent );
-		EntityDirector::addBuildStep(
+		entityDirector.addBuildStep(
 			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::MoleculeEntityBuilder::setup );
-		EntityDirector::addBuildStep(
+		entityDirector.addBuildStep(
 			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::POST_SETUP, &Entity::Scene::MoleculeEntityBuilder::postSetup );
 	}
 

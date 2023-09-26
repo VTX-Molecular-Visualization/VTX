@@ -20,6 +20,8 @@ file(GLOB_RECURSE SOURCES src/*)
 # Create library.
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
 target_include_directories(VTX_APP PUBLIC include)
+# Usefull to allow pybind to read .lib (?)
+#set_target_properties(VTX_APP PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 # Link VTX modules.
 if(NOT TARGET VTX_UTIL)
@@ -40,7 +42,7 @@ target_link_libraries(VTX_APP PRIVATE VTX_CORE)
 target_link_libraries(VTX_APP PRIVATE VTX_IO)
 
 # Link third parties.
-target_link_libraries(VTX_APP PRIVATE EnTT::EnTT)
+target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
 
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)

@@ -6,6 +6,7 @@
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/vtx_app.hpp"
 #include <concepts>
 #include <string>
 #include <util/math/aabb.hpp>
@@ -26,7 +27,7 @@ namespace VTX::App::Application
 		template<SceneItem T>
 		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
-			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
+			return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
 		void referenceItem( Component::Scene::SceneItemComponent & p_item );

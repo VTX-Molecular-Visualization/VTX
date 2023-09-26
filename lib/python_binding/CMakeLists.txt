@@ -36,7 +36,12 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 
 # Link third parties.
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::pybind11 pybind11::embed)
-pybind11_add_module(PyTX "src/python_binding/global/load_module.cpp")
+pybind11_add_module(PyTX "src/python_binding/python_module/global.cpp")
+
+target_link_libraries(PyTX PRIVATE VTX_UTIL)
+target_link_libraries(PyTX PRIVATE VTX_CORE)
+target_link_libraries(PyTX PRIVATE VTX_APP)
+target_link_libraries(PyTX PRIVATE VTX_PYTHON_BINDING)
 
 
 ## Test.

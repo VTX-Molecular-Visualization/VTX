@@ -8,6 +8,7 @@
 #include "app/entity/scene/scene_item_entity.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include "app/render/proxy_builder.hpp"
+#include "app/vtx_app.hpp"
 #include <renderer/gl/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
@@ -20,33 +21,33 @@ namespace VTX::App::Entity::Scene
 	{
 		SceneItemEntityBuilder::addComponent( p_entity, p_extraData );
 
-		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
-		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
-		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
+		VTXApp::MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
+		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
+		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
+		VTXApp::MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
 	{
 		SceneItemEntityBuilder::setup( p_entity, p_extraData );
 
 		Component::Chemistry::Molecule & moleculeComponent
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
+			= VTXApp::MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
 
 		_load( moleculeComponent, p_extraData );
 
 		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
+			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
 		sceneComponent.setName( moleculeComponent.getPdbIdCode() );
 
 		// Setup GPU Proxy
 		Renderer::GL::StructProxyMolecule & gpuProxyComponent
-			= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
+			= VTXApp::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 
 		if ( moleculeComponent.hasTrajectory() )
 		{
-			MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
+			VTXApp::MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
 		}
 	}
 	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity,

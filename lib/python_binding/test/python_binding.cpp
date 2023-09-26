@@ -10,31 +10,36 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_APP - Python binding - Loading", "[integration]" )
+TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 {
 	using namespace VTX;
 
 	App::Test::Util::App::initApp();
-
 	PythonBinding::Interpretor interpretor = PythonBinding::Interpretor();
 
 	App::Application::Scene & scene = App::VTXApp::get().getScene();
+
 	REQUIRE( scene.getItemCount() == 0 );
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
-	interpretor.print( "try to load " + moleculePath.string() );
-	const std::string commandStr = "load " + moleculePath.string();
+	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
+	openAction.execute();
+
+	REQUIRE( scene.getItemCount() == 1 );
+
+	const std::string commandStr = "openFile " + moleculePath.string();
 
 	try
 	{
-		interpretor.runCommand( commandStr );
+		// interpretor.runCommand( commandStr );
+		interpretor.runTest();
 	}
 	catch ( const std::exception e )
 	{
 		VTX_ERROR( "Exception : {}", e.what() );
 	}
 
-	// REQUIRE( scene.getItemCount() == 1 );
+	REQUIRE( scene.getItemCount() == 2 );
 };

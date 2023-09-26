@@ -4,6 +4,7 @@
 #include "app/application/scene.hpp"
 #include "app/application/setting.hpp"
 #include "app/component/io/scene_file_info.hpp"
+#include "app/core/ecs/registry.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
@@ -13,7 +14,7 @@
 
 namespace VTX::App
 {
-	VTXApp::VTXApp( StructPrivacyToken ) : _setting( std::make_unique<Application::Setting>() ) {}
+	VTXApp::VTXApp( StructPrivacyToken ) {}
 
 	VTXApp::~VTXApp() {};
 
@@ -38,12 +39,17 @@ namespace VTX::App
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
+		_system					 = std::make_shared<Application::System>();
+		_system->registryManager = std::make_unique<Application::ECS::RegistryManager>();
+
+		_system->entityDirector = std::make_unique<Application::ECS::EntityDirector>();
 		Internal::ECS::setupEntityDirector();
 
-		// Create scene.
-		Core::ECS::BaseEntity sceneEntity = Application::ECS::EntityDirector::build( Entity::SCENE_ENTITY_ID );
+		_system->setting = std::make_unique<Application::Setting>();
 
-		_scene = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
+		// Create scene.
+		Core::ECS::BaseEntity sceneEntity = _system->entityDirector->build( Entity::SCENE_ENTITY_ID );
+		_system->scene					  = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
 
 		//_tickTimer.start();
 
@@ -162,4 +168,6 @@ namespace VTX::App
 
 	//	_deleteAtEndOfFrameObjects.clear();
 	//}
+
+	Core::ECS::Registry & VTXApp::MAIN_REGISTRY() { return VTXApp::get().getSystem().registryManager->getRegistry(); }
 } // namespace VTX::App
