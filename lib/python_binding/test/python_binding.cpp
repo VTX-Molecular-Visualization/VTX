@@ -31,15 +31,9 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 
 	const std::string commandStr = "openFile " + moleculePath.string();
 
-	try
-	{
-		// interpretor.runCommand( commandStr );
-		interpretor.runTest();
-	}
-	catch ( const std::exception e )
-	{
-		VTX_ERROR( "Exception : {}", e.what() );
-	}
+	// interpretor.runCommand( commandStr );
+	const bool testSucceed = interpretor.runTest();
 
+	REQUIRE( testSucceed );
 	REQUIRE( scene.getItemCount() == 2 );
 };

@@ -29,22 +29,43 @@ namespace VTX::PythonBinding
 
 	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 
-	void Interpretor::runCommand( const std::string & p_line )
+	bool Interpretor::runCommand( const std::string & p_line )
 	{
 		pybind11::exec( "import PyTX" );
 		pybind11::exec( p_line );
+
+		return true;
 		// const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
 		// VTX_INFO( "Run command {} with result {}", p_line, result );
 	}
-	void Interpretor::runTest()
+	bool Interpretor::runTest()
 	{
-		const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
-		VTX_INFO( "Run command test with result {}", result );
+		try
+		{
+			const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
+			VTX_INFO( "Run command test with result {}", result );
+		}
+		catch ( pybind11::error_already_set error )
+		{
+			VTX_ERROR( "Error when running command {} : {}", "test", error.what() );
+			return false;
+		}
 
 		const std::string path
 			= "C:\\Users\\gcpas\\Documents\\VTX\\repositories\\VTX_dev-ndy\\out\\build\\x64-Debug\\lib\\python_"
 			  "binding\\data\\1AGA.mmtf";
-		_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path );
+
+		try
+		{
+			_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path );
+		}
+		catch ( pybind11::error_already_set error )
+		{
+			VTX_ERROR( "Error when running command {} : {}", "openFile", error.what() );
+			return false;
+		}
+
+		return true;
 	}
 
 } // namespace VTX::PythonBinding

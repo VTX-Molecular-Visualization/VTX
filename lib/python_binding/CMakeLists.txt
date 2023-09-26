@@ -38,7 +38,7 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 
 # Link third parties.
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::pybind11 pybind11::embed)
-pybind11_add_module(PyTX "src/python_binding/python_module/global.cpp")
+pybind11_add_module(PyTX SHARED "src/python_binding/python_module/global.cpp")
 
 target_link_libraries(PyTX PRIVATE VTX_UTIL)
 target_link_libraries(PyTX PRIVATE VTX_CORE)
@@ -61,6 +61,7 @@ target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_CORE)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_APP)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_PYTHON_BINDING)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE EnTT::EnTT)
+target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE PyTX)
 
 # Catch2.
 include(CTest)

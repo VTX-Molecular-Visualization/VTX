@@ -13,8 +13,8 @@ namespace VTX::PythonBinding
 		~Interpretor();
 
 		void print( const std::string & p_line );
-		void runCommand( const std::string & p_line );
-		void runTest();
+		bool runCommand( const std::string & p_line );
+		bool runTest();
 
 	  private:
 		struct Impl;
