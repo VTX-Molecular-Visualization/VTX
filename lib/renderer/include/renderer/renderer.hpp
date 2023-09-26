@@ -40,12 +40,14 @@ namespace VTX::Renderer
 										   Pass::Programs { { "Sphere", "sphere" }, { "Cylinder", "cylinder" } } } );
 
 			// Depth.
+			/*
 			Pass * const depth = _renderGraph->addPass(
 				{ "Linearize depth",
 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
 				  Pass::Programs {
 					  { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } } );
+*/
 
 			// Shading.
 			Pass * const shading = _renderGraph->addPass(
@@ -65,7 +67,7 @@ namespace VTX::Renderer
 										   Pass::Programs {} } );
 
 			// Links.
-			_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
+			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
 			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );
 			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
 			_renderGraph->addLink( shading, fxaa, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );

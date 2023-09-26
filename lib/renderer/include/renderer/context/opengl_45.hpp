@@ -74,6 +74,7 @@ namespace VTX::Renderer::Context
 		{
 			width  = p_width;
 			height = p_height;
+			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 		}
 
 		// I/O.
@@ -102,7 +103,7 @@ namespace VTX::Renderer::Context
 		// Program.
 		inline void create( Handle & p_handle, const DescProgram & p_desc )
 		{
-			_programManager->createProgram( p_desc.name, p_desc.shaders, p_desc.toInject, p_desc.suffix );
+			_programManager->createProgram( &p_handle, p_desc.name, p_desc.shaders, p_desc.toInject, p_desc.suffix );
 		}
 
 		inline void destroy( Handle & p_handle, const DescProgram & p_desc )

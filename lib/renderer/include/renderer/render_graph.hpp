@@ -69,11 +69,11 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup( void * const	 p_loader,
-					const size_t	 p_width,
-					const size_t	 p_height,
-					const FilePath & p_shaderPath,
-					const uint		 p_output = 0 )
+		bool setup( void * const		  p_loader,
+					const size_t		  p_width,
+					const size_t		  p_height,
+					const FilePath &	  p_shaderPath,
+					const Context::Handle p_output = 0 )
 		{
 			// Clean all.
 			_clear();
@@ -106,7 +106,9 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Creating resources..." );
+
 				_createResources( _renderQueue );
+
 				VTX_DEBUG( "{}", "Creating resources... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -119,7 +121,10 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
+
 				_instructions.emplace_back( [ & ]() { _context->clear(); } );
+				for ( const Pass * const pass : _renderQueue ) {}
+
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -144,7 +149,7 @@ namespace VTX::Renderer
 			{
 				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
 				{
-					_context->resize( resource.id, std::get<DescAttachment>( resource.desc ) );
+					_context->resize( resource.handle, std::get<DescAttachment>( resource.desc ) );
 				}
 			}
 		}
@@ -203,8 +208,9 @@ namespace VTX::Renderer
 				// Programs.
 				for ( const DescProgram & desc : pass->programs )
 				{
-					Handle id;
+					Handle id = -1;
 					_context->create( id, desc );
+					assert( id != -1 );
 					_resources.push_back( Resource { id, desc } );
 				}
 			}
@@ -218,11 +224,11 @@ namespace VTX::Renderer
 			{
 				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
 				{
-					_context->destroy( resource.id, std::get<DescAttachment>( resource.desc ) );
+					_context->destroy( resource.handle, std::get<DescAttachment>( resource.desc ) );
 				}
 				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
 				{
-					_context->destroy( resource.id, std::get<DescProgram>( resource.desc ) );
+					_context->destroy( resource.handle, std::get<DescProgram>( resource.desc ) );
 				}
 				else
 				{

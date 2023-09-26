@@ -9,7 +9,7 @@ namespace VTX::Renderer
 
 	struct Resource
 	{
-		Context::Handle id;
+		Context::Handle handle;
 		Context::Desc	desc;
 	};
 

@@ -21,7 +21,8 @@ namespace VTX
 
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
 
-			Program * const createProgram( const std::string & p_name,
+			Program * const createProgram( GLuint * const	   p_handle,
+										   const std::string & p_name,
 										   const std::variant<FilePath, std::vector<FilePath>> &,
 										   const std::string & p_toInject = "",
 										   const std::string & p_suffix	  = "" );
