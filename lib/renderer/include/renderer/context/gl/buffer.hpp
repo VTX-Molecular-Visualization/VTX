@@ -11,6 +11,7 @@ namespace VTX::Renderer::Context::GL::Buffer
 
 	inline void create( GLuint * const p_handle )
 	{
+		assert( glIsBuffer( *p_handle ) == false );
 		glCreateBuffers( 1, p_handle );
 		assert( glIsBuffer( *p_handle ) );
 	}

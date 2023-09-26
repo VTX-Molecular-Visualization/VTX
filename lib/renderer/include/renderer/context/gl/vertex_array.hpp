@@ -8,6 +8,7 @@ namespace VTX::Renderer::Context::GL::VertexArray
 {
 	inline void create( GLuint * const p_handle )
 	{
+		assert( glIsVertexArray( *p_handle ) == false );
 		glCreateVertexArrays( 1, p_handle );
 		assert( glIsVertexArray( *p_handle ) );
 	}
