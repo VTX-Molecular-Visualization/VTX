@@ -29,7 +29,7 @@ namespace VTX::Renderer::Context
 			{
 				throw GLException( "Failed to load OpenGL with process" );
 			}
-			if ( gladLoadGL() == 0 )
+			else if ( gladLoadGL() == 0 )
 			{
 				throw GLException( "Failed to load OpenGL" );
 			}

@@ -1,5 +1,6 @@
 message("VTX_TOOL")
 cmake_minimum_required(VERSION 3.25)
+include(../util/cmake/configure-target.cmake)
 project(VTX_TOOL)
 
 # Git dependencies.
@@ -42,6 +43,7 @@ file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 
 # Declare library
 add_library(VTX_TOOL STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
+configureTarget(VTX_TOOL)
 target_include_directories(VTX_TOOL PUBLIC include)
 
 # Link VTX modules.
@@ -71,6 +73,7 @@ apply_qt_options(VTX_TOOL)
 # Test.
 # Create executable.
 add_executable(VTX_TOOL_TEST test/main.cpp)
+configureTarget(VTX_TOOL_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_TOOL_TEST PRIVATE Catch2::Catch2WithMain)

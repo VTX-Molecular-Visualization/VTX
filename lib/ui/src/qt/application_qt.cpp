@@ -94,8 +94,6 @@ namespace VTX::UI::QT
 		_mainWindow->initWindowLayout();
 	}
 
-	void ApplicationQt::renderScene() const { _mainWindow->updateRender(); }
-
 	void ApplicationQt::stop()
 	{
 		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)

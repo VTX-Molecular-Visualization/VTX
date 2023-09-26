@@ -1,6 +1,6 @@
 message("VTX_APP")
 cmake_minimum_required(VERSION 3.20)
-set(CMAKE_CXX_STANDARD 20)
+include(../util/cmake/configure-target.cmake)
 project(VTX_APP)
 
 # Git dependencies.
@@ -19,6 +19,7 @@ file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
+configureTarget(VTX_APP)
 target_include_directories(VTX_APP PUBLIC include)
 # Usefull to allow pybind to read .lib (?)
 #set_target_properties(VTX_APP PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
@@ -47,6 +48,7 @@ target_link_libraries(VTX_APP PUBLIC EnTT::EnTT)
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
 add_executable(VTX_APP_TEST ${TEST_SOURCES})
+configureTarget(VTX_APP_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_APP_TEST PRIVATE Catch2::Catch2WithMain)

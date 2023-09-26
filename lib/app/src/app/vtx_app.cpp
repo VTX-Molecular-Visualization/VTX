@@ -10,6 +10,8 @@
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
+#include <renderer/renderer.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App
@@ -51,6 +53,9 @@ namespace VTX::App
 		Core::ECS::BaseEntity sceneEntity = _system->entityDirector->build( Entity::SCENE_ENTITY_ID );
 		_system->scene					  = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
 
+		_renderer
+			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
+
 		//_tickTimer.start();
 
 		_handleArgs( p_args );
@@ -67,6 +72,7 @@ namespace VTX::App
 		}
 #endif
 	}
+
 	void VTXApp::update() { _update(); }
 	void VTXApp::stop() { _stop(); }
 
@@ -122,6 +128,8 @@ namespace VTX::App
 		//	_tickCounter = 0;
 		//	_tickTimer.restart();
 		//}
+
+		//_renderer->render();
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

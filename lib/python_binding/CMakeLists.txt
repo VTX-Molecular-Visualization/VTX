@@ -1,5 +1,6 @@
 message("VTX_PYTHON_BINDING")
 cmake_minimum_required(VERSION 3.20)
+include(../util/cmake/configure-target.cmake)
 project(VTX_PYTHON_BINDING)
 
 # Git dependencies.
@@ -18,6 +19,7 @@ file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_PYTHON_BINDING STATIC ${HEADERS} ${SOURCES})
+configureTarget(VTX_PYTHON_BINDING)
 target_include_directories(VTX_PYTHON_BINDING PUBLIC include)
 
 # Link VTX modules.
@@ -47,6 +49,7 @@ target_link_libraries(PyTX PRIVATE VTX_PYTHON_BINDING)
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
 add_executable(VTX_PYTHON_BINDING_TEST ${TEST_SOURCES})
+configureTarget(VTX_PYTHON_BINDING_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE Catch2::Catch2WithMain)

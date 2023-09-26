@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <vector>
 
+#define VTX_OPENGL_VERSION 450
+
 namespace VTX::Renderer::Context::GL
 {
 	class Buffer

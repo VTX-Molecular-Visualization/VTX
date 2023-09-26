@@ -1,14 +1,19 @@
 message("VTX_RENDERER")
 cmake_minimum_required(VERSION 3.21)
+include(../util/cmake/configure-target.cmake)
 project(VTX_RENDERER)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
+file(GLOB_RECURSE VENDORS vendor/*)
 
 # Create library.
-add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})
+add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES} ${VENDORS})
+configureTarget(VTX_RENDERER)
 target_include_directories(VTX_RENDERER PUBLIC include)
+# TODO: PRIVATE
+target_include_directories(VTX_RENDERER PUBLIC vendor)
 
 # Link VTX_UTIL.
 if(NOT TARGET VTX_UTIL)
@@ -38,6 +43,7 @@ FetchContent_MakeAvailable(SDL2)
 
 file(GLOB_RECURSE BENCH_FILES bench/*.h bench/*.hpp bench/*.c bench/*.cpp)
 add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
+configureTarget(VTX_RENDERER_BENCH)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
 target_include_directories(VTX_RENDERER_BENCH PRIVATE ${SDL2_SOURCE_DIR}/include)
@@ -55,23 +61,24 @@ target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_CORE)
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_IO)
 
 # Link third parties.
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2)
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2-static)
 target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2main)
 
-# Copy DLLs.
-add_custom_command(TARGET VTX_RENDERER_BENCH POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:VTX_RENDERER_BENCH> $<TARGET_RUNTIME_DLLS:VTX_RENDERER_BENCH>
-  COMMAND_EXPAND_LISTS
-)
-
 # Copy assets.
-add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/assets)
-add_dependencies(VTX_RENDERER_BENCH VTX_RENDERER_COPY_ASSETS)
+#add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/assets)
+#add_dependencies(VTX_RENDERER_BENCH VTX_RENDERER_COPY_ASSETS)
+
+# Install.
+set(INSTALL_DIR DESTINATION VTXRendererBench)
+install(DIRECTORY DESTINATION ${INSTALL_DIR})
+install(TARGETS VTX_RENDERER_BENCH RUNTIME DESTINATION ${INSTALL_DIR})
+install(DIRECTORY $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/shaders DESTINATION ${INSTALL_DIR})
 
 # Tests.
 
 # Create executable.
 add_executable(VTX_RENDERER_TEST test/main.cpp)
+configureTarget(VTX_RENDERER_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)

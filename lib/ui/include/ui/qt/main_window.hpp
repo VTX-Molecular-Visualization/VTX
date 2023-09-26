@@ -43,8 +43,6 @@ namespace VTX::UI::QT
 		QT::Tool::Render::Widget::RenderWidget *			 getRender();
 		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
 
-		void updateRender() const;
-
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
 		QT::Widget::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const Core::ToolLayoutData & layoutData );

@@ -1,5 +1,6 @@
 message("VTX_UI")
 cmake_minimum_required(VERSION 3.20)
+include(../util/cmake/configure-target.cmake)
 project(VTX_UI)
 
 # Get CMake helper functions.
@@ -13,13 +14,12 @@ configure_qt()
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 COMPONENTS OpenGL REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6QGifPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-if(MSVC)
+if(WIN32)
     find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
     find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 endif()
@@ -34,6 +34,7 @@ file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 
 # Declare library.
 add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
+configureTarget(VTX_UI)
 target_include_directories(VTX_UI PUBLIC include)
 
 # Link VTX modules.
@@ -49,16 +50,19 @@ endif()
 if(NOT TARGET VTX_APP)
     add_subdirectory(../app lib/app)
 endif()
+if(NOT TARGET VTX_RENDERER)
+    add_subdirectory(../renderer lib/renderer)
+endif()
 target_link_libraries(VTX_UI PRIVATE VTX_UTIL)
 target_link_libraries(VTX_UI PRIVATE VTX_CORE)
 target_link_libraries(VTX_UI PRIVATE VTX_IO)
 target_link_libraries(VTX_UI PRIVATE VTX_APP)
+target_link_libraries(VTX_UI PRIVATE VTX_RENDERER)
 
 # Link third parties.
 target_link_libraries(VTX_UI PUBLIC Qt6::Core)
 target_link_libraries(VTX_UI PUBLIC Qt6::Gui)
 target_link_libraries(VTX_UI PUBLIC Qt6::Widgets)
-target_link_libraries(VTX_UI PUBLIC Qt6::OpenGL)
 target_link_libraries(VTX_UI PUBLIC Qt6::OpenGLWidgets)
 target_link_libraries(VTX_UI PUBLIC Qt6::Network)
 target_link_libraries(VTX_UI PUBLIC Qt6::Svg)
@@ -69,6 +73,7 @@ apply_qt_options(VTX_UI)
 # Test.
 # Create executable.
 add_executable(VTX_UI_TEST test/main.cpp)
+configureTarget(VTX_UI_TEST)
 
 # Link third parties.
 target_link_libraries(VTX_UI_TEST PRIVATE Catch2::Catch2WithMain)
