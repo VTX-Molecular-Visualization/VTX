@@ -47,6 +47,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
       
     - name: Install
+      if: runner.os == 'Windows'
       working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
       run: cmake --install . --config ${{env.BUILD_TYPE}}
       
