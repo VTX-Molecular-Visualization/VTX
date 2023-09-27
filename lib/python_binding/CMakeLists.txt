@@ -22,6 +22,13 @@ add_library(VTX_PYTHON_BINDING STATIC ${HEADERS} ${SOURCES})
 configureTarget(VTX_PYTHON_BINDING)
 target_include_directories(VTX_PYTHON_BINDING PUBLIC include)
 
+# Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
+# it seems to be done automatically with MSVC and Clang but not with GCC
+if(CMAKE_COMPILER_IS_GNUCC)
+	#set_target_properties(VTX_PYTHON_BINDING PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	target_compile_options(VTX_PYTHON_BINDING PRIVATE "-fPIC")
+endif()
+
 # Link VTX modules.
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib/util)
@@ -45,7 +52,6 @@ target_link_libraries(PyTX PRIVATE VTX_CORE)
 target_link_libraries(PyTX PRIVATE VTX_APP)
 target_link_libraries(PyTX PRIVATE VTX_PYTHON_BINDING)
 
-
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
 add_executable(VTX_PYTHON_BINDING_TEST ${TEST_SOURCES})
@@ -54,7 +60,7 @@ configureTarget(VTX_PYTHON_BINDING_TEST)
 # Link third parties.
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE Catch2::Catch2WithMain)
 
-# Link VTX_APP.
+# Link libs.
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_UTIL)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_IO)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_CORE)
@@ -63,12 +69,6 @@ target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE VTX_PYTHON_BINDING)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE EnTT::EnTT)
 target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE PyTX)
 
-
-# Link between shared library and static library => static library must be position independent.
-# it seems to be done automatically with MSVC and Clang but not with GCC
-if(CMAKE_COMPILER_IS_GNUCC)
-	set_target_properties(VTX_PYTHON_BINDING_TEST PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-endif()
 
 # Catch2.
 include(CTest)

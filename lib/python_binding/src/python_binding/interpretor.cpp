@@ -37,7 +37,7 @@ namespace VTX::PythonBinding
 			pybind11::exec( "import PyTX" );
 			pybind11::exec( p_line );
 		}
-		catch ( pybind11::error_already_set error )
+		catch ( pybind11::error_already_set & error )
 		{
 			VTX_ERROR( "Error when running command {} : {}", p_line, error.what() );
 			throw( VTX::CommandException( p_line, error.what() ) );
@@ -53,7 +53,7 @@ namespace VTX::PythonBinding
 			const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
 			VTX_INFO( "Run command test with result {}", result );
 		}
-		catch ( pybind11::error_already_set error )
+		catch ( pybind11::error_already_set & error )
 		{
 			VTX_ERROR( "Error when running command {} : {}", "test", error.what() );
 			return;
@@ -67,7 +67,7 @@ namespace VTX::PythonBinding
 		{
 			_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path );
 		}
-		catch ( pybind11::error_already_set error )
+		catch ( pybind11::error_already_set & error )
 		{
 			VTX_ERROR( "Error when running command {} : {}", "openFile", error.what() );
 			return;
