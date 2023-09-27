@@ -67,7 +67,7 @@ target_link_libraries(VTX_PYTHON_BINDING_TEST PRIVATE PyTX)
 # Link between shared library and static library => static library must be position independent.
 # it seems to be done automatically with MSVC and Clang but not with GCC
 if(CMAKE_COMPILER_IS_GNUCC)
-	target_compile_options(VTX_PYTHON_BINDING_TEST PRIVATE "-fPIC")
+	set_target_properties(VTX_PYTHON_BINDING_TEST PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
 # Catch2.
