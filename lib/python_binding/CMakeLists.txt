@@ -22,12 +22,6 @@ add_library(VTX_PYTHON_BINDING STATIC ${HEADERS} ${SOURCES})
 configureTarget(VTX_PYTHON_BINDING)
 target_include_directories(VTX_PYTHON_BINDING PUBLIC include)
 
-# Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
-# it seems to be done automatically with MSVC and Clang but not with GCC
-if(CMAKE_COMPILER_IS_GNUCC)
-	#set_target_properties(VTX_PYTHON_BINDING PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-	target_compile_options(spdlog PRIVATE "-fPIC")
-endif()
 
 # Link VTX modules.
 if(NOT TARGET VTX_UTIL)
@@ -42,6 +36,13 @@ endif()
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_UTIL)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_CORE)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
+
+# Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
+# it seems to be done automatically with MSVC and Clang but not with GCC
+if(CMAKE_COMPILER_IS_GNUCC)
+	#set_target_properties(VTX_PYTHON_BINDING PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	target_compile_options(spdlog PRIVATE "-fPIC")
+endif()
 
 # Link third parties.
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::pybind11 pybind11::embed)
