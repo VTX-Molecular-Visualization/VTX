@@ -45,6 +45,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
 	target_compile_options(VTX_UTIL PRIVATE "-fPIC")
 	target_compile_options(VTX_CORE PRIVATE "-fPIC")
 	target_compile_options(VTX_APP PRIVATE "-fPIC")
+	target_compile_options(VTX_PYTHON_BINDING PRIVATE "-fPIC")
 endif()
 
 # Link third parties.
