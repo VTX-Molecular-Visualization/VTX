@@ -46,29 +46,66 @@ namespace VTX::Renderer::Context
 			std::vector<Vec2f> quad
 				= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-			GL::Buffer::create( &_vbo );
-			GL::VertexArray::create( &_vao );
-			GL::VertexArray::bind( _vao );
-			GL::VertexArray::enableAttribute( _vao, 0 );
-			GL::VertexArray::setVertexBuffer<float>( _vao, 0, _vbo, sizeof( Vec2f ) );
-			GL::VertexArray::setAttributeFormat<float>( _vao, 0, 2 );
-			GL::VertexArray::setAttributeBinding( _vao, 0, 0 );
-			GL::Buffer::setData( _vbo, quad, GL_STATIC_DRAW );
-			GL::VertexArray::unbind();
+			_vbo = std::make_unique<GL::Buffer>();
+			_vao = std::make_unique<GL::VertexArray>();
+
+			_vao->bind();
+			_vao->enableAttribute( 0 );
+			_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
+			_vao->setAttributeFormat<float>( 0, 2 );
+			_vao->setAttributeBinding( 0, 0 );
+			_vbo->set( quad );
+			_vao->unbind();
 
 			glClearColor( 1.f, 0.f, 0.f, 1.f );
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 		}
 
-		~OpenGL45()
+		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
+
+		// inline void clear() { glClear( GL_COLOR_BUFFER_BIT ); }
+
+		void build( const RenderQueue & p_renderQueue, Instructions & p_instructions )
 		{
-			VTX_DEBUG( "{}", "Delete context opengl 4.5" );
+			assert( p_instructions.empty() );
 
-			GL::Buffer::destroy( &_vbo );
-			GL::VertexArray::destroy( &_vao );
+			// Create resources.
+			for ( const Pass * const pass : p_renderQueue )
+			{ // Outputs.
+				for ( const auto & [ channel, output ] : pass->outputs )
+				{
+					const IO & desc = output.desc;
+					if ( std::holds_alternative<Attachment>( desc ) )
+					{
+						const Attachment & attachment = std::get<Attachment>( desc );
+
+						_textures.emplace( &attachment,
+										   GL::Texture2D( width,
+														  height,
+														  _mapFormat[ attachment.format ],
+														  _mapWrapping[ attachment.wrappingS ],
+														  _mapWrapping[ attachment.wrappingT ],
+														  _mapFiltering[ attachment.filteringMin ],
+														  _mapFiltering[ attachment.filteringMag ] ) );
+					}
+					else
+					{
+						throw std::runtime_error( "unknown descriptor type" );
+					}
+				}
+
+				// Programs.
+				for ( const Program & desc : pass->programs )
+				{
+					const GL::Program * const program
+						= _programManager->createProgram( desc.name, desc.shaders, desc.toInject, desc.suffix );
+					_programs.emplace( &desc, program );
+				}
+			}
+
+			// Build instructions.
+			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT ); } );
 		}
-
-		inline void clear() { glClear( GL_COLOR_BUFFER_BIT ); }
 
 		void resize( const size_t p_width, const size_t p_height )
 		{
@@ -78,6 +115,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// I/O.
+		/*
 		inline void create( Handle & p_handle, const DescAttachment & p_desc )
 		{
 			GL::Texture2D::create( &p_handle,
@@ -110,10 +148,11 @@ namespace VTX::Renderer::Context
 		{
 			_programManager->deleteProgram( p_desc.name );
 		}
+		*/
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time)
-		std::map<E_FORMAT, GLenum> _mapFormat = {
+		std::map<const E_FORMAT, const GLenum> _mapFormat = {
 			{ E_FORMAT::RGBA16F, GL_RGBA16F },
 			{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
 			{ E_FORMAT::RGBA32F, GL_RGBA32F },
@@ -123,7 +162,7 @@ namespace VTX::Renderer::Context
 			{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },
 		};
 
-		std::map<E_WRAPPING, GLint> _mapWrapping = {
+		std::map<const E_WRAPPING, const GLint> _mapWrapping = {
 			{ E_WRAPPING::REPEAT, GL_REPEAT },
 			{ E_WRAPPING::MIRRORED_REPEAT, GL_MIRRORED_REPEAT },
 			{ E_WRAPPING::CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE },
@@ -131,7 +170,7 @@ namespace VTX::Renderer::Context
 			{ E_WRAPPING::MIRROR_CLAMP_TO_EDGE, GL_MIRROR_CLAMP_TO_EDGE },
 		};
 
-		std::map<E_FILTERING, GLint> _mapFiltering = {
+		std::map<const E_FILTERING, const GLint> _mapFiltering = {
 			{ E_FILTERING::NEAREST, GL_NEAREST },
 			{ E_FILTERING::LINEAR, GL_LINEAR },
 			{ E_FILTERING::NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_NEAREST },
@@ -144,8 +183,12 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager> _programManager;
 
 		// Quad VAO.
-		GLuint _vao;
-		GLuint _vbo;
+		std::unique_ptr<GL::VertexArray> _vao;
+		std::unique_ptr<GL::Buffer>		 _vbo;
+
+		// Resources.
+		std::unordered_map<const Attachment *, GL::Texture2D>		   _textures;
+		std::unordered_map<const Program *, const GL::Program * const> _programs;
 	};
 } // namespace VTX::Renderer::Context
 

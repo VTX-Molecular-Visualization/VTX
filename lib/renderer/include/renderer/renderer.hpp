@@ -20,14 +20,12 @@ namespace VTX::Renderer
 			_width( p_width ),
 			_height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
-			using namespace Context;
-
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
 
-			DescAttachment imageGeometry { E_FORMAT::RGBA32UI };
-			DescAttachment imageColor { E_FORMAT::RGBA16F };
-			DescAttachment imagePicking { E_FORMAT::RG32UI };
-			DescAttachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
+			Attachment imageGeometry { E_FORMAT::RGBA32UI };
+			Attachment imageColor { E_FORMAT::RGBA16F };
+			Attachment imagePicking { E_FORMAT::RG32UI };
+			Attachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
 			// Geometric.
 			Pass * const geo
@@ -44,7 +42,7 @@ namespace VTX::Renderer
 			Pass * const depth = _renderGraph->addPass(
 				{ "Linearize depth",
 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
-				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", DescAttachment { E_FORMAT::R32F } } } },
+				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", Attachment { E_FORMAT::R32F } } } },
 				  Pass::Programs {
 					  { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } } );
 */
@@ -55,7 +53,7 @@ namespace VTX::Renderer
 				{ "Shading",
 				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
 								 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
-								 { E_CHANNEL::COLOR_2, { "Blur", DescAttachment { E_FORMAT::R16F } } } },
+								 { E_CHANNEL::COLOR_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
 				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
 				  Pass::Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } } } } );
 

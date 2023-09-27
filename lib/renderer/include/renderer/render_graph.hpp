@@ -3,9 +3,6 @@
 
 #include "context/concept_context.hpp"
 #include "scheduler/concept_scheduler.hpp"
-#include "struct_link.hpp"
-#include "struct_pass.hpp"
-#include "struct_ressource.hpp"
 #include <util/logger.hpp>
 #include <util/variant.hpp>
 
@@ -19,9 +16,9 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
-		inline Scheduler::RenderQueue & getRenderQueue() { return _renderQueue; }
-		inline const Pass::Output *		getOutput() { return _output; }
-		inline void						setOutput( const Pass::Output * const p_output ) { _output = p_output; }
+		inline RenderQueue &		getRenderQueue() { return _renderQueue; }
+		inline const Pass::Output * getOutput() { return _output; }
+		inline void					setOutput( const Pass::Output * const p_output ) { _output = p_output; }
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
@@ -69,11 +66,11 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup( void * const		  p_loader,
-					const size_t		  p_width,
-					const size_t		  p_height,
-					const FilePath &	  p_shaderPath,
-					const Context::Handle p_output = 0 )
+		bool setup( void * const	 p_loader,
+					const size_t	 p_width,
+					const size_t	 p_height,
+					const FilePath & p_shaderPath,
+					const Handle	 p_output = 0 )
 		{
 			// Clean all.
 			_clear();
@@ -102,29 +99,11 @@ namespace VTX::Renderer
 			// Create context.
 			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
 
-			// Create resources.
-			try
-			{
-				VTX_DEBUG( "{}", "Creating resources..." );
-
-				_createResources( _renderQueue );
-
-				VTX_DEBUG( "{}", "Creating resources... done" );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Can not create resources: {}", p_e.what() );
-				return false;
-			}
-
 			// Generate instructions.
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-
-				_instructions.emplace_back( [ & ]() { _context->clear(); } );
-				for ( const Pass * const pass : _renderQueue ) {}
-
+				_context->build( _renderQueue, _instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -144,14 +123,6 @@ namespace VTX::Renderer
 
 			assert( _context != nullptr );
 			_context->resize( p_width, p_height );
-
-			for ( Resource & resource : _resources )
-			{
-				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
-				{
-					_context->resize( resource.handle, std::get<DescAttachment>( resource.desc ) );
-				}
-			}
 		}
 
 		void render()
@@ -169,74 +140,16 @@ namespace VTX::Renderer
 		inline Links &	getLinks() { return _links; }
 
 	  private:
-		using Instruction  = std::function<void()>;
-		using Instructions = std::vector<Instruction>;
-
-		Scheduler::RenderQueue _renderQueue;
-		std::unique_ptr<C>	   _context;
+		RenderQueue		   _renderQueue;
+		std::unique_ptr<C> _context;
 
 		const Pass::Output * _output;
 		Passes				 _passes;
 		Links				 _links;
-		Resources			 _resources;
 		Instructions		 _instructions;
-
-		void _createResources( const Scheduler::RenderQueue & p_queue )
-		{
-			using namespace Context;
-
-			for ( const Pass * const pass : p_queue )
-			{
-				// Outputs.
-				for ( const auto & [ channel, output ] : pass->outputs )
-				{
-					const DescIO & desc = output.desc;
-
-					Handle id = -1;
-					if ( std::holds_alternative<DescAttachment>( desc ) )
-					{
-						_context->create( id, std::get<DescAttachment>( desc ) );
-					}
-					else
-					{
-						throw std::runtime_error( "unknown descriptor type" );
-					}
-					assert( id != -1 );
-					_resources.push_back( Resource { id, Util::Variant::cast( desc ) } );
-				}
-
-				// Programs.
-				for ( const DescProgram & desc : pass->programs )
-				{
-					Handle id = -1;
-					_context->create( id, desc );
-					assert( id != -1 );
-					_resources.push_back( Resource { id, desc } );
-				}
-			}
-		}
 
 		void _clear()
 		{
-			using namespace Context;
-
-			for ( Resource & resource : _resources )
-			{
-				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
-				{
-					_context->destroy( resource.handle, std::get<DescAttachment>( resource.desc ) );
-				}
-				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
-				{
-					_context->destroy( resource.handle, std::get<DescProgram>( resource.desc ) );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
-				}
-			}
-
-			_resources.clear();
 			_renderQueue.clear();
 			_instructions.clear();
 			_context.reset( nullptr );

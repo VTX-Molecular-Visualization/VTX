@@ -11,6 +11,8 @@ namespace VTX::Renderer::Scheduler
 	  public:
 		void schedule( Passes & p_passes, const Links & p_links, RenderQueue & p_outRenderQueue )
 		{
+			using namespace Context;
+
 			// Build adjacent list.
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );

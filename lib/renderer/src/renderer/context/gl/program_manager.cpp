@@ -40,8 +40,7 @@ namespace VTX::Renderer::Context::GL
 		_programs.clear();
 	}
 
-	Program * const ProgramManager::createProgram( GLuint * const										 p_handle,
-												   const std::string &									 p_name,
+	Program * const ProgramManager::createProgram( const std::string &									 p_name,
 												   const std::variant<FilePath, std::vector<FilePath>> & p_shaders,
 												   const std::string &									 p_toInject,
 												   const std::string &									 p_suffix )
@@ -87,8 +86,6 @@ namespace VTX::Renderer::Context::GL
 
 			VTX_DEBUG( "Program {} created: {}", _programs[ name ]->getId(), p_name );
 		}
-
-		*p_handle = _programs[ name ]->getId();
 
 		return _programs[ name ].get();
 	}

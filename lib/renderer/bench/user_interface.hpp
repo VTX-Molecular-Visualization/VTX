@@ -132,8 +132,8 @@ namespace VTX::Bench
 			// Camera.
 			_drawCamera( p_camera );
 
-			// Passes.
-			//_drawPasses( p_renderer );
+			// DescPasses.
+			//_drawDescPasses( p_renderer );
 
 			// Times.
 			//_drawTimes( p_renderer );
@@ -203,7 +203,7 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		void _drawPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
+		void _drawDescPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 		{
 			if ( ImGui::Begin( "Render passes" ) )
 			{
@@ -463,13 +463,13 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				// Pass nodes.
+				// DescPass nodes.
 				uint									   id = 0;
 				std::map<const Pass::Input * const, uint>  mapIdInput;
 				std::map<const Pass::Output * const, uint> mapIdOutput;
 				std::map<const uint, const E_CHANNEL>	   mapIdChannel;
-				std::map<const uint, Pass *>			   mapIdPass;
-				std::map<const uint, Link *>			   mapIdLink;
+				std::map<const uint, Pass *>			   mapIdDescPass;
+				std::map<const uint, Link *>			   mapIdDescLink;
 
 				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{
@@ -483,7 +483,7 @@ namespace VTX::Bench
 					{
 						mapIdInput.emplace( &input, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPass.emplace( id, pass.get() );
+						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
@@ -496,7 +496,7 @@ namespace VTX::Bench
 					{
 						mapIdOutput.emplace( &output, id );
 						mapIdChannel.emplace( id, channel );
-						mapIdPass.emplace( id, pass.get() );
+						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
 						ImNodes::EndOutputAttribute();
@@ -520,20 +520,20 @@ namespace VTX::Bench
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
 
-				// Links.
+				// DescLinks.
 				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
-					mapIdLink.emplace( id, link.get() );
+					mapIdDescLink.emplace( id, link.get() );
 					ImNodes::Link( id++,
 								   mapIdOutput[ &( link->src->outputs[ link->channelSrc ] ) ],
 								   mapIdInput[ &( link->dest->inputs[ link->channelDest ] ) ] );
 				}
 
 				// Output.
-				uint idFinalLink = -1;
+				uint idFinalDescLink = -1;
 				if ( p_newRenderer->getRenderGraph().getOutput() )
 				{
-					idFinalLink = id;
+					idFinalDescLink = id;
 					ImNodes::Link( id++, mapIdOutput[ p_newRenderer->getRenderGraph().getOutput() ], idFinalOuput );
 				}
 
@@ -556,30 +556,30 @@ namespace VTX::Bench
 						}
 					}
 
-					// Link.
+					// DescLink.
 					else
 					{
-						p_newRenderer->getRenderGraph().addLink( mapIdPass[ newLinkStartId ],
-																 mapIdPass[ newLinkEndtId ],
+						p_newRenderer->getRenderGraph().addLink( mapIdDescPass[ newLinkStartId ],
+																 mapIdDescPass[ newLinkEndtId ],
 																 mapIdChannel[ newLinkStartId ],
 																 mapIdChannel[ newLinkEndtId ] );
 					}
 				}
 
 				// Check deleted links.
-				int deletedLinkId;
-				if ( ImNodes::IsLinkDestroyed( &deletedLinkId ) )
+				int deletedDescLinkId;
+				if ( ImNodes::IsLinkDestroyed( &deletedDescLinkId ) )
 				{
 					// Output.
-					if ( deletedLinkId == idFinalLink )
+					if ( deletedDescLinkId == idFinalDescLink )
 					{
 						p_newRenderer->getRenderGraph().setOutput( nullptr );
 					}
 
-					// Link.
+					// DescLink.
 					else
 					{
-						p_newRenderer->getRenderGraph().removeLink( mapIdLink[ deletedLinkId ] );
+						p_newRenderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
 					}
 				}
 			}

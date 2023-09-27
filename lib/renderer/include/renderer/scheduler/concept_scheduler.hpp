@@ -1,14 +1,12 @@
 #ifndef __VTX_RENDERER_SCHEDULER_CONCEPT__
 #define __VTX_RENDERER_SCHEDULER_CONCEPT__
 
-#include "renderer/struct_link.hpp"
-#include "renderer/struct_pass.hpp"
+#include "renderer/descriptors.hpp"
 #include <concepts>
 #include <vector>
 
 namespace VTX::Renderer::Scheduler
 {
-	using RenderQueue = std::vector<Pass *>;
 
 	template<typename S>
 	concept Concept
