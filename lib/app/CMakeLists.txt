@@ -22,7 +22,6 @@ add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
 configureTarget(VTX_APP)
 target_include_directories(VTX_APP PUBLIC include)
 # Usefull to allow pybind to read .lib (?)
-#set_target_properties(VTX_APP PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 # Link VTX modules.
 if(NOT TARGET VTX_UTIL)
