@@ -54,15 +54,15 @@ jobs:
       if: runner.os == 'Windows'
       with:
         name: VTX_RENDERER_BENCH_WIN
-        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTX_RENDERER_BENCH.exe ${{env.CMAKE_INSTALL_PREFIX}}/shaders
-    - uses: actions/upload-artifact@v3
-      if: runner.os == 'Linux'
-      with:
-        name: VTX_RENDERER_BENCH_LINUX
-        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTX_RENDERER_BENCH ${{env.CMAKE_INSTALL_PREFIX}}/shaders
-    - uses: actions/upload-artifact@v3
-      if: runner.os == 'macOS'
-      with:
-        name: VTX_RENDERER_BENCH_MAC
-        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTX_RENDERER_BENCH ${{env.CMAKE_INSTALL_PREFIX}}/shaders
+        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
+#    - uses: actions/upload-artifact@v3
+#      if: runner.os == 'Linux'
+#      with:
+#        name: VTX_RENDERER_BENCH_LINUX
+#        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
+#    - uses: actions/upload-artifact@v3
+#      if: runner.os == 'macOS'
+#      with:
+#        name: VTX_RENDERER_BENCH_MAC
+#        path: ${{env.CMAKE_INSTALL_PREFIX}}/VTXRendererBench
       
