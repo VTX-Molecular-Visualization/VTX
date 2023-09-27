@@ -41,7 +41,7 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 # it seems to be done automatically with MSVC and Clang but not with GCC
 if(CMAKE_COMPILER_IS_GNUCC)
 	#set_target_properties(VTX PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-	target_compile_options(VTX PUBLIC "-fPIC")
+	target_compile_options(VTX_PYTHON_BINDING PUBLIC "-fPIC")
 #	target_compile_options(spdlog PRIVATE "-fPIC")
 #	target_compile_options(chemfiles PRIVATE "-fPIC")
 #	target_compile_options(bzip2 PUBLIC "-fPIC")
