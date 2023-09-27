@@ -35,22 +35,18 @@ if(NOT TARGET VTX_APP)
 endif()
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_UTIL)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_CORE)
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_IO)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 
 # Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
 # it seems to be done automatically with MSVC and Clang but not with GCC
 if(CMAKE_COMPILER_IS_GNUCC)
 	#set_target_properties(VTX PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-	target_compile_options(VTX_PYTHON_BINDING PUBLIC "-fPIC")
-#	target_compile_options(spdlog PRIVATE "-fPIC")
-#	target_compile_options(chemfiles PRIVATE "-fPIC")
-#	target_compile_options(bzip2 PUBLIC "-fPIC")
-#	target_compile_options(VTX_UTIL PRIVATE "-fPIC")
-#	target_compile_options(VTX_CORE PRIVATE "-fPIC")
-#	target_compile_options(VTX_IO PRIVATE "-fPIC")
-#	target_compile_options(VTX_RENDERER PRIVATE "-fPIC")
-#	target_compile_options(VTX_APP PRIVATE "-fPIC")
-#	target_compile_options(VTX_PYTHON_BINDING PRIVATE "-fPIC")
+	target_compile_options(spdlog PRIVATE "-fPIC")
+	#target_compile_options(chemfiles PRIVATE "-fPIC")
+	#target_compile_options(bzip2 PUBLIC "-fPIC")
+	target_compile_options(VTX_PYTHON_BINDING PRIVATE "-fPIC")
 endif()
 
 # Link third parties.
