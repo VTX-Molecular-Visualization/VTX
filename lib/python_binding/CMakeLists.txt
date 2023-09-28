@@ -42,12 +42,27 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 # Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
 # it seems to be done automatically with MSVC and Clang but not with GCC
 if(CMAKE_COMPILER_IS_GNUCC)
-	include(cmake/add_compile_option_recursively.cmake)
-	addCompileOptionRecursively(VTX_PYTHON_BINDING "-fPIC")
-	
-	set_target_properties(VTX_PYTHON_BINDING PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-	set_target_properties(bzip2 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	#include(cmake/add_compile_option_recursively.cmake)
+	#addCompileOptionRecursively(VTX_PYTHON_BINDING "-fPIC")
+
 	set_target_properties(molfiles PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(chemfiles_objects PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(pugixml PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(zlib PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(lzma PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(bzip2 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(fmt PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(tng_io PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(chemfiles PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	
+	set_target_properties(VTX_UTIL PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_CORE PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_RENDERER_COPY_SHADERS PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_RENDERER PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_IO PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_APP PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(VTX_PYTHON_BINDING PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
 # Link third parties.
