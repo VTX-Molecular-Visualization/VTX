@@ -103,7 +103,7 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _renderQueue, _instructions );
+				_context->build( _renderQueue, _links, p_output, _instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )

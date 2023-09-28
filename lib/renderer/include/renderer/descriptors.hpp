@@ -23,6 +23,10 @@ namespace VTX::Renderer
 	{
 	};
 
+	struct Data
+	{
+	};
+
 	// 	struct Uniform
 	// 	{
 	// 	};
@@ -36,7 +40,7 @@ namespace VTX::Renderer
 	};
 
 	using Handle = uint;
-	using IO	 = std::variant<Attachment, Storage>;
+	using IO	 = std::variant<Attachment, Storage, Data>;
 
 	struct Pass
 	{
@@ -49,7 +53,7 @@ namespace VTX::Renderer
 
 		struct Output : public Input
 		{
-			// std::vector<Input *> dest;
+			// std::vector<Input *> dest; //?
 		};
 
 		using Inputs   = std::unordered_map<E_CHANNEL, Input>;

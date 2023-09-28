@@ -22,9 +22,11 @@ namespace VTX::Renderer::Context
 								   const size_t		   p_width,
 								   const size_t		   p_height,
 								   const RenderQueue & p_renderQueue,
+								   const Links &	   p_links,
+								   const Handle		   p_output,
 								   Instructions &	   p_instructions ) {
 							 {
-								 p_context.build( p_renderQueue, p_instructions )
+								 p_context.build( p_renderQueue, p_links, p_output, p_instructions )
 							 } -> std::same_as<void>;
 							 {
 								 p_context.resize( p_width, p_height )

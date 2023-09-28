@@ -3,6 +3,7 @@
 
 #include "concept_context.hpp"
 #include "gl/buffer.hpp"
+#include "gl/framebuffer.hpp"
 #include "gl/program_manager.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
@@ -63,30 +64,39 @@ namespace VTX::Renderer::Context
 
 		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
 
-		// inline void clear() { glClear( GL_COLOR_BUFFER_BIT ); }
-
-		void build( const RenderQueue & p_renderQueue, Instructions & p_instructions )
+		void build( const RenderQueue & p_renderQueue,
+					const Links &		p_links,
+					const Handle		p_output,
+					Instructions &		p_instructions )
 		{
 			assert( p_instructions.empty() );
 
-			// Create resources.
+			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
+
 			for ( const Pass * const pass : p_renderQueue )
-			{ // Outputs.
+			{
+				// Create FBO.
+				_fbos.emplace( pass, std::make_unique<GL::Framebuffer>() );
+
+				// Create outputs.
 				for ( const auto & [ channel, output ] : pass->outputs )
 				{
 					const IO & desc = output.desc;
 					if ( std::holds_alternative<Attachment>( desc ) )
 					{
 						const Attachment & attachment = std::get<Attachment>( desc );
+						_textures.emplace(
+							&attachment,
+							std::make_unique<GL::Texture2D>( width,
+															 height,
+															 _mapFormat[ attachment.format ],
+															 _mapWrapping[ attachment.wrappingS ],
+															 _mapWrapping[ attachment.wrappingT ],
+															 _mapFiltering[ attachment.filteringMin ],
+															 _mapFiltering[ attachment.filteringMag ] ) );
 
-						_textures.emplace( &attachment,
-										   GL::Texture2D( width,
-														  height,
-														  _mapFormat[ attachment.format ],
-														  _mapWrapping[ attachment.wrappingS ],
-														  _mapWrapping[ attachment.wrappingT ],
-														  _mapFiltering[ attachment.filteringMin ],
-														  _mapFiltering[ attachment.filteringMag ] ) );
+						// Attach.
+						_fbos[ pass ]->attachTexture( *_textures[ &attachment ], _mapAttachment[ channel ] );
 					}
 					else
 					{
@@ -94,7 +104,7 @@ namespace VTX::Renderer::Context
 					}
 				}
 
-				// Programs.
+				// Create programs.
 				for ( const Program & desc : pass->programs )
 				{
 					const GL::Program * const program
@@ -102,9 +112,6 @@ namespace VTX::Renderer::Context
 					_programs.emplace( &desc, program );
 				}
 			}
-
-			// Build instructions.
-			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT ); } );
 		}
 
 		void resize( const size_t p_width, const size_t p_height )
@@ -112,46 +119,26 @@ namespace VTX::Renderer::Context
 			width  = p_width;
 			height = p_height;
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+			for ( auto & [ desc, texture ] : _textures )
+			{
+				texture->resize( width, height );
+			}
 		}
-
-		// I/O.
-		/*
-		inline void create( Handle & p_handle, const DescAttachment & p_desc )
-		{
-			GL::Texture2D::create( &p_handle,
-								   GLsizei( width ),
-								   GLsizei( height ),
-								   _mapFormat[ p_desc.format ],
-								   _mapWrapping[ p_desc.wrappingS ],
-								   _mapWrapping[ p_desc.wrappingT ],
-								   _mapFiltering[ p_desc.filteringMin ],
-								   _mapFiltering[ p_desc.filteringMag ] );
-		}
-
-		inline void resize( Handle & p_handle, const DescAttachment & p_desc )
-		{
-			destroy( p_handle, p_desc );
-			create( p_handle, p_desc );
-		}
-
-		inline void destroy( Handle & p_handle, const DescAttachment & p_desc ) { GL::Texture2D::destroy( &p_handle ); }
-
-		inline void create( Handle & p_handle, const DescStorage & p_desc ) {}
-
-		// Program.
-		inline void create( Handle & p_handle, const DescProgram & p_desc )
-		{
-			_programManager->createProgram( &p_handle, p_desc.name, p_desc.shaders, p_desc.toInject, p_desc.suffix );
-		}
-
-		inline void destroy( Handle & p_handle, const DescProgram & p_desc )
-		{
-			_programManager->deleteProgram( p_desc.name );
-		}
-		*/
 
 	  private:
-		// TODO: find a better solution (magic enum explodes compile time)
+		// TODO: find a better solution (magic enum explodes compile time).
+
+		std::map<const E_CHANNEL, const GLenum> _mapAttachment = {
+			{ E_CHANNEL::COLOR_0, GL_COLOR_ATTACHMENT0 },
+			{ E_CHANNEL::COLOR_1, GL_COLOR_ATTACHMENT1 },
+			{ E_CHANNEL::COLOR_2, GL_COLOR_ATTACHMENT2 },
+			{ E_CHANNEL::DEPTH, GL_DEPTH_ATTACHMENT },
+		};
+
+		std::map<const E_PRIMTIVE, const GLenum> _mapPrimitive = { { E_PRIMTIVE::POINTS, GL_POINTS },
+																   { E_PRIMTIVE::LINES, GL_LINES },
+																   { E_PRIMTIVE::TRIANGLES, GL_TRIANGLES } };
+
 		std::map<const E_FORMAT, const GLenum> _mapFormat = {
 			{ E_FORMAT::RGBA16F, GL_RGBA16F },
 			{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
@@ -179,16 +166,15 @@ namespace VTX::Renderer::Context
 			{ E_FILTERING::LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR },
 		};
 
-		// Program manager.
 		std::unique_ptr<GL::ProgramManager> _programManager;
+		std::unique_ptr<GL::VertexArray>	_vao;
+		std::unique_ptr<GL::Buffer>			_vbo;
+		std::unique_ptr<GL::Buffer>			_ubo;
 
-		// Quad VAO.
-		std::unique_ptr<GL::VertexArray> _vao;
-		std::unique_ptr<GL::Buffer>		 _vbo;
-
-		// Resources.
-		std::unordered_map<const Attachment *, GL::Texture2D>		   _textures;
-		std::unordered_map<const Program *, const GL::Program * const> _programs;
+		std::unordered_map<const Attachment *, std::unique_ptr<GL::Texture2D>> _textures;
+		std::unordered_map<const Program *, const GL::Program * const>		   _programs;
+		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>>	   _fbos;
+		std::unordered_map<const Pass *, std::unique_ptr<GL::Buffer>>		   _ubos;
 	};
 } // namespace VTX::Renderer::Context
 

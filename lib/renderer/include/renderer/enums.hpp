@@ -31,6 +31,19 @@ namespace VTX::Renderer
 		DEPTH_COMPONENT32F
 	};
 
+	enum struct E_PRIMTIVE
+	{
+		POINTS,
+		LINES,
+		TRIANGLES
+	};
+
+	enum struct E_DRAW_TYPE
+	{
+
+	};
+
+	/*
 	enum struct E_HANDLE_TYPE
 	{
 		ATTACHMENT,
@@ -39,6 +52,7 @@ namespace VTX::Renderer
 		PROGRAM,
 		// ...?
 	};
+	*/
 
 	enum struct E_TYPE
 	{
