@@ -44,6 +44,9 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 if(CMAKE_COMPILER_IS_GNUCC)
 	include(cmake/add_compile_option_recursively.cmake)
 	addCompileOptionRecursively(VTX_PYTHON_BINDING "-fPIC")
+	
+	set_target_properties(bzip2 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(molfiles PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
 # Link third parties.
