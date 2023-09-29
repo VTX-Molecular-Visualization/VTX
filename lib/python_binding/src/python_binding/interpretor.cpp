@@ -1,6 +1,7 @@
 #include "python_binding/interpretor.hpp"
 // #include <app/application/ecs/registry_manager.hpp>
 #include <app/vtx_app.hpp>
+#include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -59,13 +60,11 @@ namespace VTX::PythonBinding
 			return;
 		}
 
-		const std::string path
-			= "C:\\Users\\gcpas\\Documents\\VTX\\repositories\\VTX_dev-ndy\\out\\build\\x64-Debug\\lib\\python_"
-			  "binding\\data\\1AGA.mmtf";
+		const FilePath path = VTX::IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 
 		try
 		{
-			_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path );
+			_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path.string() );
 		}
 		catch ( pybind11::error_already_set & error )
 		{
