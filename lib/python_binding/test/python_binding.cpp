@@ -7,6 +7,7 @@
 #include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
 #include <string>
+#include <stringstream>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -29,10 +30,27 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 
 	REQUIRE( scene.getItemCount() == 1 );
 
-	const std::string commandStr = "openFile " + moleculePath.string();
+	std::stringstream ssCommandOpen = std::stringstream();
+	ssCommandOpen << "openFile( path=" << moleculePath << " )";
 
-	// interpretor.runCommand( commandStr );
-	interpretor.runTest();
-
+	interpretor.runCommand( ssCommandOpen.str() );
 	REQUIRE( scene.getItemCount() == 2 );
+
+	std::stringstream ssBadCommandOpen = std::stringstream();
+	ssBadCommandOpen << "openFile( tirelipimpon=" << moleculePath << " )";
+
+	try
+	{
+		interpretor.runCommand( ssBadCommandOpen.str() );
+	}
+	catch ( const CommandException & e )
+	{
+		REQUIRE( true );
+		VTX_INFO( "CommandException : {}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		REQUIRE( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
 };

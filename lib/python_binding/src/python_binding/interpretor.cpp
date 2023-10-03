@@ -11,22 +11,21 @@ namespace VTX::PythonBinding
 	struct Interpretor::Impl
 	{
 	  public:
-		pybind11::module_ & vtxModule()
+		void init()
 		{
-			if ( !_vtxModule )
-			{
-				_vtxModule = pybind11::module_::import( "PyTX" );
-			}
-
-			return _vtxModule;
+			_vtxModule = pybind11::module_::import( "PyTX" );
+			pybind11::exec( "from PyTX import *" );
+			_vtxModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
 		}
+
+		pybind11::module_ & vtxModule() { return _vtxModule; }
 
 	  private:
 		pybind11::scoped_interpreter _interpretor {};
 		pybind11::module_			 _vtxModule;
 	};
 
-	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
+	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) { _impl->init(); }
 	Interpretor::~Interpretor() {}
 
 	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
@@ -35,42 +34,11 @@ namespace VTX::PythonBinding
 	{
 		try
 		{
-			pybind11::exec( "import PyTX" );
 			pybind11::exec( p_line );
 		}
-		catch ( pybind11::error_already_set & error )
+		catch ( const pybind11::error_already_set & e )
 		{
-			VTX_ERROR( "Error when running command {} : {}", p_line, error.what() );
-			throw( VTX::CommandException( p_line, error.what() ) );
-		}
-
-		// const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
-		// VTX_INFO( "Run command {} with result {}", p_line, result );
-	}
-	void Interpretor::runTest()
-	{
-		try
-		{
-			const int result = _impl->vtxModule().attr( "test" )( 5 ).cast<int>();
-			VTX_INFO( "Run command test with result {}", result );
-		}
-		catch ( pybind11::error_already_set & error )
-		{
-			VTX_ERROR( "Error when running command {} : {}", "test", error.what() );
-			return;
-		}
-
-		const FilePath path = VTX::IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
-
-		try
-		{
-			_impl->vtxModule().attr( "openFile" )( App::VTXApp::get().getSystemPtr(), path.string() );
-		}
-		catch ( pybind11::error_already_set & error )
-		{
-			VTX_ERROR( "Error when running command {} : {}", "openFile", error.what() );
-			return;
+			throw( VTX::CommandException( p_line, e.what() ) );
 		}
 	}
-
 } // namespace VTX::PythonBinding
