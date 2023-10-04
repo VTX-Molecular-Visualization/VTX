@@ -55,14 +55,19 @@ namespace VTX::Renderer
 			// 			}
 
 			// Create link.
+			// TODO: use links or ptr?
 			_links.emplace_back(
 				std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
+			p_passDest->inputs[ p_channelDest ].src = &p_passSrc->outputs[ p_channelSrc ];
 
 			return true;
 		}
 
 		void removeLink( const Link * const p_link )
 		{
+			// TODO: use links or ptr?
+			p_link->dest->inputs[ p_link->channelDest ].src = nullptr;
+			// TODO: is link deleted?
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 

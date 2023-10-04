@@ -32,24 +32,24 @@ namespace VTX::Renderer
 
 	using Handle = uint;
 	using IO	 = std::variant<Attachment, Storage, Data>;
-	// using UniformType = std::variant<int, uint, float, double, Vec3f, Mat4f, Util::Color::Rgba>;
 
+	struct Output;
 	struct Input
 	{
 		std::string name;
 		IO			desc;
+		//
+		Output * src = nullptr;
 	};
 
 	struct Output : public Input
 	{
-		// std::vector<Input *> dest; //?
 	};
 
 	struct Uniform
 	{
 		std::string name;
 		E_TYPE		type;
-		// UniformType value;
 	};
 
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;

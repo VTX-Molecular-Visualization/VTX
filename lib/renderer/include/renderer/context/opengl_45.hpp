@@ -73,6 +73,8 @@ namespace VTX::Renderer::Context
 
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
+			// Main ubo.
+
 			for ( const Pass * const descPass : p_renderQueue )
 			{
 				// Create FBO.
@@ -81,10 +83,10 @@ namespace VTX::Renderer::Context
 				// Create outputs.
 				for ( const auto & [ channel, output ] : descPass->outputs )
 				{
-					const IO & desc = output.desc;
-					if ( std::holds_alternative<Attachment>( desc ) )
+					const IO & descIO = output.desc;
+					if ( std::holds_alternative<Attachment>( descIO ) )
 					{
-						const Attachment & attachment = std::get<Attachment>( desc );
+						const Attachment & attachment = std::get<Attachment>( descIO );
 						_textures.emplace(
 							&attachment,
 							std::make_unique<GL::Texture2D>( width,
@@ -134,13 +136,74 @@ namespace VTX::Renderer::Context
 				// Bind fbo.
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 
-				// Bind textures.
+				// Bind inputs.
+				for ( const auto & [ channel, input ] : descPass->inputs )
+				{
+					if ( input.src == nullptr )
+					{
+						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPass->name );
+						// TODO: bind dummy texture?
+						continue;
+					}
 
-				// Bind ubo.
+					const IO & descIO = input.src->desc;
+					if ( std::holds_alternative<Attachment>( descIO ) )
+					{
+						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
-				// Program.
+						p_instructions.emplace_back( [ this, channel, attachment ]()
+													 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
+					}
+					else
+					{
+						throw std::runtime_error( "unknown descriptor type" );
+					}
+				}
 
-				// Unbind ubo.
+				// Programs.
+				for ( const Program & descProgram : descPass->programs )
+				{
+					if ( descProgram.uniforms.empty() == false )
+					{
+						p_instructions.emplace_back( [ this, &descProgram ]()
+													 { _ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER ); } );
+					}
+
+					p_instructions.emplace_back(
+						[ this, &descProgram ]()
+						{
+							_programs[ &descProgram ]->use();
+							_vao->drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+						} );
+
+					if ( descProgram.uniforms.empty() == false )
+					{
+						p_instructions.emplace_back( [ this, &descProgram ]() { _ubos[ &descProgram ]->unbind(); } );
+					}
+				}
+
+				// Unbind inputs.
+				for ( const auto & [ channel, input ] : descPass->inputs )
+				{
+					if ( input.src == nullptr )
+					{
+						continue;
+					}
+
+					const IO & descIO = input.src->desc;
+					if ( std::holds_alternative<Attachment>( descIO ) )
+					{
+						const Attachment * const attachment = &std::get<Attachment>( descIO );
+
+						p_instructions.emplace_back(
+							[ this, channel, attachment ]()
+							{ _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
+					}
+					else
+					{
+						throw std::runtime_error( "unknown descriptor type" );
+					}
+				}
 
 				// Unbind fbo.
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->unbind(); } );
