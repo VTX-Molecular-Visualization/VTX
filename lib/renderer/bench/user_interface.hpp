@@ -48,7 +48,7 @@ namespace VTX::Bench
 			_glContext = SDL_GL_CreateContext( _window );
 			if ( _glContext == nullptr )
 			{
-				throw std::runtime_error( "Failed to coreate GL context: " + std::string( SDL_GetError() ) );
+				throw std::runtime_error( SDL_GetError() );
 			}
 
 			SDL_GL_MakeCurrent( _window, _glContext );
@@ -464,12 +464,12 @@ namespace VTX::Bench
 				ImNodes::BeginNodeEditor();
 
 				// DescPass nodes.
-				uint									   id = 0;
-				std::map<const Pass::Input * const, uint>  mapIdInput;
-				std::map<const Pass::Output * const, uint> mapIdOutput;
-				std::map<const uint, const E_CHANNEL>	   mapIdChannel;
-				std::map<const uint, Pass *>			   mapIdDescPass;
-				std::map<const uint, Link *>			   mapIdDescLink;
+				uint								  id = 0;
+				std::map<const Input * const, uint>	  mapIdInput;
+				std::map<const Output * const, uint>  mapIdOutput;
+				std::map<const uint, const E_CHANNEL> mapIdChannel;
+				std::map<const uint, Pass *>		  mapIdDescPass;
+				std::map<const uint, Link *>		  mapIdDescLink;
 
 				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{

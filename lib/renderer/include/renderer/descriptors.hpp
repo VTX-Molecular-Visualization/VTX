@@ -3,13 +3,16 @@
 
 #include "enums.hpp"
 #include <functional>
+#include <map>
 #include <unordered_map>
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
 
 namespace VTX::Renderer
 {
+
 	struct Attachment
 	{
 		E_FORMAT	format		 = E_FORMAT::RGBA16F;
@@ -27,38 +30,47 @@ namespace VTX::Renderer
 	{
 	};
 
-	// 	struct Uniform
-	// 	{
-	// 	};
+	using Handle = uint;
+	using IO	 = std::variant<Attachment, Storage, Data>;
+	// using UniformType = std::variant<int, uint, float, double, Vec3f, Mat4f, Util::Color::Rgba>;
+
+	struct Input
+	{
+		std::string name;
+		IO			desc;
+	};
+
+	struct Output : public Input
+	{
+		// std::vector<Input *> dest; //?
+	};
+
+	struct Uniform
+	{
+		std::string name;
+		E_TYPE		type;
+		// UniformType value;
+	};
+
+	using Files	   = std::variant<FilePath, std::vector<FilePath>>;
+	using Uniforms = std::vector<Uniform>;
 
 	struct Program
 	{
-		std::string									  name;
-		std::variant<FilePath, std::vector<FilePath>> shaders;
-		std::string									  toInject;
-		std::string									  suffix;
+		std::string name;
+		Files		shaders;
+		Uniforms	uniforms;
+		std::string toInject;
+		std::string suffix;
 	};
 
-	using Handle = uint;
-	using IO	 = std::variant<Attachment, Storage, Data>;
+	using Inputs   = std::unordered_map<E_CHANNEL, Input>;
+	using Outputs  = std::unordered_map<E_CHANNEL, Output>;
+	using Programs = std::vector<Program>;
 
 	struct Pass
 	{
 		std::string name;
-		struct Input
-		{
-			std::string name;
-			IO			desc;
-		};
-
-		struct Output : public Input
-		{
-			// std::vector<Input *> dest; //?
-		};
-
-		using Inputs   = std::unordered_map<E_CHANNEL, Input>;
-		using Outputs  = std::unordered_map<E_CHANNEL, Output>;
-		using Programs = std::vector<Program>;
 
 		Inputs	 inputs;
 		Outputs	 outputs;

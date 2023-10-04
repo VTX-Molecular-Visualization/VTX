@@ -16,9 +16,9 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
-		inline RenderQueue &		getRenderQueue() { return _renderQueue; }
-		inline const Pass::Output * getOutput() { return _output; }
-		inline void					setOutput( const Pass::Output * const p_output ) { _output = p_output; }
+		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
+		inline const Output * getOutput() { return _output; }
+		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
@@ -48,7 +48,7 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Check descriptors compatibility.
+			// TODO: Check descriptors compatibility.
 			// 			if ( passIn.inputs[ p_channel ].desc != passOut.output.desc )
 			// 			{
 			// 				return false;
@@ -143,10 +143,10 @@ namespace VTX::Renderer
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 
-		const Pass::Output * _output;
-		Passes				 _passes;
-		Links				 _links;
-		Instructions		 _instructions;
+		const Output * _output;
+		Passes		   _passes;
+		Links		   _links;
+		Instructions   _instructions;
 
 		void _clear()
 		{

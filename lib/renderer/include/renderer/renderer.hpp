@@ -28,14 +28,14 @@ namespace VTX::Renderer
 			Attachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
 			// Geometric.
-			Pass * const geo
-				= _renderGraph->addPass( { "Geometric",
-										   Pass::Inputs {},
-										   Pass::Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
-														   { E_CHANNEL::COLOR_1, { "Color", imageColor } },
-														   { E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
-														   { E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
-										   Pass::Programs { { "Sphere", "sphere" }, { "Cylinder", "cylinder" } } } );
+			Pass * const geo = _renderGraph->addPass(
+				{ "Geometric",
+				  Inputs {},
+				  Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
+							{ E_CHANNEL::COLOR_1, { "Color", imageColor } },
+							{ E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
+							{ E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
+				  Programs { { "Sphere", "sphere", Uniforms {} }, { "Cylinder", "cylinder", Uniforms {} } } } );
 
 			// Depth.
 			/*
@@ -51,18 +51,17 @@ namespace VTX::Renderer
 			Pass * const shading = _renderGraph->addPass(
 
 				{ "Shading",
-				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
-								 { E_CHANNEL::COLOR_1, { "Color", imageColor } },
-								 { E_CHANNEL::COLOR_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
-				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
-				  Pass::Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } } } } );
+				  Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
+						   { E_CHANNEL::COLOR_1, { "Color", imageColor } },
+						   { E_CHANNEL::COLOR_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
+				  Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
+				  Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" }, Uniforms {} } } } );
 
 			// FXAA.
-			Pass * const fxaa
-				= _renderGraph->addPass( { "FXAA",
-										   Pass::Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
-										   Pass::Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
-										   Pass::Programs {} } );
+			Pass * const fxaa = _renderGraph->addPass( { "FXAA",
+														 Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
+														 Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
+														 Programs {} } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
