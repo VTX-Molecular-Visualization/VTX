@@ -73,7 +73,7 @@ namespace VTX::Renderer::Context
 
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
-			// Main ubo.
+			// TODO: bind main ubo.
 
 			for ( const Pass * const descPass : p_renderQueue )
 			{
@@ -151,7 +151,7 @@ namespace VTX::Renderer::Context
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
-						p_instructions.emplace_back( [ this, channel, attachment ]()
+						p_instructions.emplace_back( [ this, channel = channel, attachment ]()
 													 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
 					}
 					else
@@ -196,7 +196,7 @@ namespace VTX::Renderer::Context
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
 						p_instructions.emplace_back(
-							[ this, channel, attachment ]()
+							[ this, channel = channel, attachment ]()
 							{ _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
 					}
 					else
@@ -208,6 +208,8 @@ namespace VTX::Renderer::Context
 				// Unbind fbo.
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->unbind(); } );
 			}
+
+			// TODO: unbind main ubo.
 		}
 
 		void resize( const size_t p_width, const size_t p_height )
