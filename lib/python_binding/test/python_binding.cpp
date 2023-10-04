@@ -45,8 +45,34 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 	}
 	catch ( const CommandException & e )
 	{
-		REQUIRE( true );
 		VTX_INFO( "CommandException : {}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		REQUIRE( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
+
+	const FilePath scriptPath = IO::Internal::Filesystem::getInternalDataDir() / "script_test.py";
+
+	try
+	{
+		interpretor.runScript( scriptPath );
+	}
+	catch ( const CommandException & e )
+	{
+		VTX_INFO( "{}", e.what() );
+	}
+
+	const FilePath badScriptPath = IO::Internal::Filesystem::getInternalDataDir() / "bad_script_test.py";
+
+	try
+	{
+		interpretor.runScript( badScriptPath );
+	}
+	catch ( const ScriptException & e )
+	{
+		VTX_INFO( "{}", e.what() );
 	}
 	catch ( const std::exception & e )
 	{

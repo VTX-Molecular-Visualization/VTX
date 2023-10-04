@@ -50,6 +50,14 @@ namespace VTX
 		{
 		}
 	};
+	class ScriptException : public std::runtime_error
+	{
+	  public:
+		explicit ScriptException( const std::string & p_scriptPath, const std::string & p_err ) :
+			std::runtime_error( "[Script] " + p_scriptPath + " : " + p_err )
+		{
+		}
+	};
 
 	class NotImplementedException : public std::runtime_error
 	{

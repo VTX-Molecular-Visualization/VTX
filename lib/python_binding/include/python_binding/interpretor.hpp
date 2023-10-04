@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::PythonBinding
 {
@@ -12,8 +13,9 @@ namespace VTX::PythonBinding
 		Interpretor();
 		~Interpretor();
 
-		void print( const std::string & p_line );
-		void runCommand( const std::string & p_line );
+		void print( const std::string & p_line ) const;
+		void runCommand( const std::string & p_line ) const;
+		void runScript( const FilePath & p_path ) const;
 
 	  private:
 		struct Impl;
