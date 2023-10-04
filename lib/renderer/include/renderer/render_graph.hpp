@@ -26,10 +26,10 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
-		bool addLink( Pass * const		p_passSrc,
-					  Pass * const		p_passDest,
-					  const E_CHANNEL & p_channelSrc  = E_CHANNEL::COLOR_0,
-					  const E_CHANNEL & p_channelDest = E_CHANNEL::COLOR_0 )
+		bool addLink( Pass * const			   p_passSrc,
+					  Pass * const			   p_passDest,
+					  const E_CHANNEL_OUTPUT & p_channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0,
+					  const E_CHANNEL_INPUT &  p_channelDest = E_CHANNEL_INPUT::_0 )
 		{
 			// Check I/O existence.
 			assert( p_passSrc->outputs.contains( p_channelSrc ) );

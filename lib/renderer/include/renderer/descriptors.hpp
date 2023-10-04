@@ -64,8 +64,8 @@ namespace VTX::Renderer
 		std::string suffix;
 	};
 
-	using Inputs   = std::unordered_map<E_CHANNEL, Input>;
-	using Outputs  = std::unordered_map<E_CHANNEL, Output>;
+	using Inputs   = std::unordered_map<E_CHANNEL_INPUT, Input>;
+	using Outputs  = std::unordered_map<E_CHANNEL_OUTPUT, Output>;
 	using Programs = std::vector<Program>;
 
 	struct Pass
@@ -79,10 +79,10 @@ namespace VTX::Renderer
 
 	struct Link
 	{
-		Pass *	  src;
-		Pass *	  dest;
-		E_CHANNEL channelSrc  = E_CHANNEL::COLOR_0;
-		E_CHANNEL channelDest = E_CHANNEL::COLOR_0;
+		Pass *			 src;
+		Pass *			 dest;
+		E_CHANNEL_OUTPUT channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0;
+		E_CHANNEL_INPUT	 channelDest = E_CHANNEL_INPUT::_0;
 	};
 
 	using Passes = std::vector<std::unique_ptr<Pass>>;

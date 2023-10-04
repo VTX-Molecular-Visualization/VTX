@@ -464,12 +464,13 @@ namespace VTX::Bench
 				ImNodes::BeginNodeEditor();
 
 				// DescPass nodes.
-				uint								  id = 0;
-				std::map<const Input * const, uint>	  mapIdInput;
-				std::map<const Output * const, uint>  mapIdOutput;
-				std::map<const uint, const E_CHANNEL> mapIdChannel;
-				std::map<const uint, Pass *>		  mapIdDescPass;
-				std::map<const uint, Link *>		  mapIdDescLink;
+				uint										 id = 0;
+				std::map<const Input * const, uint>			 mapIdInput;
+				std::map<const Output * const, uint>		 mapIdOutput;
+				std::map<const uint, const E_CHANNEL_OUTPUT> mapIdChannelOutput;
+				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
+				std::map<const uint, Pass *>				 mapIdDescPass;
+				std::map<const uint, Link *>				 mapIdDescLink;
 
 				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
 				{
@@ -482,7 +483,7 @@ namespace VTX::Bench
 					for ( const auto & [ channel, input ] : pass->inputs )
 					{
 						mapIdInput.emplace( &input, id );
-						mapIdChannel.emplace( id, channel );
+						mapIdChannelInput.emplace( id, channel );
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 						ImNodes::BeginInputAttribute( id++ );
@@ -495,7 +496,7 @@ namespace VTX::Bench
 					for ( const auto & [ channel, output ] : pass->outputs )
 					{
 						mapIdOutput.emplace( &output, id );
-						mapIdChannel.emplace( id, channel );
+						mapIdChannelOutput.emplace( id, channel );
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
@@ -520,7 +521,7 @@ namespace VTX::Bench
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
 
-				// DescLinks.
+				// Links.
 				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
@@ -561,8 +562,8 @@ namespace VTX::Bench
 					{
 						p_newRenderer->getRenderGraph().addLink( mapIdDescPass[ newLinkStartId ],
 																 mapIdDescPass[ newLinkEndtId ],
-																 mapIdChannel[ newLinkStartId ],
-																 mapIdChannel[ newLinkEndtId ] );
+																 mapIdChannelOutput[ newLinkStartId ],
+																 mapIdChannelInput[ newLinkEndtId ] );
 					}
 				}
 

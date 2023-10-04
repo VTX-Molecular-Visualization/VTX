@@ -12,7 +12,15 @@ namespace VTX::Renderer
 		// ...?
 	};
 
-	enum struct E_CHANNEL
+	enum struct E_CHANNEL_INPUT
+	{
+		_0,
+		_1,
+		_2,
+		_3,
+	};
+
+	enum struct E_CHANNEL_OUTPUT
 	{
 		COLOR_0,
 		COLOR_1,

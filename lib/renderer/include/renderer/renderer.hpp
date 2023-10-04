@@ -31,10 +31,10 @@ namespace VTX::Renderer
 			Pass * const geo = _renderGraph->addPass(
 				{ "Geometric",
 				  Inputs {},
-				  Outputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
-							{ E_CHANNEL::COLOR_1, { "Color", imageColor } },
-							{ E_CHANNEL::COLOR_2, { "Picking", imagePicking } },
-							{ E_CHANNEL::DEPTH, { "Depth", imageDepth } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageGeometry } },
+							{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageColor } },
+							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imagePicking } },
+							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageDepth } } },
 				  Programs { { "Sphere", "sphere", Uniforms {} }, { "Cylinder", "cylinder", Uniforms {} } } } );
 
 			// Depth.
@@ -51,24 +51,24 @@ namespace VTX::Renderer
 			Pass * const shading = _renderGraph->addPass(
 
 				{ "Shading",
-				  Inputs { { E_CHANNEL::COLOR_0, { "Geometry", imageGeometry } },
-						   { E_CHANNEL::COLOR_1, { "Color", imageColor } },
-						   { E_CHANNEL::COLOR_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
-				  Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageGeometry } },
+						   { E_CHANNEL_INPUT::_1, { "Color", imageColor } },
+						   { E_CHANNEL_INPUT::_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
 				  Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" }, Uniforms {} } } } );
 
 			// FXAA.
 			Pass * const fxaa = _renderGraph->addPass( { "FXAA",
-														 Inputs { { E_CHANNEL::COLOR_0, { "Image", imageColor } } },
-														 Outputs { { E_CHANNEL::COLOR_0, { "", imageColor } } },
+														 Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageColor } } },
+														 Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
 														 Programs {} } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL::COLOR_1, E_CHANNEL::COLOR_1 );
-			_renderGraph->addLink( shading, fxaa, E_CHANNEL::COLOR_0, E_CHANNEL::COLOR_0 );
-			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL::COLOR_0 ] );
+			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
+			_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

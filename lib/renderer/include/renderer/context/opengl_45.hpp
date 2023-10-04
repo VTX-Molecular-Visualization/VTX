@@ -134,7 +134,7 @@ namespace VTX::Renderer::Context
 				// Bind fbo.
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 
-				// Attach textures.
+				// Bind textures.
 
 				// Bind ubo.
 
@@ -164,11 +164,11 @@ namespace VTX::Renderer::Context
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
 
-		std::map<const E_CHANNEL, const GLenum> _mapAttachments = {
-			{ E_CHANNEL::COLOR_0, GL_COLOR_ATTACHMENT0 },
-			{ E_CHANNEL::COLOR_1, GL_COLOR_ATTACHMENT1 },
-			{ E_CHANNEL::COLOR_2, GL_COLOR_ATTACHMENT2 },
-			{ E_CHANNEL::DEPTH, GL_DEPTH_ATTACHMENT },
+		std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments = {
+			{ E_CHANNEL_OUTPUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
+			{ E_CHANNEL_OUTPUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
+			{ E_CHANNEL_OUTPUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
+			{ E_CHANNEL_OUTPUT::DEPTH, GL_DEPTH_ATTACHMENT },
 		};
 
 		std::map<const E_PRIMTIVE, const GLenum> _mapPrimitives = { { E_PRIMTIVE::POINTS, GL_POINTS },
