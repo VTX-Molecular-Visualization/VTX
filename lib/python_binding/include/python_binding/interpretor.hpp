@@ -10,6 +10,9 @@ namespace VTX::PythonBinding
 	class Interpretor
 	{
 	  public:
+		inline static const std::string SYSTEM_KEY = "PYTHON_INTERPRETOR";
+
+	  public:
 		Interpretor();
 		~Interpretor();
 

@@ -2,42 +2,32 @@
 #define __VTX_APP_APPLICATION_SYSTEM__
 
 #include <memory>
+#include <util/variant.hpp>
 
-namespace VTX::App
+namespace VTX::App::Application
 {
-	namespace Application
+	class System
 	{
-		class Scene;
-		struct Setting;
+	  public:
+		System();
+		~System();
 
-		namespace ECS
+		template<typename T>
+		void referenceSystem( const std::string & p_key, T * const p_system )
 		{
-			class EntityDirector;
-			class RegistryManager;
-		} // namespace ECS
-	}	  // namespace Application
+			assert( _systems.find( p_key ) == _systems.end() );
+			_systems[ p_key ] = p_system;
+		}
 
-	namespace Core::ECS
-	{
-		class Registry;
-	}
-
-	namespace Application
-	{
-		class System
+		template<typename T>
+		T & getSystem( const std::string & p_key ) const
 		{
-		  public:
-			System();
-			~System();
+			return *( _systems.at( p_key ).getPtr<T>() );
+		}
 
-			std::unique_ptr<Application::Setting>			   setting;
-			std::unique_ptr<Application::ECS::RegistryManager> registryManager;
-			std::unique_ptr<Application::ECS::EntityDirector>  entityDirector;
-
-			// TODO better way to manage this
-			Application::Scene * scene;
-		};
-	} // namespace Application
-} // namespace VTX::App
+	  private:
+		Util::VariantMap _systems = Util::VariantMap();
+	};
+} // namespace VTX::App::Application
 
 #endif

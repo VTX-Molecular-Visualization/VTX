@@ -12,7 +12,7 @@ namespace VTX::App::Internal::ECS
 		using namespace App::Application::ECS;
 		using namespace App::Application::ECS::Building;
 
-		EntityDirector & entityDirector = *( VTXApp::get().getSystem().entityDirector );
+		EntityDirector & entityDirector = VTXApp::get().getEntityDirector();
 
 		// Scene entity
 		entityDirector.addBuildStep(

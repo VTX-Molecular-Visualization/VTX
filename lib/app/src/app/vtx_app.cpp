@@ -41,17 +41,24 @@ namespace VTX::App
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
-		_system					 = std::make_shared<Application::System>();
-		_system->registryManager = std::make_unique<Application::ECS::RegistryManager>();
+		_system = std::make_shared<Application::System>();
 
-		_system->entityDirector = std::make_unique<Application::ECS::EntityDirector>();
+		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
+		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
+
+		_entityDirector = std::make_unique<Application::ECS::EntityDirector>();
 		Internal::ECS::setupEntityDirector();
+		_system->referenceSystem( ENTITY_DIRECTOR_KEY, _entityDirector.get() );
 
-		_system->setting = std::make_unique<Application::Setting>();
+		_setting = std::make_unique<Application::Setting>();
+		_system->referenceSystem( SETTING_KEY, _setting.get() );
 
 		// Create scene.
-		Core::ECS::BaseEntity sceneEntity = _system->entityDirector->build( Entity::SCENE_ENTITY_ID );
-		_system->scene					  = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
+		Core::ECS::BaseEntity sceneEntity = getEntityDirector().build( Entity::SCENE_ENTITY_ID );
+		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+
+		// TODO better way to manage this
+		_system->referenceSystem( SCENE_KEY, &scene );
 
 		_renderer
 			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
@@ -177,5 +184,24 @@ namespace VTX::App
 	//	_deleteAtEndOfFrameObjects.clear();
 	//}
 
-	Core::ECS::Registry & VTXApp::MAIN_REGISTRY() { return VTXApp::get().getSystem().registryManager->getRegistry(); }
+	Application::Scene &	   VTXApp::getScene() { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
+	const Application::Scene & VTXApp::getScene() const { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
+
+	Application::Setting & VTXApp::getSettings() { return _system->getSystem<Application::Setting>( SETTING_KEY ); }
+	const Application::Setting & VTXApp::getSettings() const
+	{
+		return _system->getSystem<Application::Setting>( SETTING_KEY );
+	}
+
+	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	{
+		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+	}
+	Core::ECS::Registry & VTXApp::MAIN_REGISTRY()
+	{
+		return VTXApp::get()
+			.getSystem()
+			.getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY )
+			.getRegistry();
+	}
 } // namespace VTX::App

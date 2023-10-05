@@ -16,7 +16,11 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 	using namespace VTX;
 
 	App::Test::Util::App::initApp();
-	PythonBinding::Interpretor interpretor = PythonBinding::Interpretor();
+
+	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
+	App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
+
+	PythonBinding::Interpretor & interpretor = *interpretorPtr;
 
 	App::Application::Scene & scene = App::VTXApp::get().getScene();
 

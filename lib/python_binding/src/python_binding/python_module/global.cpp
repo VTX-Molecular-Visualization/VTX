@@ -19,7 +19,7 @@ PYBIND11_MODULE( PyTX, m )
 	m.doc() = "Open file at given path. Can handle molecule files or scene files."; // optional module docstring
 
 	// Global pointer to VTX data
-	pybind11::class_<App::Application::System, std::shared_ptr<VTX::App::Application::System>>( m, "VTXSystem" );
+	pybind11::class_<App::Application::System, std::shared_ptr<App::Application::System>>( m, "VTXSystem" );
 
 	// Class to redirect Python prints
 	pybind11::class_<PythonBinding::LogRedirection>( m, "LogRedirection" )
