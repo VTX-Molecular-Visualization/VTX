@@ -137,8 +137,10 @@ namespace VTX::Renderer::Context
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 
 				// Bind inputs.
+				int channelMax = 0;
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
+					channelMax = std::max( channelMax, int( channel ) );
 					if ( input.src == nullptr )
 					{
 						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPass->name );
@@ -151,7 +153,7 @@ namespace VTX::Renderer::Context
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
-						p_instructions.emplace_back( [ this, channel = channel, attachment ]()
+						p_instructions.emplace_back( [ this, &channel, attachment ]()
 													 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
 					}
 					else
@@ -165,8 +167,9 @@ namespace VTX::Renderer::Context
 				{
 					if ( descProgram.uniforms.empty() == false )
 					{
-						p_instructions.emplace_back( [ this, &descProgram ]()
-													 { _ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER ); } );
+						p_instructions.emplace_back(
+							[ this, &descProgram, &channelMax ]()
+							{ _ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 ); } );
 					}
 
 					p_instructions.emplace_back(
@@ -196,7 +199,7 @@ namespace VTX::Renderer::Context
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
 						p_instructions.emplace_back(
-							[ this, channel = channel, attachment ]()
+							[ this, &channel, attachment ]()
 							{ _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
 					}
 					else
