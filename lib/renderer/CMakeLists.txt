@@ -32,7 +32,7 @@ target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
 #target_link_libraries(VTX_RENDERER PRIVATE rps_runtime_vk )
 
 # Copy shaders.
-add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
+add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/context/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
 add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 
 # Benchmark.

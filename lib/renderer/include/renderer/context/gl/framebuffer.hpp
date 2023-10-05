@@ -33,13 +33,6 @@ namespace VTX::Renderer::Context::GL
 
 		inline GLuint getId() const { return _id; }
 
-		inline void assign( const GLuint p_id )
-		{
-			assert( glIsFramebuffer( p_id ) );
-
-			_id = p_id;
-		}
-
 		inline void clear( const GLbitfield p_clear ) const { glClear( p_clear ); }
 
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER )
@@ -53,12 +46,26 @@ namespace VTX::Renderer::Context::GL
 			glBindFramebuffer( _target, _id );
 		}
 
+		inline static void bindDefault( const GLuint p_id, const GLenum p_target = GL_FRAMEBUFFER )
+		{
+			assert( p_target != 0 );
+
+			glBindFramebuffer( p_target, p_id );
+		}
+
 		inline void unbind()
 		{
 			assert( _target != 0 );
 
 			glBindFramebuffer( _target, 0 );
 			_target = 0;
+		}
+
+		inline static void unbindDefault( const GLenum p_target = GL_FRAMEBUFFER )
+		{
+			assert( p_target != 0 );
+
+			glBindFramebuffer( p_target, 0 );
 		}
 
 		inline void attachTexture( const Texture2D & p_texture, const GLenum p_attachment, const GLint p_level = 0 )

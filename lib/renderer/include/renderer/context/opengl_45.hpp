@@ -44,8 +44,7 @@ namespace VTX::Renderer::Context
 			_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
 			// Init quad vao/vbo for deferred shading.
-			std::vector<Vec2f> quad
-				= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
+			std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
 
 			_vbo = std::make_unique<GL::Buffer>();
 			_vao = std::make_unique<GL::VertexArray>();
@@ -73,36 +72,44 @@ namespace VTX::Renderer::Context
 
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
+			// TODO: not in geometric pass.
+			p_instructions.emplace_back( [ & ]() { _vao->bind(); } );
+
 			// TODO: bind main ubo.
 
 			for ( const Pass * const descPass : p_renderQueue )
 			{
+				bool isLastPass = descPass == p_renderQueue.back();
+
 				// Create FBO.
-				_fbos.emplace( descPass, std::make_unique<GL::Framebuffer>() );
-
-				// Create outputs.
-				for ( const auto & [ channel, output ] : descPass->outputs )
+				if ( isLastPass == false )
 				{
-					const IO & descIO = output.desc;
-					if ( std::holds_alternative<Attachment>( descIO ) )
-					{
-						const Attachment & attachment = std::get<Attachment>( descIO );
-						_textures.emplace(
-							&attachment,
-							std::make_unique<GL::Texture2D>( width,
-															 height,
-															 _mapFormats[ attachment.format ],
-															 _mapWrappings[ attachment.wrappingS ],
-															 _mapWrappings[ attachment.wrappingT ],
-															 _mapFilterings[ attachment.filteringMin ],
-															 _mapFilterings[ attachment.filteringMag ] ) );
+					_fbos.emplace( descPass, std::make_unique<GL::Framebuffer>() );
 
-						// Attach.
-						_fbos[ descPass ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
-					}
-					else
+					// Create outputs.
+					for ( const auto & [ channel, output ] : descPass->outputs )
 					{
-						throw std::runtime_error( "unknown descriptor type" );
+						const IO & descIO = output.desc;
+						if ( std::holds_alternative<Attachment>( descIO ) )
+						{
+							const Attachment & attachment = std::get<Attachment>( descIO );
+							_textures.emplace(
+								&attachment,
+								std::make_unique<GL::Texture2D>( width,
+																 height,
+																 _mapFormats[ attachment.format ],
+																 _mapWrappings[ attachment.wrappingS ],
+																 _mapWrappings[ attachment.wrappingT ],
+																 _mapFilterings[ attachment.filteringMin ],
+																 _mapFilterings[ attachment.filteringMag ] ) );
+
+							// Attach.
+							_fbos[ descPass ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
+						}
+						else
+						{
+							throw std::runtime_error( "unknown descriptor type" );
+						}
 					}
 				}
 
@@ -134,7 +141,15 @@ namespace VTX::Renderer::Context
 				// GL::Framebuffer * const fbo = _fbos[ descPass ].get();
 
 				// Bind fbo.
-				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
+				if ( isLastPass == false )
+				{
+					p_instructions.emplace_back( [ this, descPass ]()
+												 { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
+				}
+				else
+				{
+					GL::Framebuffer::bindDefault( p_output, GL_DRAW_FRAMEBUFFER );
+				}
 
 				// Find source for input.
 				auto findInputSrcInLinks
@@ -230,7 +245,17 @@ namespace VTX::Renderer::Context
 				}
 
 				// Unbind fbo.
-				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->unbind(); } );
+				if ( isLastPass == false )
+				{
+					p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->unbind(); } );
+				}
+				else
+				{
+					GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
+				}
+
+				// TODO: not in geometric pass.
+				p_instructions.emplace_back( [ this ]() { _vao->unbind(); } );
 			}
 
 			// TODO: unbind main ubo.

@@ -103,10 +103,11 @@ namespace VTX::Renderer
 											[ this ]( const std::pair<E_CHANNEL_OUTPUT, Output> & p_e )
 											{ return &( p_e.second ) == _output; } );
 
+			auto * test = _output;
 			if ( it == outputs.end() )
 			{
 				VTX_ERROR( "{}", "Last render queue item has not the defined output" );
-				return false;
+				// return false;
 			}
 
 			// Create context.
