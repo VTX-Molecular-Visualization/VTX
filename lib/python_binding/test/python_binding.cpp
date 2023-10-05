@@ -36,11 +36,10 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 	interpretor.runCommand( ssCommandOpen.str() );
 	REQUIRE( scene.getItemCount() == 2 );
 
-	std::stringstream ssBadCommandOpen = std::stringstream();
-	ssBadCommandOpen << "openFile( tirelipimpon=" << moleculePath << " )";
-
 	try
 	{
+		std::stringstream ssBadCommandOpen = std::stringstream();
+		ssBadCommandOpen << "openFile( tirelipimpon=" << moleculePath << " )";
 		interpretor.runCommand( ssBadCommandOpen.str() );
 	}
 	catch ( const CommandException & e )
@@ -79,4 +78,9 @@ TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
 		REQUIRE( false );
 		VTX_ERROR( "bad exception catch : {}", e.what() );
 	}
+
+	std::stringstream ssCommandRun = std::stringstream();
+	ssCommandRun << "runScript(" << scriptPath << " )";
+
+	interpretor.runCommand( ssCommandRun.str() );
 };

@@ -9,6 +9,7 @@ namespace VTX::PythonBinding::Binding
 	{
 	  public:
 		static void openFile( const std::string & p_path );
+		static void runScript( const std::string & p_path );
 	};
 } // namespace VTX::PythonBinding::Binding
 

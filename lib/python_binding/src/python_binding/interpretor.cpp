@@ -15,11 +15,11 @@ namespace VTX::PythonBinding
 		{
 			_vtxModule = pybind11::module_::import( "PyTX" );
 
-			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
-			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
-
 			LogRedirection logger							   = LogRedirection();
 			pybind11::module::import( "sys" ).attr( "stdout" ) = logger;
+
+			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
+			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
 
 			pybind11::exec( "from PyTX.Command import *" );
 		}

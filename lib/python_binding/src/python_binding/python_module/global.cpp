@@ -8,10 +8,7 @@
 
 namespace VTX
 {
-	void _init( std::shared_ptr<VTX::App::Application::System> p_system )
-	{
-		VTX::App::VTXApp::get().referenceSystem( p_system );
-	}
+	void _init( std::shared_ptr<App::Application::System> p_system ) { App::VTXApp::get().referenceSystem( p_system ); }
 } // namespace VTX
 
 using namespace VTX;
@@ -22,12 +19,12 @@ PYBIND11_MODULE( PyTX, m )
 	m.doc() = "Open file at given path. Can handle molecule files or scene files."; // optional module docstring
 
 	// Global pointer to VTX data
-	pybind11::class_<VTX::App::Application::System, std::shared_ptr<VTX::App::Application::System>>( m, "VTXSystem" );
+	pybind11::class_<App::Application::System, std::shared_ptr<VTX::App::Application::System>>( m, "VTXSystem" );
 
 	// Class to redirect Python prints
-	pybind11::class_<VTX::PythonBinding::LogRedirection>( m, "LogRedirection" )
-		.def( "write", &VTX::PythonBinding::LogRedirection::write )
-		.def( "flush", &VTX::PythonBinding::LogRedirection::flush );
+	pybind11::class_<PythonBinding::LogRedirection>( m, "LogRedirection" )
+		.def( "write", &PythonBinding::LogRedirection::write )
+		.def( "flush", &PythonBinding::LogRedirection::flush );
 
 	// Core module : Contains some core functions which must be hidden for users
 	pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );
@@ -40,4 +37,6 @@ PYBIND11_MODULE( PyTX, m )
 	vtxCommandModule.doc()			   = "Command module : Contains all commands accessible to user via command line.";
 
 	vtxCommandModule.def( "openFile", &Global::openFile, "Open a file at given path.", pybind11::arg( "path" ) = "" );
+	vtxCommandModule.def(
+		"runScript", &Global::runScript, "Run a Python script at given path.", pybind11::arg( "path" ) = "" );
 }
