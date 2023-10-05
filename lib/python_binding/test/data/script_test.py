@@ -10,4 +10,4 @@ def openMultipleFile(p_folder, prefix):
 
 
 print("Open all files in data starting with 7R7P")
-openMultipleFile("./data", "7R7P")
+openMultipleFile(os.path.dirname(__file__), "7R7P")
