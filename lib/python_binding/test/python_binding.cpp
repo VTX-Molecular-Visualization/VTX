@@ -11,7 +11,7 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_APP - Python binding - Load molecule test", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 {
 	using namespace VTX;
 
