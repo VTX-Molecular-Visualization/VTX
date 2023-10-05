@@ -55,18 +55,14 @@ namespace VTX::Renderer
 			// 			}
 
 			// Create link.
-			// TODO: use links or ptr?
 			_links.emplace_back(
 				std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
-			p_passDest->inputs[ p_channelDest ].src = &p_passSrc->outputs[ p_channelSrc ];
 
 			return true;
 		}
 
 		void removeLink( const Link * const p_link )
 		{
-			// TODO: use links or ptr?
-			p_link->dest->inputs[ p_link->channelDest ].src = nullptr;
 			// TODO: is link deleted?
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
@@ -92,12 +88,24 @@ namespace VTX::Renderer
 			// Compute queue with scheduler.
 			try
 			{
-				S scheduler;
-				scheduler.schedule( _passes, _links, _renderQueue );
+				_scheduler.schedule( _passes, _links, _renderQueue );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not build render queue: {}", p_e.what() );
+				return false;
+			}
+
+			// Check last render queue item has the defined output.
+			const Outputs & outputs = _renderQueue.back()->outputs;
+			const auto		it		= std::find_if( outputs.begin(),
+											outputs.end(),
+											[ this ]( const std::pair<E_CHANNEL_OUTPUT, Output> & p_e )
+											{ return &( p_e.second ) == _output; } );
+
+			if ( it == outputs.end() )
+			{
+				VTX_ERROR( "{}", "Last render queue item has not the defined output" );
 				return false;
 			}
 
@@ -118,7 +126,6 @@ namespace VTX::Renderer
 			}
 
 			VTX_DEBUG( "{}", "Building render graph... done" );
-
 			return true;
 		}
 
@@ -145,6 +152,7 @@ namespace VTX::Renderer
 		inline Links &	getLinks() { return _links; }
 
 	  private:
+		S				   _scheduler;
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 

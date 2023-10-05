@@ -130,30 +130,49 @@ namespace VTX::Renderer::Context
 				}
 
 				// Enqueue instructions
-				// TODO: optimize pointer access.
+				// TODO: optimize pointer access?
 				// GL::Framebuffer * const fbo = _fbos[ descPass ].get();
 
 				// Bind fbo.
 				p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 
+				// Find source for input.
+				auto findInputSrcInLinks
+					= [ &p_links, descPass ]( const E_CHANNEL_INPUT p_channel ) -> const Output * const
+				{
+					const auto it = std::find_if( p_links.begin(),
+												  p_links.end(),
+												  [ descPass, p_channel ]( const std::unique_ptr<Link> & p_e )
+												  { return p_e->dest == descPass && p_e->channelDest == p_channel; } );
+
+					if ( it == p_links.end() )
+					{
+						return nullptr;
+					}
+
+					return &( it->get()->src->outputs[ it->get()->channelSrc ] );
+				};
+
 				// Bind inputs.
 				int channelMax = 0;
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
+					const Output * const src = findInputSrcInLinks( channel );
+
 					channelMax = std::max( channelMax, int( channel ) );
-					if ( input.src == nullptr )
+					if ( src == nullptr )
 					{
 						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPass->name );
 						// TODO: bind dummy texture?
 						continue;
 					}
 
-					const IO & descIO = input.src->desc;
+					const IO & descIO = src->desc;
 					if ( std::holds_alternative<Attachment>( descIO ) )
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
-						p_instructions.emplace_back( [ this, &channel, attachment ]()
+						p_instructions.emplace_back( [ this, channel = channel, attachment ]()
 													 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
 					}
 					else
@@ -188,18 +207,20 @@ namespace VTX::Renderer::Context
 				// Unbind inputs.
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
-					if ( input.src == nullptr )
+					const Output * const src = findInputSrcInLinks( channel );
+
+					if ( src == nullptr )
 					{
 						continue;
 					}
 
-					const IO & descIO = input.src->desc;
+					const IO & descIO = src->desc;
 					if ( std::holds_alternative<Attachment>( descIO ) )
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
 						p_instructions.emplace_back(
-							[ this, &channel, attachment ]()
+							[ this, channel = channel, attachment ]()
 							{ _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
 					}
 					else

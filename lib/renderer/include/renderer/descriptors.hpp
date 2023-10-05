@@ -33,13 +33,10 @@ namespace VTX::Renderer
 	using Handle = uint;
 	using IO	 = std::variant<Attachment, Storage, Data>;
 
-	struct Output;
 	struct Input
 	{
 		std::string name;
 		IO			desc;
-		//
-		Output * src = nullptr;
 	};
 
 	struct Output : public Input
