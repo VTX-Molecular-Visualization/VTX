@@ -47,8 +47,8 @@ namespace VTX::App
 		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
 
 		_entityDirector = std::make_unique<Application::ECS::EntityDirector>();
-		Internal::ECS::setupEntityDirector();
 		_system->referenceSystem( ENTITY_DIRECTOR_KEY, _entityDirector.get() );
+		Internal::ECS::setupEntityDirector();
 
 		_setting = std::make_unique<Application::Setting>();
 		_system->referenceSystem( SETTING_KEY, _setting.get() );
