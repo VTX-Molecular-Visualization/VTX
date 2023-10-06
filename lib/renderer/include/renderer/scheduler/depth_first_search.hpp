@@ -9,7 +9,10 @@ namespace VTX::Renderer::Scheduler
 	class DepthFirstSearch
 	{
 	  public:
-		void schedule( Passes & p_passes, const Links & p_links, RenderQueue & p_outRenderQueue )
+		void schedule( Passes &				p_passes,
+					   const Links &		p_links,
+					   const Output * const p_output,
+					   RenderQueue &		p_outRenderQueue )
 		{
 			using namespace Context;
 
@@ -33,6 +36,26 @@ namespace VTX::Renderer::Scheduler
 			std::vector<bool> visited( passes.size(), false );
 			std::vector<bool> onStack( passes.size(), false );
 
+			// Disable items not linked to the graph.
+			for ( size_t index = 0; index < passes.size(); ++index )
+			{
+				if ( adjacentList[ index ].size() == 0 )
+				{
+					// Check output connection.
+					const Outputs & outputs = passes[ index ]->outputs;
+					const auto		it		= std::find_if( outputs.begin(),
+													outputs.end(),
+													[ p_output ]( const std::pair<E_CHANNEL_OUTPUT, Output> & p_e )
+													{ return &( p_e.second ) == p_output; } );
+
+					if ( it == outputs.end() )
+					{
+						visited[ index ] = true;
+					}
+				}
+			}
+
+			// DFS.
 			bool				isCyclic = false;
 			std::vector<size_t> sorted;
 			for ( size_t index = 0; index < passes.size(); ++index )

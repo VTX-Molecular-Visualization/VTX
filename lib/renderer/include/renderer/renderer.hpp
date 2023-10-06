@@ -28,7 +28,6 @@ namespace VTX::Renderer
 			Attachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
 			// Geometric.
-			/*
 			Pass * const geo = _renderGraph->addPass(
 				{ "Geometric",
 				  Inputs {},
@@ -37,16 +36,14 @@ namespace VTX::Renderer
 							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imagePicking } },
 							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageDepth } } },
 				  Programs { { "Sphere", "sphere", Uniforms {} }, { "Cylinder", "cylinder", Uniforms {} } } } );
-			*/
+
 			// Depth.
-			/*
 			Pass * const depth = _renderGraph->addPass(
 				{ "Linearize depth",
-				  Pass::Inputs { { E_CHANNEL::COLOR_0, { "Depth", imageDepth } } },
-				  Pass::Outputs { { E_CHANNEL::COLOR_0, { "", Attachment { E_FORMAT::R32F } } } },
-				  Pass::Programs {
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageDepth } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", Attachment { E_FORMAT::R32F } } } },
+				  Programs {
 					  { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } } );
-			*/
 
 			// Shading.
 			Pass * const shading = _renderGraph->addPass(
@@ -83,7 +80,7 @@ namespace VTX::Renderer
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
 			//_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			//_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 		}
 

@@ -22,7 +22,7 @@ layout ( std140, binding = 3 ) uniform Uniforms
 } uniforms;
 
 // Out.
-out vec4 outFragColor;
+layout( location = 0 ) out vec4 outFragColor;
 
 const uint DIFFUSE = 0;
 const uint GLOSSY = 1;

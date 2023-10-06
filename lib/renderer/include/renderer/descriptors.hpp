@@ -90,6 +90,23 @@ namespace VTX::Renderer
 	using Instruction  = std::function<void()>;
 	using Instructions = std::vector<Instruction>;
 
+	struct StructCompareVisitorDesc
+	{
+		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
+		{
+			return p_left.format == p_right.format;
+		}
+		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
+
+		bool operator()( const Data & p_left, const Data & p_right ) const { return false; }
+
+		template<typename T, typename U>
+		bool operator()( const T & p_left, const U & p_right ) const
+		{
+			return false;
+		}
+	};
+
 } // namespace VTX::Renderer
 
 #endif

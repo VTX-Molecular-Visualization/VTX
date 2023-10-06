@@ -38,7 +38,7 @@ namespace VTX::Renderer
 			// Check input is free.
 			if ( std::find_if( _links.begin(),
 							   _links.end(),
-							   [ &p_passDest, &p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
+							   [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
 								   return p_element.get()->dest == p_passDest
 										  && p_element.get()->channelDest == p_channelDest;
 							   } )
@@ -48,11 +48,16 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// TODO: Check descriptors compatibility.
-			// 			if ( passIn.inputs[ p_channel ].desc != passOut.output.desc )
-			// 			{
-			// 				return false;
-			// 			}
+			StructCompareVisitorDesc visitor;
+
+			bool areCompatible = std::visit(
+				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
+
+			if ( areCompatible == false )
+			{
+				VTX_WARNING( "{}", "Descriptors are not compatible" );
+				return false;
+			}
 
 			// Create link.
 			_links.emplace_back(
@@ -88,13 +93,33 @@ namespace VTX::Renderer
 			// Compute queue with scheduler.
 			try
 			{
-				_scheduler.schedule( _passes, _links, _renderQueue );
+				_scheduler.schedule( _passes, _links, _output, _renderQueue );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not build render queue: {}", p_e.what() );
 				return false;
 			}
+
+			// Some checks.
+			if ( _renderQueue.empty() )
+			{
+				VTX_ERROR( "{}", "Render queue is empty" );
+				return false;
+			}
+
+			if ( _renderQueue.back()->outputs.size() != 1 )
+			{
+				VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				return false;
+			}
+
+			// TODO: understand why this is not working as excepted.
+			/*
+			VTX_DEBUG( "{} {}", size_t( &_renderQueue.back()->outputs ), size_t( &_passes[ 0 ]->outputs ) );
+			VTX_DEBUG( "{} {}", size_t( _output ), size_t( &_passes[ 0 ]->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] ) );
+			VTX_DEBUG(
+				"{} {}", size_t( _output ), size_t( &_renderQueue.back()->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] ) );
 
 			// Check last render queue item has the defined output.
 			const Outputs & outputs = _renderQueue.back()->outputs;
@@ -109,6 +134,7 @@ namespace VTX::Renderer
 				VTX_ERROR( "{}", "Last render queue item has not the defined output" );
 				// return false;
 			}
+			*/
 
 			// Create context.
 			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
