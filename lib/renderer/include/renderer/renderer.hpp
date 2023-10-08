@@ -59,7 +59,7 @@ namespace VTX::Renderer
 			Pass * const fxaa = _renderGraph->addPass(
 				{ "FXAA",
 				  Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageColor } } },
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "out", imageColor } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
 				  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" }, Uniforms {} } } } );
 
 			// Debug.

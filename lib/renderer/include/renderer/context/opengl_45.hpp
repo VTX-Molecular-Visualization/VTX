@@ -203,7 +203,10 @@ namespace VTX::Renderer::Context
 					{
 						p_instructions.emplace_back(
 							[ this, &descProgram, &channelMax ]()
-							{ _ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 ); } );
+							{
+								// Bind local ubo after last input.
+								_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
+							} );
 					}
 
 					p_instructions.emplace_back(

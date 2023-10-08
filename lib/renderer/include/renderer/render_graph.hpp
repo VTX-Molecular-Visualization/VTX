@@ -35,6 +35,18 @@ namespace VTX::Renderer
 			assert( p_passSrc->outputs.contains( p_channelSrc ) );
 			assert( p_passDest->inputs.contains( p_channelDest ) );
 
+			// Check descriptor compatibility.
+			StructCompareVisitorDesc visitor;
+
+			bool areCompatible = std::visit(
+				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
+
+			if ( areCompatible == false )
+			{
+				VTX_WARNING( "{}", "Descriptors are not compatible" );
+				return false;
+			}
+
 			// Check input is free.
 			if ( std::find_if( _links.begin(),
 							   _links.end(),
@@ -45,17 +57,6 @@ namespace VTX::Renderer
 				 != _links.end() )
 			{
 				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
-				return false;
-			}
-
-			StructCompareVisitorDesc visitor;
-
-			bool areCompatible = std::visit(
-				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
-
-			if ( areCompatible == false )
-			{
-				VTX_WARNING( "{}", "Descriptors are not compatible" );
 				return false;
 			}
 
@@ -114,28 +115,6 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// TODO: understand why this is not working as excepted.
-			/*
-			VTX_DEBUG( "{} {}", size_t( &_renderQueue.back()->outputs ), size_t( &_passes[ 0 ]->outputs ) );
-			VTX_DEBUG( "{} {}", size_t( _output ), size_t( &_passes[ 0 ]->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] ) );
-			VTX_DEBUG(
-				"{} {}", size_t( _output ), size_t( &_renderQueue.back()->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] ) );
-
-			// Check last render queue item has the defined output.
-			const Outputs & outputs = _renderQueue.back()->outputs;
-			const auto		it		= std::find_if( outputs.begin(),
-											outputs.end(),
-											[ this ]( const std::pair<E_CHANNEL_OUTPUT, Output> & p_e )
-											{ return &( p_e.second ) == _output; } );
-
-			auto * test = _output;
-			if ( it == outputs.end() )
-			{
-				VTX_ERROR( "{}", "Last render queue item has not the defined output" );
-				// return false;
-			}
-			*/
-
 			// Create context.
 			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
 
@@ -158,8 +137,6 @@ namespace VTX::Renderer
 
 		void resize( const size_t p_width, const size_t p_height )
 		{
-			using namespace Context;
-
 			assert( _context != nullptr );
 			_context->resize( p_width, p_height );
 		}

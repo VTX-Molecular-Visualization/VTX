@@ -41,7 +41,9 @@ namespace VTX::Renderer::Scheduler
 			{
 				if ( adjacentList[ index ].size() == 0 )
 				{
+					// TODO: understand why this is not working.
 					// Check output connection.
+					/*
 					const Outputs & outputs = passes[ index ]->outputs;
 					const auto		it		= std::find_if( outputs.begin(),
 													outputs.end(),
@@ -51,6 +53,17 @@ namespace VTX::Renderer::Scheduler
 					if ( it == outputs.end() )
 					{
 						visited[ index ] = true;
+					}
+					*/
+
+					visited[ index ] = true;
+					for ( auto & [ channel, output ] : passes[ index ]->outputs )
+					{
+						if ( &output == p_output )
+						{
+							visited[ index ] = false;
+							break;
+						}
 					}
 				}
 			}

@@ -488,6 +488,14 @@ namespace VTX::Bench
 						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 						ImNodes::BeginInputAttribute( id++ );
 						ImGui::Text( input.name.c_str() );
+						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
+						{
+							if ( std::holds_alternative<Attachment>( input.desc ) )
+							{
+								const Attachment & attachment = std::get<Attachment>( input.desc );
+								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
+							}
+						}
 						ImNodes::EndInputAttribute();
 						ImNodes::PopAttributeFlag();
 					}
@@ -500,6 +508,14 @@ namespace VTX::Bench
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text( output.name.c_str() );
+						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
+						{
+							if ( std::holds_alternative<Attachment>( output.desc ) )
+							{
+								const Attachment & attachment = std::get<Attachment>( output.desc );
+								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
+							}
+						}
 						ImNodes::EndOutputAttribute();
 					}
 
