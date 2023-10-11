@@ -151,6 +151,12 @@ namespace VTX::Renderer
 			}
 		}
 
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		{
+			_context->setUniform( p_value, p_uniform, p_program );
+		}
+
 		// Debug purposes only.
 		inline Passes & getPasses() { return _passes; }
 		inline Links &	getLinks() { return _links; }

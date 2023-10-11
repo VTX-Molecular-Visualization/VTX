@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_CONCEPT__
 
 #include "renderer/descriptors.hpp"
+#include <any>
 #include <concepts>
 
 namespace VTX::Renderer::Context
@@ -24,12 +25,19 @@ namespace VTX::Renderer::Context
 								   const RenderQueue & p_renderQueue,
 								   const Links &	   p_links,
 								   const Handle		   p_output,
-								   Instructions &	   p_instructions ) {
+								   const std::any &	   p_value,
+								   const std::string & p_uniform,
+								   const std::string & p_program,
+
+								   Instructions & p_instructions ) {
 							 {
 								 p_context.build( p_renderQueue, p_links, p_output, p_instructions )
 							 } -> std::same_as<void>;
 							 {
 								 p_context.resize( p_width, p_height )
+							 } -> std::same_as<void>;
+							 {
+								 p_context.setUniform( p_value, p_uniform, p_program )
 							 } -> std::same_as<void>;
 						 };
 

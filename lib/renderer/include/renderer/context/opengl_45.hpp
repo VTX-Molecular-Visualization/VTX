@@ -54,7 +54,7 @@ namespace VTX::Renderer::Context
 			_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
 			_vao->setAttributeFormat<float>( 0, 2 );
 			_vao->setAttributeBinding( 0, 0 );
-			_vbo->set( quad );
+			_vbo->setData( quad, GL_STATIC_DRAW );
 			_vao->unbind();
 
 			glClearColor( 1.f, 0.f, 0.f, 1.f );
@@ -123,16 +123,24 @@ namespace VTX::Renderer::Context
 					_programs.emplace( &descProgram, program );
 
 					// Uniforms.
+					if ( descProgram.uniforms.empty() == false )
+					{
+						_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
+					}
+
 					size_t offset = 0;
 					for ( const Uniform & descUniform : descProgram.uniforms )
 					{
-						_uniformOffsets.emplace( &descUniform, offset );
-						offset += _mapTypeSizes[ descUniform.type ];
+						size_t size = _mapTypeSizes[ descUniform.type ];
+						assert( _cacheUniforms.find( descProgram.name + descUniform.name ) == _cacheUniforms.end() );
+						_cacheUniforms.emplace( descProgram.name + descUniform.name,
+												StructUniformEntry { _ubos[ &descProgram ].get(), offset, size } );
+						offset += size;
 					}
 
 					if ( offset > 0 )
 					{
-						_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>( offset, GL_STATIC_DRAW ) );
+						_ubos[ &descProgram ]->setData( GLsizei( offset ), GL_STATIC_DRAW );
 					}
 				}
 
@@ -169,12 +177,10 @@ namespace VTX::Renderer::Context
 				};
 
 				// Bind inputs.
-				int channelMax = 0;
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
 					const Output * const src = findInputSrcInLinks( channel );
 
-					channelMax = std::max( channelMax, int( channel ) );
 					if ( src == nullptr )
 					{
 						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPass->name );
@@ -201,11 +207,13 @@ namespace VTX::Renderer::Context
 				{
 					if ( descProgram.uniforms.empty() == false )
 					{
+						assert( _ubos.find( &descProgram ) != _ubos.end() );
+
 						p_instructions.emplace_back(
-							[ this, &descProgram, &channelMax ]()
+							[ this, &descProgram ]()
 							{
 								// Bind local ubo after last input.
-								_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
+								_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, 10 );
 							} );
 					}
 
@@ -275,8 +283,15 @@ namespace VTX::Renderer::Context
 			}
 		}
 
-		// TODO
-		void setValue( const Uniform & p_uniform, const void * p_value ) {}
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string p_uniform, const std::string & p_program = "" )
+		{
+			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
+
+			const StructUniformEntry & entry = _cacheUniforms[ p_program + p_uniform ];
+
+			entry.buffer->setSubData( p_value, entry.offset, GLsizei( entry.size ) );
+		}
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
@@ -340,7 +355,15 @@ namespace VTX::Renderer::Context
 		std::unordered_map<const Program *, const GL::Program * const>		   _programs;
 		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>>	   _fbos;
 		std::unordered_map<const Program *, std::unique_ptr<GL::Buffer>>	   _ubos;
-		std::unordered_map<const Uniform *, size_t>							   _uniformOffsets;
+		// std::unordered_map<const Uniform *, size_t>							   _uniformOffsets;
+
+		struct StructUniformEntry
+		{
+			GL::Buffer * buffer;
+			size_t		 offset;
+			size_t		 size;
+		};
+		std::unordered_map<std::string, StructUniformEntry> _cacheUniforms;
 	};
 } // namespace VTX::Renderer::Context
 

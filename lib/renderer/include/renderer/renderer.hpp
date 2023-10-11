@@ -27,6 +27,7 @@ namespace VTX::Renderer
 			Attachment imagePicking { E_FORMAT::RG32UI };
 			Attachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
 
+			/*
 			// Geometric.
 			Pass * const geo = _renderGraph->addPass(
 				{ "Geometric",
@@ -53,35 +54,43 @@ namespace VTX::Renderer
 						   { E_CHANNEL_INPUT::_1, { "Color", imageColor } },
 						   { E_CHANNEL_INPUT::_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
-				  Programs { { "Shading", std::vector<FilePath> { "default.vert", "shading.frag" }, Uniforms {} } } } );
+				  Programs { { "Shading",
+							   std::vector<FilePath> { "default.vert", "shading.frag" },
+							   Uniforms { { "Specular factor", E_TYPE::FLOAT },
+										  { "Background color", E_TYPE::VEC3F } } } } } );
 
 			// FXAA.
-			Pass * const fxaa = _renderGraph->addPass(
-				{ "FXAA",
-				  Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageColor } } },
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
-				  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" }, Uniforms {} } } } );
+			Pass * const fxaa
+				= _renderGraph->addPass( { "FXAA",
+										   Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageColor } } },
+										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+										   Programs { { "FXAA",
+														std::vector<FilePath> { "default.vert", "fxaa.frag" },
+														Uniforms { { "Color", E_TYPE::VEC3F } } } } } );
+			*/
 
 			// Debug.
-			/*
-			Pass * const debug = _renderGraph->addPass(
-				{ "Debug",
-				  Inputs {},
-				  Outputs {  { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } }
-			, Programs
-			{
-				{
-					"Debug", std::vector<FilePath> { "default.vert", "debug.frag" }, Uniforms {}
-				}
-			} } );
-			*/
+			Pass * const debug
+				= _renderGraph->addPass( { "Debug",
+										   Inputs {},
+										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+										   Programs { { "Debug",
+														std::vector<FilePath> { "default.vert", "debug.frag" },
+														Uniforms { { "Color", E_TYPE::VEC4F } } } } } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
 			//_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
 			//_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			//_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			_renderGraph->setOutput( &debug->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+		}
+
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		{
+			_renderGraph->setUniform( p_value, p_uniform, p_program );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
@@ -89,6 +98,8 @@ namespace VTX::Renderer
 		inline void build( const uint p_output = 0 )
 		{
 			_renderGraph->setup( _loader, _width, _height, _shaderPath, p_output );
+
+			setUniform( COLOR_CYAN, "Color", "Debug" );
 		}
 
 		inline void render() { _renderGraph->render(); }
