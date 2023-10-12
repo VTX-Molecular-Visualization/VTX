@@ -165,7 +165,7 @@ namespace VTX::Renderer
 		{
 			if ( _context != nullptr )
 			{
-				return _context->getUniform<T>( p_uniform.name, p_program.name );
+				return _context->template getUniform<T>( p_uniform.name, p_program.name );
 			}
 			else
 			{
