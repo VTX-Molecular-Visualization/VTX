@@ -76,7 +76,7 @@ namespace VTX::Renderer
 										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
 										   Programs { { "Debug",
 														std::vector<FilePath> { "default.vert", "debug.frag" },
-														Uniforms { { "Color", E_TYPE::VEC4F } } } } } );
+														Uniforms { { "Color", E_TYPE::COLOR4, COLOR_GREEN } } } } } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
@@ -90,7 +90,13 @@ namespace VTX::Renderer
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
 		{
-			_renderGraph->setUniform( p_value, p_uniform, p_program );
+			_renderGraph->setUniform<T>( p_value, p_uniform, p_program );
+		}
+
+		template<typename T>
+		inline T getUniform( const Uniform & p_uniform, const Program & p_program )
+		{
+			return _renderGraph->getUniform<T>( p_uniform, p_program );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
@@ -98,8 +104,6 @@ namespace VTX::Renderer
 		inline void build( const uint p_output = 0 )
 		{
 			_renderGraph->setup( _loader, _width, _height, _shaderPath, p_output );
-
-			setUniform( COLOR_CYAN, "Color", "Debug" );
 		}
 
 		inline void render() { _renderGraph->render(); }

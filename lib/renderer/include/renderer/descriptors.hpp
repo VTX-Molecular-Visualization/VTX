@@ -43,10 +43,13 @@ namespace VTX::Renderer
 	{
 	};
 
+	using UniformValue = std::variant<uint, int, float, Vec3f, Vec4f, Mat3f, Mat4f, Util::Color::Rgba>;
+
 	struct Uniform
 	{
-		std::string name;
-		E_TYPE		type;
+		std::string	 name;
+		E_TYPE		 type;
+		UniformValue value;
 	};
 
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;

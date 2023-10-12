@@ -519,6 +519,28 @@ namespace VTX::Bench
 						ImNodes::EndOutputAttribute();
 					}
 
+					// Programs.
+					for ( const Program & program : pass->programs )
+					{
+						// Uniforms.
+						for ( const Uniform & uniform : program.uniforms )
+						{
+							ImGui::Text( uniform.name.c_str() );
+
+							switch ( uniform.type )
+							{
+							case E_TYPE::COLOR4:
+								static Util::Color::Rgba value
+									= p_newRenderer->getUniform<Util::Color::Rgba>( uniform, program );
+								ImGui::SetNextItemWidth( 150 );
+								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
+								{
+									p_newRenderer->setUniform( value, uniform.name, program.name );
+								}
+							}
+						}
+					}
+
 					ImNodes::EndNode();
 				}
 

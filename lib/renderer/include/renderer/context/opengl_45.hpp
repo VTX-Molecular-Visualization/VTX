@@ -142,6 +142,24 @@ namespace VTX::Renderer::Context
 					{
 						_ubos[ &descProgram ]->setData( GLsizei( offset ), GL_STATIC_DRAW );
 					}
+
+					for ( const Uniform & descUniform : descProgram.uniforms )
+					{
+						switch ( descUniform.type )
+						{
+						case E_TYPE::UINT: _setUniformDefaultValue<uint>( descProgram, descUniform ); break;
+						case E_TYPE::INT: _setUniformDefaultValue<int>( descProgram, descUniform ); break;
+						case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descProgram, descUniform ); break;
+						case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descProgram, descUniform ); break;
+						case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descProgram, descUniform ); break;
+						case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descProgram, descUniform ); break;
+						case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descProgram, descUniform ); break;
+						case E_TYPE::COLOR4:
+							_setUniformDefaultValue<Util::Color::Rgba>( descProgram, descUniform );
+							break;
+						default: throw std::runtime_error( "unknown type" );
+						}
+					}
 				}
 
 				// Enqueue instructions
@@ -284,13 +302,27 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string p_uniform, const std::string & p_program = "" )
+		inline void setUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
 		{
 			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
 
-			const StructUniformEntry & entry = _cacheUniforms[ p_program + p_uniform ];
+			StructUniformEntry & entry = _cacheUniforms[ p_program + p_uniform ];
 
+			entry.value = (void *)( &p_value );
 			entry.buffer->setSubData( p_value, entry.offset, GLsizei( entry.size ) );
+		}
+
+		template<typename T>
+		inline T & getUniform( const std::string & p_uniform, const std::string & p_program = "" )
+		{
+			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
+
+			void * valueAsVoid = _cacheUniforms[ p_program + p_uniform ].value;
+			T *	   valueAsT	   = static_cast<T *>( valueAsVoid );
+
+			assert( valueAsT != nullptr );
+
+			return *valueAsT;
 		}
 
 	  private:
@@ -337,13 +369,13 @@ namespace VTX::Renderer::Context
 		std::map<const E_TYPE, const GLenum> _mapTypes
 			= { { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },		{ E_TYPE::FLOAT, GL_FLOAT },
 				{ E_TYPE::VEC3F, GL_FLOAT },	   { E_TYPE::VEC4F, GL_FLOAT }, { E_TYPE::MAT3F, GL_FLOAT },
-				{ E_TYPE::MAT4F, GL_FLOAT } };
+				{ E_TYPE::MAT4F, GL_FLOAT },	   { E_TYPE::COLOR4, GL_FLOAT } };
 
 		std::map<const E_TYPE, const size_t> _mapTypeSizes
 			= { { E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
 				{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },
 				{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) },
-				{ E_TYPE::MAT4F, sizeof( Mat4f ) } };
+				{ E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) } };
 
 		std::unique_ptr<GL::ProgramManager> _programManager;
 		std::unique_ptr<GL::VertexArray>	_vao;
@@ -362,8 +394,16 @@ namespace VTX::Renderer::Context
 			GL::Buffer * buffer;
 			size_t		 offset;
 			size_t		 size;
+			void *		 value;
 		};
 		std::unordered_map<std::string, StructUniformEntry> _cacheUniforms;
+
+		template<typename T>
+		inline void _setUniformDefaultValue( const Program & descProgram, const Uniform & descUniform )
+		{
+			assert( std::holds_alternative<T>( descUniform.value ) );
+			setUniform( std::get<T>( descUniform.value ), descUniform.name, descProgram.name );
+		}
 	};
 } // namespace VTX::Renderer::Context
 

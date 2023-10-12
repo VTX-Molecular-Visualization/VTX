@@ -39,6 +39,9 @@ namespace VTX::Renderer::Context
 							 {
 								 p_context.setUniform( p_value, p_uniform, p_program )
 							 } -> std::same_as<void>;
+							 //{
+							 //	 p_context.getUniform( p_uniform, p_program )
+							 //} -> std::same_as<std::any>;
 						 };
 
 } // namespace VTX::Renderer::Context
