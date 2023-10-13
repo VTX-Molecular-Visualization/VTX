@@ -43,7 +43,25 @@ namespace VTX::Renderer
 	{
 	};
 
-	using UniformValue = std::variant<uint, int, float, Vec3f, Vec4f, Mat3f, Mat4f, Util::Color::Rgba>;
+	template<typename T>
+	struct UniformValueMinMax
+	{
+		T value;
+		T min;
+		T max;
+	};
+
+	using UniformValue = std::variant<uint,
+									  int,
+									  float,
+									  UniformValueMinMax<uint>,
+									  UniformValueMinMax<int>,
+									  UniformValueMinMax<float>,
+									  Vec3f,
+									  Vec4f,
+									  Mat3f,
+									  Mat4f,
+									  Util::Color::Rgba>;
 
 	struct Uniform
 	{

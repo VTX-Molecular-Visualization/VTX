@@ -70,13 +70,16 @@ namespace VTX::Renderer
 			*/
 
 			// Debug.
-			Pass * const debug
-				= _renderGraph->addPass( { "Debug",
-										   Inputs {},
-										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
-										   Programs { { "Debug",
-														std::vector<FilePath> { "default.vert", "debug.frag" },
-														Uniforms { { "Color", E_TYPE::COLOR4, COLOR_GREEN } } } } } );
+			Pass * const debug = _renderGraph->addPass(
+				{ "Debug",
+				  Inputs {},
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+				  Programs {
+					  { "Debug",
+						std::vector<FilePath> { "default.vert", "debug.frag" },
+						Uniforms { { "Color", E_TYPE::COLOR4, COLOR_GREEN },
+								   { "Test", E_TYPE::FLOAT, 5646.f },
+								   { "Factor", E_TYPE::FLOAT, UniformValueMinMax<float> { 5.f, 0.f, 10.f } } } } } } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );
@@ -94,9 +97,9 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline T getUniform( const Uniform & p_uniform, const Program & p_program )
+		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
 		{
-			return _renderGraph->getUniform<T>( p_uniform, p_program );
+			return _renderGraph->getUniform<T>( p_value, p_uniform, p_program );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

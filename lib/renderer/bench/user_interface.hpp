@@ -526,17 +526,42 @@ namespace VTX::Bench
 						for ( const Uniform & uniform : program.uniforms )
 						{
 							ImGui::Text( uniform.name.c_str() );
-
+							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
 							{
+							case E_TYPE::FLOAT:
+							{
+								if ( std::holds_alternative<UniformValueMinMax<float>>( uniform.value ) )
+								{
+									auto value = std::get<UniformValueMinMax<float>>( uniform.value );
+									if ( ImGui::SliderFloat(
+											 uniform.name.c_str(), &value.value, value.min, value.max ) )
+									{
+										p_newRenderer->setUniform( value.value, uniform.name, program.name );
+									}
+								}
+								else
+								{
+									float value;
+									p_newRenderer->getUniform<float>( value, uniform, program );
+									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
+									{
+										p_newRenderer->setUniform( value, uniform.name, program.name );
+									}
+								}
+								break;
+							}
 							case E_TYPE::COLOR4:
-								static Util::Color::Rgba value
-									= p_newRenderer->getUniform<Util::Color::Rgba>( uniform, program );
-								ImGui::SetNextItemWidth( 150 );
+							{
+								static Util::Color::Rgba value;
+								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
 									p_newRenderer->setUniform( value, uniform.name, program.name );
 								}
+								break;
+							}
+							default: throw std::runtime_error( "widget not implemented" ); break;
 							}
 						}
 					}

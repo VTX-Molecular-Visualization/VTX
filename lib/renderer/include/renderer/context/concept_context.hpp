@@ -25,11 +25,10 @@ namespace VTX::Renderer::Context
 								   const RenderQueue & p_renderQueue,
 								   const Links &	   p_links,
 								   const Handle		   p_output,
-								   const std::any &	   p_value,
 								   const std::string & p_uniform,
 								   const std::string & p_program,
-
-								   Instructions & p_instructions ) {
+								   UniformValue &	   p_value,
+								   Instructions &	   p_instructions ) {
 							 {
 								 p_context.build( p_renderQueue, p_links, p_output, p_instructions )
 							 } -> std::same_as<void>;
@@ -39,9 +38,9 @@ namespace VTX::Renderer::Context
 							 {
 								 p_context.setUniform( p_value, p_uniform, p_program )
 							 } -> std::same_as<void>;
-							 //{
-							 //	 p_context.getUniform( p_uniform, p_program )
-							 //} -> std::same_as<std::any>;
+							 {
+								 p_context.getUniform( p_value, p_uniform, p_program )
+							 } -> std::same_as<void>;
 						 };
 
 } // namespace VTX::Renderer::Context

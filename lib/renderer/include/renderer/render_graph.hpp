@@ -161,16 +161,16 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline T getUniform( const Uniform & p_uniform, const Program & p_program )
+		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
 		{
 			if ( _context != nullptr )
 			{
-				return _context->template getUniform<T>( p_uniform.name, p_program.name );
+				_context->template getUniform<T>( p_value, p_uniform.name, p_program.name );
 			}
 			else
 			{
 				assert( std::holds_alternative<T>( p_uniform.value ) );
-				return std::get<T>( p_uniform.value );
+				p_value = std::get<T>( p_uniform.value );
 			}
 		}
 

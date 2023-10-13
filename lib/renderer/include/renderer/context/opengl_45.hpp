@@ -313,7 +313,7 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline T & getUniform( const std::string & p_uniform, const std::string & p_program = "" )
+		inline void getUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
 		{
 			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
 
@@ -322,7 +322,7 @@ namespace VTX::Renderer::Context
 
 			assert( valueAsT != nullptr );
 
-			return *valueAsT;
+			p_value = *valueAsT;
 		}
 
 	  private:
@@ -404,7 +404,29 @@ namespace VTX::Renderer::Context
 			assert( std::holds_alternative<T>( descUniform.value ) );
 			setUniform( std::get<T>( descUniform.value ), descUniform.name, descProgram.name );
 		}
+
+		/*
+		template<>
+		inline void _setUniformDefaultValue<UniformValueMinMax<float>>( const Program & descProgram,
+																		const Uniform & descUniform )
+		{
+			assert( std::holds_alternative<UniformValueMinMax<float>>( descUniform.value ) );
+			setUniform( std::get<UniformValueMinMax<float>>( descUniform.value ), descUniform.name, descProgram.name );
+		}
+		*/
+
+		/*
+		template<>
+		inline void _setUniformDefaultValue<UniformValueMinMax<std::any>>( const Program & descProgram,
+																		   const Uniform & descUniform )
+		{
+			assert( std::holds_alternative<UniformValueMinMax<std::any>>( descUniform.value ) );
+			setUniform(
+				std::get<UniformValueMinMax<std::any>>( descUniform.value ), descUniform.name, descProgram.name );
+		}
+		*/
 	};
+
 } // namespace VTX::Renderer::Context
 
 #endif
