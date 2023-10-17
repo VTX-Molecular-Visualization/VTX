@@ -5,7 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
-#include <python_binding/binding/vtx_init.hpp>
+#include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <sstream>
 #include <string>

@@ -5,9 +5,8 @@
 
 namespace VTX::Test::ExternalTool
 {
-	void Binder::bind( PythonBinding::Wrapper::Module & p_vtxModule )
+	void Binder::bind( PythonBinding::PyTXModule & p_vtxModule )
 	{
-		PythonBinding::Wrapper::Module commandModule = p_vtxModule.getSubmodule( "Command" );
-		commandModule.bindAction<Action::ToolAction>( "new_command", "Invoke a new command function" );
+		p_vtxModule.commands().bindAction<Action::ToolAction>( "new_command", "Invoke a new command function" );
 	}
 }; // namespace VTX::Test::ExternalTool

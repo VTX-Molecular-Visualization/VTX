@@ -1,6 +1,7 @@
 #include "python_binding/interpretor.hpp"
 #include "python_binding/binder.hpp"
 #include "python_binding/log_redirection.hpp"
+#include "python_binding/pytx_module.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
@@ -29,16 +30,15 @@ namespace VTX::PythonBinding
 		void applyBinders()
 		{
 			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule );
+			PyTXModule		pytx		  = PyTXModule( moduleWrapper );
 
 			for ( const std::unique_ptr<Binder> & binder : _binders )
 			{
-				binder->bind( moduleWrapper );
+				binder->bind( pytx );
 			}
 		}
 
 		void importCommands() { pybind11::exec( "from PyTX.Command import *" ); }
-
-		pybind11::module_ & vtxModule() { return _vtxModule; }
 
 	  private:
 		pybind11::scoped_interpreter _interpretor {};

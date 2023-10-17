@@ -2,7 +2,7 @@
 #include "util/app.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <python_binding/binding/vtx_init.hpp>
+#include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 
 TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
