@@ -67,8 +67,9 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 # Link third parties.
-target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::pybind11 pybind11::embed)
-pybind11_add_module(PyTX SHARED "src/python_binding/python_module/global.cpp")
+target_link_libraries(VTX_PYTHON_BINDING PUBLIC pybind11::pybind11)
+target_link_libraries(VTX_PYTHON_BINDING PRIVATE pybind11::embed)
+pybind11_add_module(PyTX SHARED "src/python_binding/binding/vtx_module.cpp")
 
 target_link_libraries(PyTX PRIVATE VTX_UTIL)
 target_link_libraries(PyTX PRIVATE VTX_CORE)

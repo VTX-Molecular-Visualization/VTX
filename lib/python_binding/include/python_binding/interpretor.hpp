@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_INTERPRETOR__
 #define __VTX_PYTHON_BINDING_INTERPRETOR__
 
+#include "python_binding/binder.hpp"
 #include <memory>
 #include <string>
 #include <util/types.hpp>
@@ -15,6 +16,15 @@ namespace VTX::PythonBinding
 	  public:
 		Interpretor();
 		~Interpretor();
+
+		void init();
+		void addBinder( std::unique_ptr<Binder> p_binder );
+
+		template<typename TBinder>
+		void addBinder()
+		{
+			addBinder( std::make_unique<TBinder>() );
+		}
 
 		void print( const std::string & p_line ) const;
 		void runCommand( const std::string & p_line ) const;

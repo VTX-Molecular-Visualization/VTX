@@ -19,6 +19,8 @@ namespace VTX::App::Application
 			_systems[ p_key ] = p_system;
 		}
 
+		bool exists( const std::string & p_key ) const { return _systems.find( p_key ) != _systems.end(); }
+
 		template<typename T>
 		T & getSystem( const std::string & p_key ) const
 		{

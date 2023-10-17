@@ -5,6 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
+#include <python_binding/binding/vtx_init.hpp>
 #include <python_binding/interpretor.hpp>
 #include <sstream>
 #include <string>
@@ -18,7 +19,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	App::Test::Util::App::initApp();
 
 	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-	App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
+	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
+		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor::SYSTEM_KEY, interpretorPtr.get() );
+
+	interpretorPtr->addBinder<PythonBinding::Binding::VTXAppBinder>();
+	interpretorPtr->init();
 
 	PythonBinding::Interpretor & interpretor = *interpretorPtr;
 
