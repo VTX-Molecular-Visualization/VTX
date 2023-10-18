@@ -39,6 +39,7 @@ target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_RENDERER)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_IO)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
 target_link_libraries(VTX_PYTHON_BINDING PRIVATE chemfiles)
+target_link_libraries(VTX_PYTHON_BINDING PUBLIC magic_enum)
 
 # Shared library PyTX generated from static library VTX_PYTHON_BINDING => static library must be position independent.
 # it seems to be done automatically with MSVC and Clang but not with GCC

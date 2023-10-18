@@ -12,6 +12,17 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
+void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Interpretor & p_interpretor )
+{
+	using namespace VTX;
+
+	const FilePath	  scriptPath   = IO::Internal::Filesystem::getInternalDataDir() / ( p_scriptName + ".py" );
+	std::stringstream ssCommandRun = std::stringstream();
+
+	ssCommandRun << "runScript(" << scriptPath << " )";
+	p_interpretor.runCommand( ssCommandRun.str() );
+};
+
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 {
 	using namespace VTX;
@@ -92,4 +103,32 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	ssCommandRun << "runScript(" << scriptPath << " )";
 
 	interpretor.runCommand( ssCommandRun.str() );
+};
+
+TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
+{
+	using namespace VTX;
+
+	App::Test::Util::App::initApp();
+
+	const std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
+	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
+		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
+
+	interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+
+	interpretorPtr->init();
+
+	PythonBinding::Interpretor & interpretor = *interpretorPtr;
+
+	App::Application::Scene & scene = App::VTXApp::get().getScene();
+
+	const FilePath moleculePath
+		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+
+	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
+	openAction.execute();
+
+	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };
+	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", interpretor ); };
 };

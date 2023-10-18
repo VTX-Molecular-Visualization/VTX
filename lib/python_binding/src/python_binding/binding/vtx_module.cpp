@@ -1,6 +1,6 @@
+#include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/log_redirection.hpp"
 #include <app/application/system.hpp>
-#include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
@@ -34,5 +34,8 @@ namespace VTX::PythonBinding
 		// Command module : Contains all commands accessible to user via command line.
 		pybind11::module_ vtxCommandModule = m.def_submodule( "Command", "VTX Python command interface" );
 		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
+
+		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
+		apiModule( vtxAPIModule );
 	}
 } // namespace VTX::PythonBinding

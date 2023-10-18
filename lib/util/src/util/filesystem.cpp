@@ -23,6 +23,12 @@ namespace VTX::Util::Filesystem
 #endif
 	}
 
+	std::string getFileName( const FilePath & p_filePath )
+	{
+		std::string filenameWithExtension = p_filePath.filename().string();
+		return filenameWithExtension.substr( 0, filenameWithExtension.find_last_of( '.' ) );
+	}
+
 	const std::string readPath( const FilePath & p_filePath )
 	{
 		std::ifstream inputFile( p_filePath );

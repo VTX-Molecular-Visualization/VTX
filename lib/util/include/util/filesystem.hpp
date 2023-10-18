@@ -2,11 +2,13 @@
 #define __VTX_UTIL_FILESYSTEM__
 
 #include "types.hpp"
-#include <set>
+#include <string>
 
 namespace VTX::Util::Filesystem
 {
 	FilePath getExecutableDir();
+
+	std::string getFileName( const FilePath & p_filePath );
 
 	const std::string readPath( const FilePath & p_filePath );
 	void			  removeAll( const FilePath & p_filePath );
