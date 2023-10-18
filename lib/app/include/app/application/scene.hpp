@@ -34,8 +34,23 @@ namespace VTX::App::Application
 
 		const Core::ECS::BaseEntity getItem( const size_t p_index ) const;
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
-		bool						isEmpty() const;
-		size_t						getItemCount() const;
+
+		template<typename C>
+		const C & getComponentByName( const std::string & p_name ) const
+		{
+			const Core::ECS::BaseEntity entity = getItem( p_name );
+			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+		}
+
+		template<typename C>
+		C & getComponentByName( const std::string & p_name )
+		{
+			const Core::ECS::BaseEntity entity = getItem( p_name );
+			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+		}
+
+		bool   isEmpty() const;
+		size_t getItemCount() const;
 
 		virtual void update( const float & );
 

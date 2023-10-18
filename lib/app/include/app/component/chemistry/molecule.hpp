@@ -32,20 +32,20 @@ namespace VTX::App::Component::Chemistry
 		void								setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
 
 		void						 initChains( const size_t p_chainCount );
-		Chain *						 getChain( const size_t p_chainIndex ) { return _chains[ p_chainIndex ]; }
-		const Chain *				 getChain( const size_t p_chainIndex ) const { return _chains[ p_chainIndex ]; }
+		Chain *						 getChain( const size_t p_index ) { return _chains[ p_index ]; }
+		const Chain *				 getChain( const size_t p_index ) const { return _chains[ p_index ]; }
 		std::vector<Chain *> &		 getChains() { return _chains; }
 		const std::vector<Chain *> & getChains() const { return _chains; }
 
-		void					 initResidues( const size_t p_residueCount );
-		Residue *				 getResidue( const size_t p_chainIndex ) { return _residues[ p_chainIndex ]; }
-		const Residue *			 getResidue( const size_t p_chainIndex ) const { return _residues[ p_chainIndex ]; }
-		std::vector<Residue *> & getResidues() { return _residues; }
+		void						   initResidues( const size_t p_residueCount );
+		Residue *					   getResidue( const size_t p_index ) { return _residues[ p_index ]; }
+		const Residue *				   getResidue( const size_t p_index ) const { return _residues[ p_index ]; }
+		std::vector<Residue *> &	   getResidues() { return _residues; }
 		const std::vector<Residue *> & getResidues() const { return _residues; }
 
 		void						initAtoms( const size_t p_atomCount );
-		Atom *						getAtom( const size_t p_chainIndex ) { return _atoms[ p_chainIndex ]; }
-		const Atom *				getAtom( const size_t p_chainIndex ) const { return _atoms[ p_chainIndex ]; }
+		Atom *						getAtom( const size_t p_index ) { return _atoms[ p_index ]; }
+		const Atom *				getAtom( const size_t p_index ) const { return _atoms[ p_index ]; }
 		std::vector<Atom *> &		getAtoms() { return _atoms; }
 		const std::vector<Atom *> & getAtoms() const { return _atoms; }
 
@@ -55,7 +55,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<Bond *> &		getBonds() { return _bonds; }
 		const std::vector<Bond *> & getBonds() const { return _bonds; }
 
-		const std::string & getName() { return _moleculeStruct.name; }
+		const std::string & getName() const { return _moleculeStruct.name; }
 		void				setName( const std::string & p_name ) { _moleculeStruct.name = p_name; }
 
 		bool							hasTrajectory() { return _moleculeStruct.trajectory.frames.size() >= 2; }

@@ -37,7 +37,7 @@ namespace VTX::App::Entity::Scene
 
 		Component::Scene::SceneItemComponent & sceneComponent
 			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
-		sceneComponent.setName( moleculeComponent.getPdbIdCode() );
+		sceneComponent.setName( moleculeComponent.getName() );
 
 		// Setup GPU Proxy
 		Renderer::GL::StructProxyMolecule & gpuProxyComponent
@@ -87,6 +87,10 @@ namespace VTX::App::Entity::Scene
 		}
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
-		p_moleculeComponent.setPdbIdCode( chemfilesReader.getPdbIdCode() );
+		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
+		p_moleculeComponent.setPdbIdCode( pdbId );
+
+		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( path ) : pdbId;
+		p_moleculeComponent.setName( moleculeName );
 	}
 } // namespace VTX::App::Entity::Scene
