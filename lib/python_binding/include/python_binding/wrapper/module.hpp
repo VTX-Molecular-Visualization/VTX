@@ -1,7 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 #define __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 
-#include "python_binding/pybind11_extra_convertor.hpp"
+#include "python_binding/wrapper/pybind11_extra_convertor.hpp"
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>

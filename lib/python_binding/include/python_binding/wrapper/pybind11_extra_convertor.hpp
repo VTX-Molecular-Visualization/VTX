@@ -1,9 +1,9 @@
 #ifndef __VTX_PYTHON_BINDING_PYBIND11_EXTRA_CONVERTOR__
 #define __VTX_PYTHON_BINDING_PYBIND11_EXTRA_CONVERTOR__
 
-#include "wrapper/arg.hpp"
+#include "python_binding/wrapper/arg.hpp"
 
-namespace VTX::PythonBinding
+namespace VTX::PythonBinding::Wrapper
 {
 	class Pybind11ExtraConvertor
 	{
@@ -17,5 +17,5 @@ namespace VTX::PythonBinding
 		};
 	};
 
-}; // namespace VTX::PythonBinding
+}; // namespace VTX::PythonBinding::Wrapper
 #endif
