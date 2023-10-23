@@ -77,9 +77,13 @@ namespace VTX::Renderer
 				  Programs {
 					  { "Debug",
 						std::vector<FilePath> { "default.vert", "debug.frag" },
-						Uniforms { { "Color", E_TYPE::COLOR4, COLOR_GREEN },
-								   { "Test", E_TYPE::FLOAT, 5646.f },
-								   { "Factor", E_TYPE::FLOAT, UniformValueMinMax<float> { 5.f, 0.f, 10.f } } } } } } );
+						Uniforms {
+							{ "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_GREEN, {} } },
+							{ "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f, {} } },
+							{ "Factor",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 5.f,
+														  StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } } );
 
 			// Links.
 			//_renderGraph->addLink( geo, depth, E_CHANNEL::DEPTH, E_CHANNEL::COLOR_0 );

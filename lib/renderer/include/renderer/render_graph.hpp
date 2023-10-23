@@ -169,8 +169,9 @@ namespace VTX::Renderer
 			}
 			else
 			{
-				assert( std::holds_alternative<T>( p_uniform.value ) );
-				p_value = std::get<T>( p_uniform.value );
+				assert( std::holds_alternative<StructUniformValue<T>>( p_uniform.value ) );
+
+				p_value = std::get<StructUniformValue<T>>( p_uniform.value ).value;
 			}
 		}
 
