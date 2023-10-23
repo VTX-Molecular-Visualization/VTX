@@ -553,7 +553,8 @@ namespace VTX::Bench
 							}
 							case E_TYPE::COLOR4:
 							{
-								static Util::Color::Rgba value;
+								// TODO: fix.
+								Util::Color::Rgba value;
 								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
