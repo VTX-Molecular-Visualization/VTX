@@ -132,9 +132,9 @@ namespace VTX::Renderer::Context
 					for ( const Uniform & descUniform : descProgram.uniforms )
 					{
 						size_t size = _mapTypeSizes[ descUniform.type ];
-						assert( _cacheUniforms.find( descProgram.name + descUniform.name ) == _cacheUniforms.end() );
-						_cacheUniforms.emplace( descProgram.name + descUniform.name,
-												StructUniformEntry { _ubos[ &descProgram ].get(), offset, size } );
+						assert( _uniforms.find( descProgram.name + descUniform.name ) == _uniforms.end() );
+						_uniforms.emplace( descProgram.name + descUniform.name,
+										   StructUniformEntry { _ubos[ &descProgram ].get(), offset, size } );
 						offset += size;
 					}
 
@@ -304,9 +304,9 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		inline void setUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
 		{
-			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
+			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
-			StructUniformEntry & entry = _cacheUniforms[ p_program + p_uniform ];
+			StructUniformEntry & entry = _uniforms[ p_program + p_uniform ];
 
 			entry.value = (void *)( &p_value );
 			entry.buffer->setSubData( p_value, entry.offset, GLsizei( entry.size ) );
@@ -315,9 +315,9 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		inline void getUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
 		{
-			assert( _cacheUniforms.find( p_program + p_uniform ) != _cacheUniforms.end() );
+			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
-			void * valueAsVoid = _cacheUniforms[ p_program + p_uniform ].value;
+			void * valueAsVoid = _uniforms[ p_program + p_uniform ].value;
 			T *	   valueAsT	   = static_cast<T *>( valueAsVoid );
 
 			assert( valueAsT != nullptr );
@@ -396,35 +396,16 @@ namespace VTX::Renderer::Context
 			size_t		 size;
 			void *		 value;
 		};
-		std::unordered_map<std::string, StructUniformEntry> _cacheUniforms;
+		std::unordered_map<std::string, StructUniformEntry> _uniforms;
 
 		template<typename T>
-		inline void _setUniformDefaultValue( const Program & descProgram, const Uniform & descUniform )
+		inline void _setUniformDefaultValue( const Program & p_descProgram, const Uniform & p_descUniform )
 		{
-			assert( std::holds_alternative<T>( descUniform.value ) );
-			setUniform( std::get<T>( descUniform.value ), descUniform.name, descProgram.name );
-		}
+			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
-		/*
-		template<>
-		inline void _setUniformDefaultValue<UniformValueMinMax<float>>( const Program & descProgram,
-																		const Uniform & descUniform )
-		{
-			assert( std::holds_alternative<UniformValueMinMax<float>>( descUniform.value ) );
-			setUniform( std::get<UniformValueMinMax<float>>( descUniform.value ), descUniform.name, descProgram.name );
-		}
-		*/
-
-		/*
-		template<>
-		inline void _setUniformDefaultValue<UniformValueMinMax<std::any>>( const Program & descProgram,
-																		   const Uniform & descUniform )
-		{
-			assert( std::holds_alternative<UniformValueMinMax<std::any>>( descUniform.value ) );
 			setUniform(
-				std::get<UniformValueMinMax<std::any>>( descUniform.value ), descUniform.name, descProgram.name );
+				std::get<StructUniformValue<T>>( p_descUniform.value ).value, p_descUniform.name, p_descProgram.name );
 		}
-		*/
 	};
 
 } // namespace VTX::Renderer::Context

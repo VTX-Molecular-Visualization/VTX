@@ -531,19 +531,20 @@ namespace VTX::Bench
 							{
 							case E_TYPE::FLOAT:
 							{
-								if ( std::holds_alternative<UniformValueMinMax<float>>( uniform.value ) )
+								float value;
+								p_newRenderer->getUniform<float>( value, uniform, program );
+
+								auto descValue = std::get<StructUniformValue<float>>( uniform.value );
+								if ( descValue.minMax.has_value() )
 								{
-									auto value = std::get<UniformValueMinMax<float>>( uniform.value );
-									if ( ImGui::SliderFloat(
-											 uniform.name.c_str(), &value.value, value.min, value.max ) )
+									auto minMax = descValue.minMax.value();
+									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
-										p_newRenderer->setUniform( value.value, uniform.name, program.name );
+										p_newRenderer->setUniform( value, uniform.name, program.name );
 									}
 								}
 								else
 								{
-									float value;
-									p_newRenderer->getUniform<float>( value, uniform, program );
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
 										p_newRenderer->setUniform( value, uniform.name, program.name );
