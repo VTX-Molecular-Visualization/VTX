@@ -8,6 +8,3 @@ catch2/3.4.0
 [generators]
 CMakeDeps
 CMakeToolchain
-
-[layout]
-cmake_layout
