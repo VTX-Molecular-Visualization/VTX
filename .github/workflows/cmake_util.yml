@@ -29,9 +29,9 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
     
-    - name: Create default profile
+    - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install . --build --settings=compiler.cppstd=20
+      run: conan install . --output-folder=${{env.CMAKE_BUILD_DIR}} --settings=build_type={{env.BUILD_TYPE}} --build --settings=compiler.cppstd=17
       
     - uses: actions/checkout@v3
 
