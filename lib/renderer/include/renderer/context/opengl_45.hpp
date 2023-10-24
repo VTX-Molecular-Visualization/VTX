@@ -18,10 +18,12 @@ namespace VTX::Renderer::Context
 	{
 	  public:
 		OpenGL45() = delete;
-		OpenGL45( const size_t	   p_width,
-				  const size_t	   p_height,
-				  const FilePath & p_shaderPath,
-				  void *		   p_proc = nullptr ) :
+		OpenGL45(
+			const size_t	 p_width,
+			const size_t	 p_height,
+			const FilePath & p_shaderPath,
+			void *			 p_proc = nullptr
+		) :
 			BaseContext { p_width, p_height, p_shaderPath }
 		{
 			VTX_DEBUG( "{}", "Create context opengl 4.5" );
@@ -63,10 +65,12 @@ namespace VTX::Renderer::Context
 
 		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
 
-		void build( const RenderQueue & p_renderQueue,
-					const Links &		p_links,
-					const Handle		p_output,
-					Instructions &		p_instructions )
+		void build(
+			const RenderQueue & p_renderQueue,
+			const Links &		p_links,
+			const Handle		p_output,
+			Instructions &		p_instructions
+		)
 		{
 			assert( p_instructions.empty() );
 
@@ -95,13 +99,16 @@ namespace VTX::Renderer::Context
 							const Attachment & attachment = std::get<Attachment>( descIO );
 							_textures.emplace(
 								&attachment,
-								std::make_unique<GL::Texture2D>( width,
-																 height,
-																 _mapFormats[ attachment.format ],
-																 _mapWrappings[ attachment.wrappingS ],
-																 _mapWrappings[ attachment.wrappingT ],
-																 _mapFilterings[ attachment.filteringMin ],
-																 _mapFilterings[ attachment.filteringMag ] ) );
+								std::make_unique<GL::Texture2D>(
+									width,
+									height,
+									_mapFormats[ attachment.format ],
+									_mapWrappings[ attachment.wrappingS ],
+									_mapWrappings[ attachment.wrappingT ],
+									_mapFilterings[ attachment.filteringMin ],
+									_mapFilterings[ attachment.filteringMag ]
+								)
+							);
 
 							// Attach.
 							_fbos[ descPass ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
@@ -118,7 +125,8 @@ namespace VTX::Renderer::Context
 				for ( const Program & descProgram : descPass->programs )
 				{
 					const GL::Program * const program = _programManager->createProgram(
-						descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix );
+						descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
+					);
 
 					_programs.emplace( &descProgram, program );
 
@@ -133,8 +141,10 @@ namespace VTX::Renderer::Context
 					{
 						size_t size = _mapTypeSizes[ descUniform.type ];
 						assert( _uniforms.find( descProgram.name + descUniform.name ) == _uniforms.end() );
-						_uniforms.emplace( descProgram.name + descUniform.name,
-										   StructUniformEntry { _ubos[ &descProgram ].get(), offset, size } );
+						_uniforms.emplace(
+							descProgram.name + descUniform.name,
+							StructUniformEntry { _ubos[ &descProgram ].get(), offset, size }
+						);
 						offset += size;
 					}
 
@@ -181,10 +191,12 @@ namespace VTX::Renderer::Context
 				auto findInputSrcInLinks
 					= [ &p_links, descPass ]( const E_CHANNEL_INPUT p_channel ) -> const Output * const
 				{
-					const auto it = std::find_if( p_links.begin(),
-												  p_links.end(),
-												  [ descPass, p_channel ]( const std::unique_ptr<Link> & p_e )
-												  { return p_e->dest == descPass && p_e->channelDest == p_channel; } );
+					const auto it = std::find_if(
+						p_links.begin(),
+						p_links.end(),
+						[ descPass, p_channel ]( const std::unique_ptr<Link> & p_e )
+						{ return p_e->dest == descPass && p_e->channelDest == p_channel; }
+					);
 
 					if ( it == p_links.end() )
 					{
@@ -232,7 +244,8 @@ namespace VTX::Renderer::Context
 							{
 								// Bind local ubo after last input.
 								_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, 10 );
-							} );
+							}
+						);
 					}
 
 					p_instructions.emplace_back(
@@ -240,7 +253,8 @@ namespace VTX::Renderer::Context
 						{
 							_programs[ &descProgram ]->use();
 							_vao->drawArray( GL_TRIANGLE_STRIP, 0, 4 );
-						} );
+						}
+					);
 
 					if ( descProgram.uniforms.empty() == false )
 					{
@@ -263,9 +277,9 @@ namespace VTX::Renderer::Context
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
 
-						p_instructions.emplace_back(
-							[ this, channel = channel, attachment ]()
-							{ _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
+						p_instructions.emplace_back( [ this, channel = channel, attachment ]()
+													 { _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); }
+						);
 					}
 					else
 					{
@@ -404,7 +418,8 @@ namespace VTX::Renderer::Context
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
 			setUniform(
-				std::get<StructUniformValue<T>>( p_descUniform.value ).value, p_descUniform.name, p_descProgram.name );
+				std::get<StructUniformValue<T>>( p_descUniform.value ).value, p_descUniform.name, p_descProgram.name
+			);
 		}
 	};
 

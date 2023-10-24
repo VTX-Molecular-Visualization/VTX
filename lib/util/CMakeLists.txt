@@ -4,14 +4,16 @@ include(cmake/configure-target.cmake)
 project(VTX_UTIL)
 
 # Git dependencies.
-set(GIT_URL_GLM https://github.com/g-truc/glm.git)
+set(GIT_URL_GLM https://github.com/g-truc/glm)
 set(GIT_TAG_GLM 0.9.9.8)
-set(GIT_URL_SPDLOG https://github.com/gabime/spdlog.git)
-set(GIT_TAG_SPDLOG v1.11.0)
-set(GIT_URL_JSON https://github.com/nlohmann/json.git)
+set(GIT_URL_SPDLOG https://github.com/gabime/spdlog)
+set(GIT_TAG_SPDLOG v1.12.0)
+set(GIT_URL_JSON https://github.com/nlohmann/json)
 set(GIT_TAG_JSON v3.11.2)
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum)
 set(GIT_TAG_MAGIC_ENUM v0.9.3)
+set(GIT_URL_CPP_NETLIB https://github.com/cpp-netlib/cpp-netlib)
+set(GIT_TAG_CPP_NETLIB cpp-netlib-0.13.0-final)
 
 # Fetch third parties.
 include(FetchContent)
@@ -19,8 +21,9 @@ FetchContent_Declare(glm GIT_REPOSITORY ${GIT_URL_GLM} GIT_TAG ${GIT_TAG_GLM})
 FetchContent_Declare(spdlog GIT_REPOSITORY ${GIT_URL_SPDLOG} GIT_TAG ${GIT_TAG_SPDLOG})
 FetchContent_Declare(nlohmann_json GIT_REPOSITORY ${GIT_URL_JSON} GIT_TAG ${GIT_TAG_JSON})
 FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
+FetchContent_Declare(cpp-netlib GIT_REPOSITORY ${GIT_URL_CPP_NETLIB} GIT_TAG ${GIT_TAG_CPP_NETLIB})
 
-FetchContent_MakeAvailable(glm spdlog nlohmann_json magic_enum)
+FetchContent_MakeAvailable(glm spdlog nlohmann_json magic_enum cpp-netlib)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
@@ -36,6 +39,7 @@ target_link_libraries(VTX_UTIL PUBLIC glm::glm)
 target_link_libraries(VTX_UTIL PUBLIC spdlog::spdlog)
 target_link_libraries(VTX_UTIL PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_UTIL PUBLIC magic_enum::magic_enum)
+target_link_libraries(VTX_UTIL PUBLIC cpp-netlib)
 
 # Tests.
 set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)

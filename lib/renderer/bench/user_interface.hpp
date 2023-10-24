@@ -38,7 +38,8 @@ namespace VTX::Bench
 				SDL_WINDOWPOS_CENTERED,
 				int( p_width ),
 				int( p_height ),
-				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
+				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+			);
 
 			if ( _window == nullptr )
 			{
@@ -107,7 +108,8 @@ namespace VTX::Bench
 
 		void draw( /*Renderer::GL::OpenGLRenderer* const p_renderer,*/
 				   Camera * const			  p_camera,
-				   Renderer::Renderer * const p_newRenderer )
+				   Renderer::Renderer * const p_newRenderer
+		)
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -180,22 +182,27 @@ namespace VTX::Bench
 				{
 					p_camera->setFov( fov );
 				}
-				if ( ImGui::SliderFloat( "Velocity translation",
-										 &velocityTranslation,
-										 Camera::VELOCITY_TRANSLATION_MIN,
-										 Camera::VELOCITY_TRANSLATION_MAX ) )
+				if ( ImGui::SliderFloat(
+						 "Velocity translation",
+						 &velocityTranslation,
+						 Camera::VELOCITY_TRANSLATION_MIN,
+						 Camera::VELOCITY_TRANSLATION_MAX
+					 ) )
 				{
 					p_camera->setVelocityTranslation( velocityTranslation );
 				}
-				if ( ImGui::SliderFloat( "Velocity rotation",
-										 &velocityRotation,
-										 Camera::VELOCITY_ROTATION_MIN,
-										 Camera::VELOCITY_ROTATION_MAX ) )
+				if ( ImGui::SliderFloat(
+						 "Velocity rotation",
+						 &velocityRotation,
+						 Camera::VELOCITY_ROTATION_MIN,
+						 Camera::VELOCITY_ROTATION_MAX
+					 ) )
 				{
 					p_camera->setVelocityRotation( velocityRotation );
 				}
 				if ( ImGui::SliderFloat(
-						 "Velocity zoom", &velocityZoom, Camera::VELOCITY_ZOOM_MIN, Camera::VELOCITY_ZOOM_MAX ) )
+						 "Velocity zoom", &velocityZoom, Camera::VELOCITY_ZOOM_MIN, Camera::VELOCITY_ZOOM_MAX
+					 ) )
 				{
 					p_camera->setVelocityZoom( velocityZoom );
 				}
@@ -245,17 +252,21 @@ namespace VTX::Bench
 					{
 						p_renderer->setActiveSSAO( activeSSAO );
 					}
-					if ( ImGui::SliderFloat( "Intensity",
-											 &ssaoIntensity,
-											 Renderer::GL::Pass::SSAO::AO_INTENSITY_MIN,
-											 Renderer::GL::Pass::SSAO::AO_INTENSITY_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Intensity",
+							 &ssaoIntensity,
+							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MIN,
+							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MAX
+						 ) )
 					{
 						p_renderer->setSSAOIntensity( ssaoIntensity );
 					}
-					if ( ImGui::SliderFloat( "Blur size",
-											 &blurSize,
-											 Renderer::GL::Pass::Blur::BLUR_SIZE_MIN,
-											 Renderer::GL::Pass::Blur::BLUR_SIZE_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Blur size",
+							 &blurSize,
+							 Renderer::GL::Pass::Blur::BLUR_SIZE_MIN,
+							 Renderer::GL::Pass::Blur::BLUR_SIZE_MAX
+						 ) )
 					{
 						p_renderer->setBlurSize( blurSize );
 					}
@@ -270,20 +281,24 @@ namespace VTX::Bench
 					}
 					if ( shadingMode == Renderer::GL::ENUM_SHADING::GLOSSY )
 					{
-						if ( ImGui::SliderFloat( "Specular factor",
-												 &specularFactor,
-												 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
-												 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX ) )
+						if ( ImGui::SliderFloat(
+								 "Specular factor",
+								 &specularFactor,
+								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
+								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX
+							 ) )
 						{
 							p_renderer->setSpecularFactor( specularFactor );
 						}
 					}
 					else if ( shadingMode == Renderer::GL::ENUM_SHADING::TOON )
 					{
-						if ( ImGui::SliderInt( "Steps",
-											   &toonSteps,
-											   Renderer::GL::Pass::Shading::TOON_STEPS_MIN,
-											   Renderer::GL::Pass::Shading::TOON_STEPS_MAX ) )
+						if ( ImGui::SliderInt(
+								 "Steps",
+								 &toonSteps,
+								 Renderer::GL::Pass::Shading::TOON_STEPS_MIN,
+								 Renderer::GL::Pass::Shading::TOON_STEPS_MAX
+							 ) )
 						{
 							p_renderer->setToonSteps( toonSteps );
 						}
@@ -296,24 +311,30 @@ namespace VTX::Bench
 					{
 						p_renderer->setColorLight( colorLight );
 					}
-					if ( ImGui::SliderFloat( "Fog near",
-											 &fogNear,
-											 Renderer::GL::Pass::Shading::FOG_NEAR_MIN,
-											 Renderer::GL::Pass::Shading::FOG_NEAR_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Fog near",
+							 &fogNear,
+							 Renderer::GL::Pass::Shading::FOG_NEAR_MIN,
+							 Renderer::GL::Pass::Shading::FOG_NEAR_MAX
+						 ) )
 					{
 						p_renderer->setFogNear( fogNear );
 					}
-					if ( ImGui::SliderFloat( "Fog far",
-											 &fogFar,
-											 Renderer::GL::Pass::Shading::FOG_FAR_MIN,
-											 Renderer::GL::Pass::Shading::FOG_FAR_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Fog far",
+							 &fogFar,
+							 Renderer::GL::Pass::Shading::FOG_FAR_MIN,
+							 Renderer::GL::Pass::Shading::FOG_FAR_MAX
+						 ) )
 					{
 						p_renderer->setFogFar( fogFar );
 					}
-					if ( ImGui::SliderFloat( "Fog density",
-											 &fogDensity,
-											 Renderer::GL::Pass::Shading::FOG_DENSITY_MIN,
-											 Renderer::GL::Pass::Shading::FOG_DENSITY_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Fog density",
+							 &fogDensity,
+							 Renderer::GL::Pass::Shading::FOG_DENSITY_MIN,
+							 Renderer::GL::Pass::Shading::FOG_DENSITY_MAX
+						 ) )
 					{
 						p_renderer->setFogDensity( fogDensity );
 					}
@@ -329,17 +350,21 @@ namespace VTX::Bench
 					{
 						p_renderer->setActiveOutline( activeOutline );
 					}
-					if ( ImGui::SliderFloat( "Sensivity",
-											 &outlineSensivity,
-											 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MIN,
-											 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MAX ) )
+					if ( ImGui::SliderFloat(
+							 "Sensivity",
+							 &outlineSensivity,
+							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MIN,
+							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MAX
+						 ) )
 					{
 						p_renderer->setOutlineSensivity( outlineSensivity );
 					}
-					if ( ImGui::SliderInt( "Thickness",
-										   (int *)( &outlineThickness ),
-										   Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MIN,
-										   Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MAX ) )
+					if ( ImGui::SliderInt(
+							 "Thickness",
+							 (int *)( &outlineThickness ),
+							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MIN,
+							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MAX
+						 ) )
 					{
 						p_renderer->setOutlineThickness( outlineThickness );
 					}
@@ -398,7 +423,8 @@ namespace VTX::Bench
 					for ( size_t i = 0; i < times.size(); ++i )
 					{
 						ImGui::ProgressBar(
-							times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str() );
+							times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str()
+						);
 						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 						ImGui::Text( labels[ i ] );
 					}
@@ -423,15 +449,20 @@ namespace VTX::Bench
 				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 				ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
-				ImGui::ProgressBar( float( ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-											 - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ) )
-										/ openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
-									ImVec2( 0.f, 0.f ),
-									fmt::format( "{} / {}",
-												 ( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-												   - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
-												 openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX )
-										.c_str() );
+				ImGui::ProgressBar(
+					float(
+						( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+						  - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX )
+					) / openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
+					ImVec2( 0.f, 0.f ),
+					fmt::format(
+						"{} / {}",
+						( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+						  - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
+						openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+					)
+						.c_str()
+				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
 
@@ -531,13 +562,13 @@ namespace VTX::Bench
 							{
 							case E_TYPE::FLOAT:
 							{
-								float value;
-								p_newRenderer->getUniform<float>( value, uniform, program );
-
-								auto descValue = std::get<StructUniformValue<float>>( uniform.value );
+								StructUniformValue<float> descValue
+									= std::get<StructUniformValue<float>>( uniform.value );
 								if ( descValue.minMax.has_value() )
 								{
-									auto minMax = descValue.minMax.value();
+									static float value;
+									p_newRenderer->getUniform<float>( value, uniform, program );
+									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
 										p_newRenderer->setUniform( value, uniform.name, program.name );
@@ -545,6 +576,8 @@ namespace VTX::Bench
 								}
 								else
 								{
+									static float value;
+									p_newRenderer->getUniform<float>( value, uniform, program );
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
 										p_newRenderer->setUniform( value, uniform.name, program.name );
@@ -554,8 +587,7 @@ namespace VTX::Bench
 							}
 							case E_TYPE::COLOR4:
 							{
-								// TODO: fix.
-								Util::Color::Rgba value;
+								static Util::Color::Rgba value;
 								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
@@ -590,9 +622,11 @@ namespace VTX::Bench
 				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
-					ImNodes::Link( id++,
-								   mapIdOutput[ &( link->src->outputs[ link->channelSrc ] ) ],
-								   mapIdInput[ &( link->dest->inputs[ link->channelDest ] ) ] );
+					ImNodes::Link(
+						id++,
+						mapIdOutput[ &( link->src->outputs[ link->channelSrc ] ) ],
+						mapIdInput[ &( link->dest->inputs[ link->channelDest ] ) ]
+					);
 				}
 
 				// Output.
@@ -625,10 +659,12 @@ namespace VTX::Bench
 					// DescLink.
 					else
 					{
-						p_newRenderer->getRenderGraph().addLink( mapIdDescPass[ newLinkStartId ],
-																 mapIdDescPass[ newLinkEndtId ],
-																 mapIdChannelOutput[ newLinkStartId ],
-																 mapIdChannelInput[ newLinkEndtId ] );
+						p_newRenderer->getRenderGraph().addLink(
+							mapIdDescPass[ newLinkStartId ],
+							mapIdDescPass[ newLinkEndtId ],
+							mapIdChannelOutput[ newLinkStartId ],
+							mapIdChannelInput[ newLinkEndtId ]
+						);
 					}
 				}
 

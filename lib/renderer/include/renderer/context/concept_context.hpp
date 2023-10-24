@@ -7,9 +7,6 @@
 
 namespace VTX::Renderer::Context
 {
-
-	// Base context.
-	// template<typename F>
 	struct BaseContext
 	{
 		size_t	 width;
@@ -19,16 +16,18 @@ namespace VTX::Renderer::Context
 
 	template<typename C>
 	concept Concept = std::is_base_of<BaseContext, C>::value
-					  && requires( C				   p_context,
-								   const size_t		   p_width,
-								   const size_t		   p_height,
-								   const RenderQueue & p_renderQueue,
-								   const Links &	   p_links,
-								   const Handle		   p_output,
-								   const std::string & p_uniform,
-								   const std::string & p_program,
-								   UniformValue &	   p_value,
-								   Instructions &	   p_instructions ) {
+					  && requires(
+						  C					  p_context,
+						  const size_t		  p_width,
+						  const size_t		  p_height,
+						  const RenderQueue & p_renderQueue,
+						  const Links &		  p_links,
+						  const Handle		  p_output,
+						  const std::string & p_uniform,
+						  const std::string & p_program,
+						  UniformValue &	  p_value,
+						  Instructions &	  p_instructions
+					  ) {
 							 {
 								 p_context.build( p_renderQueue, p_links, p_output, p_instructions )
 							 } -> std::same_as<void>;
