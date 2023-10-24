@@ -30,8 +30,8 @@ jobs:
       run: conan profile detect --force
     
     - name: Install dependencies
-      #working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install ${{env.CMAKELISTS_DIR}} --output-folder=${{env.CMAKE_BUILD_DIR}} --settings=build_type={{env.BUILD_TYPE}} --build=missing --settings=compiler.cppstd=17
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan install . --output-folder=${{env.CMAKE_BUILD_DIR}} --settings=build_type={{env.BUILD_TYPE}} --build=missing --settings=compiler.cppstd=17
       
     - uses: actions/checkout@v3
 
