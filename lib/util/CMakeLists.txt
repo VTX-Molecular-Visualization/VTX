@@ -1,26 +1,13 @@
 message("VTX_UTIL")
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.23)
 include(cmake/configure-target.cmake)
 project(VTX_UTIL)
 
-# Git dependencies.
-set(GIT_URL_GLM https://github.com/g-truc/glm)
-set(GIT_TAG_GLM 0.9.9.8)
-set(GIT_URL_SPDLOG https://github.com/gabime/spdlog)
-set(GIT_TAG_SPDLOG v1.12.0)
-set(GIT_URL_JSON https://github.com/nlohmann/json)
-set(GIT_TAG_JSON v3.11.2)
-set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum)
-set(GIT_TAG_MAGIC_ENUM v0.9.3)
-
-# Fetch third parties.
-include(FetchContent)
-FetchContent_Declare(glm GIT_REPOSITORY ${GIT_URL_GLM} GIT_TAG ${GIT_TAG_GLM})
-FetchContent_Declare(spdlog GIT_REPOSITORY ${GIT_URL_SPDLOG} GIT_TAG ${GIT_TAG_SPDLOG})
-FetchContent_Declare(nlohmann_json GIT_REPOSITORY ${GIT_URL_JSON} GIT_TAG ${GIT_TAG_JSON})
-FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
-
-FetchContent_MakeAvailable(glm spdlog nlohmann_json magic_enum)
+# Find packages.
+find_package(glm REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(magic_enum REQUIRED)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
@@ -38,11 +25,7 @@ target_link_libraries(VTX_UTIL PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_UTIL PUBLIC magic_enum::magic_enum)
 
 # Tests.
-set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
-set(GIT_TAG_CATCH2 v3.3.2)
-
-FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
-FetchContent_MakeAvailable(Catch2)
+find_package(Catch2 REQUIRED)
 
 # Catch2 configuration.
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)

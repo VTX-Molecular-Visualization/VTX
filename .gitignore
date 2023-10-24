@@ -1,4 +1,5 @@
 **/out/
+**/build/
 **/.vs/
 **/.vscode/
 /data/
@@ -8,4 +9,5 @@
 *.code-workspace
 **/out/
 **/CMakePresets.json
+**/CMakeUserPresets.json
 **/CMakeSettings.json
