@@ -23,6 +23,16 @@ jobs:
       fail-fast: false
 
     steps:
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+      
+    - name: Create default profile
+      run: conan profile detect --force
+    
+    - name: Create default profile
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan install .     
+      
     - uses: actions/checkout@v3
 
     - name: Configure CMake
