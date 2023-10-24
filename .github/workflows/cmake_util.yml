@@ -31,7 +31,7 @@ jobs:
     
     - name: Create default profile
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install .     
+      run: conan install . --build --settings=compiler.cppstd=20
       
     - uses: actions/checkout@v3
 
