@@ -28,7 +28,7 @@ jobs:
     - name: Configure packages
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  conan editable add .
-      
+     
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan build test --build=missing --build=editable --settings=compiler.cppstd=20 

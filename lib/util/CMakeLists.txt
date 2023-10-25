@@ -1,9 +1,8 @@
-message("VTX_UTIL")
+message("vtx_util")
 cmake_minimum_required(VERSION 3.23)
 #include(cmake/configure-target.cmake)
-project(VTX_UTIL)
+project(vtx_util)
 
-# Find packages.
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -14,17 +13,14 @@ find_package(asio REQUIRED)
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 
-# Create library.
-add_library(VTX_UTIL ${HEADERS} ${SOURCES})
-#configureTarget(VTX_UTIL)
-target_include_directories(VTX_UTIL PUBLIC include)
+add_library(vtx_util ${HEADERS} ${SOURCES})
+#configureTarget(vtx_util)
+target_include_directories(vtx_util PUBLIC include)
 
-# Link third parties.
-target_link_libraries(VTX_UTIL PRIVATE glm::glm)
-target_link_libraries(VTX_UTIL PRIVATE spdlog::spdlog)
-target_link_libraries(VTX_UTIL PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(VTX_UTIL PRIVATE magic_enum::magic_enum)
-target_link_libraries(VTX_UTIL PRIVATE asio::asio)
+target_link_libraries(vtx_util PRIVATE glm::glm)
+target_link_libraries(vtx_util PRIVATE spdlog::spdlog)
+target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(vtx_util PRIVATE magic_enum::magic_enum)
+target_link_libraries(vtx_util PRIVATE asio::asio)
 
-# Install.
-install(TARGETS VTX_UTIL)
+install(TARGETS vtx_util)

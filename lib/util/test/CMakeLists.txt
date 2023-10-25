@@ -1,26 +1,17 @@
-message("VTX_UTIL_TEST")
+message("vtx_util_test")
 cmake_minimum_required(VERSION 3.23)
 
-project(VTX_UTIL_TEST)
+project(vtx_util_test)
 
-# Find packages.
-find_package(VTX_UTIL CONFIG REQUIRED)
+find_package(vtx_util CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
-# Catch2 configuration.
-list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-include(Catch)
+add_executable(vtx_util_test src/main.cpp)
+#configureTarget(vtx_util_test)
 
-# Create executable.
-add_executable(VTX_UTIL_TEST src/main.cpp)
-#configureTarget(VTX_UTIL_TEST)
+target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
 
-# Link third parties.
-target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(VTX_UTIL_TEST PRIVATE vtx_util::vtx_util)
-
-# Catch2.
 include(CTest)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-	catch_discover_tests(VTX_UTIL_TEST)
-endif()
+include(Catch)
+catch_discover_tests(vtx_util_test)
