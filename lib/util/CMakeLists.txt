@@ -8,6 +8,7 @@ find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(magic_enum REQUIRED)
+find_package(asio REQUIRED)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*)
