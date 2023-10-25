@@ -1,8 +1,8 @@
 from conan import ConanFile
-from conan.tools.cmake import CMakeToolchain, CMake, CMakeDeps
+from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
 class VTXUtilRecipe(ConanFile):
-    name = "VTXUtil"
+    name = "vtx_util"
     version = "1.0"
     package_type = "library"
     
@@ -30,6 +30,9 @@ class VTXUtilRecipe(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
+    
+    def layout(self):
+        cmake_layout(self)
 
     def generate(self):
         deps = CMakeDeps(self)
@@ -47,5 +50,5 @@ class VTXUtilRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["VTXUtil"]
+        self.cpp_info.libs = ["vtx_util"]
 

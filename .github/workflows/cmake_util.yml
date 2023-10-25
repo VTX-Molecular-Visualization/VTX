@@ -8,7 +8,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   CMAKELISTS_DIR: ${{github.workspace}}/lib/util
-  CMAKE_BUILD_DIR: out
+  CMAKE_BUILD_DIR: build
   BUILD_TYPE: Release
 
 jobs:
@@ -33,13 +33,13 @@ jobs:
     
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install . --output-folder=${{env.CMAKE_BUILD_DIR}} --settings=build_type=${{env.BUILD_TYPE}} --build=missing --settings=compiler.cppstd=17
+      run: conan install . --settings=build_type=${{env.BUILD_TYPE}} --build=missing --settings=compiler.cppstd=17
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{env.CMAKE_BUILD_DIR}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake"
+      run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake"
 
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
