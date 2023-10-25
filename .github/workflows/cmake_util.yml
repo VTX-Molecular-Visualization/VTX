@@ -31,10 +31,13 @@ jobs:
       
     - name: Create default profile
       run: conan profile detect --force
+
+    - name: Add editable package
+      run:  conan editable add .
       
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build .
+      run: conan build . --settings=compiler.cppstd=20 
     
 #    - name: Install dependencies
 #      working-directory: ${{env.CMAKELISTS_DIR}}
