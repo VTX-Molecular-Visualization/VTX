@@ -1,6 +1,6 @@
 message("VTX_UTIL")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
+#include(cmake/configure-target.cmake)
 project(VTX_UTIL)
 
 # Find packages.
@@ -25,28 +25,7 @@ target_link_libraries(VTX_UTIL PUBLIC spdlog::spdlog)
 target_link_libraries(VTX_UTIL PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(VTX_UTIL PUBLIC magic_enum::magic_enum)
 
+set_target_properties(VTX_UTIL PROPERTIES PUBLIC_HEADER HEADERS)
+
 # Install.
 install(TARGETS VTX_UTIL)
-
-# Tests.
-#find_package(Catch2 REQUIRED)
-
-# Catch2 configuration.
-#list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-#include(Catch)
-
-# Create executable.
-#add_executable(VTX_UTIL_TEST test/main.cpp)
-#configureTarget(VTX_UTIL_TEST)
-
-# Link third parties.
-#target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
-
-# Link VTX_UTIL.
-#target_link_libraries(VTX_UTIL_TEST PRIVATE VTX_UTIL)
-
-# Catch2.
-#include(CTest)
-#if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-#	catch_discover_tests(VTX_UTIL_TEST)
-#endif()

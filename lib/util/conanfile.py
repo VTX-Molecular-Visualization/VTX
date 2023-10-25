@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+from conan.tools.cmake import CMake, cmake_layout
 
 class VTXUtilRecipe(ConanFile):
     name = "vtx_util"
@@ -10,6 +10,8 @@ class VTXUtilRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
+    generators = "CMakeDeps", "CMakeToolchain"
+     
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
     
     def requirements(self):
@@ -18,27 +20,13 @@ class VTXUtilRecipe(ConanFile):
         self.requires("nlohmann_json/3.11.2")
         self.requires("magic_enum/0.9.3")
         self.requires("asio/1.28.1")
-        self.requires("catch2/3.4.0")
         
-    def build_requirements(self):
-        self.tool_requires("cmake/3.27.7")
-    
     def config_options(self):
         if self.settings.os == "Windows":
-            self.options.rm_safe("fPIC")
+            del self.options.fPIC
 
-    def configure(self):
-        if self.options.shared:
-            self.options.rm_safe("fPIC")
-    
     def layout(self):
         cmake_layout(self)
-
-    def generate(self):
-        deps = CMakeDeps(self)
-        deps.generate()
-        tc = CMakeToolchain(self)
-        tc.generate()
 
     def build(self):
         cmake = CMake(self)
