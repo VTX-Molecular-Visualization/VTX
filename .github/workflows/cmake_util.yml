@@ -38,7 +38,7 @@ jobs:
       
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build . --settings=compiler.cppstd=20 
+      run: conan build . --build=missing --build=editable --settings=compiler.cppstd=20 
     
 #    - name: Install dependencies
 #      working-directory: ${{env.CMAKELISTS_DIR}}
