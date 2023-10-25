@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.23)
 project(VTX_UTIL_TEST)
 
 # Find packages.
-find_package(vtx_util CONFIG REQUIRED)
+find_package(VTX_UTIL CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
 # Catch2 configuration.
