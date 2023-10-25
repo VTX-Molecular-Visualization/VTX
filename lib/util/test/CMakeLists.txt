@@ -1,6 +1,5 @@
 message("vtx_util_test")
 cmake_minimum_required(VERSION 3.23)
-
 project(vtx_util_test)
 
 find_package(vtx_util CONFIG REQUIRED)
