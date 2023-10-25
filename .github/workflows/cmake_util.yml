@@ -33,6 +33,7 @@ jobs:
       run: conan profile detect --force
 
     - name: Add editable package
+      working-directory: ${{env.CMAKELISTS_DIR}}
       run:  conan editable add .
       
     - name: Build 
