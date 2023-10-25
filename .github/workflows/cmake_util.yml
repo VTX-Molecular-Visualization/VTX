@@ -8,7 +8,8 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   CMAKELISTS_DIR: ${{github.workspace}}/lib/util
-  CMAKE_BUILD_DIR: b
+  # Default cmake build dir defined in conan cmake_layout
+  CMAKE_BUILD_DIR: build
   BUILD_TYPE: Release
 
 jobs:
