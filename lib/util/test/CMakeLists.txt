@@ -4,9 +4,8 @@ cmake_minimum_required(VERSION 3.23)
 project(VTX_UTIL_TEST)
 
 # Find packages.
-find_package(VTX_UTIL CONFIG REQUIRED)
+find_package(vtx_util CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
-
 
 # Catch2 configuration.
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
@@ -18,8 +17,6 @@ add_executable(VTX_UTIL_TEST src/main.cpp)
 
 # Link third parties.
 target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
-
-# Link VTX_UTIL.
 target_link_libraries(VTX_UTIL_TEST PRIVATE vtx_util::vtx_util)
 
 # Catch2.

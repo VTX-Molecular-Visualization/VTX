@@ -20,12 +20,11 @@ add_library(VTX_UTIL ${HEADERS} ${SOURCES})
 target_include_directories(VTX_UTIL PUBLIC include)
 
 # Link third parties.
-target_link_libraries(VTX_UTIL PUBLIC glm::glm)
-target_link_libraries(VTX_UTIL PUBLIC spdlog::spdlog)
-target_link_libraries(VTX_UTIL PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(VTX_UTIL PUBLIC magic_enum::magic_enum)
-
-set_target_properties(VTX_UTIL PROPERTIES PUBLIC_HEADER HEADERS)
+target_link_libraries(VTX_UTIL PRIVATE glm::glm)
+target_link_libraries(VTX_UTIL PRIVATE spdlog::spdlog)
+target_link_libraries(VTX_UTIL PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(VTX_UTIL PRIVATE magic_enum::magic_enum)
+target_link_libraries(VTX_UTIL PRIVATE asio::asio)
 
 # Install.
 install(TARGETS VTX_UTIL)

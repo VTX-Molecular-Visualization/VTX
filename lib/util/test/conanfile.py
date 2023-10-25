@@ -4,8 +4,10 @@ from conan.tools.cmake import cmake_layout, CMake
 
 class VTXUtilTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
+    package_type = "application"
     
     generators = "CMakeToolchain", "CMakeDeps"
+    
     requires = "vtx_util/1.0", "catch2/3.4.0"
         
     def layout(self):
