@@ -18,7 +18,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
+      with:
+        submodules: recursive
+        
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
@@ -31,6 +33,7 @@ jobs:
         conan editable add .
         conan editable add ${{github.workspace}}/lib/util
         conan editable add ${{github.workspace}}/lib/io
+        conan editable add ${{github.workspace}}/lib/io/chemfiles
         conan editable add ${{github.workspace}}/lib/core
       
     - uses: knicknic/os-specific-run@v1.0.4
