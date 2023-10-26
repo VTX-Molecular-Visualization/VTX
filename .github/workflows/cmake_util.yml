@@ -25,13 +25,13 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
-    - name: Configure packages
+    - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  conan editable add .
+      run: conan install . --build=missing --settings=compiler.cppstd=20
      
-    - name: Build 
+    - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build test --build=missing --build=editable --settings=compiler.cppstd=20 
+      run: conan build test --settings=compiler.cppstd=20 
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
