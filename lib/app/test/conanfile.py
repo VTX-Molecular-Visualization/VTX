@@ -13,7 +13,6 @@ class VTXAppTestConan(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("entt/3.12.2")
         self.requires("catch2/3.4.0")
         
     def layout(self):

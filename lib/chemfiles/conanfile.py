@@ -1,8 +1,9 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.scm import Git
 
-class VTXAppRecipe(ConanFile):
-    name = "vtx_app"
+class VTXChemfilesRecipe(ConanFile):
+    name = "vtx_chemfiles"
     version = "1.0"
     package_type = "library"
     
@@ -13,16 +14,10 @@ class VTXAppRecipe(ConanFile):
     generators = "CMakeDeps", "CMakeToolchain"
     
     #exports_sources = "CMakeLists.txt", "src/*", "include/*"
-        
-    def requirements(self):
-        self.requires("vtx_util/1.0")
-        self.requires("vtx_renderer/1.0")
-        self.requires("vtx_io/1.0")
-        self.requires("vtx_core/1.0")
-        self.requires("entt/3.11.1", transitive_headers=True)
-     
-    #TODO: get CMake?
-    #def build_requirements(self):
+    
+    def source(self):
+        git = Git(self)
+        git.clone(url="https://github.com/VTX-Molecular-Visualization/chemfiles.git", target="repo")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -30,6 +25,7 @@ class VTXAppRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+        self.folders.source = "repo"
 
     def build(self):
         cmake = CMake(self)
@@ -41,5 +37,5 @@ class VTXAppRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_app"]
+        self.cpp_info.libs = ["vtx_chemfiles"]
 
