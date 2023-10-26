@@ -19,11 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: recursive
-        
-    - uses: knicknic/os-specific-run@v1.0.4
-      with:
-        linux: sudo -i
+        submodules: recursive   
         
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
@@ -46,9 +42,17 @@ jobs:
 
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
+      if: runner.os == 'Windows'
       run: |
         conan build test --build=missing --build=editable --settings=compiler.cppstd=20
         conan build bench --build=missing --build=editable --settings=compiler.cppstd=20
+
+    - name: Build 
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      if: runner.os == 'Linux' || runner.os == 'macOS'
+      run: |
+        sudo conan build test --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
+        sudo conan build bench --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
