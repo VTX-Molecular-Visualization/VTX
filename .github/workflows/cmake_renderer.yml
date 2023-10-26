@@ -23,7 +23,7 @@ jobs:
         
     - uses: knicknic/os-specific-run@v1.0.4
       with:
-        linux: su root
+        linux: sudo -i
         
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
