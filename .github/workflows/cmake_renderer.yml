@@ -27,7 +27,9 @@ jobs:
 
     - name: Configure packages
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  conan editable add .
+      run:  |
+        conan editable add .
+        conan editable add util
       
     - uses: knicknic/os-specific-run@v1.0.4
       with:
