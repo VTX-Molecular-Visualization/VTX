@@ -13,7 +13,7 @@ find_package(asio REQUIRED)
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 
-add_library(vtx_util ${HEADERS} ${SOURCES})
+add_library(vtx_util STATIC ${HEADERS} ${SOURCES})
 #configureTarget(vtx_util)
 target_include_directories(vtx_util PUBLIC include)
 

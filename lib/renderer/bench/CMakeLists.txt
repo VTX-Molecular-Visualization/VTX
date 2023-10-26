@@ -1,95 +1,35 @@
-message("VTX_RENDERER")
-cmake_minimum_required(VERSION 3.21)
-include(../util/cmake/configure-target.cmake)
-project(VTX_RENDERER)
+message("vtx_renderer_bench")
+cmake_minimum_required(VERSION 3.23)
+project(vtx_renderer_bench)
 
-# Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*)
+find_package(vtx_util CONFIG REQUIRED)
+find_package(vtx_renderer CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
+find_package(SDL2 REQUIRED)
+
 file(GLOB_RECURSE SOURCES src/*)
-file(GLOB_RECURSE VENDORS vendor/*)
+add_executable(vtx_renderer_bench ${SOURCES})
 
-# Create library.
-add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES} ${VENDORS})
-configureTarget(VTX_RENDERER)
-target_include_directories(VTX_RENDERER PUBLIC include)
-# TODO: PRIVATE
-target_include_directories(VTX_RENDERER PUBLIC vendor)
+target_include_directories(vtx_renderer_bench PRIVATE bench/imgui)
+target_include_directories(vtx_renderer_bench PRIVATE bench/stb)
+target_include_directories(vtx_renderer_bench PRIVATE ${SDL2_INCLUDE_DIRS})
 
-# Link VTX_UTIL.
-if(NOT TARGET VTX_UTIL)
-	add_subdirectory(../util lib/util)
-endif()
-target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
 
-# TEST
-#FetchContent_Declare(rps  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders.git GIT_TAG main)
-#FetchContent_MakeAvailable(rps)
-#set(RpsRootSolutionFolder ${rps_SOURCE_DIR})
-#target_include_directories(VTX_RENDERER PUBLIC ${rps_SOURCE_DIR}/include)
-#target_link_libraries(VTX_RENDERER PRIVATE rps_core )
-#target_link_libraries(VTX_RENDERER PRIVATE rps_frontend )
-#target_link_libraries(VTX_RENDERER PRIVATE rps_runtime )
-#target_link_libraries(VTX_RENDERER PRIVATE rps_runtime_vk )
-
-# Copy shaders.
-add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/context/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
-add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
-
-# Benchmark.
-set(GIT_URL_SDL https://github.com/libsdl-org/SDL.git)
-set(GIT_TAG_SDL release-2.26.5)
-FetchContent_Declare(SDL2 GIT_REPOSITORY ${GIT_URL_SDL} GIT_TAG ${GIT_TAG_SDL})
-FetchContent_MakeAvailable(SDL2)
-
-file(GLOB_RECURSE BENCH_FILES bench/*.h bench/*.hpp bench/*.c bench/*.cpp)
-add_executable(VTX_RENDERER_BENCH ${BENCH_FILES})
-configureTarget(VTX_RENDERER_BENCH)
-target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/imgui)
-target_include_directories(VTX_RENDERER_BENCH PRIVATE bench/stb)
-target_include_directories(VTX_RENDERER_BENCH PRIVATE ${SDL2_SOURCE_DIR}/include)
-
-# Link VTX modules.
-if(NOT TARGET VTX_CORE)
-	add_subdirectory(../io lib/core)
-endif()
-if(NOT TARGET VTX_IO)
-	add_subdirectory(../io lib/io)
-endif()
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_UTIL)
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_CORE)
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_IO)
-
-# Link third parties.
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2-static)
-target_link_libraries(VTX_RENDERER_BENCH PRIVATE SDL2::SDL2main)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_io::vtx_io)
+target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
+target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 
 # Copy assets.
-#add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/assets)
-#add_dependencies(VTX_RENDERER_BENCH VTX_RENDERER_COPY_ASSETS)
+#add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:vtx_renderer_bench>/assets)
+#add_dependencies(vtx_renderer_bench VTX_RENDERER_COPY_ASSETS)
 
 # Install.
 # TODO: set target name as parameter?
-set(INSTALL_DIR DESTINATION VTXRendererBench)
-install(DIRECTORY DESTINATION ${INSTALL_DIR})
-install(TARGETS VTX_RENDERER_BENCH RUNTIME DESTINATION ${INSTALL_DIR})
-install(DIRECTORY $<TARGET_FILE_DIR:VTX_RENDERER_BENCH>/shaders DESTINATION ${INSTALL_DIR})
-
-# Tests.
-
-# Create executable.
-add_executable(VTX_RENDERER_TEST test/main.cpp)
-configureTarget(VTX_RENDERER_TEST)
-
-# Link third parties.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
-
-# Link VTX.
-target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_UTIL)
-target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
-
-# Catch2.
-include(CTest)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-	catch_discover_tests(VTX_RENDERER_TEST)
-endif()
+#set(INSTALL_DIR DESTINATION VTXRendererBench)
+#install(DIRECTORY DESTINATION ${INSTALL_DIR})
+#install(TARGETS vtx_renderer_bench RUNTIME DESTINATION ${INSTALL_DIR})
+#install(DIRECTORY $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders DESTINATION ${INSTALL_DIR})
