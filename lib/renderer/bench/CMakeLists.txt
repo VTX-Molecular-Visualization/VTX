@@ -15,7 +15,6 @@ target_include_directories(vtx_renderer_bench PRIVATE src/imgui)
 target_include_directories(vtx_renderer_bench PRIVATE src/stb)
 target_include_directories(vtx_renderer_bench PRIVATE ${SDL2_INCLUDE_DIRS})
 
-
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_core::vtx_core)
