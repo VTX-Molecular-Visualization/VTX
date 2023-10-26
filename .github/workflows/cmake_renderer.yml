@@ -30,6 +30,8 @@ jobs:
       run:  |
         conan editable add .
         conan editable add ${{github.workspace}}/lib/util
+        conan editable add ${{github.workspace}}/lib/io
+        conan editable add ${{github.workspace}}/lib/core
       
     - uses: knicknic/os-specific-run@v1.0.4
       with:
