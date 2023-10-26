@@ -3,7 +3,7 @@ name: CMake IO
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/io/**', '.github/workflows/cmake_io.yml']
+    paths: ['lib/io/**', lib/util/**', lib/core/**', '.github/workflows/cmake_io.yml']
 
 env:
   CMAKELISTS_DIR: ${{github.workspace}}/lib/io
