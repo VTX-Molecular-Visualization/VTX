@@ -21,6 +21,10 @@ jobs:
       with:
         submodules: recursive
         
+    - uses: knicknic/os-specific-run@v1.0.4
+      with:
+        linux: su root
+        
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
@@ -36,9 +40,9 @@ jobs:
         conan editable add ${{github.workspace}}/lib/io/chemfiles
         conan editable add ${{github.workspace}}/lib/core
       
-    - uses: knicknic/os-specific-run@v1.0.4
-      with:
-        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev libegl-dev libegl1-mesa-dev
+#    - uses: knicknic/os-specific-run@v1.0.4
+#      with:
+#        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev libegl-dev libegl1-mesa-dev
 
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
