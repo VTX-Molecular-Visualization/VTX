@@ -35,7 +35,7 @@ jobs:
      
     - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build test --settings=compiler.cppstd=20 
+      run: conan build test --build=missing --settings=compiler.cppstd=20 
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
