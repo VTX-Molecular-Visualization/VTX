@@ -43,8 +43,8 @@ jobs:
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
-        conan build test --build=missing --build=editable --settings=compiler.cppstd=20
-        conan build bench --build=missing --build=editable --settings=compiler.cppstd=20
+        conan build test --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
+        conan build bench --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
