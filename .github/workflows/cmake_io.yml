@@ -29,6 +29,7 @@ jobs:
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
         conan editable add .
+        conan editable add chemfiles
         conan editable add ${{github.workspace}}/lib/util
         conan editable add ${{github.workspace}}/lib/core
 
