@@ -1,0 +1,4 @@
+[submodule "chemfiles"]
+	path = chemfiles
+	url = https://github.com/VTX-Molecular-Visualization/chemfiles.git
+	branch = master
