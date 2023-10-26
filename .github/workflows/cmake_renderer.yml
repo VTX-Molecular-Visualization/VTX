@@ -38,13 +38,13 @@ jobs:
       
     - uses: knicknic/os-specific-run@v1.0.4
       with:
-        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
+        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev libegl-dev libegl1-mesa-dev
 
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
-        conan build test --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
-        conan build bench --build=missing --build=editable --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install
+        conan build test --build=missing --build=editable --settings=compiler.cppstd=20
+        conan build bench --build=missing --build=editable --settings=compiler.cppstd=20
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
