@@ -12,7 +12,7 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    #exports_sources = "CMakeLists.txt", "src/*", "include/*, vendor/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*, vendor/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -21,8 +21,11 @@ class VTXRendererRecipe(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
-    def layout(self):
+    def layout(self):       
         cmake_layout(self)
+        # Add vendor folder to the include path.
+        self.cpp.source.includedirs = ["include", "vendor"]
+        #self.cpp.package.includedirs = ["include", "vendor"]
 
     def build(self):
         cmake = CMake(self)
@@ -35,4 +38,5 @@ class VTXRendererRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_renderer"]
+        #self.cpp_info.includedirs = ["include", "vendor"]
 
