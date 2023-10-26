@@ -4,7 +4,7 @@ project(vtx_io)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
-find_package(vtx_chemfiles CONFIG REQUIRED)
+find_package(chemfiles CONFIG REQUIRED)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -14,6 +14,6 @@ target_include_directories(vtx_io PUBLIC include)
 
 target_link_libraries(vtx_io PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_io PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_io PRIVATE vtx_chemfiles::vtx_chemfiles)
+target_link_libraries(vtx_io PRIVATE chemfiles::chemfiles)
 
 install(TARGETS vtx_io)
