@@ -4,6 +4,7 @@
 #include "enums.hpp"
 #include <functional>
 #include <map>
+#include <optional>
 #include <unordered_map>
 #include <util/color/rgba.hpp>
 #include <util/types.hpp>
@@ -56,14 +57,15 @@ namespace VTX::Renderer
 		std::optional<MinMax> minMax;
 	};
 
-	using UniformValue = std::variant<StructUniformValue<uint>,
-									  StructUniformValue<int>,
-									  StructUniformValue<float>,
-									  StructUniformValue<Vec3f>,
-									  StructUniformValue<Vec4f>,
-									  StructUniformValue<Mat3f>,
-									  StructUniformValue<Mat4f>,
-									  StructUniformValue<Util::Color::Rgba>>;
+	using UniformValue = std::variant<
+		StructUniformValue<uint>,
+		StructUniformValue<int>,
+		StructUniformValue<float>,
+		StructUniformValue<Vec3f>,
+		StructUniformValue<Vec4f>,
+		StructUniformValue<Mat3f>,
+		StructUniformValue<Mat4f>,
+		StructUniformValue<Util::Color::Rgba>>;
 
 	struct Uniform
 	{
