@@ -11,8 +11,8 @@ find_package(SDL2 REQUIRED)
 file(GLOB_RECURSE SOURCES src/*)
 add_executable(vtx_renderer_bench ${SOURCES})
 
-target_include_directories(vtx_renderer_bench PRIVATE bench/imgui)
-target_include_directories(vtx_renderer_bench PRIVATE bench/stb)
+target_include_directories(vtx_renderer_bench PRIVATE src/imgui)
+target_include_directories(vtx_renderer_bench PRIVATE src/stb)
 target_include_directories(vtx_renderer_bench PRIVATE ${SDL2_INCLUDE_DIRS})
 
 
