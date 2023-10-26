@@ -27,7 +27,11 @@ jobs:
 
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan export . --build=missing --settings=compiler.cppstd=20
+      run: conan install . --build=missing --settings=compiler.cppstd=20
+      
+    - name: Export
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan export .
      
     - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
