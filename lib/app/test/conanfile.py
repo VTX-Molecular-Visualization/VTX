@@ -1,7 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 
-class VTXUtilTestConan(ConanFile):
+class VTXAppTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     package_type = "application"
     
@@ -9,6 +9,11 @@ class VTXUtilTestConan(ConanFile):
     
     def requirements(self):
         self.requires("vtx_util/1.0")
+        self.requires("vtx_renderer/1.0")
+        self.requires("vtx_io/1.0")
+        self.requires("vtx_core/1.0")
+        self.requires("vtx_app/1.0")
+        self.requires("entt/3.12.2")
         self.requires("catch2/3.4.0")
         
     def layout(self):
