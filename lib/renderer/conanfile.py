@@ -1,7 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 
-class VTXUtilRecipe(ConanFile):
+class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
     version = "1.0"
     package_type = "library"
@@ -12,9 +12,10 @@ class VTXUtilRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    requires = "vtx_util/1.0"
-    
     exports_sources = "CMakeLists.txt", "src/*", "include/*, vendor/*"
+    
+    def requirements(self):
+        self.requires("vtx_util/1.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
