@@ -18,7 +18,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
+      with:
+        submodules: recursive
+        
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
