@@ -20,3 +20,5 @@ target_include_directories(vtx_io PUBLIC include)
 target_link_libraries(vtx_io PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_io PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_io PRIVATE chemfiles)
+
+install(TARGETS vtx_io)

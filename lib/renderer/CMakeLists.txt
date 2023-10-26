@@ -18,3 +18,5 @@ target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 # Copy shaders.
 add_custom_target(vtx_renderer_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/context/gl/shaders $<TARGET_FILE_DIR:vtx_renderer>/shaders)
 add_dependencies(vtx_renderer vtx_renderer_COPY_SHADERS)
+
+install(TARGETS vtx_renderer)
