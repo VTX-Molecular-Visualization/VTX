@@ -16,10 +16,10 @@ target_include_directories(vtx_renderer_bench PRIVATE bench/stb)
 target_include_directories(vtx_renderer_bench PRIVATE ${SDL2_INCLUDE_DIRS})
 
 
-target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_io::vtx_io)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer::vtx_renderer)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 
