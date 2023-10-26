@@ -13,7 +13,6 @@ target_link_libraries(vtx_io_test PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_io_test PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_io_test PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(vtx_io_test PRIVATE chemfiles)
 
 include(CTest)
 include(Catch)
