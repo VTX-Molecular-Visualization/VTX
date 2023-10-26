@@ -3,7 +3,7 @@ name: CMake App
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/app/**', lib/util/**', 'lib/renderer/**', lib/io/**', lib/core/**', '.github/workflows/cmake_app.yml']
+    paths: ['lib/app/**', '.github/workflows/cmake_app.yml']
 
 env:
   CMAKELISTS_DIR: ${{github.workspace}}/lib/app
