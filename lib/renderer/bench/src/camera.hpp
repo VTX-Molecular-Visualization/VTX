@@ -161,7 +161,8 @@ namespace VTX::Bench
 			if ( _callbackMatrixProjection )
 			{
 				_callbackMatrixProjection( Util::Math::perspective(
-					Util::Math::radians( _fov ), float( _width ) / float( _height ), _near, _far ) );
+					Util::Math::radians( _fov ), float( _width ) / float( _height ), _near, _far
+				) );
 			}
 		}
 

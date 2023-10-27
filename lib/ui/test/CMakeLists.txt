@@ -1,105 +1,33 @@
-message("VTX_UI")
-cmake_minimum_required(VERSION 3.20)
-include(../util/cmake/configure-target.cmake)
-project(VTX_UI)
+message("vtx_ui_test")
+cmake_minimum_required(VERSION 3.23)
+project(vtx_ui_test)
 
-# Get CMake helper functions.
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-include(qt_helper)
+find_package(vtx_util CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_renderer CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
+find_package(vtx_app CONFIG REQUIRED)
+find_package(vtx_ui CONFIG REQUIRED)
+find_package(Catch2 REQUIRED)
 
-# Configure Qt
-configure_qt()
+add_executable(vtx_ui_test src/main.cpp)
 
-# Find required packages.
-find_package(Qt6 COMPONENTS Core REQUIRED)
-find_package(Qt6 COMPONENTS Gui REQUIRED)
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
-find_package(Qt6 COMPONENTS Network REQUIRED)
-find_package(Qt6 COMPONENTS Svg REQUIRED)
-find_package(Qt6QGifPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-if(WIN32)
-    find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-    find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
-endif()
+target_link_libraries(vtx_ui_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_ui_test PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_ui_test PRIVATE vtx_renderer::vtx_renderer)
+target_link_libraries(vtx_ui_test PRIVATE vtx_io::vtx_io)
+target_link_libraries(vtx_ui_test PRIVATE vtx_app::vtx_app)
+target_link_libraries(vtx_ui_test PRIVATE vtx_ui::vtx_ui)
+target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
 
-# Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*)
-file(GLOB_RECURSE SOURCES src/*)
-
-# Get QT forms and resources
-file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
-file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
-
-# Declare library.
-add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
-configureTarget(VTX_UI)
-target_include_directories(VTX_UI PUBLIC include)
-
-# Link VTX modules.
-if(NOT TARGET VTX_UTIL)
-	add_subdirectory(../util lib/util)
-endif()
-if(NOT TARGET VTX_CORE)
-    add_subdirectory(../core lib/core)
-endif()
-if(NOT TARGET VTX_IO)
-    add_subdirectory(../io lib/io)
-endif()
-if(NOT TARGET VTX_APP)
-    add_subdirectory(../app lib/app)
-endif()
-if(NOT TARGET VTX_RENDERER)
-    add_subdirectory(../renderer lib/renderer)
-endif()
-target_link_libraries(VTX_UI PRIVATE VTX_UTIL)
-target_link_libraries(VTX_UI PRIVATE VTX_CORE)
-target_link_libraries(VTX_UI PRIVATE VTX_IO)
-target_link_libraries(VTX_UI PRIVATE VTX_APP)
-target_link_libraries(VTX_UI PRIVATE VTX_RENDERER)
-
-# Link third parties.
-target_link_libraries(VTX_UI PUBLIC Qt6::Core)
-target_link_libraries(VTX_UI PUBLIC Qt6::Gui)
-target_link_libraries(VTX_UI PUBLIC Qt6::Widgets)
-target_link_libraries(VTX_UI PUBLIC Qt6::OpenGLWidgets)
-target_link_libraries(VTX_UI PUBLIC Qt6::Network)
-target_link_libraries(VTX_UI PUBLIC Qt6::Svg)
-
-# Qt options
-apply_qt_options(VTX_UI)
-
-# Test.
-# Create executable.
-add_executable(VTX_UI_TEST test/main.cpp)
-configureTarget(VTX_UI_TEST)
-
-# Link third parties.
-target_link_libraries(VTX_UI_TEST PRIVATE Catch2::Catch2WithMain)
-
-# Link VTX Modules.
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_UTIL)
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_CORE)
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_RENDERER)
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_IO)
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_APP)
-target_link_libraries(VTX_UI_TEST PRIVATE VTX_UI)
-
-# Catch2.
 include(CTest)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)	
-catch_discover_tests(VTX_UI_TEST)
-endif()
+include(Catch)
+catch_discover_tests(vtx_ui_test)
 
 # Copy dlls in .exe directory
-if(MSVC)
-	add_custom_command(TARGET VTX_UI_TEST POST_BUILD
-	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX_UI_TEST> $<TARGET_FILE_DIR:VTX_UI_TEST>
-	  COMMAND_EXPAND_LISTS
-	)
-endif()
-
-# Copy data.
-add_custom_target(VTX_UI_TEST_COPY_DATA ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/data $<TARGET_FILE_DIR:VTX_UI_TEST>/data)
-add_dependencies(VTX_UI_TEST VTX_UI_TEST_COPY_DATA)
+#if(MSVC)
+#	add_custom_command(TARGET vtx_ui_test POST_BUILD
+#	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:vtx_ui_test> $<TARGET_FILE_DIR:vtx_ui_test>
+#	  COMMAND_EXPAND_LISTS
+#	)
+#endif()

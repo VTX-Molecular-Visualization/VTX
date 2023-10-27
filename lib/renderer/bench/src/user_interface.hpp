@@ -4,9 +4,9 @@
 #include "camera.hpp"
 #include <SDL.h>
 #include <imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl2.h>
-#include <imnodes.h>
+#include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_sdl2.h>
+#include <imnodes/imnodes.h>
 #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/renderer.hpp>
 #include <util/logger.hpp>
