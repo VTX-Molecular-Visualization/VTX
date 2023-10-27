@@ -77,6 +77,11 @@ target_link_libraries(PyTX PRIVATE VTX_CORE)
 target_link_libraries(PyTX PRIVATE VTX_APP)
 target_link_libraries(PyTX PRIVATE VTX_PYTHON_BINDING)
 
+# Copy python core scripts.
+add_custom_target(VTX_PYTHON_BINDING_INIT_SCRIPTS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python_script $<TARGET_FILE_DIR:VTX_PYTHON_BINDING>/python_script)
+add_dependencies(VTX_PYTHON_BINDING VTX_PYTHON_BINDING_INIT_SCRIPTS)
+
+
 ## Test.
 file(GLOB_RECURSE TEST_SOURCES test/*.hpp test/*.cpp)
 add_executable(VTX_PYTHON_BINDING_TEST ${TEST_SOURCES})

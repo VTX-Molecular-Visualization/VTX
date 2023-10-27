@@ -12,4 +12,9 @@ namespace VTX::App::Application
 		class EntityDirector;
 		class RegistryManager;
 	} // namespace ECS
+
+	namespace Selection
+	{
+		class SelectionManager;
+	}
 } // namespace VTX::App::Application

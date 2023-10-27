@@ -14,7 +14,7 @@ namespace VTX::Util::Math
 	  public:
 		struct Iterator
 		{
-			using ListIt = typename std::list<Range<T>>::iterator;
+			using ListIt = typename std::list<Range<T>>::const_iterator;
 
 		  public:
 			Iterator( const ListIt & p_it ) : _listIterator( p_it ) {}
@@ -223,8 +223,8 @@ namespace VTX::Util::Math
 		void addValue( const T p_value ) { addRange( Range<T>( p_value ) ); }
 		void removeValue( const T p_value ) { removeRange( Range<T>( p_value ) ); }
 
-		Iterator begin() { return Iterator( _ranges.begin() ); }
-		Iterator end() { return Iterator( _ranges.end() ); }
+		Iterator begin() const { return Iterator( _ranges.begin() ); }
+		Iterator end() const { return Iterator( _ranges.end() ); }
 
 		bool contains( const T p_value ) const
 		{

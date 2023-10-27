@@ -7,6 +7,7 @@
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <util/exceptions.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::PythonBinding
@@ -23,6 +24,11 @@ namespace VTX::PythonBinding
 
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
 			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
+
+			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
+			FilePath initCommandsFile = initScriptDir / "pytx_init_command.py";
+
+			pybind11::eval_file( initCommandsFile.string() );
 		}
 
 		void addBinder( std::unique_ptr<Binder> p_binder ) { _binders.emplace_back( std::move( p_binder ) ); }
@@ -38,7 +44,11 @@ namespace VTX::PythonBinding
 			}
 		}
 
-		void importCommands() { pybind11::exec( "from PyTX.Command import *" ); }
+		void importCommands()
+		{
+			pybind11::exec( "from PyTX.Command import *" );
+			pybind11::exec( "from PyTX.API import select" );
+		}
 
 	  private:
 		pybind11::scoped_interpreter _interpretor {};

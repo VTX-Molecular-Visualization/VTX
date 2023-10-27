@@ -1,19 +1,29 @@
 import PyTX.API
+import PyTX.Core
 
-scene = PyTX.API.getScene()
+def countAtoms(p_selection):
 
-molecule = scene.getMolecule("1AGA")
-print("Molecule name : " + molecule.getName())
+    print(p_selection)
+    
+    mapAtomCounter = {}
 
-atom1 = molecule.getAtom(0)
-print("First atom name : " + atom1.getName())
+    for atom in p_selection.getAtoms():
+        symbol = atom.getSymbol()
+        mapAtomCounter[symbol] = mapAtomCounter.get(symbol, 0) + 1
 
-carbonCounter = 0
+    if len(mapAtomCounter) == 0:
+        print("0 atom founds")
+    else:
+        for atomSymbol, atomCount in mapAtomCounter.items() :
+            print("target contains {0} {1}.".format(atomSymbol.name, atomCount ) )
 
-for atom in molecule.getAtoms():
-    symbol = atom.getSymbol()
-    if symbol == PyTX.API.ATOM_SYMBOL.A_C :
-        carbonCounter += 1
+PyTX.Core.addCommand("countAtoms", countAtoms)
+# scene = PyTX.API.getScene()
 
-print("{0} contains {1} carbons.".format(molecule.getName(), carbonCounter ) )
+# molecule = scene.getMolecule("1AGA")
+# print("Molecule name : " + molecule.getName())
 
+# atom1 = molecule.getAtom(0)
+# print("First atom name : " + atom1.getName())
+
+# countAtoms(molecule)

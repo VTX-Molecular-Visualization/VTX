@@ -57,6 +57,13 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueSymbols[ _index ] = p_symbol;
 	}
 
+	const std::string & Residue::getShortName() const
+	{
+		return ChemDB::Residue::SYMBOL_SHORT_STR[ int( getSymbol() ) ];
+	}
+	const std::string & Residue::getName() const { return ChemDB::Residue::SYMBOL_STR[ int( getSymbol() ) ]; }
+	const std::string & Residue::getLongName() const { return ChemDB::Residue::SYMBOL_NAME[ int( getSymbol() ) ]; }
+
 	ChemDB::Atom::TYPE Residue::getAtomType() const
 	{
 		Util::Math::Range<size_t> atomRange = Util::Math::Range<size_t>( getIndexFirstAtom(), getAtomCount() );

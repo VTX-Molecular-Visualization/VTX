@@ -1,9 +1,11 @@
 #include "app/entity/scene/molecule_entity.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/selection/molecule_data.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/aabb_component.hpp"
+#include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/entity/scene/scene_item_entity.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
@@ -16,8 +18,10 @@
 
 namespace VTX::App::Entity::Scene
 {
-	void MoleculeEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity,
-											  const Util::VariantMap &		p_extraData )
+	void MoleculeEntityBuilder::addComponent(
+		const Core::ECS::BaseEntity & p_entity,
+		const Util::VariantMap &	  p_extraData
+	)
 	{
 		SceneItemEntityBuilder::addComponent( p_entity, p_extraData );
 
@@ -25,6 +29,7 @@ namespace VTX::App::Entity::Scene
 		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
 		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
 		VTXApp::MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
+		VTXApp::MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
 	{
@@ -39,6 +44,10 @@ namespace VTX::App::Entity::Scene
 			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
 		sceneComponent.setName( moleculeComponent.getName() );
 
+		Component::Scene::Selectable & selectableComponent
+			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
+		selectableComponent.setSelectionDataGenerator<Application::Selection::MoleculeData>();
+
 		// Setup GPU Proxy
 		Renderer::GL::StructProxyMolecule & gpuProxyComponent
 			= VTXApp::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
@@ -50,14 +59,18 @@ namespace VTX::App::Entity::Scene
 			VTXApp::MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
 		}
 	}
-	void MoleculeEntityBuilder::postSetup( const Core::ECS::BaseEntity & p_entity,
-										   const Util::VariantMap &		 p_extraData )
+	void MoleculeEntityBuilder::postSetup(
+		const Core::ECS::BaseEntity & p_entity,
+		const Util::VariantMap &	  p_extraData
+	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
 	}
 
-	void MoleculeEntityBuilder::_load( Component::Chemistry::Molecule & p_moleculeComponent,
-									   const Util::VariantMap &			p_extraData )
+	void MoleculeEntityBuilder::_load(
+		Component::Chemistry::Molecule & p_moleculeComponent,
+		const Util::VariantMap &		 p_extraData
+	)
 	{
 		const Util::VariantMap::const_iterator filepathProperty = p_extraData.find( "filepath" );
 		if ( filepathProperty == p_extraData.end() || !filepathProperty->second.is<std::string>() )

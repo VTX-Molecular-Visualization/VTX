@@ -37,6 +37,10 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::SYMBOL getSymbol() const;
 		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );
 
+		const std::string & getShortName() const;
+		const std::string & getName() const;
+		const std::string & getLongName() const;
+
 		const Util::Color::Rgba & getColor() const { return _color; };
 		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
 

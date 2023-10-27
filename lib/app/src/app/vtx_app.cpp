@@ -2,6 +2,7 @@
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/application/setting.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/core/ecs/registry.hpp"
@@ -18,7 +19,7 @@ namespace VTX::App
 {
 	VTXApp::VTXApp( StructPrivacyToken ) {}
 
-	VTXApp::~VTXApp() {};
+	VTXApp::~VTXApp() = default;
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
@@ -49,6 +50,9 @@ namespace VTX::App
 		_entityDirector = std::make_unique<Application::ECS::EntityDirector>();
 		_system->referenceSystem( ENTITY_DIRECTOR_KEY, _entityDirector.get() );
 		Internal::ECS::setupEntityDirector();
+
+		_selectionManager = std::make_unique<Application::Selection::SelectionManager>();
+		_system->referenceSystem( SELECTION_MANAGER_KEY, _selectionManager.get() );
 
 		_setting = std::make_unique<Application::Setting>();
 		_system->referenceSystem( SETTING_KEY, _setting.get() );
@@ -191,6 +195,15 @@ namespace VTX::App
 	const Application::Setting & VTXApp::getSettings() const
 	{
 		return _system->getSystem<Application::Setting>( SETTING_KEY );
+	}
+
+	Application::Selection::SelectionManager & VTXApp::getSelectionManager()
+	{
+		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
+	}
+	const Application::Selection::SelectionManager & VTXApp::getSelectionManager() const
+	{
+		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
 	}
 
 	Application::ECS::EntityDirector & VTXApp::getEntityDirector()

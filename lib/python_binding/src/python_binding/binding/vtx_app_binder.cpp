@@ -13,9 +13,11 @@ namespace VTX::PythonBinding::Binding
 		Wrapper::Module commands = p_vtxmodule.commands();
 
 		commands.bindAction<Internal::Action::ECS::Open, const std::string &>(
-			"openFile", "Open a file at given path.", Wrapper::Arg( "path" ) );
+			"openFile", "Open a file at given path.", Wrapper::Arg( "path" )
+		);
 
 		commands.bindAction<PythonBinding::Action::RunScript, const std::string &>(
-			"runScript", "Run a Python script at given path.", Wrapper::Arg( "path" ) );
+			"runScript", "Run a Python script at given path.", Wrapper::Arg( "path" )
+		);
 	}
 } // namespace VTX::PythonBinding::Binding

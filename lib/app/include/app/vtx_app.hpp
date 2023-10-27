@@ -23,10 +23,11 @@ namespace VTX
 		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
 		{
 		  private:
-			inline static const std::string REGISTRY_MANAGER_KEY = "REGISTRY_MANAGER";
-			inline static const std::string SETTING_KEY			 = "SETTING";
-			inline static const std::string ENTITY_DIRECTOR_KEY	 = "ENTITY_DIRECTOR";
-			inline static const std::string SCENE_KEY			 = "SCENE";
+			inline static const std::string REGISTRY_MANAGER_KEY  = "REGISTRY_MANAGER";
+			inline static const std::string SETTING_KEY			  = "SETTING";
+			inline static const std::string ENTITY_DIRECTOR_KEY	  = "ENTITY_DIRECTOR";
+			inline static const std::string SCENE_KEY			  = "SCENE";
+			inline static const std::string SELECTION_MANAGER_KEY = "SELECTION_MANAGER";
 
 		  public:
 			VTXApp( StructPrivacyToken );
@@ -57,13 +58,17 @@ namespace VTX
 
 			Application::ECS::EntityDirector & getEntityDirector();
 
+			Application::Selection::SelectionManager &		 getSelectionManager();
+			const Application::Selection::SelectionManager & getSelectionManager() const;
+
 		  private:
 			std::shared_ptr<Application::System> _system = nullptr;
 			std::unique_ptr<Renderer::Renderer>	 _renderer;
 
-			std::unique_ptr<Application::Setting>			   _setting;
-			std::unique_ptr<Application::ECS::RegistryManager> _registryManager;
-			std::unique_ptr<Application::ECS::EntityDirector>  _entityDirector;
+			std::unique_ptr<Application::Setting>					  _setting;
+			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
+			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
+			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update();

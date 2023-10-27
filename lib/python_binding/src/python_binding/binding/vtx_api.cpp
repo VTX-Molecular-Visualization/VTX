@@ -1,4 +1,5 @@
 #include "python_binding/binding/vtx_api.hpp"
+#include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/binding/helper.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/system.hpp>
@@ -35,9 +36,8 @@ namespace VTX::PythonBinding
 		// Global
 		p_apiModule.def( "getScene", []() { return VTXApp::get().getScene(); } );
 
-		// Enum
-		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL" );
-		Helper::declareEnum<VTX::Core::ChemDB::Residue::SYMBOL>( p_apiModule, "RESIDUE_SYMBOL" );
+		// Selection
+		Binding::Binders::bind_selection( p_apiModule );
 
 		// Scene
 		pybind11::class_<Application::Scene>( p_apiModule, "Scene", pybind11::module_local() )
@@ -46,12 +46,10 @@ namespace VTX::PythonBinding
 				[]( const Application::Scene & p_scene,
 					const std::string &		   p_name ) -> const Component::Chemistry::Molecule &
 				{ return p_scene.getComponentByName<Component::Chemistry::Molecule>( p_name ); },
-				pybind11::return_value_policy::reference );
+				pybind11::return_value_policy::reference
+			);
 
 		// Molecule
-
-		pybind11::bind_vector<std::vector<Component::Chemistry::Atom *>>( p_apiModule, "AtomVector" );
-
 		pybind11::class_<Component::Chemistry::Molecule>( p_apiModule, "Molecule", pybind11::module_local() )
 			.def( "molStruct", &Component::Chemistry::Molecule::getMoleculeStruct )
 			.def( "getName", &Component::Chemistry::Molecule::getName )
@@ -59,11 +57,13 @@ namespace VTX::PythonBinding
 			.def(
 				"getAtoms",
 				[]( Component::Chemistry::Molecule & p_mol ) { return p_mol.getAtoms(); },
-				pybind11::return_value_policy::reference )
+				pybind11::return_value_policy::reference
+			)
 			.def(
 				"getAtoms",
 				[]( const Component::Chemistry::Molecule & p_mol ) { return p_mol.getAtoms(); },
-				pybind11::return_value_policy::reference )
+				pybind11::return_value_policy::reference
+			)
 			.def(
 				"getAtom",
 				[]( const Component::Chemistry::Molecule & p_mol, const size_t p_index )
@@ -71,7 +71,8 @@ namespace VTX::PythonBinding
 					const Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
 					return *atom;
 				},
-				pybind11::return_value_policy::reference )
+				pybind11::return_value_policy::reference
+			)
 			.def(
 				"getAtom",
 				[]( Component::Chemistry::Molecule & p_mol, const size_t p_index )
@@ -79,28 +80,40 @@ namespace VTX::PythonBinding
 					Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
 					return *atom;
 				},
-				pybind11::return_value_policy::reference );
+				pybind11::return_value_policy::reference
+			);
+
+		// Residue
+		Helper::declareEnum<VTX::Core::ChemDB::Residue::SYMBOL>( p_apiModule, "RESIDUE_SYMBOL" );
 
 		// Atom
+		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL" );
+
 		pybind11::class_<Component::Chemistry::Atom>( p_apiModule, "Atom", pybind11::module_local() )
-			.def( "getLocalPosition",
-				  []( const Component::Chemistry::Atom & p_atom ) { return p_atom.getLocalPosition(); } )
-			.def( "getWorldPosition",
-				  []( const Component::Chemistry::Atom & p_atom ) { return p_atom.getWorldPosition(); } )
+			.def(
+				"getLocalPosition",
+				[]( const Component::Chemistry::Atom & p_atom ) { return p_atom.getLocalPosition(); }
+			)
+			.def(
+				"getWorldPosition",
+				[]( const Component::Chemistry::Atom & p_atom ) { return p_atom.getWorldPosition(); }
+			)
 			.def( "getName", &Component::Chemistry::Atom::getName )
 			.def( "setName", &Component::Chemistry::Atom::setName )
 			.def( "getIndex", &Component::Chemistry::Atom::getIndex )
 			.def( "getSymbol", &Component::Chemistry::Atom::getSymbol );
 
 		// Global
-		p_apiModule.def( "setAtomName",
-						 []( const std::string & p_moleculeName, const size_t p_atomIndex, const std::string & p_name )
-						 {
-							 return VTXApp::get()
-								 .getScene()
-								 .getComponentByName<App::Component::Chemistry::Molecule>( p_moleculeName )
-								 .getAtom( p_atomIndex )
-								 ->setName( p_name );
-						 } );
+		p_apiModule.def(
+			"setAtomName",
+			[]( const std::string & p_moleculeName, const size_t p_atomIndex, const std::string & p_name )
+			{
+				return VTXApp::get()
+					.getScene()
+					.getComponentByName<App::Component::Chemistry::Molecule>( p_moleculeName )
+					.getAtom( p_atomIndex )
+					->setName( p_name );
+			}
+		);
 	}
 } // namespace VTX::PythonBinding

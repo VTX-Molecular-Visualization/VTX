@@ -41,4 +41,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
 	interpretor.runCommand( ssCommandRun.str() );
+
+	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
+	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
 };
