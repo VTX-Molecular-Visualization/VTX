@@ -146,7 +146,7 @@ namespace VTX::App::Application::Selection
 				return false;
 
 			for ( SelectionData * const item : p_items )
-				if ( !isSelected( item ) )
+				if ( !isSelected( item->getSelectionComponent() ) )
 					return false;
 
 			return true;
