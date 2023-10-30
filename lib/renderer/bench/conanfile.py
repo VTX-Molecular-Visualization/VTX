@@ -15,7 +15,7 @@ class VTXRendererBenchRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("sdl/2.28.3")  
-        self.requires("stb/cci.20230920")
+        #self.requires("stb/cci.20230920")
         self.requires("imgui/1.89.9")
     
     def generate(self):

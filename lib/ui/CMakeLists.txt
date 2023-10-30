@@ -18,10 +18,6 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 #find_package(Qt6 COMPONENTS Svg REQUIRED)
 #find_package(Qt6 COMPONENTS Gif REQUIRED)
 #find_package(Qt6 COMPONENTS Jpeg REQUIRED)
-if(WIN32)
-    #find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-    #find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
-endif()
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
