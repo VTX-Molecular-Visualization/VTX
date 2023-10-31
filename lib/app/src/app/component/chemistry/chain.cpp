@@ -40,4 +40,15 @@ namespace VTX::App::Component::Chemistry
 		return lastResidue->getIndexLastAtom();
 	}
 
+	Iterator::ResidueContainer Chain::residues() const
+	{
+		return Iterator::ResidueContainer( _moleculePtr, getIndexFirstResidue(), getResidueCount() );
+	}
+
+	Iterator::AtomContainer Chain::atoms() const
+	{
+		const size_t atomCount = getIndexLastAtom() - getIndexFirstAtom() + 1;
+		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), atomCount );
+	}
+
 } // namespace VTX::App::Component::Chemistry

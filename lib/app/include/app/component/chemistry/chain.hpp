@@ -2,6 +2,8 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CHAIN__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/iterator/atom.hpp"
+#include "app/component/chemistry/iterator/residue.hpp"
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
@@ -39,6 +41,9 @@ namespace VTX::App::Component::Chemistry
 
 		const Util::Color::Rgba & getColor() const { return _defaultColor; };
 		void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
+
+		Iterator::ResidueContainer residues() const;
+		Iterator::AtomContainer	   atoms() const;
 
 	  private:
 		Molecule *		  _moleculePtr	   = nullptr;

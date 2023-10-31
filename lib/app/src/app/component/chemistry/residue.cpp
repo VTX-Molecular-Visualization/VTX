@@ -97,4 +97,9 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
+	Iterator::AtomContainer Residue::atoms() const
+	{
+		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), getAtomCount() );
+	}
+
 } // namespace VTX::App::Component::Chemistry

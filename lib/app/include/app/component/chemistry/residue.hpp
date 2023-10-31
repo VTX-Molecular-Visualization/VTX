@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/iterator/atom.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
@@ -51,7 +52,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Atom::TYPE getAtomType() const;
 		void			   setAtomType( const ChemDB::Atom::TYPE p_type );
 
-		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
+		size_t getIndexInOriginalChain() const { return _indexInOriginalChain; };
 		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
 		{
 			_indexInOriginalChain = p_indexInOriginalChain;
@@ -62,6 +63,8 @@ namespace VTX::App::Component::Chemistry
 
 		ChemDB::SecondaryStructure::TYPE getSecondaryStructure() const { return _ssType; }
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
+
+		Iterator::AtomContainer atoms() const;
 
 	  private:
 		Molecule * _moleculePtr = nullptr;
