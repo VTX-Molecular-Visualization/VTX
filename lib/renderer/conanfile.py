@@ -21,11 +21,13 @@ class VTXRendererRecipe(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
-    def layout(self):       
+    def layout(self):
         cmake_layout(self)
         # Add vendor folder to the include path.
+        # self.cpp.source and cpp.build are only for editable!
         self.cpp.source.includedirs = ["include", "vendor"]
         #self.cpp.package.includedirs = ["include", "vendor"]
+        self.cpp.package.set_property("SHADERS_DIR", "/path/to/shaders")
 
     def build(self):
         cmake = CMake(self)
@@ -38,5 +40,7 @@ class VTXRendererRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_renderer"]
+        # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = ["include", "vendor"]
-
+        self.cpp_info.set_property("SHADERS_DIR", self.package_folder + "/path/to/shaders")
+        self.conf_info.pop("tools.system.package_manager:sudo")
