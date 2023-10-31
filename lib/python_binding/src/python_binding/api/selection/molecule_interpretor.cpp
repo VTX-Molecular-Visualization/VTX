@@ -105,8 +105,6 @@ namespace VTX::PythonBinding::API::Selection
 				_selectChains( kwargs, moleculeSelectionData );
 			}
 		}
-
-		VTX_INFO( "Selection : {}", p_selection.toString() );
 	}
 
 	std::set<Molecule *> MoleculeInterpretor::_getMolecules( const InterpretedKwargs & p_kwargs )

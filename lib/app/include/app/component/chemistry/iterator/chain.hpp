@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_ITERATOR_CHAIN__
 
 #include "app/component/chemistry/_fwd.hpp"
+#include <cstddef>
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
