@@ -12,21 +12,14 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[.][integration]" )
 {
 	using namespace VTX;
 
 	App::Test::Util::App::initApp();
 
-	const std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
-		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
-
-	interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-
-	interpretorPtr->init();
-
-	PythonBinding::Interpretor & interpretor = *interpretorPtr;
+	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
+	interpretor->init();
 
 	App::Application::Scene & scene = App::VTXApp::get().getScene();
 
@@ -40,8 +33,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 	std::stringstream ssCommandRun = std::stringstream();
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
-	interpretor.runCommand( ssCommandRun.str() );
+	interpretor->runCommand( ssCommandRun.str() );
 
-	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
-	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
+	interpretor->runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
+	interpretor->runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
 };

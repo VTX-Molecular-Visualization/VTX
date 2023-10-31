@@ -18,7 +18,7 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueChainIndexes[ _index ] = p_chainPtr->getIndex();
 	}
 
-	const size_t Residue::getIndexFirstAtom() const
+	size_t Residue::getIndexFirstAtom() const
 	{
 		return _moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ];
 	}
@@ -26,14 +26,15 @@ namespace VTX::App::Component::Chemistry
 	{
 		_moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ] = p_indexFirstAtom;
 	}
+	size_t Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
 
-	const size_t Residue::getAtomCount() const { return _moleculePtr->_moleculeStruct.residueAtomCounts[ _index ]; }
-	void		 Residue::setAtomCount( const size_t p_atomCount )
+	size_t Residue::getAtomCount() const { return _moleculePtr->_moleculeStruct.residueAtomCounts[ _index ]; }
+	void   Residue::setAtomCount( const size_t p_atomCount )
 	{
 		_moleculePtr->_moleculeStruct.residueAtomCounts[ _index ] = p_atomCount;
 	}
 
-	const size_t Residue::getIndexFirstBond() const
+	size_t Residue::getIndexFirstBond() const
 	{
 		return _moleculePtr->_moleculeStruct.residueFirstBondIndexes[ _index ];
 	}
@@ -42,8 +43,8 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueFirstBondIndexes[ _index ] = p_indexFirstBond;
 	}
 
-	const size_t Residue::getBondCount() const { return _moleculePtr->_moleculeStruct.residueBondCounts[ _index ]; }
-	void		 Residue::setBondCount( const size_t p_bondCount )
+	size_t Residue::getBondCount() const { return _moleculePtr->_moleculeStruct.residueBondCounts[ _index ]; }
+	void   Residue::setBondCount( const size_t p_bondCount )
 	{
 		_moleculePtr->_moleculeStruct.residueBondCounts[ _index ] = p_bondCount;
 	}

@@ -19,4 +19,23 @@ namespace VTX::App::Helper::Chemistry
 
 		return res;
 	}
+
+	std::vector<Residue *> findResiduesByName( const Chain & p_chain, const std::string & p_residueName )
+	{
+		std::vector<Residue *> res		= std::vector<Residue *>();
+		Molecule &			   molecule = *( p_chain.getMoleculePtr() );
+
+		for ( size_t iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
+		{
+			Residue * const residue = molecule.getResidue( iRes );
+
+			if ( residue != nullptr
+				 && ( ( residue->getName() == p_residueName ) || ( residue->getShortName() == p_residueName )
+					  || ( residue->getLongName() == p_residueName ) ) )
+				res.emplace_back( residue );
+		}
+
+		return res;
+	}
+
 } // namespace VTX::App::Helper::Chemistry

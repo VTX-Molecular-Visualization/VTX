@@ -289,6 +289,17 @@ namespace VTX::Util::Math
 			return true;
 		}
 
+		bool   isEmpty() const { return _ranges.size() == 0; }
+		size_t size() const
+		{
+			size_t res = 0;
+
+			for ( Range<T> range : _ranges )
+				res += range.getCount();
+
+			return res;
+		}
+
 	  private:
 		std::list<Range<T>> _ranges = std::list<Range<T>>();
 	};

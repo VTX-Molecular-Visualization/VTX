@@ -26,13 +26,14 @@ namespace VTX::App::Component::Chemistry
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
 
-		const size_t			getIndexFirstAtom() const;
+		size_t					getIndexFirstAtom() const;
 		void					setIndexFirstAtom( const size_t p_indexFirstAtom );
-		const size_t			getAtomCount() const;
+		size_t					getIndexLastAtom() const;
+		size_t					getAtomCount() const;
 		void					setAtomCount( const size_t p_atomCount );
-		const size_t			getIndexFirstBond() const;
+		size_t					getIndexFirstBond() const;
 		void					setIndexFirstBond( const size_t p_indexFirstBond );
-		const size_t			getBondCount() const;
+		size_t					getBondCount() const;
 		void					setBondCount( const size_t p_bondCount );
 		ChemDB::Residue::SYMBOL getSymbol() const;
 		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );

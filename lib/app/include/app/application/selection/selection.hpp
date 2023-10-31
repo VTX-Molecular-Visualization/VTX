@@ -195,6 +195,8 @@ namespace VTX::App::Application::Selection
 
 		Util::Math::AABB getAABB() const;
 
+		std::string toString() const;
+
 	  protected:
 		void _notifyDataChanged();
 

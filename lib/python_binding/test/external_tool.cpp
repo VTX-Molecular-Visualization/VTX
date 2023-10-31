@@ -11,16 +11,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	const std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
-		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
+	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
 
-	interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-	interpretorPtr->addBinder<VTX::Test::ExternalTool::Binder>();
+	interpretor->addBinder<VTX::Test::ExternalTool::Binder>();
+	interpretor->init();
 
-	interpretorPtr->init();
-
-	PythonBinding::Interpretor & interpretor = *interpretorPtr;
-
-	interpretor.runCommand( "new_command()" );
+	interpretor->runCommand( "new_command()" );
 };

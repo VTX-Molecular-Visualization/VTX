@@ -5,10 +5,15 @@
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX
 {
-	void _init( std::shared_ptr<App::Application::System> p_system ) { App::VTXApp::get().referenceSystem( p_system ); }
+	void _init( std::shared_ptr<App::Application::System> p_system )
+	{
+		Util::Logger::get().init();
+		App::VTXApp::get().referenceSystem( p_system );
+	}
 } // namespace VTX
 
 namespace VTX::PythonBinding

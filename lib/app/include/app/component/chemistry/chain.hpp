@@ -24,11 +24,15 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
 
-		const size_t getIndexFirstResidue() const;
-		void		 setIndexFirstResidue( const size_t p_residueIndex );
+		size_t getIndexFirstResidue() const;
+		size_t getIndexLastResidue() const;
+		void   setIndexFirstResidue( const size_t p_residueIndex );
 
-		const size_t getResidueCount() const;
-		void		 setResidueCount( const size_t p_residueCount );
+		size_t getResidueCount() const;
+		void   setResidueCount( const size_t p_residueCount );
+
+		size_t getIndexFirstAtom() const;
+		size_t getIndexLastAtom() const;
 
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }

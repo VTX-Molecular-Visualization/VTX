@@ -3,6 +3,7 @@
 #include "app/component/scene/aabb_component.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
+#include <sstream>
 #include <util/exceptions.hpp>
 
 namespace VTX::App::Application::Selection
@@ -163,4 +164,19 @@ namespace VTX::App::Application::Selection
 				_notifyDataChanged();
 		}
 	}
+
+	std::string Selection::toString() const
+	{
+		std::stringstream sstr = std::stringstream();
+
+		sstr << "Obj count : " << _items.size() << std::endl;
+
+		for ( const std::unique_ptr<SelectionData> & data : _items )
+		{
+			sstr << data->toString() << std::endl;
+		}
+
+		return sstr.str();
+	}
+
 } // namespace VTX::App::Application::Selection

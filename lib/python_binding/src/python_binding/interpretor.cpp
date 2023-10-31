@@ -93,6 +93,7 @@ namespace VTX::PythonBinding
 	{
 		try
 		{
+			VTX_DEBUG( "Run Command : {}", p_line );
 			pybind11::exec( p_line );
 		}
 		catch ( const pybind11::error_already_set & e )

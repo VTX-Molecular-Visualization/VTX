@@ -29,14 +29,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
-		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor::SYSTEM_KEY, interpretorPtr.get() );
-
-	interpretorPtr->addBinder<PythonBinding::Binding::VTXAppBinder>();
-	interpretorPtr->init();
-
-	PythonBinding::Interpretor & interpretor = *interpretorPtr;
+	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = App::Test::Util::App::createInterpretor();
+	PythonBinding::Interpretor &				interpretor	   = *interpretorPtr;
+	interpretor.init();
 
 	App::Application::Scene & scene = App::VTXApp::get().getScene();
 
@@ -111,15 +106,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 
 	App::Test::Util::App::initApp();
 
-	const std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-	if ( !App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
-		App::VTXApp::get().getSystem().referenceSystem( PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get() );
-
-	interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-
-	interpretorPtr->init();
-
-	PythonBinding::Interpretor & interpretor = *interpretorPtr;
+	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
+	interpretor->init();
 
 	App::Application::Scene & scene = App::VTXApp::get().getScene();
 
@@ -129,6 +117,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 
-	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };
-	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", interpretor ); };
+	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", *interpretor ); };
+	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", *interpretor ); };
 };

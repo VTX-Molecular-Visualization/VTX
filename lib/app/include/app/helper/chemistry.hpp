@@ -9,7 +9,9 @@ namespace VTX::App::Helper::Chemistry
 {
 	using namespace App::Component::Chemistry;
 
-	std::vector<Chain *> findChainsByName( const Molecule & p_molecule, const std::string & p_chainName );
+	std::vector<Chain *>   findChainsByName( const Molecule & p_molecule, const std::string & p_chainName );
+	std::vector<Residue *> findResiduesByName( const Chain & p_molecule, const std::string & p_residueName );
+
 } // namespace VTX::App::Helper::Chemistry
 
 #endif
