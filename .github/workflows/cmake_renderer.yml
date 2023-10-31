@@ -35,11 +35,7 @@ jobs:
         conan editable add ${{github.workspace}}/lib/io
         conan editable add ${{github.workspace}}/lib/io/chemfiles
         conan editable add ${{github.workspace}}/lib/core
-      
-#    - uses: knicknic/os-specific-run@v1.0.4
-#      with:
-#        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev libegl-dev libegl1-mesa-dev
-
+        
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
