@@ -3,10 +3,11 @@
 
 #include <app/application/selection/molecule_data.hpp>
 #include <app/application/selection/selection.hpp>
-#include <app/component/chemistry/_fwd.hpp>
+#include <core/chemdb/atom.hpp>
 #include <pybind11/pybind11.h>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace VTX::PythonBinding::API::Selection
 {
@@ -33,14 +34,17 @@ namespace VTX::PythonBinding::API::Selection
 			std::vector<std::string> residueNames;
 			std::vector<size_t>		 residueIndexes;
 
-			std::vector<std::string> atomNames;
-			std::vector<size_t>		 atomIndexes;
+			std::vector<std::string>					 atomNames;
+			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols;
+			std::vector<size_t>							 atomIndexes;
 
 		  private:
 			bool _hasMoleculeParams;
 			bool _hasChainParams;
 			bool _hasResidueParams;
 			bool _hasAtomParams;
+
+			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> _interpretAtomSymbols( const pybind11::kwargs & p_kwargs );
 		};
 
 	  public:

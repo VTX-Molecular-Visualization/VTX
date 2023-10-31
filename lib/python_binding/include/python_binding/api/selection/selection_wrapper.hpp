@@ -1,6 +1,7 @@
-#ifndef __VTX_PYTHON_API_SELECTION_WRAPPER__
-#define __VTX_PYTHON_API_SELECTION_WRAPPER__
+#ifndef __VTX_PYTHON_API_SELECTION_SELECTION_WRAPPER__
+#define __VTX_PYTHON_API_SELECTION_SELECTION_WRAPPER__
 
+#include "_fwd.hpp"
 #include "python_binding/api/selection/helper.hpp"
 #include <app/application/selection/selection.hpp>
 #include <app/component/chemistry/_fwd.hpp>
@@ -10,19 +11,15 @@
 
 namespace VTX::PythonBinding::API::Selection
 {
+	using Selection = App::Application::Selection::Selection;
+
 	class SelectionWrapper
 	{
-	  private:
-		using InterpretArgFunc = std::function<void( SelectionObj &, const pybind11::kwargs & )>;
-
-	  public:
-		static SelectionWrapper select( const pybind11::kwargs & kwargs );
-
-		static void addInterpretor( const InterpretArgFunc & p_interpretor );
+		friend SelectionInterpretor;
 
 	  public:
 		SelectionWrapper();
-		SelectionWrapper( const SelectionObj & p_selection );
+		SelectionWrapper( const Selection & p_selection );
 
 		SelectionWrapper & add( const SelectionWrapper & p_other );
 		SelectionWrapper & remove( const SelectionWrapper & p_other );
@@ -40,10 +37,7 @@ namespace VTX::PythonBinding::API::Selection
 		std::string toString();
 
 	  private:
-		std::unique_ptr<App::Application::Selection::Selection> _selection
-			= std::make_unique<App::Application::Selection::Selection>();
-
-		inline static std::vector<InterpretArgFunc> _selectionInterpretors = std::vector<InterpretArgFunc>();
+		std::unique_ptr<Selection> _selection = std::make_unique<Selection>();
 	};
 
 } // namespace VTX::PythonBinding::API::Selection

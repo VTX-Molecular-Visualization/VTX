@@ -28,9 +28,37 @@ namespace VTX::PythonBinding::API::Selection
 		residueNames	  = _getStringListInKwargs( p_kwargs, "res_n" );
 		residueIndexes	  = _getIndexListInKwargs( p_kwargs, "res_i" );
 
-		_hasAtomParams = p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" );
-		atomNames	   = _getStringListInKwargs( p_kwargs, "atom_n" );
-		atomIndexes	   = _getIndexListInKwargs( p_kwargs, "atom_i" );
+		_hasAtomParams
+			= p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" ) || p_kwargs.contains( "atom_t" );
+		atomNames	= _getStringListInKwargs( p_kwargs, "atom_n" );
+		atomIndexes = _getIndexListInKwargs( p_kwargs, "atom_i" );
+		atomSymbols = _getEnumListFromStrInKwargs<VTX::Core::ChemDB::Atom::SYMBOL>(
+			p_kwargs, "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, VTX::Core::ChemDB::Atom::SYMBOL::UNKNOWN
+		);
+	}
+
+	std::vector<VTX::Core::ChemDB::Atom::SYMBOL> MoleculeInterpretor::InterpretedKwargs::_interpretAtomSymbols(
+		const pybind11::kwargs & p_kwargs
+	)
+	{
+		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols	= std::vector<VTX::Core::ChemDB::Atom::SYMBOL>();
+		const std::vector<std::string>				 atomSymbolsStr = _getStringListInKwargs( p_kwargs, "atom_t" );
+
+		atomSymbols.reserve( atomSymbolsStr.size() );
+
+		for ( const std::string & str : atomSymbolsStr )
+		{
+			const VTX::Core::ChemDB::Atom::SYMBOL symbol = VTX::Core::ChemDB::Atom::getSymbolFromString( str );
+
+			if ( symbol != VTX::Core::ChemDB::Atom::SYMBOL::UNKNOWN )
+			{
+				atomSymbols.emplace_back( symbol );
+			}
+		}
+
+		atomSymbols.shrink_to_fit();
+
+		return atomSymbols;
 	}
 
 	bool MoleculeInterpretor::InterpretedKwargs::isValid() const
@@ -85,38 +113,39 @@ namespace VTX::PythonBinding::API::Selection
 	{
 		using namespace App;
 
-		const std::vector<std::string> & moleculeNames	 = p_kwargs.moleculeNames;
-		const std::vector<size_t>		 moleculeIndexes = p_kwargs.moleculeIndexes;
-
 		std::set<Component::Chemistry::Molecule *> molecules = std::set<Component::Chemistry::Molecule *>();
 
-		for ( const std::string & molName : moleculeNames )
+		if ( p_kwargs.hasSpecifyMolecule() )
 		{
-			App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
+			const std::vector<std::string> & moleculeNames	 = p_kwargs.moleculeNames;
+			const std::vector<size_t>		 moleculeIndexes = p_kwargs.moleculeIndexes;
 
-			if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
-				continue;
+			for ( const std::string & molName : moleculeNames )
+			{
+				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
 
-			Component::Chemistry::Molecule & moleculeComponent
-				= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+					continue;
 
-			molecules.emplace( &moleculeComponent );
+				Component::Chemistry::Molecule & moleculeComponent
+					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+
+				molecules.emplace( &moleculeComponent );
+			}
+			for ( const size_t molIndex : moleculeIndexes )
+			{
+				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
+
+				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+					continue;
+
+				Component::Chemistry::Molecule & moleculeComponent
+					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+
+				molecules.emplace( &moleculeComponent );
+			}
 		}
-		for ( const size_t molIndex : moleculeIndexes )
-		{
-			App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
-
-			if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
-				continue;
-
-			Component::Chemistry::Molecule & moleculeComponent
-				= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
-
-			molecules.emplace( &moleculeComponent );
-		}
-
-		// If no molecule selected => select all molecules
-		if ( molecules.size() == 0 )
+		else
 		{
 			auto view = App::VTXApp::get().getScene().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 
@@ -216,6 +245,20 @@ namespace VTX::PythonBinding::API::Selection
 						}
 					}
 				}
+
+				for ( Residue * const residue : molecule.getResidues() )
+				{
+					for ( const size_t residueIndex : p_kwargs.residueIndexes )
+					{
+						if ( residue->getIndexInOriginalChain() == residueIndex )
+						{
+							if ( selectFullResidue )
+								p_moleculeSelectionData.selectFullResidue( *residue );
+							else
+								p_moleculeSelectionData.referenceResidue( *residue );
+						}
+					}
+				}
 			}
 			else
 			{
@@ -235,6 +278,22 @@ namespace VTX::PythonBinding::API::Selection
 								p_moleculeSelectionData.selectFullResidue( *residue );
 							else
 								p_moleculeSelectionData.referenceResidue( *residue );
+						}
+					}
+
+					for ( const size_t residueIndex : p_kwargs.residueIndexes )
+					{
+						for ( const Residue & residue : chain.residues() )
+						{
+							if ( residue.getIndexInOriginalChain() == residueIndex )
+							{
+								if ( selectFullResidue )
+									p_moleculeSelectionData.selectFullResidue( residue );
+								else
+									p_moleculeSelectionData.referenceResidue( residue );
+
+								break;
+							}
 						}
 					}
 				}
@@ -328,6 +387,15 @@ namespace VTX::PythonBinding::API::Selection
 			for ( const std::string & atomName : p_kwargs.atomNames )
 			{
 				if ( atom->getName() == atomName )
+				{
+					p_moleculeSelectionData.selectAtom( *atom );
+					break;
+				}
+			}
+
+			for ( const VTX::Core::ChemDB::Atom::SYMBOL atomSymbol : p_kwargs.atomSymbols )
+			{
+				if ( atom->getSymbol() == atomSymbol )
 				{
 					p_moleculeSelectionData.selectAtom( *atom );
 					break;

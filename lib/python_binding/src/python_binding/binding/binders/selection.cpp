@@ -1,6 +1,7 @@
 #include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/api/selection/molecule_interpretor.hpp"
-#include "python_binding/api/selection_wrapper.hpp"
+#include "python_binding/api/selection/selection_interpretor.hpp"
+#include "python_binding/api/selection/selection_wrapper.hpp"
 #include <app/application/selection/selection.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
@@ -17,7 +18,9 @@ namespace VTX::PythonBinding::Binding::Binders
 	{
 		using namespace VTX::App;
 
-		API::Selection::SelectionWrapper::addInterpretor( &API::Selection::MoleculeInterpretor::interpretMolecules );
+		API::Selection::SelectionInterpretor::clear();
+		API::Selection::SelectionInterpretor::addInterpretor( &API::Selection::MoleculeInterpretor::interpretMolecules
+		);
 
 		pybind11::bind_vector<std::vector<Component::Chemistry::Molecule *>>( p_apiModule, "MolPtrVector" );
 		pybind11::bind_vector<std::vector<Component::Chemistry::Chain *>>( p_apiModule, "ChainPtrVector" );
@@ -25,7 +28,7 @@ namespace VTX::PythonBinding::Binding::Binders
 		pybind11::bind_vector<std::vector<Component::Chemistry::Atom *>>( p_apiModule, "AtomPtrVector" );
 
 		p_apiModule.def(
-			"select", &API::Selection::SelectionWrapper::select, pybind11::return_value_policy::reference
+			"select", &API::Selection::SelectionInterpretor::select, pybind11::return_value_policy::reference
 		);
 
 		pybind11::class_<App::Application::Selection::Selection>(
@@ -35,7 +38,6 @@ namespace VTX::PythonBinding::Binding::Binders
 		pybind11::class_<API::Selection::SelectionWrapper>( p_apiModule, "Selection", pybind11::module_local() )
 			.def( "__str__", &API::Selection::SelectionWrapper::toString )
 			.def( "__add__", &API::Selection::SelectionWrapper::add )
-			.def( "getMolecules", &API::Selection::SelectionWrapper::getMolecules )
 			.def( "getMolecules", &API::Selection::SelectionWrapper::getMolecules )
 			.def( "getChains", &API::Selection::SelectionWrapper::getChains )
 			.def( "getResidues", &API::Selection::SelectionWrapper::getResidues )

@@ -1,4 +1,4 @@
-#include "python_binding/api/selection_wrapper.hpp"
+#include "python_binding/api/selection/selection_wrapper.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/selection/molecule_data.hpp>
 #include <app/component/chemistry/atom.hpp>
@@ -13,48 +13,37 @@
 namespace VTX::PythonBinding::API::Selection
 {
 	SelectionWrapper::SelectionWrapper() = default;
-	SelectionWrapper::SelectionWrapper( const SelectionObj & p_selection ) :
-		_selection( std::make_unique<SelectionObj>( p_selection ) )
+	SelectionWrapper::SelectionWrapper( const Selection & p_selection ) :
+		_selection( std::make_unique<Selection>( p_selection ) )
 	{
 	}
-
-	void SelectionWrapper::addInterpretor( const InterpretArgFunc & p_interpretor )
-	{
-		_selectionInterpretors.emplace_back( p_interpretor );
-	}
-
-	// Function that manage a param that can be a single str or a list of str and convert it into a vector of str
-	SelectionWrapper SelectionWrapper::select( const pybind11::kwargs & kwargs )
-	{
-		SelectionWrapper res = SelectionWrapper();
-
-		if ( pybind11::len( kwargs ) == 0 )
-			return res;
-
-		for ( const InterpretArgFunc & p_func : _selectionInterpretors )
-			p_func( *res._selection, kwargs );
-
-		return res;
-	};
 
 	SelectionWrapper & SelectionWrapper::add( const SelectionWrapper & p_other )
 	{
-		//_selection = SelectionObj::add( _selection, p_other._selection );
+		Selection res = Selection::add( *_selection, *( p_other._selection ) );
+		_selection	  = std::make_unique<Selection>( res );
+
 		return *this;
 	}
 	SelectionWrapper & SelectionWrapper::remove( const SelectionWrapper & p_other )
 	{
-		//_selection = SelectionObj::remove( _selection, p_other._selection );
+		Selection res = Selection::remove( *_selection, *( p_other._selection ) );
+		_selection	  = std::make_unique<Selection>( res );
+
 		return *this;
 	}
 	SelectionWrapper & SelectionWrapper::intersect( const SelectionWrapper & p_other )
 	{
-		//_selection = SelectionObj::intersection( _selection, p_other._selection );
+		Selection res = Selection::intersection( *_selection, *( p_other._selection ) );
+		_selection	  = std::make_unique<Selection>( res );
+
 		return *this;
 	}
 	SelectionWrapper & SelectionWrapper::exclusive( const SelectionWrapper & p_other )
 	{
-		//_selection = SelectionObj::exclusive( _selection, p_other._selection );
+		Selection res = Selection::exclusive( *_selection, *( p_other._selection ) );
+		_selection	  = std::make_unique<Selection>( res );
+
 		return *this;
 	}
 	SelectionWrapper & SelectionWrapper::inverse()
@@ -62,7 +51,7 @@ namespace VTX::PythonBinding::API::Selection
 		SelectionWrapper all = SelectionWrapper();
 		all.selectAll();
 
-		//_selection = SelectionObj::remove( all._selection, _selection );
+		//_selection = Selection::remove( all._selection, _selection );
 		return *this;
 	}
 
@@ -148,40 +137,6 @@ namespace VTX::PythonBinding::API::Selection
 		return res;
 	}
 
-	std::string SelectionWrapper::toString()
-	{
-		std::stringstream ss = std::stringstream();
-
-		ss << "Selection :" << _selection->getCount() << std::endl;
-
-		// ss << "Molecules (" << _molecules.size() << ") :";
-		// for ( const App::Component::Chemistry::Molecule * const mol : _molecules )
-		//{
-		//	ss << mol->getName();
-		// }
-
-		// ss << std::endl << "Chains (" << _chains.size() << ") :";
-		// for ( const App::Component::Chemistry::Chain * const chain : _chains )
-		//{
-		//	if ( chain != nullptr )
-		//		ss << chain->getName();
-		// }
-
-		// ss << std::endl << "Residues (" << _residues.size() << ") :";
-		// for ( const App::Component::Chemistry::Residue * const res : _residues )
-		//{
-		//	if ( res != nullptr )
-		//		ss << res->getName();
-		// }
-
-		// ss << std::endl << "Atoms :(" << _atoms.size() << ") :";
-		// for ( const App::Component::Chemistry::Atom * const atom : _atoms )
-		//{
-		//	if ( atom != nullptr )
-		//		ss << atom->getName();
-		// }
-
-		return ss.str();
-	}
+	std::string SelectionWrapper::toString() { return _selection->toString(); }
 
 } // namespace VTX::PythonBinding::API::Selection
