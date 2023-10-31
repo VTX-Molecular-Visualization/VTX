@@ -40,4 +40,5 @@ class VTXUiRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui"]
-
+        if self.settings.os == "Windows":
+            self.cpp_info.system_libs.append('d3d12')

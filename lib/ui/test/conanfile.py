@@ -14,7 +14,7 @@ class VTXUiTestRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_ui/1.0")
-        self.requires("catch2/3.4.0")        
+        self.requires("catch2/3.4.0")
         
     def layout(self):
         cmake_layout(self)
