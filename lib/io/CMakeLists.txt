@@ -51,9 +51,6 @@ target_link_libraries(VTX_IO_TEST PRIVATE VTX_UTIL)
 target_link_libraries(VTX_IO_TEST PRIVATE VTX_CORE)
 target_link_libraries(VTX_IO_TEST PRIVATE VTX_IO)
 
-# Link third parties.
-target_link_libraries(VTX_IO_TEST PRIVATE chemfiles)
-
 # Catch2.
 include(CTest)
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
