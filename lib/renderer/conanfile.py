@@ -43,4 +43,5 @@ class VTXRendererRecipe(ConanFile):
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = ["include", "vendor"]
         self.cpp_info.set_property("SHADERS_DIR", self.package_folder + "/path/to/shaders")
-        self.conf_info.pop("tools.system.package_manager:sudo")
+        self.conf_info.update("tools.system.package_manager", "sudo")
+        self.conf_info.update("tools.system.package_manager", "install")
