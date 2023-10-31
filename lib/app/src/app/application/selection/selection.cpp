@@ -25,7 +25,7 @@ namespace VTX::App::Application::Selection
 
 		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
 		{
-			res.select( *item );
+			res.select( item->getSelectionComponent() );
 		}
 
 		return res;
