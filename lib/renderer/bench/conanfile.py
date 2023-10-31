@@ -29,9 +29,6 @@ class VTXRendererBenchRecipe(ConanFile):
         # Add vendor folder to the include path.
         self.cpp.source.includedirs = ["include", "vendor"]
         #self.cpp.package.includedirs = ["include", "vendor"]
-        
-        self.conf.define("tools.system.package_manager:sudo", True)
-        self.conf.define("tools.system.package_manager:mode", "install")
 
     def build(self):
         cmake = CMake(self)
