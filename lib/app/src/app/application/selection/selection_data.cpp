@@ -19,7 +19,11 @@ namespace VTX::App::Application::Selection
 	const Component::Scene::Selectable & SelectionData::getSelectionComponent() const { return *_selectionComponent; }
 
 	SelectionData & SelectionData::add( const SelectionData & p_other ) { return *this; }
-	SelectionData & SelectionData::remove( const SelectionData & p_other ) { return *this; }
+	SelectionData & SelectionData::remove( const SelectionData & p_other )
+	{
+		_valid = _selectionComponent != p_other._selectionComponent;
+		return *this;
+	}
 	SelectionData & SelectionData::intersect( const SelectionData & p_other ) { return *this; }
 	SelectionData & SelectionData::exclude( const SelectionData & p_other ) { return *this; }
 

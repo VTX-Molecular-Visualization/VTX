@@ -25,13 +25,35 @@ namespace VTX::App::Application::Selection
 
 		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
 		{
-			if ( !res.isSelected( item->getSelectionComponent() ) )
+			const Component::Scene::Selectable & rhsSelectableComponent = item->getSelectionComponent();
+
+			if ( !res.isSelected( rhsSelectableComponent ) )
 			{
-				res.select( item->getSelectionComponent() );
+				res.select( rhsSelectableComponent );
 			}
 			else
 			{
-				res.getSelectionData( item->getSelectionComponent() ).add( *item );
+				res.getSelectionData( rhsSelectableComponent ).add( *item );
+			}
+		}
+
+		return res;
+	}
+
+	Selection Selection::remove( const Selection & p_lhs, const Selection & p_rhs )
+	{
+		Selection res = Selection( p_lhs );
+
+		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
+		{
+			const Component::Scene::Selectable & rhsSelectableComponent = item->getSelectionComponent();
+
+			if ( res.isSelected( rhsSelectableComponent ) )
+			{
+				const SelectionData & rhsSelectionData = res.getSelectionData( rhsSelectableComponent ).remove( *item );
+
+				if ( !rhsSelectionData.isValid() )
+					res.unselect( rhsSelectableComponent );
 			}
 		}
 
@@ -39,7 +61,6 @@ namespace VTX::App::Application::Selection
 	}
 
 	// TODO
-	Selection Selection::remove( const Selection & p_lhs, const Selection & p_rhs ) { return Selection(); }
 	Selection Selection::intersection( const Selection & p_lhs, const Selection & p_rhs ) { return Selection(); }
 	Selection Selection::exclusive( const Selection & p_lhs, const Selection & p_rhs ) { return Selection(); }
 	Selection Selection::inverse( const Selection & p_selection ) { return Selection(); }

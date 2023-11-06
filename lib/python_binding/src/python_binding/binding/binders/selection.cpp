@@ -38,6 +38,7 @@ namespace VTX::PythonBinding::Binding::Binders
 		pybind11::class_<API::Selection::SelectionWrapper>( p_apiModule, "Selection", pybind11::module_local() )
 			.def( "__str__", &API::Selection::SelectionWrapper::toString )
 			.def( "__add__", &API::Selection::SelectionWrapper::add, pybind11::return_value_policy::reference )
+			.def( "__sub__", &API::Selection::SelectionWrapper::remove, pybind11::return_value_policy::reference )
 			.def( "getMolecules", &API::Selection::SelectionWrapper::getMolecules )
 			.def( "getChains", &API::Selection::SelectionWrapper::getChains )
 			.def( "getResidues", &API::Selection::SelectionWrapper::getResidues )
