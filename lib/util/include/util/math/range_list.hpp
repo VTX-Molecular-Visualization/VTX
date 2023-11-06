@@ -170,7 +170,6 @@ namespace VTX::Util::Math
 				_ranges.insert( it, p_range );
 			}
 		}
-
 		void removeRange( const Range<T> & p_range )
 		{
 			auto it = _ranges.begin();
@@ -222,6 +221,21 @@ namespace VTX::Util::Math
 
 		void addValue( const T p_value ) { addRange( Range<T>( p_value ) ); }
 		void removeValue( const T p_value ) { removeRange( Range<T>( p_value ) ); }
+
+		void merge( const RangeList<T> & p_other )
+		{
+			for ( const Range<T> & range : p_other._ranges )
+			{
+				addRange( range );
+			}
+		}
+		void substract( const RangeList<T> & p_other )
+		{
+			for ( const Range<T> & range : p_other._ranges )
+			{
+				removeRange( range );
+			}
+		}
 
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }

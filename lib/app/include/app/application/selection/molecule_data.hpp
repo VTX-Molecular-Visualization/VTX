@@ -17,7 +17,12 @@ namespace VTX::App::Application::Selection
 		using IndexRangeList = Util::Math::RangeList<size_t>;
 
 	  public:
-		MoleculeData( Component::Scene::Selectable & p_selectable );
+		MoleculeData( const Component::Scene::Selectable & p_selectable );
+
+		SelectionData & add( const SelectionData & p_other ) override;
+		SelectionData & remove( const SelectionData & p_other ) override;
+		SelectionData & intersect( const SelectionData & p_other ) override;
+		SelectionData & exclude( const SelectionData & p_other ) override;
 
 		void selectAll();
 
@@ -47,6 +52,9 @@ namespace VTX::App::Application::Selection
 		inline const IndexRangeList & getAtomIds() const { return _atomIds; }
 
 		std::string toString() const override;
+
+	  protected:
+		std::unique_ptr<SelectionData> _cloneImpl() const override;
 
 	  private:
 		void _referenceChain( const Chain & p_chain );

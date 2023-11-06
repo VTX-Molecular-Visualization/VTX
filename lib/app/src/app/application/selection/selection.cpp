@@ -11,9 +11,9 @@ namespace VTX::App::Application::Selection
 	Selection::Selection() = default;
 	Selection::Selection( const Selection & p_source )
 	{
-		for ( const std::unique_ptr<SelectionData> & item : _items )
+		for ( const std::unique_ptr<SelectionData> & item : p_source._items )
 		{
-			_items.emplace( std::make_unique<SelectionData>( *item ) );
+			_items.emplace( item->clone() );
 		}
 	}
 
@@ -25,7 +25,14 @@ namespace VTX::App::Application::Selection
 
 		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
 		{
-			res.select( item->getSelectionComponent() );
+			if ( !res.isSelected( item->getSelectionComponent() ) )
+			{
+				res.select( item->getSelectionComponent() );
+			}
+			else
+			{
+				res.getSelectionData( item->getSelectionComponent() ).add( *item );
+			}
 		}
 
 		return res;

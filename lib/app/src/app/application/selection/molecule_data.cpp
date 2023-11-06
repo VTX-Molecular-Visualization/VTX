@@ -10,11 +10,46 @@
 
 namespace VTX::App::Application::Selection
 {
-	MoleculeData::MoleculeData( Component::Scene::Selectable & p_selectable ) :
+
+	MoleculeData::MoleculeData( const Component::Scene::Selectable & p_selectable ) :
 		SelectionData( p_selectable ),
 		_molecule( &VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( p_selectable ) )
 	{
 	}
+
+	std::unique_ptr<SelectionData> MoleculeData::_cloneImpl() const
+	{
+		std::unique_ptr<MoleculeData> copy = std::make_unique<MoleculeData>( getSelectionComponent() );
+
+		copy->_chainIds	  = _chainIds;
+		copy->_residueIds = _residueIds;
+		copy->_atomIds	  = _atomIds;
+
+		return std::move( copy );
+	}
+
+	SelectionData & MoleculeData::add( const SelectionData & p_other )
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		_chainIds.merge( castedOther._chainIds );
+		_residueIds.merge( castedOther._residueIds );
+		_atomIds.merge( castedOther._atomIds );
+
+		return *this;
+	}
+	SelectionData & MoleculeData::remove( const SelectionData & p_other )
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		_chainIds.substract( castedOther._chainIds );
+		_residueIds.substract( castedOther._residueIds );
+		_atomIds.substract( castedOther._atomIds );
+
+		return *this;
+	}
+	SelectionData & MoleculeData::intersect( const SelectionData & p_other ) { return *this; }
+	SelectionData & MoleculeData::exclude( const SelectionData & p_other ) { return *this; }
 
 	void MoleculeData::selectAll()
 	{

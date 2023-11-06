@@ -6,12 +6,22 @@
 
 namespace VTX::App::Application::Selection
 {
+
 	SelectionData::SelectionData( const Component::Scene::Selectable & p_selectionComponent ) :
 		_selectionComponent( &p_selectionComponent )
 	{
 	}
+	std::unique_ptr<SelectionData> SelectionData::_cloneImpl() const
+	{
+		return std::make_unique<SelectionData>( *_selectionComponent );
+	}
 
 	const Component::Scene::Selectable & SelectionData::getSelectionComponent() const { return *_selectionComponent; }
+
+	SelectionData & SelectionData::add( const SelectionData & p_other ) { return *this; }
+	SelectionData & SelectionData::remove( const SelectionData & p_other ) { return *this; }
+	SelectionData & SelectionData::intersect( const SelectionData & p_other ) { return *this; }
+	SelectionData & SelectionData::exclude( const SelectionData & p_other ) { return *this; }
 
 	std::string SelectionData::toString() const
 	{
