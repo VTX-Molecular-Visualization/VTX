@@ -147,15 +147,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 		"test_empty_1", "select( mol_n='Nimportequoi', chain_i=1 )", App::Application::Selection::Selection()
 	) );
 
+	CHECK( SelectionUtil::checkSelection(
+		"test_empty_2",
+		"select( mol_n='4HHB', res_n='his' )",
+		SelectionUtil::createSelection( allHistidineOn4HHB )
+	) );
+
 	// CHECK( SelectionUtil::checkSelection(
 	//	"test_mol_n_chain_str_i_1", "select( mol_n='4HHB', chain_i='1' )", App::Application::Selection::Selection()
 	//) ); // NO => manage param as str
-
-	// CHECK( SelectionUtil::checkSelection(
-	//	"test_empty_1",
-	//	"select( mol_n='Nimportequoi', res_n='his' )",
-	//	SelectionUtil::createSelection( allHistidineOn4HHB )
-	//) ); // NO => manage case
 
 	// interpretor.runCommand( "select( mol_n='4HHB', res_i=range(0, 100) )" );
 };
