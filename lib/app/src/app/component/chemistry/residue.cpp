@@ -58,6 +58,15 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueSymbols[ _index ] = p_symbol;
 	}
 
+	size_t Residue::getIndexInOriginalChain() const
+	{
+		return _moleculePtr->_moleculeStruct.residueOriginalIds[ _index ];
+	}
+	void Residue::setIndexInOriginalChain( const size_t p_index )
+	{
+		_moleculePtr->_moleculeStruct.residueOriginalIds[ _index ] = p_index;
+	}
+
 	const std::string & Residue::getShortName() const
 	{
 		return ChemDB::Residue::SYMBOL_SHORT_STR[ int( getSymbol() ) ];

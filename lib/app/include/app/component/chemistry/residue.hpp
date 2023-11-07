@@ -38,6 +38,8 @@ namespace VTX::App::Component::Chemistry
 		void					setBondCount( const size_t p_bondCount );
 		ChemDB::Residue::SYMBOL getSymbol() const;
 		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );
+		size_t					getIndexInOriginalChain() const;
+		void					setIndexInOriginalChain( const size_t p_index );
 
 		const std::string & getShortName() const;
 		const std::string & getName() const;
@@ -51,12 +53,6 @@ namespace VTX::App::Component::Chemistry
 
 		ChemDB::Atom::TYPE getAtomType() const;
 		void			   setAtomType( const ChemDB::Atom::TYPE p_type );
-
-		size_t getIndexInOriginalChain() const { return _indexInOriginalChain; };
-		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
-		{
-			_indexInOriginalChain = p_indexInOriginalChain;
-		};
 
 		const char getInsertionCode() const { return _insertionCode; }
 		void	   setInsertionCode( const char p_insertionCode ) { _insertionCode = p_insertionCode; }

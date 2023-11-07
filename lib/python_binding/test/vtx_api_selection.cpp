@@ -122,11 +122,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 		SelectionUtil::createSelection( allHistidineOn4HHB )
 	) );
 
-	// CHECK( SelectionUtil::checkSelection(
-	//	"test_mol_n_chain_res_1",
-	//	"select( mol_n='4HHB', chain_n='A', res_i=5 )",
-	//	SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB", {}, { 3 } ) )
-	//) ); // NO => Original index in scene not managed
+	CHECK( SelectionUtil::checkSelection(
+		"test_mol_n_chain_res_1",
+		"select( mol_n='4HHB', chain_n='B', res_i=4 )",
+		SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB", {}, { 144 } ) )
+	) );
 
 	// interpretor.runCommand( "select( mol_n='4HHB', atom_t='C')" ); // OK
 	// interpretor.runCommand( "select( mol_n='4HHB', res_n='HIS', atom_n='O')" ); // OK
@@ -148,9 +148,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	) );
 
 	CHECK( SelectionUtil::checkSelection(
-		"test_empty_2",
-		"select( mol_n='4HHB', res_n='his' )",
-		SelectionUtil::createSelection( allHistidineOn4HHB )
+		"test_empty_2", "select( mol_n='4HHB', res_n='his' )", SelectionUtil::createSelection( allHistidineOn4HHB )
 	) );
 
 	// CHECK( SelectionUtil::checkSelection(
