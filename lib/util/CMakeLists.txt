@@ -1,6 +1,6 @@
 message("vtx_util")
 cmake_minimum_required(VERSION 3.23)
-#include(cmake/configure-target.cmake)
+include(cmake/configure-target.cmake)
 project(vtx_util)
 
 find_package(glm REQUIRED)
@@ -14,7 +14,7 @@ file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 
 add_library(vtx_util STATIC ${HEADERS} ${SOURCES})
-#configureTarget(vtx_util)
+configureTarget(vtx_util)
 target_include_directories(vtx_util PUBLIC include)
 
 target_link_libraries(vtx_util PRIVATE glm::glm)

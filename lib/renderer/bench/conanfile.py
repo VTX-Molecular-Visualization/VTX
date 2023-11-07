@@ -20,7 +20,7 @@ class VTXRendererBenchRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["dir_shaders"] = dir_shaders
+        tc.cache_variables["DIR_SHADERS"] = dir_shaders
         tc.generate()
         
         copy(self, "*sdl2*", os.path.join(self.dependencies["imgui"].package_folder,

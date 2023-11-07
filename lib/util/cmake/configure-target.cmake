@@ -1,6 +1,6 @@
 function(configureTarget p_target)
 	# Compiler options.
-	target_compile_features(${p_target} PRIVATE cxx_std_20)
+	#target_compile_features(${p_target} PRIVATE cxx_std_20)
 
 	if(CMAKE_COMPILER_IS_GNUCC)
 		#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")

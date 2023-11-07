@@ -1,5 +1,6 @@
 message("vtx_io")
 cmake_minimum_required(VERSION 3.23)
+include(../util/cmake/configure-target.cmake)
 project(vtx_io)
 
 find_package(vtx_util CONFIG REQUIRED)
@@ -10,6 +11,7 @@ file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 
 add_library(vtx_io STATIC ${HEADERS} ${SOURCES})
+configureTarget(vtx_io)
 target_include_directories(vtx_io PUBLIC include)
 
 target_link_libraries(vtx_io PRIVATE vtx_util::vtx_util)
