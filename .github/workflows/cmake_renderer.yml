@@ -26,15 +26,6 @@ jobs:
       
     - name: Create default profile
       run: conan profile detect --force
-
-    - name: Configure packages
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  |
-        conan editable add .
-        conan editable add ${{github.workspace}}/lib/util
-        conan editable add ${{github.workspace}}/lib/io
-        conan editable add ${{github.workspace}}/lib/io/chemfiles
-        conan editable add ${{github.workspace}}/lib/core
         
     - name: Build 
       working-directory: ${{env.CMAKELISTS_DIR}}
