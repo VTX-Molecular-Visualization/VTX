@@ -22,5 +22,3 @@ target_link_libraries(vtx_util PRIVATE spdlog::spdlog)
 target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(vtx_util PRIVATE magic_enum::magic_enum)
 target_link_libraries(vtx_util PRIVATE asio::asio)
-
-install(TARGETS vtx_util)

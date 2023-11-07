@@ -7,7 +7,6 @@ find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(SDL2 REQUIRED)
-#find_package(stb REQUIRED)
 find_package(imgui REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*)
@@ -22,24 +21,15 @@ target_link_libraries(vtx_renderer_bench PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
-#target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 
-get_target_property(SHADERS vtx_renderer::vtx_renderer SHADERS_DIR)
-message(STATUS "Chemin du répertoire des shaders : ${SHADERS}")
+message(STATUS "++++++++++++++++++++++++++Shaders dir : ${dir_shaders}")
 
 # Copy shaders.
-#add_custom_target(vtx_renderer_bench_copy_shaders ALL COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_PROPERTY:vtx_renderer::vtx_renderer,shadersDir> $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
-#add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shaders)
-#add_dependencies(vtx_renderer_bench vtx_renderer::vtx_renderer_shaders)
-
-# Copy assets.
-#add_custom_target(VTX_RENDERER_COPY_ASSETS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:vtx_renderer_bench>/assets)
-#add_dependencies(vtx_renderer_bench VTX_RENDERER_COPY_ASSETS)
-
-# Install.
-# TODO: set target name as parameter?
-#set(INSTALL_DIR DESTINATION VTXRendererBench)
-#install(DIRECTORY DESTINATION ${INSTALL_DIR})
-#install(TARGETS vtx_renderer_bench RUNTIME DESTINATION ${INSTALL_DIR})
-#install(DIRECTORY $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders DESTINATION ${INSTALL_DIR})
+add_custom_target(
+	vtx_renderer_bench_copy_shader
+	ALL COMMAND
+	${CMAKE_COMMAND} -E copy_directory	
+	${dir_shaders}
+	$<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
+add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)

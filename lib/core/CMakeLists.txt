@@ -11,5 +11,3 @@ add_library(vtx_core STATIC ${HEADERS} ${SOURCES})
 target_include_directories(vtx_core PUBLIC include)
 
 target_link_libraries(vtx_core PRIVATE vtx_util::vtx_util)
-
-install(TARGETS vtx_core)
