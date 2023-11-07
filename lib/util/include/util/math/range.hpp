@@ -24,6 +24,15 @@ namespace VTX::Util::Math
 		Range() : Range( ZERO, ZERO ) {}
 		explicit Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
 
+		friend bool operator==( const Range<T> & p_lhs, const Range<T> & p_rhs )
+		{
+			return p_lhs._start == p_rhs._start && p_lhs._count == p_rhs._count;
+		}
+		friend bool operator!=( const Range<T> & p_lhs, const Range<T> & p_rhs )
+		{
+			return p_lhs._start != p_rhs._start || p_lhs._count != p_rhs._count;
+		}
+
 		T getFirst() const { return _start; };
 		T getLast() const { return _start + _count - ONE; };
 		T getCount() const { return _count; };

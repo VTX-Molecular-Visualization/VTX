@@ -16,6 +16,14 @@ namespace VTX::App::Application::Selection
 	{
 	}
 
+	bool MoleculeData::isEqualsTo( const SelectionData & p_other ) const
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		return _molecule == castedOther._molecule && _chainIds == castedOther._chainIds
+			   && _residueIds == castedOther._residueIds && _atomIds == castedOther._atomIds;
+	}
+
 	std::unique_ptr<SelectionData> MoleculeData::_cloneImpl() const
 	{
 		std::unique_ptr<MoleculeData> copy = std::make_unique<MoleculeData>( getSelectionComponent() );
@@ -81,15 +89,47 @@ namespace VTX::App::Application::Selection
 	void MoleculeData::referenceChains( const IndexRange & p_range ) { _referenceChains( p_range ); }
 	void MoleculeData::selectFullChains( const IndexRange & p_range ) { _selectFullChains( p_range ); }
 
+	void MoleculeData::referenceChains( const IndexRangeList & p_rangeList )
+	{
+		for ( const size_t index : p_rangeList )
+		{
+			const Chain * const chainPtr = _molecule->getChain( index );
+
+			if ( chainPtr != nullptr )
+				_referenceChain( *chainPtr );
+		}
+	}
+	void MoleculeData::selectFullChains( const IndexRangeList & p_rangeList )
+	{
+		for ( const size_t index : p_rangeList )
+		{
+			const Chain * const chainPtr = _molecule->getChain( index );
+
+			if ( chainPtr != nullptr )
+				_selectFullChain( *chainPtr );
+		}
+	}
+
 	// Residues //////////////////////////////////////////////////////////////////////////////////////
-	void MoleculeData::referenceResidue( const Residue & p_residue ) { _referenceResidue( p_residue ); }
-	void MoleculeData::selectFullResidue( const Residue & p_residue ) { _selectFullResidue( p_residue ); }
+	void MoleculeData::referenceResidue( const Residue & p_residue )
+	{
+		_referenceChain( *p_residue.getChainPtr() );
+		_referenceResidue( p_residue );
+	}
+	void MoleculeData::selectFullResidue( const Residue & p_residue )
+	{
+		_referenceChain( *p_residue.getChainPtr() );
+		_selectFullResidue( p_residue );
+	}
 	void MoleculeData::referenceResidues( const std::vector<Residue *> & p_residues )
 	{
 		for ( const Residue * const residuePtr : p_residues )
 		{
 			if ( residuePtr != nullptr )
+			{
+				_referenceChain( *residuePtr->getChainPtr() );
 				_referenceResidue( *residuePtr );
+			}
 		}
 	}
 	void MoleculeData::selectFullResidues( const std::vector<Residue *> & p_residues )
@@ -97,11 +137,43 @@ namespace VTX::App::Application::Selection
 		for ( const Residue * const residuePtr : p_residues )
 		{
 			if ( residuePtr != nullptr )
+			{
+				_referenceChain( *residuePtr->getChainPtr() );
+				_selectFullResidue( *residuePtr );
+			}
+		}
+	}
+	void MoleculeData::referenceResidues( const IndexRange & p_range )
+	{
+		const size_t firstChainIndex = _molecule->getResidue( p_range.getFirst() )->getChainPtr()->getIndex();
+		const size_t lastChainIndex	 = _molecule->getResidue( p_range.getLast() )->getChainPtr()->getIndex();
+
+		_referenceChains( IndexRange::createFirstLast( firstChainIndex, lastChainIndex ) );
+		_referenceResidues( p_range );
+	}
+	void MoleculeData::selectFullResidues( const IndexRange & p_range ) { _selectFullResidues( p_range ); }
+	void MoleculeData::referenceResidues( const IndexRangeList & p_rangeList )
+	{
+		for ( const size_t index : p_rangeList )
+		{
+			const Residue * const residuePtr = _molecule->getResidue( index );
+			_referenceChain( *residuePtr->getChainPtr() );
+
+			if ( residuePtr != nullptr )
+				_referenceResidue( *residuePtr );
+		}
+	}
+	void MoleculeData::selectFullResidues( const IndexRangeList & p_rangeList )
+	{
+		for ( const size_t index : p_rangeList )
+		{
+			const Residue * const residuePtr = _molecule->getResidue( index );
+			_referenceChain( *residuePtr->getChainPtr() );
+
+			if ( residuePtr != nullptr )
 				_selectFullResidue( *residuePtr );
 		}
 	}
-	void MoleculeData::referenceResidues( const IndexRange & p_range ) { _referenceResidues( p_range ); }
-	void MoleculeData::selectFullResidues( const IndexRange & p_range ) { _selectFullResidues( p_range ); }
 
 	// Atoms /////////////////////////////////////////////////////////////////////////////////////////
 	void MoleculeData::selectAtom( const Atom & p_atom ) { _referenceAtom( p_atom ); }
@@ -114,6 +186,16 @@ namespace VTX::App::Application::Selection
 		}
 	}
 	void MoleculeData::selectAtoms( const IndexRange & p_range ) { _referenceAtoms( p_range ); }
+	void MoleculeData::selectAtoms( const IndexRangeList & p_rangeList )
+	{
+		for ( const size_t index : p_rangeList )
+		{
+			const Atom * const atomPtr = _molecule->getAtom( index );
+
+			if ( atomPtr != nullptr )
+				_referenceAtom( *atomPtr );
+		}
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1,6 +1,7 @@
 #include "python_binding/api/selection/selection_wrapper.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/selection/molecule_data.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
@@ -52,6 +53,12 @@ namespace VTX::PythonBinding::API::Selection
 		all.selectAll();
 
 		//_selection = Selection::remove( all._selection, _selection );
+		return *this;
+	}
+
+	SelectionWrapper & SelectionWrapper::save( const std::string & p_name )
+	{
+		App::VTXApp::get().getSelectionManager().save( p_name, std::make_unique<SelectionObj>( *_selection ) );
 		return *this;
 	}
 
@@ -137,6 +144,6 @@ namespace VTX::PythonBinding::API::Selection
 		return res;
 	}
 
-	std::string SelectionWrapper::toString() { return _selection->toString(); }
+	std::string SelectionWrapper::toString() const { return _selection->toString(); }
 
 } // namespace VTX::PythonBinding::API::Selection

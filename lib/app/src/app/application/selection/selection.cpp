@@ -19,6 +19,30 @@ namespace VTX::App::Application::Selection
 
 	Selection::~Selection() = default;
 
+	bool Selection::isEqualsTo( const Selection & p_other ) const
+	{
+		if ( _items.size() != p_other._items.size() )
+			return false;
+
+		for ( const std::unique_ptr<SelectionData> & lhsSelData : _items )
+		{
+			bool areEquals = false;
+			for ( const std::unique_ptr<SelectionData> & rhsSelData : p_other._items )
+			{
+				if ( &lhsSelData->getSelectionComponent() == &rhsSelData->getSelectionComponent() )
+				{
+					areEquals = lhsSelData->isEqualsTo( *rhsSelData );
+					break;
+				}
+			}
+
+			if ( !areEquals )
+				return false;
+		}
+
+		return true;
+	}
+
 	Selection Selection::add( const Selection & p_lhs, const Selection & p_rhs )
 	{
 		Selection res = Selection( p_lhs );
@@ -89,6 +113,7 @@ namespace VTX::App::Application::Selection
 			return **( it.first );
 		}
 	}
+
 	void Selection::unselect( const Component::Scene::Selectable & p_selectableComponent )
 	{
 		const std::unique_ptr<SelectionData> & selItem = _getSelectionDataPtr( p_selectableComponent );

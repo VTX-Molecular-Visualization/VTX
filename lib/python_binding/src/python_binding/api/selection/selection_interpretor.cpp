@@ -20,6 +20,11 @@ namespace VTX::PythonBinding::API::Selection
 		for ( const InterpretArgFunc & p_func : _selectionInterpretors )
 			p_func( *res._selection, kwargs );
 
+		if ( kwargs.contains( "name" ) )
+		{
+			res.save( pybind11::str( kwargs[ "name" ] ) );
+		}
+
 		return res;
 	};
 

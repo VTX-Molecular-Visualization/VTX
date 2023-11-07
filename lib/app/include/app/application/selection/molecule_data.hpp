@@ -24,6 +24,8 @@ namespace VTX::App::Application::Selection
 		SelectionData & intersect( const SelectionData & p_other ) override;
 		SelectionData & exclude( const SelectionData & p_other ) override;
 
+		bool isEqualsTo( const SelectionData & p_other ) const override;
+
 		void selectAll();
 
 		// void selectCategory( const Category & p_category );
@@ -34,6 +36,8 @@ namespace VTX::App::Application::Selection
 		void selectFullChains( const std::vector<Chain *> & p_chains );
 		void referenceChains( const IndexRange & p_range );
 		void selectFullChains( const IndexRange & p_range );
+		void referenceChains( const IndexRangeList & p_rangeList );
+		void selectFullChains( const IndexRangeList & p_rangeList );
 
 		void referenceResidue( const Residue & p_residue );
 		void selectFullResidue( const Residue & p_residue );
@@ -41,10 +45,13 @@ namespace VTX::App::Application::Selection
 		void selectFullResidues( const std::vector<Residue *> & p_residues );
 		void referenceResidues( const IndexRange & p_range );
 		void selectFullResidues( const IndexRange & p_range );
+		void referenceResidues( const IndexRangeList & p_rangeList );
+		void selectFullResidues( const IndexRangeList & p_rangeList );
 
 		void selectAtom( const Atom & p_atom );
 		void selectAtoms( const std::vector<Atom *> & p_atoms );
 		void selectAtoms( const IndexRange & p_range );
+		void selectAtoms( const IndexRangeList & p_rangeList );
 
 		inline Molecule &			  getMolecule() const { return *_molecule; }
 		inline const IndexRangeList & getChainIds() const { return _chainIds; }

@@ -6,11 +6,16 @@
 
 namespace VTX::App::Application::Selection
 {
-
 	SelectionData::SelectionData( const Component::Scene::Selectable & p_selectionComponent ) :
 		_selectionComponent( &p_selectionComponent )
 	{
 	}
+
+	bool SelectionData::isEqualsTo( const SelectionData & p_other ) const
+	{
+		return _selectionComponent == p_other._selectionComponent;
+	}
+
 	std::unique_ptr<SelectionData> SelectionData::_cloneImpl() const
 	{
 		return std::make_unique<SelectionData>( *_selectionComponent );

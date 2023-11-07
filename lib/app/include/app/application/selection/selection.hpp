@@ -87,6 +87,8 @@ namespace VTX::App::Application::Selection
 		Selection( const Selection & p_source );
 		~Selection();
 
+		bool isEqualsTo( const Selection & p_other ) const;
+
 		inline const SelectionDataSet & getAll() const { return _items; }
 		inline SelectionDataSet &		getAll() { return _items; }
 

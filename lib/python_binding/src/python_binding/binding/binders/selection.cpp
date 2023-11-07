@@ -39,6 +39,7 @@ namespace VTX::PythonBinding::Binding::Binders
 			.def( "__str__", &API::Selection::SelectionWrapper::toString )
 			.def( "__add__", &API::Selection::SelectionWrapper::add, pybind11::return_value_policy::reference )
 			.def( "__sub__", &API::Selection::SelectionWrapper::remove, pybind11::return_value_policy::reference )
+			.def( "save", &API::Selection::SelectionWrapper::save )
 			.def( "getMolecules", &API::Selection::SelectionWrapper::getMolecules )
 			.def( "getChains", &API::Selection::SelectionWrapper::getChains )
 			.def( "getResidues", &API::Selection::SelectionWrapper::getResidues )

@@ -27,6 +27,8 @@ namespace VTX::PythonBinding::API::Selection
 		SelectionWrapper & exclusive( const SelectionWrapper & p_other );
 		SelectionWrapper & inverse();
 
+		SelectionWrapper & save( const std::string & p_name );
+
 		void selectAll();
 
 		const std::vector<App::Component::Chemistry::Molecule *> getMolecules();
@@ -34,7 +36,7 @@ namespace VTX::PythonBinding::API::Selection
 		const std::vector<App::Component::Chemistry::Residue *>	 getResidues();
 		const std::vector<App::Component::Chemistry::Atom *>	 getAtoms();
 
-		std::string toString();
+		std::string toString() const;
 
 	  private:
 		std::unique_ptr<Selection> _selection = std::make_unique<Selection>();

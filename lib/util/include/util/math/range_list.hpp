@@ -96,6 +96,17 @@ namespace VTX::Util::Math
 		};
 
 	  public:
+		static RangeList<T> fromList( const std::vector<T> & p_list )
+		{
+			RangeList res = RangeList();
+
+			for ( T value : p_list )
+				res.addValue( value );
+
+			return res;
+		}
+
+	  public:
 		RangeList() {}
 		explicit RangeList( const std::vector<Range<T>> & p_ranges )
 		{
@@ -103,6 +114,45 @@ namespace VTX::Util::Math
 			{
 				addRange( range );
 			}
+		}
+
+		friend bool operator==( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
+		{
+			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
+				return false;
+
+			auto itLhs = p_lhs._ranges.begin();
+			auto itRhs = p_rhs._ranges.begin();
+
+			while ( itLhs != p_lhs._ranges.end() )
+			{
+				if ( *itLhs != *itRhs )
+					return false;
+
+				++itLhs;
+				++itRhs;
+			}
+
+			return true;
+		}
+		friend bool operator!=( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
+		{
+			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
+				return true;
+
+			auto itLhs = p_lhs._ranges.begin();
+			auto itRhs = p_rhs._ranges.begin();
+
+			while ( itLhs != p_lhs._ranges.end() )
+			{
+				if ( *itLhs != *itRhs )
+					return true;
+
+				++itLhs;
+				++itRhs;
+			}
+
+			return false;
 		}
 
 		void addRange( const Range<T> & p_range )
