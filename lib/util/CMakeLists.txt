@@ -13,12 +13,19 @@ find_package(asio REQUIRED)
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 
-add_library(vtx_util STATIC ${HEADERS} ${SOURCES})
+add_library(vtx_util)
 configureTarget(vtx_util)
-target_include_directories(vtx_util PUBLIC include)
+target_sources(vtx_util
+	PRIVATE ${SOURCES}
+	PUBLIC FILE_SET public_headers
+    TYPE HEADERS
+	BASE_DIRS include
+    FILES ${HEADERS})
 
 target_link_libraries(vtx_util PRIVATE glm::glm)
 target_link_libraries(vtx_util PRIVATE spdlog::spdlog)
 target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(vtx_util PRIVATE magic_enum::magic_enum)
 target_link_libraries(vtx_util PRIVATE asio::asio)
+
+install(TARGETS vtx_util FILE_SET public_headers)

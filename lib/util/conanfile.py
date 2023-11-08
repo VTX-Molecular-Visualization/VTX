@@ -12,11 +12,10 @@ class VTXUtilRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    #exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
         
     def requirements(self):
         self.requires("glm/0.9.9.8", transitive_headers=True)
-        #TODO: hide impl to remove transitive_headers?
         self.requires("spdlog/1.12.0", transitive_headers=True)
         self.requires("nlohmann_json/3.11.2")
         self.requires("magic_enum/0.9.3", transitive_headers=True)
@@ -42,7 +41,7 @@ class VTXUtilRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_util"]
+        self.cpp_info.libs = ["vtx_util"]       
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = []
 
