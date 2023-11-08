@@ -12,7 +12,7 @@ class VTXUtilRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
         
     def requirements(self):
         self.requires("glm/0.9.9.8", transitive_headers=True)
