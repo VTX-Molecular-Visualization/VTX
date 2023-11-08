@@ -32,11 +32,11 @@ jobs:
       run:  |
         conan export ../util         
         conan export .
-        conan create test --build=missing --settings=compiler.cppstd=20
+        conan create test --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
         conan export ../core       
         conan export ../io/chemfiles
         conan export ../io
-        conan create bench --build=missing --settings=compiler.cppstd=20
+        conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
          
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
