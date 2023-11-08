@@ -7,6 +7,8 @@ class VTXUtilTestConan(ConanFile):
     
     generators = "CMakeToolchain", "CMakeDeps"
     
+    exports_sources = "CMakeLists.txt", "src/*"
+    
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("catch2/3.4.0")

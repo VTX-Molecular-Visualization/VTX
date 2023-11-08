@@ -15,3 +15,5 @@ target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
 include(CTest)
 include(Catch)
 catch_discover_tests(vtx_util_test)
+
+install(TARGETS vtx_util_test)
