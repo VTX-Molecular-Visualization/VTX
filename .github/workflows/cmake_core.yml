@@ -23,18 +23,9 @@ jobs:
       uses: turtlebrowser/get-conan@v1.2
       
     - name: Create default profile
-      run: conan profile detect --force
+      run: conan profile detect
       
-    - name: Configure packages
+    - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan editable add .
-        conan editable add ${{github.workspace}}/lib/util
-        
-    - name: Build 
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build . --build=missing --build=editable --settings=compiler.cppstd=20 
-    
-    - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: ctest --verbose
+        conan create . --build=missing --settings=compiler.cppstd=20
