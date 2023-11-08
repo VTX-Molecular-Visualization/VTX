@@ -20,3 +20,10 @@ class VTXUtilTestConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        self.cpp_info.libs = ["vtx_util_test"] 
