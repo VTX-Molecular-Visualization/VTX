@@ -30,11 +30,11 @@ jobs:
     - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan create ../util --build=missing --settings=compiler.cppstd=20
-        conan create ../core --build=missing --settings=compiler.cppstd=20
-        conan create ../io/chemfiles --build=missing
-        conan create ../io --build=missing --settings=compiler.cppstd=20
-        conan create . --build=missing --settings=compiler.cppstd=20
+        conan export ../util
+        conan export ../core
+        conan export ../io/chemfiles
+        conan export ../io
+        conan export .
         conan create test --build=missing --settings=compiler.cppstd=20
          
     - name: Test
