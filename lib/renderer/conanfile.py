@@ -13,7 +13,7 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "cmake/*", "vendor/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -25,6 +25,7 @@ class VTXRendererRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)       
         self.cpp.source.includedirs = ["include", "vendor"]
+        
 
     def build(self):
         cmake = CMake(self)
@@ -36,6 +37,7 @@ class VTXRendererRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_renderer"]
-        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/src/renderer/context/gl/shaders"))
+        self.cpp_info.libs = ["vtx_renderer"]        
+        self.cpp_info.includedirs = ["include", "vendor"]
+        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/shaders"))
         

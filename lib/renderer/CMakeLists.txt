@@ -10,12 +10,18 @@ configureTarget(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
-file(GLOB_RECURSE VENDORS vendor/*)
+file(GLOB_RECURSE HEADERS_VENDORS vendor/*.h)
+file(GLOB_RECURSE SOURCES_VENDORS vendor/*.c)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS}
-	PUBLIC FILE_SET public_vendors TYPE HEADERS BASE_DIRS vendor FILES ${VENDORS})
+	PRIVATE ${SOURCES_VENDORS}
+	PUBLIC FILE_SET public_vendors TYPE HEADERS BASE_DIRS vendor FILES ${HEADERS_VENDORS})
+
+target_include_directories(vtx_renderer PUBLIC vendor)
 
 target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 
-install(TARGETS vtx_renderer FILE_SET public_headers FILE_SET public_vendors)
+install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
+install(TARGETS vtx_renderer FILE_SET public_vendors DESTINATION vendor)
+install(DIRECTORY src/renderer/context/gl/shaders DESTINATION .)

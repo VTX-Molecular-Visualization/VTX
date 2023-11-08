@@ -4,8 +4,11 @@ from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
 
 class VTXRendererBenchRecipe(ConanFile):
-    settings = "os", "compiler", "build_type", "arch"
+    name = "vtx_renderer_bench"
+    version = "1.0"
     package_type = "application"
+    
+    settings = "os", "compiler", "build_type", "arch"
     
     generators = "CMakeDeps"
     
@@ -36,3 +39,10 @@ class VTXRendererBenchRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        self.cpp_info.libs = ["vtx_renderer_bench"]

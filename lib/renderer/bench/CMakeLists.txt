@@ -1,6 +1,6 @@
 message("vtx_renderer_bench")
 cmake_minimum_required(VERSION 3.23)
-include(../../util/cmake/configure-target.cmake)
+include(cmake/configure-target.cmake)
 project(vtx_renderer_bench)
 
 find_package(vtx_util CONFIG REQUIRED)
@@ -15,6 +15,7 @@ file(GLOB_RECURSE VENDORS vendor/*)
 
 add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS})
 configureTarget(vtx_renderer_bench)
+
 target_include_directories(vtx_renderer_bench PRIVATE vendor)
 
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
@@ -25,7 +26,7 @@ target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 
-# Copy shaders.
+# Copy shaders (only for dev).
 add_custom_target(
 	vtx_renderer_bench_copy_shader
 	ALL COMMAND
@@ -33,3 +34,6 @@ add_custom_target(
 	${DIR_SHADERS}
 	$<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
 add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
+
+install(TARGETS vtx_renderer_bench)
+install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
