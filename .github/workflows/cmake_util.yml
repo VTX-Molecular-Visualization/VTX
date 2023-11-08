@@ -31,7 +31,7 @@ jobs:
      
     - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build test -pr:h=${{github.workspace}}/conanprofile
+      run: conan build test --build=missing -pr:h=${{github.workspace}}/conanprofile
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
