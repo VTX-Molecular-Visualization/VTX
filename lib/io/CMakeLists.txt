@@ -7,7 +7,7 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(chemfiles CONFIG REQUIRED)
 
-add_library(vtx_io STATIC ${HEADERS} ${SOURCES})
+add_library(vtx_io)
 configureTarget(vtx_io)
 
 file(GLOB_RECURSE HEADERS include/*)
