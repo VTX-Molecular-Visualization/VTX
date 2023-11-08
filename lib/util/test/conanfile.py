@@ -2,8 +2,11 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 
 class VTXUtilTestConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch"
+    name = "vtx_util_test"
+    version = "1.0"
     package_type = "application"
+    
+    settings = "os", "compiler", "build_type", "arch"
     
     generators = "CMakeToolchain", "CMakeDeps"
     
