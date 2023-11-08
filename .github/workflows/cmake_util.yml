@@ -23,11 +23,11 @@ jobs:
       uses: turtlebrowser/get-conan@v1.2
       
     - name: Create default profile
-      run: conan profile detect --force
+      run: conan profile detect
 
     - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  conan create . --build=missing --settings=compiler.cppstd=20
+      run:  conan create . --build=missing --pr:h=${{github.workspace}}/conanprofile
      
     - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
