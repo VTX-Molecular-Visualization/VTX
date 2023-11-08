@@ -28,4 +28,5 @@ jobs:
     - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
+        conan create ${{github.workspace}}/lib/util --build=missing --settings=compiler.cppstd=20
         conan create . --build=missing --settings=compiler.cppstd=20
