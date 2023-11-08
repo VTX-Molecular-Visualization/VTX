@@ -33,7 +33,7 @@ jobs:
         conan export ../util
         conan export ../core
         conan export chemfiles
-        conan export . --build=missing --settings=compiler.cppstd=20
+        conan export .
         conan create test --build=missing --settings=compiler.cppstd=20
    
     - name: Test
