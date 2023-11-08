@@ -27,11 +27,11 @@ jobs:
 
     - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  conan create . --build=missing -pr:h=${{github.workspace}}/conanprofile
+      run:  conan create . --build=missing --settings=compiler.cppstd=20
      
     - name: Build tests
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build test --build=missing -pr:h=${{github.workspace}}/conanprofile
+      run: conan build test --build=missing --settings=compiler.cppstd=20
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
