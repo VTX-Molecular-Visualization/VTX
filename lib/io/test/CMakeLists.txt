@@ -22,3 +22,5 @@ catch_discover_tests(vtx_io_test)
 
 add_custom_target(vtx_io_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_io_test>/data)
 add_dependencies(vtx_io_test vtx_io_test_copy_data)
+
+install(TARGETS vtx_io_test)

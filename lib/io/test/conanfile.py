@@ -2,8 +2,11 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 
 class VTXIOTestConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch"
+    name = "vtx_io_test"
+    version = "1.0"
     package_type = "application"
+    
+    settings = "os", "compiler", "build_type", "arch"
     
     generators = "CMakeToolchain", "CMakeDeps"
     
@@ -20,3 +23,10 @@ class VTXIOTestConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+    
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        self.cpp_info.libs = ["vtx_io_test"] 
