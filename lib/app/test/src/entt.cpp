@@ -83,13 +83,13 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( scene.getItemCount() == 1 );
 
 	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
-	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( VTXApp::MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = scene.getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( VTXApp::MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
-		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
+		= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
 
 	CallbackTest renameTest = CallbackTest();
 
@@ -104,7 +104,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( view.size() == 1 );
 
 	const Renderer::GL::StructProxyMolecule & gpuProxyComponent
-		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+		= VTXApp::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );
@@ -138,7 +138,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 
 	App::Core::ECS::BaseEntity			   moleculeEntity = scene.getItem( 0 );
 	const Component::Chemistry::Molecule & molecule
-		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
+		= VTXApp::MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
 
 	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
 

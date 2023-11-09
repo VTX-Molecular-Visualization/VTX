@@ -69,12 +69,16 @@ namespace VTX::App::Core::ECS
 		template<ECS_Component C, ECS_Component CFrom>
 		C & getComponent( const CFrom & p_component )
 		{
+			static_assert( !std::is_pointer<CFrom>::value );
+
 			BaseEntity entity = getEntity( p_component );
 			return _enttRegistry.get<C>( entity );
 		}
 		template<ECS_Component C, ECS_Component CFrom>
 		const C & getComponent( const CFrom & p_component ) const
 		{
+			static_assert( !std::is_pointer<CFrom>::value );
+
 			BaseEntity entity = getEntity( p_component );
 			return _enttRegistry.get<C>( entity );
 		}
@@ -86,9 +90,15 @@ namespace VTX::App::Core::ECS
 		}
 
 		template<ECS_Component C>
-		bool hasComponent( BaseEntity & p_entity )
+		bool hasComponent( const BaseEntity & p_entity ) const
 		{
 			return _enttRegistry.all_of<C>( p_entity );
+		}
+		template<ECS_Component C1, ECS_Component C2>
+		bool hasComponent( const C2 & p_component ) const
+		{
+			const BaseEntity entity = getEntity( p_component );
+			return hasComponent<C1>( entity );
 		}
 
 		bool   isEmpty() const { return _enttRegistry.size() == 0; }

@@ -15,9 +15,11 @@ namespace VTX::IO::Reader
 		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
 		_fillStructure( *_chemfilesReader, p_molecule );
 	}
-	void Molecule::readBuffer( const std::string &			 p_buffer,
-							   const FilePath &				 p_path,
-							   VTX::Core::Struct::Molecule & p_molecule )
+	void Molecule::readBuffer(
+		const std::string &			  p_buffer,
+		const FilePath &			  p_path,
+		VTX::Core::Struct::Molecule & p_molecule
+	)
 	{
 		_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
 		_fillStructure( *_chemfilesReader, p_molecule );
@@ -49,7 +51,8 @@ namespace VTX::IO::Reader
 
 			const std::string chainName	  = p_chemfileStruct.getCurrentChainName();
 			const std::string chainId	  = p_chemfileStruct.getCurrentChainID();
-			std::string		  residueName = p_chemfileStruct.getCurrentResidueName();
+			const std::string residueName = p_chemfileStruct.getCurrentResidueName();
+			const size_t	  residueId	  = p_chemfileStruct.getCurrentResidueId();
 
 			const VTX::Core::ChemDB::Category::TYPE categoryEnum = _findCategoryType( fileExtension, residueName );
 
@@ -92,8 +95,9 @@ namespace VTX::IO::Reader
 			p_molecule.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
 			p_molecule.residueFirstAtomIndexes[ residueIdx ] = ( p_chemfileStruct.getCurrentResidueFirstAtomIndex() );
 			p_molecule.residueAtomCounts[ residueIdx ]		 = atomCount;
+			p_molecule.residueOriginalIds[ residueIdx ]		 = residueId;
 
-			ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
+			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 
 			// int symbolValue;
 
@@ -270,7 +274,8 @@ namespace VTX::IO::Reader
 	void Molecule::_readTrajectoryFrames(
 		IO::Reader::Chemfiles &												  p_chemfileStruct,
 		const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
-		const size_t														  p_trajectoryFrameStart )
+		const size_t														  p_trajectoryFrameStart
+	)
 	{
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
@@ -303,7 +308,8 @@ namespace VTX::IO::Reader
 			if ( frameIdx > 1 && frameIdx % 100 == 0 )
 			{
 				VTX_DEBUG(
-					"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime() );
+					"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime()
+				);
 				startingFrame = frameIdx;
 			}
 #endif // DEBUG
@@ -328,8 +334,10 @@ namespace VTX::IO::Reader
 		}
 	}
 
-	VTX::Core::ChemDB::Category::TYPE Molecule::_findCategoryType( const std::string & p_fileExtension,
-																   const std::string & p_residueSymbol )
+	VTX::Core::ChemDB::Category::TYPE Molecule::_findCategoryType(
+		const std::string & p_fileExtension,
+		const std::string & p_residueSymbol
+	)
 	{
 		VTX::Core::ChemDB::Category::TYPE res;
 		if ( p_fileExtension == "pdb" || p_fileExtension == "mmcif" || p_fileExtension == "mmtf" )
@@ -372,9 +380,11 @@ namespace VTX::IO::Reader
 		const std::string residueSymbol = p_chemfileStruct.getCurrentResidueName();
 
 		// Check PSF.
-		if ( std::find( _configuration->solventResidueSymbols.begin(),
-						_configuration->solventResidueSymbols.end(),
-						residueSymbol )
+		if ( std::find(
+				 _configuration->solventResidueSymbols.begin(),
+				 _configuration->solventResidueSymbols.end(),
+				 residueSymbol
+			 )
 			 != _configuration->solventResidueSymbols.end() )
 		{
 			return ChemDB::Atom::TYPE::SOLVENT;

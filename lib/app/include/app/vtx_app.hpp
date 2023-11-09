@@ -1,7 +1,9 @@
 #ifndef ___VTX_APP_VTX_APP___
 #define ___VTX_APP_VTX_APP___
 
-#include "app/application/_fwd.hpp"
+#include "app/application/system.hpp"
+#include "application/_fwd.hpp"
+#include "core/ecs/_fwd.hpp"
 // #include <QElapsedTimer>
 #include <memory>
 #include <string>
@@ -15,10 +17,18 @@ namespace VTX
 	{
 		class Renderer;
 	}
+
 	namespace App
 	{
 		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
 		{
+		  private:
+			inline static const std::string REGISTRY_MANAGER_KEY  = "REGISTRY_MANAGER";
+			inline static const std::string SETTING_KEY			  = "SETTING";
+			inline static const std::string ENTITY_DIRECTOR_KEY	  = "ENTITY_DIRECTOR";
+			inline static const std::string SCENE_KEY			  = "SCENE";
+			inline static const std::string SELECTION_MANAGER_KEY = "SELECTION_MANAGER";
+
 		  public:
 			VTXApp( StructPrivacyToken );
 			VTXApp( std::initializer_list<int> ) = delete;
@@ -31,23 +41,42 @@ namespace VTX
 			void goToState( const std::string &, void * const = nullptr );
 			void stop();
 
-			inline Application::Scene &		  getScene() { return *_scene; }
-			inline const Application::Scene & getScene() const { return *_scene; }
+			inline const Application::System &			getSystem() const { return *_system; };
+			inline Application::System &				getSystem() { return *_system; };
+			inline std::shared_ptr<Application::System> getSystemPtr() { return _system; };
+
+			inline void referenceSystem( std::shared_ptr<Application::System> p_system ) { _system = p_system; };
+
+			Application::Scene &	   getScene();
+			const Application::Scene & getScene() const;
 
 			inline Renderer::Renderer &		  getRenderer() { return *_renderer; }
 			inline const Renderer::Renderer & getRenderer() const { return *_renderer; }
 
-			inline Application::Setting &		getSettings() { return *_setting; }
-			inline const Application::Setting & getSettings() const { return *_setting; }
+			Application::Setting &		 getSettings();
+			const Application::Setting & getSettings() const;
+
+			Application::ECS::EntityDirector & getEntityDirector();
+
+			Application::Selection::SelectionManager &		 getSelectionManager();
+			const Application::Selection::SelectionManager & getSelectionManager() const;
 
 		  private:
-			Application::Scene *				  _scene = nullptr;
-			std::unique_ptr<Renderer::Renderer>	  _renderer;
-			std::unique_ptr<Application::Setting> _setting;
+			std::shared_ptr<Application::System> _system = nullptr;
+			std::unique_ptr<Renderer::Renderer>	 _renderer;
+
+			std::unique_ptr<Application::Setting>					  _setting;
+			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
+			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
+			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update();
 			void _stop();
+
+			// Convenient accessors
+		  public:
+			static Core::ECS::Registry & MAIN_REGISTRY();
 		};
 	} // namespace App
 } // namespace VTX

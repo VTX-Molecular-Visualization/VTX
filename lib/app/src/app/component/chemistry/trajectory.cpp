@@ -2,6 +2,7 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/scene_item_component.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
@@ -35,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 	void Trajectory::_referenceUpdateFunction()
 	{
 		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
+			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
 	}
 

@@ -4,19 +4,20 @@
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/core/ecs/registry.hpp"
 #include "app/entity/all_entities.hpp"
 
 namespace VTX::App::Application
 {
 	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
-		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
+		return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = ECS::EntityDirector::build( Entity::CAMERA_ENTITY_ID );
-		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+		App::Core::ECS::BaseEntity cameraEntity = VTXApp::get().getEntityDirector().build( Entity::CAMERA_ENTITY_ID );
+		_camera = &( VTXApp::MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 	}
@@ -61,7 +62,7 @@ namespace VTX::App::Application
 		return Core::ECS::INVALID_ENTITY;
 	}
 
-	void Scene::clear() { MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
+	void Scene::clear() { VTXApp::MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
 
 	void Scene::reset()
 	{
@@ -208,7 +209,7 @@ namespace VTX::App::Application
 	void Scene::_computeAABB()
 	{
 		const Core::ECS::View view
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+			= VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
@@ -225,7 +226,8 @@ namespace VTX::App::Application
 		// (let that here instead of doing the exact same things in all states for the moment)
 
 		Core::ECS::View updatables
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+			= VTXApp::MAIN_REGISTRY()
+				  .getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
 		for ( const Core::ECS::BaseEntity entity : updatables )
 		{

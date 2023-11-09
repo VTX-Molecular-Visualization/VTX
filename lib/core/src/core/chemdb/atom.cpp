@@ -9,12 +9,14 @@ namespace VTX::Core::ChemDB::Atom
 	{
 		std::string upperCaseSymbol = std::string( p_symbolStr.begin(), p_symbolStr.end() );
 
-		std::transform( p_symbolStr.begin(),
-						p_symbolStr.end(),
-						upperCaseSymbol.begin(),
-						[]( unsigned char c ) { return std::toupper( c ); } );
+		std::transform(
+			p_symbolStr.begin(),
+			p_symbolStr.end(),
+			upperCaseSymbol.begin(),
+			[]( unsigned char c ) { return std::toupper( c ); }
+		);
 
-		const std::optional symbol = magic_enum::enum_cast<SYMBOL>( "A_" + upperCaseSymbol );
+		const std::optional symbol = magic_enum::enum_cast<SYMBOL>( upperCaseSymbol );
 		return symbol.value_or( SYMBOL::UNKNOWN );
 	}
 } // namespace VTX::Core::ChemDB::Atom

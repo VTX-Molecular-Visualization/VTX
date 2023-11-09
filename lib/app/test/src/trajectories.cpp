@@ -23,7 +23,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	Application::Scene &	   scene	 = VTXApp::get().getScene();
 	App::Core::ECS::BaseEntity molEntity = scene.getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Trajectory & trajectoryComponent
-		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
+		= VTXApp::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
 	const size_t frameCount1NIM = 25;
 

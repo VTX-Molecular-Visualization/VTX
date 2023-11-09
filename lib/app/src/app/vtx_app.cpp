@@ -2,8 +2,10 @@
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/application/setting.hpp"
 #include "app/component/io/scene_file_info.hpp"
+#include "app/core/ecs/registry.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
@@ -15,9 +17,9 @@
 
 namespace VTX::App
 {
-	VTXApp::VTXApp( StructPrivacyToken ) : _setting( std::make_unique<Application::Setting>() ) {}
+	VTXApp::VTXApp( StructPrivacyToken ) {}
 
-	VTXApp::~VTXApp() {};
+	VTXApp::~VTXApp() = default;
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
@@ -40,12 +42,30 @@ namespace VTX::App
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
+		_system = std::make_shared<Application::System>();
+
+		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
+		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
+
+		_entityDirector = std::make_unique<Application::ECS::EntityDirector>();
+		_system->referenceSystem( ENTITY_DIRECTOR_KEY, _entityDirector.get() );
 		Internal::ECS::setupEntityDirector();
 
-		// Create scene.
-		Core::ECS::BaseEntity sceneEntity = Application::ECS::EntityDirector::build( Entity::SCENE_ENTITY_ID );
+		_selectionManager = std::make_unique<Application::Selection::SelectionManager>();
+		_system->referenceSystem( SELECTION_MANAGER_KEY, _selectionManager.get() );
 
-		_scene = &( MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity ) );
+		_setting = std::make_unique<Application::Setting>();
+		_system->referenceSystem( SETTING_KEY, _setting.get() );
+
+		// Create scene.
+		Core::ECS::BaseEntity sceneEntity = getEntityDirector().build( Entity::SCENE_ENTITY_ID );
+		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+
+		// TODO better way to manage this
+		_system->referenceSystem( SCENE_KEY, &scene );
+
+		_renderer
+			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
 
 		//_tickTimer.start();
 
@@ -62,9 +82,6 @@ namespace VTX::App
 			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
-
-		_renderer
-			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
 	}
 
 	void VTXApp::update() { _update(); }
@@ -170,4 +187,34 @@ namespace VTX::App
 
 	//	_deleteAtEndOfFrameObjects.clear();
 	//}
+
+	Application::Scene &	   VTXApp::getScene() { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
+	const Application::Scene & VTXApp::getScene() const { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
+
+	Application::Setting & VTXApp::getSettings() { return _system->getSystem<Application::Setting>( SETTING_KEY ); }
+	const Application::Setting & VTXApp::getSettings() const
+	{
+		return _system->getSystem<Application::Setting>( SETTING_KEY );
+	}
+
+	Application::Selection::SelectionManager & VTXApp::getSelectionManager()
+	{
+		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
+	}
+	const Application::Selection::SelectionManager & VTXApp::getSelectionManager() const
+	{
+		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
+	}
+
+	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	{
+		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+	}
+	Core::ECS::Registry & VTXApp::MAIN_REGISTRY()
+	{
+		return VTXApp::get()
+			.getSystem()
+			.getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY )
+			.getRegistry();
+	}
 } // namespace VTX::App

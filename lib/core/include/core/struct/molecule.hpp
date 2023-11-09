@@ -49,6 +49,7 @@ namespace VTX::Core::Struct
 		std::vector<size_t>					 residueAtomCounts		 = std::vector<size_t>();
 		std::vector<size_t>					 residueFirstBondIndexes = std::vector<size_t>();
 		std::vector<size_t>					 residueBondCounts		 = std::vector<size_t>();
+		std::vector<size_t>					 residueOriginalIds		 = std::vector<size_t>();
 
 		void   initResidues( const size_t p_count );
 		size_t getResidueCount() const;
