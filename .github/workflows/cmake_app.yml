@@ -27,19 +27,16 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
-    - name: Configure packages
+    - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan editable add .
-        conan editable add ${{github.workspace}}/lib/util
-        conan editable add ${{github.workspace}}/lib/renderer
-        conan editable add ${{github.workspace}}/lib/io
-        conan editable add ${{github.workspace}}/lib/io/chemfiles
-        conan editable add ${{github.workspace}}/lib/core
-
-    - name: Build 
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan build test --build=missing --build=editable --settings=compiler.cppstd=20
+        conan export ../util
+        conan export ../core
+        conan export ../io/chemfiles
+        conan export ../io
+        conan export ../renderer
+        conan export .
+        conan create test --build=missing --settings=compiler.cppstd=20
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}

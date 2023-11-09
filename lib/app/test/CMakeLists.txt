@@ -1,5 +1,6 @@
 message("vtx_app_test")
 cmake_minimum_required(VERSION 3.23)
+include(cmake/configure-target.cmake)
 project(vtx_app_test)
 
 find_package(vtx_util CONFIG REQUIRED)
@@ -28,3 +29,5 @@ catch_discover_tests(vtx_app_test)
 # Copy data.
 add_custom_target(vtx_app_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_app_test>/data)
 add_dependencies(vtx_app_test vtx_app_test_copy_data)
+
+install(TARGETS vtx_app_test)

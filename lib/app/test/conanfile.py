@@ -2,10 +2,15 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 
 class VTXAppTestConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch"
+    name = "vtx_app_test"
+    version = "1.0"
     package_type = "application"
     
+    settings = "os", "compiler", "build_type", "arch"
+    
     generators = "CMakeToolchain", "CMakeDeps"
+    
+    exports_sources = "CMakeLists.txt", "src/*", "cmake/*", "data/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -22,3 +27,10 @@ class VTXAppTestConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        self.cpp_info.libs = ["vtx_app_test"] 

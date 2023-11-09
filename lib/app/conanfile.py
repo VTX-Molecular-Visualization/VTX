@@ -12,7 +12,7 @@ class VTXAppRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    #exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -20,9 +20,6 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("entt/3.11.1", transitive_headers=True)
-     
-    #TODO: get CMake?
-    #def build_requirements(self):
         
     def config_options(self):
         if self.settings.os == "Windows":
