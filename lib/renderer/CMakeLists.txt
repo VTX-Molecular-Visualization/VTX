@@ -18,8 +18,6 @@ target_sources(vtx_renderer
 	PRIVATE ${SOURCES_VENDORS}
 	PUBLIC FILE_SET public_vendors TYPE HEADERS BASE_DIRS vendor FILES ${HEADERS_VENDORS})
 
-target_include_directories(vtx_renderer PUBLIC vendor)
-
 target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 
 install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
