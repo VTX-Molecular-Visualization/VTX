@@ -48,3 +48,4 @@ class VTXRendererBenchRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_renderer_bench"]
+        self.cpp_info.includedirs = ["include", "vendor"]

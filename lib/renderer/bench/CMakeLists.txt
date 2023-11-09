@@ -26,7 +26,6 @@ target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 
-# Copy shaders (only for dev).
 add_custom_target(
 	vtx_renderer_bench_copy_shader
 	ALL COMMAND
