@@ -282,10 +282,10 @@ namespace VTX::Util::Math
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }
 
-		std::list<Range<T>>::iterator		rangeBegin() { return _ranges.begin(); }
-		std::list<Range<T>>::iterator		rangeEnd() { return _ranges.end(); }
-		std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
-		std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
+		typename std::list<Range<T>>::iterator		 rangeBegin() { return _ranges.begin(); }
+		typename std::list<Range<T>>::iterator		 rangeEnd() { return _ranges.end(); }
+		typename std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		typename std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
 
 		bool contains( const T p_value ) const
 		{

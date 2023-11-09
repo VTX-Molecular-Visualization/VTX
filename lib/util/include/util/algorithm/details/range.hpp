@@ -34,9 +34,9 @@ namespace VTX::Util::Algorithm::Details::Range
 
 		struct ItData
 		{
-			ItData( std::list<Math::Range<T>>::const_iterator p_it ) : it( p_it ) {}
+			ItData( typename std::list<Math::Range<T>>::const_iterator p_it ) : it( p_it ) {}
 
-			operator std::list<Math::Range<T>>::const_iterator() const { return it; }
+			operator typename std::list<Math::Range<T>>::const_iterator() const { return it; }
 
 			T	 value() const { return state == Target::First ? it->getFirst() : it->getLast(); }
 			void next()
@@ -53,8 +53,8 @@ namespace VTX::Util::Algorithm::Details::Range
 			};
 			bool isOpen() const { return state == Target::First; }
 
-			std::list<Math::Range<T>>::const_iterator it;
-			Target									  state = Target::First;
+			typename std::list<Math::Range<T>>::const_iterator it;
+			Target											   state = Target::First;
 		};
 
 		void _compute()
