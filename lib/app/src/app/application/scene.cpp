@@ -29,22 +29,16 @@ namespace VTX::App::Application
 
 	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
+		_itemIndexes.emplace_back( MAIN_REGISTRY().getEntity( p_item ) );
 		_onSceneItemAddedCallback.emit( p_item );
 	}
 
 	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const
 	{
-		size_t count = 0;
+		if ( p_index < 0 || p_index >= _itemIndexes.size() )
+			return Core::ECS::INVALID_ENTITY;
 
-		for ( const Core::ECS::BaseEntity entity : getAllSceneItems() )
-		{
-			if ( count == p_index )
-				return entity;
-
-			count++;
-		}
-
-		return Core::ECS::INVALID_ENTITY;
+		return _itemIndexes[ p_index ];
 	}
 	const Core::ECS::BaseEntity Scene::getItem( const std::string & p_name ) const
 	{
@@ -62,7 +56,12 @@ namespace VTX::App::Application
 		return Core::ECS::INVALID_ENTITY;
 	}
 
-	void Scene::clear() { VTXApp::MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
+	void Scene::clear()
+	{
+		_itemIndexes.clear();
+		_itemIndexes.shrink_to_fit();
+		VTXApp::MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
+	}
 
 	void Scene::reset()
 	{
@@ -70,133 +69,139 @@ namespace VTX::App::Application
 		_createDefaultPath();
 	}
 
-	void Scene::changeItemIndex( const Component::Scene::SceneItemComponent & p_item, const int p_position )
+	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const
 	{
-		// const ECS::Component::SceneItemComponent * itemPtr = &p_item;
+		for ( size_t i = 0; i < _itemIndexes.size(); i++ )
+		{
+			if ( _itemIndexes[ i ] == p_entity )
+				return i;
+		}
 
-		// if ( _itemOrder[ p_position ] == itemPtr )
-		//	return;
+		return INVALID_INDEX;
+	}
+	void Scene::changeItemIndex( const Core::ECS::BaseEntity & p_entity, const size_t p_position )
+	{
+		if ( _itemIndexes[ p_position ] == p_entity )
+			return;
 
-		// bool changeHasStarted = false;
+		bool changeHasStarted = false;
 
-		// for ( size_t i = 0; i < p_position; i++ )
-		//{
-		//	if ( _itemOrder[ i ] == itemPtr )
-		//		changeHasStarted = true;
+		for ( size_t i = 0; i < p_position; i++ )
+		{
+			if ( _itemIndexes[ i ] == p_entity )
+				changeHasStarted = true;
 
-		//	if ( changeHasStarted )
-		//	{
-		//		_itemOrder[ i ] = _itemOrder[ i + 1 ];
-		//	}
-		//}
+			if ( changeHasStarted )
+			{
+				_itemIndexes[ i ] = _itemIndexes[ i + 1 ];
+			}
+		}
 
-		// if ( changeHasStarted )
-		//{
-		//	_itemOrder[ p_position ] = itemPtr;
-		// }
-		// else
-		//{
-		//	for ( int i = int( _itemOrder.size() - 1 ); i > p_position; i-- )
-		//	{
-		//		if ( _itemOrder[ i ] == itemPtr )
-		//			changeHasStarted = true;
+		if ( changeHasStarted )
+		{
+			_itemIndexes[ p_position ] = p_entity;
+		}
+		else
+		{
+			for ( int i = int( _itemIndexes.size() - 1 ); i > p_position; i-- )
+			{
+				if ( _itemIndexes[ i ] == p_entity )
+					changeHasStarted = true;
 
-		//		if ( changeHasStarted )
-		//			_itemOrder[ i ] = _itemOrder[ i - 1 ];
-		//	}
+				if ( changeHasStarted )
+					_itemIndexes[ i ] = _itemIndexes[ i - 1 ];
+			}
 
-		//	_itemOrder[ p_position ] = itemPtr;
-		//}
+			_itemIndexes[ p_position ] = p_entity;
+		}
 
 		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
-	void Scene::changeItemsIndex( const std::vector<const Component::Scene::SceneItemComponent *> & p_items,
-								  const int															p_position )
+	void Scene::changeItemsIndex( const std::vector<Core::ECS::BaseEntity> & p_items, const size_t p_position )
 	{
-		// std::vector<const Core::Scene::BaseSceneItem *> movedItems = std::vector<const Core::Scene::BaseSceneItem
-		// *>(); movedItems.resize( p_items.size() );
+		std::vector<Core::ECS::BaseEntity> movedItems = std::vector<Core::ECS::BaseEntity>();
+		movedItems.resize( p_items.size(), Core::ECS::INVALID_ENTITY );
 
-		// size_t indexMovedItemsBeforePosition = 0;
+		size_t indexMovedItemsBeforePosition = 0;
 
-		// for ( size_t i = 0; i < p_position; i++ )
-		//{
-		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+		for ( size_t i = 0; i < p_position; i++ )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemIndexes[ i ] ) != p_items.end();
 
-		//	if ( hasToMoveItem )
-		//	{
-		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
-		//		indexMovedItemsBeforePosition++;
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemIndexes[ i ];
+				indexMovedItemsBeforePosition++;
 
-		//		_itemOrder[ i ] = nullptr;
-		//	}
-		//	else if ( indexMovedItemsBeforePosition > 0 )
-		//	{
-		//		_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
-		//	}
-		//}
+				_itemIndexes[ i ] = Core::ECS::INVALID_ENTITY;
+			}
+			else if ( indexMovedItemsBeforePosition > 0 )
+			{
+				_itemIndexes[ i - indexMovedItemsBeforePosition ] = _itemIndexes[ i ];
+			}
+		}
 
-		// size_t itemMovedCounter = 0;
+		size_t itemMovedCounter = 0;
 
-		// for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
-		//{
-		//	const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+		for ( int i = int( _itemIndexes.size() ) - 1; i > p_position; i-- )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemIndexes[ i ] ) != p_items.end();
 
-		//	if ( hasToMoveItem )
-		//	{
-		//		const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
-		//		movedItems[ movedItemsIndex ] = _itemOrder[ i ];
-		//		itemMovedCounter++;
-		//		_itemOrder[ i ] = nullptr;
-		//	}
-		//	else if ( itemMovedCounter > 0 )
-		//	{
-		//		_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
-		//	}
-		//}
+			if ( hasToMoveItem )
+			{
+				const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
+				movedItems[ movedItemsIndex ] = _itemIndexes[ i ];
+				itemMovedCounter++;
+				_itemIndexes[ i ] = Core::ECS::INVALID_ENTITY;
+			}
+			else if ( itemMovedCounter > 0 )
+			{
+				_itemIndexes[ i + itemMovedCounter ] = _itemIndexes[ i ];
+			}
+		}
 
-		// if ( p_position < _itemOrder.size() )
-		//{
-		//	const bool hasToMoveItem
-		//		= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
-		//	if ( hasToMoveItem )
-		//	{
-		//		movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
-		//		_itemOrder[ p_position ]					= nullptr;
-		//	}
-		//	else
-		//	{
-		//		_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
-		//	}
-		// }
+		if ( p_position < _itemIndexes.size() )
+		{
+			const bool hasToMoveItem
+				= std::find( p_items.begin(), p_items.end(), _itemIndexes[ p_position ] ) != p_items.end();
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemIndexes[ p_position ];
+				_itemIndexes[ p_position ]					= Core::ECS::INVALID_ENTITY;
+			}
+			else
+			{
+				_itemIndexes[ p_position + itemMovedCounter ] = _itemIndexes[ p_position ];
+			}
+		}
 
-		// for ( size_t i = 0; i < movedItems.size(); i++ )
-		//{
-		//	_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
-		// }
+		for ( size_t i = 0; i < movedItems.size(); i++ )
+		{
+			_itemIndexes[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
+		}
 
 		// VTX_EVENT( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
-	void Scene::sortItemsBySceneIndex( std::vector<Component::Scene::SceneItemComponent *> & p_molecules ) const
+
+	void Scene::sortItemsBySceneIndex( std::vector<Core::ECS::BaseEntity> & p_items ) const
 	{
-		// for ( int i = 0; i < p_molecules.size(); i++ )
-		//{
-		//	int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
-		//	int indexInVector		= i;
+		for ( size_t i = 0; i < p_items.size(); i++ )
+		{
+			size_t smallerIndexInScene = getItemIndex( p_items[ i ] );
+			size_t indexInVector	   = i;
 
-		//	for ( int j = i + 1; j < p_molecules.size(); j++ )
-		//	{
-		//		const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
-		//		if ( currentIndexInScene < smallerIndexInScene )
-		//		{
-		//			smallerIndexInScene = currentIndexInScene;
-		//			indexInVector		= j;
-		//		}
-		//	}
+			for ( size_t j = i + 1; j < p_items.size(); j++ )
+			{
+				const size_t currentIndexInScene = getItemIndex( p_items[ j ] );
+				if ( currentIndexInScene < smallerIndexInScene )
+				{
+					smallerIndexInScene = currentIndexInScene;
+					indexInVector		= j;
+				}
+			}
 
-		//	Component::Chemistry::Molecule * const tmp = p_molecules[ i ];
-		//	p_molecules[ i ]						   = p_molecules[ indexInVector ];
-		//	p_molecules[ indexInVector ]			   = tmp;
-		//}
+			std::swap( p_items[ i ], p_items[ indexInVector ] );
+		}
 	}
 
 	const Util::Math::AABB & Scene::getAABB()
@@ -226,8 +231,8 @@ namespace VTX::App::Application
 		// (let that here instead of doing the exact same things in all states for the moment)
 
 		Core::ECS::View updatables
-			= VTXApp::MAIN_REGISTRY()
-				  .getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+			= VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>(
+			);
 
 		for ( const Core::ECS::BaseEntity entity : updatables )
 		{

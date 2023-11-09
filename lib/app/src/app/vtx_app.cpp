@@ -210,11 +210,20 @@ namespace VTX::App
 	{
 		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
 	}
+
 	Core::ECS::Registry & VTXApp::MAIN_REGISTRY()
 	{
 		return VTXApp::get()
 			.getSystem()
-			.getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY )
+			.getSystem<Application::ECS::RegistryManager>( VTXApp::REGISTRY_MANAGER_KEY )
+			.getRegistry();
+	}
+
+	Core::ECS::Registry & MAIN_REGISTRY()
+	{
+		return VTXApp::get()
+			.getSystem()
+			.getSystem<Application::ECS::RegistryManager>( VTXApp::REGISTRY_MANAGER_KEY )
 			.getRegistry();
 	}
 } // namespace VTX::App

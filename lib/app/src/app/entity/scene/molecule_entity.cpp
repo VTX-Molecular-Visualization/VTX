@@ -40,10 +40,6 @@ namespace VTX::App::Entity::Scene
 
 		_load( moleculeComponent, p_extraData );
 
-		Component::Scene::SceneItemComponent & sceneComponent
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
-		sceneComponent.setName( moleculeComponent.getName() );
-
 		Component::Scene::Selectable & selectableComponent
 			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
 		selectableComponent.setSelectionDataGenerator<Application::Selection::MoleculeData>();

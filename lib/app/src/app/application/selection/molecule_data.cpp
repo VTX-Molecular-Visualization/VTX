@@ -152,12 +152,12 @@ namespace VTX::App::Application::Selection
 	// Residues //////////////////////////////////////////////////////////////////////////////////////
 	void MoleculeData::referenceResidue( const Residue & p_residue )
 	{
-		_referenceChain( *p_residue.getChainPtr() );
+		_referenceChain( *p_residue.getConstChainPtr() );
 		_referenceResidue( p_residue );
 	}
 	void MoleculeData::selectFullResidue( const Residue & p_residue )
 	{
-		_referenceChain( *p_residue.getChainPtr() );
+		_referenceChain( *p_residue.getConstChainPtr() );
 		_selectFullResidue( p_residue );
 	}
 	void MoleculeData::referenceResidues( const std::vector<Residue *> & p_residues )
@@ -166,7 +166,7 @@ namespace VTX::App::Application::Selection
 		{
 			if ( residuePtr != nullptr )
 			{
-				_referenceChain( *residuePtr->getChainPtr() );
+				_referenceChain( *residuePtr->getConstChainPtr() );
 				_referenceResidue( *residuePtr );
 			}
 		}
@@ -177,15 +177,15 @@ namespace VTX::App::Application::Selection
 		{
 			if ( residuePtr != nullptr )
 			{
-				_referenceChain( *residuePtr->getChainPtr() );
+				_referenceChain( *residuePtr->getConstChainPtr() );
 				_selectFullResidue( *residuePtr );
 			}
 		}
 	}
 	void MoleculeData::referenceResidues( const IndexRange & p_range )
 	{
-		const size_t firstChainIndex = _molecule->getResidue( p_range.getFirst() )->getChainPtr()->getIndex();
-		const size_t lastChainIndex	 = _molecule->getResidue( p_range.getLast() )->getChainPtr()->getIndex();
+		const size_t firstChainIndex = _molecule->getResidue( p_range.getFirst() )->getConstChainPtr()->getIndex();
+		const size_t lastChainIndex	 = _molecule->getResidue( p_range.getLast() )->getConstChainPtr()->getIndex();
 
 		_referenceChains( IndexRange::createFirstLast( firstChainIndex, lastChainIndex ) );
 		_referenceResidues( p_range );
@@ -196,7 +196,7 @@ namespace VTX::App::Application::Selection
 		for ( const size_t index : p_rangeList )
 		{
 			const Residue * const residuePtr = _molecule->getResidue( index );
-			_referenceChain( *residuePtr->getChainPtr() );
+			_referenceChain( *residuePtr->getConstChainPtr() );
 
 			if ( residuePtr != nullptr )
 				_referenceResidue( *residuePtr );
@@ -207,7 +207,7 @@ namespace VTX::App::Application::Selection
 		for ( const size_t index : p_rangeList )
 		{
 			const Residue * const residuePtr = _molecule->getResidue( index );
-			_referenceChain( *residuePtr->getChainPtr() );
+			_referenceChain( *residuePtr->getConstChainPtr() );
 
 			if ( residuePtr != nullptr )
 				_selectFullResidue( *residuePtr );
@@ -215,21 +215,45 @@ namespace VTX::App::Application::Selection
 	}
 
 	// Atoms /////////////////////////////////////////////////////////////////////////////////////////
-	void MoleculeData::selectAtom( const Atom & p_atom ) { _referenceAtom( p_atom ); }
+	void MoleculeData::selectAtom( const Atom & p_atom )
+	{
+		_referenceResidue( *p_atom.getConstResiduePtr() );
+		_referenceChain( *p_atom.getConstChainPtr() );
+
+		_referenceAtom( p_atom );
+	}
 	void MoleculeData::selectAtoms( const std::vector<Atom *> & p_atoms )
 	{
 		for ( const Atom * const atomPtr : p_atoms )
 		{
+			_referenceResidue( *atomPtr->getConstResiduePtr() );
+			_referenceChain( *atomPtr->getConstChainPtr() );
+
 			if ( atomPtr != nullptr )
 				_referenceAtom( *atomPtr );
 		}
 	}
-	void MoleculeData::selectAtoms( const IndexRange & p_range ) { _referenceAtoms( p_range ); }
+	void MoleculeData::selectAtoms( const IndexRange & p_range )
+	{
+		const Residue & firstResidue = *_molecule->getAtom( p_range.getFirst() )->getConstResiduePtr();
+		const Residue & lastResidue	 = *_molecule->getAtom( p_range.getLast() )->getConstResiduePtr();
+
+		_referenceResidues( IndexRange::createFirstLast( firstResidue.getIndex(), lastResidue.getIndex() ) );
+
+		_referenceChains( IndexRange::createFirstLast(
+			firstResidue.getConstChainPtr()->getIndex(), lastResidue.getConstChainPtr()->getIndex()
+		) );
+
+		_referenceAtoms( p_range );
+	}
 	void MoleculeData::selectAtoms( const IndexRangeList & p_rangeList )
 	{
 		for ( const size_t index : p_rangeList )
 		{
 			const Atom * const atomPtr = _molecule->getAtom( index );
+
+			_referenceResidue( *atomPtr->getConstResiduePtr() );
+			_referenceChain( *atomPtr->getConstChainPtr() );
 
 			if ( atomPtr != nullptr )
 				_referenceAtom( *atomPtr );

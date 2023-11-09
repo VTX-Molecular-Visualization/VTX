@@ -22,7 +22,7 @@ namespace VTX
 	{
 		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
 		{
-		  private:
+		  public:
 			inline static const std::string REGISTRY_MANAGER_KEY  = "REGISTRY_MANAGER";
 			inline static const std::string SETTING_KEY			  = "SETTING";
 			inline static const std::string ENTITY_DIRECTOR_KEY	  = "ENTITY_DIRECTOR";
@@ -74,10 +74,12 @@ namespace VTX
 			void _update();
 			void _stop();
 
-			// Convenient accessors
 		  public:
 			static Core::ECS::Registry & MAIN_REGISTRY();
 		};
+
+		// Convenient accessors
+		Core::ECS::Registry & MAIN_REGISTRY();
 	} // namespace App
 } // namespace VTX
 
