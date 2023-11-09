@@ -1,8 +1,8 @@
 message("vtx_ui")
 cmake_minimum_required(VERSION 3.23)
-project(vtx_ui)
-
+include(cmake/configure-target.cmake)
 include(cmake/qt_helper.cmake)
+project(vtx_ui)
 
 configure_qt()
 
@@ -19,13 +19,18 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 #find_package(Qt6 COMPONENTS Gif REQUIRED)
 #find_package(Qt6 COMPONENTS Jpeg REQUIRED)
 
+add_library(vtx_ui)
+configureTarget(vtx_ui)
+
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
 file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
-
-add_library(vtx_ui STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
-target_include_directories(vtx_ui PUBLIC include)
+target_sources(vtx_ui
+	PRIVATE ${SOURCES}
+	PRIVATE ${QT_FORMS}
+	PRIVATE ${QT_RESOURCES}
+	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
 target_link_libraries(vtx_ui PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_ui PRIVATE vtx_renderer::vtx_renderer)
@@ -41,3 +46,5 @@ target_link_libraries(vtx_ui PRIVATE Qt6::OpenGLWidgets)
 #target_link_libraries(vtx_ui PRIVATE Qt6::Jpeg)
 
 apply_qt_options(vtx_ui)
+
+install(TARGETS vtx_ui FILE_SET public_headers DESTINATION include)

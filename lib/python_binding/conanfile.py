@@ -2,8 +2,8 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 
-class VTXRendererRecipe(ConanFile):
-    name = "vtx_renderer"
+class VTXPythonBindingRecipe(ConanFile):
+    name = "vtx_python_binding"
     version = "1.0"
     package_type = "library"
     
@@ -13,18 +13,21 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "cmake/*", "vendor/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
+        self.requires("vtx_core/1.0")
+        self.requires("vtx_app/1.0")
+        self.requires("pybind11/2.11.1")
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def layout(self):
-        cmake_layout(self)       
-        self.cpp.source.includedirs = ["include", "vendor"]        
+        cmake_layout(self)
+        
 
     def build(self):
         cmake = CMake(self)
@@ -36,7 +39,6 @@ class VTXRendererRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_renderer"]        
-        self.cpp_info.includedirs = ["include", "vendor"]
-        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/shaders"))
+        self.cpp_info.libs = ["vtx_python_binding"]
+        #self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/shaders"))
         
