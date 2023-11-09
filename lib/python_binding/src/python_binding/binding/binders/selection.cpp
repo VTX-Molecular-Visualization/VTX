@@ -31,6 +31,9 @@ namespace VTX::PythonBinding::Binding::Binders
 			"select", &API::Selection::SelectionInterpretor::select, pybind11::return_value_policy::reference
 		);
 
+		p_apiModule.def( "intersect", &API::Selection::SelectionWrapper::intersect );
+		p_apiModule.def( "exclusive", &API::Selection::SelectionWrapper::exclusive );
+
 		pybind11::class_<App::Application::Selection::Selection>(
 			p_apiModule, "_VTXSelection", pybind11::module_local()
 		);

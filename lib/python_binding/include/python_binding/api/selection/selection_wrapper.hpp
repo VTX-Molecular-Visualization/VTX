@@ -21,10 +21,13 @@ namespace VTX::PythonBinding::API::Selection
 		SelectionWrapper();
 		SelectionWrapper( const Selection & p_selection );
 
+		static SelectionWrapper intersect( const SelectionWrapper & p_lhs, const SelectionWrapper & p_rhs );
+		static SelectionWrapper exclusive( const SelectionWrapper & p_lhs, const SelectionWrapper & p_rhs );
+
 		SelectionWrapper & add( const SelectionWrapper & p_other );
 		SelectionWrapper & remove( const SelectionWrapper & p_other );
-		SelectionWrapper & intersect( const SelectionWrapper & p_other );
-		SelectionWrapper & exclusive( const SelectionWrapper & p_other );
+		// SelectionWrapper & intersect( const SelectionWrapper & p_other );
+		// SelectionWrapper & exclusive( const SelectionWrapper & p_other );
 		SelectionWrapper & inverse();
 
 		SelectionWrapper & save( const std::string & p_name );

@@ -84,9 +84,52 @@ namespace VTX::App::Application::Selection
 		return res;
 	}
 
+	Selection Selection::intersection( const Selection & p_lhs, const Selection & p_rhs )
+	{
+		Selection res = Selection( p_lhs );
+
+		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
+		{
+			const Component::Scene::Selectable & rhsSelectableComponent = item->getSelectionComponent();
+
+			if ( res.isSelected( rhsSelectableComponent ) )
+			{
+				const SelectionData & rhsSelectionData
+					= res.getSelectionData( rhsSelectableComponent ).intersect( *item );
+
+				if ( !rhsSelectionData.isValid() )
+					res.unselect( rhsSelectableComponent );
+			}
+		}
+
+		return res;
+	}
+	Selection Selection::exclusive( const Selection & p_lhs, const Selection & p_rhs )
+	{
+		Selection res = Selection( p_lhs );
+
+		for ( const std::unique_ptr<SelectionData> & item : p_rhs._items )
+		{
+			const Component::Scene::Selectable & rhsSelectableComponent = item->getSelectionComponent();
+
+			if ( res.isSelected( rhsSelectableComponent ) )
+			{
+				const SelectionData & rhsSelectionData
+					= res.getSelectionData( rhsSelectableComponent ).exclude( *item );
+
+				if ( !rhsSelectionData.isValid() )
+					res.unselect( rhsSelectableComponent );
+			}
+			else
+			{
+				res.getSelectionData( rhsSelectableComponent ).add( *item );
+			}
+		}
+
+		return res;
+	}
+
 	// TODO
-	Selection Selection::intersection( const Selection & p_lhs, const Selection & p_rhs ) { return Selection(); }
-	Selection Selection::exclusive( const Selection & p_lhs, const Selection & p_rhs ) { return Selection(); }
 	Selection Selection::inverse( const Selection & p_selection ) { return Selection(); }
 
 	SelectionData & Selection::select( const Component::Scene::Selectable & p_selectableComponent )

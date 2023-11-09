@@ -19,6 +19,15 @@ namespace VTX::PythonBinding::API::Selection
 	{
 	}
 
+	SelectionWrapper SelectionWrapper::intersect( const SelectionWrapper & p_lhs, const SelectionWrapper & p_rhs )
+	{
+		return SelectionWrapper( Selection::intersection( *( p_lhs._selection ), *( p_rhs._selection ) ) );
+	}
+	SelectionWrapper SelectionWrapper::exclusive( const SelectionWrapper & p_lhs, const SelectionWrapper & p_rhs )
+	{
+		return SelectionWrapper( Selection::exclusive( *( p_lhs._selection ), *( p_rhs._selection ) ) );
+	}
+
 	SelectionWrapper & SelectionWrapper::add( const SelectionWrapper & p_other )
 	{
 		Selection res = Selection::add( *_selection, *( p_other._selection ) );
@@ -29,20 +38,6 @@ namespace VTX::PythonBinding::API::Selection
 	SelectionWrapper & SelectionWrapper::remove( const SelectionWrapper & p_other )
 	{
 		Selection res = Selection::remove( *_selection, *( p_other._selection ) );
-		_selection	  = std::make_unique<Selection>( res );
-
-		return *this;
-	}
-	SelectionWrapper & SelectionWrapper::intersect( const SelectionWrapper & p_other )
-	{
-		Selection res = Selection::intersection( *_selection, *( p_other._selection ) );
-		_selection	  = std::make_unique<Selection>( res );
-
-		return *this;
-	}
-	SelectionWrapper & SelectionWrapper::exclusive( const SelectionWrapper & p_other )
-	{
-		Selection res = Selection::exclusive( *_selection, *( p_other._selection ) );
 		_selection	  = std::make_unique<Selection>( res );
 
 		return *this;

@@ -7,6 +7,7 @@
 #include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
 #include <sstream>
+#include <util/algorithm/range.hpp>
 
 namespace VTX::App::Application::Selection
 {
@@ -39,9 +40,12 @@ namespace VTX::App::Application::Selection
 	{
 		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
 
-		_chainIds.merge( castedOther._chainIds );
-		_residueIds.merge( castedOther._residueIds );
-		_atomIds.merge( castedOther._atomIds );
+		if ( _molecule == castedOther._molecule )
+		{
+			Util::Algorithm::Range::mergeInSitu( _chainIds, castedOther._chainIds );
+			Util::Algorithm::Range::mergeInSitu( _residueIds, castedOther._residueIds );
+			Util::Algorithm::Range::mergeInSitu( _atomIds, castedOther._atomIds );
+		}
 
 		return *this;
 	}
@@ -49,16 +53,51 @@ namespace VTX::App::Application::Selection
 	{
 		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
 
-		_chainIds.substract( castedOther._chainIds );
-		_residueIds.substract( castedOther._residueIds );
-		_atomIds.substract( castedOther._atomIds );
+		if ( _molecule == castedOther._molecule )
+		{
+			Util::Algorithm::Range::substractInSitu( _chainIds, castedOther._chainIds );
+			Util::Algorithm::Range::substractInSitu( _residueIds, castedOther._residueIds );
+			Util::Algorithm::Range::substractInSitu( _atomIds, castedOther._atomIds );
 
-		_valid = _chainIds.size() > 0 || _residueIds.size() > 0 || _atomIds.size() > 0;
+			_valid = _chainIds.size() > 0 || _residueIds.size() > 0 || _atomIds.size() > 0;
+		}
 
 		return *this;
 	}
-	SelectionData & MoleculeData::intersect( const SelectionData & p_other ) { return *this; }
-	SelectionData & MoleculeData::exclude( const SelectionData & p_other ) { return *this; }
+	SelectionData & MoleculeData::intersect( const SelectionData & p_other )
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		if ( _molecule == castedOther._molecule )
+		{
+			Util::Algorithm::Range::intersectInSitu( _chainIds, castedOther._chainIds );
+			Util::Algorithm::Range::intersectInSitu( _residueIds, castedOther._residueIds );
+			Util::Algorithm::Range::intersectInSitu( _atomIds, castedOther._atomIds );
+
+			_valid = _chainIds.size() > 0 || _residueIds.size() > 0 || _atomIds.size() > 0;
+		}
+		else
+		{
+			_valid = false;
+		}
+
+		return *this;
+	}
+	SelectionData & MoleculeData::exclude( const SelectionData & p_other )
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		if ( _molecule == castedOther._molecule )
+		{
+			_chainIds	= Util::Algorithm::Range::exclusive( _chainIds, castedOther._chainIds );
+			_residueIds = Util::Algorithm::Range::exclusive( _residueIds, castedOther._residueIds );
+			_atomIds	= Util::Algorithm::Range::exclusive( _atomIds, castedOther._atomIds );
+
+			_valid = _chainIds.size() > 0 || _residueIds.size() > 0 || _atomIds.size() > 0;
+		}
+
+		return *this;
+	}
 
 	void MoleculeData::selectAll()
 	{

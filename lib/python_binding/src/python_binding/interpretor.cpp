@@ -48,6 +48,8 @@ namespace VTX::PythonBinding
 		{
 			pybind11::exec( "from PyTX.Command import *" );
 			pybind11::exec( "from PyTX.API import select" );
+			pybind11::exec( "from PyTX.API import intersect" );
+			pybind11::exec( "from PyTX.API import exclusive" );
 		}
 
 	  private:

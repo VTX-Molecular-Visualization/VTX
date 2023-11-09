@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <concepts>
 #include <fstream>
+#include <util/algorithm/range.hpp>
 #include <util/enum.hpp>
 #include <util/filesystem.hpp>
 #include <util/generic/base_static_singleton.hpp>
@@ -21,27 +22,27 @@ TEST_CASE( "Util::String", "[string]" )
 {
 	std::string str = "   test   ";
 	VTX::Util::String::trimStart( str );
-	REQUIRE( str == "test   " );
+	CHECK( str == "test   " );
 
 	str = "   test   ";
 	VTX::Util::String::trimEnd( str );
-	REQUIRE( str == "   test" );
+	CHECK( str == "   test" );
 
 	str = "   test   ";
 	VTX::Util::String::trim( str );
-	REQUIRE( str == "test" );
+	CHECK( str == "test" );
 
 	str = "a string with characters to replace";
 	VTX::Util::String::replaceAll( str, "r", "t" );
-	REQUIRE( str == "a stting with chatactets to teplace" );
+	CHECK( str == "a stting with chatactets to teplace" );
 
 	const float f = 3.14159;
-	REQUIRE( VTX::Util::String::floatToStr( f, 0 ) == "3" );
-	REQUIRE( VTX::Util::String::floatToStr( f, 2 ) == "3.14" );
-	REQUIRE( VTX::Util::String::floatToStr( f, 5 ) == "3.14159" );
+	CHECK( VTX::Util::String::floatToStr( f, 0 ) == "3" );
+	CHECK( VTX::Util::String::floatToStr( f, 2 ) == "3.14" );
+	CHECK( VTX::Util::String::floatToStr( f, 5 ) == "3.14159" );
 
 	str = "3.14159";
-	REQUIRE( VTX::Util::String::strToUint( str ) == 3 );
+	CHECK( VTX::Util::String::strToUint( str ) == 3 );
 }
 
 // filesystem.hpp
@@ -54,20 +55,20 @@ TEST_CASE( "Util::Filesystem", "[filesystem]" )
 	file.close();
 
 	REQUIRE( std::filesystem::exists( filePath ) );
-	REQUIRE( VTX::Util::Filesystem::readPath( filePath ) == "Hello, world!" );
+	CHECK( VTX::Util::Filesystem::readPath( filePath ) == "Hello, world!" );
 
 	VTX::FilePath filePath2( "data_test/test.txt" );
 	VTX::Util::Filesystem::generateUniqueFileName( filePath2 );
 
 	REQUIRE( filePath2.filename().string() == "test_2.txt" );
-	REQUIRE( filePath2.string() == VTX::FilePath( "data_test" ) / "test_2.txt" );
+	CHECK( filePath2.string() == VTX::FilePath( "data_test" ) / "test_2.txt" );
 
 	std::ofstream file2( filePath2 );
 	file2 << "Hello, world!";
 	file2.close();
 
 	VTX::Util::Filesystem::removeAll( "data_test/sdqsdqsd" );
-	REQUIRE( std::filesystem::exists( "data_test" ) == false );
+	CHECK( std::filesystem::exists( "data_test" ) == false );
 }
 
 // base_static_singleton.hpp
@@ -94,91 +95,91 @@ TEST_CASE( "Util::Math::Range", "[math]" )
 	using namespace VTX;
 
 	Util::Math::Range<size_t> range;
-	REQUIRE( !range.isValid() );
+	CHECK( !range.isValid() );
 
 	range = Util::Math::Range<size_t>( 6 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 6 );
-	REQUIRE( range.getCount() == 1 );
-	REQUIRE( range.getLast() == 6 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 6 );
+	CHECK( range.getCount() == 1 );
+	CHECK( range.getLast() == 6 );
 
 	range = Util::Math::Range<size_t>( 50, 5 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 50 );
-	REQUIRE( range.getCount() == 5 );
-	REQUIRE( range.getLast() == 54 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 50 );
+	CHECK( range.getCount() == 5 );
+	CHECK( range.getLast() == 54 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 10 );
-	REQUIRE( range.getCount() == 11 );
-	REQUIRE( range.getLast() == 20 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 10 );
+	CHECK( range.getCount() == 11 );
+	CHECK( range.getLast() == 20 );
 
 	range.add( 3 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 10 );
-	REQUIRE( range.getLast() == 23 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 10 );
+	CHECK( range.getLast() == 23 );
 
 	range.remove( 8 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 10 );
-	REQUIRE( range.getLast() == 15 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 10 );
+	CHECK( range.getLast() == 15 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.setFirst( 15 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 15 );
-	REQUIRE( range.getLast() == 20 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 15 );
+	CHECK( range.getLast() == 20 );
 
 	range.setLast( 15 );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 15 );
-	REQUIRE( range.getLast() == 15 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 15 );
+	CHECK( range.getLast() == 15 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.merge( Util::Math::Range<size_t>::createFirstLast( 5, 12 ) );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 5 );
-	REQUIRE( range.getLast() == 20 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 5 );
+	CHECK( range.getLast() == 20 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.merge( Util::Math::Range<size_t>::createFirstLast( 19, 27 ) );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 10 );
-	REQUIRE( range.getLast() == 27 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 10 );
+	CHECK( range.getLast() == 27 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.merge( Util::Math::Range<size_t>::createFirstLast( 5, 25 ) );
-	REQUIRE( range.isValid() );
-	REQUIRE( range.getFirst() == 5 );
-	REQUIRE( range.getLast() == 25 );
+	CHECK( range.isValid() );
+	CHECK( range.getFirst() == 5 );
+	CHECK( range.getLast() == 25 );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
 	range.merge( Util::Math::Range<size_t>::createFirstLast( 25, 35 ) );
-	REQUIRE( !range.isValid() );
+	CHECK( !range.isValid() );
 
 	range = Util::Math::Range<size_t>::createFirstLast( 10, 20 );
-	REQUIRE( range.contains( 10 ) );
-	REQUIRE( range.contains( 15 ) );
-	REQUIRE( range.contains( 20 ) );
-	REQUIRE( !range.contains( 9 ) );
-	REQUIRE( !range.contains( 21 ) );
+	CHECK( range.contains( 10 ) );
+	CHECK( range.contains( 15 ) );
+	CHECK( range.contains( 20 ) );
+	CHECK( !range.contains( 9 ) );
+	CHECK( !range.contains( 21 ) );
 
-	REQUIRE( range.contains( { 10, 12, 18 } ) );
-	REQUIRE( !range.contains( { 10, 12, 18, 22 } ) );
+	CHECK( range.contains( { 10, 12, 18 } ) );
+	CHECK( !range.contains( { 10, 12, 18, 22 } ) );
 
-	REQUIRE( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 20 ) ) );
-	REQUIRE( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 15 ) ) );
-	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 9, 24 ) ) );
-	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 1, 5 ) ) );
-	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 12, 24 ) ) );
-	REQUIRE( !range.contains( Util::Math::Range<size_t>::createFirstLast( 500, 5000 ) ) );
+	CHECK( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 20 ) ) );
+	CHECK( range.contains( Util::Math::Range<size_t>::createFirstLast( 10, 15 ) ) );
+	CHECK( !range.contains( Util::Math::Range<size_t>::createFirstLast( 9, 24 ) ) );
+	CHECK( !range.contains( Util::Math::Range<size_t>::createFirstLast( 1, 5 ) ) );
+	CHECK( !range.contains( Util::Math::Range<size_t>::createFirstLast( 12, 24 ) ) );
+	CHECK( !range.contains( Util::Math::Range<size_t>::createFirstLast( 500, 5000 ) ) );
 
-	REQUIRE( range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
-							   Util::Math::Range<size_t>::createFirstLast( 14, 18 ) } ) );
-	REQUIRE( !range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
-								Util::Math::Range<size_t>::createFirstLast( 14, 18 ),
-								Util::Math::Range<size_t>::createFirstLast( 19, 22 ) } ) );
+	CHECK( range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
+							 Util::Math::Range<size_t>::createFirstLast( 14, 18 ) } ) );
+	CHECK( !range.contains( { Util::Math::Range<size_t>::createFirstLast( 10, 12 ),
+							  Util::Math::Range<size_t>::createFirstLast( 14, 18 ),
+							  Util::Math::Range<size_t>::createFirstLast( 19, 22 ) } ) );
 };
 TEST_CASE( "Util::Math::RangeList", "[math]" )
 {
@@ -198,7 +199,7 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 	for ( size_t index : rangeList )
 		itemCount++;
 
-	REQUIRE( itemCount == 22 );
+	CHECK( itemCount == 22 );
 
 	rangeList = Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
 												 Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
@@ -212,29 +213,98 @@ TEST_CASE( "Util::Math::RangeList", "[math]" )
 	for ( size_t index : rangeList )
 		itemCount++;
 
-	REQUIRE( itemCount == 3 );
+	CHECK( itemCount == 3 );
 
 	rangeList = Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
 												 Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
 												 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
 
-	REQUIRE( rangeList.contains( 7 ) );
-	REQUIRE( !rangeList.contains( 10 ) );
+	CHECK( rangeList.contains( 7 ) );
+	CHECK( !rangeList.contains( 10 ) );
 
-	REQUIRE( rangeList.contains( { 7, 13, 50 } ) );
-	REQUIRE( !rangeList.contains( { 7, 13, 50, 52 } ) );
+	CHECK( rangeList.contains( { 7, 13, 50 } ) );
+	CHECK( !rangeList.contains( { 7, 13, 50, 52 } ) );
 
-	REQUIRE( rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 20 ) ) );
-	REQUIRE( !rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 50 ) ) );
+	CHECK( rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 20 ) ) );
+	CHECK( !rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 50 ) ) );
 
-	REQUIRE( rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
-								   Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
-								   Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
-								   Util::Math::Range<size_t>::createFirstLast( 18, 20 ) } ) );
+	CHECK( rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+								 Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+								 Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
+								 Util::Math::Range<size_t>::createFirstLast( 18, 20 ) } ) );
 
-	REQUIRE( !rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
-									Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
-									Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
+	CHECK( !rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+								  Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+								  Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
+
+	Util::Math::RangeList<size_t> rangeListA
+		= Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+										   Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
+										   Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+
+	Util::Math::RangeList<size_t> rangeListB
+		= Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+										   Util::Math::Range<size_t>::createFirstLast( 4, 5 ),
+										   Util::Math::Range<size_t>::createFirstLast( 7, 14 ),
+										   Util::Math::Range<size_t>::createFirstLast( 18, 19 ),
+										   Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+
+	// Check Merges
+	Util::Math::RangeList<size_t> rangeListRes1 = Util::Algorithm::Range::merge( rangeListA, rangeListB );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 20 ),
+									 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } ) );
+
+	Util::Math::RangeList<size_t> rangeListRes2 = Util::Algorithm::Range::merge( rangeListB, rangeListA );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	rangeListRes1 = rangeListA;
+	Util::Algorithm::Range::mergeInSitu( rangeListRes1, rangeListB );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	// Check Substract
+	rangeListRes1 = Util::Algorithm::Range::substract( rangeListA, rangeListB );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 6, 6 ),
+									 Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
+									 Util::Math::Range<size_t>::createFirstLast( 20, 20 ) } ) );
+
+	rangeListRes2 = Util::Algorithm::Range::substract( rangeListB, rangeListA );
+	CHECK( rangeListRes2.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
+									 Util::Math::Range<size_t>::createFirstLast( 9, 11 ) } ) );
+
+	rangeListRes2 = rangeListA;
+	Util::Algorithm::Range::substractInSitu( rangeListRes2, rangeListB );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	// Check Intersect
+	rangeListRes1 = Util::Algorithm::Range::intersect( rangeListA, rangeListB );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 5 ),
+									 Util::Math::Range<size_t>::createFirstLast( 7, 8 ),
+									 Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
+									 Util::Math::Range<size_t>::createFirstLast( 18, 19 ),
+									 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } ) );
+
+	rangeListRes2 = Util::Algorithm::Range::intersect( rangeListB, rangeListA );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	rangeListRes1 = rangeListA;
+	Util::Algorithm::Range::intersectInSitu( rangeListRes1, rangeListB );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	// Check Exclusive
+	rangeListRes1 = Util::Algorithm::Range::exclusive( rangeListA, rangeListB );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
+									 Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
+									 Util::Math::Range<size_t>::createFirstLast( 20, 20 ) } ) );
+
+	rangeListRes2 = Util::Algorithm::Range::exclusive( rangeListB, rangeListA );
+	CHECK( rangeListRes1 == rangeListRes2 );
+
+	rangeListRes1 = rangeListA;
+	Util::Algorithm::Range::exclusiveInSitu( rangeListRes1, rangeListB );
+	CHECK( rangeListRes1 == rangeListRes2 );
 };
 
 // enum.hpp
@@ -255,19 +325,19 @@ TEST_CASE( "Util::Enum", "[enum]" )
 {
 	using namespace VTX::Util;
 
-	REQUIRE( Enum::enumName( E_EXAMPLE_1::FIRST ).compare( "FIRST" ) == 0 );
-	REQUIRE( Enum::enumCast<E_EXAMPLE_1>( "SECOND" ) == E_EXAMPLE_1::SECOND );
-	REQUIRE( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) == E_EXAMPLE_2::SECOND );
-	REQUIRE( Enum::enumInteger( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
+	CHECK( Enum::enumName( E_EXAMPLE_1::FIRST ).compare( "FIRST" ) == 0 );
+	CHECK( Enum::enumCast<E_EXAMPLE_1>( "SECOND" ) == E_EXAMPLE_1::SECOND );
+	CHECK( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) == E_EXAMPLE_2::SECOND );
+	CHECK( Enum::enumInteger( Enum::enumToAnother<E_EXAMPLE_1, E_EXAMPLE_2>( E_EXAMPLE_1::SECOND ) ) == 44 );
 }
 
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-	{
-		t.use()
-	} -> std::same_as<void>;
-};
+					 {
+						 t.use()
+						 } -> std::same_as<void>;
+				 };
 
 template<canUse T>
 class BaseClass : public T

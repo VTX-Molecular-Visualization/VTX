@@ -29,8 +29,16 @@ namespace VTX::App::Application::Selection
 		_valid = _selectionComponent != p_other._selectionComponent;
 		return *this;
 	}
-	SelectionData & SelectionData::intersect( const SelectionData & p_other ) { return *this; }
-	SelectionData & SelectionData::exclude( const SelectionData & p_other ) { return *this; }
+	SelectionData & SelectionData::intersect( const SelectionData & p_other )
+	{
+		_valid = _selectionComponent == p_other._selectionComponent;
+		return *this;
+	}
+	SelectionData & SelectionData::exclude( const SelectionData & p_other )
+	{
+		_valid = _selectionComponent != p_other._selectionComponent;
+		return *this;
+	}
 
 	std::string SelectionData::toString() const
 	{

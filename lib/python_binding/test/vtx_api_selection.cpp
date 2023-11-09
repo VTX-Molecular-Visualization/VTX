@@ -25,6 +25,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 
 	App::Test::Util::App::loadMolecule( "1AGA.mmtf" );
 	App::Test::Util::App::loadMolecule( "4HHB.pdb" );
+	App::Test::Util::App::loadMolecule( "8QHQ.pdb" );
 
 	App::Component::Chemistry::Molecule & mol4hhb
 		= App::VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( "4HHB" );
@@ -57,7 +58,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 		"test_chain_n_1",
 		"select( chain_n='A' )",
 		SelectionUtil::createSelection( { SelectionUtil::generateMoleculeData( "4HHB", { 0 } ).get(),
-										  SelectionUtil::generateMoleculeData( "1AGA", { 0 } ).get() } )
+										  SelectionUtil::generateMoleculeData( "1AGA", { 0 } ).get(),
+										  SelectionUtil::generateMoleculeData( "8QHQ", { 0, 6 } ).get() } )
 	) );
 
 	std::unique_ptr<App::Application::Selection::SelectionData> allHistidineOn4HHB
@@ -141,6 +143,26 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 		"test_susbtract_1",
 		"select(mol_n='4HHB', chain_n='A' ) - select( mol_n='4HHB', chain_n='B')",
 		SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB", { 0 } ) )
+	) );
+
+	CHECK( SelectionUtil::checkSelection(
+		"test_intersect_1",
+		"intersect(select( mol_n='4HHB' ), select( chain_n='A' ))",
+		SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB", { 0 } ) )
+	) );
+
+	CHECK( SelectionUtil::checkSelection(
+		"test_intersect_1",
+		"intersect(select( mol_n='4HHB' ), select( res_n='HIS' ))",
+		SelectionUtil::createSelection( allHistidineOn4HHB )
+	) );
+
+	CHECK( SelectionUtil::checkSelection(
+		"test_exclusive_1",
+		"exclusive( (select( mol_n='4HHB' ) - select(  mol_n='4HHB', res_n='HIS' )), select( mol_n='4HHB', "
+		"res_n='HIS' "
+		") )",
+		SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB" ) )
 	) );
 
 	CHECK( SelectionUtil::checkSelection(

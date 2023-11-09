@@ -108,7 +108,14 @@ namespace VTX::Util::Math
 
 	  public:
 		RangeList() {}
-		explicit RangeList( const std::vector<Range<T>> & p_ranges )
+		explicit RangeList( const std::initializer_list<Range<T>> & p_ranges )
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				addRange( range );
+			}
+		}
+		explicit RangeList( const std::list<Range<T>> & p_ranges )
 		{
 			for ( const Range<T> & range : p_ranges )
 			{
@@ -272,23 +279,13 @@ namespace VTX::Util::Math
 		void addValue( const T p_value ) { addRange( Range<T>( p_value ) ); }
 		void removeValue( const T p_value ) { removeRange( Range<T>( p_value ) ); }
 
-		void merge( const RangeList<T> & p_other )
-		{
-			for ( const Range<T> & range : p_other._ranges )
-			{
-				addRange( range );
-			}
-		}
-		void substract( const RangeList<T> & p_other )
-		{
-			for ( const Range<T> & range : p_other._ranges )
-			{
-				removeRange( range );
-			}
-		}
-
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }
+
+		std::list<Range<T>>::iterator		rangeBegin() { return _ranges.begin(); }
+		std::list<Range<T>>::iterator		rangeEnd() { return _ranges.end(); }
+		std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
 
 		bool contains( const T p_value ) const
 		{
