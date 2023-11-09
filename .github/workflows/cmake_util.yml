@@ -27,10 +27,8 @@ jobs:
 
     - name: Create packages
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  |
-        conan export .
-        conan create test --build=missing --settings=compiler.cppstd=20
-    
+      run: conan create . --build=missing --settings=compiler.cppstd=20
+        
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: ctest --verbose
+      run:  conan create test --build=missing --settings=compiler.cppstd=20
