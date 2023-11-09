@@ -24,3 +24,4 @@ add_custom_target(vtx_io_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_dir
 add_dependencies(vtx_io_test vtx_io_test_copy_data)
 
 install(TARGETS vtx_io_test)
+install(DIRECTORY data DESTINATION .)
