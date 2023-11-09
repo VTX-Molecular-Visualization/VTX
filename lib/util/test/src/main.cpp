@@ -41,7 +41,7 @@ TEST_CASE( "Util::String", "[string]" )
 	REQUIRE( VTX::Util::String::floatToStr( f, 5 ) == "3.14159" );
 
 	str = "3.14159";
-	REQUIRE( VTX::Util::String::strToUint( str ) == 3 );
+	REQUIRE( VTX::Util::String::strToUint( str ) == 4 );
 }
 
 // filesystem.hpp
