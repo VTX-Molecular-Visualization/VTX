@@ -4,6 +4,7 @@ include(cmake/configure-target.cmake)
 project(vtx_tool_test)
 
 find_package(vtx_tool CONFIG REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(Catch2 REQUIRED)
 
 add_executable(vtx_tool_test src/main.cpp)
