@@ -26,14 +26,6 @@ include(CTest)
 include(Catch)
 catch_discover_tests(vtx_ui_test)
 
-if(MSVC)
-	add_custom_command(TARGET vtx_ui_test POST_BUILD
-	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:vtx_ui_test> $<TARGET_FILE_DIR:vtx_ui_test>
-	  COMMAND_EXPAND_LISTS
-	)
-endif()
-
 install(TARGETS vtx_ui_test)
 install(DIRECTORY data DESTINATION .)
-install(FILES $<TARGET_RUNTIME_DLLS:vtx_ui_test> DESTINATION .)
 #TODO: install dll too.

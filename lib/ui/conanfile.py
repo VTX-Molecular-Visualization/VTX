@@ -12,7 +12,7 @@ class VTXUiRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "asset/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "asset/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -20,7 +20,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("qt/6.6.0", transitive_headers=True)        
+        self.requires("qt/6.6.0")        
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -37,6 +37,11 @@ class VTXUiRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        #if self.settings.os == "Windows":
+        #    copy(self, "*.lib", src=os.path.join(self.build_folder, "libs"), ...)
+        #    copy(self, "*.dll", ....)
+        #else:
+        #    copy(self, "*.lib", src=os.path.join(self.build_folder, "build", "libs"), ...)
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui"]
