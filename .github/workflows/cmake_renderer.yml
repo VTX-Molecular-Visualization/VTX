@@ -27,21 +27,24 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
-    - name: Create packages
+    - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
         conan export ../util         
         conan export .
-        conan create test --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+         
+    - name: Test
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan create test --build=missing --settings=compiler.cppstd=20
+      
+    - name: Create benchmarker
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run:  |
         conan export ../core       
         conan export ../io/chemfiles
         conan export ../io
         conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
-         
-    - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: ctest --verbose    
-    
+
 #    - name: Install
 #      if: runner.os == 'Windows'
 #      working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}

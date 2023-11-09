@@ -27,7 +27,7 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
-    - name: Create packages
+    - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
         conan export ../util
@@ -35,9 +35,9 @@ jobs:
         conan export ../io/chemfiles
         conan export ../io
         conan export ../renderer
-        conan export .
-        conan create test --build=missing --settings=compiler.cppstd=20
+        conan create . --build=missing --settings=compiler.cppstd=20
+        
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: ctest --verbose 
+      run: conan create test --build=missing --settings=compiler.cppstd=20
