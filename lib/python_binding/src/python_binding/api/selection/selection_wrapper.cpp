@@ -68,7 +68,7 @@ namespace VTX::PythonBinding::API::Selection
 			  it++ )
 		{
 			App::Component::Chemistry::Molecule & mol
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( *it );
+				= App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( *it );
 			res.emplace_back( &mol );
 		}
 
@@ -85,7 +85,7 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Chemistry::Molecule & mol = *it;
 
 			const App::Application::Selection::MoleculeData & molSelection
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
+				= App::MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
 
 			for ( const size_t & chainID : molSelection.getChainIds() )
 			{
@@ -106,7 +106,7 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Chemistry::Molecule & mol = *it;
 
 			const App::Application::Selection::MoleculeData & molSelection
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
+				= App::MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
 
 			for ( const size_t & residueID : molSelection.getResidueIds() )
 			{

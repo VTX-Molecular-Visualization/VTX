@@ -30,12 +30,12 @@ namespace VTX::App::Application::Selection
 			C & operator*() const
 			{
 				const Component::Scene::Selectable & selectionComponent = ( *_it )->getSelectionComponent();
-				return VTXApp::get().MAIN_REGISTRY().getComponent<C>( selectionComponent );
+				return MAIN_REGISTRY().getComponent<C>( selectionComponent );
 			}
 			C * operator->()
 			{
 				const Component::Scene::Selectable & selectionComponent = ( *_it )->getSelectionComponent();
-				return &VTXApp::get().MAIN_REGISTRY().getComponent<C>( selectionComponent );
+				return &MAIN_REGISTRY().getComponent<C>( selectionComponent );
 			}
 
 			// Prefix increment
@@ -67,8 +67,7 @@ namespace VTX::App::Application::Selection
 
 			void _getValid()
 			{
-				while ( _it != _endIt
-						&& !VTXApp::get().MAIN_REGISTRY().hasComponent<C>( ( *_it )->getSelectionComponent() ) )
+				while ( _it != _endIt && !MAIN_REGISTRY().hasComponent<C>( ( *_it )->getSelectionComponent() ) )
 				{
 					_it++;
 				}
@@ -118,7 +117,7 @@ namespace VTX::App::Application::Selection
 		SelectionData & select( const C & p_component )
 		{
 			const Component::Scene::Selectable & selectableComponent
-				= VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
+				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
 
 			return select( selectableComponent );
 		}
@@ -160,16 +159,12 @@ namespace VTX::App::Application::Selection
 		template<typename C>
 		SelectionData & getSelectionData( const C & p_component )
 		{
-			return getSelectionData(
-				VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component )
-			);
+			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
 		}
 		template<typename C>
 		const SelectionData & getSelectionData( const C & p_component ) const
 		{
-			return getSelectionData(
-				VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component )
-			);
+			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
 		}
 
 		inline size_t getCount() const { return _items.size(); }

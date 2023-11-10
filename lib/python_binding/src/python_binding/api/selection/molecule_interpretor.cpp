@@ -90,7 +90,7 @@ namespace VTX::PythonBinding::API::Selection
 		for ( Molecule * const molecule : molecules )
 		{
 			App::Component::Scene::Selectable & selectableComponent
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
+				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
 			App::Application::Selection::MoleculeData & moleculeSelectionData
 				= dynamic_cast<App::Application::Selection::MoleculeData &>( p_selection.select( selectableComponent )
@@ -122,11 +122,11 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
@@ -134,11 +134,11 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
@@ -149,8 +149,7 @@ namespace VTX::PythonBinding::API::Selection
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{
-				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( entity );
+				Component::Chemistry::Molecule & moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( entity );
 
 				molecules.emplace( &moleculeComponent );
 			}

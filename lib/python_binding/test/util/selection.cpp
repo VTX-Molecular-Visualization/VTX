@@ -68,7 +68,7 @@ namespace VTX::App::Test::Util
 		const App::Core::ECS::BaseEntity entity = VTXApp::get().getScene().getItem( p_molName );
 
 		const Component::Scene::Selectable & selectableComponent
-			= VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
+			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
 
 		std::unique_ptr<MoleculeData> res = std::make_unique<MoleculeData>( selectableComponent );
 

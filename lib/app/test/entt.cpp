@@ -70,7 +70,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	scene.onSceneItemAddedCallback().addCallback(
 		&addSceneItemTest,
 		[ &addSceneItemTest ]( Component::Scene::SceneItemComponent & p_sceneItem )
-		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); } );
+		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); }
+	);
 
 	// Create MoleculeEntity
 	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
@@ -83,18 +84,19 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( scene.getItemCount() == 1 );
 
 	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
-	REQUIRE( VTXApp::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = scene.getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	REQUIRE( VTXApp::MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
-		= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
+		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
 
 	CallbackTest renameTest = CallbackTest();
 
 	sceneItem.onNameChange().addCallback(
-		&renameTest, [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; } );
+		&renameTest, [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; }
+	);
 	sceneItem.setName( "Zouzou" );
 
 	REQUIRE( sceneItem.getName() == "Zouzou" );
@@ -104,7 +106,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( view.size() == 1 );
 
 	const Renderer::GL::StructProxyMolecule & gpuProxyComponent
-		= VTXApp::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );
@@ -138,7 +140,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 
 	App::Core::ECS::BaseEntity			   moleculeEntity = scene.getItem( 0 );
 	const Component::Chemistry::Molecule & molecule
-		= VTXApp::MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
+		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
 
 	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
 

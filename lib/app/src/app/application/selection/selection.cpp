@@ -145,10 +145,10 @@ namespace VTX::App::Application::Selection
 
 			auto it = _items.emplace( std::move( selectionItem ) );
 
-			if ( VTXApp::get().MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
+			if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
 			{
 				Component::Scene::AABB & aabbComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::AABB>( p_selectableComponent );
+					= MAIN_REGISTRY().getComponent<Component::Scene::AABB>( p_selectableComponent );
 
 				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
 			}
@@ -161,7 +161,7 @@ namespace VTX::App::Application::Selection
 	{
 		const std::unique_ptr<SelectionData> & selItem = _getSelectionDataPtr( p_selectableComponent );
 
-		if ( VTXApp::get().MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
+		if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
 		{
 			_mapSelectionAABB.erase( selItem.get() );
 		}

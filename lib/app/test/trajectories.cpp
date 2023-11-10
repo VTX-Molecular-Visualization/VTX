@@ -23,7 +23,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	Application::Scene &	   scene	 = VTXApp::get().getScene();
 	App::Core::ECS::BaseEntity molEntity = scene.getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Trajectory & trajectoryComponent
-		= VTXApp::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
+		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
 	const size_t frameCount1NIM = 25;
 
@@ -32,7 +32,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Stop playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Stop>(
-			App::Core::TrajectoryPlayer::Stop::NAME );
+			App::Core::TrajectoryPlayer::Stop::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );
@@ -49,7 +50,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Once playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Once>(
-			App::Core::TrajectoryPlayer::Once::NAME );
+			App::Core::TrajectoryPlayer::Once::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );
@@ -67,7 +69,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Revert once playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::RevertOnce>(
-			App::Core::TrajectoryPlayer::RevertOnce::NAME );
+			App::Core::TrajectoryPlayer::RevertOnce::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );
@@ -85,7 +88,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Loop playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
-			App::Core::TrajectoryPlayer::Loop::NAME );
+			App::Core::TrajectoryPlayer::Loop::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );
@@ -103,7 +107,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Revert loop playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::RevertLoop>(
-			App::Core::TrajectoryPlayer::RevertLoop::NAME );
+			App::Core::TrajectoryPlayer::RevertLoop::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );
@@ -121,7 +126,8 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Ping Pong playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::PingPong>(
-			App::Core::TrajectoryPlayer::PingPong::NAME );
+			App::Core::TrajectoryPlayer::PingPong::NAME
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().setFPS( 1 );

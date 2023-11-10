@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 	void Trajectory::_referenceUpdateFunction()
 	{
 		Component::Scene::SceneItemComponent & sceneComponent
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
+			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
 	}
 

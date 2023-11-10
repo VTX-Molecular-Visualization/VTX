@@ -27,7 +27,7 @@ namespace VTX::App::Application
 		template<SceneItem T>
 		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
-			return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
+			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
 		void referenceItem( Component::Scene::SceneItemComponent & p_item );
@@ -39,14 +39,14 @@ namespace VTX::App::Application
 		const C & getComponentByName( const std::string & p_name ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
-			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
 
 		template<typename C>
 		C & getComponentByName( const std::string & p_name )
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
-			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
 
 		bool   isEmpty() const;

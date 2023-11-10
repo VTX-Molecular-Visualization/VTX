@@ -11,13 +11,13 @@ namespace VTX::App::Application
 {
 	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
-		return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
+		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
 	{
 		App::Core::ECS::BaseEntity cameraEntity = VTXApp::get().getEntityDirector().build( Entity::CAMERA_ENTITY_ID );
-		_camera = &( VTXApp::MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 	}
@@ -60,7 +60,7 @@ namespace VTX::App::Application
 	{
 		_itemIndexes.clear();
 		_itemIndexes.shrink_to_fit();
-		VTXApp::MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
+		MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
 	}
 
 	void Scene::reset()
@@ -214,7 +214,7 @@ namespace VTX::App::Application
 	void Scene::_computeAABB()
 	{
 		const Core::ECS::View view
-			= VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
@@ -231,8 +231,7 @@ namespace VTX::App::Application
 		// (let that here instead of doing the exact same things in all states for the moment)
 
 		Core::ECS::View updatables
-			= VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>(
-			);
+			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
 		for ( const Core::ECS::BaseEntity entity : updatables )
 		{

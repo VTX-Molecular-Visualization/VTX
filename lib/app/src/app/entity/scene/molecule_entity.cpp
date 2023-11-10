@@ -25,34 +25,34 @@ namespace VTX::App::Entity::Scene
 	{
 		SceneItemEntityBuilder::addComponent( p_entity, p_extraData );
 
-		VTXApp::MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
-		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
-		VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		VTXApp::MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
-		VTXApp::MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
+		MAIN_REGISTRY().addComponent<VTX::Renderer::GL::StructProxyMolecule>( p_entity );
+		MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
 	{
 		SceneItemEntityBuilder::setup( p_entity, p_extraData );
 
 		Component::Chemistry::Molecule & moleculeComponent
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
+			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
 
 		_load( moleculeComponent, p_extraData );
 
 		Component::Scene::Selectable & selectableComponent
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
+			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
 		selectableComponent.setSelectionDataGenerator<Application::Selection::MoleculeData>();
 
 		// Setup GPU Proxy
 		Renderer::GL::StructProxyMolecule & gpuProxyComponent
-			= VTXApp::MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
+			= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( p_entity );
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 
 		if ( moleculeComponent.hasTrajectory() )
 		{
-			VTXApp::MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
+			MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
 		}
 	}
 	void MoleculeEntityBuilder::postSetup(

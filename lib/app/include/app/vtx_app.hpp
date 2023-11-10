@@ -73,9 +73,6 @@ namespace VTX
 			void _handleArgs( const std::vector<std::string> & );
 			void _update();
 			void _stop();
-
-		  public:
-			static Core::ECS::Registry & MAIN_REGISTRY();
 		};
 
 		// Convenient accessors

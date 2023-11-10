@@ -12,8 +12,7 @@
 namespace VTX::App::Application::Selection
 {
 	MoleculeData::MoleculeData( const Component::Scene::Selectable & p_selectable ) :
-		SelectionData( p_selectable ),
-		_molecule( &VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( p_selectable ) )
+		SelectionData( p_selectable ), _molecule( &MAIN_REGISTRY().getComponent<Molecule>( p_selectable ) )
 	{
 	}
 
