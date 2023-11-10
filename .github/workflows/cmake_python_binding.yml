@@ -32,7 +32,8 @@ jobs:
       run:  |
         conan export ../util
         conan export ../core
-        conan export ../app        
+        conan export ../app   
+        conan export ../renderer
         conan create . --build=missing --settings=compiler.cppstd=20
         
     
