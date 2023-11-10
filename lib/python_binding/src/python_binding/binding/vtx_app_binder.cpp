@@ -20,4 +20,12 @@ namespace VTX::PythonBinding::Binding
 			"runScript", "Run a Python script at given path.", Wrapper::Arg( "path" )
 		);
 	}
+
+	void VTXAppBinder::importHeaders()
+	{
+		_importObject( "PyTX.API", "select" );
+		_importObject( "PyTX.API", "intersect" );
+		_importObject( "PyTX.API", "exclusive" );
+	}
+
 } // namespace VTX::PythonBinding::Binding

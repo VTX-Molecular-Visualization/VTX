@@ -46,10 +46,14 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
+			// Import all commands
 			pybind11::exec( "from PyTX.Command import *" );
-			pybind11::exec( "from PyTX.API import select" );
-			pybind11::exec( "from PyTX.API import intersect" );
-			pybind11::exec( "from PyTX.API import exclusive" );
+
+			// Specific imports by binders
+			for ( const std::unique_ptr<Binder> & binder : _binders )
+			{
+				binder->importHeaders();
+			}
 		}
 
 	  private:
