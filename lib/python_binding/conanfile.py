@@ -1,4 +1,5 @@
 import os
+import glob
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 
@@ -44,5 +45,11 @@ class VTXPythonBindingRecipe(ConanFile):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
         self.cpp_info.components["pytx"].libs = ["pytx"]
         self.cpp_info.components["pytx"].set_property("cmake_target_name", "PyTX")
-        self.conf_info.define("user.myconf:dir_python_script", os.path.join(self.package_folder + "/python_script"))
-        self.conf_info.define("user.myconf:path_python_module", os.path.join(self.package_folder + "/bin/PyTX.cp311-win_amd64.pyd"))
+
+        dir_python_script = os.path.join(self.package_folder, "python_script")
+        self.conf_info.define("user.myconf:dir_python_script", dir_python_script)
+        path_python_module = os.path.join(self.package_folder, "bin", "**", "*.pyd")
+        files = glob.glob(os.path.normpath(self.package_folder + "/**/*.pyd"), recursive=True)
+        if len(files) > 0:
+            print("Found python module: " + files[0])
+            self.conf_info.define("user.myconf:path_python_module", files[0])

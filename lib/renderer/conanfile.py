@@ -38,5 +38,5 @@ class VTXRendererRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["vtx_renderer"]        
         self.cpp_info.includedirs = ["include", "vendor"]
-        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/shaders"))
+        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
         
