@@ -27,8 +27,9 @@ class VTXPythonBindingRecipe(ConanFile):
             del self.options.fPIC
 
     def layout(self):
-        cmake_layout(self)
-        
+        cmake_layout(self)        
+        self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
+        self.cpp.build.components["pytx"].libdirs = ['.']
 
     def build(self):
         cmake = CMake(self)
@@ -40,6 +41,7 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_python_binding"]
+        self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
+        self.cpp_info.components["pytx"].libs = ["PyTX"]
+        self.cpp_info.components["pytx"].set_property("cmake_target_name", "PyTX")
         self.conf_info.define("user.myconf:dir_python_script", os.path.join(self.package_folder + "/python_script"))
-        

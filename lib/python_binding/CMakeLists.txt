@@ -33,4 +33,5 @@ target_link_libraries(PyTX PRIVATE vtx_app::vtx_app)
 target_link_libraries(PyTX PRIVATE vtx_python_binding)
 
 install(TARGETS vtx_python_binding FILE_SET public_headers DESTINATION include)
+install(TARGETS PyTX)
 install(DIRECTORY python_script DESTINATION .)
