@@ -22,6 +22,7 @@ namespace VTX::App::Application::Selection
 
 		inline bool isValid() const { return _valid; }
 
+		virtual void			set( const SelectionData & p_other );
 		virtual SelectionData & add( const SelectionData & p_other );
 		virtual SelectionData & remove( const SelectionData & p_other );
 		virtual SelectionData & intersect( const SelectionData & p_other );

@@ -19,6 +19,8 @@ namespace VTX::App::Application::Selection
 	  public:
 		MoleculeData( const Component::Scene::Selectable & p_selectable );
 
+		void set( const SelectionData & p_other ) override;
+
 		SelectionData & add( const SelectionData & p_other ) override;
 		SelectionData & remove( const SelectionData & p_other ) override;
 		SelectionData & intersect( const SelectionData & p_other ) override;
@@ -27,6 +29,7 @@ namespace VTX::App::Application::Selection
 		bool isEqualsTo( const SelectionData & p_other ) const override;
 
 		void selectAll();
+		void clear();
 
 		// void selectCategory( const Category & p_category );
 

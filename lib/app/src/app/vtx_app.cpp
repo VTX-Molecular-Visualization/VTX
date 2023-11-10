@@ -197,6 +197,15 @@ namespace VTX::App
 		return _system->getSystem<Application::Setting>( SETTING_KEY );
 	}
 
+	Application::ECS::RegistryManager & VTXApp::getRegistryManager()
+	{
+		return _system->getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY );
+	}
+	const Application::ECS::RegistryManager & VTXApp::getRegistryManager() const
+	{
+		return _system->getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY );
+	}
+
 	Application::Selection::SelectionManager & VTXApp::getSelectionManager()
 	{
 		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
@@ -211,11 +220,8 @@ namespace VTX::App
 		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
 	}
 
-	Core::ECS::Registry & MAIN_REGISTRY()
-	{
-		return VTXApp::get()
-			.getSystem()
-			.getSystem<Application::ECS::RegistryManager>( VTXApp::REGISTRY_MANAGER_KEY )
-			.getRegistry();
-	}
+	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
+	Core::ECS::Registry &				MAIN_REGISTRY() { return VTXApp::get().getRegistryManager().getRegistry(); }
+	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
+
 } // namespace VTX::App

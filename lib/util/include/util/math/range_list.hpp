@@ -350,6 +350,7 @@ namespace VTX::Util::Math
 			return true;
 		}
 
+		void   clear() { _ranges.clear(); }
 		bool   isEmpty() const { return _ranges.size() == 0; }
 		size_t size() const
 		{

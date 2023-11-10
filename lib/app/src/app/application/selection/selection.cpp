@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <sstream>
 #include <util/exceptions.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::Application::Selection
 {
@@ -63,7 +64,6 @@ namespace VTX::App::Application::Selection
 
 		return res;
 	}
-
 	Selection Selection::remove( const Selection & p_lhs, const Selection & p_rhs )
 	{
 		Selection res = Selection( p_lhs );
@@ -83,7 +83,6 @@ namespace VTX::App::Application::Selection
 
 		return res;
 	}
-
 	Selection Selection::intersection( const Selection & p_lhs, const Selection & p_rhs )
 	{
 		Selection res = Selection( p_lhs );
@@ -142,6 +141,60 @@ namespace VTX::App::Application::Selection
 		{
 			std::unique_ptr<Application::Selection::SelectionData> selectionItem
 				= p_selectableComponent.instantiateSelectionData();
+
+			auto it = _items.emplace( std::move( selectionItem ) );
+
+			if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
+			{
+				Component::Scene::AABB & aabbComponent
+					= MAIN_REGISTRY().getComponent<Component::Scene::AABB>( p_selectableComponent );
+
+				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
+			}
+
+			return **( it.first );
+		}
+	}
+	SelectionData & Selection::select(
+		const Component::Scene::Selectable & p_selectableComponent,
+		const SelectionData &				 p_selectionData,
+		const AssignmentType				 p_assignment
+	)
+	{
+		if ( isSelected( p_selectableComponent ) )
+		{
+			SelectionData & res = getSelectionData( p_selectableComponent );
+
+			switch ( p_assignment )
+			{
+			case AssignmentType::APPEND: res.add( p_selectionData ); break;
+			case AssignmentType::SET: res.set( p_selectionData ); break;
+			default:
+				VTX_ERROR(
+					"Unknown assignment in Selection::select (value {}). Use set instead.", int( p_assignment )
+				);
+				res.set( p_selectionData );
+				break;
+			}
+
+			return res;
+		}
+		else
+		{
+			std::unique_ptr<Application::Selection::SelectionData> selectionItem
+				= p_selectableComponent.instantiateSelectionData();
+
+			switch ( p_assignment )
+			{
+			case AssignmentType::APPEND: // if append on unselected item => set
+			case AssignmentType::SET: selectionItem->set( p_selectionData ); break;
+			default:
+				VTX_ERROR(
+					"Unknown assignment in Selection::select (value {}). Use set instead.", int( p_assignment )
+				);
+				selectionItem->set( p_selectionData );
+				break;
+			}
 
 			auto it = _items.emplace( std::move( selectionItem ) );
 

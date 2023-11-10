@@ -93,15 +93,11 @@ namespace VTX::PythonBinding::API::Selection
 				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
 			App::Application::Selection::MoleculeData & moleculeSelectionData
-				= dynamic_cast<App::Application::Selection::MoleculeData &>( p_selection.select( selectableComponent )
-				);
+				= p_selection.select<App::Application::Selection::MoleculeData>( selectableComponent );
 
-			if ( selectFullMolecule )
+			if ( !selectFullMolecule )
 			{
-				moleculeSelectionData.selectAll();
-			}
-			else
-			{
+				moleculeSelectionData.clear();
 				_selectChains( kwargs, moleculeSelectionData );
 			}
 		}

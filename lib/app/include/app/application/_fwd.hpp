@@ -16,5 +16,6 @@ namespace VTX::App::Application
 	namespace Selection
 	{
 		class SelectionManager;
-	}
+		class Selection;
+	} // namespace Selection
 } // namespace VTX::App::Application

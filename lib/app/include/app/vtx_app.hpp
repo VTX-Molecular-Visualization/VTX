@@ -22,7 +22,7 @@ namespace VTX
 	{
 		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
 		{
-		  public:
+		  private:
 			inline static const std::string REGISTRY_MANAGER_KEY  = "REGISTRY_MANAGER";
 			inline static const std::string SETTING_KEY			  = "SETTING";
 			inline static const std::string ENTITY_DIRECTOR_KEY	  = "ENTITY_DIRECTOR";
@@ -56,6 +56,9 @@ namespace VTX
 			Application::Setting &		 getSettings();
 			const Application::Setting & getSettings() const;
 
+			Application::ECS::RegistryManager &		  getRegistryManager();
+			const Application::ECS::RegistryManager & getRegistryManager() const;
+
 			Application::ECS::EntityDirector & getEntityDirector();
 
 			Application::Selection::SelectionManager &		 getSelectionManager();
@@ -76,7 +79,9 @@ namespace VTX
 		};
 
 		// Convenient accessors
-		Core::ECS::Registry & MAIN_REGISTRY();
+		Application::Scene &				SCENE();
+		Core::ECS::Registry &				MAIN_REGISTRY();
+		Application::Selection::Selection & CURRENT_SELECTION();
 	} // namespace App
 } // namespace VTX
 

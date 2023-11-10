@@ -57,9 +57,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	CHECK( SelectionUtil::checkSelection(
 		"test_chain_n_1",
 		"select( chain_n='A' )",
-		SelectionUtil::createSelection( { SelectionUtil::generateMoleculeData( "4HHB", { 0 } ).get(),
-										  SelectionUtil::generateMoleculeData( "1AGA", { 0 } ).get(),
-										  SelectionUtil::generateMoleculeData( "8QHQ", { 0, 6 } ).get() } )
+		SelectionUtil::createSelection( { *SelectionUtil::generateMoleculeData( "4HHB", { 0 } ),
+										  *SelectionUtil::generateMoleculeData( "1AGA", { 0 } ),
+										  *SelectionUtil::generateMoleculeData( "8QHQ", { 0, 6 } ) } )
 	) );
 
 	std::unique_ptr<App::Application::Selection::SelectionData> allHistidineOn4HHB

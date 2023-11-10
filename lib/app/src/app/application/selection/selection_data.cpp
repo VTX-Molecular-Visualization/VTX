@@ -23,6 +23,8 @@ namespace VTX::App::Application::Selection
 
 	const Component::Scene::Selectable & SelectionData::getSelectionComponent() const { return *_selectionComponent; }
 
+	void SelectionData::set( const SelectionData & p_other ) { _valid = p_other._valid; }
+
 	SelectionData & SelectionData::add( const SelectionData & p_other ) { return *this; }
 	SelectionData & SelectionData::remove( const SelectionData & p_other )
 	{

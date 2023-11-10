@@ -14,6 +14,14 @@ namespace VTX::App::Application::Selection
 	MoleculeData::MoleculeData( const Component::Scene::Selectable & p_selectable ) :
 		SelectionData( p_selectable ), _molecule( &MAIN_REGISTRY().getComponent<Molecule>( p_selectable ) )
 	{
+		selectAll();
+	}
+
+	void MoleculeData::clear()
+	{
+		_chainIds.clear();
+		_residueIds.clear();
+		_atomIds.clear();
 	}
 
 	bool MoleculeData::isEqualsTo( const SelectionData & p_other ) const
@@ -33,6 +41,18 @@ namespace VTX::App::Application::Selection
 		copy->_atomIds	  = _atomIds;
 
 		return std::move( copy );
+	}
+
+	void MoleculeData::set( const SelectionData & p_other )
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+
+		if ( _molecule == castedOther._molecule )
+		{
+			_chainIds	= castedOther._chainIds;
+			_residueIds = castedOther._residueIds;
+			_atomIds	= castedOther._atomIds;
+		}
 	}
 
 	SelectionData & MoleculeData::add( const SelectionData & p_other )

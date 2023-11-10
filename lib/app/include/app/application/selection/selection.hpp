@@ -1,24 +1,33 @@
 #ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION__
 #define __VTX_APP_APPLICATION_SELECTION_SELECTION__
 
+#include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
 #include "app/component/scene/_fwd.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
+#include <concepts>
 #include <map>
 #include <set>
+#include <util/concepts.hpp>
 #include <util/math/aabb.hpp>
 
 namespace VTX::App::Application::Selection
 {
+	enum class AssignmentType : int
+	{
+		SET,
+		APPEND
+	};
+
 	class Selection
 	{
 	  public:
 		using SelectionDataSet = std::set<std::unique_ptr<SelectionData>>;
 
 	  public:
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		struct Iterator
 		{
 			Iterator( SelectionDataSet::const_iterator p_setIt, const SelectionDataSet::const_iterator p_endIt ) :
@@ -92,28 +101,49 @@ namespace VTX::App::Application::Selection
 		inline SelectionDataSet &		getAll() { return _items; }
 
 		SelectionDataSet::iterator begin() { return _items.begin(); }
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		inline Iterator<C> begin() const
 		{
 			return Iterator<C>( _items.cbegin(), _items.cend() );
 		}
 
 		SelectionDataSet::iterator end() { return _items.end(); }
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		inline Iterator<C> end() const
 		{
 			return Iterator<C>( _items.cend(), _items.cend() );
 		}
 
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		bool hasItemOfType() const
 		{
 			return begin<C>() != end<C>();
 		}
 
 		SelectionData & select( const Component::Scene::Selectable & p_selectableComponent );
+		SelectionData & select(
+			const Component::Scene::Selectable & p_selectableComponent,
+			const SelectionData &				 p_selectionData,
+			const AssignmentType				 p_assignment = AssignmentType::SET
+		);
 
-		template<typename C>
+		template<SelectionDataConcept T>
+		T & select( const Component::Scene::Selectable & p_selectableComponent )
+		{
+			return dynamic_cast<T &>( select( p_selectableComponent ) );
+		}
+
+		template<SelectionDataConcept T>
+		T & select(
+			const Component::Scene::Selectable & p_selectableComponent,
+			const SelectionData &				 p_selectionData,
+			const AssignmentType				 p_assignment = AssignmentType::SET
+		)
+		{
+			return dynamic_cast<T &>( select( p_selectableComponent, p_selectionData, p_assignment ) );
+		}
+
+		template<Core::ECS::ECS_Component C>
 		SelectionData & select( const C & p_component )
 		{
 			const Component::Scene::Selectable & selectableComponent
@@ -121,9 +151,42 @@ namespace VTX::App::Application::Selection
 
 			return select( selectableComponent );
 		}
+		template<Core::ECS::ECS_Component C>
+		SelectionData & select(
+			const C &			  p_component,
+			const SelectionData & p_selectionData,
+			const AssignmentType  p_assignment = AssignmentType::SET
+		)
+		{
+			const Component::Scene::Selectable & selectableComponent
+				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
 
-		template<typename Container>
-		void selectAll( const Container & p_items )
+			return select( selectableComponent, p_selectionData, p_assignment );
+		}
+
+		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
+		T & select( const C & p_component )
+		{
+			const Component::Scene::Selectable & selectableComponent
+				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
+
+			return select<T>( selectableComponent );
+		}
+		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
+		T & select(
+			const C &			  p_component,
+			const SelectionData & p_selectionData,
+			const AssignmentType  p_assignment = AssignmentType::SET
+		)
+		{
+			const Component::Scene::Selectable & selectableComponent
+				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
+
+			return select<T>( selectableComponent, p_selectionData, p_assignment );
+		}
+
+		template<Container C>
+		void selectAll( const C & p_items )
 		{
 			for ( Component::Scene::Selectable * const item : p_items )
 				select( *item );
@@ -131,8 +194,8 @@ namespace VTX::App::Application::Selection
 
 		void unselect( const Component::Scene::Selectable & p_selectableComponent );
 
-		template<typename Container>
-		void unselectAll( const Container & p_items )
+		template<Container C>
+		void unselectAll( const C & p_items )
 		{
 			for ( Component::Scene::Selectable * const item : p_items )
 				unselect( *item );
@@ -140,8 +203,8 @@ namespace VTX::App::Application::Selection
 
 		bool isSelected( const Component::Scene::Selectable & p_item ) const;
 
-		template<typename Container>
-		bool areSelected( const Container & p_items ) const
+		template<Container C>
+		bool areSelected( const C & p_items ) const
 		{
 			if ( p_items.size() == 0 )
 				return false;
@@ -156,12 +219,12 @@ namespace VTX::App::Application::Selection
 		SelectionData &		  getSelectionData( const Component::Scene::Selectable & p_selectableComponent );
 		const SelectionData & getSelectionData( const Component::Scene::Selectable & p_selectableComponent ) const;
 
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		SelectionData & getSelectionData( const C & p_component )
 		{
 			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
 		}
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		const SelectionData & getSelectionData( const C & p_component ) const
 		{
 			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
@@ -169,7 +232,7 @@ namespace VTX::App::Application::Selection
 
 		inline size_t getCount() const { return _items.size(); }
 
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		size_t getCount() const
 		{
 			Iterator<C> it	= begin<C>();
