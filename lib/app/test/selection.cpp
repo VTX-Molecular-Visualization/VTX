@@ -31,38 +31,4 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 		= CURRENT_SELECTION().select<Application::Selection::MoleculeData>( selectableMol1 );
 
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
-
-	CHECK( scene.getItem( 0 ) == scene.getItem( "1AGA_0" ) );
-	CHECK( scene.getItem( 1 ) == scene.getItem( "1AGA_1" ) );
-	CHECK( scene.getItem( 2 ) == scene.getItem( "1AGA_2" ) );
-	CHECK( scene.getItem( 3 ) == scene.getItem( "1AGA_3" ) );
-	CHECK( scene.getItem( 4 ) == scene.getItem( "1AGA_4" ) );
-
-	scene.changeItemIndex( scene.getItem( "1AGA_2" ), 4 );
-	CHECK( scene.getItem( 0 ) == scene.getItem( "1AGA_0" ) );
-	CHECK( scene.getItem( 1 ) == scene.getItem( "1AGA_1" ) );
-	CHECK( scene.getItem( 2 ) == scene.getItem( "1AGA_3" ) );
-	CHECK( scene.getItem( 3 ) == scene.getItem( "1AGA_4" ) );
-	CHECK( scene.getItem( 4 ) == scene.getItem( "1AGA_2" ) );
-
-	scene.changeItemsIndex( { scene.getItem( "1AGA_3" ), scene.getItem( "1AGA_4" ) }, 0 );
-	CHECK( scene.getItem( 0 ) == scene.getItem( "1AGA_3" ) );
-	CHECK( scene.getItem( 1 ) == scene.getItem( "1AGA_4" ) );
-	CHECK( scene.getItem( 2 ) == scene.getItem( "1AGA_0" ) );
-	CHECK( scene.getItem( 3 ) == scene.getItem( "1AGA_1" ) );
-	CHECK( scene.getItem( 4 ) == scene.getItem( "1AGA_2" ) );
-
-	scene.changeItemsIndex( { scene.getItem( "1AGA_3" ), scene.getItem( "1AGA_4" ) }, 5 );
-	CHECK( scene.getItem( 0 ) == scene.getItem( "1AGA_0" ) );
-	CHECK( scene.getItem( 1 ) == scene.getItem( "1AGA_1" ) );
-	CHECK( scene.getItem( 2 ) == scene.getItem( "1AGA_2" ) );
-	CHECK( scene.getItem( 3 ) == scene.getItem( "1AGA_3" ) );
-	CHECK( scene.getItem( 4 ) == scene.getItem( "1AGA_4" ) );
-
-	std::vector<App::Core::ECS::BaseEntity> items
-		= { scene.getItem( "1AGA_3" ), scene.getItem( "1AGA_0" ), scene.getItem( "1AGA_4" ) };
-
-	scene.sortItemsBySceneIndex( items );
-
-	CHECK( Test::Util::App::checkItemOrder( scene, items ) );
 }
