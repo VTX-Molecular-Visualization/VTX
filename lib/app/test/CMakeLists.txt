@@ -31,4 +31,4 @@ add_custom_target(vtx_app_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_di
 add_dependencies(vtx_app_test vtx_app_test_copy_data)
 
 install(TARGETS vtx_app_test)
-install(DIRECTORY data DESTINATION .)
+install(DIRECTORY data DESTINATION bin)

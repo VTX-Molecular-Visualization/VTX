@@ -35,4 +35,4 @@ add_custom_target(
 add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
 
 install(TARGETS vtx_renderer_bench)
-install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
+install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)

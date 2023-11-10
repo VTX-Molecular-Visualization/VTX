@@ -27,5 +27,5 @@ include(Catch)
 catch_discover_tests(vtx_ui_test)
 
 install(TARGETS vtx_ui_test)
-install(DIRECTORY data DESTINATION .)
+install(DIRECTORY data DESTINATION bin)
 #TODO: install dll too.

@@ -49,7 +49,7 @@ class VTXPythonBindingRecipe(ConanFile):
         dir_python_script = os.path.join(self.package_folder, "python_script")
         self.conf_info.define("user.myconf:dir_python_script", dir_python_script)
         path_python_module = os.path.join(self.package_folder, "bin", "**", "*.pyd")
-        files = glob.glob(os.path.normpath(self.package_folder + "/**/*.pyd"), recursive=True)
+        files = glob.glob(path_python_module, recursive=True)
         if len(files) > 0:
             print("Found python module: " + files[0])
             self.conf_info.define("user.myconf:path_python_module", files[0])
