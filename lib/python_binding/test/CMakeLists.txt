@@ -30,6 +30,12 @@ add_custom_target(vtx_python_binding_copy_script ALL COMMAND
 	$<TARGET_FILE_DIR:vtx_python_binding_test>/python_script)
 add_dependencies(vtx_python_binding_test vtx_python_binding_copy_script)
 
+add_custom_target(vtx_python_binding_copy_module ALL COMMAND
+	${CMAKE_COMMAND} -E copy
+	${PATH_PYTHON_MODULE}
+	$<TARGET_FILE_DIR:vtx_python_binding_test>/PyTX.pyd)
+add_dependencies(vtx_python_binding_test vtx_python_binding_copy_module)
+
 add_custom_target(vtx_python_binding_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_python_binding_test>/data)
 add_dependencies(vtx_python_binding_test vtx_python_binding_test_copy_data)
 
@@ -39,4 +45,5 @@ catch_discover_tests(vtx_python_binding_test)
 
 install(TARGETS vtx_python_binding_test)
 install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION .)
+install(FILES ${PATH_PYTHON_MODULE} DESTINATION PyTX.pyd)
 install(DIRECTORY data DESTINATION .)

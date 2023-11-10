@@ -26,6 +26,8 @@ class VTXPythonBindingTestRecipe(ConanFile):
         tc = CMakeToolchain(self)
         dir_python_script = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:dir_python_script")
         tc.cache_variables["DIR_PYTHON_SCRIPT"] = dir_python_script
+        path_python_module = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:path_python_module")
+        tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
         tc.generate()
 
     def layout(self):

@@ -45,3 +45,4 @@ class VTXPythonBindingRecipe(ConanFile):
         self.cpp_info.components["pytx"].libs = ["pytx"]
         self.cpp_info.components["pytx"].set_property("cmake_target_name", "PyTX")
         self.conf_info.define("user.myconf:dir_python_script", os.path.join(self.package_folder + "/python_script"))
+        self.conf_info.define("user.myconf:path_python_module", os.path.join(self.package_folder + "/bin/PyTX.cp311-win_amd64.pyd"))
