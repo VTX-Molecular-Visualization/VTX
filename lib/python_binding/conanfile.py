@@ -13,12 +13,13 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "python_script/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("vtx_io/1.0")
         self.requires("pybind11/2.11.1")
         
     def config_options(self):
@@ -40,5 +41,5 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
-        #self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder + "/shaders"))
+        self.conf_info.define("user.myconf:dir_python_script", os.path.join(self.package_folder + "/python_script"))
         

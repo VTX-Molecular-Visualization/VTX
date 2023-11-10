@@ -9,7 +9,7 @@ find_package(vtx_app CONFIG REQUIRED)
 find_package(pybind11 REQUIRED)
 
 add_library(vtx_python_binding)
-configureTarget(vtx_renderer)
+configureTarget(vtx_python_binding)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -30,21 +30,5 @@ target_link_libraries(PyTX PRIVATE vtx_core::vtx_core)
 target_link_libraries(PyTX PRIVATE vtx_app::vtx_app)
 target_link_libraries(PyTX PRIVATE vtx_python_binding)
 
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_UTIL)
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_CORE)
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_RENDERER)
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_IO)
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE VTX_APP)
-#target_link_libraries(VTX_PYTHON_BINDING PRIVATE chemfiles)
-#target_link_libraries(VTX_PYTHON_BINDING PUBLIC magic_enum)
-
-
-
-
-
-
-
-
-# Copy python core scripts.
-#add_custom_target(VTX_PYTHON_BINDING_INIT_SCRIPTS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python_script $<TARGET_FILE_DIR:VTX_PYTHON_BINDING>/python_script)
-#add_dependencies(VTX_PYTHON_BINDING VTX_PYTHON_BINDING_INIT_SCRIPTS)
+install(TARGETS vtx_python_binding FILE_SET public_headers DESTINATION include)
+install(DIRECTORY python_script DESTINATION .)
