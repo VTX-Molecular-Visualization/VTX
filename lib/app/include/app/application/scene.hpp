@@ -35,14 +35,14 @@ namespace VTX::App::Application
 		const Core::ECS::BaseEntity getItem( const size_t p_index ) const;
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
 
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		const C & getComponentByName( const std::string & p_name ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
 			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
 
-		template<typename C>
+		template<Core::ECS::ECS_Component C>
 		C & getComponentByName( const std::string & p_name )
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );

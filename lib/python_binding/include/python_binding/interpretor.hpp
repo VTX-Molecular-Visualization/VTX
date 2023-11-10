@@ -8,6 +8,9 @@
 
 namespace VTX::PythonBinding
 {
+	template<typename BinderType>
+	concept BinderConcept = std::derived_from<BinderType, Binder>;
+
 	class Interpretor
 	{
 	  public:
@@ -20,10 +23,10 @@ namespace VTX::PythonBinding
 		void init();
 		void addBinder( std::unique_ptr<Binder> p_binder );
 
-		template<typename TBinder>
+		template<BinderConcept BinderType>
 		void addBinder()
 		{
-			addBinder( std::make_unique<TBinder>() );
+			addBinder( std::make_unique<BinderType>() );
 		}
 
 		void print( const std::string & p_line ) const;

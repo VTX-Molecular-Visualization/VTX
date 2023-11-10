@@ -2,13 +2,14 @@
 #define __VTX_UTIL_MATH_RANGE_VECTOR__
 
 #include "util/math/range.hpp"
+#include <concepts>
 #include <list>
 #include <type_traits>
 #include <vector>
 
 namespace VTX::Util::Math
 {
-	template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
+	template<std::integral T>
 	class RangeList
 	{
 	  public:

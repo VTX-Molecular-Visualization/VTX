@@ -5,14 +5,15 @@
 #include "util/math.hpp"
 #include "util/math/range.hpp"
 #include "util/math/range_list.hpp"
+#include <concepts>
 #include <list>
 
 namespace VTX::Util::Algorithm::Range
 {
-	template<typename T>
+	template<std::integral T>
 	using RangeList = Math::RangeList<T>;
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> merge( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
@@ -24,7 +25,7 @@ namespace VTX::Util::Algorithm::Range
 
 		return res;
 	}
-	template<typename T>
+	template<std::integral T>
 	void mergeInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
@@ -33,7 +34,7 @@ namespace VTX::Util::Algorithm::Range
 		}
 	}
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> substract( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
@@ -45,7 +46,7 @@ namespace VTX::Util::Algorithm::Range
 
 		return res;
 	}
-	template<typename T>
+	template<std::integral T>
 	void substractInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
@@ -54,7 +55,7 @@ namespace VTX::Util::Algorithm::Range
 		}
 	}
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> intersect( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		std::list<Math::Range<T>> newRange = std::list<Math::Range<T>>();
@@ -98,19 +99,19 @@ namespace VTX::Util::Algorithm::Range
 		return RangeList<T>( newRange );
 	}
 
-	template<typename T>
+	template<std::integral T>
 	void intersectInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = intersect( p_obj, p_other );
 	}
 
-	template<typename T>
+	template<std::integral T>
 	Math::RangeList<T> exclusive( const Math::RangeList<T> & p_lhs, const Math::RangeList<T> & p_rhs )
 	{
 		return Details::Range::Exclusive( p_lhs, p_rhs ).getRes();
 	}
 
-	template<typename T>
+	template<std::integral T>
 	void exclusiveInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = Details::Range::Exclusive( p_obj, p_other ).getRes();
