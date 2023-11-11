@@ -47,9 +47,9 @@ target_link_libraries(vtx_ui PRIVATE Qt6::OpenGLWidgets)
 
 apply_qt_options(vtx_ui)
 
-add_custom_command(TARGET vtx_ui POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:vtx_ui> $<TARGET_RUNTIME_DLLS:vtx_ui>
-  COMMAND_EXPAND_LISTS
-)
+#add_custom_command(TARGET vtx_ui POST_BUILD
+#  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:vtx_ui> $<TARGET_RUNTIME_DLLS:vtx_ui>
+#  COMMAND_EXPAND_LISTS
+#)
 
 install(TARGETS vtx_ui FILE_SET public_headers DESTINATION include)
