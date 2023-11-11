@@ -29,8 +29,8 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)        
-        #self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
-        #self.cpp.build.components["pytx"].libdirs = ['.']
+        self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
+        self.cpp.build.components["pytx"].libdirs = ['.']
 
     def build(self):
         cmake = CMake(self)
@@ -49,7 +49,9 @@ class VTXPythonBindingRecipe(ConanFile):
 
         dir_python_script = os.path.join(self.package_folder, "python_script")
         self.conf_info.define("user.myconf:dir_python_script", dir_python_script)
-        path_python_module = os.path.join(self.package_folder, "**", "*.pyd")
+
+        filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
+        path_python_module = os.path.join(self.package_folder, "**", filename)
         files = glob.glob(path_python_module, recursive=True)
         if len(files) > 0:
             print("Found python module: " + files[0])
