@@ -43,12 +43,13 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
+        self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
         self.cpp_info.components["pytx"].libs = ["pytx"]
-        self.cpp_info.components["pytx"].set_property("cmake_target_name", "PyTX")
+        self.cpp_info.components["pytx"].set_property("cmake_target_name", "vtx_python_binding::PyTX")
 
         dir_python_script = os.path.join(self.package_folder, "python_script")
         self.conf_info.define("user.myconf:dir_python_script", dir_python_script)
-        path_python_module = os.path.join(self.package_folder, "bin", "**", "*.pyd")
+        path_python_module = os.path.join(self.package_folder, "**", "*.pyd")
         files = glob.glob(path_python_module, recursive=True)
         if len(files) > 0:
             print("Found python module: " + files[0])
