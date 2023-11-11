@@ -29,8 +29,8 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)        
-        self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
-        self.cpp.build.components["pytx"].libdirs = ['.']
+        #self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
+        #self.cpp.build.components["pytx"].libdirs = ['.']
 
     def build(self):
         cmake = CMake(self)
