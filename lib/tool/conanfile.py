@@ -18,8 +18,7 @@ class VTXToolRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_ui/1.0")
-        self.requires("eigen/3.4.0")
-        self.requires("qt/6.6.0", transitive_headers=True)            
+        self.requires("eigen/3.4.0")          
         
     def config_options(self):
         if self.settings.os == "Windows":
