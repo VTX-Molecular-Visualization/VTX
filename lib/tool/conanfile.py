@@ -39,4 +39,3 @@ class VTXToolRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_tool"]
-
