@@ -147,7 +147,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	) );
 
 	CHECK( SelectionUtil::checkSelection(
-		"test_susbtract_1",
+		"test_substract_1",
 		"select(mol_n='4HHB', chain_n='A' ) - select( mol_n='4HHB', chain_n='B')",
 		SelectionUtil::createSelection( SelectionUtil::generateMoleculeData( "4HHB", { 0 } ) )
 	) );

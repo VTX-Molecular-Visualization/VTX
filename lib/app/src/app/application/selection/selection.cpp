@@ -54,7 +54,7 @@ namespace VTX::App::Application::Selection
 
 			if ( !res.isSelected( rhsSelectableComponent ) )
 			{
-				res.select( rhsSelectableComponent );
+				res.select( rhsSelectableComponent, AssignmentType::APPEND );
 			}
 			else
 			{
@@ -121,7 +121,7 @@ namespace VTX::App::Application::Selection
 			}
 			else
 			{
-				res.getSelectionData( rhsSelectableComponent ).add( *item );
+				res.select( rhsSelectableComponent, *item, AssignmentType::APPEND );
 			}
 		}
 
@@ -131,11 +131,20 @@ namespace VTX::App::Application::Selection
 	// TODO
 	Selection Selection::inverse( const Selection & p_selection ) { return Selection(); }
 
-	SelectionData & Selection::select( const Component::Scene::Selectable & p_selectableComponent )
+	SelectionData & Selection::select(
+		const Component::Scene::Selectable & p_selectableComponent,
+		const AssignmentType				 p_assignment
+	)
 	{
+		if ( p_assignment == AssignmentType::SET )
+			clear();
+
 		if ( isSelected( p_selectableComponent ) )
 		{
-			return getSelectionData( p_selectableComponent );
+			SelectionData & res = getSelectionData( p_selectableComponent );
+			res.selectAll();
+
+			return res;
 		}
 		else
 		{
@@ -161,21 +170,13 @@ namespace VTX::App::Application::Selection
 		const AssignmentType				 p_assignment
 	)
 	{
+		if ( p_assignment == AssignmentType::SET )
+			clear();
+
 		if ( isSelected( p_selectableComponent ) )
 		{
 			SelectionData & res = getSelectionData( p_selectableComponent );
-
-			switch ( p_assignment )
-			{
-			case AssignmentType::APPEND: res.add( p_selectionData ); break;
-			case AssignmentType::SET: res.set( p_selectionData ); break;
-			default:
-				VTX_ERROR(
-					"Unknown assignment in Selection::select (value {}). Use set instead.", int( p_assignment )
-				);
-				res.set( p_selectionData );
-				break;
-			}
+			res.add( p_selectionData );
 
 			return res;
 		}
@@ -183,18 +184,7 @@ namespace VTX::App::Application::Selection
 		{
 			std::unique_ptr<Application::Selection::SelectionData> selectionItem
 				= p_selectableComponent.instantiateSelectionData();
-
-			switch ( p_assignment )
-			{
-			case AssignmentType::APPEND: // if append on unselected item => set
-			case AssignmentType::SET: selectionItem->set( p_selectionData ); break;
-			default:
-				VTX_ERROR(
-					"Unknown assignment in Selection::select (value {}). Use set instead.", int( p_assignment )
-				);
-				selectionItem->set( p_selectionData );
-				break;
-			}
+			selectionItem->set( p_selectionData );
 
 			auto it = _items.emplace( std::move( selectionItem ) );
 
@@ -232,6 +222,18 @@ namespace VTX::App::Application::Selection
 		);
 
 		return it != _items.end();
+	}
+
+	bool Selection::areSelected( const std::initializer_list<const Component::Scene::Selectable *> & p_items ) const
+	{
+		if ( p_items.size() == 0 )
+			return false;
+
+		for ( const Component::Scene::Selectable * item : p_items )
+			if ( !isSelected( *item ) )
+				return false;
+
+		return true;
 	}
 
 	void Selection::clear()

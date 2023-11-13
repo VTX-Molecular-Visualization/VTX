@@ -34,7 +34,11 @@ namespace VTX::App::Test::Util
 
 			for ( const T & sourceItemPtr : p_items )
 			{
-				res.select( sourceItemPtr.getSelectionComponent(), sourceItemPtr );
+				res.select(
+					sourceItemPtr.getSelectionComponent(),
+					sourceItemPtr,
+					VTX::App::Application::Selection::AssignmentType::APPEND
+				);
 			}
 
 			return res;
@@ -47,7 +51,11 @@ namespace VTX::App::Test::Util
 
 			for ( const SelectionData * const sourceItemPtr : p_items )
 			{
-				res.select( sourceItemPtr->getSelectionComponent(), *sourceItemPtr );
+				res.select(
+					sourceItemPtr->getSelectionComponent(),
+					*sourceItemPtr,
+					VTX::App::Application::Selection::AssignmentType::APPEND
+				);
 			}
 
 			return res;

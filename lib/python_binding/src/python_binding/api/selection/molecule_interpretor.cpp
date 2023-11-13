@@ -93,7 +93,9 @@ namespace VTX::PythonBinding::API::Selection
 				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
 			App::Application::Selection::MoleculeData & moleculeSelectionData
-				= p_selection.select<App::Application::Selection::MoleculeData>( selectableComponent );
+				= p_selection.select<App::Application::Selection::MoleculeData>(
+					selectableComponent, App::Application::Selection::AssignmentType::APPEND
+				);
 
 			if ( !selectFullMolecule )
 			{

@@ -28,7 +28,7 @@ namespace VTX::App::Application::Selection
 
 		bool isEqualsTo( const SelectionData & p_other ) const override;
 
-		void selectAll();
+		void selectAll() override;
 		void clear();
 
 		// void selectCategory( const Category & p_category );

@@ -120,7 +120,10 @@ namespace VTX::App::Application::Selection
 			return begin<C>() != end<C>();
 		}
 
-		SelectionData & select( const Component::Scene::Selectable & p_selectableComponent );
+		SelectionData & select(
+			const Component::Scene::Selectable & p_selectableComponent,
+			const AssignmentType				 p_assignment = AssignmentType::SET
+		);
 		SelectionData & select(
 			const Component::Scene::Selectable & p_selectableComponent,
 			const SelectionData &				 p_selectionData,
@@ -128,9 +131,12 @@ namespace VTX::App::Application::Selection
 		);
 
 		template<SelectionDataConcept T>
-		T & select( const Component::Scene::Selectable & p_selectableComponent )
+		T & select(
+			const Component::Scene::Selectable & p_selectableComponent,
+			const AssignmentType				 p_assignment = AssignmentType::SET
+		)
 		{
-			return dynamic_cast<T &>( select( p_selectableComponent ) );
+			return dynamic_cast<T &>( select( p_selectableComponent, p_assignment ) );
 		}
 
 		template<SelectionDataConcept T>
@@ -144,12 +150,12 @@ namespace VTX::App::Application::Selection
 		}
 
 		template<Core::ECS::ECS_Component C>
-		SelectionData & select( const C & p_component )
+		SelectionData & select( const C & p_component, const AssignmentType p_assignment = AssignmentType::SET )
 		{
 			const Component::Scene::Selectable & selectableComponent
 				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
 
-			return select( selectableComponent );
+			return select( selectableComponent, p_assignment );
 		}
 		template<Core::ECS::ECS_Component C>
 		SelectionData & select(
@@ -165,12 +171,12 @@ namespace VTX::App::Application::Selection
 		}
 
 		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
-		T & select( const C & p_component )
+		T & select( const C & p_component, const AssignmentType p_assignment = AssignmentType::SET )
 		{
 			const Component::Scene::Selectable & selectableComponent
 				= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component );
 
-			return select<T>( selectableComponent );
+			return select<T>( selectableComponent, p_assignment );
 		}
 		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
 		T & select(
@@ -186,10 +192,13 @@ namespace VTX::App::Application::Selection
 		}
 
 		template<Container C>
-		void selectAll( const C & p_items )
+		void selectAll( const C & p_items, const AssignmentType p_assignment = AssignmentType::SET )
 		{
+			if ( p_assignment == AssignmentType::SET )
+				clear();
+
 			for ( Component::Scene::Selectable * const item : p_items )
-				select( *item );
+				select( *item, AssignmentType::APPEND );
 		}
 
 		void unselect( const Component::Scene::Selectable & p_selectableComponent );
@@ -202,6 +211,26 @@ namespace VTX::App::Application::Selection
 		}
 
 		bool isSelected( const Component::Scene::Selectable & p_item ) const;
+
+		bool areSelected( const std::initializer_list<const Component::Scene::Selectable *> & p_items ) const;
+
+		template<Core::ECS::ECS_Component C>
+		bool areSelected( const std::initializer_list<C *> & p_items ) const
+		{
+			if ( p_items.size() == 0 )
+				return false;
+
+			for ( const C * item : p_items )
+			{
+				const Component::Scene::Selectable & selectableComponent
+					= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( item );
+
+				if ( !isSelected( selectableComponent ) )
+					return false;
+			}
+
+			return true;
+		}
 
 		template<Container C>
 		bool areSelected( const C & p_items ) const
