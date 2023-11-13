@@ -116,7 +116,7 @@ namespace VTX::PythonBinding::API::Selection
 
 			for ( const std::string & molName : moleculeNames )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molName );
 
 				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
@@ -128,7 +128,7 @@ namespace VTX::PythonBinding::API::Selection
 			}
 			for ( const size_t molIndex : moleculeIndexes )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molIndex );
 
 				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
@@ -141,7 +141,7 @@ namespace VTX::PythonBinding::API::Selection
 		}
 		else
 		{
-			auto view = App::VTXApp::get().getScene().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+			auto view = App::SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{

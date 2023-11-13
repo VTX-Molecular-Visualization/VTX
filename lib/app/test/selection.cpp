@@ -14,8 +14,9 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
+	using AssignmentType = Application::Selection::AssignmentType;
+
 	Test::Util::App::initApp();
-	Application::Scene & scene = VTXApp::get().getScene();
 
 	Test::Util::App::loadMolecule( "8OIT.mmtf" );
 	const Component::Scene::Selectable & selectableMol1
@@ -27,8 +28,21 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 	CHECK( CURRENT_SELECTION().isEmpty() );
 
-	Application::Selection::MoleculeData & molSelData1
-		= CURRENT_SELECTION().select<Application::Selection::MoleculeData>( selectableMol1 );
-
+	Application::Selection::SelectionData & molSelData1 = CURRENT_SELECTION().select( selectableMol1 );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
+	CHECK( !CURRENT_SELECTION().isSelected( selectableMol2 ) );
+	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+
+	Application::Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( selectableMol2 );
+	CHECK( !CURRENT_SELECTION().isSelected( selectableMol1 ) );
+	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
+	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+
+	CURRENT_SELECTION().select( selectableMol1, AssignmentType::APPEND );
+	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
+	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
+	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+
+	CURRENT_SELECTION().clear();
+	CHECK( CURRENT_SELECTION().isEmpty() );
 }

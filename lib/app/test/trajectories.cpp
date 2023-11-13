@@ -20,8 +20,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	Test::Util::App::initApp();
 	Test::Util::App::loadTestTrajectoryMolecule();
 
-	Application::Scene &	   scene	 = VTXApp::get().getScene();
-	App::Core::ECS::BaseEntity molEntity = scene.getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
+	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Trajectory & trajectoryComponent
 		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
@@ -41,9 +40,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		REQUIRE( !trajectoryComponent.getPlayer().isPlaying() );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		scene.update( 40.f );
+		SCENE().update( 40.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
 	}
 
@@ -57,11 +56,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == false );
 	}
@@ -76,11 +75,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 23 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == false );
 	}
@@ -95,11 +94,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 16 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
@@ -114,11 +113,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 23 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 8 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
@@ -133,21 +132,21 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		scene.update( 20.f );
+		SCENE().update( 20.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 7 );
-		scene.update( 8.f );
+		SCENE().update( 8.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		scene.update( 50.f );
+		SCENE().update( 50.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 4 );
-		scene.update( 72.f );
+		SCENE().update( 72.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 20 );
-		scene.update( 1.f );
+		SCENE().update( 1.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 19 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}

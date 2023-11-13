@@ -27,26 +27,24 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 	Test::Util::App::initApp();
 	Test::Util::App::loadTestMolecule();
 
-	Application::Scene & scene = VTXApp::get().getScene();
-
-	App::Core::ECS::View view1Element = scene.getAllSceneItems();
+	App::Core::ECS::View view1Element = SCENE().getAllSceneItems();
 	REQUIRE( view1Element.size() == 1 );
 
 	const App::Component::Scene::SceneItemComponent & sceneItemComponent
 		= view1Element.getComponent<App::Component::Scene::SceneItemComponent>( view1Element.front() );
 	REQUIRE( sceneItemComponent.getName() == App::Test::Util::App::MOLECULE_TEST_NAME );
 
-	App::Core::ECS::View allMolecules = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	App::Core::ECS::View allMolecules = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( allMolecules.size() == 1 );
 
 	App::Core::ECS::BaseEntity molEntity = allMolecules.front();
 	REQUIRE( molEntity != App::Core::ECS::INVALID_ENTITY );
-	REQUIRE( scene.getAllSceneItems().find( molEntity ) != scene.getAllSceneItems().end() );
+	REQUIRE( SCENE().getAllSceneItems().find( molEntity ) != SCENE().getAllSceneItems().end() );
 
-	App::Core::ECS::ViewIterator findFailIt = scene.getAllSceneItems().find( App::Core::ECS::BaseEntity( 666 ) );
-	REQUIRE( findFailIt == scene.getAllSceneItems().end() );
+	App::Core::ECS::ViewIterator findFailIt = SCENE().getAllSceneItems().find( App::Core::ECS::BaseEntity( 666 ) );
+	REQUIRE( findFailIt == SCENE().getAllSceneItems().end() );
 
-	scene.update( 0.015f );
+	SCENE().update( 0.015f );
 };
 
 TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
@@ -64,10 +62,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 
 	Test::Util::App::initApp();
 
-	// Create Scene
-	Application::Scene & scene			  = VTXApp::get().getScene();
-	CallbackTest		 addSceneItemTest = CallbackTest();
-	scene.onSceneItemAddedCallback().addCallback(
+	CallbackTest addSceneItemTest = CallbackTest();
+	SCENE().onSceneItemAddedCallback().addCallback(
 		&addSceneItemTest,
 		[ &addSceneItemTest ]( Component::Scene::SceneItemComponent & p_sceneItem )
 		{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); }
@@ -81,12 +77,12 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( addSceneItemTest.checked );
 
 	// Pick first Molecule
-	REQUIRE( scene.getItemCount() == 1 );
+	REQUIRE( SCENE().getItemCount() == 1 );
 
-	App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( 0 );
+	App::Core::ECS::BaseEntity moleculeEntity = SCENE().getItem( 0 );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
-	moleculeEntity = scene.getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
+	moleculeEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
 	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
@@ -102,7 +98,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );
 
-	const App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
 	const Renderer::GL::StructProxyMolecule & gpuProxyComponent
@@ -122,8 +118,6 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	// Create Scene
 	Test::Util::App::initApp();
 
-	const Application::Scene & scene = VTXApp::get().getScene();
-
 	// Create MoleculeEntity
 	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
 
@@ -134,11 +128,11 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	int i = 0;
 	BENCHMARK( "Get" )
 	{
-		App::Core::ECS::BaseEntity moleculeEntity = scene.getItem( i );
+		App::Core::ECS::BaseEntity moleculeEntity = SCENE().getItem( i );
 		i++;
 	};
 
-	App::Core::ECS::BaseEntity			   moleculeEntity = scene.getItem( 0 );
+	App::Core::ECS::BaseEntity			   moleculeEntity = SCENE().getItem( 0 );
 	const Component::Chemistry::Molecule & molecule
 		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
 
@@ -153,6 +147,6 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 
 	BENCHMARK( "View all" )
 	{
-		App::Core::ECS::View view = scene.getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+		App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	};
 }

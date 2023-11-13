@@ -28,15 +28,13 @@ namespace VTX::App::Internal::Action::ECS
 		//}
 		// else
 		{
-			Application::Scene & scene = VTXApp::get().getScene();
-
 			for ( const FilePath & moleculePath : _paths )
 			{
 				const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
 					= VTXApp::get().getEntityDirector().generateBuilder( Entity::MOLECULE_ENTITY_ID );
 
 				// Possibility to thread build function
-				entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &scene );
+				entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &SCENE() );
 				entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( moleculePath.string() );
 				entityBuilder->build();
 			}

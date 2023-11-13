@@ -21,14 +21,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 
 	interpretor.init();
 
-	App::Application::Scene & scene = App::VTXApp::get().getScene();
-
 	App::Test::Util::App::loadMolecule( "1AGA.mmtf" );
 	App::Test::Util::App::loadMolecule( "4HHB.pdb" );
 	App::Test::Util::App::loadMolecule( "8QHQ.pdb" );
 
 	App::Component::Chemistry::Molecule & mol4hhb
-		= App::VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( "4HHB" );
+		= App::SCENE().getComponentByName<App::Component::Chemistry::Molecule>( "4HHB" );
 
 	CHECK( SelectionUtil::checkSelection(
 		"test_mol_n_1",

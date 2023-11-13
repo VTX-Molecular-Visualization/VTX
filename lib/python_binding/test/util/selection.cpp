@@ -50,7 +50,7 @@ namespace VTX::App::Test::Util
 		const std::vector<size_t> & p_atoms
 	)
 	{
-		const App::Core::ECS::BaseEntity entity = VTXApp::get().getScene().getItem( p_molName );
+		const App::Core::ECS::BaseEntity entity = SCENE().getItem( p_molName );
 
 		const Component::Scene::Selectable & selectableComponent
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );

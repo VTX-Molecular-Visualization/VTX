@@ -33,9 +33,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	PythonBinding::Interpretor &				interpretor	   = *interpretorPtr;
 	interpretor.init();
 
-	App::Application::Scene & scene = App::VTXApp::get().getScene();
-
-	REQUIRE( scene.getItemCount() == 0 );
+	REQUIRE( App::SCENE().getItemCount() == 0 );
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
@@ -43,13 +41,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
 	openAction.execute();
 
-	REQUIRE( scene.getItemCount() == 1 );
+	REQUIRE( App::SCENE().getItemCount() == 1 );
 
 	std::stringstream ssCommandOpen = std::stringstream();
 	ssCommandOpen << "openFile( path=" << moleculePath << " )";
 
 	interpretor.runCommand( ssCommandOpen.str() );
-	REQUIRE( scene.getItemCount() == 2 );
+	REQUIRE( App::SCENE().getItemCount() == 2 );
 
 	try
 	{
@@ -108,8 +106,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 
 	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
 	interpretor->init();
-
-	App::Application::Scene & scene = App::VTXApp::get().getScene();
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
