@@ -79,7 +79,7 @@ namespace VTX::Renderer
 				  Programs {
 					  { "Debug",
 						std::vector<FilePath> { "default.vert", "debug.frag" },
-						Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_GREEN } },
+						Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
 								   { "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
 								   { "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },
 								   { "Factor",

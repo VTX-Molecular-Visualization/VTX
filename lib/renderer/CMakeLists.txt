@@ -22,4 +22,4 @@ target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 
 install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
 install(TARGETS vtx_renderer FILE_SET public_vendors DESTINATION vendor)
-install(DIRECTORY src/renderer/context/gl/shaders DESTINATION .)
+install(DIRECTORY shaders DESTINATION .)
