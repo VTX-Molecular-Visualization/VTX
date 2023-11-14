@@ -1,8 +1,8 @@
 #ifndef __VTX_UTIL_LOGGER__
 #define __VTX_UTIL_LOGGER__
 
+#include "filesystem.hpp"
 #include "generic/base_static_singleton.hpp"
-#include <filesystem>
 #include <memory>
 #include <spdlog/spdlog.h>
 
@@ -16,7 +16,8 @@ namespace VTX
 			explicit Logger( StructPrivacyToken p_token );
 			Logger( std::initializer_list<int> ) = delete;
 
-			void init( const std::filesystem::path & p_logPath = std::filesystem::current_path() );
+			void init( const FilePath & p_logPath = Filesystem::getExecutableDir() );
+			void flush();
 		};
 
 	} // namespace Util

@@ -6,6 +6,7 @@
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/vtx_app.hpp"
 #include <concepts>
 #include <string>
 #include <util/math/aabb.hpp>
@@ -21,20 +22,35 @@ namespace VTX::App::Application
 		Scene();
 		~Scene();
 
-		auto getAllSceneItems() const;
+		Core::ECS::View<Component::Scene::SceneItemComponent> getAllSceneItems() const;
 
 		template<SceneItem T>
-		auto getAllSceneItemsOftype() const
+		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
-			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
+			return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
 		void referenceItem( Component::Scene::SceneItemComponent & p_item );
 
 		const Core::ECS::BaseEntity getItem( const size_t p_index ) const;
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
-		bool						isEmpty() const;
-		size_t						getItemCount() const;
+
+		template<typename C>
+		const C & getComponentByName( const std::string & p_name ) const
+		{
+			const Core::ECS::BaseEntity entity = getItem( p_name );
+			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+		}
+
+		template<typename C>
+		C & getComponentByName( const std::string & p_name )
+		{
+			const Core::ECS::BaseEntity entity = getItem( p_name );
+			return VTXApp::MAIN_REGISTRY().getComponent<C>( entity );
+		}
+
+		bool   isEmpty() const;
+		size_t getItemCount() const;
 
 		virtual void update( const float & );
 

@@ -10,7 +10,7 @@
 namespace VTX::Util::Filesystem
 {
 	// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
-	std::filesystem::path getExecutableDir()
+	FilePath getExecutableDir()
 	{
 #ifdef _WIN32
 		// Windows specific
@@ -21,6 +21,12 @@ namespace VTX::Util::Filesystem
 #else
 		return std::filesystem::current_path();
 #endif
+	}
+
+	std::string getFileName( const FilePath & p_filePath )
+	{
+		std::string filenameWithExtension = p_filePath.filename().string();
+		return filenameWithExtension.substr( 0, filenameWithExtension.find_last_of( '.' ) );
 	}
 
 	const std::string readPath( const FilePath & p_filePath )

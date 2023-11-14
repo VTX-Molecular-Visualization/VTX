@@ -1,7 +1,9 @@
 #ifndef __VTX_UTIL_MATH_RANGE__
 #define __VTX_UTIL_MATH_RANGE__
 
+#include <assert.h>
 #include <type_traits>
+#include <vector>
 
 namespace VTX::Util::Math
 {
@@ -21,6 +23,15 @@ namespace VTX::Util::Math
 	  public:
 		Range() : Range( ZERO, ZERO ) {}
 		explicit Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
+
+		friend bool operator==( const Range<T> & p_lhs, const Range<T> & p_rhs )
+		{
+			return p_lhs._start == p_rhs._start && p_lhs._count == p_rhs._count;
+		}
+		friend bool operator!=( const Range<T> & p_lhs, const Range<T> & p_rhs )
+		{
+			return p_lhs._start != p_rhs._start || p_lhs._count != p_rhs._count;
+		}
 
 		T getFirst() const { return _start; };
 		T getLast() const { return _start + _count - ONE; };

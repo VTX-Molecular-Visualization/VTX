@@ -6,12 +6,16 @@
 #include <ui/core/tool_registration.hpp>
 #include <ui/qt/base_qt_tool.hpp>
 #include <ui/qt/widget/main_menu/menu_toolbutton_widget.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
 	class RMSDTool : public VTX::UI::QT::BaseQtTool, public VTX::App::Old::Core::Event::BaseEventReceiverVTX
 	{
 		REGISTER_TOOL( RMSDTool, TOOL_KEY );
+		
+	private:
+		inline static const FilePath STYLESHEET_FILE = FilePath( ":/stylesheet_tool.css" );
 
 	  public:
 		RMSDTool();

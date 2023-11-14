@@ -2,6 +2,7 @@
 #define __VTX_CORE_STRUCT_CATEGORY__
 
 #include "core/chemdb/category.hpp"
+#include <algorithm>
 #include <vector>
 
 namespace VTX::Core::Struct

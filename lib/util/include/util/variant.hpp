@@ -6,8 +6,29 @@
 #include <util/types.hpp>
 #include <variant>
 
-namespace VTX
+namespace VTX::Util
 {
+	namespace Variant
+	{
+		template<class... Args>
+		struct StructCastProxy
+		{
+			std::variant<Args...> v;
+
+			template<class... ToArgs>
+			operator std::variant<ToArgs...>() const
+			{
+				return std::visit( []( auto && arg ) -> std::variant<ToArgs...> { return arg; }, v );
+			}
+		};
+
+		template<class... Args>
+		StructCastProxy<Args...> cast( const std::variant<Args...> & p_v )
+		{
+			return { p_v };
+		}
+	} // namespace Variant
+
 	class VTXVariant
 	{
 	  private:
@@ -26,6 +47,12 @@ namespace VTX
 		}
 
 		template<typename T>
+		bool is() const
+		{
+			return std::holds_alternative<T>( _variant );
+		}
+
+		template<typename T>
 		T get() const
 		{
 			return std::get<T>( _variant );
@@ -41,6 +68,7 @@ namespace VTX
 		variant_t _variant;
 	};
 
-	using VariantMap = std::map<std::string, VTXVariant>;
-} // namespace VTX
+	using VariantMap = std::map<std::string, Util::VTXVariant>;
+
+} // namespace VTX::Util
 #endif

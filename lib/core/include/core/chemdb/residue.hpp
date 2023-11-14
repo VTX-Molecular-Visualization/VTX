@@ -230,7 +230,10 @@ namespace VTX::Core::ChemDB::Residue
 
 	const Util::Color::Rgba & getResidueColor( const SYMBOL p_symbol, const bool isStd = true );
 
+	const SYMBOL getSymbolFromShortName( const std::string & p_residueName );
 	const SYMBOL getSymbolFromName( const std::string & p_residueName );
+	const SYMBOL getSymbolFromLongName( const std::string & p_residueName );
+	const SYMBOL getSymbolFromAnyName( const std::string & p_residueName );
 
 	bool checkIfStandardFromName( const std::string & p_residueSymbol );
 

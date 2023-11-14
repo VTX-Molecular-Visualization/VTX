@@ -40,6 +40,7 @@ namespace VTX::Core::Struct
 		residueAtomCounts.resize( p_count, 0 );
 		residueFirstBondIndexes.resize( p_count, INVALID_INDEX );
 		residueBondCounts.resize( p_count, 0 );
+		residueOriginalIds.resize( p_count, 0 );
 	}
 	size_t Molecule::getResidueCount() const { return residueSymbols.size(); }
 

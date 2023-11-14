@@ -10,16 +10,20 @@ namespace VTX::IO::Util
 		const size_t atomIndex = _getIndexFromPosition( p_position );
 		_cellList[ atomIndex ].emplace_back( p_atomIndex );
 	}
-	void BondRecomputation::CellList::addAtomFromNonStandardResidue( const size_t				 p_atomIndex,
-																	 const chemfiles::Vector3D & p_position )
+	void BondRecomputation::CellList::addAtomFromNonStandardResidue(
+		const size_t				p_atomIndex,
+		const chemfiles::Vector3D & p_position
+	)
 	{
 		const size_t cellIndex = _getIndexFromPosition( p_position );
 		_cellList[ cellIndex ].emplace_back( p_atomIndex );
 		_nonStdAtoms[ cellIndex ].emplace_back( p_atomIndex );
 	}
 
-	void BondRecomputation::CellList::addCysteineSulfur( const size_t				 p_atomIndex,
-														 const chemfiles::Vector3D & p_position )
+	void BondRecomputation::CellList::addCysteineSulfur(
+		const size_t				p_atomIndex,
+		const chemfiles::Vector3D & p_position
+	)
 	{
 		const size_t cellIndex = _getIndexFromPosition( p_position );
 		_cellList[ cellIndex ].emplace_back( p_atomIndex );
@@ -30,8 +34,8 @@ namespace VTX::IO::Util
 	{
 		return _neighbourList[ p_index ];
 	}
-	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours(
-		const chemfiles::Vector3D & p_position ) const
+	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours( const chemfiles::Vector3D & p_position
+	) const
 	{
 		const size_t cellIndex = _getIndexFromPosition( p_position );
 		return _neighbourList[ cellIndex ];
@@ -258,9 +262,11 @@ namespace VTX::IO::Util
 		_recomputeBondsOfNonStandardResidues( p_frame, cellList );
 	}
 
-	void BondRecomputation::_recomputeDisulfides( chemfiles::Frame &				 p_frame,
-												  const CellList &					 p_cellList,
-												  const std::unordered_set<size_t> & p_sulfurAtoms )
+	void BondRecomputation::_recomputeDisulfides(
+		chemfiles::Frame &				   p_frame,
+		const CellList &				   p_cellList,
+		const std::unordered_set<size_t> & p_sulfurAtoms
+	)
 	{
 		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
 		{
@@ -285,12 +291,14 @@ namespace VTX::IO::Util
 		}
 	}
 
-	void BondRecomputation::_recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame,
-																  const CellList &	 p_cellList )
+	void BondRecomputation::_recomputeBondsOfNonStandardResidues(
+		chemfiles::Frame & frame,
+		const CellList &   p_cellList
+	)
 	{
 		const double cutoff				 = 3.48 * 2.;
 		const double cutoffPow2			 = cutoff * cutoff;
-		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::A_H );
+		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 
@@ -303,7 +311,7 @@ namespace VTX::IO::Util
 				const size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
 				const size_t atomNumInCell	   = p_cellList.getCellList()[ neighborCellIndex ].size();
 
-				const bool selfCell = ( cellIndex == neighborCellIndex );
+				// const bool selfCell = ( cellIndex == neighborCellIndex );
 
 				for ( size_t i = 0; i < atomsInCell; i++ )
 				{

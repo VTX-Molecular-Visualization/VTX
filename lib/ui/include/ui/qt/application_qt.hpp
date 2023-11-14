@@ -35,8 +35,6 @@ namespace VTX::UI::QT
 		void stop() override;
 		void quit() override;
 
-		void renderScene() const;
-
 		inline MainWindow &		  getMainWindow() { return *_mainWindow; }
 		inline const MainWindow & getMainWindow() const { return *_mainWindow; }
 

@@ -2,6 +2,8 @@
 #define __VTX_APP_APPLICATION_ECS_BUILDING_ENTITY_BUILDER__
 
 #include "app/core/ecs/base_entity.hpp"
+#include <array>
+#include <functional>
 #include <util/variant.hpp>
 #include <vector>
 
@@ -16,7 +18,7 @@ namespace VTX::App::Application::ECS::Building
 		COUNT
 	};
 
-	using Step			   = std::function<void( const Core::ECS::BaseEntity, const VariantMap & )>;
+	using Step			   = std::function<void( const Core::ECS::BaseEntity, const Util::VariantMap & )>;
 	using BuildPass		   = std::vector<Step>;
 	using BuildInstruction = std::array<BuildPass, int( PASS_ENUM::COUNT )>;
 
@@ -26,15 +28,15 @@ namespace VTX::App::Application::ECS::Building
 		EntityBuilder() {}
 		EntityBuilder( const BuildInstruction & p_instruction ) : _instruction( p_instruction ) {}
 
-		VariantMap &	   getData() { return _extraData; }
-		const VariantMap & getData() const { return _extraData; }
+		Util::VariantMap &		 getData() { return _extraData; }
+		const Util::VariantMap & getData() const { return _extraData; }
 
 		const Core::ECS::BaseEntity getEntity() const { return _entity; }
 
 		void build();
 
 	  protected:
-		VariantMap			  _extraData   = VariantMap();
+		Util::VariantMap	  _extraData   = Util::VariantMap();
 		BuildInstruction	  _instruction = BuildInstruction();
 		Core::ECS::BaseEntity _entity	   = Core::ECS::INVALID_ENTITY;
 	};

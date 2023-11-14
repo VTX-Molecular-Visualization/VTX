@@ -49,4 +49,7 @@ namespace VTX::Util
 			throw LibException( "Logger initialization failed : " + std::string( p_e.what() ) );
 		}
 	}
+
+	void Logger::flush() { spdlog::flush_on( spdlog::level::trace ); }
+
 } // namespace VTX::Util

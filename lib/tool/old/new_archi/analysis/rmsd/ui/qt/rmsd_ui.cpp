@@ -10,11 +10,16 @@
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>
 #include <ui/qt/widget_factory.hpp>
+#include <qglobal.h>
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
 	RMSDTool::RMSDTool() : VTX::UI::QT::BaseQtTool(), VTX::App::Old::Core::Event::BaseEventReceiverVTX()
 	{
+		//TODO : Manage one .qrc per tool
+		Q_INIT_RESOURCE( resources_tool );
+		UI::QT::QT_APP()->getMainWindow().appendStylesheet( STYLESHEET_FILE.string().c_str() );
+
 		_registerEvent( VTX::App::Old::Event::Global::SELECTION_CHANGE );
 	}
 

@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_QT_TOOL_MANAGER__
 #define __VTX_UI_QT_TOOL_MANAGER__
 
-#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::QT
@@ -18,8 +17,6 @@ namespace VTX::UI::QT
 		}
 
 	  private:
-		inline static const FilePath STYLESHEET_FILE_DEFAULT = FilePath( ":/stylesheet_tool.css" );
-
 	  public:
 		void registerTool( const BaseQtTool * const p_tool );
 

@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/iterator/atom.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
@@ -26,16 +27,23 @@ namespace VTX::App::Component::Chemistry
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
 
-		const size_t			getIndexFirstAtom() const;
+		size_t					getIndexFirstAtom() const;
 		void					setIndexFirstAtom( const size_t p_indexFirstAtom );
-		const size_t			getAtomCount() const;
+		size_t					getIndexLastAtom() const;
+		size_t					getAtomCount() const;
 		void					setAtomCount( const size_t p_atomCount );
-		const size_t			getIndexFirstBond() const;
+		size_t					getIndexFirstBond() const;
 		void					setIndexFirstBond( const size_t p_indexFirstBond );
-		const size_t			getBondCount() const;
+		size_t					getBondCount() const;
 		void					setBondCount( const size_t p_bondCount );
 		ChemDB::Residue::SYMBOL getSymbol() const;
 		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );
+		size_t					getIndexInOriginalChain() const;
+		void					setIndexInOriginalChain( const size_t p_index );
+
+		const std::string & getShortName() const;
+		const std::string & getName() const;
+		const std::string & getLongName() const;
 
 		const Util::Color::Rgba & getColor() const { return _color; };
 		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
@@ -46,17 +54,13 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Atom::TYPE getAtomType() const;
 		void			   setAtomType( const ChemDB::Atom::TYPE p_type );
 
-		size_t getIndexInOriginalChain() { return _indexInOriginalChain; };
-		void   setIndexInOriginalChain( const size_t p_indexInOriginalChain )
-		{
-			_indexInOriginalChain = p_indexInOriginalChain;
-		};
-
 		const char getInsertionCode() const { return _insertionCode; }
 		void	   setInsertionCode( const char p_insertionCode ) { _insertionCode = p_insertionCode; }
 
 		ChemDB::SecondaryStructure::TYPE getSecondaryStructure() const { return _ssType; }
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
+
+		Iterator::AtomContainer atoms() const;
 
 	  private:
 		Molecule * _moleculePtr = nullptr;

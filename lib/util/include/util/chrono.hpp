@@ -32,7 +32,7 @@ namespace VTX::Util
 		Clock::time_point _end;
 	};
 
-	inline static const Chrono::Timer CHRONO_CPU = []( const Chrono::Task & p_task )
+	inline const Chrono::Timer CHRONO_CPU = []( const Chrono::Task & p_task )
 	{
 		static Chrono c;
 		c.start();

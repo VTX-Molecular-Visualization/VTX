@@ -2,6 +2,8 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CHAIN__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/iterator/atom.hpp"
+#include "app/component/chemistry/iterator/residue.hpp"
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
@@ -24,17 +26,24 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
 
-		const size_t getIndexFirstResidue() const;
-		void		 setIndexFirstResidue( const size_t p_residueIndex );
+		size_t getIndexFirstResidue() const;
+		size_t getIndexLastResidue() const;
+		void   setIndexFirstResidue( const size_t p_residueIndex );
 
-		const size_t getResidueCount() const;
-		void		 setResidueCount( const size_t p_residueCount );
+		size_t getResidueCount() const;
+		void   setResidueCount( const size_t p_residueCount );
+
+		size_t getIndexFirstAtom() const;
+		size_t getIndexLastAtom() const;
 
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }
 
 		const Util::Color::Rgba & getColor() const { return _defaultColor; };
 		void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
+
+		Iterator::ResidueContainer residues() const;
+		Iterator::AtomContainer	   atoms() const;
 
 	  private:
 		Molecule *		  _moleculePtr	   = nullptr;

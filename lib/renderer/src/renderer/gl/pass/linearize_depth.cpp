@@ -28,6 +28,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo->bind( GL_DRAW_FRAMEBUFFER );
 		in.textureDepth->bindToUnit( 0 );
 		_program->use();
+
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo->unbind();
 	}

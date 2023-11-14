@@ -8,6 +8,9 @@ namespace VTX::App::Component::Chemistry
 {
 	Atom::Atom( Residue * const p_residue ) : Atom( p_residue->getMoleculePtr() ) {};
 
+	const std::string & Atom::getName() const { return _moleculePtr->_moleculeStruct.atomNames[ _index ]; }
+	void Atom::setName( const std::string & p_name ) { _moleculePtr->_moleculeStruct.atomNames[ _index ] = p_name; }
+
 	float Atom::getVdwRadius() const { return _moleculePtr->_atomRadii[ _index ]; }
 
 	const Vec3f & Atom::getLocalPosition() const
@@ -25,6 +28,12 @@ namespace VTX::App::Component::Chemistry
 	Vec3f Atom::getWorldPosition( const size_t & p_frameIndex ) const
 	{
 		return Vec3f( Vec4f( getLocalPosition( p_frameIndex ), 0 ) * _moleculePtr->getTransform().get() );
+	}
+
+	const ChemDB::Atom::SYMBOL & Atom::getSymbol() const { return _moleculePtr->_moleculeStruct.atomSymbols[ _index ]; }
+	void						 Atom::setSymbol( const ChemDB::Atom::SYMBOL & p_symbol )
+	{
+		_moleculePtr->_moleculeStruct.atomSymbols[ _index ] = p_symbol;
 	}
 
 	bool Atom::isVisible() { return _moleculePtr->_atomVisibilities[ _index ]; }

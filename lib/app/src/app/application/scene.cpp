@@ -4,19 +4,20 @@
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/core/ecs/registry.hpp"
 #include "app/entity/all_entities.hpp"
 
 namespace VTX::App::Application
 {
-	auto Scene::getAllSceneItems() const
+	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
-		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
+		return VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = ECS::EntityDirector::build( Entity::CAMERA_ENTITY_ID );
-		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+		App::Core::ECS::BaseEntity cameraEntity = VTXApp::get().getEntityDirector().build( Entity::CAMERA_ENTITY_ID );
+		_camera = &( VTXApp::MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 	}
@@ -35,7 +36,7 @@ namespace VTX::App::Application
 	{
 		size_t count = 0;
 
-		for ( const entt::entity entity : getAllSceneItems() )
+		for ( const Core::ECS::BaseEntity entity : getAllSceneItems() )
 		{
 			if ( count == p_index )
 				return entity;
@@ -47,11 +48,12 @@ namespace VTX::App::Application
 	}
 	const Core::ECS::BaseEntity Scene::getItem( const std::string & p_name ) const
 	{
-		auto group = getAllSceneItems();
-		for ( const entt::entity entity : group )
+		const Core::ECS::View view = getAllSceneItems();
+
+		for ( const Core::ECS::BaseEntity entity : view )
 		{
 			const Component::Scene::SceneItemComponent & sceneItem
-				= group.get<Component::Scene::SceneItemComponent>( entity );
+				= view.getComponent<Component::Scene::SceneItemComponent>( entity );
 
 			if ( sceneItem.getName() == p_name )
 				return entity;
@@ -60,7 +62,7 @@ namespace VTX::App::Application
 		return Core::ECS::INVALID_ENTITY;
 	}
 
-	void Scene::clear() { MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
+	void Scene::clear() { VTXApp::MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>(); }
 
 	void Scene::reset()
 	{
@@ -206,14 +208,14 @@ namespace VTX::App::Application
 	}
 	void Scene::_computeAABB()
 	{
-		const entt::basic_view view
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+		const Core::ECS::View view
+			= VTXApp::MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
-		for ( const entt::entity entity : view )
+		for ( const Core::ECS::BaseEntity entity : view )
 		{
-			const Component::Scene::AABB & aabbComponent = view.get<Component::Scene::AABB>( entity );
+			const Component::Scene::AABB & aabbComponent = view.getComponent<Component::Scene::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
 	}
@@ -223,21 +225,16 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
-		const entt::basic_view view
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+		Core::ECS::View updatables
+			= VTXApp::MAIN_REGISTRY()
+				  .getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
-		for ( entt::entity entity : view )
+		for ( const Core::ECS::BaseEntity entity : updatables )
 		{
-			const Component::Scene::Updatable & updatableComponent = view.get<Component::Scene::Updatable>( entity );
+			const Component::Scene::Updatable & updatableComponent
+				= updatables.getComponent<const Component::Scene::Updatable>( entity );
 			updatableComponent.update( p_deltaTime );
 		}
-
-		// Dynamic.
-		// for ( PairMoleculePtrFloat & pair : _molecules )
-		//{
-		//	MoleculePtr const molecule = pair.first;
-		//	molecule->updateTrajectory( p_deltaTime );
-		//}
 
 		// for ( const PairMoleculePtrFloat & pair : _molecules )
 		//{

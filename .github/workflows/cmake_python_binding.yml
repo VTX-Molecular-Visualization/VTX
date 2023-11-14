@@ -1,0 +1,46 @@
+name: CMake Python Binding
+
+on:
+  push:
+    branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
+    paths: ['lib/python_binding/**', '.github/workflows/cmake_python_binding.yml']
+
+env:
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/python_binding
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+      
+    - name: Create default profile
+      run: conan profile detect --force
+
+    - name: Create package
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run:  |
+        conan export ../util
+        conan export ../core
+        conan export ../app   
+        conan export ../renderer
+        conan export ../io
+        conan export ../io/chemfiles
+        conan create . --build=missing --settings=compiler.cppstd=20
+        
+    
+    - name: Test
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run:  |
+        conan export ../io
+        conan create test --build=missing --settings=compiler.cppstd=20

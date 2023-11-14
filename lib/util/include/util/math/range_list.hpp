@@ -14,7 +14,7 @@ namespace VTX::Util::Math
 	  public:
 		struct Iterator
 		{
-			using ListIt = typename std::list<Range<T>>::iterator;
+			using ListIt = typename std::list<Range<T>>::const_iterator;
 
 		  public:
 			Iterator( const ListIt & p_it ) : _listIterator( p_it ) {}
@@ -96,13 +96,70 @@ namespace VTX::Util::Math
 		};
 
 	  public:
+		static RangeList<T> fromList( const std::vector<T> & p_list )
+		{
+			RangeList res = RangeList();
+
+			for ( T value : p_list )
+				res.addValue( value );
+
+			return res;
+		}
+
+	  public:
 		RangeList() {}
-		explicit RangeList( const std::vector<Range<T>> & p_ranges )
+		explicit RangeList( const std::initializer_list<Range<T>> & p_ranges )
 		{
 			for ( const Range<T> & range : p_ranges )
 			{
 				addRange( range );
 			}
+		}
+		explicit RangeList( const std::list<Range<T>> & p_ranges )
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				addRange( range );
+			}
+		}
+
+		friend bool operator==( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
+		{
+			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
+				return false;
+
+			auto itLhs = p_lhs._ranges.begin();
+			auto itRhs = p_rhs._ranges.begin();
+
+			while ( itLhs != p_lhs._ranges.end() )
+			{
+				if ( *itLhs != *itRhs )
+					return false;
+
+				++itLhs;
+				++itRhs;
+			}
+
+			return true;
+		}
+		friend bool operator!=( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
+		{
+			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
+				return true;
+
+			auto itLhs = p_lhs._ranges.begin();
+			auto itRhs = p_rhs._ranges.begin();
+
+			while ( itLhs != p_lhs._ranges.end() )
+			{
+				if ( *itLhs != *itRhs )
+					return true;
+
+				++itLhs;
+				++itRhs;
+			}
+
+			return false;
 		}
 
 		void addRange( const Range<T> & p_range )
@@ -170,7 +227,6 @@ namespace VTX::Util::Math
 				_ranges.insert( it, p_range );
 			}
 		}
-
 		void removeRange( const Range<T> & p_range )
 		{
 			auto it = _ranges.begin();
@@ -223,8 +279,13 @@ namespace VTX::Util::Math
 		void addValue( const T p_value ) { addRange( Range<T>( p_value ) ); }
 		void removeValue( const T p_value ) { removeRange( Range<T>( p_value ) ); }
 
-		Iterator begin() { return Iterator( _ranges.begin() ); }
-		Iterator end() { return Iterator( _ranges.end() ); }
+		Iterator begin() const { return Iterator( _ranges.begin() ); }
+		Iterator end() const { return Iterator( _ranges.end() ); }
+
+		typename std::list<Range<T>>::iterator		 rangeBegin() { return _ranges.begin(); }
+		typename std::list<Range<T>>::iterator		 rangeEnd() { return _ranges.end(); }
+		typename std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		typename std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
 
 		bool contains( const T p_value ) const
 		{
@@ -287,6 +348,17 @@ namespace VTX::Util::Math
 			}
 
 			return true;
+		}
+
+		bool   isEmpty() const { return _ranges.size() == 0; }
+		size_t size() const
+		{
+			size_t res = 0;
+
+			for ( Range<T> range : _ranges )
+				res += range.getCount();
+
+			return res;
 		}
 
 	  private:

@@ -42,8 +42,8 @@ namespace VTX::App::Internal::Action::ECS
 		void execute();
 
 	  private:
-		std::vector<FilePath>			  _paths = std::vector<FilePath>();
-		std::map<FilePath, std::string *> _buffers;
+		std::vector<FilePath>			  _paths   = std::vector<FilePath>();
+		std::map<FilePath, std::string *> _buffers = std::map<FilePath, std::string *>();
 
 		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
 			= std::vector<Component::Chemistry::Molecule *>();
