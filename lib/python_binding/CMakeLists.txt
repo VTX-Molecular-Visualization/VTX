@@ -26,7 +26,6 @@ target_link_libraries(vtx_python_binding PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_binding PRIVATE pybind11::embed)
 
 pybind11_add_module(PyTX SHARED "src/python_binding/binding/vtx_module.cpp")
-set_target_properties(PyTX PROPERTIES OUTPUT_NAME PyTX)
 
 target_link_libraries(PyTX PRIVATE vtx_util::vtx_util)
 target_link_libraries(PyTX PRIVATE vtx_core::vtx_core)
