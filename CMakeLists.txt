@@ -37,14 +37,6 @@ if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
 endif()
 
-# TODO: better solution?
-# Force _DEBUG preprocessor on linux.
-if(CMAKE_COMPILER_IS_GNUCC)
-	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-		add_definitions(-D_DEBUG)
-	endif()
-endif()
-
 add_custom_target(
 	vtx_copy_shader
 	ALL COMMAND
