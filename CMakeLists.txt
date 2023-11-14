@@ -31,17 +31,6 @@ target_link_libraries(vtx PRIVATE vtx_tool::vtx_tool)
 target_link_libraries(vtx PRIVATE vtx_ui::vtx_ui)
 target_link_libraries(vtx PRIVATE vtx_util::vtx_util)
 
-
-# Copy dlls in .exe directory
-#if(MSVC)
-#	add_custom_command(TARGET VTX POST_BUILD
-#	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX> $<TARGET_FILE_DIR:VTX>
-#	  COMMAND_EXPAND_LISTS
-#	)
-#endif()
-
-
-
 # TODO: user command line argument?
 option(DEFINE_PRODUCTION "Enable production mode" OFF)
 if(DEFINE_PRODUCTION)
@@ -55,15 +44,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
 		add_definitions(-D_DEBUG)
 	endif()
 endif()
-
-# TODO: move in corresponding lib.
-# Get CMake helper functions.
-# list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-# include(qt_helper)
-# win_deploy_qt(VTX)
-
-# Copy render effect presets to build directory.
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory libraries ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
 
 add_custom_target(
 	vtx_copy_shader

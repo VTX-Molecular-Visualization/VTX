@@ -8,7 +8,7 @@
 layout( binding = 0 ) uniform sampler2D inTexture;
 
 // Out.
-out vec4 outFragColor;
+layout( location = 0 ) out vec4 outFragColor;
 
 // the minimum amount of local contrast required to apply algorithm.
 const float EDGE_THRESHOLD
@@ -41,6 +41,9 @@ float	   rgb2luma( const vec3 rgb ) { return dot( rgb, luma ); }
 
 void main()
 {
+outFragColor = vec4( 1.f, 1.f, 1.f, 1.f );
+return;
+
 	vec2 invTexSize = 1.f / textureSize( inTexture, 0 );
 	vec2 texCoord	= gl_FragCoord.xy * invTexSize;
 
