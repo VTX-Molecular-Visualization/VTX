@@ -33,7 +33,7 @@ add_dependencies(vtx_python_binding_test vtx_python_binding_copy_script)
 IF (WIN32)
 	set(FILENAME_PYTHON_MODULE PyTX.pyd)
 ELSE()
-	set(FILENAME_PYTHON_MODULE pytx.so)
+	set(FILENAME_PYTHON_MODULE PyTX.so)
 ENDIF()
 
 add_custom_target(vtx_python_binding_copy_module ALL COMMAND
