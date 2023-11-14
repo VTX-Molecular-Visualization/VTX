@@ -1,3 +1,4 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 from conan.tools.files import copy
@@ -25,20 +26,19 @@ class VTXUiTestRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
 
-    #def generate(self):
-        #for dep in self.dependencies.values():
-        #    copy(self, "*.dylib", dep.cpp_info.libdir, self.build_folder)
-        #    copy(self, "*.dll", dep.cpp_info.libdir, self.build_folder)
+    def generate(self):
+        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, self.build_folder)
             
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        #self.run("ctest --rerun-failed --output-on-failure")
+        self.run("ctest --rerun-failed --output-on-failure")
 
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui_test"]

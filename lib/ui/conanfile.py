@@ -1,5 +1,7 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import copy
 
 class VTXUiRecipe(ConanFile):
     name = "vtx_ui"
@@ -20,7 +22,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("qt/6.6.0", transitive_headers=True)        
+        self.requires("qt/6.6.0", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -30,10 +32,7 @@ class VTXUiRecipe(ConanFile):
         cmake_layout(self)
 
     def generate(self):
-        for dep in self.dependencies.values():
-            print(dep)
-            #copy(self, "*.dylib", dep.cpp_info.libdir, self.build_folder)
-            #copy(self, "*.dll", dep.cpp_info.libdir, self.build_folder)
+        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, self.build_folder)
 
     def build(self):
         cmake = CMake(self)
@@ -43,11 +42,7 @@ class VTXUiRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        #if self.settings.os == "Windows":
-        #    copy(self, "*.lib", src=os.path.join(self.build_folder, "libs"), ...)
-        #    copy(self, "*.dll", ....)
-        #else:
-        #    copy(self, "*.lib", src=os.path.join(self.build_folder, "build", "libs"), ...)
+        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui"]

@@ -81,6 +81,12 @@ add_custom_target(
 	$<TARGET_FILE_DIR:vtx>/python_script)
 add_dependencies(vtx vtx_copy_python_script)	
 
+IF (WIN32)
+	set(FILENAME_PYTHON_MODULE PyTX.pyd)
+ELSE()
+	set(FILENAME_PYTHON_MODULE pytx.so)
+ENDIF()
+
 add_custom_target(
 	vtx_copy_python_module
 	ALL COMMAND
