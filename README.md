@@ -116,69 +116,42 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
-## BUILD FROM SOURCE (Available soon)
+## BUILD FROM SOURCE
 
 ### Prerequisites
 
-- C++17 compiler (MSVC or GCC)
+- C++20 compiler (MSVC or GCC)
 - Git
-- CMake
-- Qt 6.2.2
 
 ### Windows
 
 - Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
-- Install Qt 6.2.2 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 64-bit" is needed)
-- Add CMake to your "Path" environment variable: \<dir\>/CMake/bin
-- Create an environment variable "CMAKE_PREFIX_PATH" with value: \<dir\>/Qt/6.2.2/msvc2019_64/lib/cmake
+- Install [Conan 2](https://conan.io/downloads)
 
-#### Create Visual Studio solution with CMake
+### Create Conan profile
 
 ```
-git clone https://gitlab.com/VTX_mol/VTX.git
-cd VTX
-cmake -B build .
+conan profile detect --force
 ```
 
-It will build external libraries and create the solution in the build folder.
-Others dependencies are downloaded during the first compilation.
-
-#### Build in command line
-
-If you don't want to use Visual Studio, you can also build executable from command line:
+### Set packages in editable mode
 
 ```
-cd VTX
-cmake --build build --config <Release|Debug>
+conan editable add lib/app
+conan editable add lib/core
+conan editable add lib/io
+conan editable add lib/io/chemfiles
+conan editable add lib/python_binding
+conan editable add lib/renderer
+conan editable add lib/tool
+conan editable add lib/ui
+conan editable add lib/util
 ```
 
-### Linux
-
-#### Create makefile with CMake
+### Build VTX
 
 ```
-git clone https://gitlab.com/VTX_mol/VTX.git
-cd VTX
-cmake -B build --config <Release|Debug> .
-```
-
-#### Build a release in command line
-
-```
-cd VTX
-cd build
-make
-```
-
-### CMake options
-
-- DEFINE_PRODUCTION: build for production usage (disable some dev features)
-- BUILD_LIB: build libraries (you can disable this option once the /lib folder is generated
-
-Example:
-
-```
-cmake -B build -DDEFINE_PRODUCTION=ON -DBUILD_LIB=OFF .
+conan build . --build=missing --build=editable -o 'qt/*:shared=True' --settings=compiler.cppstd=20
 ```
 
 ## License
