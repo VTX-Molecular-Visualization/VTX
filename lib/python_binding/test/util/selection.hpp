@@ -44,7 +44,7 @@ namespace VTX::App::Test::Util
 			return res;
 		}
 
-		template<Container C>
+		template<ContainerOfType<const SelectionData *> C>
 		static SelectionObj createSelection( const C & p_items )
 		{
 			SelectionObj res = SelectionObj();

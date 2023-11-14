@@ -123,6 +123,7 @@ namespace VTX::App::Core::ECS
 			entt::basic_view view = _enttRegistry.view<C>();
 			_enttRegistry.destroy( view.begin(), view.end() );
 		}
+		void clear() { _enttRegistry.clear(); }
 
 	  private:
 		entt::registry _enttRegistry = entt::registry();

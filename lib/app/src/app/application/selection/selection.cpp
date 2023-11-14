@@ -200,6 +200,18 @@ namespace VTX::App::Application::Selection
 		}
 	}
 
+	void Selection::selectAll(
+		const std::initializer_list<const Component::Scene::Selectable *> & p_items,
+		const AssignmentType												p_assignment
+	)
+	{
+		if ( p_assignment == AssignmentType::SET )
+			clear();
+
+		for ( const Component::Scene::Selectable * const item : p_items )
+			select( *item, AssignmentType::APPEND );
+	}
+
 	void Selection::unselect( const Component::Scene::Selectable & p_selectableComponent )
 	{
 		const std::unique_ptr<SelectionData> & selItem = _getSelectionDataPtr( p_selectableComponent );

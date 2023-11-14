@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_MATH_RANGE_VECTOR__
 #define __VTX_UTIL_MATH_RANGE_VECTOR__
 
+#include "util/concepts.hpp"
 #include "util/math/range.hpp"
 #include <concepts>
 #include <list>
@@ -298,57 +299,85 @@ namespace VTX::Util::Math
 
 			return false;
 		}
-		bool contains( const std::vector<T> & p_values ) const
-		{
-			for ( const T & value : p_values )
-			{
-				bool res = false;
-
-				for ( const Range<T> & range : _ranges )
-				{
-					if ( range.contains( value ) )
-					{
-						res = true;
-						break;
-					}
-				}
-
-				if ( !res )
-					return false;
-			}
-
-			return true;
-		}
-		bool contains( const Range<T> p_range ) const
+		bool contains( const Range<T> & p_range ) const
 		{
 			for ( const Range<T> & range : _ranges )
 			{
-				if ( range.contains( p_range ) )
-					return true;
+				if ( range.contains( p_range.getFirst() ) )
+				{
+					return range.contains( p_range.getLast() );
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			return false;
 		}
-		bool contains( const std::vector<Range<T>> p_ranges ) const
+
+		template<ContainerOfType<Range<T>> C>
+		bool contains( const C & p_ranges ) const
 		{
-			for ( const Range<T> & rangeToFind : p_ranges )
+			for ( const Range<T> & range : p_ranges )
 			{
-				bool res = false;
-
-				for ( const Range<T> & range : _ranges )
+				if ( !contains( range ) )
 				{
-					if ( range.contains( rangeToFind ) )
-					{
-						res = true;
-						break;
-					}
-				}
-
-				if ( !res )
 					return false;
+				}
 			}
 
 			return true;
+		}
+		template<ContainerOfType<T> C>
+		bool contains( const C & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		bool contains( const RangeList & p_ranges ) const { return contains( p_ranges._ranges ); }
+		bool contains( const std::initializer_list<Range<T>> & p_ranges ) const
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				if ( !contains( range ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		bool contains( const std::initializer_list<T> & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		bool intersectWith( const Range<T> & p_other ) const
+		{
+			for ( const Range<T> & range : _ranges )
+			{
+				if ( range.intersectWith( p_other ) )
+					return true;
+			}
+
+			return false;
 		}
 
 		void   clear() { _ranges.clear(); }
@@ -357,7 +386,7 @@ namespace VTX::Util::Math
 		{
 			size_t res = 0;
 
-			for ( Range<T> range : _ranges )
+			for ( const Range<T> & range : _ranges )
 				res += range.getCount();
 
 			return res;

@@ -58,8 +58,11 @@ namespace VTX::App::Application
 
 	void Scene::clear()
 	{
+		_onSceneItemAddedCallback.clear();
+
 		_itemIndexes.clear();
 		_itemIndexes.shrink_to_fit();
+
 		MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
 	}
 

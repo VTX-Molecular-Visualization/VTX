@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <type_traits>
+#include <util/math.hpp>
 #include <vector>
 
 namespace VTX::Util::Math
@@ -23,6 +24,7 @@ namespace VTX::Util::Math
 	  public:
 		Range() : Range( ZERO, ZERO ) {}
 		explicit Range( T p_start, T p_count = ONE ) : _start( p_start ), _count( p_count ) {}
+		Range( const Range<T> & p_source ) : Range( p_source._start, p_source._count ) {}
 
 		friend bool operator==( const Range<T> & p_lhs, const Range<T> & p_rhs )
 		{
@@ -94,6 +96,24 @@ namespace VTX::Util::Math
 			_start = newStart;
 			_count = newLast - newStart + 1;
 		};
+		Range<T> intersect( const Range<T> & p_other )
+		{
+			if ( _start >= p_other._start + p_other._count || p_other._start >= _start + _count )
+			{
+				return Range<T>();
+			}
+			else
+			{
+				T start = Math::max( _start, p_other._start );
+				T last	= Math::min( getLast(), p_other.getLast() );
+
+				return createFirstLast( start, last );
+			}
+		};
+		bool intersectWith( const Range<T> & p_other ) const
+		{
+			return !( _start >= p_other._start + p_other._count || p_other._start >= _start + _count );
+		}
 
 		bool isValid() const { return _count > ZERO; };
 

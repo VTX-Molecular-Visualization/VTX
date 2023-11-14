@@ -54,6 +54,14 @@ namespace VTX
 				  } -> std::same_as<bool>;
 		  };
 
+	template<typename ContainerType, typename ValueType>
+	concept ContainerOfType = requires( ContainerType p_container ) {
+								  requires Container<ContainerType>;
+								  {
+									  *( p_container.begin() )
+									  } -> std::same_as<ValueType &>;
+							  };
+
 	template<typename EnumType>
 	concept EnumConcept = std::is_enum<EnumType>::value;
 } // namespace VTX

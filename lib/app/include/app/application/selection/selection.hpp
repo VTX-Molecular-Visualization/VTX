@@ -191,22 +191,27 @@ namespace VTX::App::Application::Selection
 			return select<T>( selectableComponent, p_selectionData, p_assignment );
 		}
 
-		template<Container C>
+		void selectAll(
+			const std::initializer_list<const Component::Scene::Selectable *> & p_items,
+			const AssignmentType												p_assignment = AssignmentType::SET
+		);
+
+		template<ContainerOfType<const Component::Scene::Selectable *> C>
 		void selectAll( const C & p_items, const AssignmentType p_assignment = AssignmentType::SET )
 		{
 			if ( p_assignment == AssignmentType::SET )
 				clear();
 
-			for ( Component::Scene::Selectable * const item : p_items )
+			for ( const Component::Scene::Selectable * const item : p_items )
 				select( *item, AssignmentType::APPEND );
 		}
 
 		void unselect( const Component::Scene::Selectable & p_selectableComponent );
 
-		template<Container C>
+		template<ContainerOfType<const Component::Scene::Selectable *> C>
 		void unselectAll( const C & p_items )
 		{
-			for ( Component::Scene::Selectable * const item : p_items )
+			for ( const Component::Scene::Selectable * const item : p_items )
 				unselect( *item );
 		}
 
@@ -232,13 +237,13 @@ namespace VTX::App::Application::Selection
 			return true;
 		}
 
-		template<Container C>
+		template<ContainerOfType<const SelectionData *> C>
 		bool areSelected( const C & p_items ) const
 		{
 			if ( p_items.size() == 0 )
 				return false;
 
-			for ( SelectionData * const item : p_items )
+			for ( const SelectionData * const item : p_items )
 				if ( !isSelected( item->getSelectionComponent() ) )
 					return false;
 
