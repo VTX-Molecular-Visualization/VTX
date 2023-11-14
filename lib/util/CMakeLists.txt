@@ -1,6 +1,6 @@
 message("vtx_util")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
+include(cmake/configure_target.cmake)
 project(vtx_util)
 
 find_package(glm REQUIRED)
@@ -10,7 +10,7 @@ find_package(magic_enum REQUIRED)
 find_package(asio REQUIRED)
 
 add_library(vtx_util)
-configureTarget(vtx_util)
+configure_target(vtx_util)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)

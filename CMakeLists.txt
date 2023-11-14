@@ -1,6 +1,6 @@
 message("vtx")
 cmake_minimum_required(VERSION 3.21)
-include(cmake/configure-target.cmake)
+
 project(vtx)
 
 find_package(vtx_app CONFIG REQUIRED)
@@ -19,7 +19,7 @@ if(MSVC)
 endif()
 
 add_executable(vtx ${HEADERS} ${SOURCES} ${RESOURCES})
-configureTarget(vtx)
+configure_target(vtx)
 target_include_directories(vtx PUBLIC include)
 
 target_link_libraries(vtx PRIVATE vtx_app::vtx_app)

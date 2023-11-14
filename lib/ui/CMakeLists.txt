@@ -1,10 +1,7 @@
 message("vtx_ui")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
 include(cmake/qt_helper.cmake)
 project(vtx_ui)
-
-configure_qt()
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
@@ -19,8 +16,9 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 #find_package(Qt6 COMPONENTS Gif REQUIRED)
 #find_package(Qt6 COMPONENTS Jpeg REQUIRED)
 
+configure_qt()
 add_library(vtx_ui)
-configureTarget(vtx_ui)
+configure_target(vtx_ui)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -41,19 +39,13 @@ target_link_libraries(vtx_ui PRIVATE Qt6::Core)
 target_link_libraries(vtx_ui PRIVATE Qt6::Gui)
 target_link_libraries(vtx_ui PRIVATE Qt6::Widgets)
 target_link_libraries(vtx_ui PRIVATE Qt6::OpenGLWidgets)
-if(MSVC)
-	target_link_libraries(vtx_ui PRIVATE Qt6::QWindowsIntegrationPlugin)
-endif()
- 
 #target_link_libraries(vtx_ui PRIVATE Qt6::Svg)
 #target_link_libraries(vtx_ui PRIVATE Qt6::Gif)
 #target_link_libraries(vtx_ui PRIVATE Qt6::Jpeg)
+if(MSVC)
+	target_link_libraries(vtx_ui PRIVATE Qt6::QWindowsIntegrationPlugin)
+endif()
 
 apply_qt_options(vtx_ui)
-
-#add_custom_command(TARGET vtx_ui POST_BUILD
-#  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:vtx_ui> $<TARGET_RUNTIME_DLLS:vtx_ui>
-#  COMMAND_EXPAND_LISTS
-#)
 
 install(TARGETS vtx_ui FILE_SET public_headers DESTINATION include)

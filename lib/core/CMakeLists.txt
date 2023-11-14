@@ -1,12 +1,12 @@
 message("vtx_core")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
+
 project(vtx_core)
 
 find_package(vtx_util CONFIG REQUIRED)
 
 add_library(vtx_core STATIC ${HEADERS} ${SOURCES})
-configureTarget(vtx_core)
+configure_target(vtx_core)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
