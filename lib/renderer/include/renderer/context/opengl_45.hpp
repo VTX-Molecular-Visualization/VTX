@@ -321,9 +321,11 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
 			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
-			auto *								  src	= entry->value;
-			auto *								  dest	= &p_value;
+			auto * const						  src	= entry->value;
+			auto * const						  dest	= &p_value;
+
 			assert( src != nullptr && dest != nullptr && entry->size );
+
 			memcpy( src, dest, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset, GLsizei( entry->size ) );
 		}
@@ -333,17 +335,13 @@ namespace VTX::Renderer::Context
 		{
 			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
-			// alignas( T ) void * valueAsVoid = _uniforms[ p_program + p_uniform ]->value;
-			// T *					valueAsT	= reinterpret_cast<T *>( valueAsVoid );
-
-			// assert( valueAsT != nullptr );
 			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
-			auto *								  src	= &p_value;
-			auto *								  dest	= entry->value;
-			assert( src != nullptr && dest != nullptr && entry->size );
-			memcpy( src, dest, entry->size );
+			auto * const						  src	= &p_value;
+			auto * const						  dest	= entry->value;
 
-			// p_value = *valueAsT;
+			assert( src != nullptr && dest != nullptr && entry->size );
+
+			memcpy( src, dest, entry->size );
 		}
 
 	  private:
