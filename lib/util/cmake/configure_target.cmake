@@ -20,4 +20,6 @@ function(configure_target p_target)
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		target_compile_definitions(p_target PRIVATE _DEBUG)
 	endif()
+	# Print CMAKE_BUILD_TYPE.
+	message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endfunction()
