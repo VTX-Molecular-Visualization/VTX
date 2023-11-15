@@ -14,7 +14,7 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "python_script/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "python_script/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
