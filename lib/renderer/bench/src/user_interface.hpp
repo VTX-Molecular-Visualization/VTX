@@ -566,7 +566,7 @@ namespace VTX::Bench
 									= std::get<StructUniformValue<float>>( uniform.value );
 								if ( descValue.minMax.has_value() )
 								{
-									static float value;
+									float value;
 									p_newRenderer->getUniform<float>( value, uniform, program );
 									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
@@ -576,7 +576,7 @@ namespace VTX::Bench
 								}
 								else
 								{
-									static float value;
+									float value;
 									p_newRenderer->getUniform<float>( value, uniform, program );
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
@@ -587,7 +587,7 @@ namespace VTX::Bench
 							}
 							case E_TYPE::COLOR4:
 							{
-								static Util::Color::Rgba value;
+								Util::Color::Rgba value;
 								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{

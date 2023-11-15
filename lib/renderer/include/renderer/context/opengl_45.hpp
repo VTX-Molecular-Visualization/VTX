@@ -143,7 +143,7 @@ namespace VTX::Renderer::Context
 						assert( _uniforms.find( descProgram.name + descUniform.name ) == _uniforms.end() );
 						_uniforms.emplace(
 							descProgram.name + descUniform.name,
-							StructUniformEntry { _ubos[ &descProgram ].get(), offset, size }
+							std::make_unique<StructUniformEntry>( _ubos[ &descProgram ].get(), offset, size )
 						);
 						offset += size;
 					}
@@ -320,10 +320,12 @@ namespace VTX::Renderer::Context
 		{
 			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
-			StructUniformEntry & entry = _uniforms[ p_program + p_uniform ];
-
-			entry.value = (void *)( &p_value );
-			entry.buffer->setSubData( p_value, entry.offset, GLsizei( entry.size ) );
+			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
+			auto *								  src	= entry->value;
+			auto *								  dest	= &p_value;
+			assert( src != nullptr && dest != nullptr && entry->size );
+			memcpy( src, dest, entry->size );
+			entry->buffer->setSubData( p_value, entry->offset, GLsizei( entry->size ) );
 		}
 
 		template<typename T>
@@ -331,12 +333,17 @@ namespace VTX::Renderer::Context
 		{
 			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
 
-			void * valueAsVoid = _uniforms[ p_program + p_uniform ].value;
-			T *	   valueAsT	   = static_cast<T *>( valueAsVoid );
+			// alignas( T ) void * valueAsVoid = _uniforms[ p_program + p_uniform ]->value;
+			// T *					valueAsT	= reinterpret_cast<T *>( valueAsVoid );
 
-			assert( valueAsT != nullptr );
+			// assert( valueAsT != nullptr );
+			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
+			auto *								  src	= &p_value;
+			auto *								  dest	= entry->value;
+			assert( src != nullptr && dest != nullptr && entry->size );
+			memcpy( src, dest, entry->size );
 
-			p_value = *valueAsT;
+			// p_value = *valueAsT;
 		}
 
 	  private:
@@ -409,8 +416,15 @@ namespace VTX::Renderer::Context
 			size_t		 offset;
 			size_t		 size;
 			void *		 value;
+			// Add constructor.
+
+			StructUniformEntry( GL::Buffer * p_buffer, const size_t p_offset, const size_t p_size ) :
+				buffer( p_buffer ), offset( p_offset ), size( p_size ), value( malloc( p_size ) )
+			{
+			}
+			~StructUniformEntry() { free( value ); }
 		};
-		std::unordered_map<std::string, StructUniformEntry> _uniforms;
+		std::unordered_map<std::string, std::unique_ptr<StructUniformEntry>> _uniforms;
 
 		template<typename T>
 		inline void _setUniformDefaultValue( const Program & p_descProgram, const Uniform & p_descUniform )

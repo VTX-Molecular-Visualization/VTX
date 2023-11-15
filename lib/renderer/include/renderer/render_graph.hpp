@@ -26,10 +26,12 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
-		bool addLink( Pass * const			   p_passSrc,
-					  Pass * const			   p_passDest,
-					  const E_CHANNEL_OUTPUT & p_channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0,
-					  const E_CHANNEL_INPUT &  p_channelDest = E_CHANNEL_INPUT::_0 )
+		bool addLink(
+			Pass * const			 p_passSrc,
+			Pass * const			 p_passDest,
+			const E_CHANNEL_OUTPUT & p_channelSrc  = E_CHANNEL_OUTPUT::COLOR_0,
+			const E_CHANNEL_INPUT &	 p_channelDest = E_CHANNEL_INPUT::_0
+		)
 		{
 			// Check I/O existence.
 			assert( p_passSrc->outputs.contains( p_channelSrc ) );
@@ -39,7 +41,8 @@ namespace VTX::Renderer
 			StructCompareVisitorDesc visitor;
 
 			bool areCompatible = std::visit(
-				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
+				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc
+			);
 
 			if ( areCompatible == false )
 			{
@@ -48,12 +51,12 @@ namespace VTX::Renderer
 			}
 
 			// Check input is free.
-			if ( std::find_if( _links.begin(),
-							   _links.end(),
-							   [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
-								   return p_element.get()->dest == p_passDest
-										  && p_element.get()->channelDest == p_channelDest;
-							   } )
+			if ( std::find_if(
+					 _links.begin(),
+					 _links.end(),
+					 [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
+					 { return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
+				 )
 				 != _links.end() )
 			{
 				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
@@ -61,8 +64,8 @@ namespace VTX::Renderer
 			}
 
 			// Create link.
-			_links.emplace_back(
-				std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
+			_links.emplace_back( std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } )
+			);
 
 			return true;
 		}
@@ -73,11 +76,13 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup( void * const	 p_loader,
-					const size_t	 p_width,
-					const size_t	 p_height,
-					const FilePath & p_shaderPath,
-					const Handle	 p_output = 0 )
+		bool setup(
+			void * const	 p_loader,
+			const size_t	 p_width,
+			const size_t	 p_height,
+			const FilePath & p_shaderPath,
+			const Handle	 p_output = 0
+		)
 		{
 			// Clean all.
 			_clear();
