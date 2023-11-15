@@ -19,7 +19,7 @@ function(configure_target p_target)
 	# Force _DEBUG preprocessor on all plateforms.
 	if(DEFINED CMAKE_BUILD_TYPE)
 		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-			target_compile_definitions(p_target PRIVATE _DEBUG)
+			target_compile_definitions(${p_target} PRIVATE _DEBUG)
 		endif()
 	endif()	
 endfunction()
