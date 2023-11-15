@@ -16,10 +16,11 @@ function(configure_target p_target)
 		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ot>")
 		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Oi>")
 	endif()
+	# Print CMAKE_BUILD_TYPE.
+	message("++++++++++++++++++++++CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 	# Force _DEBUG preprocessor on all plateforms.
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		target_compile_definitions(p_target PRIVATE _DEBUG)
 	endif()
-	# Print CMAKE_BUILD_TYPE.
-	message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+	
 endfunction()
