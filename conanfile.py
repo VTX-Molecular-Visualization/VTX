@@ -3,6 +3,7 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
 
+
 class VTXRecipe(ConanFile):
     name = "vtx"
     version = "1.0"
@@ -34,15 +35,20 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
         tc.generate()
 
-        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, self.build_folder)
 
     def layout(self):
         cmake_layout(self)
 
     def build(self):
+        
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+        build_type = self.settings.get_safe("build_type", default="Release")
+        exe_dir = os.path.join(self.build_folder, build_type)
+        copy(self.package_folder, "*.dll", self.package_folder, exe_dir, keep_path=False)
+        
 
     def package(self):
         cmake = CMake(self)
