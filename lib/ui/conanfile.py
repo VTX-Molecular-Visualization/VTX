@@ -4,8 +4,6 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.files import copy
 
-from pathlib import Path
-
 class VTXUiRecipe(ConanFile):
     name = "vtx_ui"
     version = "1.0"
@@ -37,6 +35,7 @@ class VTXUiRecipe(ConanFile):
     def generate(self):
         copy(self, "*.cmake", self.source_folder, self.build_folder)
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, self.build_folder)
+        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), self.build_folder) # copy os-dependent Qt dll
 
     def build(self):
         cmake = CMake(self)

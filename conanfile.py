@@ -35,6 +35,8 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
         tc.generate()
 
+        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, self.build_folder)
+
 
     def layout(self):
         cmake_layout(self)
