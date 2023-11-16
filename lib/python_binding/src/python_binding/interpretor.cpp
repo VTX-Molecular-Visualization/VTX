@@ -26,7 +26,7 @@ namespace VTX::PythonBinding
 			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
-			FilePath initCommandsFile = initScriptDir / "pytx_init_command.py";
+			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
 
 			pybind11::eval_file( initCommandsFile.string() );
 		}
@@ -35,12 +35,12 @@ namespace VTX::PythonBinding
 
 		void applyBinders()
 		{
-			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule );
-			PyTXModule		pytx		  = PyTXModule( moduleWrapper );
+			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "PyTX" );
+			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
 
 			for ( const std::unique_ptr<Binder> & binder : _binders )
 			{
-				binder->bind( pytx );
+				binder->bind( *_pyTXModule );
 			}
 		}
 
@@ -56,9 +56,12 @@ namespace VTX::PythonBinding
 			}
 		}
 
+		PyTXModule & getPyTXModule() { return *_pyTXModule; }
+
 	  private:
 		pybind11::scoped_interpreter _interpretor {};
 		pybind11::module_			 _vtxModule;
+		std::unique_ptr<PyTXModule>	 _pyTXModule = nullptr;
 
 		std::vector<std::unique_ptr<Binder>> _binders = std::vector<std::unique_ptr<Binder>>();
 	};
@@ -93,8 +96,6 @@ namespace VTX::PythonBinding
 
 	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
 
-	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
-
 	void Interpretor::runCommand( const std::string & p_line ) const
 	{
 		try
@@ -107,7 +108,6 @@ namespace VTX::PythonBinding
 			throw( VTX::CommandException( p_line, e.what() ) );
 		}
 	}
-
 	void Interpretor::runScript( const FilePath & p_path ) const
 	{
 		try
@@ -119,5 +119,31 @@ namespace VTX::PythonBinding
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
 	}
+	Wrapper::Module Interpretor::loadModule( const FilePath & p_path ) const
+	{
+		runScript( p_path );
+
+		const std::string dir = p_path.parent_path().string();
+		getModule().core().runFunction( "addSysPath", dir );
+
+		const std::string filename = Util::Filesystem::getFileName( p_path );
+		pybind11::module  loadedModule;
+		try
+		{
+			loadedModule = pybind11::module_::import( filename.c_str() );
+		}
+		catch ( pybind11::error_already_set e )
+		{
+			VTX_ERROR( "{}", e.what() );
+			throw( e );
+		}
+
+		return Wrapper::Module( loadedModule, filename );
+
+	} // namespace VTX::PythonBinding
+
+	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
+
+	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
 
 } // namespace VTX::PythonBinding

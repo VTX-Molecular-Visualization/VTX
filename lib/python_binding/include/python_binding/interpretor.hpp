@@ -8,8 +8,11 @@
 
 namespace VTX::PythonBinding
 {
-	template<typename BinderType>
-	concept BinderConcept = std::derived_from<BinderType, Binder>;
+
+	namespace Wrapper
+	{
+		class Module;
+	}
 
 	class Interpretor
 	{
@@ -29,9 +32,12 @@ namespace VTX::PythonBinding
 			addBinder( std::make_unique<BinderType>() );
 		}
 
-		void print( const std::string & p_line ) const;
-		void runCommand( const std::string & p_line ) const;
-		void runScript( const FilePath & p_path ) const;
+		void			print( const std::string & p_line ) const;
+		void			runCommand( const std::string & p_line ) const;
+		void			runScript( const FilePath & p_path ) const;
+		Wrapper::Module loadModule( const FilePath & p_path ) const;
+
+		const PyTXModule & getModule() const;
 
 	  private:
 		struct Impl;

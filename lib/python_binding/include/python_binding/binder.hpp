@@ -6,6 +6,12 @@
 
 namespace VTX::PythonBinding
 {
+	class PyTXModule;
+	class Binder;
+
+	template<typename BinderType>
+	concept BinderConcept = std::derived_from<BinderType, Binder>;
+
 	class Binder
 	{
 	  public:
