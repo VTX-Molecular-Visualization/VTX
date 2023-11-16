@@ -8,7 +8,7 @@ namespace VTX::PythonBinding::Wrapper
 	Module Module::defSubmodule( const std::string & p_submoduleName, const std::string & p_submoduleDesc )
 	{
 		pybind11::module_ module	 = _pyModule.def_submodule( p_submoduleName.c_str(), p_submoduleDesc.c_str() );
-		const std::string		  modulePath = _modulePath + "." + p_submoduleName;
+		const std::string modulePath = _modulePath + "." + p_submoduleName;
 
 		return Module( module, modulePath );
 	}
@@ -26,7 +26,7 @@ namespace VTX::PythonBinding::Wrapper
 		{
 			pybind11::exec( "print( dir() )", _pyModule.attr( "__dict__" ) );
 		}
-		catch ( pybind11::error_already_set e )
+		catch ( const pybind11::error_already_set & e )
 		{
 			VTX_ERROR( "Display module info fail : {}", e.what() );
 		}

@@ -132,7 +132,7 @@ namespace VTX::PythonBinding
 		{
 			loadedModule = pybind11::module_::import( filename.c_str() );
 		}
-		catch ( pybind11::error_already_set e )
+		catch ( const pybind11::error_already_set & e )
 		{
 			VTX_ERROR( "{}", e.what() );
 			throw( e );

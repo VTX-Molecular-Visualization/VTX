@@ -51,12 +51,11 @@ namespace VTX::PythonBinding
 				{
 					return _pyObject.attr( p_memberName.c_str() ) = p_value;
 				}
-				catch ( pybind11::error_already_set e )
+				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
-					);
+					throw PythonWrapperException( "Error when setting member "
+												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+												  + " - " + e.what() );
 				}
 			}
 			template<>
@@ -66,12 +65,11 @@ namespace VTX::PythonBinding
 				{
 					return _pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
 				}
-				catch ( pybind11::error_already_set e )
+				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
-					);
+					throw PythonWrapperException( "Error when setting member "
+												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+												  + " - " + e.what() );
 				}
 			}
 

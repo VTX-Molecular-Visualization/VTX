@@ -16,16 +16,14 @@ namespace VTX::PythonBinding::Wrapper
 	}
 
 	template<>
-	Object Function::getReturnValue()
+	Object Function::getReturnValue<Object>()
 	{
 		Object res = Object( _returnObj );
 		return res;
 	}
 
-	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor(
-		const Module &		p_module,
-		const std::string & p_funcName
-	) const
+	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor( const Module &		p_module,
+																		const std::string & p_funcName ) const
 	{
 		const pybind11::detail::str_attr_accessor funcHandle = p_module._pyModule.attr( p_funcName.c_str() );
 
@@ -40,10 +38,8 @@ namespace VTX::PythonBinding::Wrapper
 
 		return funcHandle;
 	}
-	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor(
-		const Object &		p_object,
-		const std::string & p_funcName
-	) const
+	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor( const Object &		p_object,
+																		const std::string & p_funcName ) const
 	{
 		const pybind11::detail::str_attr_accessor funcHandle = p_object._pyObject.attr( p_funcName.c_str() );
 

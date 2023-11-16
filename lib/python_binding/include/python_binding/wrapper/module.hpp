@@ -42,12 +42,10 @@ namespace VTX::PythonBinding
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func p_function, const std::string & p_desc, Extra... p_extra )
 			{
-				_pyModule.def(
-					p_name.c_str(),
-					p_function,
-					p_desc.c_str(),
-					Pybind11ExtraConvertor::convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
-				);
+				_pyModule.def( p_name.c_str(),
+							   p_function,
+							   p_desc.c_str(),
+							   Pybind11ExtraConvertor::convertToPybind11Extra( std::forward<Extra>( p_extra ) )... );
 			}
 
 			template<typename T>
@@ -65,7 +63,7 @@ namespace VTX::PythonBinding
 				funcWrapper.run();
 			}
 			template<typename T, typename... Args>
-			T runFunction( const std::string & p_funcName, typename Args... p_args ) const
+			T runFunction( const std::string & p_funcName, Args... p_args ) const
 			{
 				Wrapper::Function funcWrapper = Wrapper::Function( *this, p_funcName );
 				funcWrapper.run( p_args... );
@@ -73,7 +71,7 @@ namespace VTX::PythonBinding
 				return funcWrapper.getReturnValue<T>();
 			}
 			template<typename... Args>
-			void runFunction( const std::string & p_funcName, typename Args... p_args ) const
+			void runFunction( const std::string & p_funcName, Args... p_args ) const
 			{
 				Wrapper::Function funcWrapper = Wrapper::Function( *this, p_funcName );
 				funcWrapper.run( p_args... );
