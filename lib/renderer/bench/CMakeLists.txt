@@ -1,6 +1,6 @@
 message("vtx_renderer_bench")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
+
 project(vtx_renderer_bench)
 
 find_package(vtx_util CONFIG REQUIRED)
@@ -14,7 +14,7 @@ file(GLOB_RECURSE SOURCES src/*)
 file(GLOB_RECURSE VENDORS vendor/*)
 
 add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS})
-configureTarget(vtx_renderer_bench)
+configure_target(vtx_renderer_bench)
 
 target_include_directories(vtx_renderer_bench PRIVATE vendor)
 

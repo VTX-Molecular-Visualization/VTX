@@ -1,6 +1,6 @@
 message("vtx")
 cmake_minimum_required(VERSION 3.21)
-include(cmake/configure-target.cmake)
+
 project(vtx)
 
 find_package(vtx_app CONFIG REQUIRED)
@@ -19,7 +19,7 @@ if(MSVC)
 endif()
 
 add_executable(vtx ${HEADERS} ${SOURCES} ${RESOURCES})
-configureTarget(vtx)
+configure_target(vtx)
 target_include_directories(vtx PUBLIC include)
 
 target_link_libraries(vtx PRIVATE vtx_app::vtx_app)
@@ -35,14 +35,6 @@ target_link_libraries(vtx PRIVATE vtx_util::vtx_util)
 option(DEFINE_PRODUCTION "Enable production mode" OFF)
 if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
-endif()
-
-# TODO: better solution?
-# Force _DEBUG preprocessor on linux.
-if(CMAKE_COMPILER_IS_GNUCC)
-	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-		add_definitions(-D_DEBUG)
-	endif()
 endif()
 
 add_custom_target(

@@ -30,9 +30,10 @@ class VTXUiRecipe(ConanFile):
             del self.options.fPIC
 
     def layout(self):
-        cmake_layout(self)
+        cmake_layout(self)      
 
     def generate(self):
+        copy(self, "*.cmake", self.source_folder, self.build_folder)
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, self.build_folder)
         copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), self.build_folder)
 
@@ -44,9 +45,12 @@ class VTXUiRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        copy(self, "*.cmake", self.build_folder, self.package_folder)
         copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui"]
+        cmake_file = os.path.join("cmake", "qt_helper.cmake")
+        self.cpp_info.set_property("cmake_build_modules", [cmake_file])
         if self.settings.os == "Windows":
             self.cpp_info.system_libs.append('d3d12')
