@@ -34,16 +34,7 @@ namespace VTX::PythonBinding::Wrapper
 		template<typename T>
 		T getReturnValue()
 		{
-			try
-			{
-				T res = _returnObj.cast<T>();
-				return res;
-			}
-			catch ( const pybind11::error_already_set & e )
-			{
-				throw( PythonWrapperException( "Unable to cast return value of function " + _functionPath + " ("
-											   + e.what() + ")." ) );
-			}
+			return _getReturnValue<T>();
 		}
 
 	  private:
@@ -56,10 +47,25 @@ namespace VTX::PythonBinding::Wrapper
 																  const std::string & p_funcName ) const;
 		pybind11::detail::str_attr_accessor _getFunctionAccessor( const Object &	  p_object,
 																  const std::string & p_funcName ) const;
-	};
 
-	template<>
-	Object Function::getReturnValue<Object>();
+		template<typename T>
+		T _getReturnValue()
+		{
+			try
+			{
+				T res = _returnObj.cast<T>();
+				return res;
+			}
+			catch ( const pybind11::error_already_set & e )
+			{
+				throw( PythonWrapperException( "Unable to cast return value of function " + _functionPath + " ("
+											   + e.what() + ")." ) );
+			}
+		}
+
+		template<>
+		Object _getReturnValue();
+	};
 }; // namespace VTX::PythonBinding::Wrapper
 
 #endif
