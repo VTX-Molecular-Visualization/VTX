@@ -46,8 +46,8 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		// Store moleculePtr or use residuePtr->getChainPtr()->getMoleculePtr() ?
-		size_t	   _index		= INVALID_INDEX;
 		Molecule * _moleculePtr = nullptr;
+		size_t	   _index		= INVALID_INDEX;
 	};
 
 } // namespace VTX::App::Component::Chemistry

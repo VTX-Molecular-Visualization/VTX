@@ -24,9 +24,10 @@ namespace VTX::PythonBinding::Wrapper
 			{
 				_returnObj = _funcHandle( p_args... );
 			}
-			catch ( const std::exception e )
+			catch ( const pybind11::error_already_set & e )
 			{
-				throw( PythonWrapperException( "Function " + _functionPath + " not found with given args." ) );
+				throw( PythonWrapperException( "Function " + _functionPath + " not found with given args (" + e.what()
+											   + ")." ) );
 			}
 		}
 
@@ -38,14 +39,12 @@ namespace VTX::PythonBinding::Wrapper
 				T res = _returnObj.cast<T>();
 				return res;
 			}
-			catch ( const std::exception e )
+			catch ( const pybind11::error_already_set & e )
 			{
-				throw( PythonWrapperException( "Unable to cast return value of function " + _functionPath ) );
+				throw( PythonWrapperException( "Unable to cast return value of function " + _functionPath + " ("
+											   + e.what() + ")." ) );
 			}
 		}
-
-		template<>
-		Object getReturnValue();
 
 	  private:
 		std::string _functionPath;
@@ -58,6 +57,9 @@ namespace VTX::PythonBinding::Wrapper
 		pybind11::detail::str_attr_accessor _getFunctionAccessor( const Object &	  p_object,
 																  const std::string & p_funcName ) const;
 	};
+
+	template<>
+	Object Function::getReturnValue<Object>();
 }; // namespace VTX::PythonBinding::Wrapper
 
 #endif

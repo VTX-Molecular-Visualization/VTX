@@ -15,7 +15,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Residue() = default;
-		Residue( Molecule * const p_molecule, const size_t p_index ) : _index( p_index ), _moleculePtr( p_molecule ) {}
+		Residue( Molecule * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {}
 
 		const Chain * const getConstChainPtr() const;
 		Chain * const		getChainPtr() const;
