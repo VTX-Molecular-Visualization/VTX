@@ -72,7 +72,7 @@ namespace VTX::App::Application::Selection
 		void unselectChains( const std::initializer_list<const Chain *> & p_chains );
 		void unselectChains( const std::initializer_list<size_t> & p_chains );
 		template<ContainerOfType<const Chain *> C>
-		void unselectChains( const Chain & p_chains )
+		void unselectChains( const C & p_chains )
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{

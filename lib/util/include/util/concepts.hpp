@@ -59,7 +59,7 @@ namespace VTX
 								  requires Container<ContainerType>;
 								  {
 									  *( p_container.begin() )
-									  } -> std::same_as<ValueType &>;
+									  } -> std::convertible_to<ValueType>;
 							  };
 
 	template<typename EnumType>
