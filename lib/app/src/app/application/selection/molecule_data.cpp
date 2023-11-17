@@ -1,8 +1,4 @@
 #include "app/application/selection/molecule_data.hpp"
-#include "app/component/chemistry/atom.hpp"
-#include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
-#include "app/component/chemistry/residue.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
@@ -168,8 +164,8 @@ namespace VTX::App::Application::Selection
 	bool MoleculeData::isChainSelected( const Chain & p_chain ) const { return isChainSelected( p_chain.getIndex() ); }
 	bool MoleculeData::isChainFullySelected( const Chain & p_chain ) const
 	{
-		return areAtomsSelected( IndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() )
-		);
+		return areAtomsSelected(
+			IndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() ) );
 	}
 	bool MoleculeData::isChainFullySelected( const size_t & p_chainIndex ) const
 	{
@@ -404,9 +400,8 @@ namespace VTX::App::Application::Selection
 
 		_referenceResidues( IndexRange::createFirstLast( firstResidue.getIndex(), lastResidue.getIndex() ) );
 
-		_referenceChains( IndexRange::createFirstLast(
-			firstResidue.getConstChainPtr()->getIndex(), lastResidue.getConstChainPtr()->getIndex()
-		) );
+		_referenceChains( IndexRange::createFirstLast( firstResidue.getConstChainPtr()->getIndex(),
+													   lastResidue.getConstChainPtr()->getIndex() ) );
 
 		_referenceAtoms( p_range );
 	}
@@ -505,8 +500,7 @@ namespace VTX::App::Application::Selection
 	{
 		_chainIds.removeValue( p_chain.getIndex() );
 		_residueIds.removeRange(
-			IndexRange::createFirstLast( p_chain.getIndexFirstResidue(), p_chain.getIndexLastResidue() )
-		);
+			IndexRange::createFirstLast( p_chain.getIndexFirstResidue(), p_chain.getIndexLastResidue() ) );
 		_atomIds.removeRange( IndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() ) );
 	}
 	void MoleculeData::_unselectChains( const IndexRange & p_range )
@@ -515,11 +509,9 @@ namespace VTX::App::Application::Selection
 		const Chain & lastChain	 = *_molecule->getChain( p_range.getLast() );
 
 		_atomIds.removeRange(
-			IndexRange::createFirstLast( firstChain.getIndexFirstAtom(), lastChain.getIndexLastAtom() )
-		);
+			IndexRange::createFirstLast( firstChain.getIndexFirstAtom(), lastChain.getIndexLastAtom() ) );
 		_residueIds.removeRange(
-			IndexRange::createFirstLast( firstChain.getIndexFirstResidue(), lastChain.getIndexLastResidue() )
-		);
+			IndexRange::createFirstLast( firstChain.getIndexFirstResidue(), lastChain.getIndexLastResidue() ) );
 		_chainIds.removeRange( p_range );
 	}
 
@@ -549,13 +541,12 @@ namespace VTX::App::Application::Selection
 	void MoleculeData::_unselectResidue( const Residue & p_residue )
 	{
 		_residueIds.removeValue( p_residue.getIndex() );
-		_atomIds.removeRange( IndexRange::createFirstLast( p_residue.getIndexFirstAtom(), p_residue.getIndexLastAtom() )
-		);
+		_atomIds.removeRange(
+			IndexRange::createFirstLast( p_residue.getIndexFirstAtom(), p_residue.getIndexLastAtom() ) );
 
 		const Chain & chainParent = *p_residue.getConstChainPtr();
-		if ( !_residueIds.intersectWith(
-				 IndexRange::createFirstLast( chainParent.getIndexFirstResidue(), chainParent.getIndexLastResidue() )
-			 ) )
+		if ( !_residueIds.intersectWith( IndexRange::createFirstLast( chainParent.getIndexFirstResidue(),
+																	  chainParent.getIndexLastResidue() ) ) )
 		{
 			_unselectChain( chainParent );
 		}
@@ -579,9 +570,8 @@ namespace VTX::App::Application::Selection
 		const Chain & lastChainParent  = *lastResidue.getConstChainPtr();
 		const size_t  lastChainIndex   = lastResidue.getIndex();
 
-		if ( !_residueIds.intersectWith( IndexRange::createFirstLast(
-				 firstChainParent.getIndexFirstResidue(), firstChainParent.getIndexLastResidue()
-			 ) ) )
+		if ( !_residueIds.intersectWith( IndexRange::createFirstLast( firstChainParent.getIndexFirstResidue(),
+																	  firstChainParent.getIndexLastResidue() ) ) )
 		{
 			_chainIds.removeValue( firstChainParent.getIndex() );
 		}
@@ -589,9 +579,8 @@ namespace VTX::App::Application::Selection
 		{
 			_chainIds.removeRange( IndexRange::createFirstLast( firstChainIndex + 1, lastChainIndex - 1 ) );
 		}
-		if ( !_residueIds.intersectWith( IndexRange::createFirstLast(
-				 lastChainParent.getIndexFirstResidue(), lastChainParent.getIndexLastResidue()
-			 ) ) )
+		if ( !_residueIds.intersectWith( IndexRange::createFirstLast( lastChainParent.getIndexFirstResidue(),
+																	  lastChainParent.getIndexLastResidue() ) ) )
 		{
 			_chainIds.removeValue( lastChainParent.getIndex() );
 		}
@@ -607,15 +596,13 @@ namespace VTX::App::Application::Selection
 		_atomIds.removeValue( p_atom.getIndex() );
 
 		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
-			 ) )
+				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() ) ) )
 		{
 			_unselectResidue( residueParent );
 		}
 
 		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
-			 ) )
+				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() ) ) )
 		{
 			_unselectChain( chainParent );
 		}
@@ -631,9 +618,8 @@ namespace VTX::App::Application::Selection
 		const Residue & lastResidueParent  = *_molecule->getAtom( p_range.getLast() )->getConstResiduePtr();
 		const size_t	lastResidueIndex   = lastResidueParent.getIndex();
 
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
-				 firstResidueParent.getIndexFirstAtom(), firstResidueParent.getIndexLastAtom()
-			 ) ) )
+		if ( !_atomIds.intersectWith( IndexRange::createFirstLast( firstResidueParent.getIndexFirstAtom(),
+																   firstResidueParent.getIndexLastAtom() ) ) )
 		{
 			_residueIds.removeValue( firstResidueParent.getIndex() );
 		}
@@ -641,9 +627,8 @@ namespace VTX::App::Application::Selection
 		{
 			_residueIds.removeRange( IndexRange::createFirstLast( firstResidueIndex + 1, lastResidueIndex - 1 ) );
 		}
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
-				 lastResidueParent.getIndexFirstAtom(), lastResidueParent.getIndexLastAtom()
-			 ) ) )
+		if ( !_atomIds.intersectWith( IndexRange::createFirstLast( lastResidueParent.getIndexFirstAtom(),
+																   lastResidueParent.getIndexLastAtom() ) ) )
 		{
 			_residueIds.removeValue( lastResidueParent.getIndex() );
 		}
@@ -653,9 +638,8 @@ namespace VTX::App::Application::Selection
 		const size_t  firstChainIndex  = firstResidueParent.getIndex();
 		const Chain & lastChainParent  = *lastResidueParent.getConstChainPtr();
 		const size_t  lastChainIndex   = lastResidueParent.getIndex();
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
-				 firstChainParent.getIndexFirstAtom(), firstChainParent.getIndexLastAtom()
-			 ) ) )
+		if ( !_atomIds.intersectWith( IndexRange::createFirstLast( firstChainParent.getIndexFirstAtom(),
+																   firstChainParent.getIndexLastAtom() ) ) )
 		{
 			_chainIds.removeValue( firstChainParent.getIndex() );
 		}
@@ -663,9 +647,8 @@ namespace VTX::App::Application::Selection
 		{
 			_chainIds.removeRange( IndexRange::createFirstLast( firstChainIndex + 1, lastChainIndex - 1 ) );
 		}
-		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( lastChainParent.getIndexFirstAtom(), lastChainParent.getIndexLastAtom() )
-			 ) )
+		if ( !_atomIds.intersectWith( IndexRange::createFirstLast( lastChainParent.getIndexFirstAtom(),
+																   lastChainParent.getIndexLastAtom() ) ) )
 		{
 			_chainIds.removeValue( lastChainParent.getIndex() );
 		}

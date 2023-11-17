@@ -2,7 +2,10 @@
 #define __VTX_APP_APPLICATION_SELECTION_MOLECULE_DATA__
 
 #include "app/application/selection/selection_data.hpp"
-#include "app/component/chemistry/_fwd.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include <util/concepts.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
