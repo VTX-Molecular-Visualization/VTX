@@ -44,12 +44,13 @@ namespace VTX::PythonBinding
 			{
 				return _pyObject.attr( p_memberName.c_str() ).cast<T>();
 			}
-			template<typename T>
-			void setMember( const std::string & p_memberName, const T & p_value )
+
+			template<typename T, std::enable_if<std::is_same_v<T, Object>>>
+			void setMember( const std::string & p_memberName, const Object & p_value )
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value;
+					return _pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
@@ -58,12 +59,12 @@ namespace VTX::PythonBinding
 												  + " - " + e.what() );
 				}
 			}
-			template<>
-			void setMember( const std::string & p_memberName, const Object & p_value )
+			template<typename T>
+			void setMember( const std::string & p_memberName, const T & p_value )
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
+					return _pyObject.attr( p_memberName.c_str() ) = p_value;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
