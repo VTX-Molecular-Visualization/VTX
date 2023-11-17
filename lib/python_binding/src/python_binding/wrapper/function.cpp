@@ -15,7 +15,6 @@ namespace VTX::PythonBinding::Wrapper
 	{
 	}
 
-	template<>
 	Object Function::_getReturnValue()
 	{
 		Object res = Object( _returnObj );

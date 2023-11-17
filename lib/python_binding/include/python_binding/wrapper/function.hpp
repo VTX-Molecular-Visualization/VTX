@@ -34,7 +34,14 @@ namespace VTX::PythonBinding::Wrapper
 		template<typename T>
 		T getReturnValue()
 		{
-			return _getReturnValue<T>();
+			if constexpr ( std::is_same_v<T, Object> )
+			{
+				return _getReturnValue();
+			}
+			else
+			{
+				return _getReturnValue<T>();
+			}
 		}
 
 	  private:
@@ -63,7 +70,6 @@ namespace VTX::PythonBinding::Wrapper
 			}
 		}
 
-		template<>
 		Object _getReturnValue();
 	};
 }; // namespace VTX::PythonBinding::Wrapper
