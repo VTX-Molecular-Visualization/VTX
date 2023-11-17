@@ -41,7 +41,7 @@ namespace VTX::Renderer::GL
 			vao.setAttributeFormat<float>( 2, 4 );
 			vao.setAttributeBinding( 2, 2 );
 
-			// Visbility.
+			// Visibility.
 			vao.enableAttribute( 3 );
 			vao.setVertexBuffer<uint>( 3, vboVisibilities, sizeof( uint ) );
 			vao.setAttributeFormat<uint>( 3, 1 );

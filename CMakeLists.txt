@@ -1,52 +1,37 @@
-message("VTX")
+message("vtx")
 cmake_minimum_required(VERSION 3.21)
-project(VTX)
+include(cmake/configure-target.cmake)
+project(vtx)
 
-# Get headers and sources.
+find_package(vtx_app CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
+find_package(vtx_python_binding CONFIG REQUIRED)
+find_package(vtx_renderer CONFIG REQUIRED)
+find_package(vtx_tool CONFIG REQUIRED)
+find_package(vtx_ui CONFIG REQUIRED)
+find_package(vtx_util CONFIG REQUIRED)
+
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
 if(MSVC)
 	file(GLOB_RECURSE RESOURCES asset/windows_resources/*.rc)
 endif()
 
-# Declare executable.
-add_executable(VTX ${HEADERS} ${SOURCES} ${RESOURCES})
-target_include_directories(VTX PUBLIC include)
+add_executable(vtx ${HEADERS} ${SOURCES} ${RESOURCES})
+configureTarget(vtx)
+target_include_directories(vtx PUBLIC include)
 
-# Link VTX modules.
-if(NOT TARGET VTX_UTIL)
-	add_subdirectory(lib/util)
-endif()
-if(NOT TARGET VTX_PYTHON_BINDING)
-	add_subdirectory(lib/python_binding)
-endif()
-if(NOT TARGET VTX_UI)
-	add_subdirectory(lib/ui)
-endif()
-if(NOT TARGET VTX_TOOL)
-	add_subdirectory(lib/tool)
-endif()
-target_link_libraries(VTX PRIVATE VTX_UTIL)
-target_link_libraries(VTX PRIVATE VTX_PYTHON_BINDING)
-target_link_libraries(VTX PRIVATE VTX_UI)
-target_link_libraries(VTX PRIVATE VTX_TOOL)
+target_link_libraries(vtx PRIVATE vtx_app::vtx_app)
+target_link_libraries(vtx PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx PRIVATE vtx_io::vtx_io)
+target_link_libraries(vtx PRIVATE vtx_python_binding::vtx_python_binding)
+target_link_libraries(vtx PRIVATE vtx_renderer::vtx_renderer)
+target_link_libraries(vtx PRIVATE vtx_tool::vtx_tool)
+target_link_libraries(vtx PRIVATE vtx_ui::vtx_ui)
+target_link_libraries(vtx PRIVATE vtx_util::vtx_util)
 
-# Copy dlls in .exe directory
-if(MSVC)
-	add_custom_command(TARGET VTX POST_BUILD
-	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:VTX> $<TARGET_FILE_DIR:VTX>
-	  COMMAND_EXPAND_LISTS
-	)
-endif()
-
-# TODO: move in corresponding lib.
-if(MSVC)
-	# Preprocessor definitions
-	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-	#(-DNOMINMAX)
-endif()
-
-# Custom options.
+# TODO: user command line argument?
 option(DEFINE_PRODUCTION "Enable production mode" OFF)
 if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
@@ -60,19 +45,42 @@ if(CMAKE_COMPILER_IS_GNUCC)
 	endif()
 endif()
 
-# TODO: move in corresponding lib.
-# Get CMake helper functions.
-# list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-# include(qt_helper)
-# win_deploy_qt(VTX)
+add_custom_target(
+	vtx_copy_shader
+	ALL COMMAND
+	${CMAKE_COMMAND} -E copy_directory	
+	${DIR_SHADERS}
+	$<TARGET_FILE_DIR:vtx>/shaders)
+add_dependencies(vtx vtx_copy_shader)
 
-# Copy render effect presets to build directory.
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory libraries ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
+add_custom_target(
+	vtx_copy_python_script
+	ALL COMMAND
+	${CMAKE_COMMAND} -E copy_directory	
+	${DIR_PYTHON_SCRIPT}
+	$<TARGET_FILE_DIR:vtx>/python_script)
+add_dependencies(vtx vtx_copy_python_script)	
 
-# Copy Data.
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
+IF (WIN32)
+	set(FILENAME_PYTHON_MODULE PyTX.pyd)
+ELSE()
+	set(FILENAME_PYTHON_MODULE pytx.so)
+ENDIF()
 
-# Readme, license and changelog.
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different CHANGELOG.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../CHANGELOG.md)
-#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different license.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../license.txt)
+add_custom_target(
+	vtx_copy_python_module
+	ALL COMMAND
+	${CMAKE_COMMAND} -E copy
+	${PATH_PYTHON_MODULE}
+	$<TARGET_FILE_DIR:vtx>/${FILENAME_PYTHON_MODULE})
+add_dependencies(vtx vtx_copy_python_module)
+
+install(TARGETS vtx)
+install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
+install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION bin)
+install(FILES ${PATH_PYTHON_MODULE} DESTINATION bin RENAME ${FILENAME_PYTHON_MODULE})
+install(DIRECTORY libraries DESTINATION bin)
+install(DIRECTORY internal_data DESTINATION bin)
+install(FILES README.md DESTINATION bin)
+install(FILES CHANGELOG.md DESTINATION bin)
+install(FILES license.txt DESTINATION bin)

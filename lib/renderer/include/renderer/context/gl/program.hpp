@@ -32,7 +32,7 @@ namespace VTX::Renderer::Context::GL
 			return loc;
 		}
 
-		inline void use() { glUseProgram( _id ); }
+		inline void use() const { glUseProgram( _id ); }
 
 		inline void setUInt( const std::string & p_name, const uint p_value ) const
 		{

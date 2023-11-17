@@ -80,6 +80,8 @@ namespace VTX::Renderer::Context::GL
 				}
 			}
 
+			assert( glIsProgram( program.getId() ) );
+
 			program.link();
 
 			VTX_DEBUG( "Program {} created: {}", _programs[ name ]->getId(), p_name );
@@ -173,6 +175,8 @@ namespace VTX::Renderer::Context::GL
 				glDeleteShader( shaderId );
 				throw GLException( error );
 			}
+
+			assert( glIsShader( shaderId ) );
 
 			assert( _shaders.find( name ) == _shaders.end() );
 			_shaders.emplace( name, shaderId );

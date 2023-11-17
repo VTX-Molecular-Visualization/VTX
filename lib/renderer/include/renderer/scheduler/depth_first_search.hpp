@@ -9,8 +9,15 @@ namespace VTX::Renderer::Scheduler
 	class DepthFirstSearch
 	{
 	  public:
-		void schedule( Passes & p_passes, const Links & p_links, RenderQueue & p_outRenderQueue )
+		void schedule(
+			Passes &			 p_passes,
+			const Links &		 p_links,
+			const Output * const p_output,
+			RenderQueue &		 p_outRenderQueue
+		)
 		{
+			using namespace Context;
+
 			// Build adjacent list.
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );
@@ -23,14 +30,47 @@ namespace VTX::Renderer::Scheduler
 			for ( auto & link : p_links )
 			{
 				adjacentList[ std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link->src ) ) ]
-					.push_back(
-						std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link->dest ) ) );
+					.push_back( std::distance( passes.begin(), std::find( passes.begin(), passes.end(), link->dest ) )
+					);
 			}
 
 			// Topological sort.
 			std::vector<bool> visited( passes.size(), false );
 			std::vector<bool> onStack( passes.size(), false );
 
+			// Disable items not linked to the graph.
+			for ( size_t index = 0; index < passes.size(); ++index )
+			{
+				if ( adjacentList[ index ].size() == 0 )
+				{
+					// TODO: understand why this is not working.
+					// Check output connection.
+					/*
+					const Outputs & outputs = passes[ index ]->outputs;
+					const auto		it		= std::find_if( outputs.begin(),
+													outputs.end(),
+													[ p_output ]( const std::pair<E_CHANNEL_OUTPUT, Output> & p_e )
+													{ return &( p_e.second ) == p_output; } );
+
+					if ( it == outputs.end() )
+					{
+						visited[ index ] = true;
+					}
+					*/
+
+					visited[ index ] = true;
+					for ( auto & [ channel, output ] : passes[ index ]->outputs )
+					{
+						if ( &output == p_output )
+						{
+							visited[ index ] = false;
+							break;
+						}
+					}
+				}
+			}
+
+			// DFS.
 			bool				isCyclic = false;
 			std::vector<size_t> sorted;
 			for ( size_t index = 0; index < passes.size(); ++index )
@@ -55,13 +95,15 @@ namespace VTX::Renderer::Scheduler
 		}
 
 	  private:
-		void _depthFirstSearch( Passes &								 p_passes,
-								const std::vector<std::vector<size_t>> & p_adjacencyLists,
-								const size_t							 p_index,
-								std::vector<bool> &						 p_visited,
-								std::vector<bool> &						 p_onStack,
-								bool &									 p_isCyclic,
-								std::vector<size_t> &					 p_sorted )
+		void _depthFirstSearch(
+			Passes &								 p_passes,
+			const std::vector<std::vector<size_t>> & p_adjacencyLists,
+			const size_t							 p_index,
+			std::vector<bool> &						 p_visited,
+			std::vector<bool> &						 p_onStack,
+			bool &									 p_isCyclic,
+			std::vector<size_t> &					 p_sorted
+		)
 		{
 			if ( p_isCyclic )
 			{
@@ -82,7 +124,8 @@ namespace VTX::Renderer::Scheduler
 				if ( p_visited[ neighbour ] == false )
 				{
 					_depthFirstSearch(
-						p_passes, p_adjacencyLists, neighbour, p_visited, p_onStack, p_isCyclic, p_sorted );
+						p_passes, p_adjacencyLists, neighbour, p_visited, p_onStack, p_isCyclic, p_sorted
+					);
 				}
 			}
 

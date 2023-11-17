@@ -1,11 +1,13 @@
 **/out/
+**/build/
 **/.vs/
 **/.vscode/
+**/Testing/
 /data/
 /external_project/
 /RELEASE/
 /.vscode/
 *.code-workspace
-**/out/
 **/CMakePresets.json
+**/CMakeUserPresets.json
 **/CMakeSettings.json

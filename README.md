@@ -10,7 +10,7 @@
 #### Windows
 
 - Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
-- Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Download [last release](https://github.com/VTX-Molecular-Visualization/VTX/releases)
 - Run the installer (it will automatically extract files in the current folder)
 - Launch VTX shortcut, or run in command line
 
@@ -38,7 +38,7 @@ Step by step :
 
 - Install all the needed packages
 
-- Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Download [last release](https://github.com/VTX-Molecular-Visualization/VTX/releases)
 
 - Run bin/VTX
 
@@ -116,190 +116,44 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
-## BUILD FROM SOURCE (Available soon)
+## BUILD FROM SOURCE
 
 ### Prerequisites
 
-- C++17 compiler (MSVC or GCC)
+- C++20 compiler
 - Git
-- CMake
-- Qt 6.2.2
 
 ### Windows
 
 - Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
-- Install Qt 6.2.2 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 64-bit" is needed)
-- Add CMake to your "Path" environment variable: \<dir\>/CMake/bin
-- Create an environment variable "CMAKE_PREFIX_PATH" with value: \<dir\>/Qt/6.2.2/msvc2019_64/lib/cmake
+- Install [Conan 2](https://conan.io/downloads)
 
-#### Create Visual Studio solution with CMake
+### Create Conan profile
 
 ```
-git clone https://gitlab.com/VTX_mol/VTX.git
-cd VTX
-cmake -B build .
+conan profile detect
 ```
 
-It will build external libraries and create the solution in the build folder.
-Others dependencies are downloaded during the first compilation.
-
-#### Build in command line
-
-If you don't want to use Visual Studio, you can also build executable from command line:
+### Set packages in editable mode
 
 ```
-cd VTX
-cmake --build build --config <Release|Debug>
+conan editable add lib/app
+conan editable add lib/core
+conan editable add lib/io
+conan editable add lib/io/chemfiles
+conan editable add lib/python_binding
+conan editable add lib/renderer
+conan editable add lib/tool
+conan editable add lib/ui
+conan editable add lib/util
 ```
 
-### Linux
-
-#### Create makefile with CMake
+### Build VTX
 
 ```
-git clone https://gitlab.com/VTX_mol/VTX.git
-cd VTX
-cmake -B build --config <Release|Debug> .
-```
-
-#### Build a release in command line
-
-```
-cd VTX
-cd build
-make
-```
-
-### CMake options
-
-- DEFINE_PRODUCTION: build for production usage (disable some dev features)
-- BUILD_LIB: build libraries (you can disable this option once the /lib folder is generated
-
-Example:
-
-```
-cmake -B build -DDEFINE_PRODUCTION=ON -DBUILD_LIB=OFF .
+conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20 -s build_type=<Debug|Release>
 ```
 
 ## License
 
 Please look at the license.txt file
-
-## DEVELOPPER GUIDE
-
-### UI
-
-#### How to add a button in the UI
-
-##### Intro
-
-The UI is just an interface which will send actions to the action manager. In that way, we can launch the same action from different part of the interface without duplicating code.
-To add a new functionality in the VTX interface, we will start to create the action which will call the real functionality, and then call this action from the UI.
-
-##### Create an action
-
-Actions are splitted in different files depending of what they do.
-All the actions files are in src/action .
-
-An action is a class inherited from BaseAction and composed by at least 2 functions :
-The constructor where you can set the parameters needed for the action.
-An override of the `void execute()` method to call your functionality.
-
-```cpp
-class MyNewAction : public BaseAction
-{
-  public:
-	explicit MyNewAction( const ParamType & p_param ) : _param( p_param )
-	{
-		// If the action modify the scene, add the ACTION_TAG::MODIFY_SCENE tag.
-		_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
-	}
-
-	virtual void execute() override
-	{
-		// Do your action here.
-	};
-
-  private:
-	const ParamType & p_param;
-};
-```
-
-##### Add an option in the main menu
-
-First, you have to decide where you want to add your functionality. The main menu is splitted in tabs, which are splitted in blocks.
-- Main for main actions.
-  - File : Save/Load files
-  - Window : Open the different windows of the software
-- Visualization for actions linked to visualization
-  - Camera : Camera actions
-  - Viewpoints : Viewpoint management
-  - Object Visibility : Toggle visibilities of specific kind of object
-  - Selection action : Actions on selection
-  - Representation : Representation management
-  - Render Effect : Render effect management
-  - Snapshot : Taking snapshot
-  - Window : Windows linked to the visualization mode.
-- Tools for actions linked to molecule analysis or other works on molecules.
-  - Various tools.
-  
-Once you decide in which block you want to add your button, you will found the right class at "src/ui/widget/main_menu/[tab]/[block].hpp" with [tab] and [block] corresponding to the tab name and the block name from the list above.
-
-In the [block].hpp file, you will have to declare your button `MenuToolButtonWidget * _functionalityButton	 = nullptr;`
-and the method called when your button will be clicked `void _functionalityAction() const;`
-
-In the [block].cpp file, you will need to :
-Go to the "_setupUi" method to instantiate your button and add it in the layout :
-```cpp
-// Instantiate your button. The given name is for debug only
-_functionalityButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "buttonName" );
-
-// Set button display. Orientation define the position of the icon related to the text.
-_functionalityButton->setData( "DisplayedActionName", ":/sprite/action_icon.png", Qt::Orientation::Horizontal );
-
-// Add the button in the layout. "columnPos" correspond to the column index where the button has to be pushed.
-pushButton( *_functionalityButton, columnPos );
-```
-
-Then you have to connect the "trigger" action of the button to the _functionalityAction() method :
-```cpp
-_functionalityButton->setTriggerAction( this, &BlockWidget::_functionalityAction );
-```
-
-And you have to implement the _functionalityAction to call the Action you create :
-```cpp
-void BlockWidget::_functionalityAction() const
-{
-	VTX_ACTION<App::Action::Namespace::MyNewAction>( params );
-}
-```
-
-##### Add a shortcut
-
-Shortcuts which can be triggered from everywhere in the software are called from the VTX::UI::MainWindow class.
-
-First you have to add the method which will call your action :
-src/ui/main_window.hpp
-```cpp
-void _onShortcutFunctionality() const;
-```
-
-src/ui/main_window.cpp
-```cpp
-void MainWindow::_onShortcutFunctionality() const
-{
-	VTX_ACTION<new App::Action::Namespace::MyNewAction>(params); 
-}
-```
-
-Then you can add a your shortcut in the _setupSlots() method like that :
-```cpp
-// Replace Ctrl+N by your own shortcut
-// the "tr" function is a qt function which will translate the text in parameter.
-connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutFunctionality;
-```
-
-See Userguide/shortcut to check the shortcuts already used in VTX.

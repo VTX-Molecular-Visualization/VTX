@@ -3,9 +3,6 @@
 
 #include "context/concept_context.hpp"
 #include "scheduler/concept_scheduler.hpp"
-#include "struct_link.hpp"
-#include "struct_pass.hpp"
-#include "struct_ressource.hpp"
 #include <util/logger.hpp>
 #include <util/variant.hpp>
 
@@ -19,9 +16,9 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
-		inline Scheduler::RenderQueue & getRenderQueue() { return _renderQueue; }
-		inline const Pass::Output *		getOutput() { return _output; }
-		inline void						setOutput( const Pass::Output * const p_output ) { _output = p_output; }
+		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
+		inline const Output * getOutput() { return _output; }
+		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
@@ -29,19 +26,31 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
-		bool addLink( Pass * const		p_passSrc,
-					  Pass * const		p_passDest,
-					  const E_CHANNEL & p_channelSrc  = E_CHANNEL::COLOR_0,
-					  const E_CHANNEL & p_channelDest = E_CHANNEL::COLOR_0 )
+		bool addLink( Pass * const			   p_passSrc,
+					  Pass * const			   p_passDest,
+					  const E_CHANNEL_OUTPUT & p_channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0,
+					  const E_CHANNEL_INPUT &  p_channelDest = E_CHANNEL_INPUT::_0 )
 		{
 			// Check I/O existence.
 			assert( p_passSrc->outputs.contains( p_channelSrc ) );
 			assert( p_passDest->inputs.contains( p_channelDest ) );
 
+			// Check descriptor compatibility.
+			StructCompareVisitorDesc visitor;
+
+			bool areCompatible = std::visit(
+				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
+
+			if ( areCompatible == false )
+			{
+				VTX_WARNING( "{}", "Descriptors are not compatible" );
+				return false;
+			}
+
 			// Check input is free.
 			if ( std::find_if( _links.begin(),
 							   _links.end(),
-							   [ &p_passDest, &p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
+							   [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element ) {
 								   return p_element.get()->dest == p_passDest
 										  && p_element.get()->channelDest == p_channelDest;
 							   } )
@@ -50,12 +59,6 @@ namespace VTX::Renderer
 				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
 				return false;
 			}
-
-			// Check descriptors compatibility.
-			// 			if ( passIn.inputs[ p_channel ].desc != passOut.output.desc )
-			// 			{
-			// 				return false;
-			// 			}
 
 			// Create link.
 			_links.emplace_back(
@@ -66,13 +69,15 @@ namespace VTX::Renderer
 
 		void removeLink( const Link * const p_link )
 		{
+			// TODO: is link deleted?
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup( const size_t	 p_width,
+		bool setup( void * const	 p_loader,
+					const size_t	 p_width,
 					const size_t	 p_height,
 					const FilePath & p_shaderPath,
-					void *			 p_proc = nullptr )
+					const Handle	 p_output = 0 )
 		{
 			// Clean all.
 			_clear();
@@ -89,8 +94,7 @@ namespace VTX::Renderer
 			// Compute queue with scheduler.
 			try
 			{
-				S scheduler;
-				scheduler.schedule( _passes, _links, _renderQueue );
+				_scheduler.schedule( _passes, _links, _output, _renderQueue );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -98,27 +102,27 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Create context.
-			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_proc );
-
-			// Create resources.
-			try
+			// Some checks.
+			if ( _renderQueue.empty() )
 			{
-				VTX_DEBUG( "{}", "Creating resources..." );
-				_createResources( _renderQueue );
-				VTX_DEBUG( "{}", "Creating resources... done" );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Can not create resources: {}", p_e.what() );
+				VTX_ERROR( "{}", "Render queue is empty" );
 				return false;
 			}
+
+			if ( _renderQueue.back()->outputs.size() != 1 )
+			{
+				VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				return false;
+			}
+
+			// Create context.
+			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
 
 			// Generate instructions.
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_instructions.emplace_back( [ & ]() { _context->clear(); } );
+				_context->build( _renderQueue, _links, p_output, _instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -128,11 +132,14 @@ namespace VTX::Renderer
 			}
 
 			VTX_DEBUG( "{}", "Building render graph... done" );
-
 			return true;
 		}
 
-		void resize( const size_t p_width, const size_t p_height ) {}
+		void resize( const size_t p_width, const size_t p_height )
+		{
+			assert( _context != nullptr );
+			_context->resize( p_width, p_height );
+		}
 
 		void render()
 		{
@@ -144,77 +151,46 @@ namespace VTX::Renderer
 			}
 		}
 
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		{
+			if ( _context != nullptr )
+			{
+				_context->setUniform( p_value, p_uniform, p_program );
+			}
+		}
+
+		template<typename T>
+		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
+		{
+			if ( _context != nullptr )
+			{
+				_context->template getUniform<T>( p_value, p_uniform.name, p_program.name );
+			}
+			else
+			{
+				assert( std::holds_alternative<StructUniformValue<T>>( p_uniform.value ) );
+
+				p_value = std::get<StructUniformValue<T>>( p_uniform.value ).value;
+			}
+		}
+
 		// Debug purposes only.
 		inline Passes & getPasses() { return _passes; }
 		inline Links &	getLinks() { return _links; }
 
 	  private:
-		using Instruction  = std::function<void()>;
-		using Instructions = std::vector<Instruction>;
+		S				   _scheduler;
+		RenderQueue		   _renderQueue;
+		std::unique_ptr<C> _context;
 
-		Scheduler::RenderQueue _renderQueue;
-		std::unique_ptr<C>	   _context;
-
-		const Pass::Output * _output;
-		Passes				 _passes;
-		Links				 _links;
-		Resources			 _resources;
-		Instructions		 _instructions;
-
-		void _createResources( const Scheduler::RenderQueue & p_queue )
-		{
-			using namespace Context;
-
-			for ( const Pass * const pass : p_queue )
-			{
-				// Outputs.
-				for ( const auto & [ channel, output ] : pass->outputs )
-				{
-					const DescIO & desc = output.desc;
-
-					Handle id;
-					if ( std::holds_alternative<DescAttachment>( desc ) )
-					{
-						_context->create( std::get<DescAttachment>( desc ), id );
-					}
-					else
-					{
-						throw std::runtime_error( "unknown descriptor type" );
-					}
-					_resources.push_back( Resource { id, Util::Variant::cast( desc ) } );
-				}
-
-				// Programs.
-				for ( const DescProgram & desc : pass->programs )
-				{
-					Handle id;
-					_context->create( desc, id );
-					_resources.push_back( Resource { id, desc } );
-				}
-			}
-		}
+		const Output * _output;
+		Passes		   _passes;
+		Links		   _links;
+		Instructions   _instructions;
 
 		void _clear()
 		{
-			using namespace Context;
-
-			for ( const Resource & resource : _resources )
-			{
-				if ( std::holds_alternative<DescAttachment>( resource.desc ) )
-				{
-					_context->destroy( std::get<DescAttachment>( resource.desc ), resource.id );
-				}
-				else if ( std::holds_alternative<DescProgram>( resource.desc ) )
-				{
-					_context->destroy( std::get<DescProgram>( resource.desc ), resource.id );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
-				}
-			}
-
-			_resources.clear();
 			_renderQueue.clear();
 			_instructions.clear();
 			_context.reset( nullptr );

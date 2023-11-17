@@ -13,11 +13,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( _id == GL_INVALID_INDEX );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glCreateVertexArrays( 1, &_id );
-#else
-			glGenVertexArrays( 1, &_id );
-#endif
 		}
 
 		~VertexArray()
@@ -46,34 +42,22 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
-#else
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, p_elementBuffer.getId() );
-#endif
 		}
 
 		inline void unbindElementBuffer() const
 		{
 			assert( glIsVertexArray( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			// 2023-07-25: Fail on Intel HD Graphics 520.
 			// glVertexArrayElementBuffer( _id, 0 );
-#else
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-#endif
 		}
 
 		inline void enableAttribute( const GLuint p_bindingIndex ) const
 		{
 			assert( glIsVertexArray( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
-#else
-			glEnableVertexAttribArray( p_bindingIndex );
-#endif
 		}
 
 		template<typename T>
@@ -84,20 +68,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
-#else
-			if ( std::is_same<T, float>::value )
-			{
-				glVertexAttribPointer(
-					p_bindingIndex, p_stride, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void *>( p_offset ) );
-			}
-			else
-			{
-				assert( false );
-				// TODO: handle more types.
-			}
-#endif
 		}
 
 		template<typename T>
@@ -115,15 +86,12 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
-#endif
 		}
 
 		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count )
 		{
 			glDrawArrays( p_mode, p_first, p_count );
-			// drawCalls++;
 		}
 
 		inline void multiDrawArray( const GLenum		  p_mode,
@@ -132,7 +100,6 @@ namespace VTX::Renderer::Context::GL
 									const GLsizei		  p_primcount )
 		{
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
-			// drawCalls++;
 		}
 
 		inline void drawElement( const GLenum		  p_mode,
@@ -141,7 +108,6 @@ namespace VTX::Renderer::Context::GL
 								 const GLvoid * const p_offset = 0 )
 		{
 			glDrawElements( p_mode, p_count, p_type, p_offset );
-			// drawCalls++;
 		}
 
 		inline void multiDrawElement( const GLenum				   p_mode,
@@ -151,7 +117,6 @@ namespace VTX::Renderer::Context::GL
 									  const GLsizei				   p_primcount )
 		{
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
-			// drawCalls++;
 		}
 
 	  private:

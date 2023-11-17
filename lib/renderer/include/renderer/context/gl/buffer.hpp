@@ -4,9 +4,8 @@
 #include <cassert>
 #include <cstddef>
 #include <glad/glad.h>
+#include <iostream>
 #include <vector>
-
-#define VTX_OPENGL_VERSION 450
 
 namespace VTX::Renderer::Context::GL
 {
@@ -19,27 +18,27 @@ namespace VTX::Renderer::Context::GL
 		explicit Buffer( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
 		{
 			_create();
-			set<T>( p_vector, p_flags );
+			setData<T>( p_vector, p_flags );
 		}
 
 		template<typename T>
 		explicit Buffer( const T & p_data, const GLbitfield p_flags = 0 )
 		{
 			_create();
-			set<T>( p_data, p_flags );
+			setData<T>( p_data, p_flags );
 		}
 
 		template<typename T>
 		explicit Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
 		{
 			_create();
-			set<T>( GLsizei( p_size ), p_data, p_flags );
+			setStorage<T>( GLsizei( p_size ), p_data, p_flags );
 		}
 
 		explicit Buffer( const size_t p_size, const GLbitfield p_flags = 0 )
 		{
 			_create();
-			set( GLsizei( p_size ), p_flags );
+			setStorage( GLsizei( p_size ), p_flags );
 		}
 
 		~Buffer() { destroy(); }
@@ -94,90 +93,78 @@ namespace VTX::Renderer::Context::GL
 		}
 
 		template<typename T>
-		inline void set( const std::vector<T> & p_vector, const GLenum p_usage ) const
+		inline void setData( const std::vector<T> & p_vector, const GLenum p_usage ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glNamedBufferData( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(), p_usage );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
-		inline void set( const T & p_data, const GLenum p_usage ) const
+		inline void setData( const T & p_data, const GLenum p_usage ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glNamedBufferData( _id, GLsizei( sizeof( T ) ), &p_data, p_usage );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
-		inline void setSub( const T &	   p_data,
-							const GLintptr p_offset = GLintptr( 0 ),
-							const GLsizei  p_size	= GLsizei( sizeof( T ) ) ) const
-		{
-			assert( glIsBuffer( _id ) );
-
-#if ( VTX_OPENGL_VERSION == 450 )
-			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
-#else
-			// TODO
-#endif
-		}
-
-		template<typename T>
-		inline void setSub( const std::vector<T> & p_vector ) const
-		{
-			assert( glIsBuffer( _id ) );
-
-#if ( VTX_OPENGL_VERSION == 450 )
-			glNamedBufferSubData( _id, GLintptr( 0 ), GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data() );
-#else
-			// TODO
-#endif
-		}
-
-		template<typename T>
-		inline void set( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
-		{
-			assert( glIsBuffer( _id ) );
-			assert( p_vector.empty() == false );
-
-#if ( VTX_OPENGL_VERSION == 450 )
-			glNamedBufferStorage( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(), p_flags );
-#else
-			// TODO
-#endif
-		}
-
-		template<typename T>
-		inline void set( const GLsizei p_size, const T & p_data, const GLbitfield p_flags = 0 )
+		inline void setData( const GLsizei p_size, const T & p_data, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-#if ( VTX_OPENGL_VERSION == 450 )
-			glNamedBufferStorage( _id, p_size, &p_data, p_flags );
-#else
-			// TODO
-#endif
+			glNamedBufferData( _id, p_size, &p_data, p_usage );
 		}
 
-		inline void set( const GLsizei p_size, const GLbitfield p_flags = 0 )
+		inline void setData( const GLsizei p_size, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
+			glNamedBufferData( _id, p_size, nullptr, p_usage );
+		}
+
+		template<typename T>
+		inline void setSubData( const T &	   p_data,
+								const GLintptr p_offset = GLintptr( 0 ),
+								const GLsizei  p_size	= GLsizei( sizeof( T ) ) ) const
+		{
+			assert( glIsBuffer( _id ) );
+
+			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
+		}
+
+		template<typename T>
+		inline void setSubData( const std::vector<T> & p_vector ) const
+		{
+			assert( glIsBuffer( _id ) );
+
+			glNamedBufferSubData( _id, GLintptr( 0 ), GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data() );
+		}
+
+		template<typename T>
+		inline void setStorage( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
+		{
+			assert( glIsBuffer( _id ) );
+			assert( p_vector.empty() == false );
+
+			glNamedBufferStorage( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(), p_flags );
+		}
+
+		template<typename T>
+		inline void setStorage( const GLsizei p_size, const T & p_data, const GLbitfield p_flags = 0 )
+		{
+			assert( glIsBuffer( _id ) );
+			assert( p_size > 0 );
+
+			glNamedBufferStorage( _id, p_size, &p_data, p_flags );
+		}
+
+		inline void setStorage( const GLsizei p_size, const GLbitfield p_flags = 0 )
+		{
+			assert( glIsBuffer( _id ) );
+
 			glNamedBufferStorage( _id, p_size, nullptr, p_flags );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
@@ -185,11 +172,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glGetNamedBufferSubData( _id, 0, GLsizei( p_vector.size() * sizeof( T ) ), &p_vector[ 0 ] );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
@@ -197,11 +180,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glGetNamedBufferSubData( _id, p_offset, p_length, p_data );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
@@ -209,11 +188,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			return reinterpret_cast<T *>( glMapNamedBuffer( _id, p_access ) );
-#else
-			// TODO
-#endif
 		}
 
 		template<typename T>
@@ -221,22 +196,14 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			return reinterpret_cast<T *>( glMapNamedBufferRange( _id, p_offset, p_length, p_access ) );
-#else
-			// TODO
-#endif
 		}
 
 		inline void unmap() const
 		{
 			assert( glIsBuffer( _id ) );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glUnmapNamedBuffer( _id );
-#else
-			// TODO
-#endif
 		}
 
 	  private:
@@ -247,11 +214,8 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( _id == GL_INVALID_INDEX );
 
-#if ( VTX_OPENGL_VERSION == 450 )
 			glCreateBuffers( 1, &_id );
-#else
-			glGenBuffers( 1, &_id );
-#endif
+
 			assert( glIsBuffer( _id ) );
 		}
 	};
