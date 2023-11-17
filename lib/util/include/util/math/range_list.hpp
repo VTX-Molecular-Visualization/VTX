@@ -304,13 +304,7 @@ namespace VTX::Util::Math
 			for ( const Range<T> & range : _ranges )
 			{
 				if ( range.contains( p_range.getFirst() ) )
-				{
 					return range.contains( p_range.getLast() );
-				}
-				else
-				{
-					return false;
-				}
 			}
 
 			return false;
