@@ -46,7 +46,7 @@ class VTXUiRecipe(ConanFile):
         cmake = CMake(self)
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
-        copy(self, "*.dll", self.build_folder, self.package_folder)
+        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui"]
