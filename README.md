@@ -134,6 +134,15 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 conan profile detect
 ```
 
+Into `~/.conan2/profiles/default` add
+```
+[settings]
+
+...
+
+build_type=<Debug|Release>
+```
+
 ### Set packages in editable mode
 
 ```
@@ -151,8 +160,11 @@ conan editable add lib/util
 ### Build VTX
 
 ```
-conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20 -s build_type=<Debug|Release>
+conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20  -c tools.cmake.cmaketoolchain:generator=Ninja
 ```
+
+**Note** : The first time conan compile external libraries, an assert may fail once and raise an error window that suspend the conan command. It doesn't mean the conan build failed, you can safely hit the `Retry` button to resume the conan build. 
+
 
 ## License
 
