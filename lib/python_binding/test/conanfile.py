@@ -8,7 +8,7 @@ class VTXPythonBindingTestRecipe(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
     
-    exports_sources = "CMakeLists.txt", "src/*", "cmake/*", "data/*"
+    exports_sources = "CMakeLists.txt", "src/*", "data/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")

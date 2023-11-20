@@ -10,7 +10,7 @@ class VTXIOTestConan(ConanFile):
     
     generators = "CMakeToolchain", "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "cmake/*", "data/*"
+    exports_sources = "CMakeLists.txt", "src/*", "data/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
