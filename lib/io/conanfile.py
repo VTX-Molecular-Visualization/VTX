@@ -12,7 +12,7 @@ class VTXIORecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")

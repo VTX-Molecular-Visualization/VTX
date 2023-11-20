@@ -1,12 +1,12 @@
 message("vtx_renderer")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
+
 project(vtx_renderer)
 
 find_package(vtx_util CONFIG REQUIRED)
 
 add_library(vtx_renderer)
-configureTarget(vtx_renderer)
+configure_target(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)

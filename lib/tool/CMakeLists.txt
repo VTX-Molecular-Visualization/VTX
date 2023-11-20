@@ -1,18 +1,16 @@
 message("vtx_tool")
 cmake_minimum_required(VERSION 3.23)
-include(cmake/configure-target.cmake)
-include(cmake/qt_helper.cmake)
-project(vtx_tool)
 
-configure_qt()
+project(vtx_tool)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+configure_qt()
 add_library(vtx_tool)
-configureTarget(vtx_tool)
+configure_target(vtx_tool)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)

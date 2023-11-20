@@ -14,7 +14,7 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "python_script/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "python_script/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -28,9 +28,12 @@ class VTXPythonBindingRecipe(ConanFile):
             del self.options.fPIC
 
     def layout(self):
-        cmake_layout(self)        
-        self.cpp.build.components["vtx_python_binding"].libdirs = ['.']
-        self.cpp.build.components["pytx"].libdirs = ['.']
+        cmake_layout(self)
+
+        generator = self.conf.get("tools.cmake.cmaketoolchain:generator")
+        bt = str(self.settings.build_type) if self.settings.os == "Windows" and generator != "Ninja" else "."
+        self.cpp.build.components["vtx_python_binding"].libdirs = [bt]
+        self.cpp.build.components["pytx"].libdirs = [bt]
 
     def build(self):
         cmake = CMake(self)
@@ -44,7 +47,7 @@ class VTXPythonBindingRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
         self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
-        self.cpp_info.components["pytx"].libs = ["pytx"]
+        self.cpp_info.components["pytx"].libs = ["PyTX"]
         self.cpp_info.components["pytx"].set_property("cmake_target_name", "vtx_python_binding::PyTX")
 
         dir_python_script = os.path.join(self.package_folder, "python_script")
