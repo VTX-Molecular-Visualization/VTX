@@ -12,10 +12,17 @@ def move_dlls__ui(dest: Path) :
         Default location should be the same directory tree that the lib itself, relative to this file's folder
     """
     for file in (dest / "lib" / "ui" / "build").iterdir():
+        target_path = dest / file.name
+        if target_path.exists():
+            if target_path.is_dir():
+                shutil.rmtree(target_path)
+            elif target_path.is_file():
+                os.remove(target_path)
+        
         if (file.is_dir()) :
-            shutil.copytree(file, dest / file.name)
+            shutil.copytree(file, target_path)
         elif (file.is_file()) :
-            shutil.copy2(file,  dest / file.name)
+            shutil.copy2(file,  target_path)
     shutil.rmtree(dest / "lib" / "ui") # cleanup
     
 
