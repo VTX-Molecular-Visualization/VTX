@@ -27,7 +27,7 @@ class VTXUiTestRecipe(ConanFile):
         cmake_layout(self)
 
     def generate(self):
-        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, self.build_folder)
+        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
             
     def build(self):
         cmake = CMake(self)
