@@ -20,6 +20,16 @@ namespace VTX::App::Application::Selection
 		using IndexRange	 = Util::Math::Range<size_t>;
 		using IndexRangeList = Util::Math::RangeList<size_t>;
 
+		enum class CurrentObjectTypeEnum : int
+		{
+			Molecule,
+			Chain,
+			Residue,
+			Atom,
+
+			None
+		};
+
 	  public:
 		MoleculeData( const Component::Scene::Selectable & p_selectable );
 
@@ -254,6 +264,18 @@ namespace VTX::App::Application::Selection
 		inline const IndexRangeList & getResidueIds() const { return _residueIds; }
 		inline const IndexRangeList & getAtomIds() const { return _atomIds; }
 
+		void setCurrentObject( const Molecule & p_molecule );
+		void setCurrentObject( const Chain & p_chain );
+		void setCurrentObject( const Residue & p_residue );
+		void setCurrentObject( const Atom & p_atom );
+
+		CurrentObjectTypeEnum getCurrentObjectType() const { return _currentObjectType; }
+
+		Molecule & getCurrentObjectAsMolecule() const;
+		Chain &	   getCurrentObjectAsChain() const;
+		Residue &  getCurrentObjectAsResidue() const;
+		Atom &	   getCurrentObjectAsAtom() const;
+
 		std::string toString() const override;
 
 	  protected:
@@ -279,7 +301,11 @@ namespace VTX::App::Application::Selection
 		void _unselectAtom( const Atom & p_atom );
 		void _unselectAtoms( const IndexRange & p_range );
 
-		Molecule * const _molecule;
+		void _refreshCurrentObject();
+
+		Molecule * const	  _molecule;
+		CurrentObjectTypeEnum _currentObjectType  = CurrentObjectTypeEnum::Molecule;
+		size_t				  _currentObjectIndex = INVALID_INDEX;
 
 		IndexRangeList _chainIds   = IndexRangeList();
 		IndexRangeList _residueIds = IndexRangeList();

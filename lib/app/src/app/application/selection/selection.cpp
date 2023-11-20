@@ -16,6 +16,8 @@ namespace VTX::App::Application::Selection
 		{
 			_items.emplace( item->clone() );
 		}
+
+		_currentSelectionData = _currentSelectionData;
 	}
 
 	Selection::~Selection() = default;
@@ -144,6 +146,8 @@ namespace VTX::App::Application::Selection
 			SelectionData & res = getSelectionData( p_selectableComponent );
 			res.selectAll();
 
+			_setCurrentObject( &res );
+
 			return res;
 		}
 		else
@@ -160,6 +164,8 @@ namespace VTX::App::Application::Selection
 
 				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
 			}
+
+			_setCurrentObject( it.first->get() );
 
 			return **( it.first );
 		}
@@ -178,6 +184,8 @@ namespace VTX::App::Application::Selection
 			SelectionData & res = getSelectionData( p_selectableComponent );
 			res.add( p_selectionData );
 
+			_setCurrentObject( &res );
+
 			return res;
 		}
 		else
@@ -195,6 +203,8 @@ namespace VTX::App::Application::Selection
 
 				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
 			}
+
+			_setCurrentObject( it.first->get() );
 
 			return **( it.first );
 		}
@@ -272,7 +282,11 @@ namespace VTX::App::Application::Selection
 
 		return res;
 	}
-	void Selection::setCurrentObject( const SelectionData * const p_object ) { _setCurrentObject( p_object ); }
+	void Selection::setCurrentObject( const Component::Scene::Selectable & p_item )
+	{
+		_setCurrentObject( _getSelectionDataPtr( p_item ).get() );
+	}
+	void Selection::setCurrentObject( const SelectionData & p_selectionData ) { _setCurrentObject( &p_selectionData ); }
 
 	void Selection::_notifyDataChanged() {}
 
@@ -307,11 +321,11 @@ namespace VTX::App::Application::Selection
 		throw VTXException( "Selectable object not found in selection." );
 	}
 
-	void Selection::_setCurrentObject( const SelectionData * const p_object, const bool p_notify )
+	void Selection::_setCurrentObject( const SelectionData * const p_selectionData, const bool p_notify )
 	{
-		if ( _currentObject != p_object )
+		if ( _currentSelectionData != p_selectionData )
 		{
-			_currentObject = p_object;
+			_currentSelectionData = p_selectionData;
 
 			if ( p_notify )
 				_notifyDataChanged();
@@ -319,9 +333,9 @@ namespace VTX::App::Application::Selection
 	}
 	void Selection::_clearCurrentObject( const bool p_notify )
 	{
-		if ( _currentObject != nullptr )
+		if ( _currentSelectionData != nullptr )
 		{
-			_currentObject = nullptr;
+			_currentSelectionData = nullptr;
 
 			if ( p_notify )
 				_notifyDataChanged();

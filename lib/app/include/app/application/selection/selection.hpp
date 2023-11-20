@@ -284,8 +284,20 @@ namespace VTX::App::Application::Selection
 		inline bool isEmpty() const { return _items.size() == 0; }
 		void		clear();
 
-		inline const SelectionData * const getCurrentObject() const { return _currentObject; }
-		void							   setCurrentObject( const SelectionData * const );
+		inline const Component::Scene::Selectable & getCurrentObject() const
+		{
+			return _currentSelectionData->getSelectionComponent();
+		}
+
+		const SelectionData & getCurrentSelectionData() const { return *_currentSelectionData; }
+		template<SelectionDataConcept T>
+		const T & getCurrentSelectionData() const
+		{
+			return dynamic_cast<T &>( *_currentSelectionData );
+		}
+
+		void setCurrentObject( const Component::Scene::Selectable & p_item );
+		void setCurrentObject( const SelectionData & p_selectionData );
 
 		Util::Math::AABB getAABB() const;
 
@@ -300,7 +312,7 @@ namespace VTX::App::Application::Selection
 		std::map<const SelectionData *, Component::Scene::AABB *> _mapSelectionAABB
 			= std::map<const SelectionData *, Component::Scene::AABB *>();
 
-		const SelectionData * _currentObject = nullptr;
+		const SelectionData * _currentSelectionData = nullptr;
 
 		const std::unique_ptr<SelectionData> & _getSelectionDataPtr( const Component::Scene::Selectable & p_selectable
 		) const;

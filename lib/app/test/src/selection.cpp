@@ -13,7 +13,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/logger.hpp>
 
-TEST_CASE( "VTX_APP - Selection", "[unit]" )
+TEST_CASE( "VTX_APP - Selection", "[wip][unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -41,28 +41,33 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( !CURRENT_SELECTION().isSelected( selectableMol2 ) );
 	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
 
 	Application::Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( mol2 );
 	CHECK( !CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
 	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
 	CURRENT_SELECTION().select( selectableMol1, AssignmentType::APPEND );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
 	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
 
 	CURRENT_SELECTION().clear();
 	CHECK( CURRENT_SELECTION().isEmpty() );
 
 	CURRENT_SELECTION().selectAll( { &selectableMol1, &selectableMol2 } );
 	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
 	CURRENT_SELECTION().clear();
 
 	std::vector<const Component::Scene::Selectable *> selectables = { &selectableMol1, &selectableMol2 };
 	CURRENT_SELECTION().selectAll( selectables );
 	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
 	CURRENT_SELECTION().clear();
 
@@ -90,6 +95,8 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	MoleculeData & molSelData1 = CURRENT_SELECTION().select<MoleculeData>( selectableMol1 );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( molSelData1.isFullySelected() );
+	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::Molecule );
+	CHECK( &molSelData1.getCurrentObjectAsMolecule() == &mol1 );
 
 	molSelData1.clear();
 	molSelData1.selectFullChain( *mol1.getChain( 0 ) );
@@ -99,6 +106,8 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( molSelData1.isResidueSelected( 0 ) );
 	CHECK( molSelData1.isResidueFullySelected( 0 ) );
 	CHECK( molSelData1.isAtomSelected( 0 ) );
+	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::Chain );
+	CHECK( &molSelData1.getCurrentObjectAsChain() == mol1.getChain( 0 ) );
 
 	molSelData1.unselectAtom( *mol1.getAtom( 0 ) );
 	CHECK( molSelData1.isChainSelected( 0 ) );
@@ -106,6 +115,8 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( molSelData1.isResidueSelected( 0 ) );
 	CHECK( !molSelData1.isResidueFullySelected( 0 ) );
 	CHECK( !molSelData1.isAtomSelected( 0 ) );
+	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::Chain );
+	CHECK( &molSelData1.getCurrentObjectAsChain() == mol1.getChain( 0 ) );
 
 	molSelData1.selectAtom( *mol1.getAtom( 0 ) );
 	CHECK( molSelData1.isChainSelected( 0 ) );
@@ -114,6 +125,10 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( molSelData1.isResidueFullySelected( 0 ) );
 	CHECK( molSelData1.isAtomSelected( 0 ) );
 	CHECK( molSelData1.isAtomSelected( 0 ) );
+
+	molSelData1.setCurrentObject( *mol1.getResidue( 0 ) );
+	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::Residue );
+	CHECK( &molSelData1.getCurrentObjectAsResidue() == mol1.getResidue( 0 ) );
 
 	molSelData1.unselectChain( *mol1.getChain( 0 ) );
 	CHECK( !molSelData1.isChainSelected( 0 ) );
@@ -127,6 +142,8 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( !molSelData1.areAtomsSelected(
 		IndexRange::createFirstLast( mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom() )
 	) );
+
+	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::None );
 }
 
 TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
