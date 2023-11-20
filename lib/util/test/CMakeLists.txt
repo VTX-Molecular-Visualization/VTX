@@ -5,7 +5,8 @@ project(vtx_util_test)
 find_package(vtx_util CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
-add_executable(vtx_util_test src/main.cpp)
+file(GLOB_RECURSE SOURCES src/*)
+add_executable(vtx_util_test ${SOURCES})
 configure_target(vtx_util_test)
 
 target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
