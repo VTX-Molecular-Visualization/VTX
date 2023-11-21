@@ -56,4 +56,4 @@ jobs:
         PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
       with:
         name: VTXRendererBench_${{runner.os}}
-        path: $PACKAGE_PATH
+        path: "$PACKAGE_PATH"
