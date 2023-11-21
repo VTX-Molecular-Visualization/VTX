@@ -6,7 +6,7 @@ project(vtx_tool_mdprep)
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
-find_package(libgromacs CONFIG REQUIRED)
+find_package(Gromacs CONFIG REQUIRED)
 
 
 add_library(vtx_tool_mdprep)
