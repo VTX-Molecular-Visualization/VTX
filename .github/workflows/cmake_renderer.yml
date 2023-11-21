@@ -47,6 +47,7 @@ jobs:
 
     - name: Read package path from output.json
       id: read_package_path
+      working-directory: ${{env.CMAKELISTS_DIR}}
       run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
       shell: bash
 
