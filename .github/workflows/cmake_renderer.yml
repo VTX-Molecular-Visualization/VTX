@@ -43,19 +43,13 @@ jobs:
         conan export ../core       
         conan export ../io/chemfiles
         conan export ../io
-        conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+        conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
-#    - name: Install
-#      if: runner.os == 'Windows'
-#      working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
-#      run: cmake --install . --config ${{env.BUILD_TYPE}} --prefix ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_INSTALL_DIR}}
-#    - name: Install
-#      if: runner.os == 'Linux' || runner.os == 'macOS'
-#      working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
-#      run: sudo cmake --install . --config ${{env.BUILD_TYPE}} --prefix ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_INSTALL_DIR}}
+    - name: Read package path from output.json
+      run: echo "::set-output name=package_path::$(jq -r '.graph.node.1.package_folder' output.json)"
+      shell: bash
 
 #    - uses: actions/upload-artifact@v3
 #      with:
 #        name: VTXRendererBench_${{runner.os}}
 #        path: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_INSTALL_DIR}}/VTXRendererBench
-      
