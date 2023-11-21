@@ -127,6 +127,7 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 - Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
 - Install [Conan 2](https://conan.io/downloads)
+- Install [Python 3.9](https://www.python.org/downloads/)
 
 ### Create Conan profile
 
