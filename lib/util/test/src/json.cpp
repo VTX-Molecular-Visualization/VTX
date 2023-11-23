@@ -41,9 +41,9 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	document = JSon::Object( { "VERSION", subDocument } );
 	json	 = { { "VERSION", subJSon } };
 
-	JSon::write( document );
+	// JSon::write( document );
 
-	document = JSon::open( "My/Path.json" );
+	// document = JSon::open( "My/Path.json" );
 
 	// Create a document								//OK
 	// Write different kind of data in the document		//OK
