@@ -30,10 +30,8 @@ class VTXPythonBindingRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
 
-        generator = self.conf.get("tools.cmake.cmaketoolchain:generator")
-        bt = str(self.settings.build_type) if self.settings.os == "Windows" and generator != "Ninja" else "."
-        self.cpp.build.components["vtx_python_binding"].libdirs = [bt]
-        self.cpp.build.components["pytx"].libdirs = [bt]
+        self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["pytx"].libdirs = self.cpp.build.libdirs
 
     def build(self):
         cmake = CMake(self)

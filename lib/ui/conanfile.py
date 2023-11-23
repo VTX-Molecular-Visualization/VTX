@@ -1,5 +1,4 @@
 import os
-import glob
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.files import copy
@@ -34,8 +33,8 @@ class VTXUiRecipe(ConanFile):
 
     def generate(self):
         copy(self, "*.cmake", self.source_folder, self.build_folder)
-        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, self.build_folder)
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), self.build_folder) # copy os-dependent Qt dll
+        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
 
     def build(self):
         cmake = CMake(self)

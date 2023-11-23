@@ -26,6 +26,7 @@ target_sources(vtx_tool
 target_link_libraries(vtx_tool PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_tool PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_tool PRIVATE vtx_ui::vtx_ui)
+target_link_libraries(vtx_tool PRIVATE Eigen3::Eigen)
 target_link_libraries(vtx_tool PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 
 apply_qt_options(vtx_tool)

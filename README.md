@@ -127,6 +127,7 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 - Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
 - Install [Conan 2](https://conan.io/downloads)
+- Install [Python 3.9](https://www.python.org/downloads/)
 
 ### Create Conan profile
 
@@ -162,7 +163,7 @@ conan editable add lib/tool/tools/mdprep/external/gromacs
 ### Build VTX
 
 ```
-conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20  -c tools.cmake.cmaketoolchain:generator=Ninja
+conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20 -s build_type=<Debug|Release>
 ```
 
 **Note** : The first time conan compile external libraries, an assert may fail once and raise an error window that suspend the conan command. It doesn't mean the conan build failed, you can safely hit the `Retry` button to resume the conan build. 
