@@ -14,7 +14,7 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	CHECK( document.toString() == json.dump() );
 
 	document = { 10 };
-	json	 = { 10 };
+	json	 = { 10ull };
 	CHECK( document.toString() == json.dump() );
 
 	document = { 10, 20, "Zouzou" };
@@ -25,11 +25,13 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	json	 = { { "INT_VALUE", 10 }, { "FLOAT_VALUE", 15.2f }, { "STR_VALUE", "I'm a string" } };
 	CHECK( document.toString() == json.dump() );
 
-	JSon::Document subDocument = JSon::Object( { { "MAJOR", 1 }, { "MINOR", 0 }, { "REVISION", 1234 } } );
-	nlohmann::json subJSon	   = { { "MAJOR", 1 }, { "MINOR", 0 }, { "REVISION", 1234 } };
+	JSon::Document subDocument = JSon::Object( { { "MAJOR", 1 }, { "MINOR", 0 }, { "REVISION", { 1234, 'b' } } } );
+	nlohmann::json subJSon	   = { { "MAJOR", 1 }, { "MINOR", 0 }, { "REVISION", { 1234, 'b' } } };
+	CHECK( subDocument.toString() == subJSon.dump() );
 
 	document = { { "VERSION", subDocument } };
 	json	 = { { "VERSION", subJSon } };
+	CHECK( document.toString() == json.dump() );
 
 	// JSon::write( document );
 
