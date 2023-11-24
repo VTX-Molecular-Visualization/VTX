@@ -1,15 +1,14 @@
 #ifndef __VTX_UTIL_JSON_DOCUMENT__
 #define __VTX_UTIL_JSON_DOCUMENT__
 
-#include "_fwd.hpp"
 #include "util/json/basic_json.hpp"
 #include <memory>
 #include <string>
 
 namespace VTX::Util::JSon
 {
-	template<typename T>
-	concept BasicJSonConcept = std::constructible_from<BasicJSon, T>;
+	// template<typename T>
+	// concept BasicJSonConcept = (!std::same_as<T, BasicJSon>) && std::constructible_from<BasicJSon, const T &>;
 
 	class Document
 	{
@@ -20,7 +19,7 @@ namespace VTX::Util::JSon
 		Document( const BasicJSon & p_init );
 		Document( const std::initializer_list<BasicJSon> & p_init );
 
-		template<BasicJSonConcept T>
+		template<typename T>
 		Document( const T & p_value ) : Document( BasicJSon( p_value ) )
 		{
 		}
