@@ -8,6 +8,9 @@
 
 namespace VTX::Util::JSon
 {
+	template<typename T>
+	concept BasicJSonConcept = std::constructible_from<BasicJSon, T>;
+
 	class Document
 	{
 	  public:

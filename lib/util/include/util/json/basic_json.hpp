@@ -60,7 +60,5 @@ namespace VTX::Util::JSon
 		static void _fillObjectFieldsFromVector( Object & p_obj, const std::initializer_list<BasicJSon> & p_vector );
 	};
 
-	template<typename T>
-	concept BasicJSonConcept = std::constructible_from<BasicJSon, T>;
 } // namespace VTX::Util::JSon
 #endif
