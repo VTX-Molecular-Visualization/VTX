@@ -12,9 +12,9 @@ namespace VTX::Util::JSon
 	BasicJSon::BasicJSon( const float p_value ) : _type( EnumType::Floating ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const char * p_value ) : _type( EnumType::String ), _value( std::string( p_value ) ) {}
 	BasicJSon::BasicJSon( const std::string & p_value ) : _type( EnumType::String ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const Array & p_value ) : _type( EnumType::Array ), _value( new Array( p_value ) ) {}
-	BasicJSon::BasicJSon( const Object & p_value ) : _type( EnumType::Object ), _value( new Object( p_value ) ) {}
-	BasicJSon::BasicJSon( const Document & p_value ) : _type( EnumType::Document ), _value( new Document( p_value ) ) {}
+	BasicJSon::BasicJSon( const Array & p_value ) : _type( EnumType::Array ), _value( &p_value ) {}
+	BasicJSon::BasicJSon( const Object & p_value ) : _type( EnumType::Object ), _value( &p_value ) {}
+	BasicJSon::BasicJSon( const Document & p_value ) : _type( EnumType::Document ), _value( &p_value ) {}
 
 	BasicJSon::BasicJSon( const BasicJSon & p_source ) = default;
 
@@ -39,25 +39,13 @@ namespace VTX::Util::JSon
 		}
 	}
 
-	BasicJSon::~BasicJSon()
-	{
-		switch ( _type )
-		{
-		case EnumType::Array: delete std::get<Array *>( _value ); break;
-		case EnumType::Object: delete std::get<Object *>( _value ); break;
-		case EnumType::Document:
-			// delete std::get<Document *>( _value );
-			break;
-		}
-	}
-
 	bool				BasicJSon::getBool() const { return std::get<bool>( _value ); }
 	size_t				BasicJSon::getNumberInteger() const { return std::get<size_t>( _value ); }
 	float				BasicJSon::getNumberFloat() const { return std::get<float>( _value ); }
 	const std::string & BasicJSon::getString() const { return std::get<std::string>( _value ); }
-	const Array &		BasicJSon::getArray() const { return *std::get<Array *>( _value ); }
-	const Object &		BasicJSon::getObject() const { return *std::get<Object *>( _value ); }
-	const Document &	BasicJSon::getDocument() const { return *std::get<Document *>( _value ); }
+	const Array &		BasicJSon::getArray() const { return *std::get<const Array *>( _value ); }
+	const Object &		BasicJSon::getObject() const { return *std::get<const Object *>( _value ); }
+	const Document &	BasicJSon::getDocument() const { return *std::get<const Document *>( _value ); }
 
 	bool BasicJSon::_isDescribingObject( const std::initializer_list<BasicJSon> & p_data )
 	{

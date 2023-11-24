@@ -11,8 +11,8 @@ namespace VTX::Util::JSon
 	class BasicJSon
 	{
 	  private:
-		using VariantType
-			= std::variant<std::monostate, bool, size_t, float, std::string, Array *, Object *, Document *>;
+		using VariantType = std::
+			variant<std::monostate, bool, size_t, float, std::string, const Array *, const Object *, const Document *>;
 
 	  public:
 		enum class EnumType : int
@@ -40,8 +40,6 @@ namespace VTX::Util::JSon
 		BasicJSon( const Array & p_value );
 		BasicJSon( const Object & p_value );
 		BasicJSon( const Document & p_value );
-
-		~BasicJSon();
 
 		EnumType getType() const { return _type; }
 
