@@ -7,8 +7,8 @@
 
 namespace VTX::Util::JSon
 {
-	// template<typename T>
-	// concept BasicJSonConcept = (!std::same_as<T, BasicJSon>) && std::constructible_from<BasicJSon, const T &>;
+	template<typename T>
+	concept BasicJSonConcept = std::convertible_to<T, BasicJSon>;
 
 	class Document
 	{
