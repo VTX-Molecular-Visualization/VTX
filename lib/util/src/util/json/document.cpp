@@ -13,7 +13,7 @@ namespace VTX::Util::JSon
 		Impl() {}
 		Impl( const Impl & p_source ) = default;
 
-		Impl( const BasicJSon & p_init ) { _jsonDocument = { convert( p_init ) }; }
+		Impl( const BasicJSon & p_init ) { _jsonDocument = convert( p_init ); }
 
 		Impl( const std::initializer_list<BasicJSon> & p_init )
 		{
