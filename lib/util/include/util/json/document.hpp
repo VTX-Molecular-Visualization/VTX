@@ -2,8 +2,7 @@
 #define __VTX_UTIL_JSON_DOCUMENT__
 
 #include "_fwd.hpp"
-#include "basic_json.hpp"
-#include "conversion.hpp"
+#include "util/json/basic_json.hpp"
 #include <memory>
 #include <string>
 
@@ -19,7 +18,7 @@ namespace VTX::Util::JSon
 		Document( const std::initializer_list<BasicJSon> & p_init );
 
 		template<BasicJSonConcept T>
-		Document( const T & p_value ) : Document( Conversion::toBasicJSon( p_value ) )
+		Document( const T & p_value ) : Document( BasicJSon( p_value ) )
 		{
 		}
 

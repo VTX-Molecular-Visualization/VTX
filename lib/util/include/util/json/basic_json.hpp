@@ -2,7 +2,6 @@
 #define __VTX_UTIL_JSON_BASIC_JSON__
 
 #include "_fwd.hpp"
-#include "value.hpp"
 #include <string>
 #include <variant>
 #include <vector>
@@ -11,10 +10,17 @@ namespace VTX::Util::JSon
 {
 	class BasicJSon
 	{
+	  private:
+		using VariantType
+			= std::variant<std::monostate, bool, size_t, float, std::string, Array *, Object *, Document *>;
+
 	  public:
 		enum class EnumType : int
 		{
-			BaseValue,
+			Bool,
+			Numeral,
+			Floating,
+			String,
 			Array,
 			Object,
 			Document,
@@ -23,37 +29,40 @@ namespace VTX::Util::JSon
 
 		BasicJSon();
 		BasicJSon( const BasicJSon & p_source );
+		BasicJSon( std::initializer_list<BasicJSon> p_init );
 
+		BasicJSon( const bool p_value );
+		BasicJSon( const int p_value );
+		BasicJSon( const size_t p_value );
+		BasicJSon( const float p_value );
+		BasicJSon( const std::string & p_value );
+		BasicJSon( const char * p_value );
 		BasicJSon( const Array & p_value );
-		BasicJSon( const Value & p_value );
 		BasicJSon( const Object & p_value );
 		BasicJSon( const Document & p_value );
 
-		BasicJSon( std::initializer_list<BasicJSon> p_init );
-
-		template<ValueCompatibleConcept T>
-		BasicJSon( const T & p_value ) : BasicJSon( Value( p_value ) )
-		{
-		}
+		~BasicJSon();
 
 		EnumType getType() const { return _type; }
 
-		const Value &	 getValue() const;
-		const Array &	 getArray() const;
-		const Object &	 getObject() const;
-		const Document & getDocument() const;
-
-		void setValue( const Array & p_value );
-		void setValue( const Value & p_value );
-		void setValue( const Object & p_value );
-		void setValue( const Document & p_value );
+		bool				getBool() const;
+		size_t				getNumberInteger() const;
+		float				getNumberFloat() const;
+		const std::string & getString() const;
+		const Array &		getArray() const;
+		const Object &		getObject() const;
+		const Document &	getDocument() const;
 
 	  private:
-		EnumType															 _type = EnumType::Unknown;
-		std::variant<std::monostate, Value *, Array *, Object *, Document *> _value
-			= std::variant<std::monostate, Value *, Array *, Object *, Document *>();
+		EnumType	_type  = EnumType::Unknown;
+		VariantType _value = VariantType();
 
-		bool _isObjectField( const std::vector<BasicJSon> & p_init ) const;
+		static bool _isDescribingObject( const std::initializer_list<BasicJSon> & p_data );
+		static bool _isObjectField( const BasicJSon & p_potentialField );
+		static void _fillObjectFieldsFromVector( Object & p_obj, const std::initializer_list<BasicJSon> & p_vector );
 	};
+
+	template<typename T>
+	concept BasicJSonConcept = requires( T obj ) { BasicJSon( obj ); };
 } // namespace VTX::Util::JSon
 #endif

@@ -2,12 +2,16 @@
 #include "util/json/array.hpp"
 #include "util/json/document.hpp"
 #include "util/json/object.hpp"
-#include "util/json/value.hpp"
 
 namespace VTX::Util::JSon
 {
 	BasicJSon::BasicJSon() : _type( EnumType::Unknown ), _value() {}
-	BasicJSon::BasicJSon( const Value & p_value ) : _type( EnumType::BaseValue ), _value( new Value( p_value ) ) {}
+	BasicJSon::BasicJSon( const bool p_value ) : _type( EnumType::Bool ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const int p_value ) : _type( EnumType::Numeral ), _value( size_t( p_value ) ) {}
+	BasicJSon::BasicJSon( const size_t p_value ) : _type( EnumType::Numeral ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const float p_value ) : _type( EnumType::Floating ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const char * p_value ) : _type( EnumType::String ), _value( std::string( p_value ) ) {}
+	BasicJSon::BasicJSon( const std::string & p_value ) : _type( EnumType::String ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const Array & p_value ) : _type( EnumType::Array ), _value( new Array( p_value ) ) {}
 	BasicJSon::BasicJSon( const Object & p_value ) : _type( EnumType::Object ), _value( new Object( p_value ) ) {}
 	BasicJSon::BasicJSon( const Document & p_value ) : _type( EnumType::Document ), _value( new Document( p_value ) ) {}
@@ -20,17 +24,13 @@ namespace VTX::Util::JSon
 		{
 			_type = EnumType::Unknown;
 		}
-		else if ( p_init.size() == 1 )
+		else if ( _isDescribingObject( p_init ) )
 		{
-			BasicJSon( *p_init.begin() );
-		}
-		else if ( _isObjectField( p_init ) )
-		{
-			const std::vector<BasicJSon> vecInit = p_init;
-			const Object::Field			 field	 = { vecInit[ 0 ].getValue().getString(), vecInit[ 1 ] };
+			_type = EnumType::Object;
 
-			_type  = EnumType::Object;
-			_value = new Object( { field } );
+			Object * obj = new Object();
+			_fillObjectFieldsFromVector( *obj, p_init );
+			_value = obj;
 		}
 		else
 		{
@@ -39,41 +39,53 @@ namespace VTX::Util::JSon
 		}
 	}
 
-	const Value &	 BasicJSon::getValue() const { return *std::get<Value *>( _value ); }
-	const Array &	 BasicJSon::getArray() const { return *std::get<Array *>( _value ); }
-	const Object &	 BasicJSon::getObject() const { return *std::get<Object *>( _value ); }
-	const Document & BasicJSon::getDocument() const { return *std::get<Document *>( _value ); }
-
-	void BasicJSon::setValue( const Array & p_value )
+	BasicJSon::~BasicJSon()
 	{
-		_type  = EnumType::Array;
-		_value = new Array( p_value );
-	}
-	void BasicJSon::setValue( const Value & p_value )
-	{
-		_type  = EnumType::BaseValue;
-		_value = new Value( p_value );
-	}
-	void BasicJSon::setValue( const Object & p_value )
-	{
-		_type  = EnumType::Object;
-		_value = new Object( p_value );
-	}
-	void BasicJSon::setValue( const Document & p_value )
-	{
-		_type  = EnumType::Document;
-		_value = new Document( p_value );
+		switch ( _type )
+		{
+		case EnumType::Array: delete std::get<Array *>( _value ); break;
+		case EnumType::Object: delete std::get<Object *>( _value ); break;
+		case EnumType::Document:
+			// delete std::get<Document *>( _value );
+			break;
+		}
 	}
 
-	bool BasicJSon::_isObjectField( const std::vector<BasicJSon> & p_init ) const
+	bool				BasicJSon::getBool() const { return std::get<bool>( _value ); }
+	size_t				BasicJSon::getNumberInteger() const { return std::get<size_t>( _value ); }
+	float				BasicJSon::getNumberFloat() const { return std::get<float>( _value ); }
+	const std::string & BasicJSon::getString() const { return std::get<std::string>( _value ); }
+	const Array &		BasicJSon::getArray() const { return *std::get<Array *>( _value ); }
+	const Object &		BasicJSon::getObject() const { return *std::get<Object *>( _value ); }
+	const Document &	BasicJSon::getDocument() const { return *std::get<Document *>( _value ); }
+
+	bool BasicJSon::_isDescribingObject( const std::initializer_list<BasicJSon> & p_data )
 	{
-		if ( p_init.size() != 2 )
+		for ( const BasicJSon & potentialField : p_data )
+		{
+			if ( !_isObjectField( potentialField ) )
+				return false;
+		}
+
+		return true;
+	}
+	bool BasicJSon::_isObjectField( const BasicJSon & p_potentialField )
+	{
+		if ( p_potentialField.getType() != BasicJSon::EnumType::Array )
 			return false;
 
-		const BasicJSon & firstItem = *p_init.begin();
+		const Array & potentialFieldArray = p_potentialField.getArray();
 
-		return firstItem.getType() == BasicJSon::EnumType::BaseValue
-			   && firstItem.getValue().getType() == Value::EnumType::String;
+		return potentialFieldArray.size() == 2 && potentialFieldArray.begin()->getType() == BasicJSon::EnumType::String;
+	}
+
+	void BasicJSon::_fillObjectFieldsFromVector( Object & p_obj, const std::initializer_list<BasicJSon> & p_vector )
+	{
+		for ( const BasicJSon & json : p_vector )
+		{
+			const Array & arrayField = json.getArray();
+			p_obj.appendField( arrayField[ 0 ].getString(), arrayField[ 1 ] );
+		}
 	}
 
 } // namespace VTX::Util::JSon

@@ -5,6 +5,5 @@
 #include "basic_json.hpp"
 #include "document.hpp"
 #include "object.hpp"
-#include "value.hpp"
 
 #endif

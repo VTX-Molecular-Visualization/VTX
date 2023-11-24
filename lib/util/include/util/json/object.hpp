@@ -14,14 +14,17 @@ namespace VTX::Util::JSon
 
 	  public:
 		Object();
-		Object( const std::string p_key, const BasicJSon & p_value );
-		Object( const Field & p_field );
+		Object( const Object & p_source ) = default;
 		Object( const std::initializer_list<Field> & p_init );
 
 		void appendField( const Field & p_field );
+		void appendField( const std::string & p_key, const BasicJSon & p_value );
 
 		std::map<std::string, BasicJSon>::const_iterator begin() const;
 		std::map<std::string, BasicJSon>::const_iterator end() const;
+
+		BasicJSon &		  operator[]( const std::string & p_key );
+		const BasicJSon & operator[]( const std::string & p_key ) const;
 
 	  private:
 		std::map<std::string, BasicJSon> _map = std::map<std::string, BasicJSon>();

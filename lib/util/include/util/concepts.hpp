@@ -2,6 +2,7 @@
 #define __VTX_UTIL_CONCEPTS__
 
 #include <concepts>
+#include <iterator>
 #include <type_traits>
 
 namespace VTX

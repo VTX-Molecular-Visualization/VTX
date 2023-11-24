@@ -3,7 +3,6 @@
 #include "util/exceptions.hpp"
 #include "util/json/array.hpp"
 #include "util/json/object.hpp"
-#include "util/json/value.hpp"
 #include <nlohmann/json.hpp>
 
 namespace VTX::Util::JSon
@@ -16,23 +15,16 @@ namespace VTX::Util::JSon
 
 		Impl( const BasicJSon & p_init ) { _jsonDocument = { convert( p_init ) }; }
 
-		Impl( const std::initializer_list<BasicJSon> && p_init ) : Impl( std::vector<BasicJSon>( p_init ) ) {}
-		Impl( const std::vector<BasicJSon> & p_init )
+		Impl( const std::initializer_list<BasicJSon> & p_init )
 		{
 			if ( p_init.size() == 0 )
 			{
 				_jsonDocument = {};
 			}
-			else if ( p_init.size() == 1 )
+			else if ( _isDescribingObject( p_init ) )
 			{
-				_jsonDocument = { convert( *p_init.begin() ) };
-			}
-			else if ( _isObjectField( p_init ) )
-			{
-				const std::vector<BasicJSon> vecInit = p_init;
-				const Object::Field			 field	 = { vecInit[ 0 ].getValue().getString(), vecInit[ 1 ] };
-
-				_jsonDocument = convert( Object( { field } ) );
+				Object obj	  = _createObjectFromVector( p_init );
+				_jsonDocument = convert( obj );
 			}
 			else
 			{
@@ -51,7 +43,10 @@ namespace VTX::Util::JSon
 			switch ( p_basicJSon.getType() )
 			{
 			case BasicJSon::EnumType::Array: return convert( p_basicJSon.getArray() ); break;
-			case BasicJSon::EnumType::BaseValue: return convert( p_basicJSon.getValue() ); break;
+			case BasicJSon::EnumType::Bool: return nlohmann::json::value_type( p_basicJSon.getBool() );
+			case BasicJSon::EnumType::Numeral: return nlohmann::json::value_type( p_basicJSon.getNumberInteger() );
+			case BasicJSon::EnumType::Floating: return nlohmann::json::value_type( p_basicJSon.getNumberFloat() );
+			case BasicJSon::EnumType::String: return nlohmann::json::value_type( p_basicJSon.getString() );
 			case BasicJSon::EnumType::Object: return convert( p_basicJSon.getObject() ); break;
 			case BasicJSon::EnumType::Document: return convert( p_basicJSon.getDocument() ); break;
 
@@ -87,31 +82,40 @@ namespace VTX::Util::JSon
 
 			return res;
 		}
-		nlohmann::json::value_type convert( const Value & p_value )
-		{
-			switch ( p_value.getType() )
-			{
-			case Value::EnumType::Bool: return nlohmann::json::value_type( p_value.getBool() );
-			case Value::EnumType::Numeral: return nlohmann::json::value_type( p_value.getNumberInteger() );
-			case Value::EnumType::Floating: return nlohmann::json::value_type( p_value.getNumberFloat() );
-			case Value::EnumType::String: return nlohmann::json::value_type( p_value.getString() );
 
-			default:
-				throw( VTXException(
-					"Unmanaged type " + std::string( Enum::enumName( p_value.getType() ) ) + " in JSon parser."
-				) );
+		bool _isDescribingObject( const std::initializer_list<BasicJSon> & p_data )
+		{
+			for ( const BasicJSon & potentialField : p_data )
+			{
+				if ( !_isObjectField( potentialField ) )
+					return false;
 			}
+
+			return true;
 		}
 
-		bool _isObjectField( const std::vector<BasicJSon> & p_init ) const
+		bool _isObjectField( const BasicJSon & p_potentialField ) const
 		{
-			if ( p_init.size() != 2 )
+			if ( p_potentialField.getType() != BasicJSon::EnumType::Array )
 				return false;
 
-			const BasicJSon & firstItem = *p_init.begin();
+			const Array & potentialFieldArray = p_potentialField.getArray();
 
-			return firstItem.getType() == BasicJSon::EnumType::BaseValue
-				   && firstItem.getValue().getType() == Value::EnumType::String;
+			return potentialFieldArray.size() == 2
+				   && potentialFieldArray.begin()->getType() == BasicJSon::EnumType::String;
+		}
+
+		Object _createObjectFromVector( const std::initializer_list<BasicJSon> & p_vector ) const
+		{
+			Object res = Object();
+
+			for ( const BasicJSon & json : p_vector )
+			{
+				const Array & arrayField = json.getArray();
+				res.appendField( arrayField[ 0 ].getString(), arrayField[ 1 ] );
+			}
+
+			return res;
 		}
 	};
 
@@ -120,7 +124,7 @@ namespace VTX::Util::JSon
 
 	Document::Document( const BasicJSon & p_init ) : _impl( std::make_unique<Impl>( p_init ) ) {};
 	Document::Document( const std::initializer_list<BasicJSon> & p_init ) :
-		_impl( std::make_unique<Impl>( std::vector<BasicJSon>( p_init ) ) ) {};
+		_impl( std::make_unique<Impl>( p_init ) ) {};
 
 	Document::~Document() {}
 
