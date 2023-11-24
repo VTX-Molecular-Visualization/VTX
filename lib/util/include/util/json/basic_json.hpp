@@ -61,6 +61,6 @@ namespace VTX::Util::JSon
 	};
 
 	template<typename T>
-	concept BasicJSonConcept = requires( T obj ) { BasicJSon( obj ); };
+	concept BasicJSonConcept = std::constructible_from<BasicJSon, T>;
 } // namespace VTX::Util::JSon
 #endif

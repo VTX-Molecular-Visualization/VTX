@@ -57,8 +57,7 @@ namespace VTX::Util::JSon
 			}
 		}
 
-		nlohmann::json convert( const Document & p_document ) { return p_document._impl->_jsonDocument; }
-
+		nlohmann::json			convert( const Document & p_document ) { return p_document._impl->_jsonDocument; }
 		nlohmann::json::array_t convert( const Array & p_array )
 		{
 			nlohmann::json::array_t res = nlohmann::json::array_t();
@@ -70,7 +69,6 @@ namespace VTX::Util::JSon
 
 			return res;
 		}
-
 		nlohmann::json::object_t convert( const Object & p_object )
 		{
 			nlohmann::json::object_t res = nlohmann::json::object_t();
@@ -93,7 +91,6 @@ namespace VTX::Util::JSon
 
 			return true;
 		}
-
 		bool _isObjectField( const BasicJSon & p_potentialField ) const
 		{
 			if ( p_potentialField.getType() != BasicJSon::EnumType::Array )
@@ -104,7 +101,6 @@ namespace VTX::Util::JSon
 			return potentialFieldArray.size() == 2
 				   && potentialFieldArray.begin()->getType() == BasicJSon::EnumType::String;
 		}
-
 		Object _createObjectFromVector( const std::initializer_list<BasicJSon> & p_vector ) const
 		{
 			Object res = Object();
