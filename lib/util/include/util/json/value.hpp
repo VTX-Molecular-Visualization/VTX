@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_JSON_VALUE__
 #define __VTX_UTIL_JSON_VALUE__
 
-#include "_fwd.hpp"
 #include <string>
 #include <variant>
 
@@ -38,9 +37,6 @@ namespace VTX::Util::JSon
 	};
 
 	template<typename T>
-	concept ValueCompatibleConcept = requires( T obj ) { new Util::JSon::Value( obj ); };
-
-	template<typename T>
-	concept ValueConcept = std::convertible_to<T, Util::JSon::Value> || ValueCompatibleConcept<T>;
+	concept ValueCompatibleConcept = requires( T obj ) { new Value( obj ); };
 } // namespace VTX::Util::JSon
 #endif

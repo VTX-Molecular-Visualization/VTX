@@ -35,10 +35,6 @@ namespace VTX::Util::JSon
 		BasicJSon( const T & p_value ) : BasicJSon( Value( p_value ) )
 		{
 		}
-		template<ValueCompatibleConcept... T>
-		BasicJSon( const T... p_values ) : BasicJSon( Array( p_values... ) )
-		{
-		}
 
 		EnumType getType() const { return _type; }
 
@@ -53,9 +49,9 @@ namespace VTX::Util::JSon
 		void setValue( const Document & p_value );
 
 	  private:
+		EnumType															 _type = EnumType::Unknown;
 		std::variant<std::monostate, Value *, Array *, Object *, Document *> _value
 			= std::variant<std::monostate, Value *, Array *, Object *, Document *>();
-		EnumType _type;
 
 		bool _isObjectField( const std::vector<BasicJSon> & p_init ) const;
 	};

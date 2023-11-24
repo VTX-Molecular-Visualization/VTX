@@ -7,20 +7,20 @@
 
 namespace VTX::Util::JSon
 {
-	namespace Conversion
+	struct Conversion
 	{
-		BasicJSon toBasicJSon( const bool p_value );
-		BasicJSon toBasicJSon( const int p_value );
-		BasicJSon toBasicJSon( const size_t p_value );
-		BasicJSon toBasicJSon( const std::string & p_value );
-		BasicJSon toBasicJSon( const Value & p_value );
-		BasicJSon toBasicJSon( const Object & p_value );
-		BasicJSon toBasicJSon( const Array & p_value );
-		BasicJSon toBasicJSon( const Document & p_value );
+		static BasicJSon toBasicJSon( const bool p_value );
+		static BasicJSon toBasicJSon( const int p_value );
+		static BasicJSon toBasicJSon( const size_t p_value );
+		static BasicJSon toBasicJSon( const std::string & p_value );
+		static BasicJSon toBasicJSon( const Value & p_value );
+		static BasicJSon toBasicJSon( const Object & p_value );
+		static BasicJSon toBasicJSon( const Array & p_value );
+		// static BasicJSon toBasicJSon( const Document & p_value );
 
-	} // namespace Conversion
+	}; // namespace Conversion
 
 	template<typename T>
-	concept BasicJSonConcept = requires( const T & obj ) { Conversion::toBasicJSon( obj ); };
+	concept BasicJSonConcept = requires( T obj ) { Conversion::toBasicJSon( obj ); };
 } // namespace VTX::Util::JSon
 #endif

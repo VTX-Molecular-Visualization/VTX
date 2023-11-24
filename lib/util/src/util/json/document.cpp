@@ -16,12 +16,7 @@ namespace VTX::Util::JSon
 
 		Impl( const BasicJSon & p_init ) { _jsonDocument = { convert( p_init ) }; }
 
-		// Impl( const Value & p_json ) { _jsonDocument = convert( p_json ); }
-		// Impl( const Object & p_json ) { _jsonDocument = convert( p_json ); }
-		// Impl( const Array & p_json ) { _jsonDocument = convert( p_json ); }
-
 		Impl( const std::initializer_list<BasicJSon> && p_init ) : Impl( std::vector<BasicJSon>( p_init ) ) {}
-
 		Impl( const std::vector<BasicJSon> & p_init )
 		{
 			if ( p_init.size() == 0 )
@@ -124,10 +119,8 @@ namespace VTX::Util::JSon
 	Document::Document( const Document & p_source ) : _impl( std::make_unique<Impl>( *p_source._impl ) ) {};
 
 	Document::Document( const BasicJSon & p_init ) : _impl( std::make_unique<Impl>( p_init ) ) {};
-	Document::Document( const std::initializer_list<BasicJSon> & p_init )
-	{
-		_init( std::vector<BasicJSon>( p_init ) );
-	};
+	Document::Document( const std::initializer_list<BasicJSon> & p_init ) :
+		_impl( std::make_unique<Impl>( std::vector<BasicJSon>( p_init ) ) ) {};
 
 	Document::~Document() {}
 
@@ -140,10 +133,5 @@ namespace VTX::Util::JSon
 	void Document::clear() { _impl->clear(); }
 
 	std::string Document::toString() const { return _impl->toString(); }
-
-	void Document::_init( const std::vector<BasicJSon> & p_initVector )
-	{
-		_impl = std::make_unique<Impl>( p_initVector );
-	}
 
 } // namespace VTX::Util::JSon

@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_JSON_OBJECT__
 #define __VTX_UTIL_JSON_OBJECT__
 
-#include "_fwd.hpp"
 #include "util/json/basic_json.hpp"
 #include <map>
 #include <string>
@@ -11,7 +10,7 @@ namespace VTX::Util::JSon
 	class Object
 	{
 	  public:
-		using Field = std::pair<const std::string, const BasicJSon>;
+		using Field = std::pair<const std::string, BasicJSon>;
 
 	  public:
 		Object();

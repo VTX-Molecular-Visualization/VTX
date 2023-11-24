@@ -3,7 +3,6 @@
 
 #include "util/json/basic_json.hpp"
 #include "util/json/conversion.hpp"
-#include <tuple>
 #include <vector>
 
 namespace VTX::Util::JSon
@@ -13,21 +12,27 @@ namespace VTX::Util::JSon
 	  public:
 		Array();
 		Array( const Array & p_source );
+
 		Array( const BasicJSon & p_singleValue );
+
+		// template<BasicJSonConcept T>
+		// Array( const T & p_singleValue ) : Array( Conversion::toBasicJSon( p_singleValue ) )
+		//{
+		// }
+
 		Array( const std::initializer_list<BasicJSon> & p_init );
 		Array( const std::vector<BasicJSon> & p_init );
 
-		template<BasicJSonConcept... Args>
-		Array( std::tuple<Args...> p_values )
-		{
-			size_t argSize = sizeof...( p_values );
-			_objs.resize( argSize );
+		// template<BasicJSonConcept T>
+		// Array( const std::initializer_list<T> & p_init )
+		//{
+		//	_objs.reserve( p_init.size() );
 
-			for ( size_t i = 0; i < argSize; i++ )
-			{
-				_objs[ i ] = Conversion::toBasicJSon( std::get<i>( p_values ) );
-			}
-		}
+		//	for ( const T & obj : p_init )
+		//	{
+		//		_objs.emplace_back( Conversion::toBasicJSon( obj ) );
+		//	}
+		//}
 
 		~Array();
 
