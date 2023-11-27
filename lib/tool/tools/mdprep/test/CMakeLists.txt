@@ -1,0 +1,27 @@
+message("vtx_tool_mdprep_test")
+cmake_minimum_required(VERSION 3.23)
+
+project(vtx_tool_mdprep_test)
+
+find_package(vtx_util CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_tool_mdprep CONFIG REQUIRED)
+find_package(Catch2 REQUIRED)
+
+add_executable(vtx_tool_mdprep_test src/main.cpp)
+configure_target(vtx_tool_mdprep_test)
+
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
+
+include(CTest)
+include(Catch)
+catch_discover_tests(vtx_tool_mdprep_test)
+
+add_custom_target(vtx_tool_mdprep_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_tool_mdprep_test>/data)
+add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep_test_copy_data)
+
+install(TARGETS vtx_tool_mdprep_test)
+install(DIRECTORY data DESTINATION bin)
