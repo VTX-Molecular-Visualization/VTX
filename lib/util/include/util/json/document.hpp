@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_JSON_DOCUMENT__
 #define __VTX_UTIL_JSON_DOCUMENT__
 
+#include "_fwd.hpp"
 #include "util/json/basic_json.hpp"
 #include <memory>
 #include <string>
@@ -12,6 +13,9 @@ namespace VTX::Util::JSon
 
 	class Document
 	{
+	  public:
+		static Document createFromString( const std::string & p_jsonStr );
+
 	  public:
 		Document();
 		Document( const Document & p_source );
@@ -28,12 +32,18 @@ namespace VTX::Util::JSon
 
 		Document & operator=( const Document & p_source );
 
+		const BasicJSon & json() const;
+
 		void		clear();
-		std::string toString() const;
+		std::string getContentAsString() const;
 
 	  private:
 		class Impl;
 		std::unique_ptr<Impl> _impl;
+
+		BasicJSon _json = BasicJSon();
+
+		void _generate();
 	};
 
 } // namespace VTX::Util::JSon

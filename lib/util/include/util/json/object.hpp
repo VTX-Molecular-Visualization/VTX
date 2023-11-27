@@ -26,6 +26,8 @@ namespace VTX::Util::JSon
 		BasicJSon &		  operator[]( const std::string & p_key );
 		const BasicJSon & operator[]( const std::string & p_key ) const;
 
+		bool contains( const std::string & p_key ) const;
+
 	  private:
 		std::map<std::string, BasicJSon> _map = std::map<std::string, BasicJSon>();
 	};

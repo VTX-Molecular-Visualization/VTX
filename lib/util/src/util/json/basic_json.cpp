@@ -7,17 +7,34 @@ namespace VTX::Util::JSon
 {
 	BasicJSon::BasicJSon() : _type( EnumType::Unknown ), _value() {}
 	BasicJSon::BasicJSon( const bool p_value ) : _type( EnumType::Bool ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const int p_value ) : _type( EnumType::Numeral ), _value( size_t( p_value ) ) {}
-	BasicJSon::BasicJSon( const size_t p_value ) : _type( EnumType::Numeral ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const float p_value ) : _type( EnumType::Floating ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const int p_value ) : _type( EnumType::Integral ), _value( size_t( p_value ) ) {}
+	BasicJSon::BasicJSon( const size_t p_value ) : _type( EnumType::Integral ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const float p_value ) : _type( EnumType::FloatingPoint ), _value( double( p_value ) ) {}
+	BasicJSon::BasicJSon( const double p_value ) : _type( EnumType::FloatingPoint ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const char * p_value ) : _type( EnumType::String ), _value( std::string( p_value ) ) {}
 	BasicJSon::BasicJSon( const std::string & p_value ) : _type( EnumType::String ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const Array & p_value ) : _type( EnumType::Array ), _value( &p_value ) {}
-	BasicJSon::BasicJSon( const Object & p_value ) : _type( EnumType::Object ), _value( &p_value ) {}
-	BasicJSon::BasicJSon( const Document & p_value ) : _type( EnumType::Document ), _value( &p_value ) {}
+	BasicJSon::BasicJSon( const Array & p_value ) :
+		_type( EnumType::Array ), _value( std::make_unique<Array>( p_value ) )
+	{
+	}
+	BasicJSon::BasicJSon( const Object & p_value ) :
+		_type( EnumType::Object ), _value( std::make_unique<Object>( p_value ) )
+	{
+	}
+	BasicJSon::BasicJSon( const Document & p_value ) :
+		_type( EnumType::Document ), _value( std::make_unique<Document>( p_value ) )
+	{
+	}
+	BasicJSon::BasicJSon( std::unique_ptr<Array> p_value ) : _type( EnumType::Array ), _value( std::move( p_value ) ) {}
+	BasicJSon::BasicJSon( std::unique_ptr<Object> p_value ) : _type( EnumType::Object ), _value( std::move( p_value ) )
+	{
+	}
+	BasicJSon::BasicJSon( std::unique_ptr<Document> p_value ) :
+		_type( EnumType::Document ), _value( std::move( p_value ) )
+	{
+	}
 
-	BasicJSon::BasicJSon( const BasicJSon & p_source ) = default;
-
+	BasicJSon::BasicJSon( const BasicJSon & p_source ) { _copyFrom( p_source ); };
 	BasicJSon::BasicJSon( std::initializer_list<BasicJSon> p_init )
 	{
 		if ( p_init.size() == 0 )
@@ -28,24 +45,38 @@ namespace VTX::Util::JSon
 		{
 			_type = EnumType::Object;
 
-			Object * obj = new Object();
+			std::unique_ptr<Object> obj = std::make_unique<Object>();
 			_fillObjectFieldsFromVector( *obj, p_init );
-			_value = obj;
+
+			_value = std::move( obj );
 		}
 		else
 		{
 			_type  = EnumType::Array;
-			_value = new Array( std::forward<std::initializer_list<BasicJSon>>( p_init ) );
+			_value = std::make_unique<Array>( p_init );
 		}
 	}
 
+	BasicJSon::~BasicJSon() = default;
+
+	BasicJSon & BasicJSon::operator=( const BasicJSon & p_source )
+	{
+		_copyFrom( p_source );
+		return *this;
+	}
+
 	bool				BasicJSon::getBool() const { return std::get<bool>( _value ); }
-	size_t				BasicJSon::getNumberInteger() const { return std::get<size_t>( _value ); }
-	float				BasicJSon::getNumberFloat() const { return std::get<float>( _value ); }
+	size_t				BasicJSon::getIntegral() const { return std::get<size_t>( _value ); }
+	double				BasicJSon::getFloatingPoint() const { return std::get<double>( _value ); }
 	const std::string & BasicJSon::getString() const { return std::get<std::string>( _value ); }
-	const Array &		BasicJSon::getArray() const { return *std::get<const Array *>( _value ); }
-	const Object &		BasicJSon::getObject() const { return *std::get<const Object *>( _value ); }
-	const Document &	BasicJSon::getDocument() const { return *std::get<const Document *>( _value ); }
+	const Array &		BasicJSon::getArray() const { return *std::get<std::unique_ptr<Array>>( _value ); }
+	const Object &		BasicJSon::getObject() const { return *std::get<std::unique_ptr<Object>>( _value ); }
+	const Document &	BasicJSon::getDocument() const { return *std::get<std::unique_ptr<Document>>( _value ); }
+
+	const BasicJSon & BasicJSon::operator[]( const std::string & p_key ) const { return getObject()[ p_key ]; }
+	const BasicJSon & BasicJSon::operator[]( const size_t & p_index ) const { return getArray()[ p_index ]; }
+
+	bool BasicJSon::contains( const std::string & p_key ) const { return getObject().contains( p_key ); }
 
 	bool BasicJSon::_isDescribingObject( const std::initializer_list<BasicJSon> & p_data )
 	{
@@ -73,6 +104,24 @@ namespace VTX::Util::JSon
 		{
 			const Array & arrayField = json.getArray();
 			p_obj.appendField( arrayField[ 0 ].getString(), arrayField[ 1 ] );
+		}
+	}
+
+	void BasicJSon::_copyFrom( const BasicJSon & p_source )
+	{
+		_type = p_source._type;
+
+		switch ( _type )
+		{
+		case EnumType::Bool: _value = p_source.getBool(); break;
+		case EnumType::Integral: _value = p_source.getIntegral(); break;
+		case EnumType::FloatingPoint: _value = p_source.getFloatingPoint(); break;
+		case EnumType::String: _value = p_source.getString(); break;
+		case EnumType::Array: _value = std::make_unique<Array>( p_source.getArray() ); break;
+		case EnumType::Object: _value = std::make_unique<Object>( p_source.getObject() ); break;
+		case EnumType::Document: _value = std::make_unique<Document>( p_source.getDocument() ); break;
+		case EnumType::Unknown:
+		default: break;
 		}
 	}
 
