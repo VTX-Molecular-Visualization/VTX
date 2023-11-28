@@ -6,6 +6,7 @@
 #include "app/application/setting.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/core/serialization/serialization.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
@@ -46,6 +47,9 @@ namespace VTX::App
 
 		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
 		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
+
+		_serializationToolManager = std::make_unique<Core::Serialization::Serialization>();
+		_system->referenceSystem( SERIALIZATION_TOOL_KEY, _serializationToolManager.get() );
 
 		_entityDirector = std::make_unique<Application::ECS::EntityDirector>();
 		_system->referenceSystem( ENTITY_DIRECTOR_KEY, _entityDirector.get() );
@@ -215,6 +219,15 @@ namespace VTX::App
 		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
 	}
 
+	Core::Serialization::Serialization & VTXApp::getSerializationTool()
+	{
+		return _system->getSystem<Core::Serialization::Serialization>( SERIALIZATION_TOOL_KEY );
+	}
+	const Core::Serialization::Serialization & VTXApp::getSerializationTool() const
+	{
+		return _system->getSystem<Core::Serialization::Serialization>( SERIALIZATION_TOOL_KEY );
+	}
+
 	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
 	{
 		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
@@ -223,5 +236,6 @@ namespace VTX::App
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
 	Core::ECS::Registry &				MAIN_REGISTRY() { return VTXApp::get().getRegistryManager().getRegistry(); }
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
+	Core::Serialization::Serialization & SERIALIZER() { return VTXApp::get().getSerializationTool(); }
 
 } // namespace VTX::App

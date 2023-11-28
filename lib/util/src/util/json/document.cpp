@@ -182,11 +182,16 @@ namespace VTX::Util::JSon
 	}
 
 	Document::Document() : _impl( std::make_unique<Impl>() ) {}
-	Document::Document( const Document & p_source ) : _impl( std::make_unique<Impl>( *p_source._impl ) ) {};
+	Document::Document( const Document & p_source ) : _impl( std::make_unique<Impl>( *p_source._impl ) )
+	{
+		_generate();
+	};
 
-	Document::Document( const BasicJSon & p_init ) : _impl( std::make_unique<Impl>( p_init ) ) {};
-	Document::Document( const std::initializer_list<BasicJSon> & p_init ) :
-		_impl( std::make_unique<Impl>( p_init ) ) {};
+	Document::Document( const BasicJSon & p_init ) : _impl( std::make_unique<Impl>( p_init ) ) { _generate(); };
+	Document::Document( const std::initializer_list<BasicJSon> & p_init ) : _impl( std::make_unique<Impl>( p_init ) )
+	{
+		_generate();
+	};
 
 	Document::~Document() {}
 

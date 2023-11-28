@@ -73,6 +73,9 @@ namespace VTX::Util::JSon
 	const Object &		BasicJSon::getObject() const { return *std::get<std::unique_ptr<Object>>( _value ); }
 	const Document &	BasicJSon::getDocument() const { return *std::get<std::unique_ptr<Document>>( _value ); }
 
+	BasicJSon::operator const Array &() const { return getArray(); }
+	BasicJSon::operator const Object &() const { return getObject(); }
+
 	const BasicJSon & BasicJSon::operator[]( const std::string & p_key ) const { return getObject()[ p_key ]; }
 	const BasicJSon & BasicJSon::operator[]( const size_t & p_index ) const { return getArray()[ p_index ]; }
 
