@@ -1,4 +1,5 @@
 #include "app/internal/serialization/all_serializers.hpp"
+#include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
 #include "app/info.hpp"
 #include "app/vtx_app.hpp"
@@ -46,58 +47,58 @@ namespace VTX::App::Internal::Serialization
 	template<typename T, glm::qualifier Q>
 	void deserialize( const Util::JSon::Object & p_json, glm::vec<2, T, Q> & p_vec )
 	{
-		p_vec.x = _get<T>( p_json, "X" );
-		p_vec.y = _get<T>( p_json, "Y" );
+		p_vec.x = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "X" );
+		p_vec.y = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Y" );
 	}
 	template<typename T, glm::qualifier Q>
 	void deserialize( const Util::JSon::Object & p_json, glm::vec<3, T, Q> & p_vec )
 	{
-		p_vec.x = _get<T>( p_json, "X" );
-		p_vec.y = _get<T>( p_json, "Y" );
-		p_vec.z = _get<T>( p_json, "Z" );
+		p_vec.x = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "X" );
+		p_vec.y = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Y" );
+		p_vec.z = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Z" );
 	}
 	template<typename T, glm::qualifier Q>
 	void deserialize( const Util::JSon::Object & p_json, glm::vec<4, T, Q> & p_vec )
 	{
-		p_vec.x = _get<T>( p_json, "X" );
-		p_vec.y = _get<T>( p_json, "Y" );
-		p_vec.z = _get<T>( p_json, "Z" );
-		p_vec.w = _get<T>( p_json, "W" );
+		p_vec.x = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "X" );
+		p_vec.y = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Y" );
+		p_vec.z = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Z" );
+		p_vec.w = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "W" );
 	}
 
 	template<typename T, glm::qualifier Q>
 	void deserialize( const Util::JSon::Object & p_json, glm::qua<T, Q> & p_quat )
 	{
-		p_quat.x = _get<T>( p_json, "X" );
-		p_quat.y = _get<T>( p_json, "Y" );
-		p_quat.z = _get<T>( p_json, "Z" );
-		p_quat.w = _get<T>( p_json, "W" );
+		p_quat.x = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "X" );
+		p_quat.y = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Y" );
+		p_quat.z = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "Z" );
+		p_quat.w = SERIALIZER().deserializeFieldWithCheck<T>( p_json, "W" );
 	}
 
 	void deserialize( const Util::JSon::Object & p_json, Util::Color::Rgba & p_color )
 	{
-		p_color.setR( _get<float>( p_json, "R", 0.f ) );
-		p_color.setG( _get<float>( p_json, "G", 0.f ) );
-		p_color.setB( _get<float>( p_json, "B", 0.f ) );
-		p_color.setA( _get<float>( p_json, "A", 1.f ) );
+		p_color.setR( SERIALIZER().deserializeFieldWithCheck( p_json, "R", 0.f ) );
+		p_color.setG( SERIALIZER().deserializeFieldWithCheck( p_json, "G", 0.f ) );
+		p_color.setB( SERIALIZER().deserializeFieldWithCheck( p_json, "B", 0.f ) );
+		p_color.setA( SERIALIZER().deserializeFieldWithCheck( p_json, "A", 1.f ) );
 	}
 
 	void deserialize( const Util::JSon::Object & p_json, Util::Math::Transform & p_transform )
 	{
-		const Vec3f position = tryDeserialize( p_json, "POSITION", VEC3F_ZERO );
+		const Vec3f position = SERIALIZER().deserializeFieldWithCheck( p_json, "POSITION", VEC3F_ZERO );
 		p_transform.setTranslation( position );
 
-		const Vec3f euler = tryDeserialize( p_json, "ROTATION", VEC3F_ZERO );
+		const Vec3f euler = SERIALIZER().deserializeFieldWithCheck( p_json, "ROTATION", VEC3F_ZERO );
 		p_transform.setRotation( euler );
 
-		const Vec3f scale = tryDeserialize( p_json, "SCALE", VEC3F_XYZ );
+		const Vec3f scale = SERIALIZER().deserializeFieldWithCheck( p_json, "SCALE", VEC3F_XYZ );
 		p_transform.setScale( scale );
 	}
 
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Serialization::Version & p_version )
 	{
-		p_version.major	   = p_json[ "MAJOR" ].get<int>();
-		p_version.minor	   = p_json[ "MINOR" ].get<int>();
-		p_version.revision = p_json[ "REVISION" ].get<int>();
+		p_version.major	   = SERIALIZER().deserializeFieldWithCheck<int>( p_json, "MAJOR" );
+		p_version.minor	   = SERIALIZER().deserializeFieldWithCheck<int>( p_json, "MINOR" );
+		p_version.revision = SERIALIZER().deserializeFieldWithCheck<int>( p_json, "REVISION" );
 	}
 } // namespace VTX::App::Internal::Serialization

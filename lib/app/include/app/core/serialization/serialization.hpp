@@ -78,6 +78,23 @@ namespace VTX::App::Core::Serialization
 			)( p_jsonObj.getObject(), p_obj );
 		}
 
+		template<typename T>
+		T deserializeFieldWithCheck(
+			const Util::JSon::Object & p_jsonObj,
+			const std::string &		   p_key,
+			const T &				   p_defaultValue = T()
+		)
+		{
+			T res;
+
+			if ( p_jsonObj.contains( p_key ) )
+				deserialize( p_jsonObj[ p_key ], res );
+			else
+				res = p_defaultValue;
+
+			return res;
+		}
+
 		VTX::Util::JSon::Document readFile( const FilePath p_path ) const;
 		void					  writeFile( const FilePath p_path, const VTX::Util::JSon::Document & p_doc ) const;
 

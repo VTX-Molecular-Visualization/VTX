@@ -61,58 +61,6 @@ namespace VTX::App::Internal::Serialization
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
-	template<typename T>
-	T tryDeserialize( const Util::JSon::Object & p_json, const std::string & p_key, const T & p_defaultValue = T() )
-	{
-		T res;
-
-		if ( p_json.contains( p_key ) )
-			deserialize( p_json[ p_key ].getObject(), res );
-		else
-			res = p_defaultValue;
-
-		return res;
-	}
-
-	template<typename T>
-	T _get( const Util::JSon::Object & p_json, const std::string & p_key, const T & p_defaultValue = T() )
-	{
-		if ( p_json.contains( p_key ) )
-			return p_json[ p_key ].get<T>();
-		else
-			return p_defaultValue;
-	}
-
-	// template<EnumConcept T>
-	// T _getEnum( const Util::JSon::Object & p_json, const std::string & p_key, const T & p_defaultValue = default( T )
-	// )
-	//{
-	//	if ( p_json.contains( p_key ) )
-	//	{
-	//		try
-	//		{
-	//			std::string value	  = p_json.at( p_key ).get<std::string>();
-	//			auto		valueEnum = magic_enum::enum_cast<T>( value );
-	//			if ( valueEnum.has_value() )
-	//			{
-	//				return valueEnum.value();
-	//			}
-	//			else
-	//			{
-	//				return p_defaultValue;
-	//			}
-	//		}
-	//		catch ( const std::exception & )
-	//		{
-	//			return p_defaultValue;
-	//		}
-	//	}
-	//	else
-	//	{
-	//		return p_defaultValue;
-	//	}
-	//}
-
 	//_migrate( const nlohmann::json &, const std::tuple<uint, uint, uint> &,
 	// Application::Representation::InstantiatedRepresentation & ) 	const; void _migrate( const nlohmann::json &,
 	// const std::tuple<uint, uint, uint> &, Application::Representation::RepresentationPreset & ) 	const;
