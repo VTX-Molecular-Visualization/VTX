@@ -24,26 +24,43 @@ namespace VTX::Renderer
 		{
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
 
-			Attachment imageGeometry { E_FORMAT::RGBA32UI };
-			Attachment imageColor { E_FORMAT::RGBA16F };
-			Attachment imagePicking { E_FORMAT::RG32UI };
-			Attachment imageDepth { E_FORMAT::DEPTH_COMPONENT32F };
+			Attachment imageRGBA32UI { E_FORMAT::RGBA32UI };
+			Attachment imageRGBA16F { E_FORMAT::RGBA16F };
+			Attachment imageRG32UI { E_FORMAT::RG32UI };
+			Attachment imageD32F { E_FORMAT::DEPTH_COMPONENT32F };
 
-			/*
+			Data dataMolecules { { { "Positions", E_TYPE::FLOAT, 3 },
+								   { "Colors", E_TYPE::FLOAT, 4 },
+								   { "Radii", E_TYPE::FLOAT, 1 },
+								   { "Visibilities", E_TYPE::UINT, 1 },
+								   { "Selections", E_TYPE::UINT, 1 },
+								   { "Ids", E_TYPE::UINT, 1 } } };
+
+			Data dataMeshes { { { "Positions", E_TYPE::FLOAT, 3 },
+								{ "Normales", E_TYPE::FLOAT, 3 },
+								{ "Colors", E_TYPE::FLOAT, 4 },
+								{ "Visibilities", E_TYPE::UINT, 1 },
+								{ "Selections", E_TYPE::UINT, 1 },
+								{ "Ids", E_TYPE::UINT, 1 } } };
+
 			// Geometric.
 			Pass * const geo = _renderGraph->addPass(
 				{ "Geometric",
-				  Inputs {},
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageGeometry } },
-							{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageColor } },
-							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imagePicking } },
-							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageDepth } } },
-				  Programs { { "Sphere", "sphere", Uniforms {} }, { "Cylinder", "cylinder", Uniforms {} } } } );
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Molecules", dataMolecules } },
+						   { E_CHANNEL_INPUT::_1, { "Meshes", dataMeshes } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
+							{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
+							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
+							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
+				  Programs { { "Sphere", "sphere", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::POINTS } },
+							 { "Cylinder", "cylinder", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::LINES } } } }
+			);
 
+			/*
 			// Depth.
 			Pass * const depth = _renderGraph->addPass(
 				{ "Linearize depth",
-				  Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageDepth } } },
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageD32F } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", Attachment { E_FORMAT::R32F } } } },
 				  Programs {
 					  { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } } );
@@ -52,10 +69,10 @@ namespace VTX::Renderer
 			Pass * const shading = _renderGraph->addPass(
 
 				{ "Shading",
-				  Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageGeometry } },
-						   { E_CHANNEL_INPUT::_1, { "Color", imageColor } },
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
+						   { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
 						   { E_CHANNEL_INPUT::_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 				  Programs { { "Shading",
 							   std::vector<FilePath> { "default.vert", "shading.frag" },
 							   Uniforms { { "Specular factor", E_TYPE::FLOAT },
@@ -64,8 +81,8 @@ namespace VTX::Renderer
 			// FXAA.
 			Pass * const fxaa
 				= _renderGraph->addPass( { "FXAA",
-										   Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageColor } } },
-										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+										   Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageRGBA16F } } },
+										   Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 										   Programs { { "FXAA",
 														std::vector<FilePath> { "default.vert", "fxaa.frag" },
 														Uniforms { { "Color", E_TYPE::VEC3F } } } } } );
@@ -74,8 +91,8 @@ namespace VTX::Renderer
 			// Debug.
 			Pass * const debug = _renderGraph->addPass(
 				{ "Debug",
-				  Inputs {},
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageColor } } },
+				  Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 				  Programs {
 					  { "Debug",
 						std::vector<FilePath> { "default.vert", "debug.frag" },
@@ -94,6 +111,9 @@ namespace VTX::Renderer
 			//_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
 			//_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+
+			_renderGraph->addLink( geo, debug, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_0 );
+
 			_renderGraph->setOutput( &debug->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 		}
 

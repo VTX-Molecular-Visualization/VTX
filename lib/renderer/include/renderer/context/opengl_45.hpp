@@ -48,16 +48,18 @@ namespace VTX::Renderer::Context
 			// Init quad vao/vbo for deferred shading.
 			std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
 
-			_vbo = std::make_unique<GL::Buffer>();
-			_vao = std::make_unique<GL::VertexArray>();
+			_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
+			_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
+			auto & vao = _vaos[ "quad" ];
+			auto & vbo = _bos[ "quad" ];
 
-			_vao->bind();
-			_vao->enableAttribute( 0 );
-			_vao->setVertexBuffer<float>( 0, *_vbo, sizeof( Vec2f ) );
-			_vao->setAttributeFormat<float>( 0, 2 );
-			_vao->setAttributeBinding( 0, 0 );
-			_vbo->setData( quad, GL_STATIC_DRAW );
-			_vao->unbind();
+			vao->bind();
+			vao->enableAttribute( 0 );
+			vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
+			vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
+			vao->setAttributeBinding( 0, 0 );
+			vbo->setData( quad, GL_STATIC_DRAW );
+			vao->unbind();
 
 			glClearColor( 1.f, 0.f, 0.f, 1.f );
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
@@ -76,14 +78,41 @@ namespace VTX::Renderer::Context
 
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
-			// TODO: not in geometric pass.
-			p_instructions.emplace_back( [ & ]() { _vao->bind(); } );
-
-			// TODO: bind main ubo.
-
 			for ( const Pass * const descPass : p_renderQueue )
 			{
 				bool isLastPass = descPass == p_renderQueue.back();
+
+				// Create data.
+				for ( const auto & [ channel, input ] : descPass->inputs )
+				{
+					const IO & descIO = input.desc;
+
+					if ( std::holds_alternative<Data>( descIO ) )
+					{
+						const Data & data = std::get<Data>( descIO );
+
+						// Create vao.
+						_vaos.emplace( input.name, std::make_unique<GL::VertexArray>() );
+						_bos.emplace( input.name + "ebo", std::make_unique<GL::Buffer>() );
+						auto & vaoData = _vaos[ input.name ];
+						auto & eboData = _bos[ input.name + "ebo" ];
+						vaoData->bindElementBuffer( *eboData );
+
+						GLuint chan = 0;
+						for ( const Data::Entry & entry : data.entries )
+						{
+							_bos.emplace( input.name + entry.name, std::make_unique<GL::Buffer>() );
+							auto & vbo = _bos[ input.name + entry.name ];
+							vaoData->enableAttribute( chan );
+							vaoData->setVertexBuffer( chan, *vbo, GLsizei( _mapTypeSizes[ entry.type ] ) );
+							vaoData->setAttributeFormat(
+								chan, GLint( entry.components ), GLint( _mapTypes[ entry.type ] )
+							);
+							vaoData->setAttributeBinding( chan, chan );
+							chan++;
+						}
+					}
+				}
 
 				// Create FBO.
 				if ( isLastPass == false )
@@ -209,7 +238,8 @@ namespace VTX::Renderer::Context
 				// Bind inputs.
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
-					const Output * const src = findInputSrcInLinks( channel );
+					const Output * const src	= findInputSrcInLinks( channel );
+					const IO &			 descIO = src->desc;
 
 					if ( src == nullptr )
 					{
@@ -218,7 +248,6 @@ namespace VTX::Renderer::Context
 						continue;
 					}
 
-					const IO & descIO = src->desc;
 					if ( std::holds_alternative<Attachment>( descIO ) )
 					{
 						const Attachment * const attachment = &std::get<Attachment>( descIO );
@@ -248,17 +277,58 @@ namespace VTX::Renderer::Context
 						);
 					}
 
-					p_instructions.emplace_back(
-						[ this, &descProgram ]()
+					// Draw custom.
+					if ( descProgram.draw.has_value() )
+					{
+						const Draw & draw = descProgram.draw.value();
+						auto &		 vao  = _vaos[ draw.name ];
+						// Element.
+						if ( draw.useIndices )
 						{
-							_programs[ &descProgram ]->use();
-							_vao->drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+							auto & ebo = _bos[ draw.name + "ebo" ];
+							p_instructions.emplace_back(
+								[ this, &draw, &vao, &ebo ]()
+								{
+									vao->bind();
+									vao->bindElementBuffer( *ebo );
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( 0 ) );
+									vao->unbindElementBuffer();
+									vao->unbind();
+								}
+							);
 						}
-					);
+						// Array.
+						else
+						{
+							p_instructions.emplace_back(
+								[ this, &draw, &vao ]()
+								{
+									vao->bind();
+									vao->drawElement( _mapPrimitives[ draw.primitive ], GLsizei( 0 ), GL_UNSIGNED_INT );
+									vao->unbind();
+								}
+							);
+						}
+					}
+					// Or quad.
+					else
+					{
+						auto & vao = _vaos[ "quad" ];
+						p_instructions.emplace_back(
+							[ &vao ]()
+							{
+								vao->bind();
+								_programs[ &descProgram ]->use();
+								vao->drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+								vao->unbind();
+							}
+						);
+					}
 
 					if ( descProgram.uniforms.empty() == false )
 					{
-						p_instructions.emplace_back( [ this, &descProgram ]() { _ubos[ &descProgram ]->unbind(); } );
+						auto & ubo = _ubos[ &descProgram ];
+						p_instructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 					}
 				}
 
@@ -296,12 +366,7 @@ namespace VTX::Renderer::Context
 				{
 					GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
 				}
-
-				// TODO: not in geometric pass.
-				p_instructions.emplace_back( [ this ]() { _vao->unbind(); } );
 			}
-
-			// TODO: unbind main ubo.
 		}
 
 		void resize( const size_t p_width, const size_t p_height )
@@ -354,9 +419,9 @@ namespace VTX::Renderer::Context
 			{ E_CHANNEL_OUTPUT::DEPTH, GL_DEPTH_ATTACHMENT },
 		};
 
-		std::map<const E_PRIMTIVE, const GLenum> _mapPrimitives = { { E_PRIMTIVE::POINTS, GL_POINTS },
-																	{ E_PRIMTIVE::LINES, GL_LINES },
-																	{ E_PRIMTIVE::TRIANGLES, GL_TRIANGLES } };
+		std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },
+																	 { E_PRIMITIVE::LINES, GL_LINES },
+																	 { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES } };
 
 		std::map<const E_FORMAT, const GLenum> _mapFormats = {
 			{ E_FORMAT::RGBA16F, GL_RGBA16F },
@@ -396,17 +461,16 @@ namespace VTX::Renderer::Context
 				{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) },
 				{ E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) } };
 
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		std::unique_ptr<GL::VertexArray>	_vao;
-		std::unique_ptr<GL::Buffer>			_vbo;
-		std::unique_ptr<GL::Buffer>			_ubo;
+		std::unique_ptr<GL::ProgramManager>								  _programManager;
+		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
+		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
+		// std::unique_ptr<GL::Buffer>										  _ubo;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const Attachment *, std::unique_ptr<GL::Texture2D>> _textures;
 		std::unordered_map<const Program *, const GL::Program * const>		   _programs;
 		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>>	   _fbos;
 		std::unordered_map<const Program *, std::unique_ptr<GL::Buffer>>	   _ubos;
-		// std::unordered_map<const Uniform *, size_t>							   _uniformOffsets;
 
 		struct StructUniformEntry
 		{
@@ -414,8 +478,6 @@ namespace VTX::Renderer::Context
 			size_t		 offset;
 			size_t		 size;
 			void *		 value;
-			// Add constructor.
-
 			StructUniformEntry( GL::Buffer * p_buffer, const size_t p_offset, const size_t p_size ) :
 				buffer( p_buffer ), offset( p_offset ), size( p_size ), value( malloc( p_size ) )
 			{

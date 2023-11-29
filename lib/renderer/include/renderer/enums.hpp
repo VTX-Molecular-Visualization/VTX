@@ -4,20 +4,16 @@
 namespace VTX::Renderer
 {
 
-	enum struct E_PASS_TYPE
-	{
-		// GEOMETRIC,
-		GRAPHIC,
-		// COMPUTE,
-		// ...?
-	};
-
 	enum struct E_CHANNEL_INPUT : int
 	{
 		_0,
 		_1,
 		_2,
 		_3,
+		_4,
+		_5,
+		_6,
+		_7,
 	};
 
 	enum struct E_CHANNEL_OUTPUT
@@ -39,28 +35,12 @@ namespace VTX::Renderer
 		DEPTH_COMPONENT32F
 	};
 
-	enum struct E_PRIMTIVE
+	enum struct E_PRIMITIVE
 	{
 		POINTS,
 		LINES,
 		TRIANGLES
 	};
-
-	enum struct E_DRAW_TYPE
-	{
-
-	};
-
-	/*
-	enum struct E_HANDLE_TYPE
-	{
-		ATTACHMENT,
-		STORAGE,
-		// UNIFORM,
-		PROGRAM,
-		// ...?
-	};
-	*/
 
 	enum struct E_TYPE
 	{
