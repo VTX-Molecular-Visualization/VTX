@@ -86,9 +86,9 @@ namespace VTX::Renderer
 	{
 		std::string name;
 		E_PRIMITIVE primitive;
-		size_t		offset;
-		size_t		count;
-		bool		useIndices = false;
+		// size_t		offset;
+		// size_t		count;
+		bool useIndices = false;
 	};
 
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;

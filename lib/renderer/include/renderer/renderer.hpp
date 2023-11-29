@@ -53,7 +53,7 @@ namespace VTX::Renderer
 							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
 							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
 				  Programs { { "Sphere", "sphere", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::POINTS } },
-							 { "Cylinder", "cylinder", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::LINES } } } }
+							 { "Cylinder", "cylinder", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::LINES, true } } } }
 			);
 
 			/*

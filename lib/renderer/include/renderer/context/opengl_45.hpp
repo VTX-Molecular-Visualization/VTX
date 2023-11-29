@@ -277,6 +277,7 @@ namespace VTX::Renderer::Context
 						);
 					}
 
+					auto & program = _programs[ &descProgram ];
 					// Draw custom.
 					if ( descProgram.draw.has_value() )
 					{
@@ -287,10 +288,11 @@ namespace VTX::Renderer::Context
 						{
 							auto & ebo = _bos[ draw.name + "ebo" ];
 							p_instructions.emplace_back(
-								[ this, &draw, &vao, &ebo ]()
+								[ this, &program, &draw, &vao, &ebo ]()
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
+									program->use();
 									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( 0 ) );
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -301,9 +303,10 @@ namespace VTX::Renderer::Context
 						else
 						{
 							p_instructions.emplace_back(
-								[ this, &draw, &vao ]()
+								[ this, &program, &draw, &vao ]()
 								{
 									vao->bind();
+									program->use();
 									vao->drawElement( _mapPrimitives[ draw.primitive ], GLsizei( 0 ), GL_UNSIGNED_INT );
 									vao->unbind();
 								}
@@ -315,10 +318,10 @@ namespace VTX::Renderer::Context
 					{
 						auto & vao = _vaos[ "quad" ];
 						p_instructions.emplace_back(
-							[ &vao ]()
+							[ &program, &vao ]()
 							{
 								vao->bind();
-								_programs[ &descProgram ]->use();
+								program->use();
 								vao->drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 								vao->unbind();
 							}
