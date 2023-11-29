@@ -73,11 +73,18 @@ namespace VTX::Util::JSon
 	const Object &		BasicJSon::getObject() const { return *std::get<std::unique_ptr<Object>>( _value ); }
 	const Document &	BasicJSon::getDocument() const { return *std::get<std::unique_ptr<Document>>( _value ); }
 
+	Array &	 BasicJSon::getArrayEditable() const { return *std::get<std::unique_ptr<Array>>( _value ); }
+	Object & BasicJSon::getObjectEditable() const { return *std::get<std::unique_ptr<Object>>( _value ); }
+
 	BasicJSon::operator const Array &() const { return getArray(); }
+	BasicJSon::operator Array &() const { return getArrayEditable(); }
 	BasicJSon::operator const Object &() const { return getObject(); }
+	BasicJSon::operator Object &() const { return getObjectEditable(); }
 
 	const BasicJSon & BasicJSon::operator[]( const std::string & p_key ) const { return getObject()[ p_key ]; }
+	BasicJSon & BasicJSon::operator[]( const std::string & p_key ) { return getObjectEditable()[ p_key ]; }
 	const BasicJSon & BasicJSon::operator[]( const size_t & p_index ) const { return getArray()[ p_index ]; }
+	BasicJSon & BasicJSon::operator[]( const size_t & p_index ) { return getArrayEditable()[ p_index ]; }
 
 	bool BasicJSon::contains( const std::string & p_key ) const { return getObject().contains( p_key ); }
 

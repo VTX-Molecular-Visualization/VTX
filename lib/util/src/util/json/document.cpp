@@ -203,6 +203,7 @@ namespace VTX::Util::JSon
 	}
 
 	const BasicJSon & Document::json() const { return _json; }
+	BasicJSon &		  Document::json() { return _json; }
 
 	void Document::clear() { _impl->clear(); }
 

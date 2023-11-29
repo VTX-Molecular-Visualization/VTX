@@ -33,6 +33,7 @@ namespace VTX::Util::JSon
 		Document & operator=( const Document & p_source );
 
 		const BasicJSon & json() const;
+		BasicJSon &		  json();
 
 		void		clear();
 		std::string getContentAsString() const;

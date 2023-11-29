@@ -2,13 +2,12 @@
 #include <app/core/serialization/deserialization_process.hpp>
 #include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/serialization_process.hpp>
+#include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
-#include <util/color/rgba.hpp>
-#include <util/json/json.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Test
@@ -65,11 +64,48 @@ namespace VTX::App::Test
 		}
 		static void deserialize( const VTX::Util::JSon::Object & p_jsonObj, CustomClass & p_obj )
 		{
-			SERIALIZER().deserialize( p_jsonObj[ "COLOR" ], p_obj.color );
-			SERIALIZER().deserialize( p_jsonObj[ "STR" ], p_obj.strValue );
-			SERIALIZER().deserialize( p_jsonObj[ "INT" ], p_obj.intValue );
-			SERIALIZER().deserialize( p_jsonObj[ "VEC" ], p_obj.vector );
-			SERIALIZER().deserialize( p_jsonObj[ "ENUM" ], p_obj.enumValue );
+			p_obj.color		= SERIALIZER().deserializeField( p_jsonObj, "COLOR", COLOR_BLACK );
+			p_obj.strValue	= SERIALIZER().deserializeField( p_jsonObj, "STR", std::string( "Default" ) );
+			p_obj.intValue	= SERIALIZER().deserializeField( p_jsonObj, "INT", 10 );
+			p_obj.vector	= SERIALIZER().deserializeField( p_jsonObj, "VEC", VEC3F_ZERO );
+			p_obj.enumValue = SERIALIZER().deserializeField( p_jsonObj, "ENUM", CustomEnum::ONE );
+		}
+
+		static void upgrade_0_1_0_to_1_0_0( VTX::Util::JSon::Object & p_jsonObj, CustomClass & p_obj )
+		{
+			using namespace VTX::App::Core::Serialization;
+
+			UpgradeUtility::renameField( p_jsonObj, "OLD_NAME_COLOR", "COLOR" );
+			UpgradeUtility::renameField( p_jsonObj, "OLD_NAME_STR", "STR" );
+			UpgradeUtility::renameField( p_jsonObj, "OLD_NAME_INT", "INT" );
+			UpgradeUtility::renameField( p_jsonObj, "OLD_NAME_VEC", "VEC" );
+			UpgradeUtility::renameField( p_jsonObj, "OLD_NAME_ENUM", "ENUM" );
+
+			// Removed parameter
+			// "OLD_UNKNOWN_FIELD"
+		}
+		static void upgrade_0_0_0_to_0_1_0( VTX::Util::JSon::Object & p_jsonObj, CustomClass & p_obj )
+		{
+			using namespace VTX::App::Core::Serialization;
+
+			UpgradeUtility::renameField( p_jsonObj, "VERY_OLD_NAME_COLOR", "OLD_NAME_COLOR" );
+
+			// "OLD_NAME_STR" => No changes
+			// "OLD_INT" recently added => Nothing to do ; will be filled by default value.
+
+			// Manage type change
+			const std::string oldVecStr
+				= SERIALIZER().deserializeField( p_jsonObj, "OLD_NAME_VEC", std::string( "<Empty>" ) );
+			if ( oldVecStr == "Was a string before" )
+			{
+				const Vec3f convertedVector = { 1.f, 2.f, 3.f };
+				p_jsonObj[ "OLD_NAME_VEC" ] = SERIALIZER().serialize( convertedVector );
+			}
+
+			// Rename VERY_OLD_UNKNOWN_FIELD
+			UpgradeUtility::renameField( p_jsonObj, "VERY_OLD_UNKNOWN_FIELD", "OLD_UNKNOWN_FIELD" );
+
+			// "OLD_NAME_ENUM" => No changes
 		}
 	};
 } // namespace VTX::App::Test
@@ -107,7 +143,7 @@ TEST_CASE( "VTX_APP - Serialization", "[unit]" )
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ][ "ENUM" ].getString() == "TWO" );
 }
 
-TEST_CASE( "VTX_APP - Serialization - IO", "[unit]" )
+TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -120,7 +156,7 @@ TEST_CASE( "VTX_APP - Serialization - IO", "[unit]" )
 	const Test::CustomClass custom
 		= Test::CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, Test::CustomClass::CustomEnum::TWO );
 
-	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/jsonTest.json";
+	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest.json";
 
 	App::Core::Serialization::SerializationProcess serialization { jsonPath, &custom };
 	serialization.run();
@@ -134,6 +170,58 @@ TEST_CASE( "VTX_APP - Serialization - IO", "[unit]" )
 	deserialization.run();
 
 	CHECK( custom == loadedCustom );
+}
+
+TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	Test::Util::App::initApp();
+
+	SERIALIZER().registerSerializationFunction<Test::CustomClass>( &Test::CustomClass::serialize );
+	SERIALIZER().registerDeserializationFunction<Test::CustomClass>( &Test::CustomClass::deserialize );
+
+	SERIALIZER().registerUpgrade<Test::CustomClass>( { 0, 1, 0 }, &Test::CustomClass::upgrade_0_0_0_to_0_1_0 );
+	SERIALIZER().registerUpgrade<Test::CustomClass>( { 1, 0, 0 }, &Test::CustomClass::upgrade_0_1_0_to_1_0_0 );
+
+	const Test::CustomClass custom
+		= Test::CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, Test::CustomClass::CustomEnum::TWO );
+
+	const FilePath	  jsonPath_0_1_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
+	Test::CustomClass loadedCustom_0_1_0 = Test::CustomClass();
+
+	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+	deserialization.run();
+
+	CHECK( custom == loadedCustom_0_1_0 );
+
+	const FilePath	  jsonPath_0_0_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
+	Test::CustomClass loadedCustom_0_0_0 = Test::CustomClass();
+
+	deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+	deserialization.run();
+
+	CHECK( loadedCustom_0_0_0.color == custom.color );
+	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
+	CHECK( loadedCustom_0_0_0.strValue == custom.strValue );
+
+	const FilePath	  jsonPath_1_2_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_1_2_0.json";
+	Test::CustomClass loadedCustom_1_2_0 = Test::CustomClass();
+
+	try
+	{
+		deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		deserialization.run();
+	}
+	catch ( const IOException & e )
+	{
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		CHECK( false );
+	}
 }
 
 TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )

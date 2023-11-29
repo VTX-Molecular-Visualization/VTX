@@ -18,7 +18,7 @@ namespace VTX::App::Core::Serialization
 
 		void run()
 		{
-			const VTX::Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
+			VTX::Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
 
 			if ( !fullDoc.json().contains( "VERSION" ) || !fullDoc.json().contains( "DATA" ) )
 				throw IOException( "Ill-formed save file" );
@@ -29,14 +29,12 @@ namespace VTX::App::Core::Serialization
 			if ( fileVersion > Version::CURRENT )
 				throw IOException( "Can not read file, version is newer than VTX" );
 
-			const VTX::Util::JSon::BasicJSon & dataJSon = fullDoc.json()[ "DATA" ];
-
-			SERIALIZER().deserialize( dataJSon, *_target );
+			VTX::Util::JSon::BasicJSon & dataJSon = fullDoc.json()[ "DATA" ];
 
 			if ( fileVersion < Version::CURRENT )
-			{
-				// migrate( dataDoc, fileVersion );
-			}
+				SERIALIZER().migrate( dataJSon, *_target, fileVersion );
+
+			SERIALIZER().deserialize( dataJSon, *_target );
 		}
 
 	  private:

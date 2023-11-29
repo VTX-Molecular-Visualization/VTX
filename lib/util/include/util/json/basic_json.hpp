@@ -67,8 +67,13 @@ namespace VTX::Util::JSon
 		const Object &		getObject() const;
 		const Document &	getDocument() const;
 
+		Array &	 getArrayEditable() const;
+		Object & getObjectEditable() const;
+
 		operator const Array &() const;
+		operator Array &() const;
 		operator const Object &() const;
+		operator Object &() const;
 
 		template<typename T>
 		const T & get() const
@@ -87,7 +92,10 @@ namespace VTX::Util::JSon
 		}
 
 		const BasicJSon & operator[]( const std::string & p_key ) const;
+		BasicJSon &		  operator[]( const std::string & p_key );
+
 		const BasicJSon & operator[]( const size_t & p_index ) const;
+		BasicJSon &		  operator[]( const size_t & p_index );
 
 		bool contains( const std::string & p_key ) const;
 

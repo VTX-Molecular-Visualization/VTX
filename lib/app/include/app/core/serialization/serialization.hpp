@@ -1,6 +1,8 @@
 #ifndef __VTX_APP_CORE_SERIALIZATION_SERIALIZATION__
 #define __VTX_APP_CORE_SERIALIZATION_SERIALIZATION__
 
+#include "app/core/serialization/upgrade_stack.hpp"
+#include "app/core/serialization/version.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
 #include <any>
 #include <functional>
@@ -56,7 +58,7 @@ namespace VTX::App::Core::Serialization
 		{
 			assert( _mapSerializeFunctions.contains( typeid( T ) ) );
 
-			return std::any_cast<SerializeFunc<T>>( _mapSerializeFunctions.at( typeid( T ) ) )( p_obj );
+			return std::any_cast<const SerializeFunc<T> &>( _mapSerializeFunctions.at( typeid( T ) ) )( p_obj );
 		}
 
 		template<Util::JSon::BasicJSonConcept T>
@@ -74,12 +76,12 @@ namespace VTX::App::Core::Serialization
 		{
 			assert( _mapDeserializeFunctions.contains( typeid( T ) ) );
 
-			std::any_cast<DeserializeFunc<T>>( _mapDeserializeFunctions.at( typeid( T ) )
+			std::any_cast<const DeserializeFunc<T> &>( _mapDeserializeFunctions.at( typeid( T ) )
 			)( p_jsonObj.getObject(), p_obj );
 		}
 
 		template<typename T>
-		T deserializeFieldWithCheck(
+		T deserializeField(
 			const Util::JSon::Object & p_jsonObj,
 			const std::string &		   p_key,
 			const T &				   p_defaultValue = T()
@@ -95,9 +97,30 @@ namespace VTX::App::Core::Serialization
 			return res;
 		}
 
+		template<typename T>
+		void registerUpgrade( const Version & p_version, UpgradeFunc<T> p_upgradeFunc )
+		{
+			if ( !_mapUpgradeFunctions.contains( typeid( T ) ) )
+				_mapUpgradeFunctions.emplace( typeid( T ), UpgradeStack<T>() );
+
+			std::any &		  any	= _mapUpgradeFunctions[ typeid( T ) ];
+			UpgradeStack<T> & stack = std::any_cast<UpgradeStack<T> &>( any );
+			stack.add( p_version, p_upgradeFunc );
+		}
+
+		template<typename T>
+		void migrate( Util::JSon::BasicJSon & p_jsonObj, T & p_obj, const Version & p_version ) const
+		{
+			const std::any &		any	  = _mapUpgradeFunctions.at( typeid( T ) );
+			const UpgradeStack<T> & stack = std::any_cast<const UpgradeStack<T> &>( any );
+			stack.applyUpgrades( p_jsonObj, p_obj, p_version );
+		}
+
 	  private:
 		std::map<std::type_index, std::any> _mapSerializeFunctions	 = std::map<std::type_index, std::any>();
 		std::map<std::type_index, std::any> _mapDeserializeFunctions = std::map<std::type_index, std::any>();
+
+		std::map<std::type_index, std::any> _mapUpgradeFunctions = std::map<std::type_index, std::any>();
 	};
 } // namespace VTX::App::Core::Serialization
 
