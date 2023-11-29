@@ -95,9 +95,6 @@ namespace VTX::App::Core::Serialization
 			return res;
 		}
 
-		VTX::Util::JSon::Document readFile( const FilePath p_path ) const;
-		void					  writeFile( const FilePath p_path, const VTX::Util::JSon::Document & p_doc ) const;
-
 	  private:
 		std::map<std::type_index, std::any> _mapSerializeFunctions	 = std::map<std::type_index, std::any>();
 		std::map<std::type_index, std::any> _mapDeserializeFunctions = std::map<std::type_index, std::any>();

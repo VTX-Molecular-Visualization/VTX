@@ -1,5 +1,8 @@
 #include "util/app.hpp"
+#include <app/core/serialization/deserialization_process.hpp>
 #include <app/core/serialization/serialization.hpp>
+#include <app/core/serialization/serialization_process.hpp>
+#include <app/core/serialization/version.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -76,8 +79,6 @@ TEST_CASE( "VTX_APP - Serialization", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	VTX_INFO( "TEST VTX_APP - Serialization" );
-
 	Test::Util::App::initApp();
 
 	SERIALIZER().registerSerializationFunction<Test::CustomClass>( &Test::CustomClass::serialize );
@@ -87,8 +88,6 @@ TEST_CASE( "VTX_APP - Serialization", "[unit]" )
 		= Test::CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, Test::CustomClass::CustomEnum::TWO );
 
 	const VTX::Util::JSon::Document jsonDoc = { { "CUSTOM_CLASS", SERIALIZER().serialize( custom ) } };
-
-	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/jsonTest.json";
 
 	REQUIRE( jsonDoc.json().contains( "CUSTOM_CLASS" ) );
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ].contains( "COLOR" ) );
@@ -106,15 +105,96 @@ TEST_CASE( "VTX_APP - Serialization", "[unit]" )
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ][ "VEC" ][ "Z" ].get<float>() == 3.f );
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ].contains( "ENUM" ) );
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ][ "ENUM" ].getString() == "TWO" );
+}
 
-	SERIALIZER().writeFile( jsonPath, jsonDoc );
+TEST_CASE( "VTX_APP - Serialization - IO", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	Test::Util::App::initApp();
+
+	SERIALIZER().registerSerializationFunction<Test::CustomClass>( &Test::CustomClass::serialize );
+	SERIALIZER().registerDeserializationFunction<Test::CustomClass>( &Test::CustomClass::deserialize );
+
+	const Test::CustomClass custom
+		= Test::CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, Test::CustomClass::CustomEnum::TWO );
+
+	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/jsonTest.json";
+
+	App::Core::Serialization::SerializationProcess serialization { jsonPath, &custom };
+	serialization.run();
+
 	REQUIRE( std::filesystem::exists( jsonPath ) );
-
-	const VTX::Util::JSon::Document loadedJsonDoc = SERIALIZER().readFile( jsonPath );
 
 	Test::CustomClass loadedCustom = Test::CustomClass();
 	CHECK( custom != loadedCustom );
 
-	SERIALIZER().deserialize( jsonDoc.json()[ "CUSTOM_CLASS" ], loadedCustom );
+	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
+	deserialization.run();
+
 	CHECK( custom == loadedCustom );
+}
+
+TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )
+{
+	using namespace VTX;
+
+	using Version = App::Core::Serialization::Version;
+
+	Version version = { 2, 1, 3 };
+
+	// Operator ==
+	CHECK( !( version == Version( 1, 3, 10 ) ) );
+	CHECK( !( version == Version( 2, 0, 10 ) ) );
+	CHECK( !( version == Version( 2, 1, 2 ) ) );
+	CHECK( version == version );
+	CHECK( !( version == Version( 2, 1, 8 ) ) );
+	CHECK( !( version == Version( 2, 4, 0 ) ) );
+	CHECK( !( version == Version( 3, 0, 0 ) ) );
+
+	// Operator !=
+	CHECK( version != Version( 1, 3, 10 ) );
+	CHECK( version != Version( 2, 0, 10 ) );
+	CHECK( version != Version( 2, 1, 2 ) );
+	CHECK( !( version != version ) );
+	CHECK( version != Version( 2, 1, 8 ) );
+	CHECK( version != Version( 2, 4, 0 ) );
+	CHECK( version != Version( 3, 0, 0 ) );
+
+	// Operator >
+	CHECK( version > Version( 1, 3, 10 ) );
+	CHECK( version > Version( 2, 0, 10 ) );
+	CHECK( version > Version( 2, 1, 2 ) );
+	CHECK( !( version > version ) );
+	CHECK( !( version > Version( 2, 1, 8 ) ) );
+	CHECK( !( version > Version( 2, 4, 0 ) ) );
+	CHECK( !( version > Version( 3, 0, 0 ) ) );
+
+	// Operator >=
+	CHECK( version >= Version( 1, 3, 10 ) );
+	CHECK( version >= Version( 2, 0, 10 ) );
+	CHECK( version >= Version( 2, 1, 2 ) );
+	CHECK( version >= version );
+	CHECK( !( version >= Version( 2, 1, 8 ) ) );
+	CHECK( !( version >= Version( 2, 4, 0 ) ) );
+	CHECK( !( version >= Version( 3, 0, 0 ) ) );
+
+	// Operator <
+	CHECK( !( version < Version( 1, 3, 10 ) ) );
+	CHECK( !( version < Version( 2, 0, 10 ) ) );
+	CHECK( !( version < Version( 2, 1, 2 ) ) );
+	CHECK( !( version < version ) );
+	CHECK( version < Version( 2, 1, 8 ) );
+	CHECK( version < Version( 2, 4, 0 ) );
+	CHECK( version < Version( 3, 0, 0 ) );
+
+	// Operator <=
+	CHECK( !( version <= Version( 1, 3, 10 ) ) );
+	CHECK( !( version <= Version( 2, 0, 10 ) ) );
+	CHECK( !( version <= Version( 2, 1, 2 ) ) );
+	CHECK( version <= version );
+	CHECK( version <= Version( 2, 1, 8 ) );
+	CHECK( version <= Version( 2, 4, 0 ) );
+	CHECK( version <= Version( 3, 0, 0 ) );
 }

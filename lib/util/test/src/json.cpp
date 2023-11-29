@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <nlohmann/json.hpp>
 #include <util/exceptions.hpp>
+#include <util/json/io.hpp>
 #include <util/json/json.hpp>
 #include <util/logger.hpp>
 

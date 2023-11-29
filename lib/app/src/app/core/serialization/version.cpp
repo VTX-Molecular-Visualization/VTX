@@ -21,19 +21,31 @@ namespace VTX::App::Core::Serialization
 	}
 	bool operator>( const Version & p_lhs, const Version & p_rhs )
 	{
-		return p_lhs.major > p_rhs.major || p_lhs.minor > p_rhs.minor || p_lhs.revision > p_rhs.revision;
+		return p_lhs.major > p_rhs.major
+			   || ( p_lhs.major == p_rhs.major
+					&& ( p_lhs.minor > p_rhs.minor || ( p_lhs.minor == p_rhs.minor && p_lhs.revision > p_rhs.revision )
+					) );
 	}
 	bool operator>=( const Version & p_lhs, const Version & p_rhs )
 	{
-		return p_lhs.major >= p_rhs.major || p_lhs.minor >= p_rhs.minor || p_lhs.revision >= p_rhs.revision;
+		return p_lhs.major > p_rhs.major
+			   || ( p_lhs.major == p_rhs.major
+					&& ( p_lhs.minor > p_rhs.minor || ( p_lhs.minor == p_rhs.minor && p_lhs.revision >= p_rhs.revision )
+					) );
 	}
 	bool operator<( const Version & p_lhs, const Version & p_rhs )
 	{
-		return p_lhs.major < p_rhs.major || p_lhs.minor < p_rhs.minor || p_lhs.revision < p_rhs.revision;
+		return p_lhs.major < p_rhs.major
+			   || ( p_lhs.major == p_rhs.major
+					&& ( p_lhs.minor < p_rhs.minor || ( p_lhs.minor == p_rhs.minor && p_lhs.revision < p_rhs.revision )
+					) );
 	}
 	bool operator<=( const Version & p_lhs, const Version & p_rhs )
 	{
-		return p_lhs.major <= p_rhs.major || p_lhs.minor <= p_rhs.minor || p_lhs.revision <= p_rhs.revision;
+		return p_lhs.major < p_rhs.major
+			   || ( p_lhs.major == p_rhs.major
+					&& ( p_lhs.minor < p_rhs.minor || ( p_lhs.minor == p_rhs.minor && p_lhs.revision <= p_rhs.revision )
+					) );
 	}
 
 } // namespace VTX::App::Core::Serialization

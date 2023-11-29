@@ -4,7 +4,6 @@
 #include "array.hpp"
 #include "basic_json.hpp"
 #include "document.hpp"
-#include "io.hpp"
 #include "object.hpp"
 
 #endif
