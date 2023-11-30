@@ -40,31 +40,33 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		// OpenGLRenderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
-		// );
+		Renderer::Renderer renderer(
+			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
+		);
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
-		// camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); }
-		// ); camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix ) {
-		// renderer.setMatrixProjection( p_matrix ); } ); camera.setCallbackClipInfos( [ &renderer ]( const float
-		// p_near,
-		// const float p_far ) 							 { renderer.setCameraClipInfos( p_near, p_far ); } );
+		camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); } );
+		camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
+											{ renderer.setMatrixProjection( p_matrix ); } );
+		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
+									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
 		// Input manager.
 		InputManager inputManager;
 		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
-		// inputManager.setCallbackResize(
-		//	[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-		//	{
-		//		renderer.resize( p_width, p_height );
-		//		camera.resize( p_width, p_height );
-		//	} );
+		inputManager.setCallbackResize(
+			[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+			{
+				renderer.resize( p_width, p_height );
+				camera.resize( p_width, p_height );
+			}
+		);
 		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
 										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackRotate(
-			[ &camera, &ui ]( const Vec2i & p_delta )
-			{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); } );
+		inputManager.setCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
+										{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
+		);
 		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
@@ -97,13 +99,15 @@ int main( int, char ** )
 						std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
 						std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
 						std::vector<float> radii( size );
-						std::generate( radii.begin(),
-									   radii.end(),
-									   [ &symbols ]
-									   {
-										   static int i = 0;
-										   return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
-									   } );
+						std::generate(
+							radii.begin(),
+							radii.end(),
+							[ &symbols ]
+							{
+								static int i = 0;
+								return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
+							}
+						);
 						std::vector<uint> visibilities = std::vector<uint>( size, 1 );
 						std::vector<uint> selections   = std::vector<uint>( size, 0 );
 						std::vector<uint> ids( size );
@@ -112,13 +116,15 @@ int main( int, char ** )
 						std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
 						const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
 
-						std::generate( bondsIndex.begin(),
-									   bondsIndex.end(),
-									   [ &bondPairAtomIndexes ]
-									   {
-										   static size_t i = 0;
-										   return uint( bondPairAtomIndexes[ i++ ] );
-									   } );
+						std::generate(
+							bondsIndex.begin(),
+							bondsIndex.end(),
+							[ &bondPairAtomIndexes ]
+							{
+								static size_t i = 0;
+								return uint( bondPairAtomIndexes[ i++ ] );
+							}
+						);
 
 						// TODO:
 						// Use struct ssbo for atom infos by symbol (like radius).
@@ -138,7 +144,8 @@ int main( int, char ** )
 															  &ids,
 															  &bondsIndex };
 						// renderer.addMolecule( proxyMolecule );
-					} );
+					}
+				);
 				VTX_INFO( "Proxify time: {}", timeProxify );
 			}
 			catch ( const std::exception & p_e )
@@ -147,22 +154,16 @@ int main( int, char ** )
 			}
 		}
 
-		// Renderer with graph test.
-		Renderer::Renderer newRenderer(
-			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress() );
-
 		// Main loop.
 		while ( isRunning )
 		{
-			// float time = float( ui.getTime() ) * 1e-3f;
+			float time = float( ui.getTime() ) * 1e-3f;
 
 			// Renderer.
-			// renderer.renderFrame( ui.getTime() );
-
-			newRenderer.render();
+			renderer.render( time );
 
 			// UI.
-			ui.draw( &camera, &newRenderer );
+			ui.draw( &camera, &renderer );
 
 			// Events.
 			SDL_Event event;

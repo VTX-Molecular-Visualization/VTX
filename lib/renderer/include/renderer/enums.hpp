@@ -44,6 +44,7 @@ namespace VTX::Renderer
 
 	enum struct E_TYPE
 	{
+		BOOL,
 		UINT,
 		INT,
 		FLOAT,
@@ -78,6 +79,15 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_NEAREST,
 		NEAREST_MIPMAP_LINEAR,
 		LINEAR_MIPMAP_LINEAR,
+	};
+
+	enum struct E_SHADING
+	{
+		DIFFUSE,
+		GLOSSY,
+		TOON,
+		FLAT_COLOR,
+		COUNT
 	};
 
 } // namespace VTX::Renderer

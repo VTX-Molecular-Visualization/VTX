@@ -560,6 +560,33 @@ namespace VTX::Bench
 							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
 							{
+							case E_TYPE::UINT:
+							{
+								StructUniformValue<uint> descValue
+									= std::get<StructUniformValue<uint>>( uniform.value );
+								if ( descValue.minMax.has_value() )
+								{
+									uint value;
+									p_newRenderer->getUniform<uint>( value, uniform, program );
+									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
+									if ( ImGui::SliderInt(
+											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
+										 ) )
+									{
+										p_newRenderer->setUniform( value, uniform.name, program.name );
+									}
+								}
+								else
+								{
+									uint value;
+									p_newRenderer->getUniform<uint>( value, uniform, program );
+									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
+									{
+										p_newRenderer->setUniform( value, uniform.name, program.name );
+									}
+								}
+								break;
+							}
 							case E_TYPE::FLOAT:
 							{
 								StructUniformValue<float> descValue

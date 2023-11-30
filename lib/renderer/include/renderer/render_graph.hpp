@@ -26,6 +26,11 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
+		inline void addUniforms( const Uniforms & p_uniforms )
+		{
+			_uniforms.insert( _uniforms.end(), p_uniforms.begin(), p_uniforms.end() );
+		}
+
 		bool addLink(
 			Pass * const			 p_passSrc,
 			Pass * const			 p_passDest,
@@ -81,6 +86,7 @@ namespace VTX::Renderer
 			const size_t	 p_width,
 			const size_t	 p_height,
 			const FilePath & p_shaderPath,
+			Instructions &	 p_instructions,
 			const Handle	 p_output = 0
 		)
 		{
@@ -127,7 +133,7 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _renderQueue, _links, p_output, _instructions );
+				_context->build( _renderQueue, _links, p_output, _uniforms, p_instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -144,16 +150,6 @@ namespace VTX::Renderer
 		{
 			assert( _context != nullptr );
 			_context->resize( p_width, p_height );
-		}
-
-		void render()
-		{
-			// TODO: Move to renderer?
-			// Execute instructions.
-			for ( Instruction & instruction : _instructions )
-			{
-				instruction();
-			}
 		}
 
 		template<typename T>
@@ -191,13 +187,12 @@ namespace VTX::Renderer
 
 		const Output * _output;
 		Passes		   _passes;
+		Uniforms	   _uniforms;
 		Links		   _links;
-		Instructions   _instructions;
 
 		void _clear()
 		{
 			_renderQueue.clear();
-			_instructions.clear();
 			_context.reset( nullptr );
 		}
 	};

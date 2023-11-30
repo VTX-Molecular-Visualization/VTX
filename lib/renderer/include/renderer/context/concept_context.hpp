@@ -23,13 +23,14 @@ namespace VTX::Renderer::Context
 						  const RenderQueue & p_renderQueue,
 						  const Links &		  p_links,
 						  const Handle		  p_output,
+						  const Uniforms &	  p_uniforms,
 						  const std::string & p_uniform,
 						  const std::string & p_program,
 						  UniformValue &	  p_value,
 						  Instructions &	  p_instructions
 					  ) {
 							 {
-								 p_context.build( p_renderQueue, p_links, p_output, p_instructions )
+								 p_context.build( p_renderQueue, p_links, p_output, p_uniforms, p_instructions )
 							 } -> std::same_as<void>;
 							 {
 								 p_context.resize( p_width, p_height )

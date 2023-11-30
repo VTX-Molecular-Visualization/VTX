@@ -71,6 +71,7 @@ namespace VTX::Renderer::Context
 			const RenderQueue & p_renderQueue,
 			const Links &		p_links,
 			const Handle		p_output,
+			const Uniforms &	p_uniforms,
 			Instructions &		p_instructions
 		)
 		{
@@ -78,11 +79,18 @@ namespace VTX::Renderer::Context
 
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
+			// Create shared uniforms.
+			if ( p_uniforms.empty() == false )
+			{
+				_ubo = std::make_unique<GL::Buffer>();
+				_createUniforms( _ubo.get(), p_uniforms );
+			}
+
 			for ( const Pass * const descPass : p_renderQueue )
 			{
 				bool isLastPass = descPass == p_renderQueue.back();
 
-				// Create data.
+				// Create data for each pass.
 				for ( const auto & [ channel, input ] : descPass->inputs )
 				{
 					const IO & descIO = input.desc;
@@ -163,41 +171,7 @@ namespace VTX::Renderer::Context
 					if ( descProgram.uniforms.empty() == false )
 					{
 						_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
-					}
-
-					size_t offset = 0;
-					for ( const Uniform & descUniform : descProgram.uniforms )
-					{
-						size_t size = _mapTypeSizes[ descUniform.type ];
-						assert( _uniforms.find( descProgram.name + descUniform.name ) == _uniforms.end() );
-						_uniforms.emplace(
-							descProgram.name + descUniform.name,
-							std::make_unique<StructUniformEntry>( _ubos[ &descProgram ].get(), offset, size )
-						);
-						offset += size;
-					}
-
-					if ( offset > 0 )
-					{
-						_ubos[ &descProgram ]->setData( GLsizei( offset ), GL_STATIC_DRAW );
-					}
-
-					for ( const Uniform & descUniform : descProgram.uniforms )
-					{
-						switch ( descUniform.type )
-						{
-						case E_TYPE::UINT: _setUniformDefaultValue<uint>( descProgram, descUniform ); break;
-						case E_TYPE::INT: _setUniformDefaultValue<int>( descProgram, descUniform ); break;
-						case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descProgram, descUniform ); break;
-						case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descProgram, descUniform ); break;
-						case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descProgram, descUniform ); break;
-						case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descProgram, descUniform ); break;
-						case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descProgram, descUniform ); break;
-						case E_TYPE::COLOR4:
-							_setUniformDefaultValue<Util::Color::Rgba>( descProgram, descUniform );
-							break;
-						default: throw std::runtime_error( "unknown type" );
-						}
+						_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram );
 					}
 				}
 
@@ -454,20 +428,20 @@ namespace VTX::Renderer::Context
 		};
 
 		std::map<const E_TYPE, const GLenum> _mapTypes
-			= { { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },		{ E_TYPE::FLOAT, GL_FLOAT },
-				{ E_TYPE::VEC3F, GL_FLOAT },	   { E_TYPE::VEC4F, GL_FLOAT }, { E_TYPE::MAT3F, GL_FLOAT },
-				{ E_TYPE::MAT4F, GL_FLOAT },	   { E_TYPE::COLOR4, GL_FLOAT } };
+			= { { E_TYPE::BOOL, GL_BOOL },	 { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },
+				{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC3F, GL_FLOAT },		{ E_TYPE::VEC4F, GL_FLOAT },
+				{ E_TYPE::MAT3F, GL_FLOAT }, { E_TYPE::MAT4F, GL_FLOAT },		{ E_TYPE::COLOR4, GL_FLOAT } };
 
-		std::map<const E_TYPE, const size_t> _mapTypeSizes
-			= { { E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
-				{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },
-				{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) },
-				{ E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) } };
+		std::map<const E_TYPE, const size_t> _mapTypeSizes = {
+			{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
+			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) }, { E_TYPE::VEC4F, sizeof( Vec4f ) },
+			{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) }
+		};
 
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
 		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		// std::unique_ptr<GL::Buffer>										  _ubo;
+		std::unique_ptr<GL::Buffer>										  _ubo;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const Attachment *, std::unique_ptr<GL::Texture2D>> _textures;
@@ -489,13 +463,54 @@ namespace VTX::Renderer::Context
 		};
 		std::unordered_map<std::string, std::unique_ptr<StructUniformEntry>> _uniforms;
 
+		void _createUniforms(
+			GL::Buffer * const	  p_ubo,
+			const Uniforms &	  p_uniforms,
+			const Program * const p_descProgram = nullptr
+		)
+		{
+			size_t offset = 0;
+			for ( const Uniform & descUniform : p_uniforms )
+			{
+				size_t		size = _mapTypeSizes[ descUniform.type ];
+				std::string key	 = ( p_descProgram ? p_descProgram->name : "" ) + descUniform.name;
+
+				assert( _uniforms.find( key ) == _uniforms.end() );
+
+				_uniforms.emplace( key, std::make_unique<StructUniformEntry>( p_ubo, offset, size ) );
+				offset += size;
+			}
+
+			assert( offset > 0 );
+
+			p_ubo->setData( GLsizei( offset ), GL_STATIC_DRAW );
+
+			for ( const Uniform & descUniform : p_uniforms )
+			{
+				switch ( descUniform.type )
+				{
+				case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram ); break;
+				case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram ); break;
+				case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram ); break;
+				case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram ); break;
+				case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram ); break;
+				case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram ); break;
+				case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram ); break;
+				case E_TYPE::COLOR4: _setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram ); break;
+				default: throw std::runtime_error( "unknown type" );
+				}
+			}
+		}
+
 		template<typename T>
-		inline void _setUniformDefaultValue( const Program & p_descProgram, const Uniform & p_descUniform )
+		void _setUniformDefaultValue( const Uniform & p_descUniform, const Program * const p_descProgram = nullptr )
 		{
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
 			setUniform(
-				std::get<StructUniformValue<T>>( p_descUniform.value ).value, p_descUniform.name, p_descProgram.name
+				std::get<StructUniformValue<T>>( p_descUniform.value ).value,
+				p_descUniform.name,
+				p_descProgram ? p_descProgram->name : ""
 			);
 		}
 	};
