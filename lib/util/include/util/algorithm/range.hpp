@@ -18,7 +18,8 @@ namespace VTX::Util::Algorithm::Range
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
 
-		for ( auto itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd();
+			  ++itRange )
 		{
 			res.addRange( *itRange );
 		}
@@ -28,7 +29,8 @@ namespace VTX::Util::Algorithm::Range
 	template<std::integral T>
 	void mergeInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
-		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd();
+			  ++itRange )
 		{
 			p_obj.addRange( *itRange );
 		}
@@ -39,7 +41,8 @@ namespace VTX::Util::Algorithm::Range
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
 
-		for ( auto itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd();
+			  ++itRange )
 		{
 			res.removeRange( *itRange );
 		}
@@ -49,7 +52,8 @@ namespace VTX::Util::Algorithm::Range
 	template<std::integral T>
 	void substractInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
-		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd();
+			  ++itRange )
 		{
 			p_obj.removeRange( *itRange );
 		}
@@ -60,8 +64,8 @@ namespace VTX::Util::Algorithm::Range
 	{
 		std::list<Math::Range<T>> newRange = std::list<Math::Range<T>>();
 
-		typename std::list<Math::Range<T>>::const_iterator it	   = p_lhs.rangeBegin();
-		typename std::list<Math::Range<T>>::const_iterator itOther = p_rhs.rangeBegin();
+		typename RangeList<T>::RangeConstIterator it	  = p_lhs.rangeBegin();
+		typename RangeList<T>::RangeConstIterator itOther = p_rhs.rangeBegin();
 
 		while ( it != p_lhs.rangeEnd() && itOther != p_rhs.rangeEnd() )
 		{

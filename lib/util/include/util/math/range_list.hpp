@@ -14,6 +14,9 @@ namespace VTX::Util::Math
 	class RangeList
 	{
 	  public:
+		using RangeIterator		 = typename std::list<Range<T>>::iterator;
+		using RangeConstIterator = typename std::list<Range<T>>::const_iterator;
+
 		struct Iterator
 		{
 			using ListIt = typename std::list<Range<T>>::const_iterator;
@@ -284,10 +287,10 @@ namespace VTX::Util::Math
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }
 
-		typename std::list<Range<T>>::iterator		 rangeBegin() { return _ranges.begin(); }
-		typename std::list<Range<T>>::iterator		 rangeEnd() { return _ranges.end(); }
-		typename std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
-		typename std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
+		RangeIterator	   rangeBegin() { return _ranges.begin(); }
+		RangeIterator	   rangeEnd() { return _ranges.end(); }
+		RangeConstIterator rangeBegin() const { return _ranges.begin(); }
+		RangeConstIterator rangeEnd() const { return _ranges.end(); }
 
 		bool contains( const T p_value ) const
 		{

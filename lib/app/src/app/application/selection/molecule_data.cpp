@@ -214,7 +214,9 @@ namespace VTX::App::Application::Selection
 	}
 	bool MoleculeData::areChainsFullySelected( const IndexRangeList & p_chains ) const
 	{
-		for ( auto itRange = p_chains.rangeBegin(); itRange != p_chains.rangeEnd(); itRange++ )
+		for ( Util::Math::RangeList<size_t>::RangeConstIterator itRange = p_chains.rangeBegin();
+			  itRange != p_chains.rangeEnd();
+			  itRange++ )
 		{
 			if ( !areResiduesFullySelected( *itRange ) )
 				return false;
@@ -291,7 +293,9 @@ namespace VTX::App::Application::Selection
 	void MoleculeData::unselectResidues( const IndexRange & p_residues ) { _unselectResidues( p_residues ); }
 	void MoleculeData::unselectResidues( const IndexRangeList & p_residues )
 	{
-		for ( auto itRange = p_residues.rangeBegin(); itRange != p_residues.rangeEnd(); ++itRange )
+		for ( Util::Math::RangeList<size_t>::RangeConstIterator itRange = p_residues.rangeBegin();
+			  itRange != p_residues.rangeEnd();
+			  ++itRange )
 		{
 			_unselectResidues( *itRange );
 		}
@@ -364,7 +368,9 @@ namespace VTX::App::Application::Selection
 	}
 	bool MoleculeData::areResiduesFullySelected( const IndexRangeList & p_residues ) const
 	{
-		for ( auto itRange = p_residues.rangeBegin(); itRange != p_residues.rangeEnd(); itRange++ )
+		for ( Util::Math::RangeList<size_t>::RangeConstIterator itRange = p_residues.rangeBegin();
+			  itRange != p_residues.rangeEnd();
+			  itRange++ )
 		{
 			if ( !areResiduesFullySelected( *itRange ) )
 				return false;
@@ -434,7 +440,9 @@ namespace VTX::App::Application::Selection
 	void MoleculeData::unselectAtoms( const IndexRange & p_atoms ) { _unselectAtoms( p_atoms ); }
 	void MoleculeData::unselectAtoms( const IndexRangeList & p_atoms )
 	{
-		for ( auto itRange = p_atoms.rangeBegin(); itRange != p_atoms.rangeEnd(); ++itRange )
+		for ( Util::Math::RangeList<size_t>::RangeConstIterator itRange = p_atoms.rangeBegin();
+			  itRange != p_atoms.rangeEnd();
+			  ++itRange )
 		{
 			unselectAtoms( *itRange );
 		}
