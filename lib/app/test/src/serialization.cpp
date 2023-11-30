@@ -166,15 +166,8 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 	Test::CustomClass loadedCustom = Test::CustomClass();
 	CHECK( custom != loadedCustom );
 
-	try
-	{
-		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
-		deserialization.run();
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "{}", e.what() );
-	}
+	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
+	deserialization.run();
 
 	CHECK( custom == loadedCustom );
 }
@@ -198,30 +191,16 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath	  jsonPath_0_1_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	Test::CustomClass loadedCustom_0_1_0 = Test::CustomClass();
 
-	try
-	{
-		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
-		deserialization.run();
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "Deserialization from 0.1.0 fail : {}", e.what() );
-	}
+	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+	deserialization.run();
 
 	CHECK( custom == loadedCustom_0_1_0 );
 
 	const FilePath	  jsonPath_0_0_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
 	Test::CustomClass loadedCustom_0_0_0 = Test::CustomClass();
 
-	try
-	{
-		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-		deserialization.run();
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "Deserialization from 0.1.0 fail : {}", e.what() );
-	}
+	deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+	deserialization.run();
 
 	CHECK( loadedCustom_0_0_0.color == custom.color );
 	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
@@ -232,7 +211,7 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	try
 	{
-		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
 		deserialization.run();
 	}
 	catch ( const IOException & e )
