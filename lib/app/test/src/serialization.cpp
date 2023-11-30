@@ -166,8 +166,15 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 	Test::CustomClass loadedCustom = Test::CustomClass();
 	CHECK( custom != loadedCustom );
 
-	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
-	deserialization.run();
+	try
+	{
+		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
+		deserialization.run();
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "{}", e.what() );
+	}
 
 	CHECK( custom == loadedCustom );
 }
@@ -191,16 +198,30 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath	  jsonPath_0_1_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	Test::CustomClass loadedCustom_0_1_0 = Test::CustomClass();
 
-	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
-	deserialization.run();
+	try
+	{
+		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+		deserialization.run();
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "Deserialization from 0.1.0 fail : {}", e.what() );
+	}
 
 	CHECK( custom == loadedCustom_0_1_0 );
 
 	const FilePath	  jsonPath_0_0_0 = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
 	Test::CustomClass loadedCustom_0_0_0 = Test::CustomClass();
 
-	deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-	deserialization.run();
+	try
+	{
+		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		deserialization.run();
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "Deserialization from 0.1.0 fail : {}", e.what() );
+	}
 
 	CHECK( loadedCustom_0_0_0.color == custom.color );
 	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
@@ -211,15 +232,17 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	try
 	{
-		deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
 		deserialization.run();
 	}
 	catch ( const IOException & e )
 	{
+		VTX_INFO( "Deserialization from more recent version catched !" );
 		CHECK( true );
 	}
 	catch ( const std::exception & e )
 	{
+		VTX_ERROR( "More recent file check fail : {}", e.what() );
 		CHECK( false );
 	}
 }

@@ -9,6 +9,7 @@
 #include <map>
 #include <typeindex>
 #include <util/json/json.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::Core::Serialization
 {
