@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_CORE_SERIALIZATION_DESERIALIZATION_PROCESS__
 #define __VTX_APP_CORE_SERIALIZATION_DESERIALIZATION_PROCESS__
 
+#include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
 #include "app/vtx_app.hpp"
 #include <util/exceptions.hpp>
