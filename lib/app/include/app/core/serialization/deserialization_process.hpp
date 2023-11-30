@@ -48,8 +48,6 @@ namespace VTX::App::Core::Serialization
 			VTX_INFO( "Upgrade Done" );
 
 			SERIALIZER().deserialize( dataJSon, *_target );
-
-			VTX_INFO( "Deserialize Done" );
 		}
 
 	  private:

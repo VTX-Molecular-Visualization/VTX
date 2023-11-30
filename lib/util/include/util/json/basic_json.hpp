@@ -67,13 +67,13 @@ namespace VTX::Util::JSon
 		const Object &		getObject() const;
 		const Document &	getDocument() const;
 
-		Array &	 getArrayEditable() const;
-		Object & getObjectEditable() const;
+		Array &	 getArrayEditable();
+		Object & getObjectEditable();
 
 		operator const Array &() const;
-		operator Array &() const;
+		operator Array &();
 		operator const Object &() const;
-		operator Object &() const;
+		operator Object &();
 
 		template<typename T>
 		const T & get() const
