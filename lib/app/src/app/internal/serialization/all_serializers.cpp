@@ -3,6 +3,7 @@
 #include "app/core/serialization/version.hpp"
 #include "app/info.hpp"
 #include "app/vtx_app.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::App::Internal::Serialization
 {
@@ -97,8 +98,10 @@ namespace VTX::App::Internal::Serialization
 
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Serialization::Version & p_version )
 	{
+		VTX_INFO( "Start to deserialize version." );
 		p_version.major	   = SERIALIZER().deserializeField<int>( p_json, "MAJOR" );
 		p_version.minor	   = SERIALIZER().deserializeField<int>( p_json, "MINOR" );
 		p_version.revision = SERIALIZER().deserializeField<int>( p_json, "REVISION" );
+		VTX_INFO( "Finish to deserialize version." );
 	}
 } // namespace VTX::App::Internal::Serialization

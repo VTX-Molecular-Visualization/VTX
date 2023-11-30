@@ -21,15 +21,19 @@ namespace VTX::App::Core::Serialization
 		void run()
 		{
 			VTX_INFO( "start DeserializationProcess" );
-			VTX::Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
+			Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
 
 			if ( !fullDoc.json().contains( "VERSION" ) || !fullDoc.json().contains( "DATA" ) )
 				throw IOException( "Ill-formed save file" );
 
 			VTX_INFO( "Check format Done" );
 
-			Version fileVersion;
-			SERIALIZER().deserialize( fullDoc.json()[ "VERSION" ], fileVersion );
+			Version					   fileVersion;
+			const Util::JSon::Object & versionJson = fullDoc.json()[ "VERSION" ];
+			VTX_INFO( "Version json object got" );
+
+			SERIALIZER().deserialize( versionJson, fileVersion );
+			VTX_INFO( "Version deserialized" );
 
 			if ( fileVersion > Version::CURRENT )
 				throw IOException( "Can not read file, version is newer than VTX" );
