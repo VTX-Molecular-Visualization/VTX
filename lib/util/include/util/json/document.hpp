@@ -8,9 +8,6 @@
 
 namespace VTX::Util::JSon
 {
-	template<typename T>
-	concept BasicJSonConcept = std::convertible_to<T, BasicJSon>;
-
 	class Document
 	{
 	  public:
@@ -23,10 +20,10 @@ namespace VTX::Util::JSon
 		Document( const BasicJSon & p_init );
 		Document( const std::initializer_list<BasicJSon> & p_init );
 
-		template<typename T>
-		Document( const T & p_value ) : Document( BasicJSon( p_value ) )
-		{
-		}
+		// template<typename T>
+		// Document( const T & p_value ) : Document( BasicJSon( p_value ) )
+		//{
+		// }
 
 		~Document();
 

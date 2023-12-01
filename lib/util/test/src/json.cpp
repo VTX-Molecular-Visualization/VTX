@@ -11,7 +11,7 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::Util;
 
-	JSon::Document document = 10;
+	JSon::Document document = JSon::BasicJSon( 10 );
 	nlohmann::json json		= 10;
 	CHECK( document.getContentAsString() == json.dump() );
 
@@ -19,8 +19,8 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	json	 = { 10 };
 	CHECK( document.getContentAsString() == json.dump() );
 
-	document = { 10, 20, "Zouzou" };
-	json	 = { 10, 20, "Zouzou" };
+	document = { 10, true, "Zouzou" };
+	json	 = { 10, true, "Zouzou" };
 	CHECK( document.getContentAsString() == json.dump() );
 
 	document = { { "INT_VALUE", 10 }, { "FLOAT_VALUE", 15.2f }, { "STR_VALUE", "I'm a string" } };
@@ -66,4 +66,41 @@ TEST_CASE( "Util::JSon", "[unit]" )
 	REQUIRE( versionObj[ "REVISION" ][ 0 ].get<float>() == 1234.f );
 	REQUIRE( versionObj[ "REVISION" ][ 1 ].get<char>() == 'b' );
 	REQUIRE( versionObj[ "REVISION" ][ 2 ].get<std::string>() == "Gloubiboulga" );
+}
+
+TEST_CASE( "Util::JSon - Object Field", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::Util;
+
+	const JSon::Document document = { { "BOOL_TRUE", true },
+									  { "BOOL_FALSE", false },
+									  { "INT", 10 },
+									  { "CHAR", 'u' },
+									  { "SIZE_T", size_t( 10 ) },
+									  { "LONG", long( 10 ) },
+									  { "UINT", unsigned int( 10 ) },
+									  { "FLOAT", 10.f },
+									  { "DOUBLE", 10. },
+									  { "STRING", std::string( "str" ) },
+									  { "ARRAY", { 10, 20, 30 } },
+									  { "OBJECT", { { "FIELD_A", 10 }, { "FIELD_B", "str" } } } };
+
+	CHECK( document.json()[ "BOOL_TRUE" ].get<bool>() == true );
+	CHECK( document.json()[ "BOOL_TRUE" ].getBool() == true );
+	CHECK( document.json()[ "BOOL_FALSE" ].get<bool>() == false );
+	CHECK( document.json()[ "BOOL_FALSE" ].getBool() == false );
+	CHECK( document.json()[ "INT" ].get<int>() == 10 );
+	CHECK( document.json()[ "CHAR" ].get<char>() == 'u' );
+	CHECK( document.json()[ "SIZE_T" ].get<size_t>() == 10 );
+	CHECK( document.json()[ "LONG" ].get<long>() == 10 );
+	CHECK( document.json()[ "UINT" ].get<unsigned int>() == 10 );
+	CHECK( document.json()[ "FLOAT" ].get<float>() == 10.f );
+	CHECK( document.json()[ "DOUBLE" ].get<double>() == 10. );
+	CHECK( document.json()[ "STRING" ].get<std::string>() == "str" );
+	CHECK( document.json()[ "ARRAY" ][ 0 ].get<int>() == 10 );
+	CHECK( document.json()[ "ARRAY" ][ 1 ].get<int>() == 20 );
+	CHECK( document.json()[ "ARRAY" ][ 2 ].get<int>() == 30 );
+	CHECK( document.json()[ "OBJECT" ][ "FIELD_A" ].get<int>() == 10 );
+	CHECK( document.json()[ "OBJECT" ][ "FIELD_B" ].get<std::string>() == "str" );
 }

@@ -3,6 +3,7 @@
 
 #include "array.hpp"
 #include "basic_json.hpp"
+#include "concepts.hpp"
 #include "document.hpp"
 #include "object.hpp"
 

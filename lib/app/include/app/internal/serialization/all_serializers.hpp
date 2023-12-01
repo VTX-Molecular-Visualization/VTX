@@ -16,6 +16,7 @@
 namespace VTX::App::Internal::Serialization
 {
 	// Util data structs ////////////////////////////////////////////////////////////////////////////
+	// Enum
 	template<EnumConcept T>
 	std::string serialize( T p_enumValue )
 	{
@@ -27,28 +28,97 @@ namespace VTX::App::Internal::Serialization
 		p_enumValue = Util::Enum::enumCast<T>( p_json.getString() );
 	}
 
+	// Types
 	template<typename T, glm::qualifier Q>
-	Util::JSon::Object serialize( const glm::vec<2, T, Q> & );
+	Util::JSon::Object serialize( const glm::vec<2, T, Q> & p_vec )
+	{
+		return Util::JSon::Object( { { "X", p_vec.x }, { "Y", p_vec.y } } );
+	}
 	template<typename T, glm::qualifier Q>
-	Util::JSon::Object serialize( const glm::vec<3, T, Q> & );
+	Util::JSon::Object serialize( const glm::vec<3, T, Q> & p_vec )
+	{
+		return Util::JSon::Object( { { "X", p_vec.x }, { "Y", p_vec.y }, { "Z", p_vec.z } } );
+	}
 	template<typename T, glm::qualifier Q>
-	Util::JSon::Object serialize( const glm::vec<4, T, Q> & );
+	Util::JSon::Object serialize( const glm::vec<4, T, Q> & p_vec )
+	{
+		return Util::JSon::Object( { { "X", p_vec.x }, { "Y", p_vec.y }, { "Z", p_vec.z }, { "W", p_vec.w } } );
+	}
 	template<typename T, glm::qualifier Q>
-	Util::JSon::Object serialize( const glm::qua<T, Q> & );
-	template<typename T, glm::qualifier Q>
-	void deserialize( const Util::JSon::Object &, glm::vec<2, T, Q> & );
-	template<typename T, glm::qualifier Q>
-	void deserialize( const Util::JSon::Object &, glm::vec<3, T, Q> & );
-	template<typename T, glm::qualifier Q>
-	void deserialize( const Util::JSon::Object &, glm::vec<4, T, Q> & );
-	template<typename T, glm::qualifier Q>
-	void deserialize( const Util::JSon::Object &, glm::qua<T, Q> & );
+	Util::JSon::Object serialize( const glm::qua<T, Q> & p_quat )
+	{
+		return Util::JSon::Object( { { "X", p_quat.x }, { "Y", p_quat.y }, { "Z", p_quat.z }, { "W", p_quat.w } } );
+	}
+	template<int M, int N, typename T, glm::qualifier Q>
+	Util::JSon::Array serialize( const glm::mat<M, N, T, Q> & p_mat )
+	{
+		Util::JSon::Array res;
 
+		for ( int i = 0; i < M; i++ )
+		{
+			for ( int j = 0; j < N; j++ )
+			{
+				res.emplace_back( p_mat[ i ][ j ] );
+			}
+		}
+
+		return res;
+	}
+
+	template<typename T, glm::qualifier Q>
+	void deserialize( const Util::JSon::Object & p_json, glm::vec<2, T, Q> & p_vec )
+	{
+		p_vec.x = p_json[ "X" ].get<T>();
+		p_vec.y = p_json[ "Y" ].get<T>();
+	}
+	template<typename T, glm::qualifier Q>
+	void deserialize( const Util::JSon::Object & p_json, glm::vec<3, T, Q> & p_vec )
+	{
+		p_vec.x = p_json[ "X" ].get<T>();
+		p_vec.y = p_json[ "Y" ].get<T>();
+		p_vec.z = p_json[ "Z" ].get<T>();
+	}
+	template<typename T, glm::qualifier Q>
+	void deserialize( const Util::JSon::Object & p_json, glm::vec<4, T, Q> & p_vec )
+	{
+		p_vec.x = p_json[ "X" ].get<T>();
+		p_vec.y = p_json[ "Y" ].get<T>();
+		p_vec.z = p_json[ "Z" ].get<T>();
+		p_vec.w = p_json[ "W" ].get<T>();
+	}
+	template<typename T, glm::qualifier Q>
+	void deserialize( const Util::JSon::Object & p_json, glm::qua<T, Q> & p_quat )
+	{
+		p_quat.x = p_json[ "X" ].get<T>();
+		p_quat.y = p_json[ "Y" ].get<T>();
+		p_quat.z = p_json[ "Z" ].get<T>();
+		p_quat.w = p_json[ "W" ].get<T>();
+	}
+	template<int M, int N, typename T, glm::qualifier Q>
+	void deserialize( const Util::JSon::Array & p_json, glm::mat<M, N, T, Q> & p_mat )
+	{
+		for ( int i = 0; i < M; i++ )
+		{
+			for ( int j = 0; j < N; j++ )
+			{
+				T value			= p_json[ i * N + j ].get<T>();
+				p_mat[ i ][ j ] = value;
+			}
+		}
+	}
+
+	// Filesystem
+	std::string serialize( const FilePath & );
+	void		deserialize( const Util::JSon::BasicJSon & p_json, FilePath & p_filepath );
+
+	// Math - Color
 	Util::JSon::Object serialize( const Util::Color::Rgba & );
 	void			   deserialize( const Util::JSon::Object & p_json, Util::Color::Rgba & p_color );
+	// Math - Transform
 	Util::JSon::Object serialize( const Util::Math::Transform & );
 	void			   deserialize( const Util::JSon::Object & p_json, Util::Math::Transform & p_color );
 
+	// Math - Range
 	template<std::integral T>
 	Util::JSon::Object serialize( const Util::Math::Range<T> & p_range )
 	{
@@ -63,6 +133,7 @@ namespace VTX::App::Internal::Serialization
 		p_range = Util::Math::Range<T>( first, count );
 	}
 
+	// Math - RangeList
 	template<std::integral T>
 	Util::JSon::Array serialize( const Util::Math::RangeList<T> & p_rangeList )
 	{
@@ -90,8 +161,8 @@ namespace VTX::App::Internal::Serialization
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// App data structs
-	/////////////////////////////////////////////////////////////////////////////////////////////////
+	// App data structs /////////////////////////////////////////////////////////////////////////////
+	// Version
 	Util::JSon::Object serialize( const App::Core::Serialization::Version & );
 	void			   deserialize( const Util::JSon::Object & p_json, App::Core::Serialization::Version & p_version );
 	/////////////////////////////////////////////////////////////////////////////////////////////////

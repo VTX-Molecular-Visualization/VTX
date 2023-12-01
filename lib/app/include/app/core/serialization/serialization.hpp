@@ -13,11 +13,12 @@
 namespace VTX::App::Core::Serialization
 {
 	template<typename T>
-	concept SerializableByDefaultConcept = requires( T p_obj ) {
-											   {
-												   Internal::Serialization::serialize( p_obj )
-												   } -> std::convertible_to<Util::JSon::BasicJSon>;
-										   };
+	concept SerializableByDefaultConcept
+		= (!Util::JSon::BasicJSonConcept<T>) && requires( T p_obj ) {
+													{
+														Internal::Serialization::serialize( p_obj )
+														} -> std::convertible_to<Util::JSon::BasicJSon>;
+												};
 	template<typename T>
 	concept DeserializableByDefaultConcept = requires( const Util::JSon::BasicJSon & p_json, T & p_obj ) {
 												 Internal::Serialization::deserialize( p_json, p_obj );
@@ -56,7 +57,8 @@ namespace VTX::App::Core::Serialization
 		template<typename T>
 		Util::JSon::BasicJSon serialize( const T & p_obj ) const
 		{
-			assert( _mapSerializeFunctions.contains( typeid( T ) ) );
+			if ( !_mapSerializeFunctions.contains( typeid( T ) ) )
+				throw VTXException( "No serializer found for {}", typeid( T ).name() );
 
 			return std::any_cast<const SerializeFunc<T> &>( _mapSerializeFunctions.at( typeid( T ) ) )( p_obj );
 		}
@@ -74,7 +76,8 @@ namespace VTX::App::Core::Serialization
 		template<typename T>
 		void deserialize( const Util::JSon::BasicJSon & p_jsonObj, T & p_obj ) const
 		{
-			assert( _mapDeserializeFunctions.contains( typeid( T ) ) );
+			if ( !_mapDeserializeFunctions.contains( typeid( T ) ) )
+				throw VTXException( "No deserializer found for {}", typeid( T ).name() );
 
 			std::any_cast<const DeserializeFunc<T> &>( _mapDeserializeFunctions.at( typeid( T ) )
 			)( p_jsonObj.getObject(), p_obj );
@@ -90,9 +93,21 @@ namespace VTX::App::Core::Serialization
 			T res;
 
 			if ( p_jsonObj.contains( p_key ) )
-				deserialize( p_jsonObj[ p_key ], res );
+			{
+				try
+				{
+					deserialize( p_jsonObj[ p_key ], res );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_WARNING( "Issue during deserialization of {} ({}). Default value assigned.", p_key, e.what() );
+					res = p_defaultValue;
+				}
+			}
 			else
+			{
 				res = p_defaultValue;
+			}
 
 			return res;
 		}

@@ -2,6 +2,7 @@
 #define __VTX_UTIL_JSON_BASIC_JSON__
 
 #include "_fwd.hpp"
+#include <concepts>
 #include <memory>
 #include <string>
 #include <variant>
@@ -14,7 +15,6 @@ namespace VTX::Util::JSon
 	  private:
 		using VariantType = std::variant<
 			std::monostate,
-			bool,
 			size_t,
 			double,
 			std::string,
@@ -40,10 +40,14 @@ namespace VTX::Util::JSon
 		BasicJSon( std::initializer_list<BasicJSon> p_init );
 
 		BasicJSon( const bool p_value );
-		BasicJSon( const int p_value );
-		BasicJSon( const size_t p_value );
-		BasicJSon( const float p_value );
-		BasicJSon( const double p_value );
+		template<std::integral T>
+		BasicJSon( const T p_value ) : _type( EnumType::Integral ), _value( size_t( p_value ) )
+		{
+		}
+		template<std::floating_point T>
+		BasicJSon( const T p_value ) : _type( EnumType::FloatingPoint ), _value( double( p_value ) )
+		{
+		}
 		BasicJSon( const std::string & p_value );
 		BasicJSon( const char * p_value );
 		BasicJSon( const Array & p_value );

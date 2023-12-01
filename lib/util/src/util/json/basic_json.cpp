@@ -6,11 +6,7 @@
 namespace VTX::Util::JSon
 {
 	BasicJSon::BasicJSon() : _type( EnumType::Unknown ), _value() {}
-	BasicJSon::BasicJSon( const bool p_value ) : _type( EnumType::Bool ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const int p_value ) : _type( EnumType::Integral ), _value( size_t( p_value ) ) {}
-	BasicJSon::BasicJSon( const size_t p_value ) : _type( EnumType::Integral ), _value( p_value ) {}
-	BasicJSon::BasicJSon( const float p_value ) : _type( EnumType::FloatingPoint ), _value( double( p_value ) ) {}
-	BasicJSon::BasicJSon( const double p_value ) : _type( EnumType::FloatingPoint ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const bool p_value ) : _type( EnumType::Bool ), _value( size_t( p_value ) ) {}
 	BasicJSon::BasicJSon( const char * p_value ) : _type( EnumType::String ), _value( std::string( p_value ) ) {}
 	BasicJSon::BasicJSon( const std::string & p_value ) : _type( EnumType::String ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const Array & p_value ) :
@@ -65,7 +61,7 @@ namespace VTX::Util::JSon
 		return *this;
 	}
 
-	bool				BasicJSon::getBool() const { return std::get<bool>( _value ); }
+	bool				BasicJSon::getBool() const { return std::get<size_t>( _value ); }
 	size_t				BasicJSon::getIntegral() const { return std::get<size_t>( _value ); }
 	double				BasicJSon::getFloatingPoint() const { return std::get<double>( _value ); }
 	const std::string & BasicJSon::getString() const { return std::get<std::string>( _value ); }

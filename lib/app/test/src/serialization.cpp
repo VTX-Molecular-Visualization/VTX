@@ -14,6 +14,7 @@
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
+#include <util/math.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
@@ -29,15 +30,96 @@ VTX::Vec3f random( const VTX::Vec3f p_min, const VTX::Vec3f p_max )
 	return { random( p_min.x, p_max.x ), random( p_min.y, p_max.y ), random( p_min.z, p_max.z ) };
 }
 
-TEST_CASE( "VTX_APP - Serialization", "[unit]" )
+TEST_CASE( "VTX_APP - Serialization - Default types", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
 
 	Test::Util::App::initApp();
 
-	const Util::Color::Rgba color = { random( 0.f, 1.f ), random( 0.f, 1.f ), random( 0.f, 1.f ), random( 0.f, 1.f ) };
+	const FilePath filepath = Util::Filesystem::getExecutableDir();
+	CHECK( Test::Util::Serialization::checkSerialization( filepath ) );
 
+	const Vec2i vec2i = Vec2i( random( 0, 100 ), random( 0, 100 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec2i ) );
+	const Vec2f vec2f = Vec2f( random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec2f ) );
+
+	const Vec3i vec3i = Vec3i( random( 0, 100 ), random( 0, 100 ), random( 0, 100 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec3i ) );
+	const Vec3f vec3f = Vec3f( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec3f ) );
+	const Vec3d vec3d = Vec3d( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec3d ) );
+	const Vec3u vec3u = Vec3u( random( 0, 100 ), random( 0, 100 ), random( 0, 100 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec3u ) );
+	const Vec3b vec3b = Vec3b( random( 0, 1 ), random( 0, 1 ), random( 0, 1 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec3b ) );
+
+	const Vec4i vec4i = Vec4i( random( 0, 100 ), random( 0, 100 ), random( 0, 100 ), random( 0, 100 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec4i ) );
+	const Vec4f vec4f = Vec4f( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec4i ) );
+	const Vec4d vec4d = Vec4d( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec4d ) );
+	const Vec4u vec4u = Vec4u( random( 0, 100 ), random( 0, 100 ), random( 0, 100 ), random( 0, 100 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec4u ) );
+	const Vec4b vec4b = Vec4b( random( 0, 1 ), random( 0, 1 ), random( 0, 1 ), random( 0, 1 ) );
+	CHECK( Test::Util::Serialization::checkSerialization( vec4b ) );
+
+	const Mat3f mat3f = Mat3f(
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 )
+	);
+	CHECK( Test::Util::Serialization::checkSerialization( mat3f ) );
+	const Mat43f mat43f = Mat43f(
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 )
+	);
+	CHECK( Test::Util::Serialization::checkSerialization( mat43f ) );
+	const Mat4f mat4f = Mat4f(
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 ),
+		random( 0, 100 )
+	);
+	CHECK( Test::Util::Serialization::checkSerialization( mat4f ) );
+
+	const Quatf quatf = Quatf( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( quatf ) );
+	const Quatd quatd = Quatd( random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ), random( 0.f, 100.f ) );
+	CHECK( Test::Util::Serialization::checkSerialization( quatd ) );
+
+	const Util::Color::Rgba color = { random( 0.f, 1.f ), random( 0.f, 1.f ), random( 0.f, 1.f ), random( 0.f, 1.f ) };
 	CHECK( Test::Util::Serialization::checkSerialization( color ) );
 
 	const Util::Math::Range<size_t> range = Util::Math::Range<size_t>( random( 0, 100 ), random( 0, 100 ) );
@@ -59,11 +141,13 @@ TEST_CASE( "VTX_APP - Serialization", "[unit]" )
 		[]( const Util::Math::Transform & p_lhs, const Util::Math::Transform & p_rhs )
 		{
 			for ( int i = 0; i < 4; i++ )
+			{
 				for ( int j = 0; j < 4; j++ )
 				{
-					if ( ( p_lhs.get()[ i ][ j ] - p_rhs.get()[ i ][ j ] ) > EPSILON )
+					if ( std::abs( p_lhs.get()[ i ][ j ] - p_rhs.get()[ i ][ j ] ) > EPSILON )
 						return false;
 				}
+			}
 
 			return true;
 		}
