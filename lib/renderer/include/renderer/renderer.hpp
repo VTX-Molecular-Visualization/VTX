@@ -4,6 +4,9 @@
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
+#include "struct_proxy_mesh.hpp"
+#include "struct_proxy_molecule.hpp"
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Renderer
@@ -130,7 +133,9 @@ namespace VTX::Renderer
 				  { "Is perspective", E_TYPE::INT, StructUniformValue<int> { 0 } } }
 			);
 
-			// Debug pass.
+			build();
+
+			//  Debug pass.
 			/*
 			Pass * const debug = _renderGraph->addPass(
 				{ "Debug",
@@ -168,7 +173,12 @@ namespace VTX::Renderer
 		inline void build( const uint p_output = 0 )
 		{
 			_instructions.clear();
-			_renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output );
+			VTX_INFO(
+				"Renderer graph setup total time: {}",
+				Util::CHRONO_CPU(
+					[ & ]() { _renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output ); }
+				)
+			);
 		}
 
 		inline void render( const float p_time )
@@ -186,6 +196,40 @@ namespace VTX::Renderer
 		inline void setCameraClipInfos( const float p_near, const float p_far )
 		{
 			setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" );
+		}
+
+		/*
+		void addMesh( const StructProxyMesh & p_proxy )
+		{
+			// TODO: handle multiple meshes.
+			_bufferMeshes->vboPositions.set( *p_proxy.vertices );
+			_bufferMeshes->vboNormals.set( *p_proxy.normals );
+			_bufferMeshes->vboColors.set( *p_proxy.colors );
+			_bufferMeshes->vboVisibilities.set( *p_proxy.visibilities );
+			_bufferMeshes->vboSelections.set( *p_proxy.selections );
+			_bufferMeshes->vboIds.set( *p_proxy.ids );
+			_bufferMeshes->ebo.set( *p_proxy.indices );
+			_bufferMeshes->size = p_proxy.indices->size();
+		}
+		*/
+
+		void addMolecule( const StructProxyMolecule & p_proxy )
+		{
+			// TODO: handle multiple molecules.
+			/*
+			_bufferMolecules->vboPositions.set( *p_proxy.atomPositions );
+			_bufferMolecules->vboColors.set( *p_proxy.atomColors );
+			_bufferMolecules->vboRadii.set( *p_proxy.atomRadii );
+			_bufferMolecules->vboVisibilities.set( *p_proxy.atomVisibilities );
+			_bufferMolecules->vboSelections.set( *p_proxy.atomSelections );
+			_bufferMolecules->vboIds.set( *p_proxy.atomIds );
+			if ( p_proxy.bonds->size() > 0 )
+			{
+				_bufferMolecules->eboBonds.set( *p_proxy.bonds );
+			}
+			_bufferMolecules->sizeAtoms = p_proxy.atomPositions->size();
+			_bufferMolecules->sizeBonds = p_proxy.bonds->size();
+			*/
 		}
 
 		// Debug purposes only.

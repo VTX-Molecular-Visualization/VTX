@@ -77,6 +77,7 @@ namespace VTX::Renderer::Context
 		{
 			assert( p_instructions.empty() );
 
+			// Clear.
 			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 
 			// Create shared uniforms.
@@ -84,6 +85,7 @@ namespace VTX::Renderer::Context
 			{
 				_ubo = std::make_unique<GL::Buffer>();
 				_createUniforms( _ubo.get(), p_uniforms );
+				p_instructions.emplace_back( [ this ]() { _ubo->bind( GL_UNIFORM_BUFFER, 15 ); } );
 			}
 
 			for ( const Pass * const descPass : p_renderQueue )
@@ -178,7 +180,8 @@ namespace VTX::Renderer::Context
 				// Enqueue instructions
 				// TODO: optimize pointer access?
 				// GL::Framebuffer * const fbo = _fbos[ descPass ].get();
-
+				// Yes.
+				//
 				// Bind fbo.
 				if ( isLastPass == false )
 				{
@@ -343,6 +346,11 @@ namespace VTX::Renderer::Context
 				{
 					GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
 				}
+			}
+			// Unbind main ubo.
+			if ( p_uniforms.empty() == false )
+			{
+				p_instructions.emplace_back( [ this ]() { _ubo->unbind(); } );
 			}
 		}
 

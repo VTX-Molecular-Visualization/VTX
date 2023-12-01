@@ -2,6 +2,7 @@
 
 namespace VTX::Util
 {
+
 	long long Chrono::getTimestamp()
 	{
 		SystemClock::time_point now = SystemClock::now();

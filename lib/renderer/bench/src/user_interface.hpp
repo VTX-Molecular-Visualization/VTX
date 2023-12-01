@@ -7,7 +7,6 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imnodes/imnodes.h>
-#include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/renderer.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -210,6 +209,7 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
+		/*
 		void _drawDescPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 		{
 			if ( ImGui::Begin( "Render passes" ) )
@@ -408,31 +408,35 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
+		*/
 
-		void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
-		{
-			bool isTimersEnabled = p_renderer->isTimersEnabled();
-			if ( isTimersEnabled )
-			{
-				auto &				times	 = p_renderer->getTimes();
-				static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
-												 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
-				if ( ImGui::Begin( "Times (ms)" ) )
+		/*
+				void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 				{
-					const float max = *std::max_element( times.begin(), times.end() );
-					for ( size_t i = 0; i < times.size(); ++i )
+					bool isTimersEnabled = p_renderer->isTimersEnabled();
+					if ( isTimersEnabled )
 					{
-						ImGui::ProgressBar(
-							times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str()
-						);
-						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-						ImGui::Text( labels[ i ] );
+						auto &				times	 = p_renderer->getTimes();
+						static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
+														 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO"
+		   }; if ( ImGui::Begin( "Times (ms)" ) )
+						{
+							const float max = *std::max_element( times.begin(), times.end() );
+							for ( size_t i = 0; i < times.size(); ++i )
+							{
+								ImGui::ProgressBar(
+									times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str()
+								);
+								ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+								ImGui::Text( labels[ i ] );
+							}
+						}
+						ImGui::End();
 					}
 				}
-				ImGui::End();
-			}
-		}
+		*/
 
+		/*
 		void _drawMisc( Renderer::GL::OpenGLRenderer * const p_renderer )
 		{
 			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
@@ -477,6 +481,7 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
+*/
 
 		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
 		{

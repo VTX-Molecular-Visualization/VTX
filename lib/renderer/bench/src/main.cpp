@@ -3,11 +3,11 @@
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
+#include <core/gpu/molecule.hpp>
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <iostream>
 #include <numeric>
-// #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/renderer.hpp>
 #include <util/filesystem.hpp>
 #include <util/math.hpp>
@@ -28,7 +28,6 @@ int main( int, char ** )
 	using namespace VTX;
 	using namespace Util;
 	using namespace IO;
-	using namespace Renderer::GL;
 	using namespace Bench;
 
 	bool isRunning = true;
@@ -71,11 +70,13 @@ int main( int, char ** )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		// Model.
-		// Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
-		// 		StructProxyMolecule proxyMolecule
-		// 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
-		// 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
-		// 		renderer.addMolecule( proxyMolecule );
+		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
+		const Renderer::StructProxyMolecule proxyMolecule
+			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
+				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
+		renderer.addMolecule( proxyMolecule );
+
+		/*
 		if ( false )
 		{
 			try
@@ -153,6 +154,7 @@ int main( int, char ** )
 				VTX_ERROR( "Loading failed: {}", p_e.what() );
 			}
 		}
+		*/
 
 		// Main loop.
 		while ( isRunning )
