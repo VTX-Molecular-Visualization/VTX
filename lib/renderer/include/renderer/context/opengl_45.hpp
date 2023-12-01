@@ -103,9 +103,9 @@ namespace VTX::Renderer::Context
 
 						// Create vao.
 						_vaos.emplace( input.name, std::make_unique<GL::VertexArray>() );
-						_bos.emplace( input.name + "ebo", std::make_unique<GL::Buffer>() );
+						_bos.emplace( input.name + "Ebo", std::make_unique<GL::Buffer>() );
 						auto & vaoData = _vaos[ input.name ];
-						auto & eboData = _bos[ input.name + "ebo" ];
+						auto & eboData = _bos[ input.name + "Ebo" ];
 						vaoData->bindElementBuffer( *eboData );
 
 						GLuint chan = 0;
@@ -263,14 +263,14 @@ namespace VTX::Renderer::Context
 						// Element.
 						if ( draw.useIndices )
 						{
-							auto & ebo = _bos[ draw.name + "ebo" ];
+							auto & ebo = _bos[ draw.name + "Ebo" ];
 							p_instructions.emplace_back(
 								[ this, &program, &draw, &vao, &ebo ]()
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
 									program->use();
-									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( 0 ) );
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
 									vao->unbindElementBuffer();
 									vao->unbind();
 								}
@@ -284,7 +284,9 @@ namespace VTX::Renderer::Context
 								{
 									vao->bind();
 									program->use();
-									vao->drawElement( _mapPrimitives[ draw.primitive ], GLsizei( 0 ), GL_UNSIGNED_INT );
+									vao->drawElement(
+										_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+									);
 									vao->unbind();
 								}
 							);
@@ -392,6 +394,14 @@ namespace VTX::Renderer::Context
 			assert( src != nullptr && dest != nullptr && entry->size );
 
 			memcpy( src, dest, entry->size );
+		}
+
+		template<typename T>
+		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
 	  private:

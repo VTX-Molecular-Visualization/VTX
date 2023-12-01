@@ -55,8 +55,12 @@ namespace VTX::Renderer
 							{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
 							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
 							{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
-				  Programs { { "Sphere", "sphere", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::POINTS } },
-							 { "Cylinder", "cylinder", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::LINES, true } } } }
+				  Programs {
+					  { "Sphere", "sphere", Uniforms {}, Draw { "Molecules", E_PRIMITIVE::POINTS, &_sizeAtoms } },
+					  { "Cylinder",
+						"cylinder",
+						Uniforms {},
+						Draw { "Molecules", E_PRIMITIVE::LINES, &_sizeBonds, true } } } }
 			);
 
 			// Depth.
@@ -177,12 +181,18 @@ namespace VTX::Renderer
 		inline void build( const uint p_output = 0 )
 		{
 			_instructions.clear();
+
 			VTX_INFO(
 				"Renderer graph setup total time: {}",
 				Util::CHRONO_CPU(
 					[ & ]() { _renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output ); }
 				)
 			);
+
+			for ( const StructProxyMolecule & proxy : _molecules )
+			{
+				_setData( proxy );
+			}
 		}
 
 		inline void render( const float p_time )
@@ -202,38 +212,10 @@ namespace VTX::Renderer
 			setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" );
 		}
 
-		/*
-		void addMesh( const StructProxyMesh & p_proxy )
+		inline void addMolecule( const StructProxyMolecule & p_proxy )
 		{
-			// TODO: handle multiple meshes.
-			_bufferMeshes->vboPositions.set( *p_proxy.vertices );
-			_bufferMeshes->vboNormals.set( *p_proxy.normals );
-			_bufferMeshes->vboColors.set( *p_proxy.colors );
-			_bufferMeshes->vboVisibilities.set( *p_proxy.visibilities );
-			_bufferMeshes->vboSelections.set( *p_proxy.selections );
-			_bufferMeshes->vboIds.set( *p_proxy.ids );
-			_bufferMeshes->ebo.set( *p_proxy.indices );
-			_bufferMeshes->size = p_proxy.indices->size();
-		}
-		*/
-
-		void addMolecule( const StructProxyMolecule & p_proxy )
-		{
-			// TODO: handle multiple molecules.
-			/*
-			_bufferMolecules->vboPositions.set( *p_proxy.atomPositions );
-			_bufferMolecules->vboColors.set( *p_proxy.atomColors );
-			_bufferMolecules->vboRadii.set( *p_proxy.atomRadii );
-			_bufferMolecules->vboVisibilities.set( *p_proxy.atomVisibilities );
-			_bufferMolecules->vboSelections.set( *p_proxy.atomSelections );
-			_bufferMolecules->vboIds.set( *p_proxy.atomIds );
-			if ( p_proxy.bonds->size() > 0 )
-			{
-				_bufferMolecules->eboBonds.set( *p_proxy.bonds );
-			}
-			_bufferMolecules->sizeAtoms = p_proxy.atomPositions->size();
-			_bufferMolecules->sizeBonds = p_proxy.bonds->size();
-			*/
+			_molecules.push_back( p_proxy );
+			_setData( p_proxy );
 		}
 
 		// Debug purposes only.
@@ -247,6 +229,25 @@ namespace VTX::Renderer
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
+
+		std::vector<StructProxyMolecule> _molecules;
+
+		size_t _sizeAtoms = 0;
+		size_t _sizeBonds = 0;
+
+		void _setData( const StructProxyMolecule & p_proxy )
+		{
+			_renderGraph->setData( *p_proxy.atomPositions, "MoleculesPositions" );
+			_renderGraph->setData( *p_proxy.atomColors, "MoleculesColors" );
+			_renderGraph->setData( *p_proxy.atomRadii, "MoleculesRadii" );
+			_renderGraph->setData( *p_proxy.atomVisibilities, "MoleculesVisibilities" );
+			_renderGraph->setData( *p_proxy.atomSelections, "MoleculesSelections" );
+			_renderGraph->setData( *p_proxy.atomIds, "MoleculesIds" );
+			_renderGraph->setData( *p_proxy.bonds, "MoleculesEbo" );
+
+			_sizeAtoms = p_proxy.atomPositions->size();
+			_sizeBonds = p_proxy.bonds->size();
+		}
 	};
 } // namespace VTX::Renderer
 #endif
