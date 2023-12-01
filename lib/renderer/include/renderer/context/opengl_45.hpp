@@ -366,11 +366,11 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void setUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void setUniform( T & p_value, const std::string & p_key )
 		{
-			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
+			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
-			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
+			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_key ];
 			auto * const						  src	= entry->value;
 			auto * const						  dest	= &p_value;
 
@@ -381,11 +381,11 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			assert( _uniforms.find( p_program + p_uniform ) != _uniforms.end() );
+			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
-			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_program + p_uniform ];
+			std::unique_ptr<StructUniformEntry> & entry = _uniforms[ p_key ];
 			auto * const						  src	= &p_value;
 			auto * const						  dest	= entry->value;
 
@@ -515,11 +515,8 @@ namespace VTX::Renderer::Context
 		{
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
-			setUniform(
-				std::get<StructUniformValue<T>>( p_descUniform.value ).value,
-				p_descUniform.name,
-				p_descProgram ? p_descProgram->name : ""
-			);
+			std::string key = ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
+			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 	};
 

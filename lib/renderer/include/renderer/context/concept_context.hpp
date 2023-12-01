@@ -24,8 +24,7 @@ namespace VTX::Renderer::Context
 						  const Links &		  p_links,
 						  const Handle		  p_output,
 						  const Uniforms &	  p_uniforms,
-						  const std::string & p_uniform,
-						  const std::string & p_program,
+						  const std::string & p_uniformKey,
 						  UniformValue &	  p_value,
 						  Instructions &	  p_instructions
 					  ) {
@@ -36,10 +35,10 @@ namespace VTX::Renderer::Context
 								 p_context.resize( p_width, p_height )
 							 } -> std::same_as<void>;
 							 {
-								 p_context.setUniform( p_value, p_uniform, p_program )
+								 p_context.setUniform( p_value, p_uniformKey )
 							 } -> std::same_as<void>;
 							 {
-								 p_context.getUniform( p_value, p_uniform, p_program )
+								 p_context.getUniform( p_value, p_uniformKey )
 							 } -> std::same_as<void>;
 						 };
 

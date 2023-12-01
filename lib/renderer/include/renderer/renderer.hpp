@@ -157,15 +157,19 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
-			_renderGraph->setUniform<T>( p_value, p_uniform, p_program );
+			_renderGraph->setUniform<T>( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
+		inline void getUniform(
+			T &					  p_value,
+			const Uniform &		  p_descUniform,
+			const Program * const p_descProgram = nullptr
+		)
 		{
-			return _renderGraph->getUniform<T>( p_value, p_uniform, p_program );
+			return _renderGraph->getUniform<T>( p_value, p_descUniform, p_descProgram );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }

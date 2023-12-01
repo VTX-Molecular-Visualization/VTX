@@ -572,22 +572,22 @@ namespace VTX::Bench
 								if ( descValue.minMax.has_value() )
 								{
 									uint value;
-									p_newRenderer->getUniform<uint>( value, uniform, program );
+									p_newRenderer->getUniform<uint>( value, uniform, &program );
 									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderInt(
 											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
 										 ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										p_newRenderer->setUniform( value, program.name + uniform.name );
 									}
 								}
 								else
 								{
 									uint value;
-									p_newRenderer->getUniform<uint>( value, uniform, program );
+									p_newRenderer->getUniform<uint>( value, uniform, &program );
 									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										p_newRenderer->setUniform( value, program.name + uniform.name );
 									}
 								}
 								break;
@@ -599,20 +599,20 @@ namespace VTX::Bench
 								if ( descValue.minMax.has_value() )
 								{
 									float value;
-									p_newRenderer->getUniform<float>( value, uniform, program );
+									p_newRenderer->getUniform<float>( value, uniform, &program );
 									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										p_newRenderer->setUniform( value, program.name + uniform.name );
 									}
 								}
 								else
 								{
 									float value;
-									p_newRenderer->getUniform<float>( value, uniform, program );
+									p_newRenderer->getUniform<float>( value, uniform, &program );
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										p_newRenderer->setUniform( value, program.name + uniform.name );
 									}
 								}
 								break;
@@ -620,10 +620,10 @@ namespace VTX::Bench
 							case E_TYPE::COLOR4:
 							{
 								Util::Color::Rgba value;
-								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
+								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, &program );
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
-									p_newRenderer->setUniform( value, uniform.name, program.name );
+									p_newRenderer->setUniform( value, program.name + uniform.name );
 								}
 								break;
 							}

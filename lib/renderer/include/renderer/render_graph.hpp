@@ -153,26 +153,31 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
 			if ( _context != nullptr )
 			{
-				_context->setUniform( p_value, p_uniform, p_program );
+				_context->setUniform( p_value, p_key );
 			}
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
+		inline void getUniform(
+			T &					  p_value,
+			const Uniform &		  p_descUniform,
+			const Program * const p_descProgram = nullptr
+		)
 		{
 			if ( _context != nullptr )
 			{
-				_context->template getUniform<T>( p_value, p_uniform.name, p_program.name );
+				std::string key = ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
+				_context->template getUniform<T>( p_value, key );
 			}
 			else
 			{
-				assert( std::holds_alternative<StructUniformValue<T>>( p_uniform.value ) );
+				assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
-				p_value = std::get<StructUniformValue<T>>( p_uniform.value ).value;
+				p_value = std::get<StructUniformValue<T>>( p_descUniform.value ).value;
 			}
 		}
 
