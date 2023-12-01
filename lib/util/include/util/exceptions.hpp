@@ -34,11 +34,11 @@ namespace VTX
 	class VTXException : public Exception
 	{
 	  public:
-		// template<typename... Args>
-		// explicit VTXException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-		//	Exception( "VTX", p_fmt, std::forward<Args...>( p_args... ) )
-		//{
-		// }
+		template<typename... Args>
+		explicit VTXException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
+			Exception( "VTX", p_fmt, std::forward<Args...>( p_args... ) )
+		{
+		}
 		explicit VTXException( const std::string & p_err ) : Exception( "VTX", p_err ) {}
 	};
 
