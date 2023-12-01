@@ -1,12 +1,9 @@
-#include "app/internal/serialization/all_serializers.hpp"
+#include "app/internal/serialization/util_serializers.hpp"
 #include "app/core/serialization/serialization.hpp"
-#include "app/core/serialization/version.hpp"
-#include "app/info.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Internal::Serialization
 {
-	// Util data structs ////////////////////////////////////////////////////////////////////////////
 	// Filesystem
 	std::string serialize( const FilePath & p_filepath ) { return p_filepath.string(); }
 	void deserialize( const Util::JSon::BasicJSon & p_json, FilePath & p_filepath ) { p_filepath = p_json.getString(); }
@@ -42,19 +39,4 @@ namespace VTX::App::Internal::Serialization
 		const Vec3f scale = SERIALIZER().deserializeField( p_json, "SCALE", VEC3F_XYZ );
 		p_transform.setScale( scale );
 	}
-	/////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// App data structs /////////////////////////////////////////////////////////////////////////////
-	// Version
-	Util::JSon::Object serialize( const App::Core::Serialization::Version & p_version )
-	{
-		return { { "MAJOR", p_version.major }, { "MINOR", p_version.minor }, { "REVISION", p_version.revision } };
-	}
-	void deserialize( const Util::JSon::Object & p_json, App::Core::Serialization::Version & p_version )
-	{
-		p_version.major	   = SERIALIZER().deserializeField<int>( p_json, "MAJOR" );
-		p_version.minor	   = SERIALIZER().deserializeField<int>( p_json, "MINOR" );
-		p_version.revision = SERIALIZER().deserializeField<int>( p_json, "REVISION" );
-	}
-	/////////////////////////////////////////////////////////////////////////////////////////////////
 } // namespace VTX::App::Internal::Serialization

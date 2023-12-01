@@ -1,39 +1,40 @@
-#ifndef __VTX_APP_CORE_SERIALIZATION_IO_DESERIALIZATION_PROCESS__
-#define __VTX_APP_CORE_SERIALIZATION_IO_DESERIALIZATION_PROCESS__
+#ifndef __VTX_APP_CORE_IO_READER_SERIALIZED_OBJECT__
+#define __VTX_APP_CORE_IO_READER_SERIALIZED_OBJECT__
 
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
 #include "app/vtx_app.hpp"
 #include <util/exceptions.hpp>
+#include <util/filesystem.hpp>
 #include <util/json/io.hpp>
 #include <util/json/json.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Serialization::IO
+namespace VTX::App::Core::IO::Reader
 {
 	template<typename T>
-	class DeserializationProcess
+	class SerializedObject
 	{
 	  public:
-		DeserializationProcess( const FilePath & p_path, T * const p_target ) : _path( p_path ), _target( p_target ) {}
+		SerializedObject( const FilePath & p_path, T * const p_target ) : _path( p_path ), _target( p_target ) {}
 
-		void run()
+		void read()
 		{
 			Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
 
 			if ( !fullDoc.json().contains( "VERSION" ) || !fullDoc.json().contains( "DATA" ) )
 				throw IOException( "Ill-formed save file" );
 
-			Version fileVersion;
+			Serialization::Version fileVersion;
 			SERIALIZER().deserialize( fullDoc.json()[ "VERSION" ], fileVersion );
 
-			if ( fileVersion > Version::CURRENT )
+			if ( fileVersion > Serialization::Version::CURRENT )
 				throw IOException( "Can not read file, version is newer than VTX" );
 
 			VTX::Util::JSon::BasicJSon & dataJSon = fullDoc.json()[ "DATA" ];
 
-			if ( fileVersion < Version::CURRENT )
+			if ( fileVersion < Serialization::Version::CURRENT )
 				SERIALIZER().migrate( dataJSon, *_target, fileVersion );
 
 			SERIALIZER().deserialize( dataJSon, *_target );
@@ -43,6 +44,6 @@ namespace VTX::App::Core::Serialization::IO
 		FilePath _path;
 		T *		 _target;
 	};
-} // namespace VTX::App::Core::Serialization::IO
+} // namespace VTX::App::Core::IO::Reader
 
 #endif

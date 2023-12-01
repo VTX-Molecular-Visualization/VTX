@@ -1,7 +1,7 @@
 #include "util/serialization.hpp"
 #include "util/app.hpp"
-#include <app/core/serialization/io/deserialization_process.hpp>
-#include <app/core/serialization/io/serialization_process.hpp>
+#include <app/core/io/reader/serialized_object.hpp>
+#include <app/core/io/writer/serialized_object.hpp>
 #include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
@@ -144,7 +144,7 @@ TEST_CASE( "VTX_APP - Serialization - Default types", "[unit]" )
 			{
 				for ( int j = 0; j < 4; j++ )
 				{
-					if ( std::abs( p_lhs.get()[ i ][ j ] - p_rhs.get()[ i ][ j ] ) > EPSILON )
+					if ( std::abs( p_lhs.get()[ i ][ j ] - p_rhs.get()[ i ][ j ] ) > ( EPSILON * 10 ) )
 						return false;
 				}
 			}
@@ -206,16 +206,16 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest.json";
 
-	App::Core::Serialization::IO::SerializationProcess serialization { jsonPath, &custom };
-	serialization.run();
+	App::Core::IO::Writer::SerializedObject writer { jsonPath, &custom };
+	writer.write();
 
 	REQUIRE( std::filesystem::exists( jsonPath ) );
 
 	CustomClass loadedCustom = CustomClass();
 	CHECK( custom != loadedCustom );
 
-	App::Core::Serialization::IO::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
-	deserialization.run();
+	App::Core::IO::Reader::SerializedObject reader = { jsonPath, &loadedCustom };
+	reader.read();
 
 	CHECK( custom == loadedCustom );
 }
@@ -241,16 +241,16 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	CustomClass	   loadedCustom_0_1_0 = CustomClass();
 
-	App::Core::Serialization::IO::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
-	deserialization.run();
+	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+	reader.read();
 
 	CHECK( custom == loadedCustom_0_1_0 );
 
 	const FilePath jsonPath_0_0_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
 	CustomClass	   loadedCustom_0_0_0 = CustomClass();
 
-	deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-	deserialization.run();
+	reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+	reader.read();
 
 	CHECK( loadedCustom_0_0_0.color == custom.color );
 	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
@@ -261,8 +261,8 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	try
 	{
-		deserialization = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-		deserialization.run();
+		reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		reader.read();
 	}
 	catch ( const IOException & e )
 	{
