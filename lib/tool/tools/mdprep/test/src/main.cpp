@@ -6,8 +6,8 @@
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
+	// assumes share/top content is exploded into the exec dir for now
 	std::vector<std::string> args {
-		//"\"D:\\dev\\vtx\\lib\\tool\\tools\\mdprep\\test\\build\\Debug\\vtx_tool_mdprep_test.exe\"",
 		"pdb2gmx",
 		"-f",
 		"D:\\dev\\vtx\\lib\\tool\\tools\\mdprep\\test\\data\\1ubq.pdb",
@@ -15,13 +15,21 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 		//"D:\\dev\\vtx\\lib\\tool\\tools\\mdprep\\test\\data\\1ubq.gro",
 		"-ff",
 		"amber03",
+		"-water",
+		"tip3p",
 	};
-	std::vector<char *> cmd( args.size() );
-	for ( int i = 0; i < args.size(); i++ )
 	{
-		cmd[ i ] = args[ i ].data();
-	}
+		// std::vector<char *> cmd( args.size() );
+		char ** cmd
+			= reinterpret_cast<char **>( std::malloc( sizeof( char * ) * args.size() ) ); // gromacs will free it ...
+		for ( int i = 0; i < args.size(); i++ )
+		{
+			args[ i ] += '\0';
+			cmd[ i ] = &args.at( i ).at( 0 );
+		}
 
-	vtx::tool::mdprep::poc_args poc_args { .i = static_cast<int>( args.size() ), .s = cmd.data() };
-	vtx::tool::mdprep::poc_execute_cmd( poc_args );
+		vtx::tool::mdprep::poc_args poc_args { .i = static_cast<int>( args.size() ), .s = cmd };
+		vtx::tool::mdprep::poc_execute_cmd( poc_args );
+	}
+	bool b = true;
 }
