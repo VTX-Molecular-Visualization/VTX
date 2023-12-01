@@ -7,6 +7,8 @@ namespace VTX::Util::JSon
 {
 	BasicJSon::BasicJSon() : _type( EnumType::Unknown ), _value() {}
 	BasicJSon::BasicJSon( const bool p_value ) : _type( EnumType::Bool ), _value( size_t( p_value ) ) {}
+	BasicJSon::BasicJSon( const size_t p_value ) : _type( EnumType::Integral ), _value( p_value ) {}
+	BasicJSon::BasicJSon( const double p_value ) : _type( EnumType::FloatingPoint ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const char * p_value ) : _type( EnumType::String ), _value( std::string( p_value ) ) {}
 	BasicJSon::BasicJSon( const std::string & p_value ) : _type( EnumType::String ), _value( p_value ) {}
 	BasicJSon::BasicJSon( const Array & p_value ) :

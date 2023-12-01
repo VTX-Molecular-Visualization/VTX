@@ -40,12 +40,14 @@ namespace VTX::Util::JSon
 		BasicJSon( std::initializer_list<BasicJSon> p_init );
 
 		BasicJSon( const bool p_value );
+		BasicJSon( const size_t p_value );
+		BasicJSon( const double p_value );
 		template<std::integral T>
-		BasicJSon( const T p_value ) : _type( EnumType::Integral ), _value( size_t( p_value ) )
+		BasicJSon( const T p_value ) : BasicJSon( size_t( p_value ) )
 		{
 		}
 		template<std::floating_point T>
-		BasicJSon( const T p_value ) : _type( EnumType::FloatingPoint ), _value( double( p_value ) )
+		BasicJSon( const T p_value ) : BasicJSon( double( p_value ) )
 		{
 		}
 		BasicJSon( const std::string & p_value );

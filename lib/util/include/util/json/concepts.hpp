@@ -2,6 +2,8 @@
 #define __VTX_UTIL_JSON_CONCEPTS__
 
 #include "_fwd.hpp"
+#include "basic_json.hpp"
+#include <concepts>
 
 namespace VTX::Util::JSon
 {
