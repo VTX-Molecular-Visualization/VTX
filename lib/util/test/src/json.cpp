@@ -79,7 +79,7 @@ TEST_CASE( "Util::JSon - Object Field", "[unit]" )
 									  { "CHAR", 'u' },
 									  { "SIZE_T", size_t( 10 ) },
 									  { "LONG", long( 10 ) },
-									  { "UINT", unsigned int( 10 ) },
+									  { "UINT", static_cast<unsigned int>( 10 ) },
 									  { "FLOAT", 10.f },
 									  { "DOUBLE", 10. },
 									  { "STRING", std::string( "str" ) },
