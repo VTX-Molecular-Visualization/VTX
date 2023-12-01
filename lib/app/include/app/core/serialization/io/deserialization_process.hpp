@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_SERIALIZATION_DESERIALIZATION_PROCESS__
-#define __VTX_APP_CORE_SERIALIZATION_DESERIALIZATION_PROCESS__
+#ifndef __VTX_APP_CORE_SERIALIZATION_IO_DESERIALIZATION_PROCESS__
+#define __VTX_APP_CORE_SERIALIZATION_IO_DESERIALIZATION_PROCESS__
 
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
@@ -10,7 +10,7 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Serialization
+namespace VTX::App::Core::Serialization::IO
 {
 	template<typename T>
 	class DeserializationProcess
@@ -43,6 +43,6 @@ namespace VTX::App::Core::Serialization
 		FilePath _path;
 		T *		 _target;
 	};
-} // namespace VTX::App::Core::Serialization
+} // namespace VTX::App::Core::Serialization::IO
 
 #endif

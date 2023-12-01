@@ -1,8 +1,8 @@
 #include "util/serialization.hpp"
 #include "util/app.hpp"
-#include <app/core/serialization/deserialization_process.hpp>
+#include <app/core/serialization/io/deserialization_process.hpp>
+#include <app/core/serialization/io/serialization_process.hpp>
 #include <app/core/serialization/serialization.hpp>
-#include <app/core/serialization/serialization_process.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
 #include <app/vtx_app.hpp>
@@ -206,7 +206,7 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest.json";
 
-	App::Core::Serialization::SerializationProcess serialization { jsonPath, &custom };
+	App::Core::Serialization::IO::SerializationProcess serialization { jsonPath, &custom };
 	serialization.run();
 
 	REQUIRE( std::filesystem::exists( jsonPath ) );
@@ -214,7 +214,7 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 	CustomClass loadedCustom = CustomClass();
 	CHECK( custom != loadedCustom );
 
-	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
+	App::Core::Serialization::IO::DeserializationProcess deserialization = { jsonPath, &loadedCustom };
 	deserialization.run();
 
 	CHECK( custom == loadedCustom );
@@ -241,7 +241,7 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	CustomClass	   loadedCustom_0_1_0 = CustomClass();
 
-	App::Core::Serialization::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+	App::Core::Serialization::IO::DeserializationProcess deserialization = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
 	deserialization.run();
 
 	CHECK( custom == loadedCustom_0_1_0 );

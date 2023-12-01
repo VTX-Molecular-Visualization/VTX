@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_SERIALIZATION_SERIALIZATION_PROCESS__
-#define __VTX_APP_CORE_SERIALIZATION_SERIALIZATION_PROCESS__
+#ifndef __VTX_APP_CORE_SERIALIZATION_IO_SERIALIZATION_PROCESS__
+#define __VTX_APP_CORE_SERIALIZATION_IO_SERIALIZATION_PROCESS__
 
 #include "app/core/serialization/version.hpp"
 #include "app/vtx_app.hpp"
@@ -7,7 +7,7 @@
 #include <util/json/json.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Serialization
+namespace VTX::App::Core::Serialization::IO
 {
 	template<typename T>
 	class SerializationProcess
@@ -33,6 +33,6 @@ namespace VTX::App::Core::Serialization
 		const T * _obj;
 	};
 
-} // namespace VTX::App::Core::Serialization
+} // namespace VTX::App::Core::Serialization::IO
 
 #endif
