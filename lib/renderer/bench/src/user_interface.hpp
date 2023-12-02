@@ -688,7 +688,7 @@ namespace VTX::Bench
 						}
 					}
 
-					// DescLink.
+					// Add link.
 					else
 					{
 						p_newRenderer->getRenderGraph().addLink(

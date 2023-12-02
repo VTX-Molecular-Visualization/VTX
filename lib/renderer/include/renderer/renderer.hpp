@@ -141,10 +141,7 @@ namespace VTX::Renderer
 				  { "Is perspective", E_TYPE::INT, StructUniformValue<int> { 0 } } }
 			);
 
-			build();
-
 			//  Debug pass.
-			/*
 			Pass * const debug = _renderGraph->addPass(
 				{ "Debug",
 				  Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
@@ -152,16 +149,19 @@ namespace VTX::Renderer
 				  Programs {
 					  { "Debug",
 						std::vector<FilePath> { "default.vert", "debug.frag" },
-						Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba>
-			{ COLOR_YELLOW } }, { "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {
-			COLOR_BLUE } }, { "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } }, {
-			"Factor", E_TYPE::FLOAT, StructUniformValue<float> { 5.f,
-			StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
+						Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
+								   { "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
+								   { "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },
+								   { "Factor",
+									 E_TYPE::FLOAT,
+									 StructUniformValue<float> {
+										 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
 			);
-			*/
 
 			//_renderGraph->addLink( geo, debug, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->setOutput( &debug->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+
+			build();
 		}
 
 		template<typename T>

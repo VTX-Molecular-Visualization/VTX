@@ -90,7 +90,6 @@ namespace VTX::Renderer::Context
 				[ & ]()
 				{
 					glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-					glEnable( GL_DEPTH_TEST );
 					glDepthFunc( GL_LESS );
 				}
 			);
@@ -105,7 +104,8 @@ namespace VTX::Renderer::Context
 
 			for ( const Pass * const descPassPtr : p_renderQueue )
 			{
-				bool isLastPass = descPassPtr == p_renderQueue.back();
+				bool isLastPass		   = descPassPtr == p_renderQueue.back();
+				bool hasDepthComponent = false;
 
 				// Create input data.
 				for ( const auto & [ channel, input ] : descPassPtr->inputs )
@@ -169,7 +169,11 @@ namespace VTX::Renderer::Context
 							_fbos[ descPassPtr ]->attachTexture(
 								*_textures[ &attachment ], _mapAttachments[ channel ]
 							);
-							if ( channel != E_CHANNEL_OUTPUT::DEPTH )
+							if ( channel == E_CHANNEL_OUTPUT::DEPTH )
+							{
+								hasDepthComponent = true;
+							}
+							else
 							{
 								drawBuffers.emplace_back( _mapAttachments[ channel ] );
 							}
@@ -209,7 +213,13 @@ namespace VTX::Renderer::Context
 				// TODO: optimize pointer access?
 				// GL::Framebuffer * const fbo = _fbos[ descPassPtr ].get();
 				// Yes.
-				//
+
+				// Enable options.
+				if ( hasDepthComponent )
+				{
+					p_instructions.emplace_back( []() { glEnable( GL_DEPTH_TEST ); } );
+				}
+
 				// Bind fbo.
 				if ( isLastPass == false )
 				{
@@ -375,6 +385,12 @@ namespace VTX::Renderer::Context
 				else
 				{
 					GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
+				}
+
+				// Disable options.
+				if ( hasDepthComponent )
+				{
+					p_instructions.emplace_back( []() { glDisable( GL_DEPTH_TEST ); } );
 				}
 			}
 			// Unbind main ubo.
