@@ -76,7 +76,6 @@ int main( int, char ** )
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
-		/*
 		if ( false )
 		{
 			try
@@ -136,15 +135,15 @@ int main( int, char ** )
 
 						// Setup representation ssbo and layout.
 						// Persisted data in CPU cache with smart ptr?
-						StructProxyMolecule proxyMolecule = { &molecule.transform,
-															  &molecule.trajectory.frames.front(),
-															  &colors,
-															  &radii,
-															  &visibilities,
-															  &selections,
-															  &ids,
-															  &bondsIndex };
-						// renderer.addMolecule( proxyMolecule );
+						Renderer::StructProxyMolecule proxyMolecule = { &molecule.transform,
+																		&molecule.trajectory.frames.front(),
+																		&colors,
+																		&radii,
+																		&visibilities,
+																		&selections,
+																		&ids,
+																		&bondsIndex };
+						renderer.addMolecule( proxyMolecule );
 					}
 				);
 				VTX_INFO( "Proxify time: {}", timeProxify );
@@ -154,7 +153,6 @@ int main( int, char ** )
 				VTX_ERROR( "Loading failed: {}", p_e.what() );
 			}
 		}
-		*/
 
 		// Main loop.
 		while ( isRunning )

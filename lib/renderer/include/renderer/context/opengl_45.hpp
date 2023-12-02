@@ -5,6 +5,7 @@
 #include "gl/buffer.hpp"
 #include "gl/framebuffer.hpp"
 #include "gl/program_manager.hpp"
+#include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
 #include <glad/glad.h>
@@ -26,8 +27,6 @@ namespace VTX::Renderer::Context
 		) :
 			BaseContext { p_width, p_height, p_shaderPath }
 		{
-			VTX_DEBUG( "{}", "Create context opengl 4.5" );
-
 			// Load opengl 4.5.
 			if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 			{
@@ -63,6 +62,15 @@ namespace VTX::Renderer::Context
 
 			glClearColor( 1.f, 0.f, 0.f, 1.f );
 			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+
+			_getOpenglInfos();
+
+			glEnable( GL_DEBUG_OUTPUT );
+			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			glDebugMessageCallback( _debugMessageCallback, nullptr );
+
+			VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
+			VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 		}
 
 		~OpenGL45() { VTX_DEBUG( "{}", "Delete context opengl 4.5" ); }
@@ -78,7 +86,14 @@ namespace VTX::Renderer::Context
 			assert( p_instructions.empty() );
 
 			// Clear.
-			p_instructions.emplace_back( [ & ]() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
+			p_instructions.emplace_back(
+				[ & ]()
+				{
+					glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+					glEnable( GL_DEPTH_TEST );
+					glDepthFunc( GL_LESS );
+				}
+			);
 
 			// Create shared uniforms.
 			if ( p_uniforms.empty() == false )
@@ -88,12 +103,12 @@ namespace VTX::Renderer::Context
 				p_instructions.emplace_back( [ this ]() { _ubo->bind( GL_UNIFORM_BUFFER, 15 ); } );
 			}
 
-			for ( const Pass * const descPass : p_renderQueue )
+			for ( const Pass * const descPassPtr : p_renderQueue )
 			{
-				bool isLastPass = descPass == p_renderQueue.back();
+				bool isLastPass = descPassPtr == p_renderQueue.back();
 
-				// Create data for each pass.
-				for ( const auto & [ channel, input ] : descPass->inputs )
+				// Create input data.
+				for ( const auto & [ channel, input ] : descPassPtr->inputs )
 				{
 					const IO & descIO = input.desc;
 
@@ -127,10 +142,11 @@ namespace VTX::Renderer::Context
 				// Create FBO.
 				if ( isLastPass == false )
 				{
-					_fbos.emplace( descPass, std::make_unique<GL::Framebuffer>() );
+					_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
 
 					// Create outputs.
-					for ( const auto & [ channel, output ] : descPass->outputs )
+					std::vector<GLenum> drawBuffers;
+					for ( const auto & [ channel, output ] : descPassPtr->outputs )
 					{
 						const IO & descIO = output.desc;
 						if ( std::holds_alternative<Attachment>( descIO ) )
@@ -150,18 +166,30 @@ namespace VTX::Renderer::Context
 							);
 
 							// Attach.
-							_fbos[ descPass ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
+							_fbos[ descPassPtr ]->attachTexture(
+								*_textures[ &attachment ], _mapAttachments[ channel ]
+							);
+							if ( channel != E_CHANNEL_OUTPUT::DEPTH )
+							{
+								drawBuffers.emplace_back( _mapAttachments[ channel ] );
+							}
 						}
 						else
 						{
 							throw std::runtime_error( "unknown descriptor type" );
 						}
 					}
+
+					// Set draw buffers.
+					if ( drawBuffers.empty() == false )
+					{
+						_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
+					}
 				}
 
 				// Create programs.
 				std::vector<uint> offsets;
-				for ( const Program & descProgram : descPass->programs )
+				for ( const Program & descProgram : descPassPtr->programs )
 				{
 					const GL::Program * const program = _programManager->createProgram(
 						descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
@@ -179,14 +207,14 @@ namespace VTX::Renderer::Context
 
 				// Enqueue instructions
 				// TODO: optimize pointer access?
-				// GL::Framebuffer * const fbo = _fbos[ descPass ].get();
+				// GL::Framebuffer * const fbo = _fbos[ descPassPtr ].get();
 				// Yes.
 				//
 				// Bind fbo.
 				if ( isLastPass == false )
 				{
-					p_instructions.emplace_back( [ this, descPass ]()
-												 { _fbos[ descPass ]->bind( GL_DRAW_FRAMEBUFFER ); } );
+					p_instructions.emplace_back( [ this, descPassPtr ]()
+												 { _fbos[ descPassPtr ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 				}
 				else
 				{
@@ -195,13 +223,13 @@ namespace VTX::Renderer::Context
 
 				// Find source for input.
 				auto findInputSrcInLinks
-					= [ &p_links, descPass ]( const E_CHANNEL_INPUT p_channel ) -> const Output * const
+					= [ &p_links, descPassPtr ]( const E_CHANNEL_INPUT p_channel ) -> const Output * const
 				{
 					const auto it = std::find_if(
 						p_links.begin(),
 						p_links.end(),
-						[ descPass, p_channel ]( const std::unique_ptr<Link> & p_e )
-						{ return p_e->dest == descPass && p_e->channelDest == p_channel; }
+						[ descPassPtr, p_channel ]( const std::unique_ptr<Link> & p_e )
+						{ return p_e->dest == descPassPtr && p_e->channelDest == p_channel; }
 					);
 
 					if ( it == p_links.end() )
@@ -213,14 +241,14 @@ namespace VTX::Renderer::Context
 				};
 
 				// Bind inputs.
-				for ( const auto & [ channel, input ] : descPass->inputs )
+				for ( const auto & [ channel, input ] : descPassPtr->inputs )
 				{
 					const Output * const src	= findInputSrcInLinks( channel );
 					const IO &			 descIO = src->desc;
 
 					if ( src == nullptr )
 					{
-						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPass->name );
+						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPassPtr->name );
 						// TODO: bind dummy texture?
 						continue;
 					}
@@ -239,7 +267,7 @@ namespace VTX::Renderer::Context
 				}
 
 				// Programs.
-				for ( const Program & descProgram : descPass->programs )
+				for ( const Program & descProgram : descPassPtr->programs )
 				{
 					if ( descProgram.uniforms.empty() == false )
 					{
@@ -315,7 +343,7 @@ namespace VTX::Renderer::Context
 				}
 
 				// Unbind inputs.
-				for ( const auto & [ channel, input ] : descPass->inputs )
+				for ( const auto & [ channel, input ] : descPassPtr->inputs )
 				{
 					const Output * const src = findInputSrcInLinks( channel );
 
@@ -342,7 +370,7 @@ namespace VTX::Renderer::Context
 				// Unbind fbo.
 				if ( isLastPass == false )
 				{
-					p_instructions.emplace_back( [ this, descPass ]() { _fbos[ descPass ]->unbind(); } );
+					p_instructions.emplace_back( [ this, descPassPtr ]() { _fbos[ descPassPtr ]->unbind(); } );
 				}
 				else
 				{
@@ -406,7 +434,6 @@ namespace VTX::Renderer::Context
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
-
 		std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments = {
 			{ E_CHANNEL_OUTPUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
 			{ E_CHANNEL_OUTPUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
@@ -481,6 +508,9 @@ namespace VTX::Renderer::Context
 		};
 		std::unordered_map<std::string, std::unique_ptr<StructUniformEntry>> _uniforms;
 
+		// Specs.
+		GL::StructOpenglInfos _openglInfos;
+
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
 			const Uniforms &	  p_uniforms,
@@ -528,8 +558,116 @@ namespace VTX::Renderer::Context
 			std::string key = ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
 			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
-	};
 
+		void _getOpenglInfos()
+		{
+			_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
+			_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );
+			_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
+			_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+
+			glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_openglInfos.glMaxTextureSize );
+			glGetIntegerv( GL_MAX_PATCH_VERTICES, &_openglInfos.glMaxPatchVertices );
+			glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &_openglInfos.glMaxTessGenLevel );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &_openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &_openglInfos.glMaxComputeWorkGroupCount[ 1 ] );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &_openglInfos.glMaxComputeWorkGroupCount[ 2 ] );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &_openglInfos.glMaxComputeWorkGroupSize[ 0 ] );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &_openglInfos.glMaxComputeWorkGroupSize[ 1 ] );
+			glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &_openglInfos.glMaxComputeWorkGroupSize[ 2 ] );
+			glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
+			glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
+			glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
+			glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
+
+			// Extensions.
+			GLint numExtensions = 0;
+			glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
+			for ( GLint i = 0; i < numExtensions; ++i )
+			{
+				const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
+				if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
+				{
+					_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
+				}
+			}
+
+// NVX_gpu_memory_info
+#if ( GL_NVX_gpu_memory_info == 1 )
+			if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+			{
+				glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
+				glGetIntegerv(
+					GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+				);
+				glGetIntegerv(
+					GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+					&_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX
+				);
+			}
+#endif
+		}
+
+		static void APIENTRY _debugMessageCallback(
+			const GLenum   p_source,
+			const GLenum   p_type,
+			const GLuint   p_id,
+			const GLenum   p_severity,
+			const GLsizei  p_length,
+			const GLchar * p_msg,
+			const void *   p_data
+		)
+		{
+			std::string source;
+			std::string type;
+			std::string severity;
+
+			switch ( p_source )
+			{
+			case GL_DEBUG_SOURCE_API: source = "API"; break;
+			case GL_DEBUG_SOURCE_WINDOW_SYSTEM: source = "WINDOW SYSTEM"; break;
+			case GL_DEBUG_SOURCE_SHADER_COMPILER: source = "SHADER COMPILER"; break;
+			case GL_DEBUG_SOURCE_THIRD_PARTY: source = "THIRD PARTY"; break;
+			case GL_DEBUG_SOURCE_APPLICATION: source = "APPLICATION"; break;
+			case GL_DEBUG_SOURCE_OTHER: source = "UNKNOWN"; break;
+			default: source = "UNKNOWN"; break;
+			}
+
+			switch ( p_type )
+			{
+			case GL_DEBUG_TYPE_ERROR: type = "ERROR"; break;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type = "DEPRECATED BEHAVIOR"; break;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type = "UDEFINED BEHAVIOR"; break;
+			case GL_DEBUG_TYPE_PORTABILITY: type = "PORTABILITY"; break;
+			case GL_DEBUG_TYPE_PERFORMANCE: type = "PERFORMANCE"; break;
+			case GL_DEBUG_TYPE_OTHER: type = "OTHER"; break;
+			case GL_DEBUG_TYPE_MARKER: type = "MARKER"; break;
+			default: type = "UNKNOWN"; break;
+			}
+
+			switch ( p_severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH: severity = "HIGH"; break;
+			case GL_DEBUG_SEVERITY_MEDIUM: severity = "MEDIUM"; break;
+			case GL_DEBUG_SEVERITY_LOW: severity = "LOW"; break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION: severity = "NOTIFICATION"; break;
+			default: severity = "UNKNOWN"; break;
+			}
+
+			std::string message( "[OPENGL] [" + severity + "] [" + type + "] " + source + ": " + p_msg );
+
+			switch ( p_severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:
+				std::cerr << message << std::endl;
+				throw GLException( message );
+				break;
+			case GL_DEBUG_SEVERITY_MEDIUM:
+			case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl; break;
+			default: break;
+			}
+		}
+	};
 } // namespace VTX::Renderer::Context
 
 #endif

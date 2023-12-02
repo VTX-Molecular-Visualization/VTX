@@ -39,18 +39,22 @@ namespace VTX::Renderer
 								   { "Selections", E_TYPE::UINT, 1 },
 								   { "Ids", E_TYPE::UINT, 1 } } };
 
+			/*
 			Data dataMeshes { { { "Positions", E_TYPE::FLOAT, 3 },
 								{ "Normales", E_TYPE::FLOAT, 3 },
 								{ "Colors", E_TYPE::FLOAT, 4 },
 								{ "Visibilities", E_TYPE::UINT, 1 },
 								{ "Selections", E_TYPE::UINT, 1 },
 								{ "Ids", E_TYPE::UINT, 1 } } };
+*/
 
 			// Geometric.
 			Pass * const geo = _renderGraph->addPass(
 				{ "Geometric",
-				  Inputs { { E_CHANNEL_INPUT::_0, { "Molecules", dataMolecules } },
-						   { E_CHANNEL_INPUT::_1, { "Meshes", dataMeshes } } },
+				  Inputs {
+					  { E_CHANNEL_INPUT::_0, { "Molecules", dataMolecules } },
+					  //{ E_CHANNEL_INPUT::_1, { "Meshes", dataMeshes } }
+				  },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
 							{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
 							{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
