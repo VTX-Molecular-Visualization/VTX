@@ -6,7 +6,7 @@ namespace VTX::App::Application::ECS::Building
 {
 	void EntityBuilder::build()
 	{
-		_entity = VTXApp::MAIN_REGISTRY().createEntity();
+		_entity = MAIN_REGISTRY().createEntity();
 
 		for ( const BuildPass & pass : _instruction )
 		{

@@ -21,9 +21,11 @@ namespace VTX::App::Component::Chemistry
 
 		size_t			getIndex() const { return _index; }
 		void			setIndex( const size_t p_index ) { _index = p_index; }
-		Residue *		getResiduePtr() const { return _residuePtr; }
-		const Residue * getConstResiduePtr() const { return _residuePtr; }
-		void			setResiduePtr( Residue * p_residue ) { _residuePtr = p_residue; }
+		Residue *		getResiduePtr() const;
+		const Residue * getConstResiduePtr() const;
+		void			setResiduePtr( Residue * const p_residue );
+		Chain *			getChainPtr() const;
+		const Chain *	getConstChainPtr() const;
 
 		const std::string &			 getName() const;
 		void						 setName( const std::string & p_name );
@@ -44,9 +46,8 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		// Store moleculePtr or use residuePtr->getChainPtr()->getMoleculePtr() ?
-		size_t	   _index		= INVALID_INDEX;
 		Molecule * _moleculePtr = nullptr;
-		Residue *  _residuePtr	= nullptr;
+		size_t	   _index		= INVALID_INDEX;
 	};
 
 } // namespace VTX::App::Component::Chemistry

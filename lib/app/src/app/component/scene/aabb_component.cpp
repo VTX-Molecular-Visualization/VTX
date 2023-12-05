@@ -18,12 +18,12 @@ namespace VTX::App::Component::Scene
 	{
 		if ( !_worldAabb.isValid() )
 		{
-			Core::ECS::BaseEntity entity = VTXApp::MAIN_REGISTRY().getEntity( *this );
+			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-			if ( VTXApp::MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
+			if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
 			{
 				Component::Scene::Transform & transformComponent
-					= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
+					= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
 				const Util::Math::Transform & transform = transformComponent.getTransform();
 
 				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();

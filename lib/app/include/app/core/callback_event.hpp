@@ -20,6 +20,7 @@ namespace VTX::App::Core
 			_mapCallbacks[ p_listener ] = p_callback;
 		}
 		void removeCallback( void * const p_listener ) { _mapCallbacks.erase( p_listener ); }
+		void clear() { _mapCallbacks.clear(); }
 
 	  protected:
 		const std::map<void *, callback_t> & getCallbacks() const { return _mapCallbacks; }

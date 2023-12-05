@@ -4,6 +4,7 @@
 #include "app/application/system.hpp"
 #include "application/_fwd.hpp"
 #include "core/ecs/_fwd.hpp"
+#include "core/serialization/_fwd.hpp"
 // #include <QElapsedTimer>
 #include <memory>
 #include <string>
@@ -23,11 +24,12 @@ namespace VTX
 		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
 		{
 		  private:
-			inline static const std::string REGISTRY_MANAGER_KEY  = "REGISTRY_MANAGER";
-			inline static const std::string SETTING_KEY			  = "SETTING";
-			inline static const std::string ENTITY_DIRECTOR_KEY	  = "ENTITY_DIRECTOR";
-			inline static const std::string SCENE_KEY			  = "SCENE";
-			inline static const std::string SELECTION_MANAGER_KEY = "SELECTION_MANAGER";
+			inline static const std::string REGISTRY_MANAGER_KEY   = "REGISTRY_MANAGER";
+			inline static const std::string SETTING_KEY			   = "SETTING";
+			inline static const std::string ENTITY_DIRECTOR_KEY	   = "ENTITY_DIRECTOR";
+			inline static const std::string SCENE_KEY			   = "SCENE";
+			inline static const std::string SELECTION_MANAGER_KEY  = "SELECTION_MANAGER";
+			inline static const std::string SERIALIZATION_TOOL_KEY = "SERIALIZATION_TOOL";
 
 		  public:
 			VTXApp( StructPrivacyToken );
@@ -56,10 +58,16 @@ namespace VTX
 			Application::Setting &		 getSettings();
 			const Application::Setting & getSettings() const;
 
+			Application::ECS::RegistryManager &		  getRegistryManager();
+			const Application::ECS::RegistryManager & getRegistryManager() const;
+
 			Application::ECS::EntityDirector & getEntityDirector();
 
 			Application::Selection::SelectionManager &		 getSelectionManager();
 			const Application::Selection::SelectionManager & getSelectionManager() const;
+
+			Core::Serialization::Serialization &	   getSerializationTool();
+			const Core::Serialization::Serialization & getSerializationTool() const;
 
 		  private:
 			std::shared_ptr<Application::System> _system = nullptr;
@@ -69,15 +77,18 @@ namespace VTX
 			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
 			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
 			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
+			std::unique_ptr<Core::Serialization::Serialization>		  _serializationToolManager;
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update();
 			void _stop();
-
-			// Convenient accessors
-		  public:
-			static Core::ECS::Registry & MAIN_REGISTRY();
 		};
+
+		// Convenient accessors
+		Application::Scene &				 SCENE();
+		Core::ECS::Registry &				 MAIN_REGISTRY();
+		Application::Selection::Selection &	 CURRENT_SELECTION();
+		Core::Serialization::Serialization & SERIALIZER();
 	} // namespace App
 } // namespace VTX
 

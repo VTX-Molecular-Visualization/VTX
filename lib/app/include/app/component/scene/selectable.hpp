@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 #define __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 
+#include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
@@ -19,7 +20,7 @@ namespace VTX::App::Component::Scene
 
 		bool isSelected() const;
 
-		template<typename T>
+		template<Application::Selection::SelectionDataConcept T>
 		void setSelectionDataGenerator()
 		{
 			const SelectionDataGenerator generator = [ this ]() { return std::move( std::make_unique<T>( *this ) ); };

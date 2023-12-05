@@ -14,7 +14,7 @@ namespace VTX::PythonBinding::Wrapper
 		static pybind11::arg_v convertToPybind11Extra( const Wrapper::VArg<V> & p_arg )
 		{
 			return p_arg.toPybind11Extra();
-		};
+		}
 	};
 
 }; // namespace VTX::PythonBinding::Wrapper

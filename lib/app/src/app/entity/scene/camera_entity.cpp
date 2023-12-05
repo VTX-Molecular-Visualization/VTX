@@ -5,9 +5,11 @@
 
 namespace VTX::App::Entity::Scene
 {
-	void CameraEntityBuilder::addComponent( const Core::ECS::BaseEntity & p_entity,
-											const Util::VariantMap &	  p_extraData )
+	void CameraEntityBuilder::addComponent(
+		const Core::ECS::BaseEntity & p_entity,
+		const Util::VariantMap &	  p_extraData
+	)
 	{
-		VTXApp::MAIN_REGISTRY().addComponent<Component::Render::Camera>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Render::Camera>( p_entity );
 	}
 } // namespace VTX::App::Entity::Scene

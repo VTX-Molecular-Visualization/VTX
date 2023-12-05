@@ -90,18 +90,16 @@ namespace VTX::PythonBinding::API::Selection
 		for ( Molecule * const molecule : molecules )
 		{
 			App::Component::Scene::Selectable & selectableComponent
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
+				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
 			App::Application::Selection::MoleculeData & moleculeSelectionData
-				= dynamic_cast<App::Application::Selection::MoleculeData &>( p_selection.select( selectableComponent )
+				= p_selection.select<App::Application::Selection::MoleculeData>(
+					selectableComponent, App::Application::Selection::AssignmentType::APPEND
 				);
 
-			if ( selectFullMolecule )
+			if ( !selectFullMolecule )
 			{
-				moleculeSelectionData.selectAll();
-			}
-			else
-			{
+				moleculeSelectionData.clear();
 				_selectChains( kwargs, moleculeSelectionData );
 			}
 		}
@@ -120,37 +118,36 @@ namespace VTX::PythonBinding::API::Selection
 
 			for ( const std::string & molName : moleculeNames )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molName );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
 			for ( const size_t molIndex : moleculeIndexes )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molIndex );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
 		}
 		else
 		{
-			auto view = App::VTXApp::get().getScene().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+			auto view = App::SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{
-				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( entity );
+				Component::Chemistry::Molecule & moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( entity );
 
 				molecules.emplace( &moleculeComponent );
 			}

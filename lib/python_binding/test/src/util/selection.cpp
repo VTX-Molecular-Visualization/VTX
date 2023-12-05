@@ -34,28 +34,13 @@ namespace VTX::App::Test::Util
 	Selection::SelectionObj Selection::createSelection( const SelectionData & p_sourceItem )
 	{
 		SelectionObj res = SelectionObj();
-
-		SelectionData & selectionData = res.select( p_sourceItem.getSelectionComponent() );
-		selectionData.add( p_sourceItem );
+		res.select( p_sourceItem.getSelectionComponent(), p_sourceItem );
 
 		return res;
 	}
 	Selection::SelectionObj Selection::createSelection( const std::unique_ptr<SelectionData> & p_itemPtr )
 	{
 		return createSelection( *p_itemPtr );
-	}
-
-	Selection::SelectionObj Selection::createSelection( const std::vector<SelectionData *> & p_items )
-	{
-		SelectionObj res = SelectionObj();
-
-		for ( const SelectionData * const sourceItemPtr : p_items )
-		{
-			SelectionData & selectionData = res.select( sourceItemPtr->getSelectionComponent() );
-			selectionData.add( *sourceItemPtr );
-		}
-
-		return res;
 	}
 
 	std::unique_ptr<Selection::MoleculeData> Selection::generateMoleculeData(
@@ -65,19 +50,19 @@ namespace VTX::App::Test::Util
 		const std::vector<size_t> & p_atoms
 	)
 	{
-		const App::Core::ECS::BaseEntity entity = VTXApp::get().getScene().getItem( p_molName );
+		const App::Core::ECS::BaseEntity entity = SCENE().getItem( p_molName );
 
 		const Component::Scene::Selectable & selectableComponent
-			= VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
+			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
 
 		std::unique_ptr<MoleculeData> res = std::make_unique<MoleculeData>( selectableComponent );
 
-		if ( p_chains.size() == 0 && p_residues.size() == 0 && p_atoms.size() == 0 )
+		const bool moleculeFullySelected = p_chains.size() == 0 && p_residues.size() == 0 && p_atoms.size() == 0;
+
+		if ( !moleculeFullySelected )
 		{
-			res->selectAll();
-		}
-		else
-		{
+			res->clear();
+
 			res->selectFullChains( VTX::Util::Math::RangeList<size_t>::fromList( p_chains ) );
 			res->selectFullResidues( VTX::Util::Math::RangeList<size_t>::fromList( p_residues ) );
 			res->selectAtoms( VTX::Util::Math::RangeList<size_t>::fromList( p_atoms ) );

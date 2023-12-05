@@ -1,10 +1,12 @@
 #ifndef __VTX_APP_TEST_UTIL_SELECTION__
 #define __VTX_APP_TEST_UTIL_SELECTION__
 
+#include <app/application/selection/concepts.hpp>
 #include <app/application/selection/molecule_data.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_data.hpp>
 #include <string>
+#include <util/concepts.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::Test::Util
@@ -24,7 +26,40 @@ namespace VTX::App::Test::Util
 
 		static SelectionObj createSelection( const SelectionData & p_item );
 		static SelectionObj createSelection( const std::unique_ptr<SelectionData> & p_itemPtr );
-		static SelectionObj createSelection( const std::vector<SelectionData *> & p_items );
+
+		template<Application::Selection::SelectionDataConcept T>
+		static SelectionObj createSelection( const std::initializer_list<T> & p_items )
+		{
+			SelectionObj res = SelectionObj();
+
+			for ( const T & sourceItemPtr : p_items )
+			{
+				res.select(
+					sourceItemPtr.getSelectionComponent(),
+					sourceItemPtr,
+					VTX::App::Application::Selection::AssignmentType::APPEND
+				);
+			}
+
+			return res;
+		}
+
+		template<ContainerOfType<const SelectionData *> C>
+		static SelectionObj createSelection( const C & p_items )
+		{
+			SelectionObj res = SelectionObj();
+
+			for ( const SelectionData * const sourceItemPtr : p_items )
+			{
+				res.select(
+					sourceItemPtr->getSelectionComponent(),
+					*sourceItemPtr,
+					VTX::App::Application::Selection::AssignmentType::APPEND
+				);
+			}
+
+			return res;
+		}
 
 		static std::unique_ptr<MoleculeData> generateMoleculeData(
 			const std::string &			p_molName,

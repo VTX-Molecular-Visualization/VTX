@@ -12,7 +12,7 @@ namespace VTX::App::Component::Scene
 	}
 	Selectable::~Selectable() {}
 
-	bool Selectable::isSelected() const { return VTXApp::get().getSelectionManager().getCurrent().isSelected( *this ); }
+	bool Selectable::isSelected() const { return CURRENT_SELECTION().isSelected( *this ); }
 
 	void Selectable::setSelectionDataGenerator( const SelectionDataGenerator & p_generator )
 	{

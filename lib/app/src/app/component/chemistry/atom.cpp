@@ -8,6 +8,22 @@ namespace VTX::App::Component::Chemistry
 {
 	Atom::Atom( Residue * const p_residue ) : Atom( p_residue->getMoleculePtr() ) {};
 
+	Residue * Atom::getResiduePtr() const
+	{
+		return _moleculePtr->getResidue( _moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] );
+	}
+	const Residue * Atom::getConstResiduePtr() const
+	{
+		return _moleculePtr->getResidue( _moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] );
+	}
+	void Atom::setResiduePtr( Residue * p_residue )
+	{
+		_moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] = p_residue->getIndex();
+	}
+
+	Chain *		  Atom::getChainPtr() const { return getResiduePtr()->getChainPtr(); }
+	const Chain * Atom::getConstChainPtr() const { return getConstResiduePtr()->getConstChainPtr(); }
+
 	const std::string & Atom::getName() const { return _moleculePtr->_moleculeStruct.atomNames[ _index ]; }
 	void Atom::setName( const std::string & p_name ) { _moleculePtr->_moleculeStruct.atomNames[ _index ] = p_name; }
 

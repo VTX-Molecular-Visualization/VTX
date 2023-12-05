@@ -5,62 +5,67 @@
 #include "util/math.hpp"
 #include "util/math/range.hpp"
 #include "util/math/range_list.hpp"
+#include <concepts>
 #include <list>
 
 namespace VTX::Util::Algorithm::Range
 {
-	template<typename T>
+	template<std::integral T>
 	using RangeList = Math::RangeList<T>;
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> merge( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
 
-		for ( auto itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd();
+			  ++itRange )
 		{
 			res.addRange( *itRange );
 		}
 
 		return res;
 	}
-	template<typename T>
+	template<std::integral T>
 	void mergeInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
-		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd();
+			  ++itRange )
 		{
 			p_obj.addRange( *itRange );
 		}
 	}
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> substract( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		RangeList<T> res = RangeList<T>( p_lhs );
 
-		for ( auto itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_rhs.rangeBegin(); itRange != p_rhs.rangeEnd();
+			  ++itRange )
 		{
 			res.removeRange( *itRange );
 		}
 
 		return res;
 	}
-	template<typename T>
+	template<std::integral T>
 	void substractInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
-		for ( auto itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd(); ++itRange )
+		for ( typename RangeList<T>::RangeConstIterator itRange = p_other.rangeBegin(); itRange != p_other.rangeEnd();
+			  ++itRange )
 		{
 			p_obj.removeRange( *itRange );
 		}
 	}
 
-	template<typename T>
+	template<std::integral T>
 	RangeList<T> intersect( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
 		std::list<Math::Range<T>> newRange = std::list<Math::Range<T>>();
 
-		typename std::list<Math::Range<T>>::const_iterator it	   = p_lhs.rangeBegin();
-		typename std::list<Math::Range<T>>::const_iterator itOther = p_rhs.rangeBegin();
+		typename RangeList<T>::RangeConstIterator it	  = p_lhs.rangeBegin();
+		typename RangeList<T>::RangeConstIterator itOther = p_rhs.rangeBegin();
 
 		while ( it != p_lhs.rangeEnd() && itOther != p_rhs.rangeEnd() )
 		{
@@ -98,19 +103,19 @@ namespace VTX::Util::Algorithm::Range
 		return RangeList<T>( newRange );
 	}
 
-	template<typename T>
+	template<std::integral T>
 	void intersectInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = intersect( p_obj, p_other );
 	}
 
-	template<typename T>
+	template<std::integral T>
 	Math::RangeList<T> exclusive( const Math::RangeList<T> & p_lhs, const Math::RangeList<T> & p_rhs )
 	{
 		return Details::Range::Exclusive( p_lhs, p_rhs ).getRes();
 	}
 
-	template<typename T>
+	template<std::integral T>
 	void exclusiveInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = Details::Range::Exclusive( p_obj, p_other ).getRes();

@@ -1,17 +1,22 @@
 #ifndef __VTX_UTIL_MATH_RANGE_VECTOR__
 #define __VTX_UTIL_MATH_RANGE_VECTOR__
 
+#include "util/concepts.hpp"
 #include "util/math/range.hpp"
+#include <concepts>
 #include <list>
 #include <type_traits>
 #include <vector>
 
 namespace VTX::Util::Math
 {
-	template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
+	template<std::integral T>
 	class RangeList
 	{
 	  public:
+		using RangeIterator		 = typename std::list<Range<T>>::iterator;
+		using RangeConstIterator = typename std::list<Range<T>>::const_iterator;
+
 		struct Iterator
 		{
 			using ListIt = typename std::list<Range<T>>::const_iterator;
@@ -282,10 +287,10 @@ namespace VTX::Util::Math
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }
 
-		typename std::list<Range<T>>::iterator		 rangeBegin() { return _ranges.begin(); }
-		typename std::list<Range<T>>::iterator		 rangeEnd() { return _ranges.end(); }
-		typename std::list<Range<T>>::const_iterator rangeBegin() const { return _ranges.begin(); }
-		typename std::list<Range<T>>::const_iterator rangeEnd() const { return _ranges.end(); }
+		RangeIterator	   rangeBegin() { return _ranges.begin(); }
+		RangeIterator	   rangeEnd() { return _ranges.end(); }
+		RangeConstIterator rangeBegin() const { return _ranges.begin(); }
+		RangeConstIterator rangeEnd() const { return _ranges.end(); }
 
 		bool contains( const T p_value ) const
 		{
@@ -297,65 +302,88 @@ namespace VTX::Util::Math
 
 			return false;
 		}
-		bool contains( const std::vector<T> & p_values ) const
+		bool contains( const Range<T> & p_range ) const
 		{
-			for ( const T & value : p_values )
+			for ( const Range<T> & range : _ranges )
 			{
-				bool res = false;
+				if ( range.contains( p_range.getFirst() ) )
+					return range.contains( p_range.getLast() );
+			}
 
-				for ( const Range<T> & range : _ranges )
+			return false;
+		}
+
+		template<ContainerOfType<Range<T>> C>
+		bool contains( const C & p_ranges ) const
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				if ( !contains( range ) )
 				{
-					if ( range.contains( value ) )
-					{
-						res = true;
-						break;
-					}
-				}
-
-				if ( !res )
 					return false;
+				}
 			}
 
 			return true;
 		}
-		bool contains( const Range<T> p_range ) const
+		template<ContainerOfType<T> C>
+		bool contains( const C & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		bool contains( const RangeList & p_ranges ) const { return contains( p_ranges._ranges ); }
+		bool contains( const std::initializer_list<Range<T>> & p_ranges ) const
+		{
+			for ( const Range<T> & range : p_ranges )
+			{
+				if ( !contains( range ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		bool contains( const std::initializer_list<T> & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		bool intersectWith( const Range<T> & p_other ) const
 		{
 			for ( const Range<T> & range : _ranges )
 			{
-				if ( range.contains( p_range ) )
+				if ( range.intersectWith( p_other ) )
 					return true;
 			}
 
 			return false;
 		}
-		bool contains( const std::vector<Range<T>> p_ranges ) const
-		{
-			for ( const Range<T> & rangeToFind : p_ranges )
-			{
-				bool res = false;
 
-				for ( const Range<T> & range : _ranges )
-				{
-					if ( range.contains( rangeToFind ) )
-					{
-						res = true;
-						break;
-					}
-				}
-
-				if ( !res )
-					return false;
-			}
-
-			return true;
-		}
-
+		void   clear() { _ranges.clear(); }
 		bool   isEmpty() const { return _ranges.size() == 0; }
 		size_t size() const
 		{
 			size_t res = 0;
 
-			for ( Range<T> range : _ranges )
+			for ( const Range<T> & range : _ranges )
 				res += range.getCount();
 
 			return res;

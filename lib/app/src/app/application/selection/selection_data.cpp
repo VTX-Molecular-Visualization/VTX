@@ -7,7 +7,7 @@
 namespace VTX::App::Application::Selection
 {
 	SelectionData::SelectionData( const Component::Scene::Selectable & p_selectionComponent ) :
-		_selectionComponent( &p_selectionComponent )
+		_selectionComponent( &p_selectionComponent ), _valid( true )
 	{
 	}
 
@@ -22,6 +22,10 @@ namespace VTX::App::Application::Selection
 	}
 
 	const Component::Scene::Selectable & SelectionData::getSelectionComponent() const { return *_selectionComponent; }
+
+	void SelectionData::selectAll() { _valid = true; }
+
+	void SelectionData::set( const SelectionData & p_other ) { _valid = p_other._valid; }
 
 	SelectionData & SelectionData::add( const SelectionData & p_other ) { return *this; }
 	SelectionData & SelectionData::remove( const SelectionData & p_other )
@@ -43,7 +47,7 @@ namespace VTX::App::Application::Selection
 	std::string SelectionData::toString() const
 	{
 		Component::Scene::SceneItemComponent & sceneItem
-			= VTXApp::get().MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
+			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
 
 		return sceneItem.getName();
 	}

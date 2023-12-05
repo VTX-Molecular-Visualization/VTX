@@ -22,7 +22,7 @@ namespace VTX::App::Test::Util
 			isInit = true;
 		}
 
-		VTXApp::get().getScene().reset();
+		SCENE().reset();
 	}
 
 	std::unique_ptr<PythonBinding::Interpretor> App::createInterpretor()
@@ -41,8 +41,6 @@ namespace VTX::App::Test::Util
 
 	void App::loadMolecule( const std::string & p_moleculePath )
 	{
-		Application::Scene & scene = VTXApp::get().getScene();
-
 		// Create MoleculeEntity
 		const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / p_moleculePath;
 		Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );

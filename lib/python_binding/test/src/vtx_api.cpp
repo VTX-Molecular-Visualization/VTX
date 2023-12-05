@@ -1,9 +1,7 @@
 #include "util/app.hpp"
-#include <app/application/scene.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <exception>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
@@ -20,8 +18,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[.][integration]" )
 
 	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
 	interpretor->init();
-
-	App::Application::Scene & scene = App::VTXApp::get().getScene();
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;

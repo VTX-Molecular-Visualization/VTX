@@ -6,34 +6,34 @@
 
 namespace VTX::App::Component::Scene
 {
-	void SceneItemComponent::addUpdateFunction( const std::string &								  p_key,
-												const Application::SceneUtility::UpdateCallback & p_callback )
+	void SceneItemComponent::addUpdateFunction(
+		const std::string &								  p_key,
+		const Application::SceneUtility::UpdateCallback & p_callback
+	)
 	{
-		App::Core::ECS::BaseEntity entity = VTXApp::MAIN_REGISTRY().getEntity( *this );
+		App::Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-		if ( !VTXApp::MAIN_REGISTRY().hasComponent<Component::Scene::Updatable>( entity ) )
+		if ( !MAIN_REGISTRY().hasComponent<Component::Scene::Updatable>( entity ) )
 		{
-			VTXApp::MAIN_REGISTRY().addComponent<Component::Scene::Updatable>( entity );
+			MAIN_REGISTRY().addComponent<Component::Scene::Updatable>( entity );
 		}
 
-		Component::Scene::Updatable & updatable
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Updatable>( entity );
+		Component::Scene::Updatable & updatable = MAIN_REGISTRY().getComponent<Component::Scene::Updatable>( entity );
 
 		updatable.addCallback( p_key, p_callback );
 	}
 	void SceneItemComponent::removeUpdateFunction( const std::string & p_key )
 	{
-		Core::ECS::BaseEntity entity = VTXApp::MAIN_REGISTRY().getEntity( *this );
+		Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-		assert( VTXApp::MAIN_REGISTRY().hasComponent<Component::Scene::Updatable>( entity ) );
+		assert( MAIN_REGISTRY().hasComponent<Component::Scene::Updatable>( entity ) );
 
-		Component::Scene::Updatable & updatable
-			= VTXApp::MAIN_REGISTRY().getComponent<Component::Scene::Updatable>( entity );
+		Component::Scene::Updatable & updatable = MAIN_REGISTRY().getComponent<Component::Scene::Updatable>( entity );
 		updatable.removeCallback( p_key );
 
 		if ( updatable.isEmpty() )
 		{
-			VTXApp::MAIN_REGISTRY().removeComponent<Component::Scene::Updatable>( entity );
+			MAIN_REGISTRY().removeComponent<Component::Scene::Updatable>( entity );
 		}
 	}
 

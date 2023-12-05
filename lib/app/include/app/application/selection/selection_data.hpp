@@ -20,8 +20,11 @@ namespace VTX::App::Application::Selection
 		const Component::Scene::Selectable & getSelectionComponent() const;
 		virtual std::string					 toString() const;
 
-		inline bool isValid() const { return _valid; }
+		inline virtual bool isValid() const { return _valid; }
 
+		virtual void selectAll();
+
+		virtual void			set( const SelectionData & p_other );
 		virtual SelectionData & add( const SelectionData & p_other );
 		virtual SelectionData & remove( const SelectionData & p_other );
 		virtual SelectionData & intersect( const SelectionData & p_other );
@@ -29,10 +32,10 @@ namespace VTX::App::Application::Selection
 
 	  protected:
 		virtual std::unique_ptr<SelectionData> _cloneImpl() const;
-		bool								   _valid = true;
 
 	  private:
 		const Component::Scene::Selectable * const _selectionComponent = nullptr;
+		bool									   _valid			   = true;
 	};
 } // namespace VTX::App::Application::Selection
 #endif

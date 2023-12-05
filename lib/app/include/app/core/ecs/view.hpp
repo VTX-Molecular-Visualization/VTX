@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_CORE_ECS_VIEW__
 #define __VTX_APP_CORE_ECS_VIEW__
 
+#include "app/core/ecs/concepts.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/entity/view.hpp>
 #include <limits>
@@ -11,15 +12,15 @@ namespace VTX::App::Core::ECS
 	template<typename It>
 	struct ViewIterator;
 
-	template<typename Type, typename... Other>
+	template<ECS_Component Type, ECS_Component... Other>
 	class View
 	{
 	  private:
-		template<typename T>
+		template<ECS_Component T>
 		using single_storage = const entt::sigh_storage_mixin<
 			entt::basic_storage<T, entt::registry::entity_type, std::allocator<T>, void>>;
 
-		template<typename... Types>
+		template<ECS_Component... Types>
 		using internal_view = entt::basic_view<entt::type_list<single_storage<Types>...>, entt::type_list<>, void>;
 
 		using view_type = internal_view<Type, Other...>;
@@ -39,7 +40,7 @@ namespace VTX::App::Core::ECS
 		}
 		size_t size_hint() const { return _view.size_hint(); }
 
-		template<typename T>
+		template<ECS_Component T>
 		const T & getComponent( const BaseEntity & p_entity ) const
 		{
 			// Template disambiguator necessary in this case because calling a template function
