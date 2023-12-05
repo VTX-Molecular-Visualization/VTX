@@ -6,7 +6,7 @@ project(vtx_tool_mdprep)
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
-find_package(vtx-gromacs CONFIG REQUIRED)
+find_package(vtx-gromacs REQUIRED COMPONENTS nonexistaent vtx-gromacs::muparser vtx-gromacs::gromacs)
 
 add_library(vtx_tool_mdprep)
 configure_target(vtx_tool_mdprep)
@@ -24,6 +24,6 @@ target_sources(vtx_tool_mdprep
 target_link_libraries(vtx_tool_mdprep PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_tool_mdprep PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_tool_mdprep PRIVATE vtx_app::vtx_app)
-target_link_libraries(vtx_tool_mdprep PRIVATE vtx-gromacs::vtx-gromacs)
+target_link_libraries(vtx_tool_mdprep PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs vtx-gromacs::gmx)
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)
