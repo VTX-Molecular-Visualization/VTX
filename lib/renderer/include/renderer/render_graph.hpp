@@ -175,10 +175,7 @@ namespace VTX::Renderer
 		template<typename T>
 		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				_context->setData( p_data, p_key );
-			}
+			_context->setData( p_data, p_key );
 		}
 
 	  private:

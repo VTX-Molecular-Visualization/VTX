@@ -16,8 +16,6 @@ namespace VTX::Renderer::Scheduler
 			RenderQueue &		 p_outRenderQueue
 		)
 		{
-			using namespace Context;
-
 			// Build adjacent list.
 			std::vector<Pass *>				 passes( p_passes.size() );
 			std::vector<std::vector<size_t>> adjacentList( p_passes.size(), std::vector<size_t>() );

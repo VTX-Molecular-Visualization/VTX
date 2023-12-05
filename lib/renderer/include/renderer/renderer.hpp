@@ -3,7 +3,7 @@
 
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"
-#include "scheduler/depth_first_search.hpp"
+#include "scheduler/custom_search.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include <util/chrono.hpp>
@@ -14,7 +14,7 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
+		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::CustomSearch>;
 		using CallbackReady		  = std::function<void()>;
 
 		Renderer(
@@ -220,7 +220,11 @@ namespace VTX::Renderer
 		inline void addMolecule( const StructProxyMolecule & p_proxy )
 		{
 			_molecules.push_back( p_proxy );
-			_setData( p_proxy );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_setData( p_proxy );
+			}
 		}
 
 		// Debug purposes only.
