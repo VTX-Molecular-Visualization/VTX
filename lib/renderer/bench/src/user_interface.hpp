@@ -499,6 +499,8 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
+				bool isBuilt = p_newRenderer->getRenderGraph().isBuilt();
+
 				// DescPass nodes.
 				uint										 id = 0;
 				std::map<const Input * const, uint>			 mapIdInput;
@@ -514,6 +516,8 @@ namespace VTX::Bench
 					ImNodes::BeginNodeTitleBar();
 					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
+
+					bool isInRenderQueue = p_newRenderer->getRenderGraph().isInRenderQueue( pass.get() );
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass->inputs )
@@ -561,6 +565,9 @@ namespace VTX::Bench
 						// Uniforms.
 						for ( const Uniform & uniform : program.uniforms )
 						{
+							std::string key		   = program.name + uniform.name;
+							bool		isEditable = isBuilt && isInRenderQueue;
+
 							ImGui::Text( uniform.name.c_str() );
 							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
@@ -569,25 +576,34 @@ namespace VTX::Bench
 							{
 								StructUniformValue<uint> descValue
 									= std::get<StructUniformValue<uint>>( uniform.value );
+
+								uint value;
+								if ( isEditable )
+								{
+									p_newRenderer->getUniform<uint>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
 								if ( descValue.minMax.has_value() )
 								{
-									uint value;
-									p_newRenderer->getUniform<uint>( value, uniform, &program );
 									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderInt(
 											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
 										 ) )
 									{
-										p_newRenderer->setUniform( value, program.name + uniform.name );
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
 									}
 								}
 								else
 								{
-									uint value;
-									p_newRenderer->getUniform<uint>( value, uniform, &program );
 									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
 									{
-										p_newRenderer->setUniform( value, program.name + uniform.name );
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
 									}
 								}
 								break;
@@ -596,34 +612,55 @@ namespace VTX::Bench
 							{
 								StructUniformValue<float> descValue
 									= std::get<StructUniformValue<float>>( uniform.value );
+
+								float value;
+								if ( isEditable )
+								{
+									p_newRenderer->getUniform<float>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
 								if ( descValue.minMax.has_value() )
 								{
-									float value;
-									p_newRenderer->getUniform<float>( value, uniform, &program );
 									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
-										p_newRenderer->setUniform( value, program.name + uniform.name );
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
 									}
 								}
 								else
 								{
-									float value;
-									p_newRenderer->getUniform<float>( value, uniform, &program );
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
-										p_newRenderer->setUniform( value, program.name + uniform.name );
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
 									}
 								}
 								break;
 							}
 							case E_TYPE::COLOR4:
 							{
+								StructUniformValue<Util::Color::Rgba> descValue
+									= std::get<StructUniformValue<Util::Color::Rgba>>( uniform.value );
+
 								Util::Color::Rgba value;
-								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, &program );
+								if ( isEditable )
+								{
+									p_newRenderer->getUniform<Util::Color::Rgba>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
-									p_newRenderer->setUniform( value, program.name + uniform.name );
+									if ( isEditable )
+										p_newRenderer->setUniform( value, key );
 								}
 								break;
 							}

@@ -45,29 +45,39 @@ int main( int, char ** )
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
-		camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); } );
-		camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
-											{ renderer.setMatrixProjection( p_matrix ); } );
-		camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
-									 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
 		// Input manager.
 		InputManager inputManager;
-		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
-		inputManager.setCallbackResize(
-			[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+
+		// Setup callbacks when ready.
+		renderer.setCallbackReady(
+			[ &isRunning, &ui, &renderer, &camera, &inputManager ]()
 			{
-				renderer.resize( p_width, p_height );
-				camera.resize( p_width, p_height );
+				camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
+											  { renderer.setMatrixView( p_matrix ); } );
+				camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
+													{ renderer.setMatrixProjection( p_matrix ); } );
+				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
+											 { renderer.setCameraClipInfos( p_near, p_far ); } );
+
+				inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
+				inputManager.setCallbackResize(
+					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+					{
+						renderer.resize( p_width, p_height );
+						camera.resize( p_width, p_height );
+					}
+				);
+				inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
+												   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
+				inputManager.setCallbackRotate(
+					[ &camera, &ui ]( const Vec2i & p_delta )
+					{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
+				);
+				inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
+											  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 			}
 		);
-		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
-										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
-										{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
-		);
-		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
-									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		// Model.
 		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );

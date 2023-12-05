@@ -15,6 +15,7 @@ namespace VTX::Renderer
 	{
 	  public:
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
+		using CallbackReady		  = std::function<void()>;
 
 		Renderer(
 			const size_t	 p_width,
@@ -161,7 +162,7 @@ namespace VTX::Renderer
 			//_renderGraph->addLink( geo, debug, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->setOutput( &debug->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 
-			build();
+			// build();
 		}
 
 		template<typename T>
@@ -171,13 +172,9 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void getUniform(
-			T &					  p_value,
-			const Uniform &		  p_descUniform,
-			const Program * const p_descProgram = nullptr
-		)
+		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			return _renderGraph->getUniform<T>( p_value, p_descUniform, p_descProgram );
+			_renderGraph->getUniform<T>( p_value, p_key );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
@@ -197,6 +194,8 @@ namespace VTX::Renderer
 			{
 				_setData( proxy );
 			}
+
+			_onReady();
 		}
 
 		inline void render( const float p_time )
@@ -206,6 +205,8 @@ namespace VTX::Renderer
 				instruction();
 			}
 		}
+
+		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
 
 		inline void setMatrixView( const Mat4f & p_view ) { setUniform( p_view, "Matrix view" ); }
 
@@ -233,6 +234,7 @@ namespace VTX::Renderer
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
+		CallbackReady						 _callbackReady;
 
 		std::vector<StructProxyMolecule> _molecules;
 
@@ -251,6 +253,14 @@ namespace VTX::Renderer
 
 			_sizeAtoms = p_proxy.atomPositions->size();
 			_sizeBonds = p_proxy.bonds->size();
+		}
+
+		inline void _onReady()
+		{
+			if ( _callbackReady )
+			{
+				_callbackReady();
+			}
 		}
 	};
 } // namespace VTX::Renderer

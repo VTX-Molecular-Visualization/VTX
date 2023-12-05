@@ -16,9 +16,17 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
+		inline Passes &		  getPasses() { return _passes; }
+		inline Links &		  getLinks() { return _links; }
 		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
 		inline const Output * getOutput() { return _output; }
 		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
+		inline bool			  isBuilt() { return _context != nullptr; }
+
+		inline bool isInRenderQueue( const Pass * const p_pass )
+		{
+			return std::find( _renderQueue.begin(), _renderQueue.end(), p_pass ) != _renderQueue.end();
+		}
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
@@ -155,30 +163,13 @@ namespace VTX::Renderer
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				_context->setUniform( p_value, p_key );
-			}
+			_context->setUniform( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void getUniform(
-			T &					  p_value,
-			const Uniform &		  p_descUniform,
-			const Program * const p_descProgram = nullptr
-		)
+		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				std::string key = ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
-				_context->template getUniform<T>( p_value, key );
-			}
-			else
-			{
-				assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
-
-				p_value = std::get<StructUniformValue<T>>( p_descUniform.value ).value;
-			}
+			_context->template getUniform<T>( p_value, p_key );
 		}
 
 		template<typename T>
@@ -189,10 +180,6 @@ namespace VTX::Renderer
 				_context->setData( p_data, p_key );
 			}
 		}
-
-		// Debug purposes only.
-		inline Passes & getPasses() { return _passes; }
-		inline Links &	getLinks() { return _links; }
 
 	  private:
 		S				   _scheduler;
