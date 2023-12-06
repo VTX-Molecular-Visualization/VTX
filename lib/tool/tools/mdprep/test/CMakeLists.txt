@@ -5,6 +5,7 @@ project(vtx_tool_mdprep_test)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_tool_mdprep CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
@@ -12,6 +13,7 @@ add_executable(vtx_tool_mdprep_test src/main.cpp)
 configure_target(vtx_tool_mdprep_test)
 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)

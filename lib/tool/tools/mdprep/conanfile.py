@@ -22,6 +22,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui/1.0")      
         self.requires("vtx-gromacs/2024.0")      
         self.requires("qt/6.6.0", transitive_headers=True)
+        self.requires("dylib/2.2.1")
 
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))

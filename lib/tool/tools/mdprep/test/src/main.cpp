@@ -1,4 +1,5 @@
 #include "tools/mdprep/mdprep.hpp"
+#include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <string>
@@ -8,6 +9,7 @@
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
 	VTX::Util::Logger::get().init();
+	VTX::App::VTXApp::get().start( {} );
 	// assumes share/top content is exploded into the exec dir for now
 	std::vector<std::string> args {
 		"pdb2gmx",
