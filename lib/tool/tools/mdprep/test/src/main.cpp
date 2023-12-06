@@ -2,10 +2,12 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <string>
+#include <util/logger.hpp>
 #include <vector>
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
+	VTX::Util::Logger::get().init();
 	// assumes share/top content is exploded into the exec dir for now
 	std::vector<std::string> args {
 		"pdb2gmx",
@@ -19,7 +21,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 		"tip3p",
 	};
 	{
-		// std::vector<char *> cmd( args.size() );
 		char ** cmd
 			= reinterpret_cast<char **>( std::malloc( sizeof( char * ) * args.size() ) ); // gromacs will free it ...
 		for ( int i = 0; i < args.size(); i++ )
