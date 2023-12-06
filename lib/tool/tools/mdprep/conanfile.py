@@ -25,6 +25,12 @@ class VTXToolMdprepRecipe(ConanFile):
 
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        copy(
+            self
+            , "*"
+            , os.path.join(self.dependencies["vtx-gromacs"].recipe_folder, "share", "top")
+            , os.path.join(self.build_folder, "data", "tool", "tools", "mdprep", "gromacs", "top")
+        )
         
     def config_options(self):
         if self.settings.os == "Windows":
