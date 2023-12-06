@@ -96,7 +96,7 @@ namespace VTX::Renderer
 							{ "Mode",
 							  E_TYPE::INT,
 							  StructUniformValue<int> {
-								  int( E_SHADING::FLAT_COLOR ),
+								  int( E_SHADING::DIFFUSE ),
 								  StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
 																	int( E_SHADING::FLAT_COLOR ) } } },
 							{ "Specular factor",
@@ -164,8 +164,6 @@ namespace VTX::Renderer
 
 			//_renderGraph->addLink( geo, debug, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_0 );
 			//_renderGraph->setOutput( &debug->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
-
-			// build();
 		}
 
 		template<typename T>

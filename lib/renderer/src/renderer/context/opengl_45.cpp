@@ -44,7 +44,6 @@ namespace VTX::Renderer::Context
 
 		_getOpenglInfos();
 
-		glDepthFunc( GL_LESS );
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
@@ -114,7 +113,13 @@ namespace VTX::Renderer::Context
 			// Enable options.
 			if ( hasDepthComponent )
 			{
-				p_instructions.emplace_back( []() { glEnable( GL_DEPTH_TEST ); } );
+				p_instructions.emplace_back(
+					[]()
+					{
+						glEnable( GL_DEPTH_TEST );
+						glDepthFunc( GL_LESS );
+					}
+				);
 			}
 
 			// Bind fbo.
@@ -221,7 +226,9 @@ namespace VTX::Renderer::Context
 								vao->bind();
 								vao->bindElementBuffer( *ebo );
 								program->use();
-								vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
+								vao->drawElement(
+									_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+								);
 								vao->unbindElementBuffer();
 								vao->unbind();
 							}
@@ -235,9 +242,7 @@ namespace VTX::Renderer::Context
 							{
 								vao->bind();
 								program->use();
-								vao->drawElement(
-									_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
-								);
+								vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
 								vao->unbind();
 							}
 						);
@@ -347,7 +352,9 @@ namespace VTX::Renderer::Context
 					_bos.emplace( input.name + entry.name, std::make_unique<GL::Buffer>() );
 					auto & vbo = _bos[ input.name + entry.name ];
 					vaoData->enableAttribute( chan );
-					vaoData->setVertexBuffer( chan, *vbo, GLsizei( _mapTypeSizes[ entry.type ] ) );
+					vaoData->setVertexBuffer(
+						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.type ] )
+					);
 					vaoData->setAttributeFormat( chan, GLint( entry.components ), GLint( _mapTypes[ entry.type ] ) );
 					vaoData->setAttributeBinding( chan, chan );
 					chan++;
