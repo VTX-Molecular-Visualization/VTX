@@ -44,6 +44,7 @@ namespace VTX::Renderer::Context
 
 		_getOpenglInfos();
 
+		glDepthFunc( GL_LESS );
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
@@ -61,15 +62,6 @@ namespace VTX::Renderer::Context
 	)
 	{
 		assert( p_instructions.empty() );
-
-		// Clear.
-		p_instructions.emplace_back(
-			[ & ]()
-			{
-				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				glDepthFunc( GL_LESS );
-			}
-		);
 
 		// Create shared uniforms.
 		if ( p_uniforms.empty() == false )
@@ -134,6 +126,18 @@ namespace VTX::Renderer::Context
 			else
 			{
 				GL::Framebuffer::bindDefault( p_output, GL_DRAW_FRAMEBUFFER );
+			}
+
+			// Settings.
+			for ( const E_SETTING setting : descPassPtr->settings )
+			{
+				switch ( setting )
+				{
+				case E_SETTING::CLEAR:
+					p_instructions.emplace_back( []() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
+					break;
+				default: break;
+				}
 			}
 
 			// Find source for input.

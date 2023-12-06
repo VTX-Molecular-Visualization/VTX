@@ -111,9 +111,10 @@ namespace VTX::Renderer
 	{
 		std::string name;
 
-		Inputs	 inputs;
-		Outputs	 outputs;
-		Programs programs;
+		Inputs				   inputs;
+		Outputs				   outputs;
+		Programs			   programs;
+		std::vector<E_SETTING> settings;
 	};
 
 	struct Link

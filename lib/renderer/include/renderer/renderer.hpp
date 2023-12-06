@@ -65,7 +65,8 @@ namespace VTX::Renderer
 					  { "Cylinder",
 						"cylinder",
 						Uniforms {},
-						Draw { "Molecules", E_PRIMITIVE::LINES, &_sizeBonds, true } } } }
+						Draw { "Molecules", E_PRIMITIVE::LINES, &_sizeBonds, true } } },
+				  { E_SETTING::CLEAR } }
 			);
 
 			// Depth.
@@ -77,41 +78,42 @@ namespace VTX::Renderer
 			);
 
 			// Shading.
-			Pass * const shading = _renderGraph->addPass( {
-				"Shading",
-				Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
-						 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
-						 { E_CHANNEL_INPUT::_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
-				Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
-				Programs {
-					{ "Shading",
-					  std::vector<FilePath> { "default.vert", "shading.frag" },
-					  Uniforms {
-						  { "Background color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
-						  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-						  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-						  { "Mode",
-							E_TYPE::INT,
-							StructUniformValue<int> { int( E_SHADING::FLAT_COLOR ),
-													  StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
-																						int( E_SHADING::COUNT ) } } },
-						  { "Specular factor",
-							E_TYPE::FLOAT,
-							StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-						  { "Toon steps",
-							E_TYPE::UINT,
-							StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 15 } } },
-						  { "Fog near",
-							E_TYPE::FLOAT,
-							StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
-						  { "Fog far",
-							E_TYPE::FLOAT,
-							StructUniformValue<float> { 80.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
-						  { "Fog density",
-							E_TYPE::FLOAT,
-							StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-					  } } } // namespace VTX::Renderer
-			}
+			Pass * const shading = _renderGraph->addPass(
+				{ "Shading",
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
+						   { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
+						   { E_CHANNEL_INPUT::_2, { "Blur", Attachment { E_FORMAT::R16F } } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+				  Programs {
+					  { "Shading",
+						std::vector<FilePath> { "default.vert", "shading.frag" },
+						Uniforms {
+							{ "Background color",
+							  E_TYPE::COLOR4,
+							  StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
+							{ "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+							{ "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+							{ "Mode",
+							  E_TYPE::INT,
+							  StructUniformValue<int> { int( E_SHADING::FLAT_COLOR ),
+														StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
+																						  int( E_SHADING::COUNT ) } } },
+							{ "Specular factor",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+							{ "Toon steps",
+							  E_TYPE::UINT,
+							  StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 15 } } },
+							{ "Fog near",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+							{ "Fog far",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 80.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+							{ "Fog density",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+						} } } }
 
 			);
 

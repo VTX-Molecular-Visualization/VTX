@@ -62,6 +62,11 @@ namespace VTX::Renderer
 		READ_WRITE,
 	};
 
+	enum struct E_SETTING
+	{
+		CLEAR
+	};
+
 	enum struct E_WRAPPING
 	{
 		REPEAT,
