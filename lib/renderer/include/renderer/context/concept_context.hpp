@@ -33,7 +33,7 @@ namespace VTX::Renderer::Context
 								 p_context.build( p_renderQueue, p_links, p_output, p_uniforms, p_instructions )
 							 } -> std::same_as<void>;
 							 {
-								 p_context.resize( p_width, p_height )
+								 p_context.resize( p_renderQueue, p_width, p_height )
 							 } -> std::same_as<void>;
 							 {
 								 p_context.setUniform( p_uniformValue, p_uniformKey )

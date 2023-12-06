@@ -29,7 +29,7 @@ namespace VTX::Renderer::Context
 			Instructions &		p_instructions
 		);
 
-		void resize( const size_t p_width, const size_t p_height );
+		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		template<typename T>
 		inline void setUniform( T & p_value, const std::string & p_key )
@@ -84,10 +84,10 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::Buffer>										  _ubo;
 
 		// TODO: check if mapping is useful.
-		std::unordered_map<const Attachment *, std::unique_ptr<GL::Texture2D>> _textures;
-		std::unordered_map<const Program *, const GL::Program * const>		   _programs;
-		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>>	   _fbos;
-		std::unordered_map<const Program *, std::unique_ptr<GL::Buffer>>	   _ubos;
+		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
+		std::unordered_map<const Program *, const GL::Program * const>	   _programs;
+		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>> _fbos;
+		std::unordered_map<const Program *, std::unique_ptr<GL::Buffer>>   _ubos;
 
 		struct _StructUniformEntry
 		{
@@ -108,7 +108,11 @@ namespace VTX::Renderer::Context
 
 		void _createInputData( const Pass * const p_descPassPtr );
 
-		void _createOuputResources( const Pass * const p_descPassPtr, bool p_hasDepthComponent );
+		void _createOuputResources(
+			const Pass * const	  p_descPassPtr,
+			std::vector<GLenum> & p_drawBuffers,
+			bool &				  p_hasDepthComponent
+		);
 
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,

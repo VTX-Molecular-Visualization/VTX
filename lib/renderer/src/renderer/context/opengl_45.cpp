@@ -74,8 +74,9 @@ namespace VTX::Renderer::Context
 		{
 			/////////////////
 			// Init resources.
-			bool isLastPass		   = descPassPtr == p_renderQueue.back();
-			bool hasDepthComponent = false;
+			bool				isLastPass = descPassPtr == p_renderQueue.back();
+			std::vector<GLenum> drawBuffers;
+			bool				hasDepthComponent = false;
 
 			// Create input data.
 			_createInputData( descPassPtr );
@@ -86,7 +87,13 @@ namespace VTX::Renderer::Context
 				_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
 
 				// Create outputs.
-				_createOuputResources( descPassPtr, hasDepthComponent );
+				_createOuputResources( descPassPtr, drawBuffers, hasDepthComponent );
+
+				// Set draw buffers.
+				if ( drawBuffers.empty() == false )
+				{
+					_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
+				}
 			}
 
 			// Create programs.
@@ -116,7 +123,7 @@ namespace VTX::Renderer::Context
 				p_instructions.emplace_back(
 					[]()
 					{
-						glEnable( GL_DEPTH_TEST );
+						// glEnable( GL_DEPTH_TEST );
 						glDepthFunc( GL_LESS );
 					}
 				);
@@ -185,9 +192,8 @@ namespace VTX::Renderer::Context
 
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					const Attachment * const attachment = &std::get<Attachment>( descIO );
-					p_instructions.emplace_back( [ this, channel = channel, attachment ]()
-												 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
+					p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
+												 { _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); } );
 				}
 				else
 				{
@@ -283,10 +289,8 @@ namespace VTX::Renderer::Context
 				const IO & descIO = src->desc;
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					const Attachment * const attachment = &std::get<Attachment>( descIO );
-
-					p_instructions.emplace_back( [ this, channel = channel, attachment ]()
-												 { _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
+					p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
+												 { _textures[ &descIO ]->unbindFromUnit( GLuint( channel ) ); } );
 				}
 				else
 				{
@@ -318,14 +322,35 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::resize( const size_t p_width, const size_t p_height )
+	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
 	{
 		width  = p_width;
 		height = p_height;
+
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
-		for ( auto & [ desc, texture ] : _textures )
+
+		for ( auto & texture : _textures )
 		{
-			texture->resize( width, height );
+			texture.second->resize( width, height );
+		}
+
+		for ( const Pass * const descPassPtr : p_renderQueue )
+		{
+			for ( const auto & [ channel, output ] : descPassPtr->outputs )
+			{
+				const IO & descIO = output.desc;
+				if ( std::holds_alternative<Attachment>( descIO ) )
+				{
+					if ( _textures.find( &descIO ) != _textures.end() )
+					{
+						_fbos[ descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
+					}
+				}
+				else
+				{
+					throw std::runtime_error( "unknown descriptor type" );
+				}
+			}
 		}
 	}
 
@@ -363,9 +388,12 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::_createOuputResources( const Pass * const p_descPassPtr, bool p_hasDepthComponent )
+	void OpenGL45::_createOuputResources(
+		const Pass * const	  p_descPassPtr,
+		std::vector<GLenum> & p_drawBuffers,
+		bool &				  p_hasDepthComponent
+	)
 	{
-		std::vector<GLenum> drawBuffers;
 		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
 		{
 			const IO & descIO = output.desc;
@@ -373,7 +401,7 @@ namespace VTX::Renderer::Context
 			{
 				const Attachment & attachment = std::get<Attachment>( descIO );
 				_textures.emplace(
-					&attachment,
+					&descIO,
 					std::make_unique<GL::Texture2D>(
 						width,
 						height,
@@ -386,26 +414,20 @@ namespace VTX::Renderer::Context
 				);
 
 				// Attach.
-				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
+				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
 				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
 				{
 					p_hasDepthComponent = true;
 				}
 				else
 				{
-					drawBuffers.emplace_back( _mapAttachments[ channel ] );
+					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
 				}
 			}
 			else
 			{
 				throw std::runtime_error( "unknown descriptor type" );
 			}
-		}
-
-		// Set draw buffers.
-		if ( drawBuffers.empty() == false )
-		{
-			_fbos[ p_descPassPtr ]->setDrawBuffers( drawBuffers );
 		}
 	}
 
