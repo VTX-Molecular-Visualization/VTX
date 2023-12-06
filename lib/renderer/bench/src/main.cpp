@@ -49,9 +49,11 @@ int main( int, char ** )
 		// Input manager.
 		InputManager inputManager;
 
-		// Setup callbacks when ready.
+		// Setup callbacks.
+		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
+
 		renderer.setCallbackReady(
-			[ &isRunning, &ui, &renderer, &camera, &inputManager ]()
+			[ &ui, &renderer, &camera, &inputManager ]()
 			{
 				camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
 											  { renderer.setMatrixView( p_matrix ); } );
@@ -60,7 +62,6 @@ int main( int, char ** )
 				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
-				inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
 				inputManager.setCallbackResize(
 					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
 					{

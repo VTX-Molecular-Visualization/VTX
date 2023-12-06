@@ -105,10 +105,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( /*Renderer::GL::OpenGLRenderer* const p_renderer,*/
-				   Camera * const			  p_camera,
-				   Renderer::Renderer * const p_newRenderer
-		)
+		void draw( Camera * const p_camera, Renderer::Renderer * const p_renderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -140,13 +137,13 @@ namespace VTX::Bench
 			//_drawTimes( p_renderer );
 
 			// Misc.
-			//_drawMisc( p_renderer );
+			_drawMisc( p_renderer );
 
 			// Node editor.
-			_drawNodeEditor( p_newRenderer );
+			_drawNodeEditor( p_renderer );
 
 			// Render queue.
-			_drawRenderQueue( p_newRenderer );
+			_drawRenderQueue( p_renderer );
 
 			// ImGui::ShowDemoWindow();
 
@@ -210,207 +207,6 @@ namespace VTX::Bench
 		}
 
 		/*
-		void _drawDescPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
-		{
-			if ( ImGui::Begin( "Render passes" ) )
-			{
-				bool activeSSAO		= p_renderer->isActiveSSAO();
-				bool activeOutline	= p_renderer->isActiveOutline();
-				bool activeFXAA		= p_renderer->isActiveFXAA();
-				bool activePixelize = p_renderer->isActivePixelize();
-
-				float ssaoIntensity = p_renderer->getSSAOIntensity();
-				float blurSize		= p_renderer->getBlurSize();
-
-				Renderer::GL::ENUM_SHADING shadingMode	  = p_renderer->getShadingMode();
-				float					   specularFactor = p_renderer->getSpecularFactor();
-				int						   toonSteps	  = p_renderer->getToonSteps();
-				Util::Color::Rgba		   colorBG		  = p_renderer->getColorBackground();
-				Util::Color::Rgba		   colorLight	  = p_renderer->getColorLight();
-				Util::Color::Rgba		   colorFog		  = p_renderer->getColorFog();
-				float					   fogNear		  = p_renderer->getFogNear();
-				float					   fogFar		  = p_renderer->getFogFar();
-				float					   fogDensity	  = p_renderer->getFogDensity();
-
-				Util::Color::Rgba colorOutline	   = p_renderer->getColorOutline();
-				float			  outlineSensivity = p_renderer->getOutlineSensivity();
-				uint			  outlineThickness = p_renderer->getOutlineThickness();
-
-				Util::Color::Rgba colorSelection = p_renderer->getColorSelection();
-
-				int	 pixelSize			  = p_renderer->getPixelSize();
-				bool pixelarizeBackground = p_renderer->isPixelizeBackground();
-
-				static bool isOpenGeometric;
-				if ( isOpenGeometric = ImGui::CollapsingHeader( "Geometric" ) ) {}
-				static bool isOpenLinearizeDepth;
-				if ( isOpenLinearizeDepth = ImGui::CollapsingHeader( "Linearize depth" ) ) {}
-				static bool isOpenSSAO;
-				if ( isOpenSSAO = ImGui::CollapsingHeader( "SSAO + Blur", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					if ( ImGui::Checkbox( "Active##SSAO", &activeSSAO ) )
-					{
-						p_renderer->setActiveSSAO( activeSSAO );
-					}
-					if ( ImGui::SliderFloat(
-							 "Intensity",
-							 &ssaoIntensity,
-							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MIN,
-							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MAX
-						 ) )
-					{
-						p_renderer->setSSAOIntensity( ssaoIntensity );
-					}
-					if ( ImGui::SliderFloat(
-							 "Blur size",
-							 &blurSize,
-							 Renderer::GL::Pass::Blur::BLUR_SIZE_MIN,
-							 Renderer::GL::Pass::Blur::BLUR_SIZE_MAX
-						 ) )
-					{
-						p_renderer->setBlurSize( blurSize );
-					}
-				}
-				static bool isOpenShading;
-				if ( isOpenShading = ImGui::CollapsingHeader( "Shading", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					const char * shadings[] = { "DIFFUSE", "GLOSSY", "TOON", "FLAT" };
-					if ( ImGui::Combo( "Mode", (int *)( &shadingMode ), shadings, IM_ARRAYSIZE( shadings ) ) )
-					{
-						p_renderer->setShadingMode( shadingMode );
-					}
-					if ( shadingMode == Renderer::GL::ENUM_SHADING::GLOSSY )
-					{
-						if ( ImGui::SliderFloat(
-								 "Specular factor",
-								 &specularFactor,
-								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
-								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX
-							 ) )
-						{
-							p_renderer->setSpecularFactor( specularFactor );
-						}
-					}
-					else if ( shadingMode == Renderer::GL::ENUM_SHADING::TOON )
-					{
-						if ( ImGui::SliderInt(
-								 "Steps",
-								 &toonSteps,
-								 Renderer::GL::Pass::Shading::TOON_STEPS_MIN,
-								 Renderer::GL::Pass::Shading::TOON_STEPS_MAX
-							 ) )
-						{
-							p_renderer->setToonSteps( toonSteps );
-						}
-					}
-					if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
-					{
-						p_renderer->setColorBackground( colorBG );
-					}
-					if ( ImGui::ColorEdit4( "Light", (float *)( &colorLight ) ) )
-					{
-						p_renderer->setColorLight( colorLight );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog near",
-							 &fogNear,
-							 Renderer::GL::Pass::Shading::FOG_NEAR_MIN,
-							 Renderer::GL::Pass::Shading::FOG_NEAR_MAX
-						 ) )
-					{
-						p_renderer->setFogNear( fogNear );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog far",
-							 &fogFar,
-							 Renderer::GL::Pass::Shading::FOG_FAR_MIN,
-							 Renderer::GL::Pass::Shading::FOG_FAR_MAX
-						 ) )
-					{
-						p_renderer->setFogFar( fogFar );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog density",
-							 &fogDensity,
-							 Renderer::GL::Pass::Shading::FOG_DENSITY_MIN,
-							 Renderer::GL::Pass::Shading::FOG_DENSITY_MAX
-						 ) )
-					{
-						p_renderer->setFogDensity( fogDensity );
-					}
-					if ( ImGui::ColorEdit4( "Fog color", (float *)( &colorFog ) ) )
-					{
-						p_renderer->setColorFog( colorFog );
-					}
-				}
-				static bool isOpenOutline;
-				if ( isOpenOutline = ImGui::CollapsingHeader( "Outline", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					if ( ImGui::Checkbox( "Active##Outline", &activeOutline ) )
-					{
-						p_renderer->setActiveOutline( activeOutline );
-					}
-					if ( ImGui::SliderFloat(
-							 "Sensivity",
-							 &outlineSensivity,
-							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MIN,
-							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MAX
-						 ) )
-					{
-						p_renderer->setOutlineSensivity( outlineSensivity );
-					}
-					if ( ImGui::SliderInt(
-							 "Thickness",
-							 (int *)( &outlineThickness ),
-							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MIN,
-							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MAX
-						 ) )
-					{
-						p_renderer->setOutlineThickness( outlineThickness );
-					}
-					if ( ImGui::ColorEdit4( "Color##Outline", (float *)( &colorOutline ) ) )
-					{
-						p_renderer->setColorOutline( colorOutline );
-					}
-				}
-				static bool isOpenSelection;
-				if ( isOpenSelection = ImGui::CollapsingHeader( "Selection" ) )
-				{
-					if ( ImGui::ColorEdit4( "Color##Selection", (float *)( &colorSelection ) ) )
-					{
-						p_renderer->setColorSelection( colorSelection );
-					}
-				}
-				static bool isOpenFXAA;
-				if ( isOpenFXAA = ImGui::CollapsingHeader( "FXAA" ) )
-				{
-					if ( ImGui::Checkbox( "Active##FXAA", &activeFXAA ) )
-					{
-						p_renderer->setActiveFXAA( activeFXAA );
-					}
-				}
-				static bool isOpenPixelize;
-				if ( isOpenPixelize = ImGui::CollapsingHeader( "Pixelize" ) )
-				{
-					if ( ImGui::Checkbox( "Active##Pixelize", &activePixelize ) )
-					{
-						p_renderer->setActivePixelize( activePixelize );
-					}
-					if ( ImGui::SliderInt( "Pixel size", &pixelSize, 1, 151 ) )
-					{
-						p_renderer->setPixelSize( pixelSize );
-					}
-					if ( ImGui::Checkbox( "Background?", &pixelarizeBackground ) )
-					{
-						p_renderer->setPixelizeBackground( pixelarizeBackground );
-					}
-				}
-			}
-			ImGui::End();
-		}
-		*/
-
-		/*
 				void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
 				{
 					bool isTimersEnabled = p_renderer->isTimersEnabled();
@@ -436,23 +232,23 @@ namespace VTX::Bench
 				}
 		*/
 
-		/*
-		void _drawMisc( Renderer::GL::OpenGLRenderer * const p_renderer )
+		void _drawMisc( Renderer::Renderer * const p_renderer )
 		{
-			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
-			static uint64_t		  lastTime						= 0;
-			const uint64_t		  now							= SDL_GetPerformanceCounter();
-			const float			  deltaTime						= float( double( now - lastTime ) / sdlFrequency );
-			lastTime											= now;
-			const Renderer::GL::StructOpenglInfos & openglInfos = p_renderer->getOpenglInfos();
+			static const uint64_t sdlFrequency = SDL_GetPerformanceFrequency();
+			static uint64_t		  lastTime	   = 0;
+			const uint64_t		  now		   = SDL_GetPerformanceCounter();
+			const float			  deltaTime	   = float( double( now - lastTime ) / sdlFrequency );
+			lastTime						   = now;
+			// const Renderer::GL::StructOpenglInfos & openglInfos = p_renderer->getOpenglInfos();
 
 			if ( ImGui::Begin( "Misc" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				bool isTimersEnabled = p_renderer->isTimersEnabled();
+				// bool isTimersEnabled = p_renderer->isTimersEnabled();
 				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 				ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
+				/*
 				ImGui::ProgressBar(
 					float(
 						( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
@@ -469,19 +265,20 @@ namespace VTX::Bench
 				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
-
+				*/
 				if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
 				{
 					setVSync( _vsync );
 				}
+				/*
 				if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
 				{
 					p_renderer->setTimersEnabled( isTimersEnabled );
 				}
+				*/
 			}
 			ImGui::End();
 		}
-*/
 
 		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
 		{

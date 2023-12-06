@@ -95,9 +95,10 @@ namespace VTX::Renderer
 							{ "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
 							{ "Mode",
 							  E_TYPE::INT,
-							  StructUniformValue<int> { int( E_SHADING::FLAT_COLOR ),
-														StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
-																						  int( E_SHADING::COUNT ) } } },
+							  StructUniformValue<int> {
+								  int( E_SHADING::FLAT_COLOR ),
+								  StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
+																	int( E_SHADING::FLAT_COLOR ) } } },
 							{ "Specular factor",
 							  E_TYPE::FLOAT,
 							  StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },

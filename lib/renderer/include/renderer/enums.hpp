@@ -92,7 +92,6 @@ namespace VTX::Renderer
 		GLOSSY,
 		TOON,
 		FLAT_COLOR,
-		COUNT
 	};
 
 } // namespace VTX::Renderer
