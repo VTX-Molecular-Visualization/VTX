@@ -4,7 +4,7 @@
 namespace VTX::Renderer
 {
 
-	enum struct E_CHANNEL_INPUT : int
+	enum struct E_CHANNEL_INPUT
 	{
 		_0,
 		_1,

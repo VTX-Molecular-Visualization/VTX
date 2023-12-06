@@ -572,6 +572,39 @@ namespace VTX::Bench
 							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
 							{
+							case E_TYPE::INT:
+							{
+								StructUniformValue<int> descValue = std::get<StructUniformValue<int>>( uniform.value );
+
+								int value;
+								if ( isEditable )
+								{
+									p_newRenderer->getUniform<int>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( descValue.minMax.has_value() )
+								{
+									StructUniformValue<int>::MinMax & minMax = descValue.minMax.value();
+									if ( ImGui::SliderInt( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
+									{
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
+									}
+								}
+								else
+								{
+									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
+									{
+										if ( isEditable )
+											p_newRenderer->setUniform( value, key );
+									}
+								}
+								break;
+							}
 							case E_TYPE::UINT:
 							{
 								StructUniformValue<uint> descValue

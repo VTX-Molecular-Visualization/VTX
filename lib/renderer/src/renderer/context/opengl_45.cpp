@@ -156,10 +156,16 @@ namespace VTX::Renderer::Context
 			};
 
 			// Bind inputs.
+			uint channelMax = 0;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
 				const Output * const src	= findInputSrcInLinks( channel );
 				const IO &			 descIO = src->desc;
+
+				if ( uint( channel ) > channelMax )
+				{
+					channelMax = uint( channel );
+				}
 
 				if ( src == nullptr )
 				{
@@ -171,7 +177,6 @@ namespace VTX::Renderer::Context
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
 					const Attachment * const attachment = &std::get<Attachment>( descIO );
-
 					p_instructions.emplace_back( [ this, channel = channel, attachment ]()
 												 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
 				}
@@ -187,12 +192,11 @@ namespace VTX::Renderer::Context
 				if ( descProgram.uniforms.empty() == false )
 				{
 					assert( _ubos.find( &descProgram ) != _ubos.end() );
-
 					p_instructions.emplace_back(
-						[ this, &descProgram ]()
+						[ this, &descProgram, channelMax ]()
 						{
 							// Bind local ubo after last input.
-							_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, 10 );
+							_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
 						}
 					);
 				}
