@@ -68,6 +68,13 @@ namespace VTX::Renderer::Context
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
+		inline void fillInfos( StructInfos & p_infos )
+		{
+			p_infos.gpuMemoryInfoDedicated		  = _openglInfos.gpuMemoryInfoDedicatedVidmemNVX;
+			p_infos.gpuMemoryInfoTotalAvailable	  = _openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX;
+			p_infos.gpuMemoryInfoCurrentAvailable = _openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX;
+		}
+
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
 		static std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments;

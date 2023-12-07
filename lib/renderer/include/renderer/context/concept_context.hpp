@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_CONCEPT__
 
 #include "renderer/descriptors.hpp"
+#include "renderer/struct_infos.hpp"
 #include <any>
 #include <concepts>
 
@@ -27,7 +28,8 @@ namespace VTX::Renderer::Context
 						  const std::string &			p_uniformKey,
 						  const std::vector<std::any> & p_data,
 						  UniformValue &				p_uniformValue,
-						  Instructions &				p_instructions
+						  Instructions &				p_instructions,
+						  StructInfos &					p_infos
 					  ) {
 							 {
 								 p_context.build( p_renderQueue, p_links, p_output, p_uniforms, p_instructions )
@@ -43,6 +45,9 @@ namespace VTX::Renderer::Context
 							 } -> std::same_as<void>;
 							 {
 								 p_context.setData( p_data, p_uniformKey )
+							 } -> std::same_as<void>;
+							 {
+								 p_context.fillInfos( p_infos )
 							 } -> std::same_as<void>;
 						 };
 

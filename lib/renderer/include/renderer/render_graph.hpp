@@ -180,6 +180,8 @@ namespace VTX::Renderer
 			_context->setData( p_data, p_key );
 		}
 
+		inline void fillInfos( StructInfos & p_infos ) { _context->fillInfos( p_infos ); }
+
 	  private:
 		S				   _scheduler;
 		RenderQueue		   _renderQueue;

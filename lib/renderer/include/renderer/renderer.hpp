@@ -309,6 +309,7 @@ namespace VTX::Renderer
 			_onBuild();
 
 			_instructions.clear();
+			_infos = StructInfos();
 
 			VTX_INFO(
 				"Renderer graph setup total time: {}",
@@ -321,6 +322,8 @@ namespace VTX::Renderer
 							{
 								_setData( proxy );
 							}
+
+							_renderGraph->fillInfos( _infos );
 
 							_onReady();
 						}
@@ -363,6 +366,8 @@ namespace VTX::Renderer
 		inline size_t getAtomCount() const { return _sizeAtoms; }
 		inline size_t getBondCount() const { return _sizeBonds; }
 
+		inline const StructInfos & getInfos() const { return _infos; }
+
 		// Debug purposes only.
 		inline RenderGraphOpenGL45 & getRenderGraph() { return *_renderGraph; }
 
@@ -374,6 +379,7 @@ namespace VTX::Renderer
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
+		StructInfos							 _infos;
 
 		CallbackBuild _callbackBuild;
 		CallbackReady _callbackReady;
