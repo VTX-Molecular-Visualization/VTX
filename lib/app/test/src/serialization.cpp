@@ -1,5 +1,6 @@
 #include "util/serialization.hpp"
 #include "util/app.hpp"
+#include <app/action/application.hpp>
 #include <app/core/io/reader/serialized_object.hpp>
 #include <app/core/io/writer/serialized_object.hpp>
 #include <app/core/serialization/serialization.hpp>
@@ -220,7 +221,7 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 	CHECK( custom == loadedCustom );
 }
 
-TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
+TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -228,52 +229,27 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
 	Test::Util::App::initApp();
+	Test::Util::App::loadTestMolecule();
 
-	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
-	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
 
-	SERIALIZER().registerUpgrade<CustomClass>( { 0, 1, 0 }, &CustomClass::upgrade_0_0_0_to_0_1_0 );
-	SERIALIZER().registerUpgrade<CustomClass>( { 1, 0, 0 }, &CustomClass::upgrade_0_1_0_to_1_0_0 );
+	App::Action::Application::SaveScene saveSceneAction = App::Action::Application::SaveScene( jsonPath );
+	saveSceneAction.execute();
 
-	const CustomClass custom
-		= CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, CustomClass::CustomEnum::TWO );
+	App::Action::Application::OpenScene openSceneAction = App::Action::Application::OpenScene( jsonPath );
+	openSceneAction.execute();
 
-	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
-	CustomClass	   loadedCustom_0_1_0 = CustomClass();
+	App::Application::Scene & loadedScene = VTXApp::get().getScene();
 
-	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
-	reader.read();
+	CHECK( loadedScene.getItemCount() == 1 );
+	const App::Component::Scene::SceneItemComponent & sceneItemObj
+		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
+	REQUIRE( sceneItemObj.getName() == "8OIT" );
 
-	CHECK( custom == loadedCustom_0_1_0 );
+	// const App::Component::Chemistry::Molecule & molecule
+	//	= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( "8OIT" );
 
-	const FilePath jsonPath_0_0_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
-	CustomClass	   loadedCustom_0_0_0 = CustomClass();
-
-	reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-	reader.read();
-
-	CHECK( loadedCustom_0_0_0.color == custom.color );
-	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
-	CHECK( loadedCustom_0_0_0.strValue == custom.strValue );
-
-	const FilePath jsonPath_1_2_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_1_2_0.json";
-	CustomClass	   loadedCustom_1_2_0 = CustomClass();
-
-	try
-	{
-		reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-		reader.read();
-	}
-	catch ( const IOException & e )
-	{
-		VTX_INFO( "Deserialization from more recent version catched !" );
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "More recent file check fail : {}", e.what() );
-		CHECK( false );
-	}
+	// CHECK( molecule.getAtoms().size() == 113095 );
 }
 
 TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )
@@ -337,4 +313,60 @@ TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )
 	CHECK( version <= Version( 2, 1, 8 ) );
 	CHECK( version <= Version( 2, 4, 0 ) );
 	CHECK( version <= Version( 3, 0, 0 ) );
+}
+
+TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	using CustomClass = Test::Util::Serialization::CustomClass;
+
+	Test::Util::App::initApp();
+
+	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+
+	SERIALIZER().registerUpgrade<CustomClass>( { 0, 1, 0 }, &CustomClass::upgrade_0_0_0_to_0_1_0 );
+	SERIALIZER().registerUpgrade<CustomClass>( { 1, 0, 0 }, &CustomClass::upgrade_0_1_0_to_1_0_0 );
+
+	const CustomClass custom
+		= CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, CustomClass::CustomEnum::TWO );
+
+	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
+	CustomClass	   loadedCustom_0_1_0 = CustomClass();
+
+	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
+	reader.read();
+
+	CHECK( custom == loadedCustom_0_1_0 );
+
+	const FilePath jsonPath_0_0_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
+	CustomClass	   loadedCustom_0_0_0 = CustomClass();
+
+	reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+	reader.read();
+
+	CHECK( loadedCustom_0_0_0.color == custom.color );
+	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
+	CHECK( loadedCustom_0_0_0.strValue == custom.strValue );
+
+	const FilePath jsonPath_1_2_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_1_2_0.json";
+	CustomClass	   loadedCustom_1_2_0 = CustomClass();
+
+	try
+	{
+		reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
+		reader.read();
+	}
+	catch ( const IOException & e )
+	{
+		VTX_INFO( "Deserialization from more recent version catched !" );
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "More recent file check fail : {}", e.what() );
+		CHECK( false );
+	}
 }

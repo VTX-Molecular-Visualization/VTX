@@ -1,10 +1,10 @@
 #include "app/component/chemistry/molecule.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/scene/scene_item_component.hpp"
-#include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <util/constants.hpp>

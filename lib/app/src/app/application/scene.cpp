@@ -4,7 +4,6 @@
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/core/ecs/registry.hpp"
 #include "app/entity/all_entities.hpp"
 
 namespace VTX::App::Application

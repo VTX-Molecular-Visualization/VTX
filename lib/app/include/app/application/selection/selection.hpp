@@ -1,11 +1,11 @@
 #ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION__
 #define __VTX_APP_APPLICATION_SELECTION_SELECTION__
 
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
 #include "app/component/scene/_fwd.hpp"
 #include "app/component/scene/selectable.hpp"
-#include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
 #include <map>

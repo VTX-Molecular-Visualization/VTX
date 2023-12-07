@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 #define __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 
+#include "app/application/ecs/component_registration.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <util/math/transform.hpp>
 
@@ -8,6 +9,8 @@ namespace VTX::App::Component::Scene
 {
 	class Transform : public Core::ECS::BaseComponent
 	{
+		inline static const Application::ECS::Registration<Transform> registration { "Scene::TransformComponent" };
+
 	  public:
 		Transform() = default;
 

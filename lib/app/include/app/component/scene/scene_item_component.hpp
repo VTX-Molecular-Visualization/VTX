@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 #define __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 
+#include "app/application/ecs/component_registration.hpp"
 #include "app/application/scene_utility.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/ecs/base_component.hpp"
@@ -10,6 +11,10 @@ namespace VTX::App::Component::Scene
 {
 	class SceneItemComponent : public Core::ECS::BaseComponent
 	{
+		inline static const Application::ECS::Registration<SceneItemComponent> registration {
+			"Scene::SceneItemComponent"
+		};
+
 	  public:
 		virtual ~SceneItemComponent() = default;
 
@@ -27,8 +32,10 @@ namespace VTX::App::Component::Scene
 		inline void setPersistentSceneID( const int p_id ) { _persistentId = p_id; }
 		inline bool hasPersistentSceneID() const { return _persistentId != -1; }
 
-		void addUpdateFunction( const std::string &								  p_key,
-								const Application::SceneUtility::UpdateCallback & p_callback );
+		void addUpdateFunction(
+			const std::string &								  p_key,
+			const Application::SceneUtility::UpdateCallback & p_callback
+		);
 		void removeUpdateFunction( const std::string & p_key );
 
 		// Callbacks
