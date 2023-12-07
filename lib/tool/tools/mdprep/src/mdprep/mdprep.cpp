@@ -1,5 +1,5 @@
 #include "tools/mdprep/mdprep.hpp"
-#include "gromacs/gmxpreprocess/pdb2gmx.h"
+#include <dylib.hpp>
 #include <filesystem>
 #include <qapplication.h>
 
@@ -25,10 +25,10 @@ namespace vtx::tool::mdprep
 			QByteArrayView env_arg( path_str.begin().operator->(), path_str.end().operator->() );
 			qputenv( "GMXLIB", env_arg );
 		}
+		dylib vtx_gromacs( "vtx_gromacs" );
+		auto  submit_cmd = vtx_gromacs.get_function<void( poc_args & )>( "submit_gromacs_command" );
 
-		gmx::ICommandLineOptionsModule::runAsMain(
-			args.i, args.s, "ctx-pdb2gmx", "poc vtx-gromacs", [ & ] { return gmx::pdb2gmxInfo::create(); }
-		);
+		submit_cmd( args );
 	}
 
 } // namespace vtx::tool::mdprep

@@ -39,6 +39,9 @@ class VTXToolMdprepRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+        self.cpp.build.components["vtx_gromacs"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_tool_mdprep"].libdirs = self.cpp.build.libdirs
+        self.cpp.source.components["vtx_tool_mdprep"].includedirs = self.cpp.source.includedirs
 
     def build(self):
         cmake = CMake(self)
@@ -50,4 +53,8 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_tool_mdprep"]
+        self.cpp_info.components["vtx_gromacs"].libs = ["vtx_gromacs"]
+
+        self.cpp_info.components["vtx_tool_mdprep"].libs = ["vtx_tool_mdprep"]
+        self.cpp_info.components["vtx_tool_mdprep"].requires = ["vtx_gromacs"]
+        self.cpp_info.components["vtx_tool_mdprep"].set_property("cmake_target_name", "vtx_tool_mdprep::vtx_tool_mdprep")

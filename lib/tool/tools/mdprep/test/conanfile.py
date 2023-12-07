@@ -17,6 +17,7 @@ class VTXRendererTestRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("qt/6.6.0", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
         self.requires("catch2/3.4.0")        
         
