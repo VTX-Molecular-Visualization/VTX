@@ -2,6 +2,7 @@
 #include <dylib.hpp>
 #include <filesystem>
 #include <qapplication.h>
+#include <util/logger.hpp>
 
 namespace vtx::tool::mdprep
 {
@@ -22,13 +23,23 @@ namespace vtx::tool::mdprep
 			path /= "gromacs";
 			path /= "top";
 			path_str = path.string();
-			QByteArrayView env_arg( path_str.begin().operator->(), path_str.end().operator->() );
+			QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
 			qputenv( "GMXLIB", env_arg );
 		}
-		dylib vtx_gromacs( "vtx_gromacs" );
-		auto  submit_cmd = vtx_gromacs.get_function<void( poc_args & )>( "submit_gromacs_command" );
-
-		submit_cmd( args );
+		try
+		{
+			dylib vtx_gromacs( "./", "vtx_gromacs" );
+			auto  submit_cmd = vtx_gromacs.get_function<void( poc_args & )>( "submit_gromacs_command" );
+			submit_cmd( args );
+		}
+		catch ( const dylib::load_error & )
+		{
+			VTX::VTX_ERROR( "Couldn't load lib" );
+		}
+		catch ( const dylib::symbol_error & )
+		{
+			VTX::VTX_ERROR( "Couldn't locate symbol" );
+		}
 	}
 
 } // namespace vtx::tool::mdprep
