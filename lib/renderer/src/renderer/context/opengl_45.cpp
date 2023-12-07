@@ -124,6 +124,7 @@ namespace VTX::Renderer::Context
 					[]()
 					{
 						// glEnable( GL_DEPTH_TEST );
+						//  glEnable( GL_DEPTH_CLAMP );
 						glDepthFunc( GL_LESS );
 					}
 				);
@@ -457,6 +458,7 @@ namespace VTX::Renderer::Context
 		{
 			switch ( descUniform.type )
 			{
+			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram ); break;
 			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram ); break;
 			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram ); break;
 			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram ); break;

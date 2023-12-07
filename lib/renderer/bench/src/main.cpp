@@ -83,7 +83,6 @@ int main( int, char ** )
 		renderer.build();
 
 		// Model.
-
 		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
 		const Renderer::StructProxyMolecule proxyMolecule
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,

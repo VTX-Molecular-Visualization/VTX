@@ -128,16 +128,10 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Print render queue.
-			VTX_DEBUG( "{}", "Render queue:" );
-			for ( auto & pass : _renderQueue )
-			{
-				VTX_DEBUG( "\t{}", pass->name );
-			}
-
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				_clear();
 				return false;
 			}
 
@@ -154,6 +148,7 @@ namespace VTX::Renderer
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				_clear();
 				return false;
 			}
 

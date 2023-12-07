@@ -3,7 +3,7 @@
 
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"
-#include "scheduler/custom_search.hpp"
+#include "scheduler/depth_first_search.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include <util/chrono.hpp>
@@ -14,7 +14,7 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::CustomSearch>;
+		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
 		using CallbackReady		  = std::function<void()>;
 
 		Renderer(
@@ -126,11 +126,31 @@ namespace VTX::Renderer
 				  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" } } } }
 			);
 
+			// Pixelize.
+			Pass * const pixelize = _renderGraph->addPass(
+				{ "Pixelize",
+				  Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
+						   { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } } },
+				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+				  Programs {
+					  { "Pixelize",
+						std::vector<FilePath> { "default.vert", "pixelize.frag" },
+						Uniforms { { "Size",
+									 E_TYPE::UINT,
+									 StructUniformValue<uint> { 5, StructUniformValue<uint>::MinMax { 1, 15 } } },
+								   { "Background", E_TYPE::BOOL, StructUniformValue<bool> { true } } } } } }
+			);
+
 			// Links.
-			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
+			//_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
 			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( shading, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+
+			_renderGraph->addLink( geo, pixelize, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->addLink( shading, pixelize, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
+
+			_renderGraph->addLink( pixelize, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+
 			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 
 			// Shared uniforms.
@@ -142,7 +162,7 @@ namespace VTX::Renderer
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
 				  // TODO: check why not compiling with bool.
-				  { "Is perspective", E_TYPE::INT, StructUniformValue<int> { 0 } } }
+				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { false } } }
 			);
 
 			//  Debug pass.
@@ -187,16 +207,20 @@ namespace VTX::Renderer
 			VTX_INFO(
 				"Renderer graph setup total time: {}",
 				Util::CHRONO_CPU(
-					[ & ]() { _renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output ); }
+					[ & ]()
+					{
+						if ( _renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output ) )
+						{
+							for ( const StructProxyMolecule & proxy : _molecules )
+							{
+								_setData( proxy );
+							}
+
+							_onReady();
+						}
+					}
 				)
 			);
-
-			for ( const StructProxyMolecule & proxy : _molecules )
-			{
-				_setData( proxy );
-			}
-
-			_onReady();
 		}
 
 		inline void render( const float p_time )

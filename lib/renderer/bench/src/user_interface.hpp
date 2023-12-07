@@ -30,6 +30,8 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
+			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
 			_window = SDL_CreateWindow(
 				"VTX_RENDERER_BENCH",
@@ -365,10 +367,33 @@ namespace VTX::Bench
 							std::string key		   = program.name + uniform.name;
 							bool		isEditable = isBuilt && isInRenderQueue;
 
-							ImGui::Text( uniform.name.c_str() );
+							// ImGui::Text( uniform.name.c_str() );
 							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
 							{
+							case E_TYPE::BOOL:
+							{
+								StructUniformValue<bool> descValue
+									= std::get<StructUniformValue<bool>>( uniform.value );
+
+								bool value;
+								if ( isEditable )
+								{
+									p_newRenderer->getUniform<bool>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::Checkbox( uniform.name.c_str(), &value ) )
+								{
+									if ( isEditable )
+										p_newRenderer->setUniform( value, key );
+								}
+
+								break;
+							}
 							case E_TYPE::INT:
 							{
 								StructUniformValue<int> descValue = std::get<StructUniformValue<int>>( uniform.value );
