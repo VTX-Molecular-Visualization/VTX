@@ -1,9 +1,10 @@
 #ifndef __VTX_UTIL_EXCEPTIONS__
 #define __VTX_UTIL_EXCEPTIONS__
 
-#include <fmt/format.h>
-#include <iostream>
+#include <format>
+#include <stdexcept>
 #include <string>
+#include <string_view>
 
 namespace VTX
 {
@@ -11,12 +12,11 @@ namespace VTX
 	{
 	  protected:
 		template<typename... Args>
-		explicit Exception(
-			const std::string &				  p_prepend,
-			const fmt::format_string<Args...> p_fmt,
-			Args &&... p_args
-		) :
-			std::runtime_error( formatMessage( p_prepend, fmt::format( p_fmt, std::forward<Args...>( p_args... ) ) ) )
+		explicit Exception( const std::string & p_prepend, const std::string_view & p_fmt, Args &&... p_args ) :
+			std::runtime_error( formatMessage(
+				p_prepend,
+				std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
+			) )
 		{
 		}
 		explicit Exception( const std::string & p_prepend, const std::string & p_err ) :
@@ -27,7 +27,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_prepend, const std::string & p_err )
 		{
-			return fmt::format( "[{}] {}", p_prepend, p_err );
+			return std::vformat( "[{}] {}", std::make_format_args( p_prepend, p_err ) );
 		}
 	};
 
@@ -35,8 +35,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit VTXException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "VTX", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit VTXException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "VTX", p_fmt, std::forward<Args>( p_args )... )
 		{
 		}
 		explicit VTXException( const std::string & p_err ) : Exception( "VTX", p_err ) {}
@@ -46,8 +46,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit GLException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "GL", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit GLException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "GL", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -58,8 +58,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit HTTPException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "HTTP", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit HTTPException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "HTTP", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -70,8 +70,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit IOException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "IO", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit IOException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "IO", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -82,8 +82,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit MathException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "MATH", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit MathException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "MATH", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -94,8 +94,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit LibException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "LIB", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit LibException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "LIB", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -106,8 +106,8 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit PythonWrapperException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
-			Exception( "WRAPPER", p_fmt, std::forward<Args...>( p_args... ) )
+		explicit PythonWrapperException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "WRAPPER", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
@@ -117,12 +117,14 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit CommandException(
-			const std::string &				  p_command,
-			const fmt::format_string<Args...> p_fmt,
-			Args &&... p_args
-		) :
-			Exception( "COMMAND", formatMessage( p_command, fmt::format( p_fmt, std::forward<Args...>( p_args... ) ) ) )
+		explicit CommandException( const std::string & p_command, const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception(
+				"COMMAND",
+				formatMessage(
+					p_command,
+					std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
+				)
+			)
 
 		{
 		}
@@ -134,7 +136,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_command, const std::string & p_err )
 		{
-			return fmt::format( "{} : {}", p_command, p_err );
+			return std::vformat( "{} : {}", std::make_format_args( p_command, p_err ) );
 		}
 	};
 	class ScriptException : public Exception
@@ -142,13 +144,16 @@ namespace VTX
 	  public:
 		template<typename... Args>
 		explicit ScriptException(
-			const std::string &				  p_scriptPath,
-			const fmt::format_string<Args...> p_fmt,
+			const std::string &		 p_scriptPath,
+			const std::string_view & p_fmt,
 			Args &&... p_args
 		) :
 			Exception(
 				"SCRIPT",
-				formatMessage( p_scriptPath, fmt::format( p_fmt, std::forward<Args...>( p_args... ) ) )
+				formatMessage(
+					p_scriptPath,
+					std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
+				)
 			)
 		{
 		}
@@ -160,7 +165,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_scriptPath, const std::string & p_err )
 		{
-			return fmt::format( "{} : {}", p_scriptPath, p_err );
+			return std::vformat( "{} : {}", std::make_format_args( p_scriptPath, p_err ) );
 		}
 	};
 
