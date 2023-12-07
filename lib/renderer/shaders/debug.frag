@@ -1,7 +1,7 @@
 #version 450 core
 
 // In.
-layout ( std140, binding = 10 ) uniform Uniforms
+layout ( std140, binding = 1 ) uniform Uniforms
 {
 	vec4 color;
 } uniforms;

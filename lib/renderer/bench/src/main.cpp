@@ -3,11 +3,11 @@
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
+#include <core/gpu/molecule.hpp>
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <iostream>
 #include <numeric>
-// #include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/renderer.hpp>
 #include <util/filesystem.hpp>
 #include <util/math.hpp>
@@ -28,7 +28,6 @@ int main( int, char ** )
 	using namespace VTX;
 	using namespace Util;
 	using namespace IO;
-	using namespace Renderer::GL;
 	using namespace Bench;
 
 	bool isRunning = true;
@@ -40,129 +39,144 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		// OpenGLRenderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
-		// );
+		Renderer::Renderer renderer(
+			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
+		);
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
-		// camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); }
-		// ); camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix ) {
-		// renderer.setMatrixProjection( p_matrix ); } ); camera.setCallbackClipInfos( [ &renderer ]( const float
-		// p_near,
-		// const float p_far ) 							 { renderer.setCameraClipInfos( p_near, p_far ); } );
 
 		// Input manager.
 		InputManager inputManager;
+
+		// Setup callbacks.
 		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
-		// inputManager.setCallbackResize(
-		//	[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-		//	{
-		//		renderer.resize( p_width, p_height );
-		//		camera.resize( p_width, p_height );
-		//	} );
-		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
-										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackRotate(
-			[ &camera, &ui ]( const Vec2i & p_delta )
-			{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
-									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
+
+		renderer.setCallbackReady(
+			[ &ui, &renderer, &camera, &inputManager ]()
+			{
+				camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
+											  { renderer.setMatrixView( p_matrix ); } );
+				camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
+													{ renderer.setMatrixProjection( p_matrix ); } );
+				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
+											 { renderer.setCameraClipInfos( p_near, p_far ); } );
+
+				inputManager.setCallbackResize(
+					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+					{
+						renderer.resize( p_width, p_height );
+						camera.resize( p_width, p_height );
+					}
+				);
+				inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
+												   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
+				inputManager.setCallbackRotate(
+					[ &camera, &ui ]( const Vec2i & p_delta )
+					{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
+				);
+				inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
+											  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
+			}
+		);
+
+		renderer.build();
 
 		// Model.
-		// Core::Gpu::Molecule molecule = generateAtomGrid( 9 );
-		// 		StructProxyMolecule proxyMolecule
-		// 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
-		// 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
-		// 		renderer.addMolecule( proxyMolecule );
-		if ( false )
+
+		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
+		const Renderer::StructProxyMolecule proxyMolecule
+			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
+				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
+		renderer.addMolecule( proxyMolecule );
+
+		/*
+		try
 		{
-			try
-			{
-				const std::string name = "4v6x.mmtf";
-				const FilePath	  path = Filesystem::getExecutableDir() / name;
+			const std::string name = "4v6x.mmtf";
+			const FilePath	  path = Filesystem::getExecutableDir() / name;
 
-				// Read model file.
-				Reader::Molecule			reader;
-				VTX::Core::Struct::Molecule molecule;
-				reader.readFile( path, molecule );
+			// Read model file.
+			Reader::Molecule			reader;
+			VTX::Core::Struct::Molecule molecule;
+			reader.readFile( path, molecule );
 
-				// Proxify.
-				// Move or maybe redo.
+			// Proxify.
+			// Move or maybe redo.
 
-				float timeProxify = Util::CHRONO_CPU(
-					[ & ]()
-					{
-						size_t										   size = molecule.trajectory.frames.front().size();
-						std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
-						std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
-						std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
-						std::vector<float> radii( size );
-						std::generate( radii.begin(),
-									   radii.end(),
-									   [ &symbols ]
-									   {
-										   static int i = 0;
-										   return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
-									   } );
-						std::vector<uint> visibilities = std::vector<uint>( size, 1 );
-						std::vector<uint> selections   = std::vector<uint>( size, 0 );
-						std::vector<uint> ids( size );
-						std::iota( ids.begin(), ids.end(), 0 );
+			float timeProxify = Util::CHRONO_CPU(
+				[ & ]()
+				{
+					size_t										   size	   = molecule.trajectory.frames.front().size();
+					std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
+					std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
+					std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
+					std::vector<float> radii( size );
+					std::generate(
+						radii.begin(),
+						radii.end(),
+						[ &symbols ]
+						{
+							static int i = 0;
+							return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
+						}
+					);
+					std::vector<uint> visibilities = std::vector<uint>( size, 1 );
+					std::vector<uint> selections   = std::vector<uint>( size, 0 );
+					std::vector<uint> ids( size );
+					std::iota( ids.begin(), ids.end(), 0 );
 
-						std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
-						const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
+					std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
+					const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
 
-						std::generate( bondsIndex.begin(),
-									   bondsIndex.end(),
-									   [ &bondPairAtomIndexes ]
-									   {
-										   static size_t i = 0;
-										   return uint( bondPairAtomIndexes[ i++ ] );
-									   } );
+					std::generate(
+						bondsIndex.begin(),
+						bondsIndex.end(),
+						[ &bondPairAtomIndexes ]
+						{
+							static size_t i = 0;
+							return uint( bondPairAtomIndexes[ i++ ] );
+						}
+					);
 
-						// TODO:
-						// Use struct ssbo for atom infos by symbol (like radius).
-						// Setup color ssbo and layout.
+					// TODO:
+					// Use struct ssbo for atom infos by symbol (like radius).
+					// Setup color ssbo and layout.
 
-						// Use relationnal bdd system,
-						// or fill data at cpu side then push to gpu in compressed data?
+					// Use relationnal bdd system,
+					// or fill data at cpu side then push to gpu in compressed data?
 
-						// Setup representation ssbo and layout.
-						// Persisted data in CPU cache with smart ptr?
-						StructProxyMolecule proxyMolecule = { &molecule.transform,
-															  &molecule.trajectory.frames.front(),
-															  &colors,
-															  &radii,
-															  &visibilities,
-															  &selections,
-															  &ids,
-															  &bondsIndex };
-						// renderer.addMolecule( proxyMolecule );
-					} );
-				VTX_INFO( "Proxify time: {}", timeProxify );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Loading failed: {}", p_e.what() );
-			}
+					// Setup representation ssbo and layout.
+					// Persisted data in CPU cache with smart ptr?
+					Renderer::StructProxyMolecule proxyMolecule = { &molecule.transform,
+																	&molecule.trajectory.frames.front(),
+																	&colors,
+																	&radii,
+																	&visibilities,
+																	&selections,
+																	&ids,
+																	&bondsIndex };
+					renderer.addMolecule( proxyMolecule );
+				}
+			);
+			VTX_INFO( "Proxify time: {}", timeProxify );
 		}
-
-		// Renderer with graph test.
-		Renderer::Renderer newRenderer(
-			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress() );
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Loading failed: {}", p_e.what() );
+		}
+		*/
 
 		// Main loop.
 		while ( isRunning )
 		{
-			// float time = float( ui.getTime() ) * 1e-3f;
+			float time = float( ui.getTime() ) * 1e-3f;
 
 			// Renderer.
-			// renderer.renderFrame( ui.getTime() );
-
-			newRenderer.render();
+			renderer.render( time );
 
 			// UI.
-			ui.draw( &camera, &newRenderer );
+			ui.draw( &camera, &renderer );
 
 			// Events.
 			SDL_Event event;

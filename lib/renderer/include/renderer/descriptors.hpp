@@ -23,11 +23,19 @@ namespace VTX::Renderer
 		E_FILTERING filteringMag = E_FILTERING::NEAREST;
 	};
 
-	struct Storage
+	struct Data
 	{
+		struct Entry
+		{
+			std::string name;
+			E_TYPE		type;
+			// TODO: map components by types?
+			size_t components;
+		};
+		std::vector<Entry> entries;
 	};
 
-	struct Data
+	struct Storage
 	{
 	};
 
@@ -74,16 +82,25 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
+	struct Draw
+	{
+		std::string name;
+		E_PRIMITIVE primitive;
+		size_t *	count;
+		bool		useIndices = false;
+	};
+
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;
 	using Uniforms = std::vector<Uniform>;
 
 	struct Program
 	{
-		std::string name;
-		Files		shaders;
-		Uniforms	uniforms;
-		std::string toInject;
-		std::string suffix;
+		std::string			name;
+		Files				shaders;
+		Uniforms			uniforms;
+		std::optional<Draw> draw;
+		std::string			toInject;
+		std::string			suffix;
 	};
 
 	using Inputs   = std::unordered_map<E_CHANNEL_INPUT, Input>;
@@ -94,9 +111,10 @@ namespace VTX::Renderer
 	{
 		std::string name;
 
-		Inputs	 inputs;
-		Outputs	 outputs;
-		Programs programs;
+		Inputs				   inputs;
+		Outputs				   outputs;
+		Programs			   programs;
+		std::vector<E_SETTING> settings;
 	};
 
 	struct Link

@@ -16,14 +16,27 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { _clear(); }
 
+		inline Passes &		  getPasses() { return _passes; }
+		inline Links &		  getLinks() { return _links; }
 		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
 		inline const Output * getOutput() { return _output; }
 		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
+		inline bool			  isBuilt() { return _context != nullptr; }
+
+		inline bool isInRenderQueue( const Pass * const p_pass )
+		{
+			return std::find( _renderQueue.begin(), _renderQueue.end(), p_pass ) != _renderQueue.end();
+		}
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
 			_passes.emplace_back( std::make_unique<Pass>( p_pass ) );
 			return _passes.back().get();
+		}
+
+		inline void addUniforms( const Uniforms & p_uniforms )
+		{
+			_uniforms.insert( _uniforms.end(), p_uniforms.begin(), p_uniforms.end() );
 		}
 
 		bool addLink(
@@ -81,6 +94,7 @@ namespace VTX::Renderer
 			const size_t	 p_width,
 			const size_t	 p_height,
 			const FilePath & p_shaderPath,
+			Instructions &	 p_instructions,
 			const Handle	 p_output = 0
 		)
 		{
@@ -114,6 +128,13 @@ namespace VTX::Renderer
 				return false;
 			}
 
+			// Print render queue.
+			VTX_DEBUG( "{}", "Render queue:" );
+			for ( auto & pass : _renderQueue )
+			{
+				VTX_DEBUG( "\t{}", pass->name );
+			}
+
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
@@ -127,7 +148,7 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _renderQueue, _links, p_output, _instructions );
+				_context->build( _renderQueue, _links, p_output, _uniforms, p_instructions );
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
@@ -146,43 +167,23 @@ namespace VTX::Renderer
 			_context->resize( p_width, p_height );
 		}
 
-		void render()
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
-			// TODO: Move to renderer?
-			// Execute instructions.
-			for ( Instruction & instruction : _instructions )
-			{
-				instruction();
-			}
+			_context->setUniform( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				_context->setUniform( p_value, p_uniform, p_program );
-			}
+			_context->template getUniform<T>( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
+		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				_context->template getUniform<T>( p_value, p_uniform.name, p_program.name );
-			}
-			else
-			{
-				assert( std::holds_alternative<StructUniformValue<T>>( p_uniform.value ) );
-
-				p_value = std::get<StructUniformValue<T>>( p_uniform.value ).value;
-			}
+			_context->setData( p_data, p_key );
 		}
-
-		// Debug purposes only.
-		inline Passes & getPasses() { return _passes; }
-		inline Links &	getLinks() { return _links; }
 
 	  private:
 		S				   _scheduler;
@@ -191,13 +192,12 @@ namespace VTX::Renderer
 
 		const Output * _output;
 		Passes		   _passes;
+		Uniforms	   _uniforms;
 		Links		   _links;
-		Instructions   _instructions;
 
 		void _clear()
 		{
 			_renderQueue.clear();
-			_instructions.clear();
 			_context.reset( nullptr );
 		}
 	};

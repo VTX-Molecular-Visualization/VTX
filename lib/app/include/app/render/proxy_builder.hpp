@@ -2,15 +2,17 @@
 #define __VTX_APP_RENDER_PROXY_BUILDER__
 
 #include "app/component/chemistry/molecule.hpp"
-#include <renderer/gl/struct_proxy_molecule.hpp>
+#include <renderer/struct_proxy_molecule.hpp>
 
 namespace VTX::App::Render
 {
 	class GPUProxyBuilder
 	{
 	  public:
-		static void fillProxy( Component::Chemistry::Molecule &			p_molecule,
-							   VTX::Renderer::GL::StructProxyMolecule & p_proxy )
+		static void fillProxy(
+			Component::Chemistry::Molecule &	 p_molecule,
+			VTX::Renderer::StructProxyMolecule & p_proxy
+		)
 		{
 			p_proxy.transform		 = &( p_molecule.getTransform().get() );
 			p_proxy.atomPositions	 = &( p_molecule.getTrajectory().getCurrentFrame() );
