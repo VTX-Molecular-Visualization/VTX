@@ -51,6 +51,23 @@ int main( int, char ** )
 
 		// Setup callbacks.
 		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
+		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
+										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
+		inputManager.setCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
+										{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
+		);
+		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
+									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
+
+		renderer.setCallbackBuild(
+			[ &camera, &inputManager ]()
+			{
+				camera.setCallbackMatrixView( nullptr );
+				camera.setCallbackMatrixProjection( nullptr );
+				camera.setCallbackClipInfos( nullptr );
+				inputManager.setCallbackResize( nullptr );
+			}
+		);
 
 		renderer.setCallbackReady(
 			[ &ui, &renderer, &camera, &inputManager ]()
@@ -69,18 +86,8 @@ int main( int, char ** )
 						camera.resize( p_width, p_height );
 					}
 				);
-				inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
-												   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-				inputManager.setCallbackRotate(
-					[ &camera, &ui ]( const Vec2i & p_delta )
-					{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
-				);
-				inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
-											  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 			}
 		);
-
-		renderer.build();
 
 		// Model.
 		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
@@ -88,6 +95,9 @@ int main( int, char ** )
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
+
+		// TODO: debug.
+		// renderer.build();
 
 		/*
 		try

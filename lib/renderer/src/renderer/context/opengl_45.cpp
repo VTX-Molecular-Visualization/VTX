@@ -123,8 +123,7 @@ namespace VTX::Renderer::Context
 				p_instructions.emplace_back(
 					[]()
 					{
-						// glEnable( GL_DEPTH_TEST );
-						//  glEnable( GL_DEPTH_CLAMP );
+						glEnable( GL_DEPTH_TEST );
 						glDepthFunc( GL_LESS );
 					}
 				);
@@ -176,29 +175,34 @@ namespace VTX::Renderer::Context
 			uint channelMax = 0;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
-				const Output * const src	= findInputSrcInLinks( channel );
-				const IO &			 descIO = src->desc;
-
-				if ( uint( channel ) > channelMax )
-				{
-					channelMax = uint( channel );
-				}
-
-				if ( src == nullptr )
-				{
-					VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPassPtr->name );
-					// TODO: bind dummy texture?
-					continue;
-				}
+				const IO & descIO = input.desc;
 
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
-												 { _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); } );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
+					const Output * const src	   = findInputSrcInLinks( channel );
+					const IO &			 descIOSrc = src->desc;
+
+					if ( uint( channel ) > channelMax )
+					{
+						channelMax = uint( channel );
+					}
+
+					if ( src == nullptr )
+					{
+						VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPassPtr->name );
+						// TODO: bind dummy texture?
+						continue;
+					}
+
+					if ( std::holds_alternative<Attachment>( descIOSrc ) )
+					{
+						p_instructions.emplace_back( [ this, channel = channel, &descIOSrc ]()
+													 { _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); } );
+					}
+					else
+					{
+						throw std::runtime_error( "unknown descriptor type" );
+					}
 				}
 			}
 
@@ -230,14 +234,17 @@ namespace VTX::Renderer::Context
 						p_instructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								vao->bind();
-								vao->bindElementBuffer( *ebo );
-								program->use();
-								vao->drawElement(
-									_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
-								);
-								vao->unbindElementBuffer();
-								vao->unbind();
+								if ( *draw.count > 0 )
+								{
+									vao->bind();
+									vao->bindElementBuffer( *ebo );
+									program->use();
+									vao->drawElement(
+										_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+									);
+									vao->unbindElementBuffer();
+									vao->unbind();
+								}
 							}
 						);
 					}
@@ -247,10 +254,13 @@ namespace VTX::Renderer::Context
 						p_instructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								vao->bind();
-								program->use();
-								vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
-								vao->unbind();
+								if ( *draw.count > 0 )
+								{
+									vao->bind();
+									program->use();
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
+									vao->unbind();
+								}
 							}
 						);
 					}
@@ -404,8 +414,8 @@ namespace VTX::Renderer::Context
 				_textures.emplace(
 					&descIO,
 					std::make_unique<GL::Texture2D>(
-						width,
-						height,
+						attachment.width.has_value() ? attachment.width.value() : width,
+						attachment.height.has_value() ? attachment.height.value() : height,
 						_mapFormats[ attachment.format ],
 						_mapWrappings[ attachment.wrappingS ],
 						_mapWrappings[ attachment.wrappingT ],
@@ -413,6 +423,11 @@ namespace VTX::Renderer::Context
 						_mapFilterings[ attachment.filteringMag ]
 					)
 				);
+
+				if ( attachment.data != nullptr )
+				{
+					_textures[ &descIO ]->fill( attachment.data );
+				}
 
 				// Attach.
 				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
@@ -592,10 +607,12 @@ namespace VTX::Renderer::Context
 																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES } };
 
 	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormats = {
+		{ E_FORMAT::RGB16F, GL_RGB16F },
 		{ E_FORMAT::RGBA16F, GL_RGBA16F },
 		{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
 		{ E_FORMAT::RGBA32F, GL_RGBA32F },
 		{ E_FORMAT::RG32UI, GL_RG32UI },
+		{ E_FORMAT::R8, GL_R8 },
 		{ E_FORMAT::R16F, GL_R16F },
 		{ E_FORMAT::R32F, GL_R32F },
 		{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },

@@ -132,9 +132,6 @@ namespace VTX::Bench
 			// Camera.
 			_drawCamera( p_camera );
 
-			// DescPasses.
-			//_drawDescPasses( p_renderer );
-
 			// Times.
 			//_drawTimes( p_renderer );
 
@@ -143,9 +140,6 @@ namespace VTX::Bench
 
 			// Node editor.
 			_drawNodeEditor( p_renderer );
-
-			// Render queue.
-			_drawRenderQueue( p_renderer );
 
 			// ImGui::ShowDemoWindow();
 
@@ -247,6 +241,8 @@ namespace VTX::Bench
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
 				// bool isTimersEnabled = p_renderer->isTimersEnabled();
+				ImGui::Text( fmt::format( "{} atoms", p_renderer->getAtomCount() ).c_str() );
+				ImGui::Text( fmt::format( "{} bonds", p_renderer->getBondCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 				ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -282,7 +278,7 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
+		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{
 			using namespace Renderer;
 
@@ -292,13 +288,27 @@ namespace VTX::Bench
 				ImGui::BeginMenuBar();
 				if ( ImGui::Button( "Build" ) )
 				{
-					p_newRenderer->build();
+					p_renderer->build();
+				}
+				RenderQueue & renderQueue = p_renderer->getRenderGraph().getRenderQueue();
+				for ( const Pass * const pass : renderQueue )
+				{
+					ImGui::TextUnformatted( pass->name.c_str() );
+					ImGui::TextUnformatted( " -> " );
+				}
+				if ( renderQueue.empty() )
+				{
+					ImGui::TextUnformatted( "<not built>" );
+				}
+				else
+				{
+					ImGui::TextUnformatted( "Output" );
 				}
 				ImGui::EndMenuBar();
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = p_newRenderer->getRenderGraph().isBuilt();
+				bool isBuilt = p_renderer->getRenderGraph().isBuilt();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -309,52 +319,52 @@ namespace VTX::Bench
 				std::map<const uint, Pass *>				 mapIdDescPass;
 				std::map<const uint, Link *>				 mapIdDescLink;
 
-				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
+				for ( std::unique_ptr<Pass> & pass : p_renderer->getRenderGraph().getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
 					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
 
-					bool isInRenderQueue = p_newRenderer->getRenderGraph().isInRenderQueue( pass.get() );
+					bool isInRenderQueue = p_renderer->getRenderGraph().isInRenderQueue( pass.get() );
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass->inputs )
 					{
-						mapIdInput.emplace( &input, id );
-						mapIdChannelInput.emplace( id, channel );
-						mapIdDescPass.emplace( id, pass.get() );
-						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
-						ImNodes::BeginInputAttribute( id++ );
-						ImGui::Text( input.name.c_str() );
-						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
+						if ( std::holds_alternative<Attachment>( input.desc ) )
 						{
-							if ( std::holds_alternative<Attachment>( input.desc ) )
-							{
-								const Attachment & attachment = std::get<Attachment>( input.desc );
-								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
-							}
+							const Attachment & attachment = std::get<Attachment>( input.desc );
+							mapIdInput.emplace( &input, id );
+							mapIdChannelInput.emplace( id, channel );
+							mapIdDescPass.emplace( id, pass.get() );
+							ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
+							ImNodes::BeginInputAttribute( id++ );
+							ImGui::Text(
+								fmt::format( "{} ({})", input.name, Util::Enum::enumName( attachment.format ) ).c_str()
+							);
+							ImNodes::EndInputAttribute();
+							ImNodes::PopAttributeFlag();
 						}
-						ImNodes::EndInputAttribute();
-						ImNodes::PopAttributeFlag();
+						else if ( std::holds_alternative<Data>( input.desc ) )
+						{
+							// const Data & data = std::get<Data>( input.desc );
+							ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1, 1, 0, 1 ) );
+							ImGui::Text( input.name.c_str() );
+							ImGui::PopStyleColor();
+						}
 					}
 
 					// Outputs.
 					for ( const auto & [ channel, output ] : pass->outputs )
 					{
+						const Attachment & attachment = std::get<Attachment>( output.desc );
 						mapIdOutput.emplace( &output, id );
 						mapIdChannelOutput.emplace( id, channel );
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
-						ImGui::Text( output.name.c_str() );
-						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
-						{
-							if ( std::holds_alternative<Attachment>( output.desc ) )
-							{
-								const Attachment & attachment = std::get<Attachment>( output.desc );
-								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
-							}
-						}
+						ImGui::Text(
+							fmt::format( "({}) {}", Util::Enum::enumName( attachment.format ), output.name ).c_str()
+						);
 						ImNodes::EndOutputAttribute();
 					}
 
@@ -379,7 +389,7 @@ namespace VTX::Bench
 								bool value;
 								if ( isEditable )
 								{
-									p_newRenderer->getUniform<bool>( value, key );
+									p_renderer->getUniform<bool>( value, key );
 								}
 								else
 								{
@@ -389,7 +399,7 @@ namespace VTX::Bench
 								if ( ImGui::Checkbox( uniform.name.c_str(), &value ) )
 								{
 									if ( isEditable )
-										p_newRenderer->setUniform( value, key );
+										p_renderer->setUniform( value, key );
 								}
 
 								break;
@@ -401,7 +411,7 @@ namespace VTX::Bench
 								int value;
 								if ( isEditable )
 								{
-									p_newRenderer->getUniform<int>( value, key );
+									p_renderer->getUniform<int>( value, key );
 								}
 								else
 								{
@@ -414,7 +424,7 @@ namespace VTX::Bench
 									if ( ImGui::SliderInt( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								else
@@ -422,7 +432,7 @@ namespace VTX::Bench
 									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								break;
@@ -435,7 +445,7 @@ namespace VTX::Bench
 								uint value;
 								if ( isEditable )
 								{
-									p_newRenderer->getUniform<uint>( value, key );
+									p_renderer->getUniform<uint>( value, key );
 								}
 								else
 								{
@@ -450,7 +460,7 @@ namespace VTX::Bench
 										 ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								else
@@ -458,7 +468,7 @@ namespace VTX::Bench
 									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								break;
@@ -471,7 +481,7 @@ namespace VTX::Bench
 								float value;
 								if ( isEditable )
 								{
-									p_newRenderer->getUniform<float>( value, key );
+									p_renderer->getUniform<float>( value, key );
 								}
 								else
 								{
@@ -484,7 +494,7 @@ namespace VTX::Bench
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								else
@@ -492,7 +502,7 @@ namespace VTX::Bench
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
 										if ( isEditable )
-											p_newRenderer->setUniform( value, key );
+											p_renderer->setUniform( value, key );
 									}
 								}
 								break;
@@ -505,7 +515,7 @@ namespace VTX::Bench
 								Util::Color::Rgba value;
 								if ( isEditable )
 								{
-									p_newRenderer->getUniform<Util::Color::Rgba>( value, key );
+									p_renderer->getUniform<Util::Color::Rgba>( value, key );
 								}
 								else
 								{
@@ -515,7 +525,7 @@ namespace VTX::Bench
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
 									if ( isEditable )
-										p_newRenderer->setUniform( value, key );
+										p_renderer->setUniform( value, key );
 								}
 								break;
 							}
@@ -543,7 +553,7 @@ namespace VTX::Bench
 				ImNodes::PopColorStyle();
 
 				// Links.
-				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
+				for ( std::unique_ptr<Link> & link : p_renderer->getRenderGraph().getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
 					ImNodes::Link(
@@ -555,10 +565,10 @@ namespace VTX::Bench
 
 				// Output.
 				uint idFinalDescLink = -1;
-				if ( p_newRenderer->getRenderGraph().getOutput() )
+				if ( p_renderer->getRenderGraph().getOutput() )
 				{
 					idFinalDescLink = id;
-					ImNodes::Link( id++, mapIdOutput[ p_newRenderer->getRenderGraph().getOutput() ], idFinalOuput );
+					ImNodes::Link( id++, mapIdOutput[ p_renderer->getRenderGraph().getOutput() ], idFinalOuput );
 				}
 
 				ImNodes::MiniMap();
@@ -575,7 +585,7 @@ namespace VTX::Bench
 						{
 							if ( it.second == newLinkStartId )
 							{
-								p_newRenderer->getRenderGraph().setOutput( it.first );
+								p_renderer->getRenderGraph().setOutput( it.first );
 							}
 						}
 					}
@@ -583,7 +593,7 @@ namespace VTX::Bench
 					// Add link.
 					else
 					{
-						p_newRenderer->getRenderGraph().addLink(
+						p_renderer->getRenderGraph().addLink(
 							mapIdDescPass[ newLinkStartId ],
 							mapIdDescPass[ newLinkEndtId ],
 							mapIdChannelOutput[ newLinkStartId ],
@@ -599,31 +609,14 @@ namespace VTX::Bench
 					// Output.
 					if ( deletedDescLinkId == idFinalDescLink )
 					{
-						p_newRenderer->getRenderGraph().setOutput( nullptr );
+						p_renderer->getRenderGraph().setOutput( nullptr );
 					}
 
 					// DescLink.
 					else
 					{
-						p_newRenderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
+						p_renderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
 					}
-				}
-			}
-			ImGui::End();
-		}
-
-		void _drawRenderQueue( Renderer::Renderer * const p_newRenderer ) const
-		{
-			if ( p_newRenderer->getRenderGraph().getRenderQueue().empty() )
-			{
-				return;
-			}
-
-			if ( ImGui::Begin( "Render queue" ) )
-			{
-				for ( const Renderer::Pass * const pass : p_newRenderer->getRenderGraph().getRenderQueue() )
-				{
-					ImGui::TextUnformatted( pass->name.c_str() );
 				}
 			}
 			ImGui::End();
