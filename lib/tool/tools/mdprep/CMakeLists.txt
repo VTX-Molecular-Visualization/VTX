@@ -50,7 +50,7 @@ target_sources(vtx_gromacs
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
-#target_link_libraries(vtx_gromacs PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs)
+target_link_libraries(vtx_gromacs PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs)
 
 # We need to link socket for gromacs
 if(WIN32)
