@@ -9,7 +9,6 @@
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
 	VTX::Util::Logger::get().init();
-	VTX::App::VTXApp::get().start( {} );
 
 	// assumes share/top content is exploded into the exec dir for now
 	std::vector<std::string> args {
@@ -40,8 +39,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 			cmd[ i ] = &args.at( i ).at( 0 );
 		}
 
-		vtx::tool::mdprep::poc_args poc_args { .i = static_cast<int>( args.size() ), .s = cmd };
-		vtx::tool::mdprep::poc_execute_cmd( poc_args );
+		VTX::Tool::Mdprep::poc_args poc_args { .i = static_cast<int>( args.size() ), .s = cmd };
+		VTX::Tool::Mdprep::poc_execute_cmd( poc_args );
 	}
 	bool b = true;
 }

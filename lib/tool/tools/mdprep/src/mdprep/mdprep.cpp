@@ -1,19 +1,19 @@
 #include "tools/mdprep/mdprep.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
 #include <dylib.hpp>
 #include <filesystem>
 #include <qapplication.h>
 #include <util/logger.hpp>
 
-namespace vtx::tool::mdprep
+namespace VTX::Tool::Mdprep
 {
-	void poc_execute_cmd( poc_args & args ) noexcept
+	void poc_execute_cmd( gromacs_command_args & args ) noexcept
 	{
 		// We need gromacs to see top param data files. One way to achieve this is to set an env var to the path of the
 		// folder containing those data
 		{
 			int				 argc = 0;
-			char **			 argv = nullptr;
-			QCoreApplication app( argc, argv );
+			QCoreApplication app( argc, nullptr );
 			QString			 qpath = app.applicationDirPath();
 			auto			 tmp   = qpath.toLocal8Bit();
 			std::string		 path_str( tmp.data(), tmp.size() );
@@ -37,7 +37,8 @@ namespace vtx::tool::mdprep
 		{
 			dylib vtx_gromacs( "./", "vtx_gromacs" );
 			auto  submit_cmd
-				= vtx_gromacs.get_function<void( vtx::tool::mdprep::poc_args & )>( "submit_gromacs_command" );
+				= vtx_gromacs.get_function<void( VTX::Tool::Mdprep::gromacs_command_args & )>( "submit_gromacs_command"
+				);
 			submit_cmd( args );
 		}
 		catch ( const dylib::load_error & )
@@ -50,4 +51,4 @@ namespace vtx::tool::mdprep
 		}
 	}
 
-} // namespace vtx::tool::mdprep
+} // namespace VTX::Tool::Mdprep

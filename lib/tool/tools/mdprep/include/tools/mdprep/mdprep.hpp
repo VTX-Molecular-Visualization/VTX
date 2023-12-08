@@ -1,11 +1,7 @@
 
 
-namespace vtx::tool::mdprep
+namespace VTX::Tool::Mdprep
 {
-	struct poc_args
-	{
-		int		i = 0;
-		char ** s;
-	};
-	void poc_execute_cmd( poc_args & ) noexcept;
-} // namespace vtx::tool::mdprep
+	struct gromacs_command_args;
+	void poc_execute_cmd( gromacs_command_args & ) noexcept;
+} // namespace VTX::Tool::Mdprep
