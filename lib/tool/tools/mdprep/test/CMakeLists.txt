@@ -31,6 +31,7 @@ include(Catch)
 catch_discover_tests(vtx_tool_mdprep_test)
 
 add_custom_target(vtx_tool_mdprep_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_tool_mdprep_test>/data)
+add_custom_target(vtx_tool_mdprep_test_copy_gromacs_dll ALL COMMAND ${CMAKE_COMMAND} -E copy_if_different ${VTX_GROMACS_DLL_PATH} $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
 add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep_test_copy_data)
 
 install(TARGETS vtx_tool_mdprep_test)

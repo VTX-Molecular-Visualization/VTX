@@ -3,6 +3,10 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake
 from conan.tools.files import copy
 
+from pathlib import Path
+
+
+
 class VTXRendererTestRecipe(ConanFile):
     name = "vtx_tool_mdprep_test"
     version = "1.0"    
@@ -34,8 +38,16 @@ class VTXRendererTestRecipe(ConanFile):
         cmake_layout(self)
 
     def build(self):
+        vtx_gromacs_shared = os.path.join(self.dependencies["vtx_tool_mdprep"].folders.build_folder, "vtx_gromacs")
+        ext = ".dll"
+        if self.settings.os == "iOS" :
+            ext = ".dylib"
+        if self.settings.os == "Linux" :
+            ext = ".so"
+        vtx_gromacs_shared += ext
+
         cmake = CMake(self)
-        cmake.configure()
+        cmake.configure(variables={"VTX_GROMACS_DLL_PATH":vtx_gromacs_shared})
         cmake.build()
         #self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
 

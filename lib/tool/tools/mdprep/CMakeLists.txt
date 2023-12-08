@@ -43,12 +43,14 @@ find_package(vtx-gromacs CONFIG REQUIRED COMPONENTS vtx-gromacs::muparser vtx-gr
 
 unset(SOURCES)
 file(GLOB_RECURSE SOURCES src/gromacs/*)
+unset(HEADERS)
+file(GLOB_RECURSE HEADERS include/*)
 
 target_sources(vtx_gromacs
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
-target_link_libraries(vtx_gromacs PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs)
+#target_link_libraries(vtx_gromacs PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs)
 
 # We need to link socket for gromacs
 if(WIN32)

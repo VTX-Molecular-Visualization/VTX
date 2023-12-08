@@ -29,8 +29,11 @@ namespace vtx::tool::mdprep
 		try
 		{
 			dylib vtx_gromacs( "./", "vtx_gromacs" );
-			auto  submit_cmd = vtx_gromacs.get_function<void( poc_args & )>( "submit_gromacs_command" );
-			submit_cmd( args );
+			// auto  submit_cmd = vtx_gromacs.get_function<void()>( "simple_function" );
+			// submit_cmd();
+			auto submit_cmd = vtx_gromacs.get_function<void( int, char ** )>( "submit_gromacs_command" );
+			//= vtx_gromacs.get_function<void( vtx::tool::mdprep::poc_args * )>( "submit_gromacs_command" );
+			submit_cmd( args.i, args.s );
 		}
 		catch ( const dylib::load_error & )
 		{
