@@ -10,13 +10,22 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
 	VTX::Util::Logger::get().init();
 	VTX::App::VTXApp::get().start( {} );
+
 	// assumes share/top content is exploded into the exec dir for now
 	std::vector<std::string> args {
 		"pdb2gmx",
 		"-f",
-		"D:\\dev\\vtx\\lib\\tool\\tools\\mdprep\\test\\data\\1ubq.pdb",
-		//"-o",
-		//"D:\\dev\\vtx\\lib\\tool\\tools\\mdprep\\test\\data\\1ubq.gro",
+		"data\\1ubq.pdb",
+		"-o",
+		"out\\1ubq.conf.gro",
+		"-p",
+		"out\\1ubq.topol.top",
+		"-i",
+		"out\\1ubq.posre.itp",
+		"-q",
+		"out\\1ubq.clean.pdb",
+		"-n",
+		"out\\1ubq.index.ndx",
 		"-ff",
 		"amber03",
 		"-water",

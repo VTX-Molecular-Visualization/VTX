@@ -11,11 +11,18 @@ namespace vtx::tool::mdprep
 		// We need gromacs to see top param data files. One way to achieve this is to set an env var to the path of the
 		// folder containing those data
 		{
-			QString		qpath = QCoreApplication::applicationDirPath();
-			auto		tmp	  = qpath.toLocal8Bit();
-			std::string path_str( tmp.data(), tmp.size() );
+			int				 argc = 0;
+			char **			 argv = nullptr;
+			QCoreApplication app( argc, argv );
+			QString			 qpath = app.applicationDirPath();
+			auto			 tmp   = qpath.toLocal8Bit();
+			std::string		 path_str( tmp.data(), tmp.size() );
 
 			std::filesystem::path path( path_str );
+			std::filesystem::path out_path = path / "out";
+			if ( std::filesystem::is_directory( out_path ) )
+				std::filesystem::remove_all( out_path );
+			std::filesystem::create_directories( out_path );
 			path /= "data";
 			path /= "tool";
 			path /= "tools";
