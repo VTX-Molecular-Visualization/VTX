@@ -1,3 +1,4 @@
+#include <cstring>
 #include "tools/mdprep/gromacs/gromacs.hpp"
 #include "gromacs/gmxpreprocess/pdb2gmx.h"
 
@@ -9,8 +10,11 @@ extern "C"
 		); // gromacs appears to free the array of the string, but not the strings themselves
 		for ( int i = 0; i < args.arguments.size(); i++ )
 		{
-			args.arguments[ i ] += '\0';
-			cmd[ i ] = &args.arguments.at( i ).at( 0 );
+			std::string & arg_str = args.arguments[ i ];
+			arg_str += '\0';
+			char * arg_cstr = reinterpret_cast<char *>( std::malloc( sizeof( char ) * arg_str.size() ));
+			strncpy_s(arg_cstr, arg_str.size(), arg_str.c_str(), arg_str.size());
+			cmd[ i ] = arg_cstr;
 		}
 		gmx::ICommandLineOptionsModule::runAsMain(
 			static_cast<int>( args.arguments.size() ),

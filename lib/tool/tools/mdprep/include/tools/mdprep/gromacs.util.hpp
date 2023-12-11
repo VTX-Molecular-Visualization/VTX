@@ -47,9 +47,11 @@ namespace VTX::Tool::Mdprep::gromacs
 	struct pdb2gmx_command
 	{
 		size_t		forcefield_index = SIZE_MAX; // position of the forcefield to use for
-		water_model water			 = water_model::tip3p; 
 		fs::path	output_dir;
 		std::string root_file_name;
+
+		water_model water			 = water_model::tip3p; 
+
 	};
 
 } // namespace VTX::Tool::Mdprep::gromacs

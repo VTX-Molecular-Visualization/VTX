@@ -1,8 +1,10 @@
 #include "tools/mdprep/mdprep.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <string>
+#include <algorithm>
 #include <util/logger.hpp>
 #include <vector>
 
@@ -39,8 +41,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 			cmd[ i ] = &args.at( i ).at( 0 );
 		}
 
-		VTX::Tool::Mdprep::poc_args poc_args { .i = static_cast<int>( args.size() ), .s = cmd };
-		VTX::Tool::Mdprep::poc_execute_cmd( poc_args );
+		VTX::Tool::Mdprep::gromacs_command_args args { std::move(args) };
+		VTX::Tool::Mdprep::poc_execute_cmd( args );
 	}
 	bool b = true;
 }
