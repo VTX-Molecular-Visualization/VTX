@@ -5,6 +5,11 @@
 
 namespace VTX::App::Application::ECS
 {
+	ComponentMetaFunction::ComponentMetaFunction( const StructPrivacyToken & p_token )
+	{
+		VTXApp::get().getSystem().referenceSystem( "ComponentMetaFunction", this );
+	}
+
 	void ComponentMetaFunction::deserializeComponent(
 		const ComponentID &			  p_id,
 		const Core::ECS::BaseEntity & p_entity,
@@ -16,12 +21,11 @@ namespace VTX::App::Application::ECS
 			_mapDeserializer.at( p_id )( MAIN_REGISTRY(), SERIALIZER(), p_json, p_entity );
 	};
 
-	void ComponentMetaFunction::serializeComponent(
+	const Util::JSon::Object ComponentMetaFunction::serializeComponent(
 		const Core::ECS::BaseEntity & p_entity,
-		const ComponentID &			  p_componentID,
-		Util::JSon::Object &		  p_json
+		const ComponentID &			  p_componentID
 	)
 	{
-		_mapSerializer.at( p_componentID )( p_entity, p_json, MAIN_REGISTRY(), SERIALIZER() );
+		return _mapSerializer.at( p_componentID )( p_entity, MAIN_REGISTRY(), SERIALIZER() );
 	}
 } // namespace VTX::App::Application::ECS

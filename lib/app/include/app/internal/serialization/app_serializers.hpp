@@ -3,6 +3,7 @@
 
 #include "app/application/_fwd.hpp"
 #include "app/core/serialization/version.hpp"
+#include "app/core/trajectory_player/_fwd.hpp"
 #include <util/json/json.hpp>
 
 namespace VTX::App
@@ -23,6 +24,22 @@ namespace VTX::App::Internal::Serialization
 	// Settings
 	Util::JSon::Object serialize( const Application::Setting & );
 	void			   deserialize( const Util::JSon::Object &, Application::Setting & );
+
+	// TrajectoryPlayers
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::BasePlayer & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::BasePlayer & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::Stop & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::Stop & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::Loop & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::Loop & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::RevertLoop & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::RevertLoop & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::Once & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::Once & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::RevertOnce & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::RevertOnce & );
+	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::PingPong & );
+	void			   deserialize( const Util::JSon::Object &, App::Core::TrajectoryPlayer::PingPong & );
 
 } // namespace VTX::App::Internal::Serialization
 #endif

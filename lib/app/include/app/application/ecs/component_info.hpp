@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <typeindex>
+#include <util/generic/base_static_singleton.hpp>
 
 namespace VTX::App::Application::ECS
 {
@@ -13,20 +14,20 @@ namespace VTX::App::Application::ECS
 
 	static const ComponentID INVALID_COMPONENT_ID = "";
 
-	class ComponentInfo
+	class ComponentInfo : public Util::Generic::BaseStaticSingleton<ComponentInfo>
 	{
 	  public:
-		ComponentInfo() {}
+		ComponentInfo( const StructPrivacyToken & p_token );
 		~ComponentInfo() {}
 
 		template<Core::ECS::ECS_Component T>
-		static void registerComponent( const ComponentID & p_id )
+		void registerComponent( const ComponentID & p_id )
 		{
 			_mapTypeID[ typeid( T ).hash_code() ] = p_id;
 		}
 
 		template<Core::ECS::ECS_Component T>
-		static const ComponentID & getComponentID()
+		const ComponentID & getComponentID()
 		{
 			const size_t hashcode = typeid( T ).hash_code();
 
@@ -37,7 +38,7 @@ namespace VTX::App::Application::ECS
 		}
 
 	  private:
-		inline static std::map<size_t, ComponentID> _mapTypeID = std::map<size_t, ComponentID>();
+		std::map<size_t, ComponentID> _mapTypeID = std::map<size_t, ComponentID>();
 	};
 
 } // namespace VTX::App::Application::ECS

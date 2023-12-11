@@ -4,9 +4,13 @@
 #include "app/application/selection/molecule_data.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
+#include "app/component/io/molecule_metadata.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
+#include "app/core/trajectory_player/base_player.hpp"
+#include "app/core/trajectory_player/loop.hpp"
+#include "app/core/trajectory_player/players.hpp"
 #include "app/entity/scene/scene_item_entity.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include "app/render/proxy_builder.hpp"
@@ -52,7 +56,15 @@ namespace VTX::App::Entity::Scene
 
 		if ( moleculeComponent.hasTrajectory() )
 		{
-			MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
+			Component::Chemistry::Trajectory & trajectoryComponent
+				= MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( p_entity, &moleculeComponent );
+
+			std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> defaultPlayMode
+				= App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
+					App::Core::TrajectoryPlayer::Loop::NAME
+				);
+
+			trajectoryComponent.setPlayer( defaultPlayMode );
 		}
 	}
 	void MoleculeEntityBuilder::postSetup(
@@ -78,6 +90,10 @@ namespace VTX::App::Entity::Scene
 		Internal::IO::Reader::MoleculeLoader loader = Internal::IO::Reader::MoleculeLoader();
 		const FilePath						 path	= FilePath( filepathProperty->second.get<std::string>() );
 
+		const Core::ECS::BaseEntity &	  entity = MAIN_REGISTRY().getEntity( p_moleculeComponent );
+		Component::IO::MoleculeMetadata & metaData
+			= MAIN_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( entity );
+
 		if ( p_extraData.find( "buffer" ) != p_extraData.end() )
 		{
 			const Util::VTXVariant buffer = p_extraData.at( "buffer" ).get<std::string>();
@@ -93,10 +109,13 @@ namespace VTX::App::Entity::Scene
 		else // Filepath
 		{
 			loader.readFile( path, p_moleculeComponent );
+			metaData.path = path;
 		}
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
 		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
+		metaData.pdbIDCode								   = pdbId;
+
 		p_moleculeComponent.setPdbIdCode( pdbId );
 
 		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( path ) : pdbId;

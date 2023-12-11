@@ -229,7 +229,9 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
 	Test::Util::App::initApp();
-	Test::Util::App::loadTestMolecule();
+	Test::Util::App::loadTestTrajectoryMolecule();
+
+	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
 
@@ -244,11 +246,12 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	CHECK( loadedScene.getItemCount() == 1 );
 	const App::Component::Scene::SceneItemComponent & sceneItemObj
 		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
-	REQUIRE( sceneItemObj.getName() == "8OIT" );
+	REQUIRE( sceneItemObj.getName() == moleculeName );
 
-	// const App::Component::Chemistry::Molecule & molecule
-	//	= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( "8OIT" );
+	const App::Component::Chemistry::Molecule & molecule
+		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
 
+	CHECK( molecule.getAtoms().size() == 263 );
 	// CHECK( molecule.getAtoms().size() == 113095 );
 }
 

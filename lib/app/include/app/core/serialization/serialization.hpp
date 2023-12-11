@@ -58,7 +58,7 @@ namespace VTX::App::Core::Serialization
 		Util::JSon::BasicJSon serialize( const T & p_obj ) const
 		{
 			if ( !_mapSerializeFunctions.contains( typeid( T ) ) )
-				throw VTXException( "No serializer found for " + std::string( typeid( T ).name() ) );
+				throw VTXException( "No serializer found for {}", typeid( T ).name() );
 
 			return std::any_cast<const SerializeFunc<T> &>( _mapSerializeFunctions.at( typeid( T ) ) )( p_obj );
 		}
@@ -77,7 +77,7 @@ namespace VTX::App::Core::Serialization
 		void deserialize( const Util::JSon::BasicJSon & p_jsonObj, T & p_obj ) const
 		{
 			if ( !_mapDeserializeFunctions.contains( typeid( T ) ) )
-				throw VTXException( "No deserializer found for " + std::string( typeid( T ).name() ) );
+				throw VTXException( "No deserializer found for {}", typeid( T ).name() );
 
 			std::any_cast<const DeserializeFunc<T> &>( _mapDeserializeFunctions.at( typeid( T ) )
 			)( p_jsonObj.getObject(), p_obj );

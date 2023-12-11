@@ -70,8 +70,9 @@ namespace VTX
 			const Core::Serialization::Serialization & getSerializationTool() const;
 
 		  private:
-			std::shared_ptr<Application::System> _system = nullptr;
-			std::unique_ptr<Renderer::Renderer>	 _renderer;
+			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
+
+			std::unique_ptr<Renderer::Renderer> _renderer;
 
 			std::unique_ptr<Application::Setting>					  _setting;
 			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;

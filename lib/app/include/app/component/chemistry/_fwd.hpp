@@ -6,4 +6,5 @@ namespace VTX::App::Component::Chemistry
 	class Chain;
 	class Molecule;
 	class Residue;
+	class Trajectory;
 } // namespace VTX::App::Component::Chemistry

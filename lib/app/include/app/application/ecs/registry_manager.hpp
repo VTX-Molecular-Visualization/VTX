@@ -38,7 +38,7 @@ namespace VTX::App::Application::ECS
 			C & res = _registry.addComponent<C>( p_entity );
 
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			const ComponentID	  componentID	= ComponentInfo::getComponentID<C>();
+			const ComponentID	  componentID	= ComponentInfo::get().getComponentID<C>();
 
 			if ( componentID != INVALID_COMPONENT_ID )
 				infoComponent.addLinkedComponent( componentID );
@@ -51,7 +51,7 @@ namespace VTX::App::Application::ECS
 			C & res = _registry.addComponent<C>( p_entity, std::forward<Args...>( p_args... ) );
 
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			infoComponent.addLinkedComponent( ComponentInfo::getComponentID<C>() );
+			infoComponent.addLinkedComponent( ComponentInfo::get().getComponentID<C>() );
 
 			return res;
 		}
@@ -60,7 +60,7 @@ namespace VTX::App::Application::ECS
 		void removeComponent( const BaseEntity & p_entity )
 		{
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			infoComponent.removeLinkedComponent( ComponentInfo::getComponentID<C>() );
+			infoComponent.removeLinkedComponent( ComponentInfo::get().getComponentID<C>() );
 
 			_registry.removeComponent<C>( p_entity );
 		}

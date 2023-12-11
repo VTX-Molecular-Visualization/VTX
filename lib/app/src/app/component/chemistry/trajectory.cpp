@@ -6,7 +6,12 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	Trajectory::Trajectory() { _referenceUpdateFunction(); };
+	Trajectory::Trajectory()
+	{
+		_moleculePtr = &MAIN_REGISTRY().getComponent<Molecule>( *this );
+		_referenceUpdateFunction();
+	}
+
 	Trajectory::Trajectory( Molecule * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
 
 	size_t Trajectory::getCurrentFrame() const
