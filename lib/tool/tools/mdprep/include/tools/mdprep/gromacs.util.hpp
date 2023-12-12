@@ -77,6 +77,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 		int						 maxsol = 0;
 		bool					 vel	= false;
 	};
+
+	// Write gromacs command arguments using input instructions
+	//    Does nothing if the instructions have default values.
+	//    Does nothing if the input pdb doesn't exists
+	//    If the output_dir is empty, will use the input filename root and append "solv"
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs

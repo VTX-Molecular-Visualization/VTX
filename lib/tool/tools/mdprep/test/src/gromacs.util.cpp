@@ -2,6 +2,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <tools/mdprep/gromacs.util.hpp>
+#include <tools/mdprep/gromacs/gromacs.hpp>
 #include <util/logger.hpp>
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[executable_directory]" )
@@ -66,7 +67,15 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][some_dir]" )
 	CHECK( ffs.empty() );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" ) {}
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
+{
+	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+
+	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
+
+	CHECK( args.arguments.empty() );
+}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" ) {}
 
@@ -74,7 +83,15 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" ) {}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" ) {}
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" )
+{
+	VTX::Tool::Mdprep::Gromacs::solvate_instructions instructions;
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+
+	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
+
+	CHECK( args.arguments.empty() );
+}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][no_input]" ) {}
 
