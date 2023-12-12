@@ -13,7 +13,10 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Catch2 REQUIRED)
 
-add_executable(vtx_tool_mdprep_test src/main.cpp)
+
+file(GLOB_RECURSE SOURCES src/*)
+
+add_executable(vtx_tool_mdprep_test ${SOURCES})
 configure_target(vtx_tool_mdprep_test)
 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
