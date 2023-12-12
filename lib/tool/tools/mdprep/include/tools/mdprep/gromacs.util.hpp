@@ -7,24 +7,24 @@ namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep
 {
-	// Show gromacs where to look for forcefields
-	void declare_ff_directory( const fs::path & ) noexcept;
-
-	// Return the position of default forcefields packaged with vtx, relative to the vtx executable folder
-	const fs::path & default_ff_directory_relative_path() noexcept;
-
 	// Return the absolute path of the directory containing VTX executable
 	const fs::path & executable_directory() noexcept;
 
 } // namespace VTX::Tool::Mdprep
 
-namespace VTX::Tool::Mdprep::gromacs
+namespace VTX::Tool::Mdprep::Gromacs
 {
+	// Return the position of default forcefields packaged with vtx, relative to the vtx executable folder
+	const fs::path & default_ff_directory_relative_path() noexcept;
+
+	// Show gromacs where to look for forcefields
+	void declare_ff_directory( const fs::path & ) noexcept;
 
 	struct forcefield
 	{
-		std::string		 forcefield_folder_path; // Absolute path of the forcefield folder. Type is as string so string_view can be use as a name.
-		std::string_view name;					 // Name to show to the user and to give gromacs
+		std::string forcefield_folder_path; // Absolute path of the forcefield folder. Type is as string so string_view
+											// can be use as a name.
+		std::string_view name;				// Name to show to the user and to give gromacs
 	};
 
 	// List forcefields available in the input directory.
@@ -46,14 +46,14 @@ namespace VTX::Tool::Mdprep::gromacs
 
 	struct pdb2gmx_command
 	{
-		size_t		forcefield_index = SIZE_MAX; // position of the forcefield to use for
-		fs::path	output_dir;
-		std::string root_file_name;
+		std::vector<forcefield> forcefields;
+		size_t					forcefield_index = SIZE_MAX; // position of the forcefield to use for
+		fs::path				output_dir;
+		std::string				root_file_name;
 
-		water_model water			 = water_model::tip3p; 
-
+		water_model water = water_model::tip3p;
 	};
 
-} // namespace VTX::Tool::Mdprep::gromacs
+} // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif

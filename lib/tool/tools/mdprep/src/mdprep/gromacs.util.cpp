@@ -5,16 +5,6 @@
 
 namespace VTX::Tool::Mdprep
 {
-	void declare_ff_directory( const std::filesystem::path & path ) noexcept
-	{
-		std::string	   path_str = path.string();
-		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
-		qputenv( "GMXLIB", env_arg );
-	}
-	const fs::path g_default_ff_directory_relative_path
-		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
-	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
-
 	std::optional<fs::path> g_executable_directory;
 	const fs::path &		executable_directory() noexcept
 	{
@@ -32,3 +22,17 @@ namespace VTX::Tool::Mdprep
 	}
 
 } // namespace VTX::Tool::Mdprep
+
+namespace VTX::Tool::Mdprep::Gromacs
+{
+	const fs::path g_default_ff_directory_relative_path
+		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
+	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
+
+	void declare_ff_directory( const std::filesystem::path & path ) noexcept
+	{
+		std::string	   path_str = path.string();
+		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
+		qputenv( "GMXLIB", env_arg );
+	}
+} // namespace VTX::Tool::Mdprep::Gromacs
