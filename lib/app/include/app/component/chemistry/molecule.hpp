@@ -71,6 +71,13 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void				setPdbIdCode( const std::string & p_pdbIdCode ) { _pdbIdCode = p_pdbIdCode; }
 
+		bool getAtomVisibility( const size_t p_index ) const { return bool( _atomVisibilities[ p_index ] ); }
+		void setAtomVisibility( const size_t p_index, const bool p_visible )
+		{
+			_atomVisibilities[ p_index ] = uint( p_visible );
+		}
+		const std::vector<uint> & getAtomVisibilities() const { return _atomVisibilities; }
+
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 

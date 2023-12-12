@@ -6,7 +6,9 @@
 #include "util/math/range.hpp"
 #include "util/math/range_list.hpp"
 #include <concepts>
+#include <functional>
 #include <list>
+#include <vector>
 
 namespace VTX::Util::Algorithm::Range
 {
@@ -119,6 +121,26 @@ namespace VTX::Util::Algorithm::Range
 	void exclusiveInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = Details::Range::Exclusive( p_obj, p_other ).getRes();
+	}
+
+	template<typename TVector>
+	RangeList<typename std::vector<TVector>::size_type> generateRangeList(
+		const std::vector<TVector> &		   p_vector,
+		std::function<bool( const TVector & )> p_predicate
+	)
+	{
+		using TRange		  = typename std::vector<TVector>::size_type;
+		RangeList<TRange> res = RangeList<TRange>();
+
+		for ( TRange i = 0; i < p_vector.size(); i++ )
+		{
+			if ( p_predicate( p_vector[ i ] ) )
+			{
+				res.addValue( i );
+			}
+		}
+
+		return res;
 	}
 } // namespace VTX::Util::Algorithm::Range
 

@@ -21,6 +21,10 @@ namespace VTX::App::Internal::Serialization
 	Util::JSon::Object serialize( const Component::Scene::Transform & p_component );
 	void			   deserialize( const Util::JSon::Object & p_json, Component::Scene::Transform & p_component );
 
+	// MoleculeComponent
+	Util::JSon::Object serialize( const Component::Chemistry::Molecule & p_component );
+	void			   deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Molecule & p_component );
+
 	// MoleculeMetadata
 	Util::JSon::Object serialize( const Component::IO::MoleculeMetadata & p_component );
 	void			   deserialize( const Util::JSon::Object & p_json, Component::IO::MoleculeMetadata & p_component );

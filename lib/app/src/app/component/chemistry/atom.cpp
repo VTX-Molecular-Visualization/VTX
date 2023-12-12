@@ -52,7 +52,7 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.atomSymbols[ _index ] = p_symbol;
 	}
 
-	bool Atom::isVisible() { return _moleculePtr->_atomVisibilities[ _index ]; }
+	bool Atom::isVisible() const { return _moleculePtr->_atomVisibilities[ _index ]; }
 	void Atom::setVisible( const bool p_visible ) { _moleculePtr->_atomVisibilities[ _index ] = p_visible; }
 
 	ChemDB::Atom::TYPE Atom::getType() const

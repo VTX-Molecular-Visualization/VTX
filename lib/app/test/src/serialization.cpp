@@ -1,6 +1,9 @@
 #include "util/serialization.hpp"
 #include "util/app.hpp"
 #include <app/action/application.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/core/io/reader/serialized_object.hpp>
 #include <app/core/io/writer/serialized_object.hpp>
 #include <app/core/serialization/serialization.hpp>
@@ -233,6 +236,15 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 
 	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
+	App::Component::Chemistry::Molecule & molecule
+		= VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+
+	for ( size_t i = molecule.getResidue( 1 )->getIndexFirstAtom(); i <= molecule.getResidue( 1 )->getIndexLastAtom();
+		  i++ )
+	{
+		molecule.setAtomVisibility( i, false );
+	}
+
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
 
 	App::Action::Application::SaveScene saveSceneAction = App::Action::Application::SaveScene( jsonPath );
@@ -248,10 +260,12 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
 	REQUIRE( sceneItemObj.getName() == moleculeName );
 
-	const App::Component::Chemistry::Molecule & molecule
+	const App::Component::Chemistry::Molecule & loadedMolecule
 		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
 
-	CHECK( molecule.getAtoms().size() == 263 );
+	CHECK( loadedMolecule.getAtoms().size() == 263 );
+	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
+	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
 	// CHECK( molecule.getAtoms().size() == 113095 );
 }
 

@@ -12,6 +12,8 @@
 #include "app/core/trajectory_player/base_player.hpp"
 #include "app/core/trajectory_player/players.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
+#include <util/algorithm/range.hpp>
+#include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Internal::Serialization
@@ -45,7 +47,6 @@ namespace VTX::App::Internal::Serialization
 				 { "CAMERA_ROTATION", SERIALIZER().serialize( p_scene.getCamera().getRotation() ) },
 				 { "ENTITIES", entities } };
 	}
-
 	void deserialize( const Util::JSon::Object & p_json, Application::Scene & p_scene )
 	{
 		p_scene.getCamera().setPosition( SERIALIZER().deserializeField<Vec3f>( p_json, "CAMERA_POSITION" ) );
@@ -84,6 +85,18 @@ namespace VTX::App::Internal::Serialization
 		p_component.setName( SERIALIZER().deserializeField<std::string>( p_json, "NAME" ) );
 	}
 
+	// Chemistry::MoleculeComponent
+	Util::JSon::Object serialize( const Component::Chemistry::Molecule & p_component )
+	{
+		return { { "PDB_ID", p_component.getPdbIdCode() },
+				 { "TRANSFORM", SERIALIZER().serialize( p_component.getTransform() ) } };
+	}
+	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Molecule & p_component )
+	{
+		p_component.setPdbIdCode( SERIALIZER().deserializeField<std::string>( p_json, "PDB_ID" ) );
+		SERIALIZER().deserialize( p_json[ "TRANSFORM" ], p_component.getTransform() );
+	}
+
 	// TransformComponent
 	Util::JSon::Object serialize( const Component::Scene::Transform & p_component )
 	{
@@ -97,9 +110,18 @@ namespace VTX::App::Internal::Serialization
 	// MoleculeMetadata
 	Util::JSon::Object serialize( const Component::IO::MoleculeMetadata & p_component )
 	{
+		const Component::Chemistry::Molecule & moleculeComponent
+			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
+
+		// Store not visible atom indexes
+		Util::Math::RangeList<size_t> visibilities = Util::Algorithm::Range::generateRangeList<uint>(
+			moleculeComponent.getAtomVisibilities(), []( const uint & p_visibility ) { return !p_visibility; }
+		);
+
 		return { { "PATH", SERIALIZER().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
-				 { "SECONDARY_STRUCTURE_FROM_FILE", p_component.isSecondaryStructureLoadedFromFile } };
+				 { "SECONDARY_STRUCTURE_FROM_FILE", p_component.isSecondaryStructureLoadedFromFile },
+				 { "VISIBILITY", SERIALIZER().serialize( visibilities ) } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::IO::MoleculeMetadata & p_component )
 	{
@@ -115,6 +137,14 @@ namespace VTX::App::Internal::Serialization
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
 
 		loader.readFile( path, moleculeComponent );
+
+		const Util::Math::RangeList<uint> visibilities
+			= SERIALIZER().deserializeField<Util::Math::RangeList<uint>>( p_json, "VISIBILITY" );
+
+		for ( const uint index : visibilities )
+		{
+			moleculeComponent.setAtomVisibility( index, false );
+		}
 	}
 
 	// TrajectoryComponent

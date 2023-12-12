@@ -7,7 +7,7 @@ namespace VTX::App::Application::ECS
 {
 	ComponentMetaFunction::ComponentMetaFunction( const StructPrivacyToken & p_token )
 	{
-		VTXApp::get().getSystem().referenceSystem( "ComponentMetaFunction", this );
+		VTXApp::get().getSystem().referenceSystem( "COMPONENT_META_FUNCTION", this );
 	}
 
 	void ComponentMetaFunction::deserializeComponent(
