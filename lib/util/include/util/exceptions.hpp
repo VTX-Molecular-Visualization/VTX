@@ -1,7 +1,8 @@
 #ifndef __VTX_UTIL_EXCEPTIONS__
 #define __VTX_UTIL_EXCEPTIONS__
 
-#include <format>
+// #include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -13,10 +14,7 @@ namespace VTX
 	  protected:
 		template<typename... Args>
 		explicit Exception( const std::string & p_prepend, const std::string_view & p_fmt, Args &&... p_args ) :
-			std::runtime_error( formatMessage(
-				p_prepend,
-				std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
-			) )
+			std::runtime_error( formatMessage( p_prepend, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) ) )
 		{
 		}
 		explicit Exception( const std::string & p_prepend, const std::string & p_err ) :
@@ -27,7 +25,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_prepend, const std::string & p_err )
 		{
-			return std::vformat( "[{}] {}", std::make_format_args( p_prepend, p_err ) );
+			return fmt::vformat( "[{}] {}", fmt::make_format_args( p_prepend, p_err ) );
 		}
 	};
 
@@ -120,10 +118,7 @@ namespace VTX
 		explicit CommandException( const std::string & p_command, const std::string_view & p_fmt, Args &&... p_args ) :
 			Exception(
 				"COMMAND",
-				formatMessage(
-					p_command,
-					std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
-				)
+				formatMessage( p_command, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) )
 			)
 
 		{
@@ -136,7 +131,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_command, const std::string & p_err )
 		{
-			return std::vformat( "{} : {}", std::make_format_args( p_command, p_err ) );
+			return fmt::vformat( "{} : {}", fmt::make_format_args( p_command, p_err ) );
 		}
 	};
 	class ScriptException : public Exception
@@ -150,10 +145,7 @@ namespace VTX
 		) :
 			Exception(
 				"SCRIPT",
-				formatMessage(
-					p_scriptPath,
-					std::vformat( p_fmt, std::make_format_args( std::forward<Args>( p_args )... ) )
-				)
+				formatMessage( p_scriptPath, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) )
 			)
 		{
 		}
@@ -165,7 +157,7 @@ namespace VTX
 	  private:
 		std::string formatMessage( const std::string & p_scriptPath, const std::string & p_err )
 		{
-			return std::vformat( "{} : {}", std::make_format_args( p_scriptPath, p_err ) );
+			return fmt::vformat( "{} : {}", fmt::make_format_args( p_scriptPath, p_err ) );
 		}
 	};
 
