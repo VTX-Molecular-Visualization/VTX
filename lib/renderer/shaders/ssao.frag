@@ -12,12 +12,11 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 layout ( std140, binding = 3 ) uniform Uniforms
 {
+	float aoKernel[ 16 * 3 ];
 	float intensity;	
 	int	kernelSize;
 	int noiseTextureSize;
 } uniforms;
-
-uniform vec3 uAoKernel[ 512 ];
 
 // Out.
 layout( location = 0 ) out float outAmbientOcclusion;
@@ -46,7 +45,8 @@ void main()
 	for ( int i = 0; i < uniforms.kernelSize; ++i )
 	{
 		// Compute sample position.
-		const vec3 samplePos = TBN * uAoKernel[ i ] * radius + pos;
+		vec3 aoKernel = vec3( uniforms.aoKernel[ i * 3 ], uniforms.aoKernel[ i * 3 + 1 ], uniforms.aoKernel[ i * 3 + 2 ] );
+		const vec3 samplePos = TBN * aoKernel * radius + pos;
 
 		// Project sample position.
 		vec4 offset = uniformsCamera.matrixProjection * vec4( samplePos, 1.f );

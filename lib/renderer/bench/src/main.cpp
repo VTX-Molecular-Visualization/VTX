@@ -59,7 +59,7 @@ int main( int, char ** )
 		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
-		renderer.setCallbackBuild(
+		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
 			{
 				camera.setCallbackMatrixView( nullptr );
@@ -90,91 +90,73 @@ int main( int, char ** )
 		);
 
 		// Model.
+
 		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
 		const Renderer::StructProxyMolecule proxyMolecule
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
 
-		// TODO: debug.
-		// renderer.build();
-
 		/*
-		try
-		{
-			const std::string name = "4v6x.mmtf";
-			const FilePath	  path = Filesystem::getExecutableDir() / name;
+		const std::string name = "4v6x.mmtf";
+		const FilePath	  path = Filesystem::getExecutableDir() / name;
 
-			// Read model file.
-			Reader::Molecule			reader;
-			VTX::Core::Struct::Molecule molecule;
-			reader.readFile( path, molecule );
+		// Read model file.
+		Reader::Molecule			reader;
+		VTX::Core::Struct::Molecule molecule;
+		reader.readFile( path, molecule );
 
-			// Proxify.
-			// Move or maybe redo.
+		// Proxify.
+		// Move or maybe redo.
+		size_t										   size	   = molecule.trajectory.frames.front().size();
+		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
+		std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
+		std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
+		std::vector<float> radii( size );
+		std::generate(
+			radii.begin(),
+			radii.end(),
+			[ &symbols ]
+			{
+				static int i = 0;
+				return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
+			}
+		);
+		std::vector<uint> visibilities = std::vector<uint>( size, 1 );
+		std::vector<uint> selections   = std::vector<uint>( size, 0 );
+		std::vector<uint> ids( size );
+		std::iota( ids.begin(), ids.end(), 0 );
 
-			float timeProxify = Util::CHRONO_CPU(
-				[ & ]()
-				{
-					size_t										   size	   = molecule.trajectory.frames.front().size();
-					std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
-					std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
-					std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
-					std::vector<float> radii( size );
-					std::generate(
-						radii.begin(),
-						radii.end(),
-						[ &symbols ]
-						{
-							static int i = 0;
-							return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
-						}
-					);
-					std::vector<uint> visibilities = std::vector<uint>( size, 1 );
-					std::vector<uint> selections   = std::vector<uint>( size, 0 );
-					std::vector<uint> ids( size );
-					std::iota( ids.begin(), ids.end(), 0 );
+		std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
+		const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
 
-					std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
-					const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
+		std::generate(
+			bondsIndex.begin(),
+			bondsIndex.end(),
+			[ &bondPairAtomIndexes ]
+			{
+				static size_t i = 0;
+				return uint( bondPairAtomIndexes[ i++ ] );
+			}
+		);
 
-					std::generate(
-						bondsIndex.begin(),
-						bondsIndex.end(),
-						[ &bondPairAtomIndexes ]
-						{
-							static size_t i = 0;
-							return uint( bondPairAtomIndexes[ i++ ] );
-						}
-					);
+		// TODO:
+		// Use struct ssbo for atom infos by symbol (like radius).
+		// Setup color ssbo and layout.
 
-					// TODO:
-					// Use struct ssbo for atom infos by symbol (like radius).
-					// Setup color ssbo and layout.
+		// Use relationnal bdd system,
+		// or fill data at cpu side then push to gpu in compressed data?
 
-					// Use relationnal bdd system,
-					// or fill data at cpu side then push to gpu in compressed data?
-
-					// Setup representation ssbo and layout.
-					// Persisted data in CPU cache with smart ptr?
-					Renderer::StructProxyMolecule proxyMolecule = { &molecule.transform,
-																	&molecule.trajectory.frames.front(),
-																	&colors,
-																	&radii,
-																	&visibilities,
-																	&selections,
-																	&ids,
-																	&bondsIndex };
-					renderer.addMolecule( proxyMolecule );
-				}
-			);
-			VTX_INFO( "Proxify time: {}", timeProxify );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Loading failed: {}", p_e.what() );
-		}
+		// Setup representation ssbo and layout.
+		// Persisted data in CPU cache with smart ptr?
+		Renderer::StructProxyMolecule proxyMolecule = {
+			&molecule.transform, &molecule.trajectory.frames.front(), &colors, &radii, &visibilities, &selections, &ids,
+			&bondsIndex
+		};
+		renderer.addMolecule( proxyMolecule );
 		*/
+
+		// renderer.build();
 
 		// Main loop.
 		while ( isRunning )

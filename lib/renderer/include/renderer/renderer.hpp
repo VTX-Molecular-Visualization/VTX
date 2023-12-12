@@ -15,7 +15,7 @@ namespace VTX::Renderer
 	{
 	  public:
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
-		using CallbackBuild		  = std::function<void()>;
+		using CallbackClean		  = std::function<void()>;
 		using CallbackReady		  = std::function<void()>;
 
 		Renderer(
@@ -96,26 +96,7 @@ namespace VTX::Renderer
 				); // Vec3f([-1;1],[-1;1],0)
 				_noise[ i ] = Util::Math::normalize( _noise[ i ] );
 			}
-
-			// Kernel.
-			uint			   kernelSize = 16;
-			std::vector<float> aoKernel	  = std::vector<float>( kernelSize * 3 );
-			// Generate random ao kernel.
-			for ( uint i = 0; i < kernelSize / 3; i++ )
-			{
-				// Sample on unit hemisphere.
-				Vec3f v = Util::Math::cosineWeightedHemisphere();
-
-				// Scale sample within the hemisphere.
-				v *= Util::Math::randomFloat();
-				// Accelerating interpolation (distance from center reduces when number of points grow up).
-				float scale = float( i ) / float( kernelSize );
-				scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
-				v *= scale;
-				aoKernel[ i + 0 ] = v.x;
-				aoKernel[ i + 1 ] = v.y;
-				aoKernel[ i + 2 ] = v.z;
-			}
+			const uint kernelSize = 16;
 
 			Pass * const ssao = _renderGraph->addPass(
 				{ "SSAO",
@@ -133,17 +114,41 @@ namespace VTX::Renderer
 						   ,
 						   { E_CHANNEL_INPUT::_2, { "Depth", imageR32F } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR8 } } },
-				  Programs { { "SSAO",
-							   std::vector<FilePath> { "default.vert", "ssao.frag" },
-							   Uniforms { { "Intensity",
-											E_TYPE::FLOAT,
-											StructUniformValue<float> {
-												5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
-										  { "Kernel size", E_TYPE::UINT, StructUniformValue<uint> { kernelSize } },
-										  { "Noise texture size",
-											E_TYPE::UINT,
-											StructUniformValue<uint> { noiseTextureSize } } } } } }
+				  Programs {
+					  { "SSAO",
+						std::vector<FilePath> { "default.vert", "ssao.frag" },
+						Uniforms {
+							{ "Kernel",
+							  E_TYPE::ARRAYF,
+							  StructUniformValue<std::vector<float>> { std::vector<float>( kernelSize * 3 ) } },
+							{ "Intensity",
+							  E_TYPE::FLOAT,
+							  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+							{ "Kernel size", E_TYPE::UINT, StructUniformValue<uint> { kernelSize } },
+							{ "Noise texture size",
+							  E_TYPE::UINT,
+							  StructUniformValue<uint> { noiseTextureSize } } } } } }
 			);
+
+			// Kernel.
+			std::vector<float> & aoKernel
+				= std::get<StructUniformValue<std::vector<float>>>( ssao->programs[ 0 ].uniforms[ 0 ].value ).value;
+			// Generate random ao kernel.
+			for ( uint i = 0; i < kernelSize / 3; i++ )
+			{
+				// Sample on unit hemisphere.
+				Vec3f v = Util::Math::cosineWeightedHemisphere();
+
+				// Scale sample within the hemisphere.
+				v *= Util::Math::randomFloat();
+				// Accelerating interpolation (distance from center reduces when number of points grow up).
+				float scale = float( i ) / float( kernelSize );
+				scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
+				v *= scale;
+				aoKernel[ i + 0 ] = v.x;
+				aoKernel[ i + 1 ] = v.y;
+				aoKernel[ i + 2 ] = v.z;
+			}
 
 			// Blur.
 			Pass * const blurX = _renderGraph->addPass(
@@ -151,16 +156,19 @@ namespace VTX::Renderer
 				  Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } },
 						   { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR16F } } },
-				  Programs { { "Blur", std::vector<FilePath> { "default.vert", "blur.frag" } } } }
+				  Programs { { "Blur",
+							   std::vector<FilePath> { "default.vert", "blur.frag" },
+							   Uniforms { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
+										  { "Size",
+											E_TYPE::FLOAT,
+											StructUniformValue<float> {
+												17.f, StructUniformValue<float>::MinMax { 1.f, 99.f } } } } } } }
+
 			);
 
-			Pass * const blurY = _renderGraph->addPass(
-				{ "BlurY",
-				  Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } },
-						   { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
-				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR16F } } },
-				  Programs { { "Blur", std::vector<FilePath> { "default.vert", "blur.frag" } } } }
-			);
+			Pass * const blurY						 = _renderGraph->addPass( *blurX );
+			blurY->name								 = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Shading.
 			Pass * const shading = _renderGraph->addPass(
@@ -187,7 +195,7 @@ namespace VTX::Renderer
 							  StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
 							{ "Toon steps",
 							  E_TYPE::UINT,
-							  StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 15 } } },
+							  StructUniformValue<uint> { 4, StructUniformValue<uint>::MinMax { 1, 15 } } },
 							{ "Fog near",
 							  E_TYPE::FLOAT,
 							  StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
@@ -244,11 +252,22 @@ namespace VTX::Renderer
 								   { "Background", E_TYPE::BOOL, StructUniformValue<bool> { true } } } } } }
 			);
 			*/
+
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
 
+			_renderGraph->addLink( geo, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->addLink( depth, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
+
+			_renderGraph->addLink( ssao, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->addLink( depth, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
+
+			_renderGraph->addLink( blurX, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			_renderGraph->addLink( depth, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
+
 			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
+			_renderGraph->addLink( blurY, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
 
 			_renderGraph->addLink( shading, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->addLink( depth, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
@@ -306,7 +325,7 @@ namespace VTX::Renderer
 
 		inline void build( const uint p_output = 0 )
 		{
-			_onBuild();
+			_onClean();
 
 			_instructions.clear();
 			_infos = StructInfos();
@@ -340,7 +359,7 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void setCallbackBuild( const CallbackBuild & p_cb ) { _callbackBuild = p_cb; }
+		inline void setCallbackClean( const CallbackClean & p_cb ) { _callbackClean = p_cb; }
 
 		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
 
@@ -381,7 +400,7 @@ namespace VTX::Renderer
 		Instructions						 _instructions;
 		StructInfos							 _infos;
 
-		CallbackBuild _callbackBuild;
+		CallbackClean _callbackClean;
 		CallbackReady _callbackReady;
 
 		std::vector<StructProxyMolecule> _molecules;
@@ -405,11 +424,11 @@ namespace VTX::Renderer
 			_sizeBonds = p_proxy.bonds->size();
 		}
 
-		inline void _onBuild()
+		inline void _onClean()
 		{
-			if ( _callbackBuild )
+			if ( _callbackClean )
 			{
-				_callbackBuild();
+				_callbackClean();
 			}
 		}
 

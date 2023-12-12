@@ -73,11 +73,13 @@ namespace VTX::Renderer
 		StructUniformValue<uint>,
 		StructUniformValue<int>,
 		StructUniformValue<float>,
+		StructUniformValue<Vec2i>,
 		StructUniformValue<Vec3f>,
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>>;
+		StructUniformValue<Util::Color::Rgba>,
+		StructUniformValue<std::vector<float>>>;
 
 	struct Uniform
 	{
@@ -141,7 +143,8 @@ namespace VTX::Renderer
 	{
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
 		{
-			return p_left.format == p_right.format;
+			// return p_left.format == p_right.format;
+			return true;
 		}
 		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
 

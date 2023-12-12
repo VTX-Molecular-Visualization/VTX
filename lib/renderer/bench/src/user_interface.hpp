@@ -30,8 +30,8 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
-			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
+			// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
+			// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
 			_window = SDL_CreateWindow(
 				"VTX_RENDERER_BENCH",
@@ -503,6 +503,28 @@ namespace VTX::Bench
 								}
 								break;
 							}
+							case E_TYPE::VEC2I:
+							{
+								StructUniformValue<Vec2i> descValue
+									= std::get<StructUniformValue<Vec2i>>( uniform.value );
+
+								Vec2i value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Vec2i>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::InputInt2( uniform.name.c_str(), (int *)&value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
+								}
+								break;
+							}
 							case E_TYPE::COLOR4:
 							{
 								StructUniformValue<Util::Color::Rgba> descValue
@@ -523,6 +545,15 @@ namespace VTX::Bench
 									if ( isEditable )
 										p_renderer->setUniform( value, key );
 								}
+								break;
+							}
+							case E_TYPE::ARRAYF:
+							{
+								StructUniformValue<std::vector<float>> descValue
+									= std::get<StructUniformValue<std::vector<float>>>( uniform.value );
+								ImGui::Text(
+									fmt::format( "float array ({}) {}", descValue.value.size(), uniform.name ).c_str()
+								);
 								break;
 							}
 							default: throw std::runtime_error( "widget not implemented" ); break;

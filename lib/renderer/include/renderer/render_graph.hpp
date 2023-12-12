@@ -148,6 +148,7 @@ namespace VTX::Renderer
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				p_instructions.clear();
 				_clear();
 				return false;
 			}

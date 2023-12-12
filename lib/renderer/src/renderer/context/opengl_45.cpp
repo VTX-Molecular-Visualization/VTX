@@ -477,12 +477,14 @@ namespace VTX::Renderer::Context
 			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram ); break;
 			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram ); break;
 			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram ); break;
+			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram ); break;
 			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram ); break;
 			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram ); break;
 			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram ); break;
 			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram ); break;
 			case E_TYPE::COLOR4: _setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram ); break;
-			default: throw std::runtime_error( "unknown type" );
+			case E_TYPE::ARRAYF: _setUniformDefaultValue<std::vector<float>>( descUniform, p_descProgram ); break;
+			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}
 		}
 	}
@@ -637,12 +639,13 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes
 		= { { E_TYPE::BOOL, GL_BOOL },	 { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },
-			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC3F, GL_FLOAT },		{ E_TYPE::VEC4F, GL_FLOAT },
-			{ E_TYPE::MAT3F, GL_FLOAT }, { E_TYPE::MAT4F, GL_FLOAT },		{ E_TYPE::COLOR4, GL_FLOAT } };
+			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC2I, GL_INT },			{ E_TYPE::VEC3F, GL_FLOAT },
+			{ E_TYPE::VEC4F, GL_FLOAT }, { E_TYPE::MAT3F, GL_FLOAT },		{ E_TYPE::MAT4F, GL_FLOAT },
+			{ E_TYPE::COLOR4, GL_FLOAT } };
 
-	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
-		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
-		{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) }, { E_TYPE::VEC4F, sizeof( Vec4f ) },
-		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) }
-	};
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
+		= { { E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
+			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC2I, sizeof( Vec2i ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },
+			{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },
+			{ E_TYPE::COLOR4, sizeof( Vec4f ) } };
 } // namespace VTX::Renderer::Context

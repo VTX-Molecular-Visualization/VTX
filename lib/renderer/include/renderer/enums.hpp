@@ -50,11 +50,14 @@ namespace VTX::Renderer
 		UINT,
 		INT,
 		FLOAT,
+		VEC2I,
+		VEC2F,
 		VEC3F,
 		VEC4F,
 		MAT3F,
 		MAT4F,
-		COLOR4
+		COLOR4,
+		ARRAYF
 	};
 
 	enum struct E_ACCESS
