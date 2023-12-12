@@ -56,3 +56,20 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][top_dir]" )
 
 	CHECK( !is_ff_in_list( ffs, "poney" ) );
 }
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][some_dir]" )
+{
+	// tests directory with something else than forcefield in it
+	CHECK( !fs::is_empty( VTX::Tool::Mdprep::executable_directory() ) );
+
+	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields( VTX::Tool::Mdprep::executable_directory() );
+	CHECK( ffs.empty() );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" ) {}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" ) {}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" ) {}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" ) {}
