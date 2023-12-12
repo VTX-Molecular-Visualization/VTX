@@ -14,7 +14,7 @@ namespace VTX::App::Core::Serialization
 {
 	template<typename T>
 	concept SerializableByDefaultConcept
-		= (!Util::JSon::BasicJSonConcept<T>) && requires( T p_obj ) {
+		= (!Util::JSon::BasicJSonConcept<T>) && requires( T & p_obj ) {
 													{
 														Internal::Serialization::serialize( p_obj )
 														} -> std::convertible_to<Util::JSon::BasicJSon>;
