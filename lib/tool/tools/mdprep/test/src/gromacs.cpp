@@ -10,11 +10,11 @@ struct io_paths
 {
 	io_paths( const char * out_dir_name, const char * pdb_code ) :
 		in( exec_path / std::format( "data\\{}.pdb", pdb_code ) ),
-		out_gro( exec_path / std::format( "data\\{}\\{}.conf.gro", out_dir_name, pdb_code ) ),
-		out_topol( exec_path / std::format( "data\\{}\\{}.topol.top", out_dir_name, pdb_code ) ),
-		out_posre( exec_path / std::format( "data\\{}\\{}.posre.itp", out_dir_name, pdb_code ) ),
-		out_clean( exec_path / std::format( "data\\{}\\{}.clean.pdb", out_dir_name, pdb_code ) ),
-		out_index( exec_path / std::format( "data\\{}\\{}.index.ndx", out_dir_name, pdb_code ) )
+		out_gro( exec_path / std::format( "{}\\{}.conf.gro", out_dir_name, pdb_code ) ),
+		out_topol( exec_path / std::format( "{}\\{}.topol.top", out_dir_name, pdb_code ) ),
+		out_posre( exec_path / std::format( "{}\\{}.posre.itp", out_dir_name, pdb_code ) ),
+		out_clean( exec_path / std::format( "{}\\{}.clean.pdb", out_dir_name, pdb_code ) ),
+		out_index( exec_path / std::format( "{}\\{}.index.ndx", out_dir_name, pdb_code ) )
 	{
 	}
 	const fs::path & exec_path = VTX::Tool::Mdprep::executable_directory();
