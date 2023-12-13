@@ -682,7 +682,7 @@ namespace VTX::Bench
 	  private:
 		SDL_Window *  _window	 = nullptr;
 		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = false;
+		bool		  _vsync	 = true;
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

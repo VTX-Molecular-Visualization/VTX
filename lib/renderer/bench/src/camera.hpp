@@ -56,11 +56,7 @@ namespace VTX::Bench
 
 		inline void setVelocityRotation( const float p_velocity ) { _velocityRotation = p_velocity; }
 
-		inline void setVelocityZoom( const float p_velocity )
-		{
-			_velocityZoom = p_velocity;
-			_onMatrixProjection();
-		}
+		inline void setVelocityZoom( const float p_velocity ) { _velocityZoom = p_velocity; }
 
 		inline void translate( const Vec3f & p_delta )
 		{

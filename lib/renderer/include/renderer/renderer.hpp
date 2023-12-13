@@ -291,7 +291,7 @@ namespace VTX::Renderer
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
 				  // TODO: check why not compiling with bool.
-				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { false } } }
+				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { true } } }
 			);
 
 			//  Debug pass.

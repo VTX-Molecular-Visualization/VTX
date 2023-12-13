@@ -90,7 +90,6 @@ int main( int, char ** )
 		);
 
 		// Model.
-
 		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
 		const Renderer::StructProxyMolecule proxyMolecule
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
@@ -156,7 +155,7 @@ int main( int, char ** )
 		renderer.addMolecule( proxyMolecule );
 		*/
 
-		// renderer.build();
+		renderer.build();
 
 		// Main loop.
 		while ( isRunning )
@@ -175,6 +174,7 @@ int main( int, char ** )
 			{
 				inputManager.handle( event );
 			}
+
 			inputManager.update();
 			inputManager.consumeInputs();
 		}
