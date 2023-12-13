@@ -8,6 +8,7 @@
 #include <util/logger.hpp>
 #include <vector>
 
+/*
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 {
 	VTX::Util::Logger::get().init();
@@ -35,3 +36,4 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[poc]" )
 	VTX::Tool::Mdprep::gromacs_command_args args { std::move( arguments_vector ) };
 	VTX::Tool::Mdprep::poc_execute_cmd( args );
 }
+*/

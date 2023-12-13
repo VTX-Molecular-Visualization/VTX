@@ -2,15 +2,10 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMACS__
 
 #include "tools/mdprep/gromacs/base.hpp"
-#include <string>
-#include <vector>
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-	struct gromacs_command_args
-	{
-		std::vector<std::string> arguments;
-	};
+	struct gromacs_command_args;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

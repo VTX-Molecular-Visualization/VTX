@@ -66,7 +66,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    If the output_dir is empty, will create a output directory in the current working directory and use it.
 	void convert( const pdb2gmx_instructions &, gromacs_command_args & ) noexcept;
 
-	struct solvate_instructions
+	struct solvate_instructions // WIP
 	{
 		fs::path				 input_gro;
 		fs::path				 output_gro;

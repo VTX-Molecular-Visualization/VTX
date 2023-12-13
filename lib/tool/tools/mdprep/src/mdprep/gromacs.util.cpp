@@ -35,4 +35,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
 		qputenv( "GMXLIB", env_arg );
 	}
+	std::vector<forcefield> list_forcefields( const fs::path & ) { return {}; }
+
+	void convert( const pdb2gmx_instructions &, gromacs_command_args & ) noexcept {}
+	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
 } // namespace VTX::Tool::Mdprep::Gromacs

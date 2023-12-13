@@ -1,5 +1,6 @@
 #include "tools/mdprep/gromacs/gromacs.hpp"
 #include "gromacs/gmxpreprocess/pdb2gmx.h"
+#include "tools/mdprep/gromacs/gromacs.args.hpp"
 #include <cstring>
 
 extern "C"
