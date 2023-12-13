@@ -1,10 +1,10 @@
 #include "tools/mdprep/gromacs/gromacs.hpp"
+#include "mdprep/test/fixture.hpp"
 #include "tools/mdprep/gromacs.hpp"
 #include "tools/mdprep/gromacs.util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>
-#include <qapplication.h>
 
 struct io_paths
 {
@@ -28,9 +28,7 @@ struct io_paths
 
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1ubq]" )
 {
-	int				 argc = 0;
-	QCoreApplication app( argc, nullptr );
-	QString			 qpath = app.applicationDirPath();
+	VTX::test::setup_env f;
 
 	const char * out_dir_name = "out";
 	io_paths	 paths( out_dir_name, "1ubq" );

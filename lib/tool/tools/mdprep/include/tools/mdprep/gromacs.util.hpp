@@ -25,7 +25,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		std::string forcefield_folder_path; // Absolute path of the forcefield folder. Type is as string so string_view
 											// can be use as a name.
-		std::string_view name;				// Name to show to the user and to give gromacs
+		std::string_view get_name() const;	// Name to show to the user and to give gromacs
 	};
 
 	// List forcefields available in the input directory.
