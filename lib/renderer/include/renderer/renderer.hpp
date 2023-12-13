@@ -153,7 +153,7 @@ namespace VTX::Renderer
 			// Print kernel.
 			for ( uint i = 0; i < kernelSize; i++ )
 			{
-				VTX_INFO( "Kernel[{}]: {}", i, aoKernel[ i ] );
+				// VTX_INFO( "Kernel[{}]: {}", i, aoKernel[ i ] );
 			}
 
 			// Blur.
@@ -327,7 +327,12 @@ namespace VTX::Renderer
 			_renderGraph->getUniform<T>( p_value, p_key );
 		}
 
-		inline void resize( const size_t p_width, const size_t p_height ) { _renderGraph->resize( p_width, p_height ); }
+		inline void resize( const size_t p_width, const size_t p_height )
+		{
+			_width	= p_width;
+			_height = p_height;
+			_renderGraph->resize( p_width, p_height );
+		}
 
 		inline void build( const uint p_output = 0 )
 		{

@@ -153,6 +153,7 @@ namespace VTX::Renderer
 				return false;
 			}
 
+			VTX_DEBUG( "{} instructions generated", p_instructions.size() );
 			VTX_DEBUG( "{}", "Building render graph... done" );
 			return true;
 		}

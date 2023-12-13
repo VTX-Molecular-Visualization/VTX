@@ -332,6 +332,8 @@ namespace VTX::Renderer::Context
 		{
 			p_instructions.emplace_back( [ this ]() { _ubo->unbind(); } );
 		}
+
+		glFinish();
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
