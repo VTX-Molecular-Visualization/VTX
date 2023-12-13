@@ -27,8 +27,8 @@ namespace VTX::App::Internal::Serialization
 	void deserialize( const Util::JSon::Object & p_json, VTXApp & p_app ) { throw NotImplementedException(); }
 
 	// Settings
-	Util::JSon::Object serialize( const Application::Setting & p_settings ) { throw NotImplementedException(); }
-	void			   deserialize( const Util::JSon::Object & p_json, Application::Setting & p_settings )
+	Util::JSon::Object serialize( const Application::Settings & p_settings ) { throw NotImplementedException(); }
+	void			   deserialize( const Util::JSon::Object & p_json, Application::Settings & p_settings )
 	{
 		throw NotImplementedException();
 	}

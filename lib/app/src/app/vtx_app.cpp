@@ -3,12 +3,13 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/application/setting.hpp"
+#include "app/application/settings.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
+#include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
@@ -58,8 +59,10 @@ namespace VTX::App
 		_selectionManager = std::make_unique<Application::Selection::SelectionManager>();
 		_system->referenceSystem( SELECTION_MANAGER_KEY, _selectionManager.get() );
 
-		_setting = std::make_unique<Application::Setting>();
-		_system->referenceSystem( SETTING_KEY, _setting.get() );
+		_settings = std::make_unique<Application::Settings>();
+		Internal::Application::Settings::initSettings( *_settings );
+
+		_system->referenceSystem( SETTINGS_KEY, _settings.get() );
 
 		// Create scene.
 		Core::ECS::BaseEntity sceneEntity = getEntityDirector().build( Entity::SCENE_ENTITY_ID );
@@ -195,10 +198,10 @@ namespace VTX::App
 	Application::Scene &	   VTXApp::getScene() { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
 	const Application::Scene & VTXApp::getScene() const { return _system->getSystem<Application::Scene>( SCENE_KEY ); }
 
-	Application::Setting & VTXApp::getSettings() { return _system->getSystem<Application::Setting>( SETTING_KEY ); }
-	const Application::Setting & VTXApp::getSettings() const
+	Application::Settings & VTXApp::getSettings() { return _system->getSystem<Application::Settings>( SETTINGS_KEY ); }
+	const Application::Settings & VTXApp::getSettings() const
 	{
-		return _system->getSystem<Application::Setting>( SETTING_KEY );
+		return _system->getSystem<Application::Settings>( SETTINGS_KEY );
 	}
 
 	Application::ECS::RegistryManager & VTXApp::getRegistryManager()

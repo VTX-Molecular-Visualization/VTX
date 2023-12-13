@@ -65,6 +65,9 @@ namespace VTX
 
 	template<typename EnumType>
 	concept EnumConcept = std::is_enum<EnumType>::value;
+
+	template<typename StringType>
+	concept StringConcept = requires( StringType & p_strLike ) { std::string( p_strLike ); };
 } // namespace VTX
 
 #endif
