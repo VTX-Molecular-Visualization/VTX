@@ -172,7 +172,8 @@ namespace VTX::Renderer::Context
 			};
 
 			// Bind inputs.
-			uint channelMax = 0;
+			uint										channelMax = 0;
+			std::map<E_CHANNEL_INPUT, const IO * const> mapBoundAttachments;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
 				const IO & descIO = input.desc;
@@ -195,13 +196,14 @@ namespace VTX::Renderer::Context
 							p_instructions.emplace_back( [ this, channel = channel, &descIOSrc ]()
 														 { _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); }
 							);
+							mapBoundAttachments.emplace( channel, &descIOSrc );
 						}
 						else
 						{
 							throw std::runtime_error( "unknown descriptor type" );
 						}
 					}
-					// Bind filled texture.
+					// Bind prefilled texture.
 					else
 					{
 						const Attachment & attachment = std::get<Attachment>( descIO );
@@ -210,12 +212,11 @@ namespace VTX::Renderer::Context
 						{
 							p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
 														 { _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); } );
+							mapBoundAttachments.emplace( channel, &descIO );
 						}
 						else
 						{
-							VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPassPtr->name );
-							// TODO: bind dummy texture?
-							continue;
+							VTX_WARNING( "Input channel {} from pass {} has no source", input.name, descPassPtr->name );
 						}
 					}
 				}
@@ -303,25 +304,10 @@ namespace VTX::Renderer::Context
 			}
 
 			// Unbind inputs.
-			for ( const auto & [ channel, input ] : descPassPtr->inputs )
+			for ( const auto & [ channel, descIOPtr ] : mapBoundAttachments )
 			{
-				const Output * const src = findInputSrcInLinks( channel );
-
-				if ( src == nullptr )
-				{
-					continue;
-				}
-
-				const IO & descIO = src->desc;
-				if ( std::holds_alternative<Attachment>( descIO ) )
-				{
-					p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
-												 { _textures[ &descIO ]->unbindFromUnit( GLuint( channel ) ); } );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
-				}
+				p_instructions.emplace_back( [ this, channel = channel, descIOPtr ]()
+											 { _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
 			}
 
 			// Unbind fbo.
@@ -396,6 +382,7 @@ namespace VTX::Renderer::Context
 					_createAttachment( descIO );
 				}
 			}
+			// Create vao if data provided.
 			else if ( std::holds_alternative<Data>( descIO ) )
 			{
 				const Data & data = std::get<Data>( descIO );
