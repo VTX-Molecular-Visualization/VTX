@@ -306,7 +306,7 @@ namespace VTX::Renderer::Context
 			// Unbind inputs.
 			for ( const auto & [ channel, descIOPtr ] : mapBoundAttachments )
 			{
-				p_instructions.emplace_back( [ this, channel = channel, descIOPtr ]()
+				p_instructions.emplace_back( [ this, channel = channel, descIOPtr = descIOPtr ]()
 											 { _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
 			}
 
