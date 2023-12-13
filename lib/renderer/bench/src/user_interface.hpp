@@ -370,7 +370,7 @@ namespace VTX::Bench
 						// Uniforms.
 						for ( const Uniform & uniform : program.uniforms )
 						{
-							std::string key		   = program.name + uniform.name;
+							std::string key		   = pass->name + program.name + uniform.name;
 							bool		isEditable = isBuilt && isInRenderQueue;
 
 							// ImGui::Text( uniform.name.c_str() );
@@ -554,6 +554,26 @@ namespace VTX::Bench
 								ImGui::Text(
 									fmt::format( "float array ({}) {}", descValue.value.size(), uniform.name ).c_str()
 								);
+
+								// Tooltip.
+								/*
+								if ( ImGui::IsItemHovered() )
+								{
+									std::vector<float> value( descValue.value.size() );
+									p_renderer->getUniform<std::vector<float>>( value, key );
+
+									std::string tooltip;
+									for ( const float & v : value )
+									{
+										 tooltip += fmt::format( "{} ", v );
+									}
+
+									ImGui::BeginTooltip();
+									ImGui::TextUnformatted( tooltip.c_str() );
+									ImGui::Separator();
+									ImGui::EndTooltip();
+								}
+								*/
 								break;
 							}
 							default: throw std::runtime_error( "widget not implemented" ); break;

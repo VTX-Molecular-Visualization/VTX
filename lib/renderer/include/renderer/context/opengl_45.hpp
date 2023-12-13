@@ -113,26 +113,34 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		void _createInputData( const Pass * const p_descPassPtr );
+		void _createInputs( const Pass * const p_descPassPtr );
 
-		void _createOuputResources(
+		void _createOuputs(
 			const Pass * const	  p_descPassPtr,
 			std::vector<GLenum> & p_drawBuffers,
 			bool &				  p_hasDepthComponent
 		);
 
+		void _createAttachment( const IO & descIO );
+
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
 			const Uniforms &	  p_uniforms,
-			const Program * const p_descProgram = nullptr
+			const Program * const p_descProgram = nullptr,
+			const Pass * const	  p_descPassPtr = nullptr
 		);
 
 		template<typename T>
-		void _setUniformDefaultValue( const Uniform & p_descUniform, const Program * const p_descProgram = nullptr )
+		void _setUniformDefaultValue(
+			const Uniform &		  p_descUniform,
+			const Program * const p_descProgram = nullptr,
+			const Pass * const	  p_descPassPtr = nullptr
+		)
 		{
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
-			std::string key = ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
+			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
+							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
 			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 

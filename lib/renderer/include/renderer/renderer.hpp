@@ -134,7 +134,7 @@ namespace VTX::Renderer
 			std::vector<float> & aoKernel
 				= std::get<StructUniformValue<std::vector<float>>>( ssao->programs[ 0 ].uniforms[ 0 ].value ).value;
 			// Generate random ao kernel.
-			for ( uint i = 0; i < kernelSize / 3; i++ )
+			for ( uint i = 0; i < kernelSize; i++ )
 			{
 				// Sample on unit hemisphere.
 				Vec3f v = Util::Math::cosineWeightedHemisphere();
@@ -145,9 +145,15 @@ namespace VTX::Renderer
 				float scale = float( i ) / float( kernelSize );
 				scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
 				v *= scale;
-				aoKernel[ i + 0 ] = v.x;
-				aoKernel[ i + 1 ] = v.y;
-				aoKernel[ i + 2 ] = v.z;
+				aoKernel[ i * 3 + 0 ] = v.x;
+				aoKernel[ i * 3 + 1 ] = v.y;
+				aoKernel[ i * 3 + 2 ] = v.z;
+			}
+
+			// Print kernel.
+			for ( uint i = 0; i < kernelSize; i++ )
+			{
+				VTX_INFO( "Kernel[{}]: {}", i, aoKernel[ i ] );
 			}
 
 			// Blur.
@@ -157,7 +163,7 @@ namespace VTX::Renderer
 						   { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR16F } } },
 				  Programs { { "Blur",
-							   std::vector<FilePath> { "default.vert", "blur.frag" },
+							   std::vector<FilePath> { "default.vert", "bilateral_blur.frag" },
 							   Uniforms { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
 										  { "Size",
 											E_TYPE::FLOAT,
