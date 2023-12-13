@@ -76,10 +76,33 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][some_dir]" )
 	CHECK( ffs.empty() );
 }
 
+namespace VTX::test
+{
+
+	struct fixture_convert_pdb2gmx
+	{
+		VTX::test::setup_env							 f;
+		const char *									 output_dir_name = "out";
+		VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
+		VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+	};
+	fixture_convert_pdb2gmx create_correct_in_out()
+	{
+		fixture_convert_pdb2gmx f;
+
+		f.instructions.forcefields.emplace_back( "./data/forcefield1.ff" );
+		f.instructions.forcefields.emplace_back( "./data/forcefield2.ff" );
+		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
+		f.instructions.forcefield_index = 1;
+		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::water_model::spce;
+		f.instructions.output_dir		= VTX::Tool::Mdprep::executable_directory() / f.output_dir_name;
+		f.instructions.input_pdb		= VTX::Tool::Mdprep::executable_directory() / "data" / "1ubq.pdb";
+		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
+	}
+} // namespace VTX::test
+
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
 {
-	VTX::test::setup_env f;
-
 	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
 
@@ -88,11 +111,21 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
 	CHECK( args.arguments.empty() );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" ) {}
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" )
+{
+	VTX::test::setup_env f;
+
+	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+
+	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
+}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" ) {}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" ) {}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" ) {}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" )
 {
