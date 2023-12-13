@@ -14,10 +14,13 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Catch2 REQUIRED)
 
 
+file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
+
 
 add_executable(vtx_tool_mdprep_test ${SOURCES})
 configure_target(vtx_tool_mdprep_test)
+
 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
@@ -28,6 +31,8 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried throug
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
+
+target_include_directories(vtx_tool_mdprep_test PRIVATE include)
 
 include(CTest)
 include(Catch)
