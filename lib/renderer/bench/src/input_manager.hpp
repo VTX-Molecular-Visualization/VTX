@@ -46,6 +46,7 @@ namespace VTX::Bench
 			case SDL_WINDOWEVENT:
 				switch ( p_event.window.event )
 				{
+				case SDL_WINDOWEVENT_SIZE_CHANGED:
 				case SDL_WINDOWEVENT_RESIZED: _onResize( p_event.window.data1, p_event.window.data2 ); break;
 				}
 				break;
