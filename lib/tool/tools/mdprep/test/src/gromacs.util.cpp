@@ -98,6 +98,8 @@ namespace VTX::test
 		f.instructions.output_dir		= VTX::Tool::Mdprep::executable_directory() / f.output_dir_name;
 		f.instructions.input_pdb		= VTX::Tool::Mdprep::executable_directory() / "data" / "1ubq.pdb";
 		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
+
+		return f;
 	}
 } // namespace VTX::test
 
@@ -113,31 +115,45 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" )
 {
-	VTX::test::setup_env f;
+	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
 
-	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
-	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+	data.instructions.forcefield_index = 13;
 
-	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+
+	CHECK( data.args.arguments.empty() );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" ) {}
-
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" ) {}
-
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" ) {}
-
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" )
 {
-	VTX::test::setup_env f;
+	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
 
-	VTX::Tool::Mdprep::Gromacs::solvate_instructions instructions;
-	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+	data.instructions.input_pdb = "";
 
-	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
 
-	CHECK( args.arguments.empty() );
+	CHECK( data.args.arguments.empty() );
 }
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" )
+{
+	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+
+	data.instructions.output_dir = "";
+
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+
+	CHECK( data.args.arguments.empty() );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
+{
+	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][no_input]" ) {}
 
