@@ -26,14 +26,11 @@ struct io_paths
 	fs::path		 out_index;
 };
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1ubq]" )
+void check_pdb( const char * pdb_code )
 {
-	VTX::test::setup_env f;
+	io_paths paths( pdb_code, pdb_code );
 
-	const char * out_dir_name = "out";
-	io_paths	 paths( out_dir_name, "1ubq" );
-
-	fs::path out_dir( paths.exec_path / out_dir_name );
+	fs::path out_dir( paths.exec_path / pdb_code );
 	if ( fs::is_directory( out_dir ) )
 		fs::remove_all( out_dir );
 	fs::create_directories( out_dir );
@@ -59,13 +56,39 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2g
 		"-water",
 		"tip3p",
 	} };
+
 	VTX::Tool::Mdprep::Gromacs::declare_ff_directory(
 		VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_ff_directory_relative_path()
 	);
 	VTX::Tool::Mdprep::Gromacs::submit_gromacs_command( args );
+
 	CHECK( fs::exists( paths.out_gro ) );
 	CHECK( fs::exists( paths.out_topol ) );
 	CHECK( fs::exists( paths.out_posre ) );
 	CHECK( fs::exists( paths.out_clean ) );
 	CHECK( fs::exists( paths.out_index ) );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1ubq]" )
+{
+	VTX::test::setup_env f;
+	check_pdb( "1ubq" );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1k22]" )
+{
+	VTX::test::setup_env f;
+	check_pdb( "1k22" );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][5j6s]" )
+{
+	VTX::test::setup_env f;
+	check_pdb( "5j6s" );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][5vo4]" )
+{
+	VTX::test::setup_env f;
+	check_pdb( "5vo4" );
 }
