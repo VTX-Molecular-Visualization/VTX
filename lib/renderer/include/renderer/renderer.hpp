@@ -96,7 +96,6 @@ namespace VTX::Renderer
 				); // Vec3f([-1;1],[-1;1],0)
 				_noise[ i ] = Util::Math::normalize( _noise[ i ] );
 			}
-			const uint kernelSize = 16;
 
 			Pass * const ssao = _renderGraph->addPass(
 				{ "SSAO",
@@ -119,10 +118,7 @@ namespace VTX::Renderer
 							   Uniforms { { "Intensity",
 											E_TYPE::FLOAT,
 											StructUniformValue<float> {
-												5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
-										  { "Noise texture size",
-											E_TYPE::UINT,
-											StructUniformValue<uint> { noiseTextureSize } } } } } }
+												5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
 			);
 
 			// Blur.

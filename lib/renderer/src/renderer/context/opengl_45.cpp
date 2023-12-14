@@ -343,11 +343,6 @@ namespace VTX::Renderer::Context
 
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
-		for ( auto & texture : _textures )
-		{
-			texture.second->resize( width, height );
-		}
-
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
 			for ( const auto & [ channel, output ] : descPassPtr->outputs )
@@ -357,6 +352,7 @@ namespace VTX::Renderer::Context
 				{
 					if ( _textures.find( &descIO ) != _textures.end() )
 					{
+						_textures[ &descIO ]->resize( width, height );
 						_fbos[ descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
 					}
 				}

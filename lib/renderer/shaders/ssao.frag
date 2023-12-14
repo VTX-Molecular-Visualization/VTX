@@ -12,8 +12,7 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
 layout ( std140, binding = 3 ) uniform Uniforms
 {	
-	float intensity;	
-	int noiseTextureSize;
+	float intensity;
 } uniforms;
 
 // Out.
@@ -39,6 +38,7 @@ const vec3[16] aoKernel = vec3[16](
     vec3(-0.444832, 0.36629602, 0.65063953)
 );
 const int kernelSize = aoKernel.length();
+const int noiseTextureSize = 64;
 
 void main()
 {
@@ -51,7 +51,7 @@ void main()
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
 	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( uniforms.noiseTextureSize ) ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( noiseTextureSize ) ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
