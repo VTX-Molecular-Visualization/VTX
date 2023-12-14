@@ -3,6 +3,7 @@
 
 #include "concept_context.hpp"
 #include "gl/buffer.hpp"
+#include "gl/chrono.hpp"
 #include "gl/framebuffer.hpp"
 #include "gl/program_manager.hpp"
 #include "gl/struct_opengl_infos.hpp"
@@ -22,11 +23,12 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		void build(
-			const RenderQueue & p_renderQueue,
-			const Links &		p_links,
-			const Handle		p_output,
-			const Uniforms &	p_uniforms,
-			Instructions &		p_instructions
+			const RenderQueue &			 p_renderQueue,
+			const Links &				 p_links,
+			const Handle				 p_output,
+			const Uniforms &			 p_uniforms,
+			Instructions &				 p_outInstructions,
+			InstructionsDurationRanges & p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
@@ -74,6 +76,8 @@ namespace VTX::Renderer::Context
 			p_infos.gpuMemoryInfoTotalAvailable	  = _openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX;
 			p_infos.gpuMemoryInfoCurrentAvailable = _openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX;
 		}
+
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) { return GL::CHRONO_GPU( p_task ); }
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).

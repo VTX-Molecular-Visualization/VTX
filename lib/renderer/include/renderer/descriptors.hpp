@@ -137,6 +137,16 @@ namespace VTX::Renderer
 	using Instruction  = std::function<void()>;
 	using Instructions = std::vector<Instruction>;
 
+	struct InstructionsDurationRange
+	{
+		std::string name;
+		size_t		first;
+		size_t		last;
+		float		duration;
+	};
+
+	using InstructionsDurationRanges = std::vector<InstructionsDurationRange>;
+
 	struct StructCompareVisitorDesc
 	{
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const

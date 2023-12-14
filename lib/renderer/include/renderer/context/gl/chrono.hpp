@@ -1,11 +1,11 @@
-#ifndef __VTX_RENDERER_GL_CHRONO__
-#define __VTX_RENDERER_GL_CHRONO__
+#ifndef __VTX_RENDERER_CONTEXT_GL_CHRONO__
+#define __VTX_RENDERER_CONTEXT_GL_CHRONO__
 
-#include "renderer/gl/include_opengl.hpp"
 #include <cassert>
+#include <glad/glad.h>
 #include <util/chrono.hpp>
 
-namespace VTX::Renderer::GL
+namespace VTX::Renderer::Context::GL
 {
 	class Chrono
 	{
@@ -57,6 +57,6 @@ namespace VTX::Renderer::GL
 		c.stop();
 		return float( c.stop() );
 	};
-} // namespace VTX::Renderer::GL
+} // namespace VTX::Renderer::Context::GL
 
 #endif

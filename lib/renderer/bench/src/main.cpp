@@ -58,14 +58,19 @@ int main( int, char ** )
 		);
 		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
-
+		inputManager.setCallbackResize(
+			[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+			{
+				renderer.resize( p_width, p_height );
+				camera.resize( p_width, p_height );
+			}
+		);
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
 			{
 				camera.setCallbackMatrixView( nullptr );
 				camera.setCallbackMatrixProjection( nullptr );
 				camera.setCallbackClipInfos( nullptr );
-				inputManager.setCallbackResize( nullptr );
 			}
 		);
 
@@ -78,14 +83,6 @@ int main( int, char ** )
 													{ renderer.setMatrixProjection( p_matrix ); } );
 				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
-
-				inputManager.setCallbackResize(
-					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-					{
-						renderer.resize( p_width, p_height );
-						camera.resize( p_width, p_height );
-					}
-				);
 			}
 		);
 
