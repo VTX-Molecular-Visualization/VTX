@@ -84,7 +84,7 @@ namespace VTX::test
 		VTX::test::setup_env							 f;
 		const char *									 output_dir_name = "out";
 		VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
-		VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+		VTX::Tool::Mdprep::Gromacs::gromacs_command_args expected_args;
 	};
 	fixture_convert_pdb2gmx create_correct_in_out()
 	{
@@ -99,6 +99,29 @@ namespace VTX::test
 		f.instructions.input_pdb		= VTX::Tool::Mdprep::executable_directory() / "data" / "1ubq.pdb";
 		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
 
+		// I kind of re-do the implementation of convert here, but I guess that if I do it twice, it is half the chance
+		// of doing a mistake ?
+		f.expected_args.arguments.push_back( "pdb2gmx" );
+		f.expected_args.arguments.push_back( "-f" );
+		f.expected_args.arguments.push_back( f.instructions.input_pdb.string() );
+		std::string input_root_name = f.instructions.input_pdb.filename().string();
+		f.expected_args.arguments.push_back( "-o" );
+		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".gro" ) ).string() );
+		f.expected_args.arguments.push_back( "-p" );
+		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".top" ) ).string() );
+		f.expected_args.arguments.push_back( "-i" );
+		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".itp" ) ).string() );
+		f.expected_args.arguments.push_back( "-q" );
+		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".clean.pdb" ) ).string()
+		);
+		f.expected_args.arguments.push_back( "-n" );
+		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".ndx" ) ).string() );
+		f.expected_args.arguments.push_back( "-ff" );
+		f.expected_args.arguments.push_back(
+			f.instructions.forcefields.at( f.instructions.forcefield_index ).get_name().data()
+		);
+		f.expected_args.arguments.push_back( "-water" );
+		f.expected_args.arguments.push_back( VTX::Tool::Mdprep::Gromacs::string( f.instructions.water ) );
 		return f;
 	}
 } // namespace VTX::test
@@ -115,42 +138,56 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" )
 {
-	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
 
 	data.instructions.forcefield_index = 13;
 
-	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
-	CHECK( data.args.arguments.empty() );
+	CHECK( args.arguments.empty() );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" )
 {
-	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
 
 	data.instructions.input_pdb = "";
 
-	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
-	CHECK( data.args.arguments.empty() );
+	CHECK( args.arguments.empty() );
 }
+
+bool share_same_parent( const fs::path & l, const fs::path & r ) { return l.parent_path() == r.parent_path(); }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" )
 {
-	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
 
 	data.instructions.output_dir = "";
 
-	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
-	CHECK( data.args.arguments.empty() );
+	// This design might be anoying as it is tightly coupled with the implementation of convert. I might want to change
+	// that in the future to have a more comprehensive way to retrieve output argument indexes.
+	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 4 ) } ) );
+	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 6 ) } ) );
+	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 8 ) } ) );
+	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 10 ) } ) );
+	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 12 ) } ) );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 {
-	VTX::test::fixture_convert_pdb2gmx data = VTX::test::create_correct_in_out();
+	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
 
-	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, data.args );
+	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
+
+	CHECK( data.expected_args == args );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}

@@ -10,6 +10,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		std::vector<std::string> arguments;
 	};
+	inline bool operator==( const gromacs_command_args & l, const gromacs_command_args & r ) noexcept
+	{
+		return l.arguments == r.arguments;
+	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

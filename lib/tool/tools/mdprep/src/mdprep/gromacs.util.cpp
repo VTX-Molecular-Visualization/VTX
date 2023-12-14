@@ -1,4 +1,5 @@
 #include "tools/mdprep/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.args.hpp"
 #include <filesystem>
 #include <format>
 #include <optional>
@@ -69,7 +70,58 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return out;
 	}
 
-	void convert( const pdb2gmx_instructions &, gromacs_command_args & ) noexcept {}
+	const char * string( const water_model & w ) noexcept
+	{
+		switch ( w )
+		{
+		case VTX::Tool::Mdprep::Gromacs::water_model::none: return "none";
+		case VTX::Tool::Mdprep::Gromacs::water_model::spc: return "spc";
+		case VTX::Tool::Mdprep::Gromacs::water_model::spce: return "spce";
+		case VTX::Tool::Mdprep::Gromacs::water_model::tip3p: return "tip3p";
+		case VTX::Tool::Mdprep::Gromacs::water_model::tip4p: return "tip4p";
+		case VTX::Tool::Mdprep::Gromacs::water_model::tip5p: return "tip5p";
+		case VTX::Tool::Mdprep::Gromacs::water_model::tips3p: return "tips3p";
+		default: break;
+		}
+		return "";
+	}
+
+	void convert( const pdb2gmx_instructions & in, gromacs_command_args & out ) noexcept
+	{
+		if ( in.forcefields.empty() )
+			return;
+		if ( in.forcefield_index >= in.forcefields.size() )
+			return;
+		if ( in.input_pdb.empty() )
+			return;
+		if ( !in.input_pdb.has_filename() )
+			return;
+
+		fs::path output_dir = in.output_dir;
+		if ( output_dir.empty() )
+			output_dir = in.input_pdb.parent_path();
+		fs::create_directories( output_dir );
+		out.arguments.clear();
+
+		out.arguments.push_back( "pdb2gmx" );
+		out.arguments.push_back( "-f" );
+		out.arguments.push_back( in.input_pdb.string() );
+		std::string input_root_name = in.input_pdb.filename().string();
+		out.arguments.push_back( "-o" );
+		out.arguments.push_back( ( output_dir / ( input_root_name + ".gro" ) ).string() );
+		out.arguments.push_back( "-p" );
+		out.arguments.push_back( ( output_dir / ( input_root_name + ".top" ) ).string() );
+		out.arguments.push_back( "-i" );
+		out.arguments.push_back( ( output_dir / ( input_root_name + ".itp" ) ).string() );
+		out.arguments.push_back( "-q" );
+		out.arguments.push_back( ( output_dir / ( input_root_name + ".clean.pdb" ) ).string() );
+		out.arguments.push_back( "-n" );
+		out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
+		out.arguments.push_back( "-ff" );
+		out.arguments.push_back( in.forcefields.at( in.forcefield_index ).get_name().data() );
+		out.arguments.push_back( "-water" );
+		out.arguments.push_back( string( in.water ) );
+	}
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
 
 	std::string_view forcefield::get_name() const

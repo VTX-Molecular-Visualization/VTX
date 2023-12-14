@@ -46,6 +46,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		tip5p,
 		tips3p
 	};
+	const char * string( const water_model & ) noexcept;
 
 	struct pdb2gmx_instructions
 	{
