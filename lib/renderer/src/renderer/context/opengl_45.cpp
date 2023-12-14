@@ -39,7 +39,7 @@ namespace VTX::Renderer::Context
 		vbo->setData( quad, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glClearColor( 1.f, 0.f, 0.f, 1.f );
+		glClearColor( 0.f, 0.f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		_getOpenglInfos();
@@ -403,9 +403,11 @@ namespace VTX::Renderer::Context
 					auto & vbo = _bos[ input.name + entry.name ];
 					vaoData->enableAttribute( chan );
 					vaoData->setVertexBuffer(
-						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.type ] )
+						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.nativeType ] )
 					);
-					vaoData->setAttributeFormat( chan, GLint( entry.components ), GLint( _mapTypes[ entry.type ] ) );
+					vaoData->setAttributeFormat(
+						chan, GLint( entry.components ), GLint( _mapTypes[ entry.nativeType ] )
+					);
 					vaoData->setAttributeBinding( chan, chan );
 					chan++;
 				}
@@ -477,23 +479,14 @@ namespace VTX::Renderer::Context
 
 		for ( const Uniform & descUniform : p_uniforms )
 		{
-			size_t size = 0;
-			if ( descUniform.type == E_TYPE::ARRAYF )
-			{
-				size = sizeof( float )
-					   * std::get<StructUniformValue<std::vector<float>>>( descUniform.value ).value.size();
-			}
-			else
-			{
-				size = _mapTypeSizes[ descUniform.type ];
-			}
-
-			std::string key = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
+			size_t		size = _mapTypeSizes[ descUniform.type ];
+			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
 							  + descUniform.name;
 
 			assert( _uniforms.find( key ) == _uniforms.end() );
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
+
 			offset += size;
 		}
 
@@ -516,9 +509,6 @@ namespace VTX::Renderer::Context
 			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::COLOR4:
 				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
-				break;
-			case E_TYPE::ARRAYF:
-				_setUniformDefaultValue<std::vector<float>>( descUniform, p_descProgram, p_descPass );
 				break;
 			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}

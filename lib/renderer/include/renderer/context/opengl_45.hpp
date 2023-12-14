@@ -121,7 +121,7 @@ namespace VTX::Renderer::Context
 			bool &				  p_hasDepthComponent
 		);
 
-		void _createAttachment( const IO & descIO );
+		void _createAttachment( const IO & p_descIO );
 
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,

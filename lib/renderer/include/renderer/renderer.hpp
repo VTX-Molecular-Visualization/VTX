@@ -114,47 +114,16 @@ namespace VTX::Renderer
 						   ,
 						   { E_CHANNEL_INPUT::_2, { "Depth", imageR32F } } },
 				  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR8 } } },
-				  Programs {
-					  { "SSAO",
-						std::vector<FilePath> { "default.vert", "ssao.frag" },
-						Uniforms {
-							{ "Kernel",
-							  E_TYPE::ARRAYF,
-							  StructUniformValue<std::vector<float>> { std::vector<float>( kernelSize * 3 ) } },
-							{ "Intensity",
-							  E_TYPE::FLOAT,
-							  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
-							{ "Kernel size", E_TYPE::UINT, StructUniformValue<uint> { kernelSize } },
-							{ "Noise texture size",
-							  E_TYPE::UINT,
-							  StructUniformValue<uint> { noiseTextureSize } } } } } }
+				  Programs { { "SSAO",
+							   std::vector<FilePath> { "default.vert", "ssao.frag" },
+							   Uniforms { { "Intensity",
+											E_TYPE::FLOAT,
+											StructUniformValue<float> {
+												5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+										  { "Noise texture size",
+											E_TYPE::UINT,
+											StructUniformValue<uint> { noiseTextureSize } } } } } }
 			);
-
-			// Kernel.
-			std::vector<float> & aoKernel
-				= std::get<StructUniformValue<std::vector<float>>>( ssao->programs[ 0 ].uniforms[ 0 ].value ).value;
-			// Generate random ao kernel.
-			for ( uint i = 0; i < kernelSize; i++ )
-			{
-				// Sample on unit hemisphere.
-				Vec3f v = Util::Math::cosineWeightedHemisphere();
-
-				// Scale sample within the hemisphere.
-				v *= Util::Math::randomFloat();
-				// Accelerating interpolation (distance from center reduces when number of points grow up).
-				float scale = float( i ) / float( kernelSize );
-				scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
-				v *= scale;
-				aoKernel[ i * 3 + 0 ] = v.x;
-				aoKernel[ i * 3 + 1 ] = v.y;
-				aoKernel[ i * 3 + 2 ] = v.z;
-			}
-
-			// Print kernel.
-			for ( uint i = 0; i < kernelSize; i++ )
-			{
-				// VTX_INFO( "Kernel[{}]: {}", i, aoKernel[ i ] );
-			}
 
 			// Blur.
 			Pass * const blurX = _renderGraph->addPass(

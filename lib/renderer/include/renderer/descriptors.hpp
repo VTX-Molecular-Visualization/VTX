@@ -31,9 +31,8 @@ namespace VTX::Renderer
 		struct Entry
 		{
 			std::string name;
-			E_TYPE		type;
-			// TODO: map components by types?
-			size_t components;
+			E_TYPE		nativeType;
+			size_t		components;
 		};
 		std::vector<Entry> entries;
 	};
@@ -78,8 +77,7 @@ namespace VTX::Renderer
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>,
-		StructUniformValue<std::vector<float>>>;
+		StructUniformValue<Util::Color::Rgba>>;
 
 	struct Uniform
 	{

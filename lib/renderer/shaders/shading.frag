@@ -88,7 +88,7 @@ void main()
 		}
 	}
 
-	const float ambientOcclusion = 1;//texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
+	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;

@@ -547,35 +547,6 @@ namespace VTX::Bench
 								}
 								break;
 							}
-							case E_TYPE::ARRAYF:
-							{
-								StructUniformValue<std::vector<float>> descValue
-									= std::get<StructUniformValue<std::vector<float>>>( uniform.value );
-								ImGui::Text(
-									fmt::format( "float array ({}) {}", descValue.value.size(), uniform.name ).c_str()
-								);
-
-								// Tooltip.
-								/*
-								if ( ImGui::IsItemHovered() )
-								{
-									std::vector<float> value( descValue.value.size() );
-									p_renderer->getUniform<std::vector<float>>( value, key );
-
-									std::string tooltip;
-									for ( const float & v : value )
-									{
-										 tooltip += fmt::format( "{} ", v );
-									}
-
-									ImGui::BeginTooltip();
-									ImGui::TextUnformatted( tooltip.c_str() );
-									ImGui::Separator();
-									ImGui::EndTooltip();
-								}
-								*/
-								break;
-							}
 							default: throw std::runtime_error( "widget not implemented" ); break;
 							}
 						}
