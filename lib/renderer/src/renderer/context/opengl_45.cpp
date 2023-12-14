@@ -53,27 +53,35 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::build(
-		const RenderQueue & p_renderQueue,
-		const Links &		p_links,
-		const Handle		p_output,
-		const Uniforms &	p_uniforms,
-		Instructions &		p_instructions
+		const RenderQueue &			 p_renderQueue,
+		const Links &				 p_links,
+		const Handle				 p_output,
+		const Uniforms &			 p_uniforms,
+		Instructions &				 p_outInstructions,
+		InstructionsDurationRanges & p_outInstructionsDurationRanges
 	)
 	{
-		assert( p_instructions.empty() );
+		assert( p_outInstructions.empty() );
 
 		// Create shared uniforms.
 		if ( p_uniforms.empty() == false )
 		{
+			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
+																					  p_outInstructions.size() } );
+
 			_ubo = std::make_unique<GL::Buffer>();
 			_createUniforms( _ubo.get(), p_uniforms );
-			p_instructions.emplace_back( [ this ]() { _ubo->bind( GL_UNIFORM_BUFFER, 15 ); } );
+			p_outInstructions.emplace_back( [ this ]() { _ubo->bind( GL_UNIFORM_BUFFER, 15 ); } );
+
+			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 		}
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
 			/////////////////
 			// Init resources.
+			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { descPassPtr->name,
+																					  p_outInstructions.size() } );
 			bool				isLastPass = descPassPtr == p_renderQueue.back();
 			std::vector<GLenum> drawBuffers;
 			bool				hasDepthComponent = false;
@@ -120,7 +128,7 @@ namespace VTX::Renderer::Context
 			// Enable options.
 			if ( hasDepthComponent )
 			{
-				p_instructions.emplace_back(
+				p_outInstructions.emplace_back(
 					[]()
 					{
 						glEnable( GL_DEPTH_TEST );
@@ -132,8 +140,8 @@ namespace VTX::Renderer::Context
 			// Bind fbo.
 			if ( isLastPass == false )
 			{
-				p_instructions.emplace_back( [ this, descPassPtr ]()
-											 { _fbos[ descPassPtr ]->bind( GL_DRAW_FRAMEBUFFER ); } );
+				p_outInstructions.emplace_back( [ this, descPassPtr ]()
+												{ _fbos[ descPassPtr ]->bind( GL_DRAW_FRAMEBUFFER ); } );
 			}
 			else
 			{
@@ -146,7 +154,7 @@ namespace VTX::Renderer::Context
 				switch ( setting )
 				{
 				case E_SETTING::CLEAR:
-					p_instructions.emplace_back( []() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
+					p_outInstructions.emplace_back( []() { glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); } );
 					break;
 				default: break;
 				}
@@ -193,8 +201,9 @@ namespace VTX::Renderer::Context
 					{
 						if ( std::holds_alternative<Attachment>( descIOSrc ) )
 						{
-							p_instructions.emplace_back( [ this, channel = channel, &descIOSrc ]()
-														 { _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); }
+							p_outInstructions.emplace_back(
+								[ this, channel = channel, &descIOSrc ]()
+								{ _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); }
 							);
 							mapBoundAttachments.emplace( channel, &descIOSrc );
 						}
@@ -210,8 +219,9 @@ namespace VTX::Renderer::Context
 
 						if ( attachment.data != nullptr )
 						{
-							p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
-														 { _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); } );
+							p_outInstructions.emplace_back( [ this, channel = channel, &descIO ]()
+															{ _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); }
+							);
 							mapBoundAttachments.emplace( channel, &descIO );
 						}
 						else
@@ -228,7 +238,7 @@ namespace VTX::Renderer::Context
 				if ( descProgram.uniforms.empty() == false )
 				{
 					assert( _ubos.find( &descProgram ) != _ubos.end() );
-					p_instructions.emplace_back(
+					p_outInstructions.emplace_back(
 						[ this, &descProgram, channelMax ]()
 						{
 							// Bind local ubo after last input.
@@ -247,7 +257,7 @@ namespace VTX::Renderer::Context
 					if ( draw.useIndices )
 					{
 						auto & ebo = _bos[ draw.name + "Ebo" ];
-						p_instructions.emplace_back(
+						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
 								if ( *draw.count > 0 )
@@ -267,7 +277,7 @@ namespace VTX::Renderer::Context
 					// Array.
 					else
 					{
-						p_instructions.emplace_back(
+						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
 								if ( *draw.count > 0 )
@@ -285,7 +295,7 @@ namespace VTX::Renderer::Context
 				else
 				{
 					auto & vao = _vaos[ "quad" ];
-					p_instructions.emplace_back(
+					p_outInstructions.emplace_back(
 						[ &program, &vao ]()
 						{
 							vao->bind();
@@ -299,21 +309,21 @@ namespace VTX::Renderer::Context
 				if ( descProgram.uniforms.empty() == false )
 				{
 					auto & ubo = _ubos[ &descProgram ];
-					p_instructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
+					p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 				}
 			}
 
 			// Unbind inputs.
 			for ( const auto & [ channel, descIOPtr ] : mapBoundAttachments )
 			{
-				p_instructions.emplace_back( [ this, channel = channel, descIOPtr = descIOPtr ]()
-											 { _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
+				p_outInstructions.emplace_back( [ this, channel = channel, descIOPtr = descIOPtr ]()
+												{ _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
 			}
 
 			// Unbind fbo.
 			if ( isLastPass == false )
 			{
-				p_instructions.emplace_back( [ this, descPassPtr ]() { _fbos[ descPassPtr ]->unbind(); } );
+				p_outInstructions.emplace_back( [ this, descPassPtr ]() { _fbos[ descPassPtr ]->unbind(); } );
 			}
 			else
 			{
@@ -323,17 +333,23 @@ namespace VTX::Renderer::Context
 			// Disable options.
 			if ( hasDepthComponent )
 			{
-				p_instructions.emplace_back( []() { glDisable( GL_DEPTH_TEST ); } );
+				p_outInstructions.emplace_back( []() { glDisable( GL_DEPTH_TEST ); } );
 			}
+
+			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 		}
+
+		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind main ubo.
 		if ( p_uniforms.empty() == false )
 		{
-			p_instructions.emplace_back( [ this ]() { _ubo->unbind(); } );
+			p_outInstructions.emplace_back( [ this ]() { _ubo->unbind(); } );
 		}
 
 		glFinish();
+
+		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )

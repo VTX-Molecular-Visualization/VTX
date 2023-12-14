@@ -296,22 +296,31 @@ namespace VTX::Renderer
 		{
 			_width	= p_width;
 			_height = p_height;
-			_renderGraph->resize( p_width, p_height );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_renderGraph->resize( p_width, p_height );
+			}
 		}
 
 		inline void build( const uint p_output = 0 )
 		{
-			_onClean();
-
-			_instructions.clear();
-			_infos = StructInfos();
+			clean();
 
 			VTX_INFO(
 				"Renderer graph setup total time: {}",
 				Util::CHRONO_CPU(
 					[ & ]()
 					{
-						if ( _renderGraph->setup( _loader, _width, _height, _shaderPath, _instructions, p_output ) )
+						if ( _renderGraph->setup(
+								 _loader,
+								 _width,
+								 _height,
+								 _shaderPath,
+								 _instructions,
+								 _instructionsDurationRanges,
+								 p_output
+							 ) )
 						{
 							for ( const StructProxyMolecule & proxy : _molecules )
 							{
@@ -327,11 +336,40 @@ namespace VTX::Renderer
 			);
 		}
 
+		inline void clean()
+		{
+			_instructions.clear();
+			_instructionsDurationRanges.clear();
+			_renderGraph->clean();
+			_infos = StructInfos();
+
+			_onClean();
+		}
+
 		inline void render( const float p_time )
 		{
-			for ( Instruction & instruction : _instructions )
+			if ( _logDurations )
 			{
-				instruction();
+				for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+				{
+					instructionDurationRange.duration = _renderGraph->measureTaskDuration(
+
+						[ this, &instructionDurationRange ]()
+						{
+							for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+							{
+								_instructions[ i ]();
+							}
+						}
+					);
+				}
+			}
+			else
+			{
+				for ( const Instruction & instruction : _instructions )
+				{
+					instruction();
+				}
 			}
 		}
 
@@ -363,8 +401,15 @@ namespace VTX::Renderer
 
 		inline const StructInfos & getInfos() const { return _infos; }
 
+		inline const bool isLogDurations() const { return _logDurations; }
+		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
+
 		// Debug purposes only.
-		inline RenderGraphOpenGL45 & getRenderGraph() { return *_renderGraph; }
+		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
+		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
+		{
+			return _instructionsDurationRanges;
+		}
 
 	  private:
 		void * _loader = nullptr;
@@ -374,7 +419,9 @@ namespace VTX::Renderer
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
+		InstructionsDurationRanges			 _instructionsDurationRanges;
 		StructInfos							 _infos;
+		bool								 _logDurations = false;
 
 		CallbackClean _callbackClean;
 		CallbackReady _callbackReady;

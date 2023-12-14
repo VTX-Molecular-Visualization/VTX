@@ -133,7 +133,7 @@ namespace VTX::Bench
 			_drawCamera( p_camera );
 
 			// Times.
-			//_drawTimes( p_renderer );
+			_drawDurations( p_renderer );
 
 			// Misc.
 			_drawMisc( p_renderer );
@@ -202,31 +202,40 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		/*
-				void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
+		void _drawDurations( Renderer::Renderer * const p_renderer ) const
+		{
+			using namespace Renderer;
+
+			bool isTimersEnabled = p_renderer->isLogDurations();
+			if ( isTimersEnabled )
+			{
+				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
+
+				if ( ImGui::Begin( "Durations (ms)" ) )
 				{
-					bool isTimersEnabled = p_renderer->isTimersEnabled();
-					if ( isTimersEnabled )
+					auto maxRange = std::max_element(
+						durations.begin(),
+						durations.end(),
+						[]( const InstructionsDurationRange & p_lhs, const InstructionsDurationRange & p_rhs )
+						{ return p_lhs.duration < p_rhs.duration; }
+					);
+
+					const float max = maxRange->duration;
+
+					for ( size_t i = 0; i < durations.size(); ++i )
 					{
-						auto &				times	 = p_renderer->getTimes();
-						static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
-														 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO"
-		   }; if ( ImGui::Begin( "Times (ms)" ) )
-						{
-							const float max = *std::max_element( times.begin(), times.end() );
-							for ( size_t i = 0; i < times.size(); ++i )
-							{
-								ImGui::ProgressBar(
-									times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str()
-								);
-								ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-								ImGui::Text( labels[ i ] );
-							}
-						}
-						ImGui::End();
+						ImGui::ProgressBar(
+							durations[ i ].duration / max,
+							ImVec2( 0.f, 0.f ),
+							std::to_string( durations[ i ].duration ).c_str()
+						);
+						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+						ImGui::Text( durations[ i ].name.c_str() );
 					}
 				}
-		*/
+				ImGui::End();
+			}
+		}
 
 		void _drawMisc( Renderer::Renderer * const p_renderer )
 		{
@@ -240,7 +249,7 @@ namespace VTX::Bench
 			if ( ImGui::Begin( "Misc" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				// bool isTimersEnabled = p_renderer->isTimersEnabled();
+				bool isLogDurations = p_renderer->isLogDurations();
 				ImGui::Text( fmt::format( "{} atoms", p_renderer->getAtomCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} bonds", p_renderer->getBondCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
@@ -264,12 +273,11 @@ namespace VTX::Bench
 				{
 					setVSync( _vsync );
 				}
-				/*
-				if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
+
+				if ( ImGui::Checkbox( "Enable timers", &isLogDurations ) )
 				{
-					p_renderer->setTimersEnabled( isTimersEnabled );
+					p_renderer->setLogDurations( isLogDurations );
 				}
-				*/
 			}
 			ImGui::End();
 		}
@@ -285,6 +293,10 @@ namespace VTX::Bench
 				if ( ImGui::Button( "Build" ) )
 				{
 					p_renderer->build();
+				}
+				if ( ImGui::Button( "Clean" ) )
+				{
+					p_renderer->clean();
 				}
 				RenderQueue & renderQueue = p_renderer->getRenderGraph().getRenderQueue();
 				for ( const Pass * const pass : renderQueue )

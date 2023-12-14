@@ -14,7 +14,7 @@ namespace VTX::Renderer
 	{
 	  public:
 		RenderGraph() = default;
-		~RenderGraph() { _clear(); }
+		~RenderGraph() { clean(); }
 
 		inline Passes &		  getPasses() { return _passes; }
 		inline Links &		  getLinks() { return _links; }
@@ -90,16 +90,17 @@ namespace VTX::Renderer
 		}
 
 		bool setup(
-			void * const	 p_loader,
-			const size_t	 p_width,
-			const size_t	 p_height,
-			const FilePath & p_shaderPath,
-			Instructions &	 p_instructions,
-			const Handle	 p_output = 0
+			void * const				 p_loader,
+			const size_t				 p_width,
+			const size_t				 p_height,
+			const FilePath &			 p_shaderPath,
+			Instructions &				 p_outInstructions,
+			InstructionsDurationRanges & p_outInstructionsDurationRanges,
+			const Handle				 p_output = 0
 		)
 		{
 			// Clean all.
-			_clear();
+			clean();
 
 			VTX_DEBUG( "{}", "Building render graph..." );
 
@@ -131,7 +132,7 @@ namespace VTX::Renderer
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
-				_clear();
+				clean();
 				return false;
 			}
 
@@ -142,18 +143,20 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _renderQueue, _links, p_output, _uniforms, p_instructions );
+				_context->build(
+					_renderQueue, _links, p_output, _uniforms, p_outInstructions, p_outInstructionsDurationRanges
+				);
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
-				p_instructions.clear();
-				_clear();
+				p_outInstructions.clear();
+				clean();
 				return false;
 			}
 
-			VTX_DEBUG( "{} instructions generated", p_instructions.size() );
+			VTX_DEBUG( "{} instructions generated", p_outInstructions.size() );
 			VTX_DEBUG( "{}", "Building render graph... done" );
 			return true;
 		}
@@ -162,6 +165,12 @@ namespace VTX::Renderer
 		{
 			assert( _context != nullptr );
 			_context->resize( _renderQueue, p_width, p_height );
+		}
+
+		void clean()
+		{
+			_renderQueue.clear();
+			_context.reset( nullptr );
 		}
 
 		template<typename T>
@@ -184,6 +193,11 @@ namespace VTX::Renderer
 
 		inline void fillInfos( StructInfos & p_infos ) { _context->fillInfos( p_infos ); }
 
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task )
+		{
+			return _context->measureTaskDuration( p_task );
+		}
+
 	  private:
 		S				   _scheduler;
 		RenderQueue		   _renderQueue;
@@ -193,12 +207,6 @@ namespace VTX::Renderer
 		Passes		   _passes;
 		Uniforms	   _uniforms;
 		Links		   _links;
-
-		void _clear()
-		{
-			_renderQueue.clear();
-			_context.reset( nullptr );
-		}
 	};
 
 } // namespace VTX::Renderer
