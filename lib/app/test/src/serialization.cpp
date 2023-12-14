@@ -341,6 +341,11 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
+	Test::Util::App::initApp();
+
+	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+
 	Application::Settings settings = Application::Settings();
 
 	settings.referenceSetting( "INT_SETTING", 0 );
