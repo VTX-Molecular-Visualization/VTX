@@ -7,7 +7,8 @@ namespace VTX::Renderer::GL::Pass
 	{
 		out.fbo		= std::make_unique<Framebuffer>();
 		out.texture = std::make_unique<Texture2D>(
-			p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+			p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST
+		);
 
 		out.fbo->attachTexture( *out.texture, GL_COLOR_ATTACHMENT0 );
 
@@ -75,19 +76,23 @@ namespace VTX::Renderer::GL::Pass
 
 		for ( uint i = 0; i < noise.size(); ++i )
 		{
-			noise[ i ] = Vec3f( Util::Math::randomFloat() * 2.f - 1.f,
-								Util::Math::randomFloat() * 2.f - 1.f,
-								0.f ); // Vec3f([-1;1],[-1;1],0)
+			noise[ i ] = Vec3f(
+				Util::Math::randomFloat() * 2.f - 1.f,
+				Util::Math::randomFloat() * 2.f - 1.f,
+				0.f
+			); // Vec3f([-1;1],[-1;1],0)
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
 
-		_noiseTexture = std::make_unique<Texture2D>( uniforms.noiseTextureSize,
-													 uniforms.noiseTextureSize,
-													 GL_RGB16F,
-													 GL_REPEAT,
-													 GL_REPEAT,
-													 GL_NEAREST,
-													 GL_NEAREST );
+		_noiseTexture = std::make_unique<Texture2D>(
+			uniforms.noiseTextureSize,
+			uniforms.noiseTextureSize,
+			GL_RGB16F,
+			GL_REPEAT,
+			GL_REPEAT,
+			GL_NEAREST,
+			GL_NEAREST
+		);
 
 		_noiseTexture->fill( noise.data() );
 

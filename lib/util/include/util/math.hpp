@@ -179,9 +179,11 @@ namespace VTX::Util::Math
 	}
 
 	template<typename T>
-	inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
-								   const glm::tvec3<T> & p_target,
-								   const glm::tvec3<T> & p_axis )
+	inline glm::tmat4x4<T> lookAt(
+		const glm::tvec3<T> & p_value,
+		const glm::tvec3<T> & p_target,
+		const glm::tvec3<T> & p_axis
+	)
 	{
 		return glm::lookAt( p_value, p_target, p_axis );
 	}
@@ -193,12 +195,14 @@ namespace VTX::Util::Math
 	}
 
 	template<typename T>
-	inline glm::tmat4x4<T> ortho( const T & p_left,
-								  const T & p_right,
-								  const T & p_bottom,
-								  const T & p_top,
-								  const T & p_near,
-								  const T & p_far )
+	inline glm::tmat4x4<T> ortho(
+		const T & p_left,
+		const T & p_right,
+		const T & p_bottom,
+		const T & p_top,
+		const T & p_near,
+		const T & p_far
+	)
 	{
 		return glm::ortho( p_left, p_right, p_bottom, p_top, p_near, p_far );
 	}
@@ -249,6 +253,18 @@ namespace VTX::Util::Math
 	inline T const * value_ptr( const glm::mat<L, L, T> & p_value )
 	{
 		return glm::value_ptr( p_value );
+	}
+
+	template<int L, typename T>
+	inline std::vector<T> toStdVector( const glm::vec<L, T> & p_value )
+	{
+		return std::vector<T>( glm::value_ptr( p_value ), glm::value_ptr( p_value ) + L );
+	}
+
+	template<int L, typename T>
+	inline std::vector<T> toStdVector( const glm::mat<L, L, T> & p_value )
+	{
+		return std::vector<T>( glm::value_ptr( p_value ), glm::value_ptr( p_value ) + L * L );
 	}
 
 	template<typename T>
@@ -453,10 +469,12 @@ namespace VTX::Util::Math
 		return angle;
 	}
 
-	inline Vec3f linearComb( const float   p_scalar0,
-							 const Vec3f & p_vector0,
-							 const float   p_scalar1,
-							 const Vec3f & p_vector1 )
+	inline Vec3f linearComb(
+		const float	  p_scalar0,
+		const Vec3f & p_vector0,
+		const float	  p_scalar1,
+		const Vec3f & p_vector1
+	)
 	{
 		return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
 	}

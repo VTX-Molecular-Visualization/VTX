@@ -39,7 +39,7 @@ namespace VTX::Renderer::Context
 		vbo->setData( quad, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glClearColor( 1.f, 0.f, 0.f, 1.f );
+		glClearColor( 0.f, 0.f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		_getOpenglInfos();
@@ -74,11 +74,12 @@ namespace VTX::Renderer::Context
 		{
 			/////////////////
 			// Init resources.
-			bool isLastPass		   = descPassPtr == p_renderQueue.back();
-			bool hasDepthComponent = false;
+			bool				isLastPass = descPassPtr == p_renderQueue.back();
+			std::vector<GLenum> drawBuffers;
+			bool				hasDepthComponent = false;
 
 			// Create input data.
-			_createInputData( descPassPtr );
+			_createInputs( descPassPtr );
 
 			// Create FBO.
 			if ( isLastPass == false )
@@ -86,7 +87,13 @@ namespace VTX::Renderer::Context
 				_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
 
 				// Create outputs.
-				_createOuputResources( descPassPtr, hasDepthComponent );
+				_createOuputs( descPassPtr, drawBuffers, hasDepthComponent );
+
+				// Set draw buffers.
+				if ( drawBuffers.empty() == false )
+				{
+					_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
+				}
 			}
 
 			// Create programs.
@@ -103,7 +110,7 @@ namespace VTX::Renderer::Context
 				if ( descProgram.uniforms.empty() == false )
 				{
 					_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
-					_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram );
+					_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
 				}
 			}
 
@@ -165,33 +172,53 @@ namespace VTX::Renderer::Context
 			};
 
 			// Bind inputs.
-			uint channelMax = 0;
+			uint										channelMax = 0;
+			std::map<E_CHANNEL_INPUT, const IO * const> mapBoundAttachments;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
-				const Output * const src	= findInputSrcInLinks( channel );
-				const IO &			 descIO = src->desc;
-
-				if ( uint( channel ) > channelMax )
-				{
-					channelMax = uint( channel );
-				}
-
-				if ( src == nullptr )
-				{
-					VTX_WARNING( "Input channel {} from pass {} as no source", input.name, descPassPtr->name );
-					// TODO: bind dummy texture?
-					continue;
-				}
+				const IO & descIO = input.desc;
 
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					const Attachment * const attachment = &std::get<Attachment>( descIO );
-					p_instructions.emplace_back( [ this, channel = channel, attachment ]()
-												 { _textures[ attachment ]->bindToUnit( GLuint( channel ) ); } );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
+					const Output * const src	   = findInputSrcInLinks( channel );
+					const IO &			 descIOSrc = src->desc;
+
+					if ( uint( channel ) > channelMax )
+					{
+						channelMax = uint( channel );
+					}
+
+					// Bind linked texture.
+					if ( src != nullptr )
+					{
+						if ( std::holds_alternative<Attachment>( descIOSrc ) )
+						{
+							p_instructions.emplace_back( [ this, channel = channel, &descIOSrc ]()
+														 { _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); }
+							);
+							mapBoundAttachments.emplace( channel, &descIOSrc );
+						}
+						else
+						{
+							throw std::runtime_error( "unknown descriptor type" );
+						}
+					}
+					// Bind prefilled texture.
+					else
+					{
+						const Attachment & attachment = std::get<Attachment>( descIO );
+
+						if ( attachment.data != nullptr )
+						{
+							p_instructions.emplace_back( [ this, channel = channel, &descIO ]()
+														 { _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); } );
+							mapBoundAttachments.emplace( channel, &descIO );
+						}
+						else
+						{
+							VTX_WARNING( "Input channel {} from pass {} has no source", input.name, descPassPtr->name );
+						}
+					}
 				}
 			}
 
@@ -223,14 +250,17 @@ namespace VTX::Renderer::Context
 						p_instructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								vao->bind();
-								vao->bindElementBuffer( *ebo );
-								program->use();
-								vao->drawElement(
-									_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
-								);
-								vao->unbindElementBuffer();
-								vao->unbind();
+								if ( *draw.count > 0 )
+								{
+									vao->bind();
+									vao->bindElementBuffer( *ebo );
+									program->use();
+									vao->drawElement(
+										_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+									);
+									vao->unbindElementBuffer();
+									vao->unbind();
+								}
 							}
 						);
 					}
@@ -240,10 +270,13 @@ namespace VTX::Renderer::Context
 						p_instructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								vao->bind();
-								program->use();
-								vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
-								vao->unbind();
+								if ( *draw.count > 0 )
+								{
+									vao->bind();
+									program->use();
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
+									vao->unbind();
+								}
 							}
 						);
 					}
@@ -271,27 +304,10 @@ namespace VTX::Renderer::Context
 			}
 
 			// Unbind inputs.
-			for ( const auto & [ channel, input ] : descPassPtr->inputs )
+			for ( const auto & [ channel, descIOPtr ] : mapBoundAttachments )
 			{
-				const Output * const src = findInputSrcInLinks( channel );
-
-				if ( src == nullptr )
-				{
-					continue;
-				}
-
-				const IO & descIO = src->desc;
-				if ( std::holds_alternative<Attachment>( descIO ) )
-				{
-					const Attachment * const attachment = &std::get<Attachment>( descIO );
-
-					p_instructions.emplace_back( [ this, channel = channel, attachment ]()
-												 { _textures[ attachment ]->unbindFromUnit( GLuint( channel ) ); } );
-				}
-				else
-				{
-					throw std::runtime_error( "unknown descriptor type" );
-				}
+				p_instructions.emplace_back( [ this, channel = channel, descIOPtr = descIOPtr ]()
+											 { _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
 			}
 
 			// Unbind fbo.
@@ -316,26 +332,56 @@ namespace VTX::Renderer::Context
 		{
 			p_instructions.emplace_back( [ this ]() { _ubo->unbind(); } );
 		}
+
+		glFinish();
 	}
 
-	void OpenGL45::resize( const size_t p_width, const size_t p_height )
+	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
 	{
 		width  = p_width;
 		height = p_height;
+
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
-		for ( auto & [ desc, texture ] : _textures )
+
+		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
-			texture->resize( width, height );
+			for ( const auto & [ channel, output ] : descPassPtr->outputs )
+			{
+				const IO & descIO = output.desc;
+				if ( std::holds_alternative<Attachment>( descIO ) )
+				{
+					if ( _textures.find( &descIO ) != _textures.end() )
+					{
+						_textures[ &descIO ]->resize( width, height );
+						_fbos[ descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
+					}
+				}
+				else
+				{
+					throw std::runtime_error( "unknown descriptor type" );
+				}
+			}
 		}
 	}
 
-	void OpenGL45::_createInputData( const Pass * const p_descPassPtr )
+	void OpenGL45::_createInputs( const Pass * const p_descPassPtr )
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
 		{
 			const IO & descIO = input.desc;
 
-			if ( std::holds_alternative<Data>( descIO ) )
+			// Create texture if data provided.
+			if ( std::holds_alternative<Attachment>( descIO ) )
+			{
+				const Attachment & attachment = std::get<Attachment>( descIO );
+
+				if ( attachment.data != nullptr )
+				{
+					_createAttachment( descIO );
+				}
+			}
+			// Create vao if data provided.
+			else if ( std::holds_alternative<Data>( descIO ) )
 			{
 				const Data & data = std::get<Data>( descIO );
 
@@ -353,9 +399,11 @@ namespace VTX::Renderer::Context
 					auto & vbo = _bos[ input.name + entry.name ];
 					vaoData->enableAttribute( chan );
 					vaoData->setVertexBuffer(
-						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.type ] )
+						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.nativeType ] )
 					);
-					vaoData->setAttributeFormat( chan, GLint( entry.components ), GLint( _mapTypes[ entry.type ] ) );
+					vaoData->setAttributeFormat(
+						chan, GLint( entry.components ), GLint( _mapTypes[ entry.nativeType ] )
+					);
 					vaoData->setAttributeBinding( chan, chan );
 					chan++;
 				}
@@ -363,37 +411,28 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::_createOuputResources( const Pass * const p_descPassPtr, bool p_hasDepthComponent )
+	void OpenGL45::_createOuputs(
+		const Pass * const	  p_descPassPtr,
+		std::vector<GLenum> & p_drawBuffers,
+		bool &				  p_hasDepthComponent
+	)
 	{
-		std::vector<GLenum> drawBuffers;
 		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
 		{
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				const Attachment & attachment = std::get<Attachment>( descIO );
-				_textures.emplace(
-					&attachment,
-					std::make_unique<GL::Texture2D>(
-						width,
-						height,
-						_mapFormats[ attachment.format ],
-						_mapWrappings[ attachment.wrappingS ],
-						_mapWrappings[ attachment.wrappingT ],
-						_mapFilterings[ attachment.filteringMin ],
-						_mapFilterings[ attachment.filteringMag ]
-					)
-				);
+				_createAttachment( descIO );
 
 				// Attach.
-				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &attachment ], _mapAttachments[ channel ] );
+				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
 				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
 				{
 					p_hasDepthComponent = true;
 				}
 				else
 				{
-					drawBuffers.emplace_back( _mapAttachments[ channel ] );
+					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
 				}
 			}
 			else
@@ -401,29 +440,49 @@ namespace VTX::Renderer::Context
 				throw std::runtime_error( "unknown descriptor type" );
 			}
 		}
+	}
 
-		// Set draw buffers.
-		if ( drawBuffers.empty() == false )
+	void OpenGL45::_createAttachment( const IO & p_descIO )
+	{
+		const Attachment & attachment = std::get<Attachment>( p_descIO );
+		_textures.emplace(
+			&p_descIO,
+			std::make_unique<GL::Texture2D>(
+				attachment.width.has_value() ? attachment.width.value() : width,
+				attachment.height.has_value() ? attachment.height.value() : height,
+				_mapFormats[ attachment.format ],
+				_mapWrappings[ attachment.wrappingS ],
+				_mapWrappings[ attachment.wrappingT ],
+				_mapFilterings[ attachment.filteringMin ],
+				_mapFilterings[ attachment.filteringMag ]
+			)
+		);
+
+		if ( attachment.data != nullptr )
 		{
-			_fbos[ p_descPassPtr ]->setDrawBuffers( drawBuffers );
+			_textures[ &p_descIO ]->fill( attachment.data );
 		}
 	}
 
 	void OpenGL45::_createUniforms(
 		GL::Buffer * const	  p_ubo,
 		const Uniforms &	  p_uniforms,
-		const Program * const p_descProgram
+		const Program * const p_descProgram,
+		const Pass * const	  p_descPass
 	)
 	{
 		size_t offset = 0;
+
 		for ( const Uniform & descUniform : p_uniforms )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
-			std::string key	 = ( p_descProgram ? p_descProgram->name : "" ) + descUniform.name;
+			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
+							  + descUniform.name;
 
 			assert( _uniforms.find( key ) == _uniforms.end() );
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
+
 			offset += size;
 		}
 
@@ -435,15 +494,19 @@ namespace VTX::Renderer::Context
 		{
 			switch ( descUniform.type )
 			{
-			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram ); break;
-			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram ); break;
-			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram ); break;
-			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram ); break;
-			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram ); break;
-			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram ); break;
-			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram ); break;
-			case E_TYPE::COLOR4: _setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram ); break;
-			default: throw std::runtime_error( "unknown type" );
+			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::COLOR4:
+				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
+				break;
+			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}
 		}
 	}
@@ -568,10 +631,12 @@ namespace VTX::Renderer::Context
 																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES } };
 
 	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormats = {
+		{ E_FORMAT::RGB16F, GL_RGB16F },
 		{ E_FORMAT::RGBA16F, GL_RGBA16F },
 		{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
 		{ E_FORMAT::RGBA32F, GL_RGBA32F },
 		{ E_FORMAT::RG32UI, GL_RG32UI },
+		{ E_FORMAT::R8, GL_R8 },
 		{ E_FORMAT::R16F, GL_R16F },
 		{ E_FORMAT::R32F, GL_R32F },
 		{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },
@@ -596,12 +661,13 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes
 		= { { E_TYPE::BOOL, GL_BOOL },	 { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },
-			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC3F, GL_FLOAT },		{ E_TYPE::VEC4F, GL_FLOAT },
-			{ E_TYPE::MAT3F, GL_FLOAT }, { E_TYPE::MAT4F, GL_FLOAT },		{ E_TYPE::COLOR4, GL_FLOAT } };
+			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC2I, GL_INT },			{ E_TYPE::VEC3F, GL_FLOAT },
+			{ E_TYPE::VEC4F, GL_FLOAT }, { E_TYPE::MAT3F, GL_FLOAT },		{ E_TYPE::MAT4F, GL_FLOAT },
+			{ E_TYPE::COLOR4, GL_FLOAT } };
 
-	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
-		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
-		{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) }, { E_TYPE::VEC4F, sizeof( Vec4f ) },
-		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) }
-	};
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
+		= { { E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
+			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC2I, sizeof( Vec2i ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },
+			{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },
+			{ E_TYPE::COLOR4, sizeof( Vec4f ) } };
 } // namespace VTX::Renderer::Context

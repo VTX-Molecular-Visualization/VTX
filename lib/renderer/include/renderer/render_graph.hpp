@@ -128,16 +128,10 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Print render queue.
-			VTX_DEBUG( "{}", "Render queue:" );
-			for ( auto & pass : _renderQueue )
-			{
-				VTX_DEBUG( "\t{}", pass->name );
-			}
-
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				_clear();
 				return false;
 			}
 
@@ -154,9 +148,12 @@ namespace VTX::Renderer
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				p_instructions.clear();
+				_clear();
 				return false;
 			}
 
+			VTX_DEBUG( "{} instructions generated", p_instructions.size() );
 			VTX_DEBUG( "{}", "Building render graph... done" );
 			return true;
 		}
@@ -164,7 +161,7 @@ namespace VTX::Renderer
 		void resize( const size_t p_width, const size_t p_height )
 		{
 			assert( _context != nullptr );
-			_context->resize( p_width, p_height );
+			_context->resize( _renderQueue, p_width, p_height );
 		}
 
 		template<typename T>
@@ -184,6 +181,8 @@ namespace VTX::Renderer
 		{
 			_context->setData( p_data, p_key );
 		}
+
+		inline void fillInfos( StructInfos & p_infos ) { _context->fillInfos( p_infos ); }
 
 	  private:
 		S				   _scheduler;

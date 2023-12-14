@@ -11,6 +11,10 @@ namespace VTX::Bench
 	class Camera
 	{
 	  public:
+		using CallbackMatrixView	   = std::function<void( const Mat4f & )>;
+		using CallbackMatrixProjection = std::function<void( const Mat4f & )>;
+		using CallbackClipInfos		   = std::function<void( const float, const float )>;
+
 		Camera() = delete;
 		Camera( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
@@ -25,45 +29,41 @@ namespace VTX::Bench
 		{
 			_width	= p_width;
 			_height = p_height;
-			_updateMatrixProjection();
+			_onMatrixProjection();
 		}
 
 		inline void setFov( const float p_fov )
 		{
 			_fov = p_fov;
-			_updateMatrixProjection();
+			_onMatrixProjection();
 		}
 
 		inline void setNear( const float p_near )
 		{
 			_near = p_near;
-			_updateClipInfos();
-			_updateMatrixProjection();
+			_onClipInfos();
+			_onMatrixProjection();
 		}
 
 		inline void setFar( const float p_far )
 		{
 			_far = p_far;
-			_updateClipInfos();
-			_updateMatrixProjection();
+			_onClipInfos();
+			_onMatrixProjection();
 		}
 
 		inline void setVelocityTranslation( const float p_velocity ) { _velocityTranslation = p_velocity; }
 
 		inline void setVelocityRotation( const float p_velocity ) { _velocityRotation = p_velocity; }
 
-		inline void setVelocityZoom( const float p_velocity )
-		{
-			_velocityZoom = p_velocity;
-			_updateMatrixProjection();
-		}
+		inline void setVelocityZoom( const float p_velocity ) { _velocityZoom = p_velocity; }
 
 		inline void translate( const Vec3f & p_delta )
 		{
 			_position += p_delta.x * _right * _velocityTranslation;
 			_position += p_delta.y * _up * _velocityTranslation;
 			_position += p_delta.z * _front * _velocityTranslation;
-			_updateMatrixView();
+			_onMatrixView();
 		}
 
 		inline void rotate( const Vec3f & p_delta )
@@ -74,32 +74,32 @@ namespace VTX::Bench
 			_front				 = rotation * _CAMERA_FRONT_DEFAULT;
 			_right				 = rotation * _CAMERA_RIGHT_DEFAULT;
 			_up					 = rotation * _CAMERA_UP_DEFAULT;
-			_updateMatrixView();
+			_onMatrixView();
 		}
 
 		inline void zoom( const float p_delta )
 		{
 			_fov += p_delta * _velocityZoom;
-			_updateMatrixProjection();
+			_onMatrixProjection();
 		}
 
 		// Callbacks.
-		inline void setCallbackMatrixView( const std::function<void( const Mat4f & )> & p_callback )
+		inline void setCallbackMatrixView( const CallbackMatrixView & p_callback )
 		{
 			_callbackMatrixView = p_callback;
-			_updateMatrixView();
+			_onMatrixView();
 		}
 
-		inline void setCallbackMatrixProjection( const std::function<void( const Mat4f & )> & p_callback )
+		inline void setCallbackMatrixProjection( const CallbackMatrixProjection & p_callback )
 		{
 			_callbackMatrixProjection = p_callback;
-			_updateMatrixProjection();
+			_onMatrixProjection();
 		}
 
-		inline void setCallbackClipInfos( const std::function<void( const float, const float )> & p_callback )
+		inline void setCallbackClipInfos( const CallbackClipInfos & p_callback )
 		{
 			_callbackClipInfos = p_callback;
-			_updateClipInfos();
+			_onClipInfos();
 		}
 
 		inline static const float NEAR_DEFAULT				   = 1e-1f;
@@ -144,11 +144,11 @@ namespace VTX::Bench
 		float _velocityRotation	   = VELOCITY_ROTATION_DEFAULT;
 		float _velocityZoom		   = VELOCITY_ZOOM_DEFAULT;
 
-		std::function<void( const Mat4f & )>			_callbackMatrixView;
-		std::function<void( const Mat4f & )>			_callbackMatrixProjection;
-		std::function<void( const float, const float )> _callbackClipInfos;
+		CallbackMatrixView		 _callbackMatrixView;
+		CallbackMatrixProjection _callbackMatrixProjection;
+		CallbackClipInfos		 _callbackClipInfos;
 
-		inline void _updateMatrixView()
+		inline void _onMatrixView()
 		{
 			if ( _callbackMatrixView )
 			{
@@ -156,7 +156,7 @@ namespace VTX::Bench
 			}
 		}
 
-		inline void _updateMatrixProjection()
+		inline void _onMatrixProjection()
 		{
 			if ( _callbackMatrixProjection )
 			{
@@ -166,7 +166,7 @@ namespace VTX::Bench
 			}
 		}
 
-		inline void _updateClipInfos()
+		inline void _onClipInfos()
 		{
 			if ( _callbackClipInfos )
 			{

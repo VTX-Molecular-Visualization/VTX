@@ -16,11 +16,14 @@ namespace VTX::Renderer
 
 	struct Attachment
 	{
-		E_FORMAT	format		 = E_FORMAT::RGBA16F;
-		E_WRAPPING	wrappingS	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING	wrappingT	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING filteringMin = E_FILTERING::NEAREST;
-		E_FILTERING filteringMag = E_FILTERING::NEAREST;
+		E_FORMAT			  format	   = E_FORMAT::RGBA16F;
+		E_WRAPPING			  wrappingS	   = E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING			  wrappingT	   = E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING			  filteringMin = E_FILTERING::NEAREST;
+		E_FILTERING			  filteringMag = E_FILTERING::NEAREST;
+		std::optional<size_t> width;
+		std::optional<size_t> height;
+		void *				  data = nullptr;
 	};
 
 	struct Data
@@ -28,9 +31,8 @@ namespace VTX::Renderer
 		struct Entry
 		{
 			std::string name;
-			E_TYPE		type;
-			// TODO: map components by types?
-			size_t components;
+			E_TYPE		nativeType;
+			size_t		components;
 		};
 		std::vector<Entry> entries;
 	};
@@ -66,9 +68,11 @@ namespace VTX::Renderer
 	};
 
 	using UniformValue = std::variant<
+		StructUniformValue<bool>,
 		StructUniformValue<uint>,
 		StructUniformValue<int>,
 		StructUniformValue<float>,
+		StructUniformValue<Vec2i>,
 		StructUniformValue<Vec3f>,
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
@@ -137,7 +141,8 @@ namespace VTX::Renderer
 	{
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
 		{
-			return p_left.format == p_right.format;
+			// return p_left.format == p_right.format;
+			return true;
 		}
 		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
 

@@ -26,10 +26,12 @@ namespace VTX::Renderer
 
 	enum struct E_FORMAT
 	{
+		RGB16F,
 		RGBA16F,
 		RGBA32UI,
 		RGBA32F,
 		RG32UI,
+		R8,
 		R16F,
 		R32F,
 		DEPTH_COMPONENT32F
@@ -48,6 +50,8 @@ namespace VTX::Renderer
 		UINT,
 		INT,
 		FLOAT,
+		VEC2I,
+		VEC2F,
 		VEC3F,
 		VEC4F,
 		MAT3F,
