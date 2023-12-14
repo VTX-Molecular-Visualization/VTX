@@ -70,14 +70,16 @@ namespace VTX::Renderer::Context
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
-		inline void fillInfos( StructInfos & p_infos )
+		inline void fillInfos( StructInfos & p_infos ) const
 		{
 			p_infos.gpuMemoryInfoDedicated		  = _openglInfos.gpuMemoryInfoDedicatedVidmemNVX;
 			p_infos.gpuMemoryInfoTotalAvailable	  = _openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX;
 			p_infos.gpuMemoryInfoCurrentAvailable = _openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX;
 		}
 
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) { return GL::CHRONO_GPU( p_task ); }
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const { return GL::CHRONO_GPU( p_task ); }
+
+		inline void compileShaders() const { _programManager->compileShaders(); }
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).

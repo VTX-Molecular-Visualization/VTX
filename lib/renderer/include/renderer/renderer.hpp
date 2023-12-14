@@ -403,6 +403,7 @@ namespace VTX::Renderer
 
 		inline const bool isLogDurations() const { return _logDurations; }
 		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
+		inline void		  compileShaders() const { _renderGraph->compileShaders(); }
 
 		// Debug purposes only.
 		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }

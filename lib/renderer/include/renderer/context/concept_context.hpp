@@ -58,6 +58,9 @@ namespace VTX::Renderer::Context
 				 {
 					 p_context.measureTaskDuration( p_task )
 				 } -> std::same_as<float>;
+				 {
+					 p_context.compileShaders()
+				 } -> std::same_as<void>;
 			 };
 
 } // namespace VTX::Renderer::Context

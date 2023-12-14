@@ -180,7 +180,7 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key )
+		inline void getUniform( T & p_value, const std::string & p_key ) const
 		{
 			_context->template getUniform<T>( p_value, p_key );
 		}
@@ -191,12 +191,14 @@ namespace VTX::Renderer
 			_context->setData( p_data, p_key );
 		}
 
-		inline void fillInfos( StructInfos & p_infos ) { _context->fillInfos( p_infos ); }
+		inline void fillInfos( StructInfos & p_infos ) const { _context->fillInfos( p_infos ); }
 
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task )
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const
 		{
 			return _context->measureTaskDuration( p_task );
 		}
+
+		inline void compileShaders() const { _context->compileShaders(); }
 
 	  private:
 		S				   _scheduler;

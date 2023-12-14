@@ -120,7 +120,7 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( "Compile" ) )
 					{
-						// p_renderer->compileShaders();
+						p_renderer->compileShaders();
 					}
 
 					ImGui::EndMenu();
