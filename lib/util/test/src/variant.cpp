@@ -14,7 +14,7 @@ class TestClass
 	void setInt( int p_int ) { _int = p_int; }
 
   private:
-	int _int = 10;
+	int _int = 0;
 };
 
 // string.hpp
@@ -52,6 +52,14 @@ TEST_CASE( "Util::Variant", "[unit]" )
 	variant = VTXVariant( std::string( "string" ) );
 	CHECK( variant.is<std::string>() );
 	CHECK( variant.get<std::string>() == "string" );
+
+	variant = VTXVariant( Vec3f( 0, 0, 0 ) );
+	CHECK( variant.is<Vec3f>() );
+	CHECK( variant.get<Vec3f>() == Vec3f( 0, 0, 0 ) );
+
+	variant = VTXVariant( Vec4f( 0, 0, 0, 0 ) );
+	CHECK( variant.is<Vec4f>() );
+	CHECK( variant.get<Vec4f>() == Vec4f( 0, 0, 0, 0 ) );
 
 	std::unique_ptr<TestClass> testClassPtr = std::make_unique<TestClass>( 10 );
 

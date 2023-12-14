@@ -1,6 +1,8 @@
 #include "util/serialization.hpp"
 #include "util/app.hpp"
 #include <app/action/application.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/settings.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -224,51 +226,6 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 	CHECK( custom == loadedCustom );
 }
 
-TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
-{
-	using namespace VTX;
-	using namespace VTX::App;
-
-	using CustomClass = Test::Util::Serialization::CustomClass;
-
-	Test::Util::App::initApp();
-	Test::Util::App::loadTestTrajectoryMolecule();
-
-	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
-
-	App::Component::Chemistry::Molecule & molecule
-		= VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
-
-	for ( size_t i = molecule.getResidue( 1 )->getIndexFirstAtom(); i <= molecule.getResidue( 1 )->getIndexLastAtom();
-		  i++ )
-	{
-		molecule.setAtomVisibility( i, false );
-	}
-
-	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
-
-	App::Action::Application::SaveScene saveSceneAction = App::Action::Application::SaveScene( jsonPath );
-	saveSceneAction.execute();
-
-	App::Action::Application::OpenScene openSceneAction = App::Action::Application::OpenScene( jsonPath );
-	openSceneAction.execute();
-
-	App::Application::Scene & loadedScene = VTXApp::get().getScene();
-
-	CHECK( loadedScene.getItemCount() == 1 );
-	const App::Component::Scene::SceneItemComponent & sceneItemObj
-		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
-	REQUIRE( sceneItemObj.getName() == moleculeName );
-
-	const App::Component::Chemistry::Molecule & loadedMolecule
-		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
-
-	CHECK( loadedMolecule.getAtoms().size() == 263 );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
-	// CHECK( molecule.getAtoms().size() == 113095 );
-}
-
 TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )
 {
 	using namespace VTX;
@@ -330,6 +287,106 @@ TEST_CASE( "VTX_APP - Serialization - Version", "[unit]" )
 	CHECK( version <= Version( 2, 1, 8 ) );
 	CHECK( version <= Version( 2, 4, 0 ) );
 	CHECK( version <= Version( 3, 0, 0 ) );
+}
+
+TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	using CustomClass = Test::Util::Serialization::CustomClass;
+
+	Test::Util::App::initApp();
+	Test::Util::App::loadTestTrajectoryMolecule();
+
+	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
+
+	App::Component::Chemistry::Molecule & molecule
+		= VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+
+	for ( size_t i = molecule.getResidue( 1 )->getIndexFirstAtom(); i <= molecule.getResidue( 1 )->getIndexLastAtom();
+		  i++ )
+	{
+		molecule.setAtomVisibility( i, false );
+	}
+
+	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
+
+	App::Action::Application::SaveScene saveSceneAction = App::Action::Application::SaveScene( jsonPath );
+	saveSceneAction.execute();
+
+	App::Action::Application::OpenScene openSceneAction = App::Action::Application::OpenScene( jsonPath );
+	openSceneAction.execute();
+
+	App::Application::Scene & loadedScene = VTXApp::get().getScene();
+
+	CHECK( loadedScene.getItemCount() == 1 );
+	const App::Component::Scene::SceneItemComponent & sceneItemObj
+		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
+	REQUIRE( sceneItemObj.getName() == moleculeName );
+
+	const App::Component::Chemistry::Molecule & loadedMolecule
+		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+
+	CHECK( loadedMolecule.getAtoms().size() == 263 );
+	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
+	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
+	// CHECK( molecule.getAtoms().size() == 113095 );
+}
+
+TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	using CustomClass = Test::Util::Serialization::CustomClass;
+
+	Application::Settings settings = Application::Settings();
+
+	settings.referenceSetting( "INT_SETTING", 0 );
+	settings.referenceSetting( "FLOAT_SETTING", 0.f );
+	settings.referenceSetting<std::string>( "STRING_SETTING", "<default>" );
+	settings.referenceSetting( "VEC3F_SETTING", VEC3F_ZERO );
+	const CustomClass defaultCustomClass = CustomClass();
+	settings.referenceSetting( "CUSTOM_CLASS_SETTING", defaultCustomClass );
+
+	CHECK( settings.get<int>( "INT_SETTING" ) == 0 );
+	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 0.f );
+	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "<default>" );
+	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
+	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == defaultCustomClass );
+
+	settings.set( "INT_SETTING", 10 );
+	settings.set( "FLOAT_SETTING", 10.f );
+	settings.set<std::string>( "STRING_SETTING", "value" );
+	settings.set( "VEC3F_SETTING", VEC3F_Z );
+	CustomClass newCustomClass = settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" );
+	newCustomClass.color	   = COLOR_BLACK;
+	settings.set( "CUSTOM_CLASS_SETTING", newCustomClass );
+
+	CHECK( settings.get<int>( "INT_SETTING" ) == 10 );
+	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 10.f );
+	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "value" );
+	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_Z );
+	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
+
+	const Util::JSon::BasicJSon json = SERIALIZER().serialize( settings );
+
+	settings.reset();
+
+	CHECK( settings.get<int>( "INT_SETTING" ) == 0 );
+	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 0.f );
+	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "<default>" );
+	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
+	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == defaultCustomClass );
+
+	SERIALIZER().deserialize( json, settings );
+
+	CHECK( settings.get<int>( "INT_SETTING" ) == 10 );
+	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 10.f );
+	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "value" );
+	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_Z );
+	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
 }
 
 TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )

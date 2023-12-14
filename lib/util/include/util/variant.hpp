@@ -11,6 +11,11 @@
 namespace VTX::Util
 {
 	template<typename T>
+	concept Vec3fConcept = std::same_as<Vec3f, T>;
+	template<typename T>
+	concept Vec4fConcept = std::same_as<Vec4f, T>;
+
+	template<typename T>
 	concept VariantPlainValue
 		= ( std::integral<T> || std::floating_point<T> || StringConcept<T> || std::same_as<Vec3f, T>
 			|| std::same_as<Vec4f, T> );
@@ -86,6 +91,16 @@ namespace VTX::Util
 		{
 			return std::holds_alternative<std::string>( _variant );
 		}
+		template<Vec3fConcept T>
+		bool is() const
+		{
+			return std::holds_alternative<Vec3f>( _variant );
+		}
+		template<Vec4fConcept T>
+		bool is() const
+		{
+			return std::holds_alternative<Vec4f>( _variant );
+		}
 
 		bool isPtr() const { return std::holds_alternative<void *>( _variant ); }
 
@@ -104,10 +119,15 @@ namespace VTX::Util
 		{
 			return T( std::get<std::string>( _variant ) );
 		}
-		template<typename T>
+		template<Vec3fConcept T>
 		T get() const
 		{
-			return std::get<T>( _variant );
+			return T( std::get<Vec3f>( _variant ) );
+		}
+		template<Vec4fConcept T>
+		T get() const
+		{
+			return T( std::get<Vec4f>( _variant ) );
 		}
 
 		template<typename T>

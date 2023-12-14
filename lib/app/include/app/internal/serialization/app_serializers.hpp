@@ -22,8 +22,8 @@ namespace VTX::App::Internal::Serialization
 	void			   deserialize( const Util::JSon::Object &, VTXApp & );
 
 	// Settings
-	Util::JSon::Object serialize( const Application::Settings & );
-	void			   deserialize( const Util::JSon::Object &, Application::Settings & );
+	Util::JSon::Object serialize( const App::Application::Settings & );
+	void			   deserialize( const Util::JSon::Object &, App::Application::Settings & );
 
 	// TrajectoryPlayers
 	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::BasePlayer & );

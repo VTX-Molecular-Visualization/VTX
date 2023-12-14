@@ -2,6 +2,7 @@
 #define __VTX_APP_INTERNAL_APPLICATION_SETTINGS__
 
 #include "app/application/settings.hpp"
+#include "app/component/render/enum_camera.hpp"
 #include <string>
 
 namespace VTX::App::Internal::Application::Settings

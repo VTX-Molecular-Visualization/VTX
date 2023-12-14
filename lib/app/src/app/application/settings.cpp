@@ -6,14 +6,8 @@ namespace VTX::App::Application
 	{
 		for ( auto & pair : _settings )
 		{
-			if ( pair.second.isPtr() )
-			{
-				*( pair.second.getPtr<std::any>() ) = *( _defaultValues[ pair.first ].getPtr<std::any>() );
-			}
-			else
-			{
-				pair.second = _defaultValues[ pair.first ];
-			}
+			pair.second->reset();
 		}
 	}
+
 } // namespace VTX::App::Application

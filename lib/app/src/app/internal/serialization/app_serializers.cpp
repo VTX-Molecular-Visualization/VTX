@@ -1,3 +1,4 @@
+#include "app/application/settings.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/trajectory_player/loop.hpp"
 #include "app/core/trajectory_player/once.hpp"
@@ -27,10 +28,48 @@ namespace VTX::App::Internal::Serialization
 	void deserialize( const Util::JSon::Object & p_json, VTXApp & p_app ) { throw NotImplementedException(); }
 
 	// Settings
-	Util::JSon::Object serialize( const Application::Settings & p_settings ) { throw NotImplementedException(); }
-	void			   deserialize( const Util::JSon::Object & p_json, Application::Settings & p_settings )
+	Util::JSon::Object serialize( const App::Application::Settings & p_settings )
 	{
-		throw NotImplementedException();
+		const Application::Settings::SettingMap & settingMap = p_settings.getSettingMap();
+		const Application::Settings::JSonMap &	  jsonMap	 = p_settings.getJSonMap();
+
+		Util::JSon::Object settingMapJSon = Util::JSon::Object();
+
+		for ( const auto & pair : settingMap )
+		{
+			// If the data has not been erased, the JSon is kept and can be re-use.
+			if ( jsonMap.contains( pair.first ) )
+			{
+				settingMapJSon.appendField( pair.first, jsonMap.at( pair.first ) );
+			}
+			else
+			{
+				settingMapJSon.appendField( pair.first, pair.second->serialize() );
+			}
+		}
+
+		return { { "MAP", settingMapJSon } };
+	}
+	void deserialize( const Util::JSon::Object & p_json, App::Application::Settings & p_settings )
+	{
+		Application::Settings::JSonMap & jsonMap = p_settings.getJSonMap();
+
+		if ( !p_json.contains( "MAP" ) )
+			throw( IOException( "Unreadable Setting file." ) );
+
+		const Util::JSon::Object & settingMapJSon = p_json[ "MAP" ];
+
+		for ( const Util::JSon::Object::Field & field : settingMapJSon )
+		{
+			if ( p_settings.contains( field.first ) )
+			{
+				jsonMap[ field.first ] = field.second;
+			}
+			else
+			{
+				VTX_WARNING( "Unknown setting \"{}\". Setting skipped.", field.first );
+			}
+		}
 	}
 
 	// TrajectoryPlayers
