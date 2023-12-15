@@ -40,6 +40,7 @@ add_library(vtx_gromacs SHARED)
 configure_target(vtx_gromacs)
 
 find_package(vtx-gromacs CONFIG REQUIRED COMPONENTS vtx-gromacs::muparser vtx-gromacs::gromacs)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 
 unset(SOURCES)
 file(GLOB_RECURSE SOURCES src/gromacs/*)
@@ -48,9 +49,12 @@ file(GLOB_RECURSE HEADERS include/*)
 
 target_sources(vtx_gromacs
 	PRIVATE ${SOURCES}
+	PRIVATE ${QT_FORMS}
+	PRIVATE ${QT_RESOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
 target_link_libraries(vtx_gromacs PRIVATE vtx-gromacs::muparser vtx-gromacs::gromacs)
+target_link_libraries(vtx_gromacs PRIVATE Qt6::Core)
 
 # We need to link socket for gromacs
 if(WIN32)
