@@ -6,9 +6,7 @@
 #include "util/math/range.hpp"
 #include "util/math/range_list.hpp"
 #include <concepts>
-#include <functional>
 #include <list>
-#include <vector>
 
 namespace VTX::Util::Algorithm::Range
 {
@@ -123,18 +121,15 @@ namespace VTX::Util::Algorithm::Range
 		p_obj = Details::Range::Exclusive( p_obj, p_other ).getRes();
 	}
 
-	template<typename TVector>
-	RangeList<typename std::vector<TVector>::size_type> generateRangeList(
-		const std::vector<TVector> &		   p_vector,
-		std::function<bool( const TVector & )> p_predicate
-	)
+	template<Container C, std::predicate<typename C::value_type> Predicate>
+	RangeList<typename C::size_type> generateIndexRangeList( const C & p_container, const Predicate & p_predicate )
 	{
-		using TRange		  = typename std::vector<TVector>::size_type;
-		RangeList<TRange> res = RangeList<TRange>();
+		using RangeType			 = typename C::size_type;
+		RangeList<RangeType> res = RangeList<RangeType>();
 
-		for ( TRange i = 0; i < p_vector.size(); i++ )
+		for ( RangeType i = 0; i < p_container.size(); i++ )
 		{
-			if ( p_predicate( p_vector[ i ] ) )
+			if ( p_predicate( p_container[ i ] ) )
 			{
 				res.addValue( i );
 			}

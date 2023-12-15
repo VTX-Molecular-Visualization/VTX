@@ -4,6 +4,7 @@
 #include <concepts>
 #include <iterator>
 #include <type_traits>
+#include <vector>
 
 namespace VTX
 {
@@ -53,7 +54,10 @@ namespace VTX
 			  {
 				  a.empty()
 				  } -> std::same_as<bool>;
-		  };
+		  }
+	// Special case for std::vector<bool> because of its special management in the standard which doesn't fit the previous requirements (Proxy on ContainerType::reference & const reference which return bool instead of const bool &)
+	// https://en.cppreference.com/w/cpp/container/vector_bool
+	|| std::same_as<ContainerType, std::vector<bool>>;
 
 	template<typename ContainerType, typename ValueType>
 	concept ContainerOfType = requires( ContainerType p_container ) {

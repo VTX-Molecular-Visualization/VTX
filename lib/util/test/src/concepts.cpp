@@ -94,11 +94,13 @@ enum class EnumTest : int
 
 TEST_CASE( "Util::Concepts", "[unit]" )
 {
+	std::vector<bool>		vecBool			= { true, true, false };
 	std::vector<int>		vecInt			= { 0, 1, 2, 3, 4, 5 };
 	std::list<int>			listInt			= { 0, 1, 2, 3, 4, 5 };
 	std::set<int>			setInt			= { 0, 1, 2, 3, 4, 5 };
 	std::unordered_set<int> unorderedSetInt = { 0, 1, 2, 3, 4, 5 };
 
+	containerFunc( vecBool );
 	containerFunc( vecInt );
 	containerFunc( listInt );
 	containerFunc( setInt );

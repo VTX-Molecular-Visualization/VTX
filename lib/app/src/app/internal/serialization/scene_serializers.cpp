@@ -114,7 +114,7 @@ namespace VTX::App::Internal::Serialization
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
 
 		// Store not visible atom indexes
-		Util::Math::RangeList<size_t> visibilities = Util::Algorithm::Range::generateRangeList<uint>(
+		Util::Math::RangeList<size_t> visibilities = Util::Algorithm::Range::generateIndexRangeList(
 			moleculeComponent.getAtomVisibilities(), []( const uint & p_visibility ) { return !p_visibility; }
 		);
 
