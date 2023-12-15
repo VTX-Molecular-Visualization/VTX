@@ -214,9 +214,21 @@ namespace VTX::Renderer
 						 { "Ratio",
 						   E_TYPE::FLOAT,
 						   StructUniformValue<float> { 0.25f, StructUniformValue<float>::MinMax { 0.1f, 1.f } } },
-						 { "Opacity",
+						 { "Graniness X",
 						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 1.f } } } } } }
+						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+						 { "Graniness Y",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+						 { "Vignette roundness",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 100.f, StructUniformValue<float>::MinMax { 1.f, 1000.f } } },
+						 { "Vignette intensity",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+						 { "Brightness",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 1.2f, StructUniformValue<float>::MinMax { 1.f, 10.f } } } } } }
 	};
 
 	static const std::vector<Pass> availablePasses { descPassGeometric, descPassDepth,	 descPassSSAO, descPassBlur,
