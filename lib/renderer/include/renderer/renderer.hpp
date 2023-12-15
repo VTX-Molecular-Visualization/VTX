@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "context/opengl_45.hpp"
-#include "passes.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
 #include "struct_proxy_mesh.hpp"

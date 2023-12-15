@@ -308,11 +308,24 @@ namespace VTX::Bench
 		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{
 			using namespace Renderer;
+			auto & graph = p_renderer->getRenderGraph();
 
 			static bool isOpen = true;
 			if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
 			{
 				ImGui::BeginMenuBar();
+				if ( ImGui::BeginMenu( "Add" ) )
+				{
+					for ( const Pass & pass : graph.getAvailablePasses() )
+					{
+						if ( ImGui::MenuItem( pass.name.c_str() ) )
+						{
+							graph.addPass( pass );
+						}
+					}
+
+					ImGui::EndMenu();
+				}
 				if ( ImGui::Button( "Build" ) )
 				{
 					p_renderer->build();
@@ -321,7 +334,8 @@ namespace VTX::Bench
 				{
 					p_renderer->clean();
 				}
-				RenderQueue & renderQueue = p_renderer->getRenderGraph().getRenderQueue();
+
+				RenderQueue & renderQueue = graph.getRenderQueue();
 				for ( const Pass * const pass : renderQueue )
 				{
 					ImGui::TextUnformatted( pass->name.c_str() );
@@ -339,7 +353,7 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = p_renderer->getRenderGraph().isBuilt();
+				bool isBuilt = graph.isBuilt();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -349,15 +363,23 @@ namespace VTX::Bench
 				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
 				std::map<const uint, Pass *>				 mapIdDescPass;
 				std::map<const uint, Link *>				 mapIdDescLink;
+				const Pass *								 passToDelete = nullptr;
 
-				for ( std::unique_ptr<Pass> & pass : p_renderer->getRenderGraph().getPasses() )
+				for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
+
+					if ( ImGui::Button( "X", ImVec2( 15, 15 ) ) )
+					{
+						passToDelete = pass.get();
+					}
+
+					ImGui::SameLine();
 					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
 
-					bool isInRenderQueue = p_renderer->getRenderGraph().isInRenderQueue( pass.get() );
+					bool isInRenderQueue = graph.isInRenderQueue( pass.get() );
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass->inputs )
@@ -602,11 +624,12 @@ namespace VTX::Bench
 				ImGui::Text( "out" );
 				ImNodes::EndInputAttribute();
 				ImNodes::PopAttributeFlag();
+
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
 
 				// Links.
-				for ( std::unique_ptr<Link> & link : p_renderer->getRenderGraph().getLinks() )
+				for ( std::unique_ptr<Link> & link : graph.getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
 					ImNodes::Link(
@@ -618,10 +641,10 @@ namespace VTX::Bench
 
 				// Output.
 				uint idFinalDescLink = -1;
-				if ( p_renderer->getRenderGraph().getOutput() )
+				if ( graph.getOutput() )
 				{
 					idFinalDescLink = id;
-					ImNodes::Link( id++, mapIdOutput[ p_renderer->getRenderGraph().getOutput() ], idFinalOuput );
+					ImNodes::Link( id++, mapIdOutput[ graph.getOutput() ], idFinalOuput );
 				}
 
 				ImNodes::MiniMap();
@@ -638,7 +661,7 @@ namespace VTX::Bench
 						{
 							if ( it.second == newLinkStartId )
 							{
-								p_renderer->getRenderGraph().setOutput( it.first );
+								graph.setOutput( it.first );
 							}
 						}
 					}
@@ -646,7 +669,7 @@ namespace VTX::Bench
 					// Add link.
 					else
 					{
-						p_renderer->getRenderGraph().addLink(
+						graph.addLink(
 							mapIdDescPass[ newLinkStartId ],
 							mapIdDescPass[ newLinkEndtId ],
 							mapIdChannelOutput[ newLinkStartId ],
@@ -662,14 +685,21 @@ namespace VTX::Bench
 					// Output.
 					if ( deletedDescLinkId == idFinalDescLink )
 					{
-						p_renderer->getRenderGraph().setOutput( nullptr );
+						graph.setOutput( nullptr );
 					}
 
 					// DescLink.
 					else
 					{
-						p_renderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
+						graph.removeLink( mapIdDescLink[ deletedDescLinkId ] );
 					}
+				}
+
+				// Check deleted node.
+				if ( passToDelete != nullptr )
+				{
+					p_renderer->clean();
+					graph.removePass( passToDelete );
 				}
 			}
 			ImGui::End();

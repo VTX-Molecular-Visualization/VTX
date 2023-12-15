@@ -201,6 +201,10 @@ namespace VTX::Renderer
 						   E_TYPE::FLOAT,
 						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } }
 	};
+
+	static const std::vector<Pass> availablePasses { descPassGeometric, descPassDepth,	  descPassSSAO,
+													 descPassBlur,		descPassShading,  descPassOutline,
+													 desPassFXAA,		descPassPixelize, descPassDebug };
 } // namespace VTX::Renderer
 
 #endif
