@@ -1,7 +1,7 @@
 #include "app/application/selection/selection_data.hpp"
+#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/selectable.hpp"
-#include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Application::Selection

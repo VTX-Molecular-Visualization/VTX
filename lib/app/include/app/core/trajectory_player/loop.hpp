@@ -23,6 +23,8 @@ namespace VTX::App::Core::TrajectoryPlayer
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
+
+		std::unique_ptr<BasePlayer> clone() const override;
 	};
 } // namespace VTX::App::Core::TrajectoryPlayer
 #endif

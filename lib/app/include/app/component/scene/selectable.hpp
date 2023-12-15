@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 #define __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 
+#include "app/application/ecs/component_registration.hpp"
 #include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
 #include "app/core/ecs/base_component.hpp"
@@ -11,6 +12,9 @@ namespace VTX::App::Component::Scene
 {
 	class Selectable : public Core::ECS::BaseComponent
 	{
+	  private:
+		inline static Application::ECS::Registration<Selectable> registration { "Scene::SelectableComponent" };
+
 	  public:
 		using SelectionDataGenerator = std::function<std::unique_ptr<Application::Selection::SelectionData>()>;
 

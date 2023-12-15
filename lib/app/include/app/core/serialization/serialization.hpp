@@ -14,7 +14,7 @@ namespace VTX::App::Core::Serialization
 {
 	template<typename T>
 	concept SerializableByDefaultConcept
-		= (!Util::JSon::BasicJSonConcept<T>) && requires( T p_obj ) {
+		= (!Util::JSon::BasicJSonConcept<T>) && requires( T & p_obj ) {
 													{
 														Internal::Serialization::serialize( p_obj )
 														} -> std::convertible_to<Util::JSon::BasicJSon>;
@@ -110,6 +110,22 @@ namespace VTX::App::Core::Serialization
 			}
 
 			return res;
+		}
+
+		template<Util::JSon::BasicJSonConcept T>
+		bool canSerialize() const
+		{
+			return true;
+		}
+		template<SerializableByDefaultConcept T>
+		bool canSerialize() const
+		{
+			return true;
+		}
+		template<typename T>
+		bool canSerialize() const
+		{
+			return _mapSerializeFunctions.contains( typeid( T ) );
 		}
 
 		template<typename T>

@@ -13,7 +13,7 @@
 #include <entt/entt.hpp>
 #include <functional>
 #include <io/internal/filesystem.hpp>
-#include <renderer/gl/struct_proxy_molecule.hpp>
+#include <renderer/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -101,8 +101,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
-	const Renderer::GL::StructProxyMolecule & gpuProxyComponent
-		= MAIN_REGISTRY().getComponent<Renderer::GL::StructProxyMolecule>( moleculeEntity );
+	const Renderer::StructProxyMolecule & gpuProxyComponent
+		= MAIN_REGISTRY().getComponent<Renderer::StructProxyMolecule>( moleculeEntity );
 
 	REQUIRE( gpuProxyComponent.atomIds != nullptr );
 	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] ) == uint( 2 ) );

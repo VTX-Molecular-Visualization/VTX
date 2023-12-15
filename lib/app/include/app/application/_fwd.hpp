@@ -3,7 +3,10 @@
 
 namespace VTX::App::Application
 {
-	struct Setting;
+	template<typename T>
+	class Setting;
+
+	class Settings;
 	class Scene;
 	class System;
 

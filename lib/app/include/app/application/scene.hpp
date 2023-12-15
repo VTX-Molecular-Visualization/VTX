@@ -5,7 +5,6 @@
 #include "app/component/render/_fwd.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/callback_event.hpp"
-#include "app/core/ecs/registry.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
 #include <string>
@@ -36,14 +35,14 @@ namespace VTX::App::Application
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
 
 		template<Core::ECS::ECS_Component C>
-		const C & getComponentByName( const std::string & p_name ) const
+		C & getComponentByIndex( const size_t & p_index ) const
 		{
-			const Core::ECS::BaseEntity entity = getItem( p_name );
+			const Core::ECS::BaseEntity entity = getItem( p_index );
 			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
 
 		template<Core::ECS::ECS_Component C>
-		C & getComponentByName( const std::string & p_name )
+		C & getComponentByName( const std::string & p_name ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
 			return MAIN_REGISTRY().getComponent<C>( entity );
@@ -118,6 +117,9 @@ namespace VTX::App::Application
 		{
 			return _onSceneItemAddedCallback;
 		}
+
+		inline const Component::Render::Camera & getCamera() const { return *_camera; }
+		inline Component::Render::Camera &		 getCamera() { return *_camera; }
 
 	  private:
 		int _persistentIDCounter = 0;

@@ -2,6 +2,7 @@
 #include <util/algorithm/range.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
+#include <vector>
 
 TEST_CASE( "Util::Math::RangeList", "[unit]" )
 {
@@ -58,6 +59,11 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	CHECK( !rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
 								  Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
 								  Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
+};
+
+TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
+{
+	using namespace VTX;
 
 	Util::Math::RangeList<size_t> rangeListA
 		= Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
@@ -127,4 +133,36 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeListRes1 = rangeListA;
 	Util::Algorithm::Range::exclusiveInSitu( rangeListRes1, rangeListB );
 	CHECK( rangeListRes1 == rangeListRes2 );
-};
+}
+
+TEST_CASE( "Util::Math::RangeList - FillVector", "[unit]" )
+{
+	using namespace VTX;
+
+	std::vector<bool> vecIndexes = std::vector<bool>();
+	vecIndexes.resize( 54, false );
+	vecIndexes[ 5 ]	 = true;
+	vecIndexes[ 6 ]	 = true;
+	vecIndexes[ 7 ]	 = true;
+	vecIndexes[ 8 ]	 = true;
+	vecIndexes[ 12 ] = true;
+	vecIndexes[ 13 ] = true;
+	vecIndexes[ 14 ] = true;
+	vecIndexes[ 15 ] = true;
+	vecIndexes[ 16 ] = true;
+	vecIndexes[ 17 ] = true;
+	vecIndexes[ 18 ] = true;
+	vecIndexes[ 19 ] = true;
+	vecIndexes[ 20 ] = true;
+	vecIndexes[ 50 ] = true;
+
+	const Util::Math::RangeList<size_t> generatedRangeList
+		= Util::Algorithm::Range::generateIndexRangeList( vecIndexes, []( const bool & p_value ) { return p_value; } );
+
+	const Util::Math::RangeList<size_t> expectedRangeList
+		= Util::Math::RangeList<size_t>( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+										   Util::Math::Range<size_t>::createFirstLast( 12, 20 ),
+										   Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } );
+
+	CHECK( generatedRangeList == expectedRangeList );
+}

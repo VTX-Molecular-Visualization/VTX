@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_CORE_IO_WRITER_SERIALIZED_OBJECT__
 #define __VTX_APP_CORE_IO_WRITER_SERIALIZED_OBJECT__
 
+#include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
 #include "app/vtx_app.hpp"
 #include <util/filesystem.hpp>

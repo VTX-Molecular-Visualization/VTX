@@ -24,6 +24,11 @@ namespace VTX::App::Core::TrajectoryPlayer
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
 
+		bool isPlayingForward() const { return _forward; }
+		void setPlayingForward( const bool p_forward ) { _forward = p_forward; }
+
+		std::unique_ptr<BasePlayer> clone() const override;
+
 	  private:
 		bool _forward = true;
 	};

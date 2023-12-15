@@ -25,7 +25,7 @@ namespace VTX
 		{
 		  private:
 			inline static const std::string REGISTRY_MANAGER_KEY   = "REGISTRY_MANAGER";
-			inline static const std::string SETTING_KEY			   = "SETTING";
+			inline static const std::string SETTINGS_KEY		   = "SETTINGS";
 			inline static const std::string ENTITY_DIRECTOR_KEY	   = "ENTITY_DIRECTOR";
 			inline static const std::string SCENE_KEY			   = "SCENE";
 			inline static const std::string SELECTION_MANAGER_KEY  = "SELECTION_MANAGER";
@@ -55,8 +55,8 @@ namespace VTX
 			inline Renderer::Renderer &		  getRenderer() { return *_renderer; }
 			inline const Renderer::Renderer & getRenderer() const { return *_renderer; }
 
-			Application::Setting &		 getSettings();
-			const Application::Setting & getSettings() const;
+			Application::Settings &		  getSettings();
+			const Application::Settings & getSettings() const;
 
 			Application::ECS::RegistryManager &		  getRegistryManager();
 			const Application::ECS::RegistryManager & getRegistryManager() const;
@@ -70,10 +70,11 @@ namespace VTX
 			const Core::Serialization::Serialization & getSerializationTool() const;
 
 		  private:
-			std::shared_ptr<Application::System> _system = nullptr;
-			std::unique_ptr<Renderer::Renderer>	 _renderer;
+			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
 
-			std::unique_ptr<Application::Setting>					  _setting;
+			std::unique_ptr<Renderer::Renderer> _renderer;
+
+			std::unique_ptr<Application::Settings>					  _settings;
 			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
 			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
 			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
@@ -86,7 +87,7 @@ namespace VTX
 
 		// Convenient accessors
 		Application::Scene &				 SCENE();
-		Core::ECS::Registry &				 MAIN_REGISTRY();
+		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();
 		Core::Serialization::Serialization & SERIALIZER();
 	} // namespace App

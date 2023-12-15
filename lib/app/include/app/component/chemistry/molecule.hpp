@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
+#include "app/application/ecs/component_registration.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
 #include <util/math/aabb.hpp>
@@ -17,6 +18,9 @@ namespace VTX::App::Component::Chemistry
 {
 	class Molecule
 	{
+		// Register component class as component
+		inline static const Application::ECS::Registration<Molecule> registration { "Chemistry::MoleculeComponent" };
+
 		friend App::Render::GPUProxyBuilder;
 		friend Chain;
 		friend Residue;
@@ -66,6 +70,13 @@ namespace VTX::App::Component::Chemistry
 
 		const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void				setPdbIdCode( const std::string & p_pdbIdCode ) { _pdbIdCode = p_pdbIdCode; }
+
+		bool getAtomVisibility( const size_t p_index ) const { return bool( _atomVisibilities[ p_index ] ); }
+		void setAtomVisibility( const size_t p_index, const bool p_visible )
+		{
+			_atomVisibilities[ p_index ] = uint( p_visible );
+		}
+		const std::vector<uint> & getAtomVisibilities() const { return _atomVisibilities; }
 
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();

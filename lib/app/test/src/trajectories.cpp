@@ -2,9 +2,11 @@
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/trajectory.hpp>
+#include <app/core/trajectory_player/base_player.hpp>
 #include <app/core/trajectory_player/loop.hpp>
 #include <app/core/trajectory_player/once.hpp>
 #include <app/core/trajectory_player/ping_pong.hpp>
+#include <app/core/trajectory_player/players.hpp>
 #include <app/core/trajectory_player/revert_loop.hpp>
 #include <app/core/trajectory_player/revert_once.hpp>
 #include <app/core/trajectory_player/stop.hpp>
@@ -21,6 +23,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	Test::Util::App::loadTestTrajectoryMolecule();
 
 	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
+	App::Component::Chemistry::Molecule & moleculeComponent
+		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( molEntity );
+
 	App::Component::Chemistry::Trajectory & trajectoryComponent
 		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
@@ -30,11 +35,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Stop playmode" )
 	{
-		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Stop>(
-			App::Core::TrajectoryPlayer::Stop::NAME
-		);
+		playmode
+			= App::Core::TrajectoryPlayer::Players::get().instantiateItem( App::Core::TrajectoryPlayer::Stop::NAME );
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( !trajectoryComponent.getPlayer().isPlaying() );
@@ -53,6 +58,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		);
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
@@ -72,6 +78,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		);
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
@@ -91,6 +98,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		);
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
@@ -110,6 +118,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		);
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
@@ -129,6 +138,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		);
 
 		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );

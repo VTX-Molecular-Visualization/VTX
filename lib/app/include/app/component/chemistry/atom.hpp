@@ -41,7 +41,7 @@ namespace VTX::App::Component::Chemistry
 		const Vec3f & getLocalPosition( const size_t & p_frameIndex ) const;
 		Vec3f		  getWorldPosition() const;
 		Vec3f		  getWorldPosition( const size_t & p_frameIndex ) const;
-		bool		  isVisible();
+		bool		  isVisible() const;
 		void		  setVisible( const bool p_visible );
 
 	  private:

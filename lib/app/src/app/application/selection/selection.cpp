@@ -4,6 +4,7 @@
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <sstream>
+#include <string_view>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
