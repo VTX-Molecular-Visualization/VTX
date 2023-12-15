@@ -582,6 +582,28 @@ namespace VTX::Bench
 								}
 								break;
 							}
+							case E_TYPE::VEC2F:
+							{
+								StructUniformValue<Vec2f> descValue
+									= std::get<StructUniformValue<Vec2f>>( uniform.value );
+
+								Vec2f value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Vec2f>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::InputFloat2( uniform.name.c_str(), (float *)&value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
+								}
+								break;
+							}
 							case E_TYPE::COLOR4:
 							{
 								StructUniformValue<Util::Color::Rgba> descValue

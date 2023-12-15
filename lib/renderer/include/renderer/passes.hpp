@@ -202,9 +202,26 @@ namespace VTX::Renderer
 						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } }
 	};
 
-	static const std::vector<Pass> availablePasses { descPassGeometric, descPassDepth,	  descPassSSAO,
-													 descPassBlur,		descPassShading,  descPassOutline,
-													 desPassFXAA,		descPassPixelize, descPassDebug };
+	// CRT.
+	static const Pass descPassCRT {
+		"CRT",
+		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs {
+			{ "CRT",
+			  std::vector<FilePath> { "default.vert", "crt.frag" },
+			  Uniforms { { "Curvature", E_TYPE::VEC2F, StructUniformValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
+						 { "Ratio",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 0.25f, StructUniformValue<float>::MinMax { 0.1f, 1.f } } },
+						 { "Opacity",
+						   E_TYPE::FLOAT,
+						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 1.f } } } } } }
+	};
+
+	static const std::vector<Pass> availablePasses { descPassGeometric, descPassDepth,	 descPassSSAO, descPassBlur,
+													 descPassShading,	descPassOutline, desPassFXAA,  descPassPixelize,
+													 descPassDebug,		descPassCRT };
 } // namespace VTX::Renderer
 
 #endif
