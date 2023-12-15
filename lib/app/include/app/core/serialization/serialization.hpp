@@ -140,11 +140,14 @@ namespace VTX::App::Core::Serialization
 		}
 
 		template<typename T>
-		void migrate( Util::JSon::BasicJSon & p_jsonObj, T & p_obj, const Version & p_version ) const
+		void upgrade( Util::JSon::BasicJSon & p_jsonObj, T & p_obj, const Version & p_version ) const
 		{
-			const std::any &		any	  = _mapUpgradeFunctions.at( typeid( T ) );
-			const UpgradeStack<T> & stack = std::any_cast<const UpgradeStack<T> &>( any );
-			stack.applyUpgrades( p_jsonObj, p_obj, p_version );
+			if ( _mapUpgradeFunctions.contains( typeid( T ) ) )
+			{
+				const std::any &		any	  = _mapUpgradeFunctions.at( typeid( T ) );
+				const UpgradeStack<T> & stack = std::any_cast<const UpgradeStack<T> &>( any );
+				stack.applyUpgrades( p_jsonObj, p_obj, p_version );
+			}
 		}
 
 	  private:

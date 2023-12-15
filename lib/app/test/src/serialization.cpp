@@ -392,6 +392,37 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "value" );
 	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_Z );
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
+
+	// Setting version check
+	Application::Settings settingsV0 = Application::Settings();
+	settingsV0.referenceSetting<int>( "SETTING_1", 0 );
+	settingsV0.referenceSetting<int>( "SETTING_2", 0 );
+	settingsV0.referenceSetting<std::string>( "SETTING_3", "<default>" );
+
+	Application::Settings settingsV1 = Application::Settings();
+	settingsV1.referenceSetting<int>( "SETTING_1", 0 ); // This setting has been kept
+	// settingsV1.referenceSetting<int>( "SETTING_2" ); // This setting has been removed
+	settingsV1.referenceSetting<float>( "SETTING_3", 0.f );						// This setting has changed type
+	settingsV1.referenceSetting<std::string>( "SETTING_4", "<set_4_default>" ); // This setting has been added
+
+	const FilePath jsonPath_0_0_0
+		= Util::Filesystem::getExecutableDir() / "data/serialization/json_settings_0_0_0.json";
+	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_0_0, &settingsV1 };
+	reader.read();
+
+	CHECK( settingsV1.get<int>( "SETTING_1" ) == 10 );						  // Loaded
+	CHECK( !settingsV1.contains( "SETTING_2" ) );							  // Skipped
+	CHECK( settingsV1.get<float>( "SETTING_3" ) == 0.f );					  // Don't change (type issue)
+	CHECK( settingsV1.get<std::string>( "SETTING_4" ) == "<set_4_default>" ); // Don't change (doesn't exists before)
+
+	SERIALIZER().registerUpgrade<Application::Settings>(
+		{ 1, 0, 0 },
+		[]( Util::JSon::Object & p_json, Application::Settings & p_settings ) { p_json[ "MAP" ][ "SETTING_3" ] = 12.f; }
+	);
+
+	reader.read();
+
+	CHECK( settingsV1.get<float>( "SETTING_3" ) == 12.f ); // Type issue corrected by upgrade.
 }
 
 TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )

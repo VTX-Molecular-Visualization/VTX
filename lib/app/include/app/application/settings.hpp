@@ -32,7 +32,16 @@ namespace VTX::App::Application
 
 			if ( _settingJSons.contains( p_key ) )
 			{
-				_getSetting<T>( p_key ).deserialize( _settingJSons[ p_key ] );
+				try
+				{
+					_getSetting<T>( p_key ).deserialize( _settingJSons[ p_key ] );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "{}", e.what() );
+					VTX_WARNING( "Unable to deserialize setting {}. Keep previous value.", p_key );
+				}
+
 				_settingJSons.erase( p_key );
 			}
 
