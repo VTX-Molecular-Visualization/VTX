@@ -231,8 +231,6 @@ namespace VTX::Renderer
 		size_t _sizeAtoms = 0;
 		size_t _sizeBonds = 0;
 
-		std::vector<Vec3f> _noise;
-
 		void _setData( const StructProxyMolecule & p_proxy )
 		{
 			_renderGraph->setData( *p_proxy.atomPositions, "MoleculesPositions" );
