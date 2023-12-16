@@ -42,7 +42,7 @@ vec4 intensityScanLine( float p_uv, float p_resolution, float p_opacity )
 	 return vec4( vec3( intensity ), 1.f );
  }
 
-void main(void) 
+void main() 
 {
     const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 	const vec2 texSize = textureSize( inTextureColor, 0 );
