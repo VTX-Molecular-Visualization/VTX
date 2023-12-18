@@ -39,7 +39,7 @@ namespace VTX::Renderer::Context
 		vbo->setData( quad, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glClearColor( 0.f, 0.f, 0.f, 1.f );
+		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		_getOpenglInfos();
@@ -515,6 +515,7 @@ namespace VTX::Renderer::Context
 			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram, p_descPass ); break;
@@ -677,13 +678,13 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes
 		= { { E_TYPE::BOOL, GL_BOOL },	 { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },
-			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC2I, GL_INT },			{ E_TYPE::VEC3F, GL_FLOAT },
-			{ E_TYPE::VEC4F, GL_FLOAT }, { E_TYPE::MAT3F, GL_FLOAT },		{ E_TYPE::MAT4F, GL_FLOAT },
-			{ E_TYPE::COLOR4, GL_FLOAT } };
+			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC2I, GL_INT },			{ E_TYPE::VEC2F, GL_FLOAT },
+			{ E_TYPE::VEC3F, GL_FLOAT }, { E_TYPE::VEC4F, GL_FLOAT },		{ E_TYPE::MAT3F, GL_FLOAT },
+			{ E_TYPE::MAT4F, GL_FLOAT }, { E_TYPE::COLOR4, GL_FLOAT } };
 
 	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
 		= { { E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
-			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC2I, sizeof( Vec2i ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },
-			{ E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },
-			{ E_TYPE::COLOR4, sizeof( Vec4f ) } };
+			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC2I, sizeof( Vec2i ) }, { E_TYPE::VEC2F, sizeof( Vec2f ) },
+			{ E_TYPE::VEC3F, sizeof( Vec3f ) }, { E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) },
+			{ E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) } };
 } // namespace VTX::Renderer::Context

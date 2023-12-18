@@ -73,6 +73,7 @@ namespace VTX::Renderer
 		StructUniformValue<int>,
 		StructUniformValue<float>,
 		StructUniformValue<Vec2i>,
+		StructUniformValue<Vec2f>,
 		StructUniformValue<Vec3f>,
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,

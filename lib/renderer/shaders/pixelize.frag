@@ -26,21 +26,10 @@ void main()
 	if ( uniforms.background == false && data.viewPosition.z == 0.f )
 	{
 		outFragColor = texture( inTextureColor, texCoord / texSize );
-		return;
 	}
 	else
 	{
-		float x = int( gl_FragCoord.x ) % uniforms.size;
-		float y = int( gl_FragCoord.y ) % uniforms.size;
-
-		x = floor( uniforms.size / 2.0 ) - x;
-		y = floor( uniforms.size / 2.0 ) - y;
-
-		x = gl_FragCoord.x + x;
-		y = gl_FragCoord.y + y;
-
-		vec2 uv = vec2( x, y ) / texSize;
-
-		outFragColor = texture( inTextureColor, uv );	
+		const vec2 xy = floor( uniforms.size / 2.f ) - ( texCoord % uniforms.size ) + texCoord;
+		outFragColor = texture( inTextureColor, xy / texSize );	
 	}
 }

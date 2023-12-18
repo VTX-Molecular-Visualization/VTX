@@ -115,33 +115,69 @@ namespace VTX::Bench
 
 			// Menu bar.
 			if ( ImGui::BeginMainMenuBar() )
-			{ // Main menu.
-				if ( ImGui::BeginMenu( "Menu" ) )
-				{ // Quit.
-					if ( ImGui::MenuItem( "Compile shaders" ) )
+			{
+				if ( ImGui::BeginMenu( "Shaders" ) )
+				{
+					if ( ImGui::MenuItem( "Compile" ) )
 					{
-						// p_renderer->compileShaders();
+						p_renderer->compileShaders();
 					}
 
 					ImGui::EndMenu();
 				}
 
+				if ( ImGui::BeginMenu( "Resolution" ) )
+				{
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						SDL_SetWindowSize( _window, 800, 600 );
+					}
+					if ( ImGui::MenuItem( "1920x1080" ) )
+					{
+						SDL_SetWindowSize( _window, 1920, 1080 );
+					}
+					if ( ImGui::MenuItem( "2560x1440" ) )
+					{
+						SDL_SetWindowSize( _window, 2560, 1440 );
+					}
+					if ( ImGui::MenuItem( "3840x2160" ) )
+					{
+						SDL_SetWindowSize( _window, 3840, 2160 );
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::Checkbox( "UI", &_drawUi );
+				if ( ImGui::Checkbox( "Vsync", &_vsync ) )
+				{
+					setVSync( _vsync );
+				}
+
+				bool isLogDurations = p_renderer->isLogDurations();
+				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
+				{
+					p_renderer->setLogDurations( isLogDurations );
+				}
+				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
 				ImGui::EndMainMenuBar();
 			}
 
-			// Camera.
-			_drawCamera( p_camera );
+			if ( _drawUi )
+			{
+				// Camera.
+				_drawCamera( p_camera );
 
-			// Times.
-			_drawDurations( p_renderer );
+				// Times.
+				_drawDurations( p_renderer );
 
-			// Misc.
-			_drawMisc( p_renderer );
+				// Misc.
+				_drawMisc( p_renderer );
 
-			// Node editor.
-			_drawNodeEditor( p_renderer );
-
-			// ImGui::ShowDemoWindow();
+				// Node editor.
+				_drawNodeEditor( p_renderer );
+			}
 
 			// Render.
 			ImGui::Render();
@@ -206,26 +242,23 @@ namespace VTX::Bench
 		{
 			using namespace Renderer;
 
-			bool isTimersEnabled = p_renderer->isLogDurations();
-			if ( isTimersEnabled )
+			if ( p_renderer->isLogDurations() )
 			{
 				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
 
 				if ( ImGui::Begin( "Durations (ms)" ) )
 				{
-					auto maxRange = std::max_element(
+					auto max = std::max_element(
 						durations.begin(),
 						durations.end(),
 						[]( const InstructionsDurationRange & p_lhs, const InstructionsDurationRange & p_rhs )
 						{ return p_lhs.duration < p_rhs.duration; }
 					);
 
-					const float max = maxRange->duration;
-
 					for ( size_t i = 0; i < durations.size(); ++i )
 					{
 						ImGui::ProgressBar(
-							durations[ i ].duration / max,
+							durations[ i ].duration / max->duration,
 							ImVec2( 0.f, 0.f ),
 							std::to_string( durations[ i ].duration ).c_str()
 						);
@@ -249,7 +282,7 @@ namespace VTX::Bench
 			if ( ImGui::Begin( "Misc" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				bool isLogDurations = p_renderer->isLogDurations();
+
 				ImGui::Text( fmt::format( "{} atoms", p_renderer->getAtomCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} bonds", p_renderer->getBondCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
@@ -268,16 +301,6 @@ namespace VTX::Bench
 				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
-
-				if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
-				{
-					setVSync( _vsync );
-				}
-
-				if ( ImGui::Checkbox( "Enable timers", &isLogDurations ) )
-				{
-					p_renderer->setLogDurations( isLogDurations );
-				}
 			}
 			ImGui::End();
 		}
@@ -285,11 +308,24 @@ namespace VTX::Bench
 		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{
 			using namespace Renderer;
+			auto & graph = p_renderer->getRenderGraph();
 
 			static bool isOpen = true;
 			if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
 			{
 				ImGui::BeginMenuBar();
+				if ( ImGui::BeginMenu( "Add" ) )
+				{
+					for ( const Pass & pass : graph.getAvailablePasses() )
+					{
+						if ( ImGui::MenuItem( pass.name.c_str() ) )
+						{
+							graph.addPass( pass );
+						}
+					}
+
+					ImGui::EndMenu();
+				}
 				if ( ImGui::Button( "Build" ) )
 				{
 					p_renderer->build();
@@ -298,7 +334,8 @@ namespace VTX::Bench
 				{
 					p_renderer->clean();
 				}
-				RenderQueue & renderQueue = p_renderer->getRenderGraph().getRenderQueue();
+
+				RenderQueue & renderQueue = graph.getRenderQueue();
 				for ( const Pass * const pass : renderQueue )
 				{
 					ImGui::TextUnformatted( pass->name.c_str() );
@@ -316,7 +353,7 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = p_renderer->getRenderGraph().isBuilt();
+				bool isBuilt = graph.isBuilt();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -326,15 +363,23 @@ namespace VTX::Bench
 				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
 				std::map<const uint, Pass *>				 mapIdDescPass;
 				std::map<const uint, Link *>				 mapIdDescLink;
+				const Pass *								 passToDelete = nullptr;
 
-				for ( std::unique_ptr<Pass> & pass : p_renderer->getRenderGraph().getPasses() )
+				for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
+
+					if ( ImGui::Button( "X", ImVec2( 15, 15 ) ) )
+					{
+						passToDelete = pass.get();
+					}
+
+					ImGui::SameLine();
 					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
 
-					bool isInRenderQueue = p_renderer->getRenderGraph().isInRenderQueue( pass.get() );
+					bool isInRenderQueue = graph.isInRenderQueue( pass.get() );
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass->inputs )
@@ -537,6 +582,28 @@ namespace VTX::Bench
 								}
 								break;
 							}
+							case E_TYPE::VEC2F:
+							{
+								StructUniformValue<Vec2f> descValue
+									= std::get<StructUniformValue<Vec2f>>( uniform.value );
+
+								Vec2f value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Vec2f>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::InputFloat2( uniform.name.c_str(), (float *)&value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
+								}
+								break;
+							}
 							case E_TYPE::COLOR4:
 							{
 								StructUniformValue<Util::Color::Rgba> descValue
@@ -579,11 +646,12 @@ namespace VTX::Bench
 				ImGui::Text( "out" );
 				ImNodes::EndInputAttribute();
 				ImNodes::PopAttributeFlag();
+
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
 
 				// Links.
-				for ( std::unique_ptr<Link> & link : p_renderer->getRenderGraph().getLinks() )
+				for ( std::unique_ptr<Link> & link : graph.getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
 					ImNodes::Link(
@@ -595,10 +663,10 @@ namespace VTX::Bench
 
 				// Output.
 				uint idFinalDescLink = -1;
-				if ( p_renderer->getRenderGraph().getOutput() )
+				if ( graph.getOutput() )
 				{
 					idFinalDescLink = id;
-					ImNodes::Link( id++, mapIdOutput[ p_renderer->getRenderGraph().getOutput() ], idFinalOuput );
+					ImNodes::Link( id++, mapIdOutput[ graph.getOutput() ], idFinalOuput );
 				}
 
 				ImNodes::MiniMap();
@@ -615,7 +683,7 @@ namespace VTX::Bench
 						{
 							if ( it.second == newLinkStartId )
 							{
-								p_renderer->getRenderGraph().setOutput( it.first );
+								graph.setOutput( it.first );
 							}
 						}
 					}
@@ -623,7 +691,7 @@ namespace VTX::Bench
 					// Add link.
 					else
 					{
-						p_renderer->getRenderGraph().addLink(
+						graph.addLink(
 							mapIdDescPass[ newLinkStartId ],
 							mapIdDescPass[ newLinkEndtId ],
 							mapIdChannelOutput[ newLinkStartId ],
@@ -639,14 +707,21 @@ namespace VTX::Bench
 					// Output.
 					if ( deletedDescLinkId == idFinalDescLink )
 					{
-						p_renderer->getRenderGraph().setOutput( nullptr );
+						graph.setOutput( nullptr );
 					}
 
 					// DescLink.
 					else
 					{
-						p_renderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
+						graph.removeLink( mapIdDescLink[ deletedDescLinkId ] );
 					}
+				}
+
+				// Check deleted node.
+				if ( passToDelete != nullptr )
+				{
+					p_renderer->clean();
+					graph.removePass( passToDelete );
 				}
 			}
 			ImGui::End();
@@ -666,6 +741,7 @@ namespace VTX::Bench
 		SDL_Window *  _window	 = nullptr;
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = true;
+		bool		  _drawUi	 = true;
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

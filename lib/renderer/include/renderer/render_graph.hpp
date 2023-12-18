@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_RENDER_GRAPH__
 
 #include "context/concept_context.hpp"
+#include "passes.hpp"
 #include "scheduler/concept_scheduler.hpp"
 #include <util/logger.hpp>
 #include <util/variant.hpp>
@@ -34,9 +35,25 @@ namespace VTX::Renderer
 			return _passes.back().get();
 		}
 
-		inline void addUniforms( const Uniforms & p_uniforms )
+		void removePass( const Pass * const p_pass )
 		{
-			_uniforms.insert( _uniforms.end(), p_uniforms.begin(), p_uniforms.end() );
+			std::erase_if(
+				_links,
+				[ &p_pass ]( const std::unique_ptr<Link> & p_e ) { return p_e->src == p_pass || p_e->dest == p_pass; }
+			);
+
+			if ( std::find_if(
+					 p_pass->outputs.begin(),
+					 p_pass->outputs.end(),
+					 [ this ]( const auto & p_element ) { return &p_element.second == _output; }
+				 )
+				 != p_pass->outputs.end() )
+			{
+				VTX_DEBUG( "{}", "REMOVE OUTPUT" );
+				_output = nullptr;
+			}
+
+			std::erase_if( _passes, [ &p_pass ]( const std::unique_ptr<Pass> & p_e ) { return p_e.get() == p_pass; } );
 		}
 
 		bool addLink(
@@ -63,18 +80,12 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Check input is free.
-			if ( std::find_if(
-					 _links.begin(),
-					 _links.end(),
-					 [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
-					 { return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
-				 )
-				 != _links.end() )
-			{
-				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
-				return false;
-			}
+			// Remove input if already used.
+			std::erase_if(
+				_links,
+				[ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
+				{ return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
+			);
 
 			// Create link.
 			_links.emplace_back( std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } )
@@ -85,7 +96,6 @@ namespace VTX::Renderer
 
 		void removeLink( const Link * const p_link )
 		{
-			// TODO: is link deleted?
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
@@ -173,6 +183,11 @@ namespace VTX::Renderer
 			_context.reset( nullptr );
 		}
 
+		inline void addUniforms( const Uniforms & p_uniforms )
+		{
+			_uniforms.insert( _uniforms.end(), p_uniforms.begin(), p_uniforms.end() );
+		}
+
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
@@ -180,7 +195,7 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key )
+		inline void getUniform( T & p_value, const std::string & p_key ) const
 		{
 			_context->template getUniform<T>( p_value, p_key );
 		}
@@ -191,12 +206,16 @@ namespace VTX::Renderer
 			_context->setData( p_data, p_key );
 		}
 
-		inline void fillInfos( StructInfos & p_infos ) { _context->fillInfos( p_infos ); }
+		inline void fillInfos( StructInfos & p_infos ) const { _context->fillInfos( p_infos ); }
 
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task )
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const
 		{
 			return _context->measureTaskDuration( p_task );
 		}
+
+		inline void compileShaders() const { _context->compileShaders(); }
+
+		inline const std::vector<Pass> & getAvailablePasses() const { return availablePasses; }
 
 	  private:
 		S				   _scheduler;
