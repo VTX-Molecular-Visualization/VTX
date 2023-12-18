@@ -1,29 +1,19 @@
-#ifndef __VTX_APP_INTERNAL_ACTION_ECS__
-#define __VTX_APP_INTERNAL_ACTION_ECS__
+#ifndef __VTX_APP_ACTION_SCENE__
+#define __VTX_APP_ACTION_SCENE__
 
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/_fwd.hpp"
+#include "app/core/action/base_action.hpp"
 #include <map>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::App::Internal::Action::ECS
+namespace VTX::App::Action::Scene
 {
-	class Open // : public App::Old::Core::Action::BaseAction
+	class LoadMolecule final : public App::Core::Action::BaseAction
 	{
-	  private:
-		// class LoadSceneClass
-		//{
-		//   public:
-		//	LoadSceneClass( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {};
-		//	void _loadScene();
-
-		//  private:
-		//	std::vector<FilePath> _paths;
-		//};
-
 	  public:
-		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit LoadMolecule( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
 		// explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		// explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
 		// explicit Open( const FilePath & p_trajectoryPath, Model::Chemistry::Molecule & p_target )
@@ -38,8 +28,7 @@ namespace VTX::App::Internal::Action::ECS
 		//	_paths.emplace_back( p_trajectoryPath );
 		// }
 
-		// virtual void execute() override;
-		void execute();
+		void execute() override;
 
 	  private:
 		std::vector<FilePath>			  _paths   = std::vector<FilePath>();
@@ -48,5 +37,15 @@ namespace VTX::App::Internal::Action::ECS
 		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
 			= std::vector<Component::Chemistry::Molecule *>();
 	};
-} // namespace VTX::App::Internal::Action::ECS
+
+	// class CreateViewpoint final : public App::Core::Action::BaseAction
+	//{
+	//   public:
+	//	explicit CreateViewpoint() {}
+	//	void execute() override;
+
+	//  private:
+	//};
+
+} // namespace VTX::App::Action::Scene
 #endif

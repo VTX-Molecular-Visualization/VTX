@@ -35,7 +35,7 @@ namespace VTX::App::Core::IO::Reader
 			VTX::Util::JSon::BasicJSon & dataJSon = fullDoc.json()[ "DATA" ];
 
 			if ( fileVersion < Serialization::Version::CURRENT )
-				SERIALIZER().migrate( dataJSon, *_target, fileVersion );
+				SERIALIZER().upgrade( dataJSon, *_target, fileVersion );
 
 			SERIALIZER().deserialize( dataJSon, *_target );
 		}

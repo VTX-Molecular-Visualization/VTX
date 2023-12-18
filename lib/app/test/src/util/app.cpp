@@ -1,6 +1,6 @@
 #include "app.hpp"
+#include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
@@ -23,8 +23,8 @@ namespace VTX::App::Test::Util
 	{
 		// Create MoleculeEntity
 		const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / p_moleculePath;
-		Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
-		openAction.execute();
+		Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
+		loadMoleculeAction.execute();
 	}
 
 	void App::loadTestMolecule() { loadMolecule( MOLECULE_TEST_NAME_EXT ); }

@@ -237,6 +237,7 @@ namespace VTX::App
 	}
 
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
+	Application::Settings &				SETTINGS() { return VTXApp::get().getSettings(); }
 	Application::ECS::RegistryManager & MAIN_REGISTRY() { return VTXApp::get().getRegistryManager(); }
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
 	Core::Serialization::Serialization & SERIALIZER() { return VTXApp::get().getSerializationTool(); }

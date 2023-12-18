@@ -31,28 +31,19 @@ namespace VTX::App::Internal::Serialization
 	Util::JSon::Object serialize( const App::Application::Settings & p_settings )
 	{
 		const Application::Settings::SettingMap & settingMap = p_settings.getSettingMap();
-		const Application::Settings::JSonMap &	  jsonMap	 = p_settings.getJSonMap();
 
 		Util::JSon::Object settingMapJSon = Util::JSon::Object();
 
 		for ( const auto & pair : settingMap )
 		{
-			// If the data has not been erased, the JSon is kept and can be re-use.
-			if ( jsonMap.contains( pair.first ) )
-			{
-				settingMapJSon.appendField( pair.first, jsonMap.at( pair.first ) );
-			}
-			else
-			{
-				settingMapJSon.appendField( pair.first, pair.second->serialize() );
-			}
+			settingMapJSon.appendField( pair.first, pair.second->serialize() );
 		}
 
 		return { { "MAP", settingMapJSon } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Application::Settings & p_settings )
 	{
-		Application::Settings::JSonMap & jsonMap = p_settings.getJSonMap();
+		const Application::Settings::SettingMap & settingMap = p_settings.getSettingMap();
 
 		if ( !p_json.contains( "MAP" ) )
 			throw( IOException( "Unreadable Setting file." ) );
@@ -61,9 +52,17 @@ namespace VTX::App::Internal::Serialization
 
 		for ( const Util::JSon::Object::Field & field : settingMapJSon )
 		{
-			if ( p_settings.contains( field.first ) )
+			if ( settingMap.contains( field.first ) )
 			{
-				jsonMap[ field.first ] = field.second;
+				try
+				{
+					settingMap.at( field.first )->deserialize( field.second );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "{}", e.what() );
+					VTX_WARNING( "Unable to deserialize setting {}. Keep previous value.", field.first );
+				}
 			}
 			else
 			{
