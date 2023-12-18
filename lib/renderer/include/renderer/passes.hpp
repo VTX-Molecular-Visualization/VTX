@@ -236,6 +236,17 @@ namespace VTX::Renderer
 					StructUniformValue<float> { -0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } } } } }
 	};
 
+	// Colorize.
+	static const Pass descPassColorize {
+		"Colorize",
+		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs {
+			{ "Colorize",
+			  std::vector<FilePath> { "default.vert", "colorize.frag" },
+			  Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } } } }
+	};
+
 	// Debug.
 	static const Pass descPassDebug {
 		"Debug",
@@ -255,7 +266,7 @@ namespace VTX::Renderer
 	static const std::vector<Pass> availablePasses {
 		descPassGeometric, descPassDepth, descPassSSAO,		descPassBlur, descPassShading,
 		descPassOutline,   desPassFXAA,	  descPassPixelize, descPassCRT,  descPassChromaticAberration,
-		descPassDebug
+		descPassColorize,  descPassDebug
 	};
 } // namespace VTX::Renderer
 

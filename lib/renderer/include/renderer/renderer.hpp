@@ -74,7 +74,7 @@ namespace VTX::Renderer
 				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
-				  // TODO: check why not compiling with bool.
+				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
 				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { true } } }
 			);
 		}
@@ -183,6 +183,11 @@ namespace VTX::Renderer
 		inline void setCameraClipInfos( const float p_near, const float p_far )
 		{
 			setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" );
+		}
+
+		inline void setMousePosition( const Vec2i & p_position )
+		{
+			setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
 		}
 
 		inline void addMolecule( const StructProxyMolecule & p_proxy )

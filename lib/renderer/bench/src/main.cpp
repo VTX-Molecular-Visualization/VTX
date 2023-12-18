@@ -65,6 +65,8 @@ int main( int, char ** )
 				camera.resize( p_width, p_height );
 			}
 		);
+		inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
+											 { renderer.setMousePosition( p_position ); } );
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
 			{
