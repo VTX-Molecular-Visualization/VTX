@@ -3,8 +3,6 @@
 
 #include <app/application/scene.hpp>
 #include <app/core/ecs/base_entity.hpp>
-#include <app/internal/action/ecs.hpp>
-#include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
 #include <vector>

@@ -1,15 +1,14 @@
 #include "util/app.hpp"
 // #include <app/ecs/component/molecule_component.hpp>
+#include <app/action/scene.hpp>
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
-#include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-// #include <core/old/struct/atom.hpp>
 #include <entt/entt.hpp>
 #include <functional>
 #include <io/internal/filesystem.hpp>
@@ -71,7 +70,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 
 	// Create MoleculeEntity
 	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
-	Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
+	Action::Scene::LoadMolecule openAction	 = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );
@@ -121,7 +120,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	// Create MoleculeEntity
 	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
 
-	Internal::Action::ECS::Open openAction = Internal::Action::ECS::Open( moleculePath );
+	Action::Scene::LoadMolecule openAction = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 	BENCHMARK( "Open molecules" ) { openAction.execute(); };
 

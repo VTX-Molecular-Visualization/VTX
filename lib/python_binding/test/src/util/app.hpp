@@ -2,7 +2,6 @@
 #define __VTX_APP_TEST_UTIL_APP__
 
 #include <app/application/scene.hpp>
-#include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <memory>

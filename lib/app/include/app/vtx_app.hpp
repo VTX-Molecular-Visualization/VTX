@@ -87,6 +87,7 @@ namespace VTX
 
 		// Convenient accessors
 		Application::Scene &				 SCENE();
+		Application::Settings &				 SETTINGS();
 		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();
 		Core::Serialization::Serialization & SERIALIZER();

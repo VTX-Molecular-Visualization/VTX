@@ -1,4 +1,6 @@
 #include "util/app.hpp"
+#include <app/action/application.hpp>
+#include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -38,10 +40,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
-	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
+	App::Action::Application::Open openAction = App::Action::Application::Open( moleculePath );
 	openAction.execute();
-
-	REQUIRE( App::SCENE().getItemCount() == 1 );
 
 	std::stringstream ssCommandOpen = std::stringstream();
 	ssCommandOpen << "openFile( path=" << moleculePath << " )";
@@ -96,6 +96,30 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 	ssCommandRun << "runScript(" << scriptPath << " )";
 
 	interpretor.runCommand( ssCommandRun.str() );
+
+	const FilePath scenePath = IO::Internal::Filesystem::getInternalDataDir() / "scene_test.vtx";
+
+	if ( std::filesystem::exists( scenePath ) )
+		std::filesystem::remove( scenePath );
+
+	CHECK( !std::filesystem::exists( scenePath ) );
+	std::stringstream ssCommandSaveScene = std::stringstream();
+	ssCommandSaveScene << "save(" << scenePath << " )";
+	interpretor.runCommand( ssCommandSaveScene.str() );
+	CHECK( std::filesystem::exists( scenePath ) );
+
+	CHECK( App::SCENE().getItemCount() > 0 );
+	interpretor.runCommand( "newScene()" );
+	CHECK( App::SCENE().getItemCount() == 0 );
+
+	std::stringstream ssCommandLoadScene = std::stringstream();
+	ssCommandLoadScene << "openScene(" << scenePath << " )";
+	interpretor.runCommand( ssCommandLoadScene.str() );
+	CHECK( App::SCENE().getItemCount() > 0 );
+
+	interpretor.runCommand( "saveSettings()" );
+	interpretor.runCommand( "resetSettings()" );
+	interpretor.runCommand( "reloadSettings()" );
 };
 
 TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
@@ -110,7 +134,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
-	App::Internal::Action::ECS::Open openAction = App::Internal::Action::ECS::Open( moleculePath );
+	VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
 	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", *interpretor ); };
