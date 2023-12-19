@@ -4,10 +4,15 @@
 #include <util/logger.hpp>
 // #include <optional>
 
+#ifndef SHARED_GROMACS
+#include "tools/mdprep/gromacs/gromacs.hpp"
+#endif // !SHARED_GROMACS
+
 namespace VTX::Tool::Mdprep::Gromacs
 {
 	// std::optional<dylib> g_gromacs_shared_lib; // TODO : Test without reloadling lib everytime
 
+#ifdef SHARED_GROMACS
 	void submit_gromacs_command( gromacs_command_args & args )
 	{
 		// for now, the function load and unload the shared library each time the function is called. This is efficient
@@ -30,5 +35,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 			throw VTX::LibException( "Shared library was found but not the function within." );
 		}
 	}
+#else
+	void submit_gromacs_command( gromacs_command_args & args ) { ::submit_gromacs_command( args ); }
 
+#endif
 } // namespace VTX::Tool::Mdprep::Gromacs

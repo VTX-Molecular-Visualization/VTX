@@ -16,7 +16,7 @@ extern "C"
 		for ( int i = 0; i < args.arguments.size(); i++ )
 		{
 			std::string & arg_str = args.arguments[ i ];
-			arg_str += '\\\\0';
+			arg_str += '\0';
 			char * arg_cstr = reinterpret_cast<char *>( std::malloc( sizeof( char ) * arg_str.size() ) );
 			strncpy_s( arg_cstr, arg_str.size(), arg_str.c_str(), arg_str.size() );
 			cmd[ i ] = arg_cstr;
@@ -31,18 +31,23 @@ extern "C"
 	}
 #else
 	void submit_gromacs_command( VTX::Tool::Mdprep::Gromacs::gromacs_command_args & args )
-	{ 
+	{
+		QString		pgm { "D:\\cnam\\tmp\\gmx.exe" };
+		QStringList qt_args;
+		for ( auto & arg : args.arguments )
+			qt_args << QString( arg.c_str() );
+
 		QProcess proc;
-		QString	 cmd { "C:\\Users\\Val\\data\\dev\\vtx\\lib\\tool\\tools\\mdprep\\external\\gromacs\\build\\Release\\bin\\gmx.exe" };
-		for (auto& arg : args.arguments)
-		{
-			cmd += " ";
-			cmd += arg;
-		}
-		proc.startCommand(cmd);
-		proc.waitForReadyRead();
-		auto out = proc.readAll();
-		args.out = out.toStdString();
+
+		proc.setProgram( pgm );
+		proc.setArguments( qt_args );
+		proc.start();
+
+		proc.waitForFinished( 60000 );
+		auto out	 = proc.readAllStandardError();
+		args.stderr_ = out.toStdString();
+		out			 = proc.readAllStandardOutput();
+		args.stdout_ += out.toStdString();
 	}
 #endif
 }

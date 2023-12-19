@@ -9,7 +9,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct gromacs_command_args
 	{
 		std::vector<std::string> arguments;
-		std::string				 out;
+		std::string				 stdout_;
+		std::string				 stderr_;
 	};
 	inline bool operator==( const gromacs_command_args & l, const gromacs_command_args & r ) noexcept
 	{

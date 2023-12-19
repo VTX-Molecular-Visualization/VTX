@@ -8,15 +8,16 @@
 
 namespace VTX::Tool::Mdprep
 {
-	void poc_execute_cmd( gromacs_command_args & args ) noexcept
+	void poc_execute_cmd( Gromacs::gromacs_command_args & args ) noexcept
 	{
 		Gromacs::declare_ff_directory( executable_directory() / Gromacs::default_ff_directory_relative_path() );
+
 		try
 		{
 			dylib vtx_gromacs( "./", "vtx_gromacs" );
-			auto  submit_cmd
-				= vtx_gromacs.get_function<void( VTX::Tool::Mdprep::gromacs_command_args & )>( "submit_gromacs_command"
-				);
+			auto  submit_cmd = vtx_gromacs.get_function<void( VTX::Tool::Mdprep::Gromacs::gromacs_command_args & )>(
+				 "submit_gromacs_command"
+			 );
 			submit_cmd( args );
 		}
 		catch ( const dylib::load_error & )
