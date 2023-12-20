@@ -30,6 +30,7 @@ namespace VTX
 			inline static const std::string SCENE_KEY			   = "SCENE";
 			inline static const std::string SELECTION_MANAGER_KEY  = "SELECTION_MANAGER";
 			inline static const std::string SERIALIZATION_TOOL_KEY = "SERIALIZATION_TOOL";
+			inline static const std::string ACTION_MANAGER_KEY	   = "ACTION_MANAGER";
 
 		  public:
 			VTXApp( StructPrivacyToken );
@@ -69,6 +70,9 @@ namespace VTX
 			Core::Serialization::Serialization &	   getSerializationTool();
 			const Core::Serialization::Serialization & getSerializationTool() const;
 
+			Application::Action::ActionManager &	   getActionManager();
+			const Application::Action::ActionManager & getActionManager() const;
+
 		  private:
 			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
 
@@ -79,6 +83,7 @@ namespace VTX
 			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
 			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
 			std::unique_ptr<Core::Serialization::Serialization>		  _serializationToolManager;
+			std::unique_ptr<Application::Action::ActionManager>		  _actionManager;
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update();
@@ -91,6 +96,7 @@ namespace VTX
 		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();
 		Core::Serialization::Serialization & SERIALIZER();
+		Application::Action::ActionManager & VTX_ACTION();
 	} // namespace App
 } // namespace VTX
 

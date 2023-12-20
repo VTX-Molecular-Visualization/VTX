@@ -1,11 +1,11 @@
 #ifndef __VTX_APP_CORE_ACTION_BASE_ACTION_UNDONABLE__
 #define __VTX_APP_CORE_ACTION_BASE_ACTION_UNDONABLE__
 
-#include "app/old/core/action/base_action.hpp"
+#include "app/core/action/base_action.hpp"
 
 namespace VTX::App::Core::Action
 {
-	class BaseActionUndonable : public App::Old::Core::Action::BaseAction
+	class BaseActionUndonable : public App::Core::Action::BaseAction
 	{
 	  public:
 		virtual ~BaseActionUndonable() = default;

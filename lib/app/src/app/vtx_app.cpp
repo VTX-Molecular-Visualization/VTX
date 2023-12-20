@@ -1,4 +1,5 @@
 #include "app/vtx_app.hpp"
+#include "app/application/action/action_manager.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
@@ -48,6 +49,9 @@ namespace VTX::App
 
 		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
 		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
+
+		_actionManager = std::make_unique<Application::Action::ActionManager>();
+		_system->referenceSystem( ACTION_MANAGER_KEY, _actionManager.get() );
 
 		_serializationToolManager = std::make_unique<Core::Serialization::Serialization>();
 		_system->referenceSystem( SERIALIZATION_TOOL_KEY, _serializationToolManager.get() );
@@ -213,6 +217,11 @@ namespace VTX::App
 		return _system->getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY );
 	}
 
+	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	{
+		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+	}
+
 	Application::Selection::SelectionManager & VTXApp::getSelectionManager()
 	{
 		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
@@ -231,9 +240,13 @@ namespace VTX::App
 		return _system->getSystem<Core::Serialization::Serialization>( SERIALIZATION_TOOL_KEY );
 	}
 
-	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	Application::Action::ActionManager & VTXApp::getActionManager()
 	{
-		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+		return _system->getSystem<Application::Action::ActionManager>( ACTION_MANAGER_KEY );
+	}
+	const Application::Action::ActionManager & VTXApp::getActionManager() const
+	{
+		return _system->getSystem<Application::Action::ActionManager>( ACTION_MANAGER_KEY );
 	}
 
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
@@ -241,5 +254,6 @@ namespace VTX::App
 	Application::ECS::RegistryManager & MAIN_REGISTRY() { return VTXApp::get().getRegistryManager(); }
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
 	Core::Serialization::Serialization & SERIALIZER() { return VTXApp::get().getSerializationTool(); }
+	Application::Action::ActionManager & VTX_ACTION() { return VTXApp::get().getActionManager(); }
 
 } // namespace VTX::App
