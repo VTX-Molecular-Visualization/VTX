@@ -39,7 +39,7 @@ namespace VTX::Renderer
 			Pass * const shading = _renderGraph->addPass( descPassShading );
 			Pass * const outline = _renderGraph->addPass( descPassOutline );
 			Pass * const fxaa	 = _renderGraph->addPass( desPassFXAA );
-			Pass * const crt	 = _renderGraph->addPass( descPassCRT );
+			// Pass * const crt	 = _renderGraph->addPass( descPassCRT );
 
 			// Setup values.
 			geo->programs[ 0 ].draw.value().count	 = &_sizeAtoms;
@@ -62,9 +62,9 @@ namespace VTX::Renderer
 			_renderGraph->addLink( shading, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->addLink( depth, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
 			_renderGraph->addLink( outline, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			//_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
-			_renderGraph->addLink( fxaa, crt, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->setOutput( &crt->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			//_renderGraph->addLink( fxaa, crt, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
+			//_renderGraph->setOutput( &crt->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
