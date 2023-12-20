@@ -1,7 +1,10 @@
 #include "util/app.hpp"
 #include <app/action/application.hpp>
+#include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/settings.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/component/render/viewpoint.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/internal/application/settings.hpp>
 #include <app/vtx_app.hpp>
@@ -38,6 +41,27 @@ TEST_CASE( "VTX_APP - Action - Application", "[integration]" )
 	launchAction<Action::Application::OpenScene>( scenePath ); // Check if scene is well loaded
 	CHECK( SCENE().getItemCount() == 1 );
 }
+
+TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	Test::Util::App::initApp();
+
+	SCENE().getCamera().moveFront( 5 );
+	SCENE().getCamera().rotate( { 45, 45, 0 } );
+
+	launchAction<Action::Scene::CreateViewpoint>();
+
+	REQUIRE( SCENE().getItem( "Viewpoint" ) != Core::ECS::INVALID_ENTITY );
+
+	const Component::Render::Viewpoint & viewpoint
+		= SCENE().getComponentByName<Component::Render::Viewpoint>( "Viewpoint" );
+
+	CHECK( viewpoint.getPosition() == SCENE().getCamera().getPosition() );
+	CHECK( viewpoint.getRotation() == SCENE().getCamera().getRotation() );
+};
 
 TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 {
