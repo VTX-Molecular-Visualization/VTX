@@ -114,8 +114,7 @@ namespace VTX::Renderer
 
 	struct Pass
 	{
-		std::string name;
-
+		std::string			   name;
 		Inputs				   inputs;
 		Outputs				   outputs;
 		Programs			   programs;
