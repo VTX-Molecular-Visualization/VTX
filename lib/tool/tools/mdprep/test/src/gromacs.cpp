@@ -51,21 +51,11 @@ void check_pdb( const char * pdb_code )
 		paths.out_clean.make_preferred().string(),
 		"-n",
 		paths.out_index.make_preferred().string(),
-		// std::string( "\"" ) + paths.in.make_preferred().string() + "\"",
-		//"-o",
-		// std::string( "\"" ) + paths.out_gro.make_preferred().string() + "\"",
-		//"-p",
-		// std::string( "\"" ) + paths.out_topol.make_preferred().string() + "\"",
-		//"-i",
-		// std::string( "\"" ) + paths.out_posre.make_preferred().string() + "\"",
-		//"-q",
-		// std::string( "\"" ) + paths.out_clean.make_preferred().string() + "\"",
-		//"-n",
-		// std::string( "\"" ) + paths.out_index.make_preferred().string() + "\"",
 		"-ff",
 		"amber03",
 		"-water",
 		"tip3p",
+		"-lys",
 	} };
 	VTX::Tool::Mdprep::Gromacs::declare_ff_directory(
 		VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_ff_directory_relative_path()
