@@ -3,6 +3,7 @@
 
 #include <array>
 #include <filesystem>
+#include <map>
 #include <vector>
 namespace fs = std::filesystem;
 
@@ -84,6 +85,70 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Does not perform filesystem check on input gro
 	//    If the output_gro is empty, will use the input filename root and append "solv"
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
+
+	// Meant to refer to one of the interactive gromacs option
+	enum class interactive_keyword : uint32_t
+	{
+		none,
+		ss,
+		ter,
+		lys,
+		arg,
+		asp,
+		glu,
+		gln,
+		his
+	};
+
+	// Meant to uniquely identify a specific instance of input required by gromacs
+	struct interactive_id
+	{
+		interactive_keyword kw	= interactive_keyword::none;
+		uint32_t			num = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+	};
+} // namespace VTX::Tool::Mdprep::Gromacs
+
+namespace std
+{
+	template<>
+	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
+	{
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & v ) noexcept
+		{
+			uint64_t out = 0;
+			out			 = static_cast<uint64_t>( v.kw ) << 32;
+			out |= v.num;
+			return out;
+		}
+	};
+} // namespace std
+
+namespace VTX::Tool::Mdprep::Gromacs
+{
+	// organized version of the arguments to be used during interactive gromacs step
+	struct interactive_arguments
+	{
+		std::map<interactive_id, std::string> kw_v;
+	};
+
+	// Returned by the script parser to inform how the parsing went
+	struct parse_report
+	{
+		bool		error	= false;
+		bool		warning = false;
+		std::string message;
+	};
+
+	// TODO : find a pdb struct that allow SS and TER interactive and check if that format is still relevent
+	// Parse user-provided script that specify interactive gromacs behavior
+	//  format should be the following :
+	//    [kw][num] [value]
+	//  for example :
+	//    HIS82 HISE
+	//    ARG1 ARGN
+	//  one line = one argument (arguments separated with a newline)
+	//  space between num and value can be white space or tab
+	interactive_arguments parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 
