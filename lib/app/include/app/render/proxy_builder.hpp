@@ -21,6 +21,7 @@ namespace VTX::App::Render
 			p_proxy.atomVisibilities = &( p_molecule._atomVisibilities );
 			p_proxy.atomSelections	 = &( p_molecule._atomSelections );
 			p_proxy.atomIds			 = &( p_molecule._atomIds );
+			// p_proxy.bonds			 = &( p_molecule._bondPairAtomIndexes );
 			// p_proxy.bonds			 = &( p_molecule._moleculeStruct.bondPairAtomIndexes );
 		}
 	};

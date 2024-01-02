@@ -16,7 +16,6 @@ class VTXPythonBindingTestRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("pybind11/2.11.1")
         self.requires("catch2/3.4.0")
 
     def generate(self):   
@@ -26,7 +25,7 @@ class VTXPythonBindingTestRecipe(ConanFile):
         deps = CMakeDeps(self)
         deps.check_components_exist = True
         deps.generate()       
-        tc = CMakeToolchain(self)       
+        tc = CMakeToolchain(self)
         tc.cache_variables["DIR_PYTHON_SCRIPT"] = dir_python_script        
         tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
         tc.generate()

@@ -4,20 +4,21 @@ cmake_minimum_required(VERSION 3.23)
 project(vtx_python_binding_test)
 
 find_package(vtx_util CONFIG REQUIRED)
-find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::PyTX)
 find_package(pybind11 REQUIRED)
 find_package(Catch2 REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*)
+
 add_executable(vtx_python_binding_test ${SOURCES})
 configure_target(vtx_python_binding_test)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding::vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding::PyTX)

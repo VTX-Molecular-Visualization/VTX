@@ -94,6 +94,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<float>			   _atomRadii		 = std::vector<float>();
 		std::vector<uint>			   _atomIds			 = std::vector<uint>();
 		std::vector<uint>			   _atomSelections	 = std::vector<uint>();
+		// std::vector<uint>			   _bondPairAtomIndexes = std::vector<uint>();
 	};
 
 } // namespace VTX::App::Component::Chemistry

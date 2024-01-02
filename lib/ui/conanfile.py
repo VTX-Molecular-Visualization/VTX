@@ -1,6 +1,6 @@
 import os
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
 
 class VTXUiRecipe(ConanFile):
@@ -12,7 +12,7 @@ class VTXUiRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "asset/*"
         
@@ -22,6 +22,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.6.0", transitive_headers=True)
         
     def config_options(self):
@@ -32,6 +33,13 @@ class VTXUiRecipe(ConanFile):
         cmake_layout(self)      
 
     def generate(self):
+        tc = CMakeToolchain(self)
+        dir_python_script = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:dir_python_script")
+        tc.cache_variables["DIR_PYTHON_SCRIPT"] = dir_python_script
+        path_python_module = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:path_python_module")
+        tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
+        tc.generate()
+        
         copy(self, "*.cmake", self.source_folder, self.build_folder)
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
         copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))

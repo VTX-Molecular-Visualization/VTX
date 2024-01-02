@@ -8,6 +8,7 @@
 // #include <QElapsedTimer>
 #include <memory>
 #include <string>
+#include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/generic/base_static_singleton.hpp>
 #include <vector>
@@ -40,7 +41,7 @@ namespace VTX
 			~VTXApp();
 
 			void start( const std::vector<std::string> & );
-			void update();
+			void update( const float p_elapsedTime = 0 );
 			void goToState( const std::string &, void * const = nullptr );
 			void stop();
 
@@ -74,6 +75,8 @@ namespace VTX
 			const Application::Action::ActionManager & getActionManager() const;
 
 		  private:
+			Util::Chrono _tickChrono = Util::Chrono();
+
 			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
 
 			std::unique_ptr<Renderer::Renderer> _renderer;
@@ -86,12 +89,13 @@ namespace VTX
 			std::unique_ptr<Application::Action::ActionManager>		  _actionManager;
 
 			void _handleArgs( const std::vector<std::string> & );
-			void _update();
+			void _update( const float p_elapsedTime );
 			void _stop();
 		};
 
 		// Convenient accessors
 		Application::Scene &				 SCENE();
+		Renderer::Renderer &				 RENDERER();
 		Application::Settings &				 SETTINGS();
 		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();
