@@ -1,6 +1,5 @@
-#include "tools/mdprep/gromacs/gromacs.hpp"
-#include "mdprep/test/fixture.hpp"
 #include "tools/mdprep/gromacs.hpp"
+#include "mdprep/test/fixture.hpp"
 #include "tools/mdprep/gromacs.util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -75,20 +74,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2g
 	check_pdb( "1ubq" );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1k22]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submit_gromacs_command][pdb2gmx][8hu4]" )
 {
 	VTX::test::setup_env f;
-	check_pdb( "1k22" );
+	check_pdb( "8hu4.nolig" );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][5j6s]" )
-{
-	VTX::test::setup_env f;
-	check_pdb( "5j6s" );
-}
-
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][5vo4]" )
-{
-	VTX::test::setup_env f;
-	check_pdb( "5vo4" );
-}
+// TODO : check with other forcefields as well

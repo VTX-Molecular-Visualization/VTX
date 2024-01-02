@@ -1,9 +1,7 @@
 #include "tools/mdprep/gromacs.hpp"
-#include "tools/mdprep/gromacs/gromacs.hpp"
+#include <qprocess.h>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-
-#include <qprocess.h>
 
 namespace VTX::Tool::Mdprep::Gromacs
 {

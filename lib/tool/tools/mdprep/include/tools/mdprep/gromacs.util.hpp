@@ -147,8 +147,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    HIS82 HISE
 	//    ARG1 ARGN
 	//  one line = one argument (arguments separated with a newline)
-	//  space between num and value can be white space or tab
-	interactive_arguments parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
+	//  space between num and value can be any number of white space or tab
+	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 
