@@ -87,7 +87,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
-	enum class interactive_keyword : uint32_t
+	enum class interactive_keyword
 	{
 		none,
 		ss,
