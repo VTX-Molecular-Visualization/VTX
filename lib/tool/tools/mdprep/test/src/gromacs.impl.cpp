@@ -70,6 +70,10 @@ namespace
 		= "Processing chain 1 'B' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
 		  "ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
 		  "number:";
+	const char * g_his2
+		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
+		  "ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
+		  "number:";
 } // namespace
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple LYS", "[parse_expected_kw_argument][simple][LYS]" )
 {
@@ -111,6 +115,28 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_
 	CHECK( check_parse_expected_kw_argument(
 		g_his1,
 		VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+	) );
+}
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - LYS into HIS",
+	"[parse_expected_kw_argument][last_print_taken][LYS][HIS]"
+)
+{
+	char b[ 500 ];
+	sprintf_s( b, "%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_lys1, g_his1 );
+	CHECK( check_parse_expected_kw_argument(
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+	) );
+}
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - HIS B into HIS A",
+	"[parse_expected_kw_argument][last_print_taken][HIS]"
+)
+{
+	char b[ 500 ];
+	sprintf_s( b, "%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_his1, g_his2 );
+	CHECK( check_parse_expected_kw_argument(
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
 	) );
 }
 
