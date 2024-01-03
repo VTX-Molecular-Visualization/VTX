@@ -47,8 +47,12 @@ namespace VTX::Renderer
 	enum struct E_TYPE
 	{
 		BOOL,
-		UINT,
+		BYTE,
+		UBYTE,
+		SHORT,
+		USHORT,
 		INT,
+		UINT,
 		FLOAT,
 		VEC2I,
 		VEC2F,

@@ -20,8 +20,8 @@ extern "C"
 }
 #endif
 
-constexpr size_t WIDTH	= 1920;
-constexpr size_t HEIGHT = 1080;
+constexpr size_t WIDTH	= 800;
+constexpr size_t HEIGHT = 600;
 
 int main( int, char ** )
 {

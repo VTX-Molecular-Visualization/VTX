@@ -511,8 +511,12 @@ namespace VTX::Renderer::Context
 			switch ( descUniform.type )
 			{
 			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::USHORT: _setUniformDefaultValue<ushort>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
 			case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, p_descProgram, p_descPass ); break;
@@ -676,15 +680,27 @@ namespace VTX::Renderer::Context
 		{ E_FILTERING::LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR },
 	};
 
-	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes
-		= { { E_TYPE::BOOL, GL_BOOL },	 { E_TYPE::UINT, GL_UNSIGNED_INT }, { E_TYPE::INT, GL_INT },
-			{ E_TYPE::FLOAT, GL_FLOAT }, { E_TYPE::VEC2I, GL_INT },			{ E_TYPE::VEC2F, GL_FLOAT },
-			{ E_TYPE::VEC3F, GL_FLOAT }, { E_TYPE::VEC4F, GL_FLOAT },		{ E_TYPE::MAT3F, GL_FLOAT },
-			{ E_TYPE::MAT4F, GL_FLOAT }, { E_TYPE::COLOR4, GL_FLOAT } };
+	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes = { { E_TYPE::BOOL, GL_BOOL },
+																 { E_TYPE::BYTE, GL_BYTE },
+																 { E_TYPE::UBYTE, GL_UNSIGNED_BYTE },
+																 { E_TYPE::SHORT, GL_SHORT },
+																 { E_TYPE::USHORT, GL_UNSIGNED_SHORT },
+																 { E_TYPE::INT, GL_INT },
+																 { E_TYPE::UINT, GL_UNSIGNED_INT },
+																 { E_TYPE::FLOAT, GL_FLOAT },
+																 { E_TYPE::VEC2I, GL_INT },
+																 { E_TYPE::VEC2F, GL_FLOAT },
+																 { E_TYPE::VEC3F, GL_FLOAT },
+																 { E_TYPE::VEC4F, GL_FLOAT },
+																 { E_TYPE::MAT3F, GL_FLOAT },
+																 { E_TYPE::MAT4F, GL_FLOAT },
+																 { E_TYPE::COLOR4, GL_FLOAT } };
 
-	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
-		= { { E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::INT, sizeof( int ) },
-			{ E_TYPE::FLOAT, sizeof( float ) }, { E_TYPE::VEC2I, sizeof( Vec2i ) }, { E_TYPE::VEC2F, sizeof( Vec2f ) },
-			{ E_TYPE::VEC3F, sizeof( Vec3f ) }, { E_TYPE::VEC4F, sizeof( Vec4f ) }, { E_TYPE::MAT3F, sizeof( Mat3f ) },
-			{ E_TYPE::MAT4F, sizeof( Mat4f ) }, { E_TYPE::COLOR4, sizeof( Vec4f ) } };
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
+		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::BYTE, sizeof( char ) },	  { E_TYPE::UBYTE, sizeof( uchar ) },
+		{ E_TYPE::SHORT, sizeof( short ) }, { E_TYPE::USHORT, sizeof( ushort ) }, { E_TYPE::INT, sizeof( int ) },
+		{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::FLOAT, sizeof( float ) },	  { E_TYPE::VEC2I, sizeof( Vec2i ) },
+		{ E_TYPE::VEC2F, sizeof( Vec2f ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
+		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },	  { E_TYPE::COLOR4, sizeof( Vec4f ) }
+	};
 } // namespace VTX::Renderer::Context

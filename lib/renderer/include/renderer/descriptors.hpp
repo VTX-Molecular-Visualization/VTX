@@ -69,8 +69,12 @@ namespace VTX::Renderer
 
 	using UniformValue = std::variant<
 		StructUniformValue<bool>,
-		StructUniformValue<uint>,
+		StructUniformValue<char>,
+		StructUniformValue<uchar>,
+		StructUniformValue<short>,
+		StructUniformValue<ushort>,
 		StructUniformValue<int>,
+		StructUniformValue<uint>,
 		StructUniformValue<float>,
 		StructUniformValue<Vec2i>,
 		StructUniformValue<Vec2f>,

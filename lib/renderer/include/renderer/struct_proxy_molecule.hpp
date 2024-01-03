@@ -22,8 +22,8 @@ namespace VTX::Renderer
 		// std::vector<Util::Color::Rgba> * colorById; // Color layout.
 
 		std::vector<float> * atomRadii;		   // To delete.
-		std::vector<uint> *	 atomVisibilities; // ?
-		std::vector<uint> *	 atomSelections;   // To redo.
+		std::vector<uchar> * atomVisibilities; // ?
+		std::vector<uchar> * atomSelections;   // To redo.
 		std::vector<uint> *	 atomIds;		   // Keep?
 		std::vector<uint> *	 bonds;			   // Ok.
 	};

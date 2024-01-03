@@ -10,10 +10,10 @@
 namespace VTX
 {
 	// Types.
+	using uchar	   = unsigned char;
 	using ushort   = unsigned short;
 	using uint	   = unsigned int;
 	using ulong	   = unsigned long;
-	using uchar	   = unsigned char;
 	using FilePath = std::filesystem::path;
 
 	using Vec2f = glm::vec2;

@@ -200,8 +200,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline size_t getAtomCount() const { return _sizeAtoms; }
-		inline size_t getBondCount() const { return _sizeBonds; }
+		inline const size_t getWidth() const { return _width; }
+		inline const size_t getHeight() const { return _height; }
+		inline const size_t getAtomCount() const { return _sizeAtoms; }
+		inline const size_t getBondCount() const { return _sizeBonds; }
 
 		inline const StructInfos & getInfos() const { return _infos; }
 

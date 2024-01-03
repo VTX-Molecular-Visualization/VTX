@@ -13,8 +13,8 @@ namespace VTX::Core::Gpu
 		std::vector<Vec3f>			   atomPositions;
 		std::vector<Util::Color::Rgba> atomColors;
 		std::vector<float>			   atomRadii;
-		std::vector<uint>			   atomVisibilities;
-		std::vector<uint>			   atomSelections;
+		std::vector<uchar>			   atomVisibilities;
+		std::vector<uchar>			   atomSelections;
 		std::vector<uint>			   atomIds;
 		std::vector<uint>			   bonds;
 	};

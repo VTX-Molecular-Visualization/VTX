@@ -18,12 +18,12 @@ namespace VTX::Bench
 		Camera() = delete;
 		Camera( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
-		inline float getNear() const { return _near; }
-		inline float getFar() const { return _far; }
-		inline float getFov() const { return _fov; }
-		inline float getVelocityTranslation() const { return _velocityTranslation; }
-		inline float getVelocityRotation() const { return _velocityRotation; }
-		inline float getVelocityZoom() const { return _velocityZoom; }
+		inline const float getNear() const { return _near; }
+		inline const float getFar() const { return _far; }
+		inline const float getFov() const { return _fov; }
+		inline const float getVelocityTranslation() const { return _velocityTranslation; }
+		inline const float getVelocityRotation() const { return _velocityRotation; }
+		inline const float getVelocityZoom() const { return _velocityZoom; }
 
 		inline void resize( const size_t p_width, const size_t p_height )
 		{

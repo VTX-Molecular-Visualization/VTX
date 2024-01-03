@@ -74,8 +74,8 @@ namespace VTX::Bench
 				 positions,
 				 colors,
 				 std::vector<float>( realSize, 0.5f ),
-				 std::vector<uint>( realSize, 1 ),
-				 std::vector<uint>( realSize, 0 ),
+				 std::vector<uchar>( realSize, 1 ),
+				 std::vector<uchar>( realSize, 0 ),
 				 std::vector<uint>( realSize, 0 ),
 				 bonds };
 	}

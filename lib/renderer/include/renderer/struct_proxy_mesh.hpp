@@ -13,8 +13,8 @@ namespace VTX::Renderer
 		std::vector<Vec3f> *			 vertices;
 		std::vector<Vec3f> *			 normals;
 		std::vector<Util::Color::Rgba> * colors;
-		std::vector<uint> *				 visibilities;
-		std::vector<uint> *				 selections;
+		std::vector<uchar> *			 visibilities;
+		std::vector<uchar> *			 selections;
 		std::vector<uint> *				 ids;
 		std::vector<uint> *				 indices;
 	};
