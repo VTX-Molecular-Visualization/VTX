@@ -11,6 +11,7 @@ find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_tool CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
 find_package(vtx_util CONFIG REQUIRED)
+find_package(pybind11 REQUIRED)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
@@ -30,6 +31,7 @@ target_link_libraries(vtx PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx PRIVATE vtx_tool::vtx_tool)
 target_link_libraries(vtx PRIVATE vtx_ui::vtx_ui)
 target_link_libraries(vtx PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx PRIVATE pybind11::embed)
 
 # TODO: user command line argument?
 option(DEFINE_PRODUCTION "Enable production mode" OFF)
