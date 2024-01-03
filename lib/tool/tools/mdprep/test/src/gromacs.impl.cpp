@@ -141,3 +141,59 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple LYS", "[parse_option_
 	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_lys1, "protonated" ) == 1 );
 	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_lys1, "LYS" ) == 1 );
 }
+TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple ARG", "[parse_option_number][simple][ARG]" )
+{
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "prout" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "" ) == 0xffui8 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "0" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "Not protonated" ) == 0 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "1" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "protonated" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_arg1, "ARG" ) == 1 );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple GLU", "[parse_option_number][simple][GLU]" )
+{
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "prout" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "" ) == 0xffui8 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "0" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "GLU" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "Not protonated" ) == 0 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "1" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "protonated" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_glu1, "GLH" ) == 1 );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple GLN", "[parse_option_number][simple][GLN]" )
+{
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "prout" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "" ) == 0xffui8 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "0" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "GLN" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "Not protonated" ) == 0 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "1" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_gln1, "protonated" ) == 1 );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple HIS", "[parse_option_number][simple][HIS]" )
+{
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "prout" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "Not protonated" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "protonated" ) == 0xffui8 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "0" ) == 0 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HID" ) == 0 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "1" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIE" ) == 1 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "2" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIP" ) == 1 );
+
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "3" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIS1" ) == 1 );
+}
