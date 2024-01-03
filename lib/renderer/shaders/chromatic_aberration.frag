@@ -1,6 +1,6 @@
 #version 450 core
 
-#include "struct_data_packed.glsl"
+#include "layout_uniforms_camera.glsl";
 
 // In.
 layout( binding = 0 ) uniform sampler2D inTextureColor;
@@ -20,9 +20,7 @@ void main()
     const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 	const vec2 texSize = textureSize( inTextureColor, 0 );
     const vec2 uv =  texCoord / texSize;
-
-    const ivec2 focusPoint = ivec2( 0, 0 );
-    const vec2 direction = uv - focusPoint;
+    const vec2 direction = uv - uniformsCamera.mousePosition / texSize;
 
     outFragColor.r = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetRed ) ) ).r;
     outFragColor.g = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetGreen ) ) ).g;

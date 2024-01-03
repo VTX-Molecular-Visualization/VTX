@@ -161,7 +161,7 @@ namespace VTX::Renderer
 					 Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
 								{ "Sensitivity",
 								  E_TYPE::FLOAT,
-								  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.01f, 1.f } } },
+								  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
 								{ "Thickness",
 								  E_TYPE::UINT,
 								  StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } }
@@ -218,11 +218,11 @@ namespace VTX::Renderer
 
 	// Chromatic aberration.
 	static const Pass descPassChromaticAberration {
-		"Chromatic Aberration",
+		"Chromatic aberration",
 		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
-			{ "Chromatic Aberration",
+			{ "Chromatic aberration",
 			  std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
 			  Uniforms {
 				  { "Red",
@@ -234,6 +234,17 @@ namespace VTX::Renderer
 				  { "Blue",
 					E_TYPE::FLOAT,
 					StructUniformValue<float> { -0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } } } } }
+	};
+
+	// Colorize.
+	static const Pass descPassColorize {
+		"Colorize",
+		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs {
+			{ "Colorize",
+			  std::vector<FilePath> { "default.vert", "colorize.frag" },
+			  Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } } } }
 	};
 
 	// Debug.
@@ -255,7 +266,7 @@ namespace VTX::Renderer
 	static const std::vector<Pass> availablePasses {
 		descPassGeometric, descPassDepth, descPassSSAO,		descPassBlur, descPassShading,
 		descPassOutline,   desPassFXAA,	  descPassPixelize, descPassCRT,  descPassChromaticAberration,
-		descPassDebug
+		descPassColorize,  descPassDebug
 	};
 } // namespace VTX::Renderer
 
