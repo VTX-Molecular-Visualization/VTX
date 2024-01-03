@@ -35,15 +35,39 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - empty", "[parse_expec
 
 	CHECK( VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw ) == false );
 }
+bool check_parse_expected_kw_argument(std::string stdout_, const VTX::Tool::Mdprep::Gromacs::interactive_id& expected_output)
+{
+	VTX::Tool::Mdprep::Gromacs::interactive_id kw;
+	return VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw ) && (kw.chain == expected_output.chain && kw.kw == expected_output.kw && kw.num == expected_output.num);
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple LYS", "[parse_expected_kw_argument][simple][LYS]" )
+{
+	CHECK(check_parse_expected_kw_argument(
+		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich LYSINE type do you want for residue 40\n0. Not protonated (charge 0) (LYN)\n1. Protonated (charge +1) (LYS)\n\nType a number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
+	));
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_expected_kw_argument][simple][ARG]" )
+{
+	CHECK(check_parse_expected_kw_argument(
+		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich ARGININE type do you want for residue 31\n0. Not protonated (charge 0) (-)\n1. Protonated (charge +1) (ARG)\n\nType a number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::arg, 31 }
+	));
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_expected_kw_argument][simple][ARG]" )
+{
+	CHECK(check_parse_expected_kw_argument(
+		"",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { '', VTX::Tool::Mdprep::Gromacs::interactive_keyword::,  }
+	));
+}
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_expected_kw_argument][simple][HIS]" )
 {
-	std::string stdout_ {
-		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
-		"ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a number:"
-	};
-	VTX::Tool::Mdprep::Gromacs::interactive_id kw;
-
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw ) == true );
-	CHECK( kw.kw == VTX::Tool::Mdprep::Gromacs::interactive_keyword::his );
-	CHECK( kw.num == 74 );
+	CHECK(check_parse_expected_kw_argument(
+		"Processing chain 1 'B' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
+		"ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
+		"number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+	));
 }

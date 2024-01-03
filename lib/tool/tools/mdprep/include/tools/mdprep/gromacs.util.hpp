@@ -103,6 +103,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct interactive_id
 	{
+		char				chain = 0x00i8; // Value of 0x00 means any chain
 		interactive_keyword kw	= interactive_keyword::none;
 		uint32_t			num = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 	};
