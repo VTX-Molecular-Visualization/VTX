@@ -55,11 +55,25 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_
 		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::arg, 31 }
 	));
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_expected_kw_argument][simple][ARG]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ASP", "[parse_expected_kw_argument][simple][ASP]" )
 {
 	CHECK(check_parse_expected_kw_argument(
-		"",
-		VTX::Tool::Mdprep::Gromacs::interactive_id { '', VTX::Tool::Mdprep::Gromacs::interactive_keyword::,  }
+		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich ASPARTIC ACID type do you want for residue 13\n0. Not protonated (charge -1) (ASP)\n1. Protonated (charge 0) (ASH)\n\nType a number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::asp, 13 }
+	));
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLU", "[parse_expected_kw_argument][simple][GLU]" )
+{
+	CHECK(check_parse_expected_kw_argument(
+		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich GLUTAMIC ACID type do you want for residue 6\n0. Not protonated (charge -1) (GLU)\n1. Protonated (charge 0) (GLH)\n\nType a number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::glu, 6 }
+	));
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLN", "[parse_expected_kw_argument][simple][GLN]" )
+{
+	CHECK(check_parse_expected_kw_argument(
+		"Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich GLUTAMINE type do you want for residue 12\n0. Not protonated (charge 0) (GLN)\n1. Protonated (charge +1) (-)\n\nType a number:",
+		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::gln, 12 }
 	));
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_expected_kw_argument][simple][HIS]" )
