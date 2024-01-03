@@ -12,6 +12,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/logger.hpp>
+#include <util/types.hpp>
 
 TEST_CASE( "VTX_APP - Selection", "[wip][unit]" )
 {
@@ -84,6 +85,7 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	using MoleculeData	 = Application::Selection::MoleculeData;
 	using AssignmentType = Application::Selection::AssignmentType;
 	using IndexRange	 = Util::Math::Range<size_t>;
+	using AtomIndexRange = Util::Math::Range<atom_index_t>;
 
 	Test::Util::App::initApp();
 
@@ -139,9 +141,9 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( !molSelData1.areResiduesFullySelected(
 		IndexRange( mol1.getChain( 0 )->getIndexFirstResidue(), mol1.getChain( 0 )->getResidueCount() )
 	) );
-	CHECK( !molSelData1.areAtomsSelected(
-		IndexRange::createFirstLast( mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom() )
-	) );
+	CHECK( !molSelData1.areAtomsSelected( AtomIndexRange::createFirstLast(
+		mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom()
+	) ) );
 
 	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::None );
 }

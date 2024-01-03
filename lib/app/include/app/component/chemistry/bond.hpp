@@ -3,6 +3,7 @@
 
 #include "_fwd.hpp"
 #include <util/constants.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -18,11 +19,11 @@ namespace VTX::App::Component::Chemistry
 		const Molecule * const getMoleculePtr() const { return _moleculePtr; }
 		Molecule * const	   getMoleculePtr() { return _moleculePtr; }
 
-		size_t getIndexFirstAtom() const;
-		void   setIndexFirstAtom( const size_t p_atomIndex );
+		atom_index_t getIndexFirstAtom() const;
+		void		 setIndexFirstAtom( const atom_index_t p_atomIndex );
 
-		size_t getIndexSecondAtom() const;
-		void   setIndexSecondAtom( const size_t p_atomIndex );
+		atom_index_t getIndexSecondAtom() const;
+		void		 setIndexSecondAtom( const atom_index_t p_atomIndex );
 
 	  private:
 		Molecule * _moleculePtr = nullptr;

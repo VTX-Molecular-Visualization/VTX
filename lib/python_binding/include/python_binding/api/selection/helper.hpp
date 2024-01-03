@@ -45,8 +45,12 @@ namespace VTX::PythonBinding::API::Selection
 		return res;
 	}
 
-	std::vector<std::string> _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
-	std::vector<size_t>		 _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<std::string>  _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<size_t>		  _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<atom_index_t> _getAtomIndexListInKwargs(
+		const pybind11::kwargs & p_kwargs,
+		const std::string &		 p_param
+	);
 
 	template<EnumConcept EnumType>
 	std::vector<EnumType> _getEnumListFromStrInKwargs(

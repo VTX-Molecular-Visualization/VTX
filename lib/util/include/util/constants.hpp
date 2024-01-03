@@ -60,8 +60,10 @@ namespace VTX
 	const Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
 	const Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
 
-	constexpr uint	 INVALID_MODEL_ID = UNSIGNED_INT_MAX;
-	constexpr size_t INVALID_INDEX	  = SIZE_T_MAX;
+	// constexpr uint	 INVALID_MODEL_ID = UNSIGNED_INT_MAX;
+
+	constexpr size_t	   INVALID_INDEX	  = SIZE_T_MAX;
+	constexpr atom_index_t INVALID_ATOM_INDEX = UNSIGNED_INT_MAX;
 
 } // namespace VTX
 

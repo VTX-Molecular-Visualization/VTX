@@ -9,6 +9,7 @@
 #include <util/concepts.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Application::Selection
 {
@@ -19,6 +20,9 @@ namespace VTX::App::Application::Selection
 	  public:
 		using IndexRange	 = Util::Math::Range<size_t>;
 		using IndexRangeList = Util::Math::RangeList<size_t>;
+
+		using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
+		using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
 
 		enum class CurrentObjectTypeEnum : int
 		{
@@ -222,15 +226,15 @@ namespace VTX::App::Application::Selection
 					_referenceAtom( *atomPtr );
 			}
 		}
-		void selectAtoms( const IndexRange & p_range );
-		void selectAtoms( const IndexRangeList & p_rangeList );
+		void selectAtoms( const AtomIndexRange & p_range );
+		void selectAtoms( const AtomIndexRangeList & p_rangeList );
 
 		void unselectAtom( const Atom & p_atom );
-		void unselectAtom( const size_t p_atomIndex );
-		void unselectAtoms( const IndexRange & p_atoms );
-		void unselectAtoms( const IndexRangeList & p_atoms );
+		void unselectAtom( const atom_index_t p_atomIndex );
+		void unselectAtoms( const AtomIndexRange & p_atoms );
+		void unselectAtoms( const AtomIndexRangeList & p_atoms );
 		void unselectAtoms( const std::initializer_list<const Atom *> & p_atoms );
-		void unselectAtoms( const std::initializer_list<size_t> & p_atoms );
+		void unselectAtoms( const std::initializer_list<atom_index_t> & p_atoms );
 		template<ContainerOfType<const Atom *> C>
 		void unselectAtoms( const C & p_atoms )
 		{
@@ -241,12 +245,12 @@ namespace VTX::App::Application::Selection
 			}
 		}
 
-		bool isAtomSelected( const size_t & p_atomIndex ) const;
+		bool isAtomSelected( const atom_index_t & p_atomIndex ) const;
 		bool isAtomSelected( const Atom & p_atom ) const;
-		bool areAtomsSelected( const IndexRange & p_atoms ) const;
-		bool areAtomsSelected( const IndexRangeList & p_atoms ) const;
+		bool areAtomsSelected( const AtomIndexRange & p_atoms ) const;
+		bool areAtomsSelected( const AtomIndexRangeList & p_atoms ) const;
 		bool areAtomsSelected( const std::initializer_list<const Atom *> & p_atoms ) const;
-		bool areAtomsSelected( const std::initializer_list<size_t> & p_atoms ) const;
+		bool areAtomsSelected( const std::initializer_list<atom_index_t> & p_atoms ) const;
 		template<ContainerOfType<const Atom *> C>
 		bool areAtomsSelected( const C & p_atoms ) const
 		{
@@ -259,10 +263,10 @@ namespace VTX::App::Application::Selection
 			return true;
 		}
 
-		inline Molecule &			  getMolecule() const { return *_molecule; }
-		inline const IndexRangeList & getChainIds() const { return _chainIds; }
-		inline const IndexRangeList & getResidueIds() const { return _residueIds; }
-		inline const IndexRangeList & getAtomIds() const { return _atomIds; }
+		inline Molecule &				  getMolecule() const { return *_molecule; }
+		inline const IndexRangeList &	  getChainIds() const { return _chainIds; }
+		inline const IndexRangeList &	  getResidueIds() const { return _residueIds; }
+		inline const AtomIndexRangeList & getAtomIds() const { return _atomIds; }
 
 		void setCurrentObject( const Molecule & p_molecule );
 		void setCurrentObject( const Chain & p_chain );
@@ -297,9 +301,9 @@ namespace VTX::App::Application::Selection
 		void _unselectResidues( const IndexRange & p_range );
 
 		void _referenceAtom( const Atom & p_atom );
-		void _referenceAtoms( const IndexRange & p_range );
+		void _referenceAtoms( const AtomIndexRange & p_range );
 		void _unselectAtom( const Atom & p_atom );
-		void _unselectAtoms( const IndexRange & p_range );
+		void _unselectAtoms( const AtomIndexRange & p_range );
 
 		void _refreshCurrentObject();
 
@@ -307,9 +311,9 @@ namespace VTX::App::Application::Selection
 		CurrentObjectTypeEnum _currentObjectType  = CurrentObjectTypeEnum::Molecule;
 		size_t				  _currentObjectIndex = INVALID_INDEX;
 
-		IndexRangeList _chainIds   = IndexRangeList();
-		IndexRangeList _residueIds = IndexRangeList();
-		IndexRangeList _atomIds	   = IndexRangeList();
+		IndexRangeList	   _chainIds   = IndexRangeList();
+		IndexRangeList	   _residueIds = IndexRangeList();
+		AtomIndexRangeList _atomIds	   = AtomIndexRangeList();
 	};
 
 } // namespace VTX::App::Application::Selection

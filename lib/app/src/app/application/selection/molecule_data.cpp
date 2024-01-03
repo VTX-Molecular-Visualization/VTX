@@ -121,7 +121,7 @@ namespace VTX::App::Application::Selection
 	{
 		_chainIds.addRange( IndexRange( 0, _molecule->getChains().size() ) );
 		_residueIds.addRange( IndexRange( 0, _molecule->getResidues().size() ) );
-		_atomIds.addRange( IndexRange( 0, _molecule->getAtoms().size() ) );
+		_atomIds.addRange( AtomIndexRange( 0, atom_index_t( _molecule->getAtoms().size() ) ) );
 
 		setCurrentObject( *_molecule );
 	}
@@ -171,7 +171,8 @@ namespace VTX::App::Application::Selection
 	bool MoleculeData::isChainSelected( const Chain & p_chain ) const { return isChainSelected( p_chain.getIndex() ); }
 	bool MoleculeData::isChainFullySelected( const Chain & p_chain ) const
 	{
-		return areAtomsSelected( IndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() )
+		return areAtomsSelected(
+			AtomIndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() )
 		);
 	}
 	bool MoleculeData::isChainFullySelected( const size_t & p_chainIndex ) const
@@ -207,10 +208,10 @@ namespace VTX::App::Application::Selection
 	}
 	bool MoleculeData::areChainsFullySelected( const IndexRange & p_chains ) const
 	{
-		const size_t firstAtom = _molecule->getChain( p_chains.getFirst() )->getIndexFirstAtom();
-		const size_t lastAtom  = _molecule->getChain( p_chains.getLast() )->getIndexLastAtom();
+		const atom_index_t firstAtom = _molecule->getChain( p_chains.getFirst() )->getIndexFirstAtom();
+		const atom_index_t lastAtom	 = _molecule->getChain( p_chains.getLast() )->getIndexLastAtom();
 
-		return _atomIds.contains( IndexRange::createFirstLast( firstAtom, lastAtom ) );
+		return _atomIds.contains( AtomIndexRange::createFirstLast( firstAtom, lastAtom ) );
 	}
 	bool MoleculeData::areChainsFullySelected( const IndexRangeList & p_chains ) const
 	{
@@ -333,7 +334,7 @@ namespace VTX::App::Application::Selection
 	}
 	bool MoleculeData::isResidueFullySelected( const Residue & p_residue ) const
 	{
-		return _atomIds.contains( IndexRange( p_residue.getIndexFirstAtom(), p_residue.getAtomCount() ) );
+		return _atomIds.contains( AtomIndexRange( p_residue.getIndexFirstAtom(), p_residue.getAtomCount() ) );
 	}
 	bool MoleculeData::areResiduesSelected( const IndexRange & p_residues ) const
 	{
@@ -361,10 +362,10 @@ namespace VTX::App::Application::Selection
 	}
 	bool MoleculeData::areResiduesFullySelected( const IndexRange & p_residues ) const
 	{
-		const size_t firstAtom = _molecule->getResidue( p_residues.getFirst() )->getIndexFirstAtom();
-		const size_t lastAtom  = _molecule->getResidue( p_residues.getLast() )->getIndexLastAtom();
+		const atom_index_t firstAtom = _molecule->getResidue( p_residues.getFirst() )->getIndexFirstAtom();
+		const atom_index_t lastAtom	 = _molecule->getResidue( p_residues.getLast() )->getIndexLastAtom();
 
-		return _atomIds.contains( IndexRange::createFirstLast( firstAtom, lastAtom ) );
+		return _atomIds.contains( AtomIndexRange::createFirstLast( firstAtom, lastAtom ) );
 	}
 	bool MoleculeData::areResiduesFullySelected( const IndexRangeList & p_residues ) const
 	{
@@ -408,7 +409,7 @@ namespace VTX::App::Application::Selection
 
 		_referenceAtom( p_atom );
 	}
-	void MoleculeData::selectAtoms( const IndexRange & p_range )
+	void MoleculeData::selectAtoms( const AtomIndexRange & p_range )
 	{
 		const Residue & firstResidue = *_molecule->getAtom( p_range.getFirst() )->getConstResiduePtr();
 		const Residue & lastResidue	 = *_molecule->getAtom( p_range.getLast() )->getConstResiduePtr();
@@ -421,9 +422,9 @@ namespace VTX::App::Application::Selection
 
 		_referenceAtoms( p_range );
 	}
-	void MoleculeData::selectAtoms( const IndexRangeList & p_rangeList )
+	void MoleculeData::selectAtoms( const AtomIndexRangeList & p_rangeList )
 	{
-		for ( const size_t index : p_rangeList )
+		for ( const atom_index_t index : p_rangeList )
 		{
 			const Atom * const atomPtr = _molecule->getAtom( index );
 
@@ -436,12 +437,14 @@ namespace VTX::App::Application::Selection
 	}
 
 	void MoleculeData::unselectAtom( const Atom & p_atom ) { _unselectAtom( p_atom ); }
-	void MoleculeData::unselectAtom( const size_t p_atomIndex ) { _unselectAtom( *_molecule->getAtom( p_atomIndex ) ); }
-	void MoleculeData::unselectAtoms( const IndexRange & p_atoms ) { _unselectAtoms( p_atoms ); }
-	void MoleculeData::unselectAtoms( const IndexRangeList & p_atoms )
+	void MoleculeData::unselectAtom( const atom_index_t p_atomIndex )
 	{
-		for ( Util::Math::RangeList<size_t>::RangeConstIterator itRange = p_atoms.rangeBegin();
-			  itRange != p_atoms.rangeEnd();
+		_unselectAtom( *_molecule->getAtom( p_atomIndex ) );
+	}
+	void MoleculeData::unselectAtoms( const AtomIndexRange & p_atoms ) { _unselectAtoms( p_atoms ); }
+	void MoleculeData::unselectAtoms( const AtomIndexRangeList & p_atoms )
+	{
+		for ( AtomIndexRangeList::RangeConstIterator itRange = p_atoms.rangeBegin(); itRange != p_atoms.rangeEnd();
 			  ++itRange )
 		{
 			unselectAtoms( *itRange );
@@ -455,9 +458,9 @@ namespace VTX::App::Application::Selection
 				_unselectAtom( *atomPtr );
 		}
 	}
-	void MoleculeData::unselectAtoms( const std::initializer_list<size_t> & p_atoms )
+	void MoleculeData::unselectAtoms( const std::initializer_list<atom_index_t> & p_atoms )
 	{
-		for ( const size_t atomIndex : p_atoms )
+		for ( const atom_index_t atomIndex : p_atoms )
 		{
 			const Atom * const atomPtr = _molecule->getAtom( atomIndex );
 
@@ -466,10 +469,16 @@ namespace VTX::App::Application::Selection
 		}
 	}
 
-	bool MoleculeData::isAtomSelected( const size_t & p_atomIndex ) const { return _atomIds.contains( p_atomIndex ); }
+	bool MoleculeData::isAtomSelected( const atom_index_t & p_atomIndex ) const
+	{
+		return _atomIds.contains( p_atomIndex );
+	}
 	bool MoleculeData::isAtomSelected( const Atom & p_atom ) const { return _atomIds.contains( p_atom.getIndex() ); }
-	bool MoleculeData::areAtomsSelected( const IndexRange & p_atoms ) const { return _atomIds.contains( p_atoms ); }
-	bool MoleculeData::areAtomsSelected( const IndexRangeList & p_atoms ) const { return _atomIds.contains( p_atoms ); }
+	bool MoleculeData::areAtomsSelected( const AtomIndexRange & p_atoms ) const { return _atomIds.contains( p_atoms ); }
+	bool MoleculeData::areAtomsSelected( const AtomIndexRangeList & p_atoms ) const
+	{
+		return _atomIds.contains( p_atoms );
+	}
 	bool MoleculeData::areAtomsSelected( const std::initializer_list<const Atom *> & p_atoms ) const
 	{
 		for ( const Atom * const atom : p_atoms )
@@ -479,9 +488,9 @@ namespace VTX::App::Application::Selection
 		}
 		return true;
 	}
-	bool MoleculeData::areAtomsSelected( const std::initializer_list<size_t> & p_atoms ) const
+	bool MoleculeData::areAtomsSelected( const std::initializer_list<atom_index_t> & p_atoms ) const
 	{
-		for ( size_t const atomIndex : p_atoms )
+		for ( atom_index_t const atomIndex : p_atoms )
 		{
 			if ( !isAtomSelected( atomIndex ) )
 				return false;
@@ -525,7 +534,8 @@ namespace VTX::App::Application::Selection
 		_residueIds.removeRange(
 			IndexRange::createFirstLast( p_chain.getIndexFirstResidue(), p_chain.getIndexLastResidue() )
 		);
-		_atomIds.removeRange( IndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() ) );
+		_atomIds.removeRange( AtomIndexRange::createFirstLast( p_chain.getIndexFirstAtom(), p_chain.getIndexLastAtom() )
+		);
 
 		_refreshCurrentObject();
 	}
@@ -535,7 +545,7 @@ namespace VTX::App::Application::Selection
 		const Chain & lastChain	 = *_molecule->getChain( p_range.getLast() );
 
 		_atomIds.removeRange(
-			IndexRange::createFirstLast( firstChain.getIndexFirstAtom(), lastChain.getIndexLastAtom() )
+			AtomIndexRange::createFirstLast( firstChain.getIndexFirstAtom(), lastChain.getIndexLastAtom() )
 		);
 		_residueIds.removeRange(
 			IndexRange::createFirstLast( firstChain.getIndexFirstResidue(), lastChain.getIndexLastResidue() )
@@ -552,10 +562,10 @@ namespace VTX::App::Application::Selection
 	}
 	void MoleculeData::_selectFullResidue( const Residue & p_residue )
 	{
-		const size_t firstAtomIndex = p_residue.getIndexFirstAtom();
-		const size_t atomCount		= p_residue.getAtomCount();
+		const atom_index_t firstAtomIndex = p_residue.getIndexFirstAtom();
+		const atom_index_t atomCount	  = p_residue.getAtomCount();
 
-		_referenceAtoms( IndexRange( firstAtomIndex, atomCount ) );
+		_referenceAtoms( AtomIndexRange( firstAtomIndex, atomCount ) );
 		_referenceResidue( p_residue );
 	}
 	void MoleculeData::_referenceResidues( const IndexRange & p_range )
@@ -568,16 +578,17 @@ namespace VTX::App::Application::Selection
 		const Residue * const firstResidue = _molecule->getResidue( p_range.getFirst() );
 		const Residue * const lastResidue  = _molecule->getResidue( p_range.getLast() );
 
-		const size_t firstAtomIndex = firstResidue->getIndexFirstAtom();
-		const size_t lastAtomIndex	= lastResidue->getIndexFirstAtom() + lastResidue->getAtomCount() - 1;
+		const atom_index_t firstAtomIndex = firstResidue->getIndexFirstAtom();
+		const atom_index_t lastAtomIndex  = lastResidue->getIndexFirstAtom() + lastResidue->getAtomCount() - 1;
 
-		_referenceAtoms( IndexRange::createFirstLast( firstAtomIndex, lastAtomIndex ) );
+		_referenceAtoms( AtomIndexRange::createFirstLast( firstAtomIndex, lastAtomIndex ) );
 		_referenceResidues( p_range );
 	}
 	void MoleculeData::_unselectResidue( const Residue & p_residue )
 	{
 		_residueIds.removeValue( p_residue.getIndex() );
-		_atomIds.removeRange( IndexRange::createFirstLast( p_residue.getIndexFirstAtom(), p_residue.getIndexLastAtom() )
+		_atomIds.removeRange(
+			AtomIndexRange::createFirstLast( p_residue.getIndexFirstAtom(), p_residue.getIndexLastAtom() )
 		);
 
 		const Chain & chainParent = *p_residue.getConstChainPtr();
@@ -596,9 +607,9 @@ namespace VTX::App::Application::Selection
 		const Residue & lastResidue	 = *_molecule->getResidue( p_range.getLast() );
 
 		// Atoms
-		const size_t firstAtomIndex = firstResidue.getIndexFirstAtom();
-		const size_t lastAtomIndex	= lastResidue.getIndexLastAtom();
-		_atomIds.removeRange( IndexRange::createFirstLast( firstAtomIndex, lastAtomIndex ) );
+		const atom_index_t firstAtomIndex = firstResidue.getIndexFirstAtom();
+		const atom_index_t lastAtomIndex  = lastResidue.getIndexLastAtom();
+		_atomIds.removeRange( AtomIndexRange::createFirstLast( firstAtomIndex, lastAtomIndex ) );
 
 		// Residues
 		_residueIds.removeRange( p_range );
@@ -634,7 +645,7 @@ namespace VTX::App::Application::Selection
 		_atomIds.addValue( p_atom.getIndex() );
 		setCurrentObject( p_atom );
 	}
-	void MoleculeData::_referenceAtoms( const IndexRange & p_range )
+	void MoleculeData::_referenceAtoms( const AtomIndexRange & p_range )
 	{
 		_atomIds.addRange( p_range );
 		setCurrentObject( *_molecule->getAtom( p_range.getLast() ) );
@@ -647,14 +658,14 @@ namespace VTX::App::Application::Selection
 		_atomIds.removeValue( p_atom.getIndex() );
 
 		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
+				 AtomIndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
 			 ) )
 		{
 			_unselectResidue( residueParent );
 		}
 
 		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
+				 AtomIndexRange::createFirstLast( residueParent.getIndexFirstAtom(), residueParent.getIndexLastAtom() )
 			 ) )
 		{
 			_unselectChain( chainParent );
@@ -662,7 +673,7 @@ namespace VTX::App::Application::Selection
 
 		_refreshCurrentObject();
 	}
-	void MoleculeData::_unselectAtoms( const IndexRange & p_range )
+	void MoleculeData::_unselectAtoms( const AtomIndexRange & p_range )
 	{
 		// Atoms
 		_atomIds.removeRange( p_range );
@@ -673,7 +684,7 @@ namespace VTX::App::Application::Selection
 		const Residue & lastResidueParent  = *_molecule->getAtom( p_range.getLast() )->getConstResiduePtr();
 		const size_t	lastResidueIndex   = lastResidueParent.getIndex();
 
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
+		if ( !_atomIds.intersectWith( AtomIndexRange::createFirstLast(
 				 firstResidueParent.getIndexFirstAtom(), firstResidueParent.getIndexLastAtom()
 			 ) ) )
 		{
@@ -683,7 +694,7 @@ namespace VTX::App::Application::Selection
 		{
 			_residueIds.removeRange( IndexRange::createFirstLast( firstResidueIndex + 1, lastResidueIndex - 1 ) );
 		}
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
+		if ( !_atomIds.intersectWith( AtomIndexRange::createFirstLast(
 				 lastResidueParent.getIndexFirstAtom(), lastResidueParent.getIndexLastAtom()
 			 ) ) )
 		{
@@ -695,7 +706,7 @@ namespace VTX::App::Application::Selection
 		const size_t  firstChainIndex  = firstResidueParent.getIndex();
 		const Chain & lastChainParent  = *lastResidueParent.getConstChainPtr();
 		const size_t  lastChainIndex   = lastResidueParent.getIndex();
-		if ( !_atomIds.intersectWith( IndexRange::createFirstLast(
+		if ( !_atomIds.intersectWith( AtomIndexRange::createFirstLast(
 				 firstChainParent.getIndexFirstAtom(), firstChainParent.getIndexLastAtom()
 			 ) ) )
 		{
@@ -705,9 +716,9 @@ namespace VTX::App::Application::Selection
 		{
 			_chainIds.removeRange( IndexRange::createFirstLast( firstChainIndex + 1, lastChainIndex - 1 ) );
 		}
-		if ( !_atomIds.intersectWith(
-				 IndexRange::createFirstLast( lastChainParent.getIndexFirstAtom(), lastChainParent.getIndexLastAtom() )
-			 ) )
+		if ( !_atomIds.intersectWith( AtomIndexRange::createFirstLast(
+				 lastChainParent.getIndexFirstAtom(), lastChainParent.getIndexLastAtom()
+			 ) ) )
 		{
 			_chainIds.removeValue( lastChainParent.getIndex() );
 		}
@@ -733,7 +744,7 @@ namespace VTX::App::Application::Selection
 	Atom & MoleculeData::getCurrentObjectAsAtom() const
 	{
 		assert( _currentObjectType == CurrentObjectTypeEnum::Atom );
-		return *_molecule->getAtom( _currentObjectIndex );
+		return *_molecule->getAtom( atom_index_t( _currentObjectIndex ) );
 	}
 
 	void MoleculeData::setCurrentObject( const Molecule & p_molecule )
@@ -765,7 +776,9 @@ namespace VTX::App::Application::Selection
 		case CurrentObjectTypeEnum::Molecule: break;
 		case CurrentObjectTypeEnum::Chain: currentObjectAsChange = !isChainSelected( _currentObjectIndex ); break;
 		case CurrentObjectTypeEnum::Residue: currentObjectAsChange = !isResidueSelected( _currentObjectIndex ); break;
-		case CurrentObjectTypeEnum::Atom: currentObjectAsChange = !isAtomSelected( _currentObjectIndex ); break;
+		case CurrentObjectTypeEnum::Atom:
+			currentObjectAsChange = !isAtomSelected( atom_index_t( _currentObjectIndex ) );
+			break;
 		}
 
 		if ( currentObjectAsChange )
@@ -785,7 +798,7 @@ namespace VTX::App::Application::Selection
 
 		int counter = 0;
 
-		for ( size_t chainId : _chainIds )
+		for ( const size_t chainId : _chainIds )
 		{
 			const Chain & chain = *_molecule->getChain( chainId );
 			sStr << chain.getName() << '(' << chainId << "),";
@@ -802,7 +815,7 @@ namespace VTX::App::Application::Selection
 		counter = 0;
 
 		sStr << "Residues  (" << _residueIds.size() << '/' << _molecule->getResidues().size() << ")" << std::endl;
-		for ( size_t residueId : _residueIds )
+		for ( const size_t residueId : _residueIds )
 		{
 			const Residue & residue = *_molecule->getResidue( residueId );
 			sStr << residue.getName() << '(' << residueId << "),";
@@ -819,7 +832,7 @@ namespace VTX::App::Application::Selection
 		counter = 0;
 
 		sStr << "Atoms  (" << _atomIds.size() << '/' << _molecule->getAtoms().size() << ")" << std::endl;
-		for ( size_t atomId : _atomIds )
+		for ( const atom_index_t atomId : _atomIds )
 		{
 			const Atom & atom = *_molecule->getAtom( atomId );
 			sStr << atom.getName() << '(' << atomId << "),";

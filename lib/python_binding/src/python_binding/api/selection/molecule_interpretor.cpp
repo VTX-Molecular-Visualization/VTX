@@ -31,7 +31,7 @@ namespace VTX::PythonBinding::API::Selection
 		_hasAtomParams
 			= p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" ) || p_kwargs.contains( "atom_t" );
 		atomNames	= _getStringListInKwargs( p_kwargs, "atom_n" );
-		atomIndexes = _getIndexListInKwargs( p_kwargs, "atom_i" );
+		atomIndexes = _getAtomIndexListInKwargs( p_kwargs, "atom_i" );
 		atomSymbols = _getEnumListFromStrInKwargs<VTX::Core::ChemDB::Atom::SYMBOL>(
 			p_kwargs, "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, VTX::Core::ChemDB::Atom::SYMBOL::UNKNOWN
 		);
@@ -319,7 +319,7 @@ namespace VTX::PythonBinding::API::Selection
 			if ( chainIDs.size() == 0 )
 			{
 				_addAtomsFollowingKwargs(
-					0, molecule.getAtoms().size() - 1, molecule, p_moleculeSelectionData, p_kwargs
+					0, atom_index_t( molecule.getAtoms().size() - 1 ), molecule, p_moleculeSelectionData, p_kwargs
 				);
 			}
 			else
@@ -365,14 +365,14 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 	void MoleculeInterpretor::_addAtomsFollowingKwargs(
-		const size_t								p_firstAtom,
-		const size_t								p_lastAtom,
+		const atom_index_t							p_firstAtom,
+		const atom_index_t							p_lastAtom,
 		Molecule &									p_molecule,
 		App::Application::Selection::MoleculeData & p_moleculeSelectionData,
 		const InterpretedKwargs &					p_kwargs
 	)
 	{
-		for ( size_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
+		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
 		{
 			Atom * const atom = p_molecule.getAtom( atomID );
 

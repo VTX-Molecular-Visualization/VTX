@@ -73,13 +73,6 @@ namespace VTX::App::Component::Chemistry
 	{
 		_bonds.resize( p_bondCount, nullptr );
 		std::generate( _bonds.begin(), _bonds.end(), [ this, n = 0 ]() mutable { return new Bond( this, n++ ); } );
-
-		//_bondPairAtomIndexes.resize( p_bondCount * 2 );
-		// std::generate(
-		//	_bondPairAtomIndexes.begin(),
-		//	_bondPairAtomIndexes.end(),
-		//	[ this, i = 0 ]() mutable { return uint( _moleculeStruct.bondPairAtomIndexes[ i++ ] ); }
-		//);
 	}
 
 	void Molecule::setName( const std::string & p_name )

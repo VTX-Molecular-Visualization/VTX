@@ -22,9 +22,11 @@ namespace VTX::IO::Reader
 		Molecule() {};
 
 		void readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule );
-		void readBuffer( const std::string &		   p_buffer,
-						 const FilePath &			   p_path,
-						 VTX::Core::Struct::Molecule & p_molecule );
+		void readBuffer(
+			const std::string &			  p_buffer,
+			const FilePath &			  p_path,
+			VTX::Core::Struct::Molecule & p_molecule
+		);
 
 		void setConfiguration( const Struct::MoleculeConfiguration & p_configuration )
 		{
@@ -37,13 +39,17 @@ namespace VTX::IO::Reader
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule );
 
 		// TODO do this function here or in IO::Reader::Chemfiles ?
-		VTX::Core::ChemDB::Category::TYPE _findCategoryType( const std::string & p_fileExtension,
-															 const std::string & p_residueSymbol );
+		VTX::Core::ChemDB::Category::TYPE _findCategoryType(
+			const std::string & p_fileExtension,
+			const std::string & p_residueSymbol
+		);
 
 		// TODO do this function here or in IO::Reader::Chemfiles ?
-		void _readTrajectoryFrames( IO::Reader::Chemfiles & p_chemfileStruct,
-									const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
-									const size_t p_trajectoryFrameStart );
+		void _readTrajectoryFrames(
+			IO::Reader::Chemfiles &												  p_chemfileStruct,
+			const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
+			const size_t														  p_trajectoryFrameStart
+		);
 
 		ChemDB::Atom::TYPE _getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const;
 

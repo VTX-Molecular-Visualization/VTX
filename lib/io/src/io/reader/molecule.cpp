@@ -86,14 +86,14 @@ namespace VTX::IO::Reader
 			currentChainResidueCount++;
 
 			// Setup residue.
-			const size_t atomCount = p_chemfileStruct.getCurrentResidueAtomCount();
+			const atom_index_t atomCount = p_chemfileStruct.getCurrentResidueAtomCount();
 			if ( atomCount == 0 )
 			{
 				VTX_WARNING( "Empty residue found" );
 			}
 
 			p_molecule.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
-			p_molecule.residueFirstAtomIndexes[ residueIdx ] = ( p_chemfileStruct.getCurrentResidueFirstAtomIndex() );
+			p_molecule.residueFirstAtomIndexes[ residueIdx ] = p_chemfileStruct.getCurrentResidueFirstAtomIndex();
 			p_molecule.residueAtomCounts[ residueIdx ]		 = atomCount;
 			p_molecule.residueOriginalIds[ residueIdx ]		 = residueId;
 
@@ -134,14 +134,14 @@ namespace VTX::IO::Reader
 
 			// size_t solventCounter = 0;
 			// size_t ionCounter	  = 0;
-			Util::Math::RangeList<size_t> atomSolvents = Util::Math::RangeList<size_t>();
-			Util::Math::RangeList<size_t> atomIons	   = Util::Math::RangeList<size_t>();
+			Util::Math::RangeList<atom_index_t> atomSolvents = Util::Math::RangeList<atom_index_t>();
+			Util::Math::RangeList<atom_index_t> atomIons	 = Util::Math::RangeList<atom_index_t>();
 
 			for ( Chemfiles::ResidueIt it = p_chemfileStruct.getCurrentResidueAtomIteratorBegin();
 				  it != p_chemfileStruct.getCurrentResidueAtomIteratorEnd();
 				  ++it )
 			{
-				const size_t atomIndex = *it;
+				const atom_index_t atomIndex = *it;
 				p_chemfileStruct.setCurrentAtom( atomIndex );
 
 				p_molecule.atomResidueIndexes[ atomIndex ] = residueIdx;

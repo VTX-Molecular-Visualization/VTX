@@ -130,7 +130,7 @@ namespace VTX::PythonBinding::API::Selection
 				= dynamic_cast<const App::Application::Selection::MoleculeData &>( _selection->getSelectionData( *it )
 				);
 
-			for ( const size_t & atomID : molSelection.getAtomIds() )
+			for ( const atom_index_t & atomID : molSelection.getAtomIds() )
 			{
 				res.emplace_back( mol.getAtom( atomID ) );
 			}
