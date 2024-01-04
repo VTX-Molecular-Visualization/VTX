@@ -17,17 +17,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			if ( !matched || match.size() < 1 )
 				return "";
 
-			std::string substring = match[ match.size() - 1 ].str();
-
-			size_t chain_pos = substring.find( '\'' ) + 1;
-
-			std::string out;
-			while ( substring.size() > chain_pos && substring.at( chain_pos + 1 ) != '\'' )
-			{
-				out += substring.at( chain_pos );
-				chain_pos++;
-			}
-			return out;
+			return match[ match.size() - 1 ].str();
 		}
 		interactive_keyword get_keyword( const std::string & last_input_asking_message ) noexcept
 		{
@@ -67,6 +57,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 			return std::stoul( num_str );
 		}
+		std::string get_last_input_request( const std::string & stdout_ ) noexcept
+		{
+			const std::regex entire_gromacs_message { "Processing chain [^]+?\nType a number:" };
+
+			std::string last_gromacs_input_request_string {};
+			for ( auto it = std::sregex_iterator( stdout_.begin(), stdout_.end(), entire_gromacs_message );
+				  it != std::sregex_iterator();
+				  ++it )
+			{
+				last_gromacs_input_request_string = it->str();
+			}
+			return last_gromacs_input_request_string;
+		}
 
 	} // namespace
 	bool is_waiting_inputs( const std::string & stdout_ ) noexcept
@@ -76,17 +79,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	bool parse_expected_kw_argument( const std::string & stdout_, interactive_id & out ) noexcept
 	{
-		const std::regex entire_gromacs_message { "Processing chain .+?\nType a number:" };
-
-		std::smatch match;
-		bool		last_request_matched
-			= std::regex_search( stdout_, match, entire_gromacs_message, std::regex_constants::match_any );
-
-		if ( last_request_matched == false || match.size() < 1 )
-			return false;
-
-		std::string last_gromacs_input_request_string = match[ match.size() - 1 ].str();
-
+		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
 		{
 			std::string buf = get_chain( last_gromacs_input_request_string );
 			if ( !buf.empty() )
