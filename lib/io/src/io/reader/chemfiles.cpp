@@ -70,8 +70,8 @@ namespace VTX::IO::Reader
 
 	Chemfiles::ResidueIt::~ResidueIt() = default;
 
-	size_t Chemfiles::ResidueIt::operator*() const { return *( _internalIterator->it ); }
-	size_t Chemfiles::ResidueIt::operator->() const { return *( _internalIterator->it ); }
+	atom_index_t Chemfiles::ResidueIt::operator*() const { return atom_index_t( *( _internalIterator->it ) ); }
+	atom_index_t Chemfiles::ResidueIt::operator->() const { return atom_index_t( *( _internalIterator->it ) ); }
 
 	// Prefix increment
 	Chemfiles::ResidueIt & Chemfiles::ResidueIt::operator++()
@@ -272,21 +272,25 @@ namespace VTX::IO::Reader
 	{
 		_readingData->_currentResidue = &( ( *_readingData->_residues )[ p_residueIndex ] );
 	}
-	const std::string Chemfiles::getCurrentResidueStringProperty( const std::string & p_property,
-																  const std::string & p_defaultValue ) const
+	const std::string Chemfiles::getCurrentResidueStringProperty(
+		const std::string & p_property,
+		const std::string & p_defaultValue
+	) const
 	{
 		// Seems to be faster that way than using value_or function for string&.
 		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
 			= _readingData->_currentResidue->properties().get( p_property );
 		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
 	}
-	const double Chemfiles::getCurrentResidueDoubleProperty( const std::string & p_property,
-															 const double		 p_defaultValue ) const
+	const double Chemfiles::getCurrentResidueDoubleProperty(
+		const std::string & p_property,
+		const double		p_defaultValue
+	) const
 	{
 		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 	}
-	const bool Chemfiles::getCurrentResidueBoolProperty( const std::string & p_property,
-														 const bool			 p_defaultValue ) const
+	const bool Chemfiles::getCurrentResidueBoolProperty( const std::string & p_property, const bool p_defaultValue )
+		const
 	{
 		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
 	}
@@ -296,11 +300,14 @@ namespace VTX::IO::Reader
 	{
 		return size_t( _readingData->_currentResidue->id().value_or( INVALID_INDEX ) );
 	}
-	const size_t Chemfiles::getCurrentResidueFirstAtomIndex() const
+	const atom_index_t Chemfiles::getCurrentResidueFirstAtomIndex() const
 	{
-		return *( _readingData->_currentResidue->begin() );
+		return atom_index_t( *( _readingData->_currentResidue->begin() ) );
 	}
-	const size_t Chemfiles::getCurrentResidueAtomCount() const { return _readingData->_currentResidue->size(); }
+	const atom_index_t Chemfiles::getCurrentResidueAtomCount() const
+	{
+		return atom_index_t( _readingData->_currentResidue->size() );
+	}
 
 	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorBegin() const
 	{
@@ -319,16 +326,18 @@ namespace VTX::IO::Reader
 		_readingData->_currentAtom		= &( _readingData->_currentFrame[ p_index ] );
 		_readingData->_currentAtomIndex = p_index;
 	}
-	const std::string Chemfiles::getCurrentAtomStringProperty( const std::string & p_property,
-															   const std::string & p_defaultValue ) const
+	const std::string Chemfiles::getCurrentAtomStringProperty(
+		const std::string & p_property,
+		const std::string & p_defaultValue
+	) const
 	{
 		// Seems to be faster that way than using value_or function for string&.
 		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
 			= _readingData->_currentAtom->properties().get( p_property );
 		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
 	}
-	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property,
-														  const double		  p_defaultValue ) const
+	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property, const double p_defaultValue )
+		const
 	{
 		return _readingData->_currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 	}
@@ -375,8 +384,14 @@ namespace VTX::IO::Reader
 		_readingData->_currentBondIndex = p_bondIndex;
 	}
 
-	size_t Chemfiles::getCurrentBondFirstAtomIndex() const { return ( *_readingData->_currentBond )[ 0 ]; }
-	size_t Chemfiles::getCurrentBondSecondAtomIndex() const { return ( *_readingData->_currentBond )[ 1 ]; }
+	atom_index_t Chemfiles::getCurrentBondFirstAtomIndex() const
+	{
+		return atom_index_t( ( *_readingData->_currentBond )[ 0 ] );
+	}
+	atom_index_t Chemfiles::getCurrentBondSecondAtomIndex() const
+	{
+		return atom_index_t( ( *_readingData->_currentBond )[ 1 ] );
+	}
 
 	const VTX::Core::ChemDB::Bond::ORDER Chemfiles::getCurrentBondOrder() const
 	{

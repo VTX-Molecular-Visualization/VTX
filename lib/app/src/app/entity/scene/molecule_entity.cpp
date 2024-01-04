@@ -15,6 +15,7 @@
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include "app/render/proxy_builder.hpp"
 #include "app/vtx_app.hpp"
+#include <renderer/renderer.hpp>
 #include <renderer/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
@@ -73,6 +74,7 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
+		RENDERER().addMolecule( MAIN_REGISTRY().getComponent<Renderer::StructProxyMolecule>( p_entity ) );
 	}
 
 	void MoleculeEntityBuilder::_load(

@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <util/math/range_list.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Core::Struct
@@ -45,8 +46,8 @@ namespace VTX::Core::Struct
 		// Residue data
 		std::vector<ChemDB::Residue::SYMBOL> residueSymbols			 = std::vector<ChemDB::Residue::SYMBOL>();
 		std::vector<size_t>					 residueChainIndexes	 = std::vector<size_t>();
-		std::vector<size_t>					 residueFirstAtomIndexes = std::vector<size_t>();
-		std::vector<size_t>					 residueAtomCounts		 = std::vector<size_t>();
+		std::vector<atom_index_t>			 residueFirstAtomIndexes = std::vector<atom_index_t>();
+		std::vector<atom_index_t>			 residueAtomCounts		 = std::vector<atom_index_t>();
 		std::vector<size_t>					 residueFirstBondIndexes = std::vector<size_t>();
 		std::vector<size_t>					 residueBondCounts		 = std::vector<size_t>();
 		std::vector<size_t>					 residueOriginalIds		 = std::vector<size_t>();
@@ -64,14 +65,14 @@ namespace VTX::Core::Struct
 
 		// Bond data
 		std::vector<ChemDB::Bond::ORDER> bondOrders			 = std::vector<ChemDB::Bond::ORDER>();
-		std::vector<size_t>				 bondPairAtomIndexes = std::vector<size_t>();
+		std::vector<atom_index_t>		 bondPairAtomIndexes = std::vector<atom_index_t>();
 
 		void   initBonds( const size_t p_count );
 		size_t getBondCount() const;
 
 		// TODO Manage Atom types and residue types with sparse_set
-		Util::Math::RangeList<size_t> atomSolvents = Util::Math::RangeList<size_t>();
-		Util::Math::RangeList<size_t> atomIons	   = Util::Math::RangeList<size_t>();
+		Util::Math::RangeList<atom_index_t> atomSolvents = Util::Math::RangeList<atom_index_t>();
+		Util::Math::RangeList<atom_index_t> atomIons	 = Util::Math::RangeList<atom_index_t>();
 	};
 } // namespace VTX::Core::Struct
 #endif

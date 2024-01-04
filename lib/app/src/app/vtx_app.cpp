@@ -1,10 +1,12 @@
 #include "app/vtx_app.hpp"
+#include "app/application/action/action_manager.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/application/settings.hpp"
 #include "app/component/io/scene_file_info.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/entity/all_entities.hpp"
@@ -49,6 +51,9 @@ namespace VTX::App
 		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
 		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
 
+		_actionManager = std::make_unique<Application::Action::ActionManager>();
+		_system->referenceSystem( ACTION_MANAGER_KEY, _actionManager.get() );
+
 		_serializationToolManager = std::make_unique<Core::Serialization::Serialization>();
 		_system->referenceSystem( SERIALIZATION_TOOL_KEY, _serializationToolManager.get() );
 
@@ -72,9 +77,9 @@ namespace VTX::App
 		_system->referenceSystem( SCENE_KEY, &scene );
 
 		_renderer
-			= std::make_unique<Renderer::Renderer>( 800, 600, Util::Filesystem::getExecutableDir() / "shaders" / "" );
+			= std::make_unique<Renderer::Renderer>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" / "" );
 
-		//_tickTimer.start();
+		_tickChrono.start();
 
 		_handleArgs( p_args );
 
@@ -91,7 +96,11 @@ namespace VTX::App
 #endif
 	}
 
-	void VTXApp::update() { _update(); }
+	void VTXApp::update( const float p_elapsedTime )
+	{
+		const float interval = _tickChrono.intervalTime();
+		_update( p_elapsedTime > 0 ? p_elapsedTime : interval );
+	}
 	void VTXApp::stop() { _stop(); }
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
@@ -122,7 +131,7 @@ namespace VTX::App
 		// }
 	}
 
-	void VTXApp::_update()
+	void VTXApp::_update( const float p_elapsedTime )
 	{
 		// Useless: nothing is delayed.
 		// Event manager.
@@ -134,7 +143,7 @@ namespace VTX::App
 		//// Call late update event for processes at end of frame
 		// VTX_EVENT( Old::Event::Global::LATE_UPDATE );
 
-		// TODO Reimplement this without Qt
+		// TODO Reimplement this without Qt - Manage stats with a callback on update
 		//// Tickrate.
 		//_tickCounter++;
 		// if ( _tickTimer.elapsed() >= 1000 )
@@ -147,7 +156,13 @@ namespace VTX::App
 		//	_tickTimer.restart();
 		//}
 
-		//_renderer->render();
+		SCENE().update( p_elapsedTime );
+
+		_renderer->setUniform( SCENE().getCamera().getViewMatrix(), "Matrix view" );
+		_renderer->setUniform( SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
+		_renderer->setUniform( SCENE().getCamera().getClipInfos(), "Camera clip infos" );
+
+		_renderer->render( p_elapsedTime );
 	}
 
 	//	bool VTXApp::hasAnyModifications() const
@@ -164,6 +179,8 @@ namespace VTX::App
 
 	void VTXApp::_stop()
 	{
+		_tickChrono.stop();
+
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );
 		//  Manager::WorkerManager::get().stopAll();
@@ -213,6 +230,11 @@ namespace VTX::App
 		return _system->getSystem<Application::ECS::RegistryManager>( REGISTRY_MANAGER_KEY );
 	}
 
+	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	{
+		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+	}
+
 	Application::Selection::SelectionManager & VTXApp::getSelectionManager()
 	{
 		return _system->getSystem<Application::Selection::SelectionManager>( SELECTION_MANAGER_KEY );
@@ -231,15 +253,21 @@ namespace VTX::App
 		return _system->getSystem<Core::Serialization::Serialization>( SERIALIZATION_TOOL_KEY );
 	}
 
-	Application::ECS::EntityDirector & VTXApp::getEntityDirector()
+	Application::Action::ActionManager & VTXApp::getActionManager()
 	{
-		return _system->getSystem<Application::ECS::EntityDirector>( ENTITY_DIRECTOR_KEY );
+		return _system->getSystem<Application::Action::ActionManager>( ACTION_MANAGER_KEY );
+	}
+	const Application::Action::ActionManager & VTXApp::getActionManager() const
+	{
+		return _system->getSystem<Application::Action::ActionManager>( ACTION_MANAGER_KEY );
 	}
 
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
+	Renderer::Renderer &				RENDERER() { return VTXApp::get().getRenderer(); }
 	Application::Settings &				SETTINGS() { return VTXApp::get().getSettings(); }
 	Application::ECS::RegistryManager & MAIN_REGISTRY() { return VTXApp::get().getRegistryManager(); }
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
 	Core::Serialization::Serialization & SERIALIZER() { return VTXApp::get().getSerializationTool(); }
+	Application::Action::ActionManager & VTX_ACTION() { return VTXApp::get().getActionManager(); }
 
 } // namespace VTX::App

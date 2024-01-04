@@ -10,6 +10,11 @@ namespace VTX::App::Application
 	class Scene;
 	class System;
 
+	namespace Action
+	{
+		class ActionManager;
+	}
+
 	namespace ECS
 	{
 		class EntityDirector;

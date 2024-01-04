@@ -3,6 +3,8 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/component/render/viewpoint.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
 #include "app/vtx_app.hpp"
@@ -21,6 +23,20 @@ namespace VTX::App::Action::Scene
 			entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( moleculePath.string() );
 			entityBuilder->build();
 		}
+	}
+
+	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}
+	CreateViewpoint::CreateViewpoint( const Component::Render::Camera & p_camera ) :
+		CreateViewpoint( p_camera.getPosition(), p_camera.getRotation() )
+	{
+	}
+	void CreateViewpoint::execute()
+	{
+		const Core::ECS::BaseEntity entity = VTXApp::get().getEntityDirector().build( Entity::VIEWPOINT_ENTITY_ID );
+
+		Component::Render::Viewpoint & viewpoint = MAIN_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
+		viewpoint.setPosition( _position );
+		viewpoint.setRotation( _rotation );
 	}
 
 } // namespace VTX::App::Action::Scene

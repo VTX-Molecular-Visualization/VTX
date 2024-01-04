@@ -3,16 +3,19 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	size_t Bond::getIndexFirstAtom() const { return _moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 ]; }
-	void   Bond::setIndexFirstAtom( const size_t p_atomIndex )
+	atom_index_t Bond::getIndexFirstAtom() const
+	{
+		return _moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 ];
+	}
+	void Bond::setIndexFirstAtom( const atom_index_t p_atomIndex )
 	{
 		_moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 ] = p_atomIndex;
 	}
-	size_t Bond::getIndexSecondAtom() const
+	atom_index_t Bond::getIndexSecondAtom() const
 	{
 		return _moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 + 1 ];
 	}
-	void Bond::setIndexSecondAtom( const size_t p_atomIndex )
+	void Bond::setIndexSecondAtom( const atom_index_t p_atomIndex )
 	{
 		_moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 + 1 ] = p_atomIndex;
 	}

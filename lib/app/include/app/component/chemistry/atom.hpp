@@ -17,10 +17,11 @@ namespace VTX::App::Component::Chemistry
 		Atom() = default;
 		Atom( Residue * const p_residue );
 		Atom( Molecule * const p_molecule ) : _moleculePtr( p_molecule ) {};
-		Atom( Molecule * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {};
+		Atom( Molecule * const p_molecule, const atom_index_t p_index ) :
+			_moleculePtr( p_molecule ), _index( p_index ) {};
 
-		size_t			getIndex() const { return _index; }
-		void			setIndex( const size_t p_index ) { _index = p_index; }
+		atom_index_t	getIndex() const { return _index; }
+		void			setIndex( const atom_index_t p_index ) { _index = p_index; }
 		Residue *		getResiduePtr() const;
 		const Residue * getConstResiduePtr() const;
 		void			setResiduePtr( Residue * const p_residue );
@@ -46,8 +47,8 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		// Store moleculePtr or use residuePtr->getChainPtr()->getMoleculePtr() ?
-		Molecule * _moleculePtr = nullptr;
-		size_t	   _index		= INVALID_INDEX;
+		Molecule *	 _moleculePtr = nullptr;
+		atom_index_t _index		  = INVALID_ATOM_INDEX;
 	};
 
 } // namespace VTX::App::Component::Chemistry

@@ -7,6 +7,7 @@
 #include <memory>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Render
@@ -48,8 +49,8 @@ namespace VTX::App::Component::Chemistry
 		const std::vector<Residue *> & getResidues() const { return _residues; }
 
 		void						initAtoms( const size_t p_atomCount );
-		Atom *						getAtom( const size_t p_index ) { return _atoms[ p_index ]; }
-		const Atom *				getAtom( const size_t p_index ) const { return _atoms[ p_index ]; }
+		Atom *						getAtom( const atom_index_t p_index ) { return _atoms[ p_index ]; }
+		const Atom *				getAtom( const atom_index_t p_index ) const { return _atoms[ p_index ]; }
 		std::vector<Atom *> &		getAtoms() { return _atoms; }
 		const std::vector<Atom *> & getAtoms() const { return _atoms; }
 

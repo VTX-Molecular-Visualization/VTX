@@ -29,12 +29,12 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.chainResidueCounts[ _index ] = p_residueCount;
 	}
 
-	size_t Chain::getIndexFirstAtom() const
+	atom_index_t Chain::getIndexFirstAtom() const
 	{
 		const Residue * const firstResidue = _moleculePtr->getResidue( getIndexFirstResidue() );
 		return firstResidue->getIndexFirstAtom();
 	}
-	size_t Chain::getIndexLastAtom() const
+	atom_index_t Chain::getIndexLastAtom() const
 	{
 		const Residue * const lastResidue = _moleculePtr->getResidue( getIndexLastResidue() );
 		return lastResidue->getIndexLastAtom();
@@ -47,7 +47,7 @@ namespace VTX::App::Component::Chemistry
 
 	Iterator::AtomContainer Chain::atoms() const
 	{
-		const size_t atomCount = getIndexLastAtom() - getIndexFirstAtom() + 1;
+		const atom_index_t atomCount = getIndexLastAtom() - getIndexFirstAtom() + 1;
 		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), atomCount );
 	}
 

@@ -18,18 +18,18 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueChainIndexes[ _index ] = p_chainPtr->getIndex();
 	}
 
-	size_t Residue::getIndexFirstAtom() const
+	atom_index_t Residue::getIndexFirstAtom() const
 	{
 		return _moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ];
 	}
-	void Residue::setIndexFirstAtom( const size_t p_indexFirstAtom )
+	void Residue::setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
 	{
-		_moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ] = p_indexFirstAtom;
+		_moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ] = atom_index_t( p_indexFirstAtom );
 	}
-	size_t Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
+	atom_index_t Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
 
-	size_t Residue::getAtomCount() const { return _moleculePtr->_moleculeStruct.residueAtomCounts[ _index ]; }
-	void   Residue::setAtomCount( const size_t p_atomCount )
+	atom_index_t Residue::getAtomCount() const { return _moleculePtr->_moleculeStruct.residueAtomCounts[ _index ]; }
+	void		 Residue::setAtomCount( const atom_index_t p_atomCount )
 	{
 		_moleculePtr->_moleculeStruct.residueAtomCounts[ _index ] = p_atomCount;
 	}
@@ -76,7 +76,8 @@ namespace VTX::App::Component::Chemistry
 
 	ChemDB::Atom::TYPE Residue::getAtomType() const
 	{
-		Util::Math::Range<size_t> atomRange = Util::Math::Range<size_t>( getIndexFirstAtom(), getAtomCount() );
+		Util::Math::Range<atom_index_t> atomRange
+			= Util::Math::Range<atom_index_t>( getIndexFirstAtom(), getAtomCount() );
 
 		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( atomRange ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
@@ -87,7 +88,8 @@ namespace VTX::App::Component::Chemistry
 	}
 	void Residue::setAtomType( const ChemDB::Atom::TYPE p_type )
 	{
-		Util::Math::Range<size_t> atomRange = Util::Math::Range<size_t>( getIndexFirstAtom(), getAtomCount() );
+		Util::Math::Range<atom_index_t> atomRange
+			= Util::Math::Range<atom_index_t>( getIndexFirstAtom(), getAtomCount() );
 
 		switch ( p_type )
 		{

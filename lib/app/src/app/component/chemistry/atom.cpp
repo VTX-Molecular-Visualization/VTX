@@ -57,9 +57,9 @@ namespace VTX::App::Component::Chemistry
 
 	ChemDB::Atom::TYPE Atom::getType() const
 	{
-		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( _index ) )
+		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( atom_index_t( _index ) ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
-		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( _index ) )
+		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( atom_index_t( _index ) ) )
 			return ChemDB::Atom::TYPE::ION;
 
 		return ChemDB::Atom::TYPE::NORMAL;
@@ -69,16 +69,16 @@ namespace VTX::App::Component::Chemistry
 		switch ( p_type )
 		{
 		case ChemDB::Atom::TYPE::SOLVENT:
-			_moleculePtr->_moleculeStruct.atomSolvents.addValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.removeValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.addValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.removeValue( atom_index_t( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::ION:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.addValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.addValue( atom_index_t( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::NORMAL:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.removeValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.removeValue( atom_index_t( _index ) );
 			break;
 		}
 	}

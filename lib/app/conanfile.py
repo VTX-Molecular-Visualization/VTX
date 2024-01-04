@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 
 class VTXAppRecipe(ConanFile):
     name = "vtx_app"
@@ -10,7 +10,7 @@ class VTXAppRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
         
@@ -27,6 +27,12 @@ class VTXAppRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+         
+    def generate(self):
+        tc = CMakeToolchain(self)
+        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
+        tc.cache_variables["DIR_SHADERS"] = dir_shaders
+        tc.generate()
 
     def build(self):
         cmake = CMake(self)

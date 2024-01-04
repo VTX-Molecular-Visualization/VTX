@@ -24,7 +24,7 @@ namespace VTX::App::Component::Scene
 			if ( _name != p_name )
 			{
 				_name = p_name;
-				_onNameChange.emit( _name );
+				_onNameChange.run( _name );
 			}
 		};
 

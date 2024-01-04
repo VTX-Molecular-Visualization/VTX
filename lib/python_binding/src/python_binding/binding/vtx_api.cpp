@@ -66,7 +66,7 @@ namespace VTX::PythonBinding
 			)
 			.def(
 				"getAtom",
-				[]( const Component::Chemistry::Molecule & p_mol, const size_t p_index )
+				[]( const Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
 				{
 					const Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
 					return *atom;
@@ -75,7 +75,7 @@ namespace VTX::PythonBinding
 			)
 			.def(
 				"getAtom",
-				[]( Component::Chemistry::Molecule & p_mol, const size_t p_index )
+				[]( Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
 				{
 					Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
 					return *atom;
@@ -106,7 +106,7 @@ namespace VTX::PythonBinding
 		// Global
 		p_apiModule.def(
 			"setAtomName",
-			[]( const std::string & p_moleculeName, const size_t p_atomIndex, const std::string & p_name )
+			[]( const std::string & p_moleculeName, const atom_index_t p_atomIndex, const std::string & p_name )
 			{
 				return VTXApp::get()
 					.getScene()

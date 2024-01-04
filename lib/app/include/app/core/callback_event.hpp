@@ -35,7 +35,7 @@ namespace VTX::App::Core
 	  public:
 		CallbackEmitter() = default;
 
-		void emit( const Args... p_params ) const
+		void run( const Args... p_params ) const
 		{
 			for ( auto pairListenerCallback : CallbackRegister<Args...>::getCallbacks() )
 			{

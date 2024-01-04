@@ -8,6 +8,8 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
+find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::PyTX)
+find_package(pybind11 REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
@@ -19,13 +21,34 @@ target_link_libraries(vtx_ui_test PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_ui_test PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx_ui_test PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_ui_test PRIVATE vtx_app::vtx_app)
+target_link_libraries(vtx_ui_test PRIVATE vtx_python_binding::vtx_python_binding)
+target_link_libraries(vtx_ui_test PRIVATE vtx_python_binding::PyTX)
 target_link_libraries(vtx_ui_test PRIVATE vtx_ui::vtx_ui)
+target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
+
+IF (WIN32)
+	set(FILENAME_PYTHON_MODULE PyTX.pyd)
+ELSE()
+	set(FILENAME_PYTHON_MODULE PyTX.so)
+ENDIF()
+
+add_custom_target(vtx_ui_copy_module ALL COMMAND
+	${CMAKE_COMMAND} -E copy
+	${PATH_PYTHON_MODULE}
+	$<TARGET_FILE_DIR:vtx_ui_test>/${FILENAME_PYTHON_MODULE})
+add_dependencies(vtx_ui_test vtx_ui_copy_module)
+
+add_custom_target(vtx_ui_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_ui_test>/data)
+add_dependencies(vtx_ui_test vtx_ui_copy_data)
 
 include(CTest)
 include(Catch)
 catch_discover_tests(vtx_ui_test)
 
 install(TARGETS vtx_ui_test)
+install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
+install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION bin)
+install(FILES ${PATH_PYTHON_MODULE} DESTINATION bin RENAME ${FILENAME_PYTHON_MODULE})
 install(DIRECTORY data DESTINATION bin)
 #TODO: install dll too.

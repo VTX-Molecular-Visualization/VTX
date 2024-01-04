@@ -7,6 +7,7 @@
 #include <python_binding/interpretor.hpp>
 #include <sstream>
 #include <util/logger.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Test::Util
 {
@@ -44,10 +45,10 @@ namespace VTX::App::Test::Util
 	}
 
 	std::unique_ptr<Selection::MoleculeData> Selection::generateMoleculeData(
-		const std::string &			p_molName,
-		const std::vector<size_t> & p_chains,
-		const std::vector<size_t> & p_residues,
-		const std::vector<size_t> & p_atoms
+		const std::string &				  p_molName,
+		const std::vector<size_t> &		  p_chains,
+		const std::vector<size_t> &		  p_residues,
+		const std::vector<atom_index_t> & p_atoms
 	)
 	{
 		const App::Core::ECS::BaseEntity entity = SCENE().getItem( p_molName );
@@ -65,7 +66,7 @@ namespace VTX::App::Test::Util
 
 			res->selectFullChains( VTX::Util::Math::RangeList<size_t>::fromList( p_chains ) );
 			res->selectFullResidues( VTX::Util::Math::RangeList<size_t>::fromList( p_residues ) );
-			res->selectAtoms( VTX::Util::Math::RangeList<size_t>::fromList( p_atoms ) );
+			res->selectAtoms( VTX::Util::Math::RangeList<atom_index_t>::fromList( p_atoms ) );
 		}
 
 		return std::move( res );

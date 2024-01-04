@@ -21,6 +21,7 @@ namespace VTX::IO::Internal::Filesystem
 		MOLECULE,
 		TRAJECTORY,
 		MESH,
+		SCRIPT,
 		UNKNOWN,
 		COUNT
 	};
@@ -135,14 +136,20 @@ namespace VTX::IO::Internal::Filesystem
 		{
 			return FILE_TYPE_ENUM::TRAJECTORY;
 		}
+		else if ( extension == ".py" )
+		{
+			return FILE_TYPE_ENUM::SCRIPT;
+		}
 		else
 		{
 			return FILE_TYPE_ENUM::UNKNOWN;
 		}
 	}
 
-	inline void fillFilepathPerMode( std::vector<FilePath>				  p_filepaths,
-									 std::vector<std::vector<FilePath>> & p_filepathPerMode )
+	inline void fillFilepathPerMode(
+		std::vector<FilePath>				 p_filepaths,
+		std::vector<std::vector<FilePath>> & p_filepathPerMode
+	)
 	{
 		p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
 
