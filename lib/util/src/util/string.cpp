@@ -1,5 +1,6 @@
 #include "util/string.hpp"
 #include "util/types.hpp"
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -60,5 +61,10 @@ namespace VTX::Util::String
 	}
 
 	uint strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
+
+	void toUpper( std::string & inout )
+	{
+		std::transform( inout.begin(), inout.end(), inout.begin(), []( char & c ) { return std::toupper( c ); } );
+	}
 
 } // namespace VTX::Util::String
