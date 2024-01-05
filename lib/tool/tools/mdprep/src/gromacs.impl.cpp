@@ -2,6 +2,7 @@
 #include "tools/mdprep/gromacs.util.hpp"
 #include <format>
 #include <regex>
+#include <util/string.hpp>
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
@@ -132,9 +133,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		const std::regex gromacs_option_regex { "[0-9]+\\. .+\n" };
 		std::string		 upper_input { value };
-		std::transform(
-			upper_input.begin(), upper_input.end(), upper_input.begin(), []( char & c ) { return std::toupper( c ); }
-		);
+		Util::String::toUpper( upper_input );
 
 		// "protonated" match also "not protonated", so we need to fix that
 		bool user_input_contains_not_protonated = ( upper_input.find( g_not_protonated ) != std::string::npos );
@@ -151,13 +150,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 			out						 = 0xffui8;
 			const std::string it_str = it->str();
 			std::string		  it_str_up { it_str };
+			Util::String::toUpper( it_str_up );
 
-			std::transform(
-				it_str_up.begin(), it_str_up.end(), it_str_up.begin(), []( char & c ) { return std::toupper( c ); }
-			);
 			std::from_chars(
 				it_str.data(), it_str.data() + it_str.size(), out
-			); // should use first chars to fill the number and stop when a non-number char is found
+			); // this function should use first chars to fill the number and stop when a non-number char is found
+			// Now I wonder if we should check the out value to make sure its not 0xff
 
 			bool current_option_is_not_protonated = it_str_up.find( g_not_protonated ) != std::string::npos;
 
