@@ -50,71 +50,86 @@ namespace
 		return VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw )
 			   && ( kw.chain == expected_output.chain && kw.kw == expected_output.kw && kw.num == expected_output.num );
 	}
+	const char	 g_chainA[] = "Processing chain 1 'A'( 6457 atoms, 827 residues )\n";
+	const char	 g_chainB[] = "Processing chain 1 'B'( 6457 atoms, 827 residues )\n";
 	const char * g_lys1
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich LYSINE type do you want for residue 40\n0. Not "
+		= "Which LYSINE type do you want for residue 40\n0. Not "
 		  "protonated (charge 0) (LYN)\n1. Protonated (charge +1) (LYS)\n\nType a number:";
 	const char * g_arg1
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich ARGININE type do you want for residue 31\n0. Not "
+		= "Which ARGININE type do you want for residue 31\n0. Not "
 		  "protonated (charge 0) (-)\n1. Protonated (charge +1) (ARG)\n\nType a number:";
 	const char * g_asp1
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich ASPARTIC ACID type do you want for residue 13\n0. "
+		= "Which ASPARTIC ACID type do you want for residue 13\n0. "
 		  "Not protonated (charge -1) (ASP)\n1. Protonated (charge 0) (ASH)\n\nType a number:";
 	const char * g_glu1
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich GLUTAMIC ACID type do you want for residue 6\n0. "
+		= "Which GLUTAMIC ACID type do you want for residue 6\n0. "
 		  "Not "
 		  "protonated (charge -1) (GLU)\n1. Protonated (charge 0) (GLH)\n\nType a number:";
 	const char * g_gln1
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich GLUTAMINE type do you want for residue 12\n0. Not "
+		= "Which GLUTAMINE type do you want for residue 12\n0. Not "
 		  "protonated (charge 0) (GLN)\n1. Protonated (charge +1) (-)\n\nType a number:";
 	const char * g_his1
-		= "Processing chain 1 'B' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
+		= "Which HISTIDINE type do you want for residue 74\n0. H on "
 		  "ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
 		  "number:";
 	const char * g_his2
-		= "Processing chain 1 'A' (6457 atoms, 827 residues)\nWhich HISTIDINE type do you want for residue 74\n0. H on "
+		= "Which HISTIDINE type do you want for residue 81\n0. H on "
 		  "ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
 		  "number:";
+
+	template<size_t SIZE>
+	void merge( char ( &b )[ SIZE ], const char * s1, const char * s2 )
+	{
+		sprintf_s( b, "%s%s", s1, s2 );
+	}
+
 } // namespace
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple LYS", "[parse_expected_kw_argument][simple][LYS]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_lys1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_lys1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_expected_kw_argument][simple][ARG]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_arg1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_arg1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::arg, 31 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::arg, 31 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ASP", "[parse_expected_kw_argument][simple][ASP]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_asp1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_asp1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::asp, 13 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::asp, 13 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLU", "[parse_expected_kw_argument][simple][GLU]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_glu1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_glu1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::glu, 6 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::glu, 6 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLN", "[parse_expected_kw_argument][simple][GLN]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_gln1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_gln1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::gln, 12 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::gln, 12 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_expected_kw_argument][simple][HIS]" )
 {
+	char b[ 1000 ];
+	merge( b, g_chainA, g_his1 );
 	CHECK( check_parse_expected_kw_argument(
-		g_his1,
-		VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
 	) );
 }
 TEST_CASE(
@@ -122,10 +137,21 @@ TEST_CASE(
 	"[parse_expected_kw_argument][last_print_taken][LYS][HIS]"
 )
 {
-	char b[ 500 ];
-	sprintf_s( b, "%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_lys1, g_his1 );
+	char b[ 1000 ];
+	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainB, g_lys1, g_his1 );
 	CHECK( check_parse_expected_kw_argument(
 		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+	) );
+}
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - HIS 1 into HIS 2",
+	"[parse_expected_kw_argument][last_print_taken][HIS]"
+)
+{
+	char b[ 1000 ];
+	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
+	CHECK( check_parse_expected_kw_argument(
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
 }
 TEST_CASE(
@@ -133,10 +159,10 @@ TEST_CASE(
 	"[parse_expected_kw_argument][last_print_taken][HIS]"
 )
 {
-	char b[ 500 ];
-	sprintf_s( b, "%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_his1, g_his2 );
+	char b[ 1000 ];
+	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
 	CHECK( check_parse_expected_kw_argument(
-		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
 }
 
