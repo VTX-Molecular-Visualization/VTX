@@ -18,6 +18,7 @@ namespace VTX::Util::String
 	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement );
 	std::string	  floatToStr( const float p_value, const int p_nbDecimals );
 	uint		  strToUint( const std::string & p_str );
+	void		  toUpper( std::string & inout );
 } // namespace VTX::Util::String
 
 #endif

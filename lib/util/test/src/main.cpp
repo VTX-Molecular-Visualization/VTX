@@ -43,6 +43,10 @@ TEST_CASE( "Util::String", "[string]" )
 
 	str = "3.14159";
 	CHECK( VTX::Util::String::strToUint( str ) == 3 );
+
+	str = "123 abcDefghijklmnopqrstuvwxyZ.()+";
+	VTX::Util::String::toUpper( str );
+	CHECK( str == "123 ABCDEFGHIJKLMNOPQRSTUVWXYZ.()+" );
 }
 
 // filesystem.hpp
@@ -334,10 +338,10 @@ TEST_CASE( "Util::Enum", "[enum]" )
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-					 {
-						 t.use()
-						 } -> std::same_as<void>;
-				 };
+	{
+		t.use()
+	} -> std::same_as<void>;
+};
 
 template<canUse T>
 class BaseClass : public T
