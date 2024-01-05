@@ -243,8 +243,25 @@ namespace VTX::Renderer
 			_renderGraph->setData( *p_proxy.atomPositions, "MoleculesPositions" );
 			_renderGraph->setData( *p_proxy.atomColors, "MoleculesColors" );
 			_renderGraph->setData( *p_proxy.atomRadii, "MoleculesRadii" );
-			_renderGraph->setData( *p_proxy.atomVisibilities, "MoleculesVisibilities" );
-			_renderGraph->setData( *p_proxy.atomSelections, "MoleculesSelections" );
+
+			std::vector<uchar> atomVisibilities( p_proxy.atomVisibilities->size() );
+			std::transform(
+				p_proxy.atomVisibilities->begin(),
+				p_proxy.atomVisibilities->end(),
+				atomVisibilities.begin(),
+				[]( const bool p_value ) { return static_cast<uchar>( p_value ); }
+			);
+			_renderGraph->setData( atomVisibilities, "MoleculesVisibilities" );
+
+			std::vector<uchar> atomSelections( p_proxy.atomSelections->size() );
+			std::transform(
+				p_proxy.atomSelections->begin(),
+				p_proxy.atomSelections->end(),
+				atomSelections.begin(),
+				[]( const bool p_value ) { return static_cast<uchar>( p_value ); }
+			);
+			_renderGraph->setData( atomSelections, "MoleculesSelections" );
+
 			_renderGraph->setData( *p_proxy.atomIds, "MoleculesIds" );
 			_renderGraph->setData( *p_proxy.bonds, "MoleculesEbo" );
 

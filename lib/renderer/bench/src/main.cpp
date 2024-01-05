@@ -3,7 +3,6 @@
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/gpu/molecule.hpp>
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <iostream>
@@ -20,8 +19,8 @@ extern "C"
 }
 #endif
 
-constexpr size_t WIDTH	= 800;
-constexpr size_t HEIGHT = 600;
+constexpr size_t WIDTH	= 1920;
+constexpr size_t HEIGHT = 1080;
 
 int main( int, char ** )
 {
@@ -89,7 +88,7 @@ int main( int, char ** )
 		);
 
 		// Model.
-		VTX::Core::Gpu::Molecule			molecule = generateAtomGrid( 9 );
+		Molecule							molecule = generateAtomGrid( 9 );
 		const Renderer::StructProxyMolecule proxyMolecule
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
