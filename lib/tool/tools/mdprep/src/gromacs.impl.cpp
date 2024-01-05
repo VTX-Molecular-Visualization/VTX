@@ -151,14 +151,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 			out						 = 0xffui8;
 			const std::string it_str = it->str();
 			std::string		  it_str_up { it_str };
+
 			std::transform(
 				it_str_up.begin(), it_str_up.end(), it_str_up.begin(), []( char & c ) { return std::toupper( c ); }
 			);
-			bool current_option_is_not_protonated	= it_str_up.find( g_not_protonated ) != std::string::npos;
-			bool current_option_contains_protonated = it_str_up.find( g_protonated ) != std::string::npos;
 			std::from_chars(
 				it_str.data(), it_str.data() + it_str.size(), out
 			); // should use first chars to fill the number and stop when a non-number char is found
+
+			bool current_option_is_not_protonated = it_str_up.find( g_not_protonated ) != std::string::npos;
 
 			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upper_input ) };
 			std::smatch		 match; // we don't actually use it
