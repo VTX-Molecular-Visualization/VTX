@@ -243,9 +243,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_option_number - simple HIS", "[parse_option_
 	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "1" ) == 1 );
 	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIE" ) == 1 );
 
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "2" ) == 1 );
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIP" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "2" ) == 2 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIP" ) == 2 );
 
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "3" ) == 1 );
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIS1" ) == 1 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "3" ) == 3 );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parse_option_number( g_his1, "HIS1" ) == 3 );
 }

@@ -1,5 +1,6 @@
 #include "tools/mdprep/gromacs.impl.hpp"
 #include "tools/mdprep/gromacs.util.hpp"
+#include <format>
 #include <regex>
 
 namespace VTX::Tool::Mdprep::Gromacs
@@ -116,9 +117,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 	}
 
 	const char * g_not_protonated = "NOT PROTONATED";
+	const char * g_protonated	  = "PROTONATED";
 
 	uint8_t parse_option_number( const std::string & stdout_, const std::string_view & value )
 	{
+		if ( value.empty() )
+			return 0xffui8;
 		uint8_t out = 0xffui8;
 		std::from_chars( value.data(), value.data() + value.size(), out );
 		if ( out != 0xffui8 )
@@ -133,7 +137,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		);
 
 		// "protonated" match also "not protonated", so we need to fix that
-		bool user_want_not_protonated = ( upper_input.find( g_not_protonated ) != std::string::npos );
+		bool user_input_contains_not_protonated = ( upper_input.find( g_not_protonated ) != std::string::npos );
+		bool user_input_contains_protonated		= ( upper_input.find( g_protonated ) != std::string::npos );
 
 		for ( auto it = std::sregex_iterator(
 				  last_gromacs_input_request_string.begin(),
@@ -143,26 +148,29 @@ namespace VTX::Tool::Mdprep::Gromacs
 			  it != std::sregex_iterator();
 			  ++it )
 		{
+			out						 = 0xffui8;
 			const std::string it_str = it->str();
 			std::string		  it_str_up { it_str };
 			std::transform(
 				it_str_up.begin(), it_str_up.end(), it_str_up.begin(), []( char & c ) { return std::toupper( c ); }
 			);
+			bool current_option_is_not_protonated	= it_str_up.find( g_not_protonated ) != std::string::npos;
+			bool current_option_contains_protonated = it_str_up.find( g_protonated ) != std::string::npos;
 			std::from_chars(
 				it_str.data(), it_str.data() + it_str.size(), out
 			); // should use first chars to fill the number and stop when a non-number char is found
 
-			if ( user_want_not_protonated )
-			{
-				if ( it_str_up.find( g_not_protonated ) != std::string::npos )
-					return out;
+			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upper_input ) };
+			std::smatch		 match; // we don't actually use it
 
-				continue;
-			}
-			if ( it->str().find( upper_input ) != std::string::npos )
+			if ( current_option_is_not_protonated && user_input_contains_not_protonated )
+				return out;
+			if ( current_option_is_not_protonated && user_input_contains_protonated )
+				continue; // This allow us to avoid "potonated" to match with "not protonated"
+			if ( std::regex_search( it_str_up, match, input_regex ) )
 				return out;
 		}
-		return out;
+		return 0xffui8;
 	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
