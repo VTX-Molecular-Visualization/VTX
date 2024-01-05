@@ -97,7 +97,22 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return true;
 	}
 
-	const char * get_default_value( const interactive_keyword & ) noexcept { return nullptr; }
+	const char * get_default_value( const interactive_keyword & kw ) noexcept
+	{
+		switch ( kw )
+		{
+		case interactive_keyword::none: return "1";
+		case interactive_keyword::ss: return "1";
+		case interactive_keyword::ter: return "0";
+		case interactive_keyword::lys: return "1";
+		case interactive_keyword::arg: return "1";
+		case interactive_keyword::asp: return "1";
+		case interactive_keyword::glu: return "1";
+		case interactive_keyword::gln: return "1";
+		case interactive_keyword::his: return "0";
+		default: break;
+		}
+	}
 
 	uint8_t parse_option_number( const std::string & stdout_, std::string_view value ) { return 0; }
 
