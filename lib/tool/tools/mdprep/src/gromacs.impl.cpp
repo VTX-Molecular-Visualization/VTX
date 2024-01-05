@@ -59,7 +59,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 		std::string get_last_input_request( const std::string & stdout_ ) noexcept
 		{
-			const std::regex entire_gromacs_message { "Processing chain [^]+?\nType a number:" };
+			const std::regex entire_gromacs_message {
+				"Which .+? type do you want for residue [0-9]+\n[^]+?\nType a number:"
+			};
 
 			std::string last_gromacs_input_request_string {};
 			for ( auto it = std::sregex_iterator( stdout_.begin(), stdout_.end(), entire_gromacs_message );
@@ -79,13 +81,13 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	bool parse_expected_kw_argument( const std::string & stdout_, interactive_id & out ) noexcept
 	{
-		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
 		{
-			std::string buf = get_chain( last_gromacs_input_request_string );
+			std::string buf = get_chain( stdout_ );
 			if ( !buf.empty() )
 				out.chain = buf.at( 0 );
 		}
-		out.kw = get_keyword( last_gromacs_input_request_string );
+		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
+		out.kw										  = get_keyword( last_gromacs_input_request_string );
 		if ( out.kw == interactive_keyword::none )
 			return false;
 

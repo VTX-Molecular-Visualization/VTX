@@ -127,7 +127,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLN", "[parse_
 TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_expected_kw_argument][simple][HIS]" )
 {
 	char b[ 1000 ];
-	merge( b, g_chainA, g_his1 );
+	merge( b, g_chainB, g_his1 );
 	CHECK( check_parse_expected_kw_argument(
 		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
 	) );
@@ -149,7 +149,7 @@ TEST_CASE(
 )
 {
 	char b[ 1000 ];
-	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
+	sprintf_s( b, "%s%s1\n%s", g_chainA, g_his1, g_his2 );
 	CHECK( check_parse_expected_kw_argument(
 		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
@@ -160,7 +160,7 @@ TEST_CASE(
 )
 {
 	char b[ 1000 ];
-	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
+	sprintf_s( b, "%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
 	CHECK( check_parse_expected_kw_argument(
 		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
