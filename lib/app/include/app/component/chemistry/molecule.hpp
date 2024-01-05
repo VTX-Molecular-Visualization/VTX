@@ -72,12 +72,12 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void				setPdbIdCode( const std::string & p_pdbIdCode ) { _pdbIdCode = p_pdbIdCode; }
 
-		bool getAtomVisibility( const size_t p_index ) const { return bool( _atomVisibilities[ p_index ] ); }
+		bool getAtomVisibility( const size_t p_index ) const { return _atomVisibilities[ p_index ]; }
 		void setAtomVisibility( const size_t p_index, const bool p_visible )
 		{
-			_atomVisibilities[ p_index ] = uint( p_visible );
+			_atomVisibilities[ p_index ] = p_visible;
 		}
-		const std::vector<uint> & getAtomVisibilities() const { return _atomVisibilities; }
+		const std::vector<bool> & getAtomVisibilities() const { return _atomVisibilities; }
 
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
@@ -90,11 +90,11 @@ namespace VTX::App::Component::Chemistry
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
-		std::vector<uint>			   _atomVisibilities = std::vector<uint>();
+		std::vector<bool>			   _atomVisibilities = std::vector<bool>();
 		std::vector<Util::Color::Rgba> _atomColors		 = std::vector<Util::Color::Rgba>();
 		std::vector<float>			   _atomRadii		 = std::vector<float>();
 		std::vector<uint>			   _atomIds			 = std::vector<uint>();
-		std::vector<uint>			   _atomSelections	 = std::vector<uint>();
+		std::vector<bool>			   _atomSelections	 = std::vector<bool>();
 	};
 
 } // namespace VTX::App::Component::Chemistry
