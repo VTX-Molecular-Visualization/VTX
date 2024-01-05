@@ -112,8 +112,57 @@ namespace VTX::Tool::Mdprep::Gromacs
 		case interactive_keyword::his: return "0";
 		default: break;
 		}
+		return "0"; // We chose to output a default value that should works everytime
 	}
 
-	uint8_t parse_option_number( const std::string & stdout_, std::string_view value ) { return 0; }
+	const char * g_not_protonated = "NOT PROTONATED";
+
+	uint8_t parse_option_number( const std::string & stdout_, const std::string_view & value )
+	{
+		uint8_t out = 0xffui8;
+		std::from_chars( value.data(), value.data() + value.size(), out );
+		if ( out != 0xffui8 )
+			return out;
+
+		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
+
+		const std::regex gromacs_option_regex { "[0-9]+\\. .+\n" };
+		std::string		 upper_input { value };
+		std::transform(
+			upper_input.begin(), upper_input.end(), upper_input.begin(), []( char & c ) { return std::toupper( c ); }
+		);
+
+		// "protonated" match also "not protonated", so we need to fix that
+		bool user_want_not_protonated = ( upper_input.find( g_not_protonated ) != std::string::npos );
+
+		for ( auto it = std::sregex_iterator(
+				  last_gromacs_input_request_string.begin(),
+				  last_gromacs_input_request_string.end(),
+				  gromacs_option_regex
+			  );
+			  it != std::sregex_iterator();
+			  ++it )
+		{
+			const std::string it_str = it->str();
+			std::string		  it_str_up { it_str };
+			std::transform(
+				it_str_up.begin(), it_str_up.end(), it_str_up.begin(), []( char & c ) { return std::toupper( c ); }
+			);
+			std::from_chars(
+				it_str.data(), it_str.data() + it_str.size(), out
+			); // should use first chars to fill the number and stop when a non-number char is found
+
+			if ( user_want_not_protonated )
+			{
+				if ( it_str_up.find( g_not_protonated ) != std::string::npos )
+					return out;
+
+				continue;
+			}
+			if ( it->str().find( upper_input ) != std::string::npos )
+				return out;
+		}
+		return out;
+	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
