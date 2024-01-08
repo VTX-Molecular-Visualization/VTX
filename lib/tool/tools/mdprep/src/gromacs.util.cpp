@@ -186,15 +186,26 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		parse_report out;
 
+		args.kw_v.clear();
+		if ( script.empty() )
+			return out;
+
 		std::string_view::const_iterator current_pos	  = script.begin(),
-										 next_newline_pos = find( script.begin(), script.end(), '\n' );
-		const std::regex	line_regex { "^([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) ([0-9a-zA-Z]+)$" };
+										 next_newline_pos = ++std::find(
+											 script.begin(), script.end(), '\n'
+										 ); // The interval looked into is [first, last ) so we need to increment it
+											// in order to include the newline into the line
+		const std::regex	line_regex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) ([0-9a-zA-Z]+)\n?" };
 		static const size_t NUM_EXPECTED_GROUPS = 4;
 		std::match_results<std::string_view::const_iterator> match;
+		// std::smatch match;
 
 		while ( current_pos != script.end() )
 		{
-			if ( std::regex_search( current_pos, next_newline_pos, match, line_regex ) == false
+			std::string_view current_view { current_pos, next_newline_pos }; // mais kel enculer
+			// std::string aaaaa { current_pos, next_newline_pos };
+			// if ( std::regex_search( aaaaa, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS )
+			if ( std::regex_search( current_view.begin(), current_view.end(), match, line_regex ) == false
 				 || match.size() < NUM_EXPECTED_GROUPS )
 			{
 				out.error	= true;

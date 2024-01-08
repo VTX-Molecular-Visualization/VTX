@@ -225,7 +225,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive
 	}
 	CHECK( duplicate_found == false );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - empty", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	interactive_arguments args, expected_args;
@@ -235,7 +235,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2g
 	CHECK( args == expected_args );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2gmx_user_script]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - classic", "[pdb2gmx][parse_pdb2gmx_user_script]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	interactive_arguments args;
