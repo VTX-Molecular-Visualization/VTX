@@ -1,11 +1,14 @@
 #include "tools/mdprep/gromacs.util.hpp"
 #include "tools/mdprep/gromacs.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <format>
 #include <optional>
 #include <qapplication.h>
+#include <regex>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Tool::Mdprep
 {
@@ -132,6 +135,124 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return std::string_view { std::next( this->forcefield_folder_path.begin(), filename_pos ),
 								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
 	}
-	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept { return {}; }
+
+	void parse( const std::string & user_str, interactive_keyword & out ) noexcept
+	{
+		if ( user_str == "HIS" )
+		{
+			out = interactive_keyword::his;
+			return;
+		};
+		if ( user_str == "LYS" )
+		{
+			out = interactive_keyword::lys;
+			return;
+		};
+		if ( user_str == "ASP" )
+		{
+			out = interactive_keyword::asp;
+			return;
+		};
+		if ( user_str == "GLN" )
+		{
+			out = interactive_keyword::gln;
+			return;
+		};
+		if ( user_str == "GLU" )
+		{
+			out = interactive_keyword::glu;
+			return;
+		};
+		if ( user_str == "ARG" )
+		{
+			out = interactive_keyword::arg;
+			return;
+		};
+		if ( user_str == "TER" )
+		{
+			out = interactive_keyword::ter;
+			return;
+		};
+		if ( user_str == "SS" )
+		{
+			out = interactive_keyword::ss;
+			return;
+		};
+		out = interactive_keyword::none;
+		return;
+	}
+
+	parse_report parse_pdb2gmx_user_script( const std::string_view & script, interactive_arguments & args ) noexcept
+	{
+		parse_report out;
+
+		std::string_view::const_iterator current_pos	  = script.begin(),
+										 next_newline_pos = find( script.begin(), script.end(), '\n' );
+		const std::regex	line_regex { "^([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) ([0-9a-zA-Z]+)$" };
+		static const size_t NUM_EXPECTED_GROUPS = 4;
+		std::match_results<std::string_view::const_iterator> match;
+
+		while ( current_pos != script.end() )
+		{
+			if ( std::regex_search( current_pos, next_newline_pos, match, line_regex ) == false
+				 || match.size() < NUM_EXPECTED_GROUPS )
+			{
+				out.error	= true;
+				out.message = std::format(
+					"Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
+					std::string( current_pos, next_newline_pos )
+				);
+				return out;
+			}
+			interactive_id new_id;
+
+			new_id.chain	= match[ 0 ].str()[ 0 ];
+			std::string buf = match[ 1 ].str();
+			Util::String::toUpper( buf );
+			parse( buf, new_id.kw );
+			if ( new_id.kw == interactive_keyword::none )
+			{
+				out.error	= true;
+				out.message = std::format(
+					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf
+				);
+				return out;
+			}
+			buf = match[ 2 ].str();
+			if ( buf.empty() )
+			{
+				out.error	= true;
+				out.message = std::format(
+					"No residue num has been found in line <{}>.", std::string( current_pos, next_newline_pos )
+				);
+				return out;
+			}
+			try
+			{
+				new_id.num = std::stoul( buf );
+			}
+			catch ( std::invalid_argument & )
+			{
+				out.error	= true;
+				out.message = std::format( "Number <{}> isn't a correct value.", buf );
+				return out;
+			}
+			buf = match[ 3 ].str();
+			if ( buf.empty() )
+			{
+				out.error	= true;
+				out.message = std::format(
+					"No value has been found in line <{}>.", std::string( current_pos, next_newline_pos )
+				);
+				return out;
+			}
+
+			args.kw_v.insert( { std::move( new_id ), buf } );
+			current_pos		 = next_newline_pos;
+			next_newline_pos = std::find( current_pos, script.end(), '\n' );
+		}
+
+		return out;
+	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs

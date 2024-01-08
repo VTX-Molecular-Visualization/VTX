@@ -164,7 +164,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
+	parse_report parse_pdb2gmx_user_script( const std::string_view &, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 
