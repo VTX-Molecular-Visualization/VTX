@@ -13,7 +13,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string				 stdout_;
 		std::string				 stderr_;
 	};
-	inline bool operator==( const gromacs_command_args & l, const gromacs_command_args & r ) noexcept
+	inline bool operator==(
+		const VTX::Tool::Mdprep::Gromacs::gromacs_command_args & l,
+		const VTX::Tool::Mdprep::Gromacs::gromacs_command_args & r
+	) noexcept
 	{
 		return l.arguments == r.arguments;
 	}

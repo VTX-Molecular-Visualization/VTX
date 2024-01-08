@@ -3,10 +3,11 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <qapplication.h>
+#include <unordered_set>
 #include <util/logger.hpp>
 //
 #include <tools/mdprep/gromacs.hpp>
-#include <tools/mdprep/gromacs.util.hpp>s
+#include <tools/mdprep/gromacs.util.hpp>
 
 TEST_CASE( "VTX_TOOL_MdPrep - executable_directory", "[executable_directory]" )
 {
@@ -191,11 +192,43 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 	CHECK( data.expected_args == args );
 }
 
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive_id][hash]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+
+	interactive_id					   id;
+	bool							   duplicate_found = false;
+	std::unordered_set<interactive_id> set;
+	for ( char it_char = 'A'; it_char <= 'Z'; it_char++ )
+	{
+		for ( uint32_t it_kw_num = 0; it_kw_num < static_cast<uint32_t>( interactive_keyword::COUNT ); it_kw_num++ )
+		{
+			interactive_keyword it_kw = static_cast<interactive_keyword>( it_kw_num );
+			for ( uint32_t it_num = 0; it_num < 1001; it_num++ )
+			{
+				id.chain = it_char;
+				id.kw	 = it_kw;
+				id.num	 = it_num;
+
+				if ( set.contains( id ) )
+				{
+					duplicate_found = true;
+					break;
+				}
+				set.insert( id );
+			}
+			if ( duplicate_found )
+				break;
+		}
+		if ( duplicate_found )
+			break;
+	}
+	CHECK( duplicate_found == false );
+}
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	interactive_arguments args, expected_args;
 	const char *		  script = "";
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 

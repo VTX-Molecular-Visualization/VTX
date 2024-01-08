@@ -132,12 +132,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return std::string_view { std::next( this->forcefield_folder_path.begin(), filename_pos ),
 								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
 	}
-} // namespace VTX::Tool::Mdprep::Gromacs
+	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept { return {}; }
 
-bool operator==(
-	const VTX::Tool::Mdprep::Gromacs::interactive_arguments & l,
-	const VTX::Tool::Mdprep::Gromacs::interactive_arguments & r
-) noexcept
-{
-	return l.kw_v == r.kw_v;
-}
+} // namespace VTX::Tool::Mdprep::Gromacs

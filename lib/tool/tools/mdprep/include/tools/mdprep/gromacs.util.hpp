@@ -3,7 +3,7 @@
 
 #include <array>
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 #include <vector>
 namespace fs = std::filesystem;
 
@@ -97,7 +97,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		asp,
 		glu,
 		gln,
-		his
+		his,
+		COUNT
 	};
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
@@ -107,6 +108,13 @@ namespace VTX::Tool::Mdprep::Gromacs
 		interactive_keyword kw	  = interactive_keyword::none;
 		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 	};
+	inline bool operator==(
+		const VTX::Tool::Mdprep::Gromacs::interactive_id & l,
+		const VTX::Tool::Mdprep::Gromacs::interactive_id & r
+	) noexcept
+	{
+		return l.chain == r.chain && l.kw == r.kw && l.num == r.num;
+	}
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 namespace std
@@ -114,11 +122,11 @@ namespace std
 	template<>
 	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & v ) noexcept
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & v ) const noexcept
 		{
 			uint64_t out = 0;
 			out			 = static_cast<uint64_t>( v.kw ) << 32;
-			out |= v.num;
+			out |= v.num | ( static_cast<uint32_t>( v.chain ) << 24 );
 			return out;
 		}
 	};
@@ -129,8 +137,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// organized version of the arguments to be used during interactive gromacs step
 	struct interactive_arguments
 	{
-		std::map<interactive_id, std::string> kw_v;
+		std::unordered_map<interactive_id, std::string> kw_v;
 	};
+	inline bool operator==(
+		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & l,
+		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & r
+	) noexcept
+	{
+		return l.kw_v == r.kw_v;
+	}
 
 	// Returned by the script parser to inform how the parsing went
 	struct parse_report
@@ -152,7 +167,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
-
-bool operator==( const VTX::Tool::Mdprep::Gromacs::interactive_arguments &, const VTX::Tool::Mdprep::Gromacs::interactive_arguments & ) noexcept;
 
 #endif
