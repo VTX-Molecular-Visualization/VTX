@@ -133,3 +133,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
 	}
 } // namespace VTX::Tool::Mdprep::Gromacs
+
+bool operator==(
+	const VTX::Tool::Mdprep::Gromacs::interactive_arguments & l,
+	const VTX::Tool::Mdprep::Gromacs::interactive_arguments & r
+) noexcept
+{
+	return l.kw_v == r.kw_v;
+}

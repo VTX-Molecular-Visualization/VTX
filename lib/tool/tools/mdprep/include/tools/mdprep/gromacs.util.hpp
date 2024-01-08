@@ -104,8 +104,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct interactive_id
 	{
 		char				chain = 0x00i8; // Value of 0x00 means any chain
-		interactive_keyword kw	= interactive_keyword::none;
-		uint32_t			num = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+		interactive_keyword kw	  = interactive_keyword::none;
+		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 	};
 } // namespace VTX::Tool::Mdprep::Gromacs
 
@@ -143,14 +143,16 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// TODO : find a pdb struct that allow SS and TER interactive and check if that format is still relevent
 	// Parse user-provided script that specify interactive gromacs behavior
 	//  format should be the following :
-	//    [kw][num] [value]
+	//    [chain] [kw][num] [value]
 	//  for example :
-	//    HIS82 HISE
-	//    ARG1 ARGN
+	//    A HIS82 HISE
+	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
 	parse_report parse_pdb2gmx_user_script( const std::string_view, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
+
+bool operator==( const VTX::Tool::Mdprep::Gromacs::interactive_arguments &, const VTX::Tool::Mdprep::Gromacs::interactive_arguments & ) noexcept;
 
 #endif

@@ -3,9 +3,10 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <qapplication.h>
-#include <tools/mdprep/gromacs.hpp>
-#include <tools/mdprep/gromacs.util.hpp>
 #include <util/logger.hpp>
+//
+#include <tools/mdprep/gromacs.hpp>
+#include <tools/mdprep/gromacs.util.hpp>s
 
 TEST_CASE( "VTX_TOOL_MdPrep - executable_directory", "[executable_directory]" )
 {
@@ -188,6 +189,36 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
 	CHECK( data.expected_args == args );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script = "";
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][parse_pdb2gmx_user_script]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script
+		= "A LYS222 LYN\n"
+		  "B LYS8 LYS\n"
+		  "A HIS1 1\n"
+		  "A HIS12 HID\n";
+	expected_args.kw_v.emplace( interactive_id { 'B', interactive_keyword::lys, 8 }, "LYS" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::lys, 222 }, "LYN" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 1 }, "1" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 12 }, "HID" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}
