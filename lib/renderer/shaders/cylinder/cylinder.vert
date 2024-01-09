@@ -18,8 +18,8 @@ outData;
 void main()
 {
 	outData.vertexColor	   = uniformsCamera.colorLayout[ inVertexColor ];
-	outData.vertexVisible  = bool( inVertexFlag & ( 1 << FLAG_VISIBILITY ) );
-	outData.vertexSelected = bool( inVertexFlag & ( 1 << FLAG_SELECTION ) );
+	outData.vertexVisible  = inVertexFlag & ( 1 << FLAG_VISIBILITY );
+	outData.vertexSelected = inVertexFlag & ( 1 << FLAG_SELECTION );
 	outData.vertexId	   = inVertexId;
 
 	// Vertex position in view space.
