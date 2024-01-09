@@ -111,7 +111,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		bool operator==( const interactive_id & ) const noexcept = default;
 	};
-	/*
+	/* TODO : remove it if it passes CI (compile/tests should fail)
 	inline bool operator==(
 		const VTX::Tool::Mdprep::Gromacs::interactive_id & l,
 		const VTX::Tool::Mdprep::Gromacs::interactive_id & r

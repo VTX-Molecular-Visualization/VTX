@@ -165,6 +165,25 @@ TEST_CASE(
 		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
 }
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_chain_taken",
+	"[parse_expected_kw_argument][last_chain_taken]"
+)
+{
+	char b[ 1000 ];
+	sprintf_s(
+		b,
+		"%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s\nlolol\n%s%s",
+		g_chainA,
+		g_his1,
+		g_his2,
+		g_chainB,
+		g_lys1
+	);
+	CHECK( check_parse_expected_kw_argument(
+		b, VTX::Tool::Mdprep::Gromacs::interactive_id { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
+	) );
+}
 
 // testing parse_option_number
 

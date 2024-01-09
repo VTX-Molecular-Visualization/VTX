@@ -10,16 +10,18 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		const char * generic_waiting_pattern = "\nType a number:";
 
-		std::string get_chain( const std::string & last_input_asking_message ) noexcept
+		// Return current chain being parametrized
+		std::string get_chain( const std::string & stdout_ ) noexcept
 		{
 			const std::regex chain_letter { "Processing chain [0-9]+ '([A-Z]+)'" };
-			std::smatch		 match;
-			bool			 matched
-				= std::regex_search( last_input_asking_message, match, chain_letter, std::regex_constants::match_any );
-			if ( !matched || match.size() < 1 )
-				return "";
-
-			return match[ match.size() - 1 ].str();
+			std::string		 out;
+			for ( auto it = std::sregex_iterator( stdout_.begin(), stdout_.end(), chain_letter );
+				  it != std::sregex_iterator();
+				  ++it )
+			{
+				out = it->operator[]( 1 ).str();
+			}
+			return out;
 		}
 		interactive_keyword get_keyword( const std::string & last_input_asking_message ) noexcept
 		{
