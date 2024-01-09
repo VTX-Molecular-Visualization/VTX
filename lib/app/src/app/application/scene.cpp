@@ -30,7 +30,7 @@ namespace VTX::App::Application
 	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
 		_itemIndexes.emplace_back( MAIN_REGISTRY().getEntity( p_item ) );
-		_onSceneItemAddedCallback.run( p_item );
+		_onSceneItemAddedCallback.call( p_item );
 	}
 
 	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const

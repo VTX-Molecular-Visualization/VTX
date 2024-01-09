@@ -2,10 +2,11 @@
 #define ___VTX_APP_VTX_APP___
 
 #include "app/application/system.hpp"
+#include "app/core/callback_event.hpp"
+#include "app/core/monitoring/stats.hpp"
 #include "application/_fwd.hpp"
 #include "core/ecs/_fwd.hpp"
 #include "core/serialization/_fwd.hpp"
-// #include <QElapsedTimer>
 #include <memory>
 #include <string>
 #include <util/chrono.hpp>
@@ -22,7 +23,7 @@ namespace VTX
 
 	namespace App
 	{
-		class VTXApp : public Util::Generic::BaseStaticSingleton<VTXApp> // final
+		class VTXApp final : public Util::Generic::BaseStaticSingleton<VTXApp>
 		{
 		  private:
 			inline static const std::string REGISTRY_MANAGER_KEY   = "REGISTRY_MANAGER";
@@ -45,11 +46,23 @@ namespace VTX
 			void goToState( const std::string &, void * const = nullptr );
 			void stop();
 
+			Core::CallbackEmitter<float> & onPreUpdate() { return _preUpdateCallback; };
+			Core::CallbackEmitter<float> & onUpdate() { return _updateCallback; };
+			Core::CallbackEmitter<float> & onLateUpdate() { return _lateUpdateCallback; };
+			Core::CallbackEmitter<float> & onPostUpdate() { return _postUpdateCallback; };
+
+			Core::CallbackEmitter<float> & onPreRender() { return _preRenderCallback; };
+			Core::CallbackEmitter<float> & onRender() { return _renderCallback; };
+			Core::CallbackEmitter<float> & onPostRender() { return _postRenderCallback; };
+
 			inline const Application::System &			getSystem() const { return *_system; };
 			inline Application::System &				getSystem() { return *_system; };
 			inline std::shared_ptr<Application::System> getSystemPtr() { return _system; };
 
 			inline void referenceSystem( std::shared_ptr<Application::System> p_system ) { _system = p_system; };
+
+			const Core::Monitoring::Stats & getStats() const { return _stats; }
+			Core::Monitoring::Stats &		getStats() { return _stats; }
 
 			Application::Scene &	   getScene();
 			const Application::Scene & getScene() const;
@@ -88,7 +101,19 @@ namespace VTX
 			std::unique_ptr<Core::Serialization::Serialization>		  _serializationToolManager;
 			std::unique_ptr<Application::Action::ActionManager>		  _actionManager;
 
+			Core::Monitoring::Stats _stats = Core::Monitoring::Stats();
+
+			Core::CallbackEmitter<float> _preUpdateCallback	 = Core::CallbackEmitter<float>();
+			Core::CallbackEmitter<float> _updateCallback	 = Core::CallbackEmitter<float>();
+			Core::CallbackEmitter<float> _lateUpdateCallback = Core::CallbackEmitter<float>();
+			Core::CallbackEmitter<float> _postUpdateCallback = Core::CallbackEmitter<float>();
+
+			Core::CallbackEmitter<float> _preRenderCallback	 = Core::CallbackEmitter<float>();
+			Core::CallbackEmitter<float> _renderCallback	 = Core::CallbackEmitter<float>();
+			Core::CallbackEmitter<float> _postRenderCallback = Core::CallbackEmitter<float>();
+
 			void _handleArgs( const std::vector<std::string> & );
+			void _applyCameraUniforms() const;
 			void _update( const float p_elapsedTime );
 			void _stop();
 		};
