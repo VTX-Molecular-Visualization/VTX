@@ -7,6 +7,8 @@
 
 namespace VTX::Core::ChemDB::Color
 {
+	using ColorLayout = std::array<Util::Color::Rgba, 256>;
+
 	enum class COLOR_MODE : int
 	{
 		ATOM_CHAIN,

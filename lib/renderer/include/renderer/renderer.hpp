@@ -4,7 +4,6 @@
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
-#include "struct_proxy_color_layout.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include <util/chrono.hpp>
@@ -204,7 +203,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void setColorLayout( const StructProxyColorLayout & p_proxy ) { _proxyColorLayout = p_proxy; }
+		inline void setColorLayout( const Util::Color::Rgba p_layout[ 256 ] )
+		{
+			setUniform( p_layout, "Color layout" );
+		}
 
 		inline const size_t getWidth() const { return _width; }
 		inline const size_t getHeight() const { return _height; }
@@ -240,7 +242,6 @@ namespace VTX::Renderer
 		CallbackReady _callbackReady;
 
 		std::vector<StructProxyMolecule> _proxiesMolecules;
-		StructProxyColorLayout			 _proxyColorLayout;
 
 		size_t _sizeAtoms = 0;
 		size_t _sizeBonds = 0;

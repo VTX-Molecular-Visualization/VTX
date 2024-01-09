@@ -3,6 +3,7 @@
 
 #include "camera.hpp"
 #include <SDL.h>
+#include <core/chemdb/color.hpp>
 #include <imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
@@ -142,6 +143,27 @@ namespace VTX::Bench
 					if ( ImGui::MenuItem( "3840x2160" ) )
 					{
 						SDL_SetWindowSize( _window, 3840, 2160 );
+					}
+
+					ImGui::EndMenu();
+				}
+				if ( ImGui::BeginMenu( "Color layout" ) )
+				{
+					if ( ImGui::MenuItem( "Random" ) )
+					{
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						std::generate(
+							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
+						);
+						p_renderer->setColorLayout( colorLayout.data() );
+					}
+					if ( ImGui::MenuItem( "Random pastel" ) )
+					{
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						std::generate(
+							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
+						);
+						p_renderer->setColorLayout( colorLayout.data() );
 					}
 
 					ImGui::EndMenu();

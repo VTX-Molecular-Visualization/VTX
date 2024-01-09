@@ -3,6 +3,7 @@
 #include "user_interface.hpp"
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
+#include <core/chemdb/color.hpp>
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <iostream>
@@ -154,6 +155,11 @@ int main( int, char ** )
 		*/
 
 		renderer.build();
+
+		// Generate array of random colors.
+		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+		std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
+		renderer.setColorLayout( colorLayout.data() );
 
 		// Main loop.
 		while ( isRunning )

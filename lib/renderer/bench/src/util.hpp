@@ -11,28 +11,29 @@ namespace VTX::Bench
 {
 	struct Mesh
 	{
-		Mat4f						   transform;
-		std::vector<Vec3f>			   vertices;
-		std::vector<Vec3f>			   normals;
-		std::vector<Util::Color::Rgba> colors;
-		std::vector<bool>			   visibilities;
-		std::vector<bool>			   selections;
-		std::vector<uint>			   ids;
-		std::vector<uint>			   indices;
+		Mat4f			   transform;
+		std::vector<Vec3f> vertices;
+		std::vector<Vec3f> normals;
+		std::vector<uchar> colors;
+		std::vector<bool>  visibilities;
+		std::vector<bool>  selections;
+		std::vector<uint>  ids;
+		std::vector<uint>  indices;
 	};
 
 	struct Molecule
 	{
-		Mat4f						   transform;
-		std::vector<Vec3f>			   atomPositions;
-		std::vector<Util::Color::Rgba> atomColors;
-		std::vector<float>			   atomRadii;
-		std::vector<bool>			   atomVisibilities;
-		std::vector<bool>			   atomSelections;
-		std::vector<uint>			   atomIds;
-		std::vector<uint>			   bonds;
+		Mat4f			   transform;
+		std::vector<Vec3f> atomPositions;
+		std::vector<uchar> atomColors;
+		std::vector<float> atomRadii;
+		std::vector<bool>  atomVisibilities;
+		std::vector<bool>  atomSelections;
+		std::vector<uint>  atomIds;
+		std::vector<uint>  bonds;
 	};
 
+	/*
 	const Mesh DEFAULT_MESH = { MAT4F_ID,
 								{ Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
 								{ Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
@@ -55,6 +56,7 @@ namespace VTX::Bench
 			{ 0, 1, 1, 2, 2, 0 }
 
 		  };
+	*/
 
 	Molecule generateAtomGrid( int p_size )
 	{
@@ -65,9 +67,9 @@ namespace VTX::Bench
 
 		const size_t realSize = p_size * p_size * p_size;
 
-		std::vector<Vec3f>			   positions( realSize );
-		std::vector<Util::Color::Rgba> colors( realSize );
-		std::vector<uint>			   bonds( ( realSize - 1 ) * 2 );
+		std::vector<Vec3f> positions( realSize );
+		std::vector<uchar> colors( realSize );
+		std::vector<uint>  bonds( ( realSize - 1 ) * 2 );
 
 		size_t		counter = 0;
 		const float offset	= 2.f;
@@ -79,7 +81,7 @@ namespace VTX::Bench
 				for ( int k = -p_size / 2; k <= p_size / 2; ++k )
 				{
 					positions[ counter ] = Vec3f( i * offset, j * offset, k * offset );
-					colors[ counter ]	 = Util::Color::Rgba::random();
+					colors[ counter ]	 = uchar( rand() % 256 );
 					if ( counter < realSize - 1 )
 					{
 						bonds[ counter * 2 ]	 = uint( counter );

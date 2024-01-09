@@ -5,7 +5,7 @@
 
 // In.
 layout( location = 0 ) in vec3  inSpherePos;
-layout( location = 1 ) in vec4  inSphereColor;
+layout( location = 1 ) in uint  inSphereColor;
 layout( location = 2 ) in float inSphereRadius;
 layout( location = 3 ) in uint  inSphereId;
 layout( location = 4 ) in uint  inSphereFlag;
@@ -23,7 +23,7 @@ outData;
 void main()
 {
 	outData.viewSpherePos	 = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-	outData.sphereColor		 = inSphereColor;
+	outData.sphereColor		 = uniformsCamera.colorLayout[ inSphereColor ];
 	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 	outData.sphereId		 = inSphereId;
 	uint flag = inSphereFlag;

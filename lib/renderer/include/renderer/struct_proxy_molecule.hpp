@@ -9,10 +9,10 @@ namespace VTX::Renderer
 {
 	struct StructProxyMolecule
 	{
-		const Mat4f * transform; // Ok.
-		// const Mat4f *					 normals;		// Ok.
-		std::vector<Vec3f> *			 atomPositions; // Ok.
-		std::vector<Util::Color::Rgba> * atomColors;	// To delete.
+		const Mat4f * transform;
+		// const Mat4f * normals;
+		std::vector<Vec3f> * atomPositions;
+		std::vector<uchar> * atomColors;
 
 		// std::vector<size_t> * atomIdColors;
 		// std::vector<size_t> * atomIdSymbol;
