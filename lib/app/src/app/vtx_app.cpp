@@ -13,6 +13,7 @@
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
+#include "app/internal/monitoring/all_metrics.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <renderer/renderer.hpp>
@@ -76,8 +77,26 @@ namespace VTX::App
 		// TODO better way to manage this
 		_system->referenceSystem( SCENE_KEY, &scene );
 
+		// Create renderer
 		_renderer
 			= std::make_unique<Renderer::Renderer>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" / "" );
+
+		// Regsiter loop events
+		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
+
+		// Event manager - Useless: nothing is delayed.
+		//_updateCallback.addCallback(
+		//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
+		//);
+
+		// Useless while delayed actions are disabled
+		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime ); }
+		//);
+
+		_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
+		_renderCallback.addCallback(
+			this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
+		);
 
 		_tickChrono.start();
 
@@ -98,8 +117,50 @@ namespace VTX::App
 
 	void VTXApp::update( const float p_elapsedTime )
 	{
-		const float interval = _tickChrono.intervalTime();
-		_update( p_elapsedTime > 0 ? p_elapsedTime : interval );
+		const float deltaTime = p_elapsedTime > 0 ? p_elapsedTime : _tickChrono.intervalTime();
+
+		Core::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
+		frameInfo.set(
+			Internal::Monitoring::TICK_RATE_KEY, Util::CHRONO_CPU( [ this, deltaTime ]() { _update( deltaTime ); } )
+		);
+	}
+
+	void VTXApp::_update( const float p_elapsedTime )
+	{
+		Core::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
+
+		frameInfo.set(
+			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preUpdateCallback.call( p_elapsedTime ); } )
+		);
+		frameInfo.set(
+			Internal::Monitoring::UPDATE_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _updateCallback.call( p_elapsedTime ); } )
+		);
+		frameInfo.set(
+			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _lateUpdateCallback.call( p_elapsedTime ); } )
+		);
+		frameInfo.set(
+			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postUpdateCallback.call( p_elapsedTime ); } )
+		);
+
+		if ( _renderer->getRenderGraph().isBuilt() )
+		{
+			frameInfo.set(
+				Internal::Monitoring::PRE_RENDER_DURATION_KEY,
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preRenderCallback.call( p_elapsedTime ); } )
+			);
+			frameInfo.set(
+				Internal::Monitoring::RENDER_DURATION_KEY,
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _renderCallback.call( p_elapsedTime ); } )
+			);
+			frameInfo.set(
+				Internal::Monitoring::POST_RENDER_DURATION_KEY,
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postRenderCallback.call( p_elapsedTime ); } )
+			);
+		}
 	}
 	void VTXApp::stop() { _stop(); }
 
@@ -131,38 +192,11 @@ namespace VTX::App
 		// }
 	}
 
-	void VTXApp::_update( const float p_elapsedTime )
+	void VTXApp::_applyCameraUniforms() const
 	{
-		// Useless: nothing is delayed.
-		// Event manager.
-		// Event::EventManager::get().update( elapsed );
-
-		// Action manager.
-		// Action::ActionManager::get().update( elapsed );
-
-		//// Call late update event for processes at end of frame
-		// VTX_EVENT( Old::Event::Global::LATE_UPDATE );
-
-		// TODO Reimplement this without Qt - Manage stats with a callback on update
-		//// Tickrate.
-		//_tickCounter++;
-		// if ( _tickTimer.elapsed() >= 1000 )
-		//{
-		//	VTX_STAT().tickRate = _tickCounter / ( _tickTimer.elapsed() * 1e-3 );
-		//	// VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
-		//	//		  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
-		//	//		  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
-		//	_tickCounter = 0;
-		//	_tickTimer.restart();
-		//}
-
-		SCENE().update( p_elapsedTime );
-
 		_renderer->setUniform( SCENE().getCamera().getViewMatrix(), "Matrix view" );
 		_renderer->setUniform( SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
 		_renderer->setUniform( SCENE().getCamera().getClipInfos(), "Camera clip infos" );
-
-		_renderer->render( p_elapsedTime );
 	}
 
 	//	bool VTXApp::hasAnyModifications() const
