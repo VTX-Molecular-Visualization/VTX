@@ -15,12 +15,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		format.setSwapInterval( 0 );
 		QSurfaceFormat::setDefaultFormat( format );
 
-		App::VTXApp::get().onPreRender().addCallback(
-			this, [ this ]( float p_deltaTime ) { context()->makeCurrent( context()->surface() ); }
-		);
-		App::VTXApp::get().onPostRender().addCallback(
-			this, [ this ]( float p_deltaTime ) { context()->doneCurrent(); }
-		);
+		App::VTXApp::get().onPreRender().addCallback( this, [ this ]( float p_deltaTime ) { makeCurrent(); } );
+		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { doneCurrent(); } );
 	}
 
 	OpenGLWidget::~OpenGLWidget() {}
@@ -36,9 +32,9 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//	_cbInitGL();
 		// }
 
-		context()->makeCurrent( context()->surface() );
+		makeCurrent();
 		VTX::App::VTXApp::get().getRenderer().build( defaultFramebufferObject() );
-		context()->doneCurrent();
+		doneCurrent();
 	}
 
 	void OpenGLWidget::paintGL()
