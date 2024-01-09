@@ -25,15 +25,18 @@ namespace VTX::Tool::Mdprep::Gromacs
 		proc.setProgram( pgm );
 		proc.setArguments( qt_args );
 		proc.start();
-
 		proc.waitForStarted( 6000 );
-		proc.waitForReadyRead( 6000 );
 
+		if ( p_args.interactive_settings.has_value() ) {}
+		proc.waitForFinished( 6000 );
 		buf = proc.readAllStandardError();
 		p_args.stderr_ += buf.toStdString();
 
 		buf = proc.readAllStandardOutput();
 		p_args.stdout_ += buf.toStdString();
+
+		return;
+
 		while ( finished == false )
 		{
 			if ( proc.isWritable() == false )
@@ -49,7 +52,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 			buf = proc.readAllStandardOutput();
 			p_args.stdout_ += buf.toStdString();
 		}
-
-		proc.waitForFinished( 6000 );
 	}
 } // namespace VTX::Tool::Mdprep::Gromacs

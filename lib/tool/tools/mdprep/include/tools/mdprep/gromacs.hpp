@@ -1,6 +1,8 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 
+#include "tools/mdprep/gromacs.util.hpp"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,10 +11,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	struct gromacs_command_args
 	{
-		std::vector<std::string> arguments;
-		std::string				 stdout_;
-		std::string				 stderr_;
-		bool					 operator==( const gromacs_command_args & ) const noexcept = default;
+		std::vector<std::string>			 arguments;
+		std::string							 stdout_;
+		std::string							 stderr_;
+		std::optional<interactive_arguments> interactive_settings;
+		bool								 operator==( const gromacs_command_args & ) const noexcept = default;
 	};
 
 	// Blindly execute gromacs with input arguments.

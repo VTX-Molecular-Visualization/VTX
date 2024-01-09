@@ -3,6 +3,7 @@
 
 #include <array>
 #include <filesystem>
+#include <optional>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -50,15 +51,46 @@ namespace VTX::Tool::Mdprep::Gromacs
 	};
 	const char * string( const water_model & ) noexcept;
 
-	struct interactive_arguments;
+	// Meant to refer to one of the interactive gromacs option
+	enum class interactive_keyword
+	{
+		none,
+		ss,
+		ter,
+		lys,
+		arg,
+		asp,
+		glu,
+		gln,
+		his,
+		COUNT
+	};
+	const char * string( const interactive_keyword & ) noexcept;
+
+	// Meant to uniquely identify a specific instance of input required by gromacs
+	struct interactive_id
+	{
+		char				chain = 0x00i8; // Value of 0x00 means any chain
+		interactive_keyword kw	  = interactive_keyword::none;
+		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+
+		bool operator==( const interactive_id & ) const noexcept = default;
+	};
+
+	// organized version of the arguments to be used during interactive gromacs step
+	struct interactive_arguments
+	{
+		std::unordered_map<interactive_id, std::string> kw_v;
+		bool operator==( const interactive_arguments & ) const noexcept = default;
+	};
 	struct pdb2gmx_instructions
 	{
-		std::vector<forcefield> forcefields;
-		size_t					forcefield_index = SIZE_MAX; // position of the forcefield to use for
-		fs::path				output_dir;
-		std::string				root_file_name;
-		fs::path				input_pdb;
-		interactive_arguments	custom_parameter; // needed for adding -his ...
+		std::vector<forcefield>				 forcefields;
+		size_t								 forcefield_index = SIZE_MAX; // position of the forcefield to use for
+		fs::path							 output_dir;
+		std::string							 root_file_name;
+		fs::path							 input_pdb;
+		std::optional<interactive_arguments> custom_parameter; // needed for adding -his ...
 
 		water_model water = water_model::tip3p;
 	};
@@ -89,31 +121,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    If the output_gro is empty, will use the input filename root and append "solv"
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
 
-	// Meant to refer to one of the interactive gromacs option
-	enum class interactive_keyword
-	{
-		none,
-		ss,
-		ter,
-		lys,
-		arg,
-		asp,
-		glu,
-		gln,
-		his,
-		COUNT
-	};
-	const char * string( const interactive_keyword & ) noexcept;
-
-	// Meant to uniquely identify a specific instance of input required by gromacs
-	struct interactive_id
-	{
-		char				chain = 0x00i8; // Value of 0x00 means any chain
-		interactive_keyword kw	  = interactive_keyword::none;
-		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
-
-		bool operator==( const interactive_id & ) const noexcept = default;
-	};
 	/* TODO : remove it if it passes CI (compile/tests should fail)
 	inline bool operator==(
 		const VTX::Tool::Mdprep::Gromacs::interactive_id & l,
@@ -121,41 +128,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	) noexcept
 	{
 		return l.chain == r.chain && l.kw == r.kw && l.num == r.num;
-	}
-	*/
-} // namespace VTX::Tool::Mdprep::Gromacs
-
-// We implement our specialization of the hash structure for interactive_id as required for set and map
-namespace std
-{
-	template<>
-	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
-	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
-		{
-			uint64_t out = 0;
-			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
-			out |= p_arg.num | ( static_cast<uint32_t>( p_arg.chain ) << 24 );
-			return out;
-		}
-	};
-} // namespace std
-
-namespace VTX::Tool::Mdprep::Gromacs
-{
-	// organized version of the arguments to be used during interactive gromacs step
-	struct interactive_arguments
-	{
-		std::unordered_map<interactive_id, std::string> kw_v;
-		bool operator==( const interactive_arguments & ) const noexcept = default;
-	};
-	/*
-	inline bool operator==(
-		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & l,
-		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & r
-	) noexcept
-	{
-		return l.kw_v == r.kw_v;
 	}
 	*/
 
@@ -178,6 +150,26 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//  space between num and value can be any number of white space or tab
 	parse_report parse_pdb2gmx_user_script( const std::string_view &, interactive_arguments & ) noexcept;
 
+} // namespace VTX::Tool::Mdprep::Gromacs
+
+// We implement our specialization of the hash structure for interactive_id as required for set and map
+namespace std
+{
+	template<>
+	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
+	{
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
+		{
+			uint64_t out = 0;
+			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
+			out |= p_arg.num | ( static_cast<uint32_t>( p_arg.chain ) << 24 );
+			return out;
+		}
+	};
+} // namespace std
+
+namespace VTX::Tool::Mdprep::Gromacs
+{
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
