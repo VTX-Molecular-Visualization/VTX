@@ -39,7 +39,7 @@ namespace VTX::App::Core::Monitoring
 		template<typename T>
 		const T get( const key_t & p_key ) const
 		{
-			return get( hash( p_key ) );
+			return get<T>( hash( p_key ) );
 		}
 
 		bool has( const hash_t & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
