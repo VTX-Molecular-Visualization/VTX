@@ -11,11 +11,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 		const char * generic_waiting_pattern = "\nType a number:";
 
 		// Return current chain being parametrized
-		std::string get_chain( const std::string & stdout_ ) noexcept
+		std::string get_chain( const std::string & p_stdout ) noexcept
 		{
 			const std::regex chain_letter { "Processing chain [0-9]+ '([A-Z]+)'" };
 			std::string		 out;
-			for ( auto it = std::sregex_iterator( stdout_.begin(), stdout_.end(), chain_letter );
+			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), chain_letter );
 				  it != std::sregex_iterator();
 				  ++it )
 			{
@@ -61,14 +61,14 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 			return std::stoul( num_str );
 		}
-		std::string get_last_input_request( const std::string & stdout_ ) noexcept
+		std::string get_last_input_request( const std::string & p_stdout ) noexcept
 		{
 			const std::regex entire_gromacs_message {
 				"Which .+? type do you want for residue [0-9]+\n[^]+?\nType a number:"
 			};
 
 			std::string last_gromacs_input_request_string {};
-			for ( auto it = std::sregex_iterator( stdout_.begin(), stdout_.end(), entire_gromacs_message );
+			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), entire_gromacs_message );
 				  it != std::sregex_iterator();
 				  ++it )
 			{
@@ -78,19 +78,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 
 	} // namespace
-	bool is_waiting_inputs( const std::string & stdout_ ) noexcept
+	bool is_waiting_inputs( const std::string & p_stdout ) noexcept
 	{
-		return !stdout_.empty() && stdout_.ends_with( generic_waiting_pattern );
+		return !p_stdout.empty() && p_stdout.ends_with( generic_waiting_pattern );
 	}
 
-	bool parse_expected_kw_argument( const std::string & stdout_, interactive_id & out ) noexcept
+	bool parse_expected_kw_argument( const std::string & p_stdout, interactive_id & out ) noexcept
 	{
 		{
-			std::string buf = get_chain( stdout_ );
+			std::string buf = get_chain( p_stdout );
 			if ( !buf.empty() )
 				out.chain = buf.at( 0 );
 		}
-		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
+		std::string last_gromacs_input_request_string = get_last_input_request( p_stdout );
 		out.kw										  = get_keyword( last_gromacs_input_request_string );
 		if ( out.kw == interactive_keyword::none )
 			return false;
@@ -101,9 +101,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return true;
 	}
 
-	const char * get_default_value( const interactive_keyword & kw ) noexcept
+	const char * get_default_value( const interactive_keyword & p_kw ) noexcept
 	{
-		switch ( kw )
+		switch ( p_kw )
 		{
 		case interactive_keyword::none: return "1";
 		case interactive_keyword::ss: return "1";
@@ -122,19 +122,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * g_not_protonated = "NOT PROTONATED";
 	const char * g_protonated	  = "PROTONATED";
 
-	uint8_t parse_option_number( const std::string & stdout_, const std::string_view & value )
+	uint8_t parse_option_number( const std::string & p_stdout, const std::string_view & p_value )
 	{
-		if ( value.empty() )
+		if ( p_value.empty() )
 			return 0xffui8;
 		uint8_t out = 0xffui8;
-		std::from_chars( value.data(), value.data() + value.size(), out );
+		std::from_chars( p_value.data(), p_value.data() + p_value.size(), out );
 		if ( out != 0xffui8 )
 			return out;
 
-		std::string last_gromacs_input_request_string = get_last_input_request( stdout_ );
+		std::string last_gromacs_input_request_string = get_last_input_request( p_stdout );
 
 		const std::regex gromacs_option_regex { "[0-9]+\\. .+\n" };
-		std::string		 upper_input { value };
+		std::string		 upper_input { p_value };
 		Util::String::toUpper( upper_input );
 
 		// "protonated" match also "not protonated", so we need to fix that

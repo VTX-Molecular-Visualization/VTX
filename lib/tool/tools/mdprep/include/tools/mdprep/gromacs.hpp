@@ -12,14 +12,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::vector<std::string> arguments;
 		std::string				 stdout_;
 		std::string				 stderr_;
+		bool					 operator==( const gromacs_command_args & ) const noexcept = default;
 	};
-	inline bool operator==(
-		const VTX::Tool::Mdprep::Gromacs::gromacs_command_args & l,
-		const VTX::Tool::Mdprep::Gromacs::gromacs_command_args & r
-	) noexcept
-	{
-		return l.arguments == r.arguments;
-	}
 
 	// Blindly execute gromacs with input arguments.
 	//   Assumes relevant arguments have been provided and checked beforehand.

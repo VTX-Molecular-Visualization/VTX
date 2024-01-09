@@ -42,13 +42,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - empty", "[parse_expec
 namespace
 {
 	bool check_parse_expected_kw_argument(
-		std::string										   stdout_,
-		const VTX::Tool::Mdprep::Gromacs::interactive_id & expected_output
+		std::string										   p_stdout,
+		const VTX::Tool::Mdprep::Gromacs::interactive_id & p_expected_output
 	)
 	{
 		VTX::Tool::Mdprep::Gromacs::interactive_id kw;
-		return VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw )
-			   && ( kw.chain == expected_output.chain && kw.kw == expected_output.kw && kw.num == expected_output.num );
+		return VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( p_stdout, kw )
+			   && ( kw.chain == p_expected_output.chain && kw.kw == p_expected_output.kw
+					&& kw.num == p_expected_output.num );
 	}
 	const char	 g_chainA[] = "Processing chain 1 'A'( 6457 atoms, 827 residues )\n";
 	const char	 g_chainB[] = "Processing chain 1 'B'( 6457 atoms, 827 residues )\n";

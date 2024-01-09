@@ -41,23 +41,23 @@ namespace VTX::Tool::Mdprep::Gromacs
 		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
 	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
 
-	void declare_ff_directory( const std::filesystem::path & path ) noexcept
+	void declare_ff_directory( const std::filesystem::path & p_path ) noexcept
 	{
-		std::string	   path_str = path.string();
+		std::string	   path_str = p_path.string();
 		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
 		qputenv( "GMXLIB", env_arg );
 	}
 
-	std::vector<forcefield> list_forcefields( const fs::path & data_dir )
+	std::vector<forcefield> list_forcefields( const fs::path & p_data_dir )
 	{
-		if ( !fs::is_directory( data_dir ) )
+		if ( !fs::is_directory( p_data_dir ) )
 		{
-			auto err_str = std::format( "Directory <{}> not found", data_dir.string() );
+			auto err_str = std::format( "Directory <{}> not found", p_data_dir.string() );
 			throw VTX::IOException( err_str );
 		}
 		std::vector<forcefield> out;
 
-		for ( auto & fs_element : fs::directory_iterator( data_dir ) )
+		for ( auto & fs_element : fs::directory_iterator( p_data_dir ) )
 		{
 			if ( !fs_element.is_directory() )
 				continue;
@@ -73,9 +73,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return out;
 	}
 
-	const char * string( const water_model & w ) noexcept
+	const char * string( const water_model & p_w ) noexcept
 	{
-		switch ( w )
+		switch ( p_w )
 		{
 		case VTX::Tool::Mdprep::Gromacs::water_model::none: return "none";
 		case VTX::Tool::Mdprep::Gromacs::water_model::spc: return "spc";
@@ -89,43 +89,60 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return "";
 	}
 
-	void convert( const pdb2gmx_instructions & in, gromacs_command_args & out ) noexcept
+	void convert( const pdb2gmx_instructions & p_in, gromacs_command_args & p_out ) noexcept
 	{
-		if ( in.forcefields.empty() )
+		if ( p_in.forcefields.empty() )
 			return;
-		if ( in.forcefield_index >= in.forcefields.size() )
+		if ( p_in.forcefield_index >= p_in.forcefields.size() )
 			return;
-		if ( in.input_pdb.empty() )
+		if ( p_in.input_pdb.empty() )
 			return;
-		if ( !in.input_pdb.has_filename() )
+		if ( !p_in.input_pdb.has_filename() )
 			return;
 
-		fs::path output_dir = in.output_dir;
+		fs::path output_dir = p_in.output_dir;
 		if ( output_dir.empty() )
-			output_dir = in.input_pdb.parent_path();
+			output_dir = p_in.input_pdb.parent_path();
 		fs::create_directories( output_dir );
-		out.arguments.clear();
+		p_out.arguments.clear();
 
-		out.arguments.push_back( "pdb2gmx" );
-		out.arguments.push_back( "-f" );
-		out.arguments.push_back( in.input_pdb.string() );
-		std::string input_root_name = in.input_pdb.filename().string();
-		out.arguments.push_back( "-o" );
-		out.arguments.push_back( ( output_dir / ( input_root_name + ".gro" ) ).string() );
-		out.arguments.push_back( "-p" );
-		out.arguments.push_back( ( output_dir / ( input_root_name + ".top" ) ).string() );
-		out.arguments.push_back( "-i" );
-		out.arguments.push_back( ( output_dir / ( input_root_name + ".itp" ) ).string() );
-		out.arguments.push_back( "-q" );
-		out.arguments.push_back( ( output_dir / ( input_root_name + ".clean.pdb" ) ).string() );
-		out.arguments.push_back( "-n" );
-		out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
-		out.arguments.push_back( "-ff" );
-		out.arguments.push_back( in.forcefields.at( in.forcefield_index ).get_name().data() );
-		out.arguments.push_back( "-water" );
-		out.arguments.push_back( string( in.water ) );
+		p_out.arguments.push_back( "pdb2gmx" );
+		p_out.arguments.push_back( "-f" );
+		p_out.arguments.push_back( p_in.input_pdb.string() );
+		std::string input_root_name = p_in.input_pdb.filename().string();
+		p_out.arguments.push_back( "-o" );
+		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".gro" ) ).string() );
+		p_out.arguments.push_back( "-p" );
+		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".top" ) ).string() );
+		p_out.arguments.push_back( "-i" );
+		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".itp" ) ).string() );
+		p_out.arguments.push_back( "-q" );
+		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".clean.pdb" ) ).string() );
+		p_out.arguments.push_back( "-n" );
+		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
+		p_out.arguments.push_back( "-ff" );
+		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).get_name().data() );
+		p_out.arguments.push_back( "-water" );
+		p_out.arguments.push_back( string( p_in.water ) );
 	}
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
+
+	const char * string( const interactive_keyword & p_kw ) noexcept
+	{
+		switch ( p_kw )
+		{
+		case interactive_keyword::ss: return "ss";
+		case interactive_keyword::ter: return "ter";
+		case interactive_keyword::lys: return "lys";
+		case interactive_keyword::arg: return "arg";
+		case interactive_keyword::asp: return "asp";
+		case interactive_keyword::glu: return "glu";
+		case interactive_keyword::gln: return "gln";
+		case interactive_keyword::his: return "his";
+		default: return "";
+		}
+		return "";
+	}
 
 	std::string_view forcefield::get_name() const
 	{
@@ -136,63 +153,63 @@ namespace VTX::Tool::Mdprep::Gromacs
 								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
 	}
 
-	void parse( const std::string & user_str, interactive_keyword & out ) noexcept
+	void parse( const std::string & p_user_str, interactive_keyword & p_out ) noexcept
 	{
-		if ( user_str == "HIS" )
+		if ( p_user_str == "HIS" )
 		{
-			out = interactive_keyword::his;
+			p_out = interactive_keyword::his;
 			return;
 		};
-		if ( user_str == "LYS" )
+		if ( p_user_str == "LYS" )
 		{
-			out = interactive_keyword::lys;
+			p_out = interactive_keyword::lys;
 			return;
 		};
-		if ( user_str == "ASP" )
+		if ( p_user_str == "ASP" )
 		{
-			out = interactive_keyword::asp;
+			p_out = interactive_keyword::asp;
 			return;
 		};
-		if ( user_str == "GLN" )
+		if ( p_user_str == "GLN" )
 		{
-			out = interactive_keyword::gln;
+			p_out = interactive_keyword::gln;
 			return;
 		};
-		if ( user_str == "GLU" )
+		if ( p_user_str == "GLU" )
 		{
-			out = interactive_keyword::glu;
+			p_out = interactive_keyword::glu;
 			return;
 		};
-		if ( user_str == "ARG" )
+		if ( p_user_str == "ARG" )
 		{
-			out = interactive_keyword::arg;
+			p_out = interactive_keyword::arg;
 			return;
 		};
-		if ( user_str == "TER" )
+		if ( p_user_str == "TER" )
 		{
-			out = interactive_keyword::ter;
+			p_out = interactive_keyword::ter;
 			return;
 		};
-		if ( user_str == "SS" )
+		if ( p_user_str == "SS" )
 		{
-			out = interactive_keyword::ss;
+			p_out = interactive_keyword::ss;
 			return;
 		};
-		out = interactive_keyword::none;
+		p_out = interactive_keyword::none;
 		return;
 	}
 
-	parse_report parse_pdb2gmx_user_script( const std::string_view & script, interactive_arguments & args ) noexcept
+	parse_report parse_pdb2gmx_user_script( const std::string_view & p_script, interactive_arguments & p_args ) noexcept
 	{
 		parse_report out;
 
-		args.kw_v.clear();
-		if ( script.empty() )
+		p_args.kw_v.clear();
+		if ( p_script.empty() )
 			return out;
 
-		std::string_view::const_iterator current_pos	  = script.begin(),
-										 next_newline_pos = std::find( script.begin(), script.end(), '\n' );
-		if ( next_newline_pos != script.end() )
+		std::string_view::const_iterator current_pos	  = p_script.begin(),
+										 next_newline_pos = std::find( p_script.begin(), p_script.end(), '\n' );
+		if ( next_newline_pos != p_script.end() )
 			next_newline_pos++;
 		// The interval looked into is [first, last ) so we need to increment it
 		// in order to include the newline into the line
@@ -201,7 +218,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		// std::match_results<std::string_view::const_iterator> match;
 		std::smatch match;
 
-		while ( current_pos != script.end() )
+		while ( current_pos != p_script.end() )
 		{
 			std::string line_buf { current_pos, next_newline_pos };
 			if ( std::regex_match( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
@@ -258,10 +275,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 				return out;
 			}
 
-			args.kw_v.insert( { std::move( new_id ), buf } );
+			p_args.kw_v.insert( { std::move( new_id ), buf } );
 			current_pos		 = next_newline_pos;
-			next_newline_pos = std::find( current_pos, script.end(), '\n' );
-			if ( next_newline_pos != script.end() )
+			next_newline_pos = std::find( current_pos, p_script.end(), '\n' );
+			if ( next_newline_pos != p_script.end() )
 				next_newline_pos++;
 		}
 

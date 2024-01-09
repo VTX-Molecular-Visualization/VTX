@@ -191,6 +191,27 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 
 	CHECK( data.expected_args == args );
 }
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][each_interactive_kw]" )
+{
+	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
+	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+	VTX::Tool::Mdprep::Gromacs::interactive_id id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::none, 12 };
+
+	data.expected_args.arguments.push_back( "" );
+	for ( int kw_idx = 0; kw_idx < static_cast<int>( VTX::Tool::Mdprep::Gromacs::interactive_keyword::COUNT );
+		  kw_idx++ )
+	{
+		VTX::Tool::Mdprep::Gromacs::interactive_keyword kw
+			= static_cast<VTX::Tool::Mdprep::Gromacs::interactive_keyword>( kw_idx );
+		id.kw = kw;
+		data.instructions.custom_parameter.kw_v.clear();
+		data.instructions.custom_parameter.kw_v.insert( { id, "0" } );
+		data.expected_args.arguments.back() = std::string( "-" ) += VTX::Tool::Mdprep::Gromacs::string( kw );
+
+		VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
+		CHECK( data.expected_args == args );
+	}
+}
 
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive_id][hash]" )
 {

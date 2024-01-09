@@ -5,16 +5,16 @@
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-	void submit_gromacs_command( gromacs_command_args & args )
+	void submit_gromacs_command( gromacs_command_args & p_args )
 	{
 		// QString pgm { "D:\\programing\\projects\\ConsoleApplication2\\x64\\Debug\\ConsoleApplication2.exe" };
 		QString		pgm { "D:\\cnam\\tmp\\gmx.exe" };
 		QStringList qt_args;
-		for ( auto & arg : args.arguments )
+		for ( auto & arg : p_args.arguments )
 			qt_args << QString( arg.c_str() );
 
 		std::string tmp;
-		for ( auto & arg : args.arguments )
+		for ( auto & arg : p_args.arguments )
 			( tmp += arg ) += " ";
 
 		bool	   finished = false;
@@ -30,10 +30,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 		proc.waitForReadyRead( 6000 );
 
 		buf = proc.readAllStandardError();
-		args.stderr_ += buf.toStdString();
+		p_args.stderr_ += buf.toStdString();
 
 		buf = proc.readAllStandardOutput();
-		args.stdout_ += buf.toStdString();
+		p_args.stdout_ += buf.toStdString();
 		while ( finished == false )
 		{
 			if ( proc.isWritable() == false )
@@ -44,10 +44,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 			proc.waitForReadyRead( 6000 );
 			buf = proc.readAllStandardError();
-			args.stderr_ += buf.toStdString();
+			p_args.stderr_ += buf.toStdString();
 
 			buf = proc.readAllStandardOutput();
-			args.stdout_ += buf.toStdString();
+			p_args.stdout_ += buf.toStdString();
 		}
 
 		proc.waitForFinished( 6000 );

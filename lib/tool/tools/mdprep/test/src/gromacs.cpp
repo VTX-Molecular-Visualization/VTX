@@ -7,13 +7,13 @@
 
 struct io_paths
 {
-	io_paths( const char * out_dir_name, const char * pdb_code ) :
-		in( exec_path / std::format( "data\\{}.pdb", pdb_code ) ),
-		out_gro( exec_path / std::format( "{}\\{}.conf.gro", out_dir_name, pdb_code ) ),
-		out_topol( exec_path / std::format( "{}\\{}.topol.top", out_dir_name, pdb_code ) ),
-		out_posre( exec_path / std::format( "{}\\{}.posre.itp", out_dir_name, pdb_code ) ),
-		out_clean( exec_path / std::format( "{}\\{}.clean.pdb", out_dir_name, pdb_code ) ),
-		out_index( exec_path / std::format( "{}\\{}.index.ndx", out_dir_name, pdb_code ) )
+	io_paths( const char * p_out_dir_name, const char * p_pdb_code ) :
+		in( exec_path / std::format( "data\\{}.pdb", p_pdb_code ) ),
+		out_gro( exec_path / std::format( "{}\\{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+		out_topol( exec_path / std::format( "{}\\{}.topol.top", p_out_dir_name, p_pdb_code ) ),
+		out_posre( exec_path / std::format( "{}\\{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
+		out_clean( exec_path / std::format( "{}\\{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
+		out_index( exec_path / std::format( "{}\\{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 	{
 	}
 	const fs::path & exec_path = VTX::Tool::Mdprep::executable_directory();
@@ -25,11 +25,11 @@ struct io_paths
 	fs::path		 out_index;
 };
 
-void check_pdb( const char * pdb_code )
+void check_pdb( const char * p_pdb_code )
 {
-	io_paths paths( pdb_code, pdb_code );
+	io_paths paths( p_pdb_code, p_pdb_code );
 
-	fs::path out_dir( paths.exec_path / pdb_code );
+	fs::path out_dir( paths.exec_path / p_pdb_code );
 	if ( fs::is_directory( out_dir ) )
 		fs::remove_all( out_dir );
 	fs::create_directories( out_dir );

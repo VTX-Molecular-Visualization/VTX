@@ -50,6 +50,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	};
 	const char * string( const water_model & ) noexcept;
 
+	struct interactive_arguments;
 	struct pdb2gmx_instructions
 	{
 		std::vector<forcefield> forcefields;
@@ -57,6 +58,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		fs::path				output_dir;
 		std::string				root_file_name;
 		fs::path				input_pdb;
+		interactive_arguments	custom_parameter; // needed for adding -his ...
 
 		water_model water = water_model::tip3p;
 	};
@@ -101,6 +103,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		his,
 		COUNT
 	};
+	const char * string( const interactive_keyword & ) noexcept;
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct interactive_id
@@ -122,16 +125,17 @@ namespace VTX::Tool::Mdprep::Gromacs
 	*/
 } // namespace VTX::Tool::Mdprep::Gromacs
 
+// We implement our specialization of the hash structure for interactive_id as required for set and map
 namespace std
 {
 	template<>
 	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & v ) const noexcept
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
 		{
 			uint64_t out = 0;
-			out			 = static_cast<uint64_t>( v.kw ) << 32;
-			out |= v.num | ( static_cast<uint32_t>( v.chain ) << 24 );
+			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
+			out |= p_arg.num | ( static_cast<uint32_t>( p_arg.chain ) << 24 );
 			return out;
 		}
 	};
@@ -153,8 +157,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		return l.kw_v == r.kw_v;
 	}
-
 	*/
+
 	// Returned by the script parser to inform how the parsing went
 	struct parse_report
 	{

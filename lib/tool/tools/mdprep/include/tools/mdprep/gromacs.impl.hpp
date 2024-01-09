@@ -11,14 +11,14 @@ These functions will be used internally to interact with gromacs
 namespace VTX::Tool::Mdprep::Gromacs
 {
 	// Parse the input string in order to determine if gromacs is actually waiting for user input
-	bool is_waiting_inputs( const std::string & stdout_ ) noexcept;
+	bool is_waiting_inputs( const std::string & p_stdout ) noexcept;
 
 	struct interactive_id;
 	struct interactive_arguments;
 
 	// Parse the input string to figure what piece of information gromacs expect
 	// Returns false if nothing could be figured out
-	bool parse_expected_kw_argument( const std::string & stdout_, interactive_id & ) noexcept;
+	bool parse_expected_kw_argument( const std::string & p_stdout, interactive_id & ) noexcept;
 
 	enum class interactive_keyword;
 
@@ -29,7 +29,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Parse the first argument to figure what is the option number requested by gromacs to refer to the option
 	// specified in the second argument.
 	// Returns 0xff if the option number couldn't be figured
-	uint8_t parse_option_number( const std::string & stdout_, const std::string_view & value );
+	uint8_t parse_option_number( const std::string & p_stdout, const std::string_view & p_value );
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 
