@@ -357,6 +357,45 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][pars
 	CHECK( args == expected_args );
 }
 
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 1", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	const char *		  script = "hehe lol";
+
+	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( report.error );
+	CHECK( report.message.empty() == false );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 2", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	const char *		  script = "A ss111 0 B ter112 1";
+
+	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( report.error );
+	CHECK( report.message.empty() == false );
+}
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error bad residue name",
+	"[pdb2gmx][parse_pdb2gmx_user_script][error]"
+)
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	const char *		  script
+		= "B te112 1\n"
+		  "C lys113 protonated\n";
+
+	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( report.error );
+	CHECK( report.message.empty() == false );
+}
+
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][no_input]" ) {}

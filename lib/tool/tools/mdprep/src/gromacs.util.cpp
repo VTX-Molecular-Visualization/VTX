@@ -204,7 +204,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		while ( current_pos != script.end() )
 		{
 			std::string line_buf { current_pos, next_newline_pos };
-			if ( std::regex_search( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
+			if ( std::regex_match( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			// if ( std::regex_search( current_view.begin(), current_view.end(), match, line_regex ) == false
 			//|| match.size() < NUM_EXPECTED_GROUPS )
 			{
