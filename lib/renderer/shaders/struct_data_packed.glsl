@@ -2,12 +2,12 @@ struct UnpackedData
 {
 	vec3 viewPosition;
 	vec3 normal;
-	uint selected;
+	bool selected;
 };
 
 #define PackedData uvec4
 
-void packData( vec3 p_viewPosition, vec3 p_normal, uint p_selected, out PackedData p_out )
+void packData( vec3 p_viewPosition, vec3 p_normal, bool p_selected, out PackedData p_out )
 {
 	p_out.x = packHalf2x16( p_viewPosition.xy );
 	p_out.y = packHalf2x16( vec2( p_viewPosition.z, p_normal.x ) );
@@ -23,5 +23,5 @@ void unpackData( usampler2D p_in, out UnpackedData p_out, ivec2 p_px )
 	p_out.viewPosition  = vec3( unpackHalf2x16( data.x ), tmp.x );
 	p_out.normal		= vec3( tmp.y, unpackHalf2x16( data.z ) );
 	tmp					= unpackHalf2x16( data.w );
-	p_out.selected		= uint( tmp.x );
+	p_out.selected		= bool( tmp.x );
 }

@@ -102,7 +102,7 @@ void main()
 				}
 
 				// Output data.
-				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( hit, normal, inData.vertexSelected[ 0 ] && inData.vertexSelected[ 1 ], outDataPacked );
 				outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
 
 				const int selectAtom0 = 1 - int( floor( 0.85f + ( y / d0 ) ) );
@@ -180,7 +180,7 @@ void main()
 				}
 
 				// Output data.
-				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( hit, normal, inData.vertexSelected[ 0 ] && inData.vertexSelected[ 1 ], outDataPacked );
 				outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
 
 				const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );

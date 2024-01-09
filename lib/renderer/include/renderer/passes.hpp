@@ -20,16 +20,16 @@ namespace VTX::Renderer
 	static const Data dataMolecules { { { "Positions", E_TYPE::FLOAT, 3 },
 										{ "Colors", E_TYPE::FLOAT, 4 },
 										{ "Radii", E_TYPE::FLOAT, 1 },
-										{ "Visibilities", E_TYPE::UBYTE, 1 },
-										{ "Selections", E_TYPE::UBYTE, 1 },
-										{ "Ids", E_TYPE::UINT, 1 } } };
+										{ "Ids", E_TYPE::UINT, 1 },
+										{ "Flags", E_TYPE::UINT, 1 } } };
 
-	static const Data dataMeshes { { { "Positions", E_TYPE::FLOAT, 3 },
-									 { "Normales", E_TYPE::FLOAT, 3 },
-									 { "Colors", E_TYPE::FLOAT, 4 },
-									 { "Visibilities", E_TYPE::UBYTE, 1 },
-									 { "Selections", E_TYPE::UBYTE, 1 },
-									 { "Ids", E_TYPE::UINT, 1 } } };
+	static const Data dataMeshes { {
+		{ "Positions", E_TYPE::FLOAT, 3 },
+		{ "Normales", E_TYPE::FLOAT, 3 },
+		{ "Colors", E_TYPE::FLOAT, 4 },
+		{ "Ids", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UINT, 1 },
+	} };
 
 	// Passes.
 

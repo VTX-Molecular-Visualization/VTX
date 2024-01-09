@@ -95,7 +95,28 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsVertexArray( _id ) );
 
-			glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, p_type, p_normalized, p_relativeOffset );
+			// Check type to call glVertexAttribFormat, glVertexAttribIFormat, glVertexAttribLFormat.
+
+			switch ( p_type )
+			{
+			case GL_FLOAT:
+				glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, p_type, p_normalized, p_relativeOffset );
+				break;
+
+			case GL_BYTE:
+			case GL_SHORT:
+			case GL_INT:
+			case GL_UNSIGNED_BYTE:
+			case GL_UNSIGNED_SHORT:
+			case GL_UNSIGNED_INT:
+				glVertexArrayAttribIFormat( _id, p_attributeIndex, p_size, p_type, p_relativeOffset );
+				break;
+
+			case GL_DOUBLE:
+				glVertexArrayAttribLFormat( _id, p_attributeIndex, p_size, p_type, p_relativeOffset );
+				break;
+			default: assert( false ); break;
+			}
 		}
 
 		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const

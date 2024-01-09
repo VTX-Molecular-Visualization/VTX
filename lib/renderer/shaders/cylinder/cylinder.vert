@@ -1,14 +1,14 @@
 #version 450 core
 
+#include "../constant.glsl"
 #include "../layout_uniforms_camera.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inVertexPosition;
 layout( location = 1 ) in vec4  inVertexColor;
 layout( location = 2 ) in float inVertexRad;
-layout( location = 3 ) in uint  inVertexVis;
-layout( location = 4 ) in uint  inVertexSel;
-layout( location = 5 ) in uint  inVertexId;
+layout( location = 3 ) in uint  inVertexId;
+layout( location = 4 ) in uint  inVertexFlag;
 
 // Out.
 out
@@ -18,8 +18,8 @@ outData;
 void main()
 {
 	outData.vertexColor	   = inVertexColor;
-	outData.vertexVisible  = inVertexVis;
-	outData.vertexSelected = inVertexSel;
+	outData.vertexVisible  = ( inVertexFlag & ( 1 << FLAG_VISIBILITY ) ) != 0;
+	outData.vertexSelected = ( inVertexFlag & ( 1 << FLAG_SELECTION ) ) != 0;
 	outData.vertexId	   = inVertexId;
 
 	// Vertex position in view space.

@@ -240,30 +240,35 @@ namespace VTX::Renderer
 
 		void _setData( const StructProxyMolecule & p_proxy )
 		{
+			assert( p_proxy.atomPositions->size() == p_proxy.atomColors->size() );
+			assert( p_proxy.atomPositions->size() == p_proxy.atomRadii->size() );
+			assert( p_proxy.atomPositions->size() == p_proxy.atomVisibilities->size() );
+			assert( p_proxy.atomPositions->size() == p_proxy.atomSelections->size() );
+			assert( p_proxy.atomPositions->size() == p_proxy.atomIds->size() );
+
 			_renderGraph->setData( *p_proxy.atomPositions, "MoleculesPositions" );
 			_renderGraph->setData( *p_proxy.atomColors, "MoleculesColors" );
 			_renderGraph->setData( *p_proxy.atomRadii, "MoleculesRadii" );
-
-			std::vector<uchar> atomVisibilities( p_proxy.atomVisibilities->size() );
-			std::transform(
-				p_proxy.atomVisibilities->begin(),
-				p_proxy.atomVisibilities->end(),
-				atomVisibilities.begin(),
-				[]( const bool p_value ) { return static_cast<uchar>( p_value ); }
-			);
-			_renderGraph->setData( atomVisibilities, "MoleculesVisibilities" );
-
-			std::vector<uchar> atomSelections( p_proxy.atomSelections->size() );
-			std::transform(
-				p_proxy.atomSelections->begin(),
-				p_proxy.atomSelections->end(),
-				atomSelections.begin(),
-				[]( const bool p_value ) { return static_cast<uchar>( p_value ); }
-			);
-			_renderGraph->setData( atomSelections, "MoleculesSelections" );
-
 			_renderGraph->setData( *p_proxy.atomIds, "MoleculesIds" );
 			_renderGraph->setData( *p_proxy.bonds, "MoleculesEbo" );
+
+			std::vector<uint> atomFlags( p_proxy.atomPositions->size() );
+
+			enum E_ATOM_FLAGS
+			{
+				VISIBILITY = 0,
+				SELECTION  = 1
+			};
+
+			for ( size_t i = 0; i < atomFlags.size(); ++i )
+			{
+				uint flag = 0;
+				flag |= ( *p_proxy.atomVisibilities )[ i ] << E_ATOM_FLAGS::VISIBILITY;
+				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
+				atomFlags[ i ] = flag;
+			}
+
+			_renderGraph->setData( atomFlags, "MoleculesFlags" );
 
 			_sizeAtoms = p_proxy.atomPositions->size();
 			_sizeBonds = p_proxy.bonds->size();

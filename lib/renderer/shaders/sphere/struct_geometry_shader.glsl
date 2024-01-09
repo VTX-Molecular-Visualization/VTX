@@ -5,6 +5,6 @@ StructGeometryShader
 	flat vec4	sphereColor;
 	flat float	sphereRadius;
 	flat float	dotViewSpherePos;
-	flat uint	sphereSelected;
+	flat bool	sphereSelected;
 	flat uint	sphereId;
 }

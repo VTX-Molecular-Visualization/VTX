@@ -1,14 +1,14 @@
 #version 450 core
 
+#include "../constant.glsl"
 #include "../layout_uniforms_camera.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inSpherePos;
 layout( location = 1 ) in vec4  inSphereColor;
 layout( location = 2 ) in float inSphereRadius;
-layout( location = 3 ) in uint  inSphereVisible;
-layout( location = 4 ) in uint  inSphereSelected;
-layout( location = 5 ) in uint  inSphereId;
+layout( location = 3 ) in uint  inSphereId;
+layout( location = 4 ) in uint  inSphereFlag;
 
 // TODO: move that.
 uniform float u_radiusAdd	  = 0.f;
@@ -22,17 +22,18 @@ outData;
 
 void main()
 {
+	outData.viewSpherePos	 = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
+	outData.sphereColor		 = inSphereColor;
+	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
+	outData.sphereId		 = inSphereId;
+	uint flag = inSphereFlag;
+	outData.sphereVisible	 = bool( flag & ( 1 << FLAG_VISIBILITY ) );
+	outData.sphereSelected	 = bool( flag & ( 1 << FLAG_SELECTION ) );	
+
 	if ( uniformsCamera.isCameraPerspective )
 	{
-		outData.viewSpherePos	 = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-		outData.sphereColor		 = inSphereColor;
-		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
-		outData.sphereVisible	 = inSphereVisible;
-		outData.sphereSelected	 = inSphereSelected;
-		outData.sphereId		 = inSphereId;
-
 		// Compute normalized view vector.
-		outData.dotViewSpherePos	  = dot( outData.viewSpherePos, outData.viewSpherePos );
+		outData.dotViewSpherePos  = dot( outData.viewSpherePos, outData.viewSpherePos );
 		const float dSphereCenter = sqrt( outData.dotViewSpherePos );
 		const vec3	view		  = outData.viewSpherePos / dSphereCenter;
 
@@ -56,16 +57,9 @@ void main()
 		gl_Position = vec4( viewImpPos, 1.f );
 	}
 	else // Orthographic
-	{ 
-		outData.viewSpherePos	 = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-		outData.sphereColor		 = inSphereColor;
-		outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
-		outData.sphereVisible	 = inSphereVisible;
-		outData.sphereSelected	 = inSphereSelected;
-		outData.sphereId		 = inSphereId;
-
+	{
 		outData.vImpU = vec3(-1, 0, 0) * outData.sphereRadius;
-		outData.vImpV = vec3(0, -1, 0) * outData.sphereRadius; 
+		outData.vImpV = vec3(0, -1, 0) * outData.sphereRadius;
 
 		gl_Position = vec4( outData.viewSpherePos + vec3(0, 0, outData.sphereRadius), 1.f );
 	}

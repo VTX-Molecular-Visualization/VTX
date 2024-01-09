@@ -1,6 +1,7 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
+#include <numeric>
 #include <util/constants.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -91,6 +92,9 @@ namespace VTX::Bench
 
 		assert( counter == realSize );
 
+		std::vector<uint> ids( realSize );
+		std::iota( ids.begin(), ids.end(), 0 );
+
 		VTX_INFO( "{} atoms and {} bonds generated", realSize, bonds.size() / 2 );
 
 		return { MAT4F_ID,
@@ -99,7 +103,7 @@ namespace VTX::Bench
 				 std::vector<float>( realSize, 0.5f ),
 				 std::vector<bool>( realSize, true ),
 				 std::vector<bool>( realSize, false ),
-				 std::vector<uint>( realSize, 0 ),
+				 ids,
 				 bonds };
 	}
 
