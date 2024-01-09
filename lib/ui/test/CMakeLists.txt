@@ -27,11 +27,19 @@ target_link_libraries(vtx_ui_test PRIVATE vtx_ui::vtx_ui)
 target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
 
-IF (WIN32)
+IF(WIN32)
 	set(FILENAME_PYTHON_MODULE PyTX.pyd)
 ELSE()
 	set(FILENAME_PYTHON_MODULE PyTX.so)
 ENDIF()
+
+add_custom_target(
+	vtx_ui_test_copy_shader
+	ALL COMMAND
+	${CMAKE_COMMAND} -E copy_directory	
+	${DIR_SHADERS}
+	$<TARGET_FILE_DIR:vtx_ui_test>/shaders)
+add_dependencies(vtx_ui_test vtx_ui_test_copy_shader)
 
 add_custom_target(vtx_ui_copy_module ALL COMMAND
 	${CMAKE_COMMAND} -E copy

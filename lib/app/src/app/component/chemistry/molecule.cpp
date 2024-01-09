@@ -48,12 +48,7 @@ namespace VTX::App::Component::Chemistry
 
 		_atomVisibilities.resize( p_atomCount, uint( true ) );
 
-		_atomColors.resize( p_atomCount, COLOR_WHITE );
-		std::generate(
-			_atomColors.begin(),
-			_atomColors.end(),
-			[ this, i = 0 ]() mutable { return ChemDB::Atom::SYMBOL_COLOR[ int( _moleculeStruct.atomSymbols[ i ] ) ]; }
-		);
+		_atomColors.resize( p_atomCount, 0 );
 
 		_atomRadii.resize( p_atomCount, 0.f );
 		std::generate(

@@ -90,11 +90,11 @@ namespace VTX::App::Component::Chemistry
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
-		std::vector<bool>			   _atomVisibilities = std::vector<bool>();
-		std::vector<Util::Color::Rgba> _atomColors		 = std::vector<Util::Color::Rgba>();
-		std::vector<float>			   _atomRadii		 = std::vector<float>();
-		std::vector<uint>			   _atomIds			 = std::vector<uint>();
-		std::vector<bool>			   _atomSelections	 = std::vector<bool>();
+		std::vector<bool>  _atomVisibilities = std::vector<bool>();
+		std::vector<uchar> _atomColors		 = std::vector<uchar>();
+		std::vector<float> _atomRadii		 = std::vector<float>();
+		std::vector<uint>  _atomIds			 = std::vector<uint>();
+		std::vector<bool>  _atomSelections	 = std::vector<bool>();
 	};
 
 } // namespace VTX::App::Component::Chemistry
