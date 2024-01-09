@@ -26,9 +26,8 @@ void main()
 	outData.sphereColor		 = uniformsCamera.colorLayout[ inSphereColor ];
 	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 	outData.sphereId		 = inSphereId;
-	uint flag = inSphereFlag;
-	outData.sphereVisible	 = bool( flag & ( 1 << FLAG_VISIBILITY ) );
-	outData.sphereSelected	 = bool( flag & ( 1 << FLAG_SELECTION ) );	
+	outData.sphereVisible	 = inSphereFlag & ( 1 << FLAG_VISIBILITY );
+	outData.sphereSelected	 = inSphereFlag & ( 1 << FLAG_SELECTION );	
 
 	if ( uniformsCamera.isCameraPerspective )
 	{
