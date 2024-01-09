@@ -191,22 +191,22 @@ namespace VTX::Tool::Mdprep::Gromacs
 			return out;
 
 		std::string_view::const_iterator current_pos	  = script.begin(),
-										 next_newline_pos = ++std::find(
-											 script.begin(), script.end(), '\n'
-										 ); // The interval looked into is [first, last ) so we need to increment it
-											// in order to include the newline into the line
-		const std::regex	line_regex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) ([0-9a-zA-Z]+)\n?" };
+										 next_newline_pos = std::find( script.begin(), script.end(), '\n' );
+		if ( next_newline_pos != script.end() )
+			next_newline_pos++;
+		// The interval looked into is [first, last ) so we need to increment it
+		// in order to include the newline into the line
+		const std::regex	line_regex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) (([a-zA-Z0-9]+ )?[0-9a-zA-Z]+)\r?\n?" };
 		static const size_t NUM_EXPECTED_GROUPS = 4;
-		std::match_results<std::string_view::const_iterator> match;
-		// std::smatch match;
+		// std::match_results<std::string_view::const_iterator> match;
+		std::smatch match;
 
 		while ( current_pos != script.end() )
 		{
-			std::string_view current_view { current_pos, next_newline_pos }; // mais kel enculer
-			// std::string aaaaa { current_pos, next_newline_pos };
-			// if ( std::regex_search( aaaaa, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS )
-			if ( std::regex_search( current_view.begin(), current_view.end(), match, line_regex ) == false
-				 || match.size() < NUM_EXPECTED_GROUPS )
+			std::string line_buf { current_pos, next_newline_pos };
+			if ( std::regex_search( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
+			// if ( std::regex_search( current_view.begin(), current_view.end(), match, line_regex ) == false
+			//|| match.size() < NUM_EXPECTED_GROUPS )
 			{
 				out.error	= true;
 				out.message = std::format(
@@ -217,8 +217,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 			interactive_id new_id;
 
-			new_id.chain	= match[ 0 ].str()[ 0 ];
-			std::string buf = match[ 1 ].str();
+			new_id.chain	= match[ 1 ].str()[ 0 ];
+			std::string buf = match[ 2 ].str();
 			Util::String::toUpper( buf );
 			parse( buf, new_id.kw );
 			if ( new_id.kw == interactive_keyword::none )
@@ -229,7 +229,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 				);
 				return out;
 			}
-			buf = match[ 2 ].str();
+			buf = match[ 3 ].str();
 			if ( buf.empty() )
 			{
 				out.error	= true;
@@ -248,7 +248,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 				out.message = std::format( "Number <{}> isn't a correct value.", buf );
 				return out;
 			}
-			buf = match[ 3 ].str();
+			buf = match[ 4 ].str();
 			if ( buf.empty() )
 			{
 				out.error	= true;
@@ -261,6 +261,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 			args.kw_v.insert( { std::move( new_id ), buf } );
 			current_pos		 = next_newline_pos;
 			next_newline_pos = std::find( current_pos, script.end(), '\n' );
+			if ( next_newline_pos != script.end() )
+				next_newline_pos++;
 		}
 
 		return out;

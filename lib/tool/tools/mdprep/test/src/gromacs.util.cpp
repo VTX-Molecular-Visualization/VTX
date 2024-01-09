@@ -194,6 +194,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive_id][hash]" )
 {
+	// We want to test if the hash function for interactive_id datastruct gives unique hash with plausible inputs
+	const size_t MAX_RESID = 1001;
+
 	using namespace VTX::Tool::Mdprep::Gromacs;
 
 	interactive_id					   id;
@@ -204,7 +207,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive
 		for ( uint32_t it_kw_num = 0; it_kw_num < static_cast<uint32_t>( interactive_keyword::COUNT ); it_kw_num++ )
 		{
 			interactive_keyword it_kw = static_cast<interactive_keyword>( it_kw_num );
-			for ( uint32_t it_num = 0; it_num < 1001; it_num++ )
+			for ( uint32_t it_num = 0; it_num < MAX_RESID; it_num++ )
 			{
 				id.chain = it_char;
 				id.kw	 = it_kw;
@@ -235,7 +238,34 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - empty", "[pdb2gmx][par
 	CHECK( args == expected_args );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - classic", "[pdb2gmx][parse_pdb2gmx_user_script]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line", "[pdb2gmx][parse_pdb2gmx_user_script][one_line]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script = "A ARG54 0\n";
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::arg, 54 }, "0" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line, no line feed",
+	"[pdb2gmx][parse_pdb2gmx_user_script][one_line]"
+)
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script = "A ARG54 0";
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::arg, 54 }, "0" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - 1", "[pdb2gmx][parse_pdb2gmx_user_script][1]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	interactive_arguments args;
@@ -249,6 +279,79 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - classic", "[pdb2gmx][p
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::lys, 222 }, "LYN" );
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 1 }, "1" );
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 12 }, "HID" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - carriage_return",
+	"[pdb2gmx][parse_pdb2gmx_user_script][carriage_return]"
+)
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script
+		= "A LYS222 LYN\r\n"
+		  "B LYS8 LYS\r\n"
+		  "A HIS1 1\r\n"
+		  "A HIS12 HID\r\n";
+	expected_args.kw_v.emplace( interactive_id { 'B', interactive_keyword::lys, 8 }, "LYS" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::lys, 222 }, "LYN" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 1 }, "1" );
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 12 }, "HID" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - value_lower",
+	"[pdb2gmx][parse_pdb2gmx_user_script][value_lower]"
+)
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script = "A HIS8 hie\r\n";
+	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 8 }, "hie" );
+	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( args == expected_args );
+}
+void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::interactive_arguments & args ) noexcept
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	const char * script
+		= "A ss111 0\n"
+		  "B ter112 1\n"
+		  "C lys113 protonated\n"
+		  "D arg114 1\n"
+		  "E asp115 not protonated\n"
+		  "F glu116 not protonated\n"
+		  "G gln117 GLN\n"
+		  "H his118 HIE\n";
+	s = script;
+	args.kw_v.clear();
+	args.kw_v.emplace( interactive_id { 'A', interactive_keyword::ss, 111 }, "0" );
+	args.kw_v.emplace( interactive_id { 'B', interactive_keyword::ter, 112 }, "1" );
+	args.kw_v.emplace( interactive_id { 'C', interactive_keyword::lys, 113 }, "protonated" );
+	args.kw_v.emplace( interactive_id { 'D', interactive_keyword::arg, 114 }, "1" );
+	args.kw_v.emplace( interactive_id { 'E', interactive_keyword::asp, 115 }, "not protonated" );
+	args.kw_v.emplace( interactive_id { 'F', interactive_keyword::glu, 116 }, "not protonated" );
+	args.kw_v.emplace( interactive_id { 'G', interactive_keyword::gln, 117 }, "GLN" );
+	args.kw_v.emplace( interactive_id { 'H', interactive_keyword::his, 118 }, "HIE" );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][parse_pdb2gmx_user_script][each]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	interactive_arguments expected_args;
+	const char *		  script = nullptr;
+
+	data_each( script, expected_args );
+
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
