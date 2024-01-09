@@ -527,6 +527,9 @@ namespace VTX::Renderer::Context
 			case E_TYPE::COLOR4:
 				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
 				break;
+			case E_TYPE::COLOR4_256:
+				_setUniformDefaultValue<Util::Color::Rgba[ 256 ]>( descUniform, p_descProgram, p_descPass );
+				break;
 			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}
 		}
@@ -694,13 +697,16 @@ namespace VTX::Renderer::Context
 																 { E_TYPE::VEC4F, GL_FLOAT },
 																 { E_TYPE::MAT3F, GL_FLOAT },
 																 { E_TYPE::MAT4F, GL_FLOAT },
-																 { E_TYPE::COLOR4, GL_FLOAT } };
+																 { E_TYPE::COLOR4, GL_FLOAT },
+																 { E_TYPE::COLOR4_256, GL_FLOAT } };
 
-	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
-		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::BYTE, sizeof( char ) },	  { E_TYPE::UBYTE, sizeof( uchar ) },
-		{ E_TYPE::SHORT, sizeof( short ) }, { E_TYPE::USHORT, sizeof( ushort ) }, { E_TYPE::INT, sizeof( int ) },
-		{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::FLOAT, sizeof( float ) },	  { E_TYPE::VEC2I, sizeof( Vec2i ) },
-		{ E_TYPE::VEC2F, sizeof( Vec2f ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
-		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },	  { E_TYPE::COLOR4, sizeof( Vec4f ) }
-	};
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
+		= { { E_TYPE::BOOL, sizeof( bool ) },	  { E_TYPE::BYTE, sizeof( char ) },
+			{ E_TYPE::UBYTE, sizeof( uchar ) },	  { E_TYPE::SHORT, sizeof( short ) },
+			{ E_TYPE::USHORT, sizeof( ushort ) }, { E_TYPE::INT, sizeof( int ) },
+			{ E_TYPE::UINT, sizeof( uint ) },	  { E_TYPE::FLOAT, sizeof( float ) },
+			{ E_TYPE::VEC2I, sizeof( Vec2i ) },	  { E_TYPE::VEC2F, sizeof( Vec2f ) },
+			{ E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
+			{ E_TYPE::MAT3F, sizeof( Mat3f ) },	  { E_TYPE::MAT4F, sizeof( Mat4f ) },
+			{ E_TYPE::COLOR4, sizeof( Vec4f ) },  { E_TYPE::COLOR4_256, 256 * sizeof( Vec4f ) } };
 } // namespace VTX::Renderer::Context

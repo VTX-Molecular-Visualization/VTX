@@ -21,14 +21,14 @@ namespace VTX::Renderer
 										{ "Colors", E_TYPE::FLOAT, 4 },
 										{ "Radii", E_TYPE::FLOAT, 1 },
 										{ "Ids", E_TYPE::UINT, 1 },
-										{ "Flags", E_TYPE::UINT, 1 } } };
+										{ "Flags", E_TYPE::UBYTE, 1 } } };
 
 	static const Data dataMeshes { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Normales", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::FLOAT, 4 },
 		{ "Ids", E_TYPE::UINT, 1 },
-		{ "Flags", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UBYTE, 1 },
 	} };
 
 	// Passes.

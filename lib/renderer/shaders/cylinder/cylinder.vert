@@ -18,8 +18,8 @@ outData;
 void main()
 {
 	outData.vertexColor	   = inVertexColor;
-	outData.vertexVisible  = ( inVertexFlag & ( 1 << FLAG_VISIBILITY ) ) != 0;
-	outData.vertexSelected = ( inVertexFlag & ( 1 << FLAG_SELECTION ) ) != 0;
+	outData.vertexVisible  = bool( inVertexFlag & ( 1 << FLAG_VISIBILITY ) );
+	outData.vertexSelected = bool( inVertexFlag & ( 1 << FLAG_SELECTION ) );
 	outData.vertexId	   = inVertexId;
 
 	// Vertex position in view space.

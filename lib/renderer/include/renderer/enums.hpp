@@ -60,7 +60,8 @@ namespace VTX::Renderer
 		VEC4F,
 		MAT3F,
 		MAT4F,
-		COLOR4
+		COLOR4,
+		COLOR4_256
 	};
 
 	enum struct E_ACCESS

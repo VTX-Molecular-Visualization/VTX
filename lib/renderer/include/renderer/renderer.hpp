@@ -4,6 +4,7 @@
 #include "context/opengl_45.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
+#include "struct_proxy_color_layout.hpp"
 #include "struct_proxy_mesh.hpp"
 #include "struct_proxy_molecule.hpp"
 #include <util/chrono.hpp>
@@ -68,7 +69,10 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ { "Color layout",
+					E_TYPE::COLOR4_256,
+					StructUniformValue<Util::Color::Rgba[ 256 ]> { { COLOR_WHITE } } },
+				  { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
@@ -121,7 +125,7 @@ namespace VTX::Renderer
 								 p_output
 							 ) )
 						{
-							for ( const StructProxyMolecule & proxy : _molecules )
+							for ( const StructProxyMolecule & proxy : _proxiesMolecules )
 							{
 								_setData( proxy );
 							}
@@ -192,13 +196,15 @@ namespace VTX::Renderer
 
 		inline void addMolecule( const StructProxyMolecule & p_proxy )
 		{
-			_molecules.push_back( p_proxy );
+			_proxiesMolecules.push_back( p_proxy );
 
 			if ( _renderGraph->isBuilt() )
 			{
 				_setData( p_proxy );
 			}
 		}
+
+		inline void setColorLayout( const StructProxyColorLayout & p_proxy ) { _proxyColorLayout = p_proxy; }
 
 		inline const size_t getWidth() const { return _width; }
 		inline const size_t getHeight() const { return _height; }
@@ -233,7 +239,8 @@ namespace VTX::Renderer
 		CallbackClean _callbackClean;
 		CallbackReady _callbackReady;
 
-		std::vector<StructProxyMolecule> _molecules;
+		std::vector<StructProxyMolecule> _proxiesMolecules;
+		StructProxyColorLayout			 _proxyColorLayout;
 
 		size_t _sizeAtoms = 0;
 		size_t _sizeBonds = 0;
@@ -252,7 +259,7 @@ namespace VTX::Renderer
 			_renderGraph->setData( *p_proxy.atomIds, "MoleculesIds" );
 			_renderGraph->setData( *p_proxy.bonds, "MoleculesEbo" );
 
-			std::vector<uint> atomFlags( p_proxy.atomPositions->size() );
+			std::vector<uchar> atomFlags( p_proxy.atomPositions->size() );
 
 			enum E_ATOM_FLAGS
 			{
@@ -262,7 +269,7 @@ namespace VTX::Renderer
 
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
-				uint flag = 0;
+				uchar flag = 0;
 				flag |= ( *p_proxy.atomVisibilities )[ i ] << E_ATOM_FLAGS::VISIBILITY;
 				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
 				atomFlags[ i ] = flag;

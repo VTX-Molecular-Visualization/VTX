@@ -82,7 +82,9 @@ namespace VTX::Renderer
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>>;
+		StructUniformValue<Util::Color::Rgba>,
+		// TODO: handle array of data.
+		StructUniformValue<Util::Color::Rgba[ 256 ]>>;
 
 	struct Uniform
 	{
