@@ -395,6 +395,22 @@ TEST_CASE(
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
+TEST_CASE(
+	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - chain name too long",
+	"[pdb2gmx][parse_pdb2gmx_user_script][error]"
+)
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	interactive_arguments args;
+	const char *		  script
+		= "BA te112 1\n"
+		  "C lys113 protonated\n";
+
+	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+
+	CHECK( report.error );
+	CHECK( report.message.empty() == false );
+}
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][solvate][empty]" ) {}
 

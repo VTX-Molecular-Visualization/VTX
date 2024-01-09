@@ -108,7 +108,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 		char				chain = 0x00i8; // Value of 0x00 means any chain
 		interactive_keyword kw	  = interactive_keyword::none;
 		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+
+		bool operator==( const interactive_id & ) const noexcept = default;
 	};
+	/*
 	inline bool operator==(
 		const VTX::Tool::Mdprep::Gromacs::interactive_id & l,
 		const VTX::Tool::Mdprep::Gromacs::interactive_id & r
@@ -116,6 +119,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		return l.chain == r.chain && l.kw == r.kw && l.num == r.num;
 	}
+	*/
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 namespace std
@@ -139,7 +143,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct interactive_arguments
 	{
 		std::unordered_map<interactive_id, std::string> kw_v;
+		bool operator==( const interactive_arguments & ) const noexcept = default;
 	};
+	/*
 	inline bool operator==(
 		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & l,
 		const VTX::Tool::Mdprep::Gromacs::interactive_arguments & r
@@ -148,6 +154,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return l.kw_v == r.kw_v;
 	}
 
+	*/
 	// Returned by the script parser to inform how the parsing went
 	struct parse_report
 	{
