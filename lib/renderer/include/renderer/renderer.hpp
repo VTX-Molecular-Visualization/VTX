@@ -68,17 +68,20 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { "Color layout",
-					E_TYPE::COLOR4_256,
-					StructUniformValue<Util::Color::Rgba[ 256 ]> { { COLOR_WHITE } } },
-				  { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
 				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
-				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { true } } }
+				  { "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } }
+			);
+
+			// create array of 256 color white.
+			Util::Color::Rgba colors[ 256 ] = { COLOR_WHITE };
+			_renderGraph->addUniforms(
+				{ { "Color layout", E_TYPE::COLOR4_256, StructUniformValue<Util::Color::Rgba[ 256 ]> { COLOR_WHITE } } }
 			);
 		}
 

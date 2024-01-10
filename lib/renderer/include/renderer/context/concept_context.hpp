@@ -26,7 +26,7 @@ namespace VTX::Renderer::Context
 			  const RenderQueue &			p_renderQueue,
 			  const Links &					p_links,
 			  const Handle					p_output,
-			  const Uniforms &				p_uniforms,
+			  const std::vector<Uniforms> & p_uniforms,
 			  const std::string &			p_uniformKey,
 			  const std::vector<std::any> & p_data,
 			  const Util::Chrono::Task &	p_task,

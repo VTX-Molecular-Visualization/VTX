@@ -37,7 +37,7 @@ float computeDepthOrtho( const vec3 p_v )
 
 void main()
 {
-	if ( uniformsCamera.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Only consider cylinder body.
 		const vec3 v1v0	  = inData.viewVertices[ 1 ] - inData.viewVertices[ 0 ];

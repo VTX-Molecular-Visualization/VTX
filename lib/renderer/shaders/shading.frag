@@ -50,7 +50,7 @@ void main()
 	}
 
 	// Lighting (on camera).
-	const vec3 lightDir = uniformsCamera.isCameraPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	const vec3 lightDir = uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
 	// FLAT_COLOR.
 	float lighting = 1.f;

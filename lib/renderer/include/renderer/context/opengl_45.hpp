@@ -23,12 +23,12 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		void build(
-			const RenderQueue &			 p_renderQueue,
-			const Links &				 p_links,
-			const Handle				 p_output,
-			const Uniforms &			 p_uniforms,
-			Instructions &				 p_outInstructions,
-			InstructionsDurationRanges & p_outInstructionsDurationRanges
+			const RenderQueue &			  p_renderQueue,
+			const Links &				  p_links,
+			const Handle				  p_output,
+			const std::vector<Uniforms> & p_uniforms,
+			Instructions &				  p_outInstructions,
+			InstructionsDurationRanges &  p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
@@ -94,7 +94,7 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
 		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::unique_ptr<GL::Buffer>										  _ubo;
+		std::vector<std::unique_ptr<GL::Buffer>>						  _ubosShared;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;

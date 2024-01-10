@@ -33,7 +33,7 @@ float computeDepthOrtho( const vec3 p_v )
 
 void main()
 {
-	if ( uniformsCamera.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		const float a = dot( inData.viewImpPos, inData.viewImpPos );
 		// b = -dot(viewImpPos, viewSpherePos);

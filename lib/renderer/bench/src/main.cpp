@@ -159,7 +159,7 @@ int main( int, char ** )
 		// Generate array of random colors.
 		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 		std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
-		renderer.setColorLayout( colorLayout.data() );
+		// renderer.setColorLayout( colorLayout.data() );
 
 		// Main loop.
 		while ( isRunning )
