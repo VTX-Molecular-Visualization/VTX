@@ -6,6 +6,7 @@
 #include <optional>
 #include <qapplication.h>
 #include <regex>
+#include <set>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -127,7 +128,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).get_name().data() );
 		p_out.arguments.push_back( "-water" );
 		p_out.arguments.push_back( string( p_in.water ) );
-		p_out.interactive_settings = p_in.custom_parameter;
+
+		if ( p_in.custom_parameter.has_value() )
+		{
+			std::set<interactive_keyword> seen_kw;
+			p_out.interactive_settings = p_in.custom_parameter;
+			for ( auto & it : p_in.custom_parameter->kw_v )
+			{
+				if ( seen_kw.contains( it.first.kw ) )
+					continue;
+
+				p_out.arguments.push_back( std::string( "-" ) += string( it.first.kw ) );
+			}
+		}
 	}
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
 

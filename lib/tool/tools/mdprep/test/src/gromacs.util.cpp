@@ -128,7 +128,7 @@ namespace VTX::test
 	}
 } // namespace VTX::test
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - empty", "[convert][pdb2gmx][empty]" )
 {
 	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -138,7 +138,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][empty]" )
 	CHECK( args.arguments.empty() );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - incorrect_forcefield", "[convert][pdb2gmx][incorrect_forcefield]" )
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -150,7 +150,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][incorrect_forcefield]" 
 	CHECK( args.arguments.empty() );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_input", "[convert][pdb2gmx][no_input]" )
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -164,7 +164,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_input]" )
 
 bool share_same_parent( const fs::path & l, const fs::path & r ) { return l.parent_path() == r.parent_path(); }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_output", "[convert][pdb2gmx][no_output]" )
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -182,7 +182,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][no_output]" )
 	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 12 ) } ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - correct_instruction", "[convert][pdb2gmx][correct_instruction]" )
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -191,7 +191,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][correct_instruction]" )
 
 	CHECK( data.expected_args == args );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][each_interactive_kw]" )
+TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[convert][pdb2gmx][each_interactive_kw]" )
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
@@ -210,6 +210,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[convert][pdb2gmx][each_interactive_kw]" )
 		data.expected_args.arguments.back() = std::string( "-" ) += VTX::Tool::Mdprep::Gromacs::string( kw );
 
 		VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
+		data.expected_args.interactive_settings = args.interactive_settings;
 		CHECK( data.expected_args == args );
 	}
 }

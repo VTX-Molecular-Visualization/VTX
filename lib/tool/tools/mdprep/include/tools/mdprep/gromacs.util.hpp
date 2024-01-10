@@ -81,6 +81,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	};
 } // namespace VTX::Tool::Mdprep::Gromacs
 
+// We implement our specialization of the hash structure for interactive_id as required for set and map
 // We got to declare the hash template specialisation before declaring its consumer
 namespace std
 {
@@ -144,16 +145,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    If the output_gro is empty, will use the input filename root and append "solv"
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
 
-	/* TODO : remove it if it passes CI (compile/tests should fail)
-	inline bool operator==(
-		const VTX::Tool::Mdprep::Gromacs::interactive_id & l,
-		const VTX::Tool::Mdprep::Gromacs::interactive_id & r
-	) noexcept
-	{
-		return l.chain == r.chain && l.kw == r.kw && l.num == r.num;
-	}
-	*/
-
 	// Returned by the script parser to inform how the parsing went
 	struct parse_report
 	{
@@ -174,10 +165,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 	parse_report parse_pdb2gmx_user_script( const std::string_view &, interactive_arguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
-
-// We implement our specialization of the hash structure for interactive_id as required for set and map
-namespace std
-{
-} // namespace std
 
 #endif
