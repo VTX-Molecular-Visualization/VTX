@@ -41,6 +41,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
 	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
 
+	const fs::path	 g_default_gmx_binary_relative_path = fs::path( "" );
+	const fs::path & default_gmx_binary_relative_path() noexcept { return g_default_gmx_binary_relative_path; }
+
 	void declare_ff_directory( const std::filesystem::path & p_path ) noexcept
 	{
 		std::string	   path_str = p_path.string();
@@ -124,6 +127,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).get_name().data() );
 		p_out.arguments.push_back( "-water" );
 		p_out.arguments.push_back( string( p_in.water ) );
+		p_out.interactive_settings = p_in.custom_parameter;
 	}
 	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
 
@@ -215,15 +219,16 @@ namespace VTX::Tool::Mdprep::Gromacs
 		// in order to include the newline into the line
 		const std::regex	line_regex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) (([a-zA-Z0-9]+ )?[0-9a-zA-Z]+)\r?\n?" };
 		static const size_t NUM_EXPECTED_GROUPS = 4;
-		// std::match_results<std::string_view::const_iterator> match;
-		std::smatch match;
+		std::smatch			match;
 
 		while ( current_pos != p_script.end() )
 		{
-			std::string line_buf { current_pos, next_newline_pos };
+			std::string line_buf {
+				current_pos, next_newline_pos
+			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
+			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
+			   // separated buffer for it to work as intended.
 			if ( std::regex_match( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
-			// if ( std::regex_search( current_view.begin(), current_view.end(), match, line_regex ) == false
-			//|| match.size() < NUM_EXPECTED_GROUPS )
 			{
 				out.error	= true;
 				out.message = std::format(

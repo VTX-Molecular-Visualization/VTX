@@ -21,6 +21,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Return the position of default forcefields packaged with vtx, relative to the vtx executable folder
 	const fs::path & default_ff_directory_relative_path() noexcept;
 
+	// Return the position of gmx binary relative to the vtx executable folder
+	const fs::path & default_gmx_binary_relative_path() noexcept;
+
 	// Show gromacs where to look for forcefields
 	void declare_ff_directory( const fs::path & ) noexcept;
 
@@ -76,6 +79,26 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		bool operator==( const interactive_id & ) const noexcept = default;
 	};
+} // namespace VTX::Tool::Mdprep::Gromacs
+
+// We got to declare the hash template specialisation before declaring its consumer
+namespace std
+{
+	template<>
+	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
+	{
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
+		{
+			uint64_t out = 0;
+			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
+			out |= p_arg.num | ( static_cast<uint32_t>( p_arg.chain ) << 24 );
+			return out;
+		}
+	};
+} // namespace std
+
+namespace VTX::Tool::Mdprep::Gromacs
+{
 
 	// organized version of the arguments to be used during interactive gromacs step
 	struct interactive_arguments
@@ -155,21 +178,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 // We implement our specialization of the hash structure for interactive_id as required for set and map
 namespace std
 {
-	template<>
-	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
-	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
-		{
-			uint64_t out = 0;
-			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
-			out |= p_arg.num | ( static_cast<uint32_t>( p_arg.chain ) << 24 );
-			return out;
-		}
-	};
 } // namespace std
-
-namespace VTX::Tool::Mdprep::Gromacs
-{
-} // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
