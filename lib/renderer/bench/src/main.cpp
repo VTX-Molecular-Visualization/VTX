@@ -39,9 +39,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer(
-			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
-		);
+		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );

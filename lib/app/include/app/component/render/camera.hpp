@@ -17,7 +17,6 @@ namespace VTX::App::Component::Render
 
 		inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 		inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
-		inline const Vec4f & getClipInfos() { return _clipInfos; }
 
 		inline const uint  getScreenWidth() const { return _screenWidth; }
 		inline const uint  getScreenHeight() const { return _screenHeight; }
@@ -79,7 +78,7 @@ namespace VTX::App::Component::Render
 		float _far			= 1e4f;
 		float _fov			= 60.f;
 
-		Vec3f _position = VEC3F_ZERO;
+		Vec3f _position = Vec3f( 0.f, 0.f, 40.f );
 		Quatf _rotation = QUATF_ID;
 
 		Vec3f _front = Internal::CAMERA_FRONT_DEFAULT;
@@ -91,11 +90,9 @@ namespace VTX::App::Component::Render
 
 		Mat4f _viewMatrix		= MAT4F_ID;
 		Mat4f _projectionMatrix = MAT4F_ID;
-		Vec4f _clipInfos		= VEC4F_ZERO;
 
 		void		 _updateRotation();
 		virtual void _updateViewMatrix();
-		void		 _updateClipInfos();
 
 		void _updateProjectionMatrix();
 		void _computePerspectiveProjectionMatrix();

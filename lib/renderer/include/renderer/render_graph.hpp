@@ -177,6 +177,12 @@ namespace VTX::Renderer
 			_context->resize( _renderQueue, p_width, p_height );
 		}
 
+		void setOutput( const Handle p_output )
+		{
+			assert( _context != nullptr );
+			_context->setOutput( p_output );
+		}
+
 		void clean()
 		{
 			_renderQueue.clear();

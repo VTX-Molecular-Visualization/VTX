@@ -70,6 +70,8 @@ namespace VTX::Renderer::Context
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
+		inline void setOutput( const Handle p_output ) { _output = p_output; }
+
 		inline void fillInfos( StructInfos & p_infos ) const
 		{
 			p_infos.gpuMemoryInfoDedicated		  = _openglInfos.gpuMemoryInfoDedicatedVidmemNVX;
@@ -115,6 +117,9 @@ namespace VTX::Renderer::Context
 			~_StructUniformEntry() { free( value ); }
 		};
 		std::unordered_map<std::string, std::unique_ptr<_StructUniformEntry>> _uniforms;
+
+		// Output.
+		Handle _output;
 
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;

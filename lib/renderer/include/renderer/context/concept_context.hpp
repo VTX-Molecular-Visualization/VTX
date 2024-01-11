@@ -44,6 +44,9 @@ namespace VTX::Renderer::Context
 					 p_context.resize( p_renderQueue, p_width, p_height )
 				 } -> std::same_as<void>;
 				 {
+					 p_context.setOutput( p_output )
+				 } -> std::same_as<void>;
+				 {
 					 p_context.setUniform( p_uniformValue, p_uniformKey )
 				 } -> std::same_as<void>;
 				 {

@@ -1,3 +1,4 @@
+
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
 #include <QOpenGLContext>
 #include <app/vtx_app.hpp>
@@ -23,6 +24,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		assert( context()->isValid() );
 
 		VTX::App::VTXApp::get().getRenderer().build( defaultFramebufferObject() );
+		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
 	}
 
 	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0 ); }
@@ -30,5 +32,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
 		VTX::App::VTXApp::get().getRenderer().resize( p_width, p_height );
+		VTX::App::VTXApp::get().getRenderer().setOutput( defaultFramebufferObject() );
 	}
 } // namespace VTX::UI::QT::Tool::Render::Widget

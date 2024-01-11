@@ -63,6 +63,8 @@ namespace VTX::Renderer::Context
 	{
 		assert( p_outInstructions.empty() );
 
+		_output = p_output;
+
 		// Create shared uniforms.
 		if ( p_uniforms.empty() == false )
 		{
@@ -150,7 +152,8 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				GL::Framebuffer::bindDefault( p_output, GL_DRAW_FRAMEBUFFER );
+				p_outInstructions.emplace_back( [ this ]()
+												{ GL::Framebuffer::bindDefault( _output, GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Settings.
@@ -332,7 +335,7 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
+				p_outInstructions.emplace_back( []() { GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Disable options.
@@ -352,7 +355,7 @@ namespace VTX::Renderer::Context
 			p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 		}
 
-		glFinish();
+		// glFinish();
 
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 	}

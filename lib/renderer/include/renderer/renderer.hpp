@@ -97,7 +97,7 @@ namespace VTX::Renderer
 			_renderGraph->getUniform<T>( p_value, p_key );
 		}
 
-		inline void resize( const size_t p_width, const size_t p_height )
+		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
 			_width	= p_width;
 			_height = p_height;
@@ -110,7 +110,15 @@ namespace VTX::Renderer
 			VTX_DEBUG( "resize: {} {}", p_width, p_height );
 		}
 
-		inline void build( const uint p_output = 0 )
+		inline void setOutput( const uint p_output )
+		{
+			if ( _renderGraph->isBuilt() )
+			{
+				_renderGraph->setOutput( p_output );
+			}
+		}
+
+		inline void build( const uint p_output = 0, void * p_loader = nullptr )
 		{
 			clean();
 
@@ -120,7 +128,7 @@ namespace VTX::Renderer
 					[ & ]()
 					{
 						if ( _renderGraph->setup(
-								 _loader,
+								 p_loader ? p_loader : _loader,
 								 _width,
 								 _height,
 								 _shaderPath,

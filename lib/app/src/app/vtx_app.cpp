@@ -197,7 +197,7 @@ namespace VTX::App
 	{
 		_renderer->setUniform( SCENE().getCamera().getViewMatrix(), "Matrix view" );
 		_renderer->setUniform( SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
-		_renderer->setUniform( SCENE().getCamera().getClipInfos(), "Camera clip infos" );
+		_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
 	}
 
 	//	bool VTXApp::hasAnyModifications() const
