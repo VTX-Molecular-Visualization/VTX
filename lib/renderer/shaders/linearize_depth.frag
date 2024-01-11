@@ -10,7 +10,7 @@ layout( location = 0 ) out float outLinearizedDepth;
 
 float linearizeDepth( const vec4 p_clipInfo, const float p_depth )
 {
-	if ( uniformsCamera.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		//float ndc = p_depth * 2.0 - 1.0; 
 		//return (2.0 * getCameraNear() * getCameraFar()) / (getCameraFar() + getCameraNear() - ndc * (getCameraFar() - getCameraNear()));	

@@ -2,6 +2,7 @@
 
 #include "../constant.glsl"
 #include "../layout_uniforms_camera.glsl"
+#include "../layout_uniforms_color.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inVertexPosition;
@@ -17,7 +18,8 @@ outData;
 
 void main()
 {
-	outData.vertexColor	   = uniformsCamera.colorLayout[ inVertexColor ];
+	//outData.vertexColor	   = uniformsColor.colorLayout[ inVertexColor ];
+	outData.vertexColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	outData.vertexVisible  = inVertexFlag & ( 1 << FLAG_VISIBILITY );
 	outData.vertexSelected = inVertexFlag & ( 1 << FLAG_SELECTION );
 	outData.vertexId	   = inVertexId;

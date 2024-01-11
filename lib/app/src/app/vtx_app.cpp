@@ -83,7 +83,7 @@ namespace VTX::App
 
 		// Create renderer
 		_renderer
-			= std::make_unique<Renderer::Renderer>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" / "" );
+			= std::make_unique<Renderer::Renderer>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
 
 		// Regsiter loop events
 		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
@@ -97,10 +97,11 @@ namespace VTX::App
 		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime ); }
 		//);
 
+		// TODO: use camera callbacks.
 		_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
-		_renderCallback.addCallback(
-			this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
-		);
+		//_renderCallback.addCallback(
+		//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
+		//);
 
 		_tickChrono.start();
 
@@ -200,7 +201,7 @@ namespace VTX::App
 	{
 		_renderer->setUniform( SCENE().getCamera().getViewMatrix(), "Matrix view" );
 		_renderer->setUniform( SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
-		_renderer->setUniform( SCENE().getCamera().getClipInfos(), "Camera clip infos" );
+		_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

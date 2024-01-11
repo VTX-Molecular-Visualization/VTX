@@ -177,16 +177,19 @@ namespace VTX::Renderer
 			_context->resize( _renderQueue, p_width, p_height );
 		}
 
+		void setOutput( const Handle p_output )
+		{
+			assert( _context != nullptr );
+			_context->setOutput( p_output );
+		}
+
 		void clean()
 		{
 			_renderQueue.clear();
 			_context.reset( nullptr );
 		}
 
-		inline void addUniforms( const Uniforms & p_uniforms )
-		{
-			_uniforms.insert( _uniforms.end(), p_uniforms.begin(), p_uniforms.end() );
-		}
+		inline void addUniforms( const Uniforms & p_uniforms ) { _uniforms.push_back( p_uniforms ); }
 
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key )
@@ -222,10 +225,10 @@ namespace VTX::Renderer
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 
-		const Output * _output;
-		Passes		   _passes;
-		Uniforms	   _uniforms;
-		Links		   _links;
+		const Output *		  _output;
+		Passes				  _passes;
+		std::vector<Uniforms> _uniforms;
+		Links				  _links;
 	};
 
 } // namespace VTX::Renderer

@@ -2,6 +2,7 @@
 
 #include "../constant.glsl"
 #include "../layout_uniforms_camera.glsl"
+#include "../layout_uniforms_color.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inSpherePos;
@@ -23,13 +24,14 @@ outData;
 void main()
 {
 	outData.viewSpherePos	 = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-	outData.sphereColor		 = uniformsCamera.colorLayout[ inSphereColor ];
+	//outData.sphereColor		 = uniformsColor.colorLayout[ inSphereColor ];
+	outData.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 	outData.sphereId		 = inSphereId;
 	outData.sphereVisible	 = inSphereFlag & ( 1 << FLAG_VISIBILITY );
 	outData.sphereSelected	 = inSphereFlag & ( 1 << FLAG_SELECTION );	
 
-	if ( uniformsCamera.isCameraPerspective )
+	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Compute normalized view vector.
 		outData.dotViewSpherePos  = dot( outData.viewSpherePos, outData.viewSpherePos );

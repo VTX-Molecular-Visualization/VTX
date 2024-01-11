@@ -39,9 +39,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer(
-			WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders" / "", ui.getProcAddress()
-		);
+		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 
 		// Camera.
 		Camera camera( WIDTH, HEIGHT );
@@ -159,7 +157,7 @@ int main( int, char ** )
 		// Generate array of random colors.
 		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 		std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
-		renderer.setColorLayout( colorLayout.data() );
+		// renderer.setColorLayout( colorLayout.data() );
 
 		// Main loop.
 		while ( isRunning )

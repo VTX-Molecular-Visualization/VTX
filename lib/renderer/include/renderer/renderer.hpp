@@ -68,17 +68,20 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { "Color layout",
-					E_TYPE::COLOR4_256,
-					StructUniformValue<Util::Color::Rgba[ 256 ]> { { COLOR_WHITE } } },
-				  { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
 				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
-				  { "Is perspective", E_TYPE::BOOL, StructUniformValue<bool> { true } } }
+				  { "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } }
+			);
+
+			// create array of 256 color white.
+			Util::Color::Rgba colors[ 256 ] = { COLOR_WHITE };
+			_renderGraph->addUniforms(
+				{ { "Color layout", E_TYPE::COLOR4_256, StructUniformValue<Util::Color::Rgba[ 256 ]> { COLOR_RED } } }
 			);
 		}
 
@@ -94,7 +97,7 @@ namespace VTX::Renderer
 			_renderGraph->getUniform<T>( p_value, p_key );
 		}
 
-		inline void resize( const size_t p_width, const size_t p_height )
+		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
 			_width	= p_width;
 			_height = p_height;
@@ -103,9 +106,19 @@ namespace VTX::Renderer
 			{
 				_renderGraph->resize( p_width, p_height );
 			}
+
+			VTX_DEBUG( "resize: {} {}", p_width, p_height );
 		}
 
-		inline void build( const uint p_output = 0 )
+		inline void setOutput( const uint p_output )
+		{
+			if ( _renderGraph->isBuilt() )
+			{
+				_renderGraph->setOutput( p_output );
+			}
+		}
+
+		inline void build( const uint p_output = 0, void * p_loader = nullptr )
 		{
 			clean();
 
@@ -115,7 +128,7 @@ namespace VTX::Renderer
 					[ & ]()
 					{
 						if ( _renderGraph->setup(
-								 _loader,
+								 p_loader ? p_loader : _loader,
 								 _width,
 								 _height,
 								 _shaderPath,

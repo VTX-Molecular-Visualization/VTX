@@ -53,25 +53,32 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::build(
-		const RenderQueue &			 p_renderQueue,
-		const Links &				 p_links,
-		const Handle				 p_output,
-		const Uniforms &			 p_uniforms,
-		Instructions &				 p_outInstructions,
-		InstructionsDurationRanges & p_outInstructionsDurationRanges
+		const RenderQueue &			  p_renderQueue,
+		const Links &				  p_links,
+		const Handle				  p_output,
+		const std::vector<Uniforms> & p_uniforms,
+		Instructions &				  p_outInstructions,
+		InstructionsDurationRanges &  p_outInstructionsDurationRanges
 	)
 	{
 		assert( p_outInstructions.empty() );
+
+		_output = p_output;
 
 		// Create shared uniforms.
 		if ( p_uniforms.empty() == false )
 		{
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
-
-			_ubo = std::make_unique<GL::Buffer>();
-			_createUniforms( _ubo.get(), p_uniforms );
-			p_outInstructions.emplace_back( [ this ]() { _ubo->bind( GL_UNIFORM_BUFFER, 15 ); } );
+			uint binding = 15;
+			for ( const Uniforms & uniforms : p_uniforms )
+			{
+				_ubosShared.emplace_back( std::make_unique<GL::Buffer>() );
+				const auto ubo = _ubosShared.back().get();
+				_createUniforms( ubo, uniforms );
+				p_outInstructions.emplace_back( [ ubo, binding ]() { ubo->bind( GL_UNIFORM_BUFFER, binding ); } );
+				binding--;
+			}
 
 			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 		}
@@ -145,7 +152,8 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				GL::Framebuffer::bindDefault( p_output, GL_DRAW_FRAMEBUFFER );
+				p_outInstructions.emplace_back( [ this ]()
+												{ GL::Framebuffer::bindDefault( _output, GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Settings.
@@ -327,7 +335,7 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER );
+				p_outInstructions.emplace_back( []() { GL::Framebuffer::unbindDefault( GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Disable options.
@@ -342,12 +350,12 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind main ubo.
-		if ( p_uniforms.empty() == false )
+		for ( const auto & ubo : _ubosShared )
 		{
-			p_outInstructions.emplace_back( [ this ]() { _ubo->unbind(); } );
+			p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 		}
 
-		glFinish();
+		// glFinish();
 
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 	}
@@ -498,6 +506,8 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( key ) == _uniforms.end() );
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
+
+			VTX_DEBUG( "Register uniform: {} (s{})(o{})", key, size, offset );
 
 			offset += size;
 		}

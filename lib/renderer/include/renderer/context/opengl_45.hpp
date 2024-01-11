@@ -23,12 +23,12 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		void build(
-			const RenderQueue &			 p_renderQueue,
-			const Links &				 p_links,
-			const Handle				 p_output,
-			const Uniforms &			 p_uniforms,
-			Instructions &				 p_outInstructions,
-			InstructionsDurationRanges & p_outInstructionsDurationRanges
+			const RenderQueue &			  p_renderQueue,
+			const Links &				  p_links,
+			const Handle				  p_output,
+			const std::vector<Uniforms> & p_uniforms,
+			Instructions &				  p_outInstructions,
+			InstructionsDurationRanges &  p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
@@ -39,12 +39,12 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   src	 = entry->value;
-			auto * const						   dest	 = &p_value;
+			auto * const						   dest	 = entry->value;
+			auto * const						   src	 = &p_value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
-			memcpy( src, dest, entry->size );
+			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset, GLsizei( entry->size ) );
 		}
 
@@ -54,12 +54,12 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   src	 = &p_value;
-			auto * const						   dest	 = entry->value;
+			auto * const						   dest	 = &p_value;
+			auto * const						   src	 = entry->value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
-			memcpy( src, dest, entry->size );
+			memcpy( dest, src, entry->size );
 		}
 
 		template<typename T>
@@ -69,6 +69,8 @@ namespace VTX::Renderer::Context
 
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
+
+		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
 		inline void fillInfos( StructInfos & p_infos ) const
 		{
@@ -94,7 +96,7 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
 		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::unique_ptr<GL::Buffer>										  _ubo;
+		std::vector<std::unique_ptr<GL::Buffer>>						  _ubosShared;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
@@ -115,6 +117,9 @@ namespace VTX::Renderer::Context
 			~_StructUniformEntry() { free( value ); }
 		};
 		std::unordered_map<std::string, std::unique_ptr<_StructUniformEntry>> _uniforms;
+
+		// Output.
+		Handle _output;
 
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
@@ -147,6 +152,7 @@ namespace VTX::Renderer::Context
 
 			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
 							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
+
 			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 

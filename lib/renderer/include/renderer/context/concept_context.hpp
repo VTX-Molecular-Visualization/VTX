@@ -26,7 +26,7 @@ namespace VTX::Renderer::Context
 			  const RenderQueue &			p_renderQueue,
 			  const Links &					p_links,
 			  const Handle					p_output,
-			  const Uniforms &				p_uniforms,
+			  const std::vector<Uniforms> & p_uniforms,
 			  const std::string &			p_uniformKey,
 			  const std::vector<std::any> & p_data,
 			  const Util::Chrono::Task &	p_task,
@@ -42,6 +42,9 @@ namespace VTX::Renderer::Context
 				 } -> std::same_as<void>;
 				 {
 					 p_context.resize( p_renderQueue, p_width, p_height )
+				 } -> std::same_as<void>;
+				 {
+					 p_context.setOutput( p_output )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.setUniform( p_uniformValue, p_uniformKey )

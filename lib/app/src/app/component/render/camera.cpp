@@ -18,7 +18,6 @@ namespace VTX::App::Component::Render
 		_fov( VTXApp::get().getSettings().get<float>( FOV_KEY ) )
 	{
 		_updateRotation();
-		_updateClipInfos();
 
 		const CAMERA_PROJECTION & cameraProjection
 			= VTXApp::get().getSettings().get<CAMERA_PROJECTION>( PROJECTION_KEY );
@@ -72,7 +71,6 @@ namespace VTX::App::Component::Render
 		// Avoid too little value.
 		_near = Util::Math::max( 1e-1f, p_near );
 
-		_updateClipInfos();
 		_updateProjectionMatrix();
 	}
 	void Camera::setFar( const float p_far )
@@ -80,7 +78,6 @@ namespace VTX::App::Component::Render
 		// Avoid too little value.
 		_far = Util::Math::max( 1e-1f, p_far );
 
-		_updateClipInfos();
 		_updateProjectionMatrix();
 	}
 
@@ -212,7 +209,6 @@ namespace VTX::App::Component::Render
 
 		// App::Old::VTXApp::get().MASK |= App::Old::Render::VTX_MASK_CAMERA_UPDATED;
 	}
-	void Camera::_updateClipInfos() { _clipInfos = Vec4f( _near * _far, _far, _far - _near, _near ); }
 
 	void Camera::_computePerspectiveProjectionMatrix()
 	{
