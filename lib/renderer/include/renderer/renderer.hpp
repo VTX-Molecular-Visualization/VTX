@@ -81,7 +81,7 @@ namespace VTX::Renderer
 			// create array of 256 color white.
 			Util::Color::Rgba colors[ 256 ] = { COLOR_WHITE };
 			_renderGraph->addUniforms(
-				{ { "Color layout", E_TYPE::COLOR4_256, StructUniformValue<Util::Color::Rgba[ 256 ]> { COLOR_WHITE } } }
+				{ { "Color layout", E_TYPE::COLOR4_256, StructUniformValue<Util::Color::Rgba[ 256 ]> { COLOR_RED } } }
 			);
 		}
 
@@ -106,6 +106,8 @@ namespace VTX::Renderer
 			{
 				_renderGraph->resize( p_width, p_height );
 			}
+
+			VTX_DEBUG( "resize: {} {}", p_width, p_height );
 		}
 
 		inline void build( const uint p_output = 0 )

@@ -39,12 +39,12 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   src	 = entry->value;
-			auto * const						   dest	 = &p_value;
+			auto * const						   dest	 = entry->value;
+			auto * const						   src	 = &p_value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
-			memcpy( src, dest, entry->size );
+			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset, GLsizei( entry->size ) );
 		}
 
@@ -54,12 +54,12 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   src	 = &p_value;
-			auto * const						   dest	 = entry->value;
+			auto * const						   dest	 = &p_value;
+			auto * const						   src	 = entry->value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
-			memcpy( src, dest, entry->size );
+			memcpy( dest, src, entry->size );
 		}
 
 		template<typename T>
@@ -147,6 +147,7 @@ namespace VTX::Renderer::Context
 
 			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
 							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
+
 			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 
