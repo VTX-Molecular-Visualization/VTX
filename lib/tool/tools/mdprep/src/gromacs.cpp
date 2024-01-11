@@ -8,7 +8,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	void submit_gromacs_command( gromacs_command_args & p_args )
 	{
 		// QString pgm { "D:\\programing\\projects\\ConsoleApplication2\\x64\\Debug\\ConsoleApplication2.exe" };
-		QString		pgm { "D:\\cnam\\tmp\\gmx.exe" };
+		QString		pgm { "D:\\cnam\\tmp\\gmx.exe" }; // TODO : do it a proper way
 		QStringList qt_args;
 		for ( auto & arg : p_args.arguments )
 			qt_args << QString( arg.c_str() );
@@ -28,6 +28,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 		proc.waitForStarted( 6000 );
 
 		if ( p_args.interactive_settings.has_value() ) {}
+		else
+		{
+			// TODO : watch over the stdout/stderr to detect if gromacs is waiting for something in the scenario of no
+			// interactive settings
+		}
+
 		proc.waitForFinished( 6000 );
 		buf = proc.readAllStandardError();
 		p_args.stderr_ += buf.toStdString();
