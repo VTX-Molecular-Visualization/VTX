@@ -56,30 +56,24 @@ namespace VTX::PythonBinding
 			.def( "setName", &Component::Chemistry::Molecule::setName )
 			.def(
 				"getAtoms",
-				[]( Component::Chemistry::Molecule & p_mol ) { return p_mol.getAtoms(); },
-				pybind11::return_value_policy::reference
+				[]( Component::Chemistry::Molecule & p_mol ) { return &p_mol.getAtoms(); },
+				pybind11::return_value_policy::reference_internal
 			)
 			.def(
 				"getAtoms",
-				[]( const Component::Chemistry::Molecule & p_mol ) { return p_mol.getAtoms(); },
-				pybind11::return_value_policy::reference
+				[]( const Component::Chemistry::Molecule & p_mol ) { return &p_mol.getAtoms(); },
+				pybind11::return_value_policy::reference_internal
 			)
 			.def(
 				"getAtom",
 				[]( const Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
-				{
-					const Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
-					return *atom;
-				},
+				{ return *p_mol.getAtom( p_index ); },
 				pybind11::return_value_policy::reference
 			)
 			.def(
 				"getAtom",
 				[]( Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
-				{
-					Component::Chemistry::Atom * const atom = p_mol.getAtom( p_index );
-					return *atom;
-				},
+				{ return *p_mol.getAtom( p_index ); },
 				pybind11::return_value_policy::reference
 			);
 
