@@ -9,6 +9,7 @@
 #include "app/component/render/camera.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/serialization/serialization.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/internal/application/settings.hpp"
@@ -51,6 +52,9 @@ namespace VTX::App
 
 		_registryManager = std::make_unique<Application::ECS::RegistryManager>();
 		_system->referenceSystem( REGISTRY_MANAGER_KEY, _registryManager.get() );
+
+		_workerManager = std::make_unique<Core::Worker::WorkerManager>();
+		_system->referenceSystem( WORKER_MANAGER_KEY, _workerManager.get() );
 
 		_actionManager = std::make_unique<Application::Action::ActionManager>();
 		_system->referenceSystem( ACTION_MANAGER_KEY, _actionManager.get() );
@@ -296,6 +300,15 @@ namespace VTX::App
 		return _system->getSystem<Application::Action::ActionManager>( ACTION_MANAGER_KEY );
 	}
 
+	Core::Worker::WorkerManager & VTXApp::getWorkerManager()
+	{
+		return _system->getSystem<Core::Worker::WorkerManager>( WORKER_MANAGER_KEY );
+	}
+	const Core::Worker::WorkerManager & VTXApp::getWorkerManager() const
+	{
+		return _system->getSystem<Core::Worker::WorkerManager>( WORKER_MANAGER_KEY );
+	}
+
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
 	Renderer::Renderer &				RENDERER() { return VTXApp::get().getRenderer(); }
 	Application::Settings &				SETTINGS() { return VTXApp::get().getSettings(); }
@@ -303,5 +316,6 @@ namespace VTX::App
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }
 	Core::Serialization::Serialization & SERIALIZER() { return VTXApp::get().getSerializationTool(); }
 	Application::Action::ActionManager & VTX_ACTION() { return VTXApp::get().getActionManager(); }
+	Core::Worker::WorkerManager &		 THREADING() { return VTXApp::get().getWorkerManager(); }
 
 } // namespace VTX::App

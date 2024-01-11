@@ -7,6 +7,7 @@
 #include "application/_fwd.hpp"
 #include "core/ecs/_fwd.hpp"
 #include "core/serialization/_fwd.hpp"
+#include "core/worker/_fwd.hpp"
 #include <memory>
 #include <string>
 #include <util/chrono.hpp>
@@ -33,6 +34,7 @@ namespace VTX
 			inline static const std::string SELECTION_MANAGER_KEY  = "SELECTION_MANAGER";
 			inline static const std::string SERIALIZATION_TOOL_KEY = "SERIALIZATION_TOOL";
 			inline static const std::string ACTION_MANAGER_KEY	   = "ACTION_MANAGER";
+			inline static const std::string WORKER_MANAGER_KEY	   = "WORKER_MANAGER";
 
 		  public:
 			VTXApp( StructPrivacyToken );
@@ -87,6 +89,9 @@ namespace VTX
 			Application::Action::ActionManager &	   getActionManager();
 			const Application::Action::ActionManager & getActionManager() const;
 
+			Core::Worker::WorkerManager &		getWorkerManager();
+			const Core::Worker::WorkerManager & getWorkerManager() const;
+
 		  private:
 			Util::Chrono _tickChrono = Util::Chrono();
 
@@ -100,6 +105,7 @@ namespace VTX
 			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
 			std::unique_ptr<Core::Serialization::Serialization>		  _serializationToolManager;
 			std::unique_ptr<Application::Action::ActionManager>		  _actionManager;
+			std::unique_ptr<Core::Worker::WorkerManager>			  _workerManager;
 
 			Core::Monitoring::Stats _stats = Core::Monitoring::Stats();
 
@@ -125,6 +131,7 @@ namespace VTX
 		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();
 		Core::Serialization::Serialization & SERIALIZER();
+		Core::Worker::WorkerManager &		 THREADING();
 		Application::Action::ActionManager & VTX_ACTION();
 	} // namespace App
 } // namespace VTX
