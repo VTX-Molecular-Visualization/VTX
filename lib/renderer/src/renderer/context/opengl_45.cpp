@@ -538,7 +538,7 @@ namespace VTX::Renderer::Context
 				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
 				break;
 			case E_TYPE::COLOR4_256:
-				_setUniformDefaultValue<Util::Color::Rgba[ 256 ]>( descUniform, p_descProgram, p_descPass );
+				_setUniformDefaultValue<std::array<Util::Color::Rgba, 256>>( descUniform, p_descProgram, p_descPass );
 				break;
 			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}

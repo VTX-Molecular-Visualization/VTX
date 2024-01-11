@@ -79,10 +79,12 @@ namespace VTX::Renderer
 			);
 
 			// create array of 256 color white.
-			Util::Color::Rgba colors[ 256 ] = { COLOR_WHITE };
-			_renderGraph->addUniforms(
-				{ { "Color layout", E_TYPE::COLOR4_256, StructUniformValue<Util::Color::Rgba[ 256 ]> { COLOR_RED } } }
-			);
+			std::array<Util::Color::Rgba, 256> colorLayout;
+			std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
+
+			_renderGraph->addUniforms( { { "Color layout",
+										   E_TYPE::COLOR4_256,
+										   StructUniformValue<std::array<Util::Color::Rgba, 256>> { colorLayout } } } );
 		}
 
 		template<typename T>
@@ -216,7 +218,7 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void setColorLayout( const Util::Color::Rgba p_layout[ 256 ] )
+		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> p_layout )
 		{
 			setUniform( p_layout, "Color layout" );
 		}

@@ -155,7 +155,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
 						);
-						p_renderer->setColorLayout( colorLayout.data() );
+						p_renderer->setColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
@@ -163,7 +163,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
-						p_renderer->setColorLayout( colorLayout.data() );
+						p_renderer->setColorLayout( colorLayout );
 					}
 
 					ImGui::EndMenu();

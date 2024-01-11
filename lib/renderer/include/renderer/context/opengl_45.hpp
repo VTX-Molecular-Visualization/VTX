@@ -34,13 +34,28 @@ namespace VTX::Renderer::Context
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		template<typename T>
-		inline void setUniform( T & p_value, const std::string & p_key )
+		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
 			auto * const						   dest	 = entry->value;
 			auto * const						   src	 = &p_value;
+
+			assert( src != nullptr && dest != nullptr && entry->size );
+
+			memcpy( dest, src, entry->size );
+			entry->buffer->setSubData( p_value, entry->offset, GLsizei( entry->size ) );
+		}
+
+		template<typename T, unsigned int S>
+		inline void setUniform( const std::array<T, S> & p_value, const std::string & p_key )
+		{
+			assert( _uniforms.find( p_key ) != _uniforms.end() );
+
+			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
+			auto * const						   dest	 = entry->value;
+			auto * const						   src	 = p_value.data();
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 

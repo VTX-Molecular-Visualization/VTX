@@ -24,8 +24,8 @@ outData;
 void main()
 {
 	outData.viewSpherePos	 = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-	//outData.sphereColor		 = uniformsColor.colorLayout[ inSphereColor ];
-	outData.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
+	outData.sphereColor		 = uniformsColor.colorLayout[ inSphereColor ];
+	//outData.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 	outData.sphereId		 = inSphereId;
 	outData.sphereVisible	 = inSphereFlag & ( 1 << FLAG_VISIBILITY );

@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_DESCRIPTORS__
 
 #include "enums.hpp"
+#include <array>
 #include <functional>
 #include <map>
 #include <optional>
@@ -84,7 +85,7 @@ namespace VTX::Renderer
 		StructUniformValue<Mat4f>,
 		StructUniformValue<Util::Color::Rgba>,
 		// TODO: handle array of data.
-		StructUniformValue<Util::Color::Rgba[ 256 ]>>;
+		StructUniformValue<std::array<Util::Color::Rgba, 256>>>;
 
 	struct Uniform
 	{

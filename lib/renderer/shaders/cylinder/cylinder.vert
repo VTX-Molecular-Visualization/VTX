@@ -18,8 +18,8 @@ outData;
 
 void main()
 {
-	//outData.vertexColor	   = uniformsColor.colorLayout[ inVertexColor ];
-	outData.vertexColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
+	outData.vertexColor	   = uniformsColor.colorLayout[ inVertexColor ];
+	//outData.vertexColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	outData.vertexVisible  = inVertexFlag & ( 1 << FLAG_VISIBILITY );
 	outData.vertexSelected = inVertexFlag & ( 1 << FLAG_SELECTION );
 	outData.vertexId	   = inVertexId;
