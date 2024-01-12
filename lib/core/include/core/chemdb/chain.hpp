@@ -16,6 +16,7 @@ namespace VTX::Core::ChemDB::Chain
 	// Chain colors are defined by the first letter of its name
 	const size_t NB_COLORS = 26;
 
+	// TODO: move to color layout.
 	const Util::Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ] = {
 		{ 192, 208, 255 }, // A, a,
 		{ 176, 255, 176 }, // B, b,

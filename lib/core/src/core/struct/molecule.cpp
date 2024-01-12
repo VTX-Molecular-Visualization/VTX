@@ -1,4 +1,5 @@
 #include "core/struct/molecule.hpp"
+#include "core/chemdb/secondary_structure.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::Core::Struct
@@ -41,6 +42,7 @@ namespace VTX::Core::Struct
 		residueFirstBondIndexes.resize( p_count, INVALID_INDEX );
 		residueBondCounts.resize( p_count, 0 );
 		residueOriginalIds.resize( p_count, 0 );
+		residueSecondaryStructure.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 	}
 	size_t Molecule::getResidueCount() const { return residueSymbols.size(); }
 

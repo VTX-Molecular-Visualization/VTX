@@ -13,19 +13,12 @@ namespace VTX::Renderer
 		// const Mat4f * normals;
 		std::vector<Vec3f> * atomPositions;
 		std::vector<uchar> * atomColors;
-
-		// std::vector<size_t> * atomIdColors;
-		// std::vector<size_t> * atomIdSymbol;
-
-		// std::vector<float> * atomSymbolById;
-		// std::vector<float> * atomRadiusById; // Radius layout. Maybe be change for infos by symbol layout.
-		// std::vector<Util::Color::Rgba> * colorById; // Color layout.
-
-		std::vector<float> * atomRadii;		   // To delete.
-		std::vector<bool> *	 atomVisibilities; // ?
-		std::vector<bool> *	 atomSelections;   // To redo.
-		std::vector<uint> *	 atomIds;		   // Keep?
-		std::vector<uint> *	 bonds;			   // Ok.
+		std::vector<float> * atomRadii;
+		std::vector<bool> *	 atomVisibilities;
+		std::vector<bool> *	 atomSelections;
+		std::vector<uint> *	 atomIds;
+		std::vector<uint> *	 bonds;
+		std::vector<uchar> * secondaryStructures;
 	};
 
 } // namespace VTX::Renderer

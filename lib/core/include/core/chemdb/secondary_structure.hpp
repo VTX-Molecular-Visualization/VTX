@@ -7,6 +7,7 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 {
 	enum class TYPE : int
 	{
+		UNKNOWN			  = -1,
 		HELIX_ALPHA_RIGHT = 0,
 		HELIX_ALPHA_LEFT  = 1,
 		HELIX_3_10_RIGHT  = 2,
@@ -18,6 +19,7 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		COUNT
 	};
 
+	// TODO: move to color layout.
 	inline static const Util::Color::Rgba COLORS_JMOL[] = { Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
 															Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
 															Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT

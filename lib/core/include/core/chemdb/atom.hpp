@@ -504,6 +504,7 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f  // UUO		= 118,
 	};
 
+	// TODO: move to collor layout.
 	// CPK by http://jmol.sourceforge.net/jscolors/#Jmolcolors
 	const Util::Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
 		{ 250, 22, 145 },  // UNKNOWN		= 0,

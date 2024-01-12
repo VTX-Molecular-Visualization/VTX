@@ -17,12 +17,6 @@ namespace VTX::Renderer
 	static const Attachment imageR8 { E_FORMAT::R8 };
 
 	// Data.
-	static const Data dataMolecules { { { "Positions", E_TYPE::FLOAT, 3 },
-										{ "Colors", E_TYPE::UBYTE, 1 },
-										{ "Radii", E_TYPE::FLOAT, 1 },
-										{ "Ids", E_TYPE::UINT, 1 },
-										{ "Flags", E_TYPE::UBYTE, 1 } } };
-
 	static const Data dataMeshes { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Normales", E_TYPE::FLOAT, 3 },
@@ -31,13 +25,27 @@ namespace VTX::Renderer
 		{ "Flags", E_TYPE::UBYTE, 1 },
 	} };
 
+	static const Data dataRibbons { { { "Positions", E_TYPE::FLOAT, 3 },
+									  { "Directions", E_TYPE::FLOAT, 3 },
+									  { "Types", E_TYPE::UBYTE, 1 },
+									  { "Colors", E_TYPE::UBYTE, 1 },
+									  { "Ids", E_TYPE::UINT, 1 },
+									  { "Flags", E_TYPE::UBYTE, 1 } } };
+
+	static const Data dataSpheresCylinders { { { "Positions", E_TYPE::FLOAT, 3 },
+											   { "Colors", E_TYPE::UBYTE, 1 },
+											   { "Radii", E_TYPE::FLOAT, 1 },
+											   { "Ids", E_TYPE::UINT, 1 },
+											   { "Flags", E_TYPE::UBYTE, 1 } } };
+
 	// Passes.
 
 	// Geometric.
 	static const Pass descPassGeometric {
 		"Geometric",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Molecules", dataMolecules } },
-				 { E_CHANNEL_INPUT::_1, { "Meshes", dataMeshes } } },
+		Inputs { { E_CHANNEL_INPUT::_0, { "Molecules", dataSpheresCylinders } },
+				 { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
+				 { E_CHANNEL_INPUT::_2, { "Meshes", dataMeshes } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
 				  { E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
 				  { E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },

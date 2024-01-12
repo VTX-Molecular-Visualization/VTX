@@ -186,6 +186,7 @@ namespace VTX::Core::ChemDB::Residue
 		"Water",		  // HOH
 	};
 
+	// TODO: move to color layout.
 	// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
 	const Util::Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
 		{ 190, 160, 110 }, // UNKNOWN
