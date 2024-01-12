@@ -63,14 +63,14 @@ int main( int, char ** )
 				camera.resize( p_width, p_height );
 			}
 		);
-		inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
-											 { renderer.setMousePosition( p_position ); } );
+
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
 			{
 				camera.setCallbackMatrixView( nullptr );
 				camera.setCallbackMatrixProjection( nullptr );
 				camera.setCallbackClipInfos( nullptr );
+				inputManager.setCallbackMouseMotion( nullptr );
 			}
 		);
 
@@ -83,6 +83,8 @@ int main( int, char ** )
 													{ renderer.setMatrixProjection( p_matrix ); } );
 				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
+				inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
+													 { renderer.setMousePosition( p_position ); } );
 			}
 		);
 
