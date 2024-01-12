@@ -41,7 +41,8 @@ namespace VTX::Renderer
 	{
 		POINTS,
 		LINES,
-		TRIANGLES
+		TRIANGLES,
+		PATCHES,
 	};
 
 	enum struct E_TYPE

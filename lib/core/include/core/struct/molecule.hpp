@@ -52,7 +52,7 @@ namespace VTX::Core::Struct
 		std::vector<size_t>							  residueFirstBondIndexes = std::vector<size_t>();
 		std::vector<size_t>							  residueBondCounts		  = std::vector<size_t>();
 		std::vector<size_t>							  residueOriginalIds	  = std::vector<size_t>();
-		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructure
+		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes
 			= std::vector<ChemDB::SecondaryStructure::TYPE>();
 
 		void   initResidues( const size_t p_count );
