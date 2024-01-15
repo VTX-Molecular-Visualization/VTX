@@ -88,6 +88,8 @@ namespace VTX::App
 		// Regsiter loop events
 		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
 
+		_postUpdateCallback.addCallback( this, []( const float p_elapsedTime ) { THREADING().lateUpdate(); } );
+
 		// Event manager - Useless: nothing is delayed.
 		//_updateCallback.addCallback(
 		//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }

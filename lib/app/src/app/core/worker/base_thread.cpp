@@ -1,30 +1,59 @@
 #include "app/core/worker/base_thread.hpp"
+#include "app/core/worker/worker_manager.hpp"
+#include "app/vtx_app.hpp"
+#include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Core::Worker
 {
-	BaseThread::~BaseThread() { _thread.request_stop(); }
-
-	void BaseThread::run( const AsyncOp & p_asyncOp )
+	BaseThread::~BaseThread()
 	{
-		_thread = std::jthread( [ this, p_asyncOp ]() { p_asyncOp( *this ); } );
+		if ( _thread.joinable() )
+			_thread.detach();
 	}
-	void BaseThread::run( const AsyncOp & p_asyncOp, const EndCallback & p_callback )
+
+	void BaseThread::start( const AsyncOp & p_function )
 	{
-		_thread = std::jthread(
-			[ this, p_asyncOp, p_callback ]()
+		_thread = std::thread(
+			[ this, p_function ]()
 			{
-				const uint retCode = p_asyncOp( *this );
-				if ( p_callback )
-					p_callback( *this, retCode );
+				p_function( *this );
+				_finish();
+			}
+		);
+	}
+	void BaseThread::start( const AsyncOp & p_function, const EndCallback & p_callback )
+	{
+		_thread = std::thread(
+			[ this, p_function, p_callback ]()
+			{
+				const uint res = p_function( *this );
+
+				if ( _stopped )
+				{
+					p_callback( *this, res );
+				}
+
+				_finish();
 			}
 		);
 	}
 
-	void BaseThread::wait() { _thread.join(); }
-	void BaseThread::stop() { _thread.request_stop(); }
+	void BaseThread::wait()
+	{
+		if ( _thread.joinable() )
+			_thread.join();
+	}
+	void BaseThread::stop()
+	{
+		progressCallback.clear();
 
-	bool BaseThread::isFinished() const { return _thread.joinable(); }
+		if ( _thread.joinable() )
+			_thread.detach();
+
+		_stopped = true;
+	}
+	bool BaseThread::isFinished() const { return !_thread.joinable(); }
 
 	void BaseThread::setProgress( const float p_value )
 	{
@@ -36,5 +65,7 @@ namespace VTX::App::Core::Worker
 			progressCallback.call( _progress );
 		}
 	}
+
+	void BaseThread::_finish() { THREADING()._killThread( *this ); }
 
 } // namespace VTX::App::Core::Worker

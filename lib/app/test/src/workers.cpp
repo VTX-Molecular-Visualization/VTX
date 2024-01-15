@@ -1,3 +1,4 @@
+#include "util/app.hpp"
 #include <app/core/worker/base_thread.hpp>
 #include <app/core/worker/worker_manager.hpp>
 #include <app/vtx_app.hpp>
@@ -13,21 +14,24 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Core::Worker::WorkerManager workerManager = Core::Worker::WorkerManager();
+	App::Test::Util::App::initApp();
 
-	Core::Worker::BaseThread & thread = workerManager.createThread(
-		[]( Core::Worker::BaseThread & p_thread )
+	Core::Worker::BaseThread::AsyncOp asyncOp = []( Core::Worker::BaseThread & p_thread )
+	{
+		for ( int i = 0; i < 100; i++ )
 		{
-			for ( int i = 0; i < 100; i++ )
-			{
-				std::this_thread::sleep_for( std::chrono::milliseconds( 15 ) );
-				p_thread.setProgress( ( i + 1 ) / 100.f );
-			}
+			std::this_thread::sleep_for( std::chrono::milliseconds( 15 ) );
+			const float progress = ( i + 1 ) / 100.f;
+			p_thread.setProgress( progress );
+		}
 
-			p_thread.setData<int>( 100 );
+		p_thread.setData<int>( 100 );
 
-			return 1;
-		},
+		return 1;
+	};
+
+	Core::Worker::BaseThread & thread = THREADING().createThread(
+		asyncOp,
 		[]( Core::Worker::BaseThread & p_thread, uint p_res )
 		{
 			const int threadData = p_thread.getData<int>();
@@ -49,24 +53,26 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		}
 	);
 
-	Core::Worker::BaseThread::AsyncOp waitTwoSecondsOp = []( Core::Worker::BaseThread & p_thread )
-	{
-		std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-		return 0;
-	};
-
-	Core::Worker::BaseThread & threadToWait = workerManager.createThread( waitTwoSecondsOp );
+	Core::Worker::BaseThread & threadToWait = THREADING().createThread( asyncOp );
+	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();
 	chrono.start();
 	threadToWait.wait();
 	chrono.stop();
-	CHECK( chrono.elapsedTime() > 1.8f ); // Ensure wait sufficient time (sleep_for not really accurate).
+	CHECK( threadToWait.isFinished() );
+	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
 
-	Core::Worker::BaseThread & threadToStop = workerManager.createThread( waitTwoSecondsOp );
+	Core::Worker::BaseThread & threadToStop = THREADING().createThread( asyncOp );
+	CHECK( !threadToStop.isFinished() );
 
 	chrono.start();
 	threadToStop.stop();
+	CHECK( threadToStop.isFinished() );
+	threadToStop.wait();
 	chrono.stop();
 	CHECK( chrono.elapsedTime() < 0.2f ); // Ensure thread stopped before it's real end.
+
+	// Flush WorkerManager
+	// VTXApp::get().update( 0.f );
 };

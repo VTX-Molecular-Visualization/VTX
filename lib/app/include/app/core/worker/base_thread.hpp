@@ -4,6 +4,7 @@
 #include "app/core/callback_event.hpp"
 #include <any>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <thread>
 #include <util/types.hpp>
@@ -20,8 +21,8 @@ namespace VTX::App::Core::Worker
 		BaseThread() = default;
 		~BaseThread();
 
-		void run( const AsyncOp & p_asyncOp );
-		void run( const AsyncOp & p_asyncOp, const EndCallback & p_callback );
+		void start( const AsyncOp & p_function );
+		void start( const AsyncOp & p_function, const EndCallback & p_callback );
 
 		void wait();
 		void stop();
@@ -45,10 +46,13 @@ namespace VTX::App::Core::Worker
 		}
 
 	  private:
-		std::jthread _thread;
-		float		 _progress = 0.f;
+		std::thread _thread;
+		float		_progress = 0.f;
+		bool		_stopped  = false;
 
 		std::any _data;
+
+		void _finish();
 	};
 } // namespace VTX::App::Core::Worker
 #endif
