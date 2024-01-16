@@ -507,13 +507,17 @@ namespace VTX::Renderer::Context
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
 
-			// Auto padding to 8 or 16 bytes.
+			// Auto padding to 4 8 or 16 bytes.
 			size_t padding = 0;
-			if ( size % 8 != 0 )
+			if ( size % 4 != 0 )
+			{
+				padding = 4 - ( size % 4 );
+			}
+			else if ( size > 4 && size % 8 != 0 )
 			{
 				padding = 8 - ( size % 8 );
 			}
-			else if ( size > 16 && size % 16 != 0 )
+			else if ( size > 8 && size % 16 != 0 )
 			{
 				padding = 16 - ( size % 16 );
 			}
