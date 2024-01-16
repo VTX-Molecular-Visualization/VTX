@@ -19,6 +19,9 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		COUNT
 	};
 
+	TYPE		pdbFormattedToEnum( const std::string & p_str );
+	std::string enumToPdbFormatted( const TYPE p_enum );
+
 	// TODO: move to color layout.
 	inline static const Util::Color::Rgba COLORS_JMOL[] = { Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
 															Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
