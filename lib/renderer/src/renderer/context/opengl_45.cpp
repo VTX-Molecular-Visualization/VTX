@@ -507,9 +507,21 @@ namespace VTX::Renderer::Context
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
 
-			VTX_DEBUG( "Register uniform: {} (s{})(o{})", key, size, offset );
+			// Auto padding to 8 or 16 bytes.
+			size_t padding = 0;
+			if ( size % 8 != 0 )
+			{
+				padding = 8 - ( size % 8 );
+			}
+			else if ( size > 16 && size % 16 != 0 )
+			{
+				padding = 16 - ( size % 16 );
+			}
+
+			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
+			offset += padding;
 		}
 
 		assert( offset > 0 );

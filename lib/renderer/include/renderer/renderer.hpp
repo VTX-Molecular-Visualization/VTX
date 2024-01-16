@@ -566,15 +566,15 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferCaODirections.size() );
 			assert( bufferCaPositions.size() == bufferSSTypes.size() );
 			assert( bufferCaPositions.size() == bufferColors.size() );
-			assert( bufferCaPositions.size() == bufferFlags.size() );
 			assert( bufferCaPositions.size() == bufferIds.size() );
+			assert( bufferCaPositions.size() == bufferFlags.size() );
 
 			_renderGraph->setData( bufferCaPositions, "RibbonsPositions" );
 			_renderGraph->setData( bufferCaODirections, "RibbonsDirections" );
 			_renderGraph->setData( bufferSSTypes, "RibbonsTypes" );
 			_renderGraph->setData( bufferColors, "RibbonsColors" );
-			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
 			_renderGraph->setData( bufferIds, "RibbonsIds" );
+			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
 		}
 
 		inline void _onClean()

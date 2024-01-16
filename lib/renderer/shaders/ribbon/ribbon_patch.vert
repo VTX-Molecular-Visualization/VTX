@@ -1,13 +1,15 @@
 #version 450 core
 
+#include "../constant.glsl"
+#include "../layout_uniforms_color.glsl"
+
 // In.
 layout( location = 0 ) in vec4 inControlPointPosition;
 layout( location = 1 ) in vec3 inControlPointDirection;
 layout( location = 2 ) in uint inType;
-layout( location = 3 ) in vec4 inColor;
-layout( location = 4 ) in uint inVisibility;
-layout( location = 5 ) in uint inControlPointSelection;
-layout( location = 6 ) in uint inResidueId;
+layout( location = 3 ) in uint inColor;
+layout( location = 4 ) in uint inResidueId;
+layout( location = 5 ) in uint inResidueFlag;
 
 // Out.
 out 
@@ -18,9 +20,10 @@ void main()
 {
 	dataOut.position	 = inControlPointPosition;
 	dataOut.direction	 = inControlPointDirection;
-	dataOut.color		 = inColor;
+	dataOut.color		 = uniformsColor.colorLayout[ inColor ];
 	dataOut.ssType	     = inType;
-	dataOut.visibility   = inVisibility;
-	dataOut.selection	 = inControlPointSelection;
 	dataOut.id		     = inResidueId;
+	dataOut.visibility   = inResidueFlag & ( 1 << FLAG_VISIBILITY );
+	dataOut.selection	 = inResidueFlag & ( 1 << FLAG_SELECTION );	
+	
 }

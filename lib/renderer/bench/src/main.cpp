@@ -114,11 +114,11 @@ int main( int, char ** )
 
 		// Proxify.
 		// Move or maybe redo.
-		/*
+
 		size_t										   size	   = molecule.trajectory.frames.front().size();
 		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
-		std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
-		std::generate( colors.begin(), colors.end(), [] { return Color::Rgba::random(); } );
+		std::vector<uchar>							   colors  = std::vector<uchar>( size );
+		std::generate( colors.begin(), colors.end(), [] { return rand() % 256; } );
 		std::vector<float> radii( size );
 		std::generate(
 			radii.begin(),
@@ -129,14 +129,14 @@ int main( int, char ** )
 				return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
 			}
 		);
-		std::vector<uint> visibilities = std::vector<uint>( s ize, 1 );
-		std::vector<uint> selections   = std::vector<uint>( size, 0 );
+		std::vector<bool> visibilities = std::vector<bool>( size, true );
+		std::vector<bool> selections   = std::vector<bool>( size, false );
 		std::vector<uint> ids( size );
 		std::iota( ids.begin(), ids.end(), 0 );
 
-		std::vector<uint>			bondsIndex( molecule.bondPairAtomIndexes.size() );
-		const std::vector<size_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
+		std::vector<uint> bondsIndex( molecule.bondPairAtomIndexes.size() );
 
+		const std::vector<atom_index_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
 		std::generate(
 			bondsIndex.begin(),
 			bondsIndex.end(),
@@ -147,20 +147,18 @@ int main( int, char ** )
 			}
 		);
 
-		/*
 		Renderer::StructProxyMolecule proxyMolecule = {
 			&molecule.transform, &molecule.trajectory.frames.front(), &colors, &radii, &visibilities, &selections, &ids,
 			&bondsIndex
 		};
 		renderer.addMolecule( proxyMolecule );
-		*/
 
 		renderer.build();
 
 		// Generate array of random colors.
 		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 		std::generate( colorLayout.begin(), colorLayout.end(), [] { return VTX::Util::Color::Rgba::random(); } );
-		// renderer.setColorLayout( colorLayout.data() );
+		renderer.setColorLayout( colorLayout );
 
 		// Main loop.
 		while ( isRunning )
