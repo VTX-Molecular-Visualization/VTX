@@ -71,6 +71,7 @@ int main( int, char ** )
 			{
 				camera.setCallbackMatrixView( nullptr );
 				camera.setCallbackMatrixProjection( nullptr );
+				camera.setCallbackTranslation( nullptr );
 				camera.setCallbackClipInfos( nullptr );
 				inputManager.setCallbackMouseMotion( nullptr );
 			}
@@ -83,6 +84,8 @@ int main( int, char ** )
 											  { renderer.setMatrixView( p_matrix ); } );
 				camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
 													{ renderer.setMatrixProjection( p_matrix ); } );
+				camera.setCallbackTranslation( [ &renderer ]( const Vec3f p_position )
+											   { renderer.setCameraPosition( p_position ); } );
 				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
 				inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )

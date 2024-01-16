@@ -73,6 +73,7 @@ namespace VTX::Renderer
 				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				  { "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
 				  // { _near * _far, _far, _far - _near, _near }
 				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
 				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
@@ -196,6 +197,8 @@ namespace VTX::Renderer
 		inline void setMatrixView( const Mat4f & p_view ) { setUniform( p_view, "Matrix view" ); }
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
+
+		inline void setCameraPosition( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); }
 
 		inline void setCameraClipInfos( const float p_near, const float p_far )
 		{

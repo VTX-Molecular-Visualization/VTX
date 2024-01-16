@@ -13,6 +13,7 @@ namespace VTX::Bench
 	  public:
 		using CallbackMatrixView	   = std::function<void( const Mat4f & )>;
 		using CallbackMatrixProjection = std::function<void( const Mat4f & )>;
+		using CallbackTranslation	   = std::function<void( const Vec3f & )>;
 		using CallbackClipInfos		   = std::function<void( const float, const float )>;
 
 		Camera() = delete;
@@ -63,6 +64,7 @@ namespace VTX::Bench
 			_position += p_delta.x * _right * _velocityTranslation;
 			_position += p_delta.y * _up * _velocityTranslation;
 			_position += p_delta.z * _front * _velocityTranslation;
+			_onTranslation();
 			_onMatrixView();
 		}
 
@@ -94,6 +96,12 @@ namespace VTX::Bench
 		{
 			_callbackMatrixProjection = p_callback;
 			_onMatrixProjection();
+		}
+
+		inline void setCallbackTranslation( const CallbackTranslation & p_callback )
+		{
+			_callbackTranslation = p_callback;
+			_onTranslation();
 		}
 
 		inline void setCallbackClipInfos( const CallbackClipInfos & p_callback )
@@ -146,6 +154,7 @@ namespace VTX::Bench
 
 		CallbackMatrixView		 _callbackMatrixView;
 		CallbackMatrixProjection _callbackMatrixProjection;
+		CallbackTranslation		 _callbackTranslation;
 		CallbackClipInfos		 _callbackClipInfos;
 
 		inline void _onMatrixView()
@@ -163,6 +172,14 @@ namespace VTX::Bench
 				_callbackMatrixProjection( Util::Math::perspective(
 					Util::Math::radians( _fov ), float( _width ) / float( _height ), _near, _far
 				) );
+			}
+		}
+
+		inline void _onTranslation()
+		{
+			if ( _callbackTranslation )
+			{
+				_callbackTranslation( _position );
 			}
 		}
 

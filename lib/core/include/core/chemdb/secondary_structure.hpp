@@ -5,9 +5,8 @@
 
 namespace VTX::Core::ChemDB::SecondaryStructure
 {
-	enum class TYPE : int
+	enum class TYPE : uchar
 	{
-		UNKNOWN			  = -1,
 		HELIX_ALPHA_RIGHT = 0,
 		HELIX_ALPHA_LEFT  = 1,
 		HELIX_3_10_RIGHT  = 2,
@@ -16,7 +15,7 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		STRAND			  = 5,
 		TURN			  = 6,
 		COIL			  = 7,
-		COUNT
+		UNKNOWN
 	};
 
 	TYPE		pdbFormattedToEnum( const std::string & p_str );
