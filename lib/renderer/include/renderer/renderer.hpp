@@ -109,8 +109,6 @@ namespace VTX::Renderer
 			{
 				_renderGraph->resize( p_width, p_height );
 			}
-
-			VTX_DEBUG( "resize: {} {}", p_width, p_height );
 		}
 
 		inline void setOutput( const uint p_output )
@@ -311,20 +309,20 @@ namespace VTX::Renderer
 		{
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
-			std::vector<Vec4f> _bufferCaPositions;
+			std::vector<Vec4f> bufferCaPositions;
 			// Ca -> O directions.
-			std::vector<Vec3f> _bufferCaODirections;
+			std::vector<Vec3f> bufferCaODirections;
 			// Secondary structure types.
-			std::vector<uchar> _bufferSSTypes;
-			std::vector<uchar> _bufferColors;
-			std::vector<uint>  _bufferIds;
-			std::vector<uchar> _bufferFlags;
-			std::vector<uint>  _bufferIndices;
+			std::vector<uchar> bufferSSTypes;
+			std::vector<uchar> bufferColors;
+			std::vector<uint>  bufferIds;
+			std::vector<uchar> bufferFlags;
+			std::vector<uint>  bufferIndices;
 
-			std::map<uint, uint> _residueToIndices;
-			std::map<uint, uint> _residueToPositions;
+			std::map<uint, uint> residueToIndices;
+			std::map<uint, uint> residueToPositions;
 
-			std::map<uint, std::vector<uint>> _data; // Chain to residues.
+			std::map<uint, std::vector<uint>> data; // Chain to residues.
 
 			auto _tryConstruct = [ & ](
 									 const uint					p_chainIdx,
@@ -341,26 +339,26 @@ namespace VTX::Renderer
 				{
 					const size_t nbControlPoints = p_caPositions.size();
 
-					_residueToPositions.emplace( p_residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
-					_residueToIndices.emplace( p_residueIndex[ 0 ], uint( _bufferIndices.size() ) );
+					residueToPositions.emplace( p_residueIndex[ 0 ], uint( bufferCaPositions.size() ) );
+					residueToIndices.emplace( p_residueIndex[ 0 ], uint( bufferIndices.size() ) );
 
-					const uint offset = uint( _bufferCaPositions.size() );
+					const uint offset = uint( bufferCaPositions.size() );
 
 					// Add segment with duplicate first index to evaluate B-spline at 0-1.
-					_bufferIndices.emplace_back( offset );
-					_bufferIndices.emplace_back( offset );
-					_bufferIndices.emplace_back( offset + 1 );
-					_bufferIndices.emplace_back( offset + 2 );
+					bufferIndices.emplace_back( offset );
+					bufferIndices.emplace_back( offset );
+					bufferIndices.emplace_back( offset + 1 );
+					bufferIndices.emplace_back( offset + 2 );
 
 					for ( uint i = 1; i < nbControlPoints - 2; ++i )
 					{
-						_residueToPositions.emplace( p_residueIndex[ i ], uint( _bufferCaPositions.size() + i ) );
-						_residueToIndices.emplace( p_residueIndex[ i ], uint( _bufferIndices.size() ) );
+						residueToPositions.emplace( p_residueIndex[ i ], uint( bufferCaPositions.size() + i ) );
+						residueToIndices.emplace( p_residueIndex[ i ], uint( bufferIndices.size() ) );
 
-						_bufferIndices.emplace_back( offset + i - 1 );
-						_bufferIndices.emplace_back( offset + i );
-						_bufferIndices.emplace_back( offset + i + 1 );
-						_bufferIndices.emplace_back( offset + i + 2 );
+						bufferIndices.emplace_back( offset + i - 1 );
+						bufferIndices.emplace_back( offset + i );
+						bufferIndices.emplace_back( offset + i + 1 );
+						bufferIndices.emplace_back( offset + i + 2 );
 					}
 
 					// TODO: better on GPU ?
@@ -375,23 +373,23 @@ namespace VTX::Renderer
 					}
 
 					// Merge buffers.
-					auto it = _data.find( p_chainIdx );
-					if ( it == _data.end() )
+					auto it = data.find( p_chainIdx );
+					if ( it == data.end() )
 					{
-						_data.emplace( p_chainIdx, std::vector<uint>() );
+						data.emplace( p_chainIdx, std::vector<uint>() );
 					}
-					_data[ p_chainIdx ].insert(
-						std::end( _data[ p_chainIdx ] ), std::begin( p_residueIndex ), std::end( p_residueIndex )
+					data[ p_chainIdx ].insert(
+						std::end( data[ p_chainIdx ] ), std::begin( p_residueIndex ), std::end( p_residueIndex )
 					);
 
-					_bufferCaPositions.insert( _bufferCaPositions.end(), p_caPositions.cbegin(), p_caPositions.cend() );
-					_bufferCaODirections.insert(
-						_bufferCaODirections.end(), p_caODirections.cbegin(), p_caODirections.cend()
+					bufferCaPositions.insert( bufferCaPositions.end(), p_caPositions.cbegin(), p_caPositions.cend() );
+					bufferCaODirections.insert(
+						bufferCaODirections.end(), p_caODirections.cbegin(), p_caODirections.cend()
 					);
-					_bufferSSTypes.insert( _bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
-					_bufferColors.insert( _bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
-					_bufferFlags.insert( _bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
-					_bufferIds.insert( _bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
+					bufferSSTypes.insert( bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
+					bufferColors.insert( bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
+					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
+					bufferIds.insert( bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
 				}
 			};
 
@@ -422,8 +420,7 @@ namespace VTX::Renderer
 				// No enought residues.
 				if ( residueCount < 4 ) // TODO: what to do ?
 				{
-					// VTX_DEBUG( "Chain residue count < 4" );
-					// std::cout << "residue count < 4 in chain " << chain->getName() << std::endl;
+					VTX_DEBUG( "Chain residue count < 4" );
 					continue;
 				}
 
@@ -458,7 +455,7 @@ namespace VTX::Renderer
 
 						for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
 						{
-							if ( ( *p_proxy.atomNames )[ p_residueIdx ] == p_name )
+							if ( ( *p_proxy.atomNames )[ i ] == p_name )
 							{
 								return i;
 							}
@@ -497,7 +494,7 @@ namespace VTX::Renderer
 
 					// Add carbon alpha (CA) position and CA-O direction.
 					caPositions.emplace_back(
-						Vec4f( positionCA, float( _bufferCaPositions.size() + caPositions.size() ) )
+						Vec4f( positionCA, float( bufferCaPositions.size() + caPositions.size() ) )
 					);
 					caODirections.emplace_back( directionCAO );
 
@@ -558,23 +555,23 @@ namespace VTX::Renderer
 			}
 
 			// Reverse indices to render the other side.
-			// std::vector<uint> indicesReverse = _bufferIndices;
+			// std::vector<uint> indicesReverse = bufferIndices;
 			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
-			//_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
+			// bufferIndices.insert( bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			// Set data.
-			assert( _bufferCaPositions.size() == _bufferCaODirections.size() );
-			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
-			assert( _bufferCaPositions.size() == _bufferColors.size() );
-			assert( _bufferCaPositions.size() == _bufferFlags.size() );
-			assert( _bufferCaPositions.size() == _bufferIds.size() );
+			assert( bufferCaPositions.size() == bufferCaODirections.size() );
+			assert( bufferCaPositions.size() == bufferSSTypes.size() );
+			assert( bufferCaPositions.size() == bufferColors.size() );
+			assert( bufferCaPositions.size() == bufferFlags.size() );
+			assert( bufferCaPositions.size() == bufferIds.size() );
 
-			_renderGraph->setData( _bufferCaPositions, "RibbonsPositions" );
-			_renderGraph->setData( _bufferCaODirections, "RibbonsDirections" );
-			_renderGraph->setData( _bufferSSTypes, "RibbonsTypes" );
-			_renderGraph->setData( _bufferColors, "RibbonsColors" );
-			_renderGraph->setData( _bufferFlags, "RibbonsFlags" );
-			_renderGraph->setData( _bufferIds, "RibbonsIds" );
+			_renderGraph->setData( bufferCaPositions, "RibbonsPositions" );
+			_renderGraph->setData( bufferCaODirections, "RibbonsDirections" );
+			_renderGraph->setData( bufferSSTypes, "RibbonsTypes" );
+			_renderGraph->setData( bufferColors, "RibbonsColors" );
+			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
+			_renderGraph->setData( bufferIds, "RibbonsIds" );
 		}
 
 		inline void _onClean()

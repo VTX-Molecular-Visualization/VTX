@@ -34,7 +34,7 @@ namespace VTX::IO::Util::SecondaryStructure
 				continue;
 			}
 
-			size_t			   idxFirstResidue = p_molecule.chainFirstResidues[ chainIdx ];
+			const size_t	   idxFirstResidue = p_molecule.chainFirstResidues[ chainIdx ];
 			std::vector<float> phi			   = std::vector<float>( residueCount );
 			std::vector<float> psi			   = std::vector<float>( residueCount );
 			// std::vector<float> omega		   = std::vector<float>( residueCount );
@@ -52,12 +52,12 @@ namespace VTX::IO::Util::SecondaryStructure
 
 			auto findFirstAtomByName = [ &p_molecule ]( const size_t p_residueIdx, const std::string & p_name )
 			{
-				atom_index_t atomCount	  = p_molecule.residueAtomCounts[ p_residueIdx ];
-				atom_index_t idxFirstAtom = p_molecule.residueFirstAtomIndexes[ p_residueIdx ];
+				const atom_index_t atomCount	= p_molecule.residueAtomCounts[ p_residueIdx ];
+				const atom_index_t idxFirstAtom = p_molecule.residueFirstAtomIndexes[ p_residueIdx ];
 
 				for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
 				{
-					if ( p_molecule.atomNames[ p_residueIdx ] == p_name )
+					if ( p_molecule.atomNames[ i ] == p_name )
 					{
 						return i;
 					}
@@ -77,9 +77,9 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 				*/
 
-				const size_t & residue0 = currentResidueIndex - 1;
-				const size_t & residue1 = currentResidueIndex;
-				const size_t & residue2 = currentResidueIndex + 1;
+				const size_t residue0 = currentResidueIndex - 1;
+				const size_t residue1 = currentResidueIndex;
+				const size_t residue2 = currentResidueIndex + 1;
 
 				types[ residue1 ] = Core::ChemDB::SecondaryStructure::TYPE::COIL;
 
@@ -196,9 +196,9 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 				*/
 
-				const size_t & residue0 = currentResidueIndex - 1;
-				const size_t & residue1 = currentResidueIndex;
-				const size_t & residue2 = currentResidueIndex + 1;
+				const size_t residue0 = currentResidueIndex - 1;
+				const size_t residue1 = currentResidueIndex;
+				const size_t residue2 = currentResidueIndex + 1;
 
 				if ( ( types[ residue0 ] == types[ residue2 ] )
 					 && ( ( types[ residue0 ] == Core::ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )

@@ -4,8 +4,10 @@
 #include "util.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/color.hpp>
+#include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
+#include <io/util/secondary_structure.hpp>
 #include <iostream>
 #include <numeric>
 #include <renderer/renderer.hpp>
@@ -89,14 +91,15 @@ int main( int, char ** )
 		);
 
 		// Model.
+		/*
 		Molecule							molecule = generateAtomGrid( 9 );
 		const Renderer::StructProxyMolecule proxyMolecule
 			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
 				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
 		renderer.addMolecule( proxyMolecule );
+		*/
 
-		/*
-		const std::string name = "4v6x.mmtf";
+		const std::string name = "4hhb.pdb";
 		const FilePath	  path = Filesystem::getExecutableDir() / name;
 
 		// Read model file.
@@ -104,8 +107,11 @@ int main( int, char ** )
 		VTX::Core::Struct::Molecule molecule;
 		reader.readFile( path, molecule );
 
+		VTX::IO::Util::SecondaryStructure::computeStride( molecule );
+
 		// Proxify.
 		// Move or maybe redo.
+		/*
 		size_t										   size	   = molecule.trajectory.frames.front().size();
 		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
 		std::vector<Color::Rgba>					   colors  = std::vector<Color::Rgba>( size );
@@ -120,7 +126,7 @@ int main( int, char ** )
 				return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
 			}
 		);
-		std::vector<uint> visibilities = std::vector<uint>( size, 1 );
+		std::vector<uint> visibilities = std::vector<uint>( s ize, 1 );
 		std::vector<uint> selections   = std::vector<uint>( size, 0 );
 		std::vector<uint> ids( size );
 		std::iota( ids.begin(), ids.end(), 0 );
@@ -138,15 +144,7 @@ int main( int, char ** )
 			}
 		);
 
-		// TODO:
-		// Use struct ssbo for atom infos by symbol (like radius).
-		// Setup color ssbo and layout.
-
-		// Use relationnal bdd system,
-		// or fill data at cpu side then push to gpu in compressed data?
-
-		// Setup representation ssbo and layout.
-		// Persisted data in CPU cache with smart ptr?
+		/*
 		Renderer::StructProxyMolecule proxyMolecule = {
 			&molecule.transform, &molecule.trajectory.frames.front(), &colors, &radii, &visibilities, &selections, &ids,
 			&bondsIndex
@@ -158,7 +156,7 @@ int main( int, char ** )
 
 		// Generate array of random colors.
 		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
-		std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
+		std::generate( colorLayout.begin(), colorLayout.end(), [] { return VTX::Util::Color::Rgba::random(); } );
 		// renderer.setColorLayout( colorLayout.data() );
 
 		// Main loop.
