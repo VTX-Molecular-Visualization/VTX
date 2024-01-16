@@ -19,14 +19,14 @@ namespace VTX::Renderer
 		std::vector<uint> *	 atomIds;
 		std::vector<uint> *	 bonds;
 
-		std::vector<int> *	 atomSymbols; //
-		std::vector<uint> *	 residueIds;
-		std::vector<uchar> * residueSecondaryStructureTypes;
-		std::vector<uchar> * residueColors;
-		std::vector<uint> *	 residueFirstAtomIndexes; //
-		std::vector<uint> *	 residueAtomCounts;		  //
-		std::vector<uint> *	 chainFirstResidues;	  //
-		std::vector<uint> *	 chainResidueCounts;	  //
+		std::vector<std::string> * atomNames; //
+		std::vector<uint> *		   residueIds;
+		std::vector<uchar> *	   residueSecondaryStructureTypes;
+		std::vector<uchar> *	   residueColors;
+		std::vector<uint> *		   residueFirstAtomIndexes; //
+		std::vector<uint> *		   residueAtomCounts;		//
+		std::vector<uint> *		   chainFirstResidues;		//
+		std::vector<uint> *		   chainResidueCounts;		//
 	};
 
 } // namespace VTX::Renderer

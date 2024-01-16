@@ -451,14 +451,14 @@ namespace VTX::Renderer
 					}
 					*/
 
-					auto findFirstAtomBySymbol = [ &p_proxy ]( const uint p_residueIdx, const int p_symbol )
+					auto findFirstAtomByName = [ &p_proxy ]( const uint p_residueIdx, const std::string & p_name )
 					{
 						uint atomCount	  = ( *p_proxy.residueAtomCounts )[ p_residueIdx ];
 						uint idxFirstAtom = ( *p_proxy.residueFirstAtomIndexes )[ p_residueIdx ];
 
 						for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
 						{
-							if ( ( *p_proxy.atomSymbols )[ p_residueIdx ] == p_symbol )
+							if ( ( *p_proxy.atomNames )[ p_residueIdx ] == p_name )
 							{
 								return i;
 							}
@@ -469,7 +469,7 @@ namespace VTX::Renderer
 
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
-					int CA = findFirstAtomBySymbol( residueIdx, 20 );
+					int CA = findFirstAtomByName( residueIdx, "CA" );
 
 					// Not an amine acid (water, heme, or phosphate groupment).
 					if ( CA == -1 ) // TODO: what to do ?
@@ -478,7 +478,7 @@ namespace VTX::Renderer
 					}
 
 					// Find oxygen.
-					int O = findFirstAtomBySymbol( residueIdx, 8 );
+					int O = findFirstAtomByName( residueIdx, "O" );
 
 					// Missing oxygen atom.
 					if ( O == -1 ) // TODO: what to do?
