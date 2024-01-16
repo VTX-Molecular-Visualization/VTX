@@ -1,6 +1,7 @@
 message("vtx_util")
 cmake_minimum_required(VERSION 3.23)
 include(cmake/configure_target.cmake)
+include(cmake/copy_registration.cmake)
 project(vtx_util)
 
 find_package(glm REQUIRED)

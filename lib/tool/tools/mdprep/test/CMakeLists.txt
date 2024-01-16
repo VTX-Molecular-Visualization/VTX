@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx_tool_mdprep_test)
 
+set_property(GLOBAL PROPERTY _REGISTER_DIR_COPY_property "${_REGISTER_DIR_COPY_property}")
+
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
@@ -38,9 +40,11 @@ include(CTest)
 include(Catch)
 catch_discover_tests(vtx_tool_mdprep_test)
 
-add_custom_target(vtx_tool_mdprep_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_tool_mdprep_test>/data)
+#add_custom_target(vtx_tool_mdprep_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_tool_mdprep_test>/data)
 #add_custom_target(vtx_tool_mdprep_test_copy_gromacs_dll ALL COMMAND ${CMAKE_COMMAND} -E copy_if_different ${VTX_GROMACS_DLL_PATH} $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
-add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep_test_copy_data)
+#add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep_test_copy_data)
 
 install(TARGETS vtx_tool_mdprep_test)
 install(DIRECTORY data DESTINATION bin)
+
+copy_directory_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)

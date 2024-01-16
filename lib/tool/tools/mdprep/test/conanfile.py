@@ -27,12 +27,14 @@ class VTXRendererTestRecipe(ConanFile):
         
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        '''
         copy(
             self
             , "*"
             , os.path.join(self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, "data")
             , os.path.join(self.build_folder, "data")
         )
+        '''
     
     def layout(self):
         cmake_layout(self)
@@ -49,13 +51,14 @@ class VTXRendererTestRecipe(ConanFile):
         """
         cmake = CMake(self)
         # cmake.configure(variables={"VTX_GROMACS_DLL_PATH":vtx_gromacs_shared})
+        cmake.configure()
         cmake.build()
         #self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
 
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_tool_mdprep_test"] 
+        None

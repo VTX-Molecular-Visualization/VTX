@@ -2,6 +2,7 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.files import copy
+from pathlib import Path
 
 class VTXUtilRecipe(ConanFile):
     name = "vtx_util"
@@ -46,7 +47,11 @@ class VTXUtilRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_util"]
+        cmake_files = []
+        for file in (Path(".") / "cmake").iterdir():
+            if file.suffix == ".cmake":
+                cmake_files.append(str(file))
         cmake_file = os.path.join("cmake", "configure_target.cmake")
-        self.cpp_info.set_property("cmake_build_modules", [cmake_file])
+        self.cpp_info.set_property("cmake_build_modules",cmake_files)
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = []

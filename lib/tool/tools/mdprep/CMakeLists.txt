@@ -7,9 +7,15 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
+
+get_filename_component(_vtx_tool_mdprep_top_dir "./external/gromacs/share/top" ABSOLUTE )
+message ("${_vtx_tool_mdprep_top_dir}")
+register_build_directory_copy("${_vtx_tool_mdprep_top_dir}")
+
 
 add_library(vtx_tool_mdprep)
 configure_target(vtx_tool_mdprep)
@@ -33,4 +39,3 @@ target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Widgets)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::OpenGLWidgets)
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)
-
