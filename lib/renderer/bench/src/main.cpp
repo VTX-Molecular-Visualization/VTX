@@ -73,6 +73,7 @@ int main( int, char ** )
 				camera.setCallbackMatrixProjection( nullptr );
 				camera.setCallbackTranslation( nullptr );
 				camera.setCallbackClipInfos( nullptr );
+				camera.setCallbackPerspective( nullptr );
 				inputManager.setCallbackMouseMotion( nullptr );
 			}
 		);
@@ -88,6 +89,8 @@ int main( int, char ** )
 											   { renderer.setCameraPosition( p_position ); } );
 				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
+				camera.setCallbackPerspective( [ &renderer ]( const bool p_isPerspective )
+											   { renderer.setPerspective( p_isPerspective ); } );
 				inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
 													 { renderer.setMousePosition( p_position ); } );
 			}

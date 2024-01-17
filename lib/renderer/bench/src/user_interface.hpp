@@ -152,6 +152,10 @@ namespace VTX::Bench
 				}
 				if ( ImGui::BeginMenu( "Color layout" ) )
 				{
+					if ( ImGui::MenuItem( "JMol" ) )
+					{
+						p_renderer->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
 						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
@@ -167,6 +171,35 @@ namespace VTX::Bench
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
 						p_renderer->setColorLayout( colorLayout );
+					}
+
+					ImGui::EndMenu();
+				}
+				if ( ImGui::BeginMenu( "Export" ) )
+				{
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 800, 600 );
+						_saveImage( image, 800, 600 );
+					}
+					if ( ImGui::MenuItem( "1920x1080" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 1920, 1080 );
+						_saveImage( image, 1920, 1080 );
+					}
+					if ( ImGui::MenuItem( "2560x1440" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 2560, 1440 );
+						_saveImage( image, 2560, 1440 );
+					}
+					if ( ImGui::MenuItem( "3840x2160" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 3840, 2160 );
+						_saveImage( image, 3840, 2160 );
 					}
 
 					ImGui::EndMenu();
@@ -192,16 +225,7 @@ namespace VTX::Bench
 				{
 					std::vector<uchar> image;
 					p_renderer->snapshot( image );
-					stbi_flip_vertically_on_write( true );
-					stbi_write_png_compression_level = 0;
-					stbi_write_png(
-						"snapshot.png",
-						int( p_renderer->getWidth() ),
-						int( p_renderer->getHeight() ),
-						4,
-						image.data(),
-						0
-					);
+					_saveImage( image, p_renderer->getWidth(), p_renderer->getHeight() );
 				}
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -790,6 +814,13 @@ namespace VTX::Bench
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
+
+		void _saveImage( const std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
+		{
+			stbi_flip_vertically_on_write( true );
+			stbi_write_png_compression_level = 0;
+			stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, p_image.data(), 0 );
+		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

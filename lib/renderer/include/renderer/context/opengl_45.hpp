@@ -83,21 +83,37 @@ namespace VTX::Renderer::Context
 
 		inline void compileShaders() const { _programManager->compileShaders(); }
 
-		inline void snapshot( std::vector<uchar> & p_image )
+		inline void snapshot(
+			std::vector<uchar> &   p_image,
+			const RenderQueue &	   p_renderQueue,
+			const RenderFunction & p_renderFunction,
+			const size_t		   p_width,
+			const size_t		   p_height
+		)
 		{
-			p_image.resize( width * height * 4 );
+			// TODO: transparency.
+
+			const size_t widthOld  = width;
+			const size_t heightOld = height;
+
+			p_image.resize( p_width * p_height * 4 );
+			resize( p_renderQueue, p_width, p_height );
+			p_renderFunction( 0 );
 			glBindFramebuffer( GL_FRAMEBUFFER, _output );
 			glReadnPixels(
 				0,
 				0,
-				GLsizei( width ),
-				GLsizei( height ),
+				GLsizei( p_width ),
+				GLsizei( p_height ),
 				GL_RGBA,
 				GL_UNSIGNED_BYTE,
 				GLsizei( p_image.size() ),
 				p_image.data()
 			);
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			resize( p_renderQueue, widthOld, heightOld );
+			p_renderFunction( 0 );
 		}
 
 	  private:

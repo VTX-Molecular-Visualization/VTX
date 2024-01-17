@@ -218,7 +218,15 @@ namespace VTX::Renderer
 
 		inline void compileShaders() const { _context->compileShaders(); }
 
-		inline void snapshot( std::vector<uchar> & p_image ) { _context->snapshot( p_image ); }
+		inline void snapshot(
+			std::vector<uchar> &			p_image,
+			const Context::RenderFunction & p_renderFunction,
+			const size_t					p_width	 = 0,
+			const size_t					p_height = 0
+		)
+		{
+			_context->snapshot( p_image, _renderQueue, p_renderFunction, p_width, p_height );
+		}
 
 		inline const std::vector<Pass> & getAvailablePasses() const { return availablePasses; }
 

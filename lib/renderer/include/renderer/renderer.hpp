@@ -242,7 +242,18 @@ namespace VTX::Renderer
 			setUniform( p_layout, "Color layout" );
 		}
 
-		inline void snapshot( std::vector<uchar> & p_image ) { _renderGraph->snapshot( p_image ); }
+		inline void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 )
+		{
+			bool isForceUpdate = _forceUpdate;
+			_forceUpdate	   = true;
+			_renderGraph->snapshot(
+				p_image,
+				std::bind( &Renderer::render, this, std::placeholders::_1 ),
+				p_width ? p_width : _width,
+				p_height ? p_height : _height
+			);
+			_forceUpdate = isForceUpdate;
+		}
 
 		inline const size_t getWidth() const { return _width; }
 		inline const size_t getHeight() const { return _height; }
