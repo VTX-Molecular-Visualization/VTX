@@ -1,6 +1,8 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "camera.hpp"
 #include <SDL.h>
 #include <core/chemdb/color.hpp>
@@ -9,6 +11,7 @@
 #include <imgui/imgui_impl_sdl2.h>
 #include <imnodes/imnodes.h>
 #include <renderer/renderer.hpp>
+#include <stb_image_write.h>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -179,6 +182,21 @@ namespace VTX::Bench
 				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
 				{
 					p_renderer->setLogDurations( isLogDurations );
+				}
+				if ( ImGui::Button( "Snapshot" ) )
+				{
+					std::vector<uchar> image;
+					p_renderer->snapshot( image );
+					stbi_flip_vertically_on_write( true );
+					stbi_write_png_compression_level = 0;
+					stbi_write_png(
+						"snapshot.png",
+						int( p_renderer->getWidth() ),
+						int( p_renderer->getHeight() ),
+						4,
+						image.data(),
+						0
+					);
 				}
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 

@@ -83,6 +83,23 @@ namespace VTX::Renderer::Context
 
 		inline void compileShaders() const { _programManager->compileShaders(); }
 
+		inline void snapshot( std::vector<uchar> & p_image )
+		{
+			p_image.resize( width * height * 4 );
+			glBindFramebuffer( GL_FRAMEBUFFER, _output );
+			glReadnPixels(
+				0,
+				0,
+				GLsizei( width ),
+				GLsizei( height ),
+				GL_RGBA,
+				GL_UNSIGNED_BYTE,
+				GLsizei( p_image.size() ),
+				p_image.data()
+			);
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		}
+
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
 		static std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments;

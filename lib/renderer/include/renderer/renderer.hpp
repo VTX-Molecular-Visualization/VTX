@@ -210,6 +210,11 @@ namespace VTX::Renderer
 			setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
 		}
 
+		inline void setPerspective( const bool p_perspective )
+		{
+			setUniform( uint( p_perspective ), "Is perspective" );
+		}
+
 		inline void addMolecule( const StructProxyMolecule & p_proxy )
 		{
 			_proxiesMolecules.push_back( p_proxy );
@@ -224,6 +229,8 @@ namespace VTX::Renderer
 		{
 			setUniform( p_layout, "Color layout" );
 		}
+
+		inline void snapshot( std::vector<uchar> & p_image ) { _renderGraph->snapshot( p_image ); }
 
 		inline const size_t getWidth() const { return _width; }
 		inline const size_t getHeight() const { return _height; }

@@ -33,7 +33,8 @@ namespace VTX::Renderer::Context
 			  UniformValue &				p_uniformValue,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
-			  StructInfos &					p_infos
+			  StructInfos &					p_infos,
+			  std::vector<uchar> &			p_image
 		  ) {
 				 {
 					 p_context.build(
@@ -63,6 +64,9 @@ namespace VTX::Renderer::Context
 				 } -> std::same_as<float>;
 				 {
 					 p_context.compileShaders()
+				 } -> std::same_as<void>;
+				 {
+					 p_context.snapshot( p_image )
 				 } -> std::same_as<void>;
 			 };
 
