@@ -41,6 +41,7 @@ namespace VTX::Renderer::Context
 
 		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 
 		_getOpenglInfos();
 
@@ -678,7 +679,8 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_PRIMITIVE, const GLenum> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },
 																		   { E_PRIMITIVE::LINES, GL_LINES },
-																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES } };
+																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES },
+																		   { E_PRIMITIVE::PATCHES, GL_PATCHES } };
 
 	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormats = {
 		{ E_FORMAT::RGB16F, GL_RGB16F },

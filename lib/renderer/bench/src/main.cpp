@@ -115,11 +115,11 @@ int main( int, char ** )
 		// Proxify.
 		// Move or maybe redo.
 
-		size_t										   size	   = molecule.trajectory.frames.front().size();
-		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols = molecule.atomSymbols;
-		std::vector<uchar>							   colors  = std::vector<uchar>( size );
-		std::generate( colors.begin(), colors.end(), [] { return rand() % 256; } );
-		std::vector<float> radii( size );
+		size_t										   sizeAtoms  = molecule.trajectory.frames.front().size();
+		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols	  = molecule.atomSymbols;
+		std::vector<uchar>							   colorAtoms = std::vector<uchar>( sizeAtoms );
+		std::generate( colorAtoms.begin(), colorAtoms.end(), [] { return rand() % 256; } );
+		std::vector<float> radii( sizeAtoms );
 		std::generate(
 			radii.begin(),
 			radii.end(),
@@ -129,28 +129,38 @@ int main( int, char ** )
 				return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
 			}
 		);
-		std::vector<bool> visibilities = std::vector<bool>( size, true );
-		std::vector<bool> selections   = std::vector<bool>( size, false );
-		std::vector<uint> ids( size );
-		std::iota( ids.begin(), ids.end(), 0 );
-
+		std::vector<bool> visibilities = std::vector<bool>( sizeAtoms, true );
+		std::vector<bool> selections   = std::vector<bool>( sizeAtoms, false );
+		std::vector<uint> idAtoms( sizeAtoms );
+		std::iota( idAtoms.begin(), idAtoms.end(), 0 );
 		std::vector<uint> bondsIndex( molecule.bondPairAtomIndexes.size() );
 
-		const std::vector<atom_index_t> & bondPairAtomIndexes = molecule.bondPairAtomIndexes;
-		std::generate(
-			bondsIndex.begin(),
-			bondsIndex.end(),
-			[ &bondPairAtomIndexes ]
-			{
-				static size_t i = 0;
-				return uint( bondPairAtomIndexes[ i++ ] );
-			}
-		);
+		size_t			  sizeResidue = molecule.residueOriginalIds.size();
+		std::vector<uint> idResidues( sizeResidue );
+		std::iota( idResidues.begin(), idResidues.end(), 0 );
+		std::vector<uchar> colorAResidues = std::vector<uchar>( sizeResidue );
+		std::generate( colorAResidues.begin(), colorAResidues.end(), [] { return rand() % 256; } );
 
-		Renderer::StructProxyMolecule proxyMolecule = {
-			&molecule.transform, &molecule.trajectory.frames.front(), &colors, &radii, &visibilities, &selections, &ids,
-			&bondsIndex
-		};
+		std::vector<uchar> sstypes( sizeResidue, 0 );
+
+		Renderer::StructProxyMolecule proxyMolecule
+			= { &molecule.transform,
+				&molecule.trajectory.frames.front(),
+				&colorAtoms,
+				&radii,
+				&visibilities,
+				&selections,
+				&idAtoms,
+				&molecule.bondPairAtomIndexes,
+				&molecule.atomNames,
+				&idResidues,
+				reinterpret_cast<std::vector<uchar> *>( &molecule.residueSecondaryStructureTypes ),
+				&colorAResidues,
+				&molecule.residueFirstAtomIndexes,
+				&molecule.residueAtomCounts,
+				&molecule.chainFirstResidues,
+				&molecule.chainResidueCounts };
+
 		renderer.addMolecule( proxyMolecule );
 
 		renderer.build();

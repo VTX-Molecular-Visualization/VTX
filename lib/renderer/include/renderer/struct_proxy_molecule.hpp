@@ -25,8 +25,8 @@ namespace VTX::Renderer
 		std::vector<uchar> *	   residueColors;
 		std::vector<uint> *		   residueFirstAtomIndexes; //
 		std::vector<uint> *		   residueAtomCounts;		//
-		std::vector<uint> *		   chainFirstResidues;		//
-		std::vector<uint> *		   chainResidueCounts;		//
+		std::vector<size_t> *	   chainFirstResidues;		//
+		std::vector<size_t> *	   chainResidueCounts;		//
 	};
 
 } // namespace VTX::Renderer

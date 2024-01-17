@@ -229,6 +229,7 @@ namespace VTX::Renderer
 		inline const size_t getHeight() const { return _height; }
 		inline const size_t getAtomCount() const { return _sizeAtoms; }
 		inline const size_t getBondCount() const { return _sizeBonds; }
+		inline const size_t getRibbonCount() const { return _sizeRibbons; }
 
 		inline const StructInfos & getInfos() const { return _infos; }
 
@@ -266,12 +267,20 @@ namespace VTX::Renderer
 
 		void _setData( const StructProxyMolecule & p_proxy )
 		{
-			_setDataSpheresCylinders( p_proxy );
-			//_setDataRibbons( p_proxy );
+			if ( p_proxy.atomIds )
+			{
+				_setDataSpheresCylinders( p_proxy );
+			}
+
+			if ( p_proxy.residueIds )
+			{
+				_setDataRibbons( p_proxy );
+			}
+
+			// TODO: make "filler" functions for each type of data ?
+			// TODO: mapping registry.
 		}
 
-		// TODO: make "filler" functions for each type of data ?
-		// TODO: mapping registry.
 		enum E_ATOM_FLAGS
 		{
 			VISIBILITY = 0,
@@ -280,11 +289,18 @@ namespace VTX::Renderer
 
 		void _setDataSpheresCylinders( const StructProxyMolecule & p_proxy )
 		{
-			assert( p_proxy.atomPositions->size() == p_proxy.atomColors->size() );
-			assert( p_proxy.atomPositions->size() == p_proxy.atomRadii->size() );
-			assert( p_proxy.atomPositions->size() == p_proxy.atomVisibilities->size() );
-			assert( p_proxy.atomPositions->size() == p_proxy.atomSelections->size() );
-			assert( p_proxy.atomPositions->size() == p_proxy.atomIds->size() );
+			assert( p_proxy.atomPositions );
+			assert( p_proxy.atomColors );
+			assert( p_proxy.atomRadii );
+			assert( p_proxy.atomVisibilities );
+			assert( p_proxy.atomSelections );
+			assert( p_proxy.atomIds );
+
+			assert( p_proxy.atomIds->size() == p_proxy.atomPositions->size() );
+			assert( p_proxy.atomIds->size() == p_proxy.atomColors->size() );
+			assert( p_proxy.atomIds->size() == p_proxy.atomRadii->size() );
+			assert( p_proxy.atomIds->size() == p_proxy.atomVisibilities->size() );
+			assert( p_proxy.atomIds->size() == p_proxy.atomSelections->size() );
 
 			_renderGraph->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
 			_renderGraph->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
@@ -310,6 +326,22 @@ namespace VTX::Renderer
 
 		void _setDataRibbons( const StructProxyMolecule & p_proxy )
 		{
+			assert( p_proxy.atomNames );
+			assert( p_proxy.residueIds );
+			assert( p_proxy.residueSecondaryStructureTypes );
+			assert( p_proxy.residueColors );
+			assert( p_proxy.residueFirstAtomIndexes );
+			assert( p_proxy.residueAtomCounts );
+			assert( p_proxy.chainFirstResidues );
+			assert( p_proxy.chainResidueCounts );
+
+			assert( p_proxy.atomNames->size() == p_proxy.atomPositions->size() );
+			assert( p_proxy.residueIds->size() == p_proxy.residueSecondaryStructureTypes->size() );
+			assert( p_proxy.residueIds->size() == p_proxy.residueColors->size() );
+			assert( p_proxy.residueIds->size() == p_proxy.residueFirstAtomIndexes->size() );
+			assert( p_proxy.residueIds->size() == p_proxy.residueAtomCounts->size() );
+			assert( p_proxy.chainFirstResidues->size() == p_proxy.chainResidueCounts->size() );
+
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
 			std::vector<Vec4f> bufferCaPositions;
@@ -417,8 +449,8 @@ namespace VTX::Renderer
 				}
 				*/
 
-				uint residueCount	 = ( *p_proxy.chainResidueCounts )[ chainIdx ];
-				uint idxFirstResidue = ( *p_proxy.chainFirstResidues )[ chainIdx ];
+				uint residueCount	 = uint( ( *p_proxy.chainResidueCounts )[ chainIdx ] );
+				uint idxFirstResidue = uint( ( *p_proxy.chainFirstResidues )[ chainIdx ] );
 
 				// No enought residues.
 				if ( residueCount < 4 ) // TODO: what to do ?
@@ -575,6 +607,9 @@ namespace VTX::Renderer
 			_renderGraph->setData( bufferColors, "RibbonsColors" );
 			_renderGraph->setData( bufferIds, "RibbonsIds" );
 			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
+			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
+
+			_sizeRibbons = bufferIndices.size();
 		}
 
 		inline void _onClean()

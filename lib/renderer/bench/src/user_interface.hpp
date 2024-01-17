@@ -308,6 +308,7 @@ namespace VTX::Bench
 
 				ImGui::Text( fmt::format( "{} atoms", p_renderer->getAtomCount() ).c_str() );
 				ImGui::Text( fmt::format( "{} bonds", p_renderer->getBondCount() ).c_str() );
+				ImGui::Text( fmt::format( "{} ribbons", p_renderer->getRibbonCount() ).c_str() );
 				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 				ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
