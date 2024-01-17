@@ -183,6 +183,11 @@ namespace VTX::Bench
 				{
 					p_renderer->setLogDurations( isLogDurations );
 				}
+				bool forceUpdate = p_renderer->isForceUpdate();
+				if ( ImGui::Checkbox( "Force update", &forceUpdate ) )
+				{
+					p_renderer->setForceUpdate( forceUpdate );
+				}
 				if ( ImGui::Button( "Snapshot" ) )
 				{
 					std::vector<uchar> image;

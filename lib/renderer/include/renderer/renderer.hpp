@@ -93,6 +93,7 @@ namespace VTX::Renderer
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
 			_renderGraph->setUniform<T>( p_value, p_key );
+			_needUpdate = true;
 		}
 
 		template<typename T>
@@ -110,6 +111,7 @@ namespace VTX::Renderer
 			{
 				_renderGraph->resize( p_width, p_height );
 			}
+			_needUpdate = true;
 		}
 
 		inline void setOutput( const uint p_output )
@@ -118,6 +120,7 @@ namespace VTX::Renderer
 			{
 				_renderGraph->setOutput( p_output );
 			}
+			_needUpdate = true;
 		}
 
 		inline void build( const uint p_output = 0, void * p_loader = nullptr )
@@ -145,7 +148,7 @@ namespace VTX::Renderer
 							}
 
 							_renderGraph->fillInfos( _infos );
-
+							_needUpdate = true;
 							_onReady();
 						}
 					}
@@ -158,35 +161,42 @@ namespace VTX::Renderer
 			_instructions.clear();
 			_instructionsDurationRanges.clear();
 			_renderGraph->clean();
-			_infos = StructInfos();
+			_infos		= StructInfos();
+			_needUpdate = false;
 
 			_onClean();
 		}
 
 		inline void render( const float p_time )
 		{
-			if ( _logDurations )
+			if ( _needUpdate || _forceUpdate )
 			{
-				for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+				if ( _logDurations )
 				{
-					instructionDurationRange.duration = _renderGraph->measureTaskDuration(
+					for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+					{
+						instructionDurationRange.duration = _renderGraph->measureTaskDuration(
 
-						[ this, &instructionDurationRange ]()
-						{
-							for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+							[ this, &instructionDurationRange ]()
 							{
-								_instructions[ i ]();
+								for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last;
+									  ++i )
+								{
+									_instructions[ i ]();
+								}
 							}
-						}
-					);
+						);
+					}
 				}
-			}
-			else
-			{
-				for ( const Instruction & instruction : _instructions )
+				else
 				{
-					instruction();
+					for ( const Instruction & instruction : _instructions )
+					{
+						instruction();
+					}
 				}
+
+				_needUpdate = false;
 			}
 		}
 
@@ -223,6 +233,8 @@ namespace VTX::Renderer
 			{
 				_setData( p_proxy );
 			}
+
+			_needUpdate = true;
 		}
 
 		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> p_layout )
@@ -240,6 +252,10 @@ namespace VTX::Renderer
 
 		inline const StructInfos & getInfos() const { return _infos; }
 
+		inline void		  setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
+		inline const bool isForceUpdate() const { return _forceUpdate; }
+		inline void		  setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
+
 		inline const bool isLogDurations() const { return _logDurations; }
 		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
 		inline void		  compileShaders() const { _renderGraph->compileShaders(); }
@@ -252,7 +268,9 @@ namespace VTX::Renderer
 		}
 
 	  private:
-		void * _loader = nullptr;
+		void * _loader		= nullptr;
+		bool   _needUpdate	= false;
+		bool   _forceUpdate = false;
 
 		size_t								 _width;
 		size_t								 _height;
