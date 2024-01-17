@@ -2,7 +2,6 @@
 #define __VTX_CORE_CHEMDB_RESIDUE__
 
 #include <string>
-#include <util/color/rgba.hpp>
 
 namespace VTX::Core::ChemDB::Residue
 {
@@ -185,51 +184,6 @@ namespace VTX::Core::ChemDB::Residue
 		"Water",		  // WAT
 		"Water",		  // HOH
 	};
-
-	// TODO: move to color layout.
-	// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
-	const Util::Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
-		{ 190, 160, 110 }, // UNKNOWN
-		{ 200, 200, 200 }, // ALA
-		{ 20, 90, 255 },   // ARG
-		{ 0, 220, 220 },   // ASN
-		{ 230, 10, 10 },   // ASP
-		{ 230, 230, 0 },   // CYS
-		{ 0, 220, 220 },   // GLN
-		{ 230, 10, 10 },   // GLU
-		{ 235, 235, 235 }, // GLY
-		{ 130, 130, 210 }, // HIS
-		{ 15, 130, 15 },   // ILE
-		{ 15, 130, 15 },   // LEU
-		{ 20, 90, 255 },   // LYS
-		{ 230, 230, 0 },   // MET
-		{ 50, 50, 170 },   // PHE
-		{ 220, 150, 130 }, // PRO
-		{ 250, 150, 0 },   // SER
-		{ 250, 150, 0 },   // THR
-		{ 180, 90, 180 },  // TRP
-		{ 50, 50, 170 },   // TYR
-		{ 15, 130, 15 },   // VAL
-		{ 190, 160, 110 }, // SEC
-		{ 190, 160, 110 }, // PYL
-		{ 255, 105, 180 }, // ASX
-		{ 255, 105, 180 }, // GLX
-		{ 255, 140, 75 },  // C
-		{ 255, 112, 112 }, // G
-		{ 160, 160, 255 }, // A
-		{ 255, 128, 128 }, // U
-		{ 128, 255, 255 }, // I
-		{ 255, 140, 75 },  // DC
-		{ 255, 112, 112 }, // DG
-		{ 160, 160, 255 }, // DA
-		{ 255, 128, 128 }, // DU
-		{ 160, 255, 160 }, // DT
-		{ 128, 255, 255 }, // DI
-		{ 255, 105, 180 }, // WAT
-		{ 255, 105, 180 }, // HOH
-	};
-
-	const Util::Color::Rgba & getResidueColor( const SYMBOL p_symbol, const bool isStd = true );
 
 	const SYMBOL getSymbolFromShortName( const std::string & p_residueName );
 	const SYMBOL getSymbolFromName( const std::string & p_residueName );

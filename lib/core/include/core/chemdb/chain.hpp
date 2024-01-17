@@ -13,39 +13,7 @@ namespace VTX::Core::ChemDB::Chain
 	//	NON_STANDARD
 	//};
 
-	// Chain colors are defined by the first letter of its name
-	const size_t NB_COLORS = 26;
-
-	// TODO: move to color layout.
-	const Util::Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ] = {
-		{ 192, 208, 255 }, // A, a,
-		{ 176, 255, 176 }, // B, b,
-		{ 255, 192, 200 }, // C, c,
-		{ 255, 255, 128 }, // D, d,
-		{ 255, 192, 255 }, // E, e,
-		{ 176, 240, 240 }, // F, f,
-		{ 255, 208, 112 }, // G, g,
-		{ 240, 128, 128 }, // H, h,
-		{ 245, 222, 179 }, // I, i,
-		{ 0, 191, 255 },   // J, j,
-		{ 205, 92, 92 },   // K, k,
-		{ 102, 205, 170 }, // L, l,
-		{ 154, 205, 50 },  // M, m,
-		{ 238, 130, 238 }, // N, n,
-		{ 0, 206, 209 },   // O, o,
-		{ 0, 255, 127 },   // P, p, 0,
-		{ 60, 179, 113 },  // Q, q, 1,
-		{ 0, 0, 139 },	   // R, r, 2,
-		{ 189, 183, 107 }, // S, s, 3,
-		{ 0, 100, 0 },	   // T, t, 4,
-		{ 128, 0, 0 },	   // U, u, 5,
-		{ 128, 128, 0 },   // V, v, 6,
-		{ 128, 0, 128 },   // W, w, 7,
-		{ 0, 128, 128 },   // X, x, 8,
-		{ 184, 134, 11 },  // Y, y, 9,
-		{ 178, 34, 34 },   // Z, z
-	};
-
+	/*
 	const Util::Color::Rgba CHAIN_ID_COLOR_HETATM[ NB_COLORS ] = {
 		{ 144, 160, 207 }, // A, a,
 		{ 128, 207, 152 }, // B, b,
@@ -74,23 +42,7 @@ namespace VTX::Core::ChemDB::Chain
 		{ 232, 182, 19 },  // Y, y, 9,
 		{ 194, 50, 50 },   // Z, z
 	};
-
-	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = COLOR_WHITE;
-
-	inline Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false )
-	{
-		if ( p_chainId.empty() )
-			return CHAIN_ID_UNKNOWN_COLOR;
-
-		// chain id should be defined by one char
-		const char c = static_cast<char>( std::toupper( static_cast<unsigned char>( p_chainId[ 0 ] ) ) );
-
-		const int id = int( c ) - 65; // 65 is A
-		if ( id < 0 || id > 26 )
-			return CHAIN_ID_UNKNOWN_COLOR;
-
-		return p_isHetAtm ? CHAIN_ID_COLOR_HETATM[ id ] : CHAIN_ID_COLOR_ATOM[ id ];
-	}
+	*/
 
 } // namespace VTX::Core::ChemDB::Chain
 

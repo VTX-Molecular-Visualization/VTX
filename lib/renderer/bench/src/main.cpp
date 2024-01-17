@@ -118,7 +118,15 @@ int main( int, char ** )
 		size_t										   sizeAtoms  = molecule.trajectory.frames.front().size();
 		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols	  = molecule.atomSymbols;
 		std::vector<uchar>							   colorAtoms = std::vector<uchar>( sizeAtoms );
-		std::generate( colorAtoms.begin(), colorAtoms.end(), [] { return rand() % 256; } );
+		std::generate(
+			colorAtoms.begin(),
+			colorAtoms.end(),
+			[ &symbols ]
+			{
+				static int i = 0;
+				return VTX::Core::ChemDB::Color::getColorIndex( symbols[ i++ ] );
+			}
+		);
 		std::vector<float> radii( sizeAtoms );
 		std::generate(
 			radii.begin(),
@@ -165,10 +173,7 @@ int main( int, char ** )
 
 		renderer.build();
 
-		// Generate array of random colors.
-		VTX::Core::ChemDB::Color::ColorLayout colorLayout;
-		std::generate( colorLayout.begin(), colorLayout.end(), [] { return VTX::Util::Color::Rgba::random(); } );
-		renderer.setColorLayout( colorLayout );
+		renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		// Main loop.
 		while ( isRunning )
