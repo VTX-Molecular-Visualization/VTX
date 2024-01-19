@@ -49,7 +49,7 @@ void main()
 			// Show impostors for debugging purpose.
 			uvec4 colorNormal = uvec4( 0 );
 			packData( inData.viewImpPos, -inData.viewSpherePos, inData.sphereSelected, outDataPacked );
-			outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
+			outColor			  = vec4( 1.f, 0.f, 0.f, 1.f ); // w = specular shininess.
 
 			gl_FragDepth = computeDepth( inData.viewImpPos );
 	#else
@@ -70,7 +70,7 @@ void main()
 			gl_FragDepth = computeDepth( hit );
 
 			packData( hit, normal, inData.sphereSelected, outDataPacked );
-			outColor			  = vec4( inData.sphereColor.xyz, 32.f ); // w = specular shininess.
+			outColor			  = inData.sphereColor;
 			outId				  = uvec2( inData.sphereId, 0 );
 		}
 	}
@@ -90,7 +90,7 @@ void main()
 			// Output data.
 			packData( inData.viewImpPos, -inData.viewSpherePos, inData.sphereSelected, outDataPacked );
 			outViewPositionNormal = viewPositionNormalCompressed;
-			outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
+			outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
 			gl_FragDepth = computeDepth( inData.viewImpPos );
 	#else
@@ -110,7 +110,7 @@ void main()
 
 			// Output data.
 			packData( hit, normal, inData.sphereSelected, outDataPacked );
-			outColor			  = vec4( inData.sphereColor.xyz, 32.f ); // w = specular shininess.
+			outColor			  = inData.sphereColor;
 			outId				  = uvec2( inData.sphereId, 0 );
 		}
 	}

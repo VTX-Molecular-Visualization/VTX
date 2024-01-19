@@ -59,7 +59,7 @@ void main()
 	#ifdef SHOW_IMPOSTORS		
 			// Output data.
 			packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-			outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
+			outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
 			gl_FragDepth = computeDepth( inData.viewImpostorPosition );
 	#else
@@ -78,7 +78,7 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 				// Output data.
 				packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-				outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
+				outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
 				gl_FragDepth = computeDepth( inData.viewImpostorPosition );
 	#else
@@ -103,7 +103,7 @@ void main()
 
 				// Output data.
 				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-				outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
+				outColor			  = color;
 
 				const int selectAtom0 = 1 - int( floor( 0.85f + ( y / d0 ) ) );
 				const int selectAtom1 = int( ceil( ( y / d0) - 0.85f ) );
@@ -137,7 +137,7 @@ void main()
 	#ifdef SHOW_IMPOSTORS
 			// Output data.
 			packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-			outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
+			outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
 			gl_FragDepth = computeDepthOrtho( inData.viewImpostorPosition );
 	#else
@@ -156,7 +156,7 @@ void main()
 	#ifdef SHOW_IMPOSTORS				
 				// Output data.
 				packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-				outColor			  = vec4( 1.f, 0.f, 1.f, 32.f ); // w = specular shininess.
+				outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
 				gl_FragDepth = computeDepthOrtho( inData.viewImpostorPosition );
 	#else
@@ -181,7 +181,7 @@ void main()
 
 				// Output data.
 				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
-				outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
+				outColor			  = color;
 
 				const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
 				const int selectAtom1 = int(ceil((y / d0) - 0.85f));

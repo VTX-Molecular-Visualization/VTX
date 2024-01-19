@@ -113,16 +113,16 @@ int main( int, char ** )
 		renderer.addMolecule( proxyMolecule );
 		*/
 
-		std::string data;
-		Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/4HHB", data );
-		// const std::string name = "4hhb.pdb";
-		// const FilePath	  path = Filesystem::getExecutableDir() / name;
+		// std::string data;
+		// Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/4HHB", data );
+		const std::string name = "4hhb.pdb";
+		const FilePath	  path = Filesystem::getExecutableDir() / name;
 
 		// Read model file.
 		Reader::Molecule			reader;
 		VTX::Core::Struct::Molecule molecule;
-		// reader.readFile( path, molecule );
-		reader.readBuffer( data, "4hhb.mmtf", molecule );
+		reader.readFile( path, molecule );
+		// reader.readBuffer( data, "4hhb.mmtf", molecule );
 
 		VTX::IO::Util::SecondaryStructure::computeStride( molecule );
 

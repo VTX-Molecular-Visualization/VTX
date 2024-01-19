@@ -15,6 +15,6 @@ layout( location = 2 ) out uvec2 outId;
 void main()
 {
 	packData( inData.viewPosition, inData.normal, inData.selected, outDataPacked );
-	outColor = vec4( inData.color, 32.f ); // w = specular shininess.	
+	outColor = inData.color;
 	outId    = uvec2( inData.id, 0 );
 }
