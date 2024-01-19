@@ -14,9 +14,11 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
-		using CallbackClean		  = std::function<void()>;
-		using CallbackReady		  = std::function<void()>;
+		using RenderGraphOpenGL45  = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
+		using CallbackClean		   = std::function<void()>;
+		using CallbackReady		   = std::function<void()>;
+		using CallbackSnapshotPre  = std::function<void( const size_t, const size_t )>;
+		using CallbackSnapshotPost = std::function<void( const size_t, const size_t )>;
 
 		Renderer(
 			const size_t	 p_width,
@@ -123,7 +125,7 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline void build( const uint p_output = 0, void * p_loader = nullptr )
+		void build( const uint p_output = 0, void * p_loader = nullptr )
 		{
 			clean();
 
@@ -163,7 +165,6 @@ namespace VTX::Renderer
 			_renderGraph->clean();
 			_infos = StructInfos();
 			setNeedUpdate( false );
-
 			_onClean();
 		}
 
@@ -211,6 +212,10 @@ namespace VTX::Renderer
 
 		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
 
+		inline void setCallbackSnapshotPre( const CallbackSnapshotPre & p_cb ) { _callbackSnapshotPre = p_cb; }
+
+		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
+
 		inline void setMatrixView( const Mat4f & p_view ) { setUniform( p_view, "Matrix view" ); }
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
@@ -249,16 +254,18 @@ namespace VTX::Renderer
 			setUniform( p_layout, "Color layout" );
 		}
 
-		inline void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 )
+		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 )
 		{
-			bool isForceUpdate = _forceUpdate;
-			_forceUpdate	   = true;
+			const size_t width		   = p_width ? p_width : _width;
+			const size_t height		   = p_height ? p_height : _height;
+			bool		 isForceUpdate = _forceUpdate;
+
+			_onSnapshotPre( width, height );
+			_forceUpdate = true;
 			_renderGraph->snapshot(
-				p_image,
-				std::bind( &Renderer::render, this, std::placeholders::_1 ),
-				p_width ? p_width : _width,
-				p_height ? p_height : _height
+				p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), width, height
 			);
+			_onSnapshotPost( _width, _height );
 			_forceUpdate = isForceUpdate;
 		}
 
@@ -310,8 +317,10 @@ namespace VTX::Renderer
 		StructInfos							 _infos;
 		bool								 _logDurations = false;
 
-		CallbackClean _callbackClean;
-		CallbackReady _callbackReady;
+		CallbackClean		 _callbackClean;
+		CallbackReady		 _callbackReady;
+		CallbackSnapshotPre	 _callbackSnapshotPre;
+		CallbackSnapshotPost _callbackSnapshotPost;
 
 		std::vector<StructProxyMolecule> _proxiesMolecules;
 
@@ -679,6 +688,22 @@ namespace VTX::Renderer
 			if ( _callbackReady )
 			{
 				_callbackReady();
+			}
+		}
+
+		inline void _onSnapshotPre( const size_t p_width, const size_t p_height )
+		{
+			if ( _callbackSnapshotPre )
+			{
+				_callbackSnapshotPre( p_width, p_height );
+			}
+		}
+
+		inline void _onSnapshotPost( const size_t p_width, const size_t p_height )
+		{
+			if ( _callbackSnapshotPost )
+			{
+				_callbackSnapshotPost( p_width, p_height );
 			}
 		}
 	};

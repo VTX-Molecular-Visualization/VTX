@@ -95,10 +95,20 @@ namespace VTX::Renderer::Context
 
 			const size_t widthOld  = width;
 			const size_t heightOld = height;
+			const Handle outputOld = _output;
 
 			p_image.resize( p_width * p_height * 4 );
+
+			GL::Framebuffer fbo;
+			GL::Texture2D	texture(
+				  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
+			  );
+			fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
+
 			resize( p_renderQueue, p_width, p_height );
+			setOutput( fbo.getId() );
 			p_renderFunction( 0 );
+
 			glBindFramebuffer( GL_FRAMEBUFFER, _output );
 			glReadnPixels(
 				0,
@@ -113,6 +123,7 @@ namespace VTX::Renderer::Context
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			resize( p_renderQueue, widthOld, heightOld );
+			setOutput( outputOld );
 			p_renderFunction( 0 );
 		}
 
