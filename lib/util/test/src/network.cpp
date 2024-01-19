@@ -8,6 +8,5 @@ TEST_CASE( "Util::Newtork", "[unit]" )
 
 	std::string data;
 	VTX::Util::Network::httpRequestGet( "https://vtx.drugdesign.fr/vtx.json", data );
-
-	VTX_INFO( "DATA RECEIVED: {}", data );
+	CHECK( data.size() == 96 );
 }

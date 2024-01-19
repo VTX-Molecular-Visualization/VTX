@@ -12,7 +12,22 @@ namespace VTX::Util::Network
 	{
 		try
 		{
-			cpr::Response response { cpr::Get( p_url ) };
+			cpr::Response response = cpr::Get(
+				cpr::Url { p_url },
+				cpr::ProgressCallback(
+					[ & ](
+						cpr::cpr_off_t downloadTotal,
+						cpr::cpr_off_t downloadNow,
+						cpr::cpr_off_t uploadTotal,
+						cpr::cpr_off_t uploadNow,
+						intptr_t	   userdata
+					) -> bool
+					{
+						VTX_DEBUG( "Downloaded {} / {} bytes", downloadNow, downloadTotal );
+						return true;
+					}
+				)
+			);
 
 			if ( response.status_code == 200 )
 			{
