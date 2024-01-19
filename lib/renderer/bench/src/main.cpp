@@ -65,6 +65,7 @@ int main( int, char ** )
 				camera.resize( p_width, p_height );
 			}
 		);
+		inputManager.setCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
 
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()

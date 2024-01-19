@@ -93,7 +93,7 @@ namespace VTX::Renderer
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
 			_renderGraph->setUniform<T>( p_value, p_key );
-			_needUpdate = true;
+			setNeedUpdate( true );
 		}
 
 		template<typename T>
@@ -111,7 +111,7 @@ namespace VTX::Renderer
 			{
 				_renderGraph->resize( p_width, p_height );
 			}
-			_needUpdate = true;
+			setNeedUpdate( true );
 		}
 
 		inline void setOutput( const uint p_output )
@@ -120,7 +120,7 @@ namespace VTX::Renderer
 			{
 				_renderGraph->setOutput( p_output );
 			}
-			_needUpdate = true;
+			setNeedUpdate( true );
 		}
 
 		inline void build( const uint p_output = 0, void * p_loader = nullptr )
@@ -148,7 +148,7 @@ namespace VTX::Renderer
 							}
 
 							_renderGraph->fillInfos( _infos );
-							_needUpdate = true;
+							setNeedUpdate( true );
 							_onReady();
 						}
 					}
@@ -161,15 +161,15 @@ namespace VTX::Renderer
 			_instructions.clear();
 			_instructionsDurationRanges.clear();
 			_renderGraph->clean();
-			_infos		= StructInfos();
-			_needUpdate = false;
+			_infos = StructInfos();
+			setNeedUpdate( false );
 
 			_onClean();
 		}
 
 		inline void render( const float p_time )
 		{
-			if ( _needUpdate || _forceUpdate )
+			if ( _needUpdate || _forceUpdate || _framesRemaining > 0 )
 			{
 				if ( _logDurations )
 				{
@@ -196,7 +196,14 @@ namespace VTX::Renderer
 					}
 				}
 
-				_needUpdate = false;
+				if ( _needUpdate )
+				{
+					setNeedUpdate( false );
+				}
+				else
+				{
+					_framesRemaining--;
+				}
 			}
 		}
 
@@ -234,7 +241,7 @@ namespace VTX::Renderer
 				_setData( p_proxy );
 			}
 
-			_needUpdate = true;
+			setNeedUpdate( true );
 		}
 
 		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> p_layout )
@@ -263,7 +270,15 @@ namespace VTX::Renderer
 
 		inline const StructInfos & getInfos() const { return _infos; }
 
-		inline void		  setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
+		inline const bool isNeedUpdate() const { return _needUpdate; }
+		inline void		  setNeedUpdate( const bool p_value )
+		{
+			_needUpdate = p_value;
+			if ( p_value == false )
+			{
+				_framesRemaining = _BUFFER_COUNT;
+			}
+		}
 		inline const bool isForceUpdate() const { return _forceUpdate; }
 		inline void		  setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
 
@@ -279,9 +294,12 @@ namespace VTX::Renderer
 		}
 
 	  private:
-		void * _loader		= nullptr;
-		bool   _needUpdate	= false;
-		bool   _forceUpdate = false;
+		const size_t _BUFFER_COUNT = 2;
+
+		void * _loader			= nullptr;
+		bool   _needUpdate		= false;
+		bool   _forceUpdate		= false;
+		size_t _framesRemaining = _BUFFER_COUNT;
 
 		size_t								 _width;
 		size_t								 _height;

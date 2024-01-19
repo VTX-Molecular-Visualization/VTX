@@ -17,6 +17,7 @@ namespace VTX::Bench
 		using CallbackRotate	  = std::function<void( const Vec2i & )>;
 		using CallbackZoom		  = std::function<void( const int )>;
 		using CallbackMouseMotion = std::function<void( const Vec2i & )>;
+		using CallbackRestore	  = std::function<void()>;
 
 		inline void setCallbackClose( const CallbackClose & p_cb ) { _callbackClose = p_cb; }
 		inline void setCallbackResize( const CallbackResize & p_cb ) { _callbackResize = p_cb; }
@@ -24,6 +25,7 @@ namespace VTX::Bench
 		inline void setCallbackRotate( const CallbackRotate & p_cb ) { _callbackRotate = p_cb; }
 		inline void setCallbackZoom( const CallbackZoom & p_cb ) { _callbackZoom = p_cb; }
 		inline void setCallbackMouseMotion( const CallbackMouseMotion & p_cb ) { _callbackMouseMotion = p_cb; }
+		inline void setCallbackRestore( const CallbackRestore & p_cb ) { _callbackRestore = p_cb; }
 
 		inline bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
 		inline bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
@@ -53,6 +55,7 @@ namespace VTX::Bench
 				{
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
 				case SDL_WINDOWEVENT_RESIZED: _onResize( p_event.window.data1, p_event.window.data2 ); break;
+				case SDL_WINDOWEVENT_RESTORED: _onRestore(); break;
 				}
 				break;
 			default: break;
@@ -127,6 +130,7 @@ namespace VTX::Bench
 		CallbackRotate		_callbackRotate;
 		CallbackZoom		_callbackZoom;
 		CallbackMouseMotion _callbackMouseMotion;
+		CallbackRestore		_callbackRestore;
 
 		inline void _onClose()
 		{
@@ -149,6 +153,14 @@ namespace VTX::Bench
 			if ( _callbackMouseMotion )
 			{
 				_callbackMouseMotion( { p_x, p_y } );
+			}
+		}
+
+		inline void _onRestore()
+		{
+			if ( _callbackRestore )
+			{
+				_callbackRestore();
 			}
 		}
 	};
