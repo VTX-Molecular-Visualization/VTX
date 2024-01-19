@@ -3,18 +3,18 @@
 
 namespace VTX
 {
-	// Use VTX_FLAG define to generate static | and & operation between two Enums.
-	// EnumFlag will manage all the casts needed for bitwise operations
-#define VTX_FLAG( FLAG_TYPE, ENUM )                                      \
-	using FLAG_TYPE = ::VTX::Util::Generic::EnumFlag<ENUM>;              \
-	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) \
-	{                                                                    \
-		return FLAG_TYPE( p_lhs ) | p_rhs;                               \
-	};                                                                   \
-	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) \
-	{                                                                    \
-		return FLAG_TYPE( p_lhs ) & p_rhs;                               \
-	};
+	//	// Use VTX_FLAG define to generate static | and & operation between two Enums.
+	//	// EnumFlag will manage all the casts needed for bitwise operations
+	// #define VTX_FLAG( FLAG_TYPE, ENUM )                                      \
+//	using FLAG_TYPE = ::VTX::Util::Generic::EnumFlag<ENUM>;              \
+//	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) \
+//	{                                                                    \
+//		return FLAG_TYPE( p_lhs ) | p_rhs;                               \
+//	};                                                                   \
+//	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) \
+//	{                                                                    \
+//		return FLAG_TYPE( p_lhs ) & p_rhs;                               \
+//	};
 
 	namespace Util::Generic
 	{
