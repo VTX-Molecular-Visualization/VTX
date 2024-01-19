@@ -12,10 +12,7 @@ find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 
-get_filename_component(_vtx_tool_mdprep_top_dir "./external/gromacs/share/top" ABSOLUTE )
-message ("${_vtx_tool_mdprep_top_dir}")
-register_build_directory_copy("${_vtx_tool_mdprep_top_dir}")
-
+include ("cmake/vtx_tool_mdprep_copy_files.cmake")
 
 add_library(vtx_tool_mdprep)
 configure_target(vtx_tool_mdprep)

@@ -1,7 +1,9 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMakeDeps
 from conan.tools.files import copy
+from conan.tools.cmake import CMakeToolchain
 
 class VTXToolMdprepRecipe(ConanFile):
     name = "vtx_tool_mdprep"
@@ -25,6 +27,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("dylib/2.2.1")
 
     def generate(self):
+        
         copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
         copy(
             self
@@ -33,14 +36,15 @@ class VTXToolMdprepRecipe(ConanFile):
             , os.path.join(self.build_folder, "data", "tool", "tools", "mdprep", "gromacs", "top")
         )
         
+        
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def layout(self):
         cmake_layout(self)
-        self.cpp.build.components["vtx_tool_mdprep"].libdirs = self.cpp.build.libdirs
-        self.cpp.source.components["vtx_tool_mdprep"].includedirs = self.cpp.source.includedirs
+        self.cpp.build.libdirs = self.cpp.build.libdirs
+        self.cpp.source.includedirs = self.cpp.source.includedirs
 
     def build(self):
         cmake = CMake(self)
@@ -53,6 +57,9 @@ class VTXToolMdprepRecipe(ConanFile):
         copy(self, "*.dll", self.dependencies["vtx-gromacs"].build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
-        self.cpp_info.components["vtx_tool_mdprep"].libs = ["vtx_tool_mdprep"]
+        self.cpp_info.libs = ["vtx_tool_mdprep"]
         # self.cpp_info.components["vtx_tool_mdprep"].requires = ["vtx-gromacs"]
-        self.cpp_info.components["vtx_tool_mdprep"].set_property("cmake_target_name", "vtx_tool_mdprep::vtx_tool_mdprep")
+        
+        cmake_file = os.path.join("cmake", "qt_helper.cmake")
+        self.cpp_info.set_property("cmake_build_modules", ["D:/dev/vtx/lib/tool/tools/mdprep/cmake/vtx_tool_mdprep_copy_files.cmake"])
+        

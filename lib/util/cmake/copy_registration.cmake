@@ -1,5 +1,4 @@
 function(register_build_directory_copy dir)
-	set(_REGISTER_DIR_COPY PARENT_SCOPE)
 	set(_REGISTER_DIR_COPY "${_REGISTER_DIR_COPY}" CACHE INTERNAL "")
 	set_property(GLOBAL PROPERTY _REGISTER_DIR_COPY_property "${_REGISTER_DIR_COPY_property};${dir}")
 	#set(ENV{_REGISTER_DIR_COPY} "$ENV{_REGISTER_DIR_COPY};${dir}")
@@ -11,8 +10,8 @@ endfunction()
 
 function(copy_directory_data target dest)
 	set(num 0)
-	message("copy_directory_data - Env var : <$ENV{_REGISTER_DIR_COPY}>")
-	message("copy_directory_data - global var : <${_REGISTER_DIR_COPY}>")
+	#message("copy_directory_data - Env var : <$ENV{_REGISTER_DIR_COPY}>")
+	#message("copy_directory_data - global var : <${_REGISTER_DIR_COPY}>")
 	get_property(v GLOBAL PROPERTY _REGISTER_DIR_COPY_property)
 	message("copy_directory_data - property var : <${v}>")
 
