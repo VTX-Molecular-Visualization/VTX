@@ -3,18 +3,18 @@
 
 namespace VTX
 {
-	//	// Use VTX_FLAG define to generate static | and & operation between two Enums.
-	//	// EnumFlag will manage all the casts needed for bitwise operations
-	// #define VTX_FLAG( FLAG_TYPE, ENUM )                                      \
-//	using FLAG_TYPE = ::VTX::Util::Generic::EnumFlag<ENUM>;              \
-//	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) \
-//	{                                                                    \
-//		return FLAG_TYPE( p_lhs ) | p_rhs;                               \
-//	};                                                                   \
-//	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) \
-//	{                                                                    \
-//		return FLAG_TYPE( p_lhs ) & p_rhs;                               \
-//	};
+	// Use VTX_FLAG define to generate static | and & operation between two Enums.
+	// EnumFlag will manage all the casts needed for bitwise operations
+#define VTX_FLAG( FLAG_TYPE, ENUM )                                      \
+	using FLAG_TYPE = ::VTX::Util::Generic::EnumFlag<ENUM>;              \
+	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) \
+	{                                                                    \
+		return FLAG_TYPE( p_lhs ) | p_rhs;                               \
+	};                                                                   \
+	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) \
+	{                                                                    \
+		return FLAG_TYPE( p_lhs ) & p_rhs;                               \
+	};
 
 	namespace Util::Generic
 	{
@@ -24,9 +24,9 @@ namespace VTX
 		  public:
 			using ENUM = T;
 
-			EnumFlag<T>() : _enum( 0 ) {}
-			EnumFlag<T>( const ENUM & p_enum ) : _enum( int( p_enum ) ) {}
-			EnumFlag<T>( const int p_value ) : _enum( p_value ) {}
+			EnumFlag() : _enum( 0 ) {}
+			EnumFlag( const ENUM & p_enum ) : _enum( int( p_enum ) ) {}
+			EnumFlag( const int p_value ) : _enum( p_value ) {}
 
 			explicit operator bool() const { return bool( _enum ); }
 			explicit operator int() const { return _enum; }
