@@ -182,6 +182,20 @@ namespace VTX::Renderer
 								  StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } }
 	};
 
+	// Selection.
+	static const Pass descPassSelection {
+		"Selection",
+		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
+				 { E_CHANNEL_INPUT::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs { { "Selection",
+					 std::vector<FilePath> { "default.vert", "selection.frag" },
+					 Uniforms { { "Color",
+								  E_TYPE::COLOR4,
+								  StructUniformValue<Util::Color::Rgba> { Util::Color::Rgba( 45, 243, 26 ) } } } } }
+	};
+
 	// FXAA.
 	static const Pass desPassFXAA { "FXAA",
 									Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageRGBA16F } } },
@@ -278,11 +292,19 @@ namespace VTX::Renderer
 						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } }
 	};
 
-	static const std::vector<Pass> availablePasses {
-		descPassGeometric, descPassDepth, descPassSSAO,		descPassBlur, descPassShading,
-		descPassOutline,   desPassFXAA,	  descPassPixelize, descPassCRT,  descPassChromaticAberration,
-		descPassColorize,  descPassDebug
-	};
+	static const std::vector<Pass> availablePasses { descPassGeometric,
+													 descPassDepth,
+													 descPassSSAO,
+													 descPassBlur,
+													 descPassShading,
+													 descPassOutline,
+													 descPassSelection,
+													 desPassFXAA,
+													 descPassPixelize,
+													 descPassCRT,
+													 descPassChromaticAberration,
+													 descPassColorize,
+													 descPassDebug };
 } // namespace VTX::Renderer
 
 #endif
