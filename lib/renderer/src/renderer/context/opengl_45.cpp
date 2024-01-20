@@ -269,13 +269,14 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								if ( *draw.count > 0 )
+								uint count = draw.countFunction();
+								if ( count > 0 )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
 									program->use();
 									vao->drawElement(
-										_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+										_mapPrimitives[ draw.primitive ], GLsizei( count ), GL_UNSIGNED_INT
 									);
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -289,11 +290,12 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								if ( *draw.count > 0 )
+								uint count = draw.countFunction();
+								if ( count > 0 )
 								{
 									vao->bind();
 									program->use();
-									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( count ) );
 									vao->unbind();
 								}
 							}

@@ -3,6 +3,7 @@
 
 #include "atom.hpp"
 #include "residue.hpp"
+#include "secondary_structure.hpp"
 #include <array>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -278,6 +279,11 @@ namespace VTX::Core::ChemDB::Color
 		}
 
 		return p_isHetAtm ? id + LAYOUT_OFFSET_CHAINS + 1 + 26 : id + LAYOUT_OFFSET_CHAINS + 1;
+	}
+
+	inline uchar getColorIndex( const SecondaryStructure::TYPE p_type )
+	{
+		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
 	}
 
 	const ColorLayout COLOR_LAYOUT_JMOL { Util::Color::Rgba { 250, 22, 145 }, // UNKNOWN

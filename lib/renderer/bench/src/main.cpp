@@ -171,10 +171,16 @@ int main( int, char ** )
 		size_t			  sizeResidue = molecule.residueOriginalIds.size();
 		std::vector<uint> idResidues( sizeResidue );
 		std::iota( idResidues.begin(), idResidues.end(), 0 );
-		std::vector<uchar> colorAResidues = std::vector<uchar>( sizeResidue );
-		std::generate( colorAResidues.begin(), colorAResidues.end(), [] { return rand() % 256; } );
-
-		std::vector<uchar> sstypes( sizeResidue, 0 );
+		std::vector<uchar> colorResidues = std::vector<uchar>( sizeResidue );
+		std::generate(
+			colorResidues.begin(),
+			colorResidues.end(),
+			[ &molecule ]
+			{
+				static int i = 0;
+				return VTX::Core::ChemDB::Color::getColorIndex( molecule.residueSecondaryStructureTypes[ i++ ] );
+			}
+		);
 
 		Renderer::Proxy::Molecule proxyMolecule
 			= { &molecule.transform,
@@ -188,7 +194,7 @@ int main( int, char ** )
 				&molecule.atomNames,
 				&idResidues,
 				reinterpret_cast<std::vector<uchar> *>( &molecule.residueSecondaryStructureTypes ),
-				&colorAResidues,
+				&colorResidues,
 				&molecule.residueFirstAtomIndexes,
 				&molecule.residueAtomCounts,
 				&molecule.chainFirstResidues,

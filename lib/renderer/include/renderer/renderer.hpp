@@ -46,12 +46,12 @@ namespace VTX::Renderer
 			// Pass * const crt	 = _renderGraph->addPass( descPassCRT );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().count	 = &_sizeAtoms;
-			geo->programs[ 1 ].draw.value().count	 = &_sizeBonds;
-			geo->programs[ 2 ].draw.value().count	 = &_sizeRibbons;
-			blurX->name								 = "BlurX";
-			blurY->name								 = "BlurY";
-			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().countFunction = [ & ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction = [ & ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction = [ & ]() { return showRibbons ? sizeRibbons : 0; };
+			blurX->name									  = "BlurX";
+			blurY->name									  = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -71,8 +71,6 @@ namespace VTX::Renderer
 			_renderGraph->addLink( depth, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
 			_renderGraph->addLink( selection, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
 			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
-			//_renderGraph->addLink( fxaa, crt, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			//_renderGraph->setOutput( &crt->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
@@ -223,16 +221,11 @@ namespace VTX::Renderer
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
-		inline const size_t getWidth() const { return _width; }
-		inline const size_t getHeight() const { return _height; }
-		inline const size_t getAtomCount() const { return _sizeAtoms; }
-		inline const size_t getBondCount() const { return _sizeBonds; }
-		inline const size_t getRibbonCount() const { return _sizeRibbons; }
-
+		inline const size_t		   getWidth() const { return _width; }
+		inline const size_t		   getHeight() const { return _height; }
 		inline const StructInfos & getInfos() const { return _infos; }
-
-		inline const bool isNeedUpdate() const { return _needUpdate; }
-		inline void		  setNeedUpdate( const bool p_value )
+		inline const bool		   isNeedUpdate() const { return _needUpdate; }
+		inline void				   setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
 			if ( p_value == false )
@@ -242,7 +235,6 @@ namespace VTX::Renderer
 		}
 		inline const bool isForceUpdate() const { return _forceUpdate; }
 		inline void		  setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
-
 		inline const bool isLogDurations() const { return _logDurations; }
 		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
 		inline void		  compileShaders() const { _renderGraph->compileShaders(); }
@@ -253,6 +245,14 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
+
+		uint sizeAtoms	 = 0;
+		uint sizeBonds	 = 0;
+		uint sizeRibbons = 0;
+
+		bool showAtoms	 = true;
+		bool showBonds	 = true;
+		bool showRibbons = true;
 
 	  private:
 		const size_t _BUFFER_COUNT = 2;
@@ -277,10 +277,6 @@ namespace VTX::Renderer
 		CallbackSnapshotPost _callbackSnapshotPost;
 
 		std::vector<Proxy::Molecule> _proxiesMolecules;
-
-		size_t _sizeAtoms	= 0;
-		size_t _sizeBonds	= 0;
-		size_t _sizeRibbons = 0;
 
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
@@ -337,8 +333,8 @@ namespace VTX::Renderer
 
 			_renderGraph->setData( atomFlags, "SpheresCylindersFlags" );
 
-			_sizeAtoms = p_proxy.atomPositions->size();
-			_sizeBonds = p_proxy.bonds->size();
+			sizeAtoms = uint( p_proxy.atomPositions->size() );
+			sizeBonds = uint( p_proxy.bonds->size() );
 		}
 
 		void _setDataRibbons( const Proxy::Molecule & p_proxy )
@@ -574,9 +570,12 @@ namespace VTX::Renderer
 					default: colors.emplace_back( Color::Rgba::WHITE ); break;
 					}
 					*/
+
 					// Generate number between 0 and 255.
-					int color = ( ( residueIdx * 7 ) % 256 );
-					colors.emplace_back( color );
+					// int color = ( ( residueIdx * 7 ) % 256 );
+					// colors.emplace_back( color );
+
+					colors.emplace_back( ( *p_proxy.residueColors )[ residueIdx ] );
 
 					// Flag.
 					// TODO.
@@ -626,7 +625,7 @@ namespace VTX::Renderer
 			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
 			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
 
-			_sizeRibbons = bufferIndices.size();
+			sizeRibbons = uint( bufferIndices.size() );
 		}
 
 		inline void _onClean()
