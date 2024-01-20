@@ -219,9 +219,9 @@ namespace VTX::Renderer
 
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			return std::any_cast<Vec2i>(
-				_renderGraph->getTextureData( p_x, _height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 )
-			);
+			std::any idsAny = std::make_any<Vec2i>();
+			_renderGraph->getTextureData( idsAny, p_x, _height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			return std::any_cast<Vec2i>( idsAny );
 		}
 
 		inline const size_t getWidth() const { return _width; }

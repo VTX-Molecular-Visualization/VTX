@@ -433,7 +433,8 @@ namespace VTX::Renderer::Context
 		p_renderFunction( 0 );
 	}
 
-	std::any OpenGL45::getTextureData(
+	void OpenGL45::getTextureData(
+		std::any &			   p_textureData,
 		const size_t		   p_x,
 		const size_t		   p_y,
 		const std::string &	   p_pass,
@@ -444,18 +445,29 @@ namespace VTX::Renderer::Context
 		{
 			if ( passPtr->name == p_pass )
 			{
+				const IO & descIO = passPtr->outputs.at( p_channel ).desc;
+
+				assert( std::holds_alternative<Attachment>( descIO ) );
+
+				const Attachment & attachment = std::get<Attachment>( descIO );
+				const E_FORMAT	   format	  = attachment.format;
+
 				fbo->bind( GL_READ_FRAMEBUFFER );
 				fbo->setReadBuffer( _mapAttachments[ p_channel ] );
-				// TODO: check how to template return type in concept.
-				Vec2i ids = Vec2i();
-				glReadPixels( GLint( p_x ), GLint( p_y ), 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, &ids );
+				glReadPixels(
+					GLint( p_x ),
+					GLint( p_y ),
+					1,
+					1,
+					_mapFormatInternalTypes[ format ],
+					_mapTypes[ _mapFormatTypes[ format ] ],
+					&p_textureData
+				);
 				fbo->unbind();
-				return ids;
+				return;
 			}
 		}
-
 		assert( false );
-		return -1;
 	}
 
 	void OpenGL45::_createInputs( const Pass * const p_descPassPtr )
@@ -806,4 +818,8 @@ namespace VTX::Renderer::Context
 			{ E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
 			{ E_TYPE::MAT3F, sizeof( Mat3f ) },	  { E_TYPE::MAT4F, sizeof( Mat4f ) },
 			{ E_TYPE::COLOR4, sizeof( Vec4f ) },  { E_TYPE::COLOR4_256, 256 * sizeof( Vec4f ) } };
+
+	std::map<const E_FORMAT, const E_TYPE> OpenGL45::_mapFormatTypes = { { E_FORMAT::RG32UI, E_TYPE::UINT } };
+
+	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormatInternalTypes = { { E_FORMAT::RG32UI, GL_RG_INTEGER } };
 } // namespace VTX::Renderer::Context

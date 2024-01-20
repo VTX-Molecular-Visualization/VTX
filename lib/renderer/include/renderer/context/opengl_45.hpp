@@ -91,11 +91,13 @@ namespace VTX::Renderer::Context
 			const size_t		   p_height
 		);
 
-		std::any getTextureData(
+		void getTextureData(
+			std::any &			   p_textureData,
 			const size_t		   p_x,
 			const size_t		   p_y,
 			const std::string &	   p_pass,
 			const E_CHANNEL_OUTPUT p_channel
+
 		) const;
 
 	  private:
@@ -107,6 +109,8 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FILTERING, const GLint>		  _mapFilterings;
 		static std::map<const E_TYPE, const GLenum>			  _mapTypes;
 		static std::map<const E_TYPE, const size_t>			  _mapTypeSizes;
+		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
+		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
