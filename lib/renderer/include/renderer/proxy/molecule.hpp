@@ -1,13 +1,13 @@
-#ifndef __VTX_RENDERER_STRUCT_PROXY_MOLECULE__
-#define __VTX_RENDERER_STRUCT_PROXY_MOLECULE__
+#ifndef __VTX_RENDERER_PROXY_MOLECULE__
+#define __VTX_RENDERER_PROXY_MOLECULE__
 
 #include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Renderer
+namespace VTX::Renderer::Proxy
 {
-	struct StructProxyMolecule
+	struct Molecule
 	{
 		const Mat4f * transform;
 		// const Mat4f * normals;
@@ -29,6 +29,6 @@ namespace VTX::Renderer
 		std::vector<size_t> *	   chainResidueCounts;		//
 	};
 
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Proxy
 
 #endif

@@ -1,13 +1,13 @@
-#ifndef __VTX_RENDERER_STRUCT_PROXY_MESH__
-#define __VTX_RENDERER_STRUCT_PROXY_MESH__
+#ifndef __VTX_RENDERER_PROXY_MESH__
+#define __VTX_RENDERER_PROXY_MESH__
 
 #include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Renderer
+namespace VTX::Renderer::Proxy
 {
-	struct StructProxyMesh
+	struct Mesh
 	{
 		Mat4f *							 transform;
 		std::vector<Vec3f> *			 vertices;
@@ -19,6 +19,6 @@ namespace VTX::Renderer
 		std::vector<uint> *				 indices;
 	};
 
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Proxy
 
 #endif

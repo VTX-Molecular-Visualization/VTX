@@ -15,8 +15,8 @@
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include "app/render/proxy_builder.hpp"
 #include "app/vtx_app.hpp"
+#include <renderer/proxy/molecule.hpp>
 #include <renderer/renderer.hpp>
-#include <renderer/struct_proxy_molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -33,7 +33,7 @@ namespace VTX::App::Entity::Scene
 		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		MAIN_REGISTRY().addComponent<VTX::Renderer::StructProxyMolecule>( p_entity );
+		MAIN_REGISTRY().addComponent<VTX::Renderer::Proxy::Molecule>( p_entity );
 		MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
@@ -50,8 +50,8 @@ namespace VTX::App::Entity::Scene
 		selectableComponent.setSelectionDataGenerator<Application::Selection::MoleculeData>();
 
 		// Setup GPU Proxy
-		Renderer::StructProxyMolecule & gpuProxyComponent
-			= MAIN_REGISTRY().getComponent<Renderer::StructProxyMolecule>( p_entity );
+		Renderer::Proxy::Molecule & gpuProxyComponent
+			= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity );
 
 		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 
@@ -74,7 +74,7 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
-		RENDERER().addMolecule( MAIN_REGISTRY().getComponent<Renderer::StructProxyMolecule>( p_entity ) );
+		RENDERER().addMolecule( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
 	}
 
 	void MoleculeEntityBuilder::_load(

@@ -172,7 +172,7 @@ int main( int, char ** )
 
 		std::vector<uchar> sstypes( sizeResidue, 0 );
 
-		Renderer::StructProxyMolecule proxyMolecule
+		Renderer::Proxy::Molecule proxyMolecule
 			= { &molecule.transform,
 				&molecule.trajectory.frames.front(),
 				&colorAtoms,

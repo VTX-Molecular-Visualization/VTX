@@ -22,7 +22,7 @@ namespace VTX::Renderer
 							 p_output
 						 ) )
 					{
-						for ( const StructProxyMolecule & proxy : _proxiesMolecules )
+						for ( const Proxy::Molecule & proxy : _proxiesMolecules )
 						{
 							_setData( proxy );
 						}

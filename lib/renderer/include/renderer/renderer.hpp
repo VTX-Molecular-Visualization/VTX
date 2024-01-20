@@ -2,10 +2,11 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "context/opengl_45.hpp"
+#include "proxy/mesh.hpp"
+#include "proxy/molecule.hpp"
+#include "proxy/representation.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
-#include "struct_proxy_mesh.hpp"
-#include "struct_proxy_molecule.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -202,7 +203,7 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		inline void addMolecule( const StructProxyMolecule & p_proxy )
+		inline void addMolecule( const Proxy::Molecule & p_proxy )
 		{
 			_proxiesMolecules.push_back( p_proxy );
 
@@ -281,13 +282,13 @@ namespace VTX::Renderer
 		CallbackSnapshotPre	 _callbackSnapshotPre;
 		CallbackSnapshotPost _callbackSnapshotPost;
 
-		std::vector<StructProxyMolecule> _proxiesMolecules;
+		std::vector<Proxy::Molecule> _proxiesMolecules;
 
 		size_t _sizeAtoms	= 0;
 		size_t _sizeBonds	= 0;
 		size_t _sizeRibbons = 0;
 
-		void _setData( const StructProxyMolecule & p_proxy )
+		void _setData( const Proxy::Molecule & p_proxy )
 		{
 			if ( p_proxy.atomIds )
 			{
@@ -309,7 +310,7 @@ namespace VTX::Renderer
 			SELECTION  = 1
 		};
 
-		void _setDataSpheresCylinders( const StructProxyMolecule & p_proxy )
+		void _setDataSpheresCylinders( const Proxy::Molecule & p_proxy )
 		{
 			assert( p_proxy.atomPositions );
 			assert( p_proxy.atomColors );
@@ -346,7 +347,7 @@ namespace VTX::Renderer
 			_sizeBonds = p_proxy.bonds->size();
 		}
 
-		void _setDataRibbons( const StructProxyMolecule & p_proxy )
+		void _setDataRibbons( const Proxy::Molecule & p_proxy )
 		{
 			assert( p_proxy.atomNames );
 			assert( p_proxy.residueIds );
