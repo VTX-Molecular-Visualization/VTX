@@ -125,48 +125,9 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		void build( const uint p_output = 0, void * p_loader = nullptr )
-		{
-			clean();
+		void build( const uint p_output = 0, void * p_loader = nullptr );
 
-			VTX_INFO(
-				"Renderer graph setup total time: {}",
-				Util::CHRONO_CPU(
-					[ & ]()
-					{
-						if ( _renderGraph->setup(
-								 p_loader ? p_loader : _loader,
-								 _width,
-								 _height,
-								 _shaderPath,
-								 _instructions,
-								 _instructionsDurationRanges,
-								 p_output
-							 ) )
-						{
-							for ( const StructProxyMolecule & proxy : _proxiesMolecules )
-							{
-								_setData( proxy );
-							}
-
-							_renderGraph->fillInfos( _infos );
-							setNeedUpdate( true );
-							_onReady();
-						}
-					}
-				)
-			);
-		}
-
-		inline void clean()
-		{
-			_instructions.clear();
-			_instructionsDurationRanges.clear();
-			_renderGraph->clean();
-			_infos = StructInfos();
-			setNeedUpdate( false );
-			_onClean();
-		}
+		void clean();
 
 		inline void render( const float p_time )
 		{
@@ -254,19 +215,13 @@ namespace VTX::Renderer
 			setUniform( p_layout, "Color layout" );
 		}
 
-		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 )
-		{
-			const size_t width		   = p_width ? p_width : _width;
-			const size_t height		   = p_height ? p_height : _height;
-			bool		 isForceUpdate = _forceUpdate;
+		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 );
 
-			_onSnapshotPre( width, height );
-			_forceUpdate = true;
-			_renderGraph->snapshot(
-				p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), width, height
+		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
+		{
+			return std::any_cast<Vec2i>(
+				_renderGraph->getTextureData( p_x, _height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 )
 			);
-			_onSnapshotPost( _width, _height );
-			_forceUpdate = isForceUpdate;
 		}
 
 		inline const size_t getWidth() const { return _width; }

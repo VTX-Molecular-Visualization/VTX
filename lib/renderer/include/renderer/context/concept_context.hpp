@@ -25,6 +25,8 @@ namespace VTX::Renderer::Context
 			  C								p_context,
 			  const size_t					p_width,
 			  const size_t					p_height,
+			  const size_t					p_x,
+			  const size_t					p_y,
 			  const RenderQueue &			p_renderQueue,
 			  const RenderFunction &		p_renderFunction,
 			  const Links &					p_links,
@@ -37,7 +39,9 @@ namespace VTX::Renderer::Context
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
 			  StructInfos &					p_infos,
-			  std::vector<uchar> &			p_image
+			  std::vector<uchar> &			p_image,
+			  const std::string &			p_pass,
+			  const E_CHANNEL_OUTPUT		p_channel
 
 		  ) {
 				 {
@@ -72,6 +76,9 @@ namespace VTX::Renderer::Context
 				 {
 					 p_context.snapshot( p_image, p_renderQueue, p_renderFunction, p_width, p_height )
 				 } -> std::same_as<void>;
+				 {
+					 p_context.getTextureData( p_x, p_y, p_pass, p_channel )
+				 } -> std::same_as<std::any>;
 			 };
 
 } // namespace VTX::Renderer::Context

@@ -67,6 +67,13 @@ int main( int, char ** )
 			}
 		);
 		inputManager.setCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
+		inputManager.setCallbackMousePick(
+			[ &renderer ]( const size_t p_x, const size_t p_y )
+			{
+				Vec2i ids = renderer.getPickedIds( p_x, p_y );
+				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			}
+		);
 
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()

@@ -83,49 +83,20 @@ namespace VTX::Renderer::Context
 
 		inline void compileShaders() const { _programManager->compileShaders(); }
 
-		inline void snapshot(
+		void snapshot(
 			std::vector<uchar> &   p_image,
 			const RenderQueue &	   p_renderQueue,
 			const RenderFunction & p_renderFunction,
 			const size_t		   p_width,
 			const size_t		   p_height
-		)
-		{
-			// TODO: transparency.
+		);
 
-			const size_t widthOld  = width;
-			const size_t heightOld = height;
-			const Handle outputOld = _output;
-
-			p_image.resize( p_width * p_height * 4 );
-
-			GL::Framebuffer fbo;
-			GL::Texture2D	texture(
-				  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
-			  );
-			fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
-
-			resize( p_renderQueue, p_width, p_height );
-			setOutput( fbo.getId() );
-			p_renderFunction( 0 );
-
-			glBindFramebuffer( GL_FRAMEBUFFER, _output );
-			glReadnPixels(
-				0,
-				0,
-				GLsizei( p_width ),
-				GLsizei( p_height ),
-				GL_RGBA,
-				GL_UNSIGNED_BYTE,
-				GLsizei( p_image.size() ),
-				p_image.data()
-			);
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-			resize( p_renderQueue, widthOld, heightOld );
-			setOutput( outputOld );
-			p_renderFunction( 0 );
-		}
+		std::any getTextureData(
+			const size_t		   p_x,
+			const size_t		   p_y,
+			const std::string &	   p_pass,
+			const E_CHANNEL_OUTPUT p_channel
+		) const;
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).

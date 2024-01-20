@@ -389,6 +389,75 @@ namespace VTX::Renderer::Context
 		}
 	}
 
+	void OpenGL45::snapshot(
+		std::vector<uchar> &   p_image,
+		const RenderQueue &	   p_renderQueue,
+		const RenderFunction & p_renderFunction,
+		const size_t		   p_width,
+		const size_t		   p_height
+	)
+	{
+		// TODO: transparency.
+
+		const size_t widthOld  = width;
+		const size_t heightOld = height;
+		const Handle outputOld = _output;
+
+		p_image.resize( p_width * p_height * 4 );
+
+		GL::Framebuffer fbo;
+		GL::Texture2D	texture(
+			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
+		  );
+		fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
+
+		resize( p_renderQueue, p_width, p_height );
+		setOutput( fbo.getId() );
+		p_renderFunction( 0 );
+
+		fbo.bind( GL_READ_FRAMEBUFFER );
+		glReadnPixels(
+			0,
+			0,
+			GLsizei( p_width ),
+			GLsizei( p_height ),
+			GL_RGBA,
+			GL_UNSIGNED_BYTE,
+			GLsizei( p_image.size() ),
+			p_image.data()
+		);
+		fbo.unbind();
+
+		resize( p_renderQueue, widthOld, heightOld );
+		setOutput( outputOld );
+		p_renderFunction( 0 );
+	}
+
+	std::any OpenGL45::getTextureData(
+		const size_t		   p_x,
+		const size_t		   p_y,
+		const std::string &	   p_pass,
+		const E_CHANNEL_OUTPUT p_channel
+	) const
+	{
+		for ( auto & [ passPtr, fbo ] : _fbos )
+		{
+			if ( passPtr->name == p_pass )
+			{
+				fbo->bind( GL_READ_FRAMEBUFFER );
+				fbo->setReadBuffer( _mapAttachments[ p_channel ] );
+				// TODO: check how to template return type in concept.
+				Vec2i ids = Vec2i();
+				glReadPixels( GLint( p_x ), GLint( p_y ), 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, &ids );
+				fbo->unbind();
+				return ids;
+			}
+		}
+
+		assert( false );
+		return -1;
+	}
+
 	void OpenGL45::_createInputs( const Pass * const p_descPassPtr )
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
