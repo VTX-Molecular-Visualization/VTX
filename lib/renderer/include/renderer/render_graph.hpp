@@ -239,7 +239,7 @@ namespace VTX::Renderer
 			return _context->getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
 		}
 
-		inline const std::vector<Pass> & getAvailablePasses() const { return availablePasses; }
+		inline const std::vector<Pass *> & getAvailablePasses() const { return availablePasses; }
 
 	  private:
 		S				   _scheduler;

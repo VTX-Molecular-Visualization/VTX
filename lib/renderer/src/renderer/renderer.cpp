@@ -38,12 +38,13 @@ namespace VTX::Renderer
 
 	void Renderer::clean()
 	{
+		_onClean();
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
-		_infos = StructInfos();
-		setNeedUpdate( false );
-		_onClean();
+		_infos			 = StructInfos();
+		_needUpdate		 = false;
+		_framesRemaining = 0;
 	}
 
 	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )

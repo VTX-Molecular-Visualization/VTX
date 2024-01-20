@@ -388,11 +388,11 @@ namespace VTX::Bench
 				ImGui::BeginMenuBar();
 				if ( ImGui::BeginMenu( "Add" ) )
 				{
-					for ( const Pass & pass : graph.getAvailablePasses() )
+					for ( const Pass * const pass : graph.getAvailablePasses() )
 					{
-						if ( ImGui::MenuItem( pass.name.c_str() ) )
+						if ( ImGui::MenuItem( pass->name.c_str() ) )
 						{
-							graph.addPass( pass );
+							graph.addPass( *pass );
 						}
 					}
 

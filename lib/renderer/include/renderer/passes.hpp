@@ -43,7 +43,7 @@ namespace VTX::Renderer
 	// Passes.
 
 	// Geometric.
-	static const Pass descPassGeometric {
+	static Pass descPassGeometric {
 		"Geometric",
 		Inputs { { E_CHANNEL_INPUT::_0, { "SpheresCylinders", dataSpheresCylinders } },
 				 { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
@@ -60,12 +60,11 @@ namespace VTX::Renderer
 	};
 
 	// Linearize depth.
-	static const Pass descPassDepth {
-		"Linearize depth",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageD32F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR32F } } },
-		Programs { { "LinearizeDepth", std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } }
-	};
+	static Pass descPassDepth { "Linearize depth",
+								Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageD32F } } },
+								Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR32F } } },
+								Programs { { "LinearizeDepth",
+											 std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } };
 
 	// SSAO.
 	static constexpr size_t	  noiseTextureSize = 64;
@@ -88,7 +87,7 @@ namespace VTX::Renderer
 	}
 	static const std::vector<Vec3f> noiseTexture = createNoiseTexture();
 
-	static const Pass descPassSSAO {
+	static Pass descPassSSAO {
 		"SSAO",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1,
@@ -113,7 +112,7 @@ namespace VTX::Renderer
 	};
 
 	// Blur.
-	static const Pass descPassBlur {
+	static Pass descPassBlur {
 		"Blur",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } }, { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR16F } } },
@@ -127,7 +126,7 @@ namespace VTX::Renderer
 	};
 
 	// Shading.
-	static const Pass descPassShading {
+	static Pass descPassShading {
 		"Shading",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
@@ -167,7 +166,7 @@ namespace VTX::Renderer
 	};
 
 	// Outline.
-	static const Pass descPassOutline {
+	static Pass descPassOutline {
 		"Outline",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } }, { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
@@ -183,7 +182,7 @@ namespace VTX::Renderer
 	};
 
 	// Selection.
-	static const Pass descPassSelection {
+	static Pass descPassSelection {
 		"Selection",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
@@ -197,13 +196,13 @@ namespace VTX::Renderer
 	};
 
 	// FXAA.
-	static const Pass desPassFXAA { "FXAA",
-									Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageRGBA16F } } },
-									Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
-									Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" } } } };
+	static Pass desPassFXAA { "FXAA",
+							  Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageRGBA16F } } },
+							  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+							  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" } } } };
 
 	// Pixelize.
-	static const Pass descPassPixelize {
+	static Pass descPassPixelize {
 		"Pixelize",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } } },
@@ -217,7 +216,7 @@ namespace VTX::Renderer
 	};
 
 	// CRT.
-	static const Pass descPassCRT {
+	static Pass descPassCRT {
 		"CRT",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
@@ -246,7 +245,7 @@ namespace VTX::Renderer
 	};
 
 	// Chromatic aberration.
-	static const Pass descPassChromaticAberration {
+	static Pass descPassChromaticAberration {
 		"Chromatic aberration",
 		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
@@ -266,7 +265,7 @@ namespace VTX::Renderer
 	};
 
 	// Colorize.
-	static const Pass descPassColorize {
+	static Pass descPassColorize {
 		"Colorize",
 		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
@@ -277,7 +276,7 @@ namespace VTX::Renderer
 	};
 
 	// Debug.
-	static const Pass descPassDebug {
+	static Pass descPassDebug {
 		"Debug",
 		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
@@ -292,19 +291,19 @@ namespace VTX::Renderer
 						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } }
 	};
 
-	static const std::vector<Pass> availablePasses { descPassGeometric,
-													 descPassDepth,
-													 descPassSSAO,
-													 descPassBlur,
-													 descPassShading,
-													 descPassOutline,
-													 descPassSelection,
-													 desPassFXAA,
-													 descPassPixelize,
-													 descPassCRT,
-													 descPassChromaticAberration,
-													 descPassColorize,
-													 descPassDebug };
+	static std::vector<Pass *> availablePasses = { &descPassGeometric,
+												   &descPassDepth,
+												   &descPassSSAO,
+												   &descPassBlur,
+												   &descPassShading,
+												   &descPassOutline,
+												   &descPassSelection,
+												   &desPassFXAA,
+												   &descPassPixelize,
+												   &descPassCRT,
+												   &descPassChromaticAberration,
+												   &descPassColorize,
+												   &descPassDebug };
 } // namespace VTX::Renderer
 
 #endif

@@ -59,21 +59,6 @@ int main( int, char ** )
 		);
 		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackResize(
-			[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-			{
-				renderer.resize( p_width, p_height );
-				camera.resize( p_width, p_height );
-			}
-		);
-		inputManager.setCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
-		inputManager.setCallbackMousePick(
-			[ &renderer ]( const size_t p_x, const size_t p_y )
-			{
-				Vec2i ids = renderer.getPickedIds( p_x, p_y );
-				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-			}
-		);
 
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
@@ -83,6 +68,9 @@ int main( int, char ** )
 				camera.setCallbackTranslation( nullptr );
 				camera.setCallbackClipInfos( nullptr );
 				camera.setCallbackPerspective( nullptr );
+				inputManager.setCallbackResize( nullptr );
+				inputManager.setCallbackRestore( nullptr );
+				inputManager.setCallbackMousePick( nullptr );
 				inputManager.setCallbackMouseMotion( nullptr );
 			}
 		);
@@ -100,6 +88,22 @@ int main( int, char ** )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
 				camera.setCallbackPerspective( [ &renderer ]( const bool p_isPerspective )
 											   { renderer.setPerspective( p_isPerspective ); } );
+
+				inputManager.setCallbackResize(
+					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+					{
+						renderer.resize( p_width, p_height );
+						camera.resize( p_width, p_height );
+					}
+				);
+				inputManager.setCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
+				inputManager.setCallbackMousePick(
+					[ &renderer ]( const size_t p_x, const size_t p_y )
+					{
+						Vec2i ids = renderer.getPickedIds( p_x, p_y );
+						VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+					}
+				);
 				inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
 													 { renderer.setMousePosition( p_position ); } );
 			}

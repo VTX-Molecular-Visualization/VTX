@@ -114,19 +114,13 @@ namespace VTX::Renderer
 			_width	= p_width;
 			_height = p_height;
 
-			if ( _renderGraph->isBuilt() )
-			{
-				_renderGraph->resize( p_width, p_height );
-			}
+			_renderGraph->resize( p_width, p_height );
 			setNeedUpdate( true );
 		}
 
 		inline void setOutput( const uint p_output )
 		{
-			if ( _renderGraph->isBuilt() )
-			{
-				_renderGraph->setOutput( p_output );
-			}
+			_renderGraph->setOutput( p_output );
 			setNeedUpdate( true );
 		}
 
