@@ -27,14 +27,6 @@ class VTXRendererTestRecipe(ConanFile):
         
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        '''
-        copy(
-            self
-            , "*"
-            , os.path.join(self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, "data")
-            , os.path.join(self.build_folder, "data")
-        )
-        '''
     
     def layout(self):
         cmake_layout(self)
