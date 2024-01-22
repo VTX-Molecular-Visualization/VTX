@@ -1,5 +1,5 @@
 # Register a directory for later content copy. The destination argument is a path relative to the build dir.
-function(register_build_directory_copy src dest)
+function(vtx_register_build_directory_copy src dest)
 	# We register the copy dir in a not-so-hidden property that will be used later on
 	# It is important that both properties are being kept symetrical
 	get_property(property_var_src GLOBAL PROPERTY _REGISTER_DIR_COPY_SOURCE_property)
@@ -9,7 +9,7 @@ function(register_build_directory_copy src dest)
 endfunction()
 
 # Add on-build copy for all registered directories into build folder
-function(copy_directory_data target dest)
+function(vtx_copy_directory_data target dest)
 
 	set(num 0)
 	set(property_var_src)

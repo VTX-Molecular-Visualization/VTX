@@ -118,10 +118,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2g
 	check_pdb( setup_test_context( "1ubq" ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submit_gromacs_command][pdb2gmx][8hu4]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submit_gromacs_command][pdb2gmx][8hu4][slow]" )
 {
 	VTX::test::setup_env f;
 	check_pdb( setup_test_context( "8hu4.nolig" ) );
 }
 
+// TODO : check with interactive stuff
 // TODO : check with other forcefields as well

@@ -1,1 +1,1 @@
-register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../external/gromacs/share/top" "data/tools/mdprep/gromacs/top")
+VTX_REGISTER_BUILD_DIRECTORY_COPY("${CMAKE_CURRENT_LIST_DIR}/../external/gromacs/share/top" "data/tools/mdprep/gromacs/top")

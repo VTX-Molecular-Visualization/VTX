@@ -58,7 +58,7 @@ class VTXToolMdprepRecipe(ConanFile):
             Path(cmake_dir).mkdir()
         cmake_file_name = f"{self._generated_cmake_prefix()}{self.settings.build_type}.cmake"
         cmake_file_path = os.path.join(cmake_dir, cmake_file_name)
-        cmake_file_content = """register_build_directory_copy("%s" "external/tools/mdprep/gromacs")""" % (Path(gmx_bin_dest).as_posix())
+        cmake_file_content = """vtx_register_build_directory_copy("%s" "external/tools/mdprep/gromacs")""" % (Path(gmx_bin_dest).as_posix())
         Path(cmake_file_path).write_text(cmake_file_content)
 
     def package(self):
