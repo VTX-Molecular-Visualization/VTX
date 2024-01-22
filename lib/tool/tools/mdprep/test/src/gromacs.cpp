@@ -74,7 +74,10 @@ namespace
 
 	void check_pdb( test_context p_context )
 	{
-		VTX::Tool::Mdprep::Gromacs::submit_gromacs_command( p_context.args );
+		VTX::Tool::Mdprep::Gromacs::submit_gromacs_command(
+			VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_gmx_binary_relative_path(),
+			p_context.args
+		);
 
 		CHECK( fs::exists( p_context.paths.out_gro ) );
 		CHECK( fs::exists( p_context.paths.out_topol ) );

@@ -5,10 +5,9 @@
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-	void submit_gromacs_command( gromacs_command_args & p_args )
+	void submit_gromacs_command( const fs::path & p_gmx_exe, gromacs_command_args & p_args )
 	{
-		// QString pgm { "D:\\programing\\projects\\ConsoleApplication2\\x64\\Debug\\ConsoleApplication2.exe" };
-		QString		pgm { "D:\\cnam\\tmp\\gmx.exe" }; // TODO : do it a proper way
+		QString		pgm { p_gmx_exe.string().data() };
 		QStringList qt_args;
 		for ( auto & arg : p_args.arguments )
 			qt_args << QString( arg.c_str() );

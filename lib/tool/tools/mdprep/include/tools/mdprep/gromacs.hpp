@@ -21,7 +21,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Blindly execute gromacs with input arguments.
 	//   Assumes relevant arguments have been provided and checked beforehand.
 	//   Assumes gromacs have been instructed on where to find data files as well.
-	void submit_gromacs_command( gromacs_command_args & );
+	void submit_gromacs_command( const fs::path & p_gmx_exe, gromacs_command_args & p_args );
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
