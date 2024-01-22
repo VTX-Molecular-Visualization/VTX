@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_PROXY_MOLECULE__
 #define __VTX_RENDERER_PROXY_MOLECULE__
 
-#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -9,7 +8,7 @@ namespace VTX::Renderer::Proxy
 {
 	struct Molecule
 	{
-		const Mat4f * transform;
+		Mat4f * transform;
 		// const Mat4f * normals;
 		std::vector<Vec3f> * atomPositions;
 		std::vector<uchar> * atomColors;

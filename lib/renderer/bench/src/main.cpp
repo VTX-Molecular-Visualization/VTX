@@ -13,6 +13,7 @@
 #include <renderer/renderer.hpp>
 #include <util/filesystem.hpp>
 #include <util/math.hpp>
+#include <util/math/aabb.hpp>
 #include <util/network.hpp>
 
 #ifdef _WIN32
@@ -200,7 +201,16 @@ int main( int, char ** )
 				&molecule.chainFirstResidues,
 				&molecule.chainResidueCounts };
 
-		renderer.addMolecule( proxyMolecule );
+		renderer.addProxy( proxyMolecule );
+
+		Math::AABB aabb;
+		for ( const Vec3f & position : molecule.trajectory.frames.front() )
+		{
+			aabb.extend( position );
+		}
+		std::vector<Vec3f> mins = { aabb.getMin() };
+		std::vector<Vec3f> maxs = { aabb.getMax() };
+		renderer.addProxy( Renderer::Proxy::Voxel { &mins, &maxs } );
 
 		renderer.build();
 

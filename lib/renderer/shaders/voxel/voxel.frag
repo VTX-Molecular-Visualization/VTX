@@ -15,8 +15,8 @@ layout( location = 1 ) out vec4 outColor;
 void main()
 {
 	vec3 viewPosition = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inData.center, 1.f ) );
-	vec3 normal		  = normalize( vec3( uniformsCamera.matrixNormal * vec4( inData.center, 1.f ) ) );	
+	vec3 normal		  = normalize( uniformsCamera.cameraPosition - viewPosition );// vec3( uniformsCamera.matrixNormal * vec4( inData.center, 1.f ) ) );	
 	
 	packData( viewPosition, normal, 0, outDataPacked );
-	outColor = vec4( 0.5f, 0.5f, 0.5f, 1.f );
+	outColor = vec4( 1.f, 1.f, 1.f, 1.f );
 }

@@ -5,6 +5,7 @@
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
 #include "proxy/representation.hpp"
+#include "proxy/voxel.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
 #include <util/chrono.hpp>
@@ -49,6 +50,7 @@ namespace VTX::Renderer
 			geo->programs[ 0 ].draw.value().countFunction = [ & ]() { return showAtoms ? sizeAtoms : 0; };
 			geo->programs[ 1 ].draw.value().countFunction = [ & ]() { return showBonds ? sizeBonds : 0; };
 			geo->programs[ 2 ].draw.value().countFunction = [ & ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction = [ & ]() { return showVoxels ? sizeVoxels : 0; };
 			blurX->name									  = "BlurX";
 			blurY->name									  = "BlurY";
 			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
@@ -195,9 +197,21 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		inline void addMolecule( const Proxy::Molecule & p_proxy )
+		inline void addProxy( const Proxy::Molecule & p_proxy )
 		{
 			_proxiesMolecules.push_back( p_proxy );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_setData( p_proxy );
+			}
+
+			setNeedUpdate( true );
+		}
+
+		inline void addProxy( const Proxy::Voxel & p_proxy )
+		{
+			_proxiesVoxels.push_back( p_proxy );
 
 			if ( _renderGraph->isBuilt() )
 			{
@@ -249,10 +263,12 @@ namespace VTX::Renderer
 		uint sizeAtoms	 = 0;
 		uint sizeBonds	 = 0;
 		uint sizeRibbons = 0;
+		uint sizeVoxels	 = 0;
 
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
+		bool showVoxels	 = true;
 
 	  private:
 		const size_t _BUFFER_COUNT = 2;
@@ -276,7 +292,10 @@ namespace VTX::Renderer
 		CallbackSnapshotPre	 _callbackSnapshotPre;
 		CallbackSnapshotPost _callbackSnapshotPost;
 
-		std::vector<Proxy::Molecule> _proxiesMolecules;
+		std::vector<Proxy::Molecule>	   _proxiesMolecules;
+		std::vector<Proxy::Mesh>		   _proxiesMeshes;
+		std::vector<Proxy::Representation> _proxiesRepresentations;
+		std::vector<Proxy::Voxel>		   _proxiesVoxels;
 
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
@@ -626,6 +645,18 @@ namespace VTX::Renderer
 			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
 
 			sizeRibbons = uint( bufferIndices.size() );
+		}
+
+		void _setData( const Proxy::Voxel & p_proxy )
+		{
+			assert( p_proxy.mins );
+			assert( p_proxy.maxs );
+			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
+
+			_renderGraph->setData( *p_proxy.mins, "VoxelsMins" );
+			_renderGraph->setData( *p_proxy.maxs, "VoxelsMaxs" );
+
+			sizeVoxels = uint( p_proxy.mins->size() );
 		}
 
 		inline void _onClean()

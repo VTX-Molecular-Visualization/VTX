@@ -26,6 +26,10 @@ namespace VTX::Renderer
 						{
 							_setData( proxy );
 						}
+						for ( const Proxy::Voxel & proxy : _proxiesVoxels )
+						{
+							_setData( proxy );
+						}
 
 						_renderGraph->fillInfos( _infos );
 						setNeedUpdate( true );
