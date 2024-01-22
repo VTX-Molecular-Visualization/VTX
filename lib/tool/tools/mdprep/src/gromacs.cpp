@@ -1,10 +1,17 @@
 #include "tools/mdprep/gromacs.hpp"
 #include <qprocess.h>
+// #include <thread>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
+	void fill_missing_string( QByteArray & from, std::string & to ) noexcept
+	{
+		to += from.toStdString();
+		// to += std::string( from.constData() + to.size(), from.size() - to.size() );
+	}
+
 	void submit_gromacs_command( const fs::path & p_gmx_exe, gromacs_command_args & p_args )
 	{
 		QString		pgm { p_gmx_exe.string().data() };
@@ -29,16 +36,20 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( p_args.interactive_settings.has_value() ) {}
 		else
 		{
-			// TODO : watch over the stdout/stderr to detect if gromacs is waiting for something in the scenario of no
-			// interactive settings
+			do
+			{
+				proc.waitForReadyRead( 10 );
+				// std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+				buf = proc.readAllStandardError();
+				fill_missing_string( buf, p_args.stderr_ );
+				// p_args.stderr_ += buf.toStdString();
+
+				buf = proc.readAllStandardOutput();
+				fill_missing_string( buf, p_args.stdout_ );
+				// p_args.stdout_ += buf.toStdString();
+
+			} while ( !finished );
 		}
-
-		proc.waitForFinished( 6000 );
-		buf = proc.readAllStandardError();
-		p_args.stderr_ += buf.toStdString();
-
-		buf = proc.readAllStandardOutput();
-		p_args.stdout_ += buf.toStdString();
 
 		return;
 

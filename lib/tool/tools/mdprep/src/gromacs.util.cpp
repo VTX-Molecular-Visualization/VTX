@@ -25,6 +25,7 @@ namespace VTX::Tool::Mdprep
 			auto		tmp	  = qpath.toLocal8Bit();
 			std::string path_str( tmp.data(), tmp.size() );
 			g_executable_directory.emplace( path_str );
+			g_executable_directory->make_preferred();
 		}
 		return g_executable_directory.value();
 	}
@@ -39,10 +40,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 	}
 
 	const fs::path g_default_ff_directory_relative_path
-		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
+		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
 	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
 
-	const fs::path	 g_default_gmx_binary_relative_path = fs::path( "external" ) / "tools" / "mdprep" / "gromacs";
+	const fs::path g_default_gmx_binary_relative_path
+		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx.exe" ).make_preferred();
 	const fs::path & default_gmx_binary_relative_path() noexcept { return g_default_gmx_binary_relative_path; }
 
 	void declare_ff_directory( const std::filesystem::path & p_path ) noexcept

@@ -43,4 +43,6 @@ catch_discover_tests(vtx_tool_mdprep_test)
 install(TARGETS vtx_tool_mdprep_test)
 install(DIRECTORY data DESTINATION bin)
 
+REGISTER_BUILD_DIRECTORY_COPY("${CMAKE_CURRENT_LIST_DIR}/data" "data")
+
 copy_directory_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)

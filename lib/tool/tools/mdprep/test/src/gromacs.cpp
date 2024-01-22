@@ -11,16 +11,17 @@ namespace
 	struct io_paths
 	{
 		io_paths( const char * p_out_dir_name, const char * p_pdb_code ) :
-			in( exec_path / std::format( "data\\{}.pdb", p_pdb_code ) ),
-			out_gro( exec_path / std::format( "{}\\{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
-			out_topol( exec_path / std::format( "{}\\{}.topol.top", p_out_dir_name, p_pdb_code ) ),
-			out_posre( exec_path / std::format( "{}\\{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
-			out_clean( exec_path / std::format( "{}\\{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
-			out_index( exec_path / std::format( "{}\\{}.index.ndx", p_out_dir_name, p_pdb_code ) )
+			in( exec_path / std::format( "data\\{}.pdb", p_pdb_code ) ), out_dir( exec_path / "out" / p_pdb_code ),
+			out_gro( exec_path / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+			out_topol( out_dir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
+			out_posre( out_dir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
+			out_clean( out_dir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
+			out_index( out_dir / std::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
 		}
 		fs::path exec_path = VTX::Tool::Mdprep::executable_directory();
 		fs::path in;
+		fs::path out_dir;
 		fs::path out_gro;
 		fs::path out_topol;
 		fs::path out_posre;
@@ -35,11 +36,33 @@ namespace
 
 	bool have_same_content( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
 
+	bool check_if_exists(
+		const fs::path & directory,
+		const char *	 starting_pattern,
+		const char *	 ending_pattern
+	) noexcept
+	{
+		for ( auto file : fs::directory_iterator( directory ) )
+		{
+			std::string filename = file.path().filename().string();
+			if ( filename.starts_with( starting_pattern ) && filename.ends_with( ending_pattern ) )
+				return true;
+		}
+		return false;
+	}
+	bool check_file_as_pattern( const fs::path & file_patterned ) noexcept
+	{
+		fs::path	dir		 = file_patterned.parent_path();
+		std::string filename = file_patterned.stem().string().data();
+		std::string ext		 = file_patterned.extension().string().data();
+		return check_if_exists( dir, filename.data(), ext.data() );
+	}
+
 	test_context setup_test_context( const char * p_pdb_code )
 	{
 		test_context out { { p_pdb_code, p_pdb_code }, {} };
 
-		fs::path out_dir( out.paths.exec_path / p_pdb_code );
+		fs::path & out_dir = out.paths.out_dir;
 		if ( fs::is_directory( out_dir ) )
 			fs::remove_all( out_dir );
 		fs::create_directories( out_dir );
@@ -78,10 +101,11 @@ namespace
 			VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_gmx_binary_relative_path(),
 			p_context.args
 		);
-
+		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
+		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		CHECK( fs::exists( p_context.paths.out_gro ) );
-		CHECK( fs::exists( p_context.paths.out_topol ) );
-		CHECK( fs::exists( p_context.paths.out_posre ) );
+		CHECK( check_file_as_pattern( p_context.paths.out_topol ) );
+		CHECK( check_file_as_pattern( p_context.paths.out_posre ) );
 		CHECK( fs::exists( p_context.paths.out_clean ) );
 		CHECK( fs::exists( p_context.paths.out_index ) );
 	}
