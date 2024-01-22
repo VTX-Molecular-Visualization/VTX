@@ -42,7 +42,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		= fs::path( "data" ) / "tool" / "tools" / "mdprep" / "gromacs" / "top";
 	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
 
-	const fs::path	 g_default_gmx_binary_relative_path = fs::path( "" );
+	const fs::path	 g_default_gmx_binary_relative_path = fs::path( "external" ) / "tools" / "mdprep" / "gromacs";
 	const fs::path & default_gmx_binary_relative_path() noexcept { return g_default_gmx_binary_relative_path; }
 
 	void declare_ff_directory( const std::filesystem::path & p_path ) noexcept
