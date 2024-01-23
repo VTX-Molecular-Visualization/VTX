@@ -34,7 +34,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - isWaitingInputs - anti-pattern", "[isWaitingInputs
 
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - empty", "[parseExpectedKwArgument][empty]" )
 {
-	std::string								   stdout_ { "" };
+	std::string								  stdout_ { "" };
 	VTX::Tool::Mdprep::Gromacs::InteractiveId kw;
 
 	CHECK( VTX::Tool::Mdprep::Gromacs::parseExpectedKwArgument( stdout_, kw ) == false );
@@ -42,14 +42,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - empty", "[parseExpectedK
 namespace
 {
 	bool check_parseExpectedKwArgument(
-		std::string										   p_stdout,
-		const VTX::Tool::Mdprep::Gromacs::InteractiveId & p_expected_output
+		std::string										  p_stdout,
+		const VTX::Tool::Mdprep::Gromacs::InteractiveId & p_expectedOutput
 	)
 	{
 		VTX::Tool::Mdprep::Gromacs::InteractiveId kw;
 		return VTX::Tool::Mdprep::Gromacs::parseExpectedKwArgument( p_stdout, kw )
-			   && ( kw.chain == p_expected_output.chain && kw.kw == p_expected_output.kw
-					&& kw.num == p_expected_output.num );
+			   && ( kw.chain == p_expectedOutput.chain && kw.kw == p_expectedOutput.kw && kw.num == p_expectedOutput.num
+			   );
 	}
 	const char	 g_chainA[] = "Processing chain 1 'A'( 6457 atoms, 827 residues )\n";
 	const char	 g_chainB[] = "Processing chain 1 'B'( 6457 atoms, 827 residues )\n";

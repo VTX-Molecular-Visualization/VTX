@@ -8,64 +8,64 @@
 namespace
 {
 
-	struct io_paths
+	struct IoPaths
 	{
-		io_paths( const char * p_out_dir_name, const char * p_pdb_code ) :
-			in( exec_path / std::format( "data\\{}.pdb", p_pdb_code ) ), out_dir( exec_path / "out" / p_pdb_code ),
-			out_gro( exec_path / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
-			out_topol( out_dir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
-			out_posre( out_dir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
-			out_clean( out_dir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
-			out_index( out_dir / std::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
+		IoPaths( const char * p_out_dir_name, const char * p_pdb_code ) :
+			in( execPath / std::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
+			outGro( execPath / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+			outTopol( outDir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
+			outPosre( outDir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
+			outClean( outDir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
+			outIndex( outDir / std::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
 		}
-		fs::path exec_path = VTX::Tool::Mdprep::executableDirectory();
+		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();
 		fs::path in;
-		fs::path out_dir;
-		fs::path out_gro;
-		fs::path out_topol;
-		fs::path out_posre;
-		fs::path out_clean;
-		fs::path out_index;
+		fs::path outDir;
+		fs::path outGro;
+		fs::path outTopol;
+		fs::path outPosre;
+		fs::path outClean;
+		fs::path outIndex;
 	};
-	struct test_context
+	struct TestContext
 	{
-		io_paths									   paths;
+		IoPaths										   paths;
 		VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 	};
 
-	bool have_same_content( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
+	bool haveSameContent( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
 
-	bool check_if_exists(
-		const fs::path & directory,
-		const char *	 starting_pattern,
-		const char *	 ending_pattern
+	bool checkIfExists(
+		const fs::path & p_directory,
+		const char *	 p_startingPattern,
+		const char *	 p_endingPattern
 	) noexcept
 	{
-		for ( auto file : fs::directory_iterator( directory ) )
+		for ( auto file : fs::directory_iterator( p_directory ) )
 		{
 			std::string filename = file.path().filename().string();
-			if ( filename.starts_with( starting_pattern ) && filename.ends_with( ending_pattern ) )
+			if ( filename.starts_with( p_startingPattern ) && filename.ends_with( p_endingPattern ) )
 				return true;
 		}
 		return false;
 	}
-	bool check_file_as_pattern( const fs::path & file_patterned ) noexcept
+	bool check_file_as_pattern( const fs::path & p_filePatterned ) noexcept
 	{
-		fs::path	dir		 = file_patterned.parent_path();
-		std::string filename = file_patterned.stem().string().data();
-		std::string ext		 = file_patterned.extension().string().data();
-		return check_if_exists( dir, filename.data(), ext.data() );
+		fs::path	dir		 = p_filePatterned.parent_path();
+		std::string filename = p_filePatterned.stem().string().data();
+		std::string ext		 = p_filePatterned.extension().string().data();
+		return checkIfExists( dir, filename.data(), ext.data() );
 	}
 
-	test_context setup_test_context( const char * p_pdb_code )
+	TestContext setupTestContext( const char * p_pdbCode )
 	{
-		test_context out { { p_pdb_code, p_pdb_code }, {} };
+		TestContext out { { p_pdbCode, p_pdbCode }, {} };
 
-		fs::path & out_dir = out.paths.out_dir;
-		if ( fs::is_directory( out_dir ) )
-			fs::remove_all( out_dir );
-		fs::create_directories( out_dir );
+		fs::path & outDir = out.paths.outDir;
+		if ( fs::is_directory( outDir ) )
+			fs::remove_all( outDir );
+		fs::create_directories( outDir );
 
 		CHECK_NOFAIL( fs::is_regular_file( out.paths.in ) );
 
@@ -74,15 +74,15 @@ namespace
 			"-f",
 			out.paths.in.make_preferred().string(),
 			"-o",
-			out.paths.out_gro.make_preferred().string(),
+			out.paths.outGro.make_preferred().string(),
 			"-p",
-			out.paths.out_topol.make_preferred().string(),
+			out.paths.outTopol.make_preferred().string(),
 			"-i",
-			out.paths.out_posre.make_preferred().string(),
+			out.paths.outPosre.make_preferred().string(),
 			"-q",
-			out.paths.out_clean.make_preferred().string(),
+			out.paths.outClean.make_preferred().string(),
 			"-n",
-			out.paths.out_index.make_preferred().string(),
+			out.paths.outIndex.make_preferred().string(),
 			"-ff",
 			"amber03",
 			"-water",
@@ -95,7 +95,7 @@ namespace
 		return out;
 	}
 
-	void check_pdb( test_context p_context )
+	void check_pdb( TestContext p_context )
 	{
 		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand(
 			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath(),
@@ -103,11 +103,11 @@ namespace
 		);
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
-		CHECK( fs::exists( p_context.paths.out_gro ) );
-		CHECK( check_file_as_pattern( p_context.paths.out_topol ) );
-		CHECK( check_file_as_pattern( p_context.paths.out_posre ) );
-		CHECK( fs::exists( p_context.paths.out_clean ) );
-		CHECK( fs::exists( p_context.paths.out_index ) );
+		CHECK( fs::exists( p_context.paths.outGro ) );
+		CHECK( check_file_as_pattern( p_context.paths.outTopol ) );
+		CHECK( check_file_as_pattern( p_context.paths.outPosre ) );
+		CHECK( fs::exists( p_context.paths.outClean ) );
+		CHECK( fs::exists( p_context.paths.outIndex ) );
 	}
 
 } // namespace
@@ -115,7 +115,7 @@ namespace
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsCommand][pdb2gmx][1ubq]" )
 {
 	VTX::test::setup_env f;
-	check_pdb( setup_test_context( "1ubq" ) );
+	check_pdb( setupTestContext( "1ubq" ) );
 }
 TEST_CASE(
 	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
@@ -124,10 +124,12 @@ TEST_CASE(
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env f;
-	auto				 context_data = setup_test_context( "1ubq" );
-	context_data.args.interactiveSettings.emplace();
-	context_data.args.interactiveSettings->kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN" );
-	check_pdb( context_data );
+	auto				 contextData = setupTestContext( "1ubq" );
+	contextData.args.interactiveSettings.emplace();
+	contextData.args.interactiveSettings->kwValue.emplace(
+		InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN"
+	);
+	check_pdb( contextData );
 }
 TEST_CASE(
 	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
@@ -136,16 +138,18 @@ TEST_CASE(
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env f;
-	auto				 context_data = setup_test_context( "1ubq" );
-	context_data.args.interactiveSettings.emplace();
-	context_data.args.interactiveSettings->kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN" );
-	check_pdb( context_data );
+	auto				 contextData = setupTestContext( "1ubq" );
+	contextData.args.interactiveSettings.emplace();
+	contextData.args.interactiveSettings->kwValue.emplace(
+		InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN"
+	);
+	check_pdb( contextData );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submitGromacsCommand][pdb2gmx][8hu4][slow]" )
 {
 	VTX::test::setup_env f;
-	check_pdb( setup_test_context( "8hu4.nolig" ) );
+	check_pdb( setupTestContext( "8hu4.nolig" ) );
 }
 
 // TODO : check with interactive stuff
