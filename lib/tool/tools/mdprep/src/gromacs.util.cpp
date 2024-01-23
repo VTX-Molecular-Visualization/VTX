@@ -49,29 +49,29 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	void declareFfDirectory( const std::filesystem::path & p_path ) noexcept
 	{
-		std::string	   path_str = p_path.string();
-		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );
+		std::string	   pathStr = p_path.string();
+		QByteArrayView env_arg( pathStr.data(), pathStr.data() + pathStr.size() );
 		qputenv( "GMXLIB", env_arg );
 	}
 
-	std::vector<forcefield> listForcefields( const fs::path & p_data_dir )
+	std::vector<forcefield> listForcefields( const fs::path & p_dataDir )
 	{
-		if ( !fs::is_directory( p_data_dir ) )
+		if ( !fs::is_directory( p_dataDir ) )
 		{
-			auto err_str = std::format( "Directory <{}> not found", p_data_dir.string() );
-			throw VTX::IOException( err_str );
+			auto errStr = std::format( "Directory <{}> not found", p_dataDir.string() );
+			throw VTX::IOException( errStr );
 		}
 		std::vector<forcefield> out;
 
-		for ( auto & fs_element : fs::directory_iterator( p_data_dir ) )
+		for ( auto & fsElement : fs::directory_iterator( p_dataDir ) )
 		{
-			if ( !fs_element.is_directory() )
+			if ( !fsElement.is_directory() )
 				continue;
 
-			auto filename = fs_element.path().filename().string();
+			auto filename = fsElement.path().filename().string();
 			if ( filename.ends_with( g_ff_suffix ) )
 			{
-				out.emplace_back( forcefield { .forcefieldFolderPath = fs_element.path().string() } );
+				out.emplace_back( forcefield { .forcefieldFolderPath = fsElement.path().string() } );
 				continue;
 			}
 		}
@@ -165,11 +165,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	std::string_view forcefield::getName() const
 	{
-		size_t filename_pos
+		size_t filenamePos
 			= this->forcefieldFolderPath.find( fs::path( this->forcefieldFolderPath ).filename().string() );
-		size_t extension_pos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
-		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filename_pos ),
-								  std::next( this->forcefieldFolderPath.begin(), extension_pos ) };
+		size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
+		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filenamePos ),
+								  std::next( this->forcefieldFolderPath.begin(), extensionPos ) };
 	}
 
 	void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
@@ -226,29 +226,29 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( p_script.empty() )
 			return out;
 
-		std::string_view::const_iterator current_pos	  = p_script.begin(),
-										 next_newline_pos = std::find( p_script.begin(), p_script.end(), '\n' );
-		if ( next_newline_pos != p_script.end() )
-			next_newline_pos++;
+		std::string_view::const_iterator currentPos		= p_script.begin(),
+										 nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
+		if ( nextNewlinePos != p_script.end() )
+			nextNewlinePos++;
 		// The interval looked into is [first, last ) so we need to increment it
 		// in order to include the newline into the line
-		const std::regex	line_regex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) (([a-zA-Z0-9]+ )?[0-9a-zA-Z]+)\r?\n?" };
-		static const size_t NUM_EXPECTED_GROUPS = 4;
-		std::smatch			match;
+		const std::regex lineRegex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) (([a-zA-Z0-9]+ )?[0-9a-zA-Z]+)\r?\n?" };
+		const size_t	 NUM_EXPECTED_GROUPS = 4;
+		std::smatch		 match;
 
-		while ( current_pos != p_script.end() )
+		while ( currentPos != p_script.end() )
 		{
-			std::string line_buf {
-				current_pos, next_newline_pos
+			std::string lineBuf {
+				currentPos, nextNewlinePos
 			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
 			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
 			   // separated buffer for it to work as intended.
-			if ( std::regex_match( line_buf, match, line_regex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
+			if ( std::regex_match( lineBuf, match, lineRegex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			{
 				out.error	= true;
 				out.message = std::format(
 					"Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
-					std::string( current_pos, next_newline_pos )
+					std::string( currentPos, nextNewlinePos )
 				);
 				return out;
 			}
@@ -271,7 +271,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			{
 				out.error	= true;
 				out.message = std::format(
-					"No residue num has been found in line <{}>.", std::string( current_pos, next_newline_pos )
+					"No residue num has been found in line <{}>.", std::string( currentPos, nextNewlinePos )
 				);
 				return out;
 			}
@@ -288,18 +288,17 @@ namespace VTX::Tool::Mdprep::Gromacs
 			buf = match[ 4 ].str();
 			if ( buf.empty() )
 			{
-				out.error	= true;
-				out.message = std::format(
-					"No value has been found in line <{}>.", std::string( current_pos, next_newline_pos )
-				);
+				out.error = true;
+				out.message
+					= std::format( "No value has been found in line <{}>.", std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 
 			p_args.kwValue.insert( { std::move( new_id ), buf } );
-			current_pos		 = next_newline_pos;
-			next_newline_pos = std::find( current_pos, p_script.end(), '\n' );
-			if ( next_newline_pos != p_script.end() )
-				next_newline_pos++;
+			currentPos	   = nextNewlinePos;
+			nextNewlinePos = std::find( currentPos, p_script.end(), '\n' );
+			if ( nextNewlinePos != p_script.end() )
+				nextNewlinePos++;
 		}
 
 		return out;

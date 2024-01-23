@@ -16,8 +16,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		{
 			QByteArray	   qBuf;
 			std::string	   sBuf;
-			const uint64_t maximumWaitingIterationNumber = 10000;
-			uint64_t	   currentIterationNumber		 = 0;
+			const uint64_t MAXIMUM_WAITING_ITERATION_NUMBER = 10000;
+			uint64_t	   currentIterationNumber			= 0;
 
 			while ( !p_finished )
 			{
