@@ -13,10 +13,10 @@
 
 namespace VTX::Tool::Mdprep
 {
-	std::optional<fs::path> g_executable_directory;
-	const fs::path &		executable_directory() noexcept
+	std::optional<fs::path> g_executableDirectory;
+	const fs::path &		executableDirectory() noexcept
 	{
-		if ( !g_executable_directory.has_value() )
+		if ( !g_executableDirectory.has_value() )
 		{
 			// int				 argc = 0;
 			// QCoreApplication app( argc, nullptr );
@@ -24,10 +24,10 @@ namespace VTX::Tool::Mdprep
 			QString		qpath = QCoreApplication::applicationDirPath();
 			auto		tmp	  = qpath.toLocal8Bit();
 			std::string path_str( tmp.data(), tmp.size() );
-			g_executable_directory.emplace( path_str );
-			g_executable_directory->make_preferred();
+			g_executableDirectory.emplace( path_str );
+			g_executableDirectory->make_preferred();
 		}
-		return g_executable_directory.value();
+		return g_executableDirectory.value();
 	}
 
 } // namespace VTX::Tool::Mdprep
@@ -39,9 +39,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		const char g_ff_suffix[] = ".ff";
 	}
 
-	const fs::path g_default_ff_directory_relative_path
+	const fs::path g_defaultFfDirectoryRelativePath
 		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
-	const fs::path & default_ff_directory_relative_path() noexcept { return g_default_ff_directory_relative_path; }
+	const fs::path & defaultFfDirectoryRelativePath() noexcept { return g_defaultFfDirectoryRelativePath; }
 
 	const fs::path g_default_gmx_binary_relative_path
 		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx.exe" ).make_preferred();

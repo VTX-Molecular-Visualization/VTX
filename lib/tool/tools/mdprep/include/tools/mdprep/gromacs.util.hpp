@@ -12,14 +12,14 @@ namespace fs = std::filesystem;
 namespace VTX::Tool::Mdprep
 {
 	// Return the absolute path of the directory containing VTX executable
-	const fs::path & executable_directory() noexcept;
+	const fs::path & executableDirectory() noexcept;
 
 } // namespace VTX::Tool::Mdprep
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
 	// Return the position of default forcefields packaged with vtx, relative to the vtx executable folder
-	const fs::path & default_ff_directory_relative_path() noexcept;
+	const fs::path & defaultFfDirectoryRelativePath() noexcept;
 
 	// Return the position of gmx binary relative to the vtx executable folder
 	const fs::path & default_gmx_binary_relative_path() noexcept;
@@ -73,9 +73,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct InteractiveId
 	{
-		char				chain = 0x00i8; // Value of 0x00 means any chain
-		InteractiveKeyword kw	  = InteractiveKeyword::none;
-		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+		char			   chain = 0x00i8; // Value of 0x00 means any chain
+		InteractiveKeyword kw	 = InteractiveKeyword::none;
+		uint32_t		   num	 = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
 		bool operator==( const InteractiveId & ) const noexcept = default;
 	};
@@ -109,11 +109,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 	};
 	struct pdb2gmx_instructions
 	{
-		std::vector<forcefield>				 forcefields;
-		size_t								 forcefield_index = SIZE_MAX; // position of the forcefield to use for
-		fs::path							 output_dir;
-		std::string							 root_file_name;
-		fs::path							 input_pdb;
+		std::vector<forcefield>				forcefields;
+		size_t								forcefield_index = SIZE_MAX; // position of the forcefield to use for
+		fs::path							output_dir;
+		std::string							root_file_name;
+		fs::path							input_pdb;
 		std::optional<InteractiveArguments> custom_parameter; // needed for adding -his ...
 
 		water_model water = water_model::tip3p;

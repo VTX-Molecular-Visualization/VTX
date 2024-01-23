@@ -9,11 +9,11 @@
 #include <tools/mdprep/gromacs.hpp>
 #include <tools/mdprep/gromacs.util.hpp>
 
-TEST_CASE( "VTX_TOOL_MdPrep - executable_directory", "[executable_directory]" )
+TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
 {
 	VTX::test::setup_env f;
 
-	const fs::path dir = VTX::Tool::Mdprep::executable_directory();
+	const fs::path dir = VTX::Tool::Mdprep::executableDirectory();
 	CHECK( fs::is_directory( dir ) );
 }
 
@@ -45,7 +45,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - list_forcefields top_dir", "[list_forcefields][top
 	//  this test is designed to be still true if gromacs maintainers add forcefields.
 	//  therefore,the size of the collection shall not be tested
 	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields(
-		VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_ff_directory_relative_path()
+		VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultFfDirectoryRelativePath()
 	);
 	CHECK( !ffs.empty() );
 	CHECK( is_ff_in_list( ffs, "amber03" ) );
@@ -72,9 +72,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][some_dir]" )
 	VTX::test::setup_env f;
 
 	// tests directory with something else than forcefield in it
-	CHECK( !fs::is_empty( VTX::Tool::Mdprep::executable_directory() ) );
+	CHECK( !fs::is_empty( VTX::Tool::Mdprep::executableDirectory() ) );
 
-	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields( VTX::Tool::Mdprep::executable_directory() );
+	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields( VTX::Tool::Mdprep::executableDirectory() );
 	CHECK( ffs.empty() );
 }
 
@@ -97,8 +97,8 @@ namespace VTX::test
 		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
 		f.instructions.forcefield_index = 1;
 		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::water_model::spce;
-		f.instructions.output_dir		= VTX::Tool::Mdprep::executable_directory() / f.output_dir_name;
-		f.instructions.input_pdb		= VTX::Tool::Mdprep::executable_directory() / "data" / "1ubq.pdb";
+		f.instructions.output_dir		= VTX::Tool::Mdprep::executableDirectory() / f.output_dir_name;
+		f.instructions.input_pdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
 		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
 
 		// I kind of re-do the implementation of convert here, but I guess that if I do it twice, it is half the chance
