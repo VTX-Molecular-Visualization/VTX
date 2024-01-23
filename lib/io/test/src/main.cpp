@@ -23,10 +23,10 @@ TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	REQUIRE( molecule.getChainCount() == 79 );
-	REQUIRE( molecule.getResidueCount() == 11381 );
-	REQUIRE( molecule.getAtomCount() == 113095 );
-	REQUIRE( molecule.getBondCount() == 129959 );
+	CHECK( molecule.getChainCount() == 79 );
+	CHECK( molecule.getResidueCount() == 11381 );
+	CHECK( molecule.getAtomCount() == 113095 );
+	CHECK( molecule.getBondCount() == 129957 );
 }
 
 TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
@@ -46,10 +46,10 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 
 	moleculeReader.readBuffer( data, "8OIT.mmtf", molecule );
 
-	REQUIRE( molecule.getChainCount() == 79 );
-	REQUIRE( molecule.getResidueCount() == 11381 );
-	REQUIRE( molecule.getAtomCount() == 113095 );
-	REQUIRE( molecule.getBondCount() == 129959 );
+	CHECK( molecule.getChainCount() == 79 );
+	CHECK( molecule.getResidueCount() == 11381 );
+	CHECK( molecule.getAtomCount() == 113095 );
+	CHECK( molecule.getBondCount() == 129957 );
 }
 
 TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )

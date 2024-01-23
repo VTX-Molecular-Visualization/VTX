@@ -36,29 +36,29 @@ namespace VTX::App::Component::Chemistry
 		const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return _moleculeStruct; };
 		void								setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
 
-		void						 initChains( const size_t p_chainCount );
-		Chain *						 getChain( const size_t p_index ) { return _chains[ p_index ]; }
-		const Chain *				 getChain( const size_t p_index ) const { return _chains[ p_index ]; }
-		std::vector<Chain *> &		 getChains() { return _chains; }
-		const std::vector<Chain *> & getChains() const { return _chains; }
+		void		  initChains( const size_t p_chainCount );
+		Chain *		  getChain( const size_t p_index ) { return _chains[ p_index ].get(); }
+		const Chain * getChain( const size_t p_index ) const { return _chains[ p_index ].get(); }
+		std::vector<std::unique_ptr<Chain>> &		getChains() { return _chains; }
+		const std::vector<std::unique_ptr<Chain>> & getChains() const { return _chains; }
 
-		void						   initResidues( const size_t p_residueCount );
-		Residue *					   getResidue( const size_t p_index ) { return _residues[ p_index ]; }
-		const Residue *				   getResidue( const size_t p_index ) const { return _residues[ p_index ]; }
-		std::vector<Residue *> &	   getResidues() { return _residues; }
-		const std::vector<Residue *> & getResidues() const { return _residues; }
+		void			initResidues( const size_t p_residueCount );
+		Residue *		getResidue( const size_t p_index ) { return _residues[ p_index ].get(); }
+		const Residue * getResidue( const size_t p_index ) const { return _residues[ p_index ].get(); }
+		std::vector<std::unique_ptr<Residue>> &		  getResidues() { return _residues; }
+		const std::vector<std::unique_ptr<Residue>> & getResidues() const { return _residues; }
 
-		void						initAtoms( const size_t p_atomCount );
-		Atom *						getAtom( const atom_index_t p_index ) { return _atoms[ p_index ]; }
-		const Atom *				getAtom( const atom_index_t p_index ) const { return _atoms[ p_index ]; }
-		std::vector<Atom *> &		getAtoms() { return _atoms; }
-		const std::vector<Atom *> & getAtoms() const { return _atoms; }
+		void		 initAtoms( const size_t p_atomCount );
+		Atom *		 getAtom( const atom_index_t p_index ) { return _atoms[ p_index ].get(); }
+		const Atom * getAtom( const atom_index_t p_index ) const { return _atoms[ p_index ].get(); }
+		std::vector<std::unique_ptr<Atom>> &	   getAtoms() { return _atoms; }
+		const std::vector<std::unique_ptr<Atom>> & getAtoms() const { return _atoms; }
 
-		void						initBonds( const size_t p_bondCount );
-		Bond *						getBond( const size_t p_index ) { return _bonds[ p_index ]; }
-		const Bond *				getBond( const size_t p_index ) const { return _bonds[ p_index ]; }
-		std::vector<Bond *> &		getBonds() { return _bonds; }
-		const std::vector<Bond *> & getBonds() const { return _bonds; }
+		void								 initBonds( const size_t p_bondCount );
+		Bond *								 getBond( const size_t p_index ) { return _bonds[ p_index ].get(); }
+		const Bond *						 getBond( const size_t p_index ) const { return _bonds[ p_index ].get(); }
+		std::vector<std::unique_ptr<Bond>> & getBonds() { return _bonds; }
+		const std::vector<std::unique_ptr<Bond>> & getBonds() const { return _bonds; }
 
 		const std::string & getName() const { return _moleculeStruct.name; }
 		void				setName( const std::string & p_name );
@@ -82,10 +82,10 @@ namespace VTX::App::Component::Chemistry
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 
-		std::vector<Chain *>   _chains	 = std::vector<Chain *>();
-		std::vector<Residue *> _residues = std::vector<Residue *>();
-		std::vector<Atom *>	   _atoms	 = std::vector<Atom *>();
-		std::vector<Bond *>	   _bonds	 = std::vector<Bond *>();
+		std::vector<std::unique_ptr<Chain>>	  _chains;
+		std::vector<std::unique_ptr<Residue>> _residues;
+		std::vector<std::unique_ptr<Atom>>	  _atoms;
+		std::vector<std::unique_ptr<Bond>>	  _bonds;
 
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";

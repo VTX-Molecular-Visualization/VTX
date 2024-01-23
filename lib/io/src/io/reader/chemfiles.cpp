@@ -16,12 +16,12 @@ namespace VTX::IO::Reader
 {
 	struct Chemfiles::ReadingData
 	{
-		ReadingData( const FilePath & p_path, const std::string & p_format ) :
+		explicit ReadingData( const FilePath & p_path, const std::string & p_format ) :
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r', p_format ) )
 		{
 		}
 
-		ReadingData( const std::string & p_buffer, const FilePath & p_path, const std::string & p_format ) :
+		explicit ReadingData( const std::string & p_buffer, const FilePath & p_path, const std::string & p_format ) :
 			_trajectory( chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), p_format ) )
 		{
 		}
@@ -134,7 +134,7 @@ namespace VTX::IO::Reader
 		_readTrajectory();
 	}
 	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) :
-		_path( p_path ), _readingData( std::make_unique<ReadingData>( p_path, _getFormat( p_path ) ) )
+		_path( p_path ), _readingData( std::make_unique<ReadingData>( p_buffer, p_path, _getFormat( p_path ) ) )
 	{
 		_readTrajectory();
 	}

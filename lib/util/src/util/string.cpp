@@ -5,6 +5,8 @@
 
 namespace VTX::Util::String
 {
+	static const char * WHITESPACES = " \n\t\r\f\v";
+
 	void trim( std::string & p_str )
 	{
 		trimStart( p_str );

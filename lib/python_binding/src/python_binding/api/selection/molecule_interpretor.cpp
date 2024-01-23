@@ -191,7 +191,7 @@ namespace VTX::PythonBinding::API::Selection
 		}
 		else if ( selectFullChain )
 		{
-			for ( Chain * const chain : molecule.getChains() )
+			for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
 			{
 				p_moleculeSelectionData.selectFullChain( *chain );
 			}
@@ -216,7 +216,7 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			if ( chainIDs.isEmpty() )
 			{
-				for ( Chain * const chain : molecule.getChains() )
+				for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
 				{
 					if ( chain == nullptr )
 						continue;
@@ -241,7 +241,7 @@ namespace VTX::PythonBinding::API::Selection
 					}
 				}
 
-				for ( Residue * const residue : molecule.getResidues() )
+				for ( const std::unique_ptr<Residue> & residue : molecule.getResidues() )
 				{
 					for ( const size_t residueIndex : p_kwargs.residueIndexes )
 					{
