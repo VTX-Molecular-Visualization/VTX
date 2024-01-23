@@ -84,7 +84,7 @@ namespace VTX::test
 	struct fixture_convert_pdb2gmx
 	{
 		VTX::test::setup_env							 f;
-		const char *									 output_dir_name = "out";
+		const char *									 outputDir_name = "out";
 		VTX::Tool::Mdprep::Gromacs::Pdb2gmxInstructions instructions;
 		VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs expected_args;
 	};
@@ -97,7 +97,7 @@ namespace VTX::test
 		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
 		f.instructions.forcefieldIndex = 1;
 		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spce;
-		f.instructions.output_dir		= VTX::Tool::Mdprep::executableDirectory() / f.output_dir_name;
+		f.instructions.outputDir		= VTX::Tool::Mdprep::executableDirectory() / f.outputDir_name;
 		f.instructions.input_pdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
 		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
 
@@ -108,16 +108,16 @@ namespace VTX::test
 		f.expected_args.arguments.push_back( f.instructions.input_pdb.string() );
 		std::string input_root_name = f.instructions.input_pdb.filename().string();
 		f.expected_args.arguments.push_back( "-o" );
-		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".gro" ) ).string() );
+		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".gro" ) ).string() );
 		f.expected_args.arguments.push_back( "-p" );
-		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".top" ) ).string() );
+		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".top" ) ).string() );
 		f.expected_args.arguments.push_back( "-i" );
-		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".itp" ) ).string() );
+		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".itp" ) ).string() );
 		f.expected_args.arguments.push_back( "-q" );
-		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".clean.pdb" ) ).string()
+		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".clean.pdb" ) ).string()
 		);
 		f.expected_args.arguments.push_back( "-n" );
-		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".ndx" ) ).string() );
+		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".ndx" ) ).string() );
 		f.expected_args.arguments.push_back( "-ff" );
 		f.expected_args.arguments.push_back(
 			f.instructions.forcefields.at( f.instructions.forcefieldIndex ).getName().data()
@@ -169,7 +169,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_output", "[convert][pdb2gmx
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 
-	data.instructions.output_dir = "";
+	data.instructions.outputDir = "";
 
 	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
@@ -210,7 +210,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 		data.expected_args.arguments.back() = std::string( "-" ) += VTX::Tool::Mdprep::Gromacs::string( kw );
 
 		VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
-		data.expected_args.interactive_settings = args.interactive_settings;
+		data.expected_args.interactiveSettings = args.interactiveSettings;
 		CHECK( data.expected_args == args );
 	}
 }

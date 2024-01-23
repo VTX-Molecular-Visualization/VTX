@@ -75,7 +75,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		proc.start();
 		proc.waitForStarted( -1 );
 
-		if ( p_args.interactive_settings.has_value() )
+		if ( p_args.interactiveSettings.has_value() )
 			interactive_process_management( proc, finished, p_args );
 		else
 			simple_process_management( proc, finished, p_args );

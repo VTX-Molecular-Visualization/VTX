@@ -106,10 +106,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( !p_in.input_pdb.has_filename() )
 			return;
 
-		fs::path output_dir = p_in.output_dir;
-		if ( output_dir.empty() )
-			output_dir = p_in.input_pdb.parent_path();
-		fs::create_directories( output_dir );
+		fs::path outputDir = p_in.outputDir;
+		if ( outputDir.empty() )
+			outputDir = p_in.input_pdb.parent_path();
+		fs::create_directories( outputDir );
 		p_out.arguments.clear();
 
 		p_out.arguments.push_back( "pdb2gmx" );
@@ -117,15 +117,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( p_in.input_pdb.string() );
 		std::string input_root_name = p_in.input_pdb.filename().string();
 		p_out.arguments.push_back( "-o" );
-		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".gro" ) ).string() );
+		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".gro" ) ).string() );
 		p_out.arguments.push_back( "-p" );
-		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".top" ) ).string() );
+		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".top" ) ).string() );
 		p_out.arguments.push_back( "-i" );
-		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".itp" ) ).string() );
+		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".itp" ) ).string() );
 		p_out.arguments.push_back( "-q" );
-		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".clean.pdb" ) ).string() );
+		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".clean.pdb" ) ).string() );
 		p_out.arguments.push_back( "-n" );
-		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
+		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".ndx" ) ).string() );
 		p_out.arguments.push_back( "-ff" );
 		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefieldIndex ).getName().data() );
 		p_out.arguments.push_back( "-water" );
@@ -134,7 +134,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( p_in.custom_parameter.has_value() )
 		{
 			std::set<E_INTERACTIVE_KEYWORD> seen_kw;
-			p_out.interactive_settings = p_in.custom_parameter;
+			p_out.interactiveSettings = p_in.custom_parameter;
 			for ( auto & it : p_in.custom_parameter->kwValue )
 			{
 				if ( seen_kw.contains( it.first.kw ) )

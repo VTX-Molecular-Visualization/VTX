@@ -14,7 +14,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::vector<std::string>			arguments;
 		std::string							stdout_;
 		std::string							stderr_;
-		std::optional<InteractiveArguments> interactive_settings;
+		std::optional<InteractiveArguments> interactiveSettings;
 		bool								operator==( const GromacsCommandArgs & ) const noexcept = default;
 	};
 

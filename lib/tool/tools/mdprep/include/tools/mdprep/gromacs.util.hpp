@@ -111,7 +111,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		std::vector<forcefield>				forcefields;
 		size_t								forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
-		fs::path							output_dir;
+		fs::path							outputDir;
 		std::string							root_file_name;
 		fs::path							input_pdb;
 		std::optional<InteractiveArguments> custom_parameter; // needed for adding -his ...
@@ -124,7 +124,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Does nothing if the instructions have default values.
 	//    Does nothing if the forcefieldIndex refer to a non-existing forcefield
 	//    Does not perform filesystem check on input pdb
-	//    If the output_dir is empty, will create a output directory in the current working directory and use it.
+	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
 	void convert( const Pdb2gmxInstructions &, GromacsCommandArgs & ) noexcept;
 
 	struct solvate_instructions // WIP
