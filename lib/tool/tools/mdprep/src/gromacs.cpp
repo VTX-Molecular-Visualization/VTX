@@ -9,7 +9,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 {
 	void fill_missing_string( QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
 
-	void interactive_process_management( QProcess & p_proc, bool & p_finished, gromacs_command_args & p_args ) noexcept
+	void interactive_process_management( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 	{
 		QByteArray	   qbuf;
 		std::string	   sbuf;
@@ -39,7 +39,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		}
 	}
-	void simple_process_management( QProcess & p_proc, bool & p_finished, gromacs_command_args & p_args ) noexcept
+	void simple_process_management( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 	{
 		QByteArray buf;
 
@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		} while ( !p_finished );
 	}
 
-	void submit_gromacs_command( const fs::path & p_gmx_exe, gromacs_command_args & p_args )
+	void submit_gromacs_command( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args )
 	{
 		QString		pgm { p_gmx_exe.string().data() };
 		QStringList qt_args;

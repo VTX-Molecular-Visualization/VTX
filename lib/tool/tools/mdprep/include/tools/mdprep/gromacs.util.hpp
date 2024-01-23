@@ -118,14 +118,14 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		water_model water = water_model::tip3p;
 	};
-	struct gromacs_command_args;
+	struct GromacsCommandArgs;
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does nothing if the forcefield_index refer to a non-existing forcefield
 	//    Does not perform filesystem check on input pdb
 	//    If the output_dir is empty, will create a output directory in the current working directory and use it.
-	void convert( const pdb2gmx_instructions &, gromacs_command_args & ) noexcept;
+	void convert( const pdb2gmx_instructions &, GromacsCommandArgs & ) noexcept;
 
 	struct solvate_instructions // WIP
 	{
@@ -143,7 +143,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
 	//    If the output_gro is empty, will use the input filename root and append "solv"
-	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept;
+	void convert( const solvate_instructions &, GromacsCommandArgs & ) noexcept;
 
 	// Returned by the script parser to inform how the parsing went
 	struct parse_report

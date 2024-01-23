@@ -30,8 +30,8 @@ namespace
 	};
 	struct test_context
 	{
-		io_paths										 paths;
-		VTX::Tool::Mdprep::Gromacs::gromacs_command_args args;
+		io_paths									   paths;
+		VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 	};
 
 	bool have_same_content( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
@@ -69,7 +69,7 @@ namespace
 
 		CHECK_NOFAIL( fs::is_regular_file( out.paths.in ) );
 
-		out.args = VTX::Tool::Mdprep::Gromacs::gromacs_command_args { {
+		out.args = VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs { {
 			"pdb2gmx",
 			"-f",
 			out.paths.in.make_preferred().string(),

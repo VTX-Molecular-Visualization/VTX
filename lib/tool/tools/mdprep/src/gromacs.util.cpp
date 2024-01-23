@@ -95,7 +95,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return "";
 	}
 
-	void convert( const pdb2gmx_instructions & p_in, gromacs_command_args & p_out ) noexcept
+	void convert( const pdb2gmx_instructions & p_in, GromacsCommandArgs & p_out ) noexcept
 	{
 		if ( p_in.forcefields.empty() )
 			return;
@@ -144,7 +144,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 		}
 	}
-	void convert( const solvate_instructions &, gromacs_command_args & ) noexcept {}
+	void convert( const solvate_instructions &, GromacsCommandArgs & ) noexcept {}
 
 	const char * string( const interactive_keyword & p_kw ) noexcept
 	{

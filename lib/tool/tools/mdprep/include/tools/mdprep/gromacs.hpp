@@ -9,19 +9,19 @@
 namespace VTX::Tool::Mdprep::Gromacs
 {
 
-	struct gromacs_command_args
+	struct GromacsCommandArgs
 	{
 		std::vector<std::string>			 arguments;
 		std::string							 stdout_;
 		std::string							 stderr_;
 		std::optional<interactive_arguments> interactive_settings;
-		bool								 operator==( const gromacs_command_args & ) const noexcept = default;
+		bool								 operator==( const GromacsCommandArgs & ) const noexcept = default;
 	};
 
 	// Blindly execute gromacs with input arguments.
 	//   Assumes relevant arguments have been provided and checked beforehand.
 	//   Assumes gromacs have been instructed on where to find data files as well.
-	void submit_gromacs_command( const fs::path & p_gmx_exe, gromacs_command_args & p_args );
+	void submit_gromacs_command( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args );
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
