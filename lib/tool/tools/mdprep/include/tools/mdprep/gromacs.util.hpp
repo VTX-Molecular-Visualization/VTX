@@ -71,24 +71,24 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * string( const interactive_keyword & ) noexcept;
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
-	struct interactive_id
+	struct interactiveId
 	{
 		char				chain = 0x00i8; // Value of 0x00 means any chain
 		interactive_keyword kw	  = interactive_keyword::none;
 		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
-		bool operator==( const interactive_id & ) const noexcept = default;
+		bool operator==( const interactiveId & ) const noexcept = default;
 	};
 } // namespace VTX::Tool::Mdprep::Gromacs
 
-// We implement our specialization of the hash structure for interactive_id as required for set and map
+// We implement our specialization of the hash structure for interactiveId as required for set and map
 // We got to declare the hash template specialisation before declaring its consumer
 namespace std
 {
 	template<>
-	struct hash<VTX::Tool::Mdprep::Gromacs::interactive_id>
+	struct hash<VTX::Tool::Mdprep::Gromacs::interactiveId>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactive_id & p_arg ) const noexcept
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::interactiveId & p_arg ) const noexcept
 		{
 			uint64_t out = 0;
 			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
@@ -104,7 +104,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// organized version of the arguments to be used during interactive gromacs step
 	struct InteractiveArguments
 	{
-		std::unordered_map<interactive_id, std::string> kw_v;
+		std::unordered_map<interactiveId, std::string> kw_v;
 		bool operator==( const InteractiveArguments & ) const noexcept = default;
 	};
 	struct pdb2gmx_instructions
