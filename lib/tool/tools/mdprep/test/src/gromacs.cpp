@@ -126,7 +126,7 @@ TEST_CASE(
 	VTX::test::setup_env f;
 	auto				 context_data = setup_test_context( "1ubq" );
 	context_data.args.interactive_settings.emplace();
-	context_data.args.interactive_settings->kw_v.emplace( interactiveId { 'A', interactive_keyword::lys, 6 }, "LYN" );
+	context_data.args.interactive_settings->kw_v.emplace( InteractiveId { 'A', interactive_keyword::lys, 6 }, "LYN" );
 	check_pdb( context_data );
 }
 TEST_CASE(
@@ -138,7 +138,7 @@ TEST_CASE(
 	VTX::test::setup_env f;
 	auto				 context_data = setup_test_context( "1ubq" );
 	context_data.args.interactive_settings.emplace();
-	context_data.args.interactive_settings->kw_v.emplace( interactiveId { 'A', interactive_keyword::lys, 6 }, "LYN" );
+	context_data.args.interactive_settings->kw_v.emplace( InteractiveId { 'A', interactive_keyword::lys, 6 }, "LYN" );
 	check_pdb( context_data );
 }
 

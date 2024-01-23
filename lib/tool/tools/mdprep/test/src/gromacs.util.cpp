@@ -195,7 +195,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 {
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
-	VTX::Tool::Mdprep::Gromacs::interactiveId id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::none, 12 };
+	VTX::Tool::Mdprep::Gromacs::InteractiveId id { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::none, 12 };
 	data.instructions.custom_parameter.emplace();
 
 	data.expected_args.arguments.push_back( "" );
@@ -215,16 +215,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 	}
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactiveId][hash]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][InteractiveId][hash]" )
 {
-	// We want to test if the hash function for interactiveId datastruct gives unique hash with plausible inputs
+	// We want to test if the hash function for InteractiveId datastruct gives unique hash with plausible inputs
 	const size_t MAX_RESID = 1001;
 
 	using namespace VTX::Tool::Mdprep::Gromacs;
 
-	interactiveId					   id;
+	InteractiveId					   id;
 	bool							   duplicate_found = false;
-	std::unordered_set<interactiveId> set;
+	std::unordered_set<InteractiveId> set;
 	for ( char it_char = 'A'; it_char <= 'Z'; it_char++ )
 	{
 		for ( uint32_t it_kw_num = 0; it_kw_num < static_cast<uint32_t>( interactive_keyword::COUNT ); it_kw_num++ )
@@ -267,7 +267,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line", "[pdb2gmx][
 	InteractiveArguments args;
 	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0\n";
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::arg, 54 }, "0" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::arg, 54 }, "0" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
@@ -282,7 +282,7 @@ TEST_CASE(
 	InteractiveArguments args;
 	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0";
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::arg, 54 }, "0" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::arg, 54 }, "0" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
@@ -298,10 +298,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - 1", "[pdb2gmx][parse_p
 		  "B LYS8 LYS\n"
 		  "A HIS1 1\n"
 		  "A HIS12 HID\n";
-	expected_args.kw_v.emplace( interactiveId { 'B', interactive_keyword::lys, 8 }, "LYS" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::lys, 222 }, "LYN" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::his, 1 }, "1" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::his, 12 }, "HID" );
+	expected_args.kw_v.emplace( InteractiveId { 'B', interactive_keyword::lys, 8 }, "LYS" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::lys, 222 }, "LYN" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::his, 1 }, "1" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::his, 12 }, "HID" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
@@ -320,10 +320,10 @@ TEST_CASE(
 		  "B LYS8 LYS\r\n"
 		  "A HIS1 1\r\n"
 		  "A HIS12 HID\r\n";
-	expected_args.kw_v.emplace( interactiveId { 'B', interactive_keyword::lys, 8 }, "LYS" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::lys, 222 }, "LYN" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::his, 1 }, "1" );
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::his, 12 }, "HID" );
+	expected_args.kw_v.emplace( InteractiveId { 'B', interactive_keyword::lys, 8 }, "LYS" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::lys, 222 }, "LYN" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::his, 1 }, "1" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::his, 12 }, "HID" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
@@ -337,7 +337,7 @@ TEST_CASE(
 	InteractiveArguments args;
 	InteractiveArguments expected_args;
 	const char *		  script = "A HIS8 hie\r\n";
-	expected_args.kw_v.emplace( interactiveId { 'A', interactive_keyword::his, 8 }, "hie" );
+	expected_args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::his, 8 }, "hie" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
@@ -356,14 +356,14 @@ void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::InteractiveArgument
 		  "H his118 HIE\n";
 	s = script;
 	args.kw_v.clear();
-	args.kw_v.emplace( interactiveId { 'A', interactive_keyword::ss, 111 }, "0" );
-	args.kw_v.emplace( interactiveId { 'B', interactive_keyword::ter, 112 }, "1" );
-	args.kw_v.emplace( interactiveId { 'C', interactive_keyword::lys, 113 }, "protonated" );
-	args.kw_v.emplace( interactiveId { 'D', interactive_keyword::arg, 114 }, "1" );
-	args.kw_v.emplace( interactiveId { 'E', interactive_keyword::asp, 115 }, "not protonated" );
-	args.kw_v.emplace( interactiveId { 'F', interactive_keyword::glu, 116 }, "not protonated" );
-	args.kw_v.emplace( interactiveId { 'G', interactive_keyword::gln, 117 }, "GLN" );
-	args.kw_v.emplace( interactiveId { 'H', interactive_keyword::his, 118 }, "HIE" );
+	args.kw_v.emplace( InteractiveId { 'A', interactive_keyword::ss, 111 }, "0" );
+	args.kw_v.emplace( InteractiveId { 'B', interactive_keyword::ter, 112 }, "1" );
+	args.kw_v.emplace( InteractiveId { 'C', interactive_keyword::lys, 113 }, "protonated" );
+	args.kw_v.emplace( InteractiveId { 'D', interactive_keyword::arg, 114 }, "1" );
+	args.kw_v.emplace( InteractiveId { 'E', interactive_keyword::asp, 115 }, "not protonated" );
+	args.kw_v.emplace( InteractiveId { 'F', interactive_keyword::glu, 116 }, "not protonated" );
+	args.kw_v.emplace( InteractiveId { 'G', interactive_keyword::gln, 117 }, "GLN" );
+	args.kw_v.emplace( InteractiveId { 'H', interactive_keyword::his, 118 }, "HIE" );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][parse_pdb2gmx_user_script][each]" )

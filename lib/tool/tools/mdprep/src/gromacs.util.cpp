@@ -252,7 +252,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 				);
 				return out;
 			}
-			interactiveId new_id;
+			InteractiveId new_id;
 
 			new_id.chain	= match[ 1 ].str()[ 0 ];
 			std::string buf = match[ 2 ].str();
