@@ -16,6 +16,8 @@ namespace VTX::Renderer::Context
 		FilePath shaderPath;
 	};
 
+	using RenderFunction = std::function<void( float )>;
+
 	template<typename C>
 	concept Concept
 		= std::is_base_of<BaseContext, C>::value
@@ -23,7 +25,10 @@ namespace VTX::Renderer::Context
 			  C								p_context,
 			  const size_t					p_width,
 			  const size_t					p_height,
+			  const size_t					p_x,
+			  const size_t					p_y,
 			  const RenderQueue &			p_renderQueue,
+			  const RenderFunction &		p_renderFunction,
 			  const Links &					p_links,
 			  const Handle					p_output,
 			  const std::vector<Uniforms> & p_uniforms,
@@ -33,7 +38,12 @@ namespace VTX::Renderer::Context
 			  UniformValue &				p_uniformValue,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
-			  StructInfos &					p_infos
+			  StructInfos &					p_infos,
+			  std::vector<uchar> &			p_image,
+			  const std::string &			p_pass,
+			  const E_CHANNEL_OUTPUT		p_channel,
+			  std::any &					p_textureData
+
 		  ) {
 				 {
 					 p_context.build(
@@ -63,6 +73,12 @@ namespace VTX::Renderer::Context
 				 } -> std::same_as<float>;
 				 {
 					 p_context.compileShaders()
+				 } -> std::same_as<void>;
+				 {
+					 p_context.snapshot( p_image, p_renderQueue, p_renderFunction, p_width, p_height )
+				 } -> std::same_as<void>;
+				 {
+					 p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel )
 				 } -> std::same_as<void>;
 			 };
 

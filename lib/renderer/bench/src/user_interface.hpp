@@ -1,6 +1,8 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "camera.hpp"
 #include <SDL.h>
 #include <core/chemdb/color.hpp>
@@ -9,6 +11,7 @@
 #include <imgui/imgui_impl_sdl2.h>
 #include <imnodes/imnodes.h>
 #include <renderer/renderer.hpp>
+#include <stb_image_write.h>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
@@ -149,13 +152,17 @@ namespace VTX::Bench
 				}
 				if ( ImGui::BeginMenu( "Color layout" ) )
 				{
+					if ( ImGui::MenuItem( "JMol" ) )
+					{
+						p_renderer->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
 						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
 						);
-						p_renderer->setColorLayout( colorLayout.data() );
+						p_renderer->setColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
@@ -163,7 +170,36 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
-						p_renderer->setColorLayout( colorLayout.data() );
+						p_renderer->setColorLayout( colorLayout );
+					}
+
+					ImGui::EndMenu();
+				}
+				if ( ImGui::BeginMenu( "Export" ) )
+				{
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 800, 600 );
+						_saveImage( image, 800, 600 );
+					}
+					if ( ImGui::MenuItem( "1920x1080" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 1920, 1080 );
+						_saveImage( image, 1920, 1080 );
+					}
+					if ( ImGui::MenuItem( "2560x1440" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 2560, 1440 );
+						_saveImage( image, 2560, 1440 );
+					}
+					if ( ImGui::MenuItem( "3840x2160" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 3840, 2160 );
+						_saveImage( image, 3840, 2160 );
 					}
 
 					ImGui::EndMenu();
@@ -179,6 +215,17 @@ namespace VTX::Bench
 				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
 				{
 					p_renderer->setLogDurations( isLogDurations );
+				}
+				bool forceUpdate = p_renderer->isForceUpdate();
+				if ( ImGui::Checkbox( "Force update", &forceUpdate ) )
+				{
+					p_renderer->setForceUpdate( forceUpdate );
+				}
+				if ( ImGui::Button( "Snapshot" ) )
+				{
+					std::vector<uchar> image;
+					p_renderer->snapshot( image );
+					_saveImage( image, p_renderer->getWidth(), p_renderer->getHeight() );
 				}
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -306,8 +353,11 @@ namespace VTX::Bench
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
 
-				ImGui::Text( fmt::format( "{} atoms", p_renderer->getAtomCount() ).c_str() );
-				ImGui::Text( fmt::format( "{} bonds", p_renderer->getBondCount() ).c_str() );
+				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
+				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
+				ImGui::Checkbox(
+					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
+				);
 				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
 				ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
@@ -340,11 +390,11 @@ namespace VTX::Bench
 				ImGui::BeginMenuBar();
 				if ( ImGui::BeginMenu( "Add" ) )
 				{
-					for ( const Pass & pass : graph.getAvailablePasses() )
+					for ( const Pass * const pass : graph.getAvailablePasses() )
 					{
-						if ( ImGui::MenuItem( pass.name.c_str() ) )
+						if ( ImGui::MenuItem( pass->name.c_str() ) )
 						{
-							graph.addPass( pass );
+							graph.addPass( *pass );
 						}
 					}
 
@@ -766,6 +816,13 @@ namespace VTX::Bench
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
+
+		void _saveImage( const std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
+		{
+			stbi_flip_vertically_on_write( true );
+			stbi_write_png_compression_level = 0;
+			stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, p_image.data(), 0 );
+		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

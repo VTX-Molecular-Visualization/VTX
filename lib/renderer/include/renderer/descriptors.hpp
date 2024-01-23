@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_DESCRIPTORS__
 
 #include "enums.hpp"
+#include <array>
 #include <functional>
 #include <map>
 #include <optional>
@@ -84,7 +85,7 @@ namespace VTX::Renderer
 		StructUniformValue<Mat4f>,
 		StructUniformValue<Util::Color::Rgba>,
 		// TODO: handle array of data.
-		StructUniformValue<Util::Color::Rgba[ 256 ]>>;
+		StructUniformValue<std::array<Util::Color::Rgba, 256>>>;
 
 	struct Uniform
 	{
@@ -93,12 +94,14 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
+	using CountFunction = std::function<uint()>;
+
 	struct Draw
 	{
-		std::string name;
-		E_PRIMITIVE primitive;
-		size_t *	count;
-		bool		useIndices = false;
+		std::string	  name;
+		E_PRIMITIVE	  primitive;
+		CountFunction countFunction;
+		bool		  useIndices = false;
 	};
 
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;

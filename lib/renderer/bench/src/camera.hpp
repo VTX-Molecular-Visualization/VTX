@@ -13,7 +13,9 @@ namespace VTX::Bench
 	  public:
 		using CallbackMatrixView	   = std::function<void( const Mat4f & )>;
 		using CallbackMatrixProjection = std::function<void( const Mat4f & )>;
+		using CallbackTranslation	   = std::function<void( const Vec3f & )>;
 		using CallbackClipInfos		   = std::function<void( const float, const float )>;
+		using CallbackPerspective	   = std::function<void( const bool )>;
 
 		Camera() = delete;
 		Camera( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
@@ -63,6 +65,7 @@ namespace VTX::Bench
 			_position += p_delta.x * _right * _velocityTranslation;
 			_position += p_delta.y * _up * _velocityTranslation;
 			_position += p_delta.z * _front * _velocityTranslation;
+			_onTranslation();
 			_onMatrixView();
 		}
 
@@ -96,10 +99,22 @@ namespace VTX::Bench
 			_onMatrixProjection();
 		}
 
+		inline void setCallbackTranslation( const CallbackTranslation & p_callback )
+		{
+			_callbackTranslation = p_callback;
+			_onTranslation();
+		}
+
 		inline void setCallbackClipInfos( const CallbackClipInfos & p_callback )
 		{
 			_callbackClipInfos = p_callback;
 			_onClipInfos();
+		}
+
+		inline void setCallbackPerspective( const CallbackPerspective & p_callback )
+		{
+			_callbackIsPerspective = p_callback;
+			_onPerspective();
 		}
 
 		inline static const float NEAR_DEFAULT				   = 1e-1f;
@@ -137,8 +152,9 @@ namespace VTX::Bench
 		float _far	= FAR_DEFAULT;
 		float _fov	= FOV_DEFAULT;
 
-		Vec3f _position = Vec3f( 0.f, 0.f, 10.f );
-		Quatf _rotation = QUATF_ID;
+		bool  _isPerspective = true;
+		Vec3f _position		 = Vec3f( 0.f, 0.f, 10.f );
+		Quatf _rotation		 = QUATF_ID;
 
 		float _velocityTranslation = VELOCITY_TRANSLATION_DEFAULT;
 		float _velocityRotation	   = VELOCITY_ROTATION_DEFAULT;
@@ -146,7 +162,9 @@ namespace VTX::Bench
 
 		CallbackMatrixView		 _callbackMatrixView;
 		CallbackMatrixProjection _callbackMatrixProjection;
+		CallbackTranslation		 _callbackTranslation;
 		CallbackClipInfos		 _callbackClipInfos;
+		CallbackPerspective		 _callbackIsPerspective;
 
 		inline void _onMatrixView()
 		{
@@ -166,11 +184,27 @@ namespace VTX::Bench
 			}
 		}
 
+		inline void _onTranslation()
+		{
+			if ( _callbackTranslation )
+			{
+				_callbackTranslation( _position );
+			}
+		}
+
 		inline void _onClipInfos()
 		{
 			if ( _callbackClipInfos )
 			{
 				_callbackClipInfos( _near, _far );
+			}
+		}
+
+		inline void _onPerspective()
+		{
+			if ( _callbackIsPerspective )
+			{
+				_callbackIsPerspective( _isPerspective );
 			}
 		}
 	};

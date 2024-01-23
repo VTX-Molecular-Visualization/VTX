@@ -5,6 +5,7 @@
 #include "core/chemdb/bond.hpp"
 #include "core/chemdb/category.hpp"
 #include "core/chemdb/residue.hpp"
+#include "core/chemdb/secondary_structure.hpp"
 #include "core/struct/category.hpp"
 #include "core/struct/trajectory.hpp"
 #include <array>
@@ -44,13 +45,15 @@ namespace VTX::Core::Struct
 		size_t getChainCount() const;
 
 		// Residue data
-		std::vector<ChemDB::Residue::SYMBOL> residueSymbols			 = std::vector<ChemDB::Residue::SYMBOL>();
-		std::vector<size_t>					 residueChainIndexes	 = std::vector<size_t>();
-		std::vector<atom_index_t>			 residueFirstAtomIndexes = std::vector<atom_index_t>();
-		std::vector<atom_index_t>			 residueAtomCounts		 = std::vector<atom_index_t>();
-		std::vector<size_t>					 residueFirstBondIndexes = std::vector<size_t>();
-		std::vector<size_t>					 residueBondCounts		 = std::vector<size_t>();
-		std::vector<size_t>					 residueOriginalIds		 = std::vector<size_t>();
+		std::vector<ChemDB::Residue::SYMBOL>		  residueSymbols		  = std::vector<ChemDB::Residue::SYMBOL>();
+		std::vector<size_t>							  residueChainIndexes	  = std::vector<size_t>();
+		std::vector<atom_index_t>					  residueFirstAtomIndexes = std::vector<atom_index_t>();
+		std::vector<atom_index_t>					  residueAtomCounts		  = std::vector<atom_index_t>();
+		std::vector<size_t>							  residueFirstBondIndexes = std::vector<size_t>();
+		std::vector<size_t>							  residueBondCounts		  = std::vector<size_t>();
+		std::vector<size_t>							  residueOriginalIds	  = std::vector<size_t>();
+		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes
+			= std::vector<ChemDB::SecondaryStructure::TYPE>();
 
 		void   initResidues( const size_t p_count );
 		size_t getResidueCount() const;

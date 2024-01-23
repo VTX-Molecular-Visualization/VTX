@@ -5,10 +5,6 @@
 
 namespace VTX::Core::ChemDB::Residue
 {
-	const Util::Color::Rgba & getResidueColor( const SYMBOL p_symbol, const bool isStd )
-	{
-		return isStd ? SYMBOL_COLOR[ int( p_symbol ) ] : SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
-	}
 
 	const SYMBOL getSymbolFromShortName( const std::string & p_residueName )
 	{

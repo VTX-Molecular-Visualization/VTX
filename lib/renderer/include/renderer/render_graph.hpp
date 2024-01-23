@@ -218,7 +218,28 @@ namespace VTX::Renderer
 
 		inline void compileShaders() const { _context->compileShaders(); }
 
-		inline const std::vector<Pass> & getAvailablePasses() const { return availablePasses; }
+		inline void snapshot(
+			std::vector<uchar> &			p_image,
+			const Context::RenderFunction & p_renderFunction,
+			const size_t					p_width	 = 0,
+			const size_t					p_height = 0
+		)
+		{
+			_context->snapshot( p_image, _renderQueue, p_renderFunction, p_width, p_height );
+		}
+
+		inline void getTextureData(
+			std::any &			   p_textureData,
+			const size_t		   p_x,
+			const size_t		   p_y,
+			const std::string &	   p_pass,
+			const E_CHANNEL_OUTPUT p_channel
+		) const
+		{
+			return _context->getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
+		}
+
+		inline const std::vector<Pass *> & getAvailablePasses() const { return availablePasses; }
 
 	  private:
 		S				   _scheduler;

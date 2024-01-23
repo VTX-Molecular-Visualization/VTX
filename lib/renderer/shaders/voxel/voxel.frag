@@ -18,5 +18,5 @@ void main()
 	vec3 normal		  = normalize( vec3( uniformsCamera.matrixNormal * vec4( inData.center, 1.f ) ) );	
 	
 	packData( viewPosition, normal, 0, outDataPacked );
-	outColor = vec4( 0.5f, 0.5f, 0.5f, 32.f );
+	outColor = vec4( 0.5f, 0.5f, 0.5f, 1.f );
 }

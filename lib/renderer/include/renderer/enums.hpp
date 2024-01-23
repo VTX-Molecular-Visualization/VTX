@@ -41,7 +41,8 @@ namespace VTX::Renderer
 	{
 		POINTS,
 		LINES,
-		TRIANGLES
+		TRIANGLES,
+		PATCHES,
 	};
 
 	enum struct E_TYPE
@@ -101,6 +102,8 @@ namespace VTX::Renderer
 		GLOSSY,
 		TOON,
 		FLAT_COLOR,
+		GGX,
+		COUNT
 	};
 
 } // namespace VTX::Renderer

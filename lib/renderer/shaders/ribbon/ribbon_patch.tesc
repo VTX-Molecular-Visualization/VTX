@@ -5,10 +5,9 @@
 
 #version 450 core
 
-layout( vertices = 4 ) out;
+#include "../layout_uniforms_camera.glsl"
 
-// TODO: move that.
-uniform vec3 u_camPosition;
+layout( vertices = 4 ) out;
 
 // In.
 in 
@@ -60,7 +59,7 @@ const float[] MAX_TESS_SS = float[]( MAX_TESS_HELIX,  // HELIX_ALPHA_RIGHT
 
 float computeTessellationFactor( vec3 p_point )
 {
-	return 1.f - clamp( ( length( p_point - u_camPosition ) - MIN_DISTANCE ) / RANGE_DISTANCE, 0.f, 1.f );
+	return 1.f - clamp( ( length( p_point - uniformsCamera.cameraPosition ) - MIN_DISTANCE ) / RANGE_DISTANCE, 0.f, 1.f );
 }
 
 void main()

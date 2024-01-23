@@ -41,6 +41,7 @@ namespace VTX::Renderer::Context
 
 		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 
 		_getOpenglInfos();
 
@@ -268,13 +269,14 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								if ( *draw.count > 0 )
+								uint count = draw.countFunction();
+								if ( count > 0 )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
 									program->use();
 									vao->drawElement(
-										_mapPrimitives[ draw.primitive ], GLsizei( *draw.count ), GL_UNSIGNED_INT
+										_mapPrimitives[ draw.primitive ], GLsizei( count ), GL_UNSIGNED_INT
 									);
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -288,11 +290,12 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								if ( *draw.count > 0 )
+								uint count = draw.countFunction();
+								if ( count > 0 )
 								{
 									vao->bind();
 									program->use();
-									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( *draw.count ) );
+									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( count ) );
 									vao->unbind();
 								}
 							}
@@ -386,6 +389,87 @@ namespace VTX::Renderer::Context
 				}
 			}
 		}
+	}
+
+	void OpenGL45::snapshot(
+		std::vector<uchar> &   p_image,
+		const RenderQueue &	   p_renderQueue,
+		const RenderFunction & p_renderFunction,
+		const size_t		   p_width,
+		const size_t		   p_height
+	)
+	{
+		// TODO: transparency.
+
+		const size_t widthOld  = width;
+		const size_t heightOld = height;
+		const Handle outputOld = _output;
+
+		p_image.resize( p_width * p_height * 4 );
+
+		GL::Framebuffer fbo;
+		GL::Texture2D	texture(
+			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
+		  );
+		fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
+
+		resize( p_renderQueue, p_width, p_height );
+		setOutput( fbo.getId() );
+		p_renderFunction( 0 );
+
+		fbo.bind( GL_READ_FRAMEBUFFER );
+		glReadnPixels(
+			0,
+			0,
+			GLsizei( p_width ),
+			GLsizei( p_height ),
+			GL_RGBA,
+			GL_UNSIGNED_BYTE,
+			GLsizei( p_image.size() ),
+			p_image.data()
+		);
+		fbo.unbind();
+
+		resize( p_renderQueue, widthOld, heightOld );
+		setOutput( outputOld );
+		p_renderFunction( 0 );
+	}
+
+	void OpenGL45::getTextureData(
+		std::any &			   p_textureData,
+		const size_t		   p_x,
+		const size_t		   p_y,
+		const std::string &	   p_pass,
+		const E_CHANNEL_OUTPUT p_channel
+	) const
+	{
+		for ( auto & [ passPtr, fbo ] : _fbos )
+		{
+			if ( passPtr->name == p_pass )
+			{
+				const IO & descIO = passPtr->outputs.at( p_channel ).desc;
+
+				assert( std::holds_alternative<Attachment>( descIO ) );
+
+				const Attachment & attachment = std::get<Attachment>( descIO );
+				const E_FORMAT	   format	  = attachment.format;
+
+				fbo->bind( GL_READ_FRAMEBUFFER );
+				fbo->setReadBuffer( _mapAttachments[ p_channel ] );
+				glReadPixels(
+					GLint( p_x ),
+					GLint( p_y ),
+					1,
+					1,
+					_mapFormatInternalTypes[ format ],
+					_mapTypes[ _mapFormatTypes[ format ] ],
+					&p_textureData
+				);
+				fbo->unbind();
+				return;
+			}
+		}
+		assert( false );
 	}
 
 	void OpenGL45::_createInputs( const Pass * const p_descPassPtr )
@@ -507,9 +591,25 @@ namespace VTX::Renderer::Context
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
 
-			VTX_DEBUG( "Register uniform: {} (s{})(o{})", key, size, offset );
+			// Auto padding to 4 8 or 16 bytes.
+			size_t padding = 0;
+			if ( size % 4 != 0 )
+			{
+				padding = 4 - ( size % 4 );
+			}
+			else if ( size > 4 && size % 8 != 0 )
+			{
+				padding = 8 - ( size % 8 );
+			}
+			else if ( size > 8 && size % 16 != 0 )
+			{
+				padding = 16 - ( size % 16 );
+			}
+
+			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
+			offset += padding;
 		}
 
 		assert( offset > 0 );
@@ -538,7 +638,7 @@ namespace VTX::Renderer::Context
 				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
 				break;
 			case E_TYPE::COLOR4_256:
-				_setUniformDefaultValue<Util::Color::Rgba[ 256 ]>( descUniform, p_descProgram, p_descPass );
+				_setUniformDefaultValue<std::array<Util::Color::Rgba, 256>>( descUniform, p_descProgram, p_descPass );
 				break;
 			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}
@@ -662,7 +762,8 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_PRIMITIVE, const GLenum> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },
 																		   { E_PRIMITIVE::LINES, GL_LINES },
-																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES } };
+																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES },
+																		   { E_PRIMITIVE::PATCHES, GL_PATCHES } };
 
 	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormats = {
 		{ E_FORMAT::RGB16F, GL_RGB16F },
@@ -719,4 +820,8 @@ namespace VTX::Renderer::Context
 			{ E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
 			{ E_TYPE::MAT3F, sizeof( Mat3f ) },	  { E_TYPE::MAT4F, sizeof( Mat4f ) },
 			{ E_TYPE::COLOR4, sizeof( Vec4f ) },  { E_TYPE::COLOR4_256, 256 * sizeof( Vec4f ) } };
+
+	std::map<const E_FORMAT, const E_TYPE> OpenGL45::_mapFormatTypes = { { E_FORMAT::RG32UI, E_TYPE::UINT } };
+
+	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormatInternalTypes = { { E_FORMAT::RG32UI, GL_RG_INTEGER } };
 } // namespace VTX::Renderer::Context

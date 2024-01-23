@@ -5,7 +5,7 @@
 
 namespace VTX::Core::ChemDB::SecondaryStructure
 {
-	enum class TYPE : int
+	enum class TYPE : uchar
 	{
 		HELIX_ALPHA_RIGHT = 0,
 		HELIX_ALPHA_LEFT  = 1,
@@ -15,9 +15,13 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		STRAND			  = 5,
 		TURN			  = 6,
 		COIL			  = 7,
-		COUNT
+		UNKNOWN
 	};
 
+	TYPE		pdbFormattedToEnum( const std::string & p_str );
+	std::string enumToPdbFormatted( const TYPE p_enum );
+
+	// TODO: move to color layout.
 	inline static const Util::Color::Rgba COLORS_JMOL[] = { Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
 															Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
 															Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT

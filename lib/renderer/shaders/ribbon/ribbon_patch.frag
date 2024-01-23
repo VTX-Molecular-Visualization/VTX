@@ -21,7 +21,6 @@ void main()
 	}
 
 	vec3 normal = inData.normal;
-	vec4 color	= inData.color;
 	if ( dot( normal, inData.viewPosition ) > 0.f )
 	{
 		normal = -normal;
@@ -29,6 +28,6 @@ void main()
 
 	// Output data.
 	packData( inData.viewPosition, normal, inData.selection, outDataPacked );
-	outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
+	outColor			  = inData.color; // w = specular shininess.
 	outId				  = uvec2( inData.id, 0 );
 }

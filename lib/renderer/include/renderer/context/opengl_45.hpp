@@ -34,7 +34,7 @@ namespace VTX::Renderer::Context
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		template<typename T>
-		inline void setUniform( T & p_value, const std::string & p_key )
+		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
@@ -83,6 +83,23 @@ namespace VTX::Renderer::Context
 
 		inline void compileShaders() const { _programManager->compileShaders(); }
 
+		void snapshot(
+			std::vector<uchar> &   p_image,
+			const RenderQueue &	   p_renderQueue,
+			const RenderFunction & p_renderFunction,
+			const size_t		   p_width,
+			const size_t		   p_height
+		);
+
+		void getTextureData(
+			std::any &			   p_textureData,
+			const size_t		   p_x,
+			const size_t		   p_y,
+			const std::string &	   p_pass,
+			const E_CHANNEL_OUTPUT p_channel
+
+		) const;
+
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
 		static std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments;
@@ -92,6 +109,8 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FILTERING, const GLint>		  _mapFilterings;
 		static std::map<const E_TYPE, const GLenum>			  _mapTypes;
 		static std::map<const E_TYPE, const size_t>			  _mapTypeSizes;
+		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
+		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;

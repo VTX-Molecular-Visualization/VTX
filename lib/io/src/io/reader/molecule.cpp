@@ -1,5 +1,6 @@
 #include "io/reader/molecule.hpp"
 #include "io/struct/molecule_configuration.hpp"
+#include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
 #include <magic_enum.hpp>
@@ -128,6 +129,14 @@ namespace VTX::IO::Reader
 			//}
 
 			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
+
+			const std::string secondaryStructure
+				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" );
+			if ( secondaryStructure != "" )
+			{
+				p_molecule.residueSecondaryStructureTypes[ residueIdx ]
+					= ChemDB::SecondaryStructure::pdbFormattedToEnum( secondaryStructure );
+			}
 
 			mapResidueBonds.emplace( residueIdx, std::vector<size_t>() );
 			mapResidueExtraBonds.emplace( residueIdx, std::vector<size_t>() );
