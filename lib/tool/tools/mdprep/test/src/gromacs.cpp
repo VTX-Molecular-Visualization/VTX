@@ -97,7 +97,7 @@ namespace
 
 	void check_pdb( test_context p_context )
 	{
-		VTX::Tool::Mdprep::Gromacs::submit_gromacs_command(
+		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand(
 			VTX::Tool::Mdprep::executable_directory() / VTX::Tool::Mdprep::Gromacs::default_gmx_binary_relative_path(),
 			p_context.args
 		);
@@ -112,14 +112,14 @@ namespace
 
 } // namespace
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submit_gromacs_command][pdb2gmx][1ubq]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsCommand][pdb2gmx][1ubq]" )
 {
 	VTX::test::setup_env f;
 	check_pdb( setup_test_context( "1ubq" ) );
 }
 TEST_CASE(
 	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submit_gromacs_command][pdb2gmx][1ubq][interactive][full][lys]"
+	"[submitGromacsCommand][pdb2gmx][1ubq][interactive][full][lys]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -131,7 +131,7 @@ TEST_CASE(
 }
 TEST_CASE(
 	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submit_gromacs_command][pdb2gmx][1ubq][interactive][default]"
+	"[submitGromacsCommand][pdb2gmx][1ubq][interactive][default]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -142,7 +142,7 @@ TEST_CASE(
 	check_pdb( context_data );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submit_gromacs_command][pdb2gmx][8hu4][slow]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submitGromacsCommand][pdb2gmx][8hu4][slow]" )
 {
 	VTX::test::setup_env f;
 	check_pdb( setup_test_context( "8hu4.nolig" ) );

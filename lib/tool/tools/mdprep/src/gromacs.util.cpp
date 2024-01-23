@@ -218,7 +218,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return;
 	}
 
-	parse_report parse_pdb2gmx_user_script( const std::string_view & p_script, interactive_arguments & p_args ) noexcept
+	parse_report parse_pdb2gmx_user_script( const std::string_view & p_script, InteractiveArguments & p_args ) noexcept
 	{
 		parse_report out;
 

@@ -102,10 +102,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 {
 
 	// organized version of the arguments to be used during interactive gromacs step
-	struct interactive_arguments
+	struct InteractiveArguments
 	{
 		std::unordered_map<interactive_id, std::string> kw_v;
-		bool operator==( const interactive_arguments & ) const noexcept = default;
+		bool operator==( const InteractiveArguments & ) const noexcept = default;
 	};
 	struct pdb2gmx_instructions
 	{
@@ -114,7 +114,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		fs::path							 output_dir;
 		std::string							 root_file_name;
 		fs::path							 input_pdb;
-		std::optional<interactive_arguments> custom_parameter; // needed for adding -his ...
+		std::optional<InteractiveArguments> custom_parameter; // needed for adding -his ...
 
 		water_model water = water_model::tip3p;
 	};
@@ -162,7 +162,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parse_report parse_pdb2gmx_user_script( const std::string_view &, interactive_arguments & ) noexcept;
+	parse_report parse_pdb2gmx_user_script( const std::string_view &, InteractiveArguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

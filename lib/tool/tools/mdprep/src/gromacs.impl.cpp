@@ -79,7 +79,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 
 	} // namespace
-	bool is_waiting_inputs( const std::string & p_stdout ) noexcept
+	bool isWaitingInputs( const std::string & p_stdout ) noexcept
 	{
 		return !p_stdout.empty() && p_stdout.ends_with( generic_waiting_pattern );
 	}

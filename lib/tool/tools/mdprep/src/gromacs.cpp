@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			qbuf = p_proc.readAllStandardOutput();
 			fill_missing_string( qbuf, sbuf);
 
-			if (is_waiting_inputs(sbuf))
+			if (isWaitingInputs(sbuf))
 			{
 				p_args.stdout_ += sbuf;
 
@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		} while ( !p_finished );
 	}
 
-	void submit_gromacs_command( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args )
+	void submitGromacsCommand( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args )
 	{
 		QString		pgm { p_gmx_exe.string().data() };
 		QStringList qt_args;

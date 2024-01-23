@@ -254,7 +254,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][interactive
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - empty", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args, expected_args;
+	InteractiveArguments args, expected_args;
 	const char *		  script = "";
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
@@ -264,8 +264,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - empty", "[pdb2gmx][par
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line", "[pdb2gmx][parse_pdb2gmx_user_script][one_line]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0\n";
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::arg, 54 }, "0" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
@@ -279,8 +279,8 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0";
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::arg, 54 }, "0" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
@@ -291,8 +291,8 @@ TEST_CASE(
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - 1", "[pdb2gmx][parse_pdb2gmx_user_script][1]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script
 		= "A LYS222 LYN\n"
 		  "B LYS8 LYS\n"
@@ -313,8 +313,8 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script
 		= "A LYS222 LYN\r\n"
 		  "B LYS8 LYS\r\n"
@@ -334,15 +334,15 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script = "A HIS8 hie\r\n";
 	expected_args.kw_v.emplace( interactive_id { 'A', interactive_keyword::his, 8 }, "hie" );
 	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
 
 	CHECK( args == expected_args );
 }
-void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::interactive_arguments & args ) noexcept
+void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::InteractiveArguments & args ) noexcept
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	const char * script
@@ -369,8 +369,8 @@ void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::interactive_argumen
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][parse_pdb2gmx_user_script][each]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
-	interactive_arguments expected_args;
+	InteractiveArguments args;
+	InteractiveArguments expected_args;
 	const char *		  script = nullptr;
 
 	data_each( script, expected_args );
@@ -383,7 +383,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][pars
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 1", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
+	InteractiveArguments args;
 	const char *		  script = "hehe lol";
 
 	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
@@ -394,7 +394,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 1", "[pdb2gmx][p
 TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 2", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
+	InteractiveArguments args;
 	const char *		  script = "A ss111 0 B ter112 1";
 
 	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
@@ -408,7 +408,7 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
+	InteractiveArguments args;
 	const char *		  script
 		= "B te112 1\n"
 		  "C lys113 protonated\n";
@@ -424,7 +424,7 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	interactive_arguments args;
+	InteractiveArguments args;
 	const char *		  script
 		= "BA te112 1\n"
 		  "C lys113 protonated\n";

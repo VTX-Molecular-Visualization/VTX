@@ -11,10 +11,10 @@ These functions will be used internally to interact with gromacs
 namespace VTX::Tool::Mdprep::Gromacs
 {
 	// Parse the input string in order to determine if gromacs is actually waiting for user input
-	bool is_waiting_inputs( const std::string & p_stdout ) noexcept;
+	bool isWaitingInputs( const std::string & p_stdout ) noexcept;
 
 	struct interactive_id;
-	struct interactive_arguments;
+	struct InteractiveArguments;
 
 	// Parse the input string to figure what piece of information gromacs expect
 	// Returns false if nothing could be figured out
