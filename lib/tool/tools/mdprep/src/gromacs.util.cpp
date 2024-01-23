@@ -71,7 +71,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			auto filename = fs_element.path().filename().string();
 			if ( filename.ends_with( g_ff_suffix ) )
 			{
-				out.emplace_back( forcefield { .forcefield_folder_path = fs_element.path().string() } );
+				out.emplace_back( forcefield { .forcefieldFolderPath = fs_element.path().string() } );
 				continue;
 			}
 		}
@@ -166,10 +166,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 	std::string_view forcefield::get_name() const
 	{
 		size_t filename_pos
-			= this->forcefield_folder_path.find( fs::path( this->forcefield_folder_path ).filename().string() );
-		size_t extension_pos = this->forcefield_folder_path.size() - ( sizeof( g_ff_suffix ) - 1 );
-		return std::string_view { std::next( this->forcefield_folder_path.begin(), filename_pos ),
-								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
+			= this->forcefieldFolderPath.find( fs::path( this->forcefieldFolderPath ).filename().string() );
+		size_t extension_pos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
+		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filename_pos ),
+								  std::next( this->forcefieldFolderPath.begin(), extension_pos ) };
 	}
 
 	void parse( const std::string & p_user_str, InteractiveKeyword & p_out ) noexcept

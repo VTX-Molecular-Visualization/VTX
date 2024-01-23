@@ -29,7 +29,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	struct forcefield
 	{
-		std::string forcefield_folder_path; // Absolute path of the forcefield folder. Type is as string so string_view
+		std::string forcefieldFolderPath; // Absolute path of the forcefield folder. Type is as string so string_view
 											// can be use as a name.
 		std::string_view get_name() const;	// Name to show to the user and to give gromacs
 	};
