@@ -40,9 +40,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Forcefields will be detected by checking child directories with pattern [forcefield name].ff
 	//    Therefore, if there is some folders with this pattern in the input directory, this function will return
 	//    misleading forcefield object
-	std::vector<forcefield> list_forcefields( const fs::path & );
+	std::vector<forcefield> listForcefields( const fs::path & );
 
-	enum class water_model
+	enum class E_WATER_MODEL
 	{
 		none,
 		spc,
@@ -52,7 +52,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		tip5p,
 		tips3p
 	};
-	const char * string( const water_model & ) noexcept;
+	const char * string( const E_WATER_MODEL & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
 	enum class InteractiveKeyword
@@ -116,7 +116,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		fs::path							input_pdb;
 		std::optional<InteractiveArguments> custom_parameter; // needed for adding -his ...
 
-		water_model water = water_model::tip3p;
+		E_WATER_MODEL water = E_WATER_MODEL::tip3p;
 	};
 	struct GromacsCommandArgs;
 

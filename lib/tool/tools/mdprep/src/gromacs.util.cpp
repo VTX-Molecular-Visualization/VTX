@@ -54,7 +54,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		qputenv( "GMXLIB", env_arg );
 	}
 
-	std::vector<forcefield> list_forcefields( const fs::path & p_data_dir )
+	std::vector<forcefield> listForcefields( const fs::path & p_data_dir )
 	{
 		if ( !fs::is_directory( p_data_dir ) )
 		{
@@ -79,17 +79,17 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return out;
 	}
 
-	const char * string( const water_model & p_w ) noexcept
+	const char * string( const E_WATER_MODEL & p_w ) noexcept
 	{
 		switch ( p_w )
 		{
-		case VTX::Tool::Mdprep::Gromacs::water_model::none: return "none";
-		case VTX::Tool::Mdprep::Gromacs::water_model::spc: return "spc";
-		case VTX::Tool::Mdprep::Gromacs::water_model::spce: return "spce";
-		case VTX::Tool::Mdprep::Gromacs::water_model::tip3p: return "tip3p";
-		case VTX::Tool::Mdprep::Gromacs::water_model::tip4p: return "tip4p";
-		case VTX::Tool::Mdprep::Gromacs::water_model::tip5p: return "tip5p";
-		case VTX::Tool::Mdprep::Gromacs::water_model::tips3p: return "tips3p";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::none: return "none";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spc: return "spc";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spce: return "spce";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::tip3p: return "tip3p";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::tip4p: return "tip4p";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::tip5p: return "tip5p";
+		case VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::tips3p: return "tips3p";
 		default: break;
 		}
 		return "";

@@ -17,14 +17,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
 	CHECK( fs::is_directory( dir ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - list_forcefields empty_dir", "[list_forcefields][empty_dir]" )
+TEST_CASE( "VTX_TOOL_MdPrep - listForcefields empty_dir", "[listForcefields][empty_dir]" )
 {
 	VTX::test::setup_env f;
 
 	// tests empty directory scenario
 	const fs::path dir = fs::temp_directory_path();
 	fs::create_directories( dir );
-	CHECK( VTX::Tool::Mdprep::Gromacs::list_forcefields( dir ).empty() );
+	CHECK( VTX::Tool::Mdprep::Gromacs::listForcefields( dir ).empty() );
 }
 
 bool is_ff_in_list( const std::vector<VTX::Tool::Mdprep::Gromacs::forcefield> & list, std::string_view name )
@@ -37,14 +37,14 @@ bool is_ff_in_list( const std::vector<VTX::Tool::Mdprep::Gromacs::forcefield> & 
 		   != list.end();
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - list_forcefields top_dir", "[list_forcefields][top_dir]" )
+TEST_CASE( "VTX_TOOL_MdPrep - listForcefields top_dir", "[listForcefields][top_dir]" )
 {
 	VTX::test::setup_env f;
 
 	// tests top directory (the default one provided by gromacs) directory scenario
 	//  this test is designed to be still true if gromacs maintainers add forcefields.
 	//  therefore,the size of the collection shall not be tested
-	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields(
+	auto ffs = VTX::Tool::Mdprep::Gromacs::listForcefields(
 		VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultFfDirectoryRelativePath()
 	);
 	CHECK( !ffs.empty() );
@@ -67,14 +67,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - list_forcefields top_dir", "[list_forcefields][top
 	CHECK( !is_ff_in_list( ffs, "poney" ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - Test", "[list_forcefields][some_dir]" )
+TEST_CASE( "VTX_TOOL_MdPrep - Test", "[listForcefields][some_dir]" )
 {
 	VTX::test::setup_env f;
 
 	// tests directory with something else than forcefield in it
 	CHECK( !fs::is_empty( VTX::Tool::Mdprep::executableDirectory() ) );
 
-	auto ffs = VTX::Tool::Mdprep::Gromacs::list_forcefields( VTX::Tool::Mdprep::executableDirectory() );
+	auto ffs = VTX::Tool::Mdprep::Gromacs::listForcefields( VTX::Tool::Mdprep::executableDirectory() );
 	CHECK( ffs.empty() );
 }
 
@@ -96,7 +96,7 @@ namespace VTX::test
 		f.instructions.forcefields.emplace_back( "./data/forcefield2.ff" );
 		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
 		f.instructions.forcefield_index = 1;
-		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::water_model::spce;
+		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spce;
 		f.instructions.output_dir		= VTX::Tool::Mdprep::executableDirectory() / f.output_dir_name;
 		f.instructions.input_pdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
 		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
