@@ -98,15 +98,15 @@ namespace VTX::test
 		f.instructions.forcefieldIndex = 1;
 		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spce;
 		f.instructions.outputDir		= VTX::Tool::Mdprep::executableDirectory() / f.outputDir_name;
-		f.instructions.input_pdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
-		f.instructions.root_file_name	= f.instructions.input_pdb.filename().string();
+		f.instructions.inputPdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
+		f.instructions.rootFileName	= f.instructions.inputPdb.filename().string();
 
 		// I kind of re-do the implementation of convert here, but I guess that if I do it twice, it is half the chance
 		// of doing a mistake ?
 		f.expected_args.arguments.push_back( "pdb2gmx" );
 		f.expected_args.arguments.push_back( "-f" );
-		f.expected_args.arguments.push_back( f.instructions.input_pdb.string() );
-		std::string input_root_name = f.instructions.input_pdb.filename().string();
+		f.expected_args.arguments.push_back( f.instructions.inputPdb.string() );
+		std::string input_root_name = f.instructions.inputPdb.filename().string();
 		f.expected_args.arguments.push_back( "-o" );
 		f.expected_args.arguments.push_back( ( f.instructions.outputDir / ( input_root_name + ".gro" ) ).string() );
 		f.expected_args.arguments.push_back( "-p" );
@@ -155,7 +155,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_input", "[convert][pdb2gmx]
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 
-	data.instructions.input_pdb = "";
+	data.instructions.inputPdb = "";
 
 	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
@@ -175,11 +175,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_output", "[convert][pdb2gmx
 
 	// This design might be anoying as it is tightly coupled with the implementation of convert. I might want to change
 	// that in the future to have a more comprehensive way to retrieve output argument indexes.
-	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 4 ) } ) );
-	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 6 ) } ) );
-	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 8 ) } ) );
-	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 10 ) } ) );
-	CHECK( share_same_parent( data.instructions.input_pdb, { args.arguments.at( 12 ) } ) );
+	CHECK( share_same_parent( data.instructions.inputPdb, { args.arguments.at( 4 ) } ) );
+	CHECK( share_same_parent( data.instructions.inputPdb, { args.arguments.at( 6 ) } ) );
+	CHECK( share_same_parent( data.instructions.inputPdb, { args.arguments.at( 8 ) } ) );
+	CHECK( share_same_parent( data.instructions.inputPdb, { args.arguments.at( 10 ) } ) );
+	CHECK( share_same_parent( data.instructions.inputPdb, { args.arguments.at( 12 ) } ) );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - correct_instruction", "[convert][pdb2gmx][correct_instruction]" )
@@ -196,7 +196,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 	VTX::Tool::Mdprep::Gromacs::InteractiveId id { 'A', VTX::Tool::Mdprep::Gromacs::E_INTERACTIVE_KEYWORD::none, 12 };
-	data.instructions.custom_parameter.emplace();
+	data.instructions.customParameter.emplace();
 
 	data.expected_args.arguments.push_back( "" );
 	for ( int kw_idx = 0; kw_idx < static_cast<int>( VTX::Tool::Mdprep::Gromacs::E_INTERACTIVE_KEYWORD::COUNT );
@@ -205,8 +205,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 		VTX::Tool::Mdprep::Gromacs::E_INTERACTIVE_KEYWORD kw
 			= static_cast<VTX::Tool::Mdprep::Gromacs::E_INTERACTIVE_KEYWORD>( kw_idx );
 		id.kw = kw;
-		data.instructions.custom_parameter->kwValue.clear();
-		data.instructions.custom_parameter->kwValue.insert( { id, "0" } );
+		data.instructions.customParameter->kwValue.clear();
+		data.instructions.customParameter->kwValue.insert( { id, "0" } );
 		data.expected_args.arguments.back() = std::string( "-" ) += VTX::Tool::Mdprep::Gromacs::string( kw );
 
 		VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
@@ -215,7 +215,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 	}
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][InteractiveId][hash]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript", "[pdb2gmx][InteractiveId][hash]" )
 {
 	// We want to test if the hash function for InteractiveId datastruct gives unique hash with plausible inputs
 	const size_t MAX_RESID = 1001;
@@ -251,31 +251,31 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script", "[pdb2gmx][Interactive
 	}
 	CHECK( duplicate_found == false );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - empty", "[pdb2gmx][parse_pdb2gmx_user_script][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - empty", "[pdb2gmx][parsePdb2gmxUserScript][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args, expected_args;
 	const char *		  script = "";
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line", "[pdb2gmx][parse_pdb2gmx_user_script][one_line]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line", "[pdb2gmx][parsePdb2gmxUserScript][one_line]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args;
 	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0\n";
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::arg, 54 }, "0" );
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - one line, no line feed",
-	"[pdb2gmx][parse_pdb2gmx_user_script][one_line]"
+	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line, no line feed",
+	"[pdb2gmx][parsePdb2gmxUserScript][one_line]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -283,12 +283,12 @@ TEST_CASE(
 	InteractiveArguments expected_args;
 	const char *		  script = "A ARG54 0";
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::arg, 54 }, "0" );
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - 1", "[pdb2gmx][parse_pdb2gmx_user_script][1]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - 1", "[pdb2gmx][parsePdb2gmxUserScript][1]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args;
@@ -302,14 +302,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - 1", "[pdb2gmx][parse_p
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 222 }, "LYN" );
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::his, 1 }, "1" );
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::his, 12 }, "HID" );
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - carriage_return",
-	"[pdb2gmx][parse_pdb2gmx_user_script][carriage_return]"
+	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - carriage_return",
+	"[pdb2gmx][parsePdb2gmxUserScript][carriage_return]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -324,13 +324,13 @@ TEST_CASE(
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 222 }, "LYN" );
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::his, 1 }, "1" );
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::his, 12 }, "HID" );
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - value_lower",
-	"[pdb2gmx][parse_pdb2gmx_user_script][value_lower]"
+	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - value_lower",
+	"[pdb2gmx][parsePdb2gmxUserScript][value_lower]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -338,7 +338,7 @@ TEST_CASE(
 	InteractiveArguments expected_args;
 	const char *		  script = "A HIS8 hie\r\n";
 	expected_args.kwValue.emplace( InteractiveId { 'A', E_INTERACTIVE_KEYWORD::his, 8 }, "hie" );
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
@@ -366,7 +366,7 @@ void data_each( const char *& s, VTX::Tool::Mdprep::Gromacs::InteractiveArgument
 	args.kwValue.emplace( InteractiveId { 'H', E_INTERACTIVE_KEYWORD::his, 118 }, "HIE" );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][parse_pdb2gmx_user_script][each]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - each", "[pdb2gmx][parsePdb2gmxUserScript][each]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args;
@@ -375,36 +375,36 @@ TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - each", "[pdb2gmx][pars
 
 	data_each( script, expected_args );
 
-	VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( args == expected_args );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 1", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 1", "[pdb2gmx][parsePdb2gmxUserScript][error]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args;
 	const char *		  script = "hehe lol";
 
-	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	auto report = VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error 2", "[pdb2gmx][parse_pdb2gmx_user_script][error]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 2", "[pdb2gmx][parsePdb2gmxUserScript][error]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	InteractiveArguments args;
 	const char *		  script = "A ss111 0 B ter112 1";
 
-	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	auto report = VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - error bad residue name",
-	"[pdb2gmx][parse_pdb2gmx_user_script][error]"
+	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error bad residue name",
+	"[pdb2gmx][parsePdb2gmxUserScript][error]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -413,14 +413,14 @@ TEST_CASE(
 		= "B te112 1\n"
 		  "C lys113 protonated\n";
 
-	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	auto report = VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_pdb2gmx_user_script - chain name too long",
-	"[pdb2gmx][parse_pdb2gmx_user_script][error]"
+	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - chain name too long",
+	"[pdb2gmx][parsePdb2gmxUserScript][error]"
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
@@ -429,7 +429,7 @@ TEST_CASE(
 		= "BA te112 1\n"
 		  "C lys113 protonated\n";
 
-	auto report = VTX::Tool::Mdprep::Gromacs::parse_pdb2gmx_user_script( script, args );
+	auto report = VTX::Tool::Mdprep::Gromacs::parsePdb2gmxUserScript( script, args );
 
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );

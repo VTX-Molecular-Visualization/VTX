@@ -112,9 +112,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::vector<forcefield>				forcefields;
 		size_t								forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
 		fs::path							outputDir;
-		std::string							root_file_name;
-		fs::path							input_pdb;
-		std::optional<InteractiveArguments> custom_parameter; // needed for adding -his ...
+		std::string							rootFileName;
+		fs::path							inputPdb;
+		std::optional<InteractiveArguments> customParameter; // needed for adding -his ...
 
 		E_WATER_MODEL water = E_WATER_MODEL::tip3p;
 	};
@@ -127,10 +127,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
 	void convert( const Pdb2gmxInstructions &, GromacsCommandArgs & ) noexcept;
 
-	struct solvate_instructions // WIP
+	struct solvateInstructions // WIP
 	{
-		fs::path				 input_gro;
-		fs::path				 output_gro;
+		fs::path				 inputGro;
+		fs::path				 outputGro;
 		std::array<double, 3ull> box { 0., 0., 0. };
 		double					 radius = 0.105;
 		double					 scale	= 0.57;
@@ -143,10 +143,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
 	//    If the output_gro is empty, will use the input filename root and append "solv"
-	void convert( const solvate_instructions &, GromacsCommandArgs & ) noexcept;
+	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept;
 
 	// Returned by the script parser to inform how the parsing went
-	struct parse_report
+	struct parseReport
 	{
 		bool		error	= false;
 		bool		warning = false;
@@ -162,7 +162,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parse_report parse_pdb2gmx_user_script( const std::string_view &, InteractiveArguments & ) noexcept;
+	parseReport parsePdb2gmxUserScript( const std::string_view &, InteractiveArguments & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

@@ -101,21 +101,21 @@ namespace VTX::Tool::Mdprep::Gromacs
 			return;
 		if ( p_in.forcefieldIndex >= p_in.forcefields.size() )
 			return;
-		if ( p_in.input_pdb.empty() )
+		if ( p_in.inputPdb.empty() )
 			return;
-		if ( !p_in.input_pdb.has_filename() )
+		if ( !p_in.inputPdb.has_filename() )
 			return;
 
 		fs::path outputDir = p_in.outputDir;
 		if ( outputDir.empty() )
-			outputDir = p_in.input_pdb.parent_path();
+			outputDir = p_in.inputPdb.parent_path();
 		fs::create_directories( outputDir );
 		p_out.arguments.clear();
 
 		p_out.arguments.push_back( "pdb2gmx" );
 		p_out.arguments.push_back( "-f" );
-		p_out.arguments.push_back( p_in.input_pdb.string() );
-		std::string input_root_name = p_in.input_pdb.filename().string();
+		p_out.arguments.push_back( p_in.inputPdb.string() );
+		std::string input_root_name = p_in.inputPdb.filename().string();
 		p_out.arguments.push_back( "-o" );
 		p_out.arguments.push_back( ( outputDir / ( input_root_name + ".gro" ) ).string() );
 		p_out.arguments.push_back( "-p" );
@@ -131,11 +131,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( "-water" );
 		p_out.arguments.push_back( string( p_in.water ) );
 
-		if ( p_in.custom_parameter.has_value() )
+		if ( p_in.customParameter.has_value() )
 		{
 			std::set<E_INTERACTIVE_KEYWORD> seen_kw;
-			p_out.interactiveSettings = p_in.custom_parameter;
-			for ( auto & it : p_in.custom_parameter->kwValue )
+			p_out.interactiveSettings = p_in.customParameter;
+			for ( auto & it : p_in.customParameter->kwValue )
 			{
 				if ( seen_kw.contains( it.first.kw ) )
 					continue;
@@ -144,7 +144,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 		}
 	}
-	void convert( const solvate_instructions &, GromacsCommandArgs & ) noexcept {}
+	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept {}
 
 	const char * string( const E_INTERACTIVE_KEYWORD & p_kw ) noexcept
 	{
@@ -218,9 +218,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return;
 	}
 
-	parse_report parse_pdb2gmx_user_script( const std::string_view & p_script, InteractiveArguments & p_args ) noexcept
+	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, InteractiveArguments & p_args ) noexcept
 	{
-		parse_report out;
+		parseReport out;
 
 		p_args.kwValue.clear();
 		if ( p_script.empty() )
