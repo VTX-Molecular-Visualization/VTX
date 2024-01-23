@@ -127,7 +127,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( "-n" );
 		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
 		p_out.arguments.push_back( "-ff" );
-		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).get_name().data() );
+		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).getName().data() );
 		p_out.arguments.push_back( "-water" );
 		p_out.arguments.push_back( string( p_in.water ) );
 
@@ -163,7 +163,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return "";
 	}
 
-	std::string_view forcefield::get_name() const
+	std::string_view forcefield::getName() const
 	{
 		size_t filename_pos
 			= this->forcefieldFolderPath.find( fs::path( this->forcefieldFolderPath ).filename().string() );

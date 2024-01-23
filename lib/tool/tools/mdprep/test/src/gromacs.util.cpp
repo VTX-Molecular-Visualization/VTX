@@ -32,7 +32,7 @@ bool is_ff_in_list( const std::vector<VTX::Tool::Mdprep::Gromacs::forcefield> & 
 	return std::find_if(
 			   list.begin(),
 			   list.end(),
-			   [ & ]( const VTX::Tool::Mdprep::Gromacs::forcefield & ff ) { return ff.get_name() == name; }
+			   [ & ]( const VTX::Tool::Mdprep::Gromacs::forcefield & ff ) { return ff.getName() == name; }
 		   )
 		   != list.end();
 }
@@ -120,7 +120,7 @@ namespace VTX::test
 		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".ndx" ) ).string() );
 		f.expected_args.arguments.push_back( "-ff" );
 		f.expected_args.arguments.push_back(
-			f.instructions.forcefields.at( f.instructions.forcefield_index ).get_name().data()
+			f.instructions.forcefields.at( f.instructions.forcefield_index ).getName().data()
 		);
 		f.expected_args.arguments.push_back( "-water" );
 		f.expected_args.arguments.push_back( VTX::Tool::Mdprep::Gromacs::string( f.instructions.water ) );
