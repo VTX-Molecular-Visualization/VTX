@@ -7,60 +7,61 @@
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-	void fill_missing_string( QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
-
-	void interactive_process_management( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
+	namespace
 	{
-		QByteArray	   qbuf;
-		std::string	   sbuf;
-		const uint64_t maximum_waiting_iteration_number = 10000;
-		uint64_t	   current_iteration_number			= 0;
 
-		while ( !p_finished )
+		void fillMissingString( QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
+
+		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			if ( p_proc.isReadable() == false || p_proc.isWritable() == false )
+			QByteArray	   qBuf;
+			std::string	   sBuf;
+			const uint64_t maximumWaitingIterationNumber = 10000;
+			uint64_t	   currentIterationNumber		 = 0;
+
+			while ( !p_finished )
 			{
-				std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
-				continue;
+				if ( p_proc.isReadable() == false || p_proc.isWritable() == false )
+				{
+					std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+					continue;
+				}
+
+				qBuf = p_proc.readAllStandardError();
+				fillMissingString( qBuf, p_args.stderr_ );
+
+				qBuf = p_proc.readAllStandardOutput();
+				fillMissingString( qBuf, sBuf );
+
+				if ( isWaitingInputs( sBuf ) )
+				{
+					p_args.stdout_ += sBuf;
+				}
 			}
-
-			qbuf = p_proc.readAllStandardError();
-			fill_missing_string( qbuf, p_args.stderr_ );
-
-			qbuf = p_proc.readAllStandardOutput();
-			fill_missing_string( qbuf, sbuf);
-
-			if (isWaitingInputs(sbuf))
-			{
-				p_args.stdout_ += sbuf;
-
-			}
-	
-
 		}
-	}
-	void simple_process_management( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
-	{
-		QByteArray buf;
-
-		do
+		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			p_proc.waitForReadyRead( 10 );
-			buf = p_proc.readAllStandardError();
-			fill_missing_string( buf, p_args.stderr_ );
+			QByteArray buf;
 
-			buf = p_proc.readAllStandardOutput();
-			fill_missing_string( buf, p_args.stdout_ );
+			do
+			{
+				p_proc.waitForReadyRead( 10 );
+				buf = p_proc.readAllStandardError();
+				fillMissingString( buf, p_args.stderr_ );
 
-		} while ( !p_finished );
-	}
+				buf = p_proc.readAllStandardOutput();
+				fillMissingString( buf, p_args.stdout_ );
 
-	void submitGromacsCommand( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args )
+			} while ( !p_finished );
+		}
+	} // namespace
+
+	void submitGromacsCommand( const fs::path & p_gmxExe, GromacsCommandArgs & p_args )
 	{
-		QString		pgm { p_gmx_exe.string().data() };
-		QStringList qt_args;
+		QString		pgm { p_gmxExe.string().data() };
+		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
-			qt_args << QString( arg.c_str() );
+			qtArgs << QString( arg.c_str() );
 
 		std::string tmp;
 		for ( auto & arg : p_args.arguments )
@@ -71,13 +72,13 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		proc.connect( &proc, &QProcess::finished, [ & ] { finished = true; } );
 		proc.setProgram( pgm );
-		proc.setArguments( qt_args );
+		proc.setArguments( qtArgs );
 		proc.start();
 		proc.waitForStarted( -1 );
 
 		if ( p_args.interactiveSettings.has_value() )
-			interactive_process_management( proc, finished, p_args );
+			interactiveProcessManagement( proc, finished, p_args );
 		else
-			simple_process_management( proc, finished, p_args );
+			simpleProcessManagement( proc, finished, p_args );
 	}
 } // namespace VTX::Tool::Mdprep::Gromacs

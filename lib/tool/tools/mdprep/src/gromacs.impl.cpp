@@ -14,9 +14,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		// Return current chain being parametrized
 		std::string get_chain( const std::string & p_stdout ) noexcept
 		{
-			const std::regex chain_letter { "Processing chain [0-9]+ '([A-Z]+)'" };
+			const std::regex chainLetter { "Processing chain [0-9]+ '([A-Z]+)'" };
 			std::string		 out;
-			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), chain_letter );
+			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), chainLetter );
 				  it != std::sregex_iterator();
 				  ++it )
 			{
@@ -24,19 +24,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 			return out;
 		}
-		E_INTERACTIVE_KEYWORD get_keyword( const std::string & last_input_asking_message ) noexcept
+		E_INTERACTIVE_KEYWORD get_keyword( const std::string & lastInputAskingMessage ) noexcept
 		{
-			if ( last_input_asking_message.find( "LYSINE" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "LYSINE" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::lys;
-			if ( last_input_asking_message.find( "ARGININE" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "ARGININE" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::arg;
-			if ( last_input_asking_message.find( "ASPARTIC ACID" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "ASPARTIC ACID" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::asp;
-			if ( last_input_asking_message.find( "GLUTAMIC ACID" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "GLUTAMIC ACID" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::glu;
-			if ( last_input_asking_message.find( "GLUTAMINE" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "GLUTAMINE" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::gln;
-			if ( last_input_asking_message.find( "HISTIDINE" ) != std::string::npos )
+			if ( lastInputAskingMessage.find( "HISTIDINE" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::his;
 			return E_INTERACTIVE_KEYWORD::none;
 		}
