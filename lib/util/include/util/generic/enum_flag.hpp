@@ -38,7 +38,18 @@ namespace VTX
 				return *this;
 			}
 
-			bool operator==( const ENUM & p_other ) const { return ENUM( _enum ) == p_other; }
+			friend bool operator==( const EnumFlag<T> && p_lhs, const ENUM && p_rhs )
+			{
+				return int( p_lhs._enum ) == int( p_rhs );
+			}
+			friend bool operator==( const ENUM && p_lhs, const EnumFlag<T> && p_rhs )
+			{
+				return int( p_lhs ) == int( p_rhs._enum );
+			}
+			friend bool operator==( const EnumFlag<T> && p_lhs, const EnumFlag<T> && p_rhs )
+			{
+				return int( p_lhs._enum ) == int( p_lhs._enum );
+			}
 			bool operator!=( const ENUM & p_other ) const { return ENUM( _enum ) != p_other; }
 
 			EnumFlag   operator&( const EnumFlag & p_rhs ) const { return EnumFlag( _enum & p_rhs._enum ); }
