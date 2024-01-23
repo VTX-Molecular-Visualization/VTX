@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * string( const water_model & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
-	enum class interactive_keyword
+	enum class InteractiveKeyword
 	{
 		none,
 		ss,
@@ -68,13 +68,13 @@ namespace VTX::Tool::Mdprep::Gromacs
 		his,
 		COUNT
 	};
-	const char * string( const interactive_keyword & ) noexcept;
+	const char * string( const InteractiveKeyword & ) noexcept;
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct InteractiveId
 	{
 		char				chain = 0x00i8; // Value of 0x00 means any chain
-		interactive_keyword kw	  = interactive_keyword::none;
+		InteractiveKeyword kw	  = InteractiveKeyword::none;
 		uint32_t			num	  = 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
 		bool operator==( const InteractiveId & ) const noexcept = default;

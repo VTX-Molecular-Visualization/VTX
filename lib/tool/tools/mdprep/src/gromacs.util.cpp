@@ -133,7 +133,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		if ( p_in.custom_parameter.has_value() )
 		{
-			std::set<interactive_keyword> seen_kw;
+			std::set<InteractiveKeyword> seen_kw;
 			p_out.interactive_settings = p_in.custom_parameter;
 			for ( auto & it : p_in.custom_parameter->kw_v )
 			{
@@ -146,18 +146,18 @@ namespace VTX::Tool::Mdprep::Gromacs
 	}
 	void convert( const solvate_instructions &, GromacsCommandArgs & ) noexcept {}
 
-	const char * string( const interactive_keyword & p_kw ) noexcept
+	const char * string( const InteractiveKeyword & p_kw ) noexcept
 	{
 		switch ( p_kw )
 		{
-		case interactive_keyword::ss: return "ss";
-		case interactive_keyword::ter: return "ter";
-		case interactive_keyword::lys: return "lys";
-		case interactive_keyword::arg: return "arg";
-		case interactive_keyword::asp: return "asp";
-		case interactive_keyword::glu: return "glu";
-		case interactive_keyword::gln: return "gln";
-		case interactive_keyword::his: return "his";
+		case InteractiveKeyword::ss: return "ss";
+		case InteractiveKeyword::ter: return "ter";
+		case InteractiveKeyword::lys: return "lys";
+		case InteractiveKeyword::arg: return "arg";
+		case InteractiveKeyword::asp: return "asp";
+		case InteractiveKeyword::glu: return "glu";
+		case InteractiveKeyword::gln: return "gln";
+		case InteractiveKeyword::his: return "his";
 		default: return "";
 		}
 		return "";
@@ -172,49 +172,49 @@ namespace VTX::Tool::Mdprep::Gromacs
 								  std::next( this->forcefield_folder_path.begin(), extension_pos ) };
 	}
 
-	void parse( const std::string & p_user_str, interactive_keyword & p_out ) noexcept
+	void parse( const std::string & p_user_str, InteractiveKeyword & p_out ) noexcept
 	{
 		if ( p_user_str == "HIS" )
 		{
-			p_out = interactive_keyword::his;
+			p_out = InteractiveKeyword::his;
 			return;
 		};
 		if ( p_user_str == "LYS" )
 		{
-			p_out = interactive_keyword::lys;
+			p_out = InteractiveKeyword::lys;
 			return;
 		};
 		if ( p_user_str == "ASP" )
 		{
-			p_out = interactive_keyword::asp;
+			p_out = InteractiveKeyword::asp;
 			return;
 		};
 		if ( p_user_str == "GLN" )
 		{
-			p_out = interactive_keyword::gln;
+			p_out = InteractiveKeyword::gln;
 			return;
 		};
 		if ( p_user_str == "GLU" )
 		{
-			p_out = interactive_keyword::glu;
+			p_out = InteractiveKeyword::glu;
 			return;
 		};
 		if ( p_user_str == "ARG" )
 		{
-			p_out = interactive_keyword::arg;
+			p_out = InteractiveKeyword::arg;
 			return;
 		};
 		if ( p_user_str == "TER" )
 		{
-			p_out = interactive_keyword::ter;
+			p_out = InteractiveKeyword::ter;
 			return;
 		};
 		if ( p_user_str == "SS" )
 		{
-			p_out = interactive_keyword::ss;
+			p_out = InteractiveKeyword::ss;
 			return;
 		};
-		p_out = interactive_keyword::none;
+		p_out = InteractiveKeyword::none;
 		return;
 	}
 
@@ -258,7 +258,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			std::string buf = match[ 2 ].str();
 			Util::String::toUpper( buf );
 			parse( buf, new_id.kw );
-			if ( new_id.kw == interactive_keyword::none )
+			if ( new_id.kw == InteractiveKeyword::none )
 			{
 				out.error	= true;
 				out.message = std::format(

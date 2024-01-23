@@ -20,11 +20,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Returns false if nothing could be figured out
 	bool parseExpectedKwArgument( const std::string & p_stdout, InteractiveId & ) noexcept;
 
-	enum class interactive_keyword;
+	enum class InteractiveKeyword;
 
 	// Returns the default string value to send to gromacs
 	//  When the user's script doesn't mention a kw requested by gromacs, we will fall back on these values
-	const char * get_default_value( const interactive_keyword & ) noexcept;
+	const char * get_default_value( const InteractiveKeyword & ) noexcept;
 
 	// Parse the first argument to figure what is the option number requested by gromacs to refer to the option
 	// specified in the second argument.
