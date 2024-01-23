@@ -102,7 +102,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return true;
 	}
 
-	const char * get_default_value( const InteractiveKeyword & p_kw ) noexcept
+	const char * getDefaultValue( const InteractiveKeyword & p_kw ) noexcept
 	{
 		switch ( p_kw )
 		{

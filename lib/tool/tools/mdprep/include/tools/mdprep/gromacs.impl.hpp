@@ -24,7 +24,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	// Returns the default string value to send to gromacs
 	//  When the user's script doesn't mention a kw requested by gromacs, we will fall back on these values
-	const char * get_default_value( const InteractiveKeyword & ) noexcept;
+	const char * getDefaultValue( const InteractiveKeyword & ) noexcept;
 
 	// Parse the first argument to figure what is the option number requested by gromacs to refer to the option
 	// specified in the second argument.
