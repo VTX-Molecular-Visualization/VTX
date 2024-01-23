@@ -29,7 +29,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Parse the first argument to figure what is the option number requested by gromacs to refer to the option
 	// specified in the second argument.
 	// Returns 0xff if the option number couldn't be figured
-	uint8_t parse_option_number( const std::string & p_stdout, const std::string_view & p_value );
+	uint8_t parseOptionNumber( const std::string & p_stdout, const std::string_view & p_value );
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

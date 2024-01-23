@@ -123,7 +123,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * g_not_protonated = "NOT PROTONATED";
 	const char * g_protonated	  = "PROTONATED";
 
-	uint8_t parse_option_number( const std::string & p_stdout, const std::string_view & p_value )
+	uint8_t parseOptionNumber( const std::string & p_stdout, const std::string_view & p_value )
 	{
 		if ( p_value.empty() )
 			return 0xffui8;
