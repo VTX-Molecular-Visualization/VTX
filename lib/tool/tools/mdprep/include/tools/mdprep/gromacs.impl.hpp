@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	// Parse the input string to figure what piece of information gromacs expect
 	// Returns false if nothing could be figured out
-	bool parse_expected_kw_argument( const std::string & p_stdout, InteractiveId & ) noexcept;
+	bool parseExpectedKwArgument( const std::string & p_stdout, InteractiveId & ) noexcept;
 
 	enum class interactive_keyword;
 

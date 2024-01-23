@@ -30,24 +30,24 @@ TEST_CASE( "VTX_TOOL_MdPrep - isWaitingInputs - anti-pattern", "[isWaitingInputs
 	CHECK( VTX::Tool::Mdprep::Gromacs::isWaitingInputs( stdout_ ) == false );
 }
 
-// testing parse_expected_kw_argument
+// testing parseExpectedKwArgument
 
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - empty", "[parse_expected_kw_argument][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - empty", "[parseExpectedKwArgument][empty]" )
 {
 	std::string								   stdout_ { "" };
 	VTX::Tool::Mdprep::Gromacs::InteractiveId kw;
 
-	CHECK( VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( stdout_, kw ) == false );
+	CHECK( VTX::Tool::Mdprep::Gromacs::parseExpectedKwArgument( stdout_, kw ) == false );
 }
 namespace
 {
-	bool check_parse_expected_kw_argument(
+	bool check_parseExpectedKwArgument(
 		std::string										   p_stdout,
 		const VTX::Tool::Mdprep::Gromacs::InteractiveId & p_expected_output
 	)
 	{
 		VTX::Tool::Mdprep::Gromacs::InteractiveId kw;
-		return VTX::Tool::Mdprep::Gromacs::parse_expected_kw_argument( p_stdout, kw )
+		return VTX::Tool::Mdprep::Gromacs::parseExpectedKwArgument( p_stdout, kw )
 			   && ( kw.chain == p_expected_output.chain && kw.kw == p_expected_output.kw
 					&& kw.num == p_expected_output.num );
 	}
@@ -85,90 +85,90 @@ namespace
 	}
 
 } // namespace
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple LYS", "[parse_expected_kw_argument][simple][LYS]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple LYS", "[parseExpectedKwArgument][simple][LYS]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainA, g_lys1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
 	) );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ARG", "[parse_expected_kw_argument][simple][ARG]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ARG", "[parseExpectedKwArgument][simple][ARG]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainA, g_arg1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::arg, 31 }
 	) );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple ASP", "[parse_expected_kw_argument][simple][ASP]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ASP", "[parseExpectedKwArgument][simple][ASP]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainA, g_asp1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::asp, 13 }
 	) );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLU", "[parse_expected_kw_argument][simple][GLU]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLU", "[parseExpectedKwArgument][simple][GLU]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainA, g_glu1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::glu, 6 }
 	) );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple GLN", "[parse_expected_kw_argument][simple][GLN]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLN", "[parseExpectedKwArgument][simple][GLN]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainA, g_gln1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::gln, 12 }
 	) );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - parse_expected_kw_argument - simple HIS", "[parse_expected_kw_argument][simple][HIS]" )
+TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple HIS", "[parseExpectedKwArgument][simple][HIS]" )
 {
 	char b[ 1000 ];
 	merge( b, g_chainB, g_his1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
 	) );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - LYS into HIS",
-	"[parse_expected_kw_argument][last_print_taken][LYS][HIS]"
+	"VTX_TOOL_MdPrep - parseExpectedKwArgument - last_print_taken - LYS into HIS",
+	"[parseExpectedKwArgument][last_print_taken][LYS][HIS]"
 )
 {
 	char b[ 1000 ];
 	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainB, g_lys1, g_his1 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 74 }
 	) );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - HIS 1 into HIS 2",
-	"[parse_expected_kw_argument][last_print_taken][HIS]"
+	"VTX_TOOL_MdPrep - parseExpectedKwArgument - last_print_taken - HIS 1 into HIS 2",
+	"[parseExpectedKwArgument][last_print_taken][HIS]"
 )
 {
 	char b[ 1000 ];
 	sprintf_s( b, "%s%s1\n%s", g_chainA, g_his1, g_his2 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_print_taken - HIS B into HIS A",
-	"[parse_expected_kw_argument][last_print_taken][HIS]"
+	"VTX_TOOL_MdPrep - parseExpectedKwArgument - last_print_taken - HIS B into HIS A",
+	"[parseExpectedKwArgument][last_print_taken][HIS]"
 )
 {
 	char b[ 1000 ];
 	sprintf_s( b, "%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'A', VTX::Tool::Mdprep::Gromacs::interactive_keyword::his, 81 }
 	) );
 }
 TEST_CASE(
-	"VTX_TOOL_MdPrep - parse_expected_kw_argument - last_chain_taken",
-	"[parse_expected_kw_argument][last_chain_taken]"
+	"VTX_TOOL_MdPrep - parseExpectedKwArgument - last_chain_taken",
+	"[parseExpectedKwArgument][last_chain_taken]"
 )
 {
 	char b[ 1000 ];
@@ -181,7 +181,7 @@ TEST_CASE(
 		g_chainB,
 		g_lys1
 	);
-	CHECK( check_parse_expected_kw_argument(
+	CHECK( check_parseExpectedKwArgument(
 		b, VTX::Tool::Mdprep::Gromacs::InteractiveId { 'B', VTX::Tool::Mdprep::Gromacs::interactive_keyword::lys, 40 }
 	) );
 }
