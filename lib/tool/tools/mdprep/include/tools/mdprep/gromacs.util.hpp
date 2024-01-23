@@ -22,10 +22,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const fs::path & defaultFfDirectoryRelativePath() noexcept;
 
 	// Return the position of gmx binary relative to the vtx executable folder
-	const fs::path & default_gmx_binary_relative_path() noexcept;
+	const fs::path & defaultGmxBinaryRelativePath() noexcept;
 
 	// Show gromacs where to look for forcefields
-	void declare_ff_directory( const fs::path & ) noexcept;
+	void declareFfDirectory( const fs::path & ) noexcept;
 
 	struct forcefield
 	{

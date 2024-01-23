@@ -43,11 +43,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
 	const fs::path & defaultFfDirectoryRelativePath() noexcept { return g_defaultFfDirectoryRelativePath; }
 
-	const fs::path g_default_gmx_binary_relative_path
+	const fs::path g_defaultGmxBinaryRelativePath
 		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx.exe" ).make_preferred();
-	const fs::path & default_gmx_binary_relative_path() noexcept { return g_default_gmx_binary_relative_path; }
+	const fs::path & defaultGmxBinaryRelativePath() noexcept { return g_defaultGmxBinaryRelativePath; }
 
-	void declare_ff_directory( const std::filesystem::path & p_path ) noexcept
+	void declareFfDirectory( const std::filesystem::path & p_path ) noexcept
 	{
 		std::string	   path_str = p_path.string();
 		QByteArrayView env_arg( path_str.data(), path_str.data() + path_str.size() );

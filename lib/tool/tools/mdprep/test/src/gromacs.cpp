@@ -88,7 +88,7 @@ namespace
 			"-water",
 			"tip3p",
 		} };
-		VTX::Tool::Mdprep::Gromacs::declare_ff_directory(
+		VTX::Tool::Mdprep::Gromacs::declareFfDirectory(
 			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultFfDirectoryRelativePath()
 		);
 
@@ -98,7 +98,7 @@ namespace
 	void check_pdb( test_context p_context )
 	{
 		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand(
-			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::default_gmx_binary_relative_path(),
+			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath(),
 			p_context.args
 		);
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
