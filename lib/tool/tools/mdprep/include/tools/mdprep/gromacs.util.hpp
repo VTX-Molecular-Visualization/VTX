@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * string( const E_WATER_MODEL & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
-	enum class InteractiveKeyword
+	enum class E_INTERACTIVE_KEYWORD
 	{
 		none,
 		ss,
@@ -68,14 +68,14 @@ namespace VTX::Tool::Mdprep::Gromacs
 		his,
 		COUNT
 	};
-	const char * string( const InteractiveKeyword & ) noexcept;
+	const char * string( const E_INTERACTIVE_KEYWORD & ) noexcept;
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct InteractiveId
 	{
-		char			   chain = 0x00i8; // Value of 0x00 means any chain
-		InteractiveKeyword kw	 = InteractiveKeyword::none;
-		uint32_t		   num	 = 0; // TODO : test TER and SS to see if keyword and number can apply to those
+		char				  chain = 0x00i8; // Value of 0x00 means any chain
+		E_INTERACTIVE_KEYWORD kw	= E_INTERACTIVE_KEYWORD::none;
+		uint32_t			  num	= 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
 		bool operator==( const InteractiveId & ) const noexcept = default;
 	};
@@ -104,7 +104,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// organized version of the arguments to be used during interactive gromacs step
 	struct InteractiveArguments
 	{
-		std::unordered_map<InteractiveId, std::string> kw_v;
+		std::unordered_map<InteractiveId, std::string> kwValue;
 		bool operator==( const InteractiveArguments & ) const noexcept = default;
 	};
 	struct pdb2gmx_instructions

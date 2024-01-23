@@ -24,21 +24,21 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 			return out;
 		}
-		InteractiveKeyword get_keyword( const std::string & last_input_asking_message ) noexcept
+		E_INTERACTIVE_KEYWORD get_keyword( const std::string & last_input_asking_message ) noexcept
 		{
 			if ( last_input_asking_message.find( "LYSINE" ) != std::string::npos )
-				return InteractiveKeyword::lys;
+				return E_INTERACTIVE_KEYWORD::lys;
 			if ( last_input_asking_message.find( "ARGININE" ) != std::string::npos )
-				return InteractiveKeyword::arg;
+				return E_INTERACTIVE_KEYWORD::arg;
 			if ( last_input_asking_message.find( "ASPARTIC ACID" ) != std::string::npos )
-				return InteractiveKeyword::asp;
+				return E_INTERACTIVE_KEYWORD::asp;
 			if ( last_input_asking_message.find( "GLUTAMIC ACID" ) != std::string::npos )
-				return InteractiveKeyword::glu;
+				return E_INTERACTIVE_KEYWORD::glu;
 			if ( last_input_asking_message.find( "GLUTAMINE" ) != std::string::npos )
-				return InteractiveKeyword::gln;
+				return E_INTERACTIVE_KEYWORD::gln;
 			if ( last_input_asking_message.find( "HISTIDINE" ) != std::string::npos )
-				return InteractiveKeyword::his;
-			return InteractiveKeyword::none;
+				return E_INTERACTIVE_KEYWORD::his;
+			return E_INTERACTIVE_KEYWORD::none;
 		}
 		uint32_t get_num( const std::string & last_input_asking_message ) noexcept
 		{
@@ -93,7 +93,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 		std::string last_gromacs_input_request_string = get_last_input_request( p_stdout );
 		out.kw										  = get_keyword( last_gromacs_input_request_string );
-		if ( out.kw == InteractiveKeyword::none )
+		if ( out.kw == E_INTERACTIVE_KEYWORD::none )
 			return false;
 
 		out.num = get_num( last_gromacs_input_request_string );
@@ -102,19 +102,19 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return true;
 	}
 
-	const char * getDefaultValue( const InteractiveKeyword & p_kw ) noexcept
+	const char * getDefaultValue( const E_INTERACTIVE_KEYWORD & p_kw ) noexcept
 	{
 		switch ( p_kw )
 		{
-		case InteractiveKeyword::none: return "1";
-		case InteractiveKeyword::ss: return "1";
-		case InteractiveKeyword::ter: return "0";
-		case InteractiveKeyword::lys: return "1";
-		case InteractiveKeyword::arg: return "1";
-		case InteractiveKeyword::asp: return "1";
-		case InteractiveKeyword::glu: return "1";
-		case InteractiveKeyword::gln: return "1";
-		case InteractiveKeyword::his: return "0";
+		case E_INTERACTIVE_KEYWORD::none: return "1";
+		case E_INTERACTIVE_KEYWORD::ss: return "1";
+		case E_INTERACTIVE_KEYWORD::ter: return "0";
+		case E_INTERACTIVE_KEYWORD::lys: return "1";
+		case E_INTERACTIVE_KEYWORD::arg: return "1";
+		case E_INTERACTIVE_KEYWORD::asp: return "1";
+		case E_INTERACTIVE_KEYWORD::glu: return "1";
+		case E_INTERACTIVE_KEYWORD::gln: return "1";
+		case E_INTERACTIVE_KEYWORD::his: return "0";
 		default: break;
 		}
 		return "0"; // We chose to output a default value that should works everytime
