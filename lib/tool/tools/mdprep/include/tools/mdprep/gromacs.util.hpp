@@ -107,10 +107,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::unordered_map<InteractiveId, std::string> kwValue;
 		bool operator==( const InteractiveArguments & ) const noexcept = default;
 	};
-	struct pdb2gmx_instructions
+	struct Pdb2gmxInstructions
 	{
 		std::vector<forcefield>				forcefields;
-		size_t								forcefield_index = SIZE_MAX; // position of the forcefield to use for
+		size_t								forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
 		fs::path							output_dir;
 		std::string							root_file_name;
 		fs::path							input_pdb;
@@ -122,10 +122,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
-	//    Does nothing if the forcefield_index refer to a non-existing forcefield
+	//    Does nothing if the forcefieldIndex refer to a non-existing forcefield
 	//    Does not perform filesystem check on input pdb
 	//    If the output_dir is empty, will create a output directory in the current working directory and use it.
-	void convert( const pdb2gmx_instructions &, GromacsCommandArgs & ) noexcept;
+	void convert( const Pdb2gmxInstructions &, GromacsCommandArgs & ) noexcept;
 
 	struct solvate_instructions // WIP
 	{

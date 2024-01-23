@@ -95,11 +95,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return "";
 	}
 
-	void convert( const pdb2gmx_instructions & p_in, GromacsCommandArgs & p_out ) noexcept
+	void convert( const Pdb2gmxInstructions & p_in, GromacsCommandArgs & p_out ) noexcept
 	{
 		if ( p_in.forcefields.empty() )
 			return;
-		if ( p_in.forcefield_index >= p_in.forcefields.size() )
+		if ( p_in.forcefieldIndex >= p_in.forcefields.size() )
 			return;
 		if ( p_in.input_pdb.empty() )
 			return;
@@ -127,7 +127,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_out.arguments.push_back( "-n" );
 		p_out.arguments.push_back( ( output_dir / ( input_root_name + ".ndx" ) ).string() );
 		p_out.arguments.push_back( "-ff" );
-		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefield_index ).getName().data() );
+		p_out.arguments.push_back( p_in.forcefields.at( p_in.forcefieldIndex ).getName().data() );
 		p_out.arguments.push_back( "-water" );
 		p_out.arguments.push_back( string( p_in.water ) );
 

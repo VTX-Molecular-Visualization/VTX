@@ -85,7 +85,7 @@ namespace VTX::test
 	{
 		VTX::test::setup_env							 f;
 		const char *									 output_dir_name = "out";
-		VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
+		VTX::Tool::Mdprep::Gromacs::Pdb2gmxInstructions instructions;
 		VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs expected_args;
 	};
 	fixture_convert_pdb2gmx create_correct_in_out()
@@ -95,7 +95,7 @@ namespace VTX::test
 		f.instructions.forcefields.emplace_back( "./data/forcefield1.ff" );
 		f.instructions.forcefields.emplace_back( "./data/forcefield2.ff" );
 		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
-		f.instructions.forcefield_index = 1;
+		f.instructions.forcefieldIndex = 1;
 		f.instructions.water			= VTX::Tool::Mdprep::Gromacs::E_WATER_MODEL::spce;
 		f.instructions.output_dir		= VTX::Tool::Mdprep::executableDirectory() / f.output_dir_name;
 		f.instructions.input_pdb		= VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
@@ -120,7 +120,7 @@ namespace VTX::test
 		f.expected_args.arguments.push_back( ( f.instructions.output_dir / ( input_root_name + ".ndx" ) ).string() );
 		f.expected_args.arguments.push_back( "-ff" );
 		f.expected_args.arguments.push_back(
-			f.instructions.forcefields.at( f.instructions.forcefield_index ).getName().data()
+			f.instructions.forcefields.at( f.instructions.forcefieldIndex ).getName().data()
 		);
 		f.expected_args.arguments.push_back( "-water" );
 		f.expected_args.arguments.push_back( VTX::Tool::Mdprep::Gromacs::string( f.instructions.water ) );
@@ -130,7 +130,7 @@ namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - empty", "[convert][pdb2gmx][empty]" )
 {
-	VTX::Tool::Mdprep::Gromacs::pdb2gmx_instructions instructions;
+	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInstructions instructions;
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 
 	VTX::Tool::Mdprep::Gromacs::convert( instructions, args );
@@ -143,7 +143,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - incorrect_forcefield", "[conve
 	VTX::test::fixture_convert_pdb2gmx				 data = VTX::test::create_correct_in_out();
 	VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
 
-	data.instructions.forcefield_index = 13;
+	data.instructions.forcefieldIndex = 13;
 
 	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
