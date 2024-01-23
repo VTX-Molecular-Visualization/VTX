@@ -32,7 +32,7 @@ namespace VTX
 			explicit operator int() const { return _enum; }
 					 operator ENUM() const { return ENUM( _enum ); }
 
-			EnumFlag<T> & operator=( const ENUM & p_other )
+			EnumFlag & operator=( const ENUM & p_other )
 			{
 				_enum = int( p_other );
 				return *this;
@@ -41,27 +41,27 @@ namespace VTX
 			bool operator==( const ENUM & p_other ) const { return ENUM( _enum ) == p_other; }
 			bool operator!=( const ENUM & p_other ) const { return ENUM( _enum ) != p_other; }
 
-			EnumFlag<T>	  operator&( const EnumFlag<T> & p_rhs ) const { return EnumFlag<T>( _enum & p_rhs._enum ); }
-			EnumFlag<T>	  operator|( const EnumFlag<T> & p_rhs ) const { return EnumFlag<T>( _enum | p_rhs._enum ); }
-			EnumFlag<T> & operator&=( const EnumFlag<T> & p_rhs )
+			EnumFlag   operator&( const EnumFlag & p_rhs ) const { return EnumFlag( _enum & p_rhs._enum ); }
+			EnumFlag   operator|( const EnumFlag & p_rhs ) const { return EnumFlag( _enum | p_rhs._enum ); }
+			EnumFlag & operator&=( const EnumFlag & p_rhs )
 			{
 				_enum = _enum & p_rhs._enum;
 				return *this;
 			}
-			EnumFlag<T> & operator|=( const EnumFlag<T> & p_rhs )
+			EnumFlag & operator|=( const EnumFlag & p_rhs )
 			{
 				_enum = _enum | p_rhs._enum;
 				return *this;
 			}
 
-			EnumFlag<T>	  operator&( const ENUM & p_rhs ) const { return EnumFlag<T>( _enum & int( p_rhs ) ); }
-			EnumFlag<T>	  operator|( const ENUM & p_rhs ) const { return EnumFlag<T>( _enum | int( p_rhs ) ); }
-			EnumFlag<T> & operator&=( const ENUM & p_rhs )
+			EnumFlag   operator&( const ENUM & p_rhs ) const { return EnumFlag( _enum & int( p_rhs ) ); }
+			EnumFlag   operator|( const ENUM & p_rhs ) const { return EnumFlag( _enum | int( p_rhs ) ); }
+			EnumFlag & operator&=( const ENUM & p_rhs )
 			{
 				_enum = _enum & int( p_rhs );
 				return *this;
 			}
-			EnumFlag<T> & operator|=( const ENUM & p_rhs )
+			EnumFlag & operator|=( const ENUM & p_rhs )
 			{
 				_enum = _enum | int( p_rhs );
 				return *this;
