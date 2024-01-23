@@ -9,10 +9,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 {
 	namespace
 	{
-		const char * generic_waiting_pattern = "\nType a number:";
+		const char * g_genericWaitingPattern = "\nType a number:";
 
 		// Return current chain being parametrized
-		std::string get_chain( const std::string & p_stdout ) noexcept
+		std::string getChain( const std::string & p_stdout ) noexcept
 		{
 			const std::regex chainLetter { "Processing chain [0-9]+ '([A-Z]+)'" };
 			std::string		 out;
@@ -24,7 +24,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 			return out;
 		}
-		E_INTERACTIVE_KEYWORD get_keyword( const std::string & lastInputAskingMessage ) noexcept
+		E_INTERACTIVE_KEYWORD getKeyword( const std::string & lastInputAskingMessage ) noexcept
 		{
 			if ( lastInputAskingMessage.find( "LYSINE" ) != std::string::npos )
 				return E_INTERACTIVE_KEYWORD::lys;
@@ -40,63 +40,63 @@ namespace VTX::Tool::Mdprep::Gromacs
 				return E_INTERACTIVE_KEYWORD::his;
 			return E_INTERACTIVE_KEYWORD::none;
 		}
-		uint32_t get_num( const std::string & last_input_asking_message ) noexcept
+		uint32_t getNum( const std::string & lastInputAskingMessage ) noexcept
 		{
-			const std::regex res_num_regex( "type do you want for residue [0-9]+\n" );
-			const std::regex num_regex( "[0-9]+" );
+			const std::regex resNumRegex( "type do you want for residue [0-9]+\n" );
+			const std::regex numRegex( "[0-9]+" );
 			std::smatch		 match;
 			bool			 matched
-				= std::regex_search( last_input_asking_message, match, res_num_regex, std::regex_constants::match_any );
+				= std::regex_search( lastInputAskingMessage, match, resNumRegex, std::regex_constants::match_any );
 
 			if ( !matched || match.size() < 1 )
 				return 0xffffffff;
 
 			std::string substring = match[ match.size() - 1 ].str();
 			match				  = std::smatch();
-			matched				  = std::regex_search( substring, match, num_regex, std::regex_constants::match_any );
+			matched				  = std::regex_search( substring, match, numRegex, std::regex_constants::match_any );
 
 			if ( !matched || match.size() < 1 )
 				return 0xffffffff;
 
-			std::string num_str = match[ match.size() - 1 ].str();
+			std::string numStr = match[ match.size() - 1 ].str();
 
-			return std::stoul( num_str );
+			return std::stoul( numStr );
 		}
-		std::string get_last_input_request( const std::string & p_stdout ) noexcept
+		std::string getLastInputRequest( const std::string & p_stdout ) noexcept
 		{
-			const std::regex entire_gromacs_message {
+			const std::regex entireGromacsMessage {
 				"Which .+? type do you want for residue [0-9]+\n[^]+?\nType a number:"
 			};
 
-			std::string last_gromacs_input_request_string {};
-			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), entire_gromacs_message );
+			std::string lastGromacsInputRequestString {};
+			for ( auto it = std::sregex_iterator( p_stdout.begin(), p_stdout.end(), entireGromacsMessage );
 				  it != std::sregex_iterator();
 				  ++it )
 			{
-				last_gromacs_input_request_string = it->str();
+				lastGromacsInputRequestString = it->str();
 			}
-			return last_gromacs_input_request_string;
+			return lastGromacsInputRequestString;
 		}
 
 	} // namespace
 	bool isWaitingInputs( const std::string & p_stdout ) noexcept
 	{
-		return !p_stdout.empty() && p_stdout.ends_with( generic_waiting_pattern );
+		return !p_stdout.empty() && p_stdout.ends_with( g_genericWaitingPattern );
 	}
 
 	bool parseExpectedKwArgument( const std::string & p_stdout, InteractiveId & out ) noexcept
 	{
 		{
-			std::string buf = get_chain( p_stdout );
+			std::string buf = getChain( p_stdout );
 			if ( !buf.empty() )
 				out.chain = buf.at( 0 );
 		}
-		std::string last_gromacs_input_request_string = get_last_input_request( p_stdout );
-		out.kw										  = get_keyword( last_gromacs_input_request_string );
+		std::string lastGromacsInputRequestString = getLastInputRequest( p_stdout );
+		out.kw									  = getKeyword( lastGromacsInputRequestString );
 		if ( out.kw == E_INTERACTIVE_KEYWORD::none )
 			return false;
 
-		out.num = get_num( last_gromacs_input_request_string );
+		out.num = getNum( lastGromacsInputRequestString );
 		if ( out.num == 0xffffffff )
 			return false;
 		return true;
@@ -120,8 +120,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return "0"; // We chose to output a default value that should works everytime
 	}
 
-	const char * g_not_protonated = "NOT PROTONATED";
-	const char * g_protonated	  = "PROTONATED";
+	const char * g_notProtonated = "NOT PROTONATED";
+	const char * g_protonated	 = "PROTONATED";
 
 	uint8_t parseOptionNumber( const std::string & p_stdout, const std::string_view & p_value )
 	{
@@ -132,44 +132,42 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( out != 0xffui8 )
 			return out;
 
-		std::string last_gromacs_input_request_string = get_last_input_request( p_stdout );
+		std::string lastGromacsInputRequestString = getLastInputRequest( p_stdout );
 
-		const std::regex gromacs_option_regex { "[0-9]+\\. .+\n" };
-		std::string		 upper_input { p_value };
-		Util::String::toUpper( upper_input );
+		const std::regex gromacsOptionRegex { "[0-9]+\\. .+\n" };
+		std::string		 upperInput { p_value };
+		Util::String::toUpper( upperInput );
 
 		// "protonated" match also "not protonated", so we need to fix that
-		bool user_input_contains_not_protonated = ( upper_input.find( g_not_protonated ) != std::string::npos );
-		bool user_input_contains_protonated		= ( upper_input.find( g_protonated ) != std::string::npos );
+		bool userInputContainsNotProtonated = ( upperInput.find( g_notProtonated ) != std::string::npos );
+		bool userInputContainsProtonated	= ( upperInput.find( g_protonated ) != std::string::npos );
 
 		for ( auto it = std::sregex_iterator(
-				  last_gromacs_input_request_string.begin(),
-				  last_gromacs_input_request_string.end(),
-				  gromacs_option_regex
+				  lastGromacsInputRequestString.begin(), lastGromacsInputRequestString.end(), gromacsOptionRegex
 			  );
 			  it != std::sregex_iterator();
 			  ++it )
 		{
-			out						 = 0xffui8;
-			const std::string it_str = it->str();
-			std::string		  it_str_up { it_str };
-			Util::String::toUpper( it_str_up );
+			out						= 0xffui8;
+			const std::string itStr = it->str();
+			std::string		  itStrUp { itStr };
+			Util::String::toUpper( itStrUp );
 
 			std::from_chars(
-				it_str.data(), it_str.data() + it_str.size(), out
+				itStr.data(), itStr.data() + itStr.size(), out
 			); // this function should use first chars to fill the number and stop when a non-number char is found
 			// Now I wonder if we should check the out value to make sure its not 0xff
 
-			bool current_option_is_not_protonated = it_str_up.find( g_not_protonated ) != std::string::npos;
+			bool currentOptionIsNotProtonated = itStrUp.find( g_notProtonated ) != std::string::npos;
 
-			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upper_input ) };
+			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upperInput ) };
 			std::smatch		 match; // we don't actually use it
 
-			if ( current_option_is_not_protonated && user_input_contains_not_protonated )
+			if ( currentOptionIsNotProtonated && userInputContainsNotProtonated )
 				return out;
-			if ( current_option_is_not_protonated && user_input_contains_protonated )
+			if ( currentOptionIsNotProtonated && userInputContainsProtonated )
 				continue; // This allow us to avoid "potonated" to match with "not protonated"
-			if ( std::regex_search( it_str_up, match, input_regex ) )
+			if ( std::regex_search( itStrUp, match, input_regex ) )
 				return out;
 		}
 		return 0xffui8;
