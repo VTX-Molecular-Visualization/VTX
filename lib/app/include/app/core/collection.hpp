@@ -1,93 +1,88 @@
 #ifndef __VTX_APP_CORE_COLLECTION__
 #define __VTX_APP_CORE_COLLECTION__
 
+#include "collectionable.hpp"
 #include <algorithm>
 #include <concepts>
+#include <functional>
+#include <map>
 #include <memory>
-#include <string>
 #include <util/generic/base_static_singleton.hpp>
-#include <vector>
+#include <util/hashing.hpp>
 
 namespace VTX::App::Core
 {
-	template<typename T>
-	concept DisplayableName = requires( T & p_t, std::string p_name ) { p_name = p_t.getName(); };
+	using CollectionKey = std::string;
 
 	template<typename T>
-	concept Collectionable = DisplayableName<T>;
+	concept CollectionableConcept
+		= std::derived_from<T, Collectionable> && requires( T & p_item ) {
+													  {
+														  p_item.clone()
+														  } -> std::same_as<std::unique_ptr<T>>;
+												  };
 
-	template<Collectionable T>
+	template<CollectionableConcept T>
 	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>
 	{
 	  public:
-		Collection( typename Util::Generic::BaseStaticSingleton<Collection<T>>::StructPrivacyToken ) {};
-
-		template<typename T2>
-		void addItem()
-		{
-			addItem( std::make_unique<T2>() );
-		}
-		void addItem( std::unique_ptr<T> p_item ) { _collection.emplace_back( std::move( p_item ) ); }
-
-		std::unique_ptr<T> instantiateItem( const size_t p_index )
-		{
-			return std::make_unique( _collection[ p_index ] );
-		}
-		template<typename T2>
-		std::unique_ptr<T> instantiateItem( const size_t p_index )
-		{
-			const T & source = *( _collection[ p_index ] );
-			return std::make_unique<T2>( dynamic_cast<const T2 &>( source ) );
-		}
-
-		std::unique_ptr<T> instantiateItem( const std::string & p_name )
-		{
-			typename std::vector<std::unique_ptr<T>>::const_iterator it = std::find_if(
-				_collection.begin(),
-				_collection.end(),
-				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; }
-			);
-
-			if ( it == _collection.end() )
-				return nullptr;
-			else
-				return ( *it )->clone();
-		}
-
-		template<typename T2>
-		std::unique_ptr<T> instantiateItem( const std::string & p_name )
-		{
-			typename std::vector<std::unique_ptr<T>>::const_iterator it = std::find_if(
-				_collection.begin(),
-				_collection.end(),
-				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; }
-			);
-
-			if ( it == _collection.end() )
-			{
-				return nullptr;
-			}
-			else
-			{
-				const T & source = *( *it );
-				return std::make_unique<T2>( dynamic_cast<const T2 &>( source ) );
-			}
-		}
-
-	  private:
-		std::vector<std::unique_ptr<T>> _collection;
-	};
-
-	template<typename T>
-	class CollectionItem
-	{
-	  protected:
 		template<typename T2>
 		class Registration
 		{
 		  public:
-			Registration() { App::Core::Collection<T>::get().template addItem<T2>(); }
+			Registration( const CollectionKey & p_key ) { Collection<T>::get().template addItem<T2>( p_key ); }
+			Registration( const Util::Hashing::Hash & p_hash ) { Collection<T>::get().template addItem<T2>( p_hash ); }
 		};
+
+	  public:
+		Collection( typename Util::Generic::BaseStaticSingleton<Collection<T>>::StructPrivacyToken ) {};
+
+		template<typename T2>
+			requires std::derived_from<T2, T> && std::default_initializable<T2>
+		void addItem( const Util::Hashing::Hash & p_hash )
+		{
+			_collection[ p_hash ] = []() { return std::make_unique<T2>(); };
+		}
+		template<typename T2>
+			requires std::derived_from<T2, T> && std::default_initializable<T2>
+		void addItem( const CollectionKey & p_key )
+		{
+			addItem<T2>( Util::Hashing::hash( p_key ) );
+		}
+
+		std::unique_ptr<T> instantiateItem( const Util::Hashing::Hash & p_hash )
+		{
+			if ( !_collection.contains( p_hash ) )
+				return nullptr;
+
+			return _collection[ p_hash ]();
+		}
+		std::unique_ptr<T> instantiateItem( const CollectionKey & p_key )
+		{
+			return instantiateItem( Util::Hashing::hash( p_key ) );
+		}
+
+		template<typename T2>
+			requires std::derived_from<T2, T> && std::copy_constructible<T2>
+		std::unique_ptr<T2> instantiateItem( const Util::Hashing::Hash & p_hash )
+		{
+			const std::unique_ptr<T> source = instantiateItem( p_hash );
+
+			if ( source == nullptr )
+				return nullptr;
+
+			const T2 * const castedSourcePtr = dynamic_cast<const T2 *>( source.get() );
+			return castedSourcePtr == nullptr ? nullptr : std::make_unique<T2>( *castedSourcePtr );
+		}
+		template<typename T2>
+			requires std::derived_from<T2, T> && std::copy_constructible<T2>
+		std::unique_ptr<T2> instantiateItem( const CollectionKey & p_name )
+		{
+			return instantiateItem<T2>( Util::Hashing::hash( p_name ) );
+		}
+
+	  private:
+		std::map<Util::Hashing::Hash, std::function<std::unique_ptr<T>()>> _collection;
 	};
 
 } // namespace VTX::App::Core

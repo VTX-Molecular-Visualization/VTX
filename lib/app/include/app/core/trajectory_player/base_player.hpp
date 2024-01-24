@@ -2,14 +2,15 @@
 #define __VTX_APP_CORE_TRAJECTORY_PLAYER_BASE_PLAYER__
 
 #include "app/core/collection.hpp"
-#include <concepts>
+#include "app/core/collectionable.hpp"
 #include <core/struct/trajectory.hpp>
 #include <memory>
+#include <string>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	class BasePlayer : public App::Core::CollectionItem<BasePlayer>
+	class BasePlayer : public App::Core::DisplayableCollectionable
 	{
 	  public:
 		BasePlayer()							  = default;
@@ -33,14 +34,14 @@ namespace VTX::App::Core::TrajectoryPlayer
 
 		inline bool isPlaying() const { return _isPlaying; }
 
-		virtual void				reset()									   = 0;
-		virtual void				nextFrame( const size_t p_frameCount = 1 ) = 0;
-		virtual const std::string & getName()								   = 0;
+		virtual void reset()									= 0;
+		virtual void nextFrame( const size_t p_frameCount = 1 ) = 0;
 
 		inline uint getFPS() const { return _fps; }
 		void		setFPS( const uint p_fps );
 
-		virtual std::unique_ptr<BasePlayer> clone() const = 0;
+		virtual const CollectionKey &		getCollectionKey() const = 0;
+		virtual std::unique_ptr<BasePlayer> clone() const			 = 0;
 
 	  private:
 		VTX::Core::Struct::Trajectory * _trajectoryPtr = nullptr;

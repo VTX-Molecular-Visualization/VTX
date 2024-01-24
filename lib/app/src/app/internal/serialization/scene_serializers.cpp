@@ -150,7 +150,7 @@ namespace VTX::App::Internal::Serialization
 	// TrajectoryComponent
 	Util::JSon::Object serialize( const Component::Chemistry::Trajectory & p_component )
 	{
-		return { { "PLAYER_NAME", p_component.getPlayer().getName() },
+		return { { "PLAYER_NAME", p_component.getPlayer().getCollectionKey() },
 				 { "PLAYER_DATA", SERIALIZER().serialize( p_component.getPlayer() ) } };
 	}
 

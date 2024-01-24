@@ -62,7 +62,7 @@ namespace VTX::App::Entity::Scene
 
 			std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> defaultPlayMode
 				= App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
-					App::Core::TrajectoryPlayer::Loop::NAME
+					App::Core::TrajectoryPlayer::Loop::COLLECTION_ID
 				);
 
 			trajectoryComponent.setPlayer( defaultPlayMode );

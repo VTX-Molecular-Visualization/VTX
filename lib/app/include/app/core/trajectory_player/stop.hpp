@@ -2,17 +2,19 @@
 #define __VTX_APP_CORE_TRAJECTORY_PLAYER_STOP__
 
 #include "base_player.hpp"
+#include "players.hpp"
 #include <string>
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
 	class Stop : public BasePlayer
 	{
-	  private:
-		inline static const Registration<Stop> reg = Registration<Stop>();
-
 	  public:
-		inline static const std::string NAME = "Stop";
+		inline static const CollectionKey COLLECTION_ID	 = "STOP";
+		inline static const std::string	  DISPLAYED_NAME = "Stop";
+
+	  private:
+		inline static const Players::Registration<Stop> _reg { COLLECTION_ID };
 
 	  public:
 		Stop();
@@ -21,7 +23,8 @@ namespace VTX::App::Core::TrajectoryPlayer
 
 		void play() override;
 
-		const std::string & getName() override { return NAME; }
+		const std::string &	  getDisplayName() const override { return DISPLAYED_NAME; }
+		const CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
