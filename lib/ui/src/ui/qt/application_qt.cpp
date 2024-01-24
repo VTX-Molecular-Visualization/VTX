@@ -1,5 +1,8 @@
 #include "ui/qt/application_qt.hpp"
+#include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
+#include "ui/qt/mode/base_mode.hpp"
+#include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/dialog.hpp"
 #include "ui/qt/widget_factory.hpp"
@@ -8,6 +11,7 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
+#include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT
@@ -29,7 +33,16 @@ namespace VTX::UI::QT
 	}
 	ApplicationQt::~ApplicationQt() {}
 
-	void ApplicationQt::init() { Core::BaseUIApplication::init(); }
+	void ApplicationQt::init()
+	{
+		Core::BaseUIApplication::init();
+
+		_inputManagerPtr = std::make_unique<Input::InputManager>();
+		App::VTXApp::get().getSystem().referenceSystem( INPUT_MANAGER_KEY, _inputManagerPtr.get() );
+
+		_currentMode = std::make_unique<Mode::Visualization>();
+		_currentMode->enter();
+	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
 		Core::BaseUIApplication::start( p_args );
@@ -50,6 +63,10 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
+		//// Init Modes.
+		//_currentMode = Mode::ModeCollection::get().instantiateItem( _currentModeKey );
+		_currentMode->enter();
+
 		// Create UI.
 		_initQt();
 
@@ -127,5 +144,7 @@ namespace VTX::UI::QT
 			return true;
 		}
 	}
+
+	Input::InputManager & INPUT_MANAGER() { return QT_APP()->getInputManager(); }
 
 } // namespace VTX::UI::QT

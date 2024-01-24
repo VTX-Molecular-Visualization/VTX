@@ -55,7 +55,8 @@ namespace VTX::UI::QT
 			assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
 
 			connect(
-				new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ), &QShortcut::activated, p_obj, p_func );
+				new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ), &QShortcut::activated, p_obj, p_func
+			);
 
 			_shortcuts.emplace( p_shortcut );
 		}
@@ -64,14 +65,18 @@ namespace VTX::UI::QT
 		void			 setWindowMode( const Core::WindowMode & p_mode );
 		void			 toggleWindowState();
 
-		void addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-									  Qt::DockWidgetArea  p_area,
-									  Qt::Orientation	  p_orientation,
-									  const bool		  p_visible = true );
-		void addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-									  QDockWidget * const p_neighbour,
-									  Qt::Orientation	  p_orientation,
-									  const bool		  p_visible );
+		void addDockWidgetAsTabified(
+			QDockWidget * const p_dockWidget,
+			Qt::DockWidgetArea	p_area,
+			Qt::Orientation		p_orientation,
+			const bool			p_visible = true
+		);
+		void addDockWidgetAsTabified(
+			QDockWidget * const p_dockWidget,
+			QDockWidget * const p_neighbour,
+			Qt::Orientation		p_orientation,
+			const bool			p_visible
+		);
 		void addDockWidgetAsFloating( QDockWidget * const p_dockWidget, const QSize & p_size, const bool p_visible );
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
@@ -81,6 +86,14 @@ namespace VTX::UI::QT
 	  protected:
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void keyPressEvent( QKeyEvent * const p_event ) override;
+		void keyReleaseEvent( QKeyEvent * const p_event ) override;
+		void mousePressEvent( QMouseEvent * const p_event ) override;
+		void mouseReleaseEvent( QMouseEvent * const p_event ) override;
+		void mouseDoubleClickEvent( QMouseEvent * const p_event ) override;
+		void mouseMoveEvent( QMouseEvent * const p_event ) override;
+		void wheelEvent( QWheelEvent * const p_event ) override;
 
 	  private:
 		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
