@@ -65,6 +65,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields top_dir", "[listForcefields][top_d
 	CHECK( is_ff_in_list( ffs, "oplsaa" ) );
 
 	CHECK( !is_ff_in_list( ffs, "poney" ) );
+	CHECK( !is_ff_in_list( ffs, "amber96poney" ) );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - Test", "[listForcefields][some_dir]" )
