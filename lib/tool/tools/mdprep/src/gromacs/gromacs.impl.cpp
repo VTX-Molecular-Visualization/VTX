@@ -42,7 +42,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 		uint32_t getNum( const std::string & lastInputAskingMessage ) noexcept
 		{
-			const std::regex resNumRegex( "type do you want for residue [0-9]+\n" );
+			const std::regex resNumRegex( "type do you want for residue [0-9]+\r?\n" );
 			const std::regex numRegex( "[0-9]+" );
 			std::smatch		 match;
 			bool			 matched
@@ -65,7 +65,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string getLastInputRequest( const std::string & p_stdout ) noexcept
 		{
 			const std::regex entireGromacsMessage {
-				"Which .+? type do you want for residue [0-9]+\n[^]+?\nType a number:"
+				"Which .+? type do you want for residue [0-9]+\r?\n[^]+?\r?\nType a number:"
 			};
 
 			std::string lastGromacsInputRequestString {};
