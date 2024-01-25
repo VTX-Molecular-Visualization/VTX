@@ -1,6 +1,6 @@
-#include "tools/mdprep/gromacs.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>

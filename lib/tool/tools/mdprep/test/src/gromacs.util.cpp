@@ -6,8 +6,8 @@
 #include <unordered_set>
 #include <util/logger.hpp>
 //
-#include <tools/mdprep/gromacs.hpp>
-#include <tools/mdprep/gromacs.util.hpp>
+#include <tools/mdprep/gromacs/gromacs.hpp>
+#include <tools/mdprep/gromacs/gromacs.util.hpp>
 
 TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
 {

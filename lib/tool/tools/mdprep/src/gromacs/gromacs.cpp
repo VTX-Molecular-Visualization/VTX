@@ -1,5 +1,5 @@
-#include "tools/mdprep/gromacs.hpp"
-#include "tools/mdprep/gromacs.impl.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/gromacs.impl.hpp"
 #include <qprocess.h>
 #include <thread>
 #include <util/exceptions.hpp>

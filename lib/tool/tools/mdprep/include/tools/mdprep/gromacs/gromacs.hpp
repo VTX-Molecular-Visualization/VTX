@@ -1,7 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 
-#include "tools/mdprep/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.util.hpp"
 #include <optional>
 #include <string>
 #include <vector>

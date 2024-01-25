@@ -1,5 +1,5 @@
-#include "tools/mdprep/gromacs.util.hpp"
-#include "tools/mdprep/gromacs.hpp"
+#include "tools/mdprep/gromacs/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <format>
