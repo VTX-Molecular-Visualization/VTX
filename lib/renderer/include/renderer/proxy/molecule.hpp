@@ -11,7 +11,7 @@ namespace VTX::Renderer::Proxy
 		Mat4f * transform;
 		// const Mat4f * normals;
 		std::vector<Vec3f> * atomPositions;
-		std::vector<uchar> * atomColors;
+		std::vector<uint_fast8_t> * atomColors;
 		std::vector<float> * atomRadii;
 		std::vector<bool> *	 atomVisibilities; //
 		std::vector<bool> *	 atomSelections;   //

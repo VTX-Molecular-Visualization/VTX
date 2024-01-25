@@ -35,6 +35,7 @@ namespace VTX::Renderer::Context
 			  const std::string &			p_uniformKey,
 			  const std::vector<std::any> & p_data,
 			  const Util::Chrono::Task &	p_task,
+			  const uchar &					p_uniformIndex,
 			  UniformValue &				p_uniformValue,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
@@ -57,10 +58,10 @@ namespace VTX::Renderer::Context
 					 p_context.setOutput( p_output )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setUniform( p_uniformValue, p_uniformKey )
+					 p_context.setUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.getUniform( p_uniformValue, p_uniformKey )
+					 p_context.getUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.setData( p_data, p_uniformKey )

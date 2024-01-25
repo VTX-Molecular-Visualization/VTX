@@ -83,9 +83,7 @@ namespace VTX::Renderer
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>,
-		// TODO: handle array of data.
-		StructUniformValue<std::array<Util::Color::Rgba, 256>>>;
+		StructUniformValue<Util::Color::Rgba>>;
 
 	struct Uniform
 	{
@@ -104,8 +102,13 @@ namespace VTX::Renderer
 		bool		  useIndices = false;
 	};
 
-	using Files	   = std::variant<FilePath, std::vector<FilePath>>;
-	using Uniforms = std::vector<Uniform>;
+	using Files = std::variant<FilePath, std::vector<FilePath>>;
+
+	struct Uniforms
+	{
+		std::vector<Uniform> entries;
+		size_t				 count = 1;
+	};
 
 	struct Program
 	{

@@ -19,7 +19,7 @@ namespace VTX::Renderer
 	// glPatchParameteri( GL_PATCH_VERTICES, 4 );
 
 	// Data.
-	static const Data dataMeshes { {
+	static const Data dataTriangles { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Normales", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
@@ -31,14 +31,19 @@ namespace VTX::Renderer
 											   { "Colors", E_TYPE::UBYTE, 1 },
 											   { "Radii", E_TYPE::FLOAT, 1 },
 											   { "Ids", E_TYPE::UINT, 1 },
-											   { "Flags", E_TYPE::UBYTE, 1 } } };
+											   { "Flags", E_TYPE::UBYTE, 1 },
+											   { "Models", E_TYPE::UBYTE, 1 },
+											   { "Representations", E_TYPE::UBYTE, 1 },
+											   { "Render settings", E_TYPE::UBYTE, 1 } } };
 
 	static const Data dataRibbons { { { "Positions", E_TYPE::FLOAT, 4 },
 									  { "Directions", E_TYPE::FLOAT, 3 },
 									  { "Types", E_TYPE::UBYTE, 1 },
 									  { "Colors", E_TYPE::UBYTE, 1 },
 									  { "Ids", E_TYPE::UINT, 1 },
-									  { "Flags", E_TYPE::UBYTE, 1 } } };
+									  { "Flags", E_TYPE::UBYTE, 1 },
+									  { "Representations", E_TYPE::UBYTE, 1 },
+									  { "Render settings", E_TYPE::UBYTE, 1 } } };
 
 	static const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
@@ -49,7 +54,7 @@ namespace VTX::Renderer
 		"Geometric",
 		Inputs { { E_CHANNEL_INPUT::_0, { "SpheresCylinders", dataSpheresCylinders } },
 				 { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
-				 { E_CHANNEL_INPUT::_2, { "Meshes", dataMeshes } },
+				 { E_CHANNEL_INPUT::_2, { "Triangles", dataTriangles } },
 				 { E_CHANNEL_INPUT::_3, { "Voxels", dataVoxels } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
 				  { E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
@@ -110,9 +115,10 @@ namespace VTX::Renderer
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
-			  Uniforms { { "Intensity",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } }
+			  Uniforms {
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
 	};
 
 	// Blur.
@@ -123,10 +129,11 @@ namespace VTX::Renderer
 		Programs {
 			{ "Blur",
 			  std::vector<FilePath> { "default.vert", "blur.frag" },
-			  Uniforms { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
-						 { "Size",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 17.f, StructUniformValue<float>::MinMax { 1.f, 99.f } } } } } }
+			  Uniforms {
+				  { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
+					{ "Size",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 17.f, StructUniformValue<float>::MinMax { 1.f, 99.f } } } } } } }
 	};
 
 	// Shading.
@@ -139,7 +146,7 @@ namespace VTX::Renderer
 		Programs {
 			{ "Shading",
 			  std::vector<FilePath> { "default.vert", "shading.frag" },
-			  Uniforms {
+			  Uniforms { {
 				  { "Background color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
 				  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
 				  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
@@ -166,7 +173,7 @@ namespace VTX::Renderer
 				  { "Fog density",
 					E_TYPE::FLOAT,
 					StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-			  } } }
+			  } } } }
 	};
 
 	// Outline.
@@ -176,13 +183,13 @@ namespace VTX::Renderer
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Outline",
 					 std::vector<FilePath> { "default.vert", "outline.frag" },
-					 Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-								{ "Sensitivity",
-								  E_TYPE::FLOAT,
-								  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-								{ "Thickness",
-								  E_TYPE::UINT,
-								  StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } }
+					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+								  { "Sensitivity",
+									E_TYPE::FLOAT,
+									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+								  { "Thickness",
+									E_TYPE::UINT,
+									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
 	};
 
 	// Selection.
@@ -194,9 +201,9 @@ namespace VTX::Renderer
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Selection",
 					 std::vector<FilePath> { "default.vert", "selection.frag" },
-					 Uniforms { { "Color",
-								  E_TYPE::COLOR4,
-								  StructUniformValue<Util::Color::Rgba> { Util::Color::Rgba( 45, 243, 26 ) } } } } }
+					 Uniforms { { { "Color",
+									E_TYPE::COLOR4,
+									StructUniformValue<Util::Color::Rgba> { Util::Color::Rgba( 45, 243, 26 ) } } } } } }
 	};
 
 	// FXAA.
@@ -211,12 +218,12 @@ namespace VTX::Renderer
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs {
-			{ "Pixelize",
-			  std::vector<FilePath> { "default.vert", "pixelize.frag" },
-			  Uniforms {
-				  { "Size", E_TYPE::UINT, StructUniformValue<uint> { 5, StructUniformValue<uint>::MinMax { 1, 15 } } },
-				  { "Background", E_TYPE::BOOL, StructUniformValue<bool> { true } } } } }
+		Programs { { "Pixelize",
+					 std::vector<FilePath> { "default.vert", "pixelize.frag" },
+					 Uniforms { { { "Size",
+									E_TYPE::UINT,
+									StructUniformValue<uint> { 5, StructUniformValue<uint>::MinMax { 1, 15 } } },
+								  { "Background", E_TYPE::BOOL, StructUniformValue<bool> { true } } } } } }
 	};
 
 	// CRT.
@@ -227,25 +234,26 @@ namespace VTX::Renderer
 		Programs {
 			{ "CRT",
 			  std::vector<FilePath> { "default.vert", "crt.frag" },
-			  Uniforms { { "Curvature", E_TYPE::VEC2F, StructUniformValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
-						 { "Ratio",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 0.25f, StructUniformValue<float>::MinMax { 0.1f, 1.f } } },
-						 { "Graniness X",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
-						 { "Graniness Y",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
-						 { "Vignette roundness",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 100.f, StructUniformValue<float>::MinMax { 1.f, 1000.f } } },
-						 { "Vignette intensity",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
-						 { "Brightness",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 1.2f, StructUniformValue<float>::MinMax { 1.f, 10.f } } } } } }
+			  Uniforms {
+				  { { "Curvature", E_TYPE::VEC2F, StructUniformValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
+					{ "Ratio",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.25f, StructUniformValue<float>::MinMax { 0.1f, 1.f } } },
+					{ "Graniness X",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					{ "Graniness Y",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					{ "Vignette roundness",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 100.f, StructUniformValue<float>::MinMax { 1.f, 1000.f } } },
+					{ "Vignette intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					{ "Brightness",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 1.2f, StructUniformValue<float>::MinMax { 1.f, 10.f } } } } } } }
 	};
 
 	// Chromatic aberration.
@@ -257,15 +265,16 @@ namespace VTX::Renderer
 			{ "Chromatic aberration",
 			  std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
 			  Uniforms {
-				  { "Red",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 0.009f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
-				  { "Green",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
-				  { "Blue",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { -0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } } } } }
+				  { { "Red",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.009f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
+					{ "Green",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
+					{ "Blue",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { -0.006f,
+												  StructUniformValue<float>::MinMax { -0.05f, 0.05f } } } } } } }
 	};
 
 	// Colorize.
@@ -276,7 +285,7 @@ namespace VTX::Renderer
 		Programs {
 			{ "Colorize",
 			  std::vector<FilePath> { "default.vert", "colorize.frag" },
-			  Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } } } }
+			  Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } } } } }
 	};
 
 	// Debug.
@@ -287,12 +296,13 @@ namespace VTX::Renderer
 		Programs {
 			{ "Debug",
 			  std::vector<FilePath> { "default.vert", "debug.frag" },
-			  Uniforms { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
-						 { "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
-						 { "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },
-						 { "Factor",
-						   E_TYPE::FLOAT,
-						   StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } }
+			  Uniforms {
+				  { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
+					{ "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
+					{ "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },
+					{ "Factor",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
 	};
 
 	static std::vector<Pass *> availablePasses = { &descPassGeometric,

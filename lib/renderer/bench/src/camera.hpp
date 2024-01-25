@@ -126,7 +126,7 @@ namespace VTX::Bench
 		inline static const float FOV_DEFAULT				   = 60.f;
 		inline static const float FOV_MIN					   = 1e-1f;
 		inline static const float FOV_MAX					   = 180.f;
-		inline static const float VELOCITY_TRANSLATION_DEFAULT = 10.f;
+		inline static const float VELOCITY_TRANSLATION_DEFAULT = 100.f;
 		inline static const float VELOCITY_TRANSLATION_MIN	   = 1.f;
 		inline static const float VELOCITY_TRANSLATION_MAX	   = 1000.f;
 		inline static const float VELOCITY_ROTATION_DEFAULT	   = 1.f;

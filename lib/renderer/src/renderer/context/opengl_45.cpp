@@ -41,7 +41,10 @@ namespace VTX::Renderer::Context
 
 		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
+		glEnable( GL_LINE_SMOOTH );
+		glLineWidth( 4.f );
 
 		_getOpenglInfos();
 
@@ -123,7 +126,7 @@ namespace VTX::Renderer::Context
 				_programs.emplace( &descProgram, program );
 
 				// Uniforms.
-				if ( descProgram.uniforms.empty() == false )
+				if ( descProgram.uniforms.entries.empty() == false )
 				{
 					_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
 					_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
@@ -244,7 +247,7 @@ namespace VTX::Renderer::Context
 			// Programs.
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
-				if ( descProgram.uniforms.empty() == false )
+				if ( descProgram.uniforms.entries.empty() == false )
 				{
 					assert( _ubos.find( &descProgram ) != _ubos.end() );
 					p_outInstructions.emplace_back(
@@ -317,7 +320,7 @@ namespace VTX::Renderer::Context
 					);
 				}
 
-				if ( descProgram.uniforms.empty() == false )
+				if ( descProgram.uniforms.entries.empty() == false )
 				{
 					auto & ubo = _ubos[ &descProgram ];
 					p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
@@ -579,9 +582,9 @@ namespace VTX::Renderer::Context
 		const Pass * const	  p_descPass
 	)
 	{
+		// Create uniform entries.
 		size_t offset = 0;
-
-		for ( const Uniform & descUniform : p_uniforms )
+		for ( const Uniform & descUniform : p_uniforms.entries )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
 			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
@@ -589,9 +592,7 @@ namespace VTX::Renderer::Context
 
 			assert( _uniforms.find( key ) == _uniforms.end() );
 
-			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size ) );
-
-			// Auto padding to 4 8 or 16 bytes.
+			// Auto padding to 4, 8 or 16 bytes.
 			size_t padding = 0;
 			if ( size % 4 != 0 )
 			{
@@ -606,41 +607,56 @@ namespace VTX::Renderer::Context
 				padding = 16 - ( size % 16 );
 			}
 
+			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
 			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
 			offset += padding;
 		}
 
-		assert( offset > 0 );
+		// Set totalSize.
+		size_t totalSize = offset;
 
-		p_ubo->setData( GLsizei( offset ), GL_STATIC_DRAW );
+		assert( totalSize > 0 );
 
-		for ( const Uniform & descUniform : p_uniforms )
+		for ( const Uniform & descUniform : p_uniforms.entries )
 		{
-			switch ( descUniform.type )
+			std::string key = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
+							  + descUniform.name;
+			_uniforms[ key ]->totalSize = totalSize;
+		}
+
+		// Init ubo.
+		p_ubo->setData( GLsizei( totalSize * p_uniforms.count ), GL_STATIC_DRAW );
+
+		// Fill default values.
+		for ( uchar i = 0; i < p_uniforms.count; ++i )
+		{
+			for ( const Uniform & descUniform : p_uniforms.entries )
 			{
-			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::USHORT: _setUniformDefaultValue<ushort>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::COLOR4:
-				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
-				break;
-			case E_TYPE::COLOR4_256:
-				_setUniformDefaultValue<std::array<Util::Color::Rgba, 256>>( descUniform, p_descProgram, p_descPass );
-				break;
-			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
+				switch ( descUniform.type )
+				{
+				case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::USHORT:
+					_setUniformDefaultValue<ushort>( descUniform, i, p_descProgram, p_descPass );
+					break;
+				case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, i, p_descProgram, p_descPass ); break;
+				case E_TYPE::COLOR4:
+					_setUniformDefaultValue<Util::Color::Rgba>( descUniform, i, p_descProgram, p_descPass );
+					break;
+				default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
+				}
 			}
 		}
 	}
@@ -808,18 +824,15 @@ namespace VTX::Renderer::Context
 																 { E_TYPE::VEC4F, GL_FLOAT },
 																 { E_TYPE::MAT3F, GL_FLOAT },
 																 { E_TYPE::MAT4F, GL_FLOAT },
-																 { E_TYPE::COLOR4, GL_FLOAT },
-																 { E_TYPE::COLOR4_256, GL_FLOAT } };
+																 { E_TYPE::COLOR4, GL_FLOAT } };
 
-	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes
-		= { { E_TYPE::BOOL, sizeof( bool ) },	  { E_TYPE::BYTE, sizeof( char ) },
-			{ E_TYPE::UBYTE, sizeof( uchar ) },	  { E_TYPE::SHORT, sizeof( short ) },
-			{ E_TYPE::USHORT, sizeof( ushort ) }, { E_TYPE::INT, sizeof( int ) },
-			{ E_TYPE::UINT, sizeof( uint ) },	  { E_TYPE::FLOAT, sizeof( float ) },
-			{ E_TYPE::VEC2I, sizeof( Vec2i ) },	  { E_TYPE::VEC2F, sizeof( Vec2f ) },
-			{ E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
-			{ E_TYPE::MAT3F, sizeof( Mat3f ) },	  { E_TYPE::MAT4F, sizeof( Mat4f ) },
-			{ E_TYPE::COLOR4, sizeof( Vec4f ) },  { E_TYPE::COLOR4_256, 256 * sizeof( Vec4f ) } };
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
+		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::BYTE, sizeof( char ) },	  { E_TYPE::UBYTE, sizeof( uchar ) },
+		{ E_TYPE::SHORT, sizeof( short ) }, { E_TYPE::USHORT, sizeof( ushort ) }, { E_TYPE::INT, sizeof( int ) },
+		{ E_TYPE::UINT, sizeof( uint ) },	{ E_TYPE::FLOAT, sizeof( float ) },	  { E_TYPE::VEC2I, sizeof( Vec2i ) },
+		{ E_TYPE::VEC2F, sizeof( Vec2f ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
+		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },	  { E_TYPE::COLOR4, sizeof( Vec4f ) }
+	};
 
 	std::map<const E_FORMAT, const E_TYPE> OpenGL45::_mapFormatTypes = { { E_FORMAT::RG32UI, E_TYPE::UINT } };
 

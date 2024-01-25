@@ -47,13 +47,13 @@ namespace VTX::Renderer
 			// Pass * const crt	 = _renderGraph->addPass( descPassCRT );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction = [ & ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction = [ & ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction = [ & ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction = [ & ]() { return showVoxels ? sizeVoxels : 0; };
-			blurX->name									  = "BlurX";
-			blurY->name									  = "BlurY";
-			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().countFunction	 = [ & ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction	 = [ & ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction	 = [ & ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction	 = [ & ]() { return showVoxels ? sizeVoxels : 0; };
+			blurX->name										 = "BlurX";
+			blurY->name										 = "BlurY";
+			blurY->programs[ 0 ].uniforms.entries[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -76,24 +76,24 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
-				  // { _near * _far, _far, _far - _near, _near }
-				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
-				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
-				  { "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } }
+				{ { { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
+					// { _near * _far, _far, _far - _near, _near }
+					{ "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
+					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
 			);
 
 			// create array of 256 color white.
 			std::array<Util::Color::Rgba, 256> colorLayout;
 			std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
 
-			_renderGraph->addUniforms( { { "Color layout",
-										   E_TYPE::COLOR4_256,
-										   StructUniformValue<std::array<Util::Color::Rgba, 256>> { colorLayout } } } );
+			_renderGraph->addUniforms(
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } } }, 256 }
+			);
 		}
 
 		template<typename T>
@@ -176,7 +176,12 @@ namespace VTX::Renderer
 
 		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
 
-		inline void setMatrixView( const Mat4f & p_view ) { setUniform( p_view, "Matrix view" ); }
+		inline void setMatrixView( const Mat4f & p_view )
+		{
+			setUniform( p_view, "Matrix view" );
+			// setUniform( p_view, "Matrix normal" );
+			// Util::Math::transpose( Util::Math::inverse( MVMatrix ) )
+		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
 

@@ -125,22 +125,27 @@ int main( int, char ** )
 		renderer.addMolecule( proxyMolecule );
 		*/
 
-		// std::string data;
-		// Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/4HHB", data );
-		const std::string name = "4hhb.pdb";
-		const FilePath	  path = Filesystem::getExecutableDir() / name;
-
-		// Read model file.
 		Reader::Molecule			reader;
 		VTX::Core::Struct::Molecule molecule;
-		reader.readFile( path, molecule );
-		// reader.readBuffer( data, "4hhb.mmtf", molecule );
+
+		try
+		{
+			std::string data;
+			Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/4HHB", data );
+			reader.readBuffer( data, "4hhb.mmtf", molecule );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+
+			const std::string name = "4hhb.pdb";
+			const FilePath	  path = Filesystem::getExecutableDir() / name;
+			reader.readFile( path, molecule );
+		}
 
 		VTX::IO::Util::SecondaryStructure::computeStride( molecule );
 
 		// Proxify.
-		// Move or maybe redo.
-
 		size_t										   sizeAtoms  = molecule.trajectory.frames.front().size();
 		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols	  = molecule.atomSymbols;
 		std::vector<uchar>							   colorAtoms = std::vector<uchar>( sizeAtoms );
@@ -214,7 +219,7 @@ int main( int, char ** )
 
 		renderer.build();
 
-		renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		// renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		// Main loop.
 		while ( isRunning )

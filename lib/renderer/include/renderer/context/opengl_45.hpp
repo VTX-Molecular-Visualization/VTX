@@ -34,13 +34,13 @@ namespace VTX::Renderer::Context
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key )
+		inline void setUniform( const T & p_value, const std::string & p_key, const uchar p_index = 0 )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   dest	 = entry->value;
-			auto * const						   src	 = &p_value;
+			auto * const dest = static_cast<char *>( entry->value ) + p_index * entry->totalSize;
+			auto * const src  = &p_value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
@@ -49,13 +49,13 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key )
+		inline void getUniform( T & p_value, const std::string & p_key, const uchar p_index = 0 )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
 			auto * const						   dest	 = &p_value;
-			auto * const						   src	 = entry->value;
+			auto * const src = static_cast<char *>( entry->value ) + p_index * entry->totalSize;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
@@ -128,9 +128,17 @@ namespace VTX::Renderer::Context
 			GL::Buffer * buffer;
 			size_t		 offset;
 			size_t		 size;
+			size_t		 padding;
+			size_t		 totalSize;
 			void *		 value;
-			_StructUniformEntry( GL::Buffer * p_buffer, const size_t p_offset, const size_t p_size ) :
-				buffer( p_buffer ), offset( p_offset ), size( p_size ), value( malloc( p_size ) )
+			_StructUniformEntry(
+				GL::Buffer * p_buffer,
+				const size_t p_offset,
+				const size_t p_size,
+				const size_t p_padding
+			) :
+				buffer( p_buffer ),
+				offset( p_offset ), size( p_size ), padding( p_padding ), value( malloc( p_size ) )
 			{
 			}
 			~_StructUniformEntry() { free( value ); }
@@ -163,6 +171,7 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		void _setUniformDefaultValue(
 			const Uniform &		  p_descUniform,
+			const uchar			  p_index		= 0,
 			const Program * const p_descProgram = nullptr,
 			const Pass * const	  p_descPassPtr = nullptr
 		)
@@ -172,7 +181,7 @@ namespace VTX::Renderer::Context
 			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
 							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
 
-			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
+			setUniform( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key, p_index );
 		}
 
 		void				 _getOpenglInfos();
