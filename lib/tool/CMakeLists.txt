@@ -7,6 +7,7 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(vtx_tool_mdprep REQUIRED)
 
 configure_qt()
 add_library(vtx_tool)
@@ -26,6 +27,7 @@ target_link_libraries(vtx_tool PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_tool PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_tool PRIVATE vtx_ui::vtx_ui)
 target_link_libraries(vtx_tool PRIVATE Eigen3::Eigen)
+target_link_libraries(vtx_tool PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 
 apply_qt_options(vtx_tool)
 

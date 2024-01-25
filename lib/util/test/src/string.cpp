@@ -28,4 +28,8 @@ TEST_CASE( "Util::String", "[unit]" )
 
 	str = "3.14159";
 	CHECK( VTX::Util::String::strToUint( str ) == 3 );
+
+	str = "123 abcDefghijklmnopqrstuvwxyZ.()+";
+	VTX::Util::String::toUpper( str );
+	CHECK( str == "123 ABCDEFGHIJKLMNOPQRSTUVWXYZ.()+" );
 }

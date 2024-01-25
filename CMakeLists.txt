@@ -76,3 +76,5 @@ install(DIRECTORY internal_data DESTINATION bin)
 install(FILES README.md DESTINATION bin)
 install(FILES CHANGELOG.md DESTINATION bin)
 install(FILES license.txt DESTINATION bin)
+
+copy_directory_data(vtx $<TARGET_FILE_DIR:vtx>)

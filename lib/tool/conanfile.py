@@ -1,5 +1,7 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import copy
 
 class VTXToolRecipe(ConanFile):
     name = "vtx_tool"
@@ -19,6 +21,15 @@ class VTXToolRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("vtx_ui/1.0")
         self.requires("eigen/3.4.0")          
+        self.requires("vtx_tool_mdprep/1.0")       
+        
+    def generate(self):
+        copy(
+            self
+            , "*"
+            , os.path.join(self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, "data")
+            , os.path.join(self.build_folder, "data")
+        )
         
     def config_options(self):
         if self.settings.os == "Windows":
