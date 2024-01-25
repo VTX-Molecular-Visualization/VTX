@@ -27,8 +27,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void resizeEvent( QResizeEvent * p_event ) override;
-
 	  private:
 		OpenGLWidget * _openGLWidget = nullptr;
 
@@ -37,7 +35,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			assert( _openGLWidget != nullptr );
 			return *_openGLWidget;
 		}
-		void _refreshRendererSize() const;
 	};
 } // namespace VTX::UI::QT::Tool::Render::Widget
 #endif

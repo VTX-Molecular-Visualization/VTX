@@ -7,6 +7,9 @@
 // #include "ui/qt/controller/global_shorcuts.hpp"
 #include "ui/qt/controller/selection_picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
+#include <app/application/scene.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/vtx_app.hpp>
 // #include "ui/qt/controller/visualization_shorcuts.hpp"
 
 namespace VTX::UI::QT::Mode
@@ -64,16 +67,36 @@ namespace VTX::UI::QT::Mode
 		BaseMode::enter();
 
 		if ( _currentCameraController != nullptr )
-			getCurrentCameraController().setActive( true );
+		{
+			_currentCameraController->setActive( true );
+			_currentCameraController->setCamera( App::SCENE().getCamera() );
+		}
 		if ( _currentPickerController != nullptr )
-			getCurrentPickerController().setActive( true );
+			_currentPickerController->setActive( true );
+
+		App::VTXApp::get().onUpdate().addCallback( this, [ this ]( float p_deltaTime ) { update( p_deltaTime ); } );
 	}
+
+	void Visualization::update( float p_deltaTime )
+	{
+		if ( _currentCameraController != nullptr )
+			_currentCameraController->update( p_deltaTime );
+
+		if ( _currentPickerController != nullptr )
+			_currentPickerController->update( p_deltaTime );
+	}
+
 	void Visualization::exit()
 	{
 		BaseMode::exit();
 
-		getCurrentCameraController().setActive( false );
-		getCurrentPickerController().setActive( false );
+		if ( _currentCameraController != nullptr )
+			_currentCameraController->setActive( false );
+
+		if ( _currentPickerController != nullptr )
+			_currentPickerController->setActive( false );
+
+		App::VTXApp::get().onUpdate().removeCallback( this );
 	}
 
 	void Visualization::addCameraController( std::unique_ptr<Controller::BaseController> & p_cameraControllerPtr )

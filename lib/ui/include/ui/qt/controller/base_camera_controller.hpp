@@ -24,12 +24,8 @@ namespace VTX::UI::QT::Controller
 
 		virtual bool canBeStopped() { return true; };
 
-		inline void setWidgetTarget( const QWidget * const p_widget ) { _widgetTarget = p_widget; }
-
 	  protected:
 		App::Component::Render::Camera & getCamera() { return *_camera; }
-
-		const QWidget * _widgetTarget = nullptr;
 
 	  private:
 		bool							 _active = true;

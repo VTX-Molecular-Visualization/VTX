@@ -20,12 +20,9 @@ namespace VTX::UI::QT::Controller
 		virtual void update( const float & p_deltaTime ) override;
 		virtual void reset() {}
 
-		inline void setWidgetTarget( const QWidget * const p_widget ) { _widgetTarget = p_widget; }
-
 	  protected:
 		bool							 _active = true;
 		App::Component::Render::Camera & _camera;
-		const QWidget *					 _widgetTarget = nullptr;
 
 		virtual void _updateInputs( const float & ) = 0;
 	};

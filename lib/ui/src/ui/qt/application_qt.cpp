@@ -41,11 +41,11 @@ namespace VTX::UI::QT
 		App::VTXApp::get().getSystem().referenceSystem( INPUT_MANAGER_KEY, _inputManagerPtr.get() );
 
 		_currentMode = std::make_unique<Mode::Visualization>();
-		_currentMode->enter();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
 		Core::BaseUIApplication::start( p_args );
+		_currentMode->enter();
 
 		_handleArgs( p_args );
 		_returnCode = exec();

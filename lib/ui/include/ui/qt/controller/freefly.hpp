@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_CONTROLLER_FREEFLY__
 #define __VTX_UI_QT_CONTROLLER_FREEFLY__
 
+#include "ui/internal/all_settings.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/input/input_manager.hpp"
@@ -49,13 +50,13 @@ namespace VTX::UI::QT::Controller
 		inline Util::Hashing::Hash		getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const override;
 
-		float translationSpeed;
-		float accelerationFactor;
-		float decelerationFactor;
-		float rotationSpeed;
-		bool  invertY;
-		bool  elasticityActive;
-		float elasticityFactor;
+		float translationSpeed	 = Internal::Controller::TRANSLATION_SPEED_DEFAULT;
+		float accelerationFactor = Internal::Controller::ACCELERATION_FACTOR_DEFAULT;
+		float decelerationFactor = Internal::Controller::DECELERATION_FACTOR_DEFAULT;
+		float rotationSpeed		 = Internal::Controller::ROTATION_SPEED_DEFAULT;
+		bool  invertY			 = Internal::Controller::INVERT_Y_DEFAULT;
+		bool  elasticityActive	 = Internal::Controller::ELASTICITY_ACTIVE_DEFAULT;
+		float elasticityFactor	 = Internal::Controller::ELASTICITY_FACTOR_DEFAULT;
 
 	  protected:
 		void _updateInputs( const float & p_deltaTime ) override;
@@ -63,9 +64,10 @@ namespace VTX::UI::QT::Controller
 	  private:
 		const KeyMapping _mapping = KeyMapping( {
 			{ int( Keys::MOVE_LEFT ), { Qt::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_A ) } },
-			{ int( Keys::MOVE_RIGHT ), { Qt::Key::Key_Right } },
+			{ int( Keys::MOVE_RIGHT ),
+			  { Qt::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_D ) } },
 			{ int( Keys::MOVE_FRONT ), { Qt::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_W ) } },
-			{ int( Keys::MOVE_BACK ), { Qt::Key::Key_Back } },
+			{ int( Keys::MOVE_BACK ), { Qt::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_S ) } },
 			{ int( Keys::MOVE_UP ), { Qt::Key::Key_R } },
 			{ int( Keys::MOVE_DOWN ), { Qt::Key::Key_F } },
 		} );

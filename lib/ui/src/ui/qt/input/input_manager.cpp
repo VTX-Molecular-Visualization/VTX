@@ -25,6 +25,12 @@ namespace VTX::UI::QT::Input
 			switch ( p_key )
 			{
 			case Qt::Key::Key_W: res = Qt::Key::Key_Z; break;
+			case Qt::Key::Key_A: res = Qt::Key::Key_Q; break;
+			case Qt::Key::Key_Q: res = Qt::Key::Key_A; break;
+			case Qt::Key::Key_Z: res = Qt::Key::Key_W; break;
+			case Qt::Key::Key_Semicolon: res = Qt::Key::Key_M; break;
+			case Qt::Key::Key_Comma: res = Qt::Key::Key_Semicolon; break;
+			case Qt::Key::Key_M: res = Qt::Key::Key_Comma; break;
 			default: res = p_key; break;
 			}
 			break;
@@ -75,9 +81,9 @@ namespace VTX::UI::QT::Input
 
 			if ( modifier != ModifierFlag::None )
 				_modifiers = ModifierFlag( _modifiers & !modifier );
-			break;
 
 			onKeyReleased.call( key );
+			break;
 
 		default: break;
 		}

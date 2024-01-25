@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Controller
 
 	void Freefly::_updateInputs( const float & p_deltaTime )
 	{
-		if ( !_widgetTarget->hasFocus() )
+		if ( !isTargetWidgetFocused() )
 			return;
 
 		// Rotation.

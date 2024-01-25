@@ -37,6 +37,7 @@ namespace VTX::UI::QT::Mode
 
 		// void init( VisualizationData & p_data );
 		void enter() override;
+		void update( float p_deltaTime ) override;
 		void exit() override;
 
 		void addCameraController( std::unique_ptr<Controller::BaseController> & p_cameraControllerPtr );
