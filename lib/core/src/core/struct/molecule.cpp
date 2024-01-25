@@ -1,4 +1,5 @@
 #include "core/struct/molecule.hpp"
+#include "core/chemdb/secondary_structure.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::Core::Struct
@@ -36,17 +37,20 @@ namespace VTX::Core::Struct
 	{
 		residueSymbols.resize( p_count, ChemDB::Residue::SYMBOL::UNKNOWN );
 		residueChainIndexes.resize( p_count, INVALID_INDEX );
-		residueFirstAtomIndexes.resize( p_count, INVALID_INDEX );
+		residueFirstAtomIndexes.resize( p_count, INVALID_ATOM_INDEX );
 		residueAtomCounts.resize( p_count, 0 );
 		residueFirstBondIndexes.resize( p_count, INVALID_INDEX );
 		residueBondCounts.resize( p_count, 0 );
 		residueOriginalIds.resize( p_count, 0 );
+		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 	}
 	size_t Molecule::getResidueCount() const { return residueSymbols.size(); }
 
 	// Atom data
 	void Molecule::initAtoms( const size_t p_count )
 	{
+		assert( p_count < std::numeric_limits<atom_index_t>::max() );
+
 		atomSymbols.resize( p_count, ChemDB::Atom::SYMBOL::UNKNOWN );
 		atomResidueIndexes.resize( p_count, INVALID_INDEX );
 		atomNames.resize( p_count );
@@ -57,7 +61,7 @@ namespace VTX::Core::Struct
 	void Molecule::initBonds( const size_t p_count )
 	{
 		bondOrders.resize( p_count, ChemDB::Bond::ORDER::UNKNOWN );
-		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
+		bondPairAtomIndexes.resize( p_count * 2, INVALID_ATOM_INDEX );
 	}
 	size_t Molecule::getBondCount() const { return bondOrders.size(); }
 

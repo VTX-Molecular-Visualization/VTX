@@ -1,11 +1,15 @@
 #ifndef __VTX_APP_APPLICATION_SYSTEM__
 #define __VTX_APP_APPLICATION_SYSTEM__
 
+#include <concepts>
 #include <memory>
 #include <util/variant.hpp>
 
 namespace VTX::App::Application
 {
+	// template<typename T>
+	// concept SystemConcept = std::is_class<T>::value;
+
 	class System
 	{
 	  public:

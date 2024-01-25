@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_OPENGL__
 #define __VTX_UI_QT_WIDGET_OPENGL__
 
-//
+// Before QOpenGLWidget to use glad instead of QOpenGLFunctions.
 #include <renderer/renderer.hpp>
 //
 #include "ui/qt/widget/base_manual_widget.hpp"

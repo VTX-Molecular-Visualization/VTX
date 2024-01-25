@@ -1,20 +1,22 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "camera.hpp"
 #include <SDL.h>
+#include <core/chemdb/color.hpp>
 #include <imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imnodes/imnodes.h>
-#include <renderer/gl/opengl_renderer.hpp>
 #include <renderer/renderer.hpp>
+#include <stb_image_write.h>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Bench
 {
-
 	class UserInterface
 	{
 	  public:
@@ -31,6 +33,8 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
+			// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
 			_window = SDL_CreateWindow(
 				"VTX_RENDERER_BENCH",
@@ -56,7 +60,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 
 			// Init ImGui.
-			if ( !IMGUI_CHECKVERSION() )
+			if ( IMGUI_CHECKVERSION() == false )
 			{
 				throw std::runtime_error( "IMGUI_CHECKVERSION() failed" );
 			}
@@ -106,10 +110,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( /*Renderer::GL::OpenGLRenderer* const p_renderer,*/
-				   Camera * const			  p_camera,
-				   Renderer::Renderer * const p_newRenderer
-		)
+		void draw( Camera * const p_camera, Renderer::Renderer * const p_renderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -117,39 +118,134 @@ namespace VTX::Bench
 
 			// Menu bar.
 			if ( ImGui::BeginMainMenuBar() )
-			{ // Main menu.
-				if ( ImGui::BeginMenu( "Menu" ) )
-				{ // Quit.
-					if ( ImGui::MenuItem( "Compile shaders" ) )
+			{
+				if ( ImGui::BeginMenu( "Shaders" ) )
+				{
+					if ( ImGui::MenuItem( "Compile" ) )
 					{
-						// p_renderer->compileShaders();
+						p_renderer->compileShaders();
 					}
 
 					ImGui::EndMenu();
 				}
 
+				if ( ImGui::BeginMenu( "Resolution" ) )
+				{
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						SDL_SetWindowSize( _window, 800, 600 );
+					}
+					if ( ImGui::MenuItem( "1920x1080" ) )
+					{
+						SDL_SetWindowSize( _window, 1920, 1080 );
+					}
+					if ( ImGui::MenuItem( "2560x1440" ) )
+					{
+						SDL_SetWindowSize( _window, 2560, 1440 );
+					}
+					if ( ImGui::MenuItem( "3840x2160" ) )
+					{
+						SDL_SetWindowSize( _window, 3840, 2160 );
+					}
+
+					ImGui::EndMenu();
+				}
+				if ( ImGui::BeginMenu( "Color layout" ) )
+				{
+					if ( ImGui::MenuItem( "JMol" ) )
+					{
+						p_renderer->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+					}
+					if ( ImGui::MenuItem( "Random" ) )
+					{
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						std::generate(
+							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
+						);
+						p_renderer->setColorLayout( colorLayout );
+					}
+					if ( ImGui::MenuItem( "Random pastel" ) )
+					{
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						std::generate(
+							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
+						);
+						p_renderer->setColorLayout( colorLayout );
+					}
+
+					ImGui::EndMenu();
+				}
+				if ( ImGui::BeginMenu( "Export" ) )
+				{
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 800, 600 );
+						_saveImage( image, 800, 600 );
+					}
+					if ( ImGui::MenuItem( "1920x1080" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 1920, 1080 );
+						_saveImage( image, 1920, 1080 );
+					}
+					if ( ImGui::MenuItem( "2560x1440" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 2560, 1440 );
+						_saveImage( image, 2560, 1440 );
+					}
+					if ( ImGui::MenuItem( "3840x2160" ) )
+					{
+						std::vector<uchar> image;
+						p_renderer->snapshot( image, 3840, 2160 );
+						_saveImage( image, 3840, 2160 );
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::Checkbox( "UI", &_drawUi );
+				if ( ImGui::Checkbox( "Vsync", &_vsync ) )
+				{
+					setVSync( _vsync );
+				}
+
+				bool isLogDurations = p_renderer->isLogDurations();
+				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
+				{
+					p_renderer->setLogDurations( isLogDurations );
+				}
+				bool forceUpdate = p_renderer->isForceUpdate();
+				if ( ImGui::Checkbox( "Force update", &forceUpdate ) )
+				{
+					p_renderer->setForceUpdate( forceUpdate );
+				}
+				if ( ImGui::Button( "Snapshot" ) )
+				{
+					std::vector<uchar> image;
+					p_renderer->snapshot( image );
+					_saveImage( image, p_renderer->getWidth(), p_renderer->getHeight() );
+				}
+				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
 				ImGui::EndMainMenuBar();
 			}
 
-			// Camera.
-			_drawCamera( p_camera );
+			if ( _drawUi )
+			{
+				// Camera.
+				_drawCamera( p_camera );
 
-			// DescPasses.
-			//_drawDescPasses( p_renderer );
+				// Times.
+				_drawDurations( p_renderer );
 
-			// Times.
-			//_drawTimes( p_renderer );
+				// Misc.
+				_drawMisc( p_renderer );
 
-			// Misc.
-			//_drawMisc( p_renderer );
-
-			// Node editor.
-			_drawNodeEditor( p_newRenderer );
-
-			// Render queue.
-			_drawRenderQueue( p_newRenderer );
-
-			// ImGui::ShowDemoWindow();
+				// Node editor.
+				_drawNodeEditor( p_renderer );
+			}
 
 			// Render.
 			ImGui::Render();
@@ -210,289 +306,128 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		void _drawDescPasses( Renderer::GL::OpenGLRenderer * const p_renderer ) const
+		void _drawDurations( Renderer::Renderer * const p_renderer ) const
 		{
-			if ( ImGui::Begin( "Render passes" ) )
+			using namespace Renderer;
+
+			if ( p_renderer->isLogDurations() )
 			{
-				bool activeSSAO		= p_renderer->isActiveSSAO();
-				bool activeOutline	= p_renderer->isActiveOutline();
-				bool activeFXAA		= p_renderer->isActiveFXAA();
-				bool activePixelize = p_renderer->isActivePixelize();
+				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
 
-				float ssaoIntensity = p_renderer->getSSAOIntensity();
-				float blurSize		= p_renderer->getBlurSize();
+				if ( ImGui::Begin( "Durations (ms)" ) )
+				{
+					auto max = std::max_element(
+						durations.begin(),
+						durations.end(),
+						[]( const InstructionsDurationRange & p_lhs, const InstructionsDurationRange & p_rhs )
+						{ return p_lhs.duration < p_rhs.duration; }
+					);
 
-				Renderer::GL::ENUM_SHADING shadingMode	  = p_renderer->getShadingMode();
-				float					   specularFactor = p_renderer->getSpecularFactor();
-				int						   toonSteps	  = p_renderer->getToonSteps();
-				Util::Color::Rgba		   colorBG		  = p_renderer->getColorBackground();
-				Util::Color::Rgba		   colorLight	  = p_renderer->getColorLight();
-				Util::Color::Rgba		   colorFog		  = p_renderer->getColorFog();
-				float					   fogNear		  = p_renderer->getFogNear();
-				float					   fogFar		  = p_renderer->getFogFar();
-				float					   fogDensity	  = p_renderer->getFogDensity();
-
-				Util::Color::Rgba colorOutline	   = p_renderer->getColorOutline();
-				float			  outlineSensivity = p_renderer->getOutlineSensivity();
-				uint			  outlineThickness = p_renderer->getOutlineThickness();
-
-				Util::Color::Rgba colorSelection = p_renderer->getColorSelection();
-
-				int	 pixelSize			  = p_renderer->getPixelSize();
-				bool pixelarizeBackground = p_renderer->isPixelizeBackground();
-
-				static bool isOpenGeometric;
-				if ( isOpenGeometric = ImGui::CollapsingHeader( "Geometric" ) ) {}
-				static bool isOpenLinearizeDepth;
-				if ( isOpenLinearizeDepth = ImGui::CollapsingHeader( "Linearize depth" ) ) {}
-				static bool isOpenSSAO;
-				if ( isOpenSSAO = ImGui::CollapsingHeader( "SSAO + Blur", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					if ( ImGui::Checkbox( "Active##SSAO", &activeSSAO ) )
-					{
-						p_renderer->setActiveSSAO( activeSSAO );
-					}
-					if ( ImGui::SliderFloat(
-							 "Intensity",
-							 &ssaoIntensity,
-							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MIN,
-							 Renderer::GL::Pass::SSAO::AO_INTENSITY_MAX
-						 ) )
-					{
-						p_renderer->setSSAOIntensity( ssaoIntensity );
-					}
-					if ( ImGui::SliderFloat(
-							 "Blur size",
-							 &blurSize,
-							 Renderer::GL::Pass::Blur::BLUR_SIZE_MIN,
-							 Renderer::GL::Pass::Blur::BLUR_SIZE_MAX
-						 ) )
-					{
-						p_renderer->setBlurSize( blurSize );
-					}
-				}
-				static bool isOpenShading;
-				if ( isOpenShading = ImGui::CollapsingHeader( "Shading", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					const char * shadings[] = { "DIFFUSE", "GLOSSY", "TOON", "FLAT" };
-					if ( ImGui::Combo( "Mode", (int *)( &shadingMode ), shadings, IM_ARRAYSIZE( shadings ) ) )
-					{
-						p_renderer->setShadingMode( shadingMode );
-					}
-					if ( shadingMode == Renderer::GL::ENUM_SHADING::GLOSSY )
-					{
-						if ( ImGui::SliderFloat(
-								 "Specular factor",
-								 &specularFactor,
-								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MIN,
-								 Renderer::GL::Pass::Shading::SPECULAR_FACTOR_MAX
-							 ) )
-						{
-							p_renderer->setSpecularFactor( specularFactor );
-						}
-					}
-					else if ( shadingMode == Renderer::GL::ENUM_SHADING::TOON )
-					{
-						if ( ImGui::SliderInt(
-								 "Steps",
-								 &toonSteps,
-								 Renderer::GL::Pass::Shading::TOON_STEPS_MIN,
-								 Renderer::GL::Pass::Shading::TOON_STEPS_MAX
-							 ) )
-						{
-							p_renderer->setToonSteps( toonSteps );
-						}
-					}
-					if ( ImGui::ColorEdit4( "Background", (float *)( &colorBG ) ) )
-					{
-						p_renderer->setColorBackground( colorBG );
-					}
-					if ( ImGui::ColorEdit4( "Light", (float *)( &colorLight ) ) )
-					{
-						p_renderer->setColorLight( colorLight );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog near",
-							 &fogNear,
-							 Renderer::GL::Pass::Shading::FOG_NEAR_MIN,
-							 Renderer::GL::Pass::Shading::FOG_NEAR_MAX
-						 ) )
-					{
-						p_renderer->setFogNear( fogNear );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog far",
-							 &fogFar,
-							 Renderer::GL::Pass::Shading::FOG_FAR_MIN,
-							 Renderer::GL::Pass::Shading::FOG_FAR_MAX
-						 ) )
-					{
-						p_renderer->setFogFar( fogFar );
-					}
-					if ( ImGui::SliderFloat(
-							 "Fog density",
-							 &fogDensity,
-							 Renderer::GL::Pass::Shading::FOG_DENSITY_MIN,
-							 Renderer::GL::Pass::Shading::FOG_DENSITY_MAX
-						 ) )
-					{
-						p_renderer->setFogDensity( fogDensity );
-					}
-					if ( ImGui::ColorEdit4( "Fog color", (float *)( &colorFog ) ) )
-					{
-						p_renderer->setColorFog( colorFog );
-					}
-				}
-				static bool isOpenOutline;
-				if ( isOpenOutline = ImGui::CollapsingHeader( "Outline", ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
-					if ( ImGui::Checkbox( "Active##Outline", &activeOutline ) )
-					{
-						p_renderer->setActiveOutline( activeOutline );
-					}
-					if ( ImGui::SliderFloat(
-							 "Sensivity",
-							 &outlineSensivity,
-							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MIN,
-							 Renderer::GL::Pass::Outline::OUTLINE_SENSIVITY_MAX
-						 ) )
-					{
-						p_renderer->setOutlineSensivity( outlineSensivity );
-					}
-					if ( ImGui::SliderInt(
-							 "Thickness",
-							 (int *)( &outlineThickness ),
-							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MIN,
-							 Renderer::GL::Pass::Outline::OUTLINE_THICKNESS_MAX
-						 ) )
-					{
-						p_renderer->setOutlineThickness( outlineThickness );
-					}
-					if ( ImGui::ColorEdit4( "Color##Outline", (float *)( &colorOutline ) ) )
-					{
-						p_renderer->setColorOutline( colorOutline );
-					}
-				}
-				static bool isOpenSelection;
-				if ( isOpenSelection = ImGui::CollapsingHeader( "Selection" ) )
-				{
-					if ( ImGui::ColorEdit4( "Color##Selection", (float *)( &colorSelection ) ) )
-					{
-						p_renderer->setColorSelection( colorSelection );
-					}
-				}
-				static bool isOpenFXAA;
-				if ( isOpenFXAA = ImGui::CollapsingHeader( "FXAA" ) )
-				{
-					if ( ImGui::Checkbox( "Active##FXAA", &activeFXAA ) )
-					{
-						p_renderer->setActiveFXAA( activeFXAA );
-					}
-				}
-				static bool isOpenPixelize;
-				if ( isOpenPixelize = ImGui::CollapsingHeader( "Pixelize" ) )
-				{
-					if ( ImGui::Checkbox( "Active##Pixelize", &activePixelize ) )
-					{
-						p_renderer->setActivePixelize( activePixelize );
-					}
-					if ( ImGui::SliderInt( "Pixel size", &pixelSize, 1, 151 ) )
-					{
-						p_renderer->setPixelSize( pixelSize );
-					}
-					if ( ImGui::Checkbox( "Background?", &pixelarizeBackground ) )
-					{
-						p_renderer->setPixelizeBackground( pixelarizeBackground );
-					}
-				}
-			}
-			ImGui::End();
-		}
-
-		void _drawTimes( Renderer::GL::OpenGLRenderer * const p_renderer ) const
-		{
-			bool isTimersEnabled = p_renderer->isTimersEnabled();
-			if ( isTimersEnabled )
-			{
-				auto &				times	 = p_renderer->getTimes();
-				static const char * labels[] = { "Geometric", "Linearize depth", "SSAO", "Blur",	 "Shading",
-												 "Outline",	  "Selection",		 "FXAA", "Pixelize", "Blit FBO" };
-				if ( ImGui::Begin( "Times (ms)" ) )
-				{
-					const float max = *std::max_element( times.begin(), times.end() );
-					for ( size_t i = 0; i < times.size(); ++i )
+					for ( size_t i = 0; i < durations.size(); ++i )
 					{
 						ImGui::ProgressBar(
-							times[ i ] / max, ImVec2( 0.f, 0.f ), std::to_string( times[ i ] ).c_str()
+							durations[ i ].duration / max->duration,
+							ImVec2( 0.f, 0.f ),
+							std::to_string( durations[ i ].duration ).c_str()
 						);
 						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-						ImGui::Text( labels[ i ] );
+						ImGui::Text( durations[ i ].name.c_str() );
 					}
 				}
 				ImGui::End();
 			}
 		}
 
-		void _drawMisc( Renderer::GL::OpenGLRenderer * const p_renderer )
+		void _drawMisc( Renderer::Renderer * const p_renderer )
 		{
-			static const uint64_t sdlFrequency					= SDL_GetPerformanceFrequency();
-			static uint64_t		  lastTime						= 0;
-			const uint64_t		  now							= SDL_GetPerformanceCounter();
-			const float			  deltaTime						= float( double( now - lastTime ) / sdlFrequency );
-			lastTime											= now;
-			const Renderer::GL::StructOpenglInfos & openglInfos = p_renderer->getOpenglInfos();
+			/*
+			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
+			static uint64_t		  lastTime		= 0;
+			const uint64_t		  now			= SDL_GetPerformanceCounter();
+			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
+			lastTime							= now;
+			*/
+			const Renderer::StructInfos & infos = p_renderer->getInfos();
 
 			if ( ImGui::Begin( "Misc" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				bool isTimersEnabled = p_renderer->isTimersEnabled();
-				ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
-				ImGui::Text( fmt::format( "{} average FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
+				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
+				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
+				ImGui::Checkbox(
+					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
+				);
+				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+				ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
+				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 				ImGui::ProgressBar(
-					float(
-						( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-						  - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX )
-					) / openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX,
+					float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
+						/ infos.gpuMemoryInfoTotalAvailable,
 					ImVec2( 0.f, 0.f ),
 					fmt::format(
 						"{} / {}",
-						( openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-						  - openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX ),
-						openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
+						( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
+						infos.gpuMemoryInfoTotalAvailable
 					)
 						.c_str()
 				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
-
-				if ( ImGui::Checkbox( "Vertical sync", &_vsync ) )
-				{
-					setVSync( _vsync );
-				}
-				if ( ImGui::Checkbox( "Enable timers", &isTimersEnabled ) )
-				{
-					p_renderer->setTimersEnabled( isTimersEnabled );
-				}
 			}
 			ImGui::End();
 		}
 
-		void _drawNodeEditor( Renderer::Renderer * const p_newRenderer ) const
+		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{
 			using namespace Renderer;
+			auto & graph = p_renderer->getRenderGraph();
 
 			static bool isOpen = true;
 			if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
 			{
 				ImGui::BeginMenuBar();
+				if ( ImGui::BeginMenu( "Add" ) )
+				{
+					for ( const Pass * const pass : graph.getAvailablePasses() )
+					{
+						if ( ImGui::MenuItem( pass->name.c_str() ) )
+						{
+							graph.addPass( *pass );
+						}
+					}
+
+					ImGui::EndMenu();
+				}
 				if ( ImGui::Button( "Build" ) )
 				{
-					p_newRenderer->build();
+					p_renderer->build();
+				}
+				if ( ImGui::Button( "Clean" ) )
+				{
+					p_renderer->clean();
+				}
+
+				RenderQueue & renderQueue = graph.getRenderQueue();
+				for ( const Pass * const pass : renderQueue )
+				{
+					ImGui::TextUnformatted( pass->name.c_str() );
+					ImGui::TextUnformatted( " -> " );
+				}
+				if ( renderQueue.empty() )
+				{
+					ImGui::TextUnformatted( "<not built>" );
+				}
+				else
+				{
+					ImGui::TextUnformatted( "Output" );
 				}
 				ImGui::EndMenuBar();
 
 				ImNodes::BeginNodeEditor();
+
+				bool isBuilt = graph.isBuilt();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -502,51 +437,61 @@ namespace VTX::Bench
 				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
 				std::map<const uint, Pass *>				 mapIdDescPass;
 				std::map<const uint, Link *>				 mapIdDescLink;
+				const Pass *								 passToDelete = nullptr;
 
-				for ( std::unique_ptr<Pass> & pass : p_newRenderer->getRenderGraph().getPasses() )
+				for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
 				{
 					ImNodes::BeginNode( id++ );
 					ImNodes::BeginNodeTitleBar();
+
+					if ( ImGui::Button( "X", ImVec2( 15, 15 ) ) )
+					{
+						passToDelete = pass.get();
+					}
+
+					ImGui::SameLine();
 					ImGui::TextUnformatted( pass->name.c_str() );
 					ImNodes::EndNodeTitleBar();
+
+					bool isInRenderQueue = graph.isInRenderQueue( pass.get() );
 
 					// Inputs.
 					for ( const auto & [ channel, input ] : pass->inputs )
 					{
-						mapIdInput.emplace( &input, id );
-						mapIdChannelInput.emplace( id, channel );
-						mapIdDescPass.emplace( id, pass.get() );
-						ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
-						ImNodes::BeginInputAttribute( id++ );
-						ImGui::Text( input.name.c_str() );
-						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
+						if ( std::holds_alternative<Attachment>( input.desc ) )
 						{
-							if ( std::holds_alternative<Attachment>( input.desc ) )
-							{
-								const Attachment & attachment = std::get<Attachment>( input.desc );
-								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
-							}
+							const Attachment & attachment = std::get<Attachment>( input.desc );
+							mapIdInput.emplace( &input, id );
+							mapIdChannelInput.emplace( id, channel );
+							mapIdDescPass.emplace( id, pass.get() );
+							ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
+							ImNodes::BeginInputAttribute( id++ );
+							ImGui::Text(
+								fmt::format( "{} ({})", input.name, Util::Enum::enumName( attachment.format ) ).c_str()
+							);
+							ImNodes::EndInputAttribute();
+							ImNodes::PopAttributeFlag();
 						}
-						ImNodes::EndInputAttribute();
-						ImNodes::PopAttributeFlag();
+						else if ( std::holds_alternative<Data>( input.desc ) )
+						{
+							// const Data & data = std::get<Data>( input.desc );
+							ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1, 1, 0, 1 ) );
+							ImGui::Text( input.name.c_str() );
+							ImGui::PopStyleColor();
+						}
 					}
 
 					// Outputs.
 					for ( const auto & [ channel, output ] : pass->outputs )
 					{
+						const Attachment & attachment = std::get<Attachment>( output.desc );
 						mapIdOutput.emplace( &output, id );
 						mapIdChannelOutput.emplace( id, channel );
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
-						ImGui::Text( output.name.c_str() );
-						if ( ImGui::IsItemHovered( ImGuiHoveredFlags_AllowWhenDisabled ) )
-						{
-							if ( std::holds_alternative<Attachment>( output.desc ) )
-							{
-								const Attachment & attachment = std::get<Attachment>( output.desc );
-								ImGui::SetTooltip( Util::Enum::enumName( attachment.format ).data() );
-							}
-						}
+						ImGui::Text(
+							fmt::format( "({}) {}", Util::Enum::enumName( attachment.format ), output.name ).c_str()
+						);
 						ImNodes::EndOutputAttribute();
 					}
 
@@ -556,42 +501,202 @@ namespace VTX::Bench
 						// Uniforms.
 						for ( const Uniform & uniform : program.uniforms )
 						{
-							ImGui::Text( uniform.name.c_str() );
+							std::string key		   = pass->name + program.name + uniform.name;
+							bool		isEditable = isBuilt && isInRenderQueue;
+
+							// ImGui::Text( uniform.name.c_str() );
 							ImGui::SetNextItemWidth( 150 );
 							switch ( uniform.type )
 							{
-							case E_TYPE::FLOAT:
+							case E_TYPE::BOOL:
 							{
-								StructUniformValue<float> descValue
-									= std::get<StructUniformValue<float>>( uniform.value );
+								StructUniformValue<bool> descValue
+									= std::get<StructUniformValue<bool>>( uniform.value );
+
+								bool value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<bool>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::Checkbox( uniform.name.c_str(), &value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
+								}
+
+								break;
+							}
+							case E_TYPE::INT:
+							{
+								StructUniformValue<int> descValue = std::get<StructUniformValue<int>>( uniform.value );
+
+								int value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<int>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
 								if ( descValue.minMax.has_value() )
 								{
-									float value;
-									p_newRenderer->getUniform<float>( value, uniform, program );
-									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
+									StructUniformValue<int>::MinMax & minMax = descValue.minMax.value();
+									if ( ImGui::SliderInt( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
 									}
 								}
 								else
 								{
-									float value;
-									p_newRenderer->getUniform<float>( value, uniform, program );
+									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
+									{
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
+									}
+								}
+								break;
+							}
+							case E_TYPE::UINT:
+							{
+								StructUniformValue<uint> descValue
+									= std::get<StructUniformValue<uint>>( uniform.value );
+
+								uint value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<uint>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( descValue.minMax.has_value() )
+								{
+									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
+									if ( ImGui::SliderInt(
+											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
+										 ) )
+									{
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
+									}
+								}
+								else
+								{
+									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
+									{
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
+									}
+								}
+								break;
+							}
+							case E_TYPE::FLOAT:
+							{
+								StructUniformValue<float> descValue
+									= std::get<StructUniformValue<float>>( uniform.value );
+
+								float value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<float>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( descValue.minMax.has_value() )
+								{
+									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
+									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
+									{
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
+									}
+								}
+								else
+								{
 									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
 									{
-										p_newRenderer->setUniform( value, uniform.name, program.name );
+										if ( isEditable )
+											p_renderer->setUniform( value, key );
 									}
+								}
+								break;
+							}
+							case E_TYPE::VEC2I:
+							{
+								StructUniformValue<Vec2i> descValue
+									= std::get<StructUniformValue<Vec2i>>( uniform.value );
+
+								Vec2i value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Vec2i>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::InputInt2( uniform.name.c_str(), (int *)&value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
+								}
+								break;
+							}
+							case E_TYPE::VEC2F:
+							{
+								StructUniformValue<Vec2f> descValue
+									= std::get<StructUniformValue<Vec2f>>( uniform.value );
+
+								Vec2f value;
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Vec2f>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
+								if ( ImGui::InputFloat2( uniform.name.c_str(), (float *)&value ) )
+								{
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
 								}
 								break;
 							}
 							case E_TYPE::COLOR4:
 							{
+								StructUniformValue<Util::Color::Rgba> descValue
+									= std::get<StructUniformValue<Util::Color::Rgba>>( uniform.value );
+
 								Util::Color::Rgba value;
-								p_newRenderer->getUniform<Util::Color::Rgba>( value, uniform, program );
+								if ( isEditable )
+								{
+									p_renderer->getUniform<Util::Color::Rgba>( value, key );
+								}
+								else
+								{
+									value = descValue.value;
+								}
+
 								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
 								{
-									p_newRenderer->setUniform( value, uniform.name, program.name );
+									if ( isEditable )
+										p_renderer->setUniform( value, key );
 								}
 								break;
 							}
@@ -615,11 +720,12 @@ namespace VTX::Bench
 				ImGui::Text( "out" );
 				ImNodes::EndInputAttribute();
 				ImNodes::PopAttributeFlag();
+
 				ImNodes::EndNode();
 				ImNodes::PopColorStyle();
 
 				// Links.
-				for ( std::unique_ptr<Link> & link : p_newRenderer->getRenderGraph().getLinks() )
+				for ( std::unique_ptr<Link> & link : graph.getLinks() )
 				{
 					mapIdDescLink.emplace( id, link.get() );
 					ImNodes::Link(
@@ -631,10 +737,10 @@ namespace VTX::Bench
 
 				// Output.
 				uint idFinalDescLink = -1;
-				if ( p_newRenderer->getRenderGraph().getOutput() )
+				if ( graph.getOutput() )
 				{
 					idFinalDescLink = id;
-					ImNodes::Link( id++, mapIdOutput[ p_newRenderer->getRenderGraph().getOutput() ], idFinalOuput );
+					ImNodes::Link( id++, mapIdOutput[ graph.getOutput() ], idFinalOuput );
 				}
 
 				ImNodes::MiniMap();
@@ -651,15 +757,15 @@ namespace VTX::Bench
 						{
 							if ( it.second == newLinkStartId )
 							{
-								p_newRenderer->getRenderGraph().setOutput( it.first );
+								graph.setOutput( it.first );
 							}
 						}
 					}
 
-					// DescLink.
+					// Add link.
 					else
 					{
-						p_newRenderer->getRenderGraph().addLink(
+						graph.addLink(
 							mapIdDescPass[ newLinkStartId ],
 							mapIdDescPass[ newLinkEndtId ],
 							mapIdChannelOutput[ newLinkStartId ],
@@ -675,31 +781,21 @@ namespace VTX::Bench
 					// Output.
 					if ( deletedDescLinkId == idFinalDescLink )
 					{
-						p_newRenderer->getRenderGraph().setOutput( nullptr );
+						graph.setOutput( nullptr );
 					}
 
 					// DescLink.
 					else
 					{
-						p_newRenderer->getRenderGraph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
+						graph.removeLink( mapIdDescLink[ deletedDescLinkId ] );
 					}
 				}
-			}
-			ImGui::End();
-		}
 
-		void _drawRenderQueue( Renderer::Renderer * const p_newRenderer ) const
-		{
-			if ( p_newRenderer->getRenderGraph().getRenderQueue().empty() )
-			{
-				return;
-			}
-
-			if ( ImGui::Begin( "Render queue" ) )
-			{
-				for ( const Renderer::Pass * const pass : p_newRenderer->getRenderGraph().getRenderQueue() )
+				// Check deleted node.
+				if ( passToDelete != nullptr )
 				{
-					ImGui::TextUnformatted( pass->name.c_str() );
+					p_renderer->clean();
+					graph.removePass( passToDelete );
 				}
 			}
 			ImGui::End();
@@ -718,7 +814,15 @@ namespace VTX::Bench
 	  private:
 		SDL_Window *  _window	 = nullptr;
 		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = false;
+		bool		  _vsync	 = true;
+		bool		  _drawUi	 = true;
+
+		void _saveImage( const std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
+		{
+			stbi_flip_vertically_on_write( true );
+			stbi_write_png_compression_level = 0;
+			stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, p_image.data(), 0 );
+		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

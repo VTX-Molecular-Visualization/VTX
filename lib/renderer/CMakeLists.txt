@@ -10,10 +10,12 @@ configure_target(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
+file(GLOB_RECURSE SHADERS shaders/*)
 file(GLOB_RECURSE HEADERS_VENDORS vendor/*.h)
 file(GLOB_RECURSE SOURCES_VENDORS vendor/*.c)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES}
+	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS}
 	PRIVATE ${SOURCES_VENDORS}
 	PUBLIC FILE_SET public_vendors TYPE HEADERS BASE_DIRS vendor FILES ${HEADERS_VENDORS})

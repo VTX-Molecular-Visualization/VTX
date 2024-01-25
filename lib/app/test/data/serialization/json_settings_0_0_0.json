@@ -1,0 +1,17 @@
+{
+	"DATA":
+	{
+		"MAP":
+		{
+			"SETTING_1":10,
+			"SETTING_2":20,
+			"SETTING_3":"value"
+		}
+	},
+	"VERSION":
+	{
+		"MAJOR":0,
+		"MINOR":0,
+		"REVISION":0
+	}
+}

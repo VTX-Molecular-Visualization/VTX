@@ -6,6 +6,8 @@
 
 namespace VTX::Util::String
 {
+	static const char * WHITESPACES = " \n\t\r\f\v";
+
 	void trim( std::string & p_str )
 	{
 		trimStart( p_str );
@@ -23,7 +25,7 @@ namespace VTX::Util::String
 		size_t startIndex = 0;
 		size_t endIndex	  = p_str.find( p_separator );
 
-		while ( endIndex != -1 )
+		while ( endIndex != size_t( -1 ) )
 		{
 			splittedStr.emplace_back( p_str.substr( startIndex, endIndex - startIndex ) );
 			startIndex = endIndex + 1;

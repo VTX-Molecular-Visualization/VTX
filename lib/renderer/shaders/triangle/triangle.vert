@@ -24,7 +24,7 @@ void main()
 
 	outData.viewPosition	= vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inVertexPosition, 1.f ) );
 	outData.normal			= vec3( uniformsCamera.matrixNormal * vec4( inVertexNormal, 1.f ) );
-	outData.color			= vec3( inVertexColor );
+	outData.color			= inVertexColor;
 	outData.selected		= inVertexSelected;
 	outData.id				= inVertexId;
 

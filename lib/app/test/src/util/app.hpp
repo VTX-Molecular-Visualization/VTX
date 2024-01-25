@@ -2,10 +2,10 @@
 #define __VTX_APP_TEST_UTIL_APP__
 
 #include <app/application/scene.hpp>
-#include <app/internal/action/ecs.hpp>
-#include <app/vtx_app.hpp>
+#include <app/core/ecs/base_entity.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
+#include <vector>
 
 namespace VTX::App::Test::Util
 {
@@ -25,6 +25,11 @@ namespace VTX::App::Test::Util
 		static void loadMolecule( const std::string & p_moleculePath );
 		static void loadTestMolecule();
 		static void loadTestTrajectoryMolecule();
+
+		static bool checkItemOrder(
+			const VTX::App::Application::Scene &	   p_scene,
+			const std::vector<Core::ECS::BaseEntity> & p_entities
+		);
 	};
 } // namespace VTX::App::Test::Util
 #endif

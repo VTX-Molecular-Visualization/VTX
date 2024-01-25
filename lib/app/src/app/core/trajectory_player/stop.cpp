@@ -14,4 +14,7 @@ namespace VTX::App::Core::TrajectoryPlayer
 			setCurrentFrameIndex( 0 );
 	}
 	void Stop::nextFrame( const size_t p_frameCount ) {}
+
+	std::unique_ptr<BasePlayer> Stop::clone() const { return std::make_unique<Stop>( *this ); }
+
 } // namespace VTX::App::Core::TrajectoryPlayer

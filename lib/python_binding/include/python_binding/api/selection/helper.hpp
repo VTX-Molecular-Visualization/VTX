@@ -7,6 +7,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <string>
+#include <util/concepts.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -44,18 +45,22 @@ namespace VTX::PythonBinding::API::Selection
 		return res;
 	}
 
-	std::vector<std::string> _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
-	std::vector<size_t>		 _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<std::string>  _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<size_t>		  _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<atom_index_t> _getAtomIndexListInKwargs(
+		const pybind11::kwargs & p_kwargs,
+		const std::string &		 p_param
+	);
 
-	template<typename Enum>
-	std::vector<Enum> _getEnumListFromStrInKwargs(
-		const pybind11::kwargs &						   p_kwargs,
-		const std::string &								   p_param,
-		const std::function<Enum( const std::string & )> & p_fromStrFunc,
-		const std::optional<Enum> &						   p_unknownEnum
+	template<EnumConcept EnumType>
+	std::vector<EnumType> _getEnumListFromStrInKwargs(
+		const pybind11::kwargs &							   p_kwargs,
+		const std::string &									   p_param,
+		const std::function<EnumType( const std::string & )> & p_fromStrFunc,
+		const std::optional<EnumType> &						   p_unknownEnum
 	)
 	{
-		std::vector<Enum> res;
+		std::vector<EnumType> res;
 
 		const std::vector<std::string> strList = _getStringListInKwargs( p_kwargs, p_param );
 
@@ -63,7 +68,7 @@ namespace VTX::PythonBinding::API::Selection
 
 		for ( const std::string & p_str : strList )
 		{
-			const Enum enumValue = p_fromStrFunc( p_str );
+			const EnumType enumValue = p_fromStrFunc( p_str );
 
 			if ( !( p_unknownEnum.has_value() && enumValue == p_unknownEnum ) )
 				res.emplace_back( enumValue );

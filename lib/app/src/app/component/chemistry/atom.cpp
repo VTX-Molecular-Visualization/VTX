@@ -8,6 +8,22 @@ namespace VTX::App::Component::Chemistry
 {
 	Atom::Atom( Residue * const p_residue ) : Atom( p_residue->getMoleculePtr() ) {};
 
+	Residue * Atom::getResiduePtr() const
+	{
+		return _moleculePtr->getResidue( _moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] );
+	}
+	const Residue * Atom::getConstResiduePtr() const
+	{
+		return _moleculePtr->getResidue( _moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] );
+	}
+	void Atom::setResiduePtr( Residue * p_residue )
+	{
+		_moleculePtr->_moleculeStruct.atomResidueIndexes[ _index ] = p_residue->getIndex();
+	}
+
+	Chain *		  Atom::getChainPtr() const { return getResiduePtr()->getChainPtr(); }
+	const Chain * Atom::getConstChainPtr() const { return getConstResiduePtr()->getConstChainPtr(); }
+
 	const std::string & Atom::getName() const { return _moleculePtr->_moleculeStruct.atomNames[ _index ]; }
 	void Atom::setName( const std::string & p_name ) { _moleculePtr->_moleculeStruct.atomNames[ _index ] = p_name; }
 
@@ -36,14 +52,14 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.atomSymbols[ _index ] = p_symbol;
 	}
 
-	bool Atom::isVisible() { return _moleculePtr->_atomVisibilities[ _index ]; }
+	bool Atom::isVisible() const { return _moleculePtr->_atomVisibilities[ _index ]; }
 	void Atom::setVisible( const bool p_visible ) { _moleculePtr->_atomVisibilities[ _index ] = p_visible; }
 
 	ChemDB::Atom::TYPE Atom::getType() const
 	{
-		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( _index ) )
+		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( atom_index_t( _index ) ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
-		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( _index ) )
+		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( atom_index_t( _index ) ) )
 			return ChemDB::Atom::TYPE::ION;
 
 		return ChemDB::Atom::TYPE::NORMAL;
@@ -53,16 +69,16 @@ namespace VTX::App::Component::Chemistry
 		switch ( p_type )
 		{
 		case ChemDB::Atom::TYPE::SOLVENT:
-			_moleculePtr->_moleculeStruct.atomSolvents.addValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.removeValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.addValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.removeValue( atom_index_t( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::ION:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.addValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.addValue( atom_index_t( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::NORMAL:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( _index );
-			_moleculePtr->_moleculeStruct.atomIons.removeValue( _index );
+			_moleculePtr->_moleculeStruct.atomSolvents.removeValue( atom_index_t( _index ) );
+			_moleculePtr->_moleculeStruct.atomIons.removeValue( atom_index_t( _index ) );
 			break;
 		}
 	}

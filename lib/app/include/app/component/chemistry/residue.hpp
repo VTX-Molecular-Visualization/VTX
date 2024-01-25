@@ -6,6 +6,7 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -15,7 +16,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Residue() = default;
-		Residue( Molecule * const p_molecule, const size_t p_index ) : _index( p_index ), _moleculePtr( p_molecule ) {}
+		Residue( Molecule * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {}
 
 		const Chain * const getConstChainPtr() const;
 		Chain * const		getChainPtr() const;
@@ -27,11 +28,11 @@ namespace VTX::App::Component::Chemistry
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
 
-		size_t					getIndexFirstAtom() const;
-		void					setIndexFirstAtom( const size_t p_indexFirstAtom );
-		size_t					getIndexLastAtom() const;
-		size_t					getAtomCount() const;
-		void					setAtomCount( const size_t p_atomCount );
+		atom_index_t			getIndexFirstAtom() const;
+		void					setIndexFirstAtom( const atom_index_t p_indexFirstAtom );
+		atom_index_t			getIndexLastAtom() const;
+		atom_index_t			getAtomCount() const;
+		void					setAtomCount( const atom_index_t p_atomCount );
 		size_t					getIndexFirstBond() const;
 		void					setIndexFirstBond( const size_t p_indexFirstBond );
 		size_t					getBondCount() const;

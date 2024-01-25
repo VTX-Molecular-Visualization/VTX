@@ -14,7 +14,8 @@ layout ( std140, binding = 3 ) uniform Uniforms
 	vec4 colorLight;	
 	vec4 colorFog;	
 	int shadingMode;
-	float specularFactor;		
+	float specularFactor;	
+	float shininess;
 	uint toonSteps;
 	float fogNear;
 	float fogFar;
@@ -28,6 +29,7 @@ const uint DIFFUSE = 0;
 const uint GLOSSY = 1;
 const uint TOON = 2;
 const uint FLAT_COLOR = 3;
+const uint GGX = 4;
 
 void main()
 {
@@ -50,7 +52,7 @@ void main()
 	}
 
 	// Lighting (on camera).
-	const vec3 lightDir = uniformsCamera.isCameraPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	const vec3 lightDir = uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
 	// FLAT_COLOR.
 	float lighting = 1.f;
@@ -66,7 +68,7 @@ void main()
 		const float diffuse = 1.f - uniforms.specularFactor;
 		const vec3	viewDir = normalize( -data.viewPosition );
 		const vec3	h		= normalize( lightDir + viewDir );
-		const float specular = uniforms.specularFactor * pow( max( dot( h, data.normal ), 0.f ), texelFetch( inTextureColor, texCoord, 0 ).w );
+		const float specular = uniforms.specularFactor * pow( max( dot( h, data.normal ), 0.f ), uniforms.shininess );
 		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 		lighting = ( diffuse + specular ) * cosTheta;
 	}
@@ -76,7 +78,7 @@ void main()
 		const float intensity = dot( data.normal, lightDir );		
 
 		// TODO: move to CPU.
-		// Set ligting base on intensity and toon steps.
+		// Set ligthing base on intensity and toon steps.
 		for( uint i = 0; i < uniforms.toonSteps; ++i )
 		{
 			const float range = float( i + 1 ) / float( uniforms.toonSteps );
@@ -86,6 +88,16 @@ void main()
 				break;
 			}
 		}
+	}
+	// GGX.
+	else if( uniforms.shadingMode == GGX )
+	{
+		const float diffuse = 1.f - uniforms.specularFactor;
+		const vec3	viewDir = normalize( -data.viewPosition );
+		const vec3	h		= normalize( lightDir + viewDir );
+		const float specular = uniforms.specularFactor * pow( max( dot( h, data.normal ), 0.f ), uniforms.shininess );
+		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
+		lighting = ( diffuse + specular ) * cosTheta;
 	}
 
 	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;

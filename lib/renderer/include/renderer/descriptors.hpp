@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_DESCRIPTORS__
 
 #include "enums.hpp"
+#include <array>
 #include <functional>
 #include <map>
 #include <optional>
@@ -16,18 +17,28 @@ namespace VTX::Renderer
 
 	struct Attachment
 	{
-		E_FORMAT	format		 = E_FORMAT::RGBA16F;
-		E_WRAPPING	wrappingS	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING	wrappingT	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING filteringMin = E_FILTERING::NEAREST;
-		E_FILTERING filteringMag = E_FILTERING::NEAREST;
-	};
-
-	struct Storage
-	{
+		E_FORMAT			  format	   = E_FORMAT::RGBA16F;
+		E_WRAPPING			  wrappingS	   = E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING			  wrappingT	   = E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING			  filteringMin = E_FILTERING::NEAREST;
+		E_FILTERING			  filteringMag = E_FILTERING::NEAREST;
+		std::optional<size_t> width;
+		std::optional<size_t> height;
+		void *				  data = nullptr;
 	};
 
 	struct Data
+	{
+		struct Entry
+		{
+			std::string name;
+			E_TYPE		nativeType;
+			size_t		components;
+		};
+		std::vector<Entry> entries;
+	};
+
+	struct Storage
 	{
 	};
 
@@ -58,14 +69,23 @@ namespace VTX::Renderer
 	};
 
 	using UniformValue = std::variant<
-		StructUniformValue<uint>,
+		StructUniformValue<bool>,
+		StructUniformValue<char>,
+		StructUniformValue<uchar>,
+		StructUniformValue<short>,
+		StructUniformValue<ushort>,
 		StructUniformValue<int>,
+		StructUniformValue<uint>,
 		StructUniformValue<float>,
+		StructUniformValue<Vec2i>,
+		StructUniformValue<Vec2f>,
 		StructUniformValue<Vec3f>,
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>>;
+		StructUniformValue<Util::Color::Rgba>,
+		// TODO: handle array of data.
+		StructUniformValue<std::array<Util::Color::Rgba, 256>>>;
 
 	struct Uniform
 	{
@@ -74,16 +94,27 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
+	using CountFunction = std::function<uint()>;
+
+	struct Draw
+	{
+		std::string	  name;
+		E_PRIMITIVE	  primitive;
+		CountFunction countFunction;
+		bool		  useIndices = false;
+	};
+
 	using Files	   = std::variant<FilePath, std::vector<FilePath>>;
 	using Uniforms = std::vector<Uniform>;
 
 	struct Program
 	{
-		std::string name;
-		Files		shaders;
-		Uniforms	uniforms;
-		std::string toInject;
-		std::string suffix;
+		std::string			name;
+		Files				shaders;
+		Uniforms			uniforms;
+		std::optional<Draw> draw;
+		std::string			toInject;
+		std::string			suffix;
 	};
 
 	using Inputs   = std::unordered_map<E_CHANNEL_INPUT, Input>;
@@ -92,11 +123,11 @@ namespace VTX::Renderer
 
 	struct Pass
 	{
-		std::string name;
-
-		Inputs	 inputs;
-		Outputs	 outputs;
-		Programs programs;
+		std::string			   name;
+		Inputs				   inputs;
+		Outputs				   outputs;
+		Programs			   programs;
+		std::vector<E_SETTING> settings;
 	};
 
 	struct Link
@@ -115,11 +146,22 @@ namespace VTX::Renderer
 	using Instruction  = std::function<void()>;
 	using Instructions = std::vector<Instruction>;
 
+	struct InstructionsDurationRange
+	{
+		std::string name;
+		size_t		first;
+		size_t		last;
+		float		duration;
+	};
+
+	using InstructionsDurationRanges = std::vector<InstructionsDurationRange>;
+
 	struct StructCompareVisitorDesc
 	{
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
 		{
-			return p_left.format == p_right.format;
+			// return p_left.format == p_right.format;
+			return true;
 		}
 		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
 

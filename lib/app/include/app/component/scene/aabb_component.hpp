@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_AABB__
 #define __VTX_APP_COMPONENT_SCENE_AABB__
 
+#include "app/application/ecs/component_registration.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
 #include <util/math/aabb.hpp>
@@ -9,6 +10,9 @@ namespace VTX::App::Component::Scene
 {
 	class AABB : public Core::ECS::BaseComponent
 	{
+	  private:
+		inline static Application::ECS::Registration<AABB> registration { "Scene::AABBComponent" };
+
 	  public:
 		AABB() = default;
 

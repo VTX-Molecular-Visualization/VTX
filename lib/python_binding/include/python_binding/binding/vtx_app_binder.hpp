@@ -9,6 +9,7 @@ namespace VTX::PythonBinding::Binding
 	class VTXAppBinder final : public Binder
 	{
 		void bind( PyTXModule & p_vtxmodule ) override;
+		void importHeaders() override;
 	};
 } // namespace VTX::PythonBinding::Binding
 

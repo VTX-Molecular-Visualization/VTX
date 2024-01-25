@@ -33,8 +33,6 @@ namespace VTX::Renderer::Context::GL
 
 		inline GLuint getId() const { return _id; }
 
-		inline void clear( const GLbitfield p_clear ) const { glClear( p_clear ); }
-
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( glIsFramebuffer( _id ) );
@@ -81,7 +79,8 @@ namespace VTX::Renderer::Context::GL
 			assert( glIsFramebuffer( _id ) );
 
 			glNamedFramebufferDrawBuffers(
-				_id, GLsizei( p_drawBuffers.size() ), static_cast<const GLenum *>( p_drawBuffers.data() ) );
+				_id, GLsizei( p_drawBuffers.size() ), static_cast<const GLenum *>( p_drawBuffers.data() )
+			);
 		}
 
 		inline void setReadBuffer( const GLenum p_readBuffer )

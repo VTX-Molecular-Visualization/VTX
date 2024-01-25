@@ -1,0 +1,21 @@
+{
+	"DATA":{
+		"OLD_NAME_COLOR":{
+			"A":1.0,
+			"B":1.0,
+			"G":0.0,
+			"R":0.0
+		},
+		"OLD_NAME_ENUM":"TWO",
+		"OLD_NAME_INT":42,
+		"OLD_UNKNOWN_FIELD":7.987654,
+		"OLD_NAME_STR":"strValue",
+		"OLD_NAME_VEC":{
+			"X":1.0,
+			"Y":2.0,
+			"Z":3.0
+		}
+	},
+	
+	"VERSION":{"MAJOR":0,"MINOR":1,"REVISION":0}
+}

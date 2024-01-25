@@ -10,11 +10,15 @@ namespace VTX::PythonBinding
 	  public:
 		PyTXModule( Wrapper::Module & p_mainModule );
 
+		const Wrapper::Module & core() const;
+		Wrapper::Module &		core();
+
 		const Wrapper::Module & commands() const;
 		Wrapper::Module &		commands();
 
 	  private:
 		Wrapper::Module _mainModule;
+		Wrapper::Module _coreModule;
 		Wrapper::Module _commandModule;
 	};
 }; // namespace VTX::PythonBinding

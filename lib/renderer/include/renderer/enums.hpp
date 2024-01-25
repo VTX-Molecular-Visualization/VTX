@@ -4,20 +4,16 @@
 namespace VTX::Renderer
 {
 
-	enum struct E_PASS_TYPE
-	{
-		// GEOMETRIC,
-		GRAPHIC,
-		// COMPUTE,
-		// ...?
-	};
-
-	enum struct E_CHANNEL_INPUT : int
+	enum struct E_CHANNEL_INPUT
 	{
 		_0,
 		_1,
 		_2,
 		_3,
+		_4,
+		_5,
+		_6,
+		_7,
 	};
 
 	enum struct E_CHANNEL_OUTPUT
@@ -30,48 +26,43 @@ namespace VTX::Renderer
 
 	enum struct E_FORMAT
 	{
+		RGB16F,
 		RGBA16F,
 		RGBA32UI,
 		RGBA32F,
 		RG32UI,
+		R8,
 		R16F,
 		R32F,
 		DEPTH_COMPONENT32F
 	};
 
-	enum struct E_PRIMTIVE
+	enum struct E_PRIMITIVE
 	{
 		POINTS,
 		LINES,
-		TRIANGLES
+		TRIANGLES,
+		PATCHES,
 	};
-
-	enum struct E_DRAW_TYPE
-	{
-
-	};
-
-	/*
-	enum struct E_HANDLE_TYPE
-	{
-		ATTACHMENT,
-		STORAGE,
-		// UNIFORM,
-		PROGRAM,
-		// ...?
-	};
-	*/
 
 	enum struct E_TYPE
 	{
-		UINT,
+		BOOL,
+		BYTE,
+		UBYTE,
+		SHORT,
+		USHORT,
 		INT,
+		UINT,
 		FLOAT,
+		VEC2I,
+		VEC2F,
 		VEC3F,
 		VEC4F,
 		MAT3F,
 		MAT4F,
-		COLOR4
+		COLOR4,
+		COLOR4_256
 	};
 
 	enum struct E_ACCESS
@@ -79,6 +70,11 @@ namespace VTX::Renderer
 		READ,
 		WRITE,
 		READ_WRITE,
+	};
+
+	enum struct E_SETTING
+	{
+		CLEAR
 	};
 
 	enum struct E_WRAPPING
@@ -98,6 +94,16 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_NEAREST,
 		NEAREST_MIPMAP_LINEAR,
 		LINEAR_MIPMAP_LINEAR,
+	};
+
+	enum struct E_SHADING
+	{
+		DIFFUSE,
+		GLOSSY,
+		TOON,
+		FLAT_COLOR,
+		GGX,
+		COUNT
 	};
 
 } // namespace VTX::Renderer

@@ -17,4 +17,7 @@ namespace VTX::App::Core::TrajectoryPlayer
 			setCurrentFrameIndex( getCurrentFrameIndex() - p_frameCount );
 		}
 	}
+
+	std::unique_ptr<BasePlayer> RevertOnce::clone() const { return std::make_unique<RevertOnce>( *this ); }
+
 } // namespace VTX::App::Core::TrajectoryPlayer

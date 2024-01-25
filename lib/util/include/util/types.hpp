@@ -10,10 +10,10 @@
 namespace VTX
 {
 	// Types.
+	using uchar	   = unsigned char;
 	using ushort   = unsigned short;
 	using uint	   = unsigned int;
 	using ulong	   = unsigned long;
-	using uchar	   = unsigned char;
 	using FilePath = std::filesystem::path;
 
 	using Vec2f = glm::vec2;
@@ -24,6 +24,7 @@ namespace VTX
 	using Vec3u = glm::uvec3;
 	using Vec3b = glm::bvec3;
 	using Vec4f = glm::vec4;
+	using Vec4d = glm::dvec4;
 	using Vec4i = glm::ivec4;
 	using Vec4u = glm::uvec4;
 	using Vec4b = glm::bvec4;
@@ -34,6 +35,8 @@ namespace VTX
 
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
+
+	using atom_index_t = uint;
 } // namespace VTX
 
 #endif

@@ -1,0 +1,20 @@
+{
+	"DATA":{
+		"COLOR":{
+			"A":1.0,
+			"B":1.0,
+			"G":0.0,
+			"R":0.0
+		},
+		"ENUM":"TWO",
+		"INT":42,
+		"STR":"Same same but different",
+		"VEC":{
+			"X":1.0,
+			"Y":2.0,
+			"Z":3.0
+		}
+	},
+	
+	"VERSION":{"MAJOR":1,"MINOR":2,"REVISION":0}
+}

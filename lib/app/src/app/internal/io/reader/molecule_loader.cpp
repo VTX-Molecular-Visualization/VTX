@@ -20,6 +20,7 @@
 
 namespace VTX::App::Internal::IO::Reader
 {
+	namespace Core	 = VTX::Core;
 	namespace ChemDB = VTX::Core::ChemDB;
 
 	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
@@ -35,9 +36,11 @@ namespace VTX::App::Internal::IO::Reader
 		VTX_INFO( "Build Molecule convenient structure : {}", chrono.elapsedTimeStr() );
 	}
 
-	void MoleculeLoader::readBuffer( const std::string &				   p_buffer,
-									 const FilePath &					   p_path,
-									 App::Component::Chemistry::Molecule & p_molecule )
+	void MoleculeLoader::readBuffer(
+		const std::string &					  p_buffer,
+		const FilePath &					  p_path,
+		App::Component::Chemistry::Molecule & p_molecule
+	)
 	{
 		_reader								  = VTX::IO::Reader::Molecule();
 		Core::Struct::Molecule moleculeStruct = Core::Struct::Molecule();

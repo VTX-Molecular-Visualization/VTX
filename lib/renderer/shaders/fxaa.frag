@@ -41,9 +41,6 @@ float	   rgb2luma( const vec3 rgb ) { return dot( rgb, luma ); }
 
 void main()
 {
-outFragColor = vec4( 1.f, 1.f, 1.f, 1.f );
-return;
-
 	vec2 invTexSize = 1.f / textureSize( inTexture, 0 );
 	vec2 texCoord	= gl_FragCoord.xy * invTexSize;
 
@@ -246,5 +243,4 @@ return;
 	// =====================================================================================
 
 	outFragColor = vec4( texture( inTexture, aaTexCoord ) );
-	//outFragColor = vec4( 1.f, 1.f, 1.f, 1.f );
 }

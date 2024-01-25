@@ -70,7 +70,7 @@ void main()
 		viewImpPos1 = outData.viewVertices[ 1 ];
 	}
 
-	if ( uniformsCamera.isCameraPerspective ){
+	if ( uniformsCamera.isCameraPerspective == 1 ){
 		// Compute normalized view vector to cylinder center.
 		const vec3 view = normalize( ( viewImpPos0 + viewImpPos1 ) * 0.5f );
 

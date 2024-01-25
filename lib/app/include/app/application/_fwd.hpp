@@ -3,9 +3,17 @@
 
 namespace VTX::App::Application
 {
-	struct Setting;
+	template<typename T>
+	class Setting;
+
+	class Settings;
 	class Scene;
 	class System;
+
+	namespace Action
+	{
+		class ActionManager;
+	}
 
 	namespace ECS
 	{
@@ -16,5 +24,6 @@ namespace VTX::App::Application
 	namespace Selection
 	{
 		class SelectionManager;
-	}
+		class Selection;
+	} // namespace Selection
 } // namespace VTX::App::Application

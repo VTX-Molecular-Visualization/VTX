@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_TRAJECTORY__
 
 #include "_fwd.hpp"
+#include "app/application/ecs/component_registration.hpp"
 #include "app/core/trajectory_player/base_player.hpp"
 #include "enum_trajectory.hpp"
 
@@ -9,6 +10,11 @@ namespace VTX::App::Component::Chemistry
 {
 	class Trajectory
 	{
+	  private:
+		inline static const Application::ECS::Registration<Trajectory> registration {
+			"Chemistry::TrajectoryComponent"
+		};
+
 	  public:
 		Trajectory();
 		Trajectory( Molecule * const p_molecule );
@@ -24,7 +30,6 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		void _update( const float p_deltaTime );
-
 		void _referenceUpdateFunction();
 
 		Molecule *												 _moleculePtr = nullptr;

@@ -31,7 +31,7 @@ namespace VTX::PythonBinding::API::Selection
 		_hasAtomParams
 			= p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" ) || p_kwargs.contains( "atom_t" );
 		atomNames	= _getStringListInKwargs( p_kwargs, "atom_n" );
-		atomIndexes = _getIndexListInKwargs( p_kwargs, "atom_i" );
+		atomIndexes = _getAtomIndexListInKwargs( p_kwargs, "atom_i" );
 		atomSymbols = _getEnumListFromStrInKwargs<VTX::Core::ChemDB::Atom::SYMBOL>(
 			p_kwargs, "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, VTX::Core::ChemDB::Atom::SYMBOL::UNKNOWN
 		);
@@ -90,18 +90,16 @@ namespace VTX::PythonBinding::API::Selection
 		for ( Molecule * const molecule : molecules )
 		{
 			App::Component::Scene::Selectable & selectableComponent
-				= App::VTXApp::get().MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
+				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
 			App::Application::Selection::MoleculeData & moleculeSelectionData
-				= dynamic_cast<App::Application::Selection::MoleculeData &>( p_selection.select( selectableComponent )
+				= p_selection.select<App::Application::Selection::MoleculeData>(
+					selectableComponent, App::Application::Selection::AssignmentType::APPEND
 				);
 
-			if ( selectFullMolecule )
+			if ( !selectFullMolecule )
 			{
-				moleculeSelectionData.selectAll();
-			}
-			else
-			{
+				moleculeSelectionData.clear();
 				_selectChains( kwargs, moleculeSelectionData );
 			}
 		}
@@ -120,37 +118,36 @@ namespace VTX::PythonBinding::API::Selection
 
 			for ( const std::string & molName : moleculeNames )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molName );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molName );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
 			for ( const size_t molIndex : moleculeIndexes )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::VTXApp::get().getScene().getItem( molIndex );
+				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molIndex );
 
-				if ( !VTXApp::get().MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
 				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
 		}
 		else
 		{
-			auto view = App::VTXApp::get().getScene().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+			auto view = App::SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{
-				Component::Chemistry::Molecule & moleculeComponent
-					= VTXApp::get().MAIN_REGISTRY().getComponent<Molecule>( entity );
+				Component::Chemistry::Molecule & moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( entity );
 
 				molecules.emplace( &moleculeComponent );
 			}
@@ -194,7 +191,7 @@ namespace VTX::PythonBinding::API::Selection
 		}
 		else if ( selectFullChain )
 		{
-			for ( Chain * const chain : molecule.getChains() )
+			for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
 			{
 				p_moleculeSelectionData.selectFullChain( *chain );
 			}
@@ -219,7 +216,7 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			if ( chainIDs.isEmpty() )
 			{
-				for ( Chain * const chain : molecule.getChains() )
+				for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
 				{
 					if ( chain == nullptr )
 						continue;
@@ -244,7 +241,7 @@ namespace VTX::PythonBinding::API::Selection
 					}
 				}
 
-				for ( Residue * const residue : molecule.getResidues() )
+				for ( const std::unique_ptr<Residue> & residue : molecule.getResidues() )
 				{
 					for ( const size_t residueIndex : p_kwargs.residueIndexes )
 					{
@@ -322,7 +319,7 @@ namespace VTX::PythonBinding::API::Selection
 			if ( chainIDs.size() == 0 )
 			{
 				_addAtomsFollowingKwargs(
-					0, molecule.getAtoms().size() - 1, molecule, p_moleculeSelectionData, p_kwargs
+					0, atom_index_t( molecule.getAtoms().size() - 1 ), molecule, p_moleculeSelectionData, p_kwargs
 				);
 			}
 			else
@@ -368,14 +365,14 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 	void MoleculeInterpretor::_addAtomsFollowingKwargs(
-		const size_t								p_firstAtom,
-		const size_t								p_lastAtom,
+		const atom_index_t							p_firstAtom,
+		const atom_index_t							p_lastAtom,
 		Molecule &									p_molecule,
 		App::Application::Selection::MoleculeData & p_moleculeSelectionData,
 		const InterpretedKwargs &					p_kwargs
 	)
 	{
-		for ( size_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
+		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
 		{
 			Atom * const atom = p_molecule.getAtom( atomID );
 

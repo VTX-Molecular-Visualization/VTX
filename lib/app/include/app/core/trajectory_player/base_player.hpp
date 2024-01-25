@@ -4,6 +4,7 @@
 #include "app/core/collection.hpp"
 #include <concepts>
 #include <core/struct/trajectory.hpp>
+#include <memory>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::TrajectoryPlayer
@@ -39,15 +40,14 @@ namespace VTX::App::Core::TrajectoryPlayer
 		inline uint getFPS() const { return _fps; }
 		void		setFPS( const uint p_fps );
 
+		virtual std::unique_ptr<BasePlayer> clone() const = 0;
+
 	  private:
 		VTX::Core::Struct::Trajectory * _trajectoryPtr = nullptr;
 
-		size_t _currentFrame	= 0;
-		bool   _isPlaying		= true;
-		uint   _fps				= 1u;
-		float  _trajectoryTimer = 0;
+		bool  _isPlaying	   = true;
+		uint  _fps			   = 1u;
+		float _trajectoryTimer = 0;
 	};
-
-	using Players = Collection<BasePlayer>;
 } // namespace VTX::App::Core::TrajectoryPlayer
 #endif

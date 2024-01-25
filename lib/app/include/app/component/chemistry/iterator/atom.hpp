@@ -3,6 +3,7 @@
 
 #include "app/component/chemistry/_fwd.hpp"
 #include <cstddef>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
@@ -10,7 +11,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct AtomIt
 		{
-			AtomIt( Molecule * const p_molecule, const size_t p_index, const size_t p_end );
+			AtomIt( Molecule * const p_molecule, const atom_index_t p_index, const atom_index_t p_end );
 
 			Atom & operator*() const;
 			Atom * operator->();
@@ -25,22 +26,26 @@ namespace VTX::App::Component::Chemistry::Iterator
 			AtomIt operator++( int );
 
 		  private:
-			Molecule * const _molecule;
-			size_t			 _index;
-			const size_t	 _end;
+			Molecule * const   _molecule;
+			atom_index_t	   _index;
+			const atom_index_t _end;
 
 			void _getValid();
 		};
 
-		AtomContainer( Molecule * const p_molecule, const size_t p_firstAtomIndex, const size_t p_atomCount );
+		AtomContainer(
+			Molecule * const   p_molecule,
+			const atom_index_t p_firstAtomIndex,
+			const atom_index_t p_atomCount
+		);
 
 		AtomIt begin();
 		AtomIt end();
 
 	  private:
-		Molecule * const _molecule;
-		const size_t	 _firstAtomIndex;
-		const size_t	 _atomCount;
+		Molecule * const   _molecule;
+		const atom_index_t _firstAtomIndex;
+		const atom_index_t _atomCount;
 	};
 } // namespace VTX::App::Component::Chemistry::Iterator
 #endif

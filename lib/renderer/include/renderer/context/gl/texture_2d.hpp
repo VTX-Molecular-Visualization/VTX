@@ -9,13 +9,15 @@ namespace VTX::Renderer::Context::GL
 	class Texture2D
 	{
 	  public:
-		Texture2D( const size_t p_width,
-				   const size_t p_height,
-				   const GLenum p_format	= GL_RGBA32F,
-				   const GLint	p_wrappingS = GL_REPEAT,
-				   const GLint	p_wrappingT = GL_REPEAT,
-				   const GLint	p_minFilter = GL_NEAREST_MIPMAP_LINEAR,
-				   const GLint	p_magFilter = GL_LINEAR )
+		Texture2D(
+			const size_t p_width,
+			const size_t p_height,
+			const GLenum p_format,
+			const GLint	 p_wrappingS,
+			const GLint	 p_wrappingT,
+			const GLint	 p_minFilter,
+			const GLint	 p_magFilter
+		)
 		{
 			assert( p_width > 0 && p_height > 0 );
 
@@ -34,10 +36,8 @@ namespace VTX::Renderer::Context::GL
 
 		inline int getId() const { return _id; }
 
-		inline void clear( const void * p_data,
-						   const GLenum p_format,
-						   const GLenum p_type,
-						   const GLint	p_level = 0 ) const
+		inline void clear( const void * p_data, const GLenum p_format, const GLenum p_type, const GLint p_level = 0 )
+			const
 		{
 			glClearTexImage( _id, p_level, p_format, p_type, p_data );
 		}
@@ -50,14 +50,16 @@ namespace VTX::Renderer::Context::GL
 			_create();
 		}
 
-		inline void fill( const void *	p_pixels,
-						  const GLenum	p_format  = GL_RGB,
-						  const GLenum	p_type	  = GL_FLOAT,
-						  const GLint	p_level	  = 0,
-						  const GLint	p_offsetX = 0,
-						  const GLint	p_offsetY = 0,
-						  const GLsizei p_width	  = -1,
-						  const GLsizei p_height  = -1 ) const
+		inline void fill(
+			const void *  p_pixels,
+			const GLenum  p_format	= GL_RGB,
+			const GLenum  p_type	= GL_FLOAT,
+			const GLint	  p_level	= 0,
+			const GLint	  p_offsetX = 0,
+			const GLint	  p_offsetY = 0,
+			const GLsizei p_width	= -1,
+			const GLsizei p_height	= -1
+		) const
 		{
 			const int width	 = p_width == -1 ? _width : p_width;
 			const int height = p_height == -1 ? _height : p_height;
@@ -87,11 +89,13 @@ namespace VTX::Renderer::Context::GL
 
 		inline void unbindFromUnit( const GLuint p_index ) { glBindTextureUnit( p_index, 0 ); }
 
-		inline void getImage( const GLint	p_level,
-							  const GLenum	p_format,
-							  const GLenum	p_type,
-							  const GLsizei p_bufSize,
-							  void * const	p_pixels ) const
+		inline void getImage(
+			const GLint	  p_level,
+			const GLenum  p_format,
+			const GLenum  p_type,
+			const GLsizei p_bufSize,
+			void * const  p_pixels
+		) const
 		{
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}

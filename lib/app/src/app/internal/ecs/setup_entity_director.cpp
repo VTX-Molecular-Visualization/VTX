@@ -3,6 +3,7 @@
 #include "app/entity/application/scene_entity.hpp"
 #include "app/entity/scene/camera_entity.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
+#include "app/entity/scene/viewpoint_entity.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Internal::ECS
@@ -16,19 +17,32 @@ namespace VTX::App::Internal::ECS
 
 		// Scene entity
 		entityDirector.addBuildStep(
-			Entity::SCENE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Application::SceneEntityBuilder::addComponent );
+			Entity::SCENE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Application::SceneEntityBuilder::addComponent
+		);
 
 		// Camera entity
 		entityDirector.addBuildStep(
-			Entity::CAMERA_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::CameraEntityBuilder::addComponent );
+			Entity::CAMERA_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::CameraEntityBuilder::addComponent
+		);
 
 		// Molecule entity
 		entityDirector.addBuildStep(
-			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::MoleculeEntityBuilder::addComponent );
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::MoleculeEntityBuilder::addComponent
+		);
 		entityDirector.addBuildStep(
-			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::MoleculeEntityBuilder::setup );
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::MoleculeEntityBuilder::setup
+		);
 		entityDirector.addBuildStep(
-			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::POST_SETUP, &Entity::Scene::MoleculeEntityBuilder::postSetup );
+			Entity::MOLECULE_ENTITY_ID, PASS_ENUM::POST_SETUP, &Entity::Scene::MoleculeEntityBuilder::postSetup
+		);
+
+		// Viewpoint entity
+		entityDirector.addBuildStep(
+			Entity::VIEWPOINT_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::ViewpointEntityBuilder::addComponent
+		);
+		entityDirector.addBuildStep(
+			Entity::VIEWPOINT_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::ViewpointEntityBuilder::setup
+		);
 	}
 
 } // namespace VTX::App::Internal::ECS

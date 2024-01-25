@@ -7,6 +7,7 @@
 #include <pybind11/pybind11.h>
 #include <set>
 #include <string>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::PythonBinding::API::Selection
@@ -36,7 +37,7 @@ namespace VTX::PythonBinding::API::Selection
 
 			std::vector<std::string>					 atomNames;
 			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols;
-			std::vector<size_t>							 atomIndexes;
+			std::vector<atom_index_t>					 atomIndexes;
 
 		  private:
 			bool _hasMoleculeParams;
@@ -69,8 +70,8 @@ namespace VTX::PythonBinding::API::Selection
 		);
 
 		static void _addAtomsFollowingKwargs(
-			const size_t								p_firstAtom,
-			const size_t								p_lastAtom,
+			const atom_index_t							p_firstAtom,
+			const atom_index_t							p_lastAtom,
 			App::Component::Chemistry::Molecule &		p_molecule,
 			App::Application::Selection::MoleculeData & p_moleculeSelectionData,
 			const InterpretedKwargs &					p_kwargs

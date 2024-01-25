@@ -45,12 +45,13 @@ namespace VTX::App::Core
 			typename std::vector<std::unique_ptr<T>>::const_iterator it = std::find_if(
 				_collection.begin(),
 				_collection.end(),
-				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; } );
+				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; }
+			);
 
 			if ( it == _collection.end() )
 				return nullptr;
 			else
-				return std::make_unique( *it );
+				return ( *it )->clone();
 		}
 
 		template<typename T2>
@@ -59,7 +60,8 @@ namespace VTX::App::Core
 			typename std::vector<std::unique_ptr<T>>::const_iterator it = std::find_if(
 				_collection.begin(),
 				_collection.end(),
-				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; } );
+				[ p_name ]( const std::unique_ptr<T> & p_item ) { return p_item->getName() == p_name; }
+			);
 
 			if ( it == _collection.end() )
 			{

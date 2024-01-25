@@ -1,7 +1,7 @@
 #include "app.hpp"
+#include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/system.hpp>
-#include <app/internal/action/ecs.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <memory>
@@ -22,7 +22,7 @@ namespace VTX::App::Test::Util
 			isInit = true;
 		}
 
-		VTXApp::get().getScene().reset();
+		SCENE().reset();
 	}
 
 	std::unique_ptr<PythonBinding::Interpretor> App::createInterpretor()
@@ -31,7 +31,7 @@ namespace VTX::App::Test::Util
 
 		if ( !VTX::App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
 			VTX::App::VTXApp::get().getSystem().referenceSystem(
-				PythonBinding::Interpretor ::SYSTEM_KEY, interpretorPtr.get()
+				PythonBinding::Interpretor::SYSTEM_KEY, interpretorPtr.get()
 			);
 
 		interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
@@ -41,11 +41,9 @@ namespace VTX::App::Test::Util
 
 	void App::loadMolecule( const std::string & p_moleculePath )
 	{
-		Application::Scene & scene = VTXApp::get().getScene();
-
 		// Create MoleculeEntity
-		const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / p_moleculePath;
-		Internal::Action::ECS::Open openAction	 = Internal::Action::ECS::Open( moleculePath );
+		const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / p_moleculePath;
+		VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
 		openAction.execute();
 	}
 

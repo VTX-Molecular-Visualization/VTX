@@ -3,19 +3,14 @@
 
 #include "app/core/ecs/base_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/core/ecs/concepts.hpp"
 #include "app/core/ecs/view.hpp"
-#include <concepts>
 #include <entt/entity/helper.hpp>
 #include <entt/entity/registry.hpp>
 #include <map>
 
 namespace VTX::App::Core::ECS
 {
-	template<typename E>
-	concept ECS_Entity = requires( E p_component ) { std::derived_from<E, BaseEntity>; };
-	template<typename C>
-	concept ECS_Component = requires( C p_component ) { true; };
-
 	enum class SIGNAL : int
 	{
 		CONSTRUCT,
@@ -83,7 +78,7 @@ namespace VTX::App::Core::ECS
 			return _enttRegistry.get<C>( entity );
 		}
 
-		template<typename Type, typename... Other>
+		template<ECS_Component Type, ECS_Component... Other>
 		View<Type, Other...> getComponents() const
 		{
 			return View<Type, Other...>( _enttRegistry );
@@ -128,6 +123,7 @@ namespace VTX::App::Core::ECS
 			entt::basic_view view = _enttRegistry.view<C>();
 			_enttRegistry.destroy( view.begin(), view.end() );
 		}
+		void clear() { _enttRegistry.clear(); }
 
 	  private:
 		entt::registry _enttRegistry = entt::registry();

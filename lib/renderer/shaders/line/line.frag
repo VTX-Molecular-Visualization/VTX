@@ -14,5 +14,5 @@ layout( location = 1 ) out vec4 outColor;
 void main()
 {
 	packData( inData.viewPosition, inData.normal, 0, outDataPacked );
-	outColor			  = vec4( 1.f, 1.f, 1.f, 32.f );
+	outColor			  = vec4( 1.f, 1.f, 1.f, 1.f );
 }

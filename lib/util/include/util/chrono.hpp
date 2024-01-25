@@ -34,7 +34,7 @@ namespace VTX::Util
 
 	inline const Chrono::Timer CHRONO_CPU = []( const Chrono::Task & p_task )
 	{
-		static Chrono c;
+		Chrono c;
 		c.start();
 		p_task();
 		c.stop();

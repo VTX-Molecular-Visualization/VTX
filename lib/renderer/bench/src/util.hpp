@@ -1,26 +1,51 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <core/gpu/mesh.hpp>
-#include <core/gpu/molecule.hpp>
+#include <numeric>
+#include <util/constants.hpp>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Bench
 {
-	const Core::Gpu::Mesh DEFAULT_MESH
-		= { MAT4F_ID,
-			{ Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
-			{ Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
-			{ Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
-			  Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
-			  Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) },
-			{ 1, 1, 1, 1 },
-			{ 0, 0, 0, 0 },
-			{ 0, 0, 0, 0 },
-			{ 0, 1, 2 } };
+	struct Mesh
+	{
+		Mat4f			   transform;
+		std::vector<Vec3f> vertices;
+		std::vector<Vec3f> normals;
+		std::vector<uchar> colors;
+		std::vector<bool>  visibilities;
+		std::vector<bool>  selections;
+		std::vector<uint>  ids;
+		std::vector<uint>  indices;
+	};
 
-	const Core::Gpu::Molecule DEFAULT_MOLECULE
+	struct Molecule
+	{
+		Mat4f			   transform;
+		std::vector<Vec3f> atomPositions;
+		std::vector<uchar> atomColors;
+		std::vector<float> atomRadii;
+		std::vector<bool>  atomVisibilities;
+		std::vector<bool>  atomSelections;
+		std::vector<uint>  atomIds;
+		std::vector<uint>  bonds;
+	};
+
+	/*
+	const Mesh DEFAULT_MESH = { MAT4F_ID,
+								{ Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
+								{ Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
+								{ Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
+								  Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
+								  Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) },
+								{ 1, 1, 1, 1 },
+								{ 0, 0, 0, 0 },
+								{ 0, 0, 0, 0 },
+								{ 0, 1, 2 } };
+
+	const Molecule DEFAULT_MOLECULE
 		= { MAT4F_ID,
 			{ Vec3f( -2.f, 0.f, 0.f ), Vec3f( 2.f, 0.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) },
 			{ Util::Color::Rgba::random(), Util::Color::Rgba::random(), Util::Color::Rgba::random() },
@@ -31,8 +56,9 @@ namespace VTX::Bench
 			{ 0, 1, 1, 2, 2, 0 }
 
 		  };
+	*/
 
-	Core::Gpu::Molecule generateAtomGrid( int p_size )
+	Molecule generateAtomGrid( int p_size )
 	{
 		if ( p_size % 2 == 0 )
 		{
@@ -41,9 +67,9 @@ namespace VTX::Bench
 
 		const size_t realSize = p_size * p_size * p_size;
 
-		std::vector<Vec3f>			   positions( realSize );
-		std::vector<Util::Color::Rgba> colors( realSize );
-		std::vector<uint>			   bonds( ( realSize - 1 ) * 2 );
+		std::vector<Vec3f> positions( realSize );
+		std::vector<uchar> colors( realSize );
+		std::vector<uint>  bonds( ( realSize - 1 ) * 2 );
 
 		size_t		counter = 0;
 		const float offset	= 2.f;
@@ -55,7 +81,7 @@ namespace VTX::Bench
 				for ( int k = -p_size / 2; k <= p_size / 2; ++k )
 				{
 					positions[ counter ] = Vec3f( i * offset, j * offset, k * offset );
-					colors[ counter ]	 = Util::Color::Rgba::random();
+					colors[ counter ]	 = uchar( rand() % 256 );
 					if ( counter < realSize - 1 )
 					{
 						bonds[ counter * 2 ]	 = uint( counter );
@@ -68,15 +94,18 @@ namespace VTX::Bench
 
 		assert( counter == realSize );
 
+		std::vector<uint> ids( realSize );
+		std::iota( ids.begin(), ids.end(), 0 );
+
 		VTX_INFO( "{} atoms and {} bonds generated", realSize, bonds.size() / 2 );
 
 		return { MAT4F_ID,
 				 positions,
 				 colors,
 				 std::vector<float>( realSize, 0.5f ),
-				 std::vector<uint>( realSize, 1 ),
-				 std::vector<uint>( realSize, 0 ),
-				 std::vector<uint>( realSize, 0 ),
+				 std::vector<bool>( realSize, true ),
+				 std::vector<bool>( realSize, false ),
+				 ids,
 				 bonds };
 	}
 

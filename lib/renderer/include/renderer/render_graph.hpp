@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_RENDER_GRAPH__
 
 #include "context/concept_context.hpp"
+#include "passes.hpp"
 #include "scheduler/concept_scheduler.hpp"
 #include <util/logger.hpp>
 #include <util/variant.hpp>
@@ -14,16 +15,45 @@ namespace VTX::Renderer
 	{
 	  public:
 		RenderGraph() = default;
-		~RenderGraph() { _clear(); }
+		~RenderGraph() { clean(); }
 
+		inline Passes &		  getPasses() { return _passes; }
+		inline Links &		  getLinks() { return _links; }
 		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
 		inline const Output * getOutput() { return _output; }
 		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
+		inline bool			  isBuilt() { return _context != nullptr; }
+
+		inline bool isInRenderQueue( const Pass * const p_pass )
+		{
+			return std::find( _renderQueue.begin(), _renderQueue.end(), p_pass ) != _renderQueue.end();
+		}
 
 		inline Pass * const addPass( const Pass & p_pass )
 		{
 			_passes.emplace_back( std::make_unique<Pass>( p_pass ) );
 			return _passes.back().get();
+		}
+
+		void removePass( const Pass * const p_pass )
+		{
+			std::erase_if(
+				_links,
+				[ &p_pass ]( const std::unique_ptr<Link> & p_e ) { return p_e->src == p_pass || p_e->dest == p_pass; }
+			);
+
+			if ( std::find_if(
+					 p_pass->outputs.begin(),
+					 p_pass->outputs.end(),
+					 [ this ]( const auto & p_element ) { return &p_element.second == _output; }
+				 )
+				 != p_pass->outputs.end() )
+			{
+				VTX_DEBUG( "{}", "REMOVE OUTPUT" );
+				_output = nullptr;
+			}
+
+			std::erase_if( _passes, [ &p_pass ]( const std::unique_ptr<Pass> & p_e ) { return p_e.get() == p_pass; } );
 		}
 
 		bool addLink(
@@ -50,18 +80,12 @@ namespace VTX::Renderer
 				return false;
 			}
 
-			// Check input is free.
-			if ( std::find_if(
-					 _links.begin(),
-					 _links.end(),
-					 [ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
-					 { return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
-				 )
-				 != _links.end() )
-			{
-				VTX_WARNING( "Channel {} from pass {} is already in use", uint( p_channelDest ), p_passDest->name );
-				return false;
-			}
+			// Remove input if already used.
+			std::erase_if(
+				_links,
+				[ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
+				{ return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
+			);
 
 			// Create link.
 			_links.emplace_back( std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } )
@@ -72,20 +96,21 @@ namespace VTX::Renderer
 
 		void removeLink( const Link * const p_link )
 		{
-			// TODO: is link deleted?
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
 		bool setup(
-			void * const	 p_loader,
-			const size_t	 p_width,
-			const size_t	 p_height,
-			const FilePath & p_shaderPath,
-			const Handle	 p_output = 0
+			void * const				 p_loader,
+			const size_t				 p_width,
+			const size_t				 p_height,
+			const FilePath &			 p_shaderPath,
+			Instructions &				 p_outInstructions,
+			InstructionsDurationRanges & p_outInstructionsDurationRanges,
+			const Handle				 p_output = 0
 		)
 		{
 			// Clean all.
-			_clear();
+			clean();
 
 			VTX_DEBUG( "{}", "Building render graph..." );
 
@@ -117,6 +142,7 @@ namespace VTX::Renderer
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				clean();
 				return false;
 			}
 
@@ -127,15 +153,20 @@ namespace VTX::Renderer
 			try
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context->build( _renderQueue, _links, p_output, _instructions );
+				_context->build(
+					_renderQueue, _links, p_output, _uniforms, p_outInstructions, p_outInstructionsDurationRanges
+				);
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
+				p_outInstructions.clear();
+				clean();
 				return false;
 			}
 
+			VTX_DEBUG( "{} instructions generated", p_outInstructions.size() );
 			VTX_DEBUG( "{}", "Building render graph... done" );
 			return true;
 		}
@@ -143,63 +174,82 @@ namespace VTX::Renderer
 		void resize( const size_t p_width, const size_t p_height )
 		{
 			assert( _context != nullptr );
-			_context->resize( p_width, p_height );
+			_context->resize( _renderQueue, p_width, p_height );
 		}
 
-		void render()
+		void setOutput( const Handle p_output )
 		{
-			// TODO: Move to renderer?
-			// Execute instructions.
-			for ( Instruction & instruction : _instructions )
-			{
-				instruction();
-			}
+			assert( _context != nullptr );
+			_context->setOutput( p_output );
+		}
+
+		void clean()
+		{
+			_renderQueue.clear();
+			_context.reset( nullptr );
+		}
+
+		inline void addUniforms( const Uniforms & p_uniforms ) { _uniforms.push_back( p_uniforms ); }
+
+		template<typename T>
+		inline void setUniform( const T & p_value, const std::string & p_key )
+		{
+			_context->setUniform( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_uniform, const std::string & p_program = "" )
+		inline void getUniform( T & p_value, const std::string & p_key ) const
 		{
-			if ( _context != nullptr )
-			{
-				_context->setUniform( p_value, p_uniform, p_program );
-			}
+			_context->template getUniform<T>( p_value, p_key );
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const Uniform & p_uniform, const Program & p_program )
+		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
 		{
-			if ( _context != nullptr )
-			{
-				_context->template getUniform<T>( p_value, p_uniform.name, p_program.name );
-			}
-			else
-			{
-				assert( std::holds_alternative<StructUniformValue<T>>( p_uniform.value ) );
-
-				p_value = std::get<StructUniformValue<T>>( p_uniform.value ).value;
-			}
+			_context->setData( p_data, p_key );
 		}
 
-		// Debug purposes only.
-		inline Passes & getPasses() { return _passes; }
-		inline Links &	getLinks() { return _links; }
+		inline void fillInfos( StructInfos & p_infos ) const { _context->fillInfos( p_infos ); }
+
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const
+		{
+			return _context->measureTaskDuration( p_task );
+		}
+
+		inline void compileShaders() const { _context->compileShaders(); }
+
+		inline void snapshot(
+			std::vector<uchar> &			p_image,
+			const Context::RenderFunction & p_renderFunction,
+			const size_t					p_width	 = 0,
+			const size_t					p_height = 0
+		)
+		{
+			_context->snapshot( p_image, _renderQueue, p_renderFunction, p_width, p_height );
+		}
+
+		inline void getTextureData(
+			std::any &			   p_textureData,
+			const size_t		   p_x,
+			const size_t		   p_y,
+			const std::string &	   p_pass,
+			const E_CHANNEL_OUTPUT p_channel
+		) const
+		{
+			return _context->getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
+		}
+
+		inline const std::vector<Pass *> & getAvailablePasses() const { return availablePasses; }
 
 	  private:
 		S				   _scheduler;
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 
-		const Output * _output;
-		Passes		   _passes;
-		Links		   _links;
-		Instructions   _instructions;
-
-		void _clear()
-		{
-			_renderQueue.clear();
-			_instructions.clear();
-			_context.reset( nullptr );
-		}
+		const Output *		  _output;
+		Passes				  _passes;
+		std::vector<Uniforms> _uniforms;
+		Links				  _links;
 	};
 
 } // namespace VTX::Renderer

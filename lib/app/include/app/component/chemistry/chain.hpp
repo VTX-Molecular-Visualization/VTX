@@ -7,6 +7,7 @@
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -33,8 +34,8 @@ namespace VTX::App::Component::Chemistry
 		size_t getResidueCount() const;
 		void   setResidueCount( const size_t p_residueCount );
 
-		size_t getIndexFirstAtom() const;
-		size_t getIndexLastAtom() const;
+		atom_index_t getIndexFirstAtom() const;
+		atom_index_t getIndexLastAtom() const;
 
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }

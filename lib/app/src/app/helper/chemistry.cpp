@@ -11,10 +11,10 @@ namespace VTX::App::Helper::Chemistry
 	{
 		std::vector<Chain *> res = std::vector<Chain *>();
 
-		for ( Chain * const chain : p_molecule.getChains() )
+		for ( const std::unique_ptr<Chain> & chain : p_molecule.getChains() )
 		{
 			if ( chain != nullptr && chain->getName() == p_chainName )
-				res.emplace_back( chain );
+				res.emplace_back( chain.get() );
 		}
 
 		return res;
