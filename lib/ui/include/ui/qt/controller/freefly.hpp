@@ -47,8 +47,7 @@ namespace VTX::UI::QT::Controller
 		explicit Freefly();
 		~Freefly() = default;
 
-		inline Util::Hashing::Hash		getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
-		std::unique_ptr<BaseController> clone() const override;
+		inline Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 
 		float translationSpeed	 = Internal::Controller::TRANSLATION_SPEED_DEFAULT;
 		float accelerationFactor = Internal::Controller::ACCELERATION_FACTOR_DEFAULT;

@@ -30,8 +30,6 @@ namespace VTX::App::Core::TrajectoryPlayer
 		bool isPlayingForward() const { return _forward; }
 		void setPlayingForward( const bool p_forward ) { _forward = p_forward; }
 
-		std::unique_ptr<BasePlayer> clone() const override;
-
 	  private:
 		bool _forward = true;
 	};

@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_CONTROLLER__
 
 #include <QWidget>
-#include <app/core/collectionable.hpp>
 #include <memory>
 #include <string>
 #include <util/hashing.hpp>
@@ -10,7 +9,7 @@
 
 namespace VTX::UI::QT::Controller
 {
-	class BaseController : public App::Core::Collectionable
+	class BaseController
 	{
 	  public:
 		BaseController()		  = default;
@@ -25,8 +24,7 @@ namespace VTX::UI::QT::Controller
 
 		inline bool isTargetWidgetFocused() const { return _widgetTarget == nullptr || _widgetTarget->hasFocus(); }
 
-		virtual Util::Hashing::Hash				getHashedCollectionID() const = 0;
-		virtual std::unique_ptr<BaseController> clone() const				  = 0;
+		virtual Util::Hashing::Hash getHashedCollectionID() const = 0;
 
 	  protected:
 		inline const QWidget * _getWidgetTarget() { return _widgetTarget; }

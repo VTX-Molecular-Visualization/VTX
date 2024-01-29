@@ -1,8 +1,6 @@
 #ifndef __VTX_APP_CORE_COLLECTION__
 #define __VTX_APP_CORE_COLLECTION__
 
-#include "collectionable.hpp"
-#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <map>
@@ -15,12 +13,7 @@ namespace VTX::App::Core
 	using CollectionKey = std::string;
 
 	template<typename T>
-	concept CollectionableConcept
-		= std::derived_from<T, Collectionable> && requires( T & p_item ) {
-													  {
-														  p_item.clone()
-														  } -> std::same_as<std::unique_ptr<T>>;
-												  };
+	concept CollectionableConcept = requires() { true; };
 
 	template<CollectionableConcept T>
 	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>

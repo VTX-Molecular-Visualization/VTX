@@ -9,8 +9,6 @@ namespace VTX::UI::QT::Controller
 {
 	Freefly::Freefly() : BaseCameraController() {}
 
-	std::unique_ptr<BaseController> Freefly::clone() const { return std::make_unique<Freefly>( *this ); }
-
 	void Freefly::_updateInputs( const float & p_deltaTime )
 	{
 		if ( !isTargetWidgetFocused() )

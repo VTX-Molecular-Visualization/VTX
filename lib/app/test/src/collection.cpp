@@ -1,5 +1,4 @@
 #include <app/core/collection.hpp>
-#include <app/core/collectionable.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
@@ -7,15 +6,13 @@
 
 namespace
 {
-	using Collectionable = VTX::App::Core::Collectionable;
-	class BaseClass : public Collectionable
+	class BaseClass
 	{
 	  public:
 		BaseClass()			 = default;
 		virtual ~BaseClass() = default;
 
-		virtual int						   getValue() { return 0; };
-		virtual std::unique_ptr<BaseClass> clone() = 0;
+		virtual int getValue() { return 0; };
 	};
 
 	using CollectionTest = VTX::App::Core::Collection<BaseClass>;
@@ -30,8 +27,6 @@ namespace
 		virtual ~DerivedClass1()			   = default;
 
 		int getValue() override { return 1; };
-
-		std::unique_ptr<BaseClass> clone() override { return std::make_unique<DerivedClass1>( *this ); };
 	};
 	class DerivedClass2 final : public BaseClass
 	{
@@ -44,8 +39,6 @@ namespace
 		virtual ~DerivedClass2()			   = default;
 
 		int getValue() override { return 2; };
-
-		std::unique_ptr<BaseClass> clone() override { return std::make_unique<DerivedClass2>( *this ); };
 	};
 	class DerivedClass3 final : public BaseClass
 	{
@@ -58,8 +51,6 @@ namespace
 		virtual ~DerivedClass3()			   = default;
 
 		int getValue() override { return 3; };
-
-		std::unique_ptr<BaseClass> clone() override { return std::make_unique<DerivedClass3>( *this ); };
 	};
 
 } // namespace
@@ -68,8 +59,6 @@ TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
-
-	using Collectionable = VTX::App::Core::Collectionable;
 
 	std::unique_ptr<BaseClass> ptr = nullptr;
 
