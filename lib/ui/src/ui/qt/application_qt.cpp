@@ -146,5 +146,6 @@ namespace VTX::UI::QT
 	}
 
 	Input::InputManager & INPUT_MANAGER() { return QT_APP()->getInputManager(); }
+	Mode::BaseMode &	  MODE() { return QT_APP()->getCurrentMode(); }
 
 } // namespace VTX::UI::QT

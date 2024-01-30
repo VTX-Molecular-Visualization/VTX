@@ -15,6 +15,7 @@ namespace VTX::UI::QT::Controller
 		BaseController()		  = default;
 		virtual ~BaseController() = default;
 
+		virtual void init() {};
 		virtual void update( const float & p_deltaTime ) {};
 
 		inline bool	 isActive() const { return _isActive; }
@@ -24,7 +25,8 @@ namespace VTX::UI::QT::Controller
 
 		inline bool isTargetWidgetFocused() const { return _widgetTarget == nullptr || _widgetTarget->hasFocus(); }
 
-		virtual Util::Hashing::Hash getHashedCollectionID() const = 0;
+		virtual VTX::Util::Hashing::Hash		getHashedCollectionID() const = 0;
+		virtual std::unique_ptr<BaseController> clone() const				  = 0;
 
 	  protected:
 		inline const QWidget * _getWidgetTarget() { return _widgetTarget; }

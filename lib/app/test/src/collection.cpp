@@ -12,7 +12,8 @@ namespace
 		BaseClass()			 = default;
 		virtual ~BaseClass() = default;
 
-		virtual int getValue() { return 0; };
+		virtual int						   getValue() { return 0; };
+		virtual std::unique_ptr<BaseClass> clone() const = 0;
 	};
 
 	using CollectionTest = VTX::App::Core::Collection<BaseClass>;
@@ -26,7 +27,8 @@ namespace
 		DerivedClass1( const DerivedClass1 & ) = default;
 		virtual ~DerivedClass1()			   = default;
 
-		int getValue() override { return 1; };
+		int						   getValue() override { return 1; };
+		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass1>(); }
 	};
 	class DerivedClass2 final : public BaseClass
 	{
@@ -38,7 +40,8 @@ namespace
 		DerivedClass2( const DerivedClass2 & ) = default;
 		virtual ~DerivedClass2()			   = default;
 
-		int getValue() override { return 2; };
+		int						   getValue() override { return 2; };
+		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass2>(); }
 	};
 	class DerivedClass3 final : public BaseClass
 	{
@@ -50,7 +53,8 @@ namespace
 		DerivedClass3( const DerivedClass3 & ) = default;
 		virtual ~DerivedClass3()			   = default;
 
-		int getValue() override { return 3; };
+		int						   getValue() override { return 3; };
+		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass3>(); }
 	};
 
 } // namespace

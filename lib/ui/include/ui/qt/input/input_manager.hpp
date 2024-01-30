@@ -4,6 +4,7 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_wheel.hpp"
+#include "ui/qt/input/keys.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -17,21 +18,6 @@
 
 namespace VTX::UI::QT::Input
 {
-	enum class KeyboardLayout : int
-	{
-		QWERTY,
-		AZERTY
-	};
-
-	enum ModifierFlag : uint
-	{
-		None	= 0,
-		Control = 1 << 0,
-		Shift	= 1 << 1,
-		Alt		= 1 << 2,
-		AltGr	= 1 << 3,
-	};
-
 	class InputManager final
 	{
 	  private:
@@ -39,10 +25,10 @@ namespace VTX::UI::QT::Input
 
 	  public:
 		static KeyboardLayout getKeyboardLayout();
-		static Qt::Key		  getKeyFromQwerty( const Qt::Key p_key );
+		static Key			  getKeyFromQwerty( const Key p_key );
 
 	  private:
-		static ModifierFlag _getModifierFromKey( const Qt::Key & p_key );
+		static ModifierEnum _getModifierFromKey( const Key & p_key );
 
 	  public:
 		InputManager();
@@ -52,12 +38,12 @@ namespace VTX::UI::QT::Input
 
 		// Keyboard
 		void handleKeyboardEvent( const QKeyEvent & p_event );
-		bool isKeyPressed( const Qt::Key & p_key ) const;
+		bool isKeyPressed( const Key & p_key ) const;
 
-		template<ContainerOfType<Qt::Key> C>
+		template<ContainerOfType<Key> C>
 		bool isAnyKeyPressed( const C & p_keys ) const
 		{
-			for ( const Qt::Key & key : p_keys )
+			for ( const Key & key : p_keys )
 				if ( isKeyPressed( key ) )
 					return true;
 
@@ -68,8 +54,8 @@ namespace VTX::UI::QT::Input
 		bool isModifierExclusive( const ModifierFlag & p_modifier ) const;
 		void clearKeyboardBuffer();
 
-		App::Core::CallbackEmitter<Qt::Key> onKeyPressed  = App::Core::CallbackEmitter<Qt::Key>();
-		App::Core::CallbackEmitter<Qt::Key> onKeyReleased = App::Core::CallbackEmitter<Qt::Key>();
+		App::Core::CallbackEmitter<Key> onKeyPressed  = App::Core::CallbackEmitter<Key>();
+		App::Core::CallbackEmitter<Key> onKeyReleased = App::Core::CallbackEmitter<Key>();
 
 		// Mouse
 		void		  handleMouseEvent( const QMouseEvent & p_event );
@@ -81,6 +67,7 @@ namespace VTX::UI::QT::Input
 		const Vec2i & getDeltaMousePosition() const;
 		const Vec2i & getMouseLeftClickPosition() const;
 		const Vec2i & getMouseRightClickPosition() const;
+		int			  getDeltaMouseWheel() const;
 
 		App::Core::CallbackEmitter<Vec2i> onMouseLeftClicked	   = App::Core::CallbackEmitter<Vec2i>();
 		App::Core::CallbackEmitter<Vec2i> onMouseRightClicked	   = App::Core::CallbackEmitter<Vec2i>();
@@ -120,8 +107,8 @@ namespace VTX::UI::QT::Input
 		//	= std::set<VTX::Event::BaseEventReceiverWheel *>();
 
 		// Keyboard
-		std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
-		ModifierFlag	  _modifiers   = ModifierFlag::None;
+		std::set<Key> _pressedKeys = std::set<Key>();
+		ModifierFlag  _modifiers   = ModifierEnum::None;
 
 		// Mouse
 		bool  _mouseLeftPressed		   = false;

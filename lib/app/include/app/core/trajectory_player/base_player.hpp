@@ -39,8 +39,9 @@ namespace VTX::App::Core::TrajectoryPlayer
 		inline uint getFPS() const { return _fps; }
 		void		setFPS( const uint p_fps );
 
-		virtual const std::string &	  getDisplayName() const   = 0;
-		virtual const CollectionKey & getCollectionKey() const = 0;
+		virtual std::unique_ptr<BasePlayer> clone() const			 = 0;
+		virtual const std::string &			getDisplayName() const	 = 0;
+		virtual const CollectionKey &		getCollectionKey() const = 0;
 
 	  private:
 		VTX::Core::Struct::Trajectory * _trajectoryPtr = nullptr;

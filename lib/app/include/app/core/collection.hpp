@@ -13,7 +13,7 @@ namespace VTX::App::Core
 	using CollectionKey = std::string;
 
 	template<typename T>
-	concept CollectionableConcept = requires() { true; };
+	concept CollectionableConcept = requires( T _collectionable ) { _collectionable.clone(); };
 
 	template<CollectionableConcept T>
 	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>
@@ -34,7 +34,7 @@ namespace VTX::App::Core
 			requires std::derived_from<T2, T> && std::default_initializable<T2>
 		void addItem( const Util::Hashing::Hash & p_hash )
 		{
-			_collection[ p_hash ] = []() { return std::make_unique<T2>(); };
+			_collection[ p_hash ] = std::make_unique<T2>();
 		}
 		template<typename T2>
 			requires std::derived_from<T2, T> && std::default_initializable<T2>
@@ -48,7 +48,8 @@ namespace VTX::App::Core
 			if ( !_collection.contains( p_hash ) )
 				return nullptr;
 
-			return _collection[ p_hash ]();
+			std::unique_ptr<T> itemPtr = _collection[ p_hash ]->clone();
+			return std::move( itemPtr );
 		}
 		std::unique_ptr<T> instantiateItem( const CollectionKey & p_key )
 		{
@@ -75,7 +76,7 @@ namespace VTX::App::Core
 		}
 
 	  private:
-		std::map<Util::Hashing::Hash, std::function<std::unique_ptr<T>()>> _collection;
+		std::map<Util::Hashing::Hash, std::unique_ptr<T>> _collection;
 	};
 
 } // namespace VTX::App::Core

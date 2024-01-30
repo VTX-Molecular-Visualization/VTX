@@ -4,7 +4,8 @@
 #include "ui/qt/controller/base_picker_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/controller/freefly.hpp"
-// #include "ui/qt/controller/global_shorcuts.hpp"
+#include "ui/qt/controller/trackball.hpp"
+// #include "ui/qt/controller/global_shortcut.hpp"
 #include "ui/qt/controller/selection_picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
 #include <app/application/scene.hpp>
@@ -21,17 +22,26 @@ namespace VTX::UI::QT::Mode
 
 		std::unique_ptr<Controller::BaseController> ptr
 			= Controller::ControllerCollection::get().instantiateItem( Controller::Freefly::HASHED_COLLECTION_ID );
+		ptr->init();
+		addCameraController( ptr );
 
+		ptr = Controller::ControllerCollection::get().instantiateItem( Controller::Trackball::HASHED_COLLECTION_ID );
+		ptr->init();
 		addCameraController( ptr );
 
 		// addPickerController( Controller::ControllerCollection::get().instantiateItem<Controller::SelectionPicker>(
 		// "SELECTION_PICKER" ) );
 
-		// addController( Controller::ControllerCollection::get().instantiateItem( "GLOBAL_SHORTCUTS" ) );
-		// addController( Controller::ControllerCollection::get().instantiateItem( "VISUALIZATION_SHORTCUTS" ) );
-
-		_currentCameraController
-			= dynamic_cast<Controller::BaseCameraController *>( _cameraControllers.begin()->get() );
+		// ptr = Controller::ControllerCollection::get().instantiateItem(
+		// Controller::GlobalShortcut::HASHED_COLLECTION_ID
+		//);
+		// ptr->init();
+		// addController( ptr );
+		//		addController( Controller::ControllerCollection::get().instantiateItem( "VISUALIZATION_SHORTCUTS" ) );
+		//
+		//  #ifndef VTX_PRODUCTION
+		//		addController( Controller::ControllerCollection::get().instantiateItem( "DEBUG_SHORTCUTS" ) );
+		//  #endif
 	}
 
 	// void Visualization::init( VisualizationData & p_data )
@@ -69,10 +79,35 @@ namespace VTX::UI::QT::Mode
 		if ( _currentCameraController != nullptr )
 		{
 			_currentCameraController->setActive( true );
-			_currentCameraController->setCamera( App::SCENE().getCamera() );
 		}
+		else
+		{
+			if ( _cameraControllers.size() > 0 )
+			{
+				_affectCameraController(
+					dynamic_cast<Controller::BaseCameraController *>( _cameraControllers.begin()->get() )
+				);
+			}
+		}
+
 		if ( _currentPickerController != nullptr )
+		{
 			_currentPickerController->setActive( true );
+		}
+		else
+		{
+			if ( _pickerControllers.size() > 0 )
+			{
+				_affectPickerController(
+					dynamic_cast<Controller::BasePickerController *>( _pickerControllers.begin()->get() )
+				);
+			}
+		}
+
+		for ( const std::unique_ptr<Controller::BaseController> & controller : _otherControllers )
+		{
+			controller->setActive( true );
+		}
 
 		App::VTXApp::get().onUpdate().addCallback( this, [ this ]( float p_deltaTime ) { update( p_deltaTime ); } );
 	}
@@ -84,6 +119,14 @@ namespace VTX::UI::QT::Mode
 
 		if ( _currentPickerController != nullptr )
 			_currentPickerController->update( p_deltaTime );
+
+		for ( const std::unique_ptr<Controller::BaseController> & controller : _otherControllers )
+		{
+			if ( controller->isActive() )
+			{
+				controller->update( true );
+			}
+		}
 	}
 
 	void Visualization::exit()
@@ -95,6 +138,11 @@ namespace VTX::UI::QT::Mode
 
 		if ( _currentPickerController != nullptr )
 			_currentPickerController->setActive( false );
+
+		for ( const std::unique_ptr<Controller::BaseController> & controller : _otherControllers )
+		{
+			controller->setActive( false );
+		}
 
 		App::VTXApp::get().onUpdate().removeCallback( this );
 	}
@@ -142,8 +190,7 @@ namespace VTX::UI::QT::Mode
 			return;
 
 		getCurrentCameraController().setActive( false );
-		_currentCameraController = dynamic_cast<Controller::BaseCameraController *>( newControllerIt->get() );
-		getCurrentCameraController().setActive( true );
+		_affectCameraController( dynamic_cast<Controller::BaseCameraController *>( newControllerIt->get() ) );
 
 		onCameraControllerChange.call( *_currentCameraController );
 	}
@@ -166,6 +213,18 @@ namespace VTX::UI::QT::Mode
 		getCurrentPickerController().setActive( true );
 
 		onPickerControllerChange.call( *_currentPickerController );
+	}
+
+	void Visualization::_affectCameraController( Controller::BaseCameraController * p_ptr )
+	{
+		_currentCameraController = p_ptr;
+		_currentCameraController->setCamera( App::SCENE().getCamera() );
+		_currentCameraController->setActive( true );
+	}
+	void Visualization::_affectPickerController( Controller::BasePickerController * p_ptr )
+	{
+		_currentPickerController = p_ptr;
+		_currentPickerController->setActive( true );
 	}
 
 	void Visualization::resetCameraController()

@@ -59,9 +59,9 @@ namespace VTX::UI::QT::Controller
 		float _orientStartingDistance = 0.f;
 		float _orientTargetDistance	  = 0.f;
 
-		virtual void _computeOrientPositions( const Util::Math::AABB & p_aabb )						  = 0;
-		virtual void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) = 0;
-		virtual void _updateOrient( const float & )													  = 0;
+		virtual void _computeOrientPositions( const Util::Math::AABB & p_aabb );
+		virtual void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation );
+		virtual void _updateOrient( const float & );
 	};
 } // namespace VTX::UI::QT::Controller
 #endif

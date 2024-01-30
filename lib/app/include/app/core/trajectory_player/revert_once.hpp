@@ -21,8 +21,9 @@ namespace VTX::App::Core::TrajectoryPlayer
 		RevertOnce( const RevertOnce & p_source ) = default;
 		RevertOnce( VTX::Core::Struct::Trajectory * const p_trajectory );
 
-		const std::string &	  getDisplayName() const override { return DISPLAYED_NAME; }
-		const CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
+		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
+		const CollectionKey &		getCollectionKey() const override { return COLLECTION_ID; }
+		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<RevertOnce>( *this ); }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;

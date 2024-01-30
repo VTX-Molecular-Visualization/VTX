@@ -23,8 +23,9 @@ namespace VTX::App::Core::TrajectoryPlayer
 
 		void play() override;
 
-		const std::string &	  getDisplayName() const override { return DISPLAYED_NAME; }
-		const CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
+		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
+		const CollectionKey &		getCollectionKey() const override { return COLLECTION_ID; }
+		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<Stop>( *this ); }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;

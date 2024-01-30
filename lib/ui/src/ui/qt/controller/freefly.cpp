@@ -1,17 +1,32 @@
 #include "ui/qt/controller/freefly.hpp"
 #include "ui/internal/all_settings.hpp"
 #include "ui/qt/application_qt.hpp"
+#include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
+#include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <app/application/settings.hpp>
 #include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Controller
 {
-	Freefly::Freefly() : BaseCameraController() {}
-
+	void Freefly::init()
+	{
+		_mapping = Input::KeyMapping( {
+			{ int( Keys::MOVE_LEFT ),
+			  { Input::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Input::Key::Key_A ) } },
+			{ int( Keys::MOVE_RIGHT ),
+			  { Input::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Input::Key::Key_D ) } },
+			{ int( Keys::MOVE_FRONT ),
+			  { Input::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Input::Key::Key_W ) } },
+			{ int( Keys::MOVE_BACK ),
+			  { Input::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Input::Key::Key_S ) } },
+			{ int( Keys::MOVE_UP ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_R ) } },
+			{ int( Keys::MOVE_DOWN ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
+		} );
+	}
 	void Freefly::_updateInputs( const float & p_deltaTime )
 	{
-		if ( !isTargetWidgetFocused() )
+		if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )
 			return;
 
 		// Rotation.
@@ -64,11 +79,11 @@ namespace VTX::UI::QT::Controller
 		translation *= translationSpeed;
 		translation *= p_deltaTime;
 
-		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierFlag::Shift ) )
+		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
 		{
 			translation *= accelerationFactor;
 		}
-		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierFlag::Alt ) )
+		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
 		{
 			translation /= decelerationFactor;
 		}

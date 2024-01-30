@@ -5,29 +5,16 @@
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/input/input_manager.hpp"
-#include <map>
-#include <set>
+#include "ui/qt/input/key_mapping.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::UI::QT::Controller
 {
-	class KeyMapping
-	{
-	  public:
-		KeyMapping() {};
-		KeyMapping( const std::map<int, std::set<Qt::Key>> & p_map ) : _map( p_map ) {};
-
-		const std::set<Qt::Key> & operator[]( int p_keyEnum ) const { return _map.at( p_keyEnum ); }
-
-	  private:
-		std::map<int, std::set<Qt::Key>> _map = std::map<int, std::set<Qt::Key>>();
-	};
-
 	class Freefly : public BaseCameraController
 	{
 	  public:
 		inline static const App::Core::CollectionKey COLLECTION_ID		  = "CONTROLLER_FREEFLY";
-		inline static const Util::Hashing::Hash		 HASHED_COLLECTION_ID = Util::Hashing::hash( COLLECTION_ID );
+		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
 
 	  private:
 		inline static const ControllerCollection::Registration<Freefly> _reg { COLLECTION_ID };
@@ -44,10 +31,14 @@ namespace VTX::UI::QT::Controller
 		};
 
 	  public:
-		explicit Freefly();
-		~Freefly() = default;
+		Freefly()							= default;
+		Freefly( const Freefly & p_source ) = default;
+		~Freefly()							= default;
 
-		inline Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		void init() override;
+
+		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		std::unique_ptr<BaseController> clone() const { return std::make_unique<Freefly>( *this ); };
 
 		float translationSpeed	 = Internal::Controller::TRANSLATION_SPEED_DEFAULT;
 		float accelerationFactor = Internal::Controller::ACCELERATION_FACTOR_DEFAULT;
@@ -61,15 +52,7 @@ namespace VTX::UI::QT::Controller
 		void _updateInputs( const float & p_deltaTime ) override;
 
 	  private:
-		const KeyMapping _mapping = KeyMapping( {
-			{ int( Keys::MOVE_LEFT ), { Qt::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_A ) } },
-			{ int( Keys::MOVE_RIGHT ),
-			  { Qt::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_D ) } },
-			{ int( Keys::MOVE_FRONT ), { Qt::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_W ) } },
-			{ int( Keys::MOVE_BACK ), { Qt::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Qt::Key::Key_S ) } },
-			{ int( Keys::MOVE_UP ), { Qt::Key::Key_R } },
-			{ int( Keys::MOVE_DOWN ), { Qt::Key::Key_F } },
-		} );
+		Input::KeyMapping _mapping;
 	};
 } // namespace VTX::UI::QT::Controller
 #endif

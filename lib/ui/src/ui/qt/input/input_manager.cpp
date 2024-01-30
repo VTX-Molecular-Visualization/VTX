@@ -15,22 +15,22 @@ namespace VTX::UI::QT::Input
 		}
 	}
 
-	Qt::Key InputManager::getKeyFromQwerty( const Qt::Key p_key )
+	Key InputManager::getKeyFromQwerty( const Key p_key )
 	{
-		Qt::Key res;
+		Key res;
 
 		switch ( getKeyboardLayout() )
 		{
 		case KeyboardLayout::AZERTY:
 			switch ( p_key )
 			{
-			case Qt::Key::Key_W: res = Qt::Key::Key_Z; break;
-			case Qt::Key::Key_A: res = Qt::Key::Key_Q; break;
-			case Qt::Key::Key_Q: res = Qt::Key::Key_A; break;
-			case Qt::Key::Key_Z: res = Qt::Key::Key_W; break;
-			case Qt::Key::Key_Semicolon: res = Qt::Key::Key_M; break;
-			case Qt::Key::Key_Comma: res = Qt::Key::Key_Semicolon; break;
-			case Qt::Key::Key_M: res = Qt::Key::Key_Comma; break;
+			case Key::Key_W: res = Key::Key_Z; break;
+			case Key::Key_A: res = Key::Key_Q; break;
+			case Key::Key_Q: res = Key::Key_A; break;
+			case Key::Key_Z: res = Key::Key_W; break;
+			case Key::Key_Semicolon: res = Key::Key_M; break;
+			case Key::Key_Comma: res = Key::Key_Semicolon; break;
+			case Key::Key_M: res = Key::Key_Comma; break;
 			default: res = p_key; break;
 			}
 			break;
@@ -49,6 +49,8 @@ namespace VTX::UI::QT::Input
 			{
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
+
+				_deltaMouseWheel = 0;
 			}
 		);
 	}
@@ -60,8 +62,8 @@ namespace VTX::UI::QT::Input
 		if ( p_event.isAutoRepeat() )
 			return;
 
-		const Qt::Key	   key		= Qt::Key( p_event.key() );
-		const ModifierFlag modifier = _getModifierFromKey( key );
+		const Key		   key		= Key( p_event.key() );
+		const ModifierEnum modifier = _getModifierFromKey( key );
 
 		switch ( p_event.type() )
 		{
@@ -69,35 +71,40 @@ namespace VTX::UI::QT::Input
 		{
 			_pressedKeys.emplace( key );
 
-			if ( modifier != ModifierFlag::None )
-				_modifiers = ModifierFlag( _modifiers | modifier );
+			if ( _modifiers != ModifierEnum::None )
+				_modifiers |= modifier;
 
 			onKeyPressed.call( key );
 
 			break;
 		}
 		case QEvent::KeyRelease:
+		{
 			_pressedKeys.erase( key );
 
-			if ( modifier != ModifierFlag::None )
-				_modifiers = ModifierFlag( _modifiers & !modifier );
+			if ( _modifiers != ModifierEnum::None )
+				_modifiers &= !modifier;
 
 			onKeyReleased.call( key );
 			break;
+		}
 
 		default: break;
 		}
 	}
-	bool InputManager::isKeyPressed( const Qt::Key & p_key ) const
+	bool InputManager::isKeyPressed( const Key & p_key ) const
 	{
 		return _pressedKeys.find( p_key ) != _pressedKeys.end();
 	}
-	bool InputManager::isModifier( const ModifierFlag & p_modifier ) const { return ( _modifiers & p_modifier ) != 0; }
+	bool InputManager::isModifier( const ModifierFlag & p_modifier ) const
+	{
+		return uint( _modifiers & p_modifier ) != 0;
+	}
 	bool InputManager::isModifierExclusive( const ModifierFlag & p_modifier ) const { return _modifiers == p_modifier; }
 	void InputManager::clearKeyboardBuffer()
 	{
 		_pressedKeys.clear();
-		_modifiers = ModifierFlag::None;
+		_modifiers = ModifierEnum::None;
 	}
 
 	// Mouse
@@ -135,6 +142,7 @@ namespace VTX::UI::QT::Input
 	const Vec2i & InputManager::getDeltaMousePosition() const { return _deltaMousePosition; }
 	const Vec2i & InputManager::getMouseLeftClickPosition() const { return _mouseLeftClickPosition; }
 	const Vec2i & InputManager::getMouseRightClickPosition() const { return _mouseRightClickPosition; }
+	int			  InputManager::getDeltaMouseWheel() const { return _deltaMouseWheel; }
 
 	void InputManager::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
 	{
@@ -231,8 +239,7 @@ namespace VTX::UI::QT::Input
 	}
 	void InputManager::_handleMouseWheelEvent( const QWheelEvent & p_event )
 	{
-		// if ( p_event.modifiers().testFlag( Qt::AltModifier ) )
-		if ( isModifier( ModifierFlag::Alt ) )
+		if ( isModifier( ModifierEnum::Alt ) )
 			_deltaMouseWheel = p_event.angleDelta().x();
 		else
 			_deltaMouseWheel = p_event.angleDelta().y();
@@ -244,23 +251,23 @@ namespace VTX::UI::QT::Input
 		clearKeyboardBuffer();
 	}
 
-	ModifierFlag InputManager::_getModifierFromKey( const Qt::Key & p_key )
+	ModifierEnum InputManager::_getModifierFromKey( const Key & p_key )
 	{
-		ModifierFlag modifier;
+		ModifierEnum modifier;
 
 		switch ( p_key )
 		{
-		case Qt::Key::Key_Control: modifier = ModifierFlag::Control; break;
-		case Qt::Key::Key_Shift: modifier = ModifierFlag::Shift; break;
-		case Qt::Key::Key_Alt: modifier = ModifierFlag::Alt; break;
-		case Qt::Key::Key_AltGr: modifier = ModifierFlag::AltGr; break;
-		default: modifier = ModifierFlag::None; break;
+		case Key::Key_Control: modifier = ModifierEnum::Control; break;
+		case Key::Key_Shift: modifier = ModifierEnum::Shift; break;
+		case Key::Key_Alt: modifier = ModifierEnum::Alt; break;
+		case Key::Key_AltGr: modifier = ModifierEnum::AltGr; break;
+		default: modifier = ModifierEnum::None; break;
 		}
 
 		return modifier;
 	}
 	// void InputManager::clearKeyboardInputEvents() const { Controller::BaseKeyboardController::clear(); }
-	// void InputManager::clearKeyboardInputEvent( const Qt::Key & p_key ) const
+	// void InputManager::clearKeyboardInputEvent( const Key & p_key ) const
 	//{
 	//	Controller::BaseKeyboardController::clearKey( p_key );
 	// }

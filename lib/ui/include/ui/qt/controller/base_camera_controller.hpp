@@ -11,13 +11,13 @@ namespace VTX::UI::QT::Controller
 	class BaseCameraController : public BaseController
 	{
 	  public:
-		explicit BaseCameraController();
+		BaseCameraController();
 		virtual ~BaseCameraController() = default;
 
 		void setCamera( VTX::App::Component::Render::Camera & p_camera );
 
-		inline bool isActive() const { return _active; }
-		inline void setActive( const bool p_active ) { _active = p_active; }
+		inline bool			isActive() const { return _active; }
+		inline virtual void setActive( const bool p_active ) { _active = p_active; }
 
 		virtual void update( const float & p_deltaTime ) override;
 		virtual void reset() {}

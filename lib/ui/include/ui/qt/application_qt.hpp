@@ -46,6 +46,9 @@ namespace VTX::UI::QT
 		inline Input::InputManager &	   getInputManager() { return *_inputManagerPtr; }
 		inline const Input::InputManager & getInputManager() const { return *_inputManagerPtr; }
 
+		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
+		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
+
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  protected:

@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Mode
 
 	class Visualization : public BaseMode
 	{
-	  private:
+	  public:
 		// inline static const ModeCollection::Registration<Visualization> _reg;
 
 		inline static const std::string ID = "MODE_VISUALIZATION";
@@ -81,6 +81,9 @@ namespace VTX::UI::QT::Mode
 
 		std::set<std::unique_ptr<Controller::BaseController>> _otherControllers
 			= std::set<std::unique_ptr<Controller::BaseController>>();
+
+		void _affectCameraController( Controller::BaseCameraController * p_ptr );
+		void _affectPickerController( Controller::BasePickerController * p_ptr );
 	};
 } // namespace VTX::UI::QT::Mode
 #endif
