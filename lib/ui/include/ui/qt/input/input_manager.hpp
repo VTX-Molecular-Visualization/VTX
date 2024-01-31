@@ -50,9 +50,10 @@ namespace VTX::UI::QT::Input
 			return false;
 		}
 
-		bool isModifier( const ModifierFlag & p_modifier ) const;
-		bool isModifierExclusive( const ModifierFlag & p_modifier ) const;
-		void clearKeyboardBuffer();
+		inline const ModifierFlag & getCurrentModifiers() const { return _modifiers; }
+		bool						isModifier( const ModifierFlag & p_modifier ) const;
+		bool						isModifierExclusive( const ModifierFlag & p_modifier ) const;
+		void						clearKeyboardBuffer();
 
 		App::Core::CallbackEmitter<Key> onKeyPressed  = App::Core::CallbackEmitter<Key>();
 		App::Core::CallbackEmitter<Key> onKeyReleased = App::Core::CallbackEmitter<Key>();

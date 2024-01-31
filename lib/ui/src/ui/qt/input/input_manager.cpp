@@ -257,7 +257,7 @@ namespace VTX::UI::QT::Input
 
 		switch ( p_key )
 		{
-		case Key::Key_Control: modifier = ModifierEnum::Control; break;
+		case Key::Key_Control: modifier = ModifierEnum::Ctrl; break;
 		case Key::Key_Shift: modifier = ModifierEnum::Shift; break;
 		case Key::Key_Alt: modifier = ModifierEnum::Alt; break;
 		case Key::Key_AltGr: modifier = ModifierEnum::AltGr; break;

@@ -8,6 +8,12 @@
 
 namespace VTX::UI::Action::Visualization
 {
+	class ToggleCameraController final : public App::Core::Action::BaseAction
+	{
+	  public:
+		ToggleCameraController() {}
+		void execute() override;
+	};
 	class ChangeCameraController final : public App::Core::Action::BaseAction
 	{
 	  public:

@@ -25,7 +25,8 @@ TEST_CASE( "VTX_UI - Test", "[integration]" )
 
 		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 
-		UI::Debug::PrintInputs();
+		// Uncomment to print inputs
+		// UI::Debug::PrintInputs();
 
 		vtxApplication->start( { molPath.string() } );
 

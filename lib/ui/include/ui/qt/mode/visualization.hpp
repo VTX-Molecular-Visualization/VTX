@@ -44,6 +44,8 @@ namespace VTX::UI::QT::Mode
 		void addPickerController( std::unique_ptr<Controller::BaseController> & p_pickerControllerPtr );
 		void addController( std::unique_ptr<Controller::BaseController> & p_controllerPtr );
 
+		void applyNextCamera();
+
 		inline const Controller::BaseCameraController & getCurrentCameraController() const
 		{
 			return *_currentCameraController;
@@ -57,9 +59,21 @@ namespace VTX::UI::QT::Mode
 
 		Controller::BaseController & getController( const App::Core::CollectionKey & p_controllerKey );
 
+		void setCameraController( const Util::Hashing::Hash & p_controllerKey );
 		void setCameraController( const App::Core::CollectionKey & p_controllerKey );
+		void setPickerController( const Util::Hashing::Hash & p_controllerHash );
 		void setPickerController( const App::Core::CollectionKey & p_controllerKey );
 		void resetCameraController();
+
+		const std::set<std::unique_ptr<Controller::BaseController>> & getCameraControllers() const
+		{
+			return _cameraControllers;
+		}
+		const std::set<std::unique_ptr<Controller::BaseController>> & getPickerControllers() const
+		{
+			return _pickerControllers;
+		}
+
 		// void orientCameraController( const App::Old::Component::Object3D::Helper::AABB & );
 		// void orientCameraController( const Vec3f & p_position, const Quatf & p_orientation );
 

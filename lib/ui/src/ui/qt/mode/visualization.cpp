@@ -4,8 +4,7 @@
 #include "ui/qt/controller/base_picker_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/controller/freefly.hpp"
-#include "ui/qt/controller/trackball.hpp"
-// #include "ui/qt/controller/global_shortcut.hpp"
+#include "ui/qt/controller/global_shortcut.hpp"
 #include "ui/qt/controller/selection_picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
 #include <app/application/scene.hpp>
@@ -32,11 +31,10 @@ namespace VTX::UI::QT::Mode
 		// addPickerController( Controller::ControllerCollection::get().instantiateItem<Controller::SelectionPicker>(
 		// "SELECTION_PICKER" ) );
 
-		// ptr = Controller::ControllerCollection::get().instantiateItem(
-		// Controller::GlobalShortcut::HASHED_COLLECTION_ID
-		//);
-		// ptr->init();
-		// addController( ptr );
+		ptr = Controller::ControllerCollection::get().instantiateItem( Controller::GlobalShortcut::HASHED_COLLECTION_ID
+		);
+		ptr->init();
+		addController( ptr );
 		//		addController( Controller::ControllerCollection::get().instantiateItem( "VISUALIZATION_SHORTCUTS" ) );
 		//
 		//  #ifndef VTX_PRODUCTION
@@ -173,7 +171,7 @@ namespace VTX::UI::QT::Mode
 		return *( *controllerIt );
 	}
 
-	void Visualization::setCameraController( const App::Core::CollectionKey & p_controllerKey )
+	void Visualization::setCameraController( const Util::Hashing::Hash & p_controllerHash )
 	{
 		if ( !getCurrentCameraController().canBeStopped() )
 			return;
@@ -181,8 +179,8 @@ namespace VTX::UI::QT::Mode
 		const auto newControllerIt = std::find_if(
 			_cameraControllers.begin(),
 			_cameraControllers.end(),
-			[ p_controllerKey ]( const std::unique_ptr<Controller::BaseController> & p_controllerPtr )
-			{ return p_controllerPtr->getHashedCollectionID() == Util::Hashing::hash( p_controllerKey ); }
+			[ p_controllerHash ]( const std::unique_ptr<Controller::BaseController> & p_controllerPtr )
+			{ return p_controllerPtr->getHashedCollectionID() == p_controllerHash; }
 		);
 
 		// Do nothing if id not in collection or already in use
@@ -194,14 +192,18 @@ namespace VTX::UI::QT::Mode
 
 		onCameraControllerChange.call( *_currentCameraController );
 	}
+	void Visualization::setCameraController( const App::Core::CollectionKey & p_controllerKey )
+	{
+		setCameraController( Util::Hashing::hash( p_controllerKey ) );
+	}
 
-	void Visualization::setPickerController( const App::Core::CollectionKey & p_controllerKey )
+	void Visualization::setPickerController( const Util::Hashing::Hash & p_controllerHash )
 	{
 		const auto newControllerIt = std::find_if(
 			_pickerControllers.begin(),
 			_pickerControllers.end(),
-			[ p_controllerKey ]( const std::unique_ptr<Controller::BaseController> & p_controllerPtr )
-			{ return p_controllerPtr->getHashedCollectionID() == Util::Hashing::hash( p_controllerKey ); }
+			[ p_controllerHash ]( const std::unique_ptr<Controller::BaseController> & p_controllerPtr )
+			{ return p_controllerPtr->getHashedCollectionID() == p_controllerHash; }
 		);
 
 		// Do nothing if id not in collection or already in use
@@ -213,6 +215,10 @@ namespace VTX::UI::QT::Mode
 		getCurrentPickerController().setActive( true );
 
 		onPickerControllerChange.call( *_currentPickerController );
+	}
+	void Visualization::setPickerController( const App::Core::CollectionKey & p_controllerKey )
+	{
+		setPickerController( Util::Hashing::hash( p_controllerKey ) );
 	}
 
 	void Visualization::_affectCameraController( Controller::BaseCameraController * p_ptr )

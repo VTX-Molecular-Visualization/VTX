@@ -10,11 +10,15 @@ namespace VTX::UI::QT::Input
 
 	enum ModifierEnum : uint
 	{
-		None	= 0,
-		Control = 1 << 0,
-		Shift	= 1 << 1,
-		Alt		= 1 << 2,
-		AltGr	= 1 << 3,
+		None  = 0,
+		Ctrl  = 1 << 0,
+		Shift = 1 << 1,
+		Alt	  = 1 << 2,
+		AltGr = 1 << 3,
+
+		Ctrl_Shift = Ctrl | Shift,
+		Ctrl_Alt   = Ctrl | Alt,
+
 	};
 	VTX_FLAG( ModifierFlag, ModifierEnum );
 

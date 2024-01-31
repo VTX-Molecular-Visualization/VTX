@@ -7,17 +7,6 @@
 
 namespace VTX::UI::QT::Input
 {
-	class KeySequence
-	{
-	  public:
-		KeySequence( const Key & p_key, const ModifierFlag & p_modifier = ModifierEnum::None );
-		bool match( const Key & p_key, const ModifierFlag & p_modifier ) const;
-
-	  private:
-		Key			 _key;
-		ModifierFlag _modifier;
-	};
-
 	class KeyMapping
 	{
 	  public:
