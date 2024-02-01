@@ -150,7 +150,7 @@ conan editable add lib/util
 ### Build VTX
 
 ```
-conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20 -s build_type=<Debug|Release>
+conan build . -b missing -b editable -s compiler.cppstd=20 -s build_type=<Debug|Release>
 ```
 
 ## License
