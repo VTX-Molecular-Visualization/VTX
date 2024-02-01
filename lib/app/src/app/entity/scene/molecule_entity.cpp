@@ -74,7 +74,7 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
-		RENDERER().addMolecule( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
+		RENDERER().addProxy( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
 	}
 
 	void MoleculeEntityBuilder::_load(

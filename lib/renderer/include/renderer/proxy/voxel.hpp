@@ -6,8 +6,8 @@ namespace VTX::Renderer::Proxy
 
 	struct Voxel
 	{
-		std::vector<Vec3f> * mins;
-		std::vector<Vec3f> * maxs;
+		const std::vector<Vec3f> * mins;
+		const std::vector<Vec3f> * maxs;
 	};
 
 } // namespace VTX::Renderer::Proxy

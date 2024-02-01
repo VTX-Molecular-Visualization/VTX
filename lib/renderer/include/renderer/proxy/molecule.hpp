@@ -8,24 +8,24 @@ namespace VTX::Renderer::Proxy
 {
 	struct Molecule
 	{
-		Mat4f * transform;
+		const Mat4f * transform;
 		// const Mat4f * normals;
-		std::vector<Vec3f> * atomPositions;
-		std::vector<uint_fast8_t> * atomColors;
-		std::vector<float> * atomRadii;
-		std::vector<bool> *	 atomVisibilities; //
-		std::vector<bool> *	 atomSelections;   //
-		std::vector<uint> *	 atomIds;
-		std::vector<uint> *	 bonds;
+		const std::vector<Vec3f> *		  atomPositions;
+		const std::vector<uint_fast8_t> * atomColors;
+		const std::vector<float> *		  atomRadii;
+		const std::vector<bool> *		  atomVisibilities; //
+		const std::vector<bool> *		  atomSelections;	//
+		const std::vector<uint> *		  atomIds;
+		const std::vector<uint> *		  bonds;
 
-		std::vector<std::string> * atomNames; //
-		std::vector<uint> *		   residueIds;
-		std::vector<uchar> *	   residueSecondaryStructureTypes;
-		std::vector<uchar> *	   residueColors;
-		std::vector<uint> *		   residueFirstAtomIndexes; //
-		std::vector<uint> *		   residueAtomCounts;		//
-		std::vector<size_t> *	   chainFirstResidues;		//
-		std::vector<size_t> *	   chainResidueCounts;		//
+		const std::vector<std::string> * atomNames; //
+		const std::vector<uint> *		 residueIds;
+		const std::vector<uchar> *		 residueSecondaryStructureTypes;
+		const std::vector<uchar> *		 residueColors;
+		const std::vector<uint> *		 residueFirstAtomIndexes; //
+		const std::vector<uint> *		 residueAtomCounts;		  //
+		const std::vector<size_t> *		 chainFirstResidues;	  //
+		const std::vector<size_t> *		 chainResidueCounts;	  //
 	};
 
 } // namespace VTX::Renderer::Proxy

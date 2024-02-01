@@ -8,14 +8,14 @@ namespace VTX::Renderer::Proxy
 {
 	struct Mesh
 	{
-		Mat4f *				 transform;
-		std::vector<Vec3f> * vertices;
-		std::vector<Vec3f> * normales;
-		std::vector<uchar> * colors;
-		std::vector<bool> *	 visibilities;
-		std::vector<bool> *	 selections;
-		std::vector<uint> *	 ids;
-		std::vector<uint> *	 indices;
+		const Mat4f *				 transform;
+		const std::vector<Vec3f> * vertices;
+		const std::vector<Vec3f> * normales;
+		const std::vector<uchar> * colors;
+		const std::vector<bool> *	 visibilities;
+		const std::vector<bool> *	 selections;
+		const std::vector<uint> *	 ids;
+		const std::vector<uint> *	 indices;
 	};
 
 } // namespace VTX::Renderer::Proxy
