@@ -174,7 +174,8 @@ namespace VTX::Renderer
 		void resize( const size_t p_width, const size_t p_height )
 		{
 			assert( _context != nullptr );
-			_context->resize( _renderQueue, p_width, p_height );
+			if ( _context != nullptr )
+				_context->resize( _renderQueue, p_width, p_height );
 		}
 
 		void setOutput( const Handle p_output )

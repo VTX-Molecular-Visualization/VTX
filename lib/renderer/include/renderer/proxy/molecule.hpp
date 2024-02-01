@@ -10,13 +10,13 @@ namespace VTX::Renderer::Proxy
 	{
 		const Mat4f * transform;
 		// const Mat4f * normals;
-		const std::vector<Vec3f> *		  atomPositions;
-		const std::vector<uint_fast8_t> * atomColors;
-		const std::vector<float> *		  atomRadii;
-		const std::vector<bool> *		  atomVisibilities; //
-		const std::vector<bool> *		  atomSelections;	//
-		const std::vector<uint> *		  atomIds;
-		const std::vector<uint> *		  bonds;
+		const std::vector<Vec3f> * atomPositions;
+		const std::vector<uchar> * atomColors;
+		const std::vector<float> * atomRadii;
+		const std::vector<bool> *  atomVisibilities; //
+		const std::vector<bool> *  atomSelections;	 //
+		const std::vector<uint> *  atomIds;
+		const std::vector<uint> *  bonds;
 
 		const std::vector<std::string> * atomNames; //
 		const std::vector<uint> *		 residueIds;

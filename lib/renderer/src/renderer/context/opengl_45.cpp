@@ -607,7 +607,9 @@ namespace VTX::Renderer::Context
 				padding = 16 - ( size % 16 );
 			}
 
-			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
+			_uniforms.emplace(
+				key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding, p_uniforms.arraySize )
+			);
 			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
@@ -627,10 +629,10 @@ namespace VTX::Renderer::Context
 		}
 
 		// Init ubo.
-		p_ubo->setData( GLsizei( totalSize * p_uniforms.count ), GL_STATIC_DRAW );
+		p_ubo->setData( GLsizei( totalSize * p_uniforms.arraySize ), GL_STATIC_DRAW );
 
 		// Fill default values.
-		for ( uchar i = 0; i < p_uniforms.count; ++i )
+		for ( size_t i = 0; i < p_uniforms.arraySize; ++i )
 		{
 			for ( const Uniform & descUniform : p_uniforms.entries )
 			{

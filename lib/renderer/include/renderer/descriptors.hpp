@@ -107,7 +107,7 @@ namespace VTX::Renderer
 	struct Uniforms
 	{
 		std::vector<Uniform> entries;
-		size_t				 count = 1;
+		size_t				 arraySize = 1;
 	};
 
 	struct Program
