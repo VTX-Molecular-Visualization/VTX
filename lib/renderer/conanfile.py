@@ -22,6 +22,12 @@ class VTXRendererRecipe(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+        
+        self.options["glad/*"].shared = False
+        self.options["glad/*"].spec = "gl"
+        self.options["glad/*"].gl_profile = "core"
+        self.options["glad/*"].gl_version = 4.5
+        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info"]
 
     def layout(self):
         cmake_layout(self)       
