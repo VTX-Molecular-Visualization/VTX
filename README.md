@@ -133,6 +133,15 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 conan profile detect
 ```
 
+Into `~/.conan2/profiles/default` add
+```
+[settings]
+
+...
+
+build_type=<Debug|Release>
+```
+
 ### Set packages in editable mode
 
 ```
@@ -145,6 +154,8 @@ conan editable add lib/renderer
 conan editable add lib/tool
 conan editable add lib/ui
 conan editable add lib/util
+conan editable add lib/tool/tools/mdprep
+conan editable add lib/tool/tools/mdprep/external/gromacs
 ```
 
 ### Build VTX
@@ -152,6 +163,9 @@ conan editable add lib/util
 ```
 conan build . -b missing -b editable -s compiler.cppstd=20 -s build_type=<Debug|Release>
 ```
+
+**Note** : The first time conan compile external libraries, an assert may fail once and raise an error window that suspend the conan command. It doesn't mean the conan build failed, you can safely hit the `Retry` button to resume the conan build. 
+
 
 ## License
 
