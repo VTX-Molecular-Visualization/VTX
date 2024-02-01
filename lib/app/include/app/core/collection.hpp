@@ -13,7 +13,7 @@ namespace VTX::App::Core
 	using CollectionKey = std::string;
 
 	template<typename T>
-	concept CollectionableConcept = requires( T _collectionable ) { _collectionable.clone(); };
+	concept CollectionableConcept = requires( const T & _collectionable ) { _collectionable.clone(); };
 
 	template<CollectionableConcept T>
 	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>
