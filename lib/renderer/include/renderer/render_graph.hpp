@@ -173,7 +173,8 @@ namespace VTX::Renderer
 
 		void resize( const size_t p_width, const size_t p_height )
 		{
-			assert( _context != nullptr );
+			// assert( _context != nullptr );
+			//  TODO: delete context check.
 			if ( _context != nullptr )
 				_context->resize( _renderQueue, p_width, p_height );
 		}

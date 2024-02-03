@@ -164,6 +164,7 @@ namespace VTX::Renderer
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
 		{
 			// return p_left.format == p_right.format;
+			// TODO: check compatibility.
 			return true;
 		}
 		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
