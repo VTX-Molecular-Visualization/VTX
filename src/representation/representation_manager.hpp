@@ -3,6 +3,7 @@
 
 #include "event/event.hpp"
 #include "id.hpp"
+#include "model/molecule.hpp"
 #include "model/representation/representation_data.hpp"
 #include "model/representation/representation_enum.hpp"
 #include <map>
@@ -15,7 +16,6 @@ namespace VTX::Generic
 
 namespace VTX::Model
 {
-	class Molecule;
 	class Selection;
 	namespace Representation
 	{

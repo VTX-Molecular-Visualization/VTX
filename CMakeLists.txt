@@ -27,7 +27,7 @@ set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/VTX-Molecular-Visualization/chemfiles.git)
-set(GIT_TAG_CHEMFILES d060165971aaf4f62358ff0aed68837f2257ca0c)
+set(GIT_TAG_CHEMFILES a714efa922ce56e1de6c6a07f062032bb5dcac37)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
@@ -36,6 +36,8 @@ set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
 set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
+set(GIT_URL_FMT https://github.com/fmtlib/fmt.git)
+set(GIT_TAG_FMT 10.2.1) #10.2.1
 
 # Create output dir.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
@@ -121,6 +123,13 @@ FetchContent_Declare(
   GIT_TAG ${GIT_TAG_CHEMFILES}
 )
 FetchContent_MakeAvailable(chemfiles)
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY ${GIT_URL_FMT}
+  GIT_TAG ${GIT_TAG_FMT}
+)
+FetchContent_MakeAvailable(fmt)
 
 # Glm.
 ExternalProject_Add(

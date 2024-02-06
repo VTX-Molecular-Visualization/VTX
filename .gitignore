@@ -1,6 +1,8 @@
 /build/
 /data/
 /lib/
+/.vs/
+/out/
 /RELEASE/
 /.vscode/
 *.code-workspace
