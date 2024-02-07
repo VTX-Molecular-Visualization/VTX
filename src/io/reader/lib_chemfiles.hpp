@@ -31,10 +31,10 @@ namespace VTX
 			void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override;
 			bool readDynamic( const IO::FilePath &, std::vector<Model::Molecule *> p_potentialTargets );
 
-			std::vector<Vec3f> readTrajectoryFrame( chemfiles::Trajectory & p_trajectory ) const;
-			void			   fillTrajectoryFrame( Model::Molecule &		   p_molecule,
-													const uint				   p_moleculeFrameIndex,
-													const std::vector<Vec3f> & p_atomPositions ) const;
+			void readTrajectoryFrame( chemfiles::Trajectory & p_trajectory, std::vector<Vec3f> & p_frame ) const;
+			void fillTrajectoryFrame( Model::Molecule &			 p_molecule,
+									  const uint				 p_moleculeFrameIndex,
+									  const std::vector<Vec3f> & p_atomPositions ) const;
 
 		  private:
 			void			  _readTrajectory( chemfiles::Trajectory &,
