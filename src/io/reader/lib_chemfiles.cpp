@@ -52,18 +52,22 @@ namespace VTX::IO::Reader
 		return _tryApplyingDynamicOnTargets( dynamicTrajectory, p_potentialTargets );
 	}
 
-	void LibChemfiles::readTrajectoryFrame( chemfiles::Trajectory & p_trajectory, std::vector<Vec3f> & p_frame ) const
+	std::vector<Vec3f> LibChemfiles::readTrajectoryFrame( chemfiles::Trajectory & p_trajectory ) const
 	{
+		std::vector<Vec3f> res = std::vector<Vec3f>();
+
 		const chemfiles::Frame					 frame	   = p_trajectory.read();
 		const std::vector<chemfiles::Vector3D> & positions = frame.positions();
 
-		p_frame.resize( positions.size() );
+		res.resize( positions.size() );
 
 		for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 		{
 			const chemfiles::Vector3D & position = positions[ positionIdx ];
-			p_frame[ positionIdx ]				 = { position[ 0 ], position[ 1 ], position[ 2 ] };
+			res[ positionIdx ]					 = { position[ 0 ], position[ 1 ], position[ 2 ] };
 		}
+
+		return res;
 	}
 	void LibChemfiles::fillTrajectoryFrame( Model::Molecule &		   p_molecule,
 											const uint				   p_moleculeFrameIndex,
@@ -86,8 +90,7 @@ namespace VTX::IO::Reader
 		int validFrameCount = 0;
 		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
 		{
-			std::vector<Vec3f> atomPositions;
-			readTrajectoryFrame( p_trajectory, atomPositions );
+			const std::vector<Vec3f> atomPositions = readTrajectoryFrame( p_trajectory );
 
 			if ( atomPositions.size() <= 0 )
 				continue;
@@ -680,9 +683,8 @@ namespace VTX::IO::Reader
 		if ( p_dynamicTrajectory.nsteps() <= 0 )
 			return res;
 
-		std::vector<Vec3f> positions;
-		readTrajectoryFrame( p_dynamicTrajectory, positions );
-		const size_t frameAtomCount = positions.size();
+		const std::vector<Vec3f> positions		= readTrajectoryFrame( p_dynamicTrajectory );
+		const size_t			 frameAtomCount = positions.size();
 
 		std::vector<std::pair<Model::Molecule *, uint>> validTargets
 			= std::vector<std::pair<Model::Molecule *, uint>>();
