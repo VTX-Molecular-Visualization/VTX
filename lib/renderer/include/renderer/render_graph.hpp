@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_RENDER_GRAPH__
 
 #include "context/concept_context.hpp"
-#include "passes.hpp"
 #include "scheduler/concept_scheduler.hpp"
 #include <util/logger.hpp>
 #include <util/variant.hpp>
@@ -99,7 +98,7 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		bool setup(
+		C * setup(
 			void * const				 p_loader,
 			const size_t				 p_width,
 			const size_t				 p_height,
@@ -118,7 +117,7 @@ namespace VTX::Renderer
 			if ( _output == nullptr )
 			{
 				VTX_ERROR( "{}", "No output defined" );
-				return false;
+				return nullptr;
 			}
 
 			// Compute queue with scheduler.
@@ -129,21 +128,21 @@ namespace VTX::Renderer
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Can not build render queue: {}", p_e.what() );
-				return false;
+				return nullptr;
 			}
 
 			// Some checks.
 			if ( _renderQueue.empty() )
 			{
 				VTX_ERROR( "{}", "Render queue is empty" );
-				return false;
+				return nullptr;
 			}
 
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
 				VTX_ERROR( "{}", "The output of the last pass must be unique" );
 				clean();
-				return false;
+				return nullptr;
 			}
 
 			// Create context.
@@ -163,26 +162,12 @@ namespace VTX::Renderer
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
 				p_outInstructions.clear();
 				clean();
-				return false;
+				return nullptr;
 			}
 
 			VTX_DEBUG( "{} instructions generated", p_outInstructions.size() );
 			VTX_DEBUG( "{}", "Building render graph... done" );
-			return true;
-		}
-
-		void resize( const size_t p_width, const size_t p_height )
-		{
-			// assert( _context != nullptr );
-			//  TODO: delete context check.
-			if ( _context != nullptr )
-				_context->resize( _renderQueue, p_width, p_height );
-		}
-
-		void setOutput( const Handle p_output )
-		{
-			assert( _context != nullptr );
-			_context->setOutput( p_output );
+			return _context.get();
 		}
 
 		void clean()
@@ -192,62 +177,6 @@ namespace VTX::Renderer
 		}
 
 		inline void addUniforms( const Uniforms & p_uniforms ) { _uniforms.push_back( p_uniforms ); }
-
-		template<typename T>
-		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
-		{
-			_context->setUniform( p_value, p_key );
-		}
-
-		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key, const uchar p_index = 0 )
-		{
-			_context->setUniform( p_value, p_key, p_index );
-		}
-
-		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key, const uchar p_index = 0 ) const
-		{
-			_context->template getUniform<T>( p_value, p_key, p_index );
-		}
-
-		template<typename T>
-		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
-		{
-			_context->setData( p_data, p_key );
-		}
-
-		inline void fillInfos( StructInfos & p_infos ) const { _context->fillInfos( p_infos ); }
-
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const
-		{
-			return _context->measureTaskDuration( p_task );
-		}
-
-		inline void compileShaders() const { _context->compileShaders(); }
-
-		inline void snapshot(
-			std::vector<uchar> &			p_image,
-			const Context::RenderFunction & p_renderFunction,
-			const size_t					p_width	 = 0,
-			const size_t					p_height = 0
-		)
-		{
-			_context->snapshot( p_image, _renderQueue, p_renderFunction, p_width, p_height );
-		}
-
-		inline void getTextureData(
-			std::any &			   p_textureData,
-			const size_t		   p_x,
-			const size_t		   p_y,
-			const std::string &	   p_pass,
-			const E_CHANNEL_OUTPUT p_channel
-		) const
-		{
-			return _context->getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
-		}
-
-		inline const std::vector<Pass *> & getAvailablePasses() const { return availablePasses; }
 
 	  private:
 		S				   _scheduler;

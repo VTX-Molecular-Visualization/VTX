@@ -25,7 +25,7 @@ namespace VTX::Renderer
 			_renderer->build( p_output, p_loader );
 		}
 
-		inline void clean() { _renderer->clean(); }
+		// inline void clean() { _renderer->clean(); }
 
 		inline void render( const float p_time ) { _renderer->render( p_time ); }
 

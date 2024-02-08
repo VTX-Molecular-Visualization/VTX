@@ -12,15 +12,17 @@ namespace VTX::Renderer
 			Util::CHRONO_CPU(
 				[ & ]()
 				{
-					if ( _renderGraph->setup(
-							 p_loader ? p_loader : _loader,
-							 width,
-							 height,
-							 _shaderPath,
-							 _instructions,
-							 _instructionsDurationRanges,
-							 p_output
-						 ) )
+					_context = _renderGraph->setup(
+						p_loader ? p_loader : _loader,
+						width,
+						height,
+						_shaderPath,
+						_instructions,
+						_instructionsDurationRanges,
+						p_output
+					);
+
+					if ( _context )
 					{
 						for ( const Proxy::Molecule & proxy : _proxiesMolecules )
 						{
@@ -31,7 +33,7 @@ namespace VTX::Renderer
 							_setData( proxy );
 						}
 
-						_renderGraph->fillInfos( infos );
+						_context->fillInfos( infos );
 						setNeedUpdate( true );
 						_onReady();
 					}
@@ -43,6 +45,7 @@ namespace VTX::Renderer
 	void Renderer::clean()
 	{
 		_onClean();
+		_context = nullptr;
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
@@ -65,8 +68,12 @@ namespace VTX::Renderer
 
 		_onSnapshotPre( snapshotWidth, snapshotWidth );
 		forceUpdate = true;
-		_renderGraph->snapshot(
-			p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), snapshotWidth, snapshotWidth
+		_context->snapshot(
+			p_image,
+			_renderGraph->getRenderQueue(),
+			std::bind( &Renderer::render, this, std::placeholders::_1 ),
+			snapshotWidth,
+			snapshotWidth
 		);
 		_onSnapshotPost( width, height );
 		forceUpdate = isForceUpdate;

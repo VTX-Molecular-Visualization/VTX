@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "context/opengl_45.hpp"
+#include "passes.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
 #include "proxy/representation.hpp"
@@ -102,40 +103,49 @@ namespace VTX::Renderer
 		template<typename T>
 		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
 		{
-			_renderGraph->setUniform<T>( p_value, p_key );
+			assert( _context != nullptr );
+			_context->setUniform<T>( p_value, p_key );
 			setNeedUpdate( true );
 		}
 
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
-			_renderGraph->setUniform<T>( p_value, p_key );
+			assert( _context != nullptr );
+			_context->setUniform<T>( p_value, p_key );
 			setNeedUpdate( true );
 		}
 
 		template<typename T>
 		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			_renderGraph->getUniform<T>( p_value, p_key );
+			_context->getUniform<T>( p_value, p_key );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
+			// assert( _context != nullptr );
+			//  TODO: delete context check.
+			if ( _context == nullptr )
+				return;
+
 			width  = p_width;
 			height = p_height;
 
-			_renderGraph->resize( p_width, p_height );
+			_context->resize( _renderGraph->getRenderQueue(), p_width, p_height );
+
 			setNeedUpdate( true );
 		}
 
 		inline void setOutput( const uint p_output )
 		{
-			_renderGraph->setOutput( p_output );
+			assert( _context != nullptr );
+
+			_context->setOutput( p_output );
 			setNeedUpdate( true );
 		}
 
 		void build( const uint p_output = 0, void * p_loader = nullptr );
-
 		void clean();
 
 		inline void render( const float p_time )
@@ -146,7 +156,7 @@ namespace VTX::Renderer
 				{
 					for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
 					{
-						instructionDurationRange.duration = _renderGraph->measureTaskDuration(
+						instructionDurationRange.duration = _context->measureTaskDuration(
 
 							[ this, &instructionDurationRange ]()
 							{
@@ -244,7 +254,7 @@ namespace VTX::Renderer
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
-			_renderGraph->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
@@ -257,9 +267,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void compileShaders() const { _renderGraph->compileShaders(); }
+		inline void compileShaders() const { _context->compileShaders(); }
 
 		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
+		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
 		{
 			return _instructionsDurationRanges;
@@ -287,9 +298,10 @@ namespace VTX::Renderer
 	  private:
 		const size_t _BUFFER_COUNT = 2;
 
-		void * _loader			= nullptr;
-		bool   _needUpdate		= false;
-		size_t _framesRemaining = _BUFFER_COUNT;
+		Context::OpenGL45 * _context		 = nullptr;
+		void *				_loader			 = nullptr;
+		bool				_needUpdate		 = false;
+		size_t				_framesRemaining = _BUFFER_COUNT;
 
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
@@ -352,11 +364,11 @@ namespace VTX::Renderer
 
 			// Forward data.
 			// TODO: add to current buffer.
-			_renderGraph->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
-			_renderGraph->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
-			_renderGraph->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
-			_renderGraph->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
-			_renderGraph->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
+			_context->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
+			_context->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
+			_context->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
+			_context->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
+			_context->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
 
 			// Flags.
 			std::vector<uchar> atomFlags( p_proxy.atomPositions->size() );
@@ -367,13 +379,11 @@ namespace VTX::Renderer
 				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
 				atomFlags[ i ] = flag;
 			}
-			_renderGraph->setData( atomFlags, "SpheresCylindersFlags" );
+			_context->setData( atomFlags, "SpheresCylindersFlags" );
 
 			// Model ID.
 			uchar modelId = sizeMolecules;
-			_renderGraph->setData(
-				std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels"
-			);
+			_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels" );
 
 			// Counters.
 			sizeAtoms += uint( p_proxy.atomPositions->size() );
@@ -673,14 +683,14 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferFlags.size() );
 			assert( bufferCaPositions.size() == bufferModels.size() );
 
-			_renderGraph->setData( bufferCaPositions, "RibbonsPositions" );
-			_renderGraph->setData( bufferCaODirections, "RibbonsDirections" );
-			_renderGraph->setData( bufferSSTypes, "RibbonsTypes" );
-			_renderGraph->setData( bufferColors, "RibbonsColors" );
-			_renderGraph->setData( bufferIds, "RibbonsIds" );
-			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
-			_renderGraph->setData( bufferModels, "RibbonsModels" );
-			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
+			_context->setData( bufferCaPositions, "RibbonsPositions" );
+			_context->setData( bufferCaODirections, "RibbonsDirections" );
+			_context->setData( bufferSSTypes, "RibbonsTypes" );
+			_context->setData( bufferColors, "RibbonsColors" );
+			_context->setData( bufferIds, "RibbonsIds" );
+			_context->setData( bufferFlags, "RibbonsFlags" );
+			_context->setData( bufferModels, "RibbonsModels" );
+			_context->setData( bufferIndices, "RibbonsEbo" );
 
 			sizeRibbons += uint( bufferIndices.size() );
 		}
@@ -704,7 +714,7 @@ namespace VTX::Renderer
 				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 			}
 
-			_renderGraph->setUniform( models, "Matrix model view" );
+			_context->setUniform( models, "Matrix model view" );
 		}
 
 		void _setData( const Proxy::Voxel & p_proxy )
@@ -713,8 +723,8 @@ namespace VTX::Renderer
 			assert( p_proxy.maxs );
 			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-			_renderGraph->setData( *p_proxy.mins, "VoxelsMins" );
-			_renderGraph->setData( *p_proxy.maxs, "VoxelsMaxs" );
+			_context->setData( *p_proxy.mins, "VoxelsMins" );
+			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
 			sizeVoxels += uint( p_proxy.mins->size() );
 		}

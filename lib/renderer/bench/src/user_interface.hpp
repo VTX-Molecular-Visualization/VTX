@@ -385,7 +385,7 @@ namespace VTX::Bench
 				ImGui::BeginMenuBar();
 				if ( ImGui::BeginMenu( "Add" ) )
 				{
-					for ( const Pass * const pass : graph.getAvailablePasses() )
+					for ( const Pass * const pass : p_renderer->getAvailablePasses() )
 					{
 						if ( ImGui::MenuItem( pass->name.c_str() ) )
 						{
