@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_MATH_RANGE__
 #define __VTX_UTIL_MATH_RANGE__
 
-#include <assert.h>
+#include <cassert>
 #include <type_traits>
 #include <util/math.hpp>
 #include <vector>

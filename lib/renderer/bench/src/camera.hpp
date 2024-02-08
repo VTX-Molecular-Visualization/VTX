@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_BENCH_CAMERA__
 #define __VTX_RENDERER_BENCH_CAMERA__
 
-#include <functional>
+#include <util/callback.hpp>
 #include <util/constants.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>
@@ -11,12 +11,6 @@ namespace VTX::Bench
 	class Camera
 	{
 	  public:
-		using CallbackMatrixView	   = std::function<void( const Mat4f & )>;
-		using CallbackMatrixProjection = std::function<void( const Mat4f & )>;
-		using CallbackTranslation	   = std::function<void( const Vec3f & )>;
-		using CallbackClipInfos		   = std::function<void( const float, const float )>;
-		using CallbackPerspective	   = std::function<void( const bool )>;
-
 		Camera() = delete;
 		Camera( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
@@ -87,33 +81,33 @@ namespace VTX::Bench
 		}
 
 		// Callbacks.
-		inline void setCallbackMatrixView( const CallbackMatrixView & p_callback )
+		inline void addCallbackMatrixView( const Util::Callback<Mat4f>::Func & p_callback )
 		{
-			_callbackMatrixView = p_callback;
+			_callbackMatrixView += p_callback;
 			_onMatrixView();
 		}
 
-		inline void setCallbackMatrixProjection( const CallbackMatrixProjection & p_callback )
+		inline void addCallbackMatrixProjection( const Util::Callback<Mat4f>::Func & p_callback )
 		{
-			_callbackMatrixProjection = p_callback;
+			_callbackMatrixProjection += p_callback;
 			_onMatrixProjection();
 		}
 
-		inline void setCallbackTranslation( const CallbackTranslation & p_callback )
+		inline void addCallbackTranslation( const Util::Callback<Vec3f>::Func & p_callback )
 		{
-			_callbackTranslation = p_callback;
+			_callbackTranslation += p_callback;
 			_onTranslation();
 		}
 
-		inline void setCallbackClipInfos( const CallbackClipInfos & p_callback )
+		inline void addCallbackClipInfos( const Util::Callback<float, float>::Func & p_callback )
 		{
-			_callbackClipInfos = p_callback;
+			_callbackClipInfos += p_callback;
 			_onClipInfos();
 		}
 
-		inline void setCallbackPerspective( const CallbackPerspective & p_callback )
+		inline void addCallbackPerspective( const Util::Callback<bool>::Func & p_callback )
 		{
-			_callbackIsPerspective = p_callback;
+			_callbackIsPerspective += p_callback;
 			_onPerspective();
 		}
 
@@ -160,53 +154,26 @@ namespace VTX::Bench
 		float _velocityRotation	   = VELOCITY_ROTATION_DEFAULT;
 		float _velocityZoom		   = VELOCITY_ZOOM_DEFAULT;
 
-		CallbackMatrixView		 _callbackMatrixView;
-		CallbackMatrixProjection _callbackMatrixProjection;
-		CallbackTranslation		 _callbackTranslation;
-		CallbackClipInfos		 _callbackClipInfos;
-		CallbackPerspective		 _callbackIsPerspective;
+		Util::Callback<Mat4f>		 _callbackMatrixView;
+		Util::Callback<Mat4f>		 _callbackMatrixProjection;
+		Util::Callback<Vec3f>		 _callbackTranslation;
+		Util::Callback<float, float> _callbackClipInfos;
+		Util::Callback<bool>		 _callbackIsPerspective;
 
-		inline void _onMatrixView()
-		{
-			if ( _callbackMatrixView )
-			{
-				_callbackMatrixView( Util::Math::lookAt( _position, _position + _front, _up ) );
-			}
-		}
+		inline void _onMatrixView() { _callbackMatrixView( Util::Math::lookAt( _position, _position + _front, _up ) ); }
 
 		inline void _onMatrixProjection()
 		{
-			if ( _callbackMatrixProjection )
-			{
-				_callbackMatrixProjection( Util::Math::perspective(
-					Util::Math::radians( _fov ), float( _width ) / float( _height ), _near, _far
-				) );
-			}
+			_callbackMatrixProjection(
+				Util::Math::perspective( Util::Math::radians( _fov ), float( _width ) / float( _height ), _near, _far )
+			);
 		}
 
-		inline void _onTranslation()
-		{
-			if ( _callbackTranslation )
-			{
-				_callbackTranslation( _position );
-			}
-		}
+		inline void _onTranslation() { _callbackTranslation( _position ); }
 
-		inline void _onClipInfos()
-		{
-			if ( _callbackClipInfos )
-			{
-				_callbackClipInfos( _near, _far );
-			}
-		}
+		inline void _onClipInfos() { _callbackClipInfos( _near, _far ); }
 
-		inline void _onPerspective()
-		{
-			if ( _callbackIsPerspective )
-			{
-				_callbackIsPerspective( _isPerspective );
-			}
-		}
+		inline void _onPerspective() { _callbackIsPerspective( _isPerspective ); }
 	};
 } // namespace VTX::Bench
 

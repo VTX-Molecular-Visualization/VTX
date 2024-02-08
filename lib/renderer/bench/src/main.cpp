@@ -52,60 +52,63 @@ int main( int, char ** )
 		InputManager inputManager;
 
 		// Setup callbacks.
-		inputManager.setCallbackClose( [ &isRunning ]() { isRunning = false; } );
-		inputManager.setCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
+		inputManager.addCallbackClose( [ &isRunning ]() { isRunning = false; } );
+		inputManager.addCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
 										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.setCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
+		inputManager.addCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
 										{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
 		);
-		inputManager.setCallbackZoom( [ &camera, &ui ]( const int p_delta )
+		inputManager.addCallbackZoom( [ &camera, &ui ]( const int p_delta )
 									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
 
 		renderer.setCallbackClean(
 			[ &camera, &inputManager ]()
 			{
-				camera.setCallbackMatrixView( nullptr );
-				camera.setCallbackMatrixProjection( nullptr );
-				camera.setCallbackTranslation( nullptr );
-				camera.setCallbackClipInfos( nullptr );
-				camera.setCallbackPerspective( nullptr );
-				inputManager.setCallbackResize( nullptr );
-				inputManager.setCallbackRestore( nullptr );
-				inputManager.setCallbackMousePick( nullptr );
-				inputManager.setCallbackMouseMotion( nullptr );
+				/*
+				camera.addCallbackMatrixView( nullptr );
+				camera.addCallbackMatrixProjection( nullptr );
+				camera.addCallbackTranslation( nullptr );
+				camera.addCallbackClipInfos( nullptr );
+				camera.addCallbackPerspective( nullptr );
+
+				inputManager.addCallbackResize( nullptr );
+				inputManager.addCallbackRestore( nullptr );
+				inputManager.addCallbackMousePick( nullptr );
+				inputManager.addCallbackMouseMotion( nullptr );
+				*/
 			}
 		);
 
 		renderer.setCallbackReady(
 			[ &ui, &renderer, &camera, &inputManager ]()
 			{
-				camera.setCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
+				camera.addCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
 											  { renderer.setMatrixView( p_matrix ); } );
-				camera.setCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
+				camera.addCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
 													{ renderer.setMatrixProjection( p_matrix ); } );
-				camera.setCallbackTranslation( [ &renderer ]( const Vec3f p_position )
+				camera.addCallbackTranslation( [ &renderer ]( const Vec3f p_position )
 											   { renderer.setCameraPosition( p_position ); } );
-				camera.setCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
+				camera.addCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
 											 { renderer.setCameraClipInfos( p_near, p_far ); } );
-				camera.setCallbackPerspective( [ &renderer ]( const bool p_isPerspective )
+				camera.addCallbackPerspective( [ &renderer ]( const bool p_isPerspective )
 											   { renderer.setPerspective( p_isPerspective ); } );
 
-				inputManager.setCallbackResize(
+				inputManager.addCallbackResize(
 					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
 					{
 						renderer.resize( p_width, p_height );
 						camera.resize( p_width, p_height );
 					}
 				);
-				inputManager.setCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
-				inputManager.setCallbackMousePick(
+				inputManager.addCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
+				inputManager.addCallbackMousePick(
 					[ &renderer ]( const size_t p_x, const size_t p_y )
 					{
 						Vec2i ids = renderer.getPickedIds( p_x, p_y );
 						VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 					}
 				);
-				inputManager.setCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
+				inputManager.addCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
 													 { renderer.setMousePosition( p_position ); } );
 			}
 		);

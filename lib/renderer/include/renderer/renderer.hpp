@@ -154,27 +154,11 @@ namespace VTX::Renderer
 			{
 				if ( logDurations )
 				{
-					for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
-					{
-						instructionDurationRange.duration = _context->measureTaskDuration(
-
-							[ this, &instructionDurationRange ]()
-							{
-								for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last;
-									  ++i )
-								{
-									_instructions[ i ]();
-								}
-							}
-						);
-					}
+					_renderLog( p_time );
 				}
 				else
 				{
-					for ( const Instruction & instruction : _instructions )
-					{
-						instruction();
-					}
+					_render( p_time );
 				}
 
 				if ( _needUpdate )
@@ -727,6 +711,31 @@ namespace VTX::Renderer
 			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
 			sizeVoxels += uint( p_proxy.mins->size() );
+		}
+
+		inline void _render( const float p_time ) const
+		{
+			for ( const Instruction & instruction : _instructions )
+			{
+				instruction();
+			}
+		}
+
+		inline void _renderLog( const float p_time )
+		{
+			for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+			{
+				instructionDurationRange.duration = _context->measureTaskDuration(
+
+					[ this, &instructionDurationRange ]()
+					{
+						for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+						{
+							_instructions[ i ]();
+						}
+					}
+				);
+			}
 		}
 
 		// TODO: encapsulate this.
