@@ -277,26 +277,6 @@ catch_discover_tests(vtx_ui_test)
 # MdPrep.
 include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
 include("${DIR_LIBS}/tool/tools/mdprep/library.cmake")
-add_library(vtx_tool_mdprep)
-configure_target(vtx_tool_mdprep)
-
-file(GLOB_RECURSE HEADERS_MDPREP ${DIR_LIBS}/tool/tools/mdprep/include/*)
-file(GLOB_RECURSE SOURCES_MDPREP ${DIR_LIBS}/tool/tools/mdprep/src/*)
-file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
-file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
-target_sources(vtx_tool_mdprep
-	PRIVATE ${SOURCES_MDPREP}
-	PRIVATE ${QT_FORMS}
-	PRIVATE ${QT_RESOURCES}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/tool/tools/mdprep/include include FILES ${HEADERS_MDPREP})
-
-target_link_libraries(vtx_tool_mdprep PRIVATE vtx_util)
-target_link_libraries(vtx_tool_mdprep PRIVATE vtx_core)
-target_link_libraries(vtx_tool_mdprep PRIVATE vtx_app)
-target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Core)
-target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Gui)
-target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Widgets)
-target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::OpenGLWidgets)
 
 # MdPrep test.
 
@@ -310,6 +290,8 @@ file(GLOB_RECURSE SOURCES_MDPREP_TEST ${DIR_LIBS}/tool/tools/mdprep/test/src/*)
 add_executable(vtx_tool_mdprep_test ${SOURCES_MDPREP_TEST})
 configure_target(vtx_tool_mdprep_test)
 
+target_include_directories(vtx_tool_mdprep_test PRIVATE ${DIR_LIBS}/tool/tools/mdprep/test/include)
+
 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
@@ -321,7 +303,6 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 
-target_include_directories(vtx_tool_mdprep_test PRIVATE include)
 
 catch_discover_tests(vtx_tool_mdprep_test)
 add_dependencies( vtx_tool_mdprep_test vtx_tool_mdprep)
