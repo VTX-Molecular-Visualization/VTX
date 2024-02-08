@@ -1,18 +1,18 @@
 
-include ("${CMAKE_CURRENT_LIST_DIR}/cmake/vtx_tool_mdprep_copy_files.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/vtx_tool_mdprep_copy_files.cmake")
 
 add_library(vtx_tool_mdprep)
 configure_target(vtx_tool_mdprep)
 
-file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/include/*")
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*")
+file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
 file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 target_sources(vtx_tool_mdprep
 	PRIVATE ${SOURCES}
 	PRIVATE ${QT_FORMS}
 	PRIVATE ${QT_RESOURCES}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include" FILES ${HEADERS})
+	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 
 if (NOT DEFINED _VTX_MDPREP_CONAN)

@@ -276,7 +276,7 @@ catch_discover_tests(vtx_ui_test)
 
 # MdPrep.
 include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
-include("${DIR_LIBS}/tool/tools/mdprep/library.cmake")
+include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
 
