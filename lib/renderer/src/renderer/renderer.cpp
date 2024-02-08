@@ -14,8 +14,8 @@ namespace VTX::Renderer
 				{
 					if ( _renderGraph->setup(
 							 p_loader ? p_loader : _loader,
-							 _width,
-							 _height,
+							 width,
+							 height,
 							 _shaderPath,
 							 _instructions,
 							 _instructionsDurationRanges,
@@ -31,7 +31,7 @@ namespace VTX::Renderer
 							_setData( proxy );
 						}
 
-						_renderGraph->fillInfos( _infos );
+						_renderGraph->fillInfos( infos );
 						setNeedUpdate( true );
 						_onReady();
 					}
@@ -46,7 +46,7 @@ namespace VTX::Renderer
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
-		_infos			 = StructInfos();
+		infos			 = StructInfos();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
@@ -59,14 +59,16 @@ namespace VTX::Renderer
 
 	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
 	{
-		const size_t width		   = p_width ? p_width : _width;
-		const size_t height		   = p_height ? p_height : _height;
+		const size_t snapshotWidth = p_width ? p_width : width;
+		const size_t snashotHeight = p_height ? p_height : height;
 		bool		 isForceUpdate = forceUpdate;
 
-		_onSnapshotPre( width, height );
+		_onSnapshotPre( snapshotWidth, snapshotWidth );
 		forceUpdate = true;
-		_renderGraph->snapshot( p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), width, height );
-		_onSnapshotPost( _width, _height );
+		_renderGraph->snapshot(
+			p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), snapshotWidth, snapshotWidth
+		);
+		_onSnapshotPost( width, height );
 		forceUpdate = isForceUpdate;
 	}
 } // namespace VTX::Renderer

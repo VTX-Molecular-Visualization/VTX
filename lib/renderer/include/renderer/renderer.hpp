@@ -28,8 +28,8 @@ namespace VTX::Renderer
 			const FilePath & p_shaderPath,
 			void *			 p_loader = nullptr
 		) :
-			_width( p_width ),
-			_height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+			width( p_width ),
+			height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
 			// Graph.
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
@@ -121,8 +121,8 @@ namespace VTX::Renderer
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
-			_width	= p_width;
-			_height = p_height;
+			width  = p_width;
+			height = p_height;
 
 			_renderGraph->resize( p_width, p_height );
 			setNeedUpdate( true );
@@ -244,15 +244,11 @@ namespace VTX::Renderer
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
-			_renderGraph->getTextureData( idsAny, p_x, _height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			_renderGraph->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
-		inline const size_t		   getWidth() const { return _width; }
-		inline const size_t		   getHeight() const { return _height; }
-		inline const StructInfos & getInfos() const { return _infos; }
-		inline const bool		   isNeedUpdate() const { return _needUpdate; }
-		inline void				   setNeedUpdate( const bool p_value )
+		inline void setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
 			if ( p_value == false )
@@ -269,6 +265,10 @@ namespace VTX::Renderer
 			return _instructionsDurationRanges;
 		}
 
+		size_t		width;
+		size_t		height;
+		StructInfos infos;
+
 		uint sizeAtoms	 = 0;
 		uint sizeBonds	 = 0;
 		uint sizeRibbons = 0;
@@ -278,7 +278,7 @@ namespace VTX::Renderer
 
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
-		bool showRibbons = false;
+		bool showRibbons = true;
 		bool showVoxels	 = true;
 
 		bool forceUpdate  = false;
@@ -287,18 +287,14 @@ namespace VTX::Renderer
 	  private:
 		const size_t _BUFFER_COUNT = 2;
 
-		void * _loader	   = nullptr;
-		bool   _needUpdate = false;
-
+		void * _loader			= nullptr;
+		bool   _needUpdate		= false;
 		size_t _framesRemaining = _BUFFER_COUNT;
 
-		size_t								 _width;
-		size_t								 _height;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
-		StructInfos							 _infos;
 
 		CallbackClean		 _callbackClean;
 		CallbackReady		 _callbackReady;

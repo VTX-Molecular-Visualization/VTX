@@ -219,7 +219,7 @@ namespace VTX::Bench
 				{
 					std::vector<uchar> image;
 					p_renderer->snapshot( image );
-					_saveImage( image, p_renderer->getWidth(), p_renderer->getHeight() );
+					_saveImage( image, p_renderer->width, p_renderer->height );
 				}
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -341,7 +341,7 @@ namespace VTX::Bench
 			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
 			lastTime							= now;
 			*/
-			const Renderer::StructInfos & infos = p_renderer->getInfos();
+			const Renderer::StructInfos & infos = p_renderer->infos;
 
 			if ( ImGui::Begin( "Misc" ) )
 			{
@@ -354,7 +354,7 @@ namespace VTX::Bench
 				);
 				ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels );
 				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
-				ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
+				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 				ImGui::ProgressBar(

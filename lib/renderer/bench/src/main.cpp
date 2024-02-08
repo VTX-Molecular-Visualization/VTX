@@ -221,7 +221,7 @@ int main( int, char ** )
 
 		renderer.build();
 
-		// renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		// Main loop.
 		while ( isRunning )
