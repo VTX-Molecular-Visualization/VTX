@@ -19,17 +19,57 @@ namespace VTX
 {
 	namespace Worker
 	{
+		void Loader::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			if ( p_event.name == Event::SCENE_CLEARED )
+			{
+				requestInterruption();
+			}
+			else if ( p_event.name == Event::MOLECULE_REMOVED )
+			{
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent
+					= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+
+				const bool moleculeInPotentialTarget
+					= std::find(
+						  _moleculeTargetsForDynamics.cbegin(), _moleculeTargetsForDynamics.cend(), castedEvent.ptr )
+					  != _moleculeTargetsForDynamics.cend();
+
+				if ( moleculeInPotentialTarget )
+					requestInterruption();
+			}
+		}
+
 		uint Loader::_run()
 		{
 			Util::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
 
 			// Load all files.
 			_loadSceneFiles();
+
+			if ( isInterruptionRequested() )
+				return 0;
+
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 			_loadConfigurationFiles( config );
+
+			if ( isInterruptionRequested() )
+				return 0;
+
 			_loadMoleculeFiles( config );
+
+			if ( isInterruptionRequested() )
+				return 0;
+
 			_loadTrajectoriesFiles( config );
+
+			if ( isInterruptionRequested() )
+				return 0;
+
 			_loadMeshFiles();
+
+			if ( isInterruptionRequested() )
+				return 0;
 
 			// Display errors for unknown files
 			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
@@ -138,7 +178,11 @@ namespace VTX
 				{
 					const bool dynamicAppliedOnTarget = reader->readDynamic( path, _moleculeTargetsForDynamics );
 
-					if ( !dynamicAppliedOnTarget ) // If the dynamic doesn't match any targets, we open it as standalone
+					if ( isInterruptionRequested() )
+						return;
+
+					if ( !dynamicAppliedOnTarget ) // If the dynamic doesn't match any targets, we open it as
+												   // standalone
 					{
 						if ( _openTrajectoryAsMolecule )
 						{

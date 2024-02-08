@@ -50,6 +50,10 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _chains );
 			MVC::MvcManager::get().deleteAllModels( _categories );
 
+			_atomPositionFramesMutex.lock();
+			_atomPositionsFrames.clear();
+			_atomPositionFramesMutex.unlock();
+
 			for ( const UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
 				delete unknownResidueSymbol;
 

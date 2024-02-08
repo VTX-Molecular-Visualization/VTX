@@ -29,6 +29,8 @@ namespace VTX
 			void _logDebug( const std::string & p_log ) const;
 			void _logFile( const std::string & p_log ) const;
 
+			bool _isThreadInterrupted() const;
+
 		  private:
 			const Worker::BaseThread * const _thread;
 		};

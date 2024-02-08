@@ -53,4 +53,12 @@ namespace VTX::IO
 		else
 			VTX_LOG_FILE( p_log );
 	}
+	bool ChemfilesIO::_isThreadInterrupted() const
+	{
+		if ( _thread != nullptr )
+			return _thread->isInterruptionRequested();
+		else
+			return false;
+	}
+
 } // namespace VTX::IO

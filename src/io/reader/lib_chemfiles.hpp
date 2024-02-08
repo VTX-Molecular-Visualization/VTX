@@ -29,7 +29,7 @@ namespace VTX
 
 			void readFile( const IO::FilePath &, Model::Molecule & ) override;
 			void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override;
-			bool readDynamic( const IO::FilePath &, std::vector<Model::Molecule *> p_potentialTargets );
+			bool readDynamic( const IO::FilePath &, std::vector<Model::Molecule *> & p_potentialTargets );
 
 			std::vector<Vec3f> readTrajectoryFrame( chemfiles::Trajectory & p_trajectory ) const;
 			void			   fillTrajectoryFrame( Model::Molecule &		   p_molecule,
@@ -44,8 +44,8 @@ namespace VTX
 			const std::string _getFormat( const IO::FilePath & );
 			const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 
-			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &				  p_dynamicTrajectory,
-											   const std::vector<Model::Molecule *> & p_potentialTargets ) const;
+			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &			p_dynamicTrajectory,
+											   std::vector<Model::Molecule *> & p_potentialTargets ) const;
 			void _readTrajectoryFrames( chemfiles::Trajectory &									p_trajectory,
 										const std::vector<std::pair<Model::Molecule *, uint>> & p_targets,
 										const uint p_trajectoryFrameStart = 0 ) const;

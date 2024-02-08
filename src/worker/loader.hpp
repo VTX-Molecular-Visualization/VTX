@@ -3,6 +3,7 @@
 
 #include "base_thread.hpp"
 #include "define.hpp"
+#include "event/base_event_receiver_vtx.hpp"
 #include "io/filepath.hpp"
 #include "tool/chrono.hpp"
 #include <map>
@@ -28,7 +29,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class Loader : public Worker::BaseThread
+		class Loader : public Worker::BaseThread, public Event::BaseEventReceiverVTX
 		{
 			Q_OBJECT
 
@@ -53,10 +54,21 @@ namespace VTX
 				SOURCE_TYPE sourceType = SOURCE_TYPE::UNKNOWN;
 			};
 
-			explicit Loader( const IO::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-			explicit Loader( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths ) {}
+			explicit Loader( const IO::FilePath & p_path )
+			{
+				_paths.emplace_back( p_path );
+				_registerEvent( Event::MOLECULE_REMOVED );
+				_registerEvent( Event::SCENE_CLEARED );
+			}
+			explicit Loader( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths )
+			{
+				_registerEvent( Event::MOLECULE_REMOVED );
+				_registerEvent( Event::SCENE_CLEARED );
+			}
 			explicit Loader( const std::map<IO::FilePath, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers )
 			{
+				_registerEvent( Event::MOLECULE_REMOVED );
+				_registerEvent( Event::SCENE_CLEARED );
 			}
 			~Loader() = default;
 
@@ -69,6 +81,8 @@ namespace VTX
 			{
 				_openTrajectoryAsMolecule = p_openAsMolecule;
 			}
+
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  protected:
 			uint _run() override;

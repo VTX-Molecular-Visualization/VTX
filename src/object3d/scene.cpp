@@ -61,6 +61,8 @@ namespace VTX::Object3D
 
 	void Scene::reset()
 	{
+		VTX_EVENT( new Event::VTXEvent( Event::SCENE_CLEARED ) );
+
 		clear();
 		_createDefaultPath();
 	}

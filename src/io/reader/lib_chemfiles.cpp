@@ -45,7 +45,7 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
-	bool LibChemfiles::readDynamic( const IO::FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
+	bool LibChemfiles::readDynamic( const IO::FilePath & p_path, std::vector<Model::Molecule *> & p_potentialTargets )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path.path(), 'r', _getFormat( p_path ) );
@@ -73,6 +73,9 @@ namespace VTX::IO::Reader
 											const uint				   p_moleculeFrameIndex,
 											const std::vector<Vec3f> & p_atomPositions ) const
 	{
+		if ( _isThreadInterrupted() )
+			return;
+
 		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
 		std::copy( p_atomPositions.begin(), p_atomPositions.end(), moleculeFrame.begin() );
 	}
@@ -95,12 +98,17 @@ namespace VTX::IO::Reader
 
 			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeStartFrame : p_targets )
 			{
+				if ( _isThreadInterrupted() )
+					return;
 				fillTrajectoryFrame(
 					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + validFrameCount, atomPositions );
-
-				_logDebug( "Frame " + std::to_string( validFrameCount ) + " done." );
-				validFrameCount++;
 			}
+
+			validFrameCount++;
+			_logDebug( "Frame " + std::to_string( validFrameCount ) + " done." );
+
+			if ( _isThreadInterrupted() )
+				return;
 
 #ifdef _DEBUG
 			if ( frameIdx > 1 && frameIdx % 100 == 0 )
@@ -114,16 +122,28 @@ namespace VTX::IO::Reader
 		timeReadingFrames.stop();
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 
+		if ( _isThreadInterrupted() )
+			return;
+
 		// Erase supernumeraries frames
 		for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : p_targets )
 		{
+			if ( _isThreadInterrupted() )
+				return;
+
 			Model::Molecule & molecule = *( pairMoleculeFirstFrame.first );
 			if ( molecule.getFrames().back().size() == 0 )
 			{
 				do
 				{
 					molecule.getFrames().pop_back();
+					if ( _isThreadInterrupted() )
+						return;
+
 				} while ( molecule.getFrames().back().size() == 0 );
+
+				if ( _isThreadInterrupted() )
+					return;
 
 				molecule.getFrames().shrink_to_fit();
 			}
@@ -172,6 +192,9 @@ namespace VTX::IO::Reader
 		chrono.start();
 		chemfiles::Frame frame = p_trajectory.read();
 		chrono.stop();
+
+		if ( _isThreadInterrupted() )
+			return;
 
 		_logInfo( "Trajectory read in: " + chrono.elapsedTimeStr() );
 
@@ -278,6 +301,9 @@ namespace VTX::IO::Reader
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
+			if ( _isThreadInterrupted() )
+				return;
+
 			const chemfiles::Residue & residue = residues[ residueIdx ];
 
 			// Check if chain name changed.
@@ -462,6 +488,9 @@ namespace VTX::IO::Reader
 
 			for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 			{
+				if ( _isThreadInterrupted() )
+					return;
+
 				const uint				atomId = uint( *it );
 				const chemfiles::Atom & atom   = topology[ atomId ];
 				uint					atomType;
@@ -587,6 +616,9 @@ namespace VTX::IO::Reader
 		uint counter = 0;
 		for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 		{
+			if ( _isThreadInterrupted() )
+				return;
+
 			const chemfiles::Bond & bond = bonds[ boundIdx ];
 
 			Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
@@ -615,6 +647,9 @@ namespace VTX::IO::Reader
 		counter				  = 0;
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
+			if ( _isThreadInterrupted() )
+				return;
+
 			Model::Residue * const		residue			 = p_molecule.getResidue( residueIdx );
 			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
 			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
@@ -624,6 +659,9 @@ namespace VTX::IO::Reader
 
 			for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
+				if ( _isThreadInterrupted() )
+					return;
+
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorBonds[ i ] ];
 				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
@@ -642,6 +680,9 @@ namespace VTX::IO::Reader
 
 			for ( uint i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
+				if ( _isThreadInterrupted() )
+					return;
+
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorExtraBonds[ i ] ];
 				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
@@ -676,8 +717,8 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &				p_dynamicTrajectory,
-													 const std::vector<Model::Molecule *> & p_potentialTargets ) const
+	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &		  p_dynamicTrajectory,
+													 std::vector<Model::Molecule *> & p_potentialTargets ) const
 	{
 		if ( p_dynamicTrajectory.nsteps() <= 0 )
 			return false;
@@ -689,10 +730,20 @@ namespace VTX::IO::Reader
 			= std::vector<std::pair<Model::Molecule *, uint>>();
 		validTargets.reserve( p_potentialTargets.size() );
 
-		for ( Model::Molecule * const molecule : p_potentialTargets )
+		auto it = p_potentialTargets.begin();
+
+		while ( it != p_potentialTargets.end() )
 		{
+			if ( _isThreadInterrupted() )
+				return false;
+
+			Model::Molecule * const molecule = *it;
+
 			if ( molecule->getAtomCount() == frameAtomCount )
 			{
+				if ( _isThreadInterrupted() )
+					return false;
+
 				const uint indexFirstNewFrame = molecule->getFrameCount() == 1 ? 0 : molecule->getFrameCount();
 				molecule->resizeAtomPositionFrames( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
 
@@ -719,10 +770,15 @@ namespace VTX::IO::Reader
 				}
 
 				validTargets.emplace_back( molecule, indexFirstNewFrame + 1 );
+				it++;
+			}
+			else
+			{
+				it = p_potentialTargets.erase( it );
 			}
 		}
 
-		validTargets.shrink_to_fit();
+		p_potentialTargets.shrink_to_fit();
 
 		if ( validTargets.size() > 0 )
 		{
@@ -730,6 +786,9 @@ namespace VTX::IO::Reader
 
 			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : validTargets )
 			{
+				if ( _isThreadInterrupted() )
+					return false;
+
 				pairMoleculeFirstFrame.first->forceNotifyTrajectoryChanged();
 			}
 		}
