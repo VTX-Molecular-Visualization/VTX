@@ -5,7 +5,7 @@
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget

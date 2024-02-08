@@ -211,16 +211,10 @@ namespace VTX::Bench
 					setVSync( _vsync );
 				}
 
-				bool isLogDurations = p_renderer->isLogDurations();
-				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
-				{
-					p_renderer->setLogDurations( isLogDurations );
-				}
-				bool forceUpdate = p_renderer->isForceUpdate();
-				if ( ImGui::Checkbox( "Force update", &forceUpdate ) )
-				{
-					p_renderer->setForceUpdate( forceUpdate );
-				}
+				ImGui::Checkbox( "Timers", &p_renderer->logDurations );
+
+				ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
+
 				if ( ImGui::Button( "Snapshot" ) )
 				{
 					std::vector<uchar> image;
@@ -310,7 +304,7 @@ namespace VTX::Bench
 		{
 			using namespace Renderer;
 
-			if ( p_renderer->isLogDurations() )
+			if ( p_renderer->logDurations )
 			{
 				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
 

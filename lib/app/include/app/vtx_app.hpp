@@ -19,7 +19,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class Renderer;
+		class Facade;
 	}
 
 	namespace App
@@ -69,8 +69,8 @@ namespace VTX
 			Application::Scene &	   getScene();
 			const Application::Scene & getScene() const;
 
-			inline Renderer::Renderer &		  getRenderer() { return *_renderer; }
-			inline const Renderer::Renderer & getRenderer() const { return *_renderer; }
+			inline Renderer::Facade &		getRenderer() { return *_renderer; }
+			inline const Renderer::Facade & getRenderer() const { return *_renderer; }
 
 			Application::Settings &		  getSettings();
 			const Application::Settings & getSettings() const;
@@ -97,7 +97,7 @@ namespace VTX
 
 			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
 
-			std::unique_ptr<Renderer::Renderer> _renderer;
+			std::unique_ptr<Renderer::Facade> _renderer;
 
 			std::unique_ptr<Application::Settings>					  _settings;
 			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
@@ -126,7 +126,7 @@ namespace VTX
 
 		// Convenient accessors
 		Application::Scene &				 SCENE();
-		Renderer::Renderer &				 RENDERER();
+		Renderer::Facade &					 RENDERER();
 		Application::Settings &				 SETTINGS();
 		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
 		Application::Selection::Selection &	 CURRENT_SELECTION();

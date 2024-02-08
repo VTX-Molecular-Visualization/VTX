@@ -44,7 +44,7 @@ namespace VTX::Renderer
 			Pass * const outline   = _renderGraph->addPass( descPassOutline );
 			Pass * const selection = _renderGraph->addPass( descPassSelection );
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-			// Pass * const crt	 = _renderGraph->addPass( descPassCRT );
+			// Pass * const crt	 = renderGraph->addPass( descPassCRT );
 
 			// Setup values.
 			geo->programs[ 0 ].draw.value().countFunction	 = [ & ]() { return showAtoms ? sizeAtoms : 0; };
@@ -140,9 +140,9 @@ namespace VTX::Renderer
 
 		inline void render( const float p_time )
 		{
-			if ( _needUpdate || _forceUpdate || _framesRemaining > 0 )
+			if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 			{
-				if ( _logDurations )
+				if ( logDurations )
 				{
 					for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
 					{
@@ -179,11 +179,8 @@ namespace VTX::Renderer
 		}
 
 		inline void setCallbackClean( const CallbackClean & p_cb ) { _callbackClean = p_cb; }
-
 		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
-
 		inline void setCallbackSnapshotPre( const CallbackSnapshotPre & p_cb ) { _callbackSnapshotPre = p_cb; }
-
 		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
 
 		inline void setMatrixView( const Mat4f & p_view )
@@ -191,21 +188,7 @@ namespace VTX::Renderer
 			setUniform( p_view, "Matrix view" );
 
 			// Update model view matrices.
-			struct _StructUBOModel
-			{
-				Mat4f mv;
-				Mat4f n;
-			};
-			std::vector<_StructUBOModel> models;
-
-			for ( const Proxy::Molecule & proxy : _proxiesMolecules )
-			{
-				const Mat4f matrixModelView = p_view * *proxy.transform;
-				const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
-			}
-
-			_renderGraph->setUniform( models, "Matrix model view" );
+			_setDataModel( _proxiesMolecules );
 		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
@@ -277,13 +260,9 @@ namespace VTX::Renderer
 				_framesRemaining = _BUFFER_COUNT;
 			}
 		}
-		inline const bool isForceUpdate() const { return _forceUpdate; }
-		inline void		  setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
-		inline const bool isLogDurations() const { return _logDurations; }
-		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
-		inline void		  compileShaders() const { _renderGraph->compileShaders(); }
 
-		// Debug purposes only.
+		inline void compileShaders() const { _renderGraph->compileShaders(); }
+
 		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
 		{
@@ -302,12 +281,15 @@ namespace VTX::Renderer
 		bool showRibbons = false;
 		bool showVoxels	 = true;
 
+		bool forceUpdate  = false;
+		bool logDurations = false;
+
 	  private:
 		const size_t _BUFFER_COUNT = 2;
 
-		void * _loader			= nullptr;
-		bool   _needUpdate		= false;
-		bool   _forceUpdate		= false;
+		void * _loader	   = nullptr;
+		bool   _needUpdate = false;
+
 		size_t _framesRemaining = _BUFFER_COUNT;
 
 		size_t								 _width;
@@ -317,19 +299,19 @@ namespace VTX::Renderer
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 		StructInfos							 _infos;
-		bool								 _logDurations = false;
 
 		CallbackClean		 _callbackClean;
 		CallbackReady		 _callbackReady;
 		CallbackSnapshotPre	 _callbackSnapshotPre;
 		CallbackSnapshotPost _callbackSnapshotPost;
 
-		// TODO.
+		// TODO: mapping registry.
 		std::vector<Proxy::Molecule>	   _proxiesMolecules;
 		std::vector<Proxy::Mesh>		   _proxiesMeshes;
 		std::vector<Proxy::Representation> _proxiesRepresentations;
 		std::vector<Proxy::Voxel>		   _proxiesVoxels;
 
+		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
 			assert( p_proxy.atomIds || p_proxy.residueIds );
@@ -345,11 +327,9 @@ namespace VTX::Renderer
 				_setDataRibbons( p_proxy );
 			}
 
-			_setDataModel( p_proxy );
+			_setDataModel( { p_proxy } );
 
 			sizeMolecules++;
-			// TODO: make "filler" functions for each type of data?
-			// TODO: mapping registry.
 		}
 
 		enum E_ATOM_FLAGS
@@ -709,23 +689,26 @@ namespace VTX::Renderer
 			sizeRibbons += uint( bufferIndices.size() );
 		}
 
-		void _setDataModel( const Proxy::Molecule & p_proxy )
+		void _setDataModel( const std::vector<Proxy::Molecule> & p_proxies )
 		{
-			// TODO: move to separate function.
 			struct _StructUBOModel
 			{
 				Mat4f mv;
 				Mat4f n;
 			};
 
-			Mat4f matrixView;
+			std::vector<_StructUBOModel> models;
+			Mat4f						 matrixView;
 			getUniform( matrixView, "Matrix view" );
-			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			_renderGraph->setUniform(
-				std::vector<_StructUBOModel> { { matrixModelView, matrixNormal } }, "Matrix model view", sizeMolecules
-			);
+			for ( const Proxy::Molecule & proxy : p_proxies )
+			{
+				const Mat4f matrixModelView = matrixView * *proxy.transform;
+				const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+			}
+
+			_renderGraph->setUniform( models, "Matrix model view" );
 		}
 
 		void _setData( const Proxy::Voxel & p_proxy )
@@ -737,9 +720,10 @@ namespace VTX::Renderer
 			_renderGraph->setData( *p_proxy.mins, "VoxelsMins" );
 			_renderGraph->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
-			sizeVoxels = uint( p_proxy.mins->size() );
+			sizeVoxels += uint( p_proxy.mins->size() );
 		}
 
+		// TODO: encapsulate this.
 		inline void _onClean()
 		{
 			if ( _callbackClean )

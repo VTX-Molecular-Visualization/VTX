@@ -61,12 +61,12 @@ namespace VTX::Renderer
 	{
 		const size_t width		   = p_width ? p_width : _width;
 		const size_t height		   = p_height ? p_height : _height;
-		bool		 isForceUpdate = _forceUpdate;
+		bool		 isForceUpdate = forceUpdate;
 
 		_onSnapshotPre( width, height );
-		_forceUpdate = true;
+		forceUpdate = true;
 		_renderGraph->snapshot( p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), width, height );
 		_onSnapshotPost( _width, _height );
-		_forceUpdate = isForceUpdate;
+		forceUpdate = isForceUpdate;
 	}
 } // namespace VTX::Renderer
