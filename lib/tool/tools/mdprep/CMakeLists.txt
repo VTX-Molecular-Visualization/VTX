@@ -12,6 +12,7 @@ find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
+set(_VTX_MDPREP_CONAN " ") # So the right target name can be linked
+include("${CMAKE_CURRENT_LIST_DIR}/library.cmake")
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)

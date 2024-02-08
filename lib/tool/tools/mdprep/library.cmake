@@ -14,9 +14,9 @@ target_sources(vtx_tool_mdprep
 	PRIVATE ${QT_RESOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include" FILES ${HEADERS})
 
-message("VTX_MDPREP_CONAN : <${_VTX_MDPREP_CONAN}>")
 
-if (NOT DEFINED ${_VTX_MDPREP_CONAN})
+if (NOT DEFINED _VTX_MDPREP_CONAN)
+	message("VTX_MDPREP_CONAN not defined")
 	target_link_libraries(vtx_tool_mdprep PRIVATE vtx_util)
 	target_link_libraries(vtx_tool_mdprep PRIVATE vtx_core)
 	target_link_libraries(vtx_tool_mdprep PRIVATE vtx_app)
