@@ -279,30 +279,6 @@ include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
 include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
+include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
 
-
-set_property(GLOBAL PROPERTY _REGISTER_DIR_COPY_property "${_REGISTER_DIR_COPY_property}")
-
-file(GLOB_RECURSE HEADERS_MDPREP_TEST ${DIR_LIBS}/tool/tools/mdprep/test/include/*)
-file(GLOB_RECURSE SOURCES_MDPREP_TEST ${DIR_LIBS}/tool/tools/mdprep/test/src/*)
-
-
-add_executable(vtx_tool_mdprep_test ${SOURCES_MDPREP_TEST})
-configure_target(vtx_tool_mdprep_test)
-
-target_include_directories(vtx_tool_mdprep_test PRIVATE ${DIR_LIBS}/tool/tools/mdprep/test/include)
-
-
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Core)			 # I feel weird about linked lib not being 
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried through packages, forcing me
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
-
-
-catch_discover_tests(vtx_tool_mdprep_test)
 add_dependencies( vtx_tool_mdprep_test vtx_tool_mdprep)

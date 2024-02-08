@@ -15,30 +15,9 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Catch2 REQUIRED)
 
+set(_VTX_MDPREP_CONAN " ") # So the right target name can be linked
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
-file(GLOB_RECURSE HEADERS include/*)
-file(GLOB_RECURSE SOURCES src/*)
-
-
-add_executable(vtx_tool_mdprep_test ${SOURCES})
-configure_target(vtx_tool_mdprep_test)
-
-
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Core)			 # I feel weird about linked lib not being 
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried through packages, forcing me
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
-
-target_include_directories(vtx_tool_mdprep_test PRIVATE include)
-
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_tool_mdprep_test)
 
 install(TARGETS vtx_tool_mdprep_test)
 install(DIRECTORY data DESTINATION bin)
