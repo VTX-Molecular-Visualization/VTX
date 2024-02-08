@@ -74,8 +74,6 @@ namespace VTX::IO::Reader
 											const std::vector<Vec3f> & p_atomPositions ) const
 	{
 		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
-		moleculeFrame.resize( p_atomPositions.size() );
-
 		std::copy( p_atomPositions.begin(), p_atomPositions.end(), moleculeFrame.begin() );
 	}
 
@@ -99,6 +97,8 @@ namespace VTX::IO::Reader
 			{
 				fillTrajectoryFrame(
 					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + validFrameCount, atomPositions );
+
+				_logDebug( "Frame " + std::to_string( validFrameCount ) + " done." );
 				validFrameCount++;
 			}
 
@@ -258,9 +258,10 @@ namespace VTX::IO::Reader
 		}
 
 		// Create models.
-		p_molecule.getFrames().resize( p_trajectory.nsteps() );
-		p_molecule.getResidues().resize( topology.residues().size() );
 		p_molecule.getAtoms().resize( frame.size() );
+		p_molecule.getResidues().resize( topology.residues().size() );
+		p_molecule.resizeAtomPositionFrames( p_trajectory.nsteps() );
+
 		p_molecule.resizeBuffers();
 		Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 		modelFrame.resize( frame.size() );
@@ -665,11 +666,11 @@ namespace VTX::IO::Reader
 
 			if ( !allBondsRecomputed )
 			{
-				_logInfo( "recomputeBondOrders with algorithm." );
+				_logDebug( "recomputeBondOrders with algorithm." );
 				Util::Molecule::recomputeBondOrders( p_molecule );
 			}
 			bondComputationChrono.stop();
-			_logInfo( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
+			_logDebug( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
 		}
 
 		assert( counter == counterOld );
@@ -678,10 +679,8 @@ namespace VTX::IO::Reader
 	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &				p_dynamicTrajectory,
 													 const std::vector<Model::Molecule *> & p_potentialTargets ) const
 	{
-		bool res = false;
-
 		if ( p_dynamicTrajectory.nsteps() <= 0 )
-			return res;
+			return false;
 
 		const std::vector<Vec3f> positions		= readTrajectoryFrame( p_dynamicTrajectory );
 		const size_t			 frameAtomCount = positions.size();
@@ -695,7 +694,7 @@ namespace VTX::IO::Reader
 			if ( molecule->getAtomCount() == frameAtomCount )
 			{
 				const uint indexFirstNewFrame = molecule->getFrameCount() == 1 ? 0 : molecule->getFrameCount();
-				molecule->getAtomPositionFrames().resize( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
+				molecule->resizeAtomPositionFrames( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
 
 				try
 				{
@@ -720,21 +719,22 @@ namespace VTX::IO::Reader
 				}
 
 				validTargets.emplace_back( molecule, indexFirstNewFrame + 1 );
-				res = true;
 			}
 		}
 
 		validTargets.shrink_to_fit();
 
-		_readTrajectoryFrames( p_dynamicTrajectory, validTargets, 1 );
-
-		for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : validTargets )
+		if ( validTargets.size() > 0 )
 		{
-			pairMoleculeFirstFrame.first->forceNotifyTrajectoryChanged();
+			_readTrajectoryFrames( p_dynamicTrajectory, validTargets, 1 );
+
+			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : validTargets )
+			{
+				pairMoleculeFirstFrame.first->forceNotifyTrajectoryChanged();
+			}
 		}
 
-		// No matching molecule found
-		return res;
+		return validTargets.size() > 0;
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats

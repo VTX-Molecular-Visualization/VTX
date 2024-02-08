@@ -19,6 +19,7 @@
 #include "representation/representation_target.hpp"
 #include "struct/range.hpp"
 #include "trajectory/trajectory_enum.hpp"
+#include <QMutex>
 #include <iostream>
 #include <map>
 #include <string>
@@ -172,18 +173,25 @@ namespace VTX
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
 			{
+				_atomPositionFramesMutex.lock();
 				_atomPositionsFrames.emplace_back();
+				_atomPositionFramesMutex.unlock();
+
 				return _atomPositionsFrames.back();
 			}
 			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
 			{
+				_atomPositionFramesMutex.lock();
 				_atomPositionsFrames.emplace_back( p_frame );
+				_atomPositionFramesMutex.unlock();
 			}
 
 			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
 			{
+				_atomPositionFramesMutex.lock();
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
+				_atomPositionFramesMutex.unlock();
 			}
 			inline const AtomPositionsFrame & getCurrentAtomPositionFrame() const
 			{
@@ -216,6 +224,7 @@ namespace VTX
 			inline std::vector<uint> &		 getBufferBonds() { return _bufferBonds; }
 			inline const std::vector<uint> & getBufferBonds() const { return _bufferBonds; }
 
+			void resizeAtomPositionFrames( const size_t p_size );
 			void resizeBuffers();
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
@@ -330,6 +339,8 @@ namespace VTX
 			std::vector<Bond *>				_bonds						= std::vector<Bond *>();
 			std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
 			uint							_indexFirstBondExtraResidue = 0;
+
+			QMutex _atomPositionFramesMutex = QMutex();
 
 			// Options.
 			Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;

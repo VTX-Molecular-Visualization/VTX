@@ -292,6 +292,21 @@ namespace VTX
 				MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
 		}
 
+		void Molecule::resizeAtomPositionFrames( const size_t p_size )
+		{
+			_atomPositionFramesMutex.lock();
+
+			const size_t previousSize = _atomPositionsFrames.size();
+			_atomPositionsFrames.resize( p_size );
+
+			for ( size_t i = previousSize; i < p_size; i++ )
+			{
+				_atomPositionsFrames[ i ].resize( _atoms.size() );
+			}
+
+			_atomPositionFramesMutex.unlock();
+		}
+
 		void Molecule::resizeBuffers()
 		{
 			_bufferAtomRadius.resize( _atoms.size() );
@@ -559,12 +574,16 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
+
 			if ( _buffer != nullptr )
 			{
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
 			}
+
 			if ( _secondaryStructure != nullptr )
+			{
 				_secondaryStructure->refresh();
+			}
 
 			refreshSolventExcludedSurfaces();
 			refreshRepresentationTargets();
