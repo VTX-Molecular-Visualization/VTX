@@ -116,6 +116,7 @@ namespace VTX::Renderer
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
 			  Uniforms {
+
 				  { { "Intensity",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
@@ -130,6 +131,7 @@ namespace VTX::Renderer
 			{ "Blur",
 			  std::vector<FilePath> { "default.vert", "blur.frag" },
 			  Uniforms {
+
 				  { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
 					{ "Size",
 					  E_TYPE::FLOAT,
@@ -146,34 +148,36 @@ namespace VTX::Renderer
 		Programs {
 			{ "Shading",
 			  std::vector<FilePath> { "default.vert", "shading.frag" },
-			  Uniforms { {
-				  { "Background color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
-				  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-				  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-				  { "Mode",
-					E_TYPE::INT,
-					StructUniformValue<int> {
-						int( E_SHADING::DIFFUSE ),
-						StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ), int( E_SHADING::COUNT ) - 1 } } },
-				  { "Specular factor",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-				  { "Shininess",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 32.f, StructUniformValue<float>::MinMax { 0.f, 128.f } } },
-				  { "Toon steps",
-					E_TYPE::UINT,
-					StructUniformValue<uint> { 4, StructUniformValue<uint>::MinMax { 1, 15 } } },
-				  { "Fog near",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
-				  { "Fog far",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 80.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
-				  { "Fog density",
-					E_TYPE::FLOAT,
-					StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-			  } } } }
+			  Uniforms {
+
+				  {
+					  { "Background color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
+					  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+					  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+					  { "Mode",
+						E_TYPE::INT,
+						StructUniformValue<int> { int( E_SHADING::DIFFUSE ),
+												  StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
+																					int( E_SHADING::COUNT ) - 1 } } },
+					  { "Specular factor",
+						E_TYPE::FLOAT,
+						StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+					  { "Shininess",
+						E_TYPE::FLOAT,
+						StructUniformValue<float> { 32.f, StructUniformValue<float>::MinMax { 0.f, 128.f } } },
+					  { "Toon steps",
+						E_TYPE::UINT,
+						StructUniformValue<uint> { 4, StructUniformValue<uint>::MinMax { 1, 15 } } },
+					  { "Fog near",
+						E_TYPE::FLOAT,
+						StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+					  { "Fog far",
+						E_TYPE::FLOAT,
+						StructUniformValue<float> { 80.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+					  { "Fog density",
+						E_TYPE::FLOAT,
+						StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+				  } } } }
 	};
 
 	// Outline.
@@ -235,6 +239,7 @@ namespace VTX::Renderer
 			{ "CRT",
 			  std::vector<FilePath> { "default.vert", "crt.frag" },
 			  Uniforms {
+
 				  { { "Curvature", E_TYPE::VEC2F, StructUniformValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
 					{ "Ratio",
 					  E_TYPE::FLOAT,
@@ -265,6 +270,7 @@ namespace VTX::Renderer
 			{ "Chromatic aberration",
 			  std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
 			  Uniforms {
+
 				  { { "Red",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 0.009f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
@@ -297,6 +303,7 @@ namespace VTX::Renderer
 			{ "Debug",
 			  std::vector<FilePath> { "default.vert", "debug.frag" },
 			  Uniforms {
+
 				  { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
 					{ "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
 					{ "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },

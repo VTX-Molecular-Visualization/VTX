@@ -194,6 +194,12 @@ namespace VTX::Renderer
 		inline void addUniforms( const Uniforms & p_uniforms ) { _uniforms.push_back( p_uniforms ); }
 
 		template<typename T>
+		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
+		{
+			_context->setUniform( p_value, p_key );
+		}
+
+		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key, const uchar p_index = 0 )
 		{
 			_context->setUniform( p_value, p_key, p_index );

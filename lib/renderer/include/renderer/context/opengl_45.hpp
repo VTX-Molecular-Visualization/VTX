@@ -33,6 +33,39 @@ namespace VTX::Renderer::Context
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
+		/*
+		template<Container C>
+		inline void setUniform( const C & p_container, const std::string & p_key )
+		{
+			assert( _uniforms.find( p_key ) != _uniforms.end() );
+
+			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
+			auto * const						   dest	 = entry->value;
+			auto * const						   src	 = &p_container;
+
+			assert( src != nullptr && dest != nullptr && entry->size );
+
+			memcpy( dest, src, p_container.size() * sizeof( typename C::value_type ) );
+			entry->buffer->setSubData( p_container );
+		}
+		*/
+
+		template<typename T>
+		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
+		{
+			assert( _uniforms.find( p_key ) != _uniforms.end() );
+
+			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
+			T * const							   dest	 = &reinterpret_cast<T * const>( entry->value )[ p_index ];
+			auto * const						   src	 = p_value.data();
+
+			assert( src != nullptr && dest != nullptr && entry->size );
+
+			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize );
+
+			// TODO: persist CPU side or move to customer?
+		}
+
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
@@ -60,6 +93,12 @@ namespace VTX::Renderer::Context
 			assert( src != nullptr && dest != nullptr && entry->size );
 
 			memcpy( dest, src, entry->size );
+		}
+
+		template<typename T>
+		inline void getUniform( std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
+		{
+			// Cannot be done for the moment.
 		}
 
 		template<typename T>

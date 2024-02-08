@@ -83,17 +83,26 @@ namespace VTX::Renderer
 					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
 					// { _near * _far, _far, _far - _near, _near }
 					{ "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
-					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
-					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
+					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1u } } } }
 			);
 
-			// create array of 256 color white.
-			std::array<Util::Color::Rgba, 256> colorLayout;
-			std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
-
+			// TODO: move to pass ubo?
 			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } } }, 256 }
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } }, 256 }
 			);
+
+			_renderGraph->addUniforms( { { { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+										 0 } );
+			_renderGraph->addUniforms( { { { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+										 0 } );
+		}
+
+		template<typename T>
+		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
+		{
+			_renderGraph->setUniform<T>( p_value, p_key );
+			setNeedUpdate( true );
 		}
 
 		template<typename T>
@@ -194,7 +203,7 @@ namespace VTX::Renderer
 
 		inline void setMousePosition( const Vec2i & p_position )
 		{
-			setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
+			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
 		}
 
 		inline void setPerspective( const bool p_perspective )
@@ -226,9 +235,9 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> p_layout )
+		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
 		{
-			setUniform( p_layout, "Color layout" );
+			setUniform( std::vector<Util::Color::Rgba>( p_layout.begin(), p_layout.end() ), "Color layout" );
 		}
 
 		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 );
@@ -297,6 +306,7 @@ namespace VTX::Renderer
 		CallbackSnapshotPre	 _callbackSnapshotPre;
 		CallbackSnapshotPost _callbackSnapshotPost;
 
+		// TODO.
 		std::vector<Proxy::Molecule>	   _proxiesMolecules;
 		std::vector<Proxy::Mesh>		   _proxiesMeshes;
 		std::vector<Proxy::Representation> _proxiesRepresentations;
@@ -314,7 +324,7 @@ namespace VTX::Renderer
 				_setDataRibbons( p_proxy );
 			}
 
-			// TODO: make "filler" functions for each type of data ?
+			// TODO: make "filler" functions for each type of data?
 			// TODO: mapping registry.
 		}
 
