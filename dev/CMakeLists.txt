@@ -266,7 +266,7 @@ target_link_libraries(vtx_ui_test PRIVATE vtx_renderer)
 target_link_libraries(vtx_ui_test PRIVATE vtx_io)
 target_link_libraries(vtx_ui_test PRIVATE vtx_app)
 target_link_libraries(vtx_ui_test PRIVATE vtx_python_binding)
-target_link_libraries(vtx_ui_test PRIVATE PyTX)
+target_link_libraries(vtx_ui_test PRIVATE PyTX)  
 target_link_libraries(vtx_ui_test PRIVATE vtx_ui)
 target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
@@ -279,6 +279,7 @@ include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
 include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
+find_package(vtx-gromacs CONFIG REQUIRED)
 include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
+add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep)
 
-add_dependencies( vtx_tool_mdprep_test vtx_tool_mdprep)

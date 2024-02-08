@@ -42,7 +42,6 @@ class VTXRendererTestRecipe(ConanFile):
         vtx_gromacs_shared += ext
         """
         cmake = CMake(self)
-        # cmake.configure(variables={"VTX_GROMACS_DLL_PATH":vtx_gromacs_shared})
         cmake.configure()
         cmake.build()
         #self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable

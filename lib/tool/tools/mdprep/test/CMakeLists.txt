@@ -22,6 +22,3 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 install(TARGETS vtx_tool_mdprep_test)
 install(DIRECTORY data DESTINATION bin)
 
-vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/data" "data")
-
-vtx_copy_directory_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
