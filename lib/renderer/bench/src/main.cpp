@@ -188,6 +188,8 @@ int main( int, char ** )
 			}
 		);
 
+		molecule.transform = MAT4F_ID;
+
 		Renderer::Proxy::Molecule proxyMolecule
 			= { &molecule.transform,
 				&molecule.trajectory.frames.front(),

@@ -14,10 +14,10 @@ layout( location = 1 ) out vec4 outColor;
 
 void main()
 {
-	vec3 viewPosition = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inData.center, 1.f ) );
+	vec3 viewPosition = vec3( uniformsCamera.matrixView * vec4( inData.center, 1.f ) );
 	//vec3 normal		  = normalize( uniformsCamera.cameraPosition - viewPosition );// vec3( uniformsCamera.matrixNormal * vec4( inData.center, 1.f ) ) );	
 	
-	vec3 normal		  = vec3( uniformsCamera.matrixNormal * vec4( normalize( uniformsCamera.cameraPosition - viewPosition ), 1.f ) );
+	vec3 normal		  = vec3( 1.f, 1.f, 1.f );//vec3( uniformsCamera.matrixNormal * vec4( normalize( uniformsCamera.cameraPosition - viewPosition ), 1.f ) );
 
 	packData( viewPosition, normal, 0, outDataPacked );
 	outColor = vec4( 1.f, 1.f, 1.f, 1.f );

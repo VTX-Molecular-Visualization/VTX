@@ -33,37 +33,19 @@ namespace VTX::Renderer::Context
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
-		/*
-		template<Container C>
-		inline void setUniform( const C & p_container, const std::string & p_key )
-		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
-
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   dest	 = entry->value;
-			auto * const						   src	 = &p_container;
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, p_container.size() * sizeof( typename C::value_type ) );
-			entry->buffer->setSubData( p_container );
-		}
-		*/
-
 		template<typename T>
 		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = &reinterpret_cast<T * const>( entry->value )[ p_index ];
+			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
 			auto * const						   src	 = p_value.data();
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
+			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize );
-
-			// TODO: persist CPU side or move to customer?
 		}
 
 		template<typename T>
@@ -72,7 +54,7 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = &reinterpret_cast<T * const>( entry->value )[ p_index ];
+			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
 			auto * const						   src	 = &p_value;
 
 			assert( src != nullptr && dest != nullptr && entry->size );
@@ -88,7 +70,7 @@ namespace VTX::Renderer::Context
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
 			auto * const						   dest	 = &p_value;
-			T * const							   src	 = &reinterpret_cast<T * const>( entry->value )[ p_index ];
+			T * const							   src	 = reinterpret_cast<T * const>( entry->value );
 
 			assert( src != nullptr && dest != nullptr && entry->size );
 
@@ -178,7 +160,9 @@ namespace VTX::Renderer::Context
 				const size_t p_arraySize = 1
 			) :
 				buffer( p_buffer ),
-				offset( p_offset ), size( p_size ), padding( p_padding ), value( malloc( p_size * p_arraySize ) )
+				offset( p_offset ), size( p_size ), padding( p_padding ),
+				// Store only first value.
+				value( malloc( p_size ) )
 			{
 			}
 			~_StructUniformEntry() { free( value ); }
@@ -211,7 +195,6 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		void _setUniformDefaultValue(
 			const Uniform &		  p_descUniform,
-			const size_t		  p_index		= 0,
 			const Program * const p_descProgram = nullptr,
 			const Pass * const	  p_descPassPtr = nullptr
 		)
@@ -221,7 +204,7 @@ namespace VTX::Renderer::Context
 			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
 							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
 
-			setUniform<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key, p_index );
+			setUniform<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 
 		void				 _getOpenglInfos();

@@ -397,7 +397,7 @@ namespace VTX::Renderer::Context
 	void OpenGL45::snapshot(
 		std::vector<uchar> &   p_image,
 		const RenderQueue &	   p_renderQueue,
-		const RenderFunction & p_renderFunction,
+		const RenderFunction & p_renderFunction, // TODO: find a better way.
 		const size_t		   p_width,
 		const size_t		   p_height
 	)
@@ -632,33 +632,28 @@ namespace VTX::Renderer::Context
 		p_ubo->setData( GLsizei( totalSize * p_uniforms.arraySize ), GL_STATIC_DRAW );
 
 		// Fill default values.
-		for ( size_t i = 0; i < p_uniforms.arraySize; ++i )
+		for ( const Uniform & descUniform : p_uniforms.entries )
 		{
-			for ( const Uniform & descUniform : p_uniforms.entries )
+			switch ( descUniform.type )
 			{
-				switch ( descUniform.type )
-				{
-				case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::USHORT:
-					_setUniformDefaultValue<ushort>( descUniform, i, p_descProgram, p_descPass );
-					break;
-				case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, i, p_descProgram, p_descPass ); break;
-				case E_TYPE::COLOR4:
-					_setUniformDefaultValue<Util::Color::Rgba>( descUniform, i, p_descProgram, p_descPass );
-					break;
-				default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
-				}
+			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::USHORT: _setUniformDefaultValue<ushort>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::COLOR4:
+				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
+				break;
+			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
 			}
 		}
 	}

@@ -12,7 +12,7 @@ outData;
 
 void main()
 {
-	outData.viewPosition = vec3( uniformsCamera.matrixView *  uniformsCamera.matrixModel * vec4( inVertexPosition, 1.f ) );
-	outData.normal	     = normalize( vec3( uniformsCamera.matrixNormal * vec4( inVertexPosition, 1.f ) ) );
+	outData.viewPosition = vec3( uniformsCamera.matrixView * vec4( inVertexPosition, 1.f ) );
+	outData.normal	     = vec3( 1.f, 1.f, 1.f );//normalize( vec3( uniformsCamera.matrixNormal * vec4( inVertexPosition, 1.f ) ) );
 	gl_Position		     =  uniformsCamera.matrixProjection * vec4( outData.viewPosition, 1.f );
 }

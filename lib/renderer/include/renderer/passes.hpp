@@ -42,6 +42,7 @@ namespace VTX::Renderer
 									  { "Colors", E_TYPE::UBYTE, 1 },
 									  { "Ids", E_TYPE::UINT, 1 },
 									  { "Flags", E_TYPE::UBYTE, 1 },
+									  { "Models", E_TYPE::UBYTE, 1 },
 									  { "Representations", E_TYPE::UBYTE, 1 },
 									  { "Render settings", E_TYPE::UBYTE, 1 } } };
 

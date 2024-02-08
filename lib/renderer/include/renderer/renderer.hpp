@@ -76,26 +76,27 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-					{ "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
-					// { _near * _far, _far, _far - _near, _near }
-					{ "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
+					{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
+					  E_TYPE::VEC4F,
+					  StructUniformValue<Vec4f> { VEC4F_ZERO } },
 					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
 					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1u } } } }
 			);
 
 			// TODO: move to pass ubo?
 			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } }, 256 }
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 256 }
 			);
 
-			_renderGraph->addUniforms( { { { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-										 0 } );
-			_renderGraph->addUniforms( { { { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-										 0 } );
+			// TODO: dynamic ubo size instead of fixed 256.
+			_renderGraph->addUniforms(
+				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+				  256 }
+			);
 		}
 
 		template<typename T>
@@ -188,8 +189,23 @@ namespace VTX::Renderer
 		inline void setMatrixView( const Mat4f & p_view )
 		{
 			setUniform( p_view, "Matrix view" );
-			// setUniform( p_view, "Matrix normal" );
-			// Util::Math::transpose( Util::Math::inverse( MVMatrix ) )
+
+			// Update model view matrices.
+			struct _StructUBOModel
+			{
+				Mat4f mv;
+				Mat4f n;
+			};
+			std::vector<_StructUBOModel> models;
+
+			for ( const Proxy::Molecule & proxy : _proxiesMolecules )
+			{
+				const Mat4f matrixModelView = p_view * *proxy.transform;
+				const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+			}
+
+			_renderGraph->setUniform( models, "Matrix model view" );
 		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
@@ -279,9 +295,11 @@ namespace VTX::Renderer
 		uint sizeRibbons = 0;
 		uint sizeVoxels	 = 0;
 
+		uint sizeMolecules = 0;
+
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
-		bool showRibbons = true;
+		bool showRibbons = false;
 		bool showVoxels	 = true;
 
 	  private:
@@ -314,6 +332,9 @@ namespace VTX::Renderer
 
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
+			assert( p_proxy.atomIds || p_proxy.residueIds );
+			assert( p_proxy.transform );
+
 			if ( p_proxy.atomIds )
 			{
 				_setDataSpheresCylinders( p_proxy );
@@ -324,6 +345,9 @@ namespace VTX::Renderer
 				_setDataRibbons( p_proxy );
 			}
 
+			_setDataModel( p_proxy );
+
+			sizeMolecules++;
 			// TODO: make "filler" functions for each type of data?
 			// TODO: mapping registry.
 		}
@@ -336,6 +360,7 @@ namespace VTX::Renderer
 
 		void _setDataSpheresCylinders( const Proxy::Molecule & p_proxy )
 		{
+			// Check sizes.
 			assert( p_proxy.atomPositions );
 			assert( p_proxy.atomColors );
 			assert( p_proxy.atomRadii );
@@ -349,14 +374,16 @@ namespace VTX::Renderer
 			assert( p_proxy.atomIds->size() == p_proxy.atomVisibilities->size() );
 			assert( p_proxy.atomIds->size() == p_proxy.atomSelections->size() );
 
+			// Forward data.
+			// TODO: add to current buffer.
 			_renderGraph->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
 			_renderGraph->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
 			_renderGraph->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
 			_renderGraph->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
 			_renderGraph->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
 
+			// Flags.
 			std::vector<uchar> atomFlags( p_proxy.atomPositions->size() );
-
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
 				uchar flag = 0;
@@ -364,11 +391,17 @@ namespace VTX::Renderer
 				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
 				atomFlags[ i ] = flag;
 			}
-
 			_renderGraph->setData( atomFlags, "SpheresCylindersFlags" );
 
-			sizeAtoms = uint( p_proxy.atomPositions->size() );
-			sizeBonds = uint( p_proxy.bonds->size() );
+			// Model ID.
+			uchar modelId = sizeMolecules;
+			_renderGraph->setData(
+				std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels"
+			);
+
+			// Counters.
+			sizeAtoms += uint( p_proxy.atomPositions->size() );
+			sizeBonds += uint( p_proxy.bonds->size() );
 		}
 
 		void _setDataRibbons( const Proxy::Molecule & p_proxy )
@@ -399,7 +432,9 @@ namespace VTX::Renderer
 			std::vector<uchar> bufferColors;
 			std::vector<uint>  bufferIds;
 			std::vector<uchar> bufferFlags;
-			std::vector<uint>  bufferIndices;
+			std::vector<uchar> bufferModels;
+
+			std::vector<uint> bufferIndices;
 
 			std::map<uint, uint> residueToIndices;
 			std::map<uint, uint> residueToPositions;
@@ -413,8 +448,10 @@ namespace VTX::Renderer
 									 std::vector<Vec3f> &		p_caODirections,
 									 const std::vector<uchar> & p_ssTypes,
 									 const std::vector<uchar> & p_colors,
+									 const std::vector<uint> &	p_ids,
 									 const std::vector<uchar> & p_flags,
-									 const std::vector<uint> &	p_ids
+									 const std::vector<uchar> & p_models
+
 								 )
 			{
 				if ( p_caPositions.size() >= 4 )
@@ -470,8 +507,9 @@ namespace VTX::Renderer
 					);
 					bufferSSTypes.insert( bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
 					bufferColors.insert( bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
-					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
 					bufferIds.insert( bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
+					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
+					bufferModels.insert( bufferModels.end(), p_models.cbegin(), p_models.cend() );
 				}
 			};
 
@@ -484,6 +522,7 @@ namespace VTX::Renderer
 			std::vector<uchar> colors;
 			std::vector<uint>  ids;
 			std::vector<uchar> flags;
+			std::vector<uchar> models;
 			std::vector<uint>  residueIndex;
 
 			for ( uint chainIdx = 0; chainIdx < p_proxy.chainFirstResidues->size(); ++chainIdx )
@@ -516,9 +555,11 @@ namespace VTX::Renderer
 						caODirections = std::vector<Vec3f>();
 						types		  = std::vector<uchar>();
 						colors		  = std::vector<uchar>();
-						flags		  = std::vector<uchar>();
 						ids			  = std::vector<uint>();
-						residueIndex  = std::vector<uint>();
+						flags		  = std::vector<uchar>();
+						models		  = std::vector<uchar>();
+
+						residueIndex = std::vector<uint>();
 
 						createVectors = false;
 					}
@@ -611,6 +652,8 @@ namespace VTX::Renderer
 
 					colors.emplace_back( ( *p_proxy.residueColors )[ residueIdx ] );
 
+					ids.emplace_back( ( *p_proxy.residueIds )[ residueIdx ] );
+
 					// Flag.
 					// TODO.
 					flags.emplace_back( 1 );
@@ -622,7 +665,9 @@ namespace VTX::Renderer
 					) );
 					*/
 
-					ids.emplace_back( ( *p_proxy.residueIds )[ residueIdx ] );
+					// Model ID.
+					models.emplace_back( sizeMolecules );
+
 					/*
 					if ( residueLast != -1
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
@@ -636,7 +681,7 @@ namespace VTX::Renderer
 				}
 
 				// Update buffers and index mapping if SS is constructed.
-				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids );
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, ids, flags, models );
 			}
 
 			// Reverse indices to render the other side.
@@ -650,6 +695,7 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferColors.size() );
 			assert( bufferCaPositions.size() == bufferIds.size() );
 			assert( bufferCaPositions.size() == bufferFlags.size() );
+			assert( bufferCaPositions.size() == bufferModels.size() );
 
 			_renderGraph->setData( bufferCaPositions, "RibbonsPositions" );
 			_renderGraph->setData( bufferCaODirections, "RibbonsDirections" );
@@ -657,9 +703,29 @@ namespace VTX::Renderer
 			_renderGraph->setData( bufferColors, "RibbonsColors" );
 			_renderGraph->setData( bufferIds, "RibbonsIds" );
 			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
+			_renderGraph->setData( bufferModels, "RibbonsModels" );
 			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
 
-			sizeRibbons = uint( bufferIndices.size() );
+			sizeRibbons += uint( bufferIndices.size() );
+		}
+
+		void _setDataModel( const Proxy::Molecule & p_proxy )
+		{
+			// TODO: move to separate function.
+			struct _StructUBOModel
+			{
+				Mat4f mv;
+				Mat4f n;
+			};
+
+			Mat4f matrixView;
+			getUniform( matrixView, "Matrix view" );
+			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
+			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+
+			_renderGraph->setUniform(
+				std::vector<_StructUBOModel> { { matrixModelView, matrixNormal } }, "Matrix model view", sizeMolecules
+			);
 		}
 
 		void _setData( const Proxy::Voxel & p_proxy )

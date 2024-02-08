@@ -72,6 +72,7 @@ void main()
 	outData[ gl_InvocationID ].color		= inData[ gl_InvocationID ].color;
 	outData[ gl_InvocationID ].selection	= inData[ gl_InvocationID ].selection;
 	outData[ gl_InvocationID ].id			= inData[ gl_InvocationID ].id;
+	outData[ gl_InvocationID ].model		= inData[ gl_InvocationID ].model;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )

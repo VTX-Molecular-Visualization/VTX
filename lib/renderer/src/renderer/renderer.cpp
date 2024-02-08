@@ -49,6 +49,12 @@ namespace VTX::Renderer
 		_infos			 = StructInfos();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
+
+		sizeAtoms	  = 0;
+		sizeBonds	  = 0;
+		sizeRibbons	  = 0;
+		sizeVoxels	  = 0;
+		sizeMolecules = 0;
 	}
 
 	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )

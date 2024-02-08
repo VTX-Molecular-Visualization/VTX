@@ -60,6 +60,7 @@ namespace VTX::Renderer
 	{
 		T value;
 
+		// TODO: test anonymous struct.
 		struct MinMax
 		{
 			T min;

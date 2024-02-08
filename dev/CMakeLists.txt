@@ -128,7 +128,7 @@ add_library(vtx_renderer)
 configure_target(vtx_renderer)
 file(GLOB_RECURSE HEADERS_RENDERER ${DIR_LIBS}/renderer/include/*)
 file(GLOB_RECURSE SOURCES_RENDERER ${DIR_LIBS}/renderer/src/*)
-file(GLOB_RECURSE SHADERS shaders/*)
+file(GLOB_RECURSE SHADERS ${DIR_LIBS}/renderer/shaders/*)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES_RENDERER}
 	PRIVATE ${SHADERS}
