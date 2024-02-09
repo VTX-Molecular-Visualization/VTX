@@ -60,7 +60,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 				p_args.stdout_ += sBuf;
 				sBuf.clear();
 
-				InteractiveId expectedId;
+				Pdb2gmxInputId expectedId;
 				bool noProblemFoundWhileParsingGromacsOutput = parseExpectedKwArgument( p_args.stdout_, expectedId );
 				if ( noProblemFoundWhileParsingGromacsOutput == false )
 				{
