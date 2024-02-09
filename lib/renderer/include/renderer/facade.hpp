@@ -31,9 +31,9 @@ namespace VTX::Renderer
 
 		inline void setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-		inline void setCallbackClean( const Renderer::CallbackClean & p_cb ) { _renderer->setCallbackClean( p_cb ); }
+		inline void addCallbackReady( const Renderer::CallbackReady & p_cb ) { _renderer->addCallbackReady( p_cb ); }
 
-		inline void setCallbackReady( const Renderer::CallbackReady & p_cb ) { _renderer->setCallbackReady( p_cb ); }
+		inline void addCallbackClean( const Renderer::CallbackClean & p_cb ) { _renderer->addCallbackClean( p_cb ); }
 
 		inline void setCallbackSnapshotPre( const Renderer::CallbackSnapshotPre & p_cb )
 		{

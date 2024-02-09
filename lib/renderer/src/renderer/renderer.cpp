@@ -5,7 +5,10 @@ namespace VTX::Renderer
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
-		clean();
+		if ( _context )
+		{
+			clean();
+		}
 
 		VTX_INFO(
 			"Renderer graph setup total time: {}",
@@ -35,7 +38,7 @@ namespace VTX::Renderer
 
 						_context->fillInfos( infos );
 						setNeedUpdate( true );
-						_onReady();
+						_callbackReady();
 					}
 				}
 			)
@@ -44,12 +47,10 @@ namespace VTX::Renderer
 
 	void Renderer::clean()
 	{
-		_onClean();
 		_context = nullptr;
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
-		infos			 = StructInfos();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
@@ -58,6 +59,9 @@ namespace VTX::Renderer
 		sizeRibbons	  = 0;
 		sizeVoxels	  = 0;
 		sizeMolecules = 0;
+		infos		  = StructInfos();
+
+		_callbackClean();
 	}
 
 	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )

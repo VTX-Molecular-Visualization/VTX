@@ -52,64 +52,85 @@ int main( int, char ** )
 		InputManager inputManager;
 
 		// Setup callbacks.
-		inputManager.addCallbackClose( [ &isRunning ]() { isRunning = false; } );
-		inputManager.addCallbackTranslate( [ &camera, &ui ]( const Vec3i & p_delta )
-										   { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); } );
-		inputManager.addCallbackRotate( [ &camera, &ui ]( const Vec2i & p_delta )
-										{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); }
-		);
-		inputManager.addCallbackZoom( [ &camera, &ui ]( const int p_delta )
-									  { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); } );
+		inputManager.callbackClose += [ &isRunning ]() { isRunning = false; };
+		inputManager.callbackTranslate +=
+			[ &camera, &ui ]( const Vec3i & p_delta ) { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); };
+		inputManager.callbackRotate += [ &camera, &ui ]( const Vec2i & p_delta )
+		{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); };
+		inputManager.callbackZoom +=
+			[ &camera, &ui ]( const int p_delta ) { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); };
 
-		renderer.setCallbackClean(
-			[ &camera, &inputManager ]()
+		const Callback<Mat4f>::Func *		   cbMatrixView		  = nullptr;
+		const Callback<Mat4f>::Func *		   cbMatrixProjection = nullptr;
+		const Callback<Vec3f>::Func *		   cbTranslation	  = nullptr;
+		const Callback<float, float>::Func *   cbClipInfos		  = nullptr;
+		const Callback<bool>::Func *		   cbPerspective	  = nullptr;
+		const Callback<size_t, size_t>::Func * cbResize			  = nullptr;
+		const Callback<>::Func *			   cbRestore		  = nullptr;
+		const Callback<size_t, size_t>::Func * cbMousePick		  = nullptr;
+		const Callback<Vec2i>::Func *		   cbMouseMotion	  = nullptr;
+
+		// Link camera and input manager with renderer when built.
+		renderer.addCallbackReady(
+			[ & ]()
 			{
-				/*
-				camera.addCallbackMatrixView( nullptr );
-				camera.addCallbackMatrixProjection( nullptr );
-				camera.addCallbackTranslation( nullptr );
-				camera.addCallbackClipInfos( nullptr );
-				camera.addCallbackPerspective( nullptr );
+				renderer.setMatrixView( camera.getMatrixView() );
+				renderer.setMatrixProjection( camera.getMatrixProjection() );
+				renderer.setCameraPosition( camera.getPosition() );
+				renderer.setCameraClipInfos( camera.getNear(), camera.getFar() );
+				renderer.setPerspective( camera.isPerspective() );
 
-				inputManager.addCallbackResize( nullptr );
-				inputManager.addCallbackRestore( nullptr );
-				inputManager.addCallbackMousePick( nullptr );
-				inputManager.addCallbackMouseMotion( nullptr );
-				*/
+				cbMatrixView = camera.callbackMatrixView +=
+					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); };
+				cbMatrixProjection = camera.callbackMatrixProjection +=
+					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixProjection( p_matrix ); };
+				cbTranslation = camera.callbackTranslation +=
+					[ &renderer ]( const Vec3f p_position ) { renderer.setCameraPosition( p_position ); };
+				cbClipInfos = camera.callbackClipInfos += [ &renderer ]( const float p_near, const float p_far )
+				{ renderer.setCameraClipInfos( p_near, p_far ); };
+				cbPerspective = camera.callbackPerspective +=
+					[ &renderer ]( const bool p_isPerspective ) { renderer.setPerspective( p_isPerspective ); };
+
+				cbResize = inputManager.callbackResize +=
+					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+				{
+					renderer.resize( p_width, p_height );
+					camera.resize( p_width, p_height );
+				};
+				cbRestore	= inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
+				cbMousePick = inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
+				{
+					Vec2i ids = renderer.getPickedIds( p_x, p_y );
+					VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+				};
+				cbMouseMotion = inputManager.callbackMouseMotion +=
+					[ &renderer ]( const Vec2i & p_position ) { renderer.setMousePosition( p_position ); };
 			}
 		);
 
-		renderer.setCallbackReady(
-			[ &ui, &renderer, &camera, &inputManager ]()
+		// Unlink when cleaned.
+		renderer.addCallbackClean(
+			[ & ]()
 			{
-				camera.addCallbackMatrixView( [ &renderer ]( const Mat4f & p_matrix )
-											  { renderer.setMatrixView( p_matrix ); } );
-				camera.addCallbackMatrixProjection( [ &renderer ]( const Mat4f & p_matrix )
-													{ renderer.setMatrixProjection( p_matrix ); } );
-				camera.addCallbackTranslation( [ &renderer ]( const Vec3f p_position )
-											   { renderer.setCameraPosition( p_position ); } );
-				camera.addCallbackClipInfos( [ &renderer ]( const float p_near, const float p_far )
-											 { renderer.setCameraClipInfos( p_near, p_far ); } );
-				camera.addCallbackPerspective( [ &renderer ]( const bool p_isPerspective )
-											   { renderer.setPerspective( p_isPerspective ); } );
+				assert( cbMatrixView );
+				assert( cbMatrixProjection );
+				assert( cbTranslation );
+				assert( cbClipInfos );
+				assert( cbPerspective );
+				assert( cbResize );
+				assert( cbRestore );
+				assert( cbMousePick );
+				assert( cbMouseMotion );
 
-				inputManager.addCallbackResize(
-					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-					{
-						renderer.resize( p_width, p_height );
-						camera.resize( p_width, p_height );
-					}
-				);
-				inputManager.addCallbackRestore( [ &renderer ]() { renderer.setNeedUpdate( true ); } );
-				inputManager.addCallbackMousePick(
-					[ &renderer ]( const size_t p_x, const size_t p_y )
-					{
-						Vec2i ids = renderer.getPickedIds( p_x, p_y );
-						VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-					}
-				);
-				inputManager.addCallbackMouseMotion( [ &renderer ]( const Vec2i & p_position )
-													 { renderer.setMousePosition( p_position ); } );
+				camera.callbackMatrixView -= cbMatrixView;
+				camera.callbackMatrixProjection -= cbMatrixProjection;
+				camera.callbackTranslation -= cbTranslation;
+				camera.callbackClipInfos -= cbClipInfos;
+				camera.callbackPerspective -= cbPerspective;
+				inputManager.callbackResize -= cbResize;
+				inputManager.callbackRestore -= cbRestore;
+				inputManager.callbackMousePick -= cbMousePick;
+				inputManager.callbackMouseMotion -= cbMouseMotion;
 			}
 		);
 

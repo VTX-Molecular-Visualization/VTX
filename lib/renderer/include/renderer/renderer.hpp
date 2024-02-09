@@ -9,6 +9,7 @@
 #include "proxy/voxel.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
+#include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -172,8 +173,9 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void setCallbackClean( const CallbackClean & p_cb ) { _callbackClean = p_cb; }
-		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
+		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
+		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
+
 		inline void setCallbackSnapshotPre( const CallbackSnapshotPre & p_cb ) { _callbackSnapshotPre = p_cb; }
 		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
 
@@ -292,8 +294,9 @@ namespace VTX::Renderer
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
-		CallbackClean		 _callbackClean;
-		CallbackReady		 _callbackReady;
+		Util::Callback<> _callbackReady;
+		Util::Callback<> _callbackClean;
+
 		CallbackSnapshotPre	 _callbackSnapshotPre;
 		CallbackSnapshotPost _callbackSnapshotPost;
 
@@ -735,23 +738,6 @@ namespace VTX::Renderer
 						}
 					}
 				);
-			}
-		}
-
-		// TODO: encapsulate this.
-		inline void _onClean()
-		{
-			if ( _callbackClean )
-			{
-				_callbackClean();
-			}
-		}
-
-		inline void _onReady()
-		{
-			if ( _callbackReady )
-			{
-				_callbackReady();
 			}
 		}
 

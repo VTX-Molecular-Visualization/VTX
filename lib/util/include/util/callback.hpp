@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <functional>
+#include <memory>
+#include <vector>
 
 namespace VTX::Util
 {
@@ -12,34 +14,41 @@ namespace VTX::Util
 	  public:
 		using Func = std::function<void( const Args &... )>;
 
-		inline void add( const Func & p_callback ) { _callbacks.push_back( p_callback ); }
-		inline void remove( const Func & p_callback ) { std::erase( _callbacks, p_callback ); }
+		inline const Func * const add( const Func & p_callback )
+		{
+			_callbacks.push_back( std::make_unique<Func>( p_callback ) );
+			return _callbacks.back().get();
+		}
+
+		inline void remove( const Func * const p_func )
+		{
+			std::erase_if(
+				_callbacks, [ &p_func ]( const std::unique_ptr<Func> & p_e ) { return p_e.get() == p_func; }
+			);
+		}
+
 		inline void clear() { _callbacks.clear(); }
 
 		inline void operator()( const Args &... p_args ) const
 		{
-			for ( const Func & callback : _callbacks )
+			for ( const auto & callback : _callbacks )
 			{
-				assert( callback );
+				assert( *callback );
 
-				callback( p_args... );
+				( *callback )( p_args... );
 			}
 		}
 
-		inline Callback & operator+=( const Func & p_func )
-		{
-			add( p_func );
-			return *this;
-		}
+		inline const Func * const operator+=( const Func & p_func ) { return add( p_func ); }
 
-		inline Callback & operator-=( const Func & p_func )
+		inline Callback & operator-=( const Func * const p_func )
 		{
 			remove( p_func );
 			return *this;
 		}
 
 	  private:
-		std::vector<Func> _callbacks;
+		std::vector<std::unique_ptr<Func>> _callbacks;
 	};
 
 } // namespace VTX::Util
