@@ -1,4 +1,5 @@
 #include "renderer/renderer.hpp"
+#include "util/math.hpp"
 
 namespace VTX::Renderer
 {
@@ -64,22 +65,29 @@ namespace VTX::Renderer
 		_callbackClean();
 	}
 
-	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
+	void Renderer::snapshot(
+		std::vector<uchar> & p_image,
+		const size_t		 p_width,
+		const size_t		 p_height,
+		const float			 p_fov,
+		const float			 p_near,
+		const float			 p_far
+	)
 	{
-		const size_t snapshotWidth = p_width ? p_width : width;
-		const size_t snashotHeight = p_height ? p_height : height;
-		bool		 isForceUpdate = forceUpdate;
-
-		_onSnapshotPre( snapshotWidth, snapshotWidth );
-		forceUpdate = true;
-		_context->snapshot(
-			p_image,
-			_renderGraph->getRenderQueue(),
-			std::bind( &Renderer::render, this, std::placeholders::_1 ),
-			snapshotWidth,
-			snapshotWidth
+		Mat4f matrixProjection;
+		getUniform( matrixProjection, "Matrix projection" );
+		setUniform(
+			Util::Math::perspective(
+				Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
+			),
+			"Matrix projection"
 		);
-		_onSnapshotPost( width, height );
-		forceUpdate = isForceUpdate;
+
+		_context->snapshot(
+			p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height, p_fov, p_near, p_far
+		);
+
+		setUniform( matrixProjection, "Matrix projection" );
 	}
+
 } // namespace VTX::Renderer

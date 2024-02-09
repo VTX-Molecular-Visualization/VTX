@@ -46,7 +46,6 @@ namespace VTX::Renderer
 			Pass * const outline   = _renderGraph->addPass( descPassOutline );
 			Pass * const selection = _renderGraph->addPass( descPassSelection );
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-			// Pass * const crt	 = renderGraph->addPass( descPassCRT );
 
 			// Setup values.
 			geo->programs[ 0 ].draw.value().countFunction	 = [ & ]() { return showAtoms ? sizeAtoms : 0; };
@@ -101,6 +100,7 @@ namespace VTX::Renderer
 			);
 		}
 
+		// Only first entry of the array saved on cpu.
 		template<typename T>
 		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
 		{
@@ -179,9 +179,6 @@ namespace VTX::Renderer
 		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
 		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
 
-		inline void setCallbackSnapshotPre( const CallbackSnapshotPre & p_cb ) { _callbackSnapshotPre = p_cb; }
-		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
-
 		inline void setMatrixView( const Mat4f & p_view )
 		{
 			setUniform( p_view, "Matrix view" );
@@ -238,7 +235,14 @@ namespace VTX::Renderer
 			setUniform( std::vector<Util::Color::Rgba>( p_layout.begin(), p_layout.end() ), "Color layout" );
 		}
 
-		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 );
+		void snapshot(
+			std::vector<uchar> & p_image,
+			const size_t		 p_width,
+			const size_t		 p_height,
+			const float			 p_fov,
+			const float			 p_near,
+			const float			 p_far
+		);
 
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
@@ -299,9 +303,6 @@ namespace VTX::Renderer
 
 		Util::Callback<> _callbackReady;
 		Util::Callback<> _callbackClean;
-
-		CallbackSnapshotPre	 _callbackSnapshotPre;
-		CallbackSnapshotPost _callbackSnapshotPost;
 
 		// TODO: mapping registry.
 		std::vector<Proxy::Molecule>	   _proxiesMolecules;
@@ -741,22 +742,6 @@ namespace VTX::Renderer
 						}
 					}
 				);
-			}
-		}
-
-		inline void _onSnapshotPre( const size_t p_width, const size_t p_height )
-		{
-			if ( _callbackSnapshotPre )
-			{
-				_callbackSnapshotPre( p_width, p_height );
-			}
-		}
-
-		inline void _onSnapshotPost( const size_t p_width, const size_t p_height )
-		{
-			if ( _callbackSnapshotPost )
-			{
-				_callbackSnapshotPost( p_width, p_height );
 			}
 		}
 	};

@@ -177,29 +177,33 @@ namespace VTX::Bench
 				}
 				if ( ImGui::BeginMenu( "Export" ) )
 				{
-					if ( ImGui::MenuItem( "800x600" ) )
+					auto snapshotFunc = [ & ]( const size_t p_width, const size_t p_height )
 					{
 						std::vector<uchar> image;
-						p_renderer->snapshot( image, 800, 600 );
-						_saveImage( image, 800, 600 );
+						p_renderer->snapshot(
+							image, p_width, p_height, p_camera->getFov(), p_camera->getNear(), p_camera->getFar()
+						);
+
+						stbi_flip_vertically_on_write( true );
+						stbi_write_png_compression_level = 0;
+						stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, image.data(), 0 );
+					};
+
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						snapshotFunc( 800, 600 );
 					}
 					if ( ImGui::MenuItem( "1920x1080" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 1920, 1080 );
-						_saveImage( image, 1920, 1080 );
+						snapshotFunc( 1920, 1080 );
 					}
 					if ( ImGui::MenuItem( "2560x1440" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 2560, 1440 );
-						_saveImage( image, 2560, 1440 );
+						snapshotFunc( 2560, 1440 );
 					}
 					if ( ImGui::MenuItem( "3840x2160" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 3840, 2160 );
-						_saveImage( image, 3840, 2160 );
+						snapshotFunc( 3840, 2160 );
 					}
 
 					ImGui::EndMenu();
@@ -215,12 +219,6 @@ namespace VTX::Bench
 
 				ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 
-				if ( ImGui::Button( "Snapshot" ) )
-				{
-					std::vector<uchar> image;
-					p_renderer->snapshot( image );
-					_saveImage( image, p_renderer->width, p_renderer->height );
-				}
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 				ImGui::EndMainMenuBar();
@@ -811,13 +809,6 @@ namespace VTX::Bench
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
-
-		void _saveImage( const std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
-		{
-			stbi_flip_vertically_on_write( true );
-			stbi_write_png_compression_level = 0;
-			stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, p_image.data(), 0 );
-		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

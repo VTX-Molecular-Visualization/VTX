@@ -35,16 +35,6 @@ namespace VTX::Renderer
 
 		inline void addCallbackClean( const Renderer::CallbackClean & p_cb ) { _renderer->addCallbackClean( p_cb ); }
 
-		inline void setCallbackSnapshotPre( const Renderer::CallbackSnapshotPre & p_cb )
-		{
-			_renderer->setCallbackSnapshotPre( p_cb );
-		}
-
-		inline void setCallbackSnapshotPost( const Renderer::CallbackSnapshotPost & p_cb )
-		{
-			_renderer->setCallbackSnapshotPost( p_cb );
-		}
-
 		inline void setMatrixView( const Mat4f & p_view ) { _renderer->setMatrixView( p_view ); }
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { _renderer->setMatrixProjection( p_proj ); }
@@ -69,9 +59,16 @@ namespace VTX::Renderer
 			_renderer->setColorLayout( p_layout );
 		}
 
-		inline void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 )
+		inline void snapshot(
+			std::vector<uchar> & p_image,
+			const size_t		 p_width,
+			const size_t		 p_height,
+			const float			 p_fov,
+			const float			 p_near,
+			const float			 p_far
+		)
 		{
-			_renderer->snapshot( p_image, p_width, p_height );
+			_renderer->snapshot( p_image, p_width, p_height, p_fov, p_near, p_far );
 		}
 
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const

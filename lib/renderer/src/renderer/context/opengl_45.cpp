@@ -395,11 +395,14 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::snapshot(
-		std::vector<uchar> &   p_image,
-		const RenderQueue &	   p_renderQueue,
-		const RenderFunction & p_renderFunction, // TODO: find a better way.
-		const size_t		   p_width,
-		const size_t		   p_height
+		std::vector<uchar> & p_image,
+		const RenderQueue &	 p_renderQueue,
+		const Instructions & p_instructions,
+		const size_t		 p_width,
+		const size_t		 p_height,
+		const float			 p_fov,
+		const float			 p_near,
+		const float			 p_far
 	)
 	{
 		// TODO: transparency.
@@ -418,7 +421,11 @@ namespace VTX::Renderer::Context
 
 		resize( p_renderQueue, p_width, p_height );
 		setOutput( fbo.getId() );
-		p_renderFunction( 0 );
+
+		for ( const Instruction & instruction : p_instructions )
+		{
+			instruction();
+		}
 
 		fbo.bind( GL_READ_FRAMEBUFFER );
 		glReadnPixels(
@@ -435,7 +442,11 @@ namespace VTX::Renderer::Context
 
 		resize( p_renderQueue, widthOld, heightOld );
 		setOutput( outputOld );
-		p_renderFunction( 0 );
+
+		for ( const Instruction & instruction : p_instructions )
+		{
+			instruction();
+		}
 	}
 
 	void OpenGL45::getTextureData(

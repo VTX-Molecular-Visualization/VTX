@@ -134,12 +134,6 @@ int main( int, char ** )
 			}
 		);
 
-		renderer.setCallbackSnapshotPre( [ &camera ]( const size_t p_width, const size_t p_height )
-										 { camera.resize( p_width, p_height ); } );
-
-		renderer.setCallbackSnapshotPost( [ &camera ]( const size_t p_width, const size_t p_height )
-										  { camera.resize( p_width, p_height ); } );
-
 		// Model.
 		/*
 		Molecule							molecule = generateAtomGrid( 9 );

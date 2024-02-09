@@ -105,11 +105,14 @@ namespace VTX::Renderer::Context
 		inline void compileShaders() const { _programManager->compileShaders(); }
 
 		void snapshot(
-			std::vector<uchar> &   p_image,
-			const RenderQueue &	   p_renderQueue,
-			const RenderFunction & p_renderFunction,
-			const size_t		   p_width,
-			const size_t		   p_height
+			std::vector<uchar> & p_image,
+			const RenderQueue &	 p_renderQueue,
+			const Instructions & p_instructions,
+			const size_t		 p_width,
+			const size_t		 p_height,
+			const float			 p_fov,
+			const float			 p_near,
+			const float			 p_far
 		);
 
 		void getTextureData(
