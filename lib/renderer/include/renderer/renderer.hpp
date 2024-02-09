@@ -162,13 +162,16 @@ namespace VTX::Renderer
 					_render( p_time );
 				}
 
-				if ( _needUpdate )
+				if ( forceUpdate == false )
 				{
-					setNeedUpdate( false );
-				}
-				else
-				{
-					_framesRemaining--;
+					if ( _needUpdate )
+					{
+						setNeedUpdate( false );
+					}
+					else
+					{
+						_framesRemaining--;
+					}
 				}
 			}
 		}
