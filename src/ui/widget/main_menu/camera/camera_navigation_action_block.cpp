@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		_freefly
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
-		_freefly->setData( "Freecam", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
+		_freefly->setData( "Freefly", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
 		pushButton( *_freefly, 1 );
 
 		// !V0.1
