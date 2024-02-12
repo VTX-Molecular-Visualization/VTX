@@ -89,12 +89,12 @@ namespace VTX::Util::JSon
 		template<std::integral T>
 		const T get() const
 		{
-			return std::get<size_t>( _value );
+			return static_cast<T>( std::get<size_t>( _value ) );
 		}
 		template<std::floating_point T>
 		const T get() const
 		{
-			return std::get<double>( _value );
+			return static_cast<T>( std::get<double>( _value ) );
 		}
 
 		const BasicJSon & operator[]( const std::string & p_key ) const;

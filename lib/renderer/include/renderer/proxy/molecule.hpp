@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_PROXY_MOLECULE__
 #define __VTX_RENDERER_PROXY_MOLECULE__
 
-#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -11,22 +10,22 @@ namespace VTX::Renderer::Proxy
 	{
 		const Mat4f * transform;
 		// const Mat4f * normals;
-		std::vector<Vec3f> * atomPositions;
-		std::vector<uchar> * atomColors;
-		std::vector<float> * atomRadii;
-		std::vector<bool> *	 atomVisibilities; //
-		std::vector<bool> *	 atomSelections;   //
-		std::vector<uint> *	 atomIds;
-		std::vector<uint> *	 bonds;
+		const std::vector<Vec3f> * atomPositions;
+		const std::vector<uchar> * atomColors;
+		const std::vector<float> * atomRadii;
+		const std::vector<bool> *  atomVisibilities; //
+		const std::vector<bool> *  atomSelections;	 //
+		const std::vector<uint> *  atomIds;
+		const std::vector<uint> *  bonds;
 
-		std::vector<std::string> * atomNames; //
-		std::vector<uint> *		   residueIds;
-		std::vector<uchar> *	   residueSecondaryStructureTypes;
-		std::vector<uchar> *	   residueColors;
-		std::vector<uint> *		   residueFirstAtomIndexes; //
-		std::vector<uint> *		   residueAtomCounts;		//
-		std::vector<size_t> *	   chainFirstResidues;		//
-		std::vector<size_t> *	   chainResidueCounts;		//
+		const std::vector<std::string> * atomNames; //
+		const std::vector<uint> *		 residueIds;
+		const std::vector<uchar> *		 residueSecondaryStructureTypes;
+		const std::vector<uchar> *		 residueColors;
+		const std::vector<uint> *		 residueFirstAtomIndexes; //
+		const std::vector<uint> *		 residueAtomCounts;		  //
+		const std::vector<size_t> *		 chainFirstResidues;	  //
+		const std::vector<size_t> *		 chainResidueCounts;	  //
 	};
 
 } // namespace VTX::Renderer::Proxy

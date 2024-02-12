@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_RENDERER__
 #define __VTX_UI_QT_RENDERER__
 
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 
 namespace VTX::UI::QT
 {
@@ -11,14 +11,14 @@ namespace VTX::UI::QT
 		inline static int MAKE_CURRENT_COUNT = 0;
 
 	  public:
-		RendererQt( Renderer::Renderer & p_renderer );
+		RendererQt( Renderer::Facade & p_renderer );
 		~RendererQt();
 
-		Renderer::Renderer &	   get();
-		const Renderer::Renderer & get() const;
+		Renderer::Facade &		 get();
+		const Renderer::Facade & get() const;
 
 	  private:
-		Renderer::Renderer & _renderer;
+		Renderer::Facade & _rendererFacade;
 	};
 } // namespace VTX::UI::QT
 

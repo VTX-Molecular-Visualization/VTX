@@ -161,7 +161,7 @@ conan editable add lib/tool/tools/mdprep/external/gromacs
 ### Build VTX
 
 ```
-conan build . -b missing -b editable -o 'qt/*:shared=True' -s compiler.cppstd=20 -s build_type=<Debug|Release>
+conan build . -b missing -b editable -s compiler.cppstd=20 -s build_type=<Debug|Release>
 ```
 
 **Note** : The first time conan compile external libraries, an assert may fail once and raise an error window that suspend the conan command. It doesn't mean the conan build failed, you can safely hit the `Retry` button to resume the conan build. 

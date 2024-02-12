@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <functional>
+#include <util/callback.hpp>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
@@ -11,24 +12,6 @@ namespace VTX::Bench
 	class InputManager
 	{
 	  public:
-		using CallbackClose		  = std::function<void()>;
-		using CallbackResize	  = std::function<void( const size_t, const size_t )>;
-		using CallbackTranslate	  = std::function<void( const Vec3i & )>;
-		using CallbackRotate	  = std::function<void( const Vec2i & )>;
-		using CallbackZoom		  = std::function<void( const int )>;
-		using CallbackMouseMotion = std::function<void( const Vec2i & )>;
-		using CallbackRestore	  = std::function<void()>;
-		using CallbackMousePick	  = std::function<void( const size_t, const size_t )>;
-
-		inline void setCallbackClose( const CallbackClose & p_cb ) { _callbackClose = p_cb; }
-		inline void setCallbackResize( const CallbackResize & p_cb ) { _callbackResize = p_cb; }
-		inline void setCallbackTranslate( const CallbackTranslate & p_cb ) { _callbackTranslate = p_cb; }
-		inline void setCallbackRotate( const CallbackRotate & p_cb ) { _callbackRotate = p_cb; }
-		inline void setCallbackZoom( const CallbackZoom & p_cb ) { _callbackZoom = p_cb; }
-		inline void setCallbackMouseMotion( const CallbackMouseMotion & p_cb ) { _callbackMouseMotion = p_cb; }
-		inline void setCallbackRestore( const CallbackRestore & p_cb ) { _callbackRestore = p_cb; }
-		inline void setCallbackMousePick( const CallbackMousePick & p_cb ) { _callbackMousePick = p_cb; }
-
 		inline bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
 		inline bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
 
@@ -36,13 +19,13 @@ namespace VTX::Bench
 		{
 			switch ( p_event.type )
 			{
-			case SDL_QUIT: _onClose(); break;
+			case SDL_QUIT: callbackClose(); break;
 			case SDL_KEYDOWN: _keys[ p_event.key.keysym.scancode ] = true; break;
 			case SDL_KEYUP: _keys[ p_event.key.keysym.scancode ] = false; break;
 			case SDL_MOUSEBUTTONDOWN:
 				_mouseButtons[ p_event.button.button - 1 ] = true;
 				if ( p_event.button.button == SDL_BUTTON_LEFT )
-					_onMousePick( p_event.button.x, p_event.button.y );
+					callbackMousePick( p_event.button.x, p_event.button.y );
 				break;
 			case SDL_MOUSEBUTTONUP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_MOUSEMOTION:
@@ -53,15 +36,15 @@ namespace VTX::Bench
 				}
 				int x, y;
 				SDL_GetMouseState( &x, &y );
-				_onMouseMotion( x, y );
+				callbackMouseMotion( { x, y } );
 				break;
 			case SDL_MOUSEWHEEL: _deltaWheel += p_event.wheel.y; break;
 			case SDL_WINDOWEVENT:
 				switch ( p_event.window.event )
 				{
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
-				case SDL_WINDOWEVENT_RESIZED: _onResize( p_event.window.data1, p_event.window.data2 ); break;
-				case SDL_WINDOWEVENT_RESTORED: _onRestore(); break;
+				case SDL_WINDOWEVENT_RESIZED: callbackResize( p_event.window.data1, p_event.window.data2 ); break;
+				case SDL_WINDOWEVENT_RESTORED: callbackRestore(); break;
 				}
 				break;
 			default: break;
@@ -96,31 +79,40 @@ namespace VTX::Bench
 			}
 			if ( _keys[ SDL_SCANCODE_ESCAPE ] )
 			{
-				_onClose();
+				callbackClose();
 			}
 		}
 
 		inline void consumeInputs()
 		{
-			if ( _deltaMoveInputs != VEC3I_ZERO && _callbackTranslate )
+			if ( _deltaMoveInputs != VEC3I_ZERO )
 			{
-				_callbackTranslate( _deltaMoveInputs );
+				callbackTranslate( _deltaMoveInputs );
 			}
 
-			if ( _deltaMouse != VEC2I_ZERO && _callbackRotate )
+			if ( _deltaMouse != VEC2I_ZERO )
 			{
-				_callbackRotate( _deltaMouse );
+				callbackRotate( _deltaMouse );
 			}
 
-			if ( _deltaWheel != 0 && _callbackZoom )
+			if ( _deltaWheel != 0 )
 			{
-				_callbackZoom( _deltaWheel );
+				callbackZoom( _deltaWheel );
 			}
 
 			_deltaMoveInputs = { 0, 0, 0 };
 			_deltaMouse		 = { 0, 0 };
 			_deltaWheel		 = 0;
 		}
+
+		Util::Callback<>			   callbackClose;
+		Util::Callback<size_t, size_t> callbackResize;
+		Util::Callback<Vec3i>		   callbackTranslate;
+		Util::Callback<Vec2i>		   callbackRotate;
+		Util::Callback<int>			   callbackZoom;
+		Util::Callback<Vec2i>		   callbackMouseMotion;
+		Util::Callback<>			   callbackRestore;
+		Util::Callback<size_t, size_t> callbackMousePick;
 
 	  private:
 		bool _keys[ SDL_NUM_SCANCODES ] = { false };
@@ -129,55 +121,6 @@ namespace VTX::Bench
 		Vec3i _deltaMoveInputs = { 0, 0, 0 };
 		Vec2i _deltaMouse	   = { 0, 0 };
 		int	  _deltaWheel	   = 0;
-
-		CallbackClose		_callbackClose;
-		CallbackResize		_callbackResize;
-		CallbackTranslate	_callbackTranslate;
-		CallbackRotate		_callbackRotate;
-		CallbackZoom		_callbackZoom;
-		CallbackMouseMotion _callbackMouseMotion;
-		CallbackRestore		_callbackRestore;
-		CallbackMousePick	_callbackMousePick;
-
-		inline void _onClose()
-		{
-			if ( _callbackClose )
-			{
-				_callbackClose();
-			}
-		}
-
-		inline void _onResize( const size_t p_w, const size_t p_h )
-		{
-			if ( _callbackResize )
-			{
-				_callbackResize( p_w, p_h );
-			}
-		}
-
-		inline void _onMouseMotion( const size_t p_x, const size_t p_y )
-		{
-			if ( _callbackMouseMotion )
-			{
-				_callbackMouseMotion( { p_x, p_y } );
-			}
-		}
-
-		inline void _onRestore()
-		{
-			if ( _callbackRestore )
-			{
-				_callbackRestore();
-			}
-		}
-
-		inline void _onMousePick( const size_t p_x, const size_t p_y )
-		{
-			if ( _callbackMousePick )
-			{
-				_callbackMousePick( p_x, p_y );
-			}
-		}
 	};
 } // namespace VTX::Bench
 

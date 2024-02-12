@@ -1,35 +1,45 @@
 #include "renderer/renderer.hpp"
+#include "util/math.hpp"
 
 namespace VTX::Renderer
 {
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
-		clean();
+		if ( _context )
+		{
+			clean();
+		}
 
 		VTX_INFO(
 			"Renderer graph setup total time: {}",
 			Util::CHRONO_CPU(
 				[ & ]()
 				{
-					if ( _renderGraph->setup(
-							 p_loader ? p_loader : _loader,
-							 _width,
-							 _height,
-							 _shaderPath,
-							 _instructions,
-							 _instructionsDurationRanges,
-							 p_output
-						 ) )
+					_context = _renderGraph->setup(
+						p_loader ? p_loader : _loader,
+						width,
+						height,
+						_shaderPath,
+						_instructions,
+						_instructionsDurationRanges,
+						p_output
+					);
+
+					if ( _context )
 					{
 						for ( const Proxy::Molecule & proxy : _proxiesMolecules )
 						{
 							_setData( proxy );
 						}
+						for ( const Proxy::Voxel & proxy : _proxiesVoxels )
+						{
+							_setData( proxy );
+						}
 
-						_renderGraph->fillInfos( _infos );
+						_context->fillInfos( infos );
 						setNeedUpdate( true );
-						_onReady();
+						_callbackReady();
 					}
 				}
 			)
@@ -38,25 +48,46 @@ namespace VTX::Renderer
 
 	void Renderer::clean()
 	{
-		_onClean();
+		_context = nullptr;
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
-		_infos			 = StructInfos();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
+
+		sizeAtoms	  = 0;
+		sizeBonds	  = 0;
+		sizeRibbons	  = 0;
+		sizeVoxels	  = 0;
+		sizeMolecules = 0;
+		infos		  = StructInfos();
+
+		_callbackClean();
 	}
 
-	void Renderer::snapshot( std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
+	void Renderer::snapshot(
+		std::vector<uchar> & p_image,
+		const size_t		 p_width,
+		const size_t		 p_height,
+		const float			 p_fov,
+		const float			 p_near,
+		const float			 p_far
+	)
 	{
-		const size_t width		   = p_width ? p_width : _width;
-		const size_t height		   = p_height ? p_height : _height;
-		bool		 isForceUpdate = _forceUpdate;
+		Mat4f matrixProjection;
+		getUniform( matrixProjection, "Matrix projection" );
+		setUniform(
+			Util::Math::perspective(
+				Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
+			),
+			"Matrix projection"
+		);
 
-		_onSnapshotPre( width, height );
-		_forceUpdate = true;
-		_renderGraph->snapshot( p_image, std::bind( &Renderer::render, this, std::placeholders::_1 ), width, height );
-		_onSnapshotPost( _width, _height );
-		_forceUpdate = isForceUpdate;
+		_context->snapshot(
+			p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height, p_fov, p_near, p_far
+		);
+
+		setUniform( matrixProjection, "Matrix projection" );
 	}
+
 } // namespace VTX::Renderer

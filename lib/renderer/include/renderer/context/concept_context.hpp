@@ -16,8 +16,6 @@ namespace VTX::Renderer::Context
 		FilePath shaderPath;
 	};
 
-	using RenderFunction = std::function<void( float )>;
-
 	template<typename C>
 	concept Concept
 		= std::is_base_of<BaseContext, C>::value
@@ -27,15 +25,19 @@ namespace VTX::Renderer::Context
 			  const size_t					p_height,
 			  const size_t					p_x,
 			  const size_t					p_y,
+			  const float					p_fov,
+			  const float					p_near,
+			  const float					p_far,
 			  const RenderQueue &			p_renderQueue,
-			  const RenderFunction &		p_renderFunction,
 			  const Links &					p_links,
 			  const Handle					p_output,
 			  const std::vector<Uniforms> & p_uniforms,
 			  const std::string &			p_uniformKey,
 			  const std::vector<std::any> & p_data,
 			  const Util::Chrono::Task &	p_task,
+			  const uchar &					p_uniformIndex,
 			  UniformValue &				p_uniformValue,
+			  std::vector<UniformValue> &	p_uniformValues,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
 			  StructInfos &					p_infos,
@@ -57,10 +59,13 @@ namespace VTX::Renderer::Context
 					 p_context.setOutput( p_output )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setUniform( p_uniformValue, p_uniformKey )
+					 p_context.setUniform( p_uniformValues, p_uniformKey )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.getUniform( p_uniformValue, p_uniformKey )
+					 p_context.setUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
+				 } -> std::same_as<void>;
+				 {
+					 p_context.getUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.setData( p_data, p_uniformKey )
@@ -75,7 +80,9 @@ namespace VTX::Renderer::Context
 					 p_context.compileShaders()
 				 } -> std::same_as<void>;
 				 {
-					 p_context.snapshot( p_image, p_renderQueue, p_renderFunction, p_width, p_height )
+					 p_context.snapshot(
+						 p_image, p_renderQueue, p_instructions, p_width, p_height, p_fov, p_near, p_far
+					 )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel )

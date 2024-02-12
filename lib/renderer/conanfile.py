@@ -13,18 +13,24 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "vendor/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
+        self.requires("glad/0.1.36", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+        
+        self.options["glad/*"].shared = False
+        self.options["glad/*"].spec = "gl"
+        self.options["glad/*"].gl_profile = "core"
+        self.options["glad/*"].gl_version = 4.5
+        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info"]
 
     def layout(self):
         cmake_layout(self)       
-        self.cpp.source.includedirs = ["include", "vendor"]        
 
     def build(self):
         cmake = CMake(self)
@@ -36,7 +42,6 @@ class VTXRendererRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_renderer"]        
-        self.cpp_info.includedirs = ["include", "vendor"]
+        self.cpp_info.libs = ["vtx_renderer"]
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
         

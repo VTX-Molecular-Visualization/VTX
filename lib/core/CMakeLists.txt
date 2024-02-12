@@ -5,7 +5,7 @@ project(vtx_core)
 
 find_package(vtx_util CONFIG REQUIRED)
 
-add_library(vtx_core STATIC ${HEADERS} ${SOURCES})
+add_library(vtx_core)
 configure_target(vtx_core)
 
 file(GLOB_RECURSE HEADERS include/*)

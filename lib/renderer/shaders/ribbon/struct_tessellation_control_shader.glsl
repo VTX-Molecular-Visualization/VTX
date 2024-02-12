@@ -8,4 +8,5 @@ StructTessellationControlShader
 	flat uint visibility;
 	flat uint selection;
 	flat uint id;
+	flat uint model;
 }

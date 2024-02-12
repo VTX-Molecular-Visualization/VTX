@@ -177,29 +177,33 @@ namespace VTX::Bench
 				}
 				if ( ImGui::BeginMenu( "Export" ) )
 				{
-					if ( ImGui::MenuItem( "800x600" ) )
+					auto snapshotFunc = [ & ]( const size_t p_width, const size_t p_height )
 					{
 						std::vector<uchar> image;
-						p_renderer->snapshot( image, 800, 600 );
-						_saveImage( image, 800, 600 );
+						p_renderer->snapshot(
+							image, p_width, p_height, p_camera->getFov(), p_camera->getNear(), p_camera->getFar()
+						);
+
+						stbi_flip_vertically_on_write( true );
+						stbi_write_png_compression_level = 0;
+						stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, image.data(), 0 );
+					};
+
+					if ( ImGui::MenuItem( "800x600" ) )
+					{
+						snapshotFunc( 800, 600 );
 					}
 					if ( ImGui::MenuItem( "1920x1080" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 1920, 1080 );
-						_saveImage( image, 1920, 1080 );
+						snapshotFunc( 1920, 1080 );
 					}
 					if ( ImGui::MenuItem( "2560x1440" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 2560, 1440 );
-						_saveImage( image, 2560, 1440 );
+						snapshotFunc( 2560, 1440 );
 					}
 					if ( ImGui::MenuItem( "3840x2160" ) )
 					{
-						std::vector<uchar> image;
-						p_renderer->snapshot( image, 3840, 2160 );
-						_saveImage( image, 3840, 2160 );
+						snapshotFunc( 3840, 2160 );
 					}
 
 					ImGui::EndMenu();
@@ -211,22 +215,10 @@ namespace VTX::Bench
 					setVSync( _vsync );
 				}
 
-				bool isLogDurations = p_renderer->isLogDurations();
-				if ( ImGui::Checkbox( "Timers", &isLogDurations ) )
-				{
-					p_renderer->setLogDurations( isLogDurations );
-				}
-				bool forceUpdate = p_renderer->isForceUpdate();
-				if ( ImGui::Checkbox( "Force update", &forceUpdate ) )
-				{
-					p_renderer->setForceUpdate( forceUpdate );
-				}
-				if ( ImGui::Button( "Snapshot" ) )
-				{
-					std::vector<uchar> image;
-					p_renderer->snapshot( image );
-					_saveImage( image, p_renderer->getWidth(), p_renderer->getHeight() );
-				}
+				ImGui::Checkbox( "Timers", &p_renderer->logDurations );
+
+				ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
+
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 				ImGui::EndMainMenuBar();
@@ -310,7 +302,7 @@ namespace VTX::Bench
 		{
 			using namespace Renderer;
 
-			if ( p_renderer->isLogDurations() )
+			if ( p_renderer->logDurations )
 			{
 				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
 
@@ -347,7 +339,7 @@ namespace VTX::Bench
 			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
 			lastTime							= now;
 			*/
-			const Renderer::StructInfos & infos = p_renderer->getInfos();
+			const Renderer::StructInfos & infos = p_renderer->infos;
 
 			if ( ImGui::Begin( "Misc" ) )
 			{
@@ -358,8 +350,9 @@ namespace VTX::Bench
 				ImGui::Checkbox(
 					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
 				);
+				ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels );
 				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
-				ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
+				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 				ImGui::ProgressBar(
@@ -390,7 +383,7 @@ namespace VTX::Bench
 				ImGui::BeginMenuBar();
 				if ( ImGui::BeginMenu( "Add" ) )
 				{
-					for ( const Pass * const pass : graph.getAvailablePasses() )
+					for ( const Pass * const pass : p_renderer->getAvailablePasses() )
 					{
 						if ( ImGui::MenuItem( pass->name.c_str() ) )
 						{
@@ -499,7 +492,7 @@ namespace VTX::Bench
 					for ( const Program & program : pass->programs )
 					{
 						// Uniforms.
-						for ( const Uniform & uniform : program.uniforms )
+						for ( const Uniform & uniform : program.uniforms.entries )
 						{
 							std::string key		   = pass->name + program.name + uniform.name;
 							bool		isEditable = isBuilt && isInRenderQueue;
@@ -816,13 +809,6 @@ namespace VTX::Bench
 		SDL_GLContext _glContext = nullptr;
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
-
-		void _saveImage( const std::vector<uchar> & p_image, const size_t p_width, const size_t p_height )
-		{
-			stbi_flip_vertically_on_write( true );
-			stbi_write_png_compression_level = 0;
-			stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, p_image.data(), 0 );
-		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

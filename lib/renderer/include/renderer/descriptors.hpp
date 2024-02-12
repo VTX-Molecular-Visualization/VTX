@@ -60,6 +60,7 @@ namespace VTX::Renderer
 	{
 		T value;
 
+		// TODO: test anonymous struct.
 		struct MinMax
 		{
 			T min;
@@ -83,9 +84,7 @@ namespace VTX::Renderer
 		StructUniformValue<Vec4f>,
 		StructUniformValue<Mat3f>,
 		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>,
-		// TODO: handle array of data.
-		StructUniformValue<std::array<Util::Color::Rgba, 256>>>;
+		StructUniformValue<Util::Color::Rgba>>;
 
 	struct Uniform
 	{
@@ -104,8 +103,13 @@ namespace VTX::Renderer
 		bool		  useIndices = false;
 	};
 
-	using Files	   = std::variant<FilePath, std::vector<FilePath>>;
-	using Uniforms = std::vector<Uniform>;
+	using Files = std::variant<FilePath, std::vector<FilePath>>;
+
+	struct Uniforms
+	{
+		std::vector<Uniform> entries;
+		size_t				 arraySize = 1;
+	};
 
 	struct Program
 	{
@@ -161,6 +165,7 @@ namespace VTX::Renderer
 		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
 		{
 			// return p_left.format == p_right.format;
+			// TODO: check compatibility.
 			return true;
 		}
 		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }

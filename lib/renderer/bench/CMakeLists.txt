@@ -10,6 +10,7 @@ find_package(vtx_io CONFIG REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(imgui REQUIRED)
 find_package(stb CONFIG REQUIRED)
+#find_package(assimp CONFIG REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*)
 file(GLOB_RECURSE VENDORS vendor/*)
@@ -27,6 +28,7 @@ target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
+#target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
 
 add_custom_target(
 	vtx_renderer_bench_copy_shader

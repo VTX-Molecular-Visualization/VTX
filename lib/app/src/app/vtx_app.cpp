@@ -17,7 +17,7 @@
 #include "app/internal/monitoring/all_metrics.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
@@ -82,8 +82,7 @@ namespace VTX::App
 		_system->referenceSystem( SCENE_KEY, &scene );
 
 		// Create renderer
-		_renderer
-			= std::make_unique<Renderer::Renderer>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
+		_renderer = std::make_unique<Renderer::Facade>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
 
 		// Regsiter loop events
 		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
@@ -153,7 +152,7 @@ namespace VTX::App
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postUpdateCallback.call( p_elapsedTime ); } )
 		);
 
-		if ( _renderer->getRenderGraph().isBuilt() )
+		// if ( _renderer->getRenderGraph().isBuilt() )
 		{
 			frameInfo.set(
 				Internal::Monitoring::PRE_RENDER_DURATION_KEY,
@@ -198,6 +197,14 @@ namespace VTX::App
 		//	VTX_ACTION<Action::Main::OpenApi>( pdbId );
 		// }
 	}
+
+	// void VTXApp::_applyCameraUniforms() const
+	//{
+	//	// TODO: do not apply each frame, only when camera changes.
+	//	_renderer->setMatrixView( SCENE().getCamera().getViewMatrix() );
+	//	_renderer->setMatrixProjection( SCENE().getCamera().getProjectionMatrix() );
+	//	_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
+	// }
 
 	//	bool VTXApp::hasAnyModifications() const
 	//	{
@@ -306,7 +313,7 @@ namespace VTX::App
 	}
 
 	Application::Scene &				SCENE() { return VTXApp::get().getScene(); }
-	Renderer::Renderer &				RENDERER() { return VTXApp::get().getRenderer(); }
+	Renderer::Facade &					RENDERER() { return VTXApp::get().getRenderer(); }
 	Application::Settings &				SETTINGS() { return VTXApp::get().getSettings(); }
 	Application::ECS::RegistryManager & MAIN_REGISTRY() { return VTXApp::get().getRegistryManager(); }
 	Application::Selection::Selection & CURRENT_SELECTION() { return VTXApp::get().getSelectionManager().getCurrent(); }

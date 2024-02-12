@@ -115,8 +115,8 @@ namespace VTX::UI::QT
 			{
 				RendererQt qtRenderer = QT_RENDERER();
 
-				qtRenderer.get().setUniform( App::SCENE().getCamera().getViewMatrix(), "Matrix view" );
-				qtRenderer.get().setUniform( App::SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
+				qtRenderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
+				qtRenderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
 				qtRenderer.get().setCameraClipInfos(
 					App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar()
 				);

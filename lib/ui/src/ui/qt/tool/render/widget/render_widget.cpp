@@ -3,7 +3,7 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QShortcut>
 #include <app/vtx_app.hpp>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget

@@ -5,7 +5,7 @@
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/entity/all_entities.hpp"
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Application
 {

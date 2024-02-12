@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT
 {
-	RendererQt::RendererQt( Renderer::Renderer & p_renderer ) : _renderer( p_renderer )
+	RendererQt::RendererQt( Renderer::Facade & p_rendererFacade ) : _rendererFacade( p_rendererFacade )
 	{
 		if ( MAKE_CURRENT_COUNT == 0 )
 			QT_APP()->getMainWindow().getRender()->makeCurrentContext();
@@ -21,7 +21,7 @@ namespace VTX::UI::QT
 			QT_APP()->getMainWindow().getRender()->doneCurrentContext();
 	}
 
-	Renderer::Renderer &	   RendererQt::get() { return _renderer; }
-	const Renderer::Renderer & RendererQt::get() const { return _renderer; }
+	Renderer::Facade &		 RendererQt::get() { return _rendererFacade; }
+	const Renderer::Facade & RendererQt::get() const { return _rendererFacade; }
 
 } // namespace VTX::UI::QT

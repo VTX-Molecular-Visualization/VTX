@@ -1,7 +1,5 @@
 layout( std140, binding = 15 ) uniform UniformsCamera
 {
-    mat4 matrixModel;
-    mat4 matrixNormal;
     mat4 matrixView;    
     mat4 matrixProjection;
     vec3 cameraPosition;

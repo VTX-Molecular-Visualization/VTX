@@ -3,6 +3,7 @@
 #include "../constant.glsl"
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_color.glsl"
+#include "../layout_uniforms_model.glsl"
 
 // In.
 layout( location = 0 ) in vec3  inSpherePos;
@@ -10,6 +11,7 @@ layout( location = 1 ) in uint  inSphereColor;
 layout( location = 2 ) in float inSphereRadius;
 layout( location = 3 ) in uint  inSphereId;
 layout( location = 4 ) in uint  inSphereFlag;
+layout( location = 5 ) in uint  inSphereModel;
 
 // TODO: move that.
 uniform float u_radiusAdd	  = 0.f;
@@ -23,8 +25,8 @@ outData;
 
 void main()
 {
-	outData.viewSpherePos	 = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( inSpherePos, 1.f ) );
-	outData.sphereColor		 = uniformsColor.colorLayout[ inSphereColor ];
+	outData.viewSpherePos	 = vec3( uniformsModel[ inSphereModel ].matrixModelView * vec4( inSpherePos, 1.f ) );
+	outData.sphereColor		 = uniformsColor[ inSphereColor ];
 	//outData.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	outData.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : inSphereRadius + u_radiusAdd;
 	outData.sphereId		 = inSphereId;
