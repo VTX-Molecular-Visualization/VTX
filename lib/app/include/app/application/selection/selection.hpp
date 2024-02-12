@@ -206,6 +206,37 @@ namespace VTX::App::Application::Selection
 				select( *item, AssignmentType::APPEND );
 		}
 
+		template<ContainerOfType<const SelectionData *> C>
+		void selectAll( const C & p_data, const AssignmentType p_assignment = AssignmentType::SET )
+		{
+			if ( p_assignment == AssignmentType::SET )
+				clear();
+
+			for ( const SelectionData * dataPtr : p_data )
+			{
+				select( dataPtr->getSelectionComponent(), *dataPtr, AssignmentType::APPEND );
+			}
+		}
+		template<ContainerOfType<const Component::Scene::Selectable *> C1, ContainerOfType<const SelectionData *> C2>
+		void selectAll( const C1 & p_items, const C2 & p_data, const AssignmentType p_assignment = AssignmentType::SET )
+		{
+			assert( p_items.size() == p_data.size() );
+
+			if ( p_assignment == AssignmentType::SET )
+				clear();
+
+			typename C1::iterator itItem = p_items.begin();
+			typename C2::iterator itData = p_data.begin();
+
+			while ( itItem != p_items.end() && itData != p_data.end() )
+			{
+				select( **itItem, **itData, AssignmentType::APPEND );
+
+				itItem++;
+				itData++;
+			}
+		}
+
 		void unselect( const Component::Scene::Selectable & p_selectableComponent );
 
 		template<ContainerOfType<const Component::Scene::Selectable *> C>
@@ -216,6 +247,12 @@ namespace VTX::App::Application::Selection
 		}
 
 		bool isSelected( const Component::Scene::Selectable & p_item ) const;
+
+		template<Core::ECS::ECS_Component C>
+		bool isSelected( const C & p_component ) const
+		{
+			return isSelected( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
+		}
 
 		bool areSelected( const std::initializer_list<const Component::Scene::Selectable *> & p_items ) const;
 

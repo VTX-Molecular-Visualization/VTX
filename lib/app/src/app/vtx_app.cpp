@@ -100,7 +100,7 @@ namespace VTX::App
 		//);
 
 		// TODO: use camera callbacks.
-		_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
+		//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
 		//_renderCallback.addCallback(
 		//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
 		//);
@@ -197,13 +197,6 @@ namespace VTX::App
 		//{
 		//	VTX_ACTION<Action::Main::OpenApi>( pdbId );
 		// }
-	}
-
-	void VTXApp::_applyCameraUniforms() const
-	{
-		_renderer->setUniform( SCENE().getCamera().getViewMatrix(), "Matrix view" );
-		_renderer->setUniform( SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
-		_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

@@ -3,22 +3,21 @@
 #include "ui/qt/controller/base_controller.hpp"
 #include "ui/qt/controller/base_picker_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
+#include "ui/qt/controller/debug_shortcut.hpp"
 #include "ui/qt/controller/freefly.hpp"
 #include "ui/qt/controller/global_shortcut.hpp"
 #include "ui/qt/controller/selection_picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
+#include "ui/qt/controller/visualization_shortcut.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
-// #include "ui/qt/controller/visualization_shorcuts.hpp"
 
 namespace VTX::UI::QT::Mode
 {
 	Visualization::Visualization() : BaseMode()
 	{
 		// TODO replace that with an initialisation with custom data.
-		// addCameraController( CONTROLLER_MANAGER().instantiateController<Controller::Trackball>( "TRACKBALL" ) );
-
 		std::unique_ptr<Controller::BaseController> ptr
 			= Controller::ControllerCollection::get().instantiateItem( Controller::Freefly::HASHED_COLLECTION_ID );
 		ptr->init();
@@ -28,18 +27,28 @@ namespace VTX::UI::QT::Mode
 		ptr->init();
 		addCameraController( ptr );
 
-		// addPickerController( Controller::ControllerCollection::get().instantiateItem<Controller::SelectionPicker>(
-		// "SELECTION_PICKER" ) );
+		ptr = Controller::ControllerCollection::get().instantiateItem( Controller::SelectionPicker::HASHED_COLLECTION_ID
+		);
+		ptr->init();
+		addPickerController( ptr );
 
 		ptr = Controller::ControllerCollection::get().instantiateItem( Controller::GlobalShortcut::HASHED_COLLECTION_ID
 		);
 		ptr->init();
 		addController( ptr );
-		//		addController( Controller::ControllerCollection::get().instantiateItem( "VISUALIZATION_SHORTCUTS" ) );
-		//
-		//  #ifndef VTX_PRODUCTION
-		//		addController( Controller::ControllerCollection::get().instantiateItem( "DEBUG_SHORTCUTS" ) );
-		//  #endif
+
+		ptr = Controller::ControllerCollection::get().instantiateItem(
+			Controller::VisualizationShortcut::HASHED_COLLECTION_ID
+		);
+		ptr->init();
+		addController( ptr );
+
+#ifndef VTX_PRODUCTION
+		ptr = Controller::ControllerCollection::get().instantiateItem( Controller::DebugShortcut::HASHED_COLLECTION_ID
+		);
+		ptr->init();
+		addController( ptr );
+#endif
 	}
 
 	// void Visualization::init( VisualizationData & p_data )

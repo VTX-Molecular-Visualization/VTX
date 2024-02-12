@@ -24,6 +24,18 @@ namespace VTX::App::Application
 
 	Scene::~Scene() {}
 
+	Core::ECS::BaseEntity Scene::findItem( const FindItemFunction & p_findFunction ) const
+	{
+		auto view = getAllSceneItems();
+		for ( const Core::ECS::BaseEntity & entity : view )
+		{
+			if ( p_findFunction( entity ) )
+				return entity;
+		}
+
+		return Core::ECS::INVALID_ENTITY;
+	}
+
 	bool   Scene::isEmpty() const { return getItemCount() == 0; }
 	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }
 

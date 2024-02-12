@@ -2,9 +2,9 @@
 
 namespace VTX::UI::QT::Controller
 {
-	BasePickerController::BasePickerController( VTX::App::Component::Render::Camera & p_camera ) : _camera( p_camera )
-	{
-	}
+	BasePickerController::BasePickerController() {}
 
-	void BasePickerController::update( const float & p_deltaTime ) { _updateInputs( p_deltaTime ); }
+	void BasePickerController::setCamera( VTX::App::Component::Render::Camera & p_camera ) { _camera = &p_camera; }
+
+	void BasePickerController::update( const float & p_deltaTime ) {}
 } // namespace VTX::UI::QT::Controller

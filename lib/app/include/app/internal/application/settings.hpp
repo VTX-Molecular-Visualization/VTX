@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_APPLICATION_SETTINGS__
 #define __VTX_APP_INTERNAL_APPLICATION_SETTINGS__
 
+#include "app/application/selection/molecule_granularity.hpp"
 #include "app/application/settings.hpp"
 #include "app/component/render/enum_camera.hpp"
 #include <string>
@@ -28,6 +29,12 @@ namespace VTX::App::Internal::Application::Settings
 			= Component::Render::CAMERA_PROJECTION::PERSPECTIVE;
 	} // namespace Camera
 
+	namespace Selection
+	{
+		const std::string							   MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
+		const App::Application::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT
+			= App::Application::Selection::Granularity::ATOM;
+	} // namespace Selection
 } // namespace VTX::App::Internal::Application::Settings
 
 #endif

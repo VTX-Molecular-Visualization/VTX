@@ -2,17 +2,17 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_PICKER_CONTROLLER__
 
 #include "ui/qt/controller/base_controller.hpp"
-#include <QWidget>
 #include <app/component/render/camera.hpp>
-#include <util/types.hpp>
 
 namespace VTX::UI::QT::Controller
 {
 	class BasePickerController : public BaseController
 	{
 	  public:
-		explicit BasePickerController( VTX::App::Component::Render::Camera & p_camera );
+		BasePickerController();
 		virtual ~BasePickerController() = default;
+
+		void setCamera( VTX::App::Component::Render::Camera & p_camera );
 
 		inline bool isActive() const { return _active; }
 		inline void setActive( const bool p_active ) { _active = p_active; }
@@ -21,10 +21,11 @@ namespace VTX::UI::QT::Controller
 		virtual void reset() {}
 
 	  protected:
-		bool							 _active = true;
-		App::Component::Render::Camera & _camera;
+		const App::Component::Render::Camera & getCamera() const { return *_camera; }
 
-		virtual void _updateInputs( const float & ) = 0;
+	  private:
+		bool							 _active = true;
+		App::Component::Render::Camera * _camera = nullptr;
 	};
 } // namespace VTX::UI::QT::Controller
 #endif

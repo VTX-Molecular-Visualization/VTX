@@ -43,6 +43,7 @@ namespace VTX::App::Application::Selection
 		SelectionData & remove( const SelectionData & p_other ) override;
 		SelectionData & intersect( const SelectionData & p_other ) override;
 		SelectionData & exclude( const SelectionData & p_other ) override;
+		bool			contains( const SelectionData & p_other ) const override;
 
 		bool isEqualsTo( const SelectionData & p_other ) const override;
 		bool isValid() const override;

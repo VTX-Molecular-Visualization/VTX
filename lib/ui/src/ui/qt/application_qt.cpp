@@ -11,6 +11,8 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
+#include <app/application/scene.hpp>
+#include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -107,6 +109,20 @@ namespace VTX::UI::QT
 	{
 		Core::BaseUIApplication::_postInit( p_args );
 
+		App::VTXApp::get().onPreRender().addCallback(
+			this,
+			[]( float p_deltaTime )
+			{
+				RendererQt qtRenderer = QT_RENDERER();
+
+				qtRenderer.get().setUniform( App::SCENE().getCamera().getViewMatrix(), "Matrix view" );
+				qtRenderer.get().setUniform( App::SCENE().getCamera().getProjectionMatrix(), "Matrix projection" );
+				qtRenderer.get().setCameraClipInfos(
+					App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar()
+				);
+			}
+		);
+
 		_mainWindow->show();
 		_mainWindow->initWindowLayout();
 	}
@@ -147,5 +163,6 @@ namespace VTX::UI::QT
 
 	Input::InputManager & INPUT_MANAGER() { return QT_APP()->getInputManager(); }
 	Mode::BaseMode &	  MODE() { return QT_APP()->getCurrentMode(); }
+	RendererQt			  QT_RENDERER() { return RendererQt( App::RENDERER() ); };
 
 } // namespace VTX::UI::QT

@@ -1,43 +1,46 @@
-// #ifndef __VTX_UI_QT_CONTROLLER_PICKER__
-// #define __VTX_UI_QT_CONTROLLER_PICKER__
-//
-// #include "base_keyboard_controller.hpp"
-// #include "base_mouse_controller.hpp"
-// #include "ui/id.hpp"
-// #include <app/old/component/chemistry/_fwd.hpp>
-// #include <util/types.hpp>
-//
-// namespace VTX::UI::QT::Controller
-//{
-//	class Picker : public BaseMouseController, public BaseKeyboardController
-//	{
-//	  public:
-//		Picker();
-//
-//		inline App::Old::VTX_ID getTargetWidget() override { return UI::ID::Input::RENDER_WIDGET; }
-//		void			   update( const float & p_deltaTime ) override;
-//
-//	  protected:
-//		void _onMouseLeftClick( const uint p_x, const uint p_y ) override;
-//		void _onMouseLeftDoubleClick( const uint p_x, const uint p_y ) override;
-//		void _onMouseRightClick( const uint p_x, const uint p_y ) override;
-//
-//		void _performSelection( const Vec2i & p_ids ) const;
-//		bool _isTargetSelected( const Vec2i & p_ids ) const;
-//
-//		void _selectItem( App::Old::Component::Chemistry::Atom & p_atomPicked ) const;
-//		void _selectItem( App::Old::Component::Chemistry::Atom & p_atomPicked1,
-//						  App::Old::Component::Chemistry::Atom & p_atomPicked2 ) const;
-//		void _selectItem( App::Old::Component::Chemistry::Residue & p_residuePicked ) const;
-//
-//		void _unselectItem( App::Old::Component::Chemistry::Atom & p_atomPicked ) const;
-//		void _unselectItem( App::Old::Component::Chemistry::Atom & p_atomPicked1,
-//							App::Old::Component::Chemistry::Atom & p_atomPicked2 ) const;
-//		void _unselectItem( App::Old::Component::Chemistry::Residue & p_residuePicked ) const;
-//
-//	  private:
-//		Vec2i _lastClickedIds;
-//	};
-// } // namespace VTX::UI::QT::Controller
-//
-// #endif
+#ifndef __VTX_UI_QT_CONTROLLER_SELECTION_PICKER__
+#define __VTX_UI_QT_CONTROLLER_SELECTION_PICKER__
+
+#include "ui/qt/controller/base_picker_controller.hpp"
+#include "ui/qt/controller/controller_manager.hpp"
+#include <app/application/selection/picking_info.hpp>
+#include <util/hashing.hpp>
+#include <util/types.hpp>
+
+namespace VTX::UI::QT::Controller
+{
+	class SelectionPicker : public BasePickerController
+	{
+	  public:
+		using PickingInfo = App::Application::Selection::PickingInfo;
+
+		inline static const App::Core::CollectionKey COLLECTION_ID		  = "CONTROLLER_PICKER";
+		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
+
+	  private:
+		inline static const ControllerCollection::Registration<SelectionPicker> _reg { COLLECTION_ID };
+
+	  public:
+		SelectionPicker()									= default;
+		SelectionPicker( const SelectionPicker & p_source ) = default;
+		~SelectionPicker()									= default;
+
+		void init() override;
+
+		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		std::unique_ptr<BaseController> clone() const { return std::make_unique<SelectionPicker>( *this ); };
+
+	  protected:
+		void _onMouseLeftClick( const Vec2i & p_mousePos );
+		void _onMouseLeftDoubleClick( const Vec2i & p_mousePos );
+		void _onMouseRightClick( const Vec2i & p_mousePos );
+
+		void _performSelection( const PickingInfo & p_pickingInfo ) const;
+		bool _isTargetSelected( const PickingInfo & p_pickingInfo ) const;
+
+	  private:
+		PickingInfo _lastPickingInfo = PickingInfo();
+	};
+} // namespace VTX::UI::QT::Controller
+
+#endif

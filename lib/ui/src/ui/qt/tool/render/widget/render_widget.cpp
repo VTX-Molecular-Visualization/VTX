@@ -37,4 +37,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	}
 
 	void RenderWidget::_setupSlots() {}
+
+	void RenderWidget::makeCurrentContext() { getOpenGLWidget().makeCurrent(); }
+	void RenderWidget::doneCurrentContext() { getOpenGLWidget().doneCurrent(); }
 } // namespace VTX::UI::QT::Tool::Render::Widget

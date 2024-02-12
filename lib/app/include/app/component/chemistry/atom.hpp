@@ -20,13 +20,15 @@ namespace VTX::App::Component::Chemistry
 		Atom( Molecule * const p_molecule, const atom_index_t p_index ) :
 			_moleculePtr( p_molecule ), _index( p_index ) {};
 
-		atom_index_t	getIndex() const { return _index; }
-		void			setIndex( const atom_index_t p_index ) { _index = p_index; }
-		Residue *		getResiduePtr() const;
-		const Residue * getConstResiduePtr() const;
-		void			setResiduePtr( Residue * const p_residue );
-		Chain *			getChainPtr() const;
-		const Chain *	getConstChainPtr() const;
+		atom_index_t			getIndex() const { return _index; }
+		void					setIndex( const atom_index_t p_index ) { _index = p_index; }
+		Residue *				getResiduePtr() const;
+		const Residue *			getConstResiduePtr() const;
+		void					setResiduePtr( Residue * const p_residue );
+		Chain *					getChainPtr() const;
+		const Chain *			getConstChainPtr() const;
+		inline Molecule *		getMoleculePtr() const { return _moleculePtr; }
+		inline const Molecule * getConstMoleculePtr() const { return _moleculePtr; }
 
 		const std::string &			 getName() const;
 		void						 setName( const std::string & p_name );

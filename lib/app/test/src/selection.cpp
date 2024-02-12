@@ -14,7 +14,7 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_APP - Selection", "[wip][unit]" )
+TEST_CASE( "VTX_APP - Selection", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -126,7 +126,6 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	CHECK( molSelData1.isResidueSelected( 0 ) );
 	CHECK( molSelData1.isResidueFullySelected( 0 ) );
 	CHECK( molSelData1.isAtomSelected( 0 ) );
-	CHECK( molSelData1.isAtomSelected( 0 ) );
 
 	molSelData1.setCurrentObject( *mol1.getResidue( 0 ) );
 	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::Residue );
@@ -146,6 +145,30 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	) ) );
 
 	CHECK( molSelData1.getCurrentObjectType() == MoleculeData::CurrentObjectTypeEnum::None );
+
+	MoleculeData molData2 = MoleculeData( selectableMol1 );
+	molSelData1.clear();
+	molData2.clear();
+
+	molData2.selectFullResidue( *mol1.getResidue( 0 ) );
+	CHECK( !molSelData1.contains( molData2 ) );
+	CHECK( molData2.contains( molSelData1 ) );
+
+	molSelData1.selectAtom( *mol1.getAtom( 0 ) );
+	CHECK( !molSelData1.contains( molData2 ) );
+	CHECK( molData2.contains( molSelData1 ) );
+
+	molSelData1.selectFullResidue( *mol1.getResidue( 0 ) );
+	CHECK( molSelData1.contains( molData2 ) );
+	CHECK( molData2.contains( molSelData1 ) );
+
+	molSelData1.selectFullChain( *mol1.getChain( 0 ) );
+	CHECK( molSelData1.contains( molData2 ) );
+	CHECK( !molData2.contains( molSelData1 ) );
+
+	molData2.selectFullChain( *mol1.getChain( 1 ) );
+	CHECK( !molSelData1.contains( molData2 ) );
+	CHECK( !molData2.contains( molSelData1 ) );
 }
 
 TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )

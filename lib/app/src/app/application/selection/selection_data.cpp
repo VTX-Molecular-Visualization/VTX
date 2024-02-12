@@ -43,6 +43,10 @@ namespace VTX::App::Application::Selection
 		_valid = _selectionComponent != p_other._selectionComponent;
 		return *this;
 	}
+	bool SelectionData::contains( const SelectionData & p_other ) const
+	{
+		return _selectionComponent == p_other._selectionComponent;
+	}
 
 	std::string SelectionData::toString() const
 	{

@@ -1,19 +1,14 @@
 #include "ui/qt/controller/global_shortcut.hpp"
-#include "ui/action/visualization.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/controller/freefly.hpp"
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include <app/action/application.hpp>
-#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Controller
 {
 	void GlobalShortcut::init()
 	{
-		referenceShortcut( { { Input::Key::Key_F1 },
-							 Shortcut::callAction<Action::Visualization::ToggleCameraController>() } );
-
 		referenceShortcut( { { Input::Key::Key_N, ( Input::ModifierEnum::Ctrl ) },
 							 Shortcut::callAction<App::Action::Application::NewScene>() } );
 

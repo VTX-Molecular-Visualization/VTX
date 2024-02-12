@@ -5,6 +5,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/scene/scene_item_component.hpp"
+#include "app/core/uid/uid_registration.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <util/constants.hpp>
@@ -21,7 +22,11 @@ namespace VTX::App::Component::Chemistry
 		_bonds	  = std::vector<std::unique_ptr<Chemistry::Bond>>();
 	};
 	Molecule::Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct ) { setMoleculeStruct( p_moleculeStruct ); }
-	Molecule::~Molecule() = default;
+	Molecule::~Molecule()
+	{
+		Core::UID::UIDRegistration::get().unregister( _atomUidRange );
+		Core::UID::UIDRegistration::get().unregister( _residueUidRange );
+	};
 
 	void Molecule::setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct )
 	{
@@ -74,8 +79,12 @@ namespace VTX::App::Component::Chemistry
 			{ return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _moleculeStruct.atomSymbols[ i ] ) ]; }
 		);
 
-		_atomIds.resize( p_atomCount, uint( INVALID_INDEX ) );
-		std::generate( _atomIds.begin(), _atomIds.end(), [ this, i = 0 ]() mutable { return i++; } );
+		_atomUidRange = Core::UID::UIDRegistration::get().registerRange( Core::UID::uid( p_atomCount ) );
+
+		const uint offset = uint( _atomUidRange.getFirst() );
+
+		_atomIds.resize( p_atomCount, Core::UID::INVALID_UID );
+		std::generate( _atomIds.begin(), _atomIds.end(), [ this, offset, i = 0 ]() mutable { return offset + i++; } );
 
 		_atomSelections.resize( p_atomCount, uint( false ) );
 	}
@@ -96,6 +105,20 @@ namespace VTX::App::Component::Chemistry
 			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.setName( p_name );
 		_moleculeStruct.name = p_name;
+	}
+
+	const Atom * Molecule::getAtomFromUID( Core::UID::uid p_uid ) const
+	{
+		return getAtom( p_uid - _atomUidRange.getFirst() );
+	}
+	Atom * Molecule::getAtomFromUID( Core::UID::uid p_uid ) { return getAtom( p_uid - _atomUidRange.getFirst() ); }
+	const Residue * Molecule::getResidueFromUID( Core::UID::uid p_uid ) const
+	{
+		return getResidue( p_uid - _residueUidRange.getFirst() );
+	}
+	Residue * Molecule::getResidueFromUID( Core::UID::uid p_uid )
+	{
+		return getResidue( p_uid - _residueUidRange.getFirst() );
 	}
 
 } // namespace VTX::App::Component::Chemistry

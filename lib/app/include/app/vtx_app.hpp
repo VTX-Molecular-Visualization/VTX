@@ -119,7 +119,6 @@ namespace VTX
 			Core::CallbackEmitter<float> _postRenderCallback = Core::CallbackEmitter<float>();
 
 			void _handleArgs( const std::vector<std::string> & );
-			void _applyCameraUniforms() const;
 			void _update( const float p_elapsedTime );
 			void _stop();
 		};
