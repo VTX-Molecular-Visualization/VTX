@@ -233,7 +233,7 @@ namespace VTX::Bench
 				_drawDurations( p_renderer );
 
 				// Misc.
-				_drawMisc( p_renderer );
+				_drawScene( p_renderer );
 
 				// Node editor.
 				_drawNodeEditor( p_renderer );
@@ -330,7 +330,7 @@ namespace VTX::Bench
 			}
 		}
 
-		void _drawMisc( Renderer::Renderer * const p_renderer )
+		void _drawScene( Renderer::Renderer * const p_renderer )
 		{
 			/*
 			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
@@ -341,7 +341,7 @@ namespace VTX::Bench
 			*/
 			const Renderer::StructInfos & infos = p_renderer->infos;
 
-			if ( ImGui::Begin( "Misc" ) )
+			if ( ImGui::Begin( "Scene" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
 
