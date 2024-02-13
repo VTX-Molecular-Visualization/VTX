@@ -31,8 +31,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = App::Test::Util::App::createInterpretor();
-	PythonBinding::Interpretor &				interpretor	   = *interpretorPtr;
+	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
 	interpretor.init();
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );
@@ -128,8 +127,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
-	interpretor->init();
+	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
+	interpretor.init();
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
@@ -137,6 +136,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
-	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", *interpretor ); };
-	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", *interpretor ); };
+	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };
+	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", interpretor ); };
 };

@@ -1,7 +1,5 @@
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/worker_manager.hpp"
-#include "app/vtx_app.hpp"
-#include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Core::Worker
@@ -66,6 +64,6 @@ namespace VTX::App::Core::Worker
 		}
 	}
 
-	void BaseThread::_finish() { THREADING()._killThread( *this ); }
+	void BaseThread::_finish() { _manager._killThread( *this ); }
 
 } // namespace VTX::App::Core::Worker

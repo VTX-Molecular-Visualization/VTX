@@ -3,6 +3,7 @@
 
 #include "app/core/monitoring/frame_info.hpp"
 #include <list>
+#include <util/hashing.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Monitoring
@@ -30,7 +31,7 @@ namespace VTX::App::Core::Monitoring
 		void clear();
 
 		template<typename T>
-		T getAverage( const FrameInfo::hash_t & p_hashedKey ) const
+		T getAverage( const Util::Hashing::Hash & p_hashedKey ) const
 		{
 			if ( _activeFrames.size() == 0 )
 				return 0;

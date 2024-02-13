@@ -2,11 +2,9 @@
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/settings.hpp"
-#include "app/core/io/reader/serialized_object.hpp"
-#include "app/core/io/writer/serialized_object.hpp"
+#include "app/application/system/serializer.hpp"
 #include "app/internal/io/reader/scene_loader.hpp"
 #include "app/internal/io/writer/scene_writer.hpp"
-#include "app/vtx_app.hpp"
 #include <io/internal/filesystem.hpp>
 
 namespace VTX::App::Action::Application
@@ -47,22 +45,14 @@ namespace VTX::App::Action::Application
 	void ClearScene::execute() { SCENE().reset(); }
 
 	LoadSettings::LoadSettings() : _path( VTX::IO::Internal::Filesystem::getSettingJsonFile() ) {}
-	void LoadSettings::execute()
-	{
-		Core::IO::Reader::SerializedObject<App::Application::Settings> loader = { _path, &SETTINGS() };
-		loader.read();
-	}
+	void LoadSettings::execute() { SERIALIZER().readObject<App::Application::Settings>( _path, SETTINGS() ); }
 	SaveSettings::SaveSettings() : _path( VTX::IO::Internal::Filesystem::getSettingJsonFile() ) {}
-	void SaveSettings::execute()
-	{
-		Core::IO::Writer::SerializedObject<App::Application::Settings> writer = { _path, &SETTINGS() };
-		writer.write();
-	}
+	void SaveSettings::execute() { SERIALIZER().writeObject<App::Application::Settings>( _path, SETTINGS() ); }
 	void ReloadSettings::execute()
 	{
-		Core::IO::Reader::SerializedObject<App::Application::Settings> loader
-			= { VTX::IO::Internal::Filesystem::getSettingJsonFile(), &SETTINGS() };
-		loader.read();
+		SERIALIZER().readObject<App::Application::Settings>(
+			VTX::IO::Internal::Filesystem::getSettingJsonFile(), SETTINGS()
+		);
 	}
 	void ResetSettings::execute() { SETTINGS().reset(); }
 

@@ -51,45 +51,68 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 		};
 
 		inline static std::vector<MenuItemDataRef<App::Old::VTX_ID>> CAMERA_CONTROLLERS {
-			MenuItemDataRef<App::Old::VTX_ID>( ID::Controller::TRACKBALL,
-										  "Trackball",
-										  ":/sprite/camera_trackball_mode.png" ),
+			MenuItemDataRef<App::Old::VTX_ID>(
+				ID::Controller::TRACKBALL,
+				"Trackball",
+				":/sprite/camera_trackball_mode.png"
+			),
 			MenuItemDataRef<App::Old::VTX_ID>( ID::Controller::FREEFLY, "Freefly", ":/sprite/camera_freefly_mode.png" )
 		};
 
 		inline static std::vector<MenuItemDataRef<App::Old::VTX_ID>> PICKER_CONTROLLERS {
-			MenuItemDataRef<App::Old::VTX_ID>( ID::Controller::PICKER, "Selection", ":/sprite/picker_selection_icon.png" ),
-			MenuItemDataRef<App::Old::VTX_ID>( ID::Controller::MEASUREMENT,
-										  "Measurement",
-										  ":/sprite/measurement_picker_icon.png" )
+			MenuItemDataRef<App::Old::VTX_ID>(
+				ID::Controller::PICKER,
+				"Selection",
+				":/sprite/picker_selection_icon.png"
+			),
+			MenuItemDataRef<App::Old::VTX_ID>(
+				ID::Controller::MEASUREMENT,
+				"Measurement",
+				":/sprite/measurement_picker_icon.png"
+			)
 		};
 
-		inline static std::vector<MenuItemData<VTX::App::Old::Application::Selection::GRANULARITY>> SELECTION_GRANULARITY {
-			MenuItemData( VTX::App::Old::Application::Selection::GRANULARITY::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
-			MenuItemData( VTX::App::Old::Application::Selection::GRANULARITY::RESIDUE,
-						  "Pick Residue",
-						  ":/sprite/pick_residue.png" ),
-			MenuItemData( VTX::App::Old::Application::Selection::GRANULARITY::CHAIN,
-						  "Pick Chain",
-						  ":/sprite/pick_chain.png" ),
-			MenuItemData( VTX::App::Old::Application::Selection::GRANULARITY::MOLECULE,
-						  "Pick Molecule",
-						  ":/sprite/pick_molecule.png" )
-		};
+		inline static std::vector<MenuItemData<VTX::App::Old::Application::Selection::GRANULARITY>>
+			SELECTION_GRANULARITY { MenuItemData(
+										VTX::App::Old::Application::Selection::GRANULARITY::ATOM,
+										"Pick Atom",
+										":/sprite/pick_atom.png"
+									),
+									MenuItemData(
+										VTX::App::Old::Application::Selection::GRANULARITY::RESIDUE,
+										"Pick Residue",
+										":/sprite/pick_residue.png"
+									),
+									MenuItemData(
+										VTX::App::Old::Application::Selection::GRANULARITY::CHAIN,
+										"Pick Chain",
+										":/sprite/pick_chain.png"
+									),
+									MenuItemData(
+										VTX::App::Old::Application::Selection::GRANULARITY::MOLECULE,
+										"Pick Molecule",
+										":/sprite/pick_molecule.png"
+									) };
 
 		inline static std::vector<MenuItemData<QT::Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
-			MenuItemData( QT::Controller::MeasurementPicker::Mode::DISTANCE,
-						  "Distance",
-						  ":/sprite/measurement_distance_icon.png" ),
+			MenuItemData(
+				QT::Controller::MeasurementPicker::Mode::DISTANCE,
+				"Distance",
+				":/sprite/measurement_distance_icon.png"
+			),
 			// MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
 			//			  "Distance to cycle",
 			//			  ":/sprite/measurement_distance_to_cycle_icon.png" ),
-			MenuItemData( QT::Controller::MeasurementPicker::Mode::ANGLE,
-						  "Angle",
-						  ":/sprite/measurement_angle_icon.png" ),
-			MenuItemData( QT::Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
-						  "Dihedral angle",
-						  ":/sprite/measurement_dihedral_angle_icon.png" ),
+			MenuItemData(
+				QT::Controller::MeasurementPicker::Mode::ANGLE,
+				"Angle",
+				":/sprite/measurement_angle_icon.png"
+			),
+			MenuItemData(
+				QT::Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
+				"Dihedral angle",
+				":/sprite/measurement_dihedral_angle_icon.png"
+			),
 		};
 
 		inline static const char * CAMERA_CONTROLLER_PROPERTY_NAME = "CAMERA_CONTROLLER";

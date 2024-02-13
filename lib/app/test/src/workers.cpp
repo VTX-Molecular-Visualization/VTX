@@ -1,6 +1,6 @@
 #include "util/app.hpp"
+#include <app/application/system/threading.hpp>
 #include <app/core/worker/base_thread.hpp>
-#include <app/core/worker/worker_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>

@@ -3,6 +3,9 @@
 
 #include "ui/core/base_ui_application.hpp"
 #include "ui/environment.hpp"
+#include "ui/qt/input/_fwd.hpp"
+#include "ui/qt/mode/_fwd.hpp"
+#include "ui/qt/renderer_qt.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QEvent>
@@ -23,6 +26,9 @@ namespace VTX::UI::QT
 	  public:
 		static void configure();
 
+	  private:
+		inline static const std::string INPUT_MANAGER_KEY = "INPUT_MANAGER";
+
 	  public:
 		ApplicationQt();
 		ApplicationQt( const ApplicationQt & )			   = delete;
@@ -37,6 +43,9 @@ namespace VTX::UI::QT
 
 		inline MainWindow &		  getMainWindow() { return *_mainWindow; }
 		inline const MainWindow & getMainWindow() const { return *_mainWindow; }
+
+		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
+		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
 		bool notify( QObject * const, QEvent * const ) override;
 
@@ -54,9 +63,15 @@ namespace VTX::UI::QT
 		QElapsedTimer _elapsedTimer = QElapsedTimer();
 		QElapsedTimer _tickTimer	= QElapsedTimer();
 		uint		  _tickCounter	= 0u;
+
+		std::unique_ptr<Mode::BaseMode> _currentMode;
+		std::string						_currentModeKey = "MODE_VISUALIZATION";
 	};
 
 	inline ApplicationQt * const QT_APP() { return VTX::UI::Environment::get().getUIApp<VTX::UI::QT::ApplicationQt>(); }
+	Mode::BaseMode &			 MODE();
+	RendererQt					 QT_RENDERER();
+
 } // namespace VTX::UI::QT
 
 #endif

@@ -1,5 +1,5 @@
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/application_qt.hpp"
+#include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
@@ -36,10 +36,12 @@ namespace VTX::UI::QT
 		return dynamic_cast<QT::Widget::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
 	}
 	QT::Widget::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
-		const Core::ToolLayoutData & layoutData )
+		const Core::ToolLayoutData & layoutData
+	)
 	{
 		return dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
-			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName ) );
+			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName )
+		);
 	}
 
 	void MainWindow::addShortcut( const std::string & p_shortcut, QAction * const p_action )
@@ -48,10 +50,12 @@ namespace VTX::UI::QT
 
 		p_action->setParent( this );
 
-		connect( new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ),
-				 &QShortcut::activated,
-				 p_action,
-				 &QAction::trigger );
+		connect(
+			new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ),
+			&QShortcut::activated,
+			p_action,
+			&QAction::trigger
+		);
 
 		_shortcuts.emplace( p_shortcut );
 	}
@@ -104,10 +108,12 @@ namespace VTX::UI::QT
 		return title;
 	}
 
-	void MainWindow::addDockWidgetAsTabified( QDockWidget * const	   p_dockWidget,
-											  const Qt::DockWidgetArea p_area,
-											  const Qt::Orientation	   p_orientation,
-											  const bool			   p_visible )
+	void MainWindow::addDockWidgetAsTabified(
+		QDockWidget * const		 p_dockWidget,
+		const Qt::DockWidgetArea p_area,
+		const Qt::Orientation	 p_orientation,
+		const bool				 p_visible
+	)
 	{
 		addDockWidget( p_area, p_dockWidget, p_orientation );
 
@@ -117,10 +123,12 @@ namespace VTX::UI::QT
 			p_dockWidget->hide();
 	}
 
-	void MainWindow::addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-											  QDockWidget * const p_neighbour,
-											  Qt::Orientation	  p_orientation,
-											  const bool		  p_visible )
+	void MainWindow::addDockWidgetAsTabified(
+		QDockWidget * const p_dockWidget,
+		QDockWidget * const p_neighbour,
+		Qt::Orientation		p_orientation,
+		const bool			p_visible
+	)
 	{
 		splitDockWidget( p_neighbour, p_dockWidget, p_orientation );
 
@@ -129,9 +137,11 @@ namespace VTX::UI::QT
 		else if ( p_dockWidget->isVisible() && !p_visible )
 			p_dockWidget->hide();
 	}
-	void MainWindow::addDockWidgetAsFloating( QDockWidget * const p_dockWidget,
-											  const QSize &		  p_size,
-											  const bool		  p_visible )
+	void MainWindow::addDockWidgetAsFloating(
+		QDockWidget * const p_dockWidget,
+		const QSize &		p_size,
+		const bool			p_visible
+	)
 	{
 		// Create an emplacement for the widget before setting it floating to prevent warning
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
@@ -171,6 +181,17 @@ namespace VTX::UI::QT
 
 		return res;
 	}
+
+	void MainWindow::keyPressEvent( QKeyEvent * const p_event ) { INPUT_MANAGER().handleKeyboardEvent( *p_event ); }
+	void MainWindow::keyReleaseEvent( QKeyEvent * const p_event ) { INPUT_MANAGER().handleKeyboardEvent( *p_event ); }
+	void MainWindow::mousePressEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
+	void MainWindow::mouseReleaseEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
+	void MainWindow::mouseDoubleClickEvent( QMouseEvent * const p_event )
+	{
+		INPUT_MANAGER().handleMouseEvent( *p_event );
+	}
+	void MainWindow::mouseMoveEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
+	void MainWindow::wheelEvent( QWheelEvent * const p_event ) { INPUT_MANAGER().handleMouseWheelEvent( *p_event ); }
 
 	void MainWindow::_updatePicker() const
 	{

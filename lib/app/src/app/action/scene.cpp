@@ -7,7 +7,6 @@
 #include "app/component/render/viewpoint.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
-#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::Scene
 {
@@ -16,7 +15,7 @@ namespace VTX::App::Action::Scene
 		for ( const FilePath & moleculePath : _paths )
 		{
 			const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
-				= VTXApp::get().getEntityDirector().generateBuilder( Entity::MOLECULE_ENTITY_ID );
+				= ENTITY_DIRECTOR().generateBuilder( Entity::MOLECULE_ENTITY_ID );
 
 			// Possibility to thread build function
 			entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &SCENE() );
@@ -32,7 +31,7 @@ namespace VTX::App::Action::Scene
 	}
 	void CreateViewpoint::execute()
 	{
-		const Core::ECS::BaseEntity entity = VTXApp::get().getEntityDirector().build( Entity::VIEWPOINT_ENTITY_ID );
+		const Core::ECS::BaseEntity entity = ENTITY_DIRECTOR().build( Entity::VIEWPOINT_ENTITY_ID );
 
 		Component::Render::Viewpoint & viewpoint = MAIN_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
 		viewpoint.setPosition( _position );

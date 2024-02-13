@@ -9,5 +9,7 @@ namespace VTX::App::Internal::Application::Settings
 		p_settings.referenceSetting( Camera::FAR_CLIP_KEY, Camera::FAR_DEFAULT );
 		p_settings.referenceSetting( Camera::FOV_KEY, Camera::FOV_DEFAULT );
 		p_settings.referenceSetting( Camera::PROJECTION_KEY, Camera::PROJECTION_DEFAULT );
+
+		p_settings.referenceSetting( Selection::MOLECULE_GRANULARITY_KEY, Selection::MOLECULE_GRANULARITY_DEFAULT );
 	}
 } // namespace VTX::App::Internal::Application::Settings

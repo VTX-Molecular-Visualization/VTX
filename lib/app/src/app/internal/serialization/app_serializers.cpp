@@ -1,5 +1,5 @@
 #include "app/application/settings.hpp"
-#include "app/core/serialization/serialization.hpp"
+#include "app/application/system/serializer.hpp"
 #include "app/core/trajectory_player/loop.hpp"
 #include "app/core/trajectory_player/once.hpp"
 #include "app/core/trajectory_player/ping_pong.hpp"

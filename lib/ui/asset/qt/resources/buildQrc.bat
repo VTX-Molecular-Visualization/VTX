@@ -1,1 +1,1 @@
-START ../../../../../tool/QrcBuilder.exe %cd% resources_ui.qrc resources_ui.qrc buildQrc.bat
+START ../../../bin/QrcBuilder.exe %cd% resources_ui.qrc resources_ui.qrc buildQrc.bat

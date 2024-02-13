@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_TEST_UTIL_SERIALIZATION__
 #define __VTX_APP_TEST_UTIL_SERIALIZATION__
 
+#include <app/application/system/serializer.hpp>
 #include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/vtx_app.hpp>

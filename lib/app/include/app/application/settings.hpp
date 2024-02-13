@@ -2,6 +2,8 @@
 #define __VTX_APP_APPLICATION_SETTINGS__
 
 #include "app/application/setting.hpp"
+#include "app/core/callback_event.hpp"
+#include "app/core/system/base_system.hpp"
 #include <cassert>
 #include <map>
 #include <memory>
@@ -9,7 +11,25 @@
 
 namespace VTX::App::Application
 {
-	class Settings
+	class BaseSettingChangeEvent
+	{
+	  public:
+		BaseSettingChangeEvent( const std::string & p_key ) : key( p_key ) {};
+		const std::string key;
+	};
+
+	template<typename T>
+	class SettingChangeEvent : public BaseSettingChangeEvent
+	{
+	  public:
+		SettingChangeEvent( const std::string & p_key, const T & p_oldValue, const T & p_newValue ) :
+			BaseSettingChangeEvent( p_key ), oldValue( p_oldValue ), newValue( p_newValue ) {};
+
+		const T & oldValue;
+		const T & newValue;
+	};
+
+	class Settings : public Core::System::BaseSystem
 	{
 	  public:
 		using SettingMap = std::map<std::string, std::unique_ptr<BaseSetting>>;
@@ -37,7 +57,18 @@ namespace VTX::App::Application
 		void set( const std::string p_key, const T & p_value )
 		{
 			assert( _settings.contains( p_key ) );
-			_getSetting<T>( p_key ).set( p_value );
+
+			const T & previousValue = _getSetting<T>( p_key ).get();
+
+			if ( previousValue != p_value )
+			{
+				_getSetting<T>( p_key ).set( p_value );
+
+				const std::unique_ptr<SettingChangeEvent<T>> eventData
+					= std::make_unique<SettingChangeEvent<T>>( p_key, previousValue, p_value );
+
+				onSettingChange.call( eventData.get() );
+			}
 		}
 
 		inline bool contains( const std::string & p_key ) const { return _settings.contains( p_key ); }
@@ -48,6 +79,8 @@ namespace VTX::App::Application
 
 		friend bool operator==( const Settings & p_lhs, const Settings & p_rhs );
 		friend bool operator!=( const Settings & p_lhs, const Settings & p_rhs );
+
+		Core::CallbackEmitter<BaseSettingChangeEvent *> onSettingChange;
 
 	  private:
 		// Mutable to allow bracket access in const functions (contains checked in asserts)

@@ -2,13 +2,13 @@
 #define __VTX_UTIL_MATH_RANGE__
 
 #include <cassert>
-#include <type_traits>
+#include <concepts>
 #include <util/math.hpp>
 #include <vector>
 
 namespace VTX::Util::Math
 {
-	template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
+	template<std::integral T>
 	class Range
 	{
 	  private:

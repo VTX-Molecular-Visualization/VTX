@@ -20,6 +20,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		}
 	}
 
-	std::unique_ptr<BasePlayer> Once::clone() const { return std::make_unique<Once>( *this ); }
-
 } // namespace VTX::App::Core::TrajectoryPlayer

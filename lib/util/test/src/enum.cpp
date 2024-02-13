@@ -28,7 +28,7 @@ TEST_CASE( "Util::Enum", "[unit]" )
 
 namespace VTX
 {
-	enum class FLAG_TEST_ENUM : int
+	enum class E_FLAG_TEST_ENUM : int
 	{
 		BIT_0 = 1 << 0,
 		BIT_1 = 1 << 1,
@@ -44,7 +44,7 @@ namespace VTX
 		ALL	 = 0xFFFF
 	};
 
-	VTX_FLAG( FLAG_TEST_FLAG, FLAG_TEST_ENUM );
+	VTX_FLAG( E_FLAG_TEST_FLAG, E_FLAG_TEST_ENUM );
 } // namespace VTX
 
 TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
@@ -53,18 +53,18 @@ TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
 	using namespace VTX::Util;
 	using namespace VTX::Util::Generic;
 
-	FLAG_TEST_FLAG testFlag = FLAG_TEST_ENUM::NONE;
-	testFlag				= testFlag | FLAG_TEST_ENUM::BIT_0;
-	CHECK( testFlag == FLAG_TEST_ENUM::BIT_0 );
+	E_FLAG_TEST_FLAG testFlag = E_FLAG_TEST_ENUM::NONE;
+	testFlag				  = testFlag | E_FLAG_TEST_ENUM::BIT_0;
+	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
 
-	testFlag = testFlag | FLAG_TEST_FLAG::ENUM::BIT_2;
-	CHECK( testFlag == ( FLAG_TEST_ENUM::BIT_0 | FLAG_TEST_ENUM::BIT_2 ) );
-	CHECK( testFlag & FLAG_TEST_ENUM::BIT_0 );
-	CHECK( !( testFlag & FLAG_TEST_ENUM::BIT_1 ) );
-	CHECK( testFlag & FLAG_TEST_ENUM::BIT_2 );
+	testFlag = testFlag | E_FLAG_TEST_FLAG::ENUM::BIT_2;
+	CHECK( testFlag == ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_2 ) );
+	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_1 ) );
+	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_2 );
 
-	testFlag = testFlag & ( FLAG_TEST_ENUM::BIT_0 | FLAG_TEST_ENUM::BIT_1 );
-	CHECK( testFlag == FLAG_TEST_ENUM::BIT_0 );
-	CHECK( testFlag & FLAG_TEST_ENUM::BIT_0 );
-	CHECK( !( testFlag & FLAG_TEST_ENUM::BIT_2 ) );
+	testFlag &= ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 );
+	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_2 ) );
 }

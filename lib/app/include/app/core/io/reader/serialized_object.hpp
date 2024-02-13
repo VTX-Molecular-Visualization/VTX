@@ -3,7 +3,6 @@
 
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
-#include "app/vtx_app.hpp"
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/json/io.hpp>
@@ -16,10 +15,19 @@ namespace VTX::App::Core::IO::Reader
 	template<typename T>
 	class SerializedObject
 	{
+	  private:
 	  public:
-		SerializedObject( const FilePath & p_path, T * const p_target ) : _path( p_path ), _target( p_target ) {}
+		SerializedObject(
+			const Serialization::Serialization & p_serializer,
+			const FilePath &					 p_path,
+			T * const							 p_target
+		) :
+			_serializer( p_serializer ),
+			_path( p_path ), _target( p_target )
+		{
+		}
 
-		void read()
+		void read() const
 		{
 			Util::JSon::Document fullDoc = Util::JSon::IO::open( _path );
 
@@ -27,7 +35,7 @@ namespace VTX::App::Core::IO::Reader
 				throw IOException( "Ill-formed save file" );
 
 			Serialization::Version fileVersion;
-			SERIALIZER().deserialize( fullDoc.json()[ "VERSION" ], fileVersion );
+			_serializer.deserialize( fullDoc.json()[ "VERSION" ], fileVersion );
 
 			if ( fileVersion > Serialization::Version::CURRENT )
 				throw IOException( "Can not read file, version is newer than VTX" );
@@ -35,14 +43,15 @@ namespace VTX::App::Core::IO::Reader
 			VTX::Util::JSon::BasicJSon & dataJSon = fullDoc.json()[ "DATA" ];
 
 			if ( fileVersion < Serialization::Version::CURRENT )
-				SERIALIZER().upgrade( dataJSon, *_target, fileVersion );
+				_serializer.upgrade( dataJSon, *_target, fileVersion );
 
-			SERIALIZER().deserialize( dataJSon, *_target );
+			_serializer.deserialize( dataJSon, *_target );
 		}
 
 	  private:
-		FilePath _path;
-		T *		 _target;
+		const Serialization::Serialization & _serializer;
+		FilePath							 _path;
+		T *									 _target;
 	};
 } // namespace VTX::App::Core::IO::Reader
 

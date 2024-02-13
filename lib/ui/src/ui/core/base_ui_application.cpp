@@ -3,7 +3,7 @@
 #include "ui/core/layout_builder.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
-#include <app/application/action/action_manager.hpp>
+#include <app/application/system/action_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/action.hpp>

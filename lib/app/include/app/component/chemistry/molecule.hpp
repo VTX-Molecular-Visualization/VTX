@@ -3,9 +3,9 @@
 
 #include "_fwd.hpp"
 #include "app/application/ecs/component_registration.hpp"
+#include "app/core/uid/uid.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
-#include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -79,6 +79,14 @@ namespace VTX::App::Component::Chemistry
 		}
 		const std::vector<bool> & getAtomVisibilities() const { return _atomVisibilities; }
 
+		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
+		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
+		Atom *						getAtomFromUID( Core::UID::uid p_uid );
+
+		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
+		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
+		Residue *					getResidueFromUID( Core::UID::uid p_uid );
+
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 
@@ -95,6 +103,9 @@ namespace VTX::App::Component::Chemistry
 		std::vector<float> _atomRadii		 = std::vector<float>();
 		std::vector<uint>  _atomIds			 = std::vector<uint>();
 		std::vector<bool>  _atomSelections	 = std::vector<bool>();
+
+		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
+		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();
 	};
 
 } // namespace VTX::App::Component::Chemistry

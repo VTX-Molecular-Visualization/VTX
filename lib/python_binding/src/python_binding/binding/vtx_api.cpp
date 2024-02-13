@@ -2,7 +2,6 @@
 #include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/binding/helper.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/system.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
