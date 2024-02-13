@@ -1,9 +1,9 @@
 #include "util/app.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
-#include <app/application/action/action_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/settings.hpp>
+#include <app/application/system/action_manager.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/viewpoint.hpp>
 #include <app/core/action/base_action.hpp>

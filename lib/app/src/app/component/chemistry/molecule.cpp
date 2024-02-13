@@ -1,11 +1,11 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/application/ecs/registry_manager.hpp"
+#include "app/application/system/uid_system.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/scene/scene_item_component.hpp"
-#include "app/core/uid/uid_registration.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <util/constants.hpp>
@@ -24,8 +24,11 @@ namespace VTX::App::Component::Chemistry
 	Molecule::Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct ) { setMoleculeStruct( p_moleculeStruct ); }
 	Molecule::~Molecule()
 	{
-		Core::UID::UIDRegistration::get().unregister( _atomUidRange );
-		Core::UID::UIDRegistration::get().unregister( _residueUidRange );
+		if ( _atomUidRange.isValid() )
+			UID_SYSTEM().unregister( _atomUidRange );
+
+		if ( _residueUidRange.isValid() )
+			UID_SYSTEM().unregister( _residueUidRange );
 	};
 
 	void Molecule::setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct )
@@ -79,7 +82,7 @@ namespace VTX::App::Component::Chemistry
 			{ return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _moleculeStruct.atomSymbols[ i ] ) ]; }
 		);
 
-		_atomUidRange = Core::UID::UIDRegistration::get().registerRange( Core::UID::uid( p_atomCount ) );
+		_atomUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_atomCount ) );
 
 		const uint offset = uint( _atomUidRange.getFirst() );
 

@@ -1,11 +1,10 @@
 #ifndef __VTX_UI_QT_CONTROLLER_FREEFLY__
 #define __VTX_UI_QT_CONTROLLER_FREEFLY__
 
+#include "ui/core/input/key_mapping.hpp"
 #include "ui/internal/all_settings.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
-#include "ui/qt/input/input_manager.hpp"
-#include "ui/qt/input/key_mapping.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::UI::QT::Controller
@@ -52,7 +51,7 @@ namespace VTX::UI::QT::Controller
 		void _updateInputs( const float & p_deltaTime ) override;
 
 	  private:
-		Input::KeyMapping _mapping;
+		Core::Input::KeyMapping _mapping;
 	};
 } // namespace VTX::UI::QT::Controller
 #endif

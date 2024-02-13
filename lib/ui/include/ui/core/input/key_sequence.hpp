@@ -1,10 +1,10 @@
-#ifndef __VTX_UI_QT_INPUT_KEY_SEQUENCE__
-#define __VTX_UI_QT_INPUT_KEY_SEQUENCE__
+#ifndef __VTX_UI_CORE_INPUT_KEY_SEQUENCE__
+#define __VTX_UI_CORE_INPUT_KEY_SEQUENCE__
 
-#include "keys.hpp"
+#include "ui/core/input/keys.hpp"
 #include <compare>
 
-namespace VTX::UI::QT::Input
+namespace VTX::UI::Core::Input
 {
 	class KeySequence
 	{
@@ -25,5 +25,5 @@ namespace VTX::UI::QT::Input
 		Key			 _key;
 		ModifierFlag _modifier;
 	};
-} // namespace VTX::UI::QT::Input
+} // namespace VTX::UI::Core::Input
 #endif

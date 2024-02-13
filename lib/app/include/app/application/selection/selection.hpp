@@ -6,7 +6,6 @@
 #include "app/application/selection/selection_data.hpp"
 #include "app/component/scene/_fwd.hpp"
 #include "app/component/scene/selectable.hpp"
-#include "app/vtx_app.hpp"
 #include <concepts>
 #include <map>
 #include <set>

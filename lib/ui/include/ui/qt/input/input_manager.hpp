@@ -1,15 +1,14 @@
 #ifndef __VTX_UI_QT_INPUT_INPUT_MANAGER__
 #define __VTX_UI_QT_INPUT_INPUT_MANAGER__
 
-#include "base_event_receiver_keyboard.hpp"
-#include "base_event_receiver_mouse.hpp"
-#include "base_event_receiver_wheel.hpp"
-#include "ui/qt/input/keys.hpp"
+#include "ui/core/input/keys.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <Qt>
+#include <app/application/system/system_registration.hpp>
 #include <app/core/callback_event.hpp>
+#include <app/core/system/base_system.hpp>
 #include <map>
 #include <queue>
 #include <set>
@@ -18,8 +17,14 @@
 
 namespace VTX::UI::QT::Input
 {
-	class InputManager final
+	using namespace UI::Core::Input;
+
+	class InputManager : public App::Core::System::BaseSystem
 	{
+	  public:
+		inline static App::Application::System::SystemRegistration<InputManager> SYSTEM
+			= App::Application::System::SystemRegistration<InputManager>();
+
 	  private:
 		inline static const int CLICK_MAX_DISTANCE = 3;
 
@@ -132,4 +137,10 @@ namespace VTX::UI::QT::Input
 		// void _flushEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
 	};
 } // namespace VTX::UI::QT::Input
+
+namespace VTX::UI::QT
+{
+	Input::InputManager & INPUT_MANAGER();
+}
+
 #endif

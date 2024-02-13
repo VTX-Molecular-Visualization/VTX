@@ -1,5 +1,4 @@
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include "ui/qt/util.hpp"

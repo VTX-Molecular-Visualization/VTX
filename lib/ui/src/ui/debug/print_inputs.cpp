@@ -1,5 +1,4 @@
 #include "ui/debug/print_inputs.hpp"
-#include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include <util/enum.hpp>
 #include <util/logger.hpp>

@@ -16,7 +16,7 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = VTXApp::get().getEntityDirector().build( Entity::CAMERA_ENTITY_ID );
+		App::Core::ECS::BaseEntity cameraEntity = ENTITY_DIRECTOR().build( Entity::CAMERA_ENTITY_ID );
 		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();

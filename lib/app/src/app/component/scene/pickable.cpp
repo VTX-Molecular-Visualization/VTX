@@ -1,7 +1,7 @@
 #include "app/component/scene/pickable.hpp"
 #include "app/action/selection.hpp"
-#include "app/application/action/action_manager.hpp"
-#include "app/vtx_app.hpp"
+#include "app/application/selection/selection_manager.hpp"
+#include "app/application/system/action_manager.hpp"
 
 namespace VTX::App::Component::Scene
 {

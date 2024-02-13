@@ -7,7 +7,7 @@
 
 namespace VTX::App::Core::Worker
 {
-	class WorkerManager final
+	class WorkerManager
 	{
 		friend class BaseThread;
 

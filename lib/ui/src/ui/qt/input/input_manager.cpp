@@ -273,3 +273,8 @@ namespace VTX::UI::QT::Input
 	// }
 
 } // namespace VTX::UI::QT::Input
+
+namespace VTX::UI::QT
+{
+	Input::InputManager & INPUT_MANAGER() { return Input::InputManager::SYSTEM.get(); }
+} // namespace VTX::UI::QT

@@ -1,6 +1,6 @@
-#include "ui/qt/input/key_sequence.hpp"
+#include "ui/core/input/key_sequence.hpp"
 
-namespace VTX::UI::QT::Input
+namespace VTX::UI::Core::Input
 {
 	bool KeySequence::match( const Key & p_key, const ModifierFlag & p_modifier ) const
 	{
@@ -18,4 +18,4 @@ namespace VTX::UI::QT::Input
 
 		return p_lhs._key <=> p_rhs._key;
 	}
-} // namespace VTX::UI::QT::Input
+} // namespace VTX::UI::Core::Input

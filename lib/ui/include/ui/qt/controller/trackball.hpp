@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_CONTROLLER_TRACKBALL__
 #define __VTX_UI_QT_CONTROLLER_TRACKBALL__
 
+#include "ui/core/input/key_mapping.hpp"
 #include "ui/internal/all_settings.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
-#include "ui/qt/input/input_manager.hpp"
-#include "ui/qt/input/key_mapping.hpp"
 #include <app/component/render/camera.hpp>
 #include <util/hashing.hpp>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT::Controller
 {
@@ -66,7 +66,7 @@ namespace VTX::UI::QT::Controller
 		void _updateElasticity( const float & );
 
 	  private:
-		Input::KeyMapping _mapping;
+		Core::Input::KeyMapping _mapping;
 
 		Vec3f _target		  = VEC3F_ZERO;
 		float _distanceForced = 0.f;

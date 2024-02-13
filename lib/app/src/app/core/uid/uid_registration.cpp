@@ -27,7 +27,7 @@ namespace VTX::App::Core::UID
 
 		auto it = _availableUIDs.rangeBegin();
 
-		while ( it != _availableUIDs.end() )
+		while ( it != _availableUIDs.rangeEnd() )
 		{
 			if ( it->getCount() >= p_count )
 			{
@@ -48,7 +48,7 @@ namespace VTX::App::Core::UID
 		std::lock_guard<std::mutex> guard( _idMutex );
 		_availableUIDs.addValue( p_value );
 	}
-	void UIDRegistration::_freeRange( const UIDRange p_range )
+	void UIDRegistration::_freeRange( const UIDRange & p_range )
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 		_availableUIDs.addRange( p_range );

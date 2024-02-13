@@ -4,12 +4,13 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/renderer_qt.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
-#include <app/application/action/action_manager.hpp>
+#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
 #include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
+#include <app/application/system/action_manager.hpp>
 #include <app/component/scene/pickable.hpp>
 #include <app/core/ecs/registry.hpp>
-#include <app/vtx_app.hpp>
 #include <optional>
 
 namespace

@@ -17,34 +17,36 @@ TEST_CASE( "VTX_APP - UID", "[unit]" )
 	uid		 value;
 	UIDRange range;
 
-	value = UIDRegistration::get().registerValue();
+	UIDRegistration registration = UIDRegistration();
+
+	value = registration.registerValue();
 	CHECK( value == 0 );
 
-	value = UIDRegistration::get().registerValue();
+	value = registration.registerValue();
 	CHECK( value == 1 );
 
-	range = UIDRegistration::get().registerRange( 50 );
+	range = registration.registerRange( 50 );
 	CHECK( range.getFirst() == 2 );
 	CHECK( range.getCount() == 50 );
 
-	UIDRegistration::get().unregister( 1 );
-	value = UIDRegistration::get().registerValue();
+	registration.unregister( 1 );
+	value = registration.registerValue();
 	CHECK( value == 1 );
 
-	value = UIDRegistration::get().registerValue();
+	value = registration.registerValue();
 	CHECK( value == 52 );
 
-	UIDRegistration::get().unregister( range );
-	value = UIDRegistration::get().registerValue();
+	registration.unregister( range );
+	value = registration.registerValue();
 	CHECK( value == 2 );
-	range = UIDRegistration::get().registerRange( 50 );
+	range = registration.registerRange( 50 );
 	CHECK( range.getFirst() == 53 );
-	range = UIDRegistration::get().registerRange( 20 );
+	range = registration.registerRange( 20 );
 	CHECK( range.getFirst() == 3 );
 
 	try
 	{
-		UIDRegistration::get().registerRange( std::numeric_limits<uid>().max() );
+		registration.registerRange( std::numeric_limits<uid>().max() );
 	}
 	catch ( const VTXException & p_e )
 	{
@@ -54,5 +56,5 @@ TEST_CASE( "VTX_APP - UID", "[unit]" )
 		CHECK( false );
 	}
 
-	UIDRegistration::get().clear();
+	registration.clear();
 }

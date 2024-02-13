@@ -3,26 +3,26 @@
 
 #include "app/application/ecs/component_info.hpp"
 #include "app/application/ecs/entity_info.hpp"
+#include "app/application/system/system_registration.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/core/system/base_system.hpp"
 
 namespace VTX::App::Application::ECS
 {
-	class RegistryManager
+	class RegistryManager : public Core::System::BaseSystem
 	{
 	  private:
 		using BaseEntity	= Core::ECS::BaseEntity;
 		using BaseComponent = Core::ECS::BaseComponent;
 
 	  public:
-		RegistryManager() {};
+		inline static const System::SystemRegistration<RegistryManager> system
+			= System::SystemRegistration<RegistryManager>();
 
-		BaseEntity createEntity()
-		{
-			BaseEntity createdEntity = _registry.createEntity();
-			_registry.addComponent<EntityInfoComponent>( createdEntity );
+	  public:
+		RegistryManager() = default;
 
-			return createdEntity;
-		}
+		BaseEntity createEntity();
 
 		template<Core::ECS::ECS_Component C>
 		inline BaseEntity getEntity( const C & p_component ) const
@@ -38,7 +38,7 @@ namespace VTX::App::Application::ECS
 			C & res = _registry.addComponent<C>( p_entity );
 
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			const ComponentID	  componentID	= ComponentInfo::get().getComponentID<C>();
+			const ComponentID	  componentID	= COMPONENT_INFO().getComponentID<C>();
 
 			if ( componentID != INVALID_COMPONENT_ID )
 				infoComponent.addLinkedComponent( componentID );
@@ -51,7 +51,7 @@ namespace VTX::App::Application::ECS
 			C & res = _registry.addComponent<C>( p_entity, std::forward<Args...>( p_args... ) );
 
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			infoComponent.addLinkedComponent( ComponentInfo::get().getComponentID<C>() );
+			infoComponent.addLinkedComponent( COMPONENT_INFO().getComponentID<C>() );
 
 			return res;
 		}
@@ -60,7 +60,7 @@ namespace VTX::App::Application::ECS
 		void removeComponent( const BaseEntity & p_entity )
 		{
 			EntityInfoComponent & infoComponent = getComponent<EntityInfoComponent>( p_entity );
-			infoComponent.removeLinkedComponent( ComponentInfo::get().getComponentID<C>() );
+			infoComponent.removeLinkedComponent( COMPONENT_INFO().getComponentID<C>() );
 
 			_registry.removeComponent<C>( p_entity );
 		}
@@ -121,4 +121,9 @@ namespace VTX::App::Application::ECS
 		Core::ECS::Registry _registry = Core::ECS::Registry();
 	};
 } // namespace VTX::App::Application::ECS
+
+namespace VTX::App
+{
+	Application::ECS::RegistryManager & MAIN_REGISTRY();
+}
 #endif

@@ -17,17 +17,12 @@ namespace VTX::App::Test::Util
 		const SelectionObj & p_expectedResult
 	)
 	{
-		const VTX::PythonBinding::Interpretor & p_interpretor
-			= VTXApp::get().getSystem().getSystem<VTX::PythonBinding::Interpretor>(
-				VTX::PythonBinding::Interpretor::SYSTEM_KEY
-			);
-
 		std::stringstream command = std::stringstream();
 		command << "(" << p_command << ").save('" << p_selName << "')";
 
-		p_interpretor.runCommand( command.str() );
+		PythonBinding::INTERPRETOR().runCommand( command.str() );
 
-		const SelectionObj & result = VTXApp::get().getSelectionManager().getSaved( p_selName );
+		const SelectionObj & result = App::SELECTION_MANAGER().getSaved( p_selName );
 
 		return result.isEqualsTo( p_expectedResult );
 	}

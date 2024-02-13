@@ -9,10 +9,10 @@
 
 namespace VTX::App::Core::UID
 {
-	class UIDRegistration : public Util::Generic::BaseStaticSingleton<UIDRegistration>
+	class UIDRegistration
 	{
 	  public:
-		UIDRegistration( const StructPrivacyToken & ) {};
+		UIDRegistration() {};
 		~UIDRegistration() = default;
 
 		inline const uid	  registerValue() { return _reserveValue(); }
@@ -31,7 +31,7 @@ namespace VTX::App::Core::UID
 		UIDRange _reserveRange( const uid p_count );
 
 		void _freeValue( const uint p_value );
-		void _freeRange( const UIDRange p_range );
+		void _freeRange( const UIDRange & p_range );
 	};
 } // namespace VTX::App::Core::UID
 

@@ -1,6 +1,9 @@
-#include "app/application/action/action_manager.hpp"
+#include "app/application/system/action_manager.hpp"
+#include <exception>
+#include <typeinfo>
+#include <util/logger.hpp>
 
-namespace VTX::App::Application::Action
+namespace VTX::App::Application::System
 {
 	ActionManager::ActionManager()	= default;
 	ActionManager::~ActionManager() = default;
@@ -129,4 +132,9 @@ namespace VTX::App::Application::Action
 			_bufferUndo.pop_back();
 		}
 	}
-} // namespace VTX::App::Application::Action
+} // namespace VTX::App::Application::System
+
+namespace VTX::App
+{
+	Application::System::ActionManager & VTX_ACTION() { return Application::System::ActionManager::SYSTEM.get(); }
+} // namespace VTX::App

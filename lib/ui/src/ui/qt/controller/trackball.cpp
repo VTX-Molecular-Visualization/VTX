@@ -1,10 +1,10 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/application_qt.hpp"
+#include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <app/application/scene.hpp>
-#include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>

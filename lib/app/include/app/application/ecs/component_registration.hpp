@@ -11,8 +11,8 @@ namespace VTX::App::Application::ECS
 	{
 		Registration( const ComponentID & p_id )
 		{
-			ComponentInfo::get().registerComponent<C>( p_id );
-			ComponentMetaFunction::get().registerComponent<C>( p_id );
+			COMPONENT_INFO().registerComponent<C>( p_id );
+			COMPONENT_META_FUNCTION().registerComponent<C>( p_id );
 		}
 	};
 } // namespace VTX::App::Application::ECS

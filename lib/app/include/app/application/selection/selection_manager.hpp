@@ -1,15 +1,21 @@
 #ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION_MANAGER__
 #define __VTX_APP_APPLICATION_SELECTION_SELECTION_MANAGER__
 
-#include "selection.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/system/system_registration.hpp"
+#include "app/core/system/base_system.hpp"
 #include <map>
 #include <memory>
 #include <string>
 
 namespace VTX::App::Application::Selection
 {
-	class SelectionManager
+	class SelectionManager : public Core::System::BaseSystem
 	{
+	  public:
+		inline static const System::SystemRegistration<SelectionManager> SYSTEM
+			= System::SystemRegistration<SelectionManager>();
+
 	  public:
 		SelectionManager();
 		~SelectionManager();
@@ -34,4 +40,10 @@ namespace VTX::App::Application::Selection
 	};
 
 } // namespace VTX::App::Application::Selection
+
+namespace VTX::App
+{
+	Application::Selection::SelectionManager & SELECTION_MANAGER();
+	Application::Selection::Selection &		   CURRENT_SELECTION();
+} // namespace VTX::App
 #endif

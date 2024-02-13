@@ -1,5 +1,4 @@
 #include "ui/qt/application_qt.hpp"
-#include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/mode/base_mode.hpp"
 #include "ui/qt/mode/visualization.hpp"
@@ -38,10 +37,6 @@ namespace VTX::UI::QT
 	void ApplicationQt::init()
 	{
 		Core::BaseUIApplication::init();
-
-		_inputManagerPtr = std::make_unique<Input::InputManager>();
-		App::VTXApp::get().getSystem().referenceSystem( INPUT_MANAGER_KEY, _inputManagerPtr.get() );
-
 		_currentMode = std::make_unique<Mode::Visualization>();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
@@ -113,6 +108,7 @@ namespace VTX::UI::QT
 			this,
 			[]( float p_deltaTime )
 			{
+				// TODO: do not apply each frame, only when camera changes.
 				RendererQt qtRenderer = QT_RENDERER();
 
 				qtRenderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
@@ -161,8 +157,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	Input::InputManager & INPUT_MANAGER() { return QT_APP()->getInputManager(); }
-	Mode::BaseMode &	  MODE() { return QT_APP()->getCurrentMode(); }
-	RendererQt			  QT_RENDERER() { return RendererQt( App::RENDERER() ); };
+	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
+	RendererQt		 QT_RENDERER() { return RendererQt( App::RENDERER() ); };
 
 } // namespace VTX::UI::QT

@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_CORE_WORKER_BASE_THREAD__
 #define __VTX_APP_CORE_WORKER_BASE_THREAD__
 
+#include "_fwd.hpp"
 #include "app/core/callback_event.hpp"
 #include <any>
 #include <functional>
@@ -18,7 +19,7 @@ namespace VTX::App::Core::Worker
 		using EndCallback = std::function<void( BaseThread &, uint )>;
 
 	  public:
-		BaseThread() = default;
+		BaseThread( WorkerManager & p_manager ) : _manager( p_manager ) {};
 		~BaseThread();
 
 		void start( const AsyncOp & p_function );
@@ -46,6 +47,8 @@ namespace VTX::App::Core::Worker
 		}
 
 	  private:
+		WorkerManager & _manager;
+
 		std::thread _thread;
 		float		_progress = 0.f;
 		bool		_stopped  = false;

@@ -44,9 +44,6 @@ namespace VTX::UI::QT
 		inline MainWindow &		  getMainWindow() { return *_mainWindow; }
 		inline const MainWindow & getMainWindow() const { return *_mainWindow; }
 
-		inline Input::InputManager &	   getInputManager() { return *_inputManagerPtr; }
-		inline const Input::InputManager & getInputManager() const { return *_inputManagerPtr; }
-
 		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
@@ -60,8 +57,7 @@ namespace VTX::UI::QT
 		void _instantiateMainWindow();
 
 	  private:
-		MainWindow *						 _mainWindow = nullptr;
-		std::unique_ptr<Input::InputManager> _inputManagerPtr;
+		MainWindow * _mainWindow = nullptr;
 
 		QTimer *	  _timer		= nullptr;
 		QElapsedTimer _elapsedTimer = QElapsedTimer();
@@ -73,7 +69,6 @@ namespace VTX::UI::QT
 	};
 
 	inline ApplicationQt * const QT_APP() { return VTX::UI::Environment::get().getUIApp<VTX::UI::QT::ApplicationQt>(); }
-	Input::InputManager &		 INPUT_MANAGER();
 	Mode::BaseMode &			 MODE();
 	RendererQt					 QT_RENDERER();
 

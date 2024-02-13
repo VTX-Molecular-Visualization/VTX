@@ -1,8 +1,6 @@
-#include "ui/qt/controller/shortcut_map.hpp"
-#include "ui/qt/application_qt.hpp"
-#include "ui/qt/input/input_manager.hpp"
+#include "ui/core/input/shortcut_map.hpp"
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Core::Input
 {
 	void ShortcutMap::referenceShortcut( const Shortcut & p_shortcut )
 	{
@@ -18,7 +16,7 @@ namespace VTX::UI::QT::Controller
 
 		for ( const Shortcut & shortcut : it->second )
 		{
-			if ( shortcut.getSequence().match( p_key, INPUT_MANAGER().getCurrentModifiers() ) )
+			if ( shortcut.getSequence().match( p_key, p_modifiers ) )
 			{
 				return &shortcut;
 			}
@@ -26,4 +24,4 @@ namespace VTX::UI::QT::Controller
 
 		return nullptr;
 	}
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Core::Input

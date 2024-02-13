@@ -1,6 +1,5 @@
 #include "app/internal/serialization/util_serializers.hpp"
-#include "app/core/serialization/serialization.hpp"
-#include "app/vtx_app.hpp"
+#include "app/application/system/serializer.hpp"
 
 namespace VTX::App::Internal::Serialization
 {

@@ -1,11 +1,11 @@
 #include "ui/qt/controller/freefly.hpp"
 #include "ui/internal/all_settings.hpp"
 #include "ui/qt/application_qt.hpp"
+#include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <app/application/settings.hpp>
-#include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Controller
 {

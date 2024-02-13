@@ -53,7 +53,7 @@ namespace VTX::PythonBinding::API::Selection
 
 	SelectionWrapper & SelectionWrapper::save( const std::string & p_name )
 	{
-		App::VTXApp::get().getSelectionManager().save( p_name, std::make_unique<SelectionObj>( *_selection ) );
+		App::SELECTION_MANAGER().save( p_name, std::make_unique<SelectionObj>( *_selection ) );
 		return *this;
 	}
 

@@ -2,7 +2,8 @@
 #define __VTX_APP_APPLICATION_SETTINGS__
 
 #include "app/application/setting.hpp"
-#include <app/core/callback_event.hpp>
+#include "app/core/callback_event.hpp"
+#include "app/core/system/base_system.hpp"
 #include <cassert>
 #include <map>
 #include <memory>
@@ -28,7 +29,7 @@ namespace VTX::App::Application
 		const T & newValue;
 	};
 
-	class Settings
+	class Settings : public Core::System::BaseSystem
 	{
 	  public:
 		using SettingMap = std::map<std::string, std::unique_ptr<BaseSetting>>;

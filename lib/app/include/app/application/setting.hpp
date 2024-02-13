@@ -1,8 +1,7 @@
 #ifndef __VTX_APP_APPLICATION_SETTING__
 #define __VTX_APP_APPLICATION_SETTING__
 
-#include "app/core/serialization/serialization.hpp"
-#include "app/vtx_app.hpp"
+#include "app/application/system/serializer.hpp"
 #include <memory>
 #include <optional>
 #include <util/json/basic_json.hpp>

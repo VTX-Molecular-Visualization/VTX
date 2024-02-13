@@ -1,11 +1,12 @@
-#ifndef __VTX_UI_QT_INPUT_KEYS__
-#define __VTX_UI_QT_INPUT_KEYS__
+#ifndef __VTX_UI_CORE_INPUT_KEYS__
+#define __VTX_UI_CORE_INPUT_KEYS__
 
 #include <Qt>
 #include <util/generic/enum_flag.hpp>
 
-namespace VTX::UI::QT::Input
+namespace VTX::UI::Core::Input
 {
+	// TODO use custom keys instead of Qt::Key
 	using Key = Qt::Key;
 
 	enum ModifierEnum : uint
@@ -28,5 +29,5 @@ namespace VTX::UI::QT::Input
 		AZERTY
 	};
 
-} // namespace VTX::UI::QT::Input
+} // namespace VTX::UI::Core::Input
 #endif
