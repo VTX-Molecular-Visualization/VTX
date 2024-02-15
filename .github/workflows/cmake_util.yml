@@ -37,6 +37,7 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
+        conan upload catch2 -r=cano7782
         conan upload glm -r=cano7782
         conan upload spdlog -r=cano7782
         conan upload nlohmann_json -r=cano7782
