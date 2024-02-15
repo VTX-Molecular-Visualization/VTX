@@ -212,17 +212,13 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest.json";
 
-	App::Core::IO::Writer::SerializedObject writer { jsonPath, &custom };
-	writer.write();
-
+	SERIALIZER().writeObject( jsonPath, custom );
 	REQUIRE( std::filesystem::exists( jsonPath ) );
 
 	CustomClass loadedCustom = CustomClass();
 	CHECK( custom != loadedCustom );
 
-	App::Core::IO::Reader::SerializedObject reader = { jsonPath, &loadedCustom };
-	reader.read();
-
+	SERIALIZER().readObject( jsonPath, loadedCustom );
 	CHECK( custom == loadedCustom );
 }
 
@@ -407,7 +403,8 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 
 	const FilePath jsonPath_0_0_0
 		= Util::Filesystem::getExecutableDir() / "data/serialization/json_settings_0_0_0.json";
-	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_0_0, &settingsV1 };
+
+	App::Core::IO::Reader::SerializedObject reader = { SERIALIZER(), jsonPath_0_0_0, &settingsV1 };
 	reader.read();
 
 	CHECK( settingsV1.get<int>( "SETTING_1" ) == 10 );						  // Loaded
@@ -446,16 +443,14 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	CustomClass	   loadedCustom_0_1_0 = CustomClass();
 
-	App::Core::IO::Reader::SerializedObject reader = { jsonPath_0_1_0, &loadedCustom_0_1_0 };
-	reader.read();
+	SERIALIZER().readObject( jsonPath_0_1_0, loadedCustom_0_1_0 );
 
 	CHECK( custom == loadedCustom_0_1_0 );
 
 	const FilePath jsonPath_0_0_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
 	CustomClass	   loadedCustom_0_0_0 = CustomClass();
 
-	reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-	reader.read();
+	SERIALIZER().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
 
 	CHECK( loadedCustom_0_0_0.color == custom.color );
 	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
@@ -466,8 +461,7 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	try
 	{
-		reader = { jsonPath_0_0_0, &loadedCustom_0_0_0 };
-		reader.read();
+		SERIALIZER().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
 	}
 	catch ( const IOException & e )
 	{

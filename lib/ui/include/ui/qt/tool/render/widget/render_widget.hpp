@@ -6,7 +6,6 @@
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
 #include "ui/qt/widget/base_manual_widget.hpp"
 #include <QFocusEvent>
-#include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <map>
@@ -22,13 +21,14 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		PANEL_TYPE getPanelType() const override { return PANEL_TYPE::CENTRAL_WIDGET; };
 
+		void makeCurrentContext();
+		void doneCurrentContext();
+
 	  protected:
 		RenderWidget( QWidget * p_parent );
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
-
-		void resizeEvent( QResizeEvent * p_event ) override;
 
 	  private:
 		OpenGLWidget * _openGLWidget = nullptr;
@@ -38,8 +38,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			assert( _openGLWidget != nullptr );
 			return *_openGLWidget;
 		}
-
-		void _refreshRendererSize() const;
 	};
 } // namespace VTX::UI::QT::Tool::Render::Widget
 #endif

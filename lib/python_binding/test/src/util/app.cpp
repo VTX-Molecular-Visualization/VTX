@@ -1,11 +1,11 @@
 #include "app.hpp"
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/system.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <memory>
 #include <python_binding/binding/vtx_app_binder.hpp>
+#include <python_binding/interpretor.hpp>
 #include <string>
 #include <util/logger.hpp>
 
@@ -18,25 +18,20 @@ namespace VTX::App::Test::Util
 		{
 			VTX::Util::Logger::get().init();
 
+			PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+
 			VTXApp::get().start( {} );
 			isInit = true;
 		}
 
 		SCENE().reset();
+		resetInterpretor();
 	}
 
-	std::unique_ptr<PythonBinding::Interpretor> App::createInterpretor()
+	void App::resetInterpretor()
 	{
-		std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = std::make_unique<PythonBinding::Interpretor>();
-
-		if ( !VTX::App::VTXApp::get().getSystem().exists( PythonBinding::Interpretor::SYSTEM_KEY ) )
-			VTX::App::VTXApp::get().getSystem().referenceSystem(
-				PythonBinding::Interpretor::SYSTEM_KEY, interpretorPtr.get()
-			);
-
-		interpretorPtr->addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-
-		return std::move( interpretorPtr );
+		PythonBinding::INTERPRETOR().clearBinders();
+		PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
 	void App::loadMolecule( const std::string & p_moleculePath )

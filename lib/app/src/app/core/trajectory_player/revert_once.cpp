@@ -18,6 +18,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		}
 	}
 
-	std::unique_ptr<BasePlayer> RevertOnce::clone() const { return std::make_unique<RevertOnce>( *this ); }
-
 } // namespace VTX::App::Core::TrajectoryPlayer

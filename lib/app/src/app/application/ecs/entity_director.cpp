@@ -20,11 +20,18 @@ namespace VTX::App::Application::ECS
 		return builderPtr->getEntity();
 	}
 
-	void EntityDirector::addBuildStep( const EntityDirectorID &	   p_directorID,
-									   const Building::PASS_ENUM & p_pass,
-									   const Building::Step &	   p_buildStep )
+	void EntityDirector::addBuildStep(
+		const EntityDirectorID &	p_directorID,
+		const Building::PASS_ENUM & p_pass,
+		const Building::Step &		p_buildStep
+	)
 	{
 		_mapDirectors[ p_directorID ][ int( p_pass ) ].emplace_back( p_buildStep );
 	}
 
 } // namespace VTX::App::Application::ECS
+
+namespace VTX::App
+{
+	Application::ECS::EntityDirector & ENTITY_DIRECTOR() { return Application::ECS::EntityDirector::SYSTEM.get(); }
+} // namespace VTX::App

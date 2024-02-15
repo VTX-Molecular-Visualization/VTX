@@ -30,6 +30,8 @@ namespace VTX::App::Application::Selection
 		virtual SelectionData & intersect( const SelectionData & p_other );
 		virtual SelectionData & exclude( const SelectionData & p_other );
 
+		virtual bool contains( const SelectionData & p_other ) const;
+
 	  protected:
 		virtual std::unique_ptr<SelectionData> _cloneImpl() const;
 

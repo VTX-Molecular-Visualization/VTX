@@ -1,13 +1,10 @@
 #ifndef ___VTX_APP_VTX_APP___
 #define ___VTX_APP_VTX_APP___
 
-#include "app/application/system.hpp"
+#include "app/application/_fwd.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/monitoring/stats.hpp"
-#include "application/_fwd.hpp"
-#include "core/ecs/_fwd.hpp"
-#include "core/serialization/_fwd.hpp"
-#include "core/worker/_fwd.hpp"
+#include "core/system/system_handler.hpp"
 #include <memory>
 #include <string>
 #include <util/chrono.hpp>
@@ -19,7 +16,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class Renderer;
+		class Facade;
 	}
 
 	namespace App
@@ -27,14 +24,8 @@ namespace VTX
 		class VTXApp final : public Util::Generic::BaseStaticSingleton<VTXApp>
 		{
 		  private:
-			inline static const std::string REGISTRY_MANAGER_KEY   = "REGISTRY_MANAGER";
-			inline static const std::string SETTINGS_KEY		   = "SETTINGS";
-			inline static const std::string ENTITY_DIRECTOR_KEY	   = "ENTITY_DIRECTOR";
-			inline static const std::string SCENE_KEY			   = "SCENE";
-			inline static const std::string SELECTION_MANAGER_KEY  = "SELECTION_MANAGER";
-			inline static const std::string SERIALIZATION_TOOL_KEY = "SERIALIZATION_TOOL";
-			inline static const std::string ACTION_MANAGER_KEY	   = "ACTION_MANAGER";
-			inline static const std::string WORKER_MANAGER_KEY	   = "WORKER_MANAGER";
+			inline static const Util::Hashing::Hash SETTINGS_KEY = Util::Hashing::hash( "SETTINGS" );
+			inline static const Util::Hashing::Hash SCENE_KEY	 = Util::Hashing::hash( "SCENE" );
 
 		  public:
 			VTXApp( StructPrivacyToken );
@@ -57,11 +48,14 @@ namespace VTX
 			Core::CallbackEmitter<float> & onRender() { return _renderCallback; };
 			Core::CallbackEmitter<float> & onPostRender() { return _postRenderCallback; };
 
-			inline const Application::System &			getSystem() const { return *_system; };
-			inline Application::System &				getSystem() { return *_system; };
-			inline std::shared_ptr<Application::System> getSystemPtr() { return _system; };
+			inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
+			inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
 
-			inline void referenceSystem( std::shared_ptr<Application::System> p_system ) { _system = p_system; };
+			inline std::shared_ptr<Core::System::SystemHandler> & getSystemHandlerPtr() { return _systemHandlerPtr; };
+			inline void referenceSystemHandler( std::shared_ptr<Core::System::SystemHandler> p_systemHandlerPtr )
+			{
+				_systemHandlerPtr = p_systemHandlerPtr;
+			};
 
 			const Core::Monitoring::Stats & getStats() const { return _stats; }
 			Core::Monitoring::Stats &		getStats() { return _stats; }
@@ -69,43 +63,21 @@ namespace VTX
 			Application::Scene &	   getScene();
 			const Application::Scene & getScene() const;
 
-			inline Renderer::Renderer &		  getRenderer() { return *_renderer; }
-			inline const Renderer::Renderer & getRenderer() const { return *_renderer; }
+			inline Renderer::Facade &		getRenderer() { return *_renderer; }
+			inline const Renderer::Facade & getRenderer() const { return *_renderer; }
 
 			Application::Settings &		  getSettings();
 			const Application::Settings & getSettings() const;
 
-			Application::ECS::RegistryManager &		  getRegistryManager();
-			const Application::ECS::RegistryManager & getRegistryManager() const;
-
-			Application::ECS::EntityDirector & getEntityDirector();
-
-			Application::Selection::SelectionManager &		 getSelectionManager();
-			const Application::Selection::SelectionManager & getSelectionManager() const;
-
-			Core::Serialization::Serialization &	   getSerializationTool();
-			const Core::Serialization::Serialization & getSerializationTool() const;
-
-			Application::Action::ActionManager &	   getActionManager();
-			const Application::Action::ActionManager & getActionManager() const;
-
-			Core::Worker::WorkerManager &		getWorkerManager();
-			const Core::Worker::WorkerManager & getWorkerManager() const;
-
 		  private:
 			Util::Chrono _tickChrono = Util::Chrono();
 
-			std::shared_ptr<Application::System> _system = std::make_shared<Application::System>();
+			std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
+				= std::make_shared<Core::System::SystemHandler>();
 
-			std::unique_ptr<Renderer::Renderer> _renderer;
+			std::unique_ptr<Renderer::Facade> _renderer;
 
-			std::unique_ptr<Application::Settings>					  _settings;
-			std::unique_ptr<Application::ECS::RegistryManager>		  _registryManager;
-			std::unique_ptr<Application::ECS::EntityDirector>		  _entityDirector;
-			std::unique_ptr<Application::Selection::SelectionManager> _selectionManager;
-			std::unique_ptr<Core::Serialization::Serialization>		  _serializationToolManager;
-			std::unique_ptr<Application::Action::ActionManager>		  _actionManager;
-			std::unique_ptr<Core::Worker::WorkerManager>			  _workerManager;
+			std::unique_ptr<Application::Settings> _settings;
 
 			Core::Monitoring::Stats _stats = Core::Monitoring::Stats();
 
@@ -119,20 +91,14 @@ namespace VTX
 			Core::CallbackEmitter<float> _postRenderCallback = Core::CallbackEmitter<float>();
 
 			void _handleArgs( const std::vector<std::string> & );
-			void _applyCameraUniforms() const;
 			void _update( const float p_elapsedTime );
 			void _stop();
 		};
 
 		// Convenient accessors
-		Application::Scene &				 SCENE();
-		Renderer::Renderer &				 RENDERER();
-		Application::Settings &				 SETTINGS();
-		Application::ECS::RegistryManager &	 MAIN_REGISTRY();
-		Application::Selection::Selection &	 CURRENT_SELECTION();
-		Core::Serialization::Serialization & SERIALIZER();
-		Core::Worker::WorkerManager &		 THREADING();
-		Application::Action::ActionManager & VTX_ACTION();
+		Application::Scene &	SCENE();
+		Renderer::Facade &		RENDERER();
+		Application::Settings & SETTINGS();
 	} // namespace App
 } // namespace VTX
 

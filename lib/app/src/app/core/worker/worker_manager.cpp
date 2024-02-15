@@ -15,7 +15,7 @@ namespace VTX::App::Core::Worker
 
 	BaseThread & WorkerManager::createThread( const BaseThread::AsyncOp & p_asyncOp )
 	{
-		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>();
+		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *this );
 		_threads.emplace_back( threadPtr );
 
 		threadPtr->start( p_asyncOp );
@@ -27,7 +27,7 @@ namespace VTX::App::Core::Worker
 		const BaseThread::EndCallback & p_callback
 	)
 	{
-		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>();
+		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *this );
 		_threads.emplace_back( threadPtr );
 
 		threadPtr->start( p_asyncOp, p_callback );

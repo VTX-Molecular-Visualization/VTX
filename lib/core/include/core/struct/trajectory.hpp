@@ -7,9 +7,8 @@
 namespace VTX::Core::Struct
 {
 	using Frame = std::vector<Vec3f>;
-	class Trajectory
+	struct Trajectory
 	{
-	  public:
 		void fillFrame( const size_t p_moleculeFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
 			Frame & frame = frames[ p_moleculeFrameIndex ];

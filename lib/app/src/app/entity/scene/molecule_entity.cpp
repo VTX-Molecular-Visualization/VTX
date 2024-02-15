@@ -2,21 +2,26 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/molecule_data.hpp"
+#include "app/application/selection/molecule_granularity.hpp"
+#include "app/application/settings.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include "app/component/scene/aabb_component.hpp"
+#include "app/component/scene/pickable.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
+#include "app/component/scene/uid_component.hpp"
 #include "app/core/trajectory_player/base_player.hpp"
 #include "app/core/trajectory_player/loop.hpp"
 #include "app/core/trajectory_player/players.hpp"
 #include "app/entity/scene/scene_item_entity.hpp"
+#include "app/internal/application/settings.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include "app/render/proxy_builder.hpp"
 #include "app/vtx_app.hpp"
+#include <renderer/facade.hpp>
 #include <renderer/proxy/molecule.hpp>
-#include <renderer/renderer.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -34,7 +39,9 @@ namespace VTX::App::Entity::Scene
 		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
 		MAIN_REGISTRY().addComponent<VTX::Renderer::Proxy::Molecule>( p_entity );
+		MAIN_REGISTRY().addComponent<App::Component::Scene::UIDComponent>( p_entity );
 		MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
+		MAIN_REGISTRY().addComponent<App::Component::Scene::Pickable>( p_entity );
 	}
 	void MoleculeEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
 	{
@@ -49,6 +56,10 @@ namespace VTX::App::Entity::Scene
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
 		selectableComponent.setSelectionDataGenerator<Application::Selection::MoleculeData>();
 
+		Component::Scene::UIDComponent & uidComponent
+			= MAIN_REGISTRY().getComponent<Component::Scene::UIDComponent>( p_entity );
+		uidComponent.referenceUID( moleculeComponent.getAtomUIDs() );
+
 		// Setup GPU Proxy
 		Renderer::Proxy::Molecule & gpuProxyComponent
 			= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity );
@@ -62,11 +73,90 @@ namespace VTX::App::Entity::Scene
 
 			std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> defaultPlayMode
 				= App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
-					App::Core::TrajectoryPlayer::Loop::NAME
+					App::Core::TrajectoryPlayer::Loop::COLLECTION_ID
 				);
 
 			trajectoryComponent.setPlayer( defaultPlayMode );
 		}
+
+		Component::Scene::Pickable & pickableComponent
+			= MAIN_REGISTRY().getComponent<Component::Scene::Pickable>( p_entity );
+
+		pickableComponent.setPickingFunction(
+			[ p_entity ]( const Application::Selection::PickingInfo & p_pickingInfo )
+			{
+				const Component::Chemistry::Molecule & moleculeComponent
+					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( p_entity );
+				const Component::Scene::Selectable & selectableComponent
+					= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_entity );
+
+				const Application::Selection::Granularity granularity
+					= SETTINGS().get<Application::Selection::Granularity>(
+						Internal::Application::Settings::Selection::MOLECULE_GRANULARITY_KEY
+					);
+
+				std::unique_ptr<Application::Selection::SelectionData> res
+					= std::make_unique<Application::Selection::MoleculeData>( selectableComponent );
+
+				Application::Selection::MoleculeData & molData
+					= dynamic_cast<Application::Selection::MoleculeData &>( *res );
+
+				if ( p_pickingInfo.hasOneValue() )
+				{
+					// First UID is Atom and not the other one => Pick Atom
+					if ( moleculeComponent.getAtomUIDs().contains( p_pickingInfo.getFirst() ) )
+					{
+						const Component::Chemistry::Atom * const atomPtr
+							= moleculeComponent.getAtomFromUID( p_pickingInfo.getFirst() );
+
+						if ( atomPtr != nullptr )
+						{
+							molData.set(
+								Application::Selection::MoleculeGranularity::getSelectionData( *atomPtr, granularity )
+							);
+						}
+					}
+					else if ( moleculeComponent.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
+					{
+						// First UID is Residue => Pick Residue
+						const Component::Chemistry::Residue * const residuePtr
+							= moleculeComponent.getResidueFromUID( p_pickingInfo.getFirst() );
+
+						if ( residuePtr != nullptr )
+						{
+							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
+								*residuePtr, granularity
+							) );
+						}
+					}
+				}
+				else if ( p_pickingInfo.hasTwoValues() )
+				{
+					// Two atoms picked => Pick Bond
+					if ( ( moleculeComponent.getAtomUIDs().contains( p_pickingInfo.getFirst() )
+						   && moleculeComponent.getAtomUIDs().contains( p_pickingInfo.getSecond() ) ) )
+					{
+						const Component::Chemistry::Atom * const firstAtomPtr
+							= moleculeComponent.getAtomFromUID( p_pickingInfo.getFirst() );
+						const Component::Chemistry::Atom * const secondAtomPtr
+							= moleculeComponent.getAtomFromUID( p_pickingInfo.getSecond() );
+
+						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
+						{
+							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
+								*firstAtomPtr, granularity
+							) );
+
+							molData.add( Application::Selection::MoleculeGranularity::getSelectionData(
+								*secondAtomPtr, granularity
+							) );
+						}
+					}
+				}
+
+				return res;
+			}
+		);
 	}
 	void MoleculeEntityBuilder::postSetup(
 		const Core::ECS::BaseEntity & p_entity,
@@ -74,7 +164,7 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
-		RENDERER().addMolecule( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
+		RENDERER().addProxy( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
 	}
 
 	void MoleculeEntityBuilder::_load(

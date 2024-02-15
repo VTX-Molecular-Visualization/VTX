@@ -128,7 +128,7 @@ add_library(vtx_renderer)
 configure_target(vtx_renderer)
 file(GLOB_RECURSE HEADERS_RENDERER ${DIR_LIBS}/renderer/include/*)
 file(GLOB_RECURSE SOURCES_RENDERER ${DIR_LIBS}/renderer/src/*)
-file(GLOB_RECURSE SHADERS shaders/*)
+file(GLOB_RECURSE SHADERS ${DIR_LIBS}/renderer/shaders/*)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES_RENDERER}
 	PRIVATE ${SHADERS}
@@ -159,6 +159,7 @@ target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
 #target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
+
 add_custom_target(vtx_renderer_bench_copy_shader ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/renderer/shaders $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
 add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
 
@@ -266,12 +267,13 @@ target_link_libraries(vtx_ui_test PRIVATE vtx_renderer)
 target_link_libraries(vtx_ui_test PRIVATE vtx_io)
 target_link_libraries(vtx_ui_test PRIVATE vtx_app)
 target_link_libraries(vtx_ui_test PRIVATE vtx_python_binding)
-target_link_libraries(vtx_ui_test PRIVATE PyTX)  
+target_link_libraries(vtx_ui_test PRIVATE PyTX)
 target_link_libraries(vtx_ui_test PRIVATE vtx_ui)
 target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
 add_custom_target(vtx_ui_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${DIR_LIBS}/ui/test/data $<TARGET_FILE_DIR:vtx_ui_test>/data)
 add_dependencies(vtx_ui_test vtx_ui_copy_data)
+
 catch_discover_tests(vtx_ui_test)
 
 # MdPrep.

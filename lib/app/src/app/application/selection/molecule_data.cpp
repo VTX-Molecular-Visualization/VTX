@@ -116,6 +116,11 @@ namespace VTX::App::Application::Selection
 
 		return *this;
 	}
+	bool MoleculeData::contains( const SelectionData & p_other ) const
+	{
+		const MoleculeData & castedOther = dynamic_cast<const MoleculeData &>( p_other );
+		return areAtomsSelected( castedOther._atomIds );
+	}
 
 	void MoleculeData::selectAll()
 	{

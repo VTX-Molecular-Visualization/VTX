@@ -1,5 +1,7 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
+#include "ui/qt/mode/base_mode.hpp"
+#include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/dialog.hpp"
 #include "ui/qt/widget_factory.hpp"
@@ -8,6 +10,9 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
+#include <app/application/scene.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT
@@ -29,10 +34,15 @@ namespace VTX::UI::QT
 	}
 	ApplicationQt::~ApplicationQt() {}
 
-	void ApplicationQt::init() { Core::BaseUIApplication::init(); }
+	void ApplicationQt::init()
+	{
+		Core::BaseUIApplication::init();
+		_currentMode = std::make_unique<Mode::Visualization>();
+	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
 		Core::BaseUIApplication::start( p_args );
+		_currentMode->enter();
 
 		_handleArgs( p_args );
 		_returnCode = exec();
@@ -50,6 +60,10 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
+		//// Init Modes.
+		//_currentMode = Mode::ModeCollection::get().instantiateItem( _currentModeKey );
+		_currentMode->enter();
+
 		// Create UI.
 		_initQt();
 
@@ -90,6 +104,21 @@ namespace VTX::UI::QT
 	{
 		Core::BaseUIApplication::_postInit( p_args );
 
+		App::VTXApp::get().onPreRender().addCallback(
+			this,
+			[]( float p_deltaTime )
+			{
+				// TODO: do not apply each frame, only when camera changes.
+				RendererQt qtRenderer = QT_RENDERER();
+
+				qtRenderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
+				qtRenderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
+				qtRenderer.get().setCameraClipInfos(
+					App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar()
+				);
+			}
+		);
+
 		_mainWindow->show();
 		_mainWindow->initWindowLayout();
 	}
@@ -127,5 +156,8 @@ namespace VTX::UI::QT
 			return true;
 		}
 	}
+
+	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
+	RendererQt		 QT_RENDERER() { return RendererQt( App::RENDERER() ); };
 
 } // namespace VTX::UI::QT

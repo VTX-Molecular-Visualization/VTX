@@ -1,13 +1,14 @@
 #include "util/app.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
-#include <app/application/action/action_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/settings.hpp>
+#include <app/application/system/action_manager.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/viewpoint.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/core/action/base_action_undonable.hpp>
+#include <app/core/ecs/base_entity.hpp>
 #include <app/internal/application/settings.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -129,7 +130,7 @@ TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
 
 	VTX_ACTION().execute<Action::Scene::CreateViewpoint>();
 
-	REQUIRE( SCENE().getItem( "Viewpoint" ) != Core::ECS::INVALID_ENTITY );
+	REQUIRE( SCENE().getItem( "Viewpoint" ) != App::Core::ECS::INVALID_ENTITY );
 
 	const Component::Render::Viewpoint & viewpoint
 		= SCENE().getComponentByName<Component::Render::Viewpoint>( "Viewpoint" );

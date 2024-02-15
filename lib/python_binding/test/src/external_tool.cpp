@@ -13,15 +13,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
+	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
 
-	interpretor->addBinder<VTX::Test::ExternalTool::Binder>();
-	interpretor->init();
+	interpretor.addBinder<VTX::Test::ExternalTool::Binder>();
+	interpretor.init();
 
-	interpretor->runCommand( "new_command()" );
+	interpretor.runCommand( "new_command()" );
 
 	const FilePath scriptPath = IO::Internal::Filesystem::getInternalDataDir() / "custom_module.py";
-	const PythonBinding::Wrapper::Module customModule = interpretor->loadModule( scriptPath );
+	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
 	customModule.displayInfo();
 

@@ -23,7 +23,7 @@ namespace VTX::PythonBinding
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
 
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
-			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemPtr() );
+			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemHandlerPtr() );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
@@ -57,6 +57,12 @@ namespace VTX::PythonBinding
 		}
 
 		PyTXModule & getPyTXModule() { return *_pyTXModule; }
+
+		void clearBinders()
+		{
+			_binders.clear();
+			_binders.shrink_to_fit();
+		}
 
 	  private:
 		pybind11::scoped_interpreter _interpretor {};
@@ -95,6 +101,7 @@ namespace VTX::PythonBinding
 	}
 
 	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
+	void Interpretor::clearBinders() { _impl->clearBinders(); }
 
 	void Interpretor::runCommand( const std::string & p_line ) const
 	{
@@ -145,5 +152,7 @@ namespace VTX::PythonBinding
 	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
 
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
+
+	Interpretor & INTERPRETOR() { return Interpretor::SYSTEM.get(); }
 
 } // namespace VTX::PythonBinding

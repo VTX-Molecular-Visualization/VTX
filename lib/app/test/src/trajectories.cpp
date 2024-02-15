@@ -36,8 +36,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Stop playmode" )
 	{
-		playmode
-			= App::Core::TrajectoryPlayer::Players::get().instantiateItem( App::Core::TrajectoryPlayer::Stop::NAME );
+		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem(
+			App::Core::TrajectoryPlayer::Stop::COLLECTION_ID
+		);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -55,7 +56,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Once playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Once>(
-			App::Core::TrajectoryPlayer::Once::NAME
+			App::Core::TrajectoryPlayer::Once::COLLECTION_ID
 		);
 
 		trajectoryComponent.setPlayer( playmode );
@@ -75,7 +76,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Revert once playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::RevertOnce>(
-			App::Core::TrajectoryPlayer::RevertOnce::NAME
+			App::Core::TrajectoryPlayer::RevertOnce::COLLECTION_ID
 		);
 
 		trajectoryComponent.setPlayer( playmode );
@@ -95,7 +96,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Loop playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
-			App::Core::TrajectoryPlayer::Loop::NAME
+			App::Core::TrajectoryPlayer::Loop::COLLECTION_ID
 		);
 
 		trajectoryComponent.setPlayer( playmode );
@@ -115,7 +116,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Revert loop playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::RevertLoop>(
-			App::Core::TrajectoryPlayer::RevertLoop::NAME
+			App::Core::TrajectoryPlayer::RevertLoop::COLLECTION_ID
 		);
 
 		trajectoryComponent.setPlayer( playmode );
@@ -135,7 +136,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	SECTION( "Ping Pong playmode" )
 	{
 		playmode = App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::PingPong>(
-			App::Core::TrajectoryPlayer::PingPong::NAME
+			App::Core::TrajectoryPlayer::PingPong::COLLECTION_ID
 		);
 
 		trajectoryComponent.setPlayer( playmode );

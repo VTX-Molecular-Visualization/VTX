@@ -1,23 +1,27 @@
 #ifndef __VTX_APP_APPLICATION_ECS_COMPONENT_INFO__
 #define __VTX_APP_APPLICATION_ECS_COMPONENT_INFO__
 
-#include "app/core/ecs/base_entity.hpp"
+#include "app/application/system/system_registration.hpp"
 #include "app/core/ecs/concepts.hpp"
+#include "app/core/system/base_system.hpp"
 #include <map>
 #include <string>
-#include <typeindex>
-#include <util/generic/base_static_singleton.hpp>
+#include <typeinfo>
 
 namespace VTX::App::Application::ECS
 {
 	using ComponentID = std::string;
 
-	static const ComponentID INVALID_COMPONENT_ID = "";
+	const ComponentID INVALID_COMPONENT_ID = "";
 
-	class ComponentInfo : public Util::Generic::BaseStaticSingleton<ComponentInfo>
+	class ComponentInfo : public Core::System::BaseSystem
 	{
 	  public:
-		ComponentInfo( const StructPrivacyToken & p_token );
+		inline static const System::SystemRegistration<ComponentInfo> SYSTEM_REG
+			= System::SystemRegistration<ComponentInfo>();
+
+	  public:
+		ComponentInfo() = default;
 		~ComponentInfo() {}
 
 		template<Core::ECS::ECS_Component T>
@@ -42,4 +46,9 @@ namespace VTX::App::Application::ECS
 	};
 
 } // namespace VTX::App::Application::ECS
+
+namespace VTX::App
+{
+	Application::ECS::ComponentInfo & COMPONENT_INFO();
+}
 #endif

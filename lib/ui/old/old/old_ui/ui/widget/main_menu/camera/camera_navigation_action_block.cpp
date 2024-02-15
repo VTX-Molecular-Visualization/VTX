@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		_freefly
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
-		_freefly->setData( "Freecam", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
+		_freefly->setData( "Freefly", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
 		pushButton( *_freefly, 1 );
 
 		// !V0.1
@@ -87,9 +87,9 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void CameraNavigationActionBlock::_updateCameraModeFeedback()
 	{
 		const App::Old::VTX_ID currentControllerID = UI::VTXApp::get()
-													.getStateMachine()
-													.getState<State::Visualization>( ID::State::VISUALIZATION )
-													->getCurrentCameraControllerID();
+														 .getStateMachine()
+														 .getState<State::Visualization>( ID::State::VISUALIZATION )
+														 ->getCurrentCameraControllerID();
 
 		_trackball->showActiveFeedback( currentControllerID == ID::Controller::TRACKBALL );
 		_freefly->showActiveFeedback( currentControllerID == ID::Controller::FREEFLY );

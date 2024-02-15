@@ -1,6 +1,7 @@
-
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
 #include <QOpenGLContext>
+#include <app/application/scene.hpp>
+#include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -31,7 +32,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
-		VTX::App::VTXApp::get().getRenderer().resize( p_width, p_height );
-		VTX::App::VTXApp::get().getRenderer().setOutput( defaultFramebufferObject() );
+		App::SCENE().getCamera().setScreenSize( width(), height() );
+		App::RENDERER().resize( p_width, p_height );
+		App::RENDERER().setOutput( defaultFramebufferObject() );
 	}
 } // namespace VTX::UI::QT::Tool::Render::Widget

@@ -4,10 +4,6 @@
 
 namespace VTX::PythonBinding::Action
 {
-	void RunScript::execute()
-	{
-		Interpretor & interpretor = App::VTXApp::get().getSystem().getSystem<Interpretor>( Interpretor::SYSTEM_KEY );
-		interpretor.runScript( _path );
-	}
+	void RunScript::execute() { INTERPRETOR().runScript( _path ); }
 
 } // namespace VTX::PythonBinding::Action

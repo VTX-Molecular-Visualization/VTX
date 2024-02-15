@@ -8,7 +8,6 @@ namespace VTX::App::Application
 
 	class Settings;
 	class Scene;
-	class System;
 
 	namespace Action
 	{

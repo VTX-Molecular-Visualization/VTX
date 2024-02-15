@@ -5,8 +5,11 @@
 #include "app/component/render/_fwd.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/callback_event.hpp"
+#include "app/core/ecs/base_entity.hpp"
+#include "app/core/system/base_system.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
+#include <functional>
 #include <string>
 #include <util/math/aabb.hpp>
 
@@ -15,8 +18,11 @@ namespace VTX::App::Application
 	template<typename T>
 	concept SceneItem = requires( T sceneItem ) { std::derived_from<T, Component::Scene::SceneItemComponent>; };
 
-	class Scene
+	class Scene : public Core::System::BaseSystem
 	{
+	  public:
+		using FindItemFunction = std::function<bool( const Core::ECS::BaseEntity & )>;
+
 	  public:
 		Scene();
 		~Scene();
@@ -47,6 +53,8 @@ namespace VTX::App::Application
 			const Core::ECS::BaseEntity entity = getItem( p_name );
 			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
+
+		Core::ECS::BaseEntity findItem( const FindItemFunction & p_findFunction ) const;
 
 		bool   isEmpty() const;
 		size_t getItemCount() const;

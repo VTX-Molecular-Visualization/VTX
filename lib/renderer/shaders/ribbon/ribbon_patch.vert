@@ -10,6 +10,7 @@ layout( location = 2 ) in uint inType;
 layout( location = 3 ) in uint inColor;
 layout( location = 4 ) in uint inResidueId;
 layout( location = 5 ) in uint inResidueFlag;
+layout( location = 6 ) in uint inResidueModel;
 
 // Out.
 out 
@@ -20,10 +21,10 @@ void main()
 {
 	dataOut.position	 = inControlPointPosition;
 	dataOut.direction	 = inControlPointDirection;
-	dataOut.color		 = uniformsColor.colorLayout[ inColor ];
+	dataOut.color		 = uniformsColor[ inColor ];
 	dataOut.ssType	     = inType;
 	dataOut.id		     = inResidueId;
 	dataOut.visibility   = inResidueFlag & ( 1 << FLAG_VISIBILITY );
 	dataOut.selection	 = inResidueFlag & ( 1 << FLAG_SELECTION );	
-	
+	dataOut.model		 = inResidueModel;
 }

@@ -2,11 +2,14 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "context/opengl_45.hpp"
+#include "passes.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
 #include "proxy/representation.hpp"
+#include "proxy/voxel.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
+#include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -27,8 +30,8 @@ namespace VTX::Renderer
 			const FilePath & p_shaderPath,
 			void *			 p_loader = nullptr
 		) :
-			_width( p_width ),
-			_height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+			width( p_width ),
+			height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
 			// Graph.
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
@@ -43,15 +46,15 @@ namespace VTX::Renderer
 			Pass * const outline   = _renderGraph->addPass( descPassOutline );
 			Pass * const selection = _renderGraph->addPass( descPassSelection );
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-			// Pass * const crt	 = _renderGraph->addPass( descPassCRT );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction = [ & ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction = [ & ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction = [ & ]() { return showRibbons ? sizeRibbons : 0; };
-			blurX->name									  = "BlurX";
-			blurY->name									  = "BlurY";
-			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().countFunction	 = [ & ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction	 = [ & ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction	 = [ & ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction	 = [ & ]() { return showVoxels ? sizeVoxels : 0; };
+			blurX->name										 = "BlurX";
+			blurY->name										 = "BlurY";
+			blurY->programs[ 0 ].uniforms.entries[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -74,107 +77,115 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { "Matrix model", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				  { "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
-				  // { _near * _far, _far, _far - _near, _near }
-				  { "Camera clip infos", E_TYPE::VEC4F, StructUniformValue<Vec4f> { VEC4F_ZERO } },
-				  { "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { { 0, 0 } } },
-				  { "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } }
+				{ { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
+					{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
+					  E_TYPE::VEC4F,
+					  StructUniformValue<Vec4f> { VEC4F_ZERO } },
+					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1u } } } }
 			);
 
-			// create array of 256 color white.
-			std::array<Util::Color::Rgba, 256> colorLayout;
-			std::generate( colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); } );
+			// TODO: move to pass ubo?
+			_renderGraph->addUniforms(
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 256 }
+			);
 
-			_renderGraph->addUniforms( { { "Color layout",
-										   E_TYPE::COLOR4_256,
-										   StructUniformValue<std::array<Util::Color::Rgba, 256>> { colorLayout } } } );
+			// TODO: dynamic ubo size instead of fixed 256.
+			_renderGraph->addUniforms(
+				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+				  256 }
+			);
+		}
+
+		// Only first entry of the array saved on cpu.
+		template<typename T>
+		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
+		{
+			assert( _context != nullptr );
+			_context->setUniform<T>( p_value, p_key );
+			setNeedUpdate( true );
 		}
 
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key )
 		{
-			_renderGraph->setUniform<T>( p_value, p_key );
+			assert( _context != nullptr );
+			_context->setUniform<T>( p_value, p_key );
 			setNeedUpdate( true );
 		}
 
 		template<typename T>
 		inline void getUniform( T & p_value, const std::string & p_key )
 		{
-			_renderGraph->getUniform<T>( p_value, p_key );
+			_context->getUniform<T>( p_value, p_key );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
-			_width	= p_width;
-			_height = p_height;
+			// assert( _context != nullptr );
+			//  TODO: delete context check.
+			if ( _context == nullptr )
+				return;
 
-			_renderGraph->resize( p_width, p_height );
+			width  = p_width;
+			height = p_height;
+
+			_context->resize( _renderGraph->getRenderQueue(), p_width, p_height );
+
 			setNeedUpdate( true );
 		}
 
 		inline void setOutput( const uint p_output )
 		{
-			_renderGraph->setOutput( p_output );
+			assert( _context != nullptr );
+
+			_context->setOutput( p_output );
 			setNeedUpdate( true );
 		}
 
 		void build( const uint p_output = 0, void * p_loader = nullptr );
-
 		void clean();
 
 		inline void render( const float p_time )
 		{
-			if ( _needUpdate || _forceUpdate || _framesRemaining > 0 )
+			if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 			{
-				if ( _logDurations )
+				if ( logDurations )
 				{
-					for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
-					{
-						instructionDurationRange.duration = _renderGraph->measureTaskDuration(
-
-							[ this, &instructionDurationRange ]()
-							{
-								for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last;
-									  ++i )
-								{
-									_instructions[ i ]();
-								}
-							}
-						);
-					}
+					_renderLog( p_time );
 				}
 				else
 				{
-					for ( const Instruction & instruction : _instructions )
-					{
-						instruction();
-					}
+					_render( p_time );
 				}
 
-				if ( _needUpdate )
+				if ( forceUpdate == false )
 				{
-					setNeedUpdate( false );
-				}
-				else
-				{
-					_framesRemaining--;
+					if ( _needUpdate )
+					{
+						setNeedUpdate( false );
+					}
+					else
+					{
+						_framesRemaining--;
+					}
 				}
 			}
 		}
 
-		inline void setCallbackClean( const CallbackClean & p_cb ) { _callbackClean = p_cb; }
+		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
+		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
 
-		inline void setCallbackReady( const CallbackReady & p_cb ) { _callbackReady = p_cb; }
+		inline void setMatrixView( const Mat4f & p_view )
+		{
+			setUniform( p_view, "Matrix view" );
 
-		inline void setCallbackSnapshotPre( const CallbackSnapshotPre & p_cb ) { _callbackSnapshotPre = p_cb; }
-
-		inline void setCallbackSnapshotPost( const CallbackSnapshotPost & p_cb ) { _callbackSnapshotPost = p_cb; }
-
-		inline void setMatrixView( const Mat4f & p_view ) { setUniform( p_view, "Matrix view" ); }
+			// Update model view matrices.
+			_setDataModel( _proxiesMolecules );
+		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
 
@@ -187,7 +198,7 @@ namespace VTX::Renderer
 
 		inline void setMousePosition( const Vec2i & p_position )
 		{
-			setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
+			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
 		}
 
 		inline void setPerspective( const bool p_perspective )
@@ -195,7 +206,7 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		inline void addMolecule( const Proxy::Molecule & p_proxy )
+		inline void addProxy( const Proxy::Molecule & p_proxy )
 		{
 			_proxiesMolecules.push_back( p_proxy );
 
@@ -207,25 +218,40 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> p_layout )
+		inline void addProxy( const Proxy::Voxel & p_proxy )
 		{
-			setUniform( p_layout, "Color layout" );
+			_proxiesVoxels.push_back( p_proxy );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_setData( p_proxy );
+			}
+
+			setNeedUpdate( true );
 		}
 
-		void snapshot( std::vector<uchar> & p_image, const size_t p_width = 0, const size_t p_height = 0 );
+		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
+		{
+			setUniform( std::vector<Util::Color::Rgba>( p_layout.begin(), p_layout.end() ), "Color layout" );
+		}
+
+		void snapshot(
+			std::vector<uchar> & p_image,
+			const size_t		 p_width,
+			const size_t		 p_height,
+			const float			 p_fov,
+			const float			 p_near,
+			const float			 p_far
+		);
 
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
-			_renderGraph->getTextureData( idsAny, p_x, _height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
-		inline const size_t		   getWidth() const { return _width; }
-		inline const size_t		   getHeight() const { return _height; }
-		inline const StructInfos & getInfos() const { return _infos; }
-		inline const bool		   isNeedUpdate() const { return _needUpdate; }
-		inline void				   setNeedUpdate( const bool p_value )
+		inline void setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
 			if ( p_value == false )
@@ -233,53 +259,63 @@ namespace VTX::Renderer
 				_framesRemaining = _BUFFER_COUNT;
 			}
 		}
-		inline const bool isForceUpdate() const { return _forceUpdate; }
-		inline void		  setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
-		inline const bool isLogDurations() const { return _logDurations; }
-		inline void		  setLogDurations( const bool p_value ) { _logDurations = p_value; }
-		inline void		  compileShaders() const { _renderGraph->compileShaders(); }
 
-		// Debug purposes only.
+		inline void compileShaders() const { _context->compileShaders(); }
+
 		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
+		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
 		{
 			return _instructionsDurationRanges;
 		}
 
+		size_t		width;
+		size_t		height;
+		StructInfos infos;
+
 		uint sizeAtoms	 = 0;
 		uint sizeBonds	 = 0;
 		uint sizeRibbons = 0;
+		uint sizeVoxels	 = 0;
+
+		uint sizeMolecules = 0;
 
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
+		bool showVoxels	 = true;
+
+		bool forceUpdate  = false;
+		bool logDurations = false;
 
 	  private:
 		const size_t _BUFFER_COUNT = 2;
 
-		void * _loader			= nullptr;
-		bool   _needUpdate		= false;
-		bool   _forceUpdate		= false;
-		size_t _framesRemaining = _BUFFER_COUNT;
+		Context::OpenGL45 * _context		 = nullptr;
+		void *				_loader			 = nullptr;
+		bool				_needUpdate		 = false;
+		size_t				_framesRemaining = _BUFFER_COUNT;
 
-		size_t								 _width;
-		size_t								 _height;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
-		StructInfos							 _infos;
-		bool								 _logDurations = false;
 
-		CallbackClean		 _callbackClean;
-		CallbackReady		 _callbackReady;
-		CallbackSnapshotPre	 _callbackSnapshotPre;
-		CallbackSnapshotPost _callbackSnapshotPost;
+		Util::Callback<> _callbackReady;
+		Util::Callback<> _callbackClean;
 
-		std::vector<Proxy::Molecule> _proxiesMolecules;
+		// TODO: mapping registry.
+		std::vector<Proxy::Molecule>	   _proxiesMolecules;
+		std::vector<Proxy::Mesh>		   _proxiesMeshes;
+		std::vector<Proxy::Representation> _proxiesRepresentations;
+		std::vector<Proxy::Voxel>		   _proxiesVoxels;
 
+		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
+			assert( p_proxy.atomIds || p_proxy.residueIds );
+			assert( p_proxy.transform );
+
 			if ( p_proxy.atomIds )
 			{
 				_setDataSpheresCylinders( p_proxy );
@@ -290,8 +326,9 @@ namespace VTX::Renderer
 				_setDataRibbons( p_proxy );
 			}
 
-			// TODO: make "filler" functions for each type of data ?
-			// TODO: mapping registry.
+			_setDataModel( { p_proxy } );
+
+			sizeMolecules++;
 		}
 
 		enum E_ATOM_FLAGS
@@ -302,6 +339,7 @@ namespace VTX::Renderer
 
 		void _setDataSpheresCylinders( const Proxy::Molecule & p_proxy )
 		{
+			// Check sizes.
 			assert( p_proxy.atomPositions );
 			assert( p_proxy.atomColors );
 			assert( p_proxy.atomRadii );
@@ -315,14 +353,16 @@ namespace VTX::Renderer
 			assert( p_proxy.atomIds->size() == p_proxy.atomVisibilities->size() );
 			assert( p_proxy.atomIds->size() == p_proxy.atomSelections->size() );
 
-			_renderGraph->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
-			_renderGraph->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
-			_renderGraph->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
-			_renderGraph->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
-			_renderGraph->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
+			// Forward data.
+			// TODO: add to current buffer.
+			_context->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
+			_context->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
+			_context->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
+			_context->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
+			_context->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
 
+			// Flags.
 			std::vector<uchar> atomFlags( p_proxy.atomPositions->size() );
-
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
 				uchar flag = 0;
@@ -330,11 +370,15 @@ namespace VTX::Renderer
 				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
 				atomFlags[ i ] = flag;
 			}
+			_context->setData( atomFlags, "SpheresCylindersFlags" );
 
-			_renderGraph->setData( atomFlags, "SpheresCylindersFlags" );
+			// Model ID.
+			uchar modelId = sizeMolecules;
+			_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels" );
 
-			sizeAtoms = uint( p_proxy.atomPositions->size() );
-			sizeBonds = uint( p_proxy.bonds->size() );
+			// Counters.
+			sizeAtoms += uint( p_proxy.atomPositions->size() );
+			sizeBonds += uint( p_proxy.bonds->size() );
 		}
 
 		void _setDataRibbons( const Proxy::Molecule & p_proxy )
@@ -365,7 +409,9 @@ namespace VTX::Renderer
 			std::vector<uchar> bufferColors;
 			std::vector<uint>  bufferIds;
 			std::vector<uchar> bufferFlags;
-			std::vector<uint>  bufferIndices;
+			std::vector<uchar> bufferModels;
+
+			std::vector<uint> bufferIndices;
 
 			std::map<uint, uint> residueToIndices;
 			std::map<uint, uint> residueToPositions;
@@ -379,8 +425,10 @@ namespace VTX::Renderer
 									 std::vector<Vec3f> &		p_caODirections,
 									 const std::vector<uchar> & p_ssTypes,
 									 const std::vector<uchar> & p_colors,
+									 const std::vector<uint> &	p_ids,
 									 const std::vector<uchar> & p_flags,
-									 const std::vector<uint> &	p_ids
+									 const std::vector<uchar> & p_models
+
 								 )
 			{
 				if ( p_caPositions.size() >= 4 )
@@ -436,8 +484,9 @@ namespace VTX::Renderer
 					);
 					bufferSSTypes.insert( bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
 					bufferColors.insert( bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
-					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
 					bufferIds.insert( bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
+					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
+					bufferModels.insert( bufferModels.end(), p_models.cbegin(), p_models.cend() );
 				}
 			};
 
@@ -450,6 +499,7 @@ namespace VTX::Renderer
 			std::vector<uchar> colors;
 			std::vector<uint>  ids;
 			std::vector<uchar> flags;
+			std::vector<uchar> models;
 			std::vector<uint>  residueIndex;
 
 			for ( uint chainIdx = 0; chainIdx < p_proxy.chainFirstResidues->size(); ++chainIdx )
@@ -482,9 +532,11 @@ namespace VTX::Renderer
 						caODirections = std::vector<Vec3f>();
 						types		  = std::vector<uchar>();
 						colors		  = std::vector<uchar>();
-						flags		  = std::vector<uchar>();
 						ids			  = std::vector<uint>();
-						residueIndex  = std::vector<uint>();
+						flags		  = std::vector<uchar>();
+						models		  = std::vector<uchar>();
+
+						residueIndex = std::vector<uint>();
 
 						createVectors = false;
 					}
@@ -577,6 +629,8 @@ namespace VTX::Renderer
 
 					colors.emplace_back( ( *p_proxy.residueColors )[ residueIdx ] );
 
+					ids.emplace_back( ( *p_proxy.residueIds )[ residueIdx ] );
+
 					// Flag.
 					// TODO.
 					flags.emplace_back( 1 );
@@ -588,7 +642,9 @@ namespace VTX::Renderer
 					) );
 					*/
 
-					ids.emplace_back( ( *p_proxy.residueIds )[ residueIdx ] );
+					// Model ID.
+					models.emplace_back( sizeMolecules );
+
 					/*
 					if ( residueLast != -1
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
@@ -602,7 +658,7 @@ namespace VTX::Renderer
 				}
 
 				// Update buffers and index mapping if SS is constructed.
-				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids );
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, ids, flags, models );
 			}
 
 			// Reverse indices to render the other side.
@@ -616,47 +672,76 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferColors.size() );
 			assert( bufferCaPositions.size() == bufferIds.size() );
 			assert( bufferCaPositions.size() == bufferFlags.size() );
+			assert( bufferCaPositions.size() == bufferModels.size() );
 
-			_renderGraph->setData( bufferCaPositions, "RibbonsPositions" );
-			_renderGraph->setData( bufferCaODirections, "RibbonsDirections" );
-			_renderGraph->setData( bufferSSTypes, "RibbonsTypes" );
-			_renderGraph->setData( bufferColors, "RibbonsColors" );
-			_renderGraph->setData( bufferIds, "RibbonsIds" );
-			_renderGraph->setData( bufferFlags, "RibbonsFlags" );
-			_renderGraph->setData( bufferIndices, "RibbonsEbo" );
+			_context->setData( bufferCaPositions, "RibbonsPositions" );
+			_context->setData( bufferCaODirections, "RibbonsDirections" );
+			_context->setData( bufferSSTypes, "RibbonsTypes" );
+			_context->setData( bufferColors, "RibbonsColors" );
+			_context->setData( bufferIds, "RibbonsIds" );
+			_context->setData( bufferFlags, "RibbonsFlags" );
+			_context->setData( bufferModels, "RibbonsModels" );
+			_context->setData( bufferIndices, "RibbonsEbo" );
 
-			sizeRibbons = uint( bufferIndices.size() );
+			sizeRibbons += uint( bufferIndices.size() );
 		}
 
-		inline void _onClean()
+		void _setDataModel( const std::vector<Proxy::Molecule> & p_proxies )
 		{
-			if ( _callbackClean )
+			struct _StructUBOModel
 			{
-				_callbackClean();
+				Mat4f mv;
+				Mat4f n;
+			};
+
+			std::vector<_StructUBOModel> models;
+			Mat4f						 matrixView;
+			getUniform( matrixView, "Matrix view" );
+
+			for ( const Proxy::Molecule & proxy : p_proxies )
+			{
+				const Mat4f matrixModelView = matrixView * *proxy.transform;
+				const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+			}
+
+			_context->setUniform( models, "Matrix model view" );
+		}
+
+		void _setData( const Proxy::Voxel & p_proxy )
+		{
+			assert( p_proxy.mins );
+			assert( p_proxy.maxs );
+			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
+
+			_context->setData( *p_proxy.mins, "VoxelsMins" );
+			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
+
+			sizeVoxels += uint( p_proxy.mins->size() );
+		}
+
+		inline void _render( const float p_time ) const
+		{
+			for ( const Instruction & instruction : _instructions )
+			{
+				instruction();
 			}
 		}
 
-		inline void _onReady()
+		inline void _renderLog( const float p_time )
 		{
-			if ( _callbackReady )
+			for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
 			{
-				_callbackReady();
-			}
-		}
+				instructionDurationRange.duration = _context->measureTaskDuration(
 
-		inline void _onSnapshotPre( const size_t p_width, const size_t p_height )
-		{
-			if ( _callbackSnapshotPre )
-			{
-				_callbackSnapshotPre( p_width, p_height );
-			}
-		}
-
-		inline void _onSnapshotPost( const size_t p_width, const size_t p_height )
-		{
-			if ( _callbackSnapshotPost )
-			{
-				_callbackSnapshotPost( p_width, p_height );
+					[ this, &instructionDurationRange ]()
+					{
+						for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+						{
+							_instructions[ i ]();
+						}
+					}
+				);
 			}
 		}
 	};

@@ -17,8 +17,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretor = App::Test::Util::App::createInterpretor();
-	interpretor->init();
+	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
+	interpretor.init();
 
 	const FilePath moleculePath
 		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
@@ -30,8 +30,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 	std::stringstream ssCommandRun = std::stringstream();
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
-	interpretor->runCommand( ssCommandRun.str() );
+	interpretor.runCommand( ssCommandRun.str() );
 
-	interpretor->runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
-	interpretor->runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
+	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
+	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
 };

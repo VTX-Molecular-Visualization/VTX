@@ -16,8 +16,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	std::unique_ptr<PythonBinding::Interpretor> interpretorPtr = App::Test::Util::App::createInterpretor();
-	PythonBinding::Interpretor &				interpretor	   = *interpretorPtr;
+	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
 
 	interpretor.init();
 

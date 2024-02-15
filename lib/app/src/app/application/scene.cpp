@@ -5,7 +5,7 @@
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/entity/all_entities.hpp"
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Application
 {
@@ -16,13 +16,25 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = VTXApp::get().getEntityDirector().build( Entity::CAMERA_ENTITY_ID );
+		App::Core::ECS::BaseEntity cameraEntity = ENTITY_DIRECTOR().build( Entity::CAMERA_ENTITY_ID );
 		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 	}
 
 	Scene::~Scene() {}
+
+	Core::ECS::BaseEntity Scene::findItem( const FindItemFunction & p_findFunction ) const
+	{
+		auto view = getAllSceneItems();
+		for ( const Core::ECS::BaseEntity & entity : view )
+		{
+			if ( p_findFunction( entity ) )
+				return entity;
+		}
+
+		return Core::ECS::INVALID_ENTITY;
+	}
 
 	bool   Scene::isEmpty() const { return getItemCount() == 0; }
 	size_t Scene::getItemCount() const { return getAllSceneItems().size(); }

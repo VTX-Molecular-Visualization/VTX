@@ -43,11 +43,12 @@ void addQuad( vec4 p_center, vec4 p_dy, vec4 p_dx ) {
 
 void main() {
     vec4 center = gl_in[0].gl_Position;
-    outData.center= center.xyz;
+    outData.center = center.xyz;
     
-    vec4 dx = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[0] * inData[0].voxelSize.x;
-    vec4 dy = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[1] * inData[0].voxelSize.y;
-    vec4 dz = ( uniformsCamera.matrixProjection *  uniformsCamera.matrixView *  uniformsCamera.matrixModel )[2] * inData[0].voxelSize.z;
+    mat4 matrix = uniformsCamera.matrixProjection * uniformsCamera.matrixView;
+    vec4 dx = matrix[ 0 ] * inData[ 0 ].voxelSize.x / 2.f;
+    vec4 dy = matrix[ 1 ] * inData[ 0 ].voxelSize.y / 2.f;
+    vec4 dz = matrix[ 2 ] * inData[ 0 ].voxelSize.z / 2.f;
 
     addQuad( center + dx, dy, dz );
     addQuad( center - dx, dy, dz );

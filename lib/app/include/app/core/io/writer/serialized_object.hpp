@@ -3,7 +3,6 @@
 
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/serialization/version.hpp"
-#include "app/vtx_app.hpp"
 #include <util/filesystem.hpp>
 #include <util/json/io.hpp>
 #include <util/json/json.hpp>
@@ -16,26 +15,28 @@ namespace VTX::App::Core::IO::Writer
 	{
 	  public:
 		SerializedObject(
-			const FilePath &			   p_path,
-			const T *					   p_obj,
-			const Serialization::Version & p_version = Serialization::Version::CURRENT
+			const Serialization::Serialization & p_serializer,
+			const FilePath &					 p_path,
+			const T *							 p_obj,
+			const Serialization::Version &		 p_version = Serialization::Version::CURRENT
 		) :
-			_path( p_path ),
-			_obj( p_obj ), _version( p_version )
+			_serializer( p_serializer ),
+			_path( p_path ), _obj( p_obj ), _version( p_version )
 		{
 		}
 
-		void write()
+		void write() const
 		{
 			const VTX::Util::JSon::Document jsonDoc
-				= { { "VERSION", SERIALIZER().serialize( _version ) }, { "DATA", SERIALIZER().serialize( *_obj ) } };
+				= { { "VERSION", _serializer.serialize( _version ) }, { "DATA", _serializer.serialize( *_obj ) } };
 
 			Util::JSon::IO::write( _path, jsonDoc );
 		}
 
 	  private:
-		FilePath			   _path;
-		Serialization::Version _version;
+		const Serialization::Serialization & _serializer;
+		FilePath							 _path;
+		Serialization::Version				 _version;
 
 		const T * _obj;
 	};

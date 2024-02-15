@@ -3,22 +3,27 @@
 
 #include "app/application/ecs/component_info.hpp"
 #include "app/application/ecs/registry_manager.hpp"
+#include "app/application/system/system_registration.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/ecs/concepts.hpp"
 #include "app/core/serialization/serialization.hpp"
+#include "app/core/system/base_system.hpp"
 #include <functional>
 #include <map>
 #include <string>
 #include <typeindex>
-#include <util/generic/base_static_singleton.hpp>
 #include <util/json/json.hpp>
 
 namespace VTX::App::Application::ECS
 {
-	class ComponentMetaFunction : public Util::Generic::BaseStaticSingleton<ComponentMetaFunction>
+	class ComponentMetaFunction : public Core::System::BaseSystem
 	{
 	  public:
-		ComponentMetaFunction( const StructPrivacyToken & p_token );
+		inline static const System::SystemRegistration<ComponentMetaFunction> SYSTEM_REG
+			= System::SystemRegistration<ComponentMetaFunction>();
+
+	  public:
+		ComponentMetaFunction() = default;
 		~ComponentMetaFunction() {}
 
 		template<Core::ECS::ECS_Component T>
@@ -77,4 +82,9 @@ namespace VTX::App::Application::ECS
 			= std::map<ComponentID, ComponentDeserializerFunction>();
 	};
 } // namespace VTX::App::Application::ECS
+
+namespace VTX::App
+{
+	Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION();
+}
 #endif

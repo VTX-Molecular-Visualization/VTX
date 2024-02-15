@@ -6,6 +6,7 @@
 #version 450 core
 
 #include "../layout_uniforms_camera.glsl"
+#include "../layout_uniforms_model.glsl"
 
 layout( quads, fractional_even_spacing ) in;
 
@@ -118,8 +119,8 @@ void main()
 	const vec3 n = normal * ( directionFactor + arrayOffset ) / directionFactor * RADIUS;
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
-	outData.viewPosition = vec3( uniformsCamera.matrixView * uniformsCamera.matrixModel * vec4( position, 1.f ) );
-	outData.normal	   = vec3( uniformsCamera.matrixNormal * vec4( normal, 1.f ) );
+	outData.viewPosition = vec3( uniformsModel[ inData[ 0 ].model ].matrixModelView * vec4( position, 1.f ) );
+	outData.normal = vec3( uniformsModel[ inData[ 0 ].model ].matrixNormal * vec4( normal, 1.f ) );
 	outData.color =  inData[ 1 ].color;
 	if(u_colorBlendingMode == 1) // Gradient.
 	{

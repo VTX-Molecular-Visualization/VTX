@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
+#include <ui/debug/print_inputs.hpp>
 #include <ui/environment.hpp>
 #include <ui/qt/tool/render_window.hpp>
 #include <ui/qt/tool/ui_features/quit_tool.hpp>
@@ -23,6 +24,9 @@ TEST_CASE( "VTX_UI - Test", "[integration]" )
 		vtxApplication->init();
 
 		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
+
+		// Uncomment to print inputs
+		// UI::Debug::PrintInputs();
 
 		vtxApplication->start( { molPath.string() } );
 

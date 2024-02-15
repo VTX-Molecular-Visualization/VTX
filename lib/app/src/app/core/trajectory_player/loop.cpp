@@ -11,6 +11,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		setCurrentFrameIndex( newFrameIndex );
 	}
 
-	std::unique_ptr<BasePlayer> Loop::clone() const { return std::make_unique<Loop>( *this ); }
-
 } // namespace VTX::App::Core::TrajectoryPlayer
