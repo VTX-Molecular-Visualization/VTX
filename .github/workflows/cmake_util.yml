@@ -32,14 +32,11 @@ jobs:
         
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: |
-        conan install . --build=missing --settings=compiler.cppstd=20
-        conan install test --build=missing --settings=compiler.cppstd=20
+      run: conan install . --build=missing --settings=compiler.cppstd=20
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
-        conan upload catch2 -r=cano7782
         conan upload glm -r=cano7782
         conan upload spdlog -r=cano7782
         conan upload nlohmann_json -r=cano7782
@@ -55,5 +52,9 @@ jobs:
         
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --settings=compiler.cppstd=20
+      run: conan create test --build=missing --settings=compiler.cppstd=20
       
+    - name: Upload extra dependencies
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: |
+        conan upload catch2 -r=cano7782
