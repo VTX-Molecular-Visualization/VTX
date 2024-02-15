@@ -32,7 +32,7 @@ jobs:
         
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install . --settings=compiler.cppstd=20
+      run: conan install . --build=missing --settings=compiler.cppstd=20
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
@@ -45,7 +45,7 @@ jobs:
       
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan export .
+      run: conan create .
         
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
