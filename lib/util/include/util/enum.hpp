@@ -7,7 +7,7 @@
 #include "concepts.hpp"
 #include "exceptions.hpp"
 #include "logger.hpp"
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 #include <type_traits>
 
 namespace VTX::Util::Enum
