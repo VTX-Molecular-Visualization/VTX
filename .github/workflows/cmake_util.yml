@@ -27,8 +27,8 @@ jobs:
       
     - name: Add custom remote
       run: |
-        conan remote add --insecure cano7782 https://cano7782.odns.fr
-        conan remote login -p vtx cano7782 vtx
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_USER }} cano7782 ${{ secrets.CONAN_SERVER_PASSWORD }}
         
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
