@@ -9,7 +9,7 @@ function(vtx_register_build_directory_copy src dest)
 endfunction()
 
 # Add on-build copy for all registered directories into build folder
-function(vtx_copy_directory_data target dest)
+function(vtx_copy_directory_data target)
 
 	set(num 0)
 	set(property_var_src)
