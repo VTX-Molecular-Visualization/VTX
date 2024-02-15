@@ -28,6 +28,40 @@ namespace VTX
 			return fmt::vformat( "[{}] {}", fmt::make_format_args( p_prepend, p_err ) );
 		}
 	};
+	///
+	///
+	///
+	///
+	///
+	///
+	struct FormatedString
+	{
+		std::string formatedString;
+		template<typename... Args>
+		FormatedString( const std::string_view & p_fmt, Args &&... p_args ) :
+			formatedString( fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) )
+		{
+		}
+	};
+
+	template<const char PREFIX[ 20 ]>
+	class SimplePrefixException : public Exception
+	{
+	  public:
+		explicit SimplePrefixException( FormatedString formatedString ) :
+			Exception( PREFIX, formatedString.formatedString )
+		{
+		}
+		explicit SimplePrefixException( const std::string & p_err ) : Exception( PREFIX, p_err ) {}
+	};
+
+	///
+	///
+	///
+	///
+	///
+	///
+	///
 
 	class VTXException : public Exception
 	{

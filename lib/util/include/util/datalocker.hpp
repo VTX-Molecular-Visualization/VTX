@@ -9,7 +9,8 @@ namespace VTX::Util
 	template<class DataType>
 	class DataLocker;
 
-	// Utility class that aim to provide a simple and concise way to read and write data from multiple threads
+	// Utility class that aim to provide a simple and concise way to read and write data from multiple threads using
+	// RAII locks
 	template<class DataType>
 	class DataLocker
 	{
@@ -29,7 +30,7 @@ namespace VTX::Util
 		ReservedData<DataType>		 open() noexcept { return ReservedData( _data, _mutex ); }
 		ReservedData<const DataType> open() const noexcept { return ReservedData<const DataType>( _data, _mutex ); }
 
-		bool is_data_available() const noexcept
+		bool isDataAvailable() const noexcept
 		{
 			if ( _mutex.try_lock() )
 			{
@@ -40,18 +41,16 @@ namespace VTX::Util
 		}
 	};
 
-	// reference to the inner datastruct guaranteed to be concurrency-safe
+	// reference to the inner datastruct guaranteed to be concurrency-safe. Should never outlive its datalocker.
 	template<class ReservedDataType> // ReservedDataType can be const !
 	class ReservedData
 	{
-		ReservedDataType *						   _dataPtr = nullptr;
-		std::optional<std::lock_guard<std::mutex>> _lock; // default constructed objects have no locks
-		bool									   _defaultConstructed = true;
+		ReservedDataType * _dataPtr = nullptr; // We leave no execution paths where this could be a nullptr so we should
+											   // be free from dangling ptr crash
+		std::optional<std::unique_lock<std::mutex>> _lock;
 
-		ReservedData( ReservedDataType & d, std::mutex & m ) : _dataPtr( &d ), _lock( m ), _defaultConstructed( false )
-		{
-		}
-		ReservedData() = default;
+		ReservedData( ReservedDataType & d, std::mutex & m ) : _dataPtr( &d ), _lock( m ) {}
+		ReservedData() = delete;
 
 		// Used when we try to refence the non-const version of the type
 		template<class T>
@@ -71,33 +70,9 @@ namespace VTX::Util
 																		 // while being a const data
 
 	  public:
-		class AttemptedUseOnDefaultConstructed : public Exception
-		{
-		};
-
-		ReservedDataType * operator->()
-		{
-			if ( _defaultConstructed )
-				throw AttemptedUseOnDefaultConstructed();
-			return _dataPtr;
-		}
-		const ReservedDataType * operator->() const
-		{
-			if ( _defaultConstructed )
-				throw AttemptedUseOnDefaultConstructed();
-			return _dataPtr;
-		}
-		ReservedDataType & operator*()
-		{
-			if ( _defaultConstructed )
-				throw AttemptedUseOnDefaultConstructed();
-			return *_dataPtr;
-		}
-		const ReservedDataType & operator*() const
-		{
-			if ( _defaultConstructed )
-				throw AttemptedUseOnDefaultConstructed();
-			return *_dataPtr;
-		}
+		ReservedDataType *		 operator->() { return _dataPtr; }
+		const ReservedDataType * operator->() const { return _dataPtr; }
+		ReservedDataType &		 operator*() { return *_dataPtr; }
+		const ReservedDataType & operator*() const { return *_dataPtr; }
 	};
 } // namespace VTX::Util
