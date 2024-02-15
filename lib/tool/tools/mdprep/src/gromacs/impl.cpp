@@ -1,9 +1,9 @@
-#include "tools/mdprep/gromacs/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/util.hpp"
 #include <format>
 #include <regex>
 #include <util/string.hpp>
 //
-#include "tools/mdprep/gromacs/gromacs.impl.hpp"
+#include "tools/mdprep/gromacs/impl.hpp"
 
 namespace VTX::Tool::Mdprep::Gromacs
 {

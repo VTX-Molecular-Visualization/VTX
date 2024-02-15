@@ -6,6 +6,7 @@
 #include <optional>
 #include <string_view>
 #include <unordered_map>
+#include <util/datalocker.hpp>
 #include <vector>
 namespace fs = std::filesystem;
 
@@ -105,15 +106,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct Pdb2gmxInputs
 	{
 		std::unordered_map<Pdb2gmxInputId, std::string> kwValue;
-		bool operator==( const Pdb2gmxInputs & ) const noexcept = default;
+		bool											operator==( const Pdb2gmxInputs & ) const noexcept = default;
 	};
 	struct Pdb2gmxInstructions
 	{
-		std::vector<forcefield>				forcefields;
-		size_t								forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
-		fs::path							outputDir;
-		std::string							rootFileName;
-		fs::path							inputPdb;
+		std::vector<forcefield>		 forcefields;
+		size_t						 forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
+		fs::path					 outputDir;
+		std::string					 rootFileName;
+		fs::path					 inputPdb;
 		std::optional<Pdb2gmxInputs> customParameter; // needed for adding -his ...
 
 		E_WATER_MODEL water = E_WATER_MODEL::tip3p;
@@ -125,18 +126,20 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string stderr_;
 	};
 
-	// This class is responsible for unfolding gromacs interactive process by entering interactive input when gromacs expect it.
-	class Inputs // TODO : type-erased class for interactive input (cover Pdb2gmxInput and the ones for editconf, trjconv and genion)
+	// This class is responsible for unfolding gromacs interactive process by entering interactive input when gromacs
+	// expect it.
+	class Inputs // TODO : type-erased class for interactive input (cover Pdb2gmxInput and the ones for editconf,
+				 // trjconv and genion)
 	{
 	};
 	struct GromacsCommandArgs
 	{
-		std::vector<std::string>	 arguments;
-		Datalocker<Channels>		 channels; // TODO : put datalocker from batchreg project into VTX 
-		std::optional<Inputs>		 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
-		bool						 operator==( const GromacsCommandArgs & ) const noexcept = default;
+		std::vector<std::string>		arguments;
+		VTX::Util::DataLocker<Channels> channels;
+		std::optional<Inputs>
+			 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
+		bool operator==( const GromacsCommandArgs & ) const noexcept = default;
 	};
-
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
