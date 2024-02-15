@@ -71,24 +71,24 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const char * string( const E_INTERACTIVE_KEYWORD & ) noexcept;
 
 	// Meant to uniquely identify a specific instance of input required by gromacs
-	struct InteractiveId
+	struct Pdb2gmxInputId
 	{
 		char				  chain = 0x00i8; // Value of 0x00 means any chain
 		E_INTERACTIVE_KEYWORD kw	= E_INTERACTIVE_KEYWORD::none;
 		uint32_t			  num	= 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
-		bool operator==( const InteractiveId & ) const noexcept = default;
+		bool operator==( const Pdb2gmxInputId & ) const noexcept = default;
 	};
 } // namespace VTX::Tool::Mdprep::Gromacs
 
-// We implement our specialization of the hash structure for InteractiveId as required for set and map
+// We implement our specialization of the hash structure for Pdb2gmxInputId as required for set and map
 // We got to declare the hash template specialisation before declaring its consumer
 namespace std
 {
 	template<>
-	struct hash<VTX::Tool::Mdprep::Gromacs::InteractiveId>
+	struct hash<VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputId>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::InteractiveId & p_arg ) const noexcept
+		inline uint64_t operator()( const VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputId & p_arg ) const noexcept
 		{
 			uint64_t out = 0;
 			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
@@ -102,10 +102,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 {
 
 	// organized version of the arguments to be used during interactive gromacs step
-	struct InteractiveArguments
+	struct Pdb2gmxInputs
 	{
-		std::unordered_map<InteractiveId, std::string> kwValue;
-		bool operator==( const InteractiveArguments & ) const noexcept = default;
+		std::unordered_map<Pdb2gmxInputId, std::string> kwValue;
+		bool operator==( const Pdb2gmxInputs & ) const noexcept = default;
 	};
 	struct Pdb2gmxInstructions
 	{
@@ -114,11 +114,29 @@ namespace VTX::Tool::Mdprep::Gromacs
 		fs::path							outputDir;
 		std::string							rootFileName;
 		fs::path							inputPdb;
-		std::optional<InteractiveArguments> customParameter; // needed for adding -his ...
+		std::optional<Pdb2gmxInputs> customParameter; // needed for adding -his ...
 
 		E_WATER_MODEL water = E_WATER_MODEL::tip3p;
 	};
-	struct GromacsCommandArgs;
+
+	struct Channels
+	{
+		std::string stdout_;
+		std::string stderr_;
+	};
+
+	// This class is responsible for unfolding gromacs interactive process by entering interactive input when gromacs expect it.
+	class Inputs // TODO : type-erased class for interactive input (cover Pdb2gmxInput and the ones for editconf, trjconv and genion)
+	{
+	};
+	struct GromacsCommandArgs
+	{
+		std::vector<std::string>	 arguments;
+		Datalocker<Channels>		 channels; // TODO : put datalocker from batchreg project into VTX 
+		std::optional<Inputs>		 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
+		bool						 operator==( const GromacsCommandArgs & ) const noexcept = default;
+	};
+
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
@@ -162,7 +180,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parseReport parsePdb2gmxUserScript( const std::string_view &, InteractiveArguments & ) noexcept;
+	parseReport parsePdb2gmxUserScript( const std::string_view &, Pdb2gmxInputs & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 

@@ -84,7 +84,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return !p_stdout.empty() && p_stdout.ends_with( g_genericWaitingPattern );
 	}
 
-	bool parseExpectedKwArgument( const std::string & p_stdout, InteractiveId & out ) noexcept
+	bool parseExpectedKwArgument( const std::string & p_stdout, Pdb2gmxInputId & out ) noexcept
 	{
 		{
 			std::string buf = getChain( p_stdout );
