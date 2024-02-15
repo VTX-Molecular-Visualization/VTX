@@ -26,15 +26,22 @@ jobs:
       run: conan profile detect
       
     - name: Add custom remote
-      run: conan remote add --insecure cano7782 https://cano7782.odns.fr
-
+      run: |
+        conan remote add --insecure cano7782 https://cano7782.odns.fr
+        conan remote login -p vtx cano7782 vtx
+        
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan install . --settings=compiler.cppstd=20
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan upload cpr -r=cano7782
+      run: |
+        conan upload glm -r=cano7782
+        conan upload spdlog -r=cano7782
+        conan upload nlohmann_json -r=cano7782
+        conan upload magic_enum -r=cano7782
+        conan upload cpr -r=cano7782
       
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
