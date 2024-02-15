@@ -42,6 +42,9 @@ jobs:
         conan upload nlohmann_json -r=cano7782
         conan upload magic_enum -r=cano7782
         conan upload cpr -r=cano7782
+        conan upload fmt -r=cano7782
+        conan upload zlib -r=cano7782
+        conan upload libcurl -r=cano7782
       
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
