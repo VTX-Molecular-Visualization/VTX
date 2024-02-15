@@ -45,7 +45,7 @@ jobs:
       
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create .
+      run: conan export .
         
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
