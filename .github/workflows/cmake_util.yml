@@ -32,7 +32,9 @@ jobs:
         
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install . --build=missing --settings=compiler.cppstd=20 
+      run: |
+        conan install . --build=missing --settings=compiler.cppstd=20
+        conan install test --build=missing --settings=compiler.cppstd=20 
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
@@ -49,9 +51,9 @@ jobs:
       
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan export .
+      run: conan create . --settings=compiler.cppstd=20
         
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --build=missing --settings=compiler.cppstd=20
+      run: conan create test --settings=compiler.cppstd=20
       
