@@ -34,7 +34,7 @@ jobs:
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
         conan install . --build=missing --settings=compiler.cppstd=20
-        conan install test --build=missing --settings=compiler.cppstd=20 
+        conan install test --build=missing --settings=compiler.cppstd=20
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
