@@ -41,6 +41,7 @@ jobs:
         conan export ../io
         conan export ../renderer
         conan export ../app
+        conan export ../python_binding
         conan create . --build=missing --settings=compiler.cppstd=20
     
 # TODO: tests without gui?
