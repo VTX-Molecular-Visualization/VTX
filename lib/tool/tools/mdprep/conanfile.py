@@ -27,8 +27,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_ui/1.0")      
-        self.requires("vtx-gromacs/2024.0")      
-        self.requires("qt/6.6.0", transitive_headers=True)
+        self.requires("vtx-gromacs/2024.0")
         self.requires("dylib/2.2.1")
 
     def generate(self):
