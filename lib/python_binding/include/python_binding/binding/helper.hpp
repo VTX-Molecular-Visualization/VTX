@@ -1,4 +1,4 @@
-#include <magic_enum.hpp>
+#include <util/enum.hpp>
 #include <pybind11/pybind11.h>
 #include <util/concepts.hpp>
 

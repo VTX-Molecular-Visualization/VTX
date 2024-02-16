@@ -11,11 +11,11 @@
 #include <core/struct/trajectory.hpp>
 #include <io/reader/molecule.hpp>
 #include <iostream>
-#include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
 #include <util/chrono.hpp>
 #include <util/color/rgba.hpp>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Internal::IO::Reader
