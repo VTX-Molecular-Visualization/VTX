@@ -32,6 +32,6 @@ jobs:
  
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  |
+      run: |
         conan export ../util
         conan create . --build=missing --settings=compiler.cppstd=20
