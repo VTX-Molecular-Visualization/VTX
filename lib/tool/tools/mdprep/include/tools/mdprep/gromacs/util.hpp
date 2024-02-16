@@ -3,14 +3,6 @@
 
 #include <array>
 #include <filesystem>
-#include <optional>
-#include <string_view>
-#include <unordered_map>
-#include <vector>
-//
-#include <tools/mdprep/gromacs/inputs.hpp>
-#include <tools/mdprep/gromacs/pdb2gmx.hpp>
-#include <util/datalocker.hpp>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep
@@ -35,7 +27,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-
+	struct GromacsCommandArgs;
 	struct solvateInstructions // WIP // TODO : move it in appropriate location
 	{
 		fs::path				 inputGro;

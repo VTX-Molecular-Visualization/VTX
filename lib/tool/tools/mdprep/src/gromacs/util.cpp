@@ -1,5 +1,7 @@
-#include "tools/mdprep/gromacs/util.hpp"
+#include "tools/mdprep/gromacs/inputs.hpp"
+//
 #include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/util.hpp"
 #include <qapplication.h>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>

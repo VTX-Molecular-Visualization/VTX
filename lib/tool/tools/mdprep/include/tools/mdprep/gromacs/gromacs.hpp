@@ -1,7 +1,6 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 
-#include "tools/mdprep/gromacs/inputs.hpp"
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -11,6 +10,7 @@ namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
+	class Inputs;
 
 	struct Channels
 	{
