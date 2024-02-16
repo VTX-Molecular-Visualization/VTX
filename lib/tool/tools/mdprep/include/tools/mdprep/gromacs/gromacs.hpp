@@ -20,7 +20,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct GromacsCommandArgs
 	{
 		std::vector<std::string>		arguments;
-		VTX::Util::DataLocker<Channels> channels;
+		VTX::Util::DataLocker<Channels> channelsLocker;
 		std::optional<Inputs>
 			 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
 		bool operator==( const GromacsCommandArgs & ) const noexcept = default;

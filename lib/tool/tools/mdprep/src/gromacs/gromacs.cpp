@@ -10,26 +10,42 @@ namespace VTX::Tool::Mdprep::Gromacs
 	namespace
 	{
 
-		void fillMissingString( QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
+		void fillMissingString( const QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
+		void fillMissingString( Channels & channels, std::string & err, std::string & out )
+		{
+			channels.stderr_ += err;
+			channels.stdout_ += out;
+
+			err.clear();
+			out.clear();
+		}
 
 		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			/*
-			QByteArray	   qBuf;
-			std::string	   sBuf;
+			std::string unsentBuf, // Used when the stdout is not ready to be sent
+				bufErr, bufOut;
 			const uint64_t MAXIMUM_WAITING_ITERATION_NUMBER = 10000;
 			uint64_t	   currentIterationNumber			= 0; // Used to kill the process if too long
 			size_t		   lastStdChannelSizeSum			= 0; // Used to see if gromacs wrote something
 
 			while ( !p_finished )
 			{
+				size_t savedChannelsSizeSum = 0;
+				{
+					auto channels		 = p_args.channelsLocker.open();
+					savedChannelsSizeSum = channels->stderr_.size() + channels->stdout_.size();
+
+					if ( bufErr.empty() == false || bufOut.empty() == false )
+						fillMissingString( *channels, bufErr, bufOut );
+				}
+
 				p_proc.waitForReadyRead();
 
 				if ( currentIterationNumber > MAXIMUM_WAITING_ITERATION_NUMBER )
 				{
 					p_proc.kill();
-					p_args.stderr_ += "\nVTX error -- gromacs was very long and might encountered unexpected
-			difficulties. The process was killed."; break;
+					bufErr += "\nVTX error -- gromacs was very long and might encountered unexpected difficulties. The process was killed.";
+					break;
 				}
 				if ( p_proc.isReadable() == false || p_proc.isWritable() == false )
 				{
@@ -37,14 +53,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 					continue;
 				}
 
-				qBuf = p_proc.readAllStandardError();
-				fillMissingString( qBuf, p_args.stderr_ );
+				fillMissingString( p_proc.readAllStandardError(), bufErr );
+				fillMissingString( p_proc.readAllStandardOutput(), unsentBuf );
 
-				qBuf = p_proc.readAllStandardOutput();
-				fillMissingString( qBuf, sBuf );
-
-				size_t currentStdChannelSizeSum = p_args.stderr_.size() + sBuf.size() + p_args.stdout_.size();
-				bool   gromacsIsWaitingInputs	= isWaitingInputs( sBuf );
+				size_t currentStdChannelSizeSum = savedChannelsSizeSum + bufErr.size() + unsentBuf.size();
+				bool   gromacsIsWaitingInputs	= isWaitingInputs( unsentBuf );
 
 				if ( gromacsIsWaitingInputs == false && currentStdChannelSizeSum == lastStdChannelSizeSum )
 				{
@@ -58,9 +71,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 				// From here, gromacs wait for us to write something
 
 				lastStdChannelSizeSum = currentStdChannelSizeSum;
-				p_args.stdout_ += sBuf;
-				sBuf.clear();
+				bufOut += unsentBuf;
+				unsentBuf.clear();
 
+				/*
 				Pdb2gmxInputId expectedId;
 				bool noProblemFoundWhileParsingGromacsOutput = parseExpectedKwArgument( p_args.stdout_, expectedId );
 				if ( noProblemFoundWhileParsingGromacsOutput == false )
@@ -80,27 +94,28 @@ namespace VTX::Tool::Mdprep::Gromacs
 				p_proc.write( bytesForGromacs.data() );
 				p_args.stdout_ += bytesForGromacs;
 				p_proc.waitForBytesWritten();
+				*/
 			}
-			fillMissingString( qBuf, p_args.stderr_ );
-			p_args.stdout_ += sBuf;
-			*/
+			auto channels = p_args.channelsLocker.open();
+			fillMissingString( p_proc.readAllStandardError(), bufErr );
+			fillMissingString( p_proc.readAllStandardOutput(), bufOut );
+			fillMissingString( *channels, bufErr, bufOut );
 		}
 		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			/*
-			QByteArray buf;
+			QByteArray bufErr, bufOut;
 
 			do
 			{
 				p_proc.waitForReadyRead( 10 );
-				buf = p_proc.readAllStandardError();
-				fillMissingString( buf, p_args.stderr_ );
+				bufErr = p_proc.readAllStandardError();
+				bufOut = p_proc.readAllStandardOutput();
 
-				buf = p_proc.readAllStandardOutput();
-				fillMissingString( buf, p_args.stdout_ );
+				auto channels = p_args.channelsLocker.open();
+				fillMissingString( bufErr, channels->stderr_ );
+				fillMissingString( bufOut, channels->stdout_ );
 
 			} while ( !p_finished );
-			*/
 		}
 	} // namespace
 
