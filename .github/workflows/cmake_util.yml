@@ -33,7 +33,15 @@ jobs:
     - name: Install dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan install . --build=missing --settings=compiler.cppstd=20
-
+     
+    - name: Create package
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan create . --build=missing --settings=compiler.cppstd=20
+        
+    - name: Test
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan create test --build=missing --settings=compiler.cppstd=20
+               
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
@@ -42,17 +50,7 @@ jobs:
         conan upload nlohmann_json -r=cano7782
         conan upload magic_enum -r=cano7782
         conan upload cpr -r=cano7782
+        conan upload catch2 -r=cano7782
         conan upload fmt -r=cano7782
         conan upload zlib -r=cano7782
         conan upload libcurl -r=cano7782
-      
-    - name: Create package
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create . --settings=compiler.cppstd=20
-        
-    - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: |
-        conan create test --build=missing --settings=compiler.cppstd=20
-        conan upload catch2 -r=cano7782
-        

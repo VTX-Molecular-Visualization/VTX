@@ -27,11 +27,16 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_USER }} cano7782 ${{ secrets.CONAN_SERVER_PASSWORD }}
+
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
         conan export ../util         
-        conan export .
+        conan create . --build=missing --settings=compiler.cppstd=20
          
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
@@ -45,12 +50,20 @@ jobs:
         conan export ../io
         conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
+    - name: Upload dependencies
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: |
+        conan upload glad -r=cano7782
+        conan upload sdl -r=cano7782
+        conan upload imgui -r=cano7782
+        conan upload stb -r=cano7782
+
     - name: Read package path from output.json
       id: read_package_path
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
       shell: bash
-
+        
     - uses: actions/upload-artifact@v3
       env:
         PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
