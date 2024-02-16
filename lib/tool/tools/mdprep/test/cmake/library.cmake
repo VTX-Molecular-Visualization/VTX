@@ -32,4 +32,4 @@ include(Catch)
 catch_discover_tests(vtx_tool_mdprep_test)
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "data")
 
-vtx_copy_directory_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
+vtx_copy_registered_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
