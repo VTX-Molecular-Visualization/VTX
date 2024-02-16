@@ -27,6 +27,11 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_USER }} cano7782 ${{ secrets.CONAN_SERVER_PASSWORD }}
+
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
@@ -36,9 +41,13 @@ jobs:
         conan export ../renderer
         conan export ../io
         conan export ../io/chemfiles
-        conan create . --build=missing --settings=compiler.cppstd=20
-        
+        conan create . --build=missing --settings=compiler.cppstd=20  
     
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan create test --build=missing --settings=compiler.cppstd=20
+      
+    - name: Upload dependencies
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: |
+        conan upload pybind11 -r=cano7782
