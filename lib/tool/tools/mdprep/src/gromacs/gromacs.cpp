@@ -1,5 +1,5 @@
 #include "tools/mdprep/gromacs/gromacs.hpp"
-#include "tools/mdprep/gromacs/gromacs.impl.hpp"
+#include "tools/mdprep/gromacs/impl.hpp"
 #include <qprocess.h>
 #include <thread>
 #include <util/exceptions.hpp>
@@ -14,6 +14,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
+			/*
 			QByteArray	   qBuf;
 			std::string	   sBuf;
 			const uint64_t MAXIMUM_WAITING_ITERATION_NUMBER = 10000;
@@ -27,8 +28,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 				if ( currentIterationNumber > MAXIMUM_WAITING_ITERATION_NUMBER )
 				{
 					p_proc.kill();
-					p_args.stderr_ += "\nVTX error -- gromacs was very long and might encountered unexpected difficulties. The process was killed.";
-					break;
+					p_args.stderr_ += "\nVTX error -- gromacs was very long and might encountered unexpected
+			difficulties. The process was killed."; break;
 				}
 				if ( p_proc.isReadable() == false || p_proc.isWritable() == false )
 				{
@@ -82,9 +83,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 			}
 			fillMissingString( qBuf, p_args.stderr_ );
 			p_args.stdout_ += sBuf;
+			*/
 		}
 		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
+			/*
 			QByteArray buf;
 
 			do
@@ -97,6 +100,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 				fillMissingString( buf, p_args.stdout_ );
 
 			} while ( !p_finished );
+			*/
 		}
 	} // namespace
 

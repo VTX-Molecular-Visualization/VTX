@@ -5,11 +5,12 @@
 #include <filesystem>
 #include <optional>
 #include <string_view>
+#include <unordered_map>
+#include <vector>
+//
 #include <tools/mdprep/gromacs/inputs.hpp>
 #include <tools/mdprep/gromacs/pdb2gmx.hpp>
-#include <unordered_map>
 #include <util/datalocker.hpp>
-#include <vector>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep
@@ -35,12 +36,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 namespace VTX::Tool::Mdprep::Gromacs
 {
 
-	// Write gromacs command arguments using input instructions
-	//    Does nothing if the instructions have default values.
-	//    Does not perform filesystem check on input gro
-	//    If the output_gro is empty, will use the input filename root and append "solv"
-	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept;
-
 	struct solvateInstructions // WIP // TODO : move it in appropriate location
 	{
 		fs::path				 inputGro;
@@ -52,6 +47,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 		int						 maxsol = 0;
 		bool					 vel	= false;
 	};
+
+	// Write gromacs command arguments using input instructions
+	//    Does nothing if the instructions have default values.
+	//    Does not perform filesystem check on input gro
+	//    If the output_gro is empty, will use the input filename root and append "solv"
+	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept;
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
