@@ -29,11 +29,7 @@ jobs:
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_USER }} cano7782 ${{ secrets.CONAN_SERVER_PASSWORD }}
-        
-    - name: Install dependencies
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan install . --build=missing --settings=compiler.cppstd=20
-     
+           
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan create . --build=missing --settings=compiler.cppstd=20
