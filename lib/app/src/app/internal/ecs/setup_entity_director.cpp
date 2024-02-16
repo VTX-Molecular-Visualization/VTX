@@ -1,4 +1,5 @@
 #include "app/internal/ecs/setup_entity_director.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/entity/scene/camera_entity.hpp"

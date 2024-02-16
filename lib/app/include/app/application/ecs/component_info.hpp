@@ -1,54 +1,44 @@
-#ifndef __VTX_APP_APPLICATION_ECS_COMPONENT_INFO__
-#define __VTX_APP_APPLICATION_ECS_COMPONENT_INFO__
+#ifndef __VTX_APP_APPLICATION_ECS_COMPONENT_STATIC_ID_MAP__
+#define __VTX_APP_APPLICATION_ECS_COMPONENT_STATIC_ID_MAP__
 
-#include "app/application/system/system_registration.hpp"
 #include "app/core/ecs/concepts.hpp"
-#include "app/core/system/base_system.hpp"
 #include <map>
 #include <string>
 #include <typeinfo>
 
 namespace VTX::App::Application::ECS
 {
-	using ComponentID = std::string;
+	using ComponentStaticID = std::string;
 
-	const ComponentID INVALID_COMPONENT_ID = "";
+	const ComponentStaticID INVALID_COMPONENT_STATIC_ID = "";
 
-	class ComponentInfo : public Core::System::BaseSystem
+	class ComponentStaticIDMap
 	{
 	  public:
-		inline static const System::SystemRegistration<ComponentInfo> SYSTEM_REG
-			= System::SystemRegistration<ComponentInfo>();
-
-	  public:
-		ComponentInfo() = default;
-		~ComponentInfo() {}
+		ComponentStaticIDMap() = default;
+		~ComponentStaticIDMap() {}
 
 		template<Core::ECS::ECS_Component T>
-		void registerComponent( const ComponentID & p_id )
+		void registerComponent( const ComponentStaticID & p_id )
 		{
-			_mapTypeID[ typeid( T ).hash_code() ] = p_id;
+			_mapTypeStaticID[ typeid( T ).hash_code() ] = p_id;
 		}
 
 		template<Core::ECS::ECS_Component T>
-		const ComponentID & getComponentID()
+		const ComponentStaticID & getComponentID()
 		{
 			const size_t hashcode = typeid( T ).hash_code();
 
-			if ( !_mapTypeID.contains( hashcode ) )
-				return INVALID_COMPONENT_ID;
+			if ( !_mapTypeStaticID.contains( hashcode ) )
+				return INVALID_COMPONENT_STATIC_ID;
 
-			return _mapTypeID.at( hashcode );
+			return _mapTypeStaticID.at( hashcode );
 		}
 
 	  private:
-		std::map<size_t, ComponentID> _mapTypeID = std::map<size_t, ComponentID>();
+		std::map<size_t, ComponentStaticID> _mapTypeStaticID = std::map<size_t, ComponentStaticID>();
 	};
 
 } // namespace VTX::App::Application::ECS
 
-namespace VTX::App
-{
-	Application::ECS::ComponentInfo & COMPONENT_INFO();
-}
 #endif

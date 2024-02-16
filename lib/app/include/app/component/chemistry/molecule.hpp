@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
-#include "app/application/ecs/component_registration.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/core/uid/uid.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
@@ -19,8 +19,11 @@ namespace VTX::App::Component::Chemistry
 {
 	class Molecule
 	{
+	  private:
 		// Register component class as component
-		inline static const Application::ECS::Registration<Molecule> registration { "Chemistry::MoleculeComponent" };
+		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Molecule> _compReg {
+			"Chemistry::MoleculeComponent"
+		};
 
 		friend App::Render::GPUProxyBuilder;
 		friend Chain;

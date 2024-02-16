@@ -30,8 +30,3 @@ namespace VTX::App::Application::ECS
 	}
 
 } // namespace VTX::App::Application::ECS
-
-namespace VTX::App
-{
-	Application::ECS::EntityDirector & ENTITY_DIRECTOR() { return Application::ECS::EntityDirector::SYSTEM.get(); }
-} // namespace VTX::App

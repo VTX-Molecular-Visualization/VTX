@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 #define __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 
-#include "app/application/ecs/component_registration.hpp"
 #include "app/application/scene_utility.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/core/callback_event.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <string>
@@ -11,9 +11,8 @@ namespace VTX::App::Component::Scene
 {
 	class SceneItemComponent : public Core::ECS::BaseComponent
 	{
-		inline static const Application::ECS::Registration<SceneItemComponent> registration {
-			"Scene::SceneItemComponent"
-		};
+		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<SceneItemComponent>
+			registration { "Scene::SceneItemComponent" };
 
 	  public:
 		virtual ~SceneItemComponent() = default;

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_UID_COMPONENT__
 #define __VTX_APP_COMPONENT_SCENE_UID_COMPONENT__
 
-#include "app/application/ecs/component_registration.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include "app/core/uid/uid.hpp"
 #include <util/math/range_list.hpp>
@@ -11,7 +11,9 @@ namespace VTX::App::Component::Scene
 	class UIDComponent : public Core::ECS::BaseComponent
 	{
 	  private:
-		inline static Application::ECS::Registration<UIDComponent> registration { "Scene::UIDComponent" };
+		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<UIDComponent> registration {
+			"Scene::UIDComponent"
+		};
 
 	  public:
 		UIDComponent() = default;

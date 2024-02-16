@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_PICKABLE__
 #define __VTX_APP_COMPONENT_SCENE_PICKABLE__
 
-#include "app/application/ecs/component_registration.hpp"
 #include "app/application/selection/picking_info.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_data.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
 #include <memory>
@@ -18,7 +18,9 @@ namespace VTX::App::Component::Scene
 			std::unique_ptr<Application::Selection::SelectionData>( const Application::Selection::PickingInfo & )>;
 
 	  private:
-		inline static Application::ECS::Registration<Pickable> registration { "Scene::PickableComponent" };
+		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<Pickable> registration {
+			"Scene::PickableComponent"
+		};
 
 	  public:
 		Pickable();

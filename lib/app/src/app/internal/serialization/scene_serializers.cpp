@@ -4,6 +4,7 @@
 #include "app/application/system/serializer.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
+#include "app/component/ecs/entity_info.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/scene/scene_item_component.hpp"
@@ -25,11 +26,11 @@ namespace VTX::App::Internal::Serialization
 
 		for ( const Core::ECS::BaseEntity entity : p_scene.getAllSceneItems() )
 		{
-			Util::JSon::Array							  jsonComponentsArray = Util::JSon::Array();
-			const Application::ECS::EntityInfoComponent & entityInfo
-				= MAIN_REGISTRY().getComponent<Application::ECS::EntityInfoComponent>( entity );
+			Util::JSon::Array							jsonComponentsArray = Util::JSon::Array();
+			const Component::ECS::EntityInfoComponent & entityInfo
+				= MAIN_REGISTRY().getComponent<Component::ECS::EntityInfoComponent>( entity );
 
-			for ( const Application::ECS::ComponentID & componentID : entityInfo.getLinkedComponents() )
+			for ( const Application::ECS::ComponentStaticID & componentID : entityInfo.getLinkedComponents() )
 			{
 				Util::JSon::Object jsonComponent
 					= { { "ID", componentID },
@@ -61,8 +62,8 @@ namespace VTX::App::Internal::Serialization
 
 			for ( const Util::JSon::Object & component : componentsArray )
 			{
-				const Application::ECS::ComponentID componentID
-					= SERIALIZER().deserializeField<Application::ECS::ComponentID>( component, "ID" );
+				const Application::ECS::ComponentStaticID componentID
+					= SERIALIZER().deserializeField<Application::ECS::ComponentStaticID>( component, "ID" );
 				const Util::JSon::Object & componentData = component[ "DATA" ];
 
 				COMPONENT_META_FUNCTION().deserializeComponent( componentID, entity, componentData );

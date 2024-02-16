@@ -2,8 +2,6 @@
 #define __VTX_APP_APPLICATION_ECS_ENTITY_DIRECTOR__
 
 #include "app/application/ecs/building/entity_builder.hpp"
-#include "app/application/system/system_registration.hpp"
-#include "app/core/system/base_system.hpp"
 #include <map>
 #include <string>
 
@@ -11,12 +9,8 @@ namespace VTX::App::Application::ECS
 {
 	using EntityDirectorID = std::string;
 
-	class EntityDirector : public Core::System::BaseSystem
+	class EntityDirector
 	{
-	  public:
-		inline static const System::SystemRegistration<EntityDirector> SYSTEM
-			= System::SystemRegistration<EntityDirector>();
-
 	  public:
 		EntityDirector();
 		~EntityDirector();
@@ -35,10 +29,5 @@ namespace VTX::App::Application::ECS
 			= std::map<EntityDirectorID, Building::BuildInstruction>();
 	};
 } // namespace VTX::App::Application::ECS
-
-namespace VTX::App
-{
-	Application::ECS::EntityDirector & ENTITY_DIRECTOR();
-}
 
 #endif
