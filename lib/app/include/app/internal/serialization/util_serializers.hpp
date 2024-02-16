@@ -18,7 +18,7 @@ namespace VTX::App::Internal::Serialization
 	template<EnumConcept T>
 	std::string serialize( T p_enumValue )
 	{
-		return std::string( Util::Enum::enumName( p_enumValue ) );
+		return std::string( Util::Enum::enum_name( p_enumValue ) );
 	}
 	template<EnumConcept T>
 	void deserialize( const Util::JSon::BasicJSon & p_json, T & p_enumValue )

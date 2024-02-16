@@ -3,6 +3,7 @@
 
 #include <concepts>
 #include <iterator>
+#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -61,11 +62,11 @@ namespace VTX
 
 	template<typename ContainerType, typename ValueType>
 	concept ContainerOfType = requires( ContainerType p_container ) {
-								  requires Container<ContainerType>;
-								  {
-									  *( p_container.begin() )
-									  } -> std::convertible_to<ValueType>;
-							  };
+		requires Container<ContainerType>;
+		{
+			*( p_container.begin() )
+		} -> std::convertible_to<ValueType>;
+	};
 
 	template<typename EnumType>
 	concept EnumConcept = std::is_enum<EnumType>::value;

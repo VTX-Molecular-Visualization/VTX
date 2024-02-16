@@ -12,11 +12,7 @@
 
 namespace VTX::Util::Enum
 {
-	template<EnumConcept E>
-	inline constexpr std::string_view enumName( const E & p_enum )
-	{
-		return magic_enum::enum_name( p_enum );
-	}
+	using namespace ::magic_enum;
 
 	template<EnumConcept E>
 	inline constexpr E enumCast( const std::string & p_name )
@@ -33,24 +29,13 @@ namespace VTX::Util::Enum
 		}
 	}
 
-	template<EnumConcept E>
-	inline constexpr uint enumInteger( const E & p_enum )
-	{
-		return magic_enum::enum_integer( p_enum );
-	}
-
-	template<EnumConcept E>
-	inline constexpr E enumValue( const size_t p_index )
-	{
-		return magic_enum::enum_value<E>( p_index );
-	}
-
 	template<EnumConcept E1, EnumConcept E2>
 	inline constexpr E2 enumToAnother( const E1 & p_enum )
 	{
-		auto name = enumName( p_enum );
+		auto name = enum_name( p_enum );
 		return enumCast<E2>( std::string( name ) );
 	}
+
 } // namespace VTX::Util::Enum
 
 #endif

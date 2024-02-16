@@ -460,7 +460,7 @@ namespace VTX::Bench
 							ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 							ImNodes::BeginInputAttribute( id++ );
 							ImGui::Text(
-								fmt::format( "{} ({})", input.name, Util::Enum::enumName( attachment.format ) ).c_str()
+								fmt::format( "{} ({})", input.name, Util::Enum::enum_name( attachment.format ) ).c_str()
 							);
 							ImNodes::EndInputAttribute();
 							ImNodes::PopAttributeFlag();
@@ -483,7 +483,7 @@ namespace VTX::Bench
 						mapIdDescPass.emplace( id, pass.get() );
 						ImNodes::BeginOutputAttribute( id++ );
 						ImGui::Text(
-							fmt::format( "({}) {}", Util::Enum::enumName( attachment.format ), output.name ).c_str()
+							fmt::format( "({}) {}", Util::Enum::enum_name( attachment.format ), output.name ).c_str()
 						);
 						ImNodes::EndOutputAttribute();
 					}

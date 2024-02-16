@@ -58,7 +58,7 @@ namespace VTX::Util::JSon
 			case nlohmann::json::value_t::null:
 			case nlohmann::json::value_t::binary:
 			default:
-				VTX_ERROR( "Unmanaged json type {}", Enum::enumName( p_json.type() ) );
+				VTX_ERROR( "Unmanaged json type {}", Enum::enum_name( p_json.type() ) );
 				child = BasicJSon();
 				break;
 			}
@@ -107,7 +107,7 @@ namespace VTX::Util::JSon
 
 			default:
 				throw( VTXException(
-					"Unmanaged type " + std::string( Enum::enumName( p_basicJSon.getType() ) ) + " in JSon parser."
+					"Unmanaged type " + std::string( Enum::enum_name( p_basicJSon.getType() ) ) + " in JSon parser."
 				) );
 			}
 		}

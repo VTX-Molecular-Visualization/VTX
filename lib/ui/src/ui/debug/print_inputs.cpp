@@ -13,10 +13,10 @@ namespace VTX::UI::Debug
 
 	void PrintInputs::_logKeyPressed( Qt::Key p_key ) const
 	{
-		VTX_DEBUG( "Key pressed : {}", Util::Enum::enumName<Qt::Key>( p_key ) );
+		VTX_DEBUG( "Key pressed : {}", Util::Enum::enum_name<Qt::Key>( p_key ) );
 	}
 	void PrintInputs::_logKeyReleased( Qt::Key p_key ) const
 	{
-		VTX_DEBUG( "Key released : {}", Util::Enum::enumName<Qt::Key>( p_key ) );
+		VTX_DEBUG( "Key released : {}", Util::Enum::enum_name<Qt::Key>( p_key ) );
 	}
 } // namespace VTX::UI::Debug
