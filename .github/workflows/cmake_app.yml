@@ -37,7 +37,6 @@ jobs:
       run:  |
         conan export ../util
         conan export ../core
-        conan export ../io/chemfiles
         conan export ../io
         conan export ../renderer
         conan create . --build=missing --settings=compiler.cppstd=20
