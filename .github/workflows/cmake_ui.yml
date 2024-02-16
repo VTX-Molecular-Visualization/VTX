@@ -32,7 +32,14 @@ jobs:
            
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create . --build=missing --settings=compiler.cppstd=20
+      run: |
+        conan export ../util
+        conan export ../core
+        conan export ../io/chemfiles
+        conan export ../io
+        conan export ../renderer
+        conan export ../app
+        conan create . --build=missing --settings=compiler.cppstd=20
     
 # TODO: tests without gui?
     
