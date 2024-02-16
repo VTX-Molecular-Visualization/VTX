@@ -43,8 +43,8 @@ jobs:
         conan export ../app
         conan export ../python_binding
         conan export ../ui
-        conan export ../tools/mdprep/external/gromacs
-        conan export ../tools/mdprep
+        conan export tools/mdprep/external/gromacs
+        conan export tools/mdprep
         conan create . --build=missing --settings=compiler.cppstd=20
     
     - name: Test
