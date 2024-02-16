@@ -2,8 +2,10 @@ import os
 import glob
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import copy
+from pathlib import Path
 
-class VTXPythonBindingRecipe(ConanFile):
+class VTXPythonBindingRecipe(ConanFile):    
     name = "vtx_python_binding"
     version = "1.0"
     package_type = "library"
@@ -14,8 +16,11 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "python_script/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "python_script/*"
     
+    def _generated_cmake_prefix(self):
+        return "pybind11-"
+        
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
@@ -51,12 +56,26 @@ class VTXPythonBindingRecipe(ConanFile):
         self.cpp_info.components["pytx"].set_property("cmake_target_name", "vtx_python_binding::PyTX")
         self.cpp_info.components["pytx"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
 
-        dir_python_script = os.path.join(self.package_folder, "python_script")
-        self.conf_info.define("user.myconf:dir_python_script", dir_python_script)
-
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)
         files = glob.glob(path_python_module, recursive=True)
+        
+        cmake_file_list = ["cmake/vtx_python_binding_copy_files.cmake"]
+        
         if len(files) > 0:
             print("Found python module: " + files[0])
             self.conf_info.define("user.myconf:path_python_module", files[0])
+            
+            cmake_dir = os.path.join(self.recipe_folder, "cmake", "out")
+
+            if not Path(cmake_dir).exists():
+                Path(cmake_dir).mkdir()
+            cmake_file_name = f"{self._generated_cmake_prefix()}{self.settings.build_type}.cmake"
+            cmake_file_path = os.path.join(cmake_dir, cmake_file_name)
+            
+            cmake_file_content = """vtx_register_build_file_copy("%s" ".")""" % ((Path(files[0])).as_posix())
+            Path(cmake_file_path).write_text(cmake_file_content)
+            cmake_file_list.append(cmake_file_path)
+            
+        # Give away cmake code to be executed by the consumer of this package
+        self.cpp_info.set_property("cmake_build_modules", cmake_file_list)

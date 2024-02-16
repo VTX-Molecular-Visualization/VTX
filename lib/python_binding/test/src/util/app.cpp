@@ -7,6 +7,7 @@
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <string>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Test::Util
@@ -16,7 +17,9 @@ namespace VTX::App::Test::Util
 		static bool isInit;
 		if ( !isInit )
 		{
-			VTX::Util::Logger::get().init();
+			const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
+			std::filesystem::create_directory( path );
+			VTX::Util::Logger::get().init( path );
 
 			PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 

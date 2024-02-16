@@ -1,0 +1,1 @@
+vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../python_script" "python_script")

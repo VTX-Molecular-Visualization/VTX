@@ -9,6 +9,8 @@ find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 REQUIRED)
 
+include ("cmake/vtx_python_binding_copy_files.cmake")
+
 add_library(vtx_python_binding)
 configure_target(vtx_python_binding)
 
