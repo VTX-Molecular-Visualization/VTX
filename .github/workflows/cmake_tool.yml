@@ -58,4 +58,5 @@ jobs:
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
         conan upload eigen -r=cano7782
-        conan upload dylib -r=cano7782        
+        conan upload dylib -r=cano7782
+        
