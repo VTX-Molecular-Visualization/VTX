@@ -22,12 +22,35 @@ namespace VTX::Util
 			_mutex; // This member is mutable so the lock can be tested on a const DataLocker, which make sense as we
 					// expect a const object to prevent Data modification but to be lockable anyway
 
+		static DataType lock_and_copy( const DataType & p_data, std::mutex & p_mutex )
+		{
+			std::scoped_lock<std::mutex> lock { p_mutex };
+			return DataType( p_data );
+		}
+
 	  public:
 		// Default-construct inner data class/struct provided in class template
 		DataLocker()  = default;
 		~DataLocker() = default;
 
-		DataLocker( DataType && d ) : _data( std::move( d ) ) {}
+		inline DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}
+		inline DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
+		inline DataLocker & operator=( DataLocker<DataType> && p_ )
+		{
+			if ( &p_ != this )
+				_data = std::move( p_._data );
+
+			return *this;
+		}
+		inline DataLocker & operator=( const DataLocker<DataType> & p_ )
+		{
+			std::scoped_lock<std::mutex> lock { p_._mutex };
+
+			if ( &p_ != this )
+				_data = DataType( p_._data );
+
+			return *this;
+		}
 
 		// Open the datalocker to be granted an exclusive scoped usage of the datastruct inside
 		ReservedData<DataType>		 open() noexcept { return ReservedData( _data, _mutex ); }

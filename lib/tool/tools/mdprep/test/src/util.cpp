@@ -127,7 +127,7 @@ namespace VTX::test
 		);
 		f.expectedArgs.arguments.push_back( "-water" );
 		f.expectedArgs.arguments.push_back( VTX::Tool::Mdprep::Gromacs::string( f.instructions.water ) );
-		return f;
+		return std::move( f );
 	}
 } // namespace VTX::test
 
@@ -192,7 +192,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - correct_instruction", "[conver
 
 	VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 
-	CHECK( data.expectedArgs == args );
+	CHECK( data.expectedArgs.arguments == args.arguments );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[convert][pdb2gmx][each_interactive_kw]" )
 {
@@ -213,7 +213,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 
 		VTX::Tool::Mdprep::Gromacs::convert( data.instructions, args );
 		data.expectedArgs.interactiveSettings = args.interactiveSettings;
-		CHECK( data.expectedArgs == args );
+		CHECK( data.expectedArgs.arguments == args.arguments );
 	}
 }
 

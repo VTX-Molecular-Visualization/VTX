@@ -24,7 +24,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			/*
 			std::string unsentBuf, // Used when the stdout is not ready to be sent
 				bufErr, bufOut;
 			const uint64_t MAXIMUM_WAITING_ITERATION_NUMBER = 10000;
@@ -47,8 +46,8 @@ namespace VTX::Tool::Mdprep::Gromacs
 				if ( currentIterationNumber > MAXIMUM_WAITING_ITERATION_NUMBER )
 				{
 					p_proc.kill();
-					bufErr += "\nVTX error -- gromacs was very long and might encountered unexpected difficulties. The
-			process was killed."; break;
+					bufErr += "\nVTX error -- gromacs was very long and might encountered unexpected difficulties. The process was killed.";
+					break;
 				}
 				if ( p_proc.isReadable() == false || p_proc.isWritable() == false )
 				{
@@ -83,11 +82,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 			fillMissingString( p_proc.readAllStandardError(), bufErr );
 			fillMissingString( p_proc.readAllStandardOutput(), bufOut );
 			fillMissingString( *channels, bufErr, bufOut );
-			*/
 		}
 		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
 		{
-			/*
 			QByteArray bufErr, bufOut;
 
 			do
@@ -101,13 +98,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 				fillMissingString( bufOut, channels->stdout_ );
 
 			} while ( !p_finished );
-			*/
 		}
 	} // namespace
 
 	void submitGromacsCommand( const fs::path & p_gmxExe, GromacsCommandArgs & p_args )
 	{
-		/*
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
@@ -130,6 +125,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 			interactiveProcessManagement( proc, finished, p_args );
 		else
 			simpleProcessManagement( proc, finished, p_args );
-		*/
 	}
 } // namespace VTX::Tool::Mdprep::Gromacs
