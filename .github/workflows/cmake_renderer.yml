@@ -17,6 +17,11 @@ jobs:
       fail-fast: false
 
     steps:
+    - name: Set git to use CRLF
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
     - uses: actions/checkout@v4
       with:
         submodules: recursive   
