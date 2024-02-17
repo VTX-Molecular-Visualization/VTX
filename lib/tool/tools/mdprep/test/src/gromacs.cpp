@@ -1,6 +1,9 @@
-#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/inputs.hpp"
+//
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/gromacs/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/pdb2gmx.hpp"
+#include "tools/mdprep/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>
@@ -128,12 +131,24 @@ TEST_CASE(
 	contextData.args.arguments.push_back( "-lys" );
 	contextData.args.interactiveSettings.emplace();
 	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "0" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 11 }, "1" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 27 }, "1" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 29 }, "0" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 33 }, "1" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 48 }, "1" );
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 63 }, "0" );
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 11 }, "1"
+	);
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 27 }, "1"
+	);
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 29 }, "0"
+	);
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 33 }, "1"
+	);
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 48 }, "1"
+	);
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 63 }, "0"
+	);
 	check_pdb( contextData );
 }
 TEST_CASE(
@@ -161,7 +176,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsComman
 	contextData.args.interactiveSettings->kwValue.emplace(
 		Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::gln, 289 }, "1"
 	);
-	contextData.args.interactiveSettings->kwValue.emplace( Pdb2gmxInputId { 'B', E_INTERACTIVE_KEYWORD::gln, 62 }, "1" );
+	contextData.args.interactiveSettings->kwValue.emplace(
+		Pdb2gmxInputId { 'B', E_INTERACTIVE_KEYWORD::gln, 62 }, "1"
+	);
 	check_pdb( contextData );
 }
 
