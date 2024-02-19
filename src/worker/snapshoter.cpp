@@ -124,7 +124,7 @@ namespace VTX::Worker
 		{
 			if ( render.save( _path.qpath(), _path.extension().c_str(), _exportData.getIntQuality() ) )
 			{
-				VTX_INFO( "Snapshot taken: " + _path.filename() );
+				VTX_INFO( "Snapshot taken: " + _path.path() );
 			}
 			else
 			{
