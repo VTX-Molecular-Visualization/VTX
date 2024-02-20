@@ -142,6 +142,12 @@ Into `~/.conan2/profiles/default` add
 build_type=<Debug|Release>
 ```
 
+### Add custom Conan repository
+
+```
+conan remote add --insecure cano7782 https://cano7782.odns.fr
+```
+
 ### Set packages in editable mode
 
 ```

@@ -25,9 +25,6 @@ namespace VTX::Renderer::Context
 			  const size_t					p_height,
 			  const size_t					p_x,
 			  const size_t					p_y,
-			  const float					p_fov,
-			  const float					p_near,
-			  const float					p_far,
 			  const RenderQueue &			p_renderQueue,
 			  const Links &					p_links,
 			  const Handle					p_output,
@@ -80,9 +77,7 @@ namespace VTX::Renderer::Context
 					 p_context.compileShaders()
 				 } -> std::same_as<void>;
 				 {
-					 p_context.snapshot(
-						 p_image, p_renderQueue, p_instructions, p_width, p_height, p_fov, p_near, p_far
-					 )
+					 p_context.snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel )

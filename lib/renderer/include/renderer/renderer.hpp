@@ -268,6 +268,10 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
+		inline std::vector<Proxy::Molecule> &		getProxiesMolecules() { return _proxiesMolecules; }
+		inline std::vector<Proxy::Mesh> &			getProxiesMeshes() { return _proxiesMeshes; }
+		inline std::vector<Proxy::Representation> & getProxiesRepresentations() { return _proxiesRepresentations; }
+		inline std::vector<Proxy::Voxel> &			getProxiesVoxels() { return _proxiesVoxels; }
 
 		size_t		width;
 		size_t		height;

@@ -109,10 +109,7 @@ namespace VTX::Renderer::Context
 			const RenderQueue &	 p_renderQueue,
 			const Instructions & p_instructions,
 			const size_t		 p_width,
-			const size_t		 p_height,
-			const float			 p_fov,
-			const float			 p_near,
-			const float			 p_far
+			const size_t		 p_height
 		);
 
 		void getTextureData(

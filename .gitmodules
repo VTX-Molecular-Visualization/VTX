@@ -1,7 +1,3 @@
-[submodule "lib/io/chemfiles"]
-	path = lib/io/chemfiles
-	url = https://github.com/VTX-Molecular-Visualization/chemfiles.git
-	branch = master
 [submodule "lib/tool/tools/mdprep/external/gromacs"]
 	path = lib/tool/tools/mdprep/external/gromacs
 	url = https://github.com/VTX-Molecular-Visualization/VTX-gromacs.git

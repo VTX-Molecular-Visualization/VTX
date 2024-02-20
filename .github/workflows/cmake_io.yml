@@ -17,6 +17,11 @@ jobs:
       fail-fast: false
 
     steps:
+    - name: Set git to use CRLF
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
     - uses: actions/checkout@v4
       with:
         submodules: recursive
@@ -26,15 +31,19 @@ jobs:
       
     - name: Create default profile
       run: conan profile detect
+      
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
         conan export ../util
         conan export ../core
-        conan export chemfiles
         conan create . --build=missing --settings=compiler.cppstd=20
    
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --build=missing --settings=compiler.cppstd=20
+      run: conan create test --build=missing --settings=compiler.cppstd=20 

@@ -14,7 +14,6 @@ class VTXUtilTestConan(ConanFile):
     
     def requirements(self):
         self.requires("vtx_util/1.0")
-        self.requires("nlohmann_json/3.11.2") # Compare Wrapper with lib
         self.requires("catch2/3.4.0")
         
     def layout(self):
