@@ -1,7 +1,17 @@
 # Change Log
 
+## [0.4.2] (beta) - 2024-02-20
 
-## [0.4.1] (beta) - 2022-05-30
+### Debug
+
+- Fix possible crash when loading big trajectory.
+- Fix memory leak on SES.
+
+## UI
+
+- Fix some typo.
+
+## [0.4.1] (beta) - 2023-05-30
 
 ### Debug
 
@@ -24,7 +34,7 @@
 
 - Update links in information to the new VTX git repository.
 
-## [0.4.0] (beta) - 2022-05-04
+## [0.4.0] (beta) - 2023-05-04
 
 ### New features
 
