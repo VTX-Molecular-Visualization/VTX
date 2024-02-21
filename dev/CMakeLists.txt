@@ -128,10 +128,12 @@ add_library(vtx_renderer)
 configure_target(vtx_renderer)
 file(GLOB_RECURSE HEADERS_RENDERER ${DIR_LIBS}/renderer/include/*)
 file(GLOB_RECURSE SOURCES_RENDERER ${DIR_LIBS}/renderer/src/*)
+file(GLOB_RECURSE RENDERER_IMGUI_BACKEND ${CMAKE_CURRENT_LIST_DIR}/vendor/*)
 file(GLOB_RECURSE SHADERS ${DIR_LIBS}/renderer/shaders/*)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES_RENDERER}
 	PRIVATE ${SHADERS}
+	PRIVATE ${RENDERER_IMGUI_BACKEND}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/renderer/include FILES ${HEADERS_RENDERER})
 target_link_libraries(vtx_renderer PRIVATE vtx_util)
 target_link_libraries(vtx_renderer PUBLIC glad::glad)
