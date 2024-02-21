@@ -50,7 +50,7 @@ namespace VTX::Renderer
 
 		inline void setPerspective( const bool p_perspective ) { _renderer->setPerspective( p_perspective ); }
 
-		inline void addProxy( const Proxy::Molecule & p_proxy ) { _renderer->addProxy( p_proxy ); }
+		inline size_t addProxy( const Proxy::Molecule & p_proxy ) { return _renderer->addProxy( p_proxy ); }
 
 		inline void addProxy( const Proxy::Voxel & p_proxy ) { _renderer->addProxy( p_proxy ); }
 
@@ -58,6 +58,8 @@ namespace VTX::Renderer
 		{
 			_renderer->setColorLayout( p_layout );
 		}
+
+		inline void updateMoleculeTransform( const size_t p_id ) { _renderer->updateMoleculeTransform( p_id ); }
 
 		inline void snapshot(
 			std::vector<uchar> & p_image,

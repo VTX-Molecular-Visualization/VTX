@@ -271,7 +271,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								uint count = draw.countFunction();
+								size_t count = draw.countFunction();
 								if ( count > 0 )
 								{
 									vao->bind();
@@ -292,7 +292,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								uint count = draw.countFunction();
+								size_t count = draw.countFunction();
 								if ( count > 0 )
 								{
 									vao->bind();

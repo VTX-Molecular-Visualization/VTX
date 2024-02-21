@@ -224,7 +224,13 @@ int main( int, char ** )
 				&molecule.chainFirstResidues,
 				&molecule.chainResidueCounts };
 
-		renderer.addProxy( proxyMolecule );
+		////////////////
+		Mat4f					  transform2	 = MAT4F_ID;
+		Renderer::Proxy::Molecule proxyMolecule2 = proxyMolecule;
+		proxyMolecule2.transform				 = &transform2;
+
+		const size_t rendererId	 = renderer.addProxy( proxyMolecule );
+		const size_t rendererId2 = renderer.addProxy( proxyMolecule2 );
 
 		Math::AABB aabb;
 		for ( const Vec3f & position : molecule.trajectory.frames.front() )
@@ -243,6 +249,14 @@ int main( int, char ** )
 		while ( isRunning )
 		{
 			float time = float( ui.getTime() ) * 1e-3f;
+
+			// Update scene.
+			// Rotate molecule.
+			*proxyMolecule.transform = Math::rotate( *proxyMolecule.transform, time * 0.001f, VEC3F_Y );
+			renderer.updateMoleculeTransform( rendererId );
+
+			*proxyMolecule2.transform = Math::rotate( *proxyMolecule2.transform, time * 0.001f, VEC3F_X );
+			renderer.updateMoleculeTransform( rendererId2 );
 
 			// Renderer.
 			renderer.render( time );

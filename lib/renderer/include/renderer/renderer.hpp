@@ -184,7 +184,7 @@ namespace VTX::Renderer
 			setUniform( p_view, "Matrix view" );
 
 			// Update model view matrices.
-			_setDataModel( _proxiesMolecules );
+			_setDataModels( _proxiesMolecules );
 		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
@@ -206,15 +206,26 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		inline void addProxy( const Proxy::Molecule & p_proxy )
+		// TODO: uchar?
+		using RendererId = size_t;
+		inline RendererId addProxy( const Proxy::Molecule & p_proxy )
 		{
 			_proxiesMolecules.push_back( p_proxy );
 
 			if ( _renderGraph->isBuilt() )
 			{
-				_setData( p_proxy );
+				_refreshDataSpheresCylinders();
 			}
 
+			setNeedUpdate( true );
+
+			RendererId id = _proxiesMolecules.size() - 1;
+			return id;
+		}
+
+		inline void updateMoleculeTransform( const RendererId p_id )
+		{
+			_setDataModel( p_id );
 			setNeedUpdate( true );
 		}
 
@@ -277,12 +288,12 @@ namespace VTX::Renderer
 		size_t		height;
 		StructInfos infos;
 
-		uint sizeAtoms	 = 0;
-		uint sizeBonds	 = 0;
-		uint sizeRibbons = 0;
-		uint sizeVoxels	 = 0;
+		size_t sizeAtoms   = 0;
+		size_t sizeBonds   = 0;
+		size_t sizeRibbons = 0;
+		size_t sizeVoxels  = 0;
 
-		uint sizeMolecules = 0;
+		// uint sizeMolecules = 0;
 
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
@@ -315,6 +326,10 @@ namespace VTX::Renderer
 		std::vector<Proxy::Voxel>		   _proxiesVoxels;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
+
+		void _refreshDataSpheresCylinders();
+
+		/*
 		void _setData( const Proxy::Molecule & p_proxy )
 		{
 			assert( p_proxy.atomIds || p_proxy.residueIds );
@@ -327,14 +342,14 @@ namespace VTX::Renderer
 
 			if ( p_proxy.residueIds )
 			{
-				_setDataRibbons( p_proxy );
+				//_setDataRibbons( p_proxy );
 			}
 
-			_setDataModel( { p_proxy } );
+			_setDataModels( { p_proxy } );
 
-			sizeMolecules++;
+			// sizeMolecules++;
 		}
-
+		*/
 		enum E_ATOM_FLAGS
 		{
 			VISIBILITY = 0,
@@ -377,8 +392,9 @@ namespace VTX::Renderer
 			_context->setData( atomFlags, "SpheresCylindersFlags" );
 
 			// Model ID.
-			uchar modelId = sizeMolecules;
-			_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels" );
+			//			uchar modelId = sizeMolecules;
+			//_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels"
+			//);
 
 			// Counters.
 			sizeAtoms += uint( p_proxy.atomPositions->size() );
@@ -647,7 +663,7 @@ namespace VTX::Renderer
 					*/
 
 					// Model ID.
-					models.emplace_back( sizeMolecules );
+					// models.emplace_back( sizeMolecules );
 
 					/*
 					if ( residueLast != -1
@@ -690,14 +706,14 @@ namespace VTX::Renderer
 			sizeRibbons += uint( bufferIndices.size() );
 		}
 
-		void _setDataModel( const std::vector<Proxy::Molecule> & p_proxies )
+		struct _StructUBOModel
 		{
-			struct _StructUBOModel
-			{
-				Mat4f mv;
-				Mat4f n;
-			};
+			Mat4f mv;
+			Mat4f n;
+		};
 
+		void _setDataModels( const std::vector<Proxy::Molecule> & p_proxies )
+		{
 			std::vector<_StructUBOModel> models;
 			Mat4f						 matrixView;
 			getUniform( matrixView, "Matrix view" );
@@ -710,6 +726,16 @@ namespace VTX::Renderer
 			}
 
 			_context->setUniform( models, "Matrix model view" );
+		}
+
+		inline void _setDataModel( const RendererId p_id )
+		{
+			//_StructUBOModel model;
+			Mat4f matrixView;
+			getUniform( matrixView, "Matrix view" );
+			const Mat4f matrixModelView = matrixView * *_proxiesMolecules[ p_id ].transform;
+			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			_context->setUniform( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", p_id );
 		}
 
 		void _setData( const Proxy::Voxel & p_proxy )

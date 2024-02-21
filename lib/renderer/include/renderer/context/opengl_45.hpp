@@ -91,6 +91,22 @@ namespace VTX::Renderer::Context
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
+		inline void reserveData( const size_t p_size, const std::string & p_key )
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->reserveData( GLsizei( p_size ), GL_STATIC_DRAW );
+		}
+
+		template<typename T>
+		inline void setSubData( const std::vector<T> & p_data, const std::string & p_key, const size_t p_offset = 0 )
+
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->setSubData( p_data, GLintptr( p_offset ) );
+		}
+
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
 		inline void fillInfos( StructInfos & p_infos ) const
