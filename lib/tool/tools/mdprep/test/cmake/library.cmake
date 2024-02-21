@@ -1,5 +1,7 @@
 
 
+set(HEADERS "")
+set(SOURCES "")
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 

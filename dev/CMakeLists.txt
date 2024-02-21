@@ -40,6 +40,7 @@ function (apply_qt_options target)
 	add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)	
 endfunction()
 
+
 message("vtx")
 cmake_minimum_required(VERSION 3.23)
 
@@ -68,18 +69,9 @@ include(CTest)
 include(Catch)
 
 # Util.
-add_library(vtx_util)
-configure_target(vtx_util)
-file(GLOB_RECURSE HEADERS_UTIL ${DIR_LIBS}/util/include/*)
-file(GLOB_RECURSE SOURCES_UTIL ${DIR_LIBS}/util/src/*)
-target_sources(vtx_util
-	PRIVATE ${SOURCES_UTIL}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/util/include FILES ${HEADERS_UTIL})
-target_link_libraries(vtx_util PUBLIC glm::glm)
-target_link_libraries(vtx_util PUBLIC spdlog::spdlog)
-target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json) # ??
-target_link_libraries(vtx_util PUBLIC magic_enum::magic_enum)
-target_link_libraries(vtx_util PUBLIC cpr::cpr)
+include("${DIR_LIBS}/util/cmake/library.cmake")
+
+
 
 # Util test.
 file(GLOB_RECURSE SOURCES_UTIL_TEST ${DIR_LIBS}/util/test/src/*)
@@ -128,7 +120,7 @@ add_library(vtx_renderer)
 configure_target(vtx_renderer)
 file(GLOB_RECURSE HEADERS_RENDERER ${DIR_LIBS}/renderer/include/*)
 file(GLOB_RECURSE SOURCES_RENDERER ${DIR_LIBS}/renderer/src/*)
-file(GLOB_RECURSE RENDERER_IMGUI_BACKEND ${CMAKE_CURRENT_LIST_DIR}/vendor/*)
+#file(GLOB_RECURSE RENDERER_IMGUI_BACKEND ${CMAKE_CURRENT_LIST_DIR}/vendor/*)
 file(GLOB_RECURSE SHADERS ${DIR_LIBS}/renderer/shaders/*)
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES_RENDERER}
@@ -139,31 +131,31 @@ target_link_libraries(vtx_renderer PRIVATE vtx_util)
 target_link_libraries(vtx_renderer PUBLIC glad::glad)
 
 # Renderer test.
-add_executable(vtx_renderer_test ${DIR_LIBS}/renderer/test/src/main.cpp)
-configure_target(vtx_renderer_test)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
-target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
-catch_discover_tests(vtx_renderer_test)
+#add_executable(vtx_renderer_test ${DIR_LIBS}/renderer/test/src/main.cpp)
+#configure_target(vtx_renderer_test)
+#target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
+#target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
+#target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+#catch_discover_tests(vtx_renderer_test)
 
 # Renderer bench.
-file(GLOB_RECURSE SOURCES_BENCH ${DIR_LIBS}/renderer/bench/src/*)
-file(GLOB_RECURSE VENDORS_BENCH ${DIR_LIBS}/renderer/bench/vendor/*)
-add_executable(vtx_renderer_bench ${SOURCES_BENCH} ${VENDORS_BENCH})
-configure_target(vtx_renderer_bench)
-target_include_directories(vtx_renderer_bench PRIVATE ${DIR_LIBS}/renderer/bench/vendor)
-target_link_libraries(vtx_renderer_bench PRIVATE vtx_util)
-target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer)
-target_link_libraries(vtx_renderer_bench PRIVATE vtx_core)
-target_link_libraries(vtx_renderer_bench PRIVATE vtx_io)
-target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
-target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
-target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
-target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
-#target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
-
-add_custom_target(vtx_renderer_bench_copy_shader ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/renderer/shaders $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
-add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
+#file(GLOB_RECURSE SOURCES_BENCH ${DIR_LIBS}/renderer/bench/src/*)
+#file(GLOB_RECURSE VENDORS_BENCH ${DIR_LIBS}/renderer/bench/vendor/*)
+#add_executable(vtx_renderer_bench ${SOURCES_BENCH} ${VENDORS_BENCH})
+#configure_target(vtx_renderer_bench)
+#target_include_directories(vtx_renderer_bench PRIVATE ${DIR_LIBS}/renderer/bench/vendor)
+#target_link_libraries(vtx_renderer_bench PRIVATE vtx_util)
+#target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer)
+#target_link_libraries(vtx_renderer_bench PRIVATE vtx_core)
+#target_link_libraries(vtx_renderer_bench PRIVATE vtx_io)
+#target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
+#target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
+#target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
+#target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
+##target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
+#
+#add_custom_target(vtx_renderer_bench_copy_shader ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/renderer/shaders #$<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
+#add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
 
 # App.
 add_library(vtx_app)
@@ -232,33 +224,7 @@ add_dependencies(vtx_python_binding_test vtx_python_binding_test_copy_data)
 catch_discover_tests(vtx_python_binding_test)
 
 # UI.
-configure_qt()
-add_library(vtx_ui)
-configure_target(vtx_ui)
-file(GLOB_RECURSE HEADERS_UI ${DIR_LIBS}/ui/include/*)
-file(GLOB_RECURSE SOURCES_UI ${DIR_LIBS}/ui/src/*)
-file(GLOB_RECURSE QT_FORMS_UI ${DIR_LIBS}/ui/asset/qt/forms/*.ui)
-file(GLOB_RECURSE QT_RESOURCES_UI ${DIR_LIBS}/ui/asset/qt/resources/*.qrc)
-target_sources(vtx_ui
-	PRIVATE ${SOURCES_UI}
-	PRIVATE ${QT_FORMS_UI}
-	PRIVATE ${QT_RESOURCES_UI}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/ui/include FILES ${HEADERS_UI})
-target_link_libraries(vtx_ui PRIVATE vtx_util)
-target_link_libraries(vtx_ui PRIVATE vtx_renderer)
-target_link_libraries(vtx_ui PRIVATE vtx_core)
-target_link_libraries(vtx_ui PRIVATE vtx_io)
-target_link_libraries(vtx_ui PRIVATE vtx_app)
-target_link_libraries(vtx_ui PRIVATE vtx_python_binding)
-target_link_libraries(vtx_ui PRIVATE PyTX)
-target_link_libraries(vtx_ui PUBLIC Qt6::Core)
-target_link_libraries(vtx_ui PUBLIC Qt6::Gui)
-target_link_libraries(vtx_ui PUBLIC Qt6::Widgets)
-target_link_libraries(vtx_ui PUBLIC Qt6::OpenGLWidgets)
-if(MSVC)
-	target_link_libraries(vtx_ui PUBLIC Qt6::QWindowsIntegrationPlugin)
-endif()
-apply_qt_options(vtx_ui)
+include("${DIR_LIBS}/ui/cmake/library.cmake")
 
 # UI test.
 add_executable(vtx_ui_test ${DIR_LIBS}/ui/test/src/main.cpp)
@@ -279,7 +245,6 @@ add_dependencies(vtx_ui_test vtx_ui_copy_data)
 catch_discover_tests(vtx_ui_test)
 
 # MdPrep.
-include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
 include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
