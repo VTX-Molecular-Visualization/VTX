@@ -29,6 +29,7 @@ class VTXRecipe(ConanFile):
         self.requires("qt/6.6.1")
         self.requires("eigen/3.4.0") 
         self.requires("vtx-gromacs/2024.0") 
+        self.requires("fmt/10.2.1")
 
     def config_options(self):
         self.options["glad/*"].shared = False

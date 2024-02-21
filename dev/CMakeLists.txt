@@ -64,6 +64,7 @@ find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 include(CTest)
 include(Catch)
@@ -71,16 +72,14 @@ include(Catch)
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
 
-
-
 # Util test.
-file(GLOB_RECURSE SOURCES_UTIL_TEST ${DIR_LIBS}/util/test/src/*)
-add_executable(vtx_util_test ${SOURCES_UTIL_TEST})
-configure_target(vtx_util_test)
-target_link_libraries(vtx_util_test PRIVATE vtx_util)
-target_link_libraries(vtx_util_test PRIVATE nlohmann_json::nlohmann_json) # ??
-target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
-catch_discover_tests(vtx_util_test)
+include("${DIR_LIBS}/util/test/cmake/library.cmake")
+
+target_link_libraries(vtx_util_test PRIVATE fmt::fmt)
+target_link_libraries(vtx_util_test PRIVATE glm::glm)
+target_link_libraries(vtx_util_test PRIVATE spdlog::spdlog)
+target_link_libraries(vtx_util_test PRIVATE cpr::cpr)
+target_link_libraries(vtx_util_test PRIVATE magic_enum::magic_enum)
 
 # Core.
 add_library(vtx_core)
