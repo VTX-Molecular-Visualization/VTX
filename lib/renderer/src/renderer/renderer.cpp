@@ -74,20 +74,14 @@ namespace VTX::Renderer
 		const float			 p_far
 	)
 	{
-		Mat4f matrixProjection;
-		getUniform( matrixProjection, "Matrix projection" );
-		setUniform(
-			Util::Math::perspective(
-				Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
-			),
-			"Matrix projection"
+		Mat4f matrixProjectionOld;
+		getUniform( matrixProjectionOld, "Matrix projection" );
+		Mat4f matrixProjection = Util::Math::perspective(
+			Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		);
-
-		_context->snapshot(
-			p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height, p_fov, p_near, p_far
-		);
-
 		setUniform( matrixProjection, "Matrix projection" );
+		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
+		setUniform( matrixProjectionOld, "Matrix projection" );
 	}
 
 } // namespace VTX::Renderer

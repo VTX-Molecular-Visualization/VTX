@@ -27,11 +27,7 @@ target_link_libraries(vtx_ui_test PRIVATE vtx_ui::vtx_ui)
 target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
 
-IF(WIN32)
-	set(FILENAME_PYTHON_MODULE PyTX.pyd)
-ELSE()
-	set(FILENAME_PYTHON_MODULE PyTX.so)
-ENDIF()
+vtx_copy_registered_data(vtx_ui_test)
 
 add_custom_target(
 	vtx_ui_test_copy_shader
@@ -40,12 +36,6 @@ add_custom_target(
 	${DIR_SHADERS}
 	$<TARGET_FILE_DIR:vtx_ui_test>/shaders)
 add_dependencies(vtx_ui_test vtx_ui_test_copy_shader)
-
-add_custom_target(vtx_ui_copy_module ALL COMMAND
-	${CMAKE_COMMAND} -E copy
-	${PATH_PYTHON_MODULE}
-	$<TARGET_FILE_DIR:vtx_ui_test>/${FILENAME_PYTHON_MODULE})
-add_dependencies(vtx_ui_test vtx_ui_copy_module)
 
 add_custom_target(vtx_ui_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_ui_test>/data)
 add_dependencies(vtx_ui_test vtx_ui_copy_data)
@@ -56,7 +46,5 @@ catch_discover_tests(vtx_ui_test)
 
 install(TARGETS vtx_ui_test)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
-install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION bin)
-install(FILES ${PATH_PYTHON_MODULE} DESTINATION bin RENAME ${FILENAME_PYTHON_MODULE})
 install(DIRECTORY data DESTINATION bin)
 #TODO: install dll too.

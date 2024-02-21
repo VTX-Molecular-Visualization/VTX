@@ -1,5 +1,6 @@
 #include "app/entity/scene/camera_entity.hpp"
 #include "app/application/ecs/registry_manager.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/vtx_app.hpp"
 

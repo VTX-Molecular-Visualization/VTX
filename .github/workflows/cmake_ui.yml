@@ -1,12 +1,12 @@
-name: CMake Core
+name: CMake UI
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/core/**', '.github/workflows/cmake_core.yml']
+    paths: ['lib/ui/**', '.github/workflows/cmake_ui.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/core
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/ui
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-
+        
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
@@ -36,9 +36,21 @@ jobs:
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
- 
+           
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
         conan export ../util
+        conan export ../core
+        conan export ../io
+        conan export ../renderer
+        conan export ../app
+        conan export ../python_binding
         conan create . --build=missing --settings=compiler.cppstd=20
+    
+# TODO: tests without gui?
+    
+    - name: Upload dependencies
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: |
+        conan upload qt -r=cano7782

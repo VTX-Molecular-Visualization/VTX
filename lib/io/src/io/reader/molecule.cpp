@@ -3,7 +3,7 @@
 #include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
-#include <magic_enum.hpp>
+#include <util/enum.hpp>
 #include <map>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>

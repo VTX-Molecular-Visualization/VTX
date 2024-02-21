@@ -1,7 +1,7 @@
 #include "app/action/scene.hpp"
 #include "app/application/ecs/entity_director.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"

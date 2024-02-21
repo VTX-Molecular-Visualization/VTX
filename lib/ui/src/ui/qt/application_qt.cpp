@@ -36,7 +36,12 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::init()
 	{
+		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
+		std::filesystem::create_directory( path );
+		VTX::Util::Logger::get().init( path );
+
 		Core::BaseUIApplication::init();
+
 		_currentMode = std::make_unique<Mode::Visualization>();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )

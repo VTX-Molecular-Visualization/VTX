@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_IO_MOLECULE_METADATA__
 #define __VTX_APP_COMPONENT_IO_MOLECULE_METADATA__
 
-#include "app/application/ecs/component_registration.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include <set>
 #include <string>
 #include <util/types.hpp>
@@ -11,7 +11,9 @@ namespace VTX::App::Component::IO
 	struct MoleculeMetadata
 	{
 	  private:
-		inline static Application::ECS::Registration<MoleculeMetadata> registration { "IO::MoleculeMetadataComponent" };
+		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<MoleculeMetadata> registration {
+			"IO::MoleculeMetadataComponent"
+		};
 
 	  public:
 		FilePath	path				= FilePath();

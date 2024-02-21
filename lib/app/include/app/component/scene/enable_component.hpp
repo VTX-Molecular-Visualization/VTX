@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_ENABLE__
 #define __VTX_APP_COMPONENT_SCENE_ENABLE__
 
-#include "app/application/ecs/component_registration.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/ecs/core/base_component.hpp"
 
 namespace VTX::App::Component::Scene
@@ -9,7 +9,9 @@ namespace VTX::App::Component::Scene
 	class EnableComponent : public ECS::Core::BaseComponent
 	{
 	  private:
-		inline static Application::ECS::Registration<EnableComponent> registration { "Scene::EnableComponent" };
+		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<EnableComponent> registration {
+			"Scene::EnableComponent"
+		};
 
 	  public:
 		EnableComponent() = default;

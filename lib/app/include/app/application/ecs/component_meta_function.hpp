@@ -3,11 +3,9 @@
 
 #include "app/application/ecs/component_info.hpp"
 #include "app/application/ecs/registry_manager.hpp"
-#include "app/application/system/system_registration.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/ecs/concepts.hpp"
 #include "app/core/serialization/serialization.hpp"
-#include "app/core/system/base_system.hpp"
 #include <functional>
 #include <map>
 #include <string>
@@ -16,24 +14,18 @@
 
 namespace VTX::App::Application::ECS
 {
-	class ComponentMetaFunction : public Core::System::BaseSystem
+	class ComponentMetaFunction
 	{
-	  public:
-		inline static const System::SystemRegistration<ComponentMetaFunction> SYSTEM_REG
-			= System::SystemRegistration<ComponentMetaFunction>();
-
 	  public:
 		ComponentMetaFunction() = default;
 		~ComponentMetaFunction() {}
 
 		template<Core::ECS::ECS_Component T>
-		void registerComponent( const ComponentID & p_id )
+		void registerComponent( const ComponentStaticID & p_id )
 		{
-			_mapSerializer[ p_id ] = [ p_id ](
-										 const Core::ECS::BaseEntity &				p_entity,
+			_mapSerializer[ p_id ] = []( const Core::ECS::BaseEntity &				p_entity,
 										 const Application::ECS::RegistryManager &	p_registry,
-										 const Core::Serialization::Serialization & p_serializer
-									 )
+										 const Core::Serialization::Serialization & p_serializer )
 			{
 				const T & component = p_registry.getComponent<T>( p_entity );
 
@@ -61,12 +53,15 @@ namespace VTX::App::Application::ECS
 			};
 		}
 
-		const Util::JSon::Object serializeComponent( const Core::ECS::BaseEntity & p_target, const ComponentID & p_id );
-		void					 deserializeComponent(
-								const ComponentID &			  p_id,
-								const Core::ECS::BaseEntity & p_target,
-								const Util::JSon::Object &	  p_json
-							);
+		const Util::JSon::Object serializeComponent(
+			const Core::ECS::BaseEntity & p_target,
+			const ComponentStaticID &	  p_id
+		);
+		void deserializeComponent(
+			const ComponentStaticID &	  p_id,
+			const Core::ECS::BaseEntity & p_target,
+			const Util::JSon::Object &	  p_json
+		);
 
 	  private:
 		using ComponentSerializerFunction = std::function<
@@ -76,15 +71,11 @@ namespace VTX::App::Application::ECS
 		using ComponentDeserializerFunction = std::function<
 			void( Application::ECS::RegistryManager &, const Core::Serialization::Serialization &, const Util::JSon::Object &, const Core::ECS::BaseEntity & )>;
 
-		std::map<ComponentID, ComponentSerializerFunction> _mapSerializer
-			= std::map<ComponentID, ComponentSerializerFunction>();
-		std::map<ComponentID, ComponentDeserializerFunction> _mapDeserializer
-			= std::map<ComponentID, ComponentDeserializerFunction>();
+		std::map<ComponentStaticID, ComponentSerializerFunction> _mapSerializer
+			= std::map<ComponentStaticID, ComponentSerializerFunction>();
+		std::map<ComponentStaticID, ComponentDeserializerFunction> _mapDeserializer
+			= std::map<ComponentStaticID, ComponentDeserializerFunction>();
 	};
 } // namespace VTX::App::Application::ECS
 
-namespace VTX::App
-{
-	Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION();
-}
 #endif
