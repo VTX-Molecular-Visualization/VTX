@@ -78,23 +78,8 @@ include("${DIR_LIBS}/util/test/cmake/library.cmake")
 # Core.
 include("${DIR_LIBS}/core/cmake/library.cmake")
 
-#target_link_libraries(vtx_core PRIVATE fmt::fmt)
-#target_link_libraries(vtx_core PRIVATE glm::glm)
-#target_link_libraries(vtx_core PRIVATE spdlog::spdlog)
-#target_link_libraries(vtx_core PRIVATE cpr::cpr)
-#target_link_libraries(vtx_core PRIVATE magic_enum::magic_enum)
-
 # IO.
-#add_library(vtx_io)
-#configure_target(vtx_io)
-#file(GLOB_RECURSE HEADERS_IO ${DIR_LIBS}/io/include/*)
-#file(GLOB_RECURSE SOURCES_IO ${DIR_LIBS}/io/src/*)
-#target_sources(vtx_io
-#	PRIVATE ${SOURCES_IO}
-#	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/io/include FILES ${HEADERS_IO})
-#target_link_libraries(vtx_io PRIVATE vtx_util)
-#target_link_libraries(vtx_io PRIVATE vtx_core)
-#target_link_libraries(vtx_io PRIVATE chemfiles::chemfiles)
+include("${DIR_LIBS}/io/cmake/library.cmake")
 
 # IO test.
 #add_executable(vtx_io_test ${DIR_LIBS}/io/test/src/main.cpp)
