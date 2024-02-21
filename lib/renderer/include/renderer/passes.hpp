@@ -16,8 +16,6 @@ namespace VTX::Renderer
 	static const Attachment imageR16F { E_FORMAT::R16F };
 	static const Attachment imageR8 { E_FORMAT::R8 };
 
-	// glPatchParameteri( GL_PATCH_VERTICES, 4 );
-
 	// Data.
 	static const Data dataTriangles { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
@@ -51,22 +49,23 @@ namespace VTX::Renderer
 	// Passes.
 
 	// Geometric.
-	static Pass descPassGeometric {
-		"Geometric",
-		Inputs { { E_CHANNEL_INPUT::_0, { "SpheresCylinders", dataSpheresCylinders } },
-				 { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
-				 { E_CHANNEL_INPUT::_2, { "Triangles", dataTriangles } },
-				 { E_CHANNEL_INPUT::_3, { "Voxels", dataVoxels } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
-				  { E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
-				  { E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
-				  { E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
-		Programs {
-			{ "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS, nullptr } },
-			{ "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, nullptr, true } },
-			{ "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, nullptr, true } },
-			{ "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS, nullptr } } },
-		{ E_SETTING::CLEAR }
+	static Attachment imagePicking = imageRG32UI;
+	static Pass		  descPassGeometric {
+		  "Geometric",
+		  Inputs { { E_CHANNEL_INPUT::_0, { "SpheresCylinders", dataSpheresCylinders } },
+					   { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
+					   { E_CHANNEL_INPUT::_2, { "Triangles", dataTriangles } },
+					   { E_CHANNEL_INPUT::_3, { "Voxels", dataVoxels } } },
+		  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
+						{ E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
+						{ E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
+						{ E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
+		  Programs {
+				  { "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS, nullptr } },
+				  { "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, nullptr, true } },
+				  { "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, nullptr, true } },
+				  { "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS, nullptr } } },
+			  { E_SETTING::CLEAR }
 	};
 
 	// Linearize depth.

@@ -111,7 +111,7 @@ void main()
 				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
 				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
 
-				outId				  = ivec2( id0, id1 );
+				outId				  = uvec2( id0, id1 );
 			}
 		}
 	}
@@ -189,7 +189,7 @@ void main()
 				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
 				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
 
-				outId				  = ivec2( id0, id1 );
+				outId				  = uvec2( id0, id1 );
 			}
 		}
 	}

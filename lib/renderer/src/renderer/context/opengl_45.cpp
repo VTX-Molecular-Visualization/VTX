@@ -39,7 +39,6 @@ namespace VTX::Renderer::Context
 		vbo->setData( quad, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
