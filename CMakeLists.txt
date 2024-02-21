@@ -45,27 +45,11 @@ add_custom_target(
 	$<TARGET_FILE_DIR:vtx>/shaders)
 add_dependencies(vtx vtx_copy_shader)
 
-add_custom_target(
-	vtx_copy_python_script
-	ALL COMMAND
-	${CMAKE_COMMAND} -E copy_directory	
-	${DIR_PYTHON_SCRIPT}
-	$<TARGET_FILE_DIR:vtx>/python_script)
-add_dependencies(vtx vtx_copy_python_script)	
-
 IF (WIN32)
 	set(FILENAME_PYTHON_MODULE PyTX.pyd)
 ELSE()
 	set(FILENAME_PYTHON_MODULE pytx.so)
 ENDIF()
-
-add_custom_target(
-	vtx_copy_python_module
-	ALL COMMAND
-	${CMAKE_COMMAND} -E copy
-	${PATH_PYTHON_MODULE}
-	$<TARGET_FILE_DIR:vtx>/${FILENAME_PYTHON_MODULE})
-add_dependencies(vtx vtx_copy_python_module)
 
 install(TARGETS vtx)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
@@ -77,4 +61,4 @@ install(FILES README.md DESTINATION bin)
 install(FILES CHANGELOG.md DESTINATION bin)
 install(FILES license.txt DESTINATION bin)
 
-copy_directory_data(vtx $<TARGET_FILE_DIR:vtx>)
+vtx_copy_registered_data(vtx)
