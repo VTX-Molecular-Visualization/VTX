@@ -81,12 +81,12 @@ namespace VTX::Renderer
 		}
 
 		// Create empty VBOs.
-		_context->reserveData( totalAtoms, "SpheresCylindersPositions" );
-		_context->reserveData( totalAtoms, "SpheresCylindersColors" );
-		_context->reserveData( totalAtoms, "SpheresCylindersRadii" );
-		_context->reserveData( totalAtoms, "SpheresCylindersIds" );
-		_context->reserveData( totalAtoms, "SpheresCylindersFlags" );
-		_context->reserveData( totalBonds, "SpheresCylindersEbo" );
+		_context->setData( totalAtoms, "SpheresCylindersPositions" );
+		_context->setData( totalAtoms, "SpheresCylindersColors" );
+		_context->setData( totalAtoms, "SpheresCylindersRadii" );
+		_context->setData( totalAtoms, "SpheresCylindersIds" );
+		_context->setData( totalAtoms, "SpheresCylindersFlags" );
+		_context->setData( totalBonds, "SpheresCylindersEbo" );
 
 		// TODO: save those informations for further updates?
 		size_t offsetAtoms = 0;
@@ -104,8 +104,8 @@ namespace VTX::Renderer
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
 				uchar flag = 0;
-				flag |= ( *proxy.atomVisibilities )[ i ] << E_ATOM_FLAGS::VISIBILITY;
-				flag |= ( *proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
+				flag |= ( *proxy.atomVisibilities )[ i ] << E_ELEMENT_FLAGS::VISIBILITY;
+				flag |= ( *proxy.atomSelections )[ i ] << E_ELEMENT_FLAGS::SELECTION;
 				atomFlags[ i ] = flag;
 			}
 			_context->setSubData( atomFlags, "SpheresCylindersFlags", offsetAtoms );

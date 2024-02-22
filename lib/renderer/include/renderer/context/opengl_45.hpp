@@ -61,7 +61,7 @@ namespace VTX::Renderer::Context
 
 			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData(
-				p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size + entry->padding )
+				p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size /* + entry->padding*/ )
 			);
 		}
 
@@ -93,11 +93,11 @@ namespace VTX::Renderer::Context
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
-		inline void reserveData( const size_t p_size, const std::string & p_key )
+		inline void setData( const size_t p_size, const std::string & p_key )
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
-			_bos[ p_key ]->reserveData( GLsizei( p_size ), GL_STATIC_DRAW );
+			_bos[ p_key ]->setData( GLsizei( p_size ), GL_STATIC_DRAW );
 		}
 
 		template<typename T>

@@ -325,8 +325,8 @@ namespace VTX::Renderer
 
 		inline void _refreshData()
 		{
-			//_refreshDataSpheresCylinders();
-			//_refreshDataModels();
+			_refreshDataSpheresCylinders();
+			_refreshDataModels();
 
 			setNeedUpdate( true );
 		}
@@ -356,59 +356,11 @@ namespace VTX::Renderer
 		}
 		*/
 
-		enum E_ATOM_FLAGS
+		enum E_ELEMENT_FLAGS
 		{
 			VISIBILITY = 0,
 			SELECTION  = 1
 		};
-
-		/*
-		void _setDataSpheresCylinders( const Proxy::Molecule & p_proxy )
-		{
-			// Check sizes.
-			assert( p_proxy.atomPositions );
-			assert( p_proxy.atomColors );
-			assert( p_proxy.atomRadii );
-			assert( p_proxy.atomVisibilities );
-			assert( p_proxy.atomSelections );
-			assert( p_proxy.atomIds );
-
-			assert( p_proxy.atomIds->size() == p_proxy.atomPositions->size() );
-			assert( p_proxy.atomIds->size() == p_proxy.atomColors->size() );
-			assert( p_proxy.atomIds->size() == p_proxy.atomRadii->size() );
-			assert( p_proxy.atomIds->size() == p_proxy.atomVisibilities->size() );
-			assert( p_proxy.atomIds->size() == p_proxy.atomSelections->size() );
-
-			// Forward data.
-			// TODO: add to current buffer.
-			_context->setData( *p_proxy.atomPositions, "SpheresCylindersPositions" );
-			_context->setData( *p_proxy.atomColors, "SpheresCylindersColors" );
-			_context->setData( *p_proxy.atomRadii, "SpheresCylindersRadii" );
-			_context->setData( *p_proxy.atomIds, "SpheresCylindersIds" );
-			_context->setData( *p_proxy.bonds, "SpheresCylindersEbo" );
-
-			// Flags.
-			std::vector<uchar> atomFlags( p_proxy.atomPositions->size() );
-			for ( size_t i = 0; i < atomFlags.size(); ++i )
-			{
-				uchar flag = 0;
-				flag |= ( *p_proxy.atomVisibilities )[ i ] << E_ATOM_FLAGS::VISIBILITY;
-				flag |= ( *p_proxy.atomSelections )[ i ] << E_ATOM_FLAGS::SELECTION;
-				atomFlags[ i ] = flag;
-			}
-			_context->setData( atomFlags, "SpheresCylindersFlags" );
-
-			// Model ID.
-			//			uchar modelId = sizeMolecules;
-			//_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ),
-		"SpheresCylindersModels"
-			//);
-
-			// Counters.
-			sizeAtoms += uint( p_proxy.atomPositions->size() );
-			sizeBonds += uint( p_proxy.bonds->size() );
-		}
-		*/
 
 		void _setDataRibbons( const Proxy::Molecule & p_proxy )
 		{

@@ -117,19 +117,11 @@ namespace VTX::Renderer::Context::GL
 			glNamedBufferData( _id, p_size, &p_data, p_usage );
 		}
 
-		inline void reserveData( const GLsizei p_size, const GLenum p_usage ) const
+		inline void setData( const GLsizei p_size, const GLenum p_usage ) const
 		{
 			assert( glIsBuffer( _id ) );
 
 			glNamedBufferData( _id, p_size, nullptr, p_usage );
-		}
-
-		template<typename T>
-		inline void setSubData( const std::vector<T> & p_vector, const GLintptr p_offset = GLintptr( 0 ) ) const
-		{
-			assert( glIsBuffer( _id ) );
-
-			glNamedBufferSubData( _id, p_offset, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data() );
 		}
 
 		template<typename T>
@@ -142,6 +134,14 @@ namespace VTX::Renderer::Context::GL
 			assert( glIsBuffer( _id ) );
 
 			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
+		}
+
+		template<typename T>
+		inline void setSubData( const std::vector<T> & p_vector, const GLintptr p_offset = GLintptr( 0 ) ) const
+		{
+			assert( glIsBuffer( _id ) );
+
+			glNamedBufferSubData( _id, p_offset, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data() );
 		}
 
 		template<typename T>
