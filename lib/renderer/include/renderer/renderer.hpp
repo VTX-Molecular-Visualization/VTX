@@ -48,10 +48,10 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction	 = [ & ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction	 = [ & ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction	 = [ & ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction	 = [ & ]() { return showVoxels ? sizeVoxels : 0; };
+			geo->programs[ 0 ].draw.value().countFunction	 = [ this ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction	 = [ this ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction	 = [ this ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction	 = [ this ]() { return showVoxels ? sizeVoxels : 0; };
 			blurX->name										 = "BlurX";
 			blurY->name										 = "BlurY";
 			blurY->programs[ 0 ].uniforms.entries[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
@@ -184,7 +184,7 @@ namespace VTX::Renderer
 			setUniform( p_view, "Matrix view" );
 
 			// Update model view matrices.
-			_setDataModels( _proxiesMolecules );
+			_refreshDataModels();
 		}
 
 		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
@@ -214,10 +214,8 @@ namespace VTX::Renderer
 
 			if ( _renderGraph->isBuilt() )
 			{
-				_refreshDataSpheresCylinders();
+				_refreshData();
 			}
-
-			setNeedUpdate( true );
 
 			RendererId id = _proxiesMolecules.size() - 1;
 			return id;
@@ -293,8 +291,6 @@ namespace VTX::Renderer
 		size_t sizeRibbons = 0;
 		size_t sizeVoxels  = 0;
 
-		// uint sizeMolecules = 0;
-
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
@@ -327,7 +323,16 @@ namespace VTX::Renderer
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 
+		inline void _refreshData()
+		{
+			//_refreshDataSpheresCylinders();
+			//_refreshDataModels();
+
+			setNeedUpdate( true );
+		}
+
 		void _refreshDataSpheresCylinders();
+		void _refreshDataModels();
 
 		/*
 		void _setData( const Proxy::Molecule & p_proxy )
@@ -350,12 +355,14 @@ namespace VTX::Renderer
 			// sizeMolecules++;
 		}
 		*/
+
 		enum E_ATOM_FLAGS
 		{
 			VISIBILITY = 0,
 			SELECTION  = 1
 		};
 
+		/*
 		void _setDataSpheresCylinders( const Proxy::Molecule & p_proxy )
 		{
 			// Check sizes.
@@ -393,13 +400,15 @@ namespace VTX::Renderer
 
 			// Model ID.
 			//			uchar modelId = sizeMolecules;
-			//_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ), "SpheresCylindersModels"
+			//_context->setData( std::vector<uchar>( p_proxy.atomPositions->size(), modelId ),
+		"SpheresCylindersModels"
 			//);
 
 			// Counters.
 			sizeAtoms += uint( p_proxy.atomPositions->size() );
 			sizeBonds += uint( p_proxy.bonds->size() );
 		}
+		*/
 
 		void _setDataRibbons( const Proxy::Molecule & p_proxy )
 		{
@@ -669,8 +678,8 @@ namespace VTX::Renderer
 					if ( residueLast != -1
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
 					{
-						_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids );
-						createVectors = true;
+						_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids
+					); createVectors = true;
 					}
 					*/
 
@@ -712,25 +721,8 @@ namespace VTX::Renderer
 			Mat4f n;
 		};
 
-		void _setDataModels( const std::vector<Proxy::Molecule> & p_proxies )
-		{
-			std::vector<_StructUBOModel> models;
-			Mat4f						 matrixView;
-			getUniform( matrixView, "Matrix view" );
-
-			for ( const Proxy::Molecule & proxy : p_proxies )
-			{
-				const Mat4f matrixModelView = matrixView * *proxy.transform;
-				const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-				models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
-			}
-
-			_context->setUniform( models, "Matrix model view" );
-		}
-
 		inline void _setDataModel( const RendererId p_id )
 		{
-			//_StructUBOModel model;
 			Mat4f matrixView;
 			getUniform( matrixView, "Matrix view" );
 			const Mat4f matrixModelView = matrixView * *_proxiesMolecules[ p_id ].transform;

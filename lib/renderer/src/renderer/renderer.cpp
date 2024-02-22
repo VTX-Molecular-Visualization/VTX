@@ -28,10 +28,8 @@ namespace VTX::Renderer
 
 					if ( _context )
 					{
-						_refreshDataSpheresCylinders();
-
+						_refreshData();
 						_context->fillInfos( infos );
-						setNeedUpdate( true );
 						_callbackReady();
 					}
 				}
@@ -101,6 +99,7 @@ namespace VTX::Renderer
 			_context->setSubData( *proxy.atomRadii, "SpheresCylindersRadii", offsetAtoms );
 			_context->setSubData( *proxy.atomIds, "SpheresCylindersIds", offsetAtoms );
 
+			// Flags.
 			std::vector<uchar> atomFlags( proxy.atomPositions->size() );
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
@@ -111,10 +110,37 @@ namespace VTX::Renderer
 			}
 			_context->setSubData( atomFlags, "SpheresCylindersFlags", offsetAtoms );
 
-			// Counters.
-			sizeAtoms = totalAtoms;
-			sizeBonds = totalBonds;
+			// Bonds.
+			std::vector<uint> bonds( proxy.bonds->size() );
+			for ( size_t i = 0; i < proxy.bonds->size(); ++i )
+			{
+				bonds[ i ] = uint( ( *proxy.bonds )[ i ] + offsetAtoms );
+			}
+			_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
+
+			// Offsets.
+			offsetAtoms += proxy.atomPositions->size();
+			offsetBonds += proxy.bonds->size();
 		}
+		// Counters.
+		sizeAtoms = totalAtoms;
+		sizeBonds = totalBonds;
+	}
+
+	void Renderer::_refreshDataModels()
+	{
+		std::vector<_StructUBOModel> models;
+		Mat4f						 matrixView;
+		getUniform( matrixView, "Matrix view" );
+
+		for ( const Proxy::Molecule & proxy : _proxiesMolecules )
+		{
+			const Mat4f matrixModelView = matrixView * *proxy.transform;
+			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+		}
+
+		_context->setUniform( models, "Matrix model view" );
 	}
 
 	void Renderer::snapshot(
