@@ -29,6 +29,9 @@ namespace VTX::Renderer::Proxy
 		const std::vector<size_t> *		 chainResidueCounts;	  //
 
 		Util::Callback<> onTransform;
+		// TODO:
+		// onVisible()
+		// onSelection)
 	};
 
 } // namespace VTX::Renderer::Proxy

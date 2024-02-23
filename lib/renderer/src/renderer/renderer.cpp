@@ -59,12 +59,14 @@ namespace VTX::Renderer
 	{
 		_proxiesMolecules.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
+		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
 
 		if ( _renderGraph->isBuilt() )
 		{
 			_refreshDataMolecules();
 		}
 
+		// Set up callbacks.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
 			Mat4f matrixView;
@@ -129,7 +131,7 @@ namespace VTX::Renderer
 			_context->setSubData( *proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags if not cached.
-			if ( cache.flags.size() != atomCount )
+			if ( cache.flags.empty() )
 			{
 				std::vector<uchar> atomFlags( atomCount );
 				for ( size_t i = 0; i < atomFlags.size(); ++i )
@@ -165,6 +167,9 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataRibbons()
 	{
+		size_t totalCaPositions = 0;
+		size_t totalIndices		= 0;
+
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			assert( proxy->atomNames );
@@ -182,7 +187,319 @@ namespace VTX::Renderer
 			assert( proxy->residueIds->size() == proxy->residueFirstAtomIndexes->size() );
 			assert( proxy->residueIds->size() == proxy->residueAtomCounts->size() );
 			assert( proxy->chainFirstResidues->size() == proxy->chainResidueCounts->size() );
+
+			// Compute data if not cached.
+			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+			if ( cache.bufferCaPositions.empty() == false )
+			{
+				continue;
+			}
+
+			// Carbon alpha (Ca) positions.
+			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
+			std ::vector<Vec4f> & bufferCaPositions = cache.bufferCaPositions;
+			// Ca -> O directions.
+			std::vector<Vec3f> & bufferCaODirections = cache.bufferCaODirections;
+			// Secondary structure types.
+			std::vector<uchar> &				bufferSSTypes	   = cache.bufferSSTypes;
+			std::vector<uchar> &				bufferColors	   = cache.bufferColors;
+			std::vector<uint> &					bufferIds		   = cache.bufferIds;
+			std::vector<uchar> &				bufferFlags		   = cache.bufferFlags;
+			std::vector<uchar> &				bufferModels	   = cache.bufferModels;
+			std::vector<uint> &					bufferIndices	   = cache.bufferIndices;
+			std::map<uint, uint> &				residueToIndices   = cache.residueToIndices;
+			std::map<uint, uint> &				residueToPositions = cache.residueToPositions;
+			std::map<uint, std::vector<uint>> & data			   = cache.data;
+
+			auto _tryConstruct = [ & ](
+									 const uint					p_chainIdx,
+									 const std::vector<uint> &	p_residueIndex,
+									 const std::vector<Vec4f> & p_caPositions,
+									 std::vector<Vec3f> &		p_caODirections,
+									 const std::vector<uchar> & p_ssTypes,
+									 const std::vector<uchar> & p_colors,
+									 const std::vector<uint> &	p_ids,
+									 const std::vector<uchar> & p_flags,
+									 const std::vector<uchar> & p_models
+
+								 )
+			{
+				if ( p_caPositions.size() >= 4 )
+				{
+					const size_t nbControlPoints = p_caPositions.size();
+
+					residueToPositions.emplace( p_residueIndex[ 0 ], uint( bufferCaPositions.size() ) );
+					residueToIndices.emplace( p_residueIndex[ 0 ], uint( bufferIndices.size() ) );
+
+					const uint offset = uint( bufferCaPositions.size() );
+
+					// Add segment with duplicate first index to evaluate B-spline at 0-1.
+					bufferIndices.emplace_back( offset );
+					bufferIndices.emplace_back( offset );
+					bufferIndices.emplace_back( offset + 1 );
+					bufferIndices.emplace_back( offset + 2 );
+
+					for ( uint i = 1; i < nbControlPoints - 2; ++i )
+					{
+						residueToPositions.emplace( p_residueIndex[ i ], uint( bufferCaPositions.size() + i ) );
+						residueToIndices.emplace( p_residueIndex[ i ], uint( bufferIndices.size() ) );
+
+						bufferIndices.emplace_back( offset + i - 1 );
+						bufferIndices.emplace_back( offset + i );
+						bufferIndices.emplace_back( offset + i + 1 );
+						bufferIndices.emplace_back( offset + i + 2 );
+					}
+
+					// TODO: better on GPU ?
+					// CheckOrientationAndFlip.
+					size_t i;
+					for ( i = 1; i < p_caODirections.size(); ++i )
+					{
+						if ( Util::Math::dot( p_caODirections[ i ], p_caODirections[ i - 1 ] ) < 0.f )
+						{
+							p_caODirections[ i ] = -p_caODirections[ i ];
+						}
+					}
+
+					// Merge buffers.
+					auto it = data.find( p_chainIdx );
+					if ( it == data.end() )
+					{
+						data.emplace( p_chainIdx, std::vector<uint>() );
+					}
+					data[ p_chainIdx ].insert(
+						std::end( data[ p_chainIdx ] ), std::begin( p_residueIndex ), std::end( p_residueIndex )
+					);
+
+					bufferCaPositions.insert( bufferCaPositions.end(), p_caPositions.cbegin(), p_caPositions.cend() );
+					bufferCaODirections.insert(
+						bufferCaODirections.end(), p_caODirections.cbegin(), p_caODirections.cend()
+					);
+					bufferSSTypes.insert( bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
+					bufferColors.insert( bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
+					bufferIds.insert( bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
+					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
+					bufferModels.insert( bufferModels.end(), p_models.cbegin(), p_models.cend() );
+				}
+			};
+
+			const std::vector<Vec3f> & positions = *proxy->atomPositions;
+
+			// Temporary vectors, merged with buffers if constructed.
+			std::vector<Vec4f> caPositions;
+			std::vector<Vec3f> caODirections;
+			std::vector<uchar> types;
+			std::vector<uchar> colors;
+			std::vector<uint>  ids;
+			std::vector<uchar> flags;
+			std::vector<uchar> models;
+			std::vector<uint>  residueIndex;
+
+			for ( uint chainIdx = 0; chainIdx < proxy->chainFirstResidues->size(); ++chainIdx )
+			{
+				/*
+				const Chain * const chain = _molecule->getChain( chainIdx );
+				if ( chain == nullptr )
+				{
+					continue;
+				}
+				*/
+
+				uint residueCount	 = uint( ( *proxy->chainResidueCounts )[ chainIdx ] );
+				uint idxFirstResidue = uint( ( *proxy->chainFirstResidues )[ chainIdx ] );
+
+				// No enought residues.
+				if ( residueCount < 4 ) // TODO: what to do ?
+				{
+					VTX_DEBUG( "Chain residue count < 4" );
+					continue;
+				}
+
+				bool createVectors = true;
+				int	 residueLast   = -1;
+				for ( uint residueIdx = idxFirstResidue; residueIdx < idxFirstResidue + residueCount; ++residueIdx )
+				{
+					if ( createVectors )
+					{
+						caPositions	  = std::vector<Vec4f>();
+						caODirections = std::vector<Vec3f>();
+						types		  = std::vector<uchar>();
+						colors		  = std::vector<uchar>();
+						ids			  = std::vector<uint>();
+						flags		  = std::vector<uchar>();
+						models		  = std::vector<uchar>();
+
+						residueIndex = std::vector<uint>();
+
+						createVectors = false;
+					}
+
+					/*
+					if ( residue == nullptr )
+					{
+						continue;
+					}
+					*/
+
+					auto findFirstAtomByName = [ &proxy ]( const uint p_residueIdx, const std::string & p_name )
+					{
+						uint atomCount	  = ( *proxy->residueAtomCounts )[ p_residueIdx ];
+						uint idxFirstAtom = ( *proxy->residueFirstAtomIndexes )[ p_residueIdx ];
+
+						for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
+						{
+							if ( ( *proxy->atomNames )[ i ] == p_name )
+							{
+								return i;
+							}
+						}
+
+						return -1;
+					};
+
+					// Use backbone to compute spline data.
+					// Find alpha carbon.
+					int CA = findFirstAtomByName( residueIdx, "CA" );
+
+					// Not an amine acid (water, heme, or phosphate groupment).
+					if ( CA == -1 ) // TODO: what to do ?
+					{
+						continue;
+					}
+
+					// Find oxygen.
+					int O = findFirstAtomByName( residueIdx, "O" );
+
+					// Missing oxygen atom.
+					if ( O == -1 ) // TODO: what to do?
+					{
+						continue;
+					}
+					/// TODO: For all these "what to do ?" I think we should render it with spheres or b&s...
+
+					// Compute direction between carbon alpha and oxygen.
+					const Vec3f & positionCA   = positions[ CA ];
+					const Vec3f & positionO	   = positions[ O ];
+					const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
+
+					// Store residue index for later.
+					residueIndex.emplace_back( residueIdx );
+
+					// Add carbon alpha (CA) position and CA-O direction.
+					caPositions.emplace_back(
+						Vec4f( positionCA, float( bufferCaPositions.size() + caPositions.size() ) )
+					);
+					caODirections.emplace_back( directionCAO );
+
+					// Add secondary structure type.
+					types.emplace_back( ( *proxy->residueSecondaryStructureTypes )[ residueIdx ] );
+
+					/*
+					switch ( residue->getRepresentation()->getRibbonData().colorMode )
+					{
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+						colors.emplace_back( residue->getMoleculePtr()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+						colors.emplace_back( residue->getRepresentation()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+						colors.emplace_back( residue->getChainPtr()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+						colors.emplace_back( residue->getColor() );
+						break;
+					default: colors.emplace_back( Color::Rgba::WHITE ); break;
+					}
+					*/
+
+					// Generate number between 0 and 255.
+					// int color = ( ( residueIdx * 7 ) % 256 );
+					// colors.emplace_back( color );
+
+					colors.emplace_back( ( *proxy->residueColors )[ residueIdx ] );
+
+					ids.emplace_back( ( *proxy->residueIds )[ residueIdx ] );
+
+					// Flag.
+					// TODO.
+					flags.emplace_back( 1 );
+
+					/*
+					visibilities.emplace_back( uint(
+						_molecule->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
+						&& O->isVisible()
+					) );
+					*/
+
+					// Model ID.
+					models.emplace_back( uchar( _getProxyId( proxy ) ) );
+
+					/*
+					if ( residueLast != -1
+						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
+					{
+						_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids
+					); createVectors = true;
+					}
+					*/
+
+					residueLast = residueIdx;
+				}
+
+				// Update buffers and index mapping if SS is constructed.
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, ids, flags, models );
+			}
+
+			assert( bufferCaPositions.size() == bufferCaODirections.size() );
+			assert( bufferCaPositions.size() == bufferSSTypes.size() );
+			assert( bufferCaPositions.size() == bufferColors.size() );
+			assert( bufferCaPositions.size() == bufferIds.size() );
+			assert( bufferCaPositions.size() == bufferFlags.size() );
+			assert( bufferCaPositions.size() == bufferModels.size() );
+
+			totalCaPositions += bufferCaPositions.size();
+			totalIndices += bufferIndices.size();
 		}
+
+		_context->setData<Vec4f>( totalCaPositions, "RibbonsPositions" );
+		_context->setData<Vec3f>( totalCaPositions, "RibbonsDirections" );
+		_context->setData<uchar>( totalCaPositions, "RibbonsTypes" );
+		_context->setData<uchar>( totalCaPositions, "RibbonsColors" );
+		_context->setData<uint>( totalCaPositions, "RibbonsIds" );
+		_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
+		_context->setData<uchar>( totalCaPositions, "RibbonsModels" );
+		_context->setData<uint>( totalIndices, "RibbonsEbo" );
+
+		size_t offsetCaPositions = 0;
+		size_t offsetIndices	 = 0;
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		{
+			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+
+			if ( cache.bufferCaPositions.empty() == true )
+			{
+				continue;
+			}
+
+			_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
+			_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
+			_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
+			_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
+			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
+			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
+			_context->setSubData( cache.bufferModels, "RibbonsModels", offsetCaPositions );
+			_context->setSubData( cache.bufferIndices, "RibbonsEbo", offsetIndices );
+
+			// Offsets.
+			offsetCaPositions += cache.bufferCaPositions.size();
+			offsetIndices += cache.bufferIndices.size();
+		}
+
+		sizeRibbons = offsetIndices;
 	}
 
 	void Renderer::_refreshDataModels()

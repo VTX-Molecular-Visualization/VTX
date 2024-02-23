@@ -138,7 +138,8 @@ int main( int, char ** )
 		renderer.addProxy( proxyMolecule );
 
 		// Another molecule.
-		Molecule				  molecule2		 = downloadMolecule( "1aga" );
+		Molecule molecule2 = downloadMolecule( "1aga" );
+		IO::Util::SecondaryStructure::computeStride( molecule2 );
 		Renderer::Proxy::Molecule proxyMolecule2 = proxify( molecule2 );
 		renderer.addProxy( proxyMolecule2 );
 
@@ -165,14 +166,15 @@ int main( int, char ** )
 		// Main loop.
 		while ( isRunning )
 		{
-			float time = float( ui.getTime() ) * 1e-3f;
+			float time		= float( ui.getTime() ) * 1e-3f;
+			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
 			// Rotate molecule.
-			molecule.transform = Math::rotate( molecule.transform, time * 0.001f, VEC3F_Y );
+			molecule.transform = Math::rotate( molecule.transform, deltaTime, VEC3F_Y );
 			proxyMolecule.onTransform();
 
-			molecule2.transform = Math::rotate( molecule2.transform, time * 0.001f, VEC3F_X );
+			molecule2.transform = Math::rotate( molecule2.transform, deltaTime, VEC3F_X );
 			proxyMolecule2.onTransform();
 
 			// Renderer.
