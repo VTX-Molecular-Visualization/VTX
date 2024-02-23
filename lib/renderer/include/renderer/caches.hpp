@@ -3,6 +3,7 @@
 
 #include <map>
 #include <util/types.hpp>
+#include <vector>
 
 namespace VTX::Renderer::Cache
 {
