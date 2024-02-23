@@ -129,14 +129,24 @@ int main( int, char ** )
 		);
 
 		// Models.
-		Molecule molecule;
-		// molecule = loadMolecule( "8ckb.cif" );
-		molecule = downloadMolecule( "4hhb" );
+		// Molecule molecule = loadMolecule( "8ckb.cif" );
+		Molecule molecule = downloadMolecule( "4hhb" );
 		IO::Util::SecondaryStructure::computeStride( molecule );
 
 		// Proxify.
 		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
 		const size_t			  rendererId	= renderer.addProxy( proxyMolecule );
+
+		// Another molecule.
+		Molecule				  molecule2		 = downloadMolecule( "1aga" );
+		Renderer::Proxy::Molecule proxyMolecule2 = proxify( molecule2 );
+		const size_t			  rendererId2	 = renderer.addProxy( proxyMolecule2 );
+
+		/*
+		Molecule				  molecule3		 = downloadMolecule( "4v6x" );
+		Renderer::Proxy::Molecule proxyMolecule3 = proxify( molecule3 );
+		const size_t			  rendererId3	 = renderer.addProxy( proxyMolecule3 );
+		*/
 
 		/*
 		Math::AABB aabb;
@@ -159,11 +169,11 @@ int main( int, char ** )
 
 			// Update scene.
 			// Rotate molecule.
-			//*proxyMolecule.transform = Math::rotate( *proxyMolecule.transform, time * 0.001f, VEC3F_Y );
-			// renderer.updateMoleculeTransform( rendererId );
+			molecule.transform = Math::rotate( molecule.transform, time * 0.001f, VEC3F_Y );
+			renderer.updateMoleculeTransform( rendererId );
 
-			//*proxyMolecule2.transform = Math::rotate( *proxyMolecule2.transform, time * 0.001f, VEC3F_X );
-			// renderer.updateMoleculeTransform( rendererId2 );
+			molecule2.transform = Math::rotate( molecule2.transform, time * 0.001f, VEC3F_X );
+			renderer.updateMoleculeTransform( rendererId2 );
 
 			// Renderer.
 			renderer.render( time );

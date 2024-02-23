@@ -54,15 +54,12 @@ namespace VTX::Bench
 		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdResidues;
 		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColorResidues;
 
-		auto colorAtoms = std::make_unique<std::vector<uchar>>( sizeAtoms );
+		auto   colorAtoms = std::make_unique<std::vector<uchar>>( sizeAtoms );
+		size_t i		  = 0;
 		std::generate(
 			colorAtoms->begin(),
 			colorAtoms->end(),
-			[ &symbols ]
-			{
-				static int i = 0;
-				return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] );
-			}
+			[ & ] { return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] ); }
 		);
 		vecColors.emplace_back( std::move( colorAtoms ) );
 
@@ -70,14 +67,11 @@ namespace VTX::Bench
 		vecSelections.emplace_back( std::make_unique<const std::vector<bool>>( sizeAtoms, false ) );
 
 		auto radii = std::make_unique<std::vector<float>>( sizeAtoms );
+		i		   = 0;
 		std::generate(
 			radii->begin(),
 			radii->end(),
-			[ &symbols ]
-			{
-				static int i = 0;
-				return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
-			}
+			[ & ] { return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ]; }
 		);
 		vecRadii.emplace_back( std::move( radii ) );
 
@@ -90,14 +84,11 @@ namespace VTX::Bench
 		vecIdResidues.emplace_back( std::move( idResidues ) );
 
 		auto colorResidues = std::make_unique<std::vector<uchar>>( sizeResidue );
+		i				   = 0;
 		std::generate(
 			colorResidues->begin(),
 			colorResidues->end(),
-			[ & ]
-			{
-				static int i = 0;
-				return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] );
-			}
+			[ & ] { return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 		vecColorResidues.emplace_back( std::move( colorResidues ) );
 
