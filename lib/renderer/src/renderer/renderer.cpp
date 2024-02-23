@@ -28,7 +28,7 @@ namespace VTX::Renderer
 
 					if ( _context )
 					{
-						_refreshData();
+						_refreshDataMolecules();
 						_context->fillInfos( infos );
 						_callbackReady();
 					}
@@ -55,29 +55,52 @@ namespace VTX::Renderer
 		_callbackClean();
 	}
 
+	void Renderer::addProxy( Proxy::Molecule & p_proxy )
+	{
+		_proxiesMolecules.push_back( &p_proxy );
+		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
+
+		if ( _renderGraph->isBuilt() )
+		{
+			_refreshDataMolecules();
+		}
+
+		p_proxy.onTransform += [ this, &p_proxy ]()
+		{
+			Mat4f matrixView;
+			getUniform( matrixView, "Matrix view" );
+			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
+			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			_context->setUniform(
+				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
+			);
+			setNeedUpdate( true );
+		};
+	}
+
 	void Renderer::_refreshDataSpheresCylinders()
 	{
 		// Check data.
 		size_t totalAtoms = 0;
 		size_t totalBonds = 0;
-		for ( const Proxy::Molecule & proxy : _proxiesMolecules )
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			// Check sizes.
-			assert( proxy.atomPositions );
-			assert( proxy.atomColors );
-			assert( proxy.atomRadii );
-			assert( proxy.atomVisibilities );
-			assert( proxy.atomSelections );
-			assert( proxy.atomIds );
+			assert( proxy->atomPositions );
+			assert( proxy->atomColors );
+			assert( proxy->atomRadii );
+			assert( proxy->atomVisibilities );
+			assert( proxy->atomSelections );
+			assert( proxy->atomIds );
 
-			assert( proxy.atomIds->size() == proxy.atomPositions->size() );
-			assert( proxy.atomIds->size() == proxy.atomColors->size() );
-			assert( proxy.atomIds->size() == proxy.atomRadii->size() );
-			assert( proxy.atomIds->size() == proxy.atomVisibilities->size() );
-			assert( proxy.atomIds->size() == proxy.atomSelections->size() );
+			assert( proxy->atomIds->size() == proxy->atomPositions->size() );
+			assert( proxy->atomIds->size() == proxy->atomColors->size() );
+			assert( proxy->atomIds->size() == proxy->atomRadii->size() );
+			assert( proxy->atomIds->size() == proxy->atomVisibilities->size() );
+			assert( proxy->atomIds->size() == proxy->atomSelections->size() );
 
-			totalAtoms += proxy.atomPositions->size();
-			totalBonds += proxy.bonds->size();
+			totalAtoms += proxy->atomPositions->size();
+			totalBonds += proxy->bonds->size();
 		}
 
 		// Create buffers.
@@ -89,39 +112,43 @@ namespace VTX::Renderer
 		_context->setData<uchar>( totalAtoms, "SpheresCylindersModels" );
 		_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
 
-		// TODO: save those informations for further updates?
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
 		uchar  modelId	   = 0;
-		for ( const Proxy::Molecule & proxy : _proxiesMolecules )
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
-			const size_t atomCount = proxy.atomPositions->size();
-			const size_t bondCount = proxy.bonds->size();
+			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
+
+			const size_t atomCount = proxy->atomPositions->size();
+			const size_t bondCount = proxy->bonds->size();
 
 			// Fill buffers.
-			_context->setSubData( *proxy.atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSubData( *proxy.atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSubData( *proxy.atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSubData( *proxy.atomIds, "SpheresCylindersIds", offsetAtoms );
+			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+			_context->setSubData( *proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context->setSubData( *proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context->setSubData( *proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
-			// Flags.
-			std::vector<uchar> atomFlags( atomCount );
-			for ( size_t i = 0; i < atomFlags.size(); ++i )
+			// Flags if not cached.
+			if ( cache.flags.size() != atomCount )
 			{
-				uchar flag = 0;
-				flag |= ( *proxy.atomVisibilities )[ i ] << E_ELEMENT_FLAGS::VISIBILITY;
-				flag |= ( *proxy.atomSelections )[ i ] << E_ELEMENT_FLAGS::SELECTION;
-				atomFlags[ i ] = flag;
+				std::vector<uchar> atomFlags( atomCount );
+				for ( size_t i = 0; i < atomFlags.size(); ++i )
+				{
+					uchar flag = 0;
+					flag |= ( *proxy->atomVisibilities )[ i ] << E_ELEMENT_FLAGS::VISIBILITY;
+					flag |= ( *proxy->atomSelections )[ i ] << E_ELEMENT_FLAGS::SELECTION;
+					atomFlags[ i ] = flag;
+				}
+				cache.flags = atomFlags;
 			}
-			_context->setSubData( atomFlags, "SpheresCylindersFlags", offsetAtoms );
-
+			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
 			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
 
 			// Move bonds.
 			std::vector<uint> bonds( bondCount );
 			for ( size_t i = 0; i < bondCount; ++i )
 			{
-				bonds[ i ] = uint( ( *proxy.bonds )[ i ] + offsetAtoms );
+				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 			}
 			_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
 
@@ -136,15 +163,39 @@ namespace VTX::Renderer
 		sizeBonds = totalBonds;
 	}
 
+	void Renderer::_refreshDataRibbons()
+	{
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		{
+			assert( proxy->atomNames );
+			assert( proxy->residueIds );
+			assert( proxy->residueSecondaryStructureTypes );
+			assert( proxy->residueColors );
+			assert( proxy->residueFirstAtomIndexes );
+			assert( proxy->residueAtomCounts );
+			assert( proxy->chainFirstResidues );
+			assert( proxy->chainResidueCounts );
+
+			assert( proxy->atomNames->size() == proxy->atomPositions->size() );
+			assert( proxy->residueIds->size() == proxy->residueSecondaryStructureTypes->size() );
+			assert( proxy->residueIds->size() == proxy->residueColors->size() );
+			assert( proxy->residueIds->size() == proxy->residueFirstAtomIndexes->size() );
+			assert( proxy->residueIds->size() == proxy->residueAtomCounts->size() );
+			assert( proxy->chainFirstResidues->size() == proxy->chainResidueCounts->size() );
+		}
+	}
+
 	void Renderer::_refreshDataModels()
 	{
 		std::vector<_StructUBOModel> models;
 		Mat4f						 matrixView;
 		getUniform( matrixView, "Matrix view" );
 
-		for ( const Proxy::Molecule & proxy : _proxiesMolecules )
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
-			const Mat4f matrixModelView = matrixView * *proxy.transform;
+			assert( proxy->transform );
+
+			const Mat4f matrixModelView = matrixView * *proxy->transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}

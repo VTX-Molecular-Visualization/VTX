@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#include "caches.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
 #include "proxy/mesh.hpp"
@@ -206,29 +207,11 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		// TODO: uchar?
-		using RendererId = size_t;
-		inline RendererId addProxy( const Proxy::Molecule & p_proxy )
-		{
-			_proxiesMolecules.push_back( p_proxy );
-
-			if ( _renderGraph->isBuilt() )
-			{
-				_refreshData();
-			}
-
-			RendererId id = _proxiesMolecules.size() - 1;
-			return id;
-		}
-
-		inline void updateMoleculeTransform( const RendererId p_id )
-		{
-			_setDataModel( p_id );
-			setNeedUpdate( true );
-		}
+		void addProxy( Proxy::Molecule & p_proxy );
 
 		inline void addProxy( const Proxy::Voxel & p_proxy )
 		{
+			/*
 			_proxiesVoxels.push_back( p_proxy );
 
 			if ( _renderGraph->isBuilt() )
@@ -237,6 +220,7 @@ namespace VTX::Renderer
 			}
 
 			setNeedUpdate( true );
+			*/
 		}
 
 		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
@@ -277,10 +261,10 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
-		inline std::vector<Proxy::Molecule> &		getProxiesMolecules() { return _proxiesMolecules; }
-		inline std::vector<Proxy::Mesh> &			getProxiesMeshes() { return _proxiesMeshes; }
-		inline std::vector<Proxy::Representation> & getProxiesRepresentations() { return _proxiesRepresentations; }
-		inline std::vector<Proxy::Voxel> &			getProxiesVoxels() { return _proxiesVoxels; }
+		inline std::vector<Proxy::Molecule *> &		  getProxiesMolecules() { return _proxiesMolecules; }
+		inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
+		inline std::vector<Proxy::Representation *> & getProxiesRepresentations() { return _proxiesRepresentations; }
+		inline std::vector<Proxy::Voxel *> &		  getProxiesVoxels() { return _proxiesVoxels; }
 
 		size_t		width;
 		size_t		height;
@@ -302,59 +286,49 @@ namespace VTX::Renderer
 	  private:
 		const size_t _BUFFER_COUNT = 2;
 
-		Context::OpenGL45 * _context		 = nullptr;
-		void *				_loader			 = nullptr;
-		bool				_needUpdate		 = false;
-		size_t				_framesRemaining = _BUFFER_COUNT;
-
+		Context::OpenGL45 *					 _context		  = nullptr;
+		void *								 _loader		  = nullptr;
+		bool								 _needUpdate	  = false;
+		size_t								 _framesRemaining = _BUFFER_COUNT;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
+		// Callbacks.
 		Util::Callback<> _callbackReady;
 		Util::Callback<> _callbackClean;
 
-		// TODO: mapping registry.
-		std::vector<Proxy::Molecule>	   _proxiesMolecules;
-		std::vector<Proxy::Mesh>		   _proxiesMeshes;
-		std::vector<Proxy::Representation> _proxiesRepresentations;
-		std::vector<Proxy::Voxel>		   _proxiesVoxels;
+		// Proxies.
+		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
+		std::vector<Proxy::Mesh *>			 _proxiesMeshes;
+		std::vector<Proxy::Representation *> _proxiesRepresentations;
+		std::vector<Proxy::Voxel *>			 _proxiesVoxels;
+
+		// TODO: check complexity.
+		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const
+		{
+			return std::distance(
+				_proxiesMolecules.begin(), std::find( _proxiesMolecules.begin(), _proxiesMolecules.end(), p_proxy )
+			);
+		}
+
+		// Cache.
+		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
-
-		inline void _refreshData()
+		inline void _refreshDataMolecules()
 		{
 			_refreshDataSpheresCylinders();
+			_refreshDataRibbons();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
 		}
 
 		void _refreshDataSpheresCylinders();
+		void _refreshDataRibbons();
 		void _refreshDataModels();
-
-		/*
-		void _setData( const Proxy::Molecule & p_proxy )
-		{
-			assert( p_proxy.atomIds || p_proxy.residueIds );
-			assert( p_proxy.transform );
-
-			if ( p_proxy.atomIds )
-			{
-				_setDataSpheresCylinders( p_proxy );
-			}
-
-			if ( p_proxy.residueIds )
-			{
-				//_setDataRibbons( p_proxy );
-			}
-
-			_setDataModels( { p_proxy } );
-
-			// sizeMolecules++;
-		}
-		*/
 
 		enum E_ELEMENT_FLAGS
 		{
@@ -672,15 +646,6 @@ namespace VTX::Renderer
 			Mat4f mv;
 			Mat4f n;
 		};
-
-		inline void _setDataModel( const RendererId p_id )
-		{
-			Mat4f matrixView;
-			getUniform( matrixView, "Matrix view" );
-			const Mat4f matrixModelView = matrixView * *_proxiesMolecules[ p_id ].transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-			_context->setUniform( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", p_id );
-		}
 
 		void _setData( const Proxy::Voxel & p_proxy )
 		{

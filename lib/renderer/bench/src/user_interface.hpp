@@ -352,7 +352,7 @@ namespace VTX::Bench
 					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
 					{
 						// Display transform.
-						Mat4f transform = *proxyMolecule.transform;
+						Mat4f transform = *proxyMolecule->transform;
 						ImGui::Text( "Transform" );
 						ImGui::InputFloat4( "", &transform[ 0 ][ 0 ] );
 						ImGui::InputFloat4( "", &transform[ 1 ][ 0 ] );

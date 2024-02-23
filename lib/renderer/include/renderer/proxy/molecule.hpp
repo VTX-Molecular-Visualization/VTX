@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_PROXY_MOLECULE__
 #define __VTX_RENDERER_PROXY_MOLECULE__
 
+#include <util/callback.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -26,6 +27,8 @@ namespace VTX::Renderer::Proxy
 		const std::vector<uint> *		 residueAtomCounts;		  //
 		const std::vector<size_t> *		 chainFirstResidues;	  //
 		const std::vector<size_t> *		 chainResidueCounts;	  //
+
+		Util::Callback<> onTransform;
 	};
 
 } // namespace VTX::Renderer::Proxy

@@ -135,12 +135,12 @@ int main( int, char ** )
 
 		// Proxify.
 		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
-		const size_t			  rendererId	= renderer.addProxy( proxyMolecule );
+		renderer.addProxy( proxyMolecule );
 
 		// Another molecule.
 		Molecule				  molecule2		 = downloadMolecule( "1aga" );
 		Renderer::Proxy::Molecule proxyMolecule2 = proxify( molecule2 );
-		const size_t			  rendererId2	 = renderer.addProxy( proxyMolecule2 );
+		renderer.addProxy( proxyMolecule2 );
 
 		/*
 		Molecule				  molecule3		 = downloadMolecule( "4v6x" );
@@ -170,10 +170,10 @@ int main( int, char ** )
 			// Update scene.
 			// Rotate molecule.
 			molecule.transform = Math::rotate( molecule.transform, time * 0.001f, VEC3F_Y );
-			renderer.updateMoleculeTransform( rendererId );
+			proxyMolecule.onTransform();
 
 			molecule2.transform = Math::rotate( molecule2.transform, time * 0.001f, VEC3F_X );
-			renderer.updateMoleculeTransform( rendererId2 );
+			proxyMolecule2.onTransform();
 
 			// Renderer.
 			renderer.render( time );
