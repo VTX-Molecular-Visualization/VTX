@@ -8,8 +8,8 @@ namespace VTX::Renderer::Proxy
 {
 	struct Molecule
 	{
-		Mat4f * transform;
-		// const Mat4f * normals;
+		const Mat4f * transform;
+
 		const std::vector<Vec3f> * atomPositions;
 		const std::vector<uchar> * atomColors;
 		const std::vector<float> * atomRadii;

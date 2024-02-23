@@ -17,7 +17,7 @@ namespace VTX
 			Logger( std::initializer_list<int> ) = delete;
 
 			void init( const FilePath & p_logPath = Filesystem::getExecutableDir() );
-			void flush();
+			// void flush();
 		};
 
 	} // namespace Util

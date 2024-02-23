@@ -80,27 +80,32 @@ namespace VTX::Renderer
 			totalBonds += proxy.bonds->size();
 		}
 
-		// Create empty VBOs.
-		_context->setData( totalAtoms, "SpheresCylindersPositions" );
-		_context->setData( totalAtoms, "SpheresCylindersColors" );
-		_context->setData( totalAtoms, "SpheresCylindersRadii" );
-		_context->setData( totalAtoms, "SpheresCylindersIds" );
-		_context->setData( totalAtoms, "SpheresCylindersFlags" );
-		_context->setData( totalBonds, "SpheresCylindersEbo" );
+		// Create buffers.
+		_context->setData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
+		_context->setData<uchar>( totalAtoms, "SpheresCylindersColors" );
+		_context->setData<float>( totalAtoms, "SpheresCylindersRadii" );
+		_context->setData<uint>( totalAtoms, "SpheresCylindersIds" );
+		_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
+		_context->setData<uchar>( totalAtoms, "SpheresCylindersModels" );
+		_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
 
 		// TODO: save those informations for further updates?
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
+		uchar  modelId	   = 0;
 		for ( const Proxy::Molecule & proxy : _proxiesMolecules )
 		{
-			// Fill VBOs.
+			const size_t atomCount = proxy.atomPositions->size();
+			const size_t bondCount = proxy.bonds->size();
+
+			// Fill buffers.
 			_context->setSubData( *proxy.atomPositions, "SpheresCylindersPositions", offsetAtoms );
 			_context->setSubData( *proxy.atomColors, "SpheresCylindersColors", offsetAtoms );
 			_context->setSubData( *proxy.atomRadii, "SpheresCylindersRadii", offsetAtoms );
 			_context->setSubData( *proxy.atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags.
-			std::vector<uchar> atomFlags( proxy.atomPositions->size() );
+			std::vector<uchar> atomFlags( atomCount );
 			for ( size_t i = 0; i < atomFlags.size(); ++i )
 			{
 				uchar flag = 0;
@@ -110,18 +115,22 @@ namespace VTX::Renderer
 			}
 			_context->setSubData( atomFlags, "SpheresCylindersFlags", offsetAtoms );
 
-			// Bonds.
-			std::vector<uint> bonds( proxy.bonds->size() );
-			for ( size_t i = 0; i < proxy.bonds->size(); ++i )
+			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+
+			// Move bonds.
+			std::vector<uint> bonds( bondCount );
+			for ( size_t i = 0; i < bondCount; ++i )
 			{
 				bonds[ i ] = uint( ( *proxy.bonds )[ i ] + offsetAtoms );
 			}
 			_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
 
 			// Offsets.
-			offsetAtoms += proxy.atomPositions->size();
-			offsetBonds += proxy.bonds->size();
+			offsetAtoms += atomCount;
+			offsetBonds += bondCount;
+			modelId++;
 		}
+
 		// Counters.
 		sizeAtoms = totalAtoms;
 		sizeBonds = totalBonds;

@@ -759,16 +759,16 @@ namespace VTX::Renderer::Context
 		default: severity = "UNKNOWN"; break;
 		}
 
-		std::string message( "[OPENGL] [" + severity + "] [" + type + "] " + source + ": " + p_msg );
+		std::string message( "[" + severity + "] [" + type + "] " + source + ": " + p_msg );
 
 		switch ( p_severity )
 		{
 		case GL_DEBUG_SEVERITY_HIGH:
-			std::cerr << message << std::endl;
+			// VTX_ERROR( "{}", message );
 			throw GLException( message );
 			break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
-		case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl; break;
+		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
 		default: break;
 		}
 	}

@@ -2,19 +2,11 @@
 #include "input_manager.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
-#include <core/chemdb/atom.hpp>
-#include <core/chemdb/color.hpp>
-#include <core/chemdb/secondary_structure.hpp>
-#include <core/struct/molecule.hpp>
-#include <io/reader/molecule.hpp>
-#include <io/util/secondary_structure.hpp>
 #include <iostream>
 #include <numeric>
 #include <renderer/renderer.hpp>
-#include <util/filesystem.hpp>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
-#include <util/network.hpp>
 
 #ifdef _WIN32
 extern "C"
@@ -33,6 +25,8 @@ int main( int, char ** )
 	using namespace Util;
 	using namespace IO;
 	using namespace Bench;
+	using namespace VTX::Core;
+	using namespace VTX::Core::Struct;
 
 	bool isRunning = true;
 	Logger::get().init( Filesystem::getExecutableDir() / "logs" );
@@ -134,104 +128,17 @@ int main( int, char ** )
 			}
 		);
 
-		// Model.
-		/*
-		Molecule							molecule = generateAtomGrid( 9 );
-		const Renderer::StructProxyMolecule proxyMolecule
-			= { &molecule.transform,		&molecule.atomPositions,  &molecule.atomColors, &molecule.atomRadii,
-				&molecule.atomVisibilities, &molecule.atomSelections, &molecule.atomIds,	&molecule.bonds };
-		renderer.addMolecule( proxyMolecule );
-		*/
-
-		Reader::Molecule			reader;
-		VTX::Core::Struct::Molecule molecule;
-
-		try
-		{
-			std::string data;
-			Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/4hhb", data );
-			reader.readBuffer( data, "4hhb.mmtf", molecule );
-
-			// reader.readFile( Filesystem::getExecutableDir() / "8ckb.cif", molecule );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "{}", p_e.what() );
-		}
-
-		VTX::IO::Util::SecondaryStructure::computeStride( molecule );
+		// Models.
+		Molecule molecule;
+		// molecule = loadMolecule( "8ckb.cif" );
+		molecule = downloadMolecule( "4hhb" );
+		IO::Util::SecondaryStructure::computeStride( molecule );
 
 		// Proxify.
-		size_t										   sizeAtoms  = molecule.trajectory.frames.front().size();
-		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> & symbols	  = molecule.atomSymbols;
-		std::vector<uchar>							   colorAtoms = std::vector<uchar>( sizeAtoms );
-		std::generate(
-			colorAtoms.begin(),
-			colorAtoms.end(),
-			[ &symbols ]
-			{
-				static int i = 0;
-				return VTX::Core::ChemDB::Color::getColorIndex( symbols[ i++ ] );
-			}
-		);
-		std::vector<float> radii( sizeAtoms );
-		std::generate(
-			radii.begin(),
-			radii.end(),
-			[ &symbols ]
-			{
-				static int i = 0;
-				return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ];
-			}
-		);
-		std::vector<bool> visibilities = std::vector<bool>( sizeAtoms, true );
-		std::vector<bool> selections   = std::vector<bool>( sizeAtoms, false );
-		std::vector<uint> idAtoms( sizeAtoms );
-		std::iota( idAtoms.begin(), idAtoms.end(), 0 );
-		std::vector<uint> bondsIndex( molecule.bondPairAtomIndexes.size() );
+		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
+		const size_t			  rendererId	= renderer.addProxy( proxyMolecule );
 
-		size_t			  sizeResidue = molecule.residueOriginalIds.size();
-		std::vector<uint> idResidues( sizeResidue );
-		std::iota( idResidues.begin(), idResidues.end(), 0 );
-		std::vector<uchar> colorResidues = std::vector<uchar>( sizeResidue );
-		std::generate(
-			colorResidues.begin(),
-			colorResidues.end(),
-			[ &molecule ]
-			{
-				static int i = 0;
-				return VTX::Core::ChemDB::Color::getColorIndex( molecule.residueSecondaryStructureTypes[ i++ ] );
-			}
-		);
-
-		molecule.transform = MAT4F_ID;
-
-		Renderer::Proxy::Molecule proxyMolecule
-			= { &molecule.transform,
-				&molecule.trajectory.frames.front(),
-				&colorAtoms,
-				&radii,
-				&visibilities,
-				&selections,
-				&idAtoms,
-				&molecule.bondPairAtomIndexes,
-				&molecule.atomNames,
-				&idResidues,
-				reinterpret_cast<std::vector<uchar> *>( &molecule.residueSecondaryStructureTypes ),
-				&colorResidues,
-				&molecule.residueFirstAtomIndexes,
-				&molecule.residueAtomCounts,
-				&molecule.chainFirstResidues,
-				&molecule.chainResidueCounts };
-
-		////////////////
-		Mat4f					  transform2	 = MAT4F_ID;
-		Renderer::Proxy::Molecule proxyMolecule2 = proxyMolecule;
-		proxyMolecule2.transform				 = &transform2;
-
-		const size_t rendererId	 = renderer.addProxy( proxyMolecule );
-		const size_t rendererId2 = renderer.addProxy( proxyMolecule2 );
-
+		/*
 		Math::AABB aabb;
 		for ( const Vec3f & position : molecule.trajectory.frames.front() )
 		{
@@ -240,10 +147,10 @@ int main( int, char ** )
 		std::vector<Vec3f> mins = { aabb.getMin() };
 		std::vector<Vec3f> maxs = { aabb.getMax() };
 		renderer.addProxy( Renderer::Proxy::Voxel { &mins, &maxs } );
+		*/
 
 		renderer.build();
-
-		renderer.setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		renderer.setColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		// Main loop.
 		while ( isRunning )
@@ -252,11 +159,11 @@ int main( int, char ** )
 
 			// Update scene.
 			// Rotate molecule.
-			*proxyMolecule.transform = Math::rotate( *proxyMolecule.transform, time * 0.001f, VEC3F_Y );
-			renderer.updateMoleculeTransform( rendererId );
+			//*proxyMolecule.transform = Math::rotate( *proxyMolecule.transform, time * 0.001f, VEC3F_Y );
+			// renderer.updateMoleculeTransform( rendererId );
 
-			*proxyMolecule2.transform = Math::rotate( *proxyMolecule2.transform, time * 0.001f, VEC3F_X );
-			renderer.updateMoleculeTransform( rendererId2 );
+			//*proxyMolecule2.transform = Math::rotate( *proxyMolecule2.transform, time * 0.001f, VEC3F_X );
+			// renderer.updateMoleculeTransform( rendererId2 );
 
 			// Renderer.
 			renderer.render( time );

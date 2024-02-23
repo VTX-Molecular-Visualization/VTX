@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <glad/glad.h>
 #include <iostream>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Renderer::Context::GL
