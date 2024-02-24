@@ -55,7 +55,7 @@ namespace VTX::Renderer
 		_callbackClean();
 	}
 
-	void Renderer::addProxy( Proxy::Molecule & p_proxy )
+	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		_proxiesMolecules.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
@@ -73,11 +73,38 @@ namespace VTX::Renderer
 			getUniform( matrixView, "Matrix view" );
 			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-			_context->setUniform(
+			setUniform(
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
-			setNeedUpdate( true );
 		};
+	}
+
+	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
+
+	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
+	{
+		setUniform( std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout" );
+	}
+
+	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy ) {}
+
+	void Renderer::setProxyVoxels( Proxy::Voxel & p_proxy )
+	{
+		_proxyVoxels = &p_proxy;
+
+		if ( _renderGraph->isBuilt() )
+		{
+			assert( p_proxy.mins );
+			assert( p_proxy.maxs );
+			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
+
+			_context->setData( *p_proxy.mins, "VoxelsMins" );
+			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
+
+			sizeVoxels += uint( p_proxy.mins->size() );
+		}
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::_refreshDataSpheresCylinders()
@@ -517,7 +544,10 @@ namespace VTX::Renderer
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}
 
-		_context->setUniform( models, "Matrix model view" );
+		if ( models.empty() == false )
+		{
+			setUniform( models, "Matrix model view" );
+		}
 	}
 
 	void Renderer::snapshot(

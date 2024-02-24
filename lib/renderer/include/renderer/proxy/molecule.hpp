@@ -31,7 +31,7 @@ namespace VTX::Renderer::Proxy
 		Util::Callback<> onTransform;
 		// TODO:
 		// onVisible()
-		// onSelection)
+		// onSelection()
 	};
 
 } // namespace VTX::Renderer::Proxy

@@ -52,6 +52,6 @@ namespace VTX::Util
 		}
 	}
 
-	// void Logger::flush() { spdlog::flush_on( spdlog::level::trace ); }
+	void Logger::flush() { spdlog::flush_on( spdlog::level::trace ); }
 
 } // namespace VTX::Util

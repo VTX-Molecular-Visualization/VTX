@@ -128,20 +128,36 @@ int main( int, char ** )
 			}
 		);
 
-		// Models.
+		// Build renderer.
+		renderer.build();
+
+		// Models/proxies.
 		// Molecule molecule = loadMolecule( "8ckb.cif" );
 		Molecule molecule = downloadMolecule( "4hhb" );
 		IO::Util::SecondaryStructure::computeStride( molecule );
-
-		// Proxify.
 		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
-		renderer.addProxy( proxyMolecule );
+		renderer.addProxyMolecule( proxyMolecule );
 
 		// Another molecule.
+		/*
 		Molecule molecule2 = downloadMolecule( "1aga" );
 		IO::Util::SecondaryStructure::computeStride( molecule2 );
 		Renderer::Proxy::Molecule proxyMolecule2 = proxify( molecule2 );
-		renderer.addProxy( proxyMolecule2 );
+		renderer.addProxyMolecule( proxyMolecule2 );
+		*/
+
+		std::vector<std::unique_ptr<Molecule>>					molecules;
+		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
+		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
+		{
+			if ( p_key == SDL_SCANCODE_SPACE )
+			{
+				molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( "1aga" ) ) );
+				IO::Util::SecondaryStructure::computeStride( *molecules.back() );
+				proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
+				renderer.addProxyMolecule( *proxies.back() );
+			}
+		};
 
 		/*
 		Molecule				  molecule3		 = downloadMolecule( "4v6x" );
@@ -160,8 +176,7 @@ int main( int, char ** )
 		renderer.addProxy( Renderer::Proxy::Voxel { &mins, &maxs } );
 		*/
 
-		renderer.build();
-		renderer.setColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
+		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		// Main loop.
 		while ( isRunning )
@@ -174,8 +189,8 @@ int main( int, char ** )
 			molecule.transform = Math::rotate( molecule.transform, deltaTime, VEC3F_Y );
 			proxyMolecule.onTransform();
 
-			molecule2.transform = Math::rotate( molecule2.transform, deltaTime, VEC3F_X );
-			proxyMolecule2.onTransform();
+			// molecule2.transform = Math::rotate( molecule2.transform, deltaTime, VEC3F_X );
+			// proxyMolecule2.onTransform();
 
 			// Renderer.
 			renderer.render( time );

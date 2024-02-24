@@ -154,7 +154,7 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( "JMol" ) )
 					{
-						p_renderer->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+						p_renderer->setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
@@ -162,7 +162,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
 						);
-						p_renderer->setColorLayout( colorLayout );
+						p_renderer->setProxyColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
@@ -170,7 +170,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
-						p_renderer->setColorLayout( colorLayout );
+						p_renderer->setProxyColorLayout( colorLayout );
 					}
 
 					ImGui::EndMenu();

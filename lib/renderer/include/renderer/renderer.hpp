@@ -4,10 +4,11 @@
 #include "caches.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
+#include "proxy/color_layout.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
-#include "proxy/representation.hpp"
-#include "proxy/voxel.hpp"
+#include "proxy/representations.hpp"
+#include "proxy/voxels.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
 #include <util/callback.hpp>
@@ -111,10 +112,10 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key )
+		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_size = 0 )
 		{
 			assert( _context != nullptr );
-			_context->setUniform<T>( p_value, p_key );
+			_context->setUniform<T>( p_value, p_key, p_size );
 			setNeedUpdate( true );
 		}
 
@@ -207,26 +208,11 @@ namespace VTX::Renderer
 			setUniform( uint( p_perspective ), "Is perspective" );
 		}
 
-		void addProxy( Proxy::Molecule & p_proxy );
-
-		inline void addProxy( const Proxy::Voxel & p_proxy )
-		{
-			/*
-			_proxiesVoxels.push_back( p_proxy );
-
-			if ( _renderGraph->isBuilt() )
-			{
-				_setData( p_proxy );
-			}
-
-			setNeedUpdate( true );
-			*/
-		}
-
-		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
-		{
-			setUniform( std::vector<Util::Color::Rgba>( p_layout.begin(), p_layout.end() ), "Color layout" );
-		}
+		void addProxyMolecule( Proxy::Molecule & p_proxy );
+		// void addProxyMesh( Proxy::Mesh & p_proxy );
+		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
+		void setProxyRepresentations( Proxy::Representations & p_proxy );
+		void setProxyVoxels( Proxy::Voxel & p_proxy );
 
 		void snapshot(
 			std::vector<uchar> & p_image,
@@ -261,10 +247,10 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
-		inline std::vector<Proxy::Molecule *> &		  getProxiesMolecules() { return _proxiesMolecules; }
-		inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
-		inline std::vector<Proxy::Representation *> & getProxiesRepresentations() { return _proxiesRepresentations; }
-		inline std::vector<Proxy::Voxel *> &		  getProxiesVoxels() { return _proxiesVoxels; }
+		inline std::vector<Proxy::Molecule *> & getProxiesMolecules() { return _proxiesMolecules; }
+		// inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
+		inline Proxy::Representations * getProxyRepresentations() { return _proxyRepresentations; }
+		inline Proxy::Voxel *			getProxyVoxels() { return _proxyVoxels; }
 
 		size_t		width;
 		size_t		height;
@@ -300,10 +286,11 @@ namespace VTX::Renderer
 		Util::Callback<> _callbackClean;
 
 		// Proxies.
-		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
-		std::vector<Proxy::Mesh *>			 _proxiesMeshes;
-		std::vector<Proxy::Representation *> _proxiesRepresentations;
-		std::vector<Proxy::Voxel *>			 _proxiesVoxels;
+		std::vector<Proxy::Molecule *> _proxiesMolecules;
+		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
+		Proxy::ColorLayout *	 _proxyColorLayout;
+		Proxy::Representations * _proxyRepresentations;
+		Proxy::Voxel *			 _proxyVoxels;
 
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const
@@ -330,6 +317,7 @@ namespace VTX::Renderer
 		void _refreshDataSpheresCylinders();
 		void _refreshDataRibbons();
 		void _refreshDataModels();
+		void _refreshDataVoxels();
 
 		enum E_ELEMENT_FLAGS
 		{
@@ -342,18 +330,6 @@ namespace VTX::Renderer
 			Mat4f mv;
 			Mat4f n;
 		};
-
-		void _setData( const Proxy::Voxel & p_proxy )
-		{
-			assert( p_proxy.mins );
-			assert( p_proxy.maxs );
-			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
-
-			_context->setData( *p_proxy.mins, "VoxelsMins" );
-			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
-
-			sizeVoxels += uint( p_proxy.mins->size() );
-		}
 
 		inline void _render( const float p_time ) const
 		{

@@ -17,7 +17,7 @@ namespace VTX::Renderer
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
-			_renderer->resize( p_width, p_height );
+			_renderer->resize( p_width, p_height, p_output );
 		}
 
 		inline void build( const uint p_output = 0, void * p_loader = nullptr )
@@ -50,14 +50,18 @@ namespace VTX::Renderer
 
 		inline void setPerspective( const bool p_perspective ) { _renderer->setPerspective( p_perspective ); }
 
-		inline void addProxy( const Proxy::Molecule & p_proxy ) { _renderer->addProxy( p_proxy ); }
+		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
 
-		inline void addProxy( const Proxy::Voxel & p_proxy ) { _renderer->addProxy( p_proxy ); }
+		// inline void addProxyMesh( Proxy::Mesh & p_proxy ) { _renderer->addProxyMesh( p_proxy ); }
 
-		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
+		inline void setProxyColorLayout( Proxy::ColorLayout & p_proxy ) { _renderer->setProxyColorLayout( p_proxy ); }
+
+		inline void setProxyRepresentations( Proxy::Representations & p_proxy )
 		{
-			_renderer->setColorLayout( p_layout );
+			_renderer->setProxyRepresentations( p_proxy );
 		}
+
+		inline void setProxyVoxels( Proxy::Voxel & p_proxy ) { _renderer->setProxyVoxels( p_proxy ); }
 
 		inline void snapshot(
 			std::vector<uchar> & p_image,
