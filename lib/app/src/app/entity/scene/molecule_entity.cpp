@@ -38,7 +38,7 @@ namespace VTX::App::Entity::Scene
 		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		// MAIN_REGISTRY().addComponent<VTX::Renderer::Proxy::Molecule>( p_entity );
+		MAIN_REGISTRY().addComponent<VTX::Renderer::Proxy::Molecule>( p_entity );
 		MAIN_REGISTRY().addComponent<App::Component::Scene::UIDComponent>( p_entity );
 		MAIN_REGISTRY().addComponent<App::Component::Scene::Selectable>( p_entity );
 		MAIN_REGISTRY().addComponent<App::Component::Scene::Pickable>( p_entity );
@@ -61,10 +61,10 @@ namespace VTX::App::Entity::Scene
 		uidComponent.referenceUID( moleculeComponent.getAtomUIDs() );
 
 		// Setup GPU Proxy
-		// Renderer::Proxy::Molecule & gpuProxyComponent
-		//	= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity );
+		Renderer::Proxy::Molecule & gpuProxyComponent
+			= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity );
 
-		// Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
+		Render::GPUProxyBuilder::fillProxy( moleculeComponent, gpuProxyComponent );
 
 		if ( moleculeComponent.hasTrajectory() )
 		{
