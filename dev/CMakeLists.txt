@@ -90,11 +90,17 @@ include("${DIR_LIBS}/renderer/cmake/library.cmake")
 # Renderer test.
 include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
 
+
+# _________________________________________________________________
 # Renderer bench.
+
+
+
 
 #include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
 
 ## Should work but "lib/renderer/bench/vendor/imnodes/imnodes.*" files are not copied by conan and are actually in the git tracking tree. We might want to rework the vendor part of this project. I leave if commented for the time being.
+
 
 
 
@@ -116,6 +122,10 @@ include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
 #add_custom_target(vtx_renderer_bench_copy_shader ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/renderer/shaders #$<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
 #add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
 
+
+
+# _________________________________________________________________
+
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
 
@@ -129,34 +139,14 @@ include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 
 # UI.
-#include("${DIR_LIBS}/ui/cmake/library.cmake")
+include("${DIR_LIBS}/ui/cmake/library.cmake")
 
 # UI test.
-#include("${DIR_LIBS}/ui/test/cmake/library.cmake")
-#
-#target_link_libraries(vtx_ui_test PRIVATE glm::glm)
-#target_link_libraries(vtx_ui_test PRIVATE Qt6::Core)
-#target_link_libraries(vtx_ui_test PRIVATE Qt6::Gui)
-#target_link_libraries(vtx_ui_test PRIVATE Qt6::Widgets)
-#target_link_libraries(vtx_ui_test PRIVATE Qt6::OpenGLWidgets)
-
+include("${DIR_LIBS}/ui/test/cmake/library.cmake")
 
 # MdPrep.
-#include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
-#target_link_libraries(vtx_tool_mdprep PRIVATE fmt::fmt)
-#target_link_libraries(vtx_tool_mdprep PRIVATE glm::glm)
-#target_link_libraries(vtx_tool_mdprep PRIVATE spdlog::spdlog)
-#target_link_libraries(vtx_tool_mdprep PRIVATE cpr::cpr)
-#target_link_libraries(vtx_tool_mdprep PRIVATE magic_enum::magic_enum)
+include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
-#find_package(vtx-gromacs CONFIG REQUIRED)
-#include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
-#add_dependencies(vtx_tool_mdprep_test vtx_tool_mdprep)
-#
-#target_link_libraries(vtx_tool_mdprep_test PRIVATE fmt::fmt)
-#target_link_libraries(vtx_tool_mdprep_test PRIVATE glm::glm)
-#target_link_libraries(vtx_tool_mdprep_test PRIVATE spdlog::spdlog)
-#target_link_libraries(vtx_tool_mdprep_test PRIVATE cpr::cpr)
-#target_link_libraries(vtx_tool_mdprep_test PRIVATE magic_enum::magic_enum)
+include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
 
