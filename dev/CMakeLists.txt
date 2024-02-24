@@ -82,40 +82,22 @@ include("${DIR_LIBS}/core/cmake/library.cmake")
 include("${DIR_LIBS}/io/cmake/library.cmake")
 
 # IO test.
-#add_executable(vtx_io_test ${DIR_LIBS}/io/test/src/main.cpp)
-#configure_target(vtx_io_test)
-#target_link_libraries(vtx_io_test PRIVATE vtx_util)
-#target_link_libraries(vtx_io_test PRIVATE vtx_core)
-#target_link_libraries(vtx_io_test PRIVATE vtx_io)
-#target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
-#catch_discover_tests(vtx_io_test)
-#add_custom_target(vtx_io_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${DIR_LIBS}/io/test/data #$<TARGET_FILE_DIR:vtx_io_test>/data)
-#add_dependencies(vtx_io_test vtx_io_test_copy_data)
+include("${DIR_LIBS}/io/test/cmake/library.cmake")
 
 # Renderer.
-#add_library(vtx_renderer)
-#configure_target(vtx_renderer)
-#file(GLOB_RECURSE HEADERS_RENDERER ${DIR_LIBS}/renderer/include/*)
-#file(GLOB_RECURSE SOURCES_RENDERER ${DIR_LIBS}/renderer/src/*)
-##file(GLOB_RECURSE RENDERER_IMGUI_BACKEND ${CMAKE_CURRENT_LIST_DIR}/vendor/*)
-#file(GLOB_RECURSE SHADERS ${DIR_LIBS}/renderer/shaders/*)
-#target_sources(vtx_renderer
-#	PRIVATE ${SOURCES_RENDERER}
-#	PRIVATE ${SHADERS}
-#	PRIVATE ${RENDERER_IMGUI_BACKEND}
-#	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/renderer/include FILES ${HEADERS_RENDERER})
-#target_link_libraries(vtx_renderer PRIVATE vtx_util)
-#target_link_libraries(vtx_renderer PUBLIC glad::glad)
+include("${DIR_LIBS}/renderer/cmake/library.cmake")
 
 # Renderer test.
-#add_executable(vtx_renderer_test ${DIR_LIBS}/renderer/test/src/main.cpp)
-#configure_target(vtx_renderer_test)
-#target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
-#target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
-#target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
-#catch_discover_tests(vtx_renderer_test)
+include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
 
 # Renderer bench.
+
+#include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
+
+## Should work but "lib/renderer/bench/vendor/imnodes/imnodes.*" files are not copied by conan and are actually in the git tracking tree. We might want to rework the vendor part of this project. I leave if commented for the time being.
+
+
+
 #file(GLOB_RECURSE SOURCES_BENCH ${DIR_LIBS}/renderer/bench/src/*)
 #file(GLOB_RECURSE VENDORS_BENCH ${DIR_LIBS}/renderer/bench/vendor/*)
 #add_executable(vtx_renderer_bench ${SOURCES_BENCH} ${VENDORS_BENCH})
@@ -135,70 +117,16 @@ include("${DIR_LIBS}/io/cmake/library.cmake")
 #add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
 
 # App.
-#add_library(vtx_app)
-#configure_target(vtx_app)
-#file(GLOB_RECURSE HEADERS_APP ${DIR_LIBS}/app/include/*)
-#file(GLOB_RECURSE SOURCES_APP ${DIR_LIBS}/app/src/*)
-#target_sources(vtx_app
-#	PRIVATE ${SOURCES_APP}
-#	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/app/include FILES ${HEADERS_APP})
-#target_link_libraries(vtx_app PRIVATE vtx_util)
-#target_link_libraries(vtx_app PRIVATE vtx_renderer)
-#target_link_libraries(vtx_app PRIVATE vtx_core)
-#target_link_libraries(vtx_app PRIVATE vtx_io)
-#target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
+include("${DIR_LIBS}/app/cmake/library.cmake")
 
 # App test.
-#file(GLOB_RECURSE SOURCES_APP_TEST ${DIR_LIBS}/app/test/src/*)
-#add_executable(vtx_app_test ${SOURCES_APP_TEST})
-#target_link_libraries(vtx_app_test PRIVATE vtx_util)
-#target_link_libraries(vtx_app_test PRIVATE vtx_renderer)
-#target_link_libraries(vtx_app_test PRIVATE vtx_core)
-#target_link_libraries(vtx_app_test PRIVATE vtx_io)
-#target_link_libraries(vtx_app_test PRIVATE vtx_app)
-#target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
-#catch_discover_tests(vtx_app_test)
-#add_custom_target(vtx_app_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${DIR_LIBS}/app/test/data $<TARGET_FILE_DIR:vtx_app_test>/data)
-#add_dependencies(vtx_app_test vtx_app_test_copy_data)
+include("${DIR_LIBS}/app/test/cmake/library.cmake")
 
 # Python binding.
-#add_library(vtx_python_binding)
-#configure_target(vtx_python_binding)
-#file(GLOB_RECURSE HEADERS_PYTHON_BINDING ${DIR_LIBS}/python_binding/include/*)
-#file(GLOB_RECURSE SOURCES_PYTHON_BINDING ${DIR_LIBS}/python_binding/src/*)
-#target_sources(vtx_python_binding
-#	PRIVATE ${SOURCES_PYTHON_BINDING}
-#	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${DIR_LIBS}/python_binding/include FILES ${HEADERS_PYTHON_BINDING})
-#target_link_libraries(vtx_python_binding PRIVATE vtx_util)
-#target_link_libraries(vtx_python_binding PRIVATE vtx_core)
-#target_link_libraries(vtx_python_binding PRIVATE vtx_app)
-#target_link_libraries(vtx_python_binding PRIVATE vtx_io)
-#target_link_libraries(vtx_python_binding PUBLIC pybind11::pybind11)
-#target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
-#pybind11_add_module(PyTX SHARED ${DIR_LIBS}/python_binding/src/python_binding/binding/vtx_module.cpp)
-#target_link_libraries(PyTX PRIVATE vtx_util)
-#target_link_libraries(PyTX PRIVATE vtx_core)
-#target_link_libraries(PyTX PRIVATE vtx_app)
-#target_link_libraries(PyTX PRIVATE pybind11::pybind11)
-#target_link_libraries(PyTX PRIVATE pybind11::embed)
-#target_link_libraries(PyTX PRIVATE vtx_python_binding)
+include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # Python binding test.
-#file(GLOB_RECURSE SOURCES_PYTHON_BINDING_TEST ${DIR_LIBS}/python_binding/test/src/*)
-#add_executable(vtx_python_binding_test ${SOURCES_PYTHON_BINDING_TEST})
-#configure_target(vtx_python_binding_test)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_core)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_io)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_app)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
-#target_link_libraries(vtx_python_binding_test PRIVATE PyTX)
-#target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
-#add_custom_target(vtx_python_binding_copy_script ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/python_binding/python_script $<TARGET_FILE_DIR:vtx_python_binding_test>/python_script)
-#add_dependencies(vtx_python_binding_test vtx_python_binding_copy_script)
-#add_custom_target(vtx_python_binding_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${DIR_LIBS}/python_binding/test/data $<TARGET_FILE_DIR:vtx_python_binding_test>/data)
-#add_dependencies(vtx_python_binding_test vtx_python_binding_test_copy_data)
-#catch_discover_tests(vtx_python_binding_test)
+include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 
 # UI.
 #include("${DIR_LIBS}/ui/cmake/library.cmake")
