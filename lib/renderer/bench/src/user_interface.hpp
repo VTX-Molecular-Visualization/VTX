@@ -389,7 +389,6 @@ namespace VTX::Bench
 				ImGui::Text( "GPU memory" );
 
 				size_t idMolecule = 0;
-				int	   toDelete	  = -1;
 				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
 				{
 					// Display transform.
@@ -403,20 +402,23 @@ namespace VTX::Bench
 						ImGui::InputFloat4( "", &transform[ 2 ][ 0 ] );
 						ImGui::InputFloat4( "", &transform[ 3 ][ 0 ] );
 
+						if ( ImGui::Button( "S" ) )
+						{
+							proxyMolecule->onSelect( true );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "U" ) )
+						{
+							proxyMolecule->onSelect( false );
+						}
+						ImGui::SameLine();
 						if ( ImGui::Button( "X" ) )
 						{
-							toDelete = int( idMolecule ) - 1;
-							// proxyMolecule->onRemove();
+							proxyMolecule->onRemove();
 						}
-						if ( ImGui::Button( "Select" ) ) {}
 
 						ImGui::TreePop();
 					}
-				}
-				if ( toDelete != -1 )
-				{
-					p_renderer->getProxiesMolecules()[ toDelete ]->onRemove();
-					toDelete = -1;
 				}
 			}
 			ImGui::End();

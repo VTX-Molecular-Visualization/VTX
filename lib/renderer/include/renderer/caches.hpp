@@ -7,14 +7,20 @@
 
 namespace VTX::Renderer::Cache
 {
-
 	// TODO: auto cache in context?
-	struct SphereCylinder
+
+	struct RangedCache
+	{
+		size_t offset = 0;
+		size_t size	  = 0;
+	};
+
+	struct SphereCylinder : public RangedCache
 	{
 		std::vector<uchar> flags;
 	};
 
-	struct Ribbon
+	struct Ribbon : public RangedCache
 	{
 		bool							  isEmpty = false;
 		std::vector<Vec4f>				  bufferCaPositions;

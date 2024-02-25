@@ -58,7 +58,6 @@ namespace VTX::Renderer
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		// If size max reached, do not add.
-
 		if ( _proxiesMolecules.size() >= UNSIGNED_CHAR_MAX )
 		{
 			throw GLException( "Max molecule count reached" );
@@ -85,6 +84,27 @@ namespace VTX::Renderer
 			);
 		};
 
+		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
+
+			for ( size_t i = 0; i < cacheSC.size; ++i )
+			{
+				cacheSC.flags[ i ] &= ~mask;
+				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+
+			for ( size_t i = 0; i < cacheR.size; ++i )
+			{
+				cacheR.bufferFlags[ i ] &= ~mask;
+				cacheR.bufferFlags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+		};
+
 		p_proxy.onRemove += [ this, &p_proxy ]()
 		{
 			std::erase( _proxiesMolecules, &p_proxy );
@@ -107,7 +127,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy ) {}
 
-	void Renderer::setProxyVoxels( Proxy::Voxel & p_proxy )
+	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
 	{
 		_proxyVoxels = &p_proxy;
 
@@ -203,6 +223,8 @@ namespace VTX::Renderer
 			_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
 
 			// Offsets.
+			cache.offset = offsetAtoms;
+			cache.size	 = atomCount;
 			offsetAtoms += atomCount;
 			offsetBonds += bondCount;
 			modelId++;
@@ -569,6 +591,8 @@ namespace VTX::Renderer
 			_context->setSubData( indices, "RibbonsEbo", offsetIndices );
 
 			// Offsets.
+			cache.offset = offsetCaPositions;
+			cache.size	 = cache.bufferCaPositions.size();
 			offsetCaPositions += cache.bufferCaPositions.size();
 			offsetIndices += cache.bufferIndices.size();
 		}

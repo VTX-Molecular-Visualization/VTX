@@ -155,42 +155,28 @@ int main( int, char ** )
 
 		addMolecule( "4hhb" );
 
-		/*
-		for ( size_t i = 0; i < 254; ++i )
-		{
-			VTX_DEBUG( "Loading molecule {}", i );
-			molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( "1aga.pdb" ) ) );
-			molecules.back()->transform
-				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
-			renderer.addProxyMolecule( *proxies.back() );
-		}
-		*/
-
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
-			if ( p_key == SDL_SCANCODE_SPACE )
+			if ( p_key == SDL_SCANCODE_F1 )
 			{
 				addMolecule( "4hhb.pdb" );
 			}
+			else if ( p_key == SDL_SCANCODE_F2 )
+			{
+				addMolecule( "1aga.pdb" );
+			}
+			else if ( p_key == SDL_SCANCODE_F3 )
+			{
+				addMolecule( "4v6x.mmtf" );
+			}
 		};
 
-		/*
-		Molecule				  molecule3		 = downloadMolecule( "4v6x" );
-		Renderer::Proxy::Molecule proxyMolecule3 = proxify( molecule3 );
-		const size_t			  rendererId3	 = renderer.addProxy( proxyMolecule3 );
-		*/
+		Math::AABB aabb( VEC3F_ZERO, 100.f );
 
-		/*
-		Math::AABB aabb;
-		for ( const Vec3f & position : molecule.trajectory.frames.front() )
-		{
-			aabb.extend( position );
-		}
-		std::vector<Vec3f> mins = { aabb.getMin() };
-		std::vector<Vec3f> maxs = { aabb.getMax() };
-		renderer.addProxy( Renderer::Proxy::Voxel { &mins, &maxs } );
-		*/
+		std::vector<Vec3f> mins		   = { aabb.getMin() };
+		std::vector<Vec3f> maxs		   = { aabb.getMax() };
+		auto			   proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
+		renderer.setProxyVoxels( proxyVoxels );
 
 		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
 

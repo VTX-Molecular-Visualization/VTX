@@ -211,7 +211,7 @@ namespace VTX::Renderer
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
-		void setProxyVoxels( Proxy::Voxel & p_proxy );
+		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
 		void snapshot(
 			std::vector<uchar> & p_image,
@@ -249,7 +249,7 @@ namespace VTX::Renderer
 		inline std::vector<Proxy::Molecule *> & getProxiesMolecules() { return _proxiesMolecules; }
 		// inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
 		inline Proxy::Representations * getProxyRepresentations() { return _proxyRepresentations; }
-		inline Proxy::Voxel *			getProxyVoxels() { return _proxyVoxels; }
+		inline Proxy::Voxels *			getProxyVoxels() { return _proxyVoxels; }
 
 		size_t		width;
 		size_t		height;
@@ -289,7 +289,7 @@ namespace VTX::Renderer
 		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
 		Proxy::ColorLayout *	 _proxyColorLayout;
 		Proxy::Representations * _proxyRepresentations;
-		Proxy::Voxel *			 _proxyVoxels;
+		Proxy::Voxels *			 _proxyVoxels;
 
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const

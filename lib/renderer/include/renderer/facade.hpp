@@ -61,7 +61,7 @@ namespace VTX::Renderer
 			_renderer->setProxyRepresentations( p_proxy );
 		}
 
-		inline void setProxyVoxels( Proxy::Voxel & p_proxy ) { _renderer->setProxyVoxels( p_proxy ); }
+		inline void setProxyVoxels( Proxy::Voxels & p_proxy ) { _renderer->setProxyVoxels( p_proxy ); }
 
 		inline void snapshot(
 			std::vector<uchar> & p_image,

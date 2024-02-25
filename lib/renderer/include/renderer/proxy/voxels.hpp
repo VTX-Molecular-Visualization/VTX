@@ -7,7 +7,7 @@
 namespace VTX::Renderer::Proxy
 {
 
-	struct Voxel
+	struct Voxels
 	{
 		const std::vector<Vec3f> * mins;
 		const std::vector<Vec3f> * maxs;
