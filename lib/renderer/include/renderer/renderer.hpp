@@ -209,7 +209,6 @@ namespace VTX::Renderer
 		}
 
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
-		// void addProxyMesh( Proxy::Mesh & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
 		void setProxyVoxels( Proxy::Voxel & p_proxy );

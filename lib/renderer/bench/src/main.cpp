@@ -147,7 +147,7 @@ int main( int, char ** )
 			}
 
 			molecules.back()->transform
-				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 100.f - 50.f );
+				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
 			IO::Util::SecondaryStructure::computeStride( *molecules.back() );
 			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 			renderer.addProxyMolecule( *proxies.back() );
@@ -171,7 +171,7 @@ int main( int, char ** )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE )
 			{
-				addMolecule( "4hhb" );
+				addMolecule( "4hhb.pdb" );
 			}
 		};
 

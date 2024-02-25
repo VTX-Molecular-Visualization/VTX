@@ -245,6 +245,25 @@ namespace VTX::Bench
 			SDL_GL_SwapWindow( _window );
 		}
 
+		bool getEvent( SDL_Event & p_event ) const
+		{
+			bool hasEvent = SDL_PollEvent( &p_event );
+			if ( hasEvent )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &p_event );
+			}
+			return hasEvent;
+		}
+
+		inline bool isUpdateScene() const { return _updateScene; }
+
+	  private:
+		SDL_Window *  _window	   = nullptr;
+		SDL_GLContext _glContext   = nullptr;
+		bool		  _vsync	   = true;
+		bool		  _drawUi	   = true;
+		bool		  _updateScene = false;
+
 		void _drawCamera( Camera * const p_camera ) const
 		{
 			if ( ImGui::Begin( "Camera" ) )
@@ -370,6 +389,7 @@ namespace VTX::Bench
 				ImGui::Text( "GPU memory" );
 
 				size_t idMolecule = 0;
+				int	   toDelete	  = -1;
 				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
 				{
 					// Display transform.
@@ -383,8 +403,20 @@ namespace VTX::Bench
 						ImGui::InputFloat4( "", &transform[ 2 ][ 0 ] );
 						ImGui::InputFloat4( "", &transform[ 3 ][ 0 ] );
 
+						if ( ImGui::Button( "X" ) )
+						{
+							toDelete = int( idMolecule ) - 1;
+							// proxyMolecule->onRemove();
+						}
+						if ( ImGui::Button( "Select" ) ) {}
+
 						ImGui::TreePop();
 					}
+				}
+				if ( toDelete != -1 )
+				{
+					p_renderer->getProxiesMolecules()[ toDelete ]->onRemove();
+					toDelete = -1;
 				}
 			}
 			ImGui::End();
@@ -811,25 +843,6 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
-
-		bool getEvent( SDL_Event & p_event ) const
-		{
-			bool hasEvent = SDL_PollEvent( &p_event );
-			if ( hasEvent )
-			{
-				ImGui_ImplSDL2_ProcessEvent( &p_event );
-			}
-			return hasEvent;
-		}
-
-		inline bool isUpdateScene() const { return _updateScene; }
-
-	  private:
-		SDL_Window *  _window	   = nullptr;
-		SDL_GLContext _glContext   = nullptr;
-		bool		  _vsync	   = true;
-		bool		  _drawUi	   = true;
-		bool		  _updateScene = false;
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

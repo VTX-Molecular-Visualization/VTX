@@ -16,19 +16,17 @@ namespace VTX::Renderer::Cache
 
 	struct Ribbon
 	{
-		bool				 isEmpty = false;
-		std::vector<Vec4f>	 bufferCaPositions;
-		std::vector<Vec3f>	 bufferCaODirections;
-		std::vector<uchar>	 bufferSSTypes;
-		std::vector<uchar>	 bufferColors;
-		std::vector<uint>	 bufferIds;
-		std::vector<uchar>	 bufferFlags;
-		std::vector<uchar>	 bufferModels;
-		std::vector<uint>	 bufferIndices;
-		std::map<uint, uint> residueToIndices;
-		std::map<uint, uint> residueToPositions;
-		// Chain to residues.
-		std::map<uint, std::vector<uint>> data;
+		bool							  isEmpty = false;
+		std::vector<Vec4f>				  bufferCaPositions;
+		std::vector<Vec3f>				  bufferCaODirections;
+		std::vector<uchar>				  bufferSSTypes;
+		std::vector<uchar>				  bufferColors;
+		std::vector<uint>				  bufferIds;
+		std::vector<uchar>				  bufferFlags;
+		std::vector<uint>				  bufferIndices;
+		std::map<uint, uint>			  residueToIndices;
+		std::map<uint, uint>			  residueToPositions;
+		std::map<uint, std::vector<uint>> data; // Chain to residues.
 	};
 
 } // namespace VTX::Renderer::Cache

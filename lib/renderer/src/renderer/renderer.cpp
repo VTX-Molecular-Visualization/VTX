@@ -84,6 +84,18 @@ namespace VTX::Renderer
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
 		};
+
+		p_proxy.onRemove += [ this, &p_proxy ]()
+		{
+			std::erase( _proxiesMolecules, &p_proxy );
+			_cacheSpheresCylinders.erase( &p_proxy );
+			_cacheRibbons.erase( &p_proxy );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_refreshDataMolecules();
+			}
+		};
 	}
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
@@ -177,6 +189,7 @@ namespace VTX::Renderer
 				}
 				cache.flags = atomFlags;
 			}
+
 			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
 			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
 
@@ -249,7 +262,6 @@ namespace VTX::Renderer
 			std::vector<uchar> &				bufferColors	   = cache.bufferColors;
 			std::vector<uint> &					bufferIds		   = cache.bufferIds;
 			std::vector<uchar> &				bufferFlags		   = cache.bufferFlags;
-			std::vector<uchar> &				bufferModels	   = cache.bufferModels;
 			std::vector<uint> &					bufferIndices	   = cache.bufferIndices;
 			std::map<uint, uint> &				residueToIndices   = cache.residueToIndices;
 			std::map<uint, uint> &				residueToPositions = cache.residueToPositions;
@@ -323,7 +335,6 @@ namespace VTX::Renderer
 					bufferColors.insert( bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
 					bufferIds.insert( bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
 					bufferFlags.insert( bufferFlags.end(), p_flags.cbegin(), p_flags.cend() );
-					bufferModels.insert( bufferModels.end(), p_models.cbegin(), p_models.cend() );
 				}
 			};
 
@@ -503,7 +514,6 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferColors.size() );
 			assert( bufferCaPositions.size() == bufferIds.size() );
 			assert( bufferCaPositions.size() == bufferFlags.size() );
-			assert( bufferCaPositions.size() == bufferModels.size() );
 
 			if ( bufferCaPositions.empty() )
 			{
@@ -526,8 +536,10 @@ namespace VTX::Renderer
 
 		size_t offsetCaPositions = 0;
 		size_t offsetIndices	 = 0;
+		uchar  modelId			 = -1;
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
+			modelId++;
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
 
 			assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
@@ -551,7 +563,9 @@ namespace VTX::Renderer
 			_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
 			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
 			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
-			_context->setSubData( cache.bufferModels, "RibbonsModels", offsetCaPositions );
+			_context->setSubData(
+				std::vector<uchar>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
+			);
 			_context->setSubData( indices, "RibbonsEbo", offsetIndices );
 
 			// Offsets.
