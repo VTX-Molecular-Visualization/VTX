@@ -16,6 +16,7 @@ namespace VTX::Renderer::Cache
 
 	struct Ribbon
 	{
+		bool				 isEmpty = false;
 		std::vector<Vec4f>	 bufferCaPositions;
 		std::vector<Vec3f>	 bufferCaODirections;
 		std::vector<uchar>	 bufferSSTypes;

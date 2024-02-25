@@ -16,8 +16,8 @@ namespace VTX
 	constexpr float FLOAT_MIN	 = std::numeric_limits<float>::min();
 	constexpr float FLOAT_MAX	 = std::numeric_limits<float>::max();
 
-	constexpr uint UNSIGNED_INT_MIN = std::numeric_limits<uint>::min();
-	constexpr uint UNSIGNED_INT_MAX = std::numeric_limits<uint>::max();
+	constexpr uint	UNSIGNED_INT_MAX  = std::numeric_limits<uint>::max();
+	constexpr uchar UNSIGNED_CHAR_MAX = std::numeric_limits<uchar>::max();
 
 	constexpr size_t SIZE_T_MIN = std::numeric_limits<size_t>::min();
 	constexpr size_t SIZE_T_MAX = std::numeric_limits<size_t>::max();

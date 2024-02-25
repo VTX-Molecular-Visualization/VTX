@@ -58,7 +58,8 @@ namespace VTX::Renderer
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		// If size max reached, do not add.
-		if ( _proxiesMolecules.size() >= 255 )
+
+		if ( _proxiesMolecules.size() >= UNSIGNED_CHAR_MAX )
 		{
 			throw GLException( "Max molecule count reached" );
 		}
@@ -200,7 +201,6 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataRibbons()
 	{
-		return;
 		size_t totalCaPositions = 0;
 		size_t totalIndices		= 0;
 
@@ -224,8 +224,10 @@ namespace VTX::Renderer
 
 			// Compute data if not cached.
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-			if ( cache.bufferCaPositions.empty() == false )
+			if ( cache.bufferCaPositions.empty() == false || cache.isEmpty )
 			{
+				totalCaPositions += cache.bufferCaPositions.size();
+				totalIndices += cache.bufferIndices.size();
 				continue;
 			}
 
@@ -494,6 +496,12 @@ namespace VTX::Renderer
 			assert( bufferCaPositions.size() == bufferIds.size() );
 			assert( bufferCaPositions.size() == bufferFlags.size() );
 			assert( bufferCaPositions.size() == bufferModels.size() );
+
+			if ( bufferCaPositions.empty() )
+			{
+				cache.isEmpty = true;
+				continue;
+			}
 
 			totalCaPositions += bufferCaPositions.size();
 			totalIndices += bufferIndices.size();
