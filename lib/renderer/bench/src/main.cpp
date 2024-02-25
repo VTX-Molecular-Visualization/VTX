@@ -138,21 +138,28 @@ int main( int, char ** )
 
 		auto addMolecule = [ & ]( const std::string & p_name )
 		{
-			if ( p_name.find( '.' ) != std::string::npos )
-			{
-				molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( p_name ) ) );
-			}
-			else
-			{
-				molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( p_name ) ) );
-			}
+			float time = CHRONO_CPU(
+				[ & ]()
+				{
+					if ( p_name.find( '.' ) != std::string::npos )
+					{
+						molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( p_name ) ) );
+					}
+					else
+					{
+						molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( p_name ) ) );
+					}
 
-			molecules.back()->transform
-				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-			IO::Util::SecondaryStructure::computeStride( *molecules.back() );
-			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
-			renderer.addProxyMolecule( *proxies.back() );
-			directions.emplace_back( Math::randomVec3f() );
+					molecules.back()->transform
+						= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
+					IO::Util::SecondaryStructure::computeStride( *molecules.back() );
+					proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
+					renderer.addProxyMolecule( *proxies.back() );
+					directions.emplace_back( Math::randomVec3f() );
+				}
+			);
+
+			VTX_INFO( "Molecule {} added in {} ms", p_name, time );
 		};
 
 		addMolecule( "4hhb" );
