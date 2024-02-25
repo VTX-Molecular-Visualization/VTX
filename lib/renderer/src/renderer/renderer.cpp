@@ -181,6 +181,7 @@ namespace VTX::Renderer
 			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
 
 			// Move bonds.
+			// TODO: caches bonds ?
 			std::vector<uint> bonds( bondCount );
 			for ( size_t i = 0; i < bondCount; ++i )
 			{
@@ -228,6 +229,13 @@ namespace VTX::Renderer
 			{
 				totalCaPositions += cache.bufferCaPositions.size();
 				totalIndices += cache.bufferIndices.size();
+				continue;
+			}
+
+			// Check if data.
+			if ( proxy->residueSecondaryStructureTypes->empty() )
+			{
+				cache.isEmpty = true;
 				continue;
 			}
 
@@ -522,9 +530,19 @@ namespace VTX::Renderer
 		{
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
 
+			assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
+
 			if ( cache.bufferCaPositions.empty() == true )
 			{
 				continue;
+			}
+
+			// Move indices.
+			// TODO: caches indices ?
+			std::vector<uint> indices = cache.bufferIndices;
+			for ( size_t i = 0; i < cache.bufferIndices.size(); ++i )
+			{
+				indices[ i ] += uint( offsetCaPositions );
 			}
 
 			_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
@@ -534,7 +552,7 @@ namespace VTX::Renderer
 			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
 			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
 			_context->setSubData( cache.bufferModels, "RibbonsModels", offsetCaPositions );
-			_context->setSubData( cache.bufferIndices, "RibbonsEbo", offsetIndices );
+			_context->setSubData( indices, "RibbonsEbo", offsetIndices );
 
 			// Offsets.
 			offsetCaPositions += cache.bufferCaPositions.size();

@@ -344,7 +344,7 @@ namespace VTX::Bench
 			if ( ImGui::Begin( "Scene" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-
+				ImGui::Checkbox( "Update", &_updateScene );
 				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
 				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
 				ImGui::Checkbox(
@@ -822,11 +822,14 @@ namespace VTX::Bench
 			return hasEvent;
 		}
 
+		inline bool isUpdateScene() const { return _updateScene; }
+
 	  private:
-		SDL_Window *  _window	 = nullptr;
-		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = true;
-		bool		  _drawUi	 = true;
+		SDL_Window *  _window	   = nullptr;
+		SDL_GLContext _glContext   = nullptr;
+		bool		  _vsync	   = true;
+		bool		  _drawUi	   = true;
+		bool		  _updateScene = false;
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

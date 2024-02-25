@@ -132,15 +132,30 @@ int main( int, char ** )
 		renderer.build();
 
 		// Models/proxies.
-		// Molecule molecule = loadMolecule( "8ckb.cif" );
-		Molecule molecule = downloadMolecule( "4hhb" );
-		IO::Util::SecondaryStructure::computeStride( molecule );
-		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
-		renderer.addProxyMolecule( proxyMolecule );
-
 		std::vector<std::unique_ptr<Molecule>>					molecules;
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
 
+		auto addMolecule = [ & ]( const std::string & p_name )
+		{
+			if ( p_name.find( '.' ) != std::string::npos )
+			{
+				molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( p_name ) ) );
+			}
+			else
+			{
+				molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( p_name ) ) );
+			}
+
+			molecules.back()->transform
+				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 100.f - 50.f );
+			IO::Util::SecondaryStructure::computeStride( *molecules.back() );
+			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
+			renderer.addProxyMolecule( *proxies.back() );
+		};
+
+		addMolecule( "4hhb" );
+
+		/*
 		for ( size_t i = 0; i < 254; ++i )
 		{
 			VTX_DEBUG( "Loading molecule {}", i );
@@ -150,16 +165,13 @@ int main( int, char ** )
 			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 			renderer.addProxyMolecule( *proxies.back() );
 		}
+		*/
 
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE )
 			{
-				molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( "1aga.pdb" ) ) );
-				molecules.back()->transform
-					= Math::translate( molecules.back()->transform, Math::randomVec3f() * 100.f - 50.f );
-				proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
-				renderer.addProxyMolecule( *proxies.back() );
+				addMolecule( "4hhb" );
 			}
 		};
 
@@ -189,17 +201,15 @@ int main( int, char ** )
 			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
-			// Rotate molecule.
-			molecule.transform = Math::rotate( molecule.transform, deltaTime, VEC3F_Y );
-			proxyMolecule.onTransform();
-			/*
-			auto i = 0;
-			for ( auto & molecule : molecules )
+			if ( ui.isUpdateScene() )
 			{
-				molecule->transform = Math::rotate( molecule->transform, deltaTime, Math::randomVec3f() );
-				proxies[ i++ ]->onTransform();
+				int i = 0;
+				for ( auto & molecule : molecules )
+				{
+					molecule->transform = Math::rotate( molecule->transform, deltaTime, Math::randomVec3f() );
+					proxies[ i++ ]->onTransform();
+				}
 			}
-			*/
 
 			// Renderer.
 			renderer.render( time );
