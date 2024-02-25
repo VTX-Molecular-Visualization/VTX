@@ -345,24 +345,6 @@ namespace VTX::Bench
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
 
-				size_t idMolecule = 0;
-				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
-				{
-					// Display transform.
-					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
-					{
-						// Display transform.
-						Mat4f transform = *proxyMolecule->transform;
-						ImGui::Text( "Transform" );
-						ImGui::InputFloat4( "", &transform[ 0 ][ 0 ] );
-						ImGui::InputFloat4( "", &transform[ 1 ][ 0 ] );
-						ImGui::InputFloat4( "", &transform[ 2 ][ 0 ] );
-						ImGui::InputFloat4( "", &transform[ 3 ][ 0 ] );
-
-						ImGui::TreePop();
-					}
-				}
-
 				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
 				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
 				ImGui::Checkbox(
@@ -386,6 +368,24 @@ namespace VTX::Bench
 				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
+
+				size_t idMolecule = 0;
+				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
+				{
+					// Display transform.
+					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
+					{
+						// Display transform.
+						Mat4f transform = *proxyMolecule->transform;
+						ImGui::Text( "Transform" );
+						ImGui::InputFloat4( "", &transform[ 0 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 1 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 2 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 3 ][ 0 ] );
+
+						ImGui::TreePop();
+					}
+				}
 			}
 			ImGui::End();
 		}

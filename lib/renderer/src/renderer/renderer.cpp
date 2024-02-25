@@ -57,6 +57,12 @@ namespace VTX::Renderer
 
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
+		// If size max reached, do not add.
+		if ( _proxiesMolecules.size() >= 255 )
+		{
+			throw GLException( "Max molecule count reached" );
+		}
+
 		_proxiesMolecules.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
@@ -194,6 +200,7 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataRibbons()
 	{
+		return;
 		size_t totalCaPositions = 0;
 		size_t totalIndices		= 0;
 

@@ -138,22 +138,26 @@ int main( int, char ** )
 		Renderer::Proxy::Molecule proxyMolecule = proxify( molecule );
 		renderer.addProxyMolecule( proxyMolecule );
 
-		// Another molecule.
-		/*
-		Molecule molecule2 = downloadMolecule( "1aga" );
-		IO::Util::SecondaryStructure::computeStride( molecule2 );
-		Renderer::Proxy::Molecule proxyMolecule2 = proxify( molecule2 );
-		renderer.addProxyMolecule( proxyMolecule2 );
-		*/
-
 		std::vector<std::unique_ptr<Molecule>>					molecules;
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
+
+		for ( size_t i = 0; i < 254; ++i )
+		{
+			VTX_DEBUG( "Loading molecule {}", i );
+			molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( "1aga.pdb" ) ) );
+			molecules.back()->transform
+				= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
+			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
+			renderer.addProxyMolecule( *proxies.back() );
+		}
+
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE )
 			{
-				molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( "1aga" ) ) );
-				IO::Util::SecondaryStructure::computeStride( *molecules.back() );
+				molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( "1aga.pdb" ) ) );
+				molecules.back()->transform
+					= Math::translate( molecules.back()->transform, Math::randomVec3f() * 100.f - 50.f );
 				proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 				renderer.addProxyMolecule( *proxies.back() );
 			}
@@ -188,9 +192,14 @@ int main( int, char ** )
 			// Rotate molecule.
 			molecule.transform = Math::rotate( molecule.transform, deltaTime, VEC3F_Y );
 			proxyMolecule.onTransform();
-
-			// molecule2.transform = Math::rotate( molecule2.transform, deltaTime, VEC3F_X );
-			// proxyMolecule2.onTransform();
+			/*
+			auto i = 0;
+			for ( auto & molecule : molecules )
+			{
+				molecule->transform = Math::rotate( molecule->transform, deltaTime, Math::randomVec3f() );
+				proxies[ i++ ]->onTransform();
+			}
+			*/
 
 			// Renderer.
 			renderer.render( time );
