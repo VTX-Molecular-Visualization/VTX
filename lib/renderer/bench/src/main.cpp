@@ -155,7 +155,7 @@ int main( int, char ** )
 					IO::Util::SecondaryStructure::computeStride( *molecules.back() );
 					proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 					renderer.addProxyMolecule( *proxies.back() );
-					directions.emplace_back( Math::randomVec3f() );
+					directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
 				}
 			);
 
