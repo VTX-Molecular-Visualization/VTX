@@ -171,6 +171,10 @@ int main( int, char ** )
 			{
 				addMolecule( "4v6x.mmtf" );
 			}
+			else if ( p_key == SDL_SCANCODE_F4 )
+			{
+				addMolecule( "3j3q.mmtf" );
+			}
 		};
 
 		Math::AABB aabb( VEC3F_ZERO, 100.f );
