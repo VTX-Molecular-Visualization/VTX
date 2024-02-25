@@ -134,6 +134,7 @@ int main( int, char ** )
 		// Models/proxies.
 		std::vector<std::unique_ptr<Molecule>>					molecules;
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
+		std::vector<Vec3f>										directions;
 
 		auto addMolecule = [ & ]( const std::string & p_name )
 		{
@@ -151,6 +152,7 @@ int main( int, char ** )
 			IO::Util::SecondaryStructure::computeStride( *molecules.back() );
 			proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 			renderer.addProxyMolecule( *proxies.back() );
+			directions.emplace_back( Math::randomVec3f() );
 		};
 
 		addMolecule( "4hhb" );
@@ -179,6 +181,7 @@ int main( int, char ** )
 		renderer.setProxyVoxels( proxyVoxels );
 
 		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
+		renderer.setProxyRepresentations( { Renderer::Proxy::Representation() } );
 
 		// Main loop.
 		while ( isRunning )
@@ -192,7 +195,7 @@ int main( int, char ** )
 				int i = 0;
 				for ( auto & molecule : molecules )
 				{
-					molecule->transform = Math::rotate( molecule->transform, deltaTime, Math::randomVec3f() );
+					molecule->transform = Math::rotate( molecule->transform, deltaTime, directions[ i ] );
 					proxies[ i++ ]->onTransform();
 				}
 			}
