@@ -32,3 +32,5 @@ target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Core)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Gui)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Widgets)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::OpenGLWidgets)
+
+vtx_copy_registered_data(vtx_tool_mdprep)

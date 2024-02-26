@@ -1,14 +1,18 @@
-
+set(_VTX_RENDERER_BENCH_VENDOR_DIR "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 set(SOURCES "")
-set(VENDORS "")
+# There is currently 2 vendor type of files : those that are statically bound to the project tree (imnodes) referred here as VENDOR_STATIC
+# And those copied by the build system, referred here as VENDORS_DYNAMIC. 
+set(VENDORS_STATIC "")
+set(VENDORS_DYNAMIC "")
+
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
-file(GLOB_RECURSE VENDORS ./vendor/*)
-message("VTX bench - VENDORS : <${VENDORS}>")
-add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS})
+file(GLOB_RECURSE VENDORS_STATIC "${_VTX_RENDERER_BENCH_VENDOR_DIR}/imnodes/*")
+file(GLOB_RECURSE VENDORS_DYNAMIC ./vendor/*)
+add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS_STATIC} ${VENDORS_DYNAMIC})
 configure_target(vtx_renderer_bench)
 
 if(NOT DEFINED _VTX_RENDERER_BENCH_CONAN)
-	target_include_directories(vtx_renderer_bench PRIVATE vendor)
+	target_include_directories(vtx_renderer_bench PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" ./vendor)
 
 	target_link_libraries(vtx_renderer_bench PUBLIC vtx_util)
 	target_link_libraries(vtx_renderer_bench PUBLIC vtx_renderer)

@@ -23,7 +23,6 @@ target_sources(vtx_ui
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 if (NOT DEFINED _VTX_UI_CONAN)
-	message("VTX - UI - entring <NOT DEFINED _VTX_UI_CONAN>")
 	target_link_libraries(vtx_ui PUBLIC vtx_util)
 	target_link_libraries(vtx_ui PUBLIC vtx_renderer)
 	target_link_libraries(vtx_ui PUBLIC vtx_core)

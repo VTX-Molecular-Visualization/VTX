@@ -1,46 +1,5 @@
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 
-function(configure_target p_target)
-	if(CMAKE_COMPILER_IS_GNUCC)
-		target_compile_options(${p_target} PRIVATE "-Wpedantic")
-		target_compile_options(${p_target} PRIVATE "-Wall")
-	elseif(MSVC)
-		# General.
-		target_compile_options(${p_target} PRIVATE "/W3")  # Warning level 3.
-		target_compile_options(${p_target} PRIVATE "/WX")  # Warnings as errors.
-		target_compile_options(${p_target} PRIVATE "/MP")  # Multicore compilation.
-		target_compile_options(${p_target} PRIVATE "/sdl") # Additional Security Checks.	
-		target_compile_options(${p_target} PRIVATE "/utf-8")
-		target_compile_options(${p_target} PRIVATE "/fp:fast") # Floating Point Model.
-		# Optimization.
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/O2>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ob2>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ot>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Oi>")
-	endif()
-	# Force _DEBUG preprocessor on all plateforms.
-	if(DEFINED CMAKE_BUILD_TYPE)
-		if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-			target_compile_definitions(${p_target} PRIVATE _DEBUG)
-		endif()
-	endif()	
-endfunction()
-function (configure_qt)
-	set(CMAKE_AUTOMOC ON PARENT_SCOPE)
-	set(CMAKE_AUTORCC ON PARENT_SCOPE)
-	set(CMAKE_AUTOUIC ON PARENT_SCOPE)
-	set(CMAKE_AUTOUIC_SEARCH_PATHS ${DIR_LIBS}/ui/asset/qt/forms PARENT_SCOPE)
-	#set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
-	set_property(GLOBAL PROPERTY USE_FOLDERS ON PARENT_SCOPE)
-	set(CMAKE_INCLUDE_CURRENT_DIR ON PARENT_SCOPE)
-	#set(CMAKE_POSITION_INDEPENDENT_CODE ON)	
-endfunction()
-function (apply_qt_options target)
-	set_property(TARGET ${target} PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
-	add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)	
-endfunction()
-
-
 message("vtx")
 cmake_minimum_required(VERSION 3.23)
 
@@ -90,41 +49,8 @@ include("${DIR_LIBS}/renderer/cmake/library.cmake")
 # Renderer test.
 include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
 
-
-# _________________________________________________________________
 # Renderer bench.
-
-
-
-
-#include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
-
-## Should work but "lib/renderer/bench/vendor/imnodes/imnodes.*" files are not copied by conan and are actually in the git tracking tree. We might want to rework the vendor part of this project. I leave if commented for the time being.
-
-
-
-
-#file(GLOB_RECURSE SOURCES_BENCH ${DIR_LIBS}/renderer/bench/src/*)
-#file(GLOB_RECURSE VENDORS_BENCH ${DIR_LIBS}/renderer/bench/vendor/*)
-#add_executable(vtx_renderer_bench ${SOURCES_BENCH} ${VENDORS_BENCH})
-#configure_target(vtx_renderer_bench)
-#target_include_directories(vtx_renderer_bench PRIVATE ${DIR_LIBS}/renderer/bench/vendor)
-#target_link_libraries(vtx_renderer_bench PRIVATE vtx_util)
-#target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer)
-#target_link_libraries(vtx_renderer_bench PRIVATE vtx_core)
-#target_link_libraries(vtx_renderer_bench PRIVATE vtx_io)
-#target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
-#target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
-#target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
-#target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
-##target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
-#
-#add_custom_target(vtx_renderer_bench_copy_shader ALL COMMAND ${CMAKE_COMMAND} -E copy_directory	${DIR_LIBS}/renderer/shaders #$<TARGET_FILE_DIR:vtx_renderer_bench>/shaders)
-#add_dependencies(vtx_renderer_bench vtx_renderer_bench_copy_shader)
-
-
-
-# _________________________________________________________________
+include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
 
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")

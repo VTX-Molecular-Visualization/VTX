@@ -37,14 +37,6 @@ if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
 endif()
 
-add_custom_target(
-	vtx_copy_shader
-	ALL COMMAND
-	${CMAKE_COMMAND} -E copy_directory	
-	${DIR_SHADERS}
-	$<TARGET_FILE_DIR:vtx>/shaders)
-add_dependencies(vtx vtx_copy_shader)
-
 IF (WIN32)
 	set(FILENAME_PYTHON_MODULE PyTX.pyd)
 ELSE()
