@@ -23,6 +23,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	void OpenGLWidget::initializeGL()
 	{
 		assert( context()->isValid() );
+
 		VTX::App::VTXApp::get().getRenderer().build( defaultFramebufferObject() );
 		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
 	}
