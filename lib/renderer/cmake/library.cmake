@@ -6,7 +6,7 @@ configure_target(vtx_renderer)
 set(HEADERS "")
 set(SOURCES "")
 set(SHADERS "")
-file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../src/include/*")
+file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE SHADERS "${CMAKE_CURRENT_LIST_DIR}/../shaders/*")
 target_sources(vtx_renderer
