@@ -156,6 +156,7 @@ int main( int, char ** )
 					proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
 					renderer.addProxyMolecule( *proxies.back() );
 					directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
+					proxies.back()->onRepresentation( rand() % 4 );
 				}
 			);
 
@@ -182,6 +183,12 @@ int main( int, char ** )
 			{
 				addMolecule( "3j3q.mmtf" );
 			}
+			else if ( p_key == SDL_SCANCODE_F5 )
+			{
+				VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+				std::generate( colorLayout.begin(), colorLayout.end(), [] { return Color::Rgba::random(); } );
+				renderer.setProxyColorLayout( colorLayout );
+			}
 		};
 
 		// Math::AABB aabb( VEC3F_ZERO, 100.f );
@@ -207,9 +214,15 @@ int main( int, char ** )
 		renderer.setProxyVoxels( proxyVoxels );
 
 		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
-		renderer.setProxyRepresentations(
-			{ Renderer::Proxy::Representation(), Renderer::Proxy::Representation(), Renderer::Proxy::Representation() }
-		);
+
+		Renderer::Proxy::Representation representation1, representation2, representation3;
+
+		representation2.radiusFixed		  = false;
+		representation3.radiusSphereFixed = 0.1f;
+
+		renderer.setProxyRepresentations( { representation1, representation2, representation3 } );
+
+		// Generate random representation.
 
 		// Main loop.
 		while ( isRunning )

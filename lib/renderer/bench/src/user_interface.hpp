@@ -117,6 +117,50 @@ namespace VTX::Bench
 			ImGui::NewFrame();
 
 			// Menu bar.
+			_drawMenuBar( p_camera, p_renderer );
+
+			if ( _drawUi )
+			{
+				// Camera.
+				_drawCamera( p_camera );
+
+				// Times.
+				_drawDurations( p_renderer );
+
+				// Scene.
+				_drawScene( p_renderer );
+
+				// Node editor.
+				_drawNodeEditor( p_renderer );
+			}
+
+			// Render.
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+			SDL_GL_SwapWindow( _window );
+		}
+
+		bool getEvent( SDL_Event & p_event ) const
+		{
+			bool hasEvent = SDL_PollEvent( &p_event );
+			if ( hasEvent )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &p_event );
+			}
+			return hasEvent;
+		}
+
+		inline bool isUpdateScene() const { return _updateScene; }
+
+	  private:
+		SDL_Window *  _window	   = nullptr;
+		SDL_GLContext _glContext   = nullptr;
+		bool		  _vsync	   = true;
+		bool		  _drawUi	   = true;
+		bool		  _updateScene = false;
+
+		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer )
+		{
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				if ( ImGui::BeginMenu( "Shaders" ) )
@@ -223,46 +267,7 @@ namespace VTX::Bench
 
 				ImGui::EndMainMenuBar();
 			}
-
-			if ( _drawUi )
-			{
-				// Camera.
-				_drawCamera( p_camera );
-
-				// Times.
-				_drawDurations( p_renderer );
-
-				// Scene.
-				_drawScene( p_renderer );
-
-				// Node editor.
-				_drawNodeEditor( p_renderer );
-			}
-
-			// Render.
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-			SDL_GL_SwapWindow( _window );
 		}
-
-		bool getEvent( SDL_Event & p_event ) const
-		{
-			bool hasEvent = SDL_PollEvent( &p_event );
-			if ( hasEvent )
-			{
-				ImGui_ImplSDL2_ProcessEvent( &p_event );
-			}
-			return hasEvent;
-		}
-
-		inline bool isUpdateScene() const { return _updateScene; }
-
-	  private:
-		SDL_Window *  _window	   = nullptr;
-		SDL_GLContext _glContext   = nullptr;
-		bool		  _vsync	   = true;
-		bool		  _drawUi	   = true;
-		bool		  _updateScene = false;
 
 		void _drawCamera( Camera * const p_camera ) const
 		{
@@ -423,6 +428,8 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
+
+		void _drawUniforms() const {}
 
 		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{

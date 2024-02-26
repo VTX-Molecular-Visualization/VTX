@@ -31,9 +31,12 @@ namespace VTX::Renderer::Proxy
 		Util::Callback<>	 onTransform;
 		Util::Callback<bool> onSelect;
 		Util::Callback<>	 onRemove;
+
+		// Or reprensetation proxy * instead of index?
+		Util::Callback<uchar> onRepresentation;
+
 		// TODO:
 		// onVisible()
-		// onSelection()
 	};
 
 } // namespace VTX::Renderer::Proxy

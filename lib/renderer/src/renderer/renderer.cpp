@@ -116,6 +116,18 @@ namespace VTX::Renderer
 				_refreshDataMolecules();
 			}
 		};
+
+		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+
+			cacheSC.representations = std::vector<uchar>( cacheSC.size, p_representation );
+			cacheR.representations	= std::vector<uchar>( cacheR.size, p_representation );
+
+			_context->setSubData( cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.offset );
+			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.offset );
+		};
 	}
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
@@ -230,9 +242,15 @@ namespace VTX::Renderer
 				cache.flags = atomFlags;
 			}
 
+			// Reprensentations if not cached.
+			if ( cache.representations.empty() )
+			{
+				cache.representations = std::vector<uchar>( atomCount, 0 );
+			}
+
 			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
 			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
-			_context->setSubData( std::vector<uchar>( atomCount, 0 ), "SpheresCylindersRepresentations", offsetAtoms );
+			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
 
 			// Move bonds.
 			// TODO: caches bonds ?
@@ -601,6 +619,11 @@ namespace VTX::Renderer
 				indices[ i ] += uint( offsetCaPositions );
 			}
 
+			if ( cache.representations.empty() )
+			{
+				cache.representations = std::vector<uchar>( cache.bufferCaPositions.size(), 0 );
+			}
+
 			_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
 			_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
 			_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
@@ -610,9 +633,7 @@ namespace VTX::Renderer
 			_context->setSubData(
 				std::vector<uchar>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
-			_context->setSubData(
-				std::vector<uchar>( cache.bufferCaPositions.size(), 0 ), "RibbonsRepresentations", offsetCaPositions
-			);
+			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
 			_context->setSubData( indices, "RibbonsEbo", offsetIndices );
 
 			// Offsets.

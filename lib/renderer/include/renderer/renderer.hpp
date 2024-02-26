@@ -86,10 +86,9 @@ namespace VTX::Renderer
 					  E_TYPE::VEC4F,
 					  StructUniformValue<Vec4f> { VEC4F_ZERO } },
 					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
-					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1u } } } }
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
 			);
 
-			// TODO: move to pass ubo?
 			_renderGraph->addUniforms(
 				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 256 }
 			);
