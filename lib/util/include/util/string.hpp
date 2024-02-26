@@ -8,6 +8,7 @@
 
 namespace VTX::Util::String
 {
+
 	void trim( std::string & p_str );
 	void trimStart( std::string & p_str );
 	void trimEnd( std::string & p_str );
@@ -17,6 +18,7 @@ namespace VTX::Util::String
 	std::string	  floatToStr( const float p_value, const int p_nbDecimals );
 	uint		  strToUint( const std::string & p_str );
 	void		  toUpper( std::string & inout );
+
 } // namespace VTX::Util::String
 
 #endif
