@@ -100,9 +100,7 @@ namespace VTX
 			{
 				QDir dir( QCoreApplication::applicationDirPath() );
 				dir.cdUp();
-#ifdef _MSC_VER
-				dir.cdUp();
-#endif
+
 				return dir.path().toStdString();
 			}
 

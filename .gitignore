@@ -6,3 +6,4 @@
 /RELEASE/
 /.vscode/
 *.code-workspace
+CMakeSettings.json
