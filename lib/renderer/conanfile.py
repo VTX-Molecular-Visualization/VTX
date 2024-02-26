@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import copy
 
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
