@@ -313,6 +313,21 @@ namespace VTX::UI
 		}
 	}
 
+	bool Dialog::bigSESComputationWarning()
+	{
+		const std::string msg
+			= "You are going to compute a big SES which may overload your GPU's memory.\n Do you want to continue ?";
+
+		const int res
+			= QMessageBox::warning( &VTXApp::get().getMainWindow(),
+									"Warning",
+									msg.c_str(),
+									( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel ),
+									QMessageBox::StandardButton::Cancel );
+
+		return res == QMessageBox::StandardButton::Yes;
+	}
+
 	void Dialog::openGLInitializationFail()
 	{
 		std::string msg

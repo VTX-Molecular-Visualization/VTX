@@ -3,13 +3,16 @@
 #include "action/instantiated_representation.hpp"
 #include "action/molecule.hpp"
 #include "action/transformable.hpp"
+#include "model/representation/representation_library.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/dialog.hpp"
 #include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/solvent_excluded_surface.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -332,9 +335,29 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
+	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		bool	   reallyApplyPreset  = true;
+		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
+											.getRepresentation( p_presetIndex )
+											->getRepresentationType()
+										== Generic::REPRESENTATION::SES;
+
+		const bool isBigSES = Util::SolventExcludedSurface::checkSESMemory( getTargets() );
+
+		if ( isTryingToApplySES && isBigSES )
+		{
+			reallyApplyPreset = Dialog::bigSESComputationWarning();
+		}
+
+		if ( reallyApplyPreset )
+		{
+			VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		}
+		else
+		{
+			refresh( SectionFlag::REPRESENTATION );
+		}
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,

@@ -73,7 +73,7 @@ namespace VTX::UI::Widget::Inspector
 		void _onRotationDragged( const Vec3f & ) const;
 		void _onScaleDragged( const Vec3f & ) const;
 
-		void _onRepresentationPresetChange( const int p_presetIndex ) const;
+		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
 									  const Model::Representation::MEMBER_FLAG &				p_flag ) const;
 		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,

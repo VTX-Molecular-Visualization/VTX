@@ -6,11 +6,13 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/solvent_excluded_surface.hpp"
 #include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
@@ -262,7 +264,34 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		bool	   reallyApplyPreset  = true;
+		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
+											.getRepresentation( p_presetIndex )
+											->getRepresentationType()
+										== Generic::REPRESENTATION::SES;
+
+		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+		for ( const Model::Chain * chain : getTargets() )
+		{
+			molecules.emplace( chain->getMoleculePtr() );
+		}
+
+		const bool isBigSES = Util::SolventExcludedSurface::checkSESMemory( molecules );
+
+		if ( isTryingToApplySES && isBigSES )
+		{
+			reallyApplyPreset = Dialog::bigSESComputationWarning();
+		}
+
+		if ( reallyApplyPreset )
+		{
+			VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		}
+		else
+		{
+			refresh( SectionFlag::REPRESENTATION );
+		}
 	}
 	void MultipleChainWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
