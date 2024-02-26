@@ -152,6 +152,11 @@ namespace VTX
 				workerCreateSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 				workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
+				// Compute size.
+				size_t sizeCreateSDF = bufferSesGridData.getSize() + bufferAtomGridDataSorted.getSize()
+									   + bufferAtomIndexSorted.getSize() + bufferAtomPosition.getSize();
+				VTX_DEBUG( "Step create SDF size: {}", sizeCreateSDF );
+
 				// Start.
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 				workerCreateSDF.start( gridSES.getCellCount() );
@@ -162,6 +167,11 @@ namespace VTX
 				bufferAtomGridDataSorted.unbind();
 				bufferAtomIndexSorted.unbind();
 				bufferAtomPosition.unbind();
+
+				// Free memory.
+				bufferAtomIndexSorted.destroy();
+				bufferAtomGridDataSorted.destroy();
+				bufferAtomPosition.destroy();
 
 				chrono2.stop();
 				VTX_DEBUG( "SDF created in {}s", chrono2.elapsedTime() );
@@ -184,6 +194,10 @@ namespace VTX
 				workerRefineSDF.getProgram().setUInt( "uGridSESCellCount", uint( gridSES.getCellCount() ) );
 				workerRefineSDF.getProgram().setVec3i( "uCellsToVisitCount", cellsToVisitCount );
 				workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
+
+				// Compute size.
+				size_t sizeRefineSDF = bufferSesGridData.getSize();
+				VTX_DEBUG( "Step refine SDF size: {}", sizeRefineSDF );
 
 				// Start
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
@@ -215,6 +229,11 @@ namespace VTX
 
 				workerReduceGrid.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
 				workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
+
+				// Compute size.
+				size_t sizeReduceGrid
+					= bufferSesGridData.getSize() + bufferCellValidities.getSize() + bufferCellHashs.getSize();
+				VTX_DEBUG( "Step reduce grid size: {}", sizeReduceGrid );
 
 				// Start.
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
@@ -254,6 +273,11 @@ namespace VTX
 				workerGridCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
 				workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
+				// Compute size.
+				size_t sizeGridCompactionSDF
+					= bufferCellValidities.getSize() + bufferCellHashs.getSize() + bufferCellHashsReduced.getSize();
+				VTX_DEBUG( "Step grid compaction size: {}", sizeGridCompactionSDF );
+
 				// Start.
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 				workerGridCompaction.start( gridSES.getCellCount() );
@@ -263,6 +287,10 @@ namespace VTX
 				bufferCellValidities.unbind();
 				bufferCellHashs.unbind();
 				bufferCellHashsReduced.unbind();
+
+				// Free memory.
+				bufferCellValidities.destroy();
+				bufferCellHashs.destroy();
 
 				chrono2.stop();
 				VTX_DEBUG( "Grid compacted in {}s", chrono2.elapsedTime() );
@@ -301,6 +329,13 @@ namespace VTX
 				workerMarchingCube.getProgram().setFloat( "uIsovalue", 0.f );
 				workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
+				// Compute size.
+				size_t sizeMarchingCube = bufferSesGridData.getSize() + bufferPositionsTmp.getSize()
+										  + bufferAtomIndicesTmp.getSize() + bufferTriangleValidities.getSize()
+										  + bufferTriangleTable.getSize() + bufferCellHashsReduced.getSize()
+										  + bufferTrianglesPerAtom.getSize();
+				VTX_DEBUG( "Step marching cube size: {}", sizeMarchingCube );
+
 				// Start.
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 				workerMarchingCube.start( bufferSizeReduced );
@@ -314,6 +349,11 @@ namespace VTX
 				bufferTriangleTable.unbind();
 				bufferCellHashsReduced.unbind();
 				bufferTrianglesPerAtom.unbind();
+
+				// Free memory.
+				bufferSesGridData.destroy();
+				bufferTriangleTable.destroy();
+				bufferCellHashsReduced.destroy();
 
 				chrono2.stop();
 				VTX_DEBUG( "Marching cube done in {}s", chrono2.elapsedTime() );
@@ -395,6 +435,13 @@ namespace VTX
 				workerBufferCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
 				workerBufferCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
+				// Compute size.
+				size_t sizeBufferCompaction = bufferPositions.getSize() + bufferIndices.getSize() + bufferIds.getSize()
+											  + bufferPositionsTmp.getSize() + bufferAtomIndicesTmp.getSize()
+											  + bufferTriangleValidities.getSize() + bufferAtomsToTriangles.getSize()
+											  + bufferAtomIds.getSize() + bufferTrianglesPerAtom.getSize();
+				VTX_DEBUG( "Step buffer compaction size: {}", sizeBufferCompaction );
+
 				// Start.
 				assert( bufferSize % 3 == 0 );
 				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
@@ -411,6 +458,13 @@ namespace VTX
 				bufferAtomsToTriangles.unbind();
 				bufferAtomIds.unbind();
 				bufferTrianglesPerAtom.unbind();
+
+				// Free memory.
+				bufferPositionsTmp.destroy();
+				bufferAtomIndicesTmp.destroy();
+				bufferTriangleValidities.destroy();
+				bufferAtomIds.destroy();
+				bufferTrianglesPerAtom.destroy();
 
 				chrono2.stop();
 				VTX_DEBUG( "Buffer compacted in {}s", chrono2.elapsedTime() );
@@ -513,6 +567,11 @@ namespace VTX
 					workerComputeNormals.getProgram().use();
 					workerComputeNormals.getProgram().setUInt( "uSize", _indiceCount );
 
+					// Compute size.
+					size_t sizeComputeNormals = bufferPositions.getSize() + bufferNormals.getSize()
+												+ bufferIndices.getSize() + bufferNormalsCasted.getSize();
+					VTX_DEBUG( "Step compute normals size: {}", sizeComputeNormals );
+
 					// Start.
 					assert( _indiceCount % 3 == 0 );
 					_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
@@ -535,6 +594,10 @@ namespace VTX
 
 					workerNormalizeNormals.getProgram().use();
 					workerNormalizeNormals.getProgram().setUInt( "uSize", _indiceCount );
+
+					// Compute size.
+					size_t sizeNormalizeNormals = bufferNormals.getSize() + bufferNormalsCasted.getSize();
+					VTX_DEBUG( "Step normalize normals size: {}", sizeNormalizeNormals );
 
 					// Start.
 					_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
@@ -594,11 +657,19 @@ namespace VTX
 			}
 			_buffer->doneContextCurrent();
 
-			//			//////////////////////////
+			////////////////////////////
 			// Refresh other data.
 			refreshColors();
 			refreshVisibilities();
 			refreshSelections();
+
+			// Compute final mesh size.
+			size_t sizeFinalMesh = _buffer->getBufferPositions().getSize() + _buffer->getBufferNormals().getSize()
+								   + _buffer->getBufferIndices().getSize() + _buffer->getBufferColors().getSize()
+								   + _buffer->getBufferVisibilities().getSize()
+								   + _buffer->getBufferSelections().getSize() + _buffer->getBufferIds().getSize()
+								   + _buffer->getBufferAtomsToTriangles().getSize();
+			VTX_DEBUG( "Final mesh size: {}", sizeFinalMesh );
 
 			// No CPU data.
 			assert( _vertices.empty() );

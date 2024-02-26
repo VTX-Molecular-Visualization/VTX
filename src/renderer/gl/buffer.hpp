@@ -172,7 +172,8 @@ namespace VTX::Renderer::GL
 			assert( _gl->glIsBuffer( _id ) );
 			assert( p_vector.empty() == false );
 
-			_gl->glNamedBufferStorage( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(), p_flags );
+			_size = GLsizei( sizeof( T ) * p_vector.size() );
+			_gl->glNamedBufferStorage( _id, GLsizei( _size ), p_vector.data(), p_flags );
 		}
 
 		template<typename T>
@@ -181,14 +182,16 @@ namespace VTX::Renderer::GL
 			assert( _gl->glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
+			_size = p_size;
+			_gl->glNamedBufferStorage( _id, GLsizei( _size ), &p_data, p_flags );
 		}
 
 		inline void set( const size_t p_size, const Flags & p_flags = Flags::NONE )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), nullptr, p_flags );
+			_size = p_size;
+			_gl->glNamedBufferStorage( _id, GLsizei( _size ), nullptr, p_flags );
 		}
 
 		template<typename T>
@@ -231,9 +234,12 @@ namespace VTX::Renderer::GL
 			_gl->glUnmapNamedBuffer( _id );
 		}
 
+		inline size_t getSize() const { return _size; }
+
 	  private:
 		GLuint _id	   = GL_INVALID_INDEX;
 		Target _target = Target::NONE;
+		size_t _size   = 0;
 	};
 } // namespace VTX::Renderer::GL
 
