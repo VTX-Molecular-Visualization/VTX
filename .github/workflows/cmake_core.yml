@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
     paths: ['lib/core/**', '.github/workflows/cmake_core.yml']
+  workflow_run:
+    workflows: ["CMake Util"]
+    types:
+      - completed
 
 env:
   CMAKELISTS_DIR: ${{github.workspace}}/lib/core
