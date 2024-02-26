@@ -8,20 +8,23 @@ namespace VTX::Renderer::Proxy
 
 	struct Representation
 	{
-		bool  hasShphere;
-		float radiusSphere;
+		bool  hasShphere		= true;
+		float radiusSphereFixed = 0.4f;
+		float radiusSphereAdd	= 0.f;
+		bool  radiusFixed		= true;
 
-		bool  hasCylinder;
-		float radiusCylinder;
+		bool  hasCylinder	 = true;
+		float radiusCylinder = 0.1f;
+		uint  cylinderColorBlendingMode;
 
-		bool  hasRibbon;
-		uchar ribbonColorBlendingMode;
+		bool hasRibbon = true;
+		uint ribbonColorBlendingMode;
 
 		bool  hasSes;
 		float sesResolution;
 	};
 
-	using Representations = const std::array<Representation, 256>;
+	using Representations = const std::vector<Representation>;
 
 } // namespace VTX::Renderer::Proxy
 

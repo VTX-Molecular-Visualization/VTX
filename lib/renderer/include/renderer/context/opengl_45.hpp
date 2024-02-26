@@ -60,9 +60,7 @@ namespace VTX::Renderer::Context
 			assert( src != nullptr && dest != nullptr && entry->size );
 
 			memcpy( dest, src, entry->size );
-			entry->buffer->setSubData(
-				p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size + entry->padding )
-			);
+			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
 		template<typename T>

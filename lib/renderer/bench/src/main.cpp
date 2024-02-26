@@ -184,15 +184,32 @@ int main( int, char ** )
 			}
 		};
 
-		Math::AABB aabb( VEC3F_ZERO, 100.f );
+		// Math::AABB aabb( VEC3F_ZERO, 100.f );
 
-		std::vector<Vec3f> mins		   = { aabb.getMin() };
-		std::vector<Vec3f> maxs		   = { aabb.getMax() };
-		auto			   proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
+		// std::vector<Vec3f> mins		   = { aabb.getMin() };
+		// std::vector<Vec3f> maxs		   = { aabb.getMax() };
+
+		// Generate grid with mins and maxs.
+		std::vector<Vec3f> mins, maxs;
+		for ( float x = -100.f; x <= 100.f; x += 50.f )
+		{
+			for ( float y = -100.f; y <= 100.f; y += 50.f )
+			{
+				for ( float z = -100.f; z <= 100.f; z += 50.f )
+				{
+					mins.emplace_back( x, y, z );
+					maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
+				}
+			}
+		}
+
+		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
 		renderer.setProxyVoxels( proxyVoxels );
 
 		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
-		renderer.setProxyRepresentations( { Renderer::Proxy::Representation() } );
+		renderer.setProxyRepresentations(
+			{ Renderer::Proxy::Representation(), Renderer::Proxy::Representation(), Renderer::Proxy::Representation() }
+		);
 
 		// Main loop.
 		while ( isRunning )

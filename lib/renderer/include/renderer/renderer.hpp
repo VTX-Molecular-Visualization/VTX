@@ -95,11 +95,18 @@ namespace VTX::Renderer
 			);
 
 			// TODO: dynamic ubo size instead of fixed 256.
-			_renderGraph->addUniforms(
-				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-				  256 }
-			);
+			_renderGraph->addUniforms( { { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} },
+										   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} } },
+										 256 } );
+
+			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
+										   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
+										   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
+										   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
+
+										   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
+										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
+										 256 } );
 		}
 
 		// Only first entry of the array saved on cpu.
@@ -265,7 +272,7 @@ namespace VTX::Renderer
 		bool showRibbons = true;
 		bool showVoxels	 = true;
 
-		bool forceUpdate  = false;
+		bool forceUpdate  = true;
 		bool logDurations = false;
 
 	  private:
@@ -328,6 +335,18 @@ namespace VTX::Renderer
 		{
 			Mat4f mv;
 			Mat4f n;
+		};
+
+		struct _StructUBORepresentation
+		{
+			float radiusSphereFixed;
+			float radiusSphereAdd;
+			uint  radiusFixed;
+			float radiusCylinder;
+
+			uint cylinderColorBlendingMode;
+			uint ribbonColorBlendingMode;
+			uint padding[ 2 ];
 		};
 
 		inline void _render( const float p_time ) const

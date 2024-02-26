@@ -12,6 +12,7 @@ layout( location = 2 ) in float inVertexRad;
 layout( location = 3 ) in uint  inVertexId;
 layout( location = 4 ) in uint  inVertexFlag;
 layout( location = 5 ) in uint  inVertexModel;
+layout( location = 6 ) in uint  inVertexRepresentation;
 
 // Out.
 out
@@ -20,11 +21,12 @@ outData;
 
 void main()
 {
-	outData.vertexColor	   = uniformsColor[ inVertexColor ];
-	//outData.vertexColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
-	outData.vertexVisible  = inVertexFlag & ( 1 << FLAG_VISIBILITY );
-	outData.vertexSelected = inVertexFlag & ( 1 << FLAG_SELECTION );
-	outData.vertexId	   = inVertexId;
+	outData.vertexColor				= uniformsColor[ inVertexColor ];
+	//outData.vertexColor					 = vec4( 1.f, 1.f, 1.f, 1.f );
+	outData.vertexVisible			= inVertexFlag & ( 1 << FLAG_VISIBILITY );
+	outData.vertexSelected			= inVertexFlag & ( 1 << FLAG_SELECTION );
+	outData.vertexId				= inVertexId;
+	outData.vertexIdRepresentation	= inVertexRepresentation;
 
 	// Vertex position in view space.
 	gl_Position = uniformsModel[ inVertexModel ].matrixModelView * vec4( inVertexPosition, 1.f );
