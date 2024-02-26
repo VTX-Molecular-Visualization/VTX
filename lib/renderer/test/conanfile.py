@@ -10,7 +10,7 @@ class VTXRendererTestRecipe(ConanFile):
     
     generators = "CMakeToolchain", "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*"
+    exports_sources = "CMakeLists.txt", "src/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
