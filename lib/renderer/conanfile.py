@@ -30,7 +30,7 @@ class VTXRendererRecipe(ConanFile):
         self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info"]
 
     def layout(self):
-        cmake_layout(self)       
+        cmake_layout(self)
 
     def build(self):
         cmake = CMake(self)
