@@ -1,8 +1,7 @@
 #ifndef __VTX_UTIL_SOLVENT_EXCLUDED_SURFACE__
 #define __VTX_UTIL_SOLVENT_EXCLUDED_SURFACE__
 
-#include "model/molecule.hpp"
-#include <unordered_set>
+#include "model/category.hpp"
 
 namespace VTX::Util::SolventExcludedSurface
 {
@@ -10,9 +9,7 @@ namespace VTX::Util::SolventExcludedSurface
 
 	const memory_size_type SMALL_SES_MEMORY_THRESHOLD = memory_size_type( 8000000000 ); // 8Go
 
-	bool			 checkSESMemory( const std::unordered_set<Model::Molecule *> & p_molecules );
-	bool			 checkSESMemory( const Model::Molecule & p_molecule );
-	memory_size_type estimateSESMemory( const Model::Molecule & p_molecule );
+	bool checkSESMemory( const Model::Category & category );
 
 } // namespace VTX::Util::SolventExcludedSurface
 

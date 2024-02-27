@@ -1,28 +1,47 @@
 #include "util/solvent_excluded_surface.hpp"
+#include "model/atom.hpp"
+#include "model/molecule.hpp"
 #include "model/solvent_excluded_surface.hpp"
 #include "tool/logger.hpp"
 
 namespace VTX::Util::SolventExcludedSurface
 {
-	bool checkSESMemory( const std::unordered_set<Model::Molecule *> & p_molecules )
+	bool checkSESMemory( const Model::Category & p_category )
 	{
-		memory_size_type memorySum = 0;
+		memory_size_type memory = 0;
 
-		for ( const Model::Molecule * const mol : p_molecules )
-		{
-			if ( !mol->hasSolventExcludedSurface() )
-				memorySum += estimateSESMemory( *mol );
-		}
+		// Estimate memory needed from grid size.
+		const std::vector<uint>		 atomsIdx = p_category.generateAtomIndexList();
+		const Object3D::Helper::AABB molAABB  = p_category.getAABB();
+		const float					 maxVdWRadius
+			= *std::max_element( Model::Atom::SYMBOL_VDW_RADIUS,
+								 Model::Atom::SYMBOL_VDW_RADIUS + std::size( Model::Atom::SYMBOL_VDW_RADIUS ) );
 
-		return memorySum > SMALL_SES_MEMORY_THRESHOLD;
+		const float			   atomGridCellSize = Model::SolventExcludedSurface::PROBE_RADIUS + maxVdWRadius;
+		const Vec3f			   gridMin			= molAABB.getMin() - atomGridCellSize;
+		const Vec3f			   gridMax			= molAABB.getMax() + atomGridCellSize;
+		const Vec3f			   gridSize			= gridMax - gridMin;
+		Vec3i				   atomGridSize		= Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
+		Object3D::Helper::Grid gridAtoms = Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+		Vec3i sesGridSize = Vec3i( Util::Math::ceil( gridSize / Model::SolventExcludedSurface::VOXEL_SIZE ) );
+		Object3D::Helper::Grid gridSES
+			= Object3D::Helper::Grid( gridMin, Vec3f( Model::SolventExcludedSurface::VOXEL_SIZE ), sesGridSize );
+
+		// bufferSesGridData
+		memory_size_type sizeGridData = sizeof( float ) + sizeof( int );
+		memory						  = gridSES.getCellCount() * sizeGridData;
+		// bufferAtomGridDataSorted
+		memory += gridAtoms.getCellCount() * sizeof( Model::SolventExcludedSurface::Range );
+		// bufferAtomIndexSorted
+		memory += p_category.getMolecule()->getAtomCount() * sizeof( uint );
+		// bufferAtomPosition
+		memory += p_category.getMolecule()->getAtomCount() * sizeof( Vec4f );
+		// From tests, vram is the most used in marching cube or grid reduction (2 - 2.5x)
+		memory *= 2;
+
+		VTX_DEBUG( "Estimated needed vram: {}mo", memory / 1000000.f );
+
+		return memory < SMALL_SES_MEMORY_THRESHOLD;
 	}
-	bool checkSESMemory( const Model::Molecule & p_molecule )
-	{
-		if ( p_molecule.hasSolventExcludedSurface() )
-			return false;
 
-		return estimateSESMemory( p_molecule ) > SMALL_SES_MEMORY_THRESHOLD;
-	}
-
-	memory_size_type estimateSESMemory( const Model::Molecule & p_molecule ) { return SMALL_SES_MEMORY_THRESHOLD - 1; }
 } // namespace VTX::Util::SolventExcludedSurface

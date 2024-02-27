@@ -215,18 +215,26 @@ namespace VTX::UI::Widget::Inspector
 											->getRepresentationType()
 										== Generic::REPRESENTATION::SES;
 
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-		for ( const Model::Residue * residue : getTargets() )
+		if ( isTryingToApplySES )
 		{
-			molecules.emplace( residue->getMoleculePtr() );
-		}
-
-		const bool isBigSES = Util::SolventExcludedSurface::checkSESMemory( molecules );
-
-		if ( isTryingToApplySES && isBigSES )
-		{
-			reallyApplyPreset = Dialog::bigSESComputationWarning();
+			std::unordered_set<Model::Category *> categories;
+			for ( const Model::Residue * residue : getTargets() )
+			{
+				Model::Category * category = residue->getMoleculePtr()->getCategoryFromChain( *residue->getChainPtr() );
+				const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+				{
+					categories.emplace( category );
+				}
+			}
+			for ( Model::Category * category : categories )
+			{
+				if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+				{
+					reallyApplyPreset = Dialog::bigSESComputationWarning();
+					break;
+				}
+			}
 		}
 
 		if ( reallyApplyPreset )

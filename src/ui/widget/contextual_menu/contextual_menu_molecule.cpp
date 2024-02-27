@@ -6,6 +6,7 @@
 #include "model/representation/representation_library.hpp"
 #include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/solvent_excluded_surface.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -128,6 +129,34 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuMolecule::_applyRepresentationAction( const int p_representationIndex )
 	{
+		bool	   reallyApplyPreset  = true;
+		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
+											.getRepresentation( p_representationIndex )
+											->getRepresentationType()
+										== Generic::REPRESENTATION::SES;
+
+		bool isBigSES = false;
+		if ( isTryingToApplySES )
+		{
+			for ( const Model::Category * const category : _target->getCategories() )
+			{
+				const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+				{
+					if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+					{
+						isBigSES = true;
+						break;
+					}
+				}
+			}
+		}
+
+		if ( isTryingToApplySES && isBigSES )
+		{
+			reallyApplyPreset = Dialog::bigSESComputationWarning();
+		}
+
 		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 

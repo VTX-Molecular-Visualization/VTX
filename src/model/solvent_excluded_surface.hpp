@@ -24,6 +24,7 @@ namespace VTX
 			};
 
 			inline const static float PROBE_RADIUS = 1.4f;
+			inline const static float VOXEL_SIZE   = 0.4f;
 
 			inline const Model::Category * const getCategory() const { return _category; }
 			inline const std::vector<Range> &	 getAtomsToTriangles() const { return _atomsToTriangles; }

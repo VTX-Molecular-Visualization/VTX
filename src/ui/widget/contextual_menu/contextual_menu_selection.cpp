@@ -11,6 +11,7 @@
 #include "ui/ui_action/self_referenced_action.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/solvent_excluded_surface.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
 #include <QTimer>
@@ -439,7 +440,84 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		bool	   reallyApplyPreset  = true;
+		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
+											.getRepresentation( p_representationIndex )
+											->getRepresentationType()
+										== Generic::REPRESENTATION::SES;
+
+		bool isBigSES = false;
+		if ( isTryingToApplySES )
+		{
+			CATEGORY_ENUM categoryEnum;
+			for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+				if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
+				{
+					for ( const Model::Category * const category : molecule.getCategories() )
+					{
+						categoryEnum = category->getCategoryEnum();
+						if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+						{
+							if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+							{
+								isBigSES = true;
+								break;
+							}
+						}
+					}
+				}
+				else
+				{
+					for ( const Model::Selection::PairChainIds & chainData : moleculeData.second )
+					{
+						Model::Chain * const chain = molecule.getChain( chainData.first );
+						if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
+						{
+							Model::Category * category = chain->getMoleculePtr()->getCategoryFromChain( *chain );
+							categoryEnum			   = category->getCategoryEnum();
+							if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+							{
+								if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+								{
+									isBigSES = true;
+									break;
+								}
+							}
+						}
+						else
+						{
+							for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+							{
+								Model::Residue * const residue = molecule.getResidue( residueData.first );
+								Model::Category *	   category
+									= residue->getMoleculePtr()->getCategoryFromChain( *residue->getChainPtr() );
+								categoryEnum = category->getCategoryEnum();
+								if ( categoryEnum == CATEGORY_ENUM::POLYMER
+									 || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+								{
+									if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+									{
+										isBigSES = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if ( isTryingToApplySES && isBigSES )
+		{
+			reallyApplyPreset = Dialog::bigSESComputationWarning();
+		}
+		if ( reallyApplyPreset )
+		{
+			VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		}
 	}
 
 	void ContextualMenuSelection::_updateCurrentRepresentationFeedback( QAction & _action ) const

@@ -343,7 +343,25 @@ namespace VTX::UI::Widget::Inspector
 											->getRepresentationType()
 										== Generic::REPRESENTATION::SES;
 
-		const bool isBigSES = Util::SolventExcludedSurface::checkSESMemory( getTargets() );
+		bool isBigSES = false;
+		if ( isTryingToApplySES )
+		{
+			for ( Model::Molecule * molecule : getTargets() )
+			{
+				for ( const Model::Category * const category : molecule->getCategories() )
+				{
+					const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+					{
+						if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+						{
+							isBigSES = true;
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		if ( isTryingToApplySES && isBigSES )
 		{

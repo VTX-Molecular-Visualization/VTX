@@ -14,8 +14,6 @@
 #include "worker/gpu_computer.hpp"
 #include "worker/worker_manager.hpp"
 
-#define VOXEL_SIZE 0.4f
-
 #define VTX_SES_NORMALS_GPU 1
 
 namespace VTX
