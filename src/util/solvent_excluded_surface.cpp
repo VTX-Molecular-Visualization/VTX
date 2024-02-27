@@ -41,7 +41,7 @@ namespace VTX::Util::SolventExcludedSurface
 
 		VTX_DEBUG( "Estimated needed vram: {}mo", memory / 1000000.f );
 
-		return memory < SMALL_SES_MEMORY_THRESHOLD;
+		return memory > SMALL_SES_MEMORY_THRESHOLD;
 	}
 
 } // namespace VTX::Util::SolventExcludedSurface

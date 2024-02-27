@@ -143,7 +143,8 @@ namespace VTX::UI::Widget::ContextualMenu
 				const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 				{
-					if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+					if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
+						 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
 					{
 						isBigSES = true;
 						break;

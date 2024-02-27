@@ -280,7 +280,8 @@ namespace VTX::UI::Widget::Inspector
 				const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 				{
-					categories.emplace( category );
+					if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
+						categories.emplace( category );
 				}
 			}
 

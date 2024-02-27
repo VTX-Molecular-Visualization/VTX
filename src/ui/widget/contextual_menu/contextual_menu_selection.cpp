@@ -458,8 +458,15 @@ namespace VTX::UI::Widget::ContextualMenu
 					for ( const Model::Category * const category : molecule.getCategories() )
 					{
 						categoryEnum = category->getCategoryEnum();
+
+						if ( category->getChains().empty() )
+							continue;
+
 						if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 						{
+							if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
+								continue;
+
 							if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
 							{
 								isBigSES = true;
@@ -479,7 +486,8 @@ namespace VTX::UI::Widget::ContextualMenu
 							categoryEnum			   = category->getCategoryEnum();
 							if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 							{
-								if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+								if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
+									 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
 								{
 									isBigSES = true;
 									break;
@@ -494,6 +502,13 @@ namespace VTX::UI::Widget::ContextualMenu
 								Model::Category *	   category
 									= residue->getMoleculePtr()->getCategoryFromChain( *residue->getChainPtr() );
 								categoryEnum = category->getCategoryEnum();
+
+								if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
+								{
+									// All in the same category.
+									break;
+								}
+
 								if ( categoryEnum == CATEGORY_ENUM::POLYMER
 									 || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 								{

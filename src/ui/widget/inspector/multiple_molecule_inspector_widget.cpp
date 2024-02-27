@@ -350,9 +350,15 @@ namespace VTX::UI::Widget::Inspector
 			{
 				for ( const Model::Category * const category : molecule->getCategories() )
 				{
+					if ( category->getChains().empty() )
+						continue;
+
 					const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 					{
+						if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
+							continue;
+
 						if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
 						{
 							isBigSES = true;
