@@ -58,7 +58,7 @@ namespace VTX::Renderer
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		// If size max reached, do not add.
-		if ( _proxiesMolecules.size() >= UNSIGNED_CHAR_MAX )
+		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
 		{
 			throw GLException( "Max molecule count reached" );
 		}
@@ -208,13 +208,13 @@ namespace VTX::Renderer
 		_context->setData<float>( totalAtoms, "SpheresCylindersRadii" );
 		_context->setData<uint>( totalAtoms, "SpheresCylindersIds" );
 		_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
-		_context->setData<uchar>( totalAtoms, "SpheresCylindersModels" );
+		_context->setData<ushort>( totalAtoms, "SpheresCylindersModels" );
 		_context->setData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
 		_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
 
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
-		uchar  modelId	   = 0;
+		ushort modelId	   = 0;
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
@@ -249,7 +249,7 @@ namespace VTX::Renderer
 			}
 
 			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-			_context->setSubData( std::vector<uchar>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+			_context->setSubData( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
 			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
 
 			// Move bonds.
@@ -336,8 +336,7 @@ namespace VTX::Renderer
 									 const std::vector<uchar> & p_ssTypes,
 									 const std::vector<uchar> & p_colors,
 									 const std::vector<uint> &	p_ids,
-									 const std::vector<uchar> & p_flags,
-									 const std::vector<uchar> & p_models
+									 const std::vector<uchar> & p_flags
 
 								 )
 			{
@@ -408,7 +407,6 @@ namespace VTX::Renderer
 			std::vector<uchar> colors;
 			std::vector<uint>  ids;
 			std::vector<uchar> flags;
-			std::vector<uchar> models;
 			std::vector<uint>  residueIndex;
 
 			for ( uint chainIdx = 0; chainIdx < proxy->chainFirstResidues->size(); ++chainIdx )
@@ -443,7 +441,6 @@ namespace VTX::Renderer
 						colors		  = std::vector<uchar>();
 						ids			  = std::vector<uint>();
 						flags		  = std::vector<uchar>();
-						models		  = std::vector<uchar>();
 
 						residueIndex = std::vector<uint>();
 
@@ -551,9 +548,6 @@ namespace VTX::Renderer
 					) );
 					*/
 
-					// Model ID.
-					models.emplace_back( uchar( _getProxyId( proxy ) ) );
-
 					/*
 					if ( residueLast != -1
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
@@ -567,7 +561,7 @@ namespace VTX::Renderer
 				}
 
 				// Update buffers and index mapping if SS is constructed.
-				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, ids, flags, models );
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, ids, flags );
 			}
 
 			assert( bufferCaPositions.size() == bufferCaODirections.size() );
@@ -592,7 +586,7 @@ namespace VTX::Renderer
 		_context->setData<uchar>( totalCaPositions, "RibbonsColors" );
 		_context->setData<uint>( totalCaPositions, "RibbonsIds" );
 		_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
-		_context->setData<uchar>( totalCaPositions, "RibbonsModels" );
+		_context->setData<ushort>( totalCaPositions, "RibbonsModels" );
 		_context->setData<uchar>( totalCaPositions, "RibbonsRepresentations" );
 		_context->setData<uint>( totalIndices, "RibbonsEbo" );
 
@@ -631,7 +625,7 @@ namespace VTX::Renderer
 			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
 			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
 			_context->setSubData(
-				std::vector<uchar>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
+				std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
 			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
 			_context->setSubData( indices, "RibbonsEbo", offsetIndices );

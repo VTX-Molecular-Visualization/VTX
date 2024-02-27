@@ -86,13 +86,13 @@ namespace VTX::Renderer
 			);
 
 			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 256 }
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } },
+				  UNSIGNED_CHAR_MAX + 1 }
 			);
 
-			// TODO: dynamic ubo size instead of fixed 256.
 			_renderGraph->addUniforms( { { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} },
 										   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} } },
-										 256 } );
+										 UNSIGNED_SHORT_MAX + 1 } );
 
 			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
@@ -101,7 +101,7 @@ namespace VTX::Renderer
 
 										   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
 										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
-										 256 } );
+										 UNSIGNED_CHAR_MAX + 1 } );
 		}
 
 		// Only first entry of the array saved on cpu.

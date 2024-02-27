@@ -3,17 +3,14 @@
 
 #include <map>
 #include <util/types.hpp>
+#include <variant>
 #include <vector>
 
 namespace VTX::Renderer::Cache
 {
 	// TODO: auto cache in context?
-
-	/*
-	template<typename T>
-		requires std::integral<T>
-	using IndexOrList = std::variant<T, std::vector<T>>;
-	*/
+	// template<typename T>
+	// using CompressedData = std::variant<T, std::vector<T>>;
 
 	struct RangedCache
 	{
