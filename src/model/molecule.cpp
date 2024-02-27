@@ -589,7 +589,31 @@ namespace VTX
 				_secondaryStructure->refresh();
 			}
 
-			refreshSolventExcludedSurfaces();
+			bool refreshSes = false;
+			for ( const auto & representationTargetPair : _representationTargets )
+			{
+				const VTX::Representation::FlagDataTargeted dataFlag
+					= representationTargetPair.first->getFlagDataTargeted();
+
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
+				{
+					refreshSes = true;
+					break;
+				}
+			}
+
+			if ( refreshSes )
+			{
+				refreshSolventExcludedSurfaces();
+			}
+			else
+			{
+				for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
+				{
+					MVC::MvcManager::get().deleteModel( sesCurrent );
+				}
+				_solventExcludedSurfaces.clear();
+			}
 			refreshRepresentationTargets();
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
