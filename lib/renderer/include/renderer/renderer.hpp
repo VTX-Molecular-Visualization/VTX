@@ -20,11 +20,7 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		using RenderGraphOpenGL45  = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
-		using CallbackClean		   = std::function<void()>;
-		using CallbackReady		   = std::function<void()>;
-		using CallbackSnapshotPre  = std::function<void( const size_t, const size_t )>;
-		using CallbackSnapshotPost = std::function<void( const size_t, const size_t )>;
+		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
 
 		Renderer(
 			const size_t	 p_width,

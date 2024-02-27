@@ -14,10 +14,12 @@ namespace VTX::Renderer::Proxy
 		const std::vector<Vec3f> * atomPositions;
 		const std::vector<uchar> * atomColors;
 		const std::vector<float> * atomRadii;
-		const std::vector<bool> *  atomVisibilities; //
-		const std::vector<bool> *  atomSelections;	 //
-		const std::vector<uint> *  atomIds;
-		const std::vector<uint> *  bonds;
+		// TODO: remove and cache?
+		const std::vector<bool> * atomVisibilities; //
+		const std::vector<bool> * atomSelections;	//
+
+		const std::vector<uint> * atomIds;
+		const std::vector<uint> * bonds;
 
 		const std::vector<std::string> * atomNames; //
 		const std::vector<uint> *		 residueIds;

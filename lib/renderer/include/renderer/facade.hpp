@@ -31,9 +31,9 @@ namespace VTX::Renderer
 
 		inline void setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-		inline void addCallbackReady( const Renderer::CallbackReady & p_cb ) { _renderer->addCallbackReady( p_cb ); }
+		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackReady( p_cb ); }
 
-		inline void addCallbackClean( const Renderer::CallbackClean & p_cb ) { _renderer->addCallbackClean( p_cb ); }
+		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackClean( p_cb ); }
 
 		inline void setMatrixView( const Mat4f & p_view ) { _renderer->setMatrixView( p_view ); }
 
