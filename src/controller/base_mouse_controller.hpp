@@ -31,9 +31,9 @@ namespace VTX
 			bool _mouseRightPressed	 = false;
 			bool _mouseMiddlePressed = false;
 
-			Vec2i _mousePosition	  = Vec2i();
-			Vec2i _deltaMousePosition = Vec2i();
-			int	  _deltaMouseWheel	  = 0;
+			Vec2i _mouseGlobalPosition = Vec2i();
+			Vec2i _deltaMousePosition  = Vec2i();
+			int _deltaMouseWheel = 0;
 
 			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event );
 			virtual void _handleMouseButtonUpEvent( const QMouseEvent & p_event );

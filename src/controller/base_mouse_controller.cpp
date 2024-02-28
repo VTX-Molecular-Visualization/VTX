@@ -47,15 +47,15 @@ namespace VTX
 		void BaseMouseController::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
 		{
 			// Save current position.
-			_mousePosition.x = p_event.pos().x();
-			_mousePosition.y = p_event.pos().y();
+			_mouseGlobalPosition.x = p_event.globalPos().x();
+			_mouseGlobalPosition.y = p_event.globalPos().y();
 
 			switch ( p_event.button() )
 			{
 			case Qt::MouseButton::LeftButton:
 				_mouseLeftPressed		= true;
 				_isLeftClickCanceled	= false;
-				_mouseLeftClickPosition = _mousePosition;
+				_mouseLeftClickPosition = _mouseGlobalPosition;
 				if ( _mouseRightPressed )
 				{
 					_isRightClickCanceled = true;
@@ -64,7 +64,7 @@ namespace VTX
 			case Qt::MouseButton::RightButton:
 				_mouseRightPressed		 = true;
 				_isRightClickCanceled	 = false;
-				_mouseRightClickPosition = _mousePosition;
+				_mouseRightClickPosition = _mouseGlobalPosition;
 				if ( _mouseLeftPressed )
 				{
 					_isLeftClickCanceled = true;
@@ -114,16 +114,15 @@ namespace VTX
 
 		void BaseMouseController::_handleMouseMotionEvent( const QMouseEvent & p_event )
 		{
-			Vec2i mousePosition = Vec2i();
-			mousePosition.x		= p_event.pos().x();
-			mousePosition.y		= p_event.pos().y();
+			const Vec2i globalMousePosition = Vec2i( p_event.globalPos().x(), p_event.globalPos().y() );
 
-			_deltaMousePosition += ( mousePosition - _mousePosition );
-			_mousePosition = mousePosition;
+			_deltaMousePosition += ( globalMousePosition - _mouseGlobalPosition );
+			_mouseGlobalPosition = globalMousePosition;
 
 			if ( _mouseLeftPressed )
 			{
-				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseLeftClickPosition ) > CLICK_MAX_DISTANCE )
+				if ( Util::Math::distance( Vec2f( globalMousePosition ), Vec2f( _mouseLeftClickPosition ) )
+					 > CLICK_MAX_DISTANCE )
 				{
 					_isLeftClickCanceled = true;
 				}
@@ -131,7 +130,7 @@ namespace VTX
 
 			if ( _mouseRightPressed )
 			{
-				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseRightClickPosition )
+				if ( Util::Math::distance( Vec2f( globalMousePosition ), Vec2f( _mouseRightClickPosition ) )
 					 > CLICK_MAX_DISTANCE )
 				{
 					_isRightClickCanceled = true;
@@ -153,6 +152,9 @@ namespace VTX
 			_mouseRightPressed	  = false;
 			_isLeftClickCanceled  = false;
 			_isRightClickCanceled = false;
+
+			_mouseGlobalPosition = Vec2i( QCursor::pos().x(), QCursor::pos().y() );
+			_deltaMousePosition	 = VEC2I_ZERO;
 		}
 
 		/*
