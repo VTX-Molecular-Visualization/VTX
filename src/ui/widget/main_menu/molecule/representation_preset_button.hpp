@@ -21,6 +21,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		int _id = -1;
 
 		void _onButtonClicked();
+		void _applyRepresentationOnSelection();
+		void _applyRepresentationOnScene();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

@@ -985,7 +985,7 @@ namespace VTX::Action::Selection
 	class ChangeRepresentationPreset : public BaseAction
 	{
 	  public:
-		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
+		explicit ChangeRepresentationPreset( const Model::Selection & p_selection, const int p_indexPreset ) :
 			_selection( p_selection ), _indexPreset( p_indexPreset )
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
@@ -1002,8 +1002,8 @@ namespace VTX::Action::Selection
 		}
 
 	  private:
-		Model::Selection & _selection;
-		const int		   _indexPreset;
+		const Model::Selection & _selection;
+		const int				 _indexPreset;
 	};
 
 	class Orient : public BaseAction
