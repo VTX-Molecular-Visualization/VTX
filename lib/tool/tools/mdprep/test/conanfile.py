@@ -16,12 +16,12 @@ class VTXRendererTestRecipe(ConanFile):
     
     generators = "CMakeToolchain", "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*"
+    exports_sources = "CMakeLists.txt", "src/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("qt/6.6.0", transitive_headers=True)
+        self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
         self.requires("catch2/3.4.0")        
         
@@ -42,7 +42,6 @@ class VTXRendererTestRecipe(ConanFile):
         vtx_gromacs_shared += ext
         """
         cmake = CMake(self)
-        # cmake.configure(variables={"VTX_GROMACS_DLL_PATH":vtx_gromacs_shared})
         cmake.configure()
         cmake.build()
         #self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable

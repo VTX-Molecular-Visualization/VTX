@@ -1,6 +1,11 @@
-#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/pdb2gmx.hpp"
+//
+#include "tools/mdprep/gromacs/inputs.hpp"
+//
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/gromacs/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/pdb2gmx.hpp"
+#include "tools/mdprep/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>
@@ -12,7 +17,7 @@ namespace
 	{
 		IoPaths( const char * p_out_dir_name, const char * p_pdb_code ) :
 			in( execPath / std::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
-			outGro( execPath / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+			outGro( outDir / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
 			outTopol( outDir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
 			outPosre( outDir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
 			outClean( outDir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
@@ -97,10 +102,9 @@ namespace
 
 	void check_pdb( TestContext p_context )
 	{
-		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand(
-			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath(),
-			p_context.args
-		);
+		fs::path full_gmx_exe_path
+			= VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath();
+		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		CHECK( fs::exists( p_context.paths.outGro ) );
@@ -111,7 +115,6 @@ namespace
 	}
 
 } // namespace
-
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsCommand][pdb2gmx][1ubq]" )
 {
 	VTX::test::setup_env f;
@@ -123,12 +126,19 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	VTX::test::setup_env f;
-	auto				 contextData = setupTestContext( "1ubq" );
-	contextData.args.interactiveSettings.emplace();
-	contextData.args.interactiveSettings->kwValue.emplace(
-		InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN"
-	);
+	VTX::test::setup_env					  f;
+	auto									  contextData = setupTestContext( "1ubq" );
+	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+
+	contextData.args.arguments.push_back( "-lys" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "0" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 11 }, "1" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 27 }, "1" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 29 }, "0" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 33 }, "1" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 48 }, "1" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 63 }, "0" );
+	contextData.args.interactiveSettings = Pdb2gmxInputs( inputs );
 	check_pdb( contextData );
 }
 TEST_CASE(
@@ -137,12 +147,28 @@ TEST_CASE(
 )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
-	VTX::test::setup_env f;
-	auto				 contextData = setupTestContext( "1ubq" );
-	contextData.args.interactiveSettings.emplace();
-	contextData.args.interactiveSettings->kwValue.emplace(
-		InteractiveId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "LYN"
-	);
+	VTX::test::setup_env					  f;
+	auto									  contextData = setupTestContext( "1ubq" );
+	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+
+	contextData.args.arguments.push_back( "-lys" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "0" );
+
+	contextData.args.interactiveSettings.emplace( std::move( inputs ) );
+	check_pdb( contextData );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsCommand][pdb2gmx][8hu4][interactive][slow]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	VTX::test::setup_env					  f;
+	auto									  contextData = setupTestContext( "8hu4.nolig" );
+	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+
+	contextData.args.arguments.push_back( "-lys" );
+	contextData.args.interactiveSettings.emplace( std::move( inputs ) );
+
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::gln, 289 }, "1" );
+	inputs.kwValue.emplace( Pdb2gmxInputId { 'B', E_INTERACTIVE_KEYWORD::gln, 62 }, "1" );
 	check_pdb( contextData );
 }
 

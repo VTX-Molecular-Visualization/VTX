@@ -18,15 +18,13 @@ class VTXToolMdprepRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
 
-    def _generated_cmake_prefix(self):
-        return "gmxbin-"
      
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("vtx_ui/1.0")      
+        self.requires("vtx_ui/1.0")
         self.requires("vtx-gromacs/2024.0")
         self.requires("dylib/2.2.1")
 
@@ -52,13 +50,6 @@ class VTXToolMdprepRecipe(ConanFile):
         for ext in ("*.exe", "*.dll", "*.a", "*.so", "*.dylib", "^[^.]$"): # No extension for executable in linux, right ? TODO !!!
             copy(self, ext, gmx_bin_dir, gmx_bin_dest)
         
-        cmake_dir = os.path.join(self.recipe_folder, "cmake", "out")
-        if not Path(cmake_dir).exists():
-            Path(cmake_dir).mkdir()
-        cmake_file_name = f"{self._generated_cmake_prefix()}{self.settings.build_type}.cmake"
-        cmake_file_path = os.path.join(cmake_dir, cmake_file_name)
-        cmake_file_content = """vtx_register_build_directory_copy("%s" "external/tools/mdprep/gromacs")""" % (Path(gmx_bin_dest).as_posix())
-        Path(cmake_file_path).write_text(cmake_file_content)
 
     def package(self):
         cmake = CMake(self)
@@ -67,8 +58,4 @@ class VTXToolMdprepRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_tool_mdprep"]
-        
-        # Give away cmake code to be executed by the consumer of this package
-        generated_cmake = "cmake/out/%s%s.cmake" % (self._generated_cmake_prefix(), self.settings.build_type)
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_tool_mdprep_copy_files.cmake", generated_cmake])
         

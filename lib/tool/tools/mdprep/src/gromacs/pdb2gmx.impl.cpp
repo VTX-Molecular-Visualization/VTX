@@ -1,9 +1,13 @@
-#include "tools/mdprep/gromacs/gromacs.util.hpp"
+#include "tools/mdprep/gromacs/pdb2gmx.hpp"
+#include <tools/mdprep/gromacs/inputs.hpp>
+//
+#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/util.hpp"
 #include <format>
 #include <regex>
 #include <util/string.hpp>
 //
-#include "tools/mdprep/gromacs/gromacs.impl.hpp"
+#include "tools/mdprep/gromacs/pdb2gmx.impl.hpp"
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
@@ -42,7 +46,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 		uint32_t getNum( const std::string & lastInputAskingMessage ) noexcept
 		{
-			const std::regex resNumRegex( "type do you want for residue [0-9]+\n" );
+			const std::regex resNumRegex( "type do you want for residue [0-9]+\r?\n" );
 			const std::regex numRegex( "[0-9]+" );
 			std::smatch		 match;
 			bool			 matched
@@ -65,7 +69,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string getLastInputRequest( const std::string & p_stdout ) noexcept
 		{
 			const std::regex entireGromacsMessage {
-				"Which .+? type do you want for residue [0-9]+\n[^]+?\nType a number:"
+				"Which .+? type do you want for residue [0-9]+\r?\n[^]+?\r?\nType a number:"
 			};
 
 			std::string lastGromacsInputRequestString {};
@@ -79,12 +83,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 
 	} // namespace
-	bool isWaitingInputs( const std::string & p_stdout ) noexcept
+	bool isWaitingInputs( const std::string_view & p_stdout ) noexcept
 	{
 		return !p_stdout.empty() && p_stdout.ends_with( g_genericWaitingPattern );
 	}
 
-	bool parseExpectedKwArgument( const std::string & p_stdout, InteractiveId & out ) noexcept
+	bool parseExpectedKwArgument( const std::string & p_stdout, Pdb2gmxInputId & out ) noexcept
 	{
 		{
 			std::string buf = getChain( p_stdout );

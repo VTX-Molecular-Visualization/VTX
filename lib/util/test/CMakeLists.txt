@@ -6,16 +6,10 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Catch2 REQUIRED)
 
-file(GLOB_RECURSE SOURCES src/*)
-add_executable(vtx_util_test ${SOURCES})
-configure_target(vtx_util_test)
-
-target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
-target_link_libraries(vtx_util_test PRIVATE nlohmann_json::nlohmann_json)
-
 include(CTest)
 include(Catch)
-catch_discover_tests(vtx_util_test)
+
+set(_VTX_UTIL_TEST_CONAN " ") # So the right target name can be linked
+include(cmake/library.cmake)
 
 install(TARGETS vtx_util_test)

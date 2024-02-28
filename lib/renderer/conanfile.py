@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import copy
 
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
@@ -13,7 +14,7 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -29,8 +30,11 @@ class VTXRendererRecipe(ConanFile):
         self.options["glad/*"].gl_version = 4.5
         self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info"]
 
+    def generate(self):
+        copy(self, "*.cmake", self.source_folder, self.build_folder)
+        
     def layout(self):
-        cmake_layout(self)       
+        cmake_layout(self)
 
     def build(self):
         cmake = CMake(self)
@@ -40,8 +44,10 @@ class VTXRendererRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        copy(self, "*.cmake", self.build_folder, self.package_folder)
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_renderer"]
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
         

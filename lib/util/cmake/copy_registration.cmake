@@ -38,10 +38,11 @@ function(vtx_copy_registered_data target)
 		message("VTX -- Registering ${target}_directory_copy${num} as a post build event to copy directory <${src_it}> into <${current_dest}> ")
 		add_custom_target("${target}_directory_copy${num}" ALL COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
 		
+		add_dependencies("${target}" "${target}_directory_copy${num}")
+
 		MATH(EXPR num "${num}+1")
-
 	endforeach()
-
+	
 	# We copy files
 	set(num 0)
 	set(property_var_file_src)

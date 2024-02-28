@@ -10,28 +10,8 @@ find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::PyTX)
 find_package(Catch2 REQUIRED)
 
-file(GLOB_RECURSE SOURCES src/*)
-
-add_executable(vtx_python_binding_test ${SOURCES})
-configure_target(vtx_python_binding_test)
-
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding::vtx_python_binding)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding::PyTX)
-target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
-
-# All other find_package call
-vtx_copy_registered_data(vtx_python_binding_test)
-
-add_custom_target(vtx_python_binding_test_copy_data ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:vtx_python_binding_test>/data)
-add_dependencies(vtx_python_binding_test vtx_python_binding_test_copy_data)
-
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_python_binding_test)
+set(_VTX_PYTHON_BINDING_TEST_CONAN " ") # So the right target name can be linked
+include(cmake/library.cmake)
 
 install(TARGETS vtx_python_binding_test)
 install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION bin)
