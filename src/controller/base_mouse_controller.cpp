@@ -34,6 +34,14 @@ namespace VTX
 			}
 		}
 
+		void BaseMouseController::receiveEvent( const QFocusEvent & p_event )
+		{
+			if ( p_event.gotFocus() )
+			{
+				_resetState();
+			}
+		}
+
 		void BaseMouseController::update( const float & p_deltaTime ) {}
 
 		void BaseMouseController::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
@@ -137,6 +145,14 @@ namespace VTX
 				_deltaMouseWheel = p_event.angleDelta().x();
 			else
 				_deltaMouseWheel = p_event.angleDelta().y();
+		}
+
+		void BaseMouseController::_resetState()
+		{
+			_mouseLeftPressed	  = false;
+			_mouseRightPressed	  = false;
+			_isLeftClickCanceled  = false;
+			_isRightClickCanceled = false;
 		}
 
 		/*

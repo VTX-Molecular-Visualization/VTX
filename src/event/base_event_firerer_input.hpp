@@ -31,6 +31,12 @@ namespace VTX
 				EventManager::get().fireEventWheel( p_event, getEventFirererId() );
 				p_event->accept();
 			}
+
+			void _fireEventInput( QFocusEvent * const p_event )
+			{
+				EventManager::get().fireEventFocus( p_event, getEventFirererId() );
+				p_event->accept();
+			}
 		};
 	} // namespace Event
 } // namespace VTX

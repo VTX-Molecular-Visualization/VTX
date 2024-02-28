@@ -3,6 +3,7 @@
 
 #include "base_controller.hpp"
 #include "define.hpp"
+#include "event/base_event_receiver_focus.hpp"
 #include "event/base_event_receiver_mouse.hpp"
 #include "event/base_event_receiver_wheel.hpp"
 
@@ -13,7 +14,8 @@ namespace VTX
 		class BaseMouseController :
 			virtual public BaseController,
 			public Event::BaseEventReceiverMouse,
-			public Event::BaseEventReceiverWheel
+			public Event::BaseEventReceiverWheel,
+			public Event::BaseEventReceiverFocus
 		{
 		  public:
 			inline static const int CLICK_MAX_DISTANCE = 3;
@@ -21,6 +23,7 @@ namespace VTX
 		  public:
 			virtual void receiveEvent( const QMouseEvent & p_event ) override;
 			virtual void receiveEvent( const QWheelEvent & p_event ) override;
+			virtual void receiveEvent( const QFocusEvent & p_event ) override;
 			virtual void update( const float & p_deltaTime ) override;
 
 		  protected:
@@ -49,6 +52,7 @@ namespace VTX
 			// bool _mouseHoveringRenderWidget() const;
 
 		  private:
+			void  _resetState();
 			Vec2i _mouseLeftClickPosition  = Vec2i();
 			Vec2i _mouseRightClickPosition = Vec2i();
 		};

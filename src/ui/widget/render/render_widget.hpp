@@ -60,6 +60,9 @@ namespace VTX::UI::Widget::Render
 		void keyReleaseEvent( QKeyEvent * const p_event ) override { _fireEventInput( p_event ); }
 		void wheelEvent( QWheelEvent * const p_event ) override { _fireEventInput( p_event ); }
 
+		void focusInEvent( QFocusEvent * p_event ) override { _fireEventInput( p_event ); }
+		void focusOutEvent( QFocusEvent * p_event ) override { _fireEventInput( p_event ); }
+
 	  private:
 		OpenGLWidget *									   _openGLWidget = nullptr;
 		std::map<Overlay::OVERLAY, Overlay::BaseOverlay *> _overlays

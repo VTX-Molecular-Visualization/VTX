@@ -1,6 +1,7 @@
 #ifndef __VTX_EVENT_MANAGER__
 #define __VTX_EVENT_MANAGER__
 
+#include "base_event_receiver_focus.hpp"
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_vtx.hpp"
@@ -41,6 +42,8 @@ namespace VTX
 			void unregisterEventReceiverMouse( BaseEventReceiverMouse * const );
 			void registerEventReceiverWheel( BaseEventReceiverWheel * const );
 			void unregisterEventReceiverWheel( BaseEventReceiverWheel * const );
+			void registerEventReceiverFocus( BaseEventReceiverFocus * const );
+			void unregisterEventReceiverFocus( BaseEventReceiverFocus * const );
 
 			virtual void update( const float & p_deltaTime ) override;
 
@@ -54,6 +57,7 @@ namespace VTX
 			void fireEventKeyboard( QKeyEvent * const, const ID::VTX_ID & );
 			void fireEventMouse( QMouseEvent * const, const ID::VTX_ID & );
 			void fireEventWheel( QWheelEvent * const, const ID::VTX_ID & );
+			void fireEventFocus( QFocusEvent * const, const ID::VTX_ID & );
 
 		  private:
 			// Input events.
@@ -62,6 +66,7 @@ namespace VTX
 			std::set<BaseEventReceiverKeyboard *> _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
 			std::set<BaseEventReceiverMouse *>	  _receiversMouse	 = std::set<BaseEventReceiverMouse *>();
 			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
+			std::set<BaseEventReceiverFocus *>	  _receiversFocus	 = std::set<BaseEventReceiverFocus *>();
 
 			// Event queues.
 			std::queue<VTXEvent *> _eventQueueVTX = std::queue<VTXEvent *>();
@@ -69,6 +74,7 @@ namespace VTX
 			std::queue<QKeyEvent *>	  _eventQueueKeyboard = std::queue<QKeyEvent *>();
 			std::queue<QMouseEvent *> _eventQueueMouse	  = std::queue<QMouseEvent *>();
 			std::queue<QWheelEvent *> _eventQueueWheel	  = std::queue<QWheelEvent *>();
+			std::queue<QFocusEvent *> _eventQueueFocus	  = std::queue<QFocusEvent *>();
 
 			bool _freeze = false;
 
@@ -81,6 +87,7 @@ namespace VTX
 			void _flushEventKeyboard( QKeyEvent * const, const ID::VTX_ID & );
 			void _flushEventMouse( QMouseEvent * const, const ID::VTX_ID & );
 			void _flushEventWheel( QWheelEvent * const, const ID::VTX_ID & );
+			void _flushEventFocus( QFocusEvent * const, const ID::VTX_ID & );
 		};
 	} // namespace Event
 

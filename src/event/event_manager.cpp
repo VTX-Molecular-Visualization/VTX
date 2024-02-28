@@ -58,6 +58,15 @@ namespace VTX
 		{
 			_receiversWheel.erase( p_receiver );
 		}
+		void EventManager::registerEventReceiverFocus( BaseEventReceiverFocus * const p_receiver )
+		{
+			_receiversFocus.emplace( p_receiver );
+		}
+
+		void EventManager::unregisterEventReceiverFocus( BaseEventReceiverFocus * const p_receiver )
+		{
+			_receiversFocus.erase( p_receiver );
+		}
 
 		void EventManager::fireEventVTX( VTXEvent * const p_event )
 		{
@@ -97,6 +106,15 @@ namespace VTX
 #endif
 		}
 
+		void EventManager::fireEventFocus( QFocusEvent * const p_event, const ID::VTX_ID & p_firerer )
+		{
+#ifdef DELAY_EVENTS_QT
+			_eventQueueFocus.emplace( p_event );
+#else
+			_flushEventFocus( p_event, p_firerer );
+#endif
+		}
+
 		void EventManager::update( const float & p_deltaTime )
 		{
 #ifdef DELAY_EVENTS_QT
@@ -121,6 +139,14 @@ namespace VTX
 				_flushEventWheel( event );
 				_eventQueueWheel.pop();
 			}
+
+			while ( _eventQueueFocus.empty() == false )
+			{
+				QFocusEvent * const event = _eventQueueFocus.front();
+				_flushEventFocus( event );
+				_eventQueueFocus.pop();
+			}
+
 #endif
 			// VTX events.
 			while ( _eventQueueVTX.empty() == false )
@@ -184,6 +210,20 @@ namespace VTX
 			if ( !_freeze )
 			{
 				for ( BaseEventReceiverWheel * const receiver : _receiversWheel )
+				{
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
+				}
+			}
+		}
+
+		void EventManager::_flushEventFocus( QFocusEvent * const p_event, const ID::VTX_ID & p_firerer )
+		{
+			if ( !_freeze )
+			{
+				for ( BaseEventReceiverFocus * const receiver : _receiversFocus )
 				{
 					if ( receiver->getTargetWidget() == p_firerer )
 					{
