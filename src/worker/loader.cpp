@@ -42,6 +42,7 @@ namespace VTX
 
 		uint Loader::_run()
 		{
+			VTX_EVENT( new Event::VTXEventValue<std::string>( Event::Global::UPDATE_STATUS_BAR, "Loading..." ) );
 			Util::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
 
 			// Load all files.

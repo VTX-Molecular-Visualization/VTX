@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QStatusBar>
+#include <QTimer>
 
 namespace VTX
 {

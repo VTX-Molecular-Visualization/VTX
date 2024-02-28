@@ -35,6 +35,7 @@ namespace VTX
 				_workers.emplace( p_worker, p_callback );
 
 				connect( p_worker, &Worker::BaseThread::resultReady, this, &WorkerManager::_resultReady );
+				connect( p_worker, &Worker::BaseThread::updateStatusBar, this, &WorkerManager::_updateStatusBar );
 				connect( p_worker, &Worker::BaseThread::updateProgress, this, &WorkerManager::_updateProgress );
 				connect( p_worker, &Worker::BaseThread::logInfo, this, &WorkerManager::_logInfo );
 				connect( p_worker, &Worker::BaseThread::logWarning, this, &WorkerManager::_logWarning );
@@ -43,6 +44,7 @@ namespace VTX
 				connect( p_worker, &Worker::BaseThread::logFile, this, &WorkerManager::_logFile );
 				connect( p_worker, &Worker::BaseThread::finished, p_worker, &QObject::deleteLater );
 				VTX_DEBUG( "Starting thread" );
+				_updateProgress( true );
 				p_worker->start();
 			}
 
@@ -54,6 +56,7 @@ namespace VTX
 					( *p_callback )();
 					delete p_callback;
 				}
+
 				delete p_worker;
 			}
 
@@ -68,7 +71,7 @@ namespace VTX
 					delete pair.second;
 					delete pair.first;
 				}
-
+				_updateProgress( false );
 				_workers.clear();
 			}
 
@@ -100,13 +103,25 @@ namespace VTX
 						delete callback;
 					}
 				}
-
+				_updateProgress( false );
 				delete p_worker;
 			}
 
+			/*
 			void _updateProgress( BaseThread * p_worker, const uint p_progress )
 			{
 				VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, p_progress ) );
+			}
+			*/
+
+			void _updateProgress( const bool p_active )
+			{
+				VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::UPDATE_PROGRESS_BAR, p_active ) );
+			}
+
+			void _updateStatusBar( const std::string & p_status )
+			{
+				VTX_EVENT( new Event::VTXEventValue<std::string>( Event::Global::UPDATE_STATUS_BAR, p_status ) );
 			}
 
 			void _logInfo( const std::string p_msg ) { VTX_INFO( p_msg ); }

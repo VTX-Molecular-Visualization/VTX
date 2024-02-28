@@ -12,6 +12,8 @@ namespace VTX::Network::Request
 	  public:
 		DownloadMMTF( const std::string & p_id );
 
+		std::string getStatusBarMessage() const override { return "Downloading " + _id + "..."; }
+
 	  private:
 		std::string _id;
 

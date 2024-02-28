@@ -21,7 +21,8 @@ namespace VTX
 
 		  signals:
 			void resultReady( BaseThread *, const uint p_returnCode ) const;
-			void updateProgress( BaseThread *, const uint p_progress ) const;
+			void updateStatusBar( const std::string & p_status ) const;
+			void updateProgress( const bool p_progress ) const;
 			void logInfo( const std::string p_msg ) const;
 			void logWarning( const std::string p_msg ) const;
 			void logError( const std::string p_msg ) const;

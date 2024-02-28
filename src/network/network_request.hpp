@@ -23,6 +23,8 @@ namespace VTX
 			NetworkRequest( const std::string & p_url ) { setUrl( QUrl( p_url.c_str() ) ); }
 			virtual ~NetworkRequest() = default;
 
+			virtual std::string getStatusBarMessage() const = 0;
+
 		  private:
 			void		 _finished( QNetworkReply * const p_reply );
 			virtual void _success( QNetworkReply * const ) = 0;

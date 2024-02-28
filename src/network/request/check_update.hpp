@@ -12,6 +12,8 @@ namespace VTX::Network::Request
 	  public:
 		CheckUpdate( const bool p_showPopupIfNoUpdate );
 
+		std::string getStatusBarMessage() const override { return "Checking for updates..."; }
+
 	  private:
 		bool _showPopupIfNoUpdate;
 		void _success( QNetworkReply * const p_reply ) override;
