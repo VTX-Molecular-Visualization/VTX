@@ -1,14 +1,19 @@
 # Change Log
 
-## [0.4.2] (beta) - 2024-02-20
+## [0.4.2] (beta) - 2024-02-29
 
 ### Debug
 
 - Fix possible crash when loading big trajectory.
-- Fix memory leak on SES.
+- Fix Memory leak when reading trajectory in SES representation.
+- Debug crazy camera movement after focusing render panel.
 
 ## UI
 
+- Display warning pop-up when trying to compute huge SES.
+- Add feedback when loading a molecule.
+- Display full path to image file when taking instant snapshot.
+- Rename color modes Atom-Chain, Atom-Molecule, Atom-Custom into CHONPS Chain, CHONPS Molecule and CHONPS Custom.
 - Fix some typo.
 
 ## [0.4.1] (beta) - 2023-05-30

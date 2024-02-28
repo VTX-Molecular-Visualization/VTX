@@ -21,9 +21,9 @@ namespace VTX
 			CUSTOM,
 			INHERITED
 		};
-		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom",
-																  "Residue",	"Chain",	   "Molecule",
-																  "Custom",		"Inherited" };
+		static const std::vector<std::string> COLOR_MODE_STRING { "CHONPS Chain", "CHONPS Molecule", "CHONPS Custom",
+																  "Residue",	  "Chain",		   "Molecule",
+																  "Custom",		  "Inherited" };
 		enum class COLOR_BLENDING_MODE : int
 		{
 			HARD,
