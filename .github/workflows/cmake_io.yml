@@ -1,13 +1,13 @@
-name: CMake Renderer
+name: CMake IO
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/renderer/**']
+    paths: ['lib/io/**']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/renderer
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/io
   CMAKE_BUILD_DIR: out
   BUILD_TYPE: Release
 
@@ -27,7 +27,7 @@ jobs:
     
     - uses: knicknic/os-specific-run@v1.0.3
       with:
-        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
+        linux: sudo apt-get install -y libxrandr-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
@@ -38,7 +38,7 @@ jobs:
     - name: Build
       working-directory: ${{env.CMAKELISTS_DIR}}
       # Build your program with the given configuration
-      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_RENDERER VTX_RENDERER_BENCH
+      run: cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{env.BUILD_TYPE}} --target VTX_IO VTX_IO_TEST
 
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}/${{env.CMAKE_BUILD_DIR}}
