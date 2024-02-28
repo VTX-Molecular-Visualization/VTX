@@ -90,9 +90,11 @@ namespace VTX::Renderer
 				  UNSIGNED_CHAR_MAX + 1 }
 			);
 
-			_renderGraph->addUniforms( { { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} },
-										   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> {} } },
-										 UNSIGNED_SHORT_MAX + 1 } );
+			_renderGraph->addUniforms(
+				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+				  UNSIGNED_SHORT_MAX + 1 }
+			);
 
 			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },

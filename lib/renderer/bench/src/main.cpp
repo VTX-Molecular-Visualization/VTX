@@ -160,7 +160,7 @@ int main( int, char ** )
 				}
 			);
 
-			VTX_INFO( "Molecule {} added in {} ms", p_name, time );
+			VTX_INFO( "Molecule {} added in {}s", p_name, time );
 		};
 
 		addMolecule( "4hhb" );

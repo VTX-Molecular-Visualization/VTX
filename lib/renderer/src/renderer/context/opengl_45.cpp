@@ -636,6 +636,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// Init ubo.
+		// TODO:
 		p_ubo->setData( GLsizei( totalSize * p_uniforms.arraySize ), GL_STATIC_DRAW );
 
 		// Fill default values.

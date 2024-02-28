@@ -88,6 +88,7 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
+			// Destroy/create if new size or other function?
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 

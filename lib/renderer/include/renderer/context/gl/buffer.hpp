@@ -226,6 +226,8 @@ namespace VTX::Renderer::Context::GL
 			glUnmapNamedBuffer( _id );
 		}
 
+		inline size_t getSize() const { return _size; }
+
 	  private:
 		GLuint	_id		= GL_INVALID_INDEX;
 		GLenum	_target = 0;
