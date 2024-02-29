@@ -43,14 +43,18 @@ namespace VTX::App::Internal::Serialization
 			entities.emplace_back( jsonComponents );
 		}
 
-		return { { "CAMERA_POSITION", SERIALIZER().serialize( p_scene.getCamera().getPosition() ) },
-				 { "CAMERA_ROTATION", SERIALIZER().serialize( p_scene.getCamera().getRotation() ) },
+		return { { "CAMERA_POSITION", SERIALIZER().serialize( p_scene.getCamera().getTransform().getPosition() ) },
+				 { "CAMERA_ROTATION", SERIALIZER().serialize( p_scene.getCamera().getTransform().getRotation() ) },
 				 { "ENTITIES", entities } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Application::Scene & p_scene )
 	{
-		p_scene.getCamera().setPosition( SERIALIZER().deserializeField<Vec3f>( p_json, "CAMERA_POSITION" ) );
-		p_scene.getCamera().setRotation( SERIALIZER().deserializeField<Quatf>( p_json, "CAMERA_ROTATION" ) );
+		p_scene.getCamera().getTransform().setPosition(
+			SERIALIZER().deserializeField<Vec3f>( p_json, "CAMERA_POSITION" )
+		);
+		p_scene.getCamera().getTransform().setRotation(
+			SERIALIZER().deserializeField<Quatf>( p_json, "CAMERA_ROTATION" )
+		);
 
 		const Util::JSon::Array & items = p_json[ "ENTITIES" ];
 
@@ -102,7 +106,7 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::Scene::Transform & p_component )
 	{
-		p_component.setTransform( SERIALIZER().deserializeField<Util::Math::Transform>( p_json, "TRANSFORM" ) );
+		p_component.applyTransform( SERIALIZER().deserializeField<Util::Math::Transform>( p_json, "TRANSFORM" ) );
 	}
 
 	// MoleculeMetadata

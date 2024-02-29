@@ -41,13 +41,13 @@ namespace VTX::UI::QT::Controller
 			_velocity = VEC3F_ZERO;
 			// Save distance to force at next setActive(true).
 			// If orient is called in Freefly, the distance is overriden.
-			_distanceForced = VTX::Util::Math::distance( getCamera().getPosition(), _target );
+			_distanceForced = VTX::Util::Math::distance( getCamera().getTransform().getPosition(), _target );
 		}
 	}
 
 	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 	{
-		return p_camera.getPosition() + p_camera.getFront() * _distanceForced;
+		return p_camera.getTransform().getPosition() + p_camera.getTransform().getFront() * _distanceForced;
 	}
 
 	void Trackball::_updateInputs( const float & p_deltaTime )
@@ -60,7 +60,7 @@ namespace VTX::UI::QT::Controller
 		if ( INPUT_MANAGER().getDeltaMouseWheel() != 0 )
 		{
 			deltaDistance = INPUT_MANAGER().getDeltaMouseWheel() * 0.00001
-							* VTX::Util::Math::distance( getCamera().getPosition(), _target );
+							* VTX::Util::Math::distance( getCamera().getTransform().getPosition(), _target );
 		}
 
 		// Mouse left.
@@ -81,7 +81,7 @@ namespace VTX::UI::QT::Controller
 			float deltaX = -INPUT_MANAGER().getDeltaMousePosition().x * 0.1;
 			float deltaY = INPUT_MANAGER().getDeltaMousePosition().y * 0.1;
 
-			_target		= _target + getCamera().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+			_target		= _target + getCamera().getTransform().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 			_needUpdate = true;
 		}
 
@@ -165,13 +165,13 @@ namespace VTX::UI::QT::Controller
 			}
 			else
 			{
-				distance = VTX::Util::Math::distance( getCamera().getPosition(), _target );
+				distance = VTX::Util::Math::distance( getCamera().getTransform().getPosition(), _target );
 				distance = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 			}
 
 			const Quatf rotation
 				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? p_deltaTime : 0.2f ) );
-			getCamera().rotateAround( rotation, _target, distance );
+			getCamera().getTransform().rotateAround( rotation, _target, distance );
 			// float d = Util::distance( _camera.getPosition(), _target );
 			// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
 			//			  + std::to_string( d ) );

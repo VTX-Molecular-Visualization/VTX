@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_RENDER_CAMERA__
 
 #include "app/component/render/enum_camera.hpp"
+#include "app/component/scene/transform_component.hpp"
 #include "app/internal/constants.hpp"
 #include <util/types.hpp>
 
@@ -12,8 +13,10 @@ namespace VTX::App::Component::Render
 	  public:
 		Camera();
 
-		inline const Vec3f & getPosition() const { return _position; }
-		inline const Quatf & getRotation() const { return _rotation; }
+		void init();
+
+		inline const Component::Scene::Transform & getTransform() const { return *_transform; }
+		inline Component::Scene::Transform &	   getTransform() { return *_transform; }
 
 		inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 		inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
@@ -21,10 +24,6 @@ namespace VTX::App::Component::Render
 		inline const uint  getScreenWidth() const { return _screenWidth; }
 		inline const uint  getScreenHeight() const { return _screenHeight; }
 		inline const float getAspectRatio() const { return _aspectRatio; }
-
-		inline const Vec3f & getFront() const { return _front; }
-		inline const Vec3f & getRight() const { return _right; }
-		inline const Vec3f & getUp() const { return _up; }
 
 		inline const float getNear() const { return _near; }
 		inline const float getFar() const { return _far; }
@@ -38,33 +37,13 @@ namespace VTX::App::Component::Render
 		const bool isPerspective() const { return _projection == CAMERA_PROJECTION::PERSPECTIVE; }
 
 		void setScreenSize( const uint p_width, const uint p_height );
-		void setPosition( const Vec3f & p_position );
-		void setRotation( const Quatf & p_rotation );
-		void setRotation( const Vec3f & p_rotation );
-		void set( const Vec3f & p_position, const Quatf & p_rotation );
-
-		void setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up );
 
 		void setNear( const float p_near );
 		void setFar( const float p_far );
 		void setFov( const float p_fov );
 
-		virtual void move( const Vec3f & );
-		virtual void moveFront( const float );
-		virtual void moveRight( const float );
-		virtual void moveUp( const float );
-
 		virtual void  setTarget( const Vec3f & p_target );
 		virtual float getDistanceToTarget() const;
-
-		void rotate( const Vec3f & );
-		void rotatePitch( const float );
-		void rotateYaw( const float );
-		void rotateRoll( const float );
-
-		void		 setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
-		virtual void rotateAround( const Quatf &, const Vec3f &, const float );
-		void		 lookAt( const Vec3f &, const Vec3f & );
 
 		void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
@@ -78,12 +57,7 @@ namespace VTX::App::Component::Render
 		float _far			= 1e4f;
 		float _fov			= 60.f;
 
-		Vec3f _position = Vec3f( 0.f, 0.f, 40.f );
-		Quatf _rotation = QUATF_ID;
-
-		Vec3f _front = Internal::CAMERA_FRONT_DEFAULT;
-		Vec3f _right = Internal::CAMERA_RIGHT_DEFAULT;
-		Vec3f _up	 = Internal::CAMERA_UP_DEFAULT;
+		Component::Scene::Transform * _transform = nullptr;
 
 		Vec3f			  _target	  = VEC3F_ZERO;
 		CAMERA_PROJECTION _projection = CAMERA_PROJECTION::PERSPECTIVE;
@@ -91,7 +65,6 @@ namespace VTX::App::Component::Render
 		Mat4f _viewMatrix		= MAT4F_ID;
 		Mat4f _projectionMatrix = MAT4F_ID;
 
-		void		 _updateRotation();
 		virtual void _updateViewMatrix();
 
 		void _updateProjectionMatrix();

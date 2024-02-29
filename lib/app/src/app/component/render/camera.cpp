@@ -17,12 +17,25 @@ namespace VTX::App::Component::Render
 		_far( Util::Math::max( _near, VTXApp::get().getSettings().get<float>( FAR_CLIP_KEY ) ) ),
 		_fov( VTXApp::get().getSettings().get<float>( FOV_KEY ) )
 	{
-		_updateRotation();
-
 		const CAMERA_PROJECTION & cameraProjection
 			= VTXApp::get().getSettings().get<CAMERA_PROJECTION>( PROJECTION_KEY );
 
-		setCameraProjection( cameraProjection );
+		_projection = cameraProjection;
+	}
+
+	void Camera::init()
+	{
+		assert( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) );
+
+		Component::Scene::Transform & transformComponent
+			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+
+		_transform = &transformComponent;
+
+		_transform->onTransformChanged += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
+
+		_updateViewMatrix();
+		_updateProjectionMatrix();
 	}
 
 	void Camera::setScreenSize( const uint p_width, const uint p_height )
@@ -32,38 +45,6 @@ namespace VTX::App::Component::Render
 		_aspectRatio  = float( _screenWidth ) / float( _screenHeight );
 
 		_updateProjectionMatrix();
-	}
-
-	void Camera::setPosition( const Vec3f & p_position )
-	{
-		_position = p_position;
-		_updateViewMatrix();
-	}
-
-	void Camera::setRotation( const Quatf & p_rotation )
-	{
-		_rotation = Util::Math::normalize( p_rotation );
-		_updateRotation();
-	}
-
-	void Camera::setRotation( const Vec3f & p_rotation )
-	{
-		_rotation = Util::Math::normalize( Util::Math::eulerToQuaternion( p_rotation ) );
-		_updateRotation();
-	}
-
-	void Camera::set( const Vec3f & p_position, const Quatf & p_rotation )
-	{
-		_position = p_position;
-		setRotation( p_rotation );
-	}
-
-	void Camera::setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up )
-	{
-		_front = p_front;
-		_right = p_right;
-		_up	   = p_up;
-		_updateViewMatrix();
 	}
 
 	void Camera::setNear( const float p_near )
@@ -87,95 +68,10 @@ namespace VTX::App::Component::Render
 		_updateProjectionMatrix();
 	}
 
-	void Camera::move( const Vec3f & p_delta )
-	{
-		_position += _right * p_delta.x;
-		_position += _up * p_delta.y;
-		_position += _front * p_delta.z;
-		_updateViewMatrix();
-	}
-
-	void Camera::moveFront( const float p_delta )
-	{
-		_position += _front * p_delta;
-		_updateViewMatrix();
-	}
-
-	void Camera::moveRight( const float p_delta )
-	{
-		_position += _right * p_delta;
-		_updateViewMatrix();
-	}
-
-	void Camera::moveUp( const float p_delta )
-	{
-		_position += _up * p_delta;
-		_updateViewMatrix();
-	}
-
 	void  Camera::setTarget( const Vec3f & p_target ) { _target = p_target; }
-	float Camera::getDistanceToTarget() const { return Util::Math::distance( getPosition(), _target ); }
+	float Camera::getDistanceToTarget() const { return Util::Math::distance( _transform->getPosition(), _target ); }
 
-	void Camera::rotate( const Vec3f & p_delta )
-	{
-		_rotation = _rotation * Util::Math::eulerToQuaternion( p_delta );
-		_updateRotation();
-	}
-
-	void Camera::rotatePitch( const float p_delta )
-	{
-		_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( p_delta, 0.f, 0.f ) );
-		_updateRotation();
-	}
-
-	void Camera::rotateYaw( const float p_delta )
-	{
-		_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( 0.f, p_delta, 0.f ) );
-		_updateRotation();
-	}
-
-	void Camera::rotateRoll( const float p_delta )
-	{
-		_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( 0.f, 0.f, p_delta ) );
-		_updateRotation();
-	}
-
-	void Camera::setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
-	{
-		_rotation = Util::Math::normalize( p_rotation );
-		_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
-		_updateRotation();
-	}
-
-	void Camera::rotateAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
-	{
-		_rotation = Util::Math::normalize( _rotation * p_rotation );
-		_position = _rotation * Vec3f( 0.0, 0.0, p_distance ) + p_target;
-		_updateRotation();
-	}
-
-	void Camera::lookAt( const Vec3f & p_target, const Vec3f & p_up )
-	{
-		_rotation = Util::Math::lookAt( _position, p_target, p_up );
-		_updateRotation();
-	}
-
-	void Camera::reset( const Vec3f & p_defaultPosition )
-	{
-		_position = p_defaultPosition;
-		_rotation = QUATF_ID;
-		_updateRotation();
-	}
-
-	void Camera::_updateRotation()
-	{
-		const Mat3f rotation = Util::Math::castMat3( _rotation );
-		_front				 = rotation * Internal::CAMERA_FRONT_DEFAULT;
-		_right				 = rotation * Internal::CAMERA_RIGHT_DEFAULT;
-		_up					 = rotation * Internal::CAMERA_UP_DEFAULT;
-
-		_updateViewMatrix();
-	}
+	void Camera::reset( const Vec3f & p_defaultPosition ) { _transform->set( p_defaultPosition, QUATF_ID ); }
 
 	void Camera::setCameraProjection( const CAMERA_PROJECTION & p_projection )
 	{
@@ -187,12 +83,12 @@ namespace VTX::App::Component::Render
 
 	void Camera::_updateViewMatrix()
 	{
-		_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up );
+		_viewMatrix = Util::Math::lookAt(
+			_transform->getPosition(), _transform->getPosition() + _transform->getFront(), _transform->getUp()
+		);
 
 		if ( _projection == CAMERA_PROJECTION::ORTHOGRAPHIC )
 			_updateProjectionMatrix();
-
-		// App::Old::VTXApp::get().MASK |= App::Old::Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void Camera::_updateProjectionMatrix()
@@ -216,7 +112,8 @@ namespace VTX::App::Component::Render
 	}
 	void Camera::_computeOrthographicProjectionMatrix()
 	{
-		float top = tanf( Util::Math::radians( _fov ) * 0.5f ) * Util::Math::distance( _target, _position );
+		float top
+			= tanf( Util::Math::radians( _fov ) * 0.5f ) * Util::Math::distance( _target, _transform->getPosition() );
 
 		float bottom = -top;
 		float right	 = top * _aspectRatio;
@@ -227,11 +124,11 @@ namespace VTX::App::Component::Render
 
 	void Camera::print() const
 	{
-		VTX_INFO( "Position: {}", Util::Math::to_string_fmt( _position ) );
-		VTX_INFO( "Rotation: {}", Util::Math::to_string_fmt( _rotation ) );
-		VTX_INFO( "Front: {}", Util::Math::to_string_fmt( _front ) );
-		VTX_INFO( "Right: {}", Util::Math::to_string_fmt( _right ) );
-		VTX_INFO( "Up: {}", Util::Math::to_string_fmt( _up ) );
+		VTX_INFO( "Position: {}", Util::Math::to_string_fmt( _transform->getPosition() ) );
+		VTX_INFO( "Rotation: {}", Util::Math::to_string_fmt( _transform->getRotation() ) );
+		VTX_INFO( "Front: {}", Util::Math::to_string_fmt( _transform->getFront() ) );
+		VTX_INFO( "Right: {}", Util::Math::to_string_fmt( _transform->getRight() ) );
+		VTX_INFO( "Up: {}", Util::Math::to_string_fmt( _transform->getUp() ) );
 
 		VTX_INFO( "Projection: ", int( _projection ) );
 	}

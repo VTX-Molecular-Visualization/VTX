@@ -6,6 +6,7 @@
 #include "app/core/uid/uid.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
+#include <util/callback.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -89,6 +90,8 @@ namespace VTX::App::Component::Chemistry
 		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
 		Residue *					getResidueFromUID( Core::UID::uid p_uid );
+
+		Util::Callback<> onStructChange = Util::Callback<>();
 
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();

@@ -7,6 +7,22 @@
 
 namespace VTX::App::Component::Scene
 {
+	void AABB::init()
+	{
+		if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) )
+		{
+			Component::Scene::Transform & transformComponent
+				= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+
+			_linkedTransform = &transformComponent;
+
+			_linkedTransform->onTransformChanged +=
+				[ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); };
+		}
+	}
+
+	void AABB::invalidateAABB() { _aabb.invalidate(); }
+
 	const Util::Math::AABB & AABB::getLocalAABB() const
 	{
 		if ( _aabb.isValid() )
@@ -20,11 +36,9 @@ namespace VTX::App::Component::Scene
 		{
 			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-			if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
+			if ( _linkedTransform != nullptr )
 			{
-				Component::Scene::Transform & transformComponent
-					= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
-				const Util::Math::Transform & transform = transformComponent.getTransform();
+				const Util::Math::Transform & transform = _linkedTransform->getTransform();
 
 				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();
 

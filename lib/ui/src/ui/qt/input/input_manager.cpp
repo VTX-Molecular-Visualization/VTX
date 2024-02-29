@@ -71,7 +71,7 @@ namespace VTX::UI::QT::Input
 		{
 			_pressedKeys.emplace( key );
 
-			if ( _modifiers != ModifierEnum::None )
+			if ( modifier != ModifierEnum::None )
 				_modifiers |= modifier;
 
 			onKeyPressed.call( key );
@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Input
 		{
 			_pressedKeys.erase( key );
 
-			if ( _modifiers != ModifierEnum::None )
+			if ( modifier != ModifierEnum::None )
 				_modifiers &= !modifier;
 
 			onKeyReleased.call( key );

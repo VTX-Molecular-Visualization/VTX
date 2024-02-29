@@ -13,9 +13,6 @@ namespace VTX::App::Entity::Scene
 		static void addComponent( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
 		static void setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
 		static void postSetup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
-
-	  private:
-		static void _load( Component::Chemistry::Molecule & moleculeComponent, const Util::VariantMap & p_extraData );
 	};
 
 } // namespace VTX::App::Entity::Scene
