@@ -1,21 +1,21 @@
 Unicode True
 
 # Installer filename.
-OutFile VTX_0.4.1_SelfExtractor.exe
+OutFile VTX_0.4.2_SelfExtractor.exe
  
 # Installer directory.
-InstallDir $EXEDIR\VTX_0.4.1
+InstallDir $EXEDIR\VTX_0.4.2
 
 # Installer name.
-Name "VTX v0.4.1"
+Name "VTX v0.4.2"
 
 # Meta tags.
-VIProductVersion "0.4.1.0"
+VIProductVersion "0.4.2.0"
 VIAddVersionKey "ProductName" "VTX"
 VIAddVersionKey "CompanyName" "VTX Consortium"
-VIAddVersionKey "LegalCopyright" "Copyright (C) 2023"
+VIAddVersionKey "LegalCopyright" "Copyright (C) 2024"
 VIAddVersionKey "FileDescription" "High performance molecular visualization software"
-VIAddVersionKey "FileVersion" "0.4.1"
+VIAddVersionKey "FileVersion" "0.4.2"
 
 Section
  
