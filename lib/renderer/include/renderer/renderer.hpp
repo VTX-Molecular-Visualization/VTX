@@ -7,6 +7,7 @@
 #include "proxy/color_layout.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
+#include "proxy/render_settings.hpp"
 #include "proxy/representations.hpp"
 #include "proxy/voxels.hpp"
 #include "render_graph.hpp"
@@ -215,6 +216,7 @@ namespace VTX::Renderer
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
+		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
 		void snapshot(
@@ -293,6 +295,7 @@ namespace VTX::Renderer
 		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
 		Proxy::ColorLayout *	 _proxyColorLayout;
 		Proxy::Representations * _proxyRepresentations;
+		Proxy::RenderSettings *	 _proxyRenderSettings;
 		Proxy::Voxels *			 _proxyVoxels;
 
 		// TODO: check complexity.
@@ -312,6 +315,7 @@ namespace VTX::Renderer
 		{
 			_refreshDataSpheresCylinders();
 			_refreshDataRibbons();
+			_refreshDataSES();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
@@ -319,6 +323,7 @@ namespace VTX::Renderer
 
 		void _refreshDataSpheresCylinders();
 		void _refreshDataRibbons();
+		void _refreshDataSES();
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 

@@ -29,6 +29,10 @@ namespace VTX::Renderer
 					if ( _context )
 					{
 						_refreshDataMolecules();
+						if ( _proxyRepresentations )
+						{
+							setProxyRepresentations( *_proxyRepresentations );
+						}
 						_context->fillInfos( infos );
 						_callbackReady();
 					}
@@ -84,6 +88,8 @@ namespace VTX::Renderer
 			);
 		};
 
+		// TODO: onVisible to split in multi call or update flags if atomic granularity.
+
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
@@ -105,18 +111,6 @@ namespace VTX::Renderer
 			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
 		};
 
-		p_proxy.onRemove += [ this, &p_proxy ]()
-		{
-			std::erase( _proxiesMolecules, &p_proxy );
-			_cacheSpheresCylinders.erase( &p_proxy );
-			_cacheRibbons.erase( &p_proxy );
-
-			if ( _renderGraph->isBuilt() )
-			{
-				_refreshDataMolecules();
-			}
-		};
-
 		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
@@ -127,6 +121,18 @@ namespace VTX::Renderer
 
 			_context->setSubData( cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.offset );
 			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.offset );
+		};
+
+		p_proxy.onRemove += [ this, &p_proxy ]()
+		{
+			std::erase( _proxiesMolecules, &p_proxy );
+			_cacheSpheresCylinders.erase( &p_proxy );
+			_cacheRibbons.erase( &p_proxy );
+
+			if ( _renderGraph->isBuilt() )
+			{
+				_refreshDataMolecules();
+			}
 		};
 	}
 
@@ -156,6 +162,34 @@ namespace VTX::Renderer
 		setUniform( representations, "Sphere radius fixed" );
 
 		// TODO: remove useless primitives with multi calls.
+	}
+
+	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
+	{
+		_proxyRenderSettings = &p_proxy;
+
+		// Updates each pass.
+		if ( p_proxy.ssaoIntensity.has_value() && p_proxy.ssaoIntensity.value() != 0.f )
+		{
+			assert( p_proxy.blurXDirection.has_value() );
+			assert( p_proxy.blurXSize.has_value() );
+			assert( p_proxy.blurYDirection.has_value() );
+			assert( p_proxy.blurYSize.has_value() );
+
+			setUniform( p_proxy.ssaoIntensity.value(), "SSAOSSAOIntensity" );
+			setUniform( p_proxy.blurXDirection.value(), "BlurXBlurDirection" );
+			setUniform( p_proxy.blurXSize.value(), "BlurXBlurSize" );
+			setUniform( p_proxy.blurYDirection.value(), "BlurYBlurDirection" );
+			setUniform( p_proxy.blurYSize.value(), "BlurYBlurSize" );
+		}
+		else
+		{
+			// TODO: disable ssao and blur.
+		}
+
+		setUniform( p_proxy.colorBackground, "ShadingShadingBrightnessBackground color" );
+		setUniform( p_proxy.colorLight, "ShadingShadingBrightnessBackground color" );
+		setUniform( p_proxy.colorFog, "ShadingShadingBrightnessBackground color" );
 	}
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
@@ -638,6 +672,11 @@ namespace VTX::Renderer
 		}
 
 		sizeRibbons = offsetIndices;
+	}
+
+	void Renderer::_refreshDataSES()
+	{
+		// TODO.
 	}
 
 	void Renderer::_refreshDataModels()

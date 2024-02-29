@@ -11,6 +11,8 @@ namespace VTX::Renderer::Proxy
 	{
 		const std::vector<Vec3f> * mins;
 		const std::vector<Vec3f> * maxs;
+
+		// TODO: update callbacks.
 	};
 
 } // namespace VTX::Renderer::Proxy

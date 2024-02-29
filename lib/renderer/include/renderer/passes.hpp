@@ -23,26 +23,29 @@ namespace VTX::Renderer
 		{ "Colors", E_TYPE::UBYTE, 1 },
 		{ "Ids", E_TYPE::UINT, 1 },
 		{ "Flags", E_TYPE::UBYTE, 1 },
+		{ "Models", E_TYPE::USHORT, 1 },
 	} };
 
-	static const Data dataSpheresCylinders { { { "Positions", E_TYPE::FLOAT, 3 },
-											   { "Colors", E_TYPE::UBYTE, 1 },
-											   { "Radii", E_TYPE::FLOAT, 1 },
-											   { "Ids", E_TYPE::UINT, 1 },
-											   { "Flags", E_TYPE::UBYTE, 1 },
-											   { "Models", E_TYPE::USHORT, 1 },
-											   { "Representations", E_TYPE::UBYTE, 1 },
-											   { "Render settings", E_TYPE::UBYTE, 1 } } };
+	static const Data dataSpheresCylinders { {
+		{ "Positions", E_TYPE::FLOAT, 3 },
+		{ "Colors", E_TYPE::UBYTE, 1 },
+		{ "Radii", E_TYPE::FLOAT, 1 },
+		{ "Ids", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UBYTE, 1 },
+		{ "Models", E_TYPE::USHORT, 1 },
+		{ "Representations", E_TYPE::UBYTE, 1 },
+	} };
 
-	static const Data dataRibbons { { { "Positions", E_TYPE::FLOAT, 4 },
-									  { "Directions", E_TYPE::FLOAT, 3 },
-									  { "Types", E_TYPE::UBYTE, 1 },
-									  { "Colors", E_TYPE::UBYTE, 1 },
-									  { "Ids", E_TYPE::UINT, 1 },
-									  { "Flags", E_TYPE::UBYTE, 1 },
-									  { "Models", E_TYPE::USHORT, 1 },
-									  { "Representations", E_TYPE::UBYTE, 1 },
-									  { "Render settings", E_TYPE::UBYTE, 1 } } };
+	static const Data dataRibbons { {
+		{ "Positions", E_TYPE::FLOAT, 4 },
+		{ "Directions", E_TYPE::FLOAT, 3 },
+		{ "Types", E_TYPE::UBYTE, 1 },
+		{ "Colors", E_TYPE::UBYTE, 1 },
+		{ "Ids", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UBYTE, 1 },
+		{ "Models", E_TYPE::USHORT, 1 },
+		{ "Representations", E_TYPE::UBYTE, 1 },
+	} };
 
 	static const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
@@ -154,10 +157,11 @@ namespace VTX::Renderer
 					  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
 					  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
 					  { "Mode",
-						E_TYPE::INT,
-						StructUniformValue<int> { int( E_SHADING::DIFFUSE ),
-												  StructUniformValue<int>::MinMax { int( E_SHADING::DIFFUSE ),
-																					int( E_SHADING::COUNT ) - 1 } } },
+						E_TYPE::UINT,
+						StructUniformValue<uint> {
+							uint( E_SHADING::DIFFUSE ),
+							StructUniformValue<uint>::MinMax { uint( E_SHADING::DIFFUSE ),
+															   uint( E_SHADING::COUNT ) - 1 } } },
 					  { "Specular factor",
 						E_TYPE::FLOAT,
 						StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
@@ -309,6 +313,24 @@ namespace VTX::Renderer
 					{ "Factor",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
+	};
+
+	enum class E_PASS : size_t
+	{
+		GEOMETRIC,
+		DEPTH,
+		SSAO,
+		BLUR,
+		SHADING,
+		OUTLINE,
+		SELECTION,
+		FXAA,
+		PIXELIZE,
+		CRT,
+		CHROMATIC_ABERRATION,
+		COLORIZE,
+		DEBUG,
+		COUNT
 	};
 
 	static std::vector<Pass *> availablePasses = { &descPassGeometric,

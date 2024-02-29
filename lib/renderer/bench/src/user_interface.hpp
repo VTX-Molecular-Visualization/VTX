@@ -562,7 +562,7 @@ namespace VTX::Bench
 							{
 							case E_TYPE::BOOL:
 							{
-								StructUniformValue<bool> descValue
+								const StructUniformValue<bool> descValue
 									= std::get<StructUniformValue<bool>>( uniform.value );
 
 								bool value;
@@ -583,78 +583,39 @@ namespace VTX::Bench
 
 								break;
 							}
+							case E_TYPE::BYTE:
+							{
+								_drawWidgetSliderInt<char>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::UBYTE:
+							{
+								_drawWidgetSliderInt<uchar>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::SHORT:
+							{
+								_drawWidgetSliderInt<short>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::USHORT:
+							{
+								_drawWidgetSliderInt<ushort>( p_renderer, uniform, key, isEditable );
+								break;
+							}
 							case E_TYPE::INT:
 							{
-								StructUniformValue<int> descValue = std::get<StructUniformValue<int>>( uniform.value );
-
-								int value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<int>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( descValue.minMax.has_value() )
-								{
-									StructUniformValue<int>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderInt( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
-								else
-								{
-									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
+								_drawWidgetSliderInt<int>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::UINT:
 							{
-								StructUniformValue<uint> descValue
-									= std::get<StructUniformValue<uint>>( uniform.value );
-
-								uint value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<uint>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( descValue.minMax.has_value() )
-								{
-									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderInt(
-											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
-										 ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
-								else
-								{
-									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
+								_drawWidgetSliderInt<uint>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::FLOAT:
 							{
-								StructUniformValue<float> descValue
+								const StructUniformValue<float> descValue
 									= std::get<StructUniformValue<float>>( uniform.value );
 
 								float value;
@@ -669,7 +630,7 @@ namespace VTX::Bench
 
 								if ( descValue.minMax.has_value() )
 								{
-									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
+									const StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
 									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
 									{
 										if ( isEditable )
@@ -688,7 +649,7 @@ namespace VTX::Bench
 							}
 							case E_TYPE::VEC2I:
 							{
-								StructUniformValue<Vec2i> descValue
+								const StructUniformValue<Vec2i> descValue
 									= std::get<StructUniformValue<Vec2i>>( uniform.value );
 
 								Vec2i value;
@@ -710,7 +671,7 @@ namespace VTX::Bench
 							}
 							case E_TYPE::VEC2F:
 							{
-								StructUniformValue<Vec2f> descValue
+								const StructUniformValue<Vec2f> descValue
 									= std::get<StructUniformValue<Vec2f>>( uniform.value );
 
 								Vec2f value;
@@ -732,7 +693,7 @@ namespace VTX::Bench
 							}
 							case E_TYPE::COLOR4:
 							{
-								StructUniformValue<Util::Color::Rgba> descValue
+								const StructUniformValue<Util::Color::Rgba> descValue
 									= std::get<StructUniformValue<Util::Color::Rgba>>( uniform.value );
 
 								Util::Color::Rgba value;
@@ -851,6 +812,46 @@ namespace VTX::Bench
 				}
 			}
 			ImGui::End();
+		}
+
+		template<typename T>
+		void _drawWidgetSliderInt(
+			Renderer::Renderer * const p_renderer,
+			const Renderer::Uniform &  p_uniform,
+			const std::string &		   p_key,
+			const bool				   p_isEditable
+		) const
+		{
+			using namespace Renderer;
+			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
+
+			T value;
+			if ( p_isEditable )
+			{
+				p_renderer->getUniform<T>( value, p_key );
+			}
+			else
+			{
+				value = descValue.value;
+			}
+
+			if ( descValue.minMax.has_value() )
+			{
+				const StructUniformValue<T>::MinMax & minMax = descValue.minMax.value();
+				if ( ImGui::SliderInt( p_uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max ) )
+				{
+					if ( p_isEditable )
+						p_renderer->setUniform( value, p_key );
+				}
+			}
+			else
+			{
+				if ( ImGui::DragInt( p_uniform.name.c_str(), (int *)( &value ) ) )
+				{
+					if ( p_isEditable )
+						p_renderer->setUniform( value, p_key );
+				}
+			}
 		}
 
 	}; // namespace VTX::Bench

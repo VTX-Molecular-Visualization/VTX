@@ -18,7 +18,7 @@ namespace VTX::Renderer::Proxy
 		// TODO: remove and cache?
 		const std::vector<bool> * atomVisibilities; // Needed?
 		const std::vector<bool> * atomSelections;	// Needed?
-		// const std::vector<uchar> * onAtomRepresentations; // Needed?
+		// const std::vector<uchar> * atomRepresentations; // Needed?
 
 		const std::vector<uint> * atomIds; // Not needed?
 		const std::vector<uint> * bonds;   // Needed.
@@ -33,31 +33,32 @@ namespace VTX::Renderer::Proxy
 		const std::vector<size_t> *		 chainResidueCounts;			 // Needed to recompute ss.
 
 		// Default color layout and representation.
-		const uchar idColorLayout	 = 0; // TODO.
-		const uchar idRepresentation = 0;
-		// // TODO: const bool smoothMD = false;
+		const uint idColorLayout	= 0; // TODO.
+		const uint idRepresentation = 0;
+		const uint idRenderSettings = 0;
+		// TODO: const bool smoothMD = false;
 
-		Util::Callback<>	  onTransform;		// Move/rotate.
-		Util::Callback<bool>  onSelect;			// Select/deselect the whole molecule.
-		Util::Callback<bool>  onVisible;		// Show/hide the whole molecule.
-		Util::Callback<uchar> onRepresentation; // Change the representation of the whole molecule.
-		Util::Callback<>	  onRemove;			// Remove proxy.
+		Util::Callback<>	 onTransform;	   // Move/rotate.
+		Util::Callback<bool> onVisible;		   // Show/hide the whole molecule.
+		Util::Callback<bool> onSelect;		   // Select/deselect the whole molecule.
+		Util::Callback<uint> onRepresentation; // Change the representation of the whole molecule.
+		Util::Callback<>	 onRemove;		   // Remove proxy.
 
 		Util::Callback<> onAtomPositions; // Update dynamics.
 		// Update dynamics: mix(atomPositions, atomPositionsNextFrame, t).
 		Util::Callback<>	  onAtomPositionsNextFrame;
 		Util::Callback<float> onUpate;
 		// Use pointer, precomputed data passed to callback or compute in renderer?
-		Util::Callback<>	  onAtomColors;				  // Update colors (ATOM/CHAIN/RESIDUE)...
-		Util::Callback<>	  onAtomVisibilities;		  // Update visibilities.
-		Util::Callback<>	  onAtomSelections;			  // Update selections.
-		Util::Callback<uchar> onAtomRepresentations;	  // To discuss.
-		Util::Callback<>	  onUpdateSecondaryStructure; // Recompute secondary structure.
+		Util::Callback<>	 onAtomColors;				 // Update colors (ATOM/CHAIN/RESIDUE)...
+		Util::Callback<>	 onAtomVisibilities;		 // Update visibilities.
+		Util::Callback<>	 onAtomSelections;			 // Update selections.
+		Util::Callback<uint> onAtomRepresentations;		 // To discuss.
+		Util::Callback<>	 onUpdateSecondaryStructure; // Recompute secondary structure.
 
-		Util::Callback<uchar> onColorLayout; // TODO: Change the model color layout.
+		Util::Callback<uint> onColorLayout; // TODO: Change the model color layout.
 
-		// TODO:
-		// onVisible()
+		// TODO: Util::Callback<uchar> onRenderSettings;
+		// TODO: onVisible()
 	};
 
 } // namespace VTX::Renderer::Proxy

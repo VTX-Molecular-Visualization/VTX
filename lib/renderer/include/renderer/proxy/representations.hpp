@@ -22,6 +22,8 @@ namespace VTX::Renderer::Proxy
 
 		bool  hasSes;
 		float sesResolution;
+
+		// TODO: update callbacks.
 	};
 
 	using Representations = const std::vector<Representation>;
