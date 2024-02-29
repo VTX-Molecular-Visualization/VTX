@@ -13,7 +13,7 @@
 - Display warning pop-up when trying to compute huge SES.
 - Add feedback when loading a molecule.
 - Display full path to image file when taking instant snapshot.
-- Rename color modes Atom-Chain, Atom-Molecule, Atom-Custom into CHONPS Chain, CHONPS Molecule and CHONPS Custom.
+- Rename color modes Atom-Chain, Atom-Molecule, Atom-Custom into CHNOPS Chain, CHNOPS Molecule and CHNOPS Custom.
 - Fix some typo.
 
 ## [0.4.1] (beta) - 2023-05-30

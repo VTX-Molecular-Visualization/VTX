@@ -21,8 +21,8 @@ namespace VTX
 			CUSTOM,
 			INHERITED
 		};
-		static const std::vector<std::string> COLOR_MODE_STRING { "CHONPS Chain", "CHONPS Molecule", "CHONPS Custom",
-																  "Residue",	  "Chain",		   "Molecule",
+		static const std::vector<std::string> COLOR_MODE_STRING { "CHNOPS Chain", "CHNOPS Molecule", "CHNOPS Custom",
+																  "Residue",	  "Chain",			 "Molecule",
 																  "Custom",		  "Inherited" };
 		enum class COLOR_BLENDING_MODE : int
 		{
