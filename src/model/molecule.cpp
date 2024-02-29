@@ -273,6 +273,7 @@ namespace VTX
 		{
 			_aabb.invalidate();
 
+			const AtomPositionsFrame & currentFrame = getCurrentAtomPositionFrame();
 			for ( const Model::Atom * const atom : _atoms )
 			{
 				if ( atom == nullptr )
@@ -281,10 +282,13 @@ namespace VTX
 				// Compute AABB on all frames to ensure that all the trajectory may be visible with an orient
 				const uint	atomIndex  = atom->getIndex();
 				const float atomRadius = atom->getVdwRadius();
-				for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
-				{
-					_aabb.extend( frame[ atomIndex ], atomRadius );
-				}
+
+				_aabb.extend( currentFrame[ atomIndex ], atomRadius );
+
+				// for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
+				//{
+				//	_aabb.extend( frame[ atomIndex ], atomRadius );
+				// }
 			}
 		}
 
@@ -615,6 +619,8 @@ namespace VTX
 				_solventExcludedSurfaces.clear();
 			}
 			refreshRepresentationTargets();
+
+			_invalidateAABB();
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 
