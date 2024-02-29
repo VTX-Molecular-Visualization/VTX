@@ -837,7 +837,7 @@ namespace VTX::Bench
 
 			if ( descValue.minMax.has_value() )
 			{
-				const StructUniformValue<T>::MinMax & minMax = descValue.minMax.value();
+				const typename StructUniformValue<T>::MinMax & minMax = descValue.minMax.value();
 				if ( ImGui::SliderInt( p_uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max ) )
 				{
 					if ( p_isEditable )
