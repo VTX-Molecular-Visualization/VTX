@@ -34,6 +34,8 @@ include("${DIR_LIBS}/util/cmake/library.cmake")
 # Util test.
 include("${DIR_LIBS}/util/test/cmake/library.cmake")
 
+vtx_clear_registered_copies()
+
 # Core.
 include("${DIR_LIBS}/core/cmake/library.cmake")
 
@@ -42,6 +44,8 @@ include("${DIR_LIBS}/io/cmake/library.cmake")
 
 # IO test.
 include("${DIR_LIBS}/io/test/cmake/library.cmake")
+
+vtx_clear_registered_copies()
 
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
@@ -52,11 +56,15 @@ include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
 # Renderer bench.
 include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
 
+vtx_clear_registered_copies()
+
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
 
 # App test.
 include("${DIR_LIBS}/app/test/cmake/library.cmake")
+
+vtx_clear_registered_copies()
 
 # Python binding.
 include("${DIR_LIBS}/python_binding/cmake/library.cmake")
@@ -64,11 +72,15 @@ include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 # Python binding test.
 include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 
+vtx_clear_registered_copies()
+
 # UI.
 include("${DIR_LIBS}/ui/cmake/library.cmake")
 
 # UI test.
 include("${DIR_LIBS}/ui/test/cmake/library.cmake")
+
+vtx_clear_registered_copies()
 
 # MdPrep.
 include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")

@@ -35,10 +35,11 @@ function(vtx_copy_registered_data target)
 
 	foreach(src_it IN LISTS  property_var_dir_src)
 		list(GET property_var_dir_dest ${num} current_dest)
+		set(_COPY_TARGET_NAME "z_${target}_file_copy${num}")
 		message("VTX -- Registering ${target}_directory_copy${num} as a post build event to copy directory <${src_it}> into <${current_dest}> ")
-		add_custom_target("${target}_directory_copy${num}" ALL COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
+		add_custom_target("${_COPY_TARGET_NAME}" ALL COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
 		
-		add_dependencies("${target}" "${target}_directory_copy${num}")
+		add_dependencies("${target}" "${_COPY_TARGET_NAME}")
 
 		MATH(EXPR num "${num}+1")
 	endforeach()
@@ -55,11 +56,20 @@ function(vtx_copy_registered_data target)
 
 	foreach(src_it IN LISTS  property_var_file_src)
 		list(GET property_var_file_dest ${num} current_dest)
+		set(_COPY_TARGET_NAME "z_${target}_file_copy${num}")
 		message("VTX -- Registering ${target}_file_copy${num} as a post build event to copy file <${src_it}> into <${current_dest}> ")
-		add_custom_target("${target}_file_copy${num}" ALL COMMAND ${CMAKE_COMMAND} -E copy ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
+		add_custom_target("${_COPY_TARGET_NAME}" ALL COMMAND ${CMAKE_COMMAND} -E copy ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
+		
+		add_dependencies("${target}" "${_COPY_TARGET_NAME}")
 		
 		MATH(EXPR num "${num}+1")
 
 	endforeach()
 
+endfunction()
+	
+# All copies are cumulative until this function is called
+function(vtx_clear_registered_copies)
+	set_property(GLOBAL PROPERTY _REGISTER_DIR_COPY_SOURCE_property "")
+	set_property(GLOBAL PROPERTY _REGISTER_DIR_COPY_DEST_property "")
 endfunction()
