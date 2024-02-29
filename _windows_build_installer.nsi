@@ -26,7 +26,7 @@ SetOutPath $INSTDIR
 File /r RELEASE\*
  
 # Create shortcut.
-CreateShortCut $INSTDIR\VTX.lnk $INSTDIR\bin\Release\VTX.exe
+CreateShortCut $INSTDIR\VTX.lnk $INSTDIR\bin\VTX.exe
 
 # define uninstaller name
 WriteUninstaller $INSTDIR\uninstall.exe
