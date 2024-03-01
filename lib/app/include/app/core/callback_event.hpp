@@ -15,18 +15,18 @@ namespace VTX::App::Core
 	  public:
 		CallbackRegister() = default;
 
-		void addCallback( void * const p_listener, const callback_t & p_callback )
+		void addCallback( const void * const p_listener, const callback_t & p_callback )
 		{
 			_mapCallbacks[ p_listener ] = p_callback;
 		}
-		void removeCallback( void * const p_listener ) { _mapCallbacks.erase( p_listener ); }
+		void removeCallback( const void * const p_listener ) { _mapCallbacks.erase( p_listener ); }
 		void clear() { _mapCallbacks.clear(); }
 
 	  protected:
-		const std::map<void *, callback_t> & getCallbacks() const { return _mapCallbacks; }
+		const std::map<const void *, callback_t> & getCallbacks() const { return _mapCallbacks; }
 
 	  private:
-		std::map<void *, callback_t> _mapCallbacks = std::map<void *, callback_t>();
+		std::map<const void *, callback_t> _mapCallbacks = std::map<const void *, callback_t>();
 	};
 
 	template<typename... Args>
@@ -34,6 +34,8 @@ namespace VTX::App::Core
 	{
 	  public:
 		CallbackEmitter() = default;
+
+		void operator()( const Args... p_args ) const { call( p_args... ); }
 
 		void call( const Args... p_params ) const
 		{

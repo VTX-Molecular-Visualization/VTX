@@ -3,10 +3,10 @@
 
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
+#include "app/core/callback_event.hpp"
 #include "app/core/uid/uid.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
-#include <util/callback.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -91,7 +91,7 @@ namespace VTX::App::Component::Chemistry
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
 		Residue *					getResidueFromUID( Core::UID::uid p_uid );
 
-		Util::Callback<> onStructChange = Util::Callback<>();
+		App::Core::CallbackEmitter<> onStructChange = App::Core::CallbackEmitter<>();
 
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();

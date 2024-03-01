@@ -17,6 +17,14 @@ namespace VTX::UI::Internal::Animation
 		Vec3f finalPosition = VEC3F_ZERO;
 		Quatf startRotation = QUATF_ID;
 		Quatf finalRotation = QUATF_ID;
+
+		Core::Animation::BaseAnimationInfo toBaseAnimationInfo() const
+		{
+			Core::Animation::BaseAnimationInfo res = Core::Animation::BaseAnimationInfo();
+			res.duration						   = duration;
+
+			return res;
+		}
 	};
 
 	class Translation : public UI::Core::Animation::BaseAnimation

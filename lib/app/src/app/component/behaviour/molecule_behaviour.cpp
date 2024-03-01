@@ -55,8 +55,9 @@ namespace VTX::App::Component::Behaviour
 		aabbComponent.init();
 		aabbComponent.setAABBComputationFunction( [ this ]() { return _computeMoleculeAABB(); } );
 
-		_moleculeComponent.onStructChange +=
-			[ this ]() { MAIN_REGISTRY().getComponent<Component::Scene::AABB>( _entity ).invalidateAABB(); };
+		_moleculeComponent.onStructChange.addCallback(
+			this, [ this ]() { MAIN_REGISTRY().getComponent<Component::Scene::AABB>( _entity ).invalidateAABB(); }
+		);
 	}
 	void Molecule::_initGpuProxyComponent() const
 	{

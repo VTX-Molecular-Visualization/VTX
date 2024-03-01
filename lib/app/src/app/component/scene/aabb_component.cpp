@@ -16,8 +16,9 @@ namespace VTX::App::Component::Scene
 
 			_linkedTransform = &transformComponent;
 
-			_linkedTransform->onTransformChanged +=
-				[ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); };
+			_linkedTransform->onTransformChanged.addCallback(
+				this, [ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); }
+			);
 		}
 	}
 
@@ -25,7 +26,7 @@ namespace VTX::App::Component::Scene
 
 	const Util::Math::AABB & AABB::getLocalAABB() const
 	{
-		if ( _aabb.isValid() )
+		if ( !_aabb.isValid() )
 			_aabb = _recomputeAABB();
 		return _aabb;
 	};

@@ -25,6 +25,9 @@ namespace VTX::App::Internal::ECS
 		entityDirector.addBuildStep(
 			Entity::CAMERA_ENTITY_ID, PASS_ENUM::ADD_COMPONENT, &Entity::Scene::CameraEntityBuilder::addComponent
 		);
+		entityDirector.addBuildStep(
+			Entity::CAMERA_ENTITY_ID, PASS_ENUM::SETUP, &Entity::Scene::CameraEntityBuilder::setup
+		);
 
 		// Molecule entity
 		entityDirector.addBuildStep(

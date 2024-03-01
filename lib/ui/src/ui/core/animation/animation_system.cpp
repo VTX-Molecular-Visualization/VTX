@@ -8,14 +8,13 @@
 
 namespace VTX::UI::Core::Animation
 {
-	AnimationSystem::AnimationSystem() { _currentAnimationIt = _animationSequence.end(); }
-
-	void AnimationSystem::launchAnimation( const BaseAnimation & p_animation )
+	AnimationSystem::AnimationSystem()
 	{
-		stop();
-		clear();
-		pushBackAnimation( p_animation );
-		play();
+		_currentAnimationIt = _animationSequence.end();
+
+		App::VTXApp::get().onUpdate().addCallback(
+			this, [ this ]( const float p_deltaTime ) { update( p_deltaTime ); }
+		);
 	}
 
 	void AnimationSystem::play()
@@ -23,32 +22,30 @@ namespace VTX::UI::Core::Animation
 		_currentAnimationIt = _animationSequence.begin();
 		_isPlaying			= true;
 
-		App::VTXApp::get().onUpdate().addCallback(
-			this, [ this ]( const float p_deltaTime ) { update( p_deltaTime ); }
-		);
+		_playAnimation();
 	}
 	void AnimationSystem::stop()
 	{
 		_isPlaying			= false;
 		_currentAnimationIt = _animationSequence.end();
 
-		App::VTXApp::get().onUpdate().removeCallback( this );
-
 		onStopped();
 	}
 
-	void AnimationSystem::update( const float p_deltaTime ) { _currentAnimationIt->update( p_deltaTime ); }
-
-	void AnimationSystem::pushBackAnimation( const BaseAnimation & p_animation )
+	void AnimationSystem::update( const float p_deltaTime )
 	{
-		_animationSequence.push_back( p_animation );
+		if ( !_isPlaying )
+			return;
+
+		( *_currentAnimationIt )->update( p_deltaTime );
 	}
+
 	void AnimationSystem::clear() { _animationSequence.clear(); }
 
 	void AnimationSystem::_playAnimation()
 	{
-		_currentAnimationIt->onStopped += [ this ]() { _playNextAnimation(); };
-		_currentAnimationIt->play();
+		( *_currentAnimationIt )->onStopped.addCallback( this, [ this ]() { _playNextAnimation(); } );
+		( *_currentAnimationIt )->play();
 	}
 	void AnimationSystem::_playNextAnimation()
 	{

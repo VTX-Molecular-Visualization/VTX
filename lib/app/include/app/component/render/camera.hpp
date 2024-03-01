@@ -3,7 +3,9 @@
 
 #include "app/component/render/enum_camera.hpp"
 #include "app/component/scene/transform_component.hpp"
+#include "app/core/callback_event.hpp"
 #include "app/internal/constants.hpp"
+#include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
@@ -48,6 +50,11 @@ namespace VTX::App::Component::Render
 		void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
 		void print() const;
+
+		App::Core::CallbackEmitter<Mat4f>			  onMatrixViewChange;
+		App::Core::CallbackEmitter<Mat4f>			  onMatrixProjectionChange;
+		App::Core::CallbackEmitter<float, float>	  onClipInfosChange;
+		App::Core::CallbackEmitter<CAMERA_PROJECTION> onProjectionChange;
 
 	  protected:
 		uint  _screenWidth	= 1u;

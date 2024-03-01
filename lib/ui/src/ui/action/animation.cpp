@@ -21,11 +21,7 @@ namespace VTX::UI::Action::Animation
 	{
 	}
 
-	void Orient::execute()
-	{
-		UI::Internal::Animation::Orient orient = UI::Internal::Animation::Orient( _orientInfo );
-		ANIMATION_SYSTEM().launchAnimation( orient );
-	}
+	void Orient::execute() { ANIMATION_SYSTEM().launchAnimation<UI::Internal::Animation::Orient>( _orientInfo ); }
 
 	void ResetCamera::execute()
 	{

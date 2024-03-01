@@ -4,7 +4,7 @@
 namespace VTX::UI::Internal::Animation
 {
 	Translation::Translation( const TranslationInfo & p_info ) :
-		UI::Core::Animation::BaseAnimation(), _info( p_info ) {};
+		UI::Core::Animation::BaseAnimation( p_info.toBaseAnimationInfo() ), _info( p_info ) {};
 
 	void Translation::_enter()
 	{

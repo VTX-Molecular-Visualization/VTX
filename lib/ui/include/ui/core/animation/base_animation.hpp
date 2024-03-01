@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_ANIMATION_BASE_ANIMATION__
 #define __VTX_UI_CORE_ANIMATION_BASE_ANIMATION__
 
-#include <util/callback.hpp>
+#include <app/core/callback_event.hpp>
 
 namespace VTX::UI::Core::Animation
 {
@@ -30,11 +30,11 @@ namespace VTX::UI::Core::Animation
 		bool  isRunning() { return _isRunning; }
 		float getRatio() const;
 
-		Util::Callback<> onStopped = Util::Callback<>();
+		App::Core::CallbackEmitter<> onStopped = App::Core::CallbackEmitter<>();
 
 	  protected:
 		virtual void _enter() {}
-		virtual void _internalUpdate( float p_deltaTime ) {};
+		virtual void _internalUpdate( float p_deltaTime ) = 0;
 		virtual void _exit() {}
 
 		BaseAnimationInfo _info = BaseAnimationInfo();

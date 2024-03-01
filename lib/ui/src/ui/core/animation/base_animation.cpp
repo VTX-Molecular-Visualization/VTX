@@ -6,7 +6,7 @@ namespace VTX::UI::Core::Animation
 	BaseAnimation::BaseAnimation( const BaseAnimation & p_source )
 	{
 		_info	  = p_source._info;
-		onStopped = Util::Callback<>();
+		onStopped = App::Core::CallbackEmitter<>();
 	}
 	BaseAnimation::BaseAnimation( const BaseAnimationInfo & p_info ) { _info = p_info; }
 
@@ -22,7 +22,8 @@ namespace VTX::UI::Core::Animation
 
 	void BaseAnimation::play()
 	{
-		_isRunning = true;
+		_isRunning	 = true;
+		_currentTime = 0.f;
 		_enter();
 	}
 

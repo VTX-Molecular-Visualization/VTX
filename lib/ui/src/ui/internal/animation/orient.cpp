@@ -76,8 +76,6 @@ namespace VTX::UI::Internal::Animation
 			QT::Mode::Visualization & visualizationMode = dynamic_cast<QT::Mode::Visualization &>( QT::MODE() );
 			visualizationMode.getCurrentCameraController().setActive( false );
 			visualizationMode.getCurrentPickerController().setActive( false );
-			visualizationMode.getController( QT::Controller::CameraAnimationController::COLLECTION_ID )
-				.setActive( true );
 		}
 	}
 
@@ -96,8 +94,6 @@ namespace VTX::UI::Internal::Animation
 			QT::Mode::Visualization & visualizationMode = dynamic_cast<QT::Mode::Visualization &>( QT::MODE() );
 			visualizationMode.getCurrentCameraController().setActive( true );
 			visualizationMode.getCurrentPickerController().setActive( true );
-			visualizationMode.getController( QT::Controller::CameraAnimationController::COLLECTION_ID )
-				.setActive( false );
 		}
 	}
 } // namespace VTX::UI::Internal::Animation
