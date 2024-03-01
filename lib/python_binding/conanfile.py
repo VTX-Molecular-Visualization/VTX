@@ -66,10 +66,13 @@ class VTXPythonBindingRecipe(ConanFile):
             print("Found python module: " + files[0])
             self.conf_info.define("user.myconf:path_python_module", files[0])
             
-            cmake_dir = os.path.join(self.recipe_folder, "cmake", "out")
-
+            cmake_dir = os.path.join(self.recipe_folder, "cmake")
             if not Path(cmake_dir).exists():
                 Path(cmake_dir).mkdir()
+            cmake_dir = os.path.join(cmake_dir, "out")
+            if not Path(cmake_dir).exists():
+                Path(cmake_dir).mkdir()
+            
             cmake_file_name = f"{self._generated_cmake_prefix()}{self.settings.build_type}.cmake"
             cmake_file_path = os.path.join(cmake_dir, cmake_file_name)
             
