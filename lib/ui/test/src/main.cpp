@@ -4,6 +4,7 @@
 #include <io/internal/filesystem.hpp>
 #include <ui/debug/print_inputs.hpp>
 #include <ui/environment.hpp>
+#include <ui/qt/tool/miscellaneous/orient_on_first_molecule_loaded.hpp>
 #include <ui/qt/tool/render_window.hpp>
 #include <ui/qt/tool/ui_features/quit_tool.hpp>
 #include <ui/ui_generator.hpp>

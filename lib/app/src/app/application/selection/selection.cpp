@@ -1,6 +1,5 @@
 #include "app/application/selection/selection.hpp"
 #include "app/application/ecs/registry_manager.hpp"
-#include "app/component/scene/aabb_component.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <sstream>
@@ -157,15 +156,6 @@ namespace VTX::App::Application::Selection
 				= p_selectableComponent.instantiateSelectionData();
 
 			auto it = _items.emplace( std::move( selectionItem ) );
-
-			if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
-			{
-				Component::Scene::AABB & aabbComponent
-					= MAIN_REGISTRY().getComponent<Component::Scene::AABB>( p_selectableComponent );
-
-				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
-			}
-
 			_setCurrentObject( it.first->get() );
 
 			return **( it.first );
@@ -196,15 +186,6 @@ namespace VTX::App::Application::Selection
 			selectionItem->set( p_selectionData );
 
 			auto it = _items.emplace( std::move( selectionItem ) );
-
-			if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
-			{
-				Component::Scene::AABB & aabbComponent
-					= MAIN_REGISTRY().getComponent<Component::Scene::AABB>( p_selectableComponent );
-
-				_mapSelectionAABB[ ( *( it.first ) ).get() ] = &aabbComponent;
-			}
-
 			_setCurrentObject( it.first->get() );
 
 			return **( it.first );
@@ -226,12 +207,6 @@ namespace VTX::App::Application::Selection
 	void Selection::unselect( const Component::Scene::Selectable & p_selectableComponent )
 	{
 		const std::unique_ptr<SelectionData> & selItem = _getSelectionDataPtr( p_selectableComponent );
-
-		if ( MAIN_REGISTRY().hasComponent<Component::Scene::AABB>( p_selectableComponent ) )
-		{
-			_mapSelectionAABB.erase( selItem.get() );
-		}
-
 		_items.erase( selItem );
 	}
 
@@ -269,16 +244,9 @@ namespace VTX::App::Application::Selection
 	{
 		Util::Math::AABB res = Util::Math::AABB();
 
-		if ( _mapSelectionAABB.empty() )
+		for ( const std::unique_ptr<SelectionData> & selectionData : _items )
 		{
-			res.extend( VEC3F_ZERO );
-		}
-		else
-		{
-			for ( const auto & pairItemAABB : _mapSelectionAABB )
-			{
-				res.extend( pairItemAABB.second->getWorldAABB() );
-			}
+			res.extend( selectionData->getAABB() );
 		}
 
 		return res;
@@ -291,11 +259,7 @@ namespace VTX::App::Application::Selection
 
 	void Selection::_notifyDataChanged() {}
 
-	void Selection::_clearWithoutNotify()
-	{
-		_items.clear();
-		_mapSelectionAABB.clear();
-	}
+	void Selection::_clearWithoutNotify() { _items.clear(); }
 
 	SelectionData & Selection::getSelectionData( const Component::Scene::Selectable & p_selectable )
 	{

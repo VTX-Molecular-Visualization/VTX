@@ -35,6 +35,9 @@ namespace VTX::UI::Internal::Animation
 
 		_translationInfo.targetPtr = &cameraTransformComponent;
 		_translationInfo.duration  = p_duration;
+
+		targetStartPosition = p_camera.getTarget();
+		targetFinalPosition = p_targetAabb.centroid();
 	}
 
 	OrientInfo::OrientInfo(
@@ -87,7 +90,8 @@ namespace VTX::UI::Internal::Animation
 		const Vec3f target = Util::Math::easeInOutInterpolation(
 			_orientInfo.targetStartPosition, _orientInfo.targetFinalPosition, getRatio()
 		);
-		_camera.setTarget( target );
+
+		_camera.setTargetWorld( target );
 
 		if ( QT::MODE().getName() == QT::Mode::Visualization::ID )
 		{

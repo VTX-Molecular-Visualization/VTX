@@ -72,7 +72,44 @@ namespace VTX::App::Component::Render
 		_updateProjectionMatrix();
 	}
 
-	void  Camera::setTarget( const Vec3f & p_target ) { _target = p_target; }
+	void Camera::setTargetWorld( const Vec3f & p_target )
+	{
+		if ( _targetIsLocal )
+		{
+			_target = getTransform().getPosition() - _target;
+		}
+		else
+		{
+			_target = p_target;
+		}
+	}
+	void Camera::setTargetLocal( const Vec3f & p_target )
+	{
+		if ( _targetIsLocal )
+		{
+			_target = p_target;
+		}
+		else
+		{
+			_target = getTransform().getPosition() + _target;
+		}
+	}
+	void Camera::attachTarget()
+	{
+		if ( !_targetIsLocal )
+		{
+			_targetIsLocal = true;
+			_target		   = getTransform().getPosition() - _target;
+		}
+	}
+	void Camera::detachTarget()
+	{
+		if ( _targetIsLocal )
+		{
+			_targetIsLocal = false;
+			_target = getTransform().getPosition() + ( getTransform().getFront() * Util::Math::length( _target ) );
+		}
+	}
 	float Camera::getDistanceToTarget() const { return Util::Math::distance( _transform->getPosition(), _target ); }
 
 	void Camera::reset( const Vec3f & p_defaultPosition ) { _transform->set( p_defaultPosition, QUATF_ID ); }

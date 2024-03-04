@@ -24,6 +24,17 @@ namespace VTX::UI::QT::Controller
 			{ int( Keys::MOVE_DOWN ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
 		} );
 	}
+
+	void Freefly::setActive( const bool p_active )
+	{
+		BaseCameraController::setActive( p_active );
+
+		if ( p_active )
+			getCamera().attachTarget();
+		else
+			getCamera().detachTarget();
+	}
+
 	void Freefly::_updateInputs( const float & p_deltaTime )
 	{
 		if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )

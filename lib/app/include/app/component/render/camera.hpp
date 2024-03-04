@@ -44,7 +44,10 @@ namespace VTX::App::Component::Render
 		void setFar( const float p_far );
 		void setFov( const float p_fov );
 
-		virtual void  setTarget( const Vec3f & p_target );
+		virtual void  setTargetWorld( const Vec3f & p_target );
+		virtual void  setTargetLocal( const Vec3f & p_target );
+		void		  attachTarget();
+		void		  detachTarget();
 		virtual float getDistanceToTarget() const;
 
 		void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
@@ -66,7 +69,9 @@ namespace VTX::App::Component::Render
 
 		Component::Scene::Transform * _transform = nullptr;
 
-		Vec3f			  _target	  = VEC3F_ZERO;
+		Vec3f _target		 = VEC3F_ZERO;
+		bool  _targetIsLocal = false;
+
 		CAMERA_PROJECTION _projection = CAMERA_PROJECTION::PERSPECTIVE;
 
 		Mat4f _viewMatrix		= MAT4F_ID;

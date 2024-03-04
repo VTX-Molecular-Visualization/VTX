@@ -2,6 +2,7 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/helper/math.hpp"
 #include "app/vtx_app.hpp"
 #include <util/math/transform.hpp>
 
@@ -40,15 +41,7 @@ namespace VTX::App::Component::Scene
 			if ( _linkedTransform != nullptr )
 			{
 				const Util::Math::Transform & transform = _linkedTransform->getTransform();
-
-				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();
-
-				_worldAabb = Util::Math::AABB();
-				for ( const Vec3f & summit : aabbSummits )
-				{
-					const Vec4f worldSummit = transform.get() * Vec4f( summit, 1 );
-					_worldAabb.extend( worldSummit );
-				}
+				_worldAabb = Helper::Math::applyTransformOnAABB( getLocalAABB(), transform );
 			}
 			else
 			{

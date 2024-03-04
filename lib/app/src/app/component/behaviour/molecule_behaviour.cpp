@@ -164,6 +164,7 @@ namespace VTX::App::Component::Behaviour
 			= std::make_unique<Application::Selection::MoleculeData>( selectableComponent );
 
 		Application::Selection::MoleculeData & molData = dynamic_cast<Application::Selection::MoleculeData &>( *res );
+		molData.clear();
 
 		if ( p_pickingInfo.hasOneValue() )
 		{

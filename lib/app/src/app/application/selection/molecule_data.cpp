@@ -1,6 +1,8 @@
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/selectable.hpp"
+#include "app/component/scene/transform_component.hpp"
+#include "app/helper/math.hpp"
 #include "app/vtx_app.hpp"
 #include <sstream>
 #include <util/algorithm/range.hpp>
@@ -649,11 +651,15 @@ namespace VTX::App::Application::Selection
 	{
 		_atomIds.addValue( p_atom.getIndex() );
 		setCurrentObject( p_atom );
+
+		_localAABB.invalidate();
 	}
 	void MoleculeData::_referenceAtoms( const AtomIndexRange & p_range )
 	{
 		_atomIds.addRange( p_range );
 		setCurrentObject( *_molecule->getAtom( p_range.getLast() ) );
+
+		_localAABB.invalidate();
 	}
 	void MoleculeData::_unselectAtom( const Atom & p_atom )
 	{
@@ -677,6 +683,7 @@ namespace VTX::App::Application::Selection
 		}
 
 		_refreshCurrentObject();
+		_localAABB.invalidate();
 	}
 	void MoleculeData::_unselectAtoms( const AtomIndexRange & p_range )
 	{
@@ -729,6 +736,29 @@ namespace VTX::App::Application::Selection
 		}
 
 		_refreshCurrentObject();
+		_localAABB.invalidate();
+	}
+
+	Util::Math::AABB MoleculeData::getAABB() const
+	{
+		if ( !_localAABB.isValid() )
+			_recomputeAABB();
+
+		const Util::Math::Transform & transform
+			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *_molecule ).getTransform();
+
+		return Helper::Math::applyTransformOnAABB( _localAABB, transform );
+	}
+
+	void MoleculeData::_recomputeAABB() const
+	{
+		_localAABB.invalidate();
+
+		for ( const atom_index_t atomId : _atomIds )
+		{
+			const Component::Chemistry::Atom * const atomPtr = _molecule->getAtom( atomId );
+			_localAABB.extend( atomPtr->getLocalPosition(), atomPtr->getVdwRadius() );
+		}
 	}
 
 	Molecule & MoleculeData::getCurrentObjectAsMolecule() const

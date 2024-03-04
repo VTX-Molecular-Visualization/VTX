@@ -4,6 +4,7 @@
 #include "app/component/scene/_fwd.hpp"
 #include <memory>
 #include <string>
+#include <util/math/aabb.hpp>
 
 namespace VTX::App::Application::Selection
 {
@@ -31,6 +32,8 @@ namespace VTX::App::Application::Selection
 		virtual SelectionData & exclude( const SelectionData & p_other );
 
 		virtual bool contains( const SelectionData & p_other ) const;
+
+		virtual Util::Math::AABB getAABB() const { return Util::Math::AABB(); }
 
 	  protected:
 		virtual std::unique_ptr<SelectionData> _cloneImpl() const;

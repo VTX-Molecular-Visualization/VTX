@@ -4,6 +4,7 @@
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
+#include <core/chemdb/color.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
@@ -27,6 +28,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		App::RENDERER().build( defaultFramebufferObject() );
 		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
+		App::RENDERER().setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		RendererQt renderer = QT_RENDERER();
 		renderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
@@ -36,7 +38,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		renderer.get().setPerspective( App::SCENE().getCamera().isPerspective() );
 	}
 
-	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0 ); }
+	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0.15f ); }
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
