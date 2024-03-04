@@ -161,7 +161,6 @@ conan editable add lib/tool
 conan editable add lib/ui
 conan editable add lib/util
 conan editable add lib/tool/tools/mdprep
-conan editable add lib/tool/tools/mdprep/external/gromacs
 ```
 
 ### Build VTX
