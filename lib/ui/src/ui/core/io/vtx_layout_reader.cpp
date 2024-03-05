@@ -9,6 +9,7 @@ namespace VTX::UI::Core::IO
 		ToolLayoutData layoutData;
 		_result.layoutDescriptor.addTool( ToolDescriptor( "RENDER_WINDOW_KEY" ) );
 		_result.layoutDescriptor.addTool( ToolDescriptor( "UI_FEATURE_QUIT" ) );
+		_result.layoutDescriptor.addTool( ToolDescriptor( "MISCELLANEOUS_ORIENT_ON_FIRST_MOLECULE_LOADED" ) );
 	}
 
 } // namespace VTX::UI::Core::IO

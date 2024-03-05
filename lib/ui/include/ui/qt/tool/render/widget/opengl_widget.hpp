@@ -34,10 +34,6 @@ namespace VTX
 
 			void _setupUi( const QString & p_name ) override {}
 			void _setupSlots() override {}
-
-		  private:
-			// CallbackInitGL	 _cbInitGL;
-			// CallbackResizeGL _cbResizeGL;
 		};
 	} // namespace UI::QT::Tool::Render::Widget
 

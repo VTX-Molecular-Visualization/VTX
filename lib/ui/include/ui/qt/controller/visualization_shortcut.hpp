@@ -28,6 +28,10 @@ namespace VTX::UI::QT::Controller
 
 		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<VisualizationShortcut>( *this ); };
+
+	  private:
+		void _callOrientOnScene() const;
+		void _callOrientOnSelection() const;
 	};
 } // namespace VTX::UI::QT::Controller
 #endif

@@ -24,6 +24,17 @@ namespace VTX::UI::QT::Controller
 			{ int( Keys::MOVE_DOWN ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
 		} );
 	}
+
+	void Freefly::setActive( const bool p_active )
+	{
+		BaseCameraController::setActive( p_active );
+
+		if ( p_active )
+			getCamera().attachTarget();
+		else
+			getCamera().detachTarget();
+	}
+
 	void Freefly::_updateInputs( const float & p_deltaTime )
 	{
 		if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )
@@ -32,7 +43,7 @@ namespace VTX::UI::QT::Controller
 		// Rotation.
 		if ( INPUT_MANAGER().isMouseLeftPressed() )
 		{
-			getCamera().rotate( Vec3f(
+			getCamera().getTransform().localRotate( Vec3f(
 				-rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().y * ( invertY ? -1.f : 1.f ),
 				-rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x,
 				0.f
@@ -40,7 +51,7 @@ namespace VTX::UI::QT::Controller
 		}
 		if ( INPUT_MANAGER().isMouseRightPressed() )
 		{
-			getCamera().rotateRoll( rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x );
+			getCamera().getTransform().rotateRoll( rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x );
 		}
 
 		// Translation.
@@ -88,7 +99,7 @@ namespace VTX::UI::QT::Controller
 			translation /= decelerationFactor;
 		}
 
-		getCamera().move( translation );
+		getCamera().getTransform().localMove( translation );
 	}
 
 } // namespace VTX::UI::QT::Controller

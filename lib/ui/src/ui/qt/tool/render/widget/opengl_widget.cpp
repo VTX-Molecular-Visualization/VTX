@@ -1,8 +1,10 @@
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
+#include "ui/qt/application_qt.hpp"
 #include <QOpenGLContext>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/vtx_app.hpp>
+#include <core/chemdb/color.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
@@ -24,16 +26,26 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		assert( context()->isValid() );
 
-		VTX::App::VTXApp::get().getRenderer().build( defaultFramebufferObject() );
+		App::RENDERER().build( defaultFramebufferObject() );
 		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
+		App::RENDERER().setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+
+		RendererQt renderer = QT_RENDERER();
+		renderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
+		renderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
+		renderer.get().setCameraPosition( App::SCENE().getCamera().getTransform().getPosition() );
+		renderer.get().setCameraClipInfos( App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar() );
+		renderer.get().setPerspective( App::SCENE().getCamera().isPerspective() );
 	}
 
-	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0 ); }
+	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0.15f ); }
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
 		App::SCENE().getCamera().setScreenSize( width(), height() );
-		App::RENDERER().resize( p_width, p_height );
-		App::RENDERER().setOutput( defaultFramebufferObject() );
+
+		RendererQt renderer = QT_RENDERER();
+		renderer.get().resize( p_width, p_height );
+		renderer.get().setOutput( defaultFramebufferObject() );
 	}
 } // namespace VTX::UI::QT::Tool::Render::Widget

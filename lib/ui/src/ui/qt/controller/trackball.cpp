@@ -5,6 +5,7 @@
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <app/application/scene.hpp>
+#include <util/fmt/glm.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>
@@ -30,24 +31,18 @@ namespace VTX::UI::QT::Controller
 	}
 	void Trackball::setActive( const bool p_active )
 	{
-		BaseController::setActive( p_active );
+		BaseCameraController::setActive( p_active );
 
 		if ( p_active )
-		{
-			_target = targetSimulationFromCamera( getCamera() );
-		}
-		else
-		{
-			_velocity = VEC3F_ZERO;
-			// Save distance to force at next setActive(true).
-			// If orient is called in Freefly, the distance is overriden.
-			_distanceForced = VTX::Util::Math::distance( getCamera().getPosition(), _target );
-		}
+			getCamera().detachTarget();
 	}
 
 	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 	{
-		return p_camera.getPosition() + p_camera.getFront() * _distanceForced;
+		const float distanceToTarget
+			= VTX::Util::Math::distance( p_camera.getTransform().getPosition(), p_camera.getTarget() );
+
+		return p_camera.getTransform().getPosition() + p_camera.getTransform().getFront() * distanceToTarget;
 	}
 
 	void Trackball::_updateInputs( const float & p_deltaTime )
@@ -59,8 +54,9 @@ namespace VTX::UI::QT::Controller
 		float deltaDistance = 0.f;
 		if ( INPUT_MANAGER().getDeltaMouseWheel() != 0 )
 		{
-			deltaDistance = INPUT_MANAGER().getDeltaMouseWheel() * 0.00001
-							* VTX::Util::Math::distance( getCamera().getPosition(), _target );
+			deltaDistance
+				= INPUT_MANAGER().getDeltaMouseWheel() * 0.00001
+				  * VTX::Util::Math::distance( getCamera().getTransform().getPosition(), getCamera().getTarget() );
 		}
 
 		// Mouse left.
@@ -81,7 +77,12 @@ namespace VTX::UI::QT::Controller
 			float deltaX = -INPUT_MANAGER().getDeltaMousePosition().x * 0.1;
 			float deltaY = INPUT_MANAGER().getDeltaMousePosition().y * 0.1;
 
-			_target		= _target + getCamera().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+			const Vec3f newTarget
+				= getCamera().getTarget()
+				  + getCamera().getTransform().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+
+			getCamera().setTargetWorld( newTarget );
+
 			_needUpdate = true;
 		}
 
@@ -157,21 +158,14 @@ namespace VTX::UI::QT::Controller
 		// Update if needed.
 		if ( _needUpdate )
 		{
-			float distance = 0.f;
-			if ( _distanceForced != 0.f )
-			{
-				distance		= VTX::Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
-				_distanceForced = 0.f;
-			}
-			else
-			{
-				distance = VTX::Util::Math::distance( getCamera().getPosition(), _target );
-				distance = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
-			}
+			float distance
+				= VTX::Util::Math::distance( getCamera().getTransform().getPosition(), getCamera().getTarget() );
+			distance = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
 			const Quatf rotation
 				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? p_deltaTime : 0.2f ) );
-			getCamera().rotateAround( rotation, _target, distance );
+
+			getCamera().getTransform().rotateAround( rotation, getCamera().getTarget(), distance );
 			// float d = Util::distance( _camera.getPosition(), _target );
 			// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
 			//			  + std::to_string( d ) );
@@ -211,8 +205,8 @@ namespace VTX::UI::QT::Controller
 		BaseCameraController::reset();
 
 		_needUpdate = true;
-		_target		= App::SCENE().getAABB().centroid();
-		_velocity	= VEC3F_ZERO;
+		getCamera().setTargetWorld( App::SCENE().getAABB().centroid() );
+		_velocity = VEC3F_ZERO;
 	}
 
 } // namespace VTX::UI::QT::Controller

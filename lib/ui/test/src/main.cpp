@@ -4,11 +4,20 @@
 #include <io/internal/filesystem.hpp>
 #include <ui/debug/print_inputs.hpp>
 #include <ui/environment.hpp>
+#include <ui/qt/tool/miscellaneous/orient_on_first_molecule_loaded.hpp>
 #include <ui/qt/tool/render_window.hpp>
 #include <ui/qt/tool/ui_features/quit_tool.hpp>
 #include <ui/ui_generator.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
+
+#ifdef _WIN32
+extern "C"
+{
+	__declspec( dllexport ) uint32_t NvOptimusEnablement			 = 0x00000001;
+	__declspec( dllexport ) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
 
 TEST_CASE( "VTX_UI - Test", "[integration]" )
 {

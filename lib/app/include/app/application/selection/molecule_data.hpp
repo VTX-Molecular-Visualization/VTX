@@ -281,6 +281,8 @@ namespace VTX::App::Application::Selection
 		Residue &  getCurrentObjectAsResidue() const;
 		Atom &	   getCurrentObjectAsAtom() const;
 
+		Util::Math::AABB getAABB() const override;
+
 		std::string toString() const override;
 
 	  protected:
@@ -308,6 +310,8 @@ namespace VTX::App::Application::Selection
 
 		void _refreshCurrentObject();
 
+		void _recomputeAABB() const;
+
 		Molecule * const	  _molecule;
 		CurrentObjectTypeEnum _currentObjectType  = CurrentObjectTypeEnum::Molecule;
 		size_t				  _currentObjectIndex = INVALID_INDEX;
@@ -315,6 +319,8 @@ namespace VTX::App::Application::Selection
 		IndexRangeList	   _chainIds   = IndexRangeList();
 		IndexRangeList	   _residueIds = IndexRangeList();
 		AtomIndexRangeList _atomIds	   = AtomIndexRangeList();
+
+		mutable Util::Math::AABB _localAABB = Util::Math::AABB();
 	};
 
 } // namespace VTX::App::Application::Selection

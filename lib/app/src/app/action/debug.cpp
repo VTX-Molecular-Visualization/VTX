@@ -1,6 +1,7 @@
 #include "app/action/debug.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
+#include "app/component/scene/transform_component.hpp"
 #include "app/vtx_app.hpp"
 #include <string>
 #include <util/exceptions.hpp>
@@ -15,13 +16,14 @@ namespace VTX::App::Action::Debug
 
 	void PrintCameraInfo::execute()
 	{
-		const Component::Render::Camera & camera = SCENE().getCamera();
+		const Component::Render::Camera &	camera			= SCENE().getCamera();
+		const Component::Scene::Transform & cameraTransform = camera.getTransform();
 
-		VTX_INFO( "Position: {}", camera.getPosition() );
-		VTX_INFO( "Rotation: {}", camera.getRotation() );
-		VTX_INFO( "Front: {}", camera.getFront() );
-		VTX_INFO( "Right: {}", camera.getRight() );
-		VTX_INFO( "Up: {}", camera.getUp() );
+		VTX_INFO( "Position: {}", cameraTransform.getPosition() );
+		VTX_INFO( "Rotation: {}", cameraTransform.getRotation() );
+		VTX_INFO( "Front: {}", cameraTransform.getFront() );
+		VTX_INFO( "Right: {}", cameraTransform.getRight() );
+		VTX_INFO( "Up: {}", cameraTransform.getUp() );
 
 		const std::string projectionStr = camera.isPerspective() ? "Perspective" : "Orthographic";
 		VTX_INFO( "Projection: {}", projectionStr );

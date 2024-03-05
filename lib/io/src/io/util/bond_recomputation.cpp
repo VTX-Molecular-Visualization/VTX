@@ -298,7 +298,7 @@ namespace VTX::IO::Util
 	{
 		const double cutoff				 = 3.48 * 2.;
 		const double cutoffPow2			 = cutoff * cutoff;
-		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::H );
+		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::A_H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 

@@ -1,6 +1,8 @@
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/selectable.hpp"
+#include "app/component/scene/transform_component.hpp"
+#include "app/helper/math.hpp"
 #include "app/vtx_app.hpp"
 #include <sstream>
 #include <util/algorithm/range.hpp>
@@ -18,6 +20,8 @@ namespace VTX::App::Application::Selection
 		_chainIds.clear();
 		_residueIds.clear();
 		_atomIds.clear();
+
+		_localAABB.invalidate();
 
 		_currentObjectType = CurrentObjectTypeEnum::Molecule;
 	}
@@ -43,6 +47,8 @@ namespace VTX::App::Application::Selection
 		copy->_currentObjectType  = _currentObjectType;
 		copy->_currentObjectIndex = _currentObjectIndex;
 
+		copy->_localAABB = _localAABB;
+
 		return std::move( copy );
 	}
 
@@ -55,6 +61,8 @@ namespace VTX::App::Application::Selection
 			_chainIds	= castedOther._chainIds;
 			_residueIds = castedOther._residueIds;
 			_atomIds	= castedOther._atomIds;
+
+			_localAABB = castedOther._localAABB;
 		}
 	}
 
@@ -67,6 +75,8 @@ namespace VTX::App::Application::Selection
 			Util::Algorithm::Range::mergeInSitu( _chainIds, castedOther._chainIds );
 			Util::Algorithm::Range::mergeInSitu( _residueIds, castedOther._residueIds );
 			Util::Algorithm::Range::mergeInSitu( _atomIds, castedOther._atomIds );
+
+			_localAABB.extend( castedOther._localAABB );
 		}
 
 		return *this;
@@ -80,6 +90,8 @@ namespace VTX::App::Application::Selection
 			Util::Algorithm::Range::substractInSitu( _chainIds, castedOther._chainIds );
 			Util::Algorithm::Range::substractInSitu( _residueIds, castedOther._residueIds );
 			Util::Algorithm::Range::substractInSitu( _atomIds, castedOther._atomIds );
+
+			_localAABB.invalidate();
 		}
 
 		return *this;
@@ -101,6 +113,8 @@ namespace VTX::App::Application::Selection
 			_atomIds.clear();
 		}
 
+		_localAABB.invalidate();
+
 		return *this;
 	}
 	SelectionData & MoleculeData::exclude( const SelectionData & p_other )
@@ -112,6 +126,8 @@ namespace VTX::App::Application::Selection
 			_chainIds	= Util::Algorithm::Range::exclusive( _chainIds, castedOther._chainIds );
 			_residueIds = Util::Algorithm::Range::exclusive( _residueIds, castedOther._residueIds );
 			_atomIds	= Util::Algorithm::Range::exclusive( _atomIds, castedOther._atomIds );
+
+			_localAABB.invalidate();
 		}
 
 		return *this;
@@ -127,6 +143,8 @@ namespace VTX::App::Application::Selection
 		_chainIds.addRange( IndexRange( 0, _molecule->getChains().size() ) );
 		_residueIds.addRange( IndexRange( 0, _molecule->getResidues().size() ) );
 		_atomIds.addRange( AtomIndexRange( 0, atom_index_t( _molecule->getAtoms().size() ) ) );
+
+		_localAABB.invalidate();
 
 		setCurrentObject( *_molecule );
 	}
@@ -164,10 +182,29 @@ namespace VTX::App::Application::Selection
 	{
 		unselectChain( *_molecule->getChain( p_chainIndex ) );
 	}
-	void MoleculeData::unselectChains( const IndexRange & p_chain ) {}
-	void MoleculeData::unselectChains( const IndexRangeList & p_chain ) {}
-	void MoleculeData::unselectChains( const std::initializer_list<const Chain *> & p_chains ) {}
-	void MoleculeData::unselectChains( const std::initializer_list<size_t> & p_chains ) {}
+	void MoleculeData::unselectChains( const IndexRange & p_chains ) { _unselectChains( p_chains ); }
+	void MoleculeData::unselectChains( const IndexRangeList & p_chain )
+	{
+		for ( auto it = p_chain.rangeBegin(); it != p_chain.rangeEnd(); ++it )
+		{
+			_unselectChains( *it );
+		}
+	}
+	void MoleculeData::unselectChains( const std::initializer_list<const Chain *> & p_chains )
+	{
+		for ( const Chain * const chainPtr : p_chains )
+		{
+			if ( chainPtr != nullptr )
+				_unselectChain( *chainPtr );
+		}
+	}
+	void MoleculeData::unselectChains( const std::initializer_list<size_t> & p_chains )
+	{
+		for ( const size_t chainIndex : p_chains )
+		{
+			unselectChain( chainIndex );
+		}
+	}
 
 	bool MoleculeData::isChainSelected( const size_t & p_chainIndex ) const
 	{
@@ -649,11 +686,19 @@ namespace VTX::App::Application::Selection
 	{
 		_atomIds.addValue( p_atom.getIndex() );
 		setCurrentObject( p_atom );
+
+		_localAABB.extend( p_atom.getLocalPosition(), p_atom.getVdwRadius() );
 	}
 	void MoleculeData::_referenceAtoms( const AtomIndexRange & p_range )
 	{
 		_atomIds.addRange( p_range );
 		setCurrentObject( *_molecule->getAtom( p_range.getLast() ) );
+
+		for ( atom_index_t atomIndex = p_range.getFirst(); atomIndex <= p_range.getLast(); atomIndex++ )
+		{
+			const Atom & atom = *_molecule->getAtom( atomIndex );
+			_localAABB.extend( atom.getLocalPosition(), atom.getVdwRadius() );
+		}
 	}
 	void MoleculeData::_unselectAtom( const Atom & p_atom )
 	{
@@ -677,6 +722,7 @@ namespace VTX::App::Application::Selection
 		}
 
 		_refreshCurrentObject();
+		_localAABB.invalidate();
 	}
 	void MoleculeData::_unselectAtoms( const AtomIndexRange & p_range )
 	{
@@ -729,6 +775,29 @@ namespace VTX::App::Application::Selection
 		}
 
 		_refreshCurrentObject();
+		_localAABB.invalidate();
+	}
+
+	Util::Math::AABB MoleculeData::getAABB() const
+	{
+		if ( !_localAABB.isValid() )
+			_recomputeAABB();
+
+		const Util::Math::Transform & transform
+			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *_molecule ).getTransform();
+
+		return Helper::Math::applyTransformOnAABB( _localAABB, transform );
+	}
+
+	void MoleculeData::_recomputeAABB() const
+	{
+		_localAABB.invalidate();
+
+		for ( const atom_index_t atomId : _atomIds )
+		{
+			const Component::Chemistry::Atom * const atomPtr = _molecule->getAtom( atomId );
+			_localAABB.extend( atomPtr->getLocalPosition(), atomPtr->getVdwRadius() );
+		}
 	}
 
 	Molecule & MoleculeData::getCurrentObjectAsMolecule() const

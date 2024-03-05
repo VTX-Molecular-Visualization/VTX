@@ -2,14 +2,32 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/helper/math.hpp"
 #include "app/vtx_app.hpp"
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Component::Scene
 {
+	void AABB::init()
+	{
+		if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) )
+		{
+			Component::Scene::Transform & transformComponent
+				= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+
+			_linkedTransform = &transformComponent;
+
+			_linkedTransform->onTransformChanged.addCallback(
+				this, [ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); }
+			);
+		}
+	}
+
+	void AABB::invalidateAABB() { _aabb.invalidate(); }
+
 	const Util::Math::AABB & AABB::getLocalAABB() const
 	{
-		if ( _aabb.isValid() )
+		if ( !_aabb.isValid() )
 			_aabb = _recomputeAABB();
 		return _aabb;
 	};
@@ -20,20 +38,10 @@ namespace VTX::App::Component::Scene
 		{
 			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
 
-			if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( entity ) )
+			if ( _linkedTransform != nullptr )
 			{
-				Component::Scene::Transform & transformComponent
-					= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( entity );
-				const Util::Math::Transform & transform = transformComponent.getTransform();
-
-				std::vector<Vec3f> aabbSummits = getLocalAABB().getSummits();
-
-				_worldAabb = Util::Math::AABB();
-				for ( const Vec3f & summit : aabbSummits )
-				{
-					const Vec4f worldSummit = transform.get() * Vec4f( summit, 1 );
-					_worldAabb.extend( worldSummit );
-				}
+				const Util::Math::Transform & transform = _linkedTransform->getTransform();
+				_worldAabb = Helper::Math::applyTransformOnAABB( getLocalAABB(), transform );
 			}
 			else
 			{

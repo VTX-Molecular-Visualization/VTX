@@ -18,6 +18,8 @@ namespace VTX::App::Component::Scene
 	  public:
 		AABB() = default;
 
+		void init();
+
 		void setAABBComputationFunction( std::function<Util::Math::AABB()> p_recomputeAABB )
 		{
 			_recomputeAABB = p_recomputeAABB;
@@ -28,10 +30,14 @@ namespace VTX::App::Component::Scene
 
 		void setLocalAABB( const Util::Math::AABB & p_aabb ) { _aabb = p_aabb; };
 
+		void invalidateAABB();
+
 	  private:
 		mutable Util::Math::AABB		  _aabb		 = Util::Math::AABB();
 		mutable Util::Math::AABB		  _worldAabb = Util::Math::AABB();
 		std::function<Util::Math::AABB()> _recomputeAABB;
+
+		Component::Scene::Transform * _linkedTransform = nullptr;
 	};
 } // namespace VTX::App::Component::Scene
 #endif

@@ -35,6 +35,7 @@ namespace VTX::UI::QT::Controller
 		~Freefly()							= default;
 
 		void init() override;
+		void setActive( const bool p_active ) override;
 
 		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<Freefly>( *this ); };
