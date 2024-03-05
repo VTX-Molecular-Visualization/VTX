@@ -4,7 +4,6 @@
 #include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/component/scene/_fwd.hpp"
 #include "app/component/scene/selectable.hpp"
 #include <concepts>
 #include <map>
@@ -343,11 +342,7 @@ namespace VTX::App::Application::Selection
 		void _notifyDataChanged();
 
 	  private:
-		SelectionDataSet _items = SelectionDataSet();
-
-		std::map<const SelectionData *, Component::Scene::AABB *> _mapSelectionAABB
-			= std::map<const SelectionData *, Component::Scene::AABB *>();
-
+		SelectionDataSet	  _items				= SelectionDataSet();
 		const SelectionData * _currentSelectionData = nullptr;
 
 		const std::unique_ptr<SelectionData> & _getSelectionDataPtr( const Component::Scene::Selectable & p_selectable

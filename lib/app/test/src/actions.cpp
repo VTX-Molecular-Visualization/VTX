@@ -125,8 +125,8 @@ TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
 
 	Test::Util::App::initApp();
 
-	SCENE().getCamera().moveFront( 5 );
-	SCENE().getCamera().rotate( { 45, 45, 0 } );
+	SCENE().getCamera().getTransform().moveFront( 5 );
+	SCENE().getCamera().getTransform().localRotate( { 45, 45, 0 } );
 
 	VTX_ACTION().execute<Action::Scene::CreateViewpoint>();
 
@@ -135,8 +135,8 @@ TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
 	const Component::Render::Viewpoint & viewpoint
 		= SCENE().getComponentByName<Component::Render::Viewpoint>( "Viewpoint" );
 
-	CHECK( viewpoint.getPosition() == SCENE().getCamera().getPosition() );
-	CHECK( viewpoint.getRotation() == SCENE().getCamera().getRotation() );
+	CHECK( viewpoint.getPosition() == SCENE().getCamera().getTransform().getPosition() );
+	CHECK( viewpoint.getRotation() == SCENE().getCamera().getTransform().getRotation() );
 };
 
 TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )

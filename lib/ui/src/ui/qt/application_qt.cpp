@@ -12,8 +12,10 @@
 #include <QStyleFactory>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
+#include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
 #include <util/logger.hpp>
+#include <util/math/transform.hpp>
 
 namespace VTX::UI::QT
 {
@@ -109,17 +111,41 @@ namespace VTX::UI::QT
 	{
 		Core::BaseUIApplication::_postInit( p_args );
 
-		App::VTXApp::get().onPreRender().addCallback(
-			this,
-			[]( float p_deltaTime )
-			{
-				// TODO: do not apply each frame, only when camera changes.
-				RendererQt qtRenderer = QT_RENDERER();
+		// App::VTXApp::get().onPreRender().addCallback(
+		//	this,
+		//	[]( float p_deltaTime )
+		//	{
+		//		// TODO: do not apply each frame, only when camera changes.
+		//		RendererQt qtRenderer = QT_RENDERER();
 
-				qtRenderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
-				qtRenderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
-				qtRenderer.get().setCameraClipInfos(
-					App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar()
+		//		qtRenderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
+		//		qtRenderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
+		//		qtRenderer.get().setCameraClipInfos(
+		//			App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar()
+		//		);
+		//	}
+		//);
+
+		App::SCENE().getCamera().onMatrixViewChange.addCallback(
+			this, []( const Mat4f & p_matrix ) { QT_RENDERER().get().setMatrixView( p_matrix ); }
+		);
+		App::SCENE().getCamera().onMatrixProjectionChange.addCallback(
+			this, []( const Mat4f & p_matrix ) { QT_RENDERER().get().setMatrixProjection( p_matrix ); }
+		);
+		App::SCENE().getCamera().getTransform().onTransformChanged.addCallback(
+			this,
+			[]( const VTX::Util::Math::Transform & p_transform )
+			{ QT_RENDERER().get().setCameraPosition( p_transform.getTranslationVector() ); }
+		);
+		App::SCENE().getCamera().onClipInfosChange.addCallback(
+			this,
+			[]( const float p_near, const float p_far ) { QT_RENDERER().get().setCameraClipInfos( p_near, p_far ); }
+		);
+		App::SCENE().getCamera().onProjectionChange.addCallback(
+			this,
+			[]( const App::Component::Render::CAMERA_PROJECTION p_projection ) {
+				QT_RENDERER().get().setPerspective(
+					p_projection == App::Component::Render::CAMERA_PROJECTION::PERSPECTIVE
 				);
 			}
 		);

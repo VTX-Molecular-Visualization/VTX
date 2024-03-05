@@ -17,6 +17,7 @@ namespace VTX::App::Application::Selection
 		const Component::Scene::Selectable & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_atom.getMoleculePtr() );
 		MoleculeData molData = MoleculeData( molSelectable );
+		molData.clear();
 
 		switch ( p_granularity )
 		{
@@ -34,6 +35,7 @@ namespace VTX::App::Application::Selection
 		const Component::Scene::Selectable & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_residue.getMoleculePtr() );
 		MoleculeData molData = MoleculeData( molSelectable );
+		molData.clear();
 
 		switch ( p_granularity )
 		{
@@ -51,6 +53,7 @@ namespace VTX::App::Application::Selection
 		const Component::Scene::Selectable & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_chain.getMoleculePtr() );
 		MoleculeData molData = MoleculeData( molSelectable );
+		molData.clear();
 
 		switch ( p_granularity )
 		{

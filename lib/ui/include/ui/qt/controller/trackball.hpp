@@ -40,16 +40,12 @@ namespace VTX::UI::QT::Controller
 		~Trackball()							= default;
 
 		void init() override;
+		void setActive( const bool p_active ) override;
 
-		void setActive( const bool p_active );
 		void reset() override;
 
 		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<Trackball>( *this ); };
-
-		inline const Vec3f & getTarget() const { return _target; }
-		inline void			 setTarget( const Vec3f & p_target ) { _target = p_target; }
-		inline void			 setDistanceForced( const float & p_distance ) { _distanceForced = p_distance; }
 
 		Vec3f targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const;
 
@@ -68,9 +64,7 @@ namespace VTX::UI::QT::Controller
 	  private:
 		Core::Input::KeyMapping _mapping;
 
-		Vec3f _target		  = VEC3F_ZERO;
-		float _distanceForced = 0.f;
-		Vec3f _velocity		  = VEC3F_ZERO;
+		Vec3f _velocity = VEC3F_ZERO;
 
 		bool _needUpdate = false;
 	};

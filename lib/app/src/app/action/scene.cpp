@@ -5,6 +5,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"
+#include "app/component/scene/transform_component.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
 
@@ -26,7 +27,7 @@ namespace VTX::App::Action::Scene
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}
 	CreateViewpoint::CreateViewpoint( const Component::Render::Camera & p_camera ) :
-		CreateViewpoint( p_camera.getPosition(), p_camera.getRotation() )
+		CreateViewpoint( p_camera.getTransform().getPosition(), p_camera.getTransform().getRotation() )
 	{
 	}
 	void CreateViewpoint::execute()
