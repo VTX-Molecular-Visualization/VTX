@@ -26,10 +26,11 @@ namespace VTX::Renderer
 		{ "Models", E_TYPE::USHORT, 1 },
 	} };
 
+	// TODO: compress all.
 	static const Data dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
-		{ "Radii", E_TYPE::FLOAT, 1 },
+		{ "Radii", E_TYPE::FLOAT, 1 }, // TODO: move to ubo or hardcode?
 		{ "Ids", E_TYPE::UINT, 1 },
 		{ "Flags", E_TYPE::UBYTE, 1 },
 		{ "Models", E_TYPE::USHORT, 1 },

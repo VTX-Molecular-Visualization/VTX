@@ -134,6 +134,18 @@ namespace VTX::Renderer
 				_refreshDataMolecules();
 			}
 		};
+
+		p_proxy.onAtomPositions += [ this, &p_proxy ]()
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context->setSubData( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.offset );
+		};
+
+		p_proxy.onAtomColors += [ this, &p_proxy ]( std::vector<uchar> & p_colors )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.offset );
+		};
 	}
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
@@ -220,17 +232,10 @@ namespace VTX::Renderer
 		{
 			// Check sizes.
 			assert( proxy->atomPositions );
-			assert( proxy->atomColors );
-			assert( proxy->atomRadii );
-			assert( proxy->atomVisibilities );
-			assert( proxy->atomSelections );
-			assert( proxy->atomIds );
 
-			assert( proxy->atomIds->size() == proxy->atomPositions->size() );
-			assert( proxy->atomIds->size() == proxy->atomColors->size() );
-			assert( proxy->atomIds->size() == proxy->atomRadii->size() );
-			assert( proxy->atomIds->size() == proxy->atomVisibilities->size() );
-			assert( proxy->atomIds->size() == proxy->atomSelections->size() );
+			assert( proxy->atomIds.size() == proxy->atomPositions->size() );
+			assert( proxy->atomIds.size() == proxy->atomColors.size() );
+			assert( proxy->atomIds.size() == proxy->atomRadii.size() );
 
 			totalAtoms += proxy->atomPositions->size();
 			totalBonds += proxy->bonds->size();
@@ -258,9 +263,9 @@ namespace VTX::Renderer
 
 			// Fill buffers.
 			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSubData( *proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSubData( *proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSubData( *proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+			_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags if not cached.
 			if ( cache.flags.empty() )
@@ -269,17 +274,17 @@ namespace VTX::Renderer
 				for ( size_t i = 0; i < atomFlags.size(); ++i )
 				{
 					uchar flag = 0;
-					flag |= ( *proxy->atomVisibilities )[ i ] << E_ELEMENT_FLAGS::VISIBILITY;
-					flag |= ( *proxy->atomSelections )[ i ] << E_ELEMENT_FLAGS::SELECTION;
+					flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+					flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
 					atomFlags[ i ] = flag;
 				}
 				cache.flags = atomFlags;
 			}
 
-			// Reprensentations if not cached.
+			// Representations if not cached.
 			if ( cache.representations.empty() )
 			{
-				cache.representations = std::vector<uchar>( atomCount, 0 );
+				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
 			}
 
 			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
@@ -316,19 +321,17 @@ namespace VTX::Renderer
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			assert( proxy->atomNames );
-			assert( proxy->residueIds );
 			assert( proxy->residueSecondaryStructureTypes );
-			assert( proxy->residueColors );
 			assert( proxy->residueFirstAtomIndexes );
 			assert( proxy->residueAtomCounts );
 			assert( proxy->chainFirstResidues );
 			assert( proxy->chainResidueCounts );
 
 			assert( proxy->atomNames->size() == proxy->atomPositions->size() );
-			assert( proxy->residueIds->size() == proxy->residueSecondaryStructureTypes->size() );
-			assert( proxy->residueIds->size() == proxy->residueColors->size() );
-			assert( proxy->residueIds->size() == proxy->residueFirstAtomIndexes->size() );
-			assert( proxy->residueIds->size() == proxy->residueAtomCounts->size() );
+			assert( proxy->residueIds.size() == proxy->residueSecondaryStructureTypes->size() );
+			assert( proxy->residueIds.size() == proxy->residueColors.size() );
+			assert( proxy->residueIds.size() == proxy->residueFirstAtomIndexes->size() );
+			assert( proxy->residueIds.size() == proxy->residueAtomCounts->size() );
 			assert( proxy->chainFirstResidues->size() == proxy->chainResidueCounts->size() );
 
 			// Compute data if not cached.
@@ -567,9 +570,8 @@ namespace VTX::Renderer
 					// int color = ( ( residueIdx * 7 ) % 256 );
 					// colors.emplace_back( color );
 
-					colors.emplace_back( ( *proxy->residueColors )[ residueIdx ] );
-
-					ids.emplace_back( ( *proxy->residueIds )[ residueIdx ] );
+					colors.emplace_back( proxy->residueColors[ residueIdx ] );
+					ids.emplace_back( proxy->residueIds[ residueIdx ] );
 
 					// Flag.
 					// TODO.

@@ -48,8 +48,6 @@ namespace VTX::Bench
 		// Generate.
 		static std::vector<std::unique_ptr<const std::vector<float>>> vecRadii;
 		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColors;
-		static std::vector<std::unique_ptr<const std::vector<bool>>>  vecVisibilities;
-		static std::vector<std::unique_ptr<const std::vector<bool>>>  vecSelections;
 		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdAtoms;
 		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdResidues;
 		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColorResidues;
@@ -62,9 +60,6 @@ namespace VTX::Bench
 			[ & ] { return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] ); }
 		);
 		vecColors.emplace_back( std::move( colorAtoms ) );
-
-		vecVisibilities.emplace_back( std::make_unique<const std::vector<bool>>( sizeAtoms, true ) );
-		vecSelections.emplace_back( std::make_unique<const std::vector<bool>>( sizeAtoms, false ) );
 
 		auto radii = std::make_unique<std::vector<float>>( sizeAtoms );
 		i		   = 0;
@@ -94,20 +89,18 @@ namespace VTX::Bench
 
 		return { &p_molecule.transform,
 				 &p_molecule.trajectory.frames.front(),
-				 vecColors.back().get(),
-				 vecRadii.back().get(),
-				 vecVisibilities.back().get(),
-				 vecSelections.back().get(),
-				 vecIdAtoms.back().get(),
 				 &p_molecule.bondPairAtomIndexes,
 				 &p_molecule.atomNames,
-				 vecIdResidues.back().get(),
 				 reinterpret_cast<const std::vector<uchar> *>( &p_molecule.residueSecondaryStructureTypes ),
-				 vecColorResidues.back().get(),
 				 &p_molecule.residueFirstAtomIndexes,
 				 &p_molecule.residueAtomCounts,
 				 &p_molecule.chainFirstResidues,
-				 &p_molecule.chainResidueCounts };
+				 &p_molecule.chainResidueCounts,
+				 *vecColors.back(),
+				 *vecRadii.back(),
+				 *vecIdAtoms.back(),
+				 *vecColorResidues.back(),
+				 *vecIdResidues.back() };
 	}
 
 	// Grid.

@@ -690,6 +690,7 @@ namespace VTX::Renderer::Context
 		// Extensions.
 		GLint numExtensions = 0;
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
+		VTX_DEBUG( "{} GL extensions", numExtensions );
 		for ( GLint i = 0; i < numExtensions; ++i )
 		{
 			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
@@ -697,6 +698,12 @@ namespace VTX::Renderer::Context
 			{
 				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
 			}
+			else if ( strcmp( "GL_ATI_meminfo", extension ) == 0 )
+			{
+				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::GL_ATI_meminfo ] = true;
+			}
+
+			VTX_DEBUG( "GL extension loaded: {}", extension );
 		}
 
 // NVX_gpu_memory_info

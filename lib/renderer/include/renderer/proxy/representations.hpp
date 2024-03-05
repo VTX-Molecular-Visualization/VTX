@@ -8,7 +8,7 @@ namespace VTX::Renderer::Proxy
 
 	struct Representation
 	{
-		bool  hasShphere		= true;
+		bool  hasSphere			= true;
 		float radiusSphereFixed = 0.4f;
 		float radiusSphereAdd	= 0.f;
 		bool  radiusFixed		= true;
@@ -20,8 +20,7 @@ namespace VTX::Renderer::Proxy
 		bool hasRibbon = true;
 		uint ribbonColorBlendingMode;
 
-		bool  hasSes;
-		float sesResolution;
+		bool hasSes = false;
 
 		// TODO: update callbacks.
 	};
