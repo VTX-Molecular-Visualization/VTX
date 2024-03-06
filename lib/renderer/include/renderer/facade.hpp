@@ -35,20 +35,7 @@ namespace VTX::Renderer
 
 		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackClean( p_cb ); }
 
-		inline void setMatrixView( const Mat4f & p_view ) { _renderer->setMatrixView( p_view ); }
-
-		inline void setMatrixProjection( const Mat4f & p_proj ) { _renderer->setMatrixProjection( p_proj ); }
-
-		inline void setCameraPosition( const Vec3f & p_position ) { _renderer->setCameraPosition( p_position ); }
-
-		inline void setCameraClipInfos( const float p_near, const float p_far )
-		{
-			_renderer->setCameraClipInfos( p_near, p_far );
-		}
-
-		inline void setMousePosition( const Vec2i & p_position ) { _renderer->setMousePosition( p_position ); }
-
-		inline void setPerspective( const bool p_perspective ) { _renderer->setPerspective( p_perspective ); }
+		inline void setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }
 
 		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
 

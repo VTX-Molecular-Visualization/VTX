@@ -18,16 +18,18 @@ namespace VTX::Bench
 			_updateMatrixProjection();
 		}
 
-		inline const Mat4f & getMatrixView() const { return _matrixView; }
-		inline const Mat4f & getMatrixProjection() const { return _matrixProjection; }
-		inline const Vec3f & getPosition() const { return _position; }
-		inline const float	 getNear() const { return _near; }
-		inline const float	 getFar() const { return _far; }
-		inline const float	 getFov() const { return _fov; }
-		inline const bool	 isPerspective() const { return _isPerspective; }
-		inline const float	 getVelocityTranslation() const { return _velocityTranslation; }
-		inline const float	 getVelocityRotation() const { return _velocityRotation; }
-		inline const float	 getVelocityZoom() const { return _velocityZoom; }
+		inline const Mat4f &	   getMatrixView() const { return _matrixView; }
+		inline const Mat4f &	   getMatrixProjection() const { return _matrixProjection; }
+		inline const Mat4f * const getMatrixViewPtr() const { return &_matrixView; }
+		inline const Mat4f * const getMatrixProjectionPtr() const { return &_matrixProjection; }
+		inline const Vec3f &	   getPosition() const { return _position; }
+		inline const float		   getNear() const { return _near; }
+		inline const float		   getFar() const { return _far; }
+		inline const float		   getFov() const { return _fov; }
+		inline const bool		   isPerspective() const { return _isPerspective; }
+		inline const float		   getVelocityTranslation() const { return _velocityTranslation; }
+		inline const float		   getVelocityRotation() const { return _velocityRotation; }
+		inline const float		   getVelocityZoom() const { return _velocityZoom; }
 
 		inline void resize( const size_t p_width, const size_t p_height )
 		{

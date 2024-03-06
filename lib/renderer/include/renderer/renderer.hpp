@@ -4,6 +4,7 @@
 #include "caches.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
+#include "proxy/camera.hpp"
 #include "proxy/color_layout.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
@@ -185,33 +186,7 @@ namespace VTX::Renderer
 		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
 		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
 
-		inline void setMatrixView( const Mat4f & p_view )
-		{
-			setUniform( p_view, "Matrix view" );
-
-			// Update model view matrices.
-			_refreshDataModels();
-		}
-
-		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
-
-		inline void setCameraPosition( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); }
-
-		inline void setCameraClipInfos( const float p_near, const float p_far )
-		{
-			setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" );
-		}
-
-		inline void setMousePosition( const Vec2i & p_position )
-		{
-			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
-		}
-
-		inline void setPerspective( const bool p_perspective )
-		{
-			setUniform( uint( p_perspective ), "Is perspective" );
-		}
-
+		void setProxyCamera( Proxy::Camera & p_proxy );
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
@@ -290,6 +265,7 @@ namespace VTX::Renderer
 		Util::Callback<> _callbackClean;
 
 		// Proxies.
+		Proxy::Camera *				   _proxyCamera;
 		std::vector<Proxy::Molecule *> _proxiesMolecules;
 		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
 		Proxy::ColorLayout *	 _proxyColorLayout;

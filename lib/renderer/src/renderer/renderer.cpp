@@ -63,6 +63,37 @@ namespace VTX::Renderer
 		_callbackClean();
 	}
 
+	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
+	{
+		_proxyCamera = &p_proxy;
+
+		p_proxy.onMatrixView += [ this, &p_proxy ]()
+		{
+			setUniform( *p_proxy.matrixView, "Matrix view" );
+			_refreshDataModels();
+		};
+
+		p_proxy.onMatrixProjection +=
+			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
+
+		p_proxy.onCameraPosition += [ this, &p_proxy ]( const Vec3f & p_position )
+		{
+			setUniform( p_position, "Camera position" );
+			_refreshDataModels();
+		};
+
+		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
+		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+
+		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
+		{
+			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
+		};
+
+		p_proxy.onPerspective +=
+			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
+	}
+
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		// If size max reached, do not add.

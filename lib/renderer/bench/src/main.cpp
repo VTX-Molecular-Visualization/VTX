@@ -65,25 +65,31 @@ int main( int, char ** )
 		const Callback<Vec2i>::Func *		   cbMouseMotion	  = nullptr;
 
 		// Link camera and input manager with renderer when built.
+		Renderer::Proxy::Camera proxyCamera { camera.getMatrixViewPtr(), camera.getMatrixProjectionPtr(),
+											  camera.getPosition(),		 VEC2I_ZERO,
+											  camera.getNear(),			 camera.getFar(),
+											  camera.isPerspective() };
+		renderer.setProxyCamera( proxyCamera );
+
 		renderer.addCallbackReady(
 			[ & ]()
 			{
-				renderer.setMatrixView( camera.getMatrixView() );
-				renderer.setMatrixProjection( camera.getMatrixProjection() );
-				renderer.setCameraPosition( camera.getPosition() );
-				renderer.setCameraClipInfos( camera.getNear(), camera.getFar() );
-				renderer.setPerspective( camera.isPerspective() );
+				proxyCamera.onMatrixView();
+				proxyCamera.onMatrixProjection();
+				proxyCamera.onCameraPosition( camera.getPosition() );
+				proxyCamera.onCameraNearFar( camera.getNear(), camera.getFar() );
+				proxyCamera.onPerspective( camera.isPerspective() );
 
 				cbMatrixView = camera.callbackMatrixView +=
-					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); };
+					[ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixView(); };
 				cbMatrixProjection = camera.callbackMatrixProjection +=
-					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixProjection( p_matrix ); };
+					[ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixProjection(); };
 				cbTranslation = camera.callbackTranslation +=
-					[ &renderer ]( const Vec3f p_position ) { renderer.setCameraPosition( p_position ); };
-				cbClipInfos = camera.callbackClipInfos += [ &renderer ]( const float p_near, const float p_far )
-				{ renderer.setCameraClipInfos( p_near, p_far ); };
+					[ & ]( const Vec3f p_position ) { proxyCamera.onCameraPosition( p_position ); };
+				cbClipInfos = camera.callbackClipInfos +=
+					[ & ]( const float p_near, const float p_far ) { proxyCamera.onCameraNearFar( p_near, p_far ); };
 				cbPerspective = camera.callbackPerspective +=
-					[ &renderer ]( const bool p_isPerspective ) { renderer.setPerspective( p_isPerspective ); };
+					[ & ]( const bool p_isPerspective ) { proxyCamera.onPerspective( p_isPerspective ); };
 
 				cbResize = inputManager.callbackResize +=
 					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
@@ -98,7 +104,7 @@ int main( int, char ** )
 					VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 				};
 				cbMouseMotion = inputManager.callbackMouseMotion +=
-					[ &renderer ]( const Vec2i & p_position ) { renderer.setMousePosition( p_position ); };
+					[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };
 			}
 		);
 
