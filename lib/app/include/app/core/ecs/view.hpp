@@ -1,8 +1,11 @@
 #ifndef __VTX_APP_CORE_ECS_VIEW__
 #define __VTX_APP_CORE_ECS_VIEW__
 
+#include "app/core/ecs/base_entity.hpp"
 #include "app/core/ecs/concepts.hpp"
+#include <entt/entity/mixin.hpp>
 #include <entt/entity/registry.hpp>
+#include <entt/entity/storage.hpp>
 #include <entt/entity/view.hpp>
 #include <limits>
 #include <memory>
@@ -17,11 +20,10 @@ namespace VTX::App::Core::ECS
 	{
 	  private:
 		template<ECS_Component T>
-		using single_storage = const entt::sigh_storage_mixin<
-			entt::basic_storage<T, entt::registry::entity_type, std::allocator<T>, void>>;
+		using single_storage = const entt::basic_sigh_mixin<entt::basic_storage<T>, entt::registry>;
 
 		template<ECS_Component... Types>
-		using internal_view = entt::basic_view<entt::type_list<single_storage<Types>...>, entt::type_list<>, void>;
+		using internal_view = entt::basic_view<entt::get_t<single_storage<Types>...>, entt::exclude_t<>>;
 
 		using view_type = internal_view<Type, Other...>;
 
@@ -33,11 +35,7 @@ namespace VTX::App::Core::ECS
 
 		const view_type & getView() const { return _view; };
 
-		size_t size() const
-		{
-			// Template disambiguator necessary in this case because calling a template function
-			return _view.template storage<0>().size();
-		}
+		size_t size() const { return _view.handle()->size(); }
 		size_t size_hint() const { return _view.size_hint(); }
 
 		template<ECS_Component T>

@@ -28,7 +28,7 @@ namespace VTX::App::Core::ECS
 		template<ECS_Component C>
 		inline BaseEntity getEntity( const C & p_component ) const
 		{
-			return entt::to_entity( _enttRegistry, p_component );
+			return entt::to_entity( *_enttRegistry.storage<C>(), p_component );
 		}
 
 		bool isValid( const BaseEntity p_entity ) { return p_entity != INVALID_ENTITY; }
@@ -96,8 +96,7 @@ namespace VTX::App::Core::ECS
 			return hasComponent<C1>( entity );
 		}
 
-		bool   isEmpty() const { return _enttRegistry.size() == 0; }
-		size_t size() const { return _enttRegistry.size(); }
+		bool isEmpty() const { return _enttRegistry.storage().begin() == _enttRegistry.storage().end(); }
 
 		// template<ECS_Component C>
 		// entt::observer & getObservers()
