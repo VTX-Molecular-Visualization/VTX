@@ -551,7 +551,7 @@ namespace VTX::Bench
 					for ( const Program & program : pass->programs )
 					{
 						// Uniforms.
-						for ( const Uniform & uniform : program.uniforms.entries )
+						for ( const Uniform & uniform : program.uniforms )
 						{
 							std::string key		   = pass->name + program.name + uniform.name;
 							bool		isEditable = isBuilt && isInRenderQueue;
@@ -730,7 +730,7 @@ namespace VTX::Bench
 			T value;
 			if ( p_isEditable )
 			{
-				p_renderer->getUniform<T>( value, p_key );
+				// p_renderer->getUniform<T>( value, p_key );
 			}
 			else
 			{

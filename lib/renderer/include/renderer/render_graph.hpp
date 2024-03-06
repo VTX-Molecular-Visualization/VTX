@@ -108,6 +108,8 @@ namespace VTX::Renderer
 			const Handle				 p_output = 0
 		)
 		{
+			// TODO: check diff and clean only what is needed.
+			// + redo only routing?
 			// Clean all.
 			clean();
 

@@ -62,9 +62,6 @@ namespace VTX::Renderer::Context
 					 p_context.setUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.getUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
-				 } -> std::same_as<void>;
-				 {
 					 p_context.setData( p_data, p_uniformKey )
 				 } -> std::same_as<void>;
 				 {

@@ -83,6 +83,7 @@ namespace VTX::Renderer
 		// Set up callbacks.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
+			/*
 			Mat4f matrixView;
 			getUniform( matrixView, "Matrix view" );
 			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
@@ -90,6 +91,7 @@ namespace VTX::Renderer
 			setUniform(
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
+			*/
 		};
 
 		// TODO: onVisible to split in multi call or update flags if atomic granularity.
@@ -686,6 +688,7 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
+		/*
 		std::vector<_StructUBOModel> models;
 		Mat4f						 matrixView;
 		getUniform( matrixView, "Matrix view" );
@@ -703,6 +706,7 @@ namespace VTX::Renderer
 		{
 			setUniform( models, "Matrix model view" );
 		}
+		*/
 	}
 
 	void Renderer::snapshot(
@@ -714,6 +718,7 @@ namespace VTX::Renderer
 		const float			 p_far
 	)
 	{
+		/*
 		Mat4f matrixProjectionOld;
 		getUniform( matrixProjectionOld, "Matrix projection" );
 		Mat4f matrixProjection = Util::Math::perspective(
@@ -722,6 +727,7 @@ namespace VTX::Renderer
 		setUniform( matrixProjection, "Matrix projection" );
 		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
 		setUniform( matrixProjectionOld, "Matrix projection" );
+		*/
 	}
 
 } // namespace VTX::Renderer

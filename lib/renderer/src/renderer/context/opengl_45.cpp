@@ -125,7 +125,7 @@ namespace VTX::Renderer::Context
 				_programs.emplace( &descProgram, program );
 
 				// Uniforms.
-				if ( descProgram.uniforms.entries.empty() == false )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
 					_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
@@ -246,7 +246,7 @@ namespace VTX::Renderer::Context
 			// Programs.
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
-				if ( descProgram.uniforms.entries.empty() == false )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					assert( _ubos.find( &descProgram ) != _ubos.end() );
 					p_outInstructions.emplace_back(
@@ -319,7 +319,7 @@ namespace VTX::Renderer::Context
 					);
 				}
 
-				if ( descProgram.uniforms.entries.empty() == false )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					auto & ubo = _ubos[ &descProgram ];
 					p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
@@ -591,7 +591,7 @@ namespace VTX::Renderer::Context
 	{
 		// Create uniform entries.
 		size_t offset = 0;
-		for ( const Uniform & descUniform : p_uniforms.entries )
+		for ( const Uniform & descUniform : p_uniforms )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
 			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
@@ -614,9 +614,7 @@ namespace VTX::Renderer::Context
 				padding = 16 - ( size % 16 );
 			}
 
-			_uniforms.emplace(
-				key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding, p_uniforms.arraySize )
-			);
+			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
 			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
@@ -628,7 +626,7 @@ namespace VTX::Renderer::Context
 
 		assert( totalSize > 0 );
 
-		for ( const Uniform & descUniform : p_uniforms.entries )
+		for ( const Uniform & descUniform : p_uniforms )
 		{
 			std::string key = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
 							  + descUniform.name;
@@ -639,7 +637,7 @@ namespace VTX::Renderer::Context
 		p_ubo->setData( GLsizei( totalSize ), GL_STATIC_DRAW );
 
 		// Fill default values.
-		for ( const Uniform & descUniform : p_uniforms.entries )
+		for ( const Uniform & descUniform : p_uniforms )
 		{
 			switch ( descUniform.type )
 			{

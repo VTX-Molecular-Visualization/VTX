@@ -47,13 +47,13 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction	 = [ this ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction	 = [ this ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction	 = [ this ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction	 = [ this ]() { return showVoxels ? sizeVoxels : 0; };
-			blurX->name										 = "BlurX";
-			blurY->name										 = "BlurY";
-			blurY->programs[ 0 ].uniforms.entries[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().countFunction = [ this ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction = [ this ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction = [ this ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction = [ this ]() { return showVoxels ? sizeVoxels : 0; };
+			blurX->name									  = "BlurX";
+			blurY->name									  = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -87,14 +87,12 @@ namespace VTX::Renderer
 			);
 
 			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } },
-				  UNSIGNED_CHAR_MAX + 1 }
+				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } } }
 			);
 
 			_renderGraph->addUniforms(
 				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-				  UNSIGNED_SHORT_MAX + 1 }
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } } }
 			);
 
 			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
@@ -103,8 +101,7 @@ namespace VTX::Renderer
 										   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
 
 										   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
-										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
-										 UNSIGNED_CHAR_MAX + 1 } );
+										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } } } );
 		}
 
 		// Only first entry of the array saved on cpu.
@@ -124,11 +121,13 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
+		/*
 		template<typename T>
 		inline void getUniform( T & p_value, const std::string & p_key )
 		{
 			_context->getUniform<T>( p_value, p_key );
 		}
+		*/
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{

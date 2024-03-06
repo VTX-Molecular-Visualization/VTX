@@ -39,12 +39,6 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
-			auto * const						   src	 = p_value.data();
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize );
 		}
 
@@ -54,33 +48,7 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
-			auto * const						   src	 = &p_value;
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
-		}
-
-		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key, const size_t p_index = 0 )
-		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
-
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   dest	 = &p_value;
-			T * const							   src	 = reinterpret_cast<T * const>( entry->value );
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
-		}
-
-		template<typename T>
-		inline void getUniform( std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
-		{
-			// Cannot be done for the moment.
 		}
 
 		template<typename T>
@@ -88,7 +56,6 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
-			// Destroy/create if new size or other function?
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
@@ -99,15 +66,6 @@ namespace VTX::Renderer::Context
 
 			_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
 		}
-
-		/*
-		inline void setData( const size_t p_size, const std::string & p_key )
-		{
-			assert( _bos.find( p_key ) != _bos.end() );
-
-			_bos[ p_key ]->setData( GLsizei( p_size ), GL_STATIC_DRAW );
-		}
-		*/
 
 		template<typename T>
 		inline void setSubData( const std::vector<T> & p_data, const std::string & p_key, const size_t p_offset = 0 )
@@ -177,21 +135,16 @@ namespace VTX::Renderer::Context
 			size_t		 size;
 			size_t		 padding;
 			size_t		 totalSize;
-			void *		 value;
 			_StructUniformEntry(
 				GL::Buffer * p_buffer,
 				const size_t p_offset,
 				const size_t p_size,
-				const size_t p_padding,
-				const size_t p_arraySize = 1
+				const size_t p_padding
 			) :
 				buffer( p_buffer ),
-				offset( p_offset ), size( p_size ), padding( p_padding ),
-				// Store only first value.
-				value( malloc( p_size ) )
+				offset( p_offset ), size( p_size ), padding( p_padding )
 			{
 			}
-			~_StructUniformEntry() { free( value ); }
 		};
 		std::unordered_map<std::string, std::unique_ptr<_StructUniformEntry>> _uniforms;
 

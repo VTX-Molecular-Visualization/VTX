@@ -105,11 +105,7 @@ namespace VTX::Renderer
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
 
-	struct Uniforms
-	{
-		std::vector<Uniform> entries;
-		size_t				 arraySize = 1;
-	};
+	using Uniforms = std::vector<Uniform>;
 
 	struct Program
 	{
