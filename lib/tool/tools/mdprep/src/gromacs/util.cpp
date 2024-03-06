@@ -46,6 +46,29 @@ namespace VTX::Tool::Mdprep::Gromacs
 		qputenv( "GMXLIB", env_arg );
 	}
 
+	void checkJobResults( GromacsJobData & p_in ) noexcept
+	{
+		// TODO Check for the error pattern
+
+		p_in.report.allOutputOk = true;
+		for ( auto & it : p_in.expectedOutputFilesPtrs )
+		{
+			fs::path f { *it };
+			if ( fs::is_regular_file( f ) == false )
+			{
+				p_in.report.allOutputOk = false;
+				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> not found.", *it ) );
+				break;
+			}
+			if ( fs::file_size( f ) == 0 )
+			{
+				p_in.report.allOutputOk = false;
+				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> is empty.", *it ) );
+				break;
+			}
+		}
+	}
+
 	void convert( const solvateInstructions &, GromacsJobData & ) noexcept {}
 
 } // namespace VTX::Tool::Mdprep::Gromacs

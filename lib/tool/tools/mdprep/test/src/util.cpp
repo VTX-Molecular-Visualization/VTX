@@ -1,3 +1,4 @@
+#include <fstream>
 #include <tools/mdprep/gromacs/inputs.hpp>
 //
 #include "mdprep/test/fixture.hpp"
@@ -297,4 +298,72 @@ TEST_CASE(
 
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
+}
+namespace
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	void add_file( GromacsJobData & p_jd, const char * p_name ) noexcept
+	{
+		fs::path dir = VTX::Tool::Mdprep::executableDirectory() / "data" / "mdprep" / "checkJobResults";
+		if ( fs::is_directory( dir ) == false )
+			fs::create_directories( dir );
+		fs::path file = dir / p_name;
+		std::ofstream( dir.string() ) << "Some data\n";
+		p_jd.arguments.push_back( dir.string() );
+		p_jd.expectedOutputFilesPtrs.push_back( &p_jd.arguments.back() );
+	}
+} // namespace
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+
+	checkJobResults( jd );
+	add_file( jd, "f1.tpr" );
+	add_file( jd, "f1.gro" );
+	CHECK( jd.report.allOutputOk == true );
+	CHECK( jd.report.error_occured == false );
+	CHECK( jd.report.errors.empty() == false );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - not all ok", "[checkJobResults][files]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+
+	checkJobResults( jd );
+	add_file( jd, "f1.tpr" );
+	add_file( jd, "f1.gro" );
+	add_file( jd, "f1.pdb" );
+	fs::remove( fs::path( jd.arguments.back() ) ); // one file is missing !
+	CHECK( jd.report.allOutputOk == false );
+	CHECK( jd.report.error_occured == true );
+	CHECK( jd.report.errors.size() == 1 );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][files]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+
+	checkJobResults( jd );
+	add_file( jd, "f1.tpr" );
+	add_file( jd, "f1.gro" );
+	add_file( jd, "f1.pdb" );
+	jd.expectedOutputFilesPtrs.clear();
+	CHECK( jd.report.allOutputOk == true );
+	CHECK( jd.report.error_occured == false );
+	CHECK( jd.report.errors.empty() == false );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][channels]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+
+	checkJobResults( jd );
+	add_file( jd, "f1.tpr" );
+	add_file( jd, "f1.gro" );
+	add_file( jd, "f1.pdb" );
+	jd.expectedOutputFilesPtrs.clear();
+	CHECK( jd.report.allOutputOk == true );
+	CHECK( jd.report.error_occured == false );
+	CHECK( jd.report.errors.empty() == false );
 }
