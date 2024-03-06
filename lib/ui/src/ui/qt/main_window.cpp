@@ -192,6 +192,15 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::mouseMoveEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
 	void MainWindow::wheelEvent( QWheelEvent * const p_event ) { INPUT_MANAGER().handleMouseWheelEvent( *p_event ); }
+	void MainWindow::changeEvent( QEvent * const p_event )
+	{
+		QMainWindow::changeEvent( p_event );
+
+		if ( p_event->type() == QEvent::ActivationChange && this->isActiveWindow() )
+		{
+			INPUT_MANAGER().clearKeyboardBuffer();
+		}
+	}
 
 	void MainWindow::_updatePicker() const
 	{
