@@ -19,7 +19,7 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("entt/3.11.1", transitive_headers=True)
+        self.requires("entt/3.13.0", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":

@@ -104,8 +104,7 @@ namespace VTX::App::Application::ECS
 			return _registry.hasComponent<C1>( p_component );
 		}
 
-		bool   isEmpty() const { return _registry.isEmpty(); }
-		size_t size() const { return _registry.size(); }
+		bool isEmpty() const { return _registry.isEmpty(); }
 
 		template<Core::ECS::ECS_Component C>
 		void deleteAll()
