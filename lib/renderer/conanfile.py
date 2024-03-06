@@ -28,7 +28,7 @@ class VTXRendererRecipe(ConanFile):
         self.options["glad/*"].spec = "gl"
         self.options["glad/*"].gl_profile = "core"
         self.options["glad/*"].gl_version = 4.5
-        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info"]
+        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
 
     def generate(self):
         copy(self, "*.cmake", self.source_folder, self.build_folder)

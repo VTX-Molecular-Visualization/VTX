@@ -65,14 +65,15 @@ float computeTessellationFactor( vec3 p_point )
 void main()
 {
 	// Transmit data.
-	outData[ gl_InvocationID ].position	    = inData[ gl_InvocationID ].position.xyz;
-	outData[ gl_InvocationID ].direction	= inData[ gl_InvocationID ].direction;
-	outData[ gl_InvocationID ].ssType		= inData[ gl_InvocationID ].ssType;
-	outData[ gl_InvocationID ].visibility   = inData[ gl_InvocationID ].visibility;
-	outData[ gl_InvocationID ].color		= inData[ gl_InvocationID ].color;
-	outData[ gl_InvocationID ].selection	= inData[ gl_InvocationID ].selection;
-	outData[ gl_InvocationID ].id			= inData[ gl_InvocationID ].id;
-	outData[ gl_InvocationID ].model		= inData[ gl_InvocationID ].model;
+	outData[ gl_InvocationID ].position			= inData[ gl_InvocationID ].position.xyz;
+	outData[ gl_InvocationID ].direction		= inData[ gl_InvocationID ].direction;
+	outData[ gl_InvocationID ].ssType			= inData[ gl_InvocationID ].ssType;
+	outData[ gl_InvocationID ].visibility		= inData[ gl_InvocationID ].visibility;
+	outData[ gl_InvocationID ].color			= inData[ gl_InvocationID ].color;
+	outData[ gl_InvocationID ].selection		= inData[ gl_InvocationID ].selection;
+	outData[ gl_InvocationID ].id				= inData[ gl_InvocationID ].id;
+	outData[ gl_InvocationID ].model			= inData[ gl_InvocationID ].model;
+	outData[ gl_InvocationID ].representation	= inData[ gl_InvocationID ].representation;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )

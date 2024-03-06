@@ -93,7 +93,7 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
-	using CountFunction = std::function<uint()>;
+	using CountFunction = std::function<size_t()>;
 
 	struct Draw
 	{

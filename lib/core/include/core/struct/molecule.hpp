@@ -23,8 +23,8 @@ namespace VTX::Core::Struct
 
 		Molecule();
 
-		std::string name = "unknown";
-		Mat4f		transform;
+		std::string name	  = "unknown";
+		Mat4f		transform = MAT4F_ID;
 
 		// Trajectory
 		Struct::Trajectory trajectory = Struct::Trajectory();

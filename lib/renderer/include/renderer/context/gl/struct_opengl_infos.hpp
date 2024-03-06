@@ -6,6 +6,7 @@ namespace VTX::Renderer::Context::GL
 	enum E_GL_EXTENSIONS
 	{
 		NVX_gpu_memory_info = 0,
+		GL_ATI_meminfo,
 		EXTENSIONS_COUNT
 	};
 

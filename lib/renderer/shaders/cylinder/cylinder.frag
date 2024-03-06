@@ -1,13 +1,10 @@
 #version 450 core
 
-#include "../layout_uniforms_camera.glsl"
 #include "../struct_data_packed.glsl"
+#include "../layout_uniforms_camera.glsl"
+#include "../layout_uniforms_representation.glsl"
 
 //#define SHOW_IMPOSTORS
-
-// TODO: move that.
-uniform float u_cylRad;
-uniform uint  u_colorBlendingMode;
 
 // In.
 in
@@ -37,6 +34,9 @@ float computeDepthOrtho( const vec3 p_v )
 
 void main()
 {
+	float radiusCylinder	= uniformsRepresentation[ inData.vertexIdRepresentation[ 0 ] ].radiusCylinder;
+	uint colorBlendingMode	= uniformsRepresentation[ inData.vertexIdRepresentation[ 0 ] ].cylinderColorBlendingMode;
+
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Only consider cylinder body.
@@ -50,7 +50,7 @@ void main()
 
 		const float a = d0 - d1 * d1;
 		const float b = d0 * dot( v0, rayDir ) - d2 * d1;
-		const float c = d0 * dot( v0, v0 ) - d2 * d2 - u_cylRad * u_cylRad * d0;
+		const float c = d0 * dot( v0, v0 ) - d2 * d2 - radiusCylinder * radiusCylinder * d0;
 
 		const float h = b * b - a * c;
 
@@ -96,7 +96,7 @@ void main()
 
 				// Color with good color extremity.			
 				vec4 color = inData.colors[ int( y > d0 * 0.5f ) ];			
-				if( u_colorBlendingMode == 1 ) // Gradient.
+				if( colorBlendingMode == 1 ) // Gradient.
 				{
 					color = mix( inData.colors[0], inData.colors[1], y / d0 );
 				}
@@ -111,7 +111,7 @@ void main()
 				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
 				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
 
-				outId				  = ivec2( id0, id1 );
+				outId				  = uvec2( id0, id1 );
 			}
 		}
 	}
@@ -128,7 +128,7 @@ void main()
 
 		const float a = d0 - d1 * d1;
 		const float b = d0 * -v0.z - d2 * d1;
-		const float c = d0 * dot( v0, v0 ) - d2 * d2 - u_cylRad * u_cylRad * d0;
+		const float c = d0 * dot( v0, v0 ) - d2 * d2 - radiusCylinder * radiusCylinder * d0;
 
 		const float h = b * b - a * c;
 
@@ -174,7 +174,7 @@ void main()
 
 				// Color with good color extremity.			
 				vec4 color = inData.colors[ int( y > d0 * 0.5f ) ];			
-				if( u_colorBlendingMode == 1 ) // Gradient.
+				if( colorBlendingMode == 1 ) // Gradient.
 				{
 					color = mix( inData.colors[0], inData.colors[1], y / d0 );
 				}
@@ -189,7 +189,7 @@ void main()
 				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
 				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
 
-				outId				  = ivec2( id0, id1 );
+				outId				  = uvec2( id0, id1 );
 			}
 		}
 	}

@@ -17,7 +17,7 @@ namespace VTX::Renderer
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
-			_renderer->resize( p_width, p_height );
+			_renderer->resize( p_width, p_height, p_output );
 		}
 
 		inline void build( const uint p_output = 0, void * p_loader = nullptr )
@@ -31,9 +31,9 @@ namespace VTX::Renderer
 
 		inline void setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-		inline void addCallbackReady( const Renderer::CallbackReady & p_cb ) { _renderer->addCallbackReady( p_cb ); }
+		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackReady( p_cb ); }
 
-		inline void addCallbackClean( const Renderer::CallbackClean & p_cb ) { _renderer->addCallbackClean( p_cb ); }
+		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackClean( p_cb ); }
 
 		inline void setMatrixView( const Mat4f & p_view ) { _renderer->setMatrixView( p_view ); }
 
@@ -50,14 +50,23 @@ namespace VTX::Renderer
 
 		inline void setPerspective( const bool p_perspective ) { _renderer->setPerspective( p_perspective ); }
 
-		inline void addProxy( const Proxy::Molecule & p_proxy ) { _renderer->addProxy( p_proxy ); }
+		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
 
-		inline void addProxy( const Proxy::Voxel & p_proxy ) { _renderer->addProxy( p_proxy ); }
+		// inline void addProxyMesh( Proxy::Mesh & p_proxy ) { _renderer->addProxyMesh( p_proxy ); }
 
-		inline void setColorLayout( const std::array<Util::Color::Rgba, 256> & p_layout )
+		inline void setProxyColorLayout( Proxy::ColorLayout & p_proxy ) { _renderer->setProxyColorLayout( p_proxy ); }
+
+		inline void setProxyRepresentations( Proxy::Representations & p_proxy )
 		{
-			_renderer->setColorLayout( p_layout );
+			_renderer->setProxyRepresentations( p_proxy );
 		}
+
+		inline void setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
+		{
+			_renderer->setProxyRenderSettings( p_proxy );
+		}
+
+		inline void setProxyVoxels( Proxy::Voxels & p_proxy ) { _renderer->setProxyVoxels( p_proxy ); }
 
 		inline void snapshot(
 			std::vector<uchar> & p_image,

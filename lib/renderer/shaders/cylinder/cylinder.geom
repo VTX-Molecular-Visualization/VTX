@@ -1,12 +1,10 @@
 #version 450 core
 
 #include "../layout_uniforms_camera.glsl"
+#include "../layout_uniforms_representation.glsl"
 
 layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
-
-// TODO: move that.
-uniform float u_cylRad = 0.1f;
 
 // In.
 in 
@@ -48,14 +46,16 @@ void main()
 	}
 
 	// Output data.
-	outData.viewVertices[ 0 ]	= gl_in[ 0 ].gl_Position.xyz;
-	outData.viewVertices[ 1 ]	= gl_in[ 1 ].gl_Position.xyz;
-	outData.colors[ 0 ]		    = inData[ 0 ].vertexColor;
-	outData.colors[ 1 ]		    = inData[ 1 ].vertexColor;
-	outData.vertexSelected[ 0 ] = inData[ 0 ].vertexSelected;
-	outData.vertexSelected[ 1 ] = inData[ 1 ].vertexSelected;
-	outData.vertexId[ 0 ]		= inData[ 0 ].vertexId;
-	outData.vertexId[ 1 ]		= inData[ 1 ].vertexId;
+	outData.viewVertices[ 0 ]			= gl_in[ 0 ].gl_Position.xyz;
+	outData.viewVertices[ 1 ]			= gl_in[ 1 ].gl_Position.xyz;
+	outData.colors[ 0 ]					= inData[ 0 ].vertexColor;
+	outData.colors[ 1 ]					= inData[ 1 ].vertexColor;
+	outData.vertexSelected[ 0 ]			= inData[ 0 ].vertexSelected;
+	outData.vertexSelected[ 1 ]			= inData[ 1 ].vertexSelected;
+	outData.vertexId[ 0 ]				= inData[ 0 ].vertexId;
+	outData.vertexId[ 1 ]				= inData[ 1 ].vertexId;
+	outData.vertexIdRepresentation[ 0 ]	= inData[ 0 ].vertexIdRepresentation;
+	outData.vertexIdRepresentation[ 1 ]	= inData[ 1 ].vertexIdRepresentation;
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;
@@ -70,7 +70,10 @@ void main()
 		viewImpPos1 = outData.viewVertices[ 1 ];
 	}
 
-	if ( uniformsCamera.isCameraPerspective == 1 ){
+	float radiusCylinder = uniformsRepresentation[ inData[ 0 ].vertexIdRepresentation ].radiusCylinder;
+
+	if ( uniformsCamera.isCameraPerspective == 1 )
+	{
 		// Compute normalized view vector to cylinder center.
 		const vec3 view = normalize( ( viewImpPos0 + viewImpPos1 ) * 0.5f );
 
@@ -83,13 +86,14 @@ void main()
 		const float dV0 = length( viewImpPos0 );
 		const float dV1 = length( viewImpPos1 );
 
-		const float sinAngle = u_cylRad / dV0;
+		
+		const float sinAngle = radiusCylinder / dV0;
 		float		angle	 = asin( sinAngle );
-		const vec3	y1		 = y * u_cylRad;
-		const vec3	x2		 = x * u_cylRad * cos( angle );
+		const vec3	y1		 = y * radiusCylinder;
+		const vec3	x2		 = x * radiusCylinder * cos( angle );
 		const vec3	y2		 = y1 * sinAngle;
-		angle				 = asin( u_cylRad / dV1 );
-		const vec3 x3		 = x * ( dV1 - u_cylRad ) * tan( angle );
+		angle				 = asin( radiusCylinder / dV1 );
+		const vec3 x3		 = x * ( dV1 - radiusCylinder ) * tan( angle );
 
 		// Compute impostors vertices.
 		const vec3 v1 = viewImpPos0 - x2 + y2;
@@ -102,7 +106,7 @@ void main()
 
 		/*
 		const vec3 dirCyl = normalize( viewImpPos1 - viewImpPos0 );
-		const vec3 vertStep = normalize(vec3(-dirCyl.y, dirCyl.x, 0)) * u_cylRad;
+		const vec3 vertStep = normalize(vec3(-dirCyl.y, dirCyl.x, 0)) * radiusCylinder;
 
 		// Compute impostors vertices.
 		const vec3 v1 = viewImpPos0 + vertStep;
@@ -126,13 +130,13 @@ void main()
 		const float dV0 = length( viewImpPos0 );
 		const float dV1 = length( viewImpPos1 );
 
-		const float sinAngle = u_cylRad / dV0;
+		const float sinAngle = radiusCylinder / dV0;
 		float		angle	 = asin( sinAngle );
-		const vec3	y1		 = y * u_cylRad;
-		const vec3	x2		 = x * u_cylRad * cos( angle );
+		const vec3	y1		 = y * radiusCylinder;
+		const vec3	x2		 = x * radiusCylinder * cos( angle );
 		const vec3	y2		 = y1 * sinAngle;
-		angle				 = asin( u_cylRad / dV1 );
-		const vec3 x3		 = x * ( dV1 - u_cylRad ) * tan( angle );
+		angle				 = asin( radiusCylinder / dV1 );
+		const vec3 x3		 = x * ( dV1 - radiusCylinder ) * tan( angle );
 
 		// Compute impostors vertices.
 		const vec3 v1 = viewImpPos0 - x2 + y2;

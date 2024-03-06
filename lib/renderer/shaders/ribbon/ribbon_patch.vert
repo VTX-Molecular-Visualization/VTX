@@ -11,6 +11,7 @@ layout( location = 3 ) in uint inColor;
 layout( location = 4 ) in uint inResidueId;
 layout( location = 5 ) in uint inResidueFlag;
 layout( location = 6 ) in uint inResidueModel;
+layout( location = 6 ) in uint inResidueRepresentation;
 
 // Out.
 out 
@@ -19,12 +20,13 @@ dataOut;
 
 void main()
 {
-	dataOut.position	 = inControlPointPosition;
-	dataOut.direction	 = inControlPointDirection;
-	dataOut.color		 = uniformsColor[ inColor ];
-	dataOut.ssType	     = inType;
-	dataOut.id		     = inResidueId;
-	dataOut.visibility   = inResidueFlag & ( 1 << FLAG_VISIBILITY );
-	dataOut.selection	 = inResidueFlag & ( 1 << FLAG_SELECTION );	
-	dataOut.model		 = inResidueModel;
+	dataOut.position		= inControlPointPosition;
+	dataOut.direction		= inControlPointDirection;
+	dataOut.color			= uniformsColor[ inColor ];
+	dataOut.ssType			= inType;
+	dataOut.id				= inResidueId;
+	dataOut.visibility		= inResidueFlag & ( 1 << FLAG_VISIBILITY );
+	dataOut.selection		= inResidueFlag & ( 1 << FLAG_SELECTION );	
+	dataOut.model			= inResidueModel;
+	dataOut.representation	= inResidueRepresentation;
 }
