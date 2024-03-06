@@ -105,7 +105,6 @@ namespace VTX::Renderer
 										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } } } );
 		}
 
-		// Only first entry of the array saved on cpu.
 		template<typename T>
 		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
 		{
@@ -121,14 +120,6 @@ namespace VTX::Renderer
 			_context->setUniform<T>( p_value, p_key, p_size );
 			setNeedUpdate( true );
 		}
-
-		/*
-		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key )
-		{
-			_context->getUniform<T>( p_value, p_key );
-		}
-		*/
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
@@ -182,9 +173,6 @@ namespace VTX::Renderer
 				}
 			}
 		}
-
-		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
-		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
 
 		void setProxyCamera( Proxy::Camera & p_proxy );
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
@@ -260,10 +248,6 @@ namespace VTX::Renderer
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
-		// Callbacks.
-		Util::Callback<> _callbackReady;
-		Util::Callback<> _callbackClean;
-
 		// Proxies.
 		Proxy::Camera *				   _proxyCamera;
 		std::vector<Proxy::Molecule *> _proxiesMolecules;
@@ -288,12 +272,15 @@ namespace VTX::Renderer
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataMolecules()
 		{
-			_refreshDataSpheresCylinders();
-			_refreshDataRibbons();
-			_refreshDataSES();
-			_refreshDataModels();
+			if ( _proxiesMolecules.empty() == false )
+			{
+				_refreshDataSpheresCylinders();
+				_refreshDataRibbons();
+				_refreshDataSES();
+				_refreshDataModels();
 
-			setNeedUpdate( true );
+				setNeedUpdate( true );
+			}
 		}
 
 		void _refreshDataSpheresCylinders();
@@ -308,6 +295,23 @@ namespace VTX::Renderer
 			SELECTION  = 1
 		};
 
+		/*
+		struct _StructUBOCamera
+		{
+			Mat4f matrixView;
+			Mat4f matrixProjection;
+			Vec3f cameraPosition;
+			Vec4f cameraClipInfos;
+			Vec2i mousePosition;
+			uint  isPerspective;
+		};
+
+		struct _StructUBOColorLayout
+		{
+		};
+		*/
+
+		// TODO: find a way to delete that.
 		struct _StructUBOModel
 		{
 			Mat4f mv;

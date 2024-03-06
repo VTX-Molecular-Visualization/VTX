@@ -99,7 +99,11 @@ namespace VTX::Renderer::Context::GL
 			assert( glIsBuffer( _id ) );
 			assert( p_vector.empty() == false );
 
-			_size = GLsizei( sizeof( T ) * p_vector.size() );
+			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
+
+			assert( size != _size );
+
+			_size = size;
 			glNamedBufferData( _id, _size, p_vector.data(), p_usage );
 		}
 
@@ -108,7 +112,11 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-			_size = GLsizei( sizeof( T ) );
+			GLsizei size = GLsizei( sizeof( T ) );
+
+			assert( size != _size );
+
+			_size = size;
 			glNamedBufferData( _id, _size, &p_data, p_usage );
 		}
 
@@ -117,6 +125,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
+			assert( _size != p_size );
 
 			_size = p_size;
 			glNamedBufferData( _id, _size, &p_data, p_usage );
@@ -125,6 +134,8 @@ namespace VTX::Renderer::Context::GL
 		inline void setData( const GLsizei p_size, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
+			assert( p_size > 0 );
+			assert( _size != p_size );
 
 			_size = p_size;
 			glNamedBufferData( _id, _size, nullptr, p_usage );
@@ -162,9 +173,12 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_vector.empty() == false );
-			assert( _size == 0 );
 
-			_size = GLsizei( sizeof( T ) * p_vector.size() );
+			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
+
+			assert( size != _size );
+
+			_size = size;
 			glNamedBufferStorage( _id, _size, p_vector.data(), p_flags );
 		}
 
@@ -173,7 +187,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
-			assert( _size == 0 );
+			assert( _size != p_size );
 
 			_size = p_size;
 			glNamedBufferStorage( _id, _size, &p_data, p_flags );
@@ -183,7 +197,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
-			assert( _size == 0 );
+			assert( _size != p_size );
 
 			_size = p_size;
 			glNamedBufferStorage( _id, _size, nullptr, p_flags );

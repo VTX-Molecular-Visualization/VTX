@@ -25,21 +25,6 @@ namespace VTX::Renderer
 						_instructionsDurationRanges,
 						p_output
 					);
-
-					if ( _context )
-					{
-						_refreshDataMolecules();
-						if ( _proxyColorLayout )
-						{
-							setProxyColorLayout( *_proxyColorLayout );
-						}
-						if ( _proxyRepresentations )
-						{
-							setProxyRepresentations( *_proxyRepresentations );
-						}
-						_context->fillInfos( infos );
-						_callbackReady();
-					}
 				}
 			)
 		);
@@ -54,18 +39,27 @@ namespace VTX::Renderer
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
+		_proxiesMolecules.clear();
+		_proxyCamera		  = nullptr;
+		_proxyColorLayout	  = nullptr;
+		_proxyRepresentations = nullptr;
+		_proxyRenderSettings  = nullptr;
+
+		_cacheSpheresCylinders.clear();
+		_cacheRibbons.clear();
+
 		sizeAtoms	= 0;
 		sizeBonds	= 0;
 		sizeRibbons = 0;
 		sizeVoxels	= 0;
 		infos		= StructInfos();
-
-		_callbackClean();
 	}
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
 		_proxyCamera = &p_proxy;
+
+		if ( _renderGraph->isBuilt() ) {}
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
@@ -76,18 +70,15 @@ namespace VTX::Renderer
 		p_proxy.onMatrixProjection +=
 			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
 
-		p_proxy.onCameraPosition += [ this, &p_proxy ]( const Vec3f & p_position )
-		{
-			setUniform( p_position, "Camera position" );
-			_refreshDataModels();
-		};
+		p_proxy.onCameraPosition +=
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
 		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
-			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
+			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
 		};
 
 		p_proxy.onPerspective +=
@@ -114,15 +105,11 @@ namespace VTX::Renderer
 		// Set up callbacks.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
-			/*
-			Mat4f matrixView;
-			getUniform( matrixView, "Matrix view" );
-			const Mat4f matrixModelView = matrixView * *p_proxy.transform;
+			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 			setUniform(
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
-			*/
 		};
 
 		// TODO: onVisible to split in multi call or update flags if atomic granularity.
@@ -719,16 +706,13 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
-		/*
 		std::vector<_StructUBOModel> models;
-		Mat4f						 matrixView;
-		getUniform( matrixView, "Matrix view" );
 
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			assert( proxy->transform );
 
-			const Mat4f matrixModelView = matrixView * *proxy->transform;
+			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}
@@ -737,7 +721,6 @@ namespace VTX::Renderer
 		{
 			setUniform( models, "Matrix model view" );
 		}
-		*/
 	}
 
 	void Renderer::snapshot(
