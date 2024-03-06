@@ -27,7 +27,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
-	struct GromacsCommandArgs;
+	struct GromacsJobData;
+
+	// Fill the job report with results on the job data. Aims to indentify if all expected output files are here and if
+	// there is no error message in any of the chanels.
+	void checkJobResults( GromacsJobData & ) noexcept;
+
 	struct solvateInstructions // WIP // TODO : move it in appropriate location
 	{
 		fs::path				 inputGro;
@@ -44,7 +49,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
 	//    If the output_gro is empty, will use the input filename root and append "solv"
-	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept;
+	void convert( const solvateInstructions &, GromacsJobData & ) noexcept;
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif

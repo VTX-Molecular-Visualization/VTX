@@ -45,7 +45,7 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         
-        gmx_bin_dir = os.path.join(self.dependencies["vtx-gromacs"].cpp_info.bindir, "bin")
+        gmx_bin_dir = os.path.join(self.dependencies["gromacs"].cpp_info.bindir, "bin")
         gmx_bin_dest = os.path.join(self.build_folder, self.cpp.build.libdirs[0], "external", "tools", "mdprep", "gromacs")
         for ext in ("*.exe", "*.dll", "*.a", "*.so", "*.dylib", "^[^.]$"): # No extension for executable in linux, right ? TODO !!!
             copy(self, ext, gmx_bin_dir, gmx_bin_dest)
@@ -54,8 +54,9 @@ class VTXToolMdprepRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.dll", (self.dependencies["vtx-gromacs"].build_folder), os.path.join(self.package_folder, "bin"))
+        copy(self, "*.dll", (self.dependencies["gromacs"].build_folder), os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
+        print("package_info  build_folder : <%s> " % self.build_folder)
         self.cpp_info.libs = ["vtx_tool_mdprep"]
         

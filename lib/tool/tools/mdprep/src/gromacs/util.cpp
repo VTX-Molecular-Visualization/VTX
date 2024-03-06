@@ -46,6 +46,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 		qputenv( "GMXLIB", env_arg );
 	}
 
-	void convert( const solvateInstructions &, GromacsCommandArgs & ) noexcept {}
+	void convert( const solvateInstructions &, GromacsJobData & ) noexcept {}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
