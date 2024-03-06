@@ -36,7 +36,7 @@ class VTXRecipe(ConanFile):
         self.options["glad/*"].spec = "gl"
         self.options["glad/*"].gl_profile = "core"
         self.options["glad/*"].gl_version = 4.5
-        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
+        #self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
         # Package options.
         self.options["qt/*"].shared = True
         self.options["qt/*"].opengl = "desktop"

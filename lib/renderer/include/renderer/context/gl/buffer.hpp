@@ -97,6 +97,7 @@ namespace VTX::Renderer::Context::GL
 		inline void setData( const std::vector<T> & p_vector, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
+			assert( p_vector.empty() == false );
 
 			_size = GLsizei( sizeof( T ) * p_vector.size() );
 			glNamedBufferData( _id, _size, p_vector.data(), p_usage );
@@ -137,6 +138,7 @@ namespace VTX::Renderer::Context::GL
 		) const
 		{
 			assert( glIsBuffer( _id ) );
+			assert( _size > 0 );
 			assert( p_offset + p_size <= _size );
 
 			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
@@ -146,6 +148,7 @@ namespace VTX::Renderer::Context::GL
 		inline void setSubData( const std::vector<T> & p_vector, const GLintptr p_offset = GLintptr( 0 ) ) const
 		{
 			assert( glIsBuffer( _id ) );
+			assert( _size > 0 );
 
 			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
 
@@ -159,6 +162,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_vector.empty() == false );
+			assert( _size == 0 );
 
 			_size = GLsizei( sizeof( T ) * p_vector.size() );
 			glNamedBufferStorage( _id, _size, p_vector.data(), p_flags );
@@ -169,6 +173,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
+			assert( _size == 0 );
 
 			_size = p_size;
 			glNamedBufferStorage( _id, _size, &p_data, p_flags );
@@ -177,6 +182,8 @@ namespace VTX::Renderer::Context::GL
 		inline void setStorage( const GLsizei p_size, const GLbitfield p_flags = 0 )
 		{
 			assert( glIsBuffer( _id ) );
+			assert( p_size > 0 );
+			assert( _size == 0 );
 
 			_size = p_size;
 			glNamedBufferStorage( _id, _size, nullptr, p_flags );
@@ -186,6 +193,7 @@ namespace VTX::Renderer::Context::GL
 		inline void const getData( std::vector<T> & p_vector ) const
 		{
 			assert( glIsBuffer( _id ) );
+			assert( _size > 0 );
 
 			GLsizei size = GLsizei( p_vector.size() * sizeof( T ) );
 
@@ -198,6 +206,7 @@ namespace VTX::Renderer::Context::GL
 		inline void const getData( const GLintptr p_offset, const GLsizei p_size, T * const p_data ) const
 		{
 			assert( glIsBuffer( _id ) );
+			assert( _size > 0 );
 			assert( p_offset + p_size <= _size );
 
 			glGetNamedBufferSubData( _id, p_offset, p_size, p_data );

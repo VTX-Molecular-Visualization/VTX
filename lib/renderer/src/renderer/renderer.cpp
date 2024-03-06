@@ -29,6 +29,10 @@ namespace VTX::Renderer
 					if ( _context )
 					{
 						_refreshDataMolecules();
+						if ( _proxyColorLayout )
+						{
+							setProxyColorLayout( *_proxyColorLayout );
+						}
 						if ( _proxyRepresentations )
 						{
 							setProxyRepresentations( *_proxyRepresentations );
@@ -174,34 +178,33 @@ namespace VTX::Renderer
 		setUniform( representations, "Sphere radius fixed" );
 
 		// TODO: remove useless primitives with multi calls.
+		// TODO: compute ss if needed
+		// TODO: delete others ss from cache?
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
 		_proxyRenderSettings = &p_proxy;
 
-		// Updates each pass.
-		if ( p_proxy.ssaoIntensity.has_value() && p_proxy.ssaoIntensity.value() != 0.f )
-		{
-			assert( p_proxy.blurXDirection.has_value() );
-			assert( p_proxy.blurXSize.has_value() );
-			assert( p_proxy.blurYDirection.has_value() );
-			assert( p_proxy.blurYSize.has_value() );
+		setUniform( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
+		setUniform( p_proxy.blurSize, "BlurXBlurSize" );
+		setUniform( p_proxy.blurSize, "BlurYBlurSize" );
+		setUniform( p_proxy.colorBackground, "ShadingShadingBackground color" );
+		setUniform( p_proxy.colorLight, "ShadingShadingLight color" );
+		setUniform( p_proxy.colorFog, "ShadingShadingFog color" );
+		setUniform( p_proxy.shadingMode, "ShadingShadingMode" );
+		setUniform( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
+		setUniform( p_proxy.shininess, "ShadingShadingShininess" );
+		setUniform( p_proxy.toonSteps, "ShadingShadingToon steps" );
+		setUniform( p_proxy.fogNear, "ShadingShadingFog near" );
+		setUniform( p_proxy.fogFar, "ShadingShadingFog far" );
+		setUniform( p_proxy.fogDensity, "ShadingShadingFog density" );
+		setUniform( p_proxy.colorOutline, "OutlineOutlineColor" );
+		setUniform( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
+		setUniform( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+		setUniform( p_proxy.colorSelection, "SelectionSelectionColor" );
 
-			setUniform( p_proxy.ssaoIntensity.value(), "SSAOSSAOIntensity" );
-			setUniform( p_proxy.blurXDirection.value(), "BlurXBlurDirection" );
-			setUniform( p_proxy.blurXSize.value(), "BlurXBlurSize" );
-			setUniform( p_proxy.blurYDirection.value(), "BlurYBlurDirection" );
-			setUniform( p_proxy.blurYSize.value(), "BlurYBlurSize" );
-		}
-		else
-		{
-			// TODO: disable ssao and blur.
-		}
-
-		setUniform( p_proxy.colorBackground, "ShadingShadingBrightnessBackground color" );
-		setUniform( p_proxy.colorLight, "ShadingShadingBrightnessBackground color" );
-		setUniform( p_proxy.colorFog, "ShadingShadingBrightnessBackground color" );
+		// TODO: disable/enable ssao, outline, etc.
 	}
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )

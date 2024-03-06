@@ -4,7 +4,7 @@
 #include "util.hpp"
 #include <iostream>
 #include <numeric>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
 
@@ -185,7 +185,7 @@ int main( int, char ** )
 			}
 			else if ( p_key == SDL_SCANCODE_F5 )
 			{
-				VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+				static VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 				std::generate( colorLayout.begin(), colorLayout.end(), [] { return Color::Rgba::random(); } );
 				renderer.setProxyColorLayout( colorLayout );
 			}
@@ -222,7 +222,11 @@ int main( int, char ** )
 
 		renderer.setProxyRepresentations( { representation1, representation2, representation3 } );
 
-		// Generate random representation.
+		Renderer::Proxy::RenderSettings renderSettings
+			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
+				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
+
+		renderer.setProxyRenderSettings( renderSettings );
 
 		// Main loop.
 		while ( isRunning )
