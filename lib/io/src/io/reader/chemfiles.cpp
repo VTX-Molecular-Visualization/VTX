@@ -221,15 +221,19 @@ namespace VTX::IO::Reader
 		// Check properties, same for all atoms/residues?
 		if ( _readingData->_currentFrame.size() > 0 )
 		{
-			std::string propAtom
-				= std::to_string( _readingData->_currentFrame[ 0 ].properties()->size() ) + " properties in atoms:";
-			for ( chemfiles::property_map::const_iterator it = _readingData->_currentFrame[ 0 ].properties()->begin();
-				  it != _readingData->_currentFrame[ 0 ].properties()->end();
-				  ++it )
+			if ( _readingData->_currentFrame[ 0 ].properties() )
 			{
-				propAtom += " " + it->first;
+				std::string propAtom
+					= std::to_string( _readingData->_currentFrame[ 0 ].properties()->size() ) + " properties in atoms:";
+				for ( chemfiles::property_map::const_iterator it
+					  = _readingData->_currentFrame[ 0 ].properties()->begin();
+					  it != _readingData->_currentFrame[ 0 ].properties()->end();
+					  ++it )
+				{
+					propAtom += " " + it->first;
+				}
+				VTX_DEBUG( "{}", propAtom );
 			}
-			VTX_DEBUG( "{}", propAtom );
 		}
 
 		if ( residues.size() > 0 )
@@ -332,6 +336,10 @@ namespace VTX::IO::Reader
 	) const
 	{
 		// Seems to be faster that way than using value_or function for string&.
+
+		if ( !_readingData->_currentAtom->properties() )
+			return p_defaultValue;
+
 		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
 			= _readingData->_currentAtom->properties()->get( p_property );
 		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
@@ -339,10 +347,16 @@ namespace VTX::IO::Reader
 	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property, const double p_defaultValue )
 		const
 	{
+		if ( !_readingData->_currentAtom->properties() )
+			return p_defaultValue;
+
 		return _readingData->_currentAtom->properties()->get( p_property ).value_or( p_defaultValue ).as_double();
 	}
 	const bool Chemfiles::getCurrentAtomBoolProperty( const std::string & p_property, const bool p_defaultValue ) const
 	{
+		if ( !_readingData->_currentAtom->properties() )
+			return p_defaultValue;
+
 		return _readingData->_currentAtom->properties()->get( p_property ).value_or( p_defaultValue ).as_bool();
 	}
 
