@@ -51,7 +51,7 @@ namespace VTX::Renderer::Context::GL
 
 	inline const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
 	{
-		static Chrono c;
+		Chrono c;
 		c.start();
 		p_task();
 		c.stop();

@@ -77,7 +77,8 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Camera",
+				  { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
 					{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
@@ -87,16 +88,17 @@ namespace VTX::Renderer
 					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
 			);
 
-			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } } }
-			);
+			_renderGraph->addUniforms( { "Color layout",
+										 { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } } } );
 
 			_renderGraph->addUniforms(
-				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Models",
+				  { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } } }
 			);
 
-			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
+			_renderGraph->addUniforms( { "Representations",
+										 { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
 										   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
@@ -295,7 +297,7 @@ namespace VTX::Renderer
 			SELECTION  = 1
 		};
 
-		/*
+		// TODO: find a way to delete that?
 		struct _StructUBOCamera
 		{
 			Mat4f matrixView;
@@ -309,9 +311,7 @@ namespace VTX::Renderer
 		struct _StructUBOColorLayout
 		{
 		};
-		*/
 
-		// TODO: find a way to delete that.
 		struct _StructUBOModel
 		{
 			Mat4f mv;

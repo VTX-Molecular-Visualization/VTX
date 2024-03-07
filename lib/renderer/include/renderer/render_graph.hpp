@@ -178,17 +178,17 @@ namespace VTX::Renderer
 			_context.reset( nullptr );
 		}
 
-		inline void addUniforms( const Uniforms & p_uniforms ) { _uniforms.push_back( p_uniforms ); }
+		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace( p_uniforms ); }
 
 	  private:
 		S				   _scheduler;
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 
-		const Output *		  _output;
-		Passes				  _passes;
-		std::vector<Uniforms> _uniforms;
-		Links				  _links;
+		const Output * _output;
+		Passes		   _passes;
+		SharedUniforms _uniforms;
+		Links		   _links;
 	};
 
 } // namespace VTX::Renderer

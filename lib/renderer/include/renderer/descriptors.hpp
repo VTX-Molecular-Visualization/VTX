@@ -105,7 +105,9 @@ namespace VTX::Renderer
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
 
-	using Uniforms = std::vector<Uniform>;
+	using Uniforms		 = std::vector<Uniform>;
+	using SharedUniform	 = std::pair<std::string, Uniforms>;
+	using SharedUniforms = std::unordered_map<std::string, Uniforms>;
 
 	struct Program
 	{

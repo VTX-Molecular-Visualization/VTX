@@ -57,9 +57,24 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		_proxyCamera = &p_proxy;
 
-		if ( _renderGraph->isBuilt() ) {}
+		_context->setUniforms(
+			std::vector<_StructUBOCamera> { { *p_proxy.matrixView,
+											  *p_proxy.matrixProjection,
+											  p_proxy.cameraPosition,
+											  Vec4f(
+												  p_proxy.cameraNear * p_proxy.cameraFar,
+												  p_proxy.cameraFar,
+												  p_proxy.cameraFar - p_proxy.cameraNear,
+												  p_proxy.cameraNear
+											  ),
+											  p_proxy.mousePosition,
+											  p_proxy.isPerspective } },
+			"Camera"
+		);
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
@@ -87,6 +102,8 @@ namespace VTX::Renderer
 
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		// If size max reached, do not add.
 		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
 		{
@@ -97,10 +114,7 @@ namespace VTX::Renderer
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
 
-		if ( _renderGraph->isBuilt() )
-		{
-			_refreshDataMolecules();
-		}
+		_refreshDataMolecules();
 
 		// Set up callbacks.
 		p_proxy.onTransform += [ this, &p_proxy ]()
@@ -176,12 +190,18 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		_proxyColorLayout = &p_proxy;
-		setUniform( std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout" );
+		_context->setUniforms( std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout" );
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		_proxyRepresentations = &p_proxy;
 
 		std::vector<_StructUBORepresentation> representations;
@@ -195,15 +215,19 @@ namespace VTX::Renderer
 																	 representation.ribbonColorBlendingMode } );
 		}
 
-		setUniform( representations, "Sphere radius fixed" );
+		_context->setUniforms( representations, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
 		// TODO: delete others ss from cache?
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		_proxyRenderSettings = &p_proxy;
 
 		setUniform( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
@@ -225,23 +249,24 @@ namespace VTX::Renderer
 		setUniform( p_proxy.colorSelection, "SelectionSelectionColor" );
 
 		// TODO: disable/enable ssao, outline, etc.
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
 	{
+		assert( _renderGraph->isBuilt() );
+
 		_proxyVoxels = &p_proxy;
 
-		if ( _renderGraph->isBuilt() )
-		{
-			assert( p_proxy.mins );
-			assert( p_proxy.maxs );
-			assert( p_proxy.mins->size() == p_proxy.maxs->size() );
+		assert( p_proxy.mins );
+		assert( p_proxy.maxs );
+		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-			_context->setData( *p_proxy.mins, "VoxelsMins" );
-			_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
+		_context->setData( *p_proxy.mins, "VoxelsMins" );
+		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
-			sizeVoxels += uint( p_proxy.mins->size() );
-		}
+		sizeVoxels += uint( p_proxy.mins->size() );
 
 		setNeedUpdate( true );
 	}
@@ -719,7 +744,7 @@ namespace VTX::Renderer
 
 		if ( models.empty() == false )
 		{
-			setUniform( models, "Matrix model view" );
+			_context->setUniforms( models, "Models" );
 		}
 	}
 

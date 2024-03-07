@@ -56,12 +56,12 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::build(
-		const RenderQueue &			  p_renderQueue,
-		const Links &				  p_links,
-		const Handle				  p_output,
-		const std::vector<Uniforms> & p_uniforms,
-		Instructions &				  p_outInstructions,
-		InstructionsDurationRanges &  p_outInstructionsDurationRanges
+		const RenderQueue &			 p_renderQueue,
+		const Links &				 p_links,
+		const Handle				 p_output,
+		const SharedUniforms &		 p_uniforms,
+		Instructions &				 p_outInstructions,
+		InstructionsDurationRanges & p_outInstructionsDurationRanges
 	)
 	{
 		assert( p_outInstructions.empty() );
@@ -74,10 +74,10 @@ namespace VTX::Renderer::Context
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
 			uint binding = 15;
-			for ( const Uniforms & uniforms : p_uniforms )
+			for ( const auto & [ name, uniforms ] : p_uniforms )
 			{
-				_ubosShared.emplace_back( std::make_unique<GL::Buffer>() );
-				const auto ubo = _ubosShared.back().get();
+				auto			   pair = _ubosShared.emplace( name, std::make_unique<GL::Buffer>() );
+				GL::Buffer * const ubo	= ( pair.first->second ).get();
 				_createUniforms( ubo, uniforms );
 				p_outInstructions.emplace_back( [ ubo, binding ]() { ubo->bind( GL_UNIFORM_BUFFER, binding ); } );
 				binding--;
@@ -355,7 +355,7 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind main ubo.
-		for ( const auto & ubo : _ubosShared )
+		for ( const auto & [ name, ubo ] : _ubosShared )
 		{
 			p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 		}

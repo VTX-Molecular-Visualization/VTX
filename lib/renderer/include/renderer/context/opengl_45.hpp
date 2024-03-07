@@ -23,25 +23,17 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		void build(
-			const RenderQueue &			  p_renderQueue,
-			const Links &				  p_links,
-			const Handle				  p_output,
-			const std::vector<Uniforms> & p_uniforms,
-			Instructions &				  p_outInstructions,
-			InstructionsDurationRanges &  p_outInstructionsDurationRanges
+			const RenderQueue &			 p_renderQueue,
+			const Links &				 p_links,
+			const Handle				 p_output,
+			const SharedUniforms &		 p_uniforms,
+			Instructions &				 p_outInstructions,
+			InstructionsDurationRanges & p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
-		template<typename T>
-		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
-		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
-
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize );
-		}
-
+		// TODO: naming more explicit?
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
@@ -49,6 +41,22 @@ namespace VTX::Renderer::Context
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
+		}
+
+		template<typename T>
+		inline void setUniforms( const std::vector<T> & p_data, const std::string & p_key )
+		{
+			assert( _ubosShared.find( p_key ) != _ubosShared.end() );
+
+			// Auto scale ubos (useful?).
+			if ( _ubosShared[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			{
+				_ubosShared[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+			}
+			else
+			{
+				_ubosShared[ p_key ]->setSubData( p_data, 0 );
+			}
 		}
 
 		template<typename T>
@@ -120,7 +128,7 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
 		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::vector<std::unique_ptr<GL::Buffer>>						  _ubosShared;
+		std::map<std::string, std::unique_ptr<GL::Buffer>>				  _ubosShared;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
