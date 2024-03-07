@@ -313,28 +313,38 @@ namespace
 		p_jd.expectedOutputFilesPtrs.push_back( &p_jd.arguments.back() );
 	}
 } // namespace
-TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	GromacsJobData jd;
 
 	checkJobResults( jd );
-	add_file( jd, "f1.tpr" );
-	add_file( jd, "f1.gro" );
 	CHECK( jd.report.allOutputOk == true );
 	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == false );
+	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+
+	add_file( jd, "f1.tpr" );
+	add_file( jd, "f1.gro" );
+	checkJobResults( jd );
+	CHECK( jd.report.allOutputOk == true );
+	CHECK( jd.report.error_occured == false );
+	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - not all ok", "[checkJobResults][files]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	GromacsJobData jd;
 
-	checkJobResults( jd );
 	add_file( jd, "f1.tpr" );
 	add_file( jd, "f1.gro" );
 	add_file( jd, "f1.pdb" );
 	fs::remove( fs::path( jd.arguments.back() ) ); // one file is missing !
+	checkJobResults( jd );
 	CHECK( jd.report.allOutputOk == false );
 	CHECK( jd.report.error_occured == true );
 	CHECK( jd.report.errors.size() == 1 );
@@ -344,26 +354,49 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobR
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	GromacsJobData jd;
 
-	checkJobResults( jd );
 	add_file( jd, "f1.tpr" );
 	add_file( jd, "f1.gro" );
 	add_file( jd, "f1.pdb" );
 	jd.expectedOutputFilesPtrs.clear();
+	checkJobResults( jd );
 	CHECK( jd.report.allOutputOk == true );
 	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == false );
+	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][channels]" )
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobResults][channels]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	GromacsJobData jd;
-
-	checkJobResults( jd );
-	add_file( jd, "f1.tpr" );
-	add_file( jd, "f1.gro" );
-	add_file( jd, "f1.pdb" );
+	{
+		auto chans = jd.channelsLocker.open();
+		chans->stderr_
+			= "Some stuff blablaa\nMore stuff\n   Error for some reason : \nReason blabla reasons\nline return "
+			  "reaons\n\nNot the error text any more"
+	}
 	jd.expectedOutputFilesPtrs.clear();
+	checkJobResults( jd );
 	CHECK( jd.report.allOutputOk == true );
 	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == false );
+	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobResults][channels][errormsg]" )
+{
+	const char * preFiller	= "Some stuff blablaa\nMore stuff\n";
+	const char * errMsg		= "   Error for some reason : \nReason blabla reasons\nline return reaons\n\n";
+	const char * postFiller = "Not the error text any more";
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+	{
+		auto chans	   = jd.channelsLocker.open();
+		chans->stderr_ = "";
+		chans->stderr_ += preFiller;
+		chans->stderr_ += errMsg;
+		chans->stderr_ += postFiller;
+	}
+	jd.expectedOutputFilesPtrs.clear();
+	checkJobResults( jd );
+	CHECK( jd.report.allOutputOk == false );
+	CHECK( jd.report.error_occured == true );
+	CHECK_NOFAIL( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errors[ 0 ] == errMsg );
 }
