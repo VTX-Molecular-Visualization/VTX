@@ -20,7 +20,10 @@ namespace VTX::Bench
 			switch ( p_event.type )
 			{
 			case SDL_QUIT: callbackClose(); break;
-			case SDL_KEYDOWN: _keys[ p_event.key.keysym.scancode ] = true; break;
+			case SDL_KEYDOWN:
+				_keys[ p_event.key.keysym.scancode ] = true;
+				callbackKeyPressed( p_event.key.keysym.scancode );
+				break;
 			case SDL_KEYUP: _keys[ p_event.key.keysym.scancode ] = false; break;
 			case SDL_MOUSEBUTTONDOWN:
 				_mouseButtons[ p_event.button.button - 1 ] = true;
@@ -113,6 +116,7 @@ namespace VTX::Bench
 		Util::Callback<Vec2i>		   callbackMouseMotion;
 		Util::Callback<>			   callbackRestore;
 		Util::Callback<size_t, size_t> callbackMousePick;
+		Util::Callback<SDL_Scancode>   callbackKeyPressed;
 
 	  private:
 		bool _keys[ SDL_NUM_SCANCODES ] = { false };

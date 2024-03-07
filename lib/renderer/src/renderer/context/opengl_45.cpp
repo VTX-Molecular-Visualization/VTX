@@ -39,7 +39,6 @@ namespace VTX::Renderer::Context
 		vbo->setData( quad, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glClearColor( 0.f, 0.5f, 0.f, 1.f );
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
@@ -272,7 +271,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao, &ebo ]()
 							{
-								uint count = draw.countFunction();
+								size_t count = draw.countFunction();
 								if ( count > 0 )
 								{
 									vao->bind();
@@ -293,7 +292,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ this, &program, &draw, &vao ]()
 							{
-								uint count = draw.countFunction();
+								size_t count = draw.countFunction();
 								if ( count > 0 )
 								{
 									vao->bind();
@@ -637,6 +636,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// Init ubo.
+		// TODO:
 		p_ubo->setData( GLsizei( totalSize * p_uniforms.arraySize ), GL_STATIC_DRAW );
 
 		// Fill default values.
@@ -760,16 +760,16 @@ namespace VTX::Renderer::Context
 		default: severity = "UNKNOWN"; break;
 		}
 
-		std::string message( "[OPENGL] [" + severity + "] [" + type + "] " + source + ": " + p_msg );
+		std::string message( "[" + severity + "] [" + type + "] " + source + ": " + p_msg );
 
 		switch ( p_severity )
 		{
 		case GL_DEBUG_SEVERITY_HIGH:
-			std::cerr << message << std::endl;
+			// VTX_ERROR( "{}", message );
 			throw GLException( message );
 			break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
-		case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl; break;
+		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
 		default: break;
 		}
 	}

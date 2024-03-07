@@ -1,63 +1,117 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
+#include <core/chemdb/atom.hpp>
+#include <core/chemdb/color.hpp>
+#include <core/chemdb/secondary_structure.hpp>
+#include <io/reader/molecule.hpp>
+#include <io/util/secondary_structure.hpp>
 #include <numeric>
+#include <renderer/proxy/molecule.hpp>
 #include <util/constants.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/network.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Bench
 {
-	struct Mesh
+	Core::Struct::Molecule loadMolecule( const FilePath & p_filename )
 	{
-		Mat4f			   transform;
-		std::vector<Vec3f> vertices;
-		std::vector<Vec3f> normals;
-		std::vector<uchar> colors;
-		std::vector<bool>  visibilities;
-		std::vector<bool>  selections;
-		std::vector<uint>  ids;
-		std::vector<uint>  indices;
-	};
+		IO::Reader::Molecule   reader;
+		Core::Struct::Molecule molecule;
 
-	struct Molecule
+		reader.readFile( VTX::Util::Filesystem::getExecutableDir() / p_filename, molecule );
+
+		return molecule;
+	}
+
+	Core::Struct::Molecule downloadMolecule( const std::string & p_pdb )
 	{
-		Mat4f			   transform;
-		std::vector<Vec3f> atomPositions;
-		std::vector<uchar> atomColors;
-		std::vector<float> atomRadii;
-		std::vector<bool>  atomVisibilities;
-		std::vector<bool>  atomSelections;
-		std::vector<uint>  atomIds;
-		std::vector<uint>  bonds;
-	};
+		IO::Reader::Molecule   reader;
+		Core::Struct::Molecule molecule;
+		std::string			   data;
 
+		VTX::Util::Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/" + p_pdb, data );
+		reader.readBuffer( data, p_pdb + ".mmtf", molecule );
+
+		return molecule;
+	}
+
+	Renderer::Proxy::Molecule proxify( const Core::Struct::Molecule & p_molecule )
+	{
+		const size_t									sizeAtoms	= p_molecule.trajectory.frames.front().size();
+		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;
+		const size_t									sizeResidue = p_molecule.residueOriginalIds.size();
+
+		// Generate.
+		static std::vector<std::unique_ptr<const std::vector<float>>> vecRadii;
+		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColors;
+		static std::vector<std::unique_ptr<const std::vector<bool>>>  vecVisibilities;
+		static std::vector<std::unique_ptr<const std::vector<bool>>>  vecSelections;
+		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdAtoms;
+		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdResidues;
+		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColorResidues;
+
+		auto   colorAtoms = std::make_unique<std::vector<uchar>>( sizeAtoms );
+		size_t i		  = 0;
+		std::generate(
+			colorAtoms->begin(),
+			colorAtoms->end(),
+			[ & ] { return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] ); }
+		);
+		vecColors.emplace_back( std::move( colorAtoms ) );
+
+		vecVisibilities.emplace_back( std::make_unique<const std::vector<bool>>( sizeAtoms, true ) );
+		vecSelections.emplace_back( std::make_unique<const std::vector<bool>>( sizeAtoms, false ) );
+
+		auto radii = std::make_unique<std::vector<float>>( sizeAtoms );
+		i		   = 0;
+		std::generate(
+			radii->begin(),
+			radii->end(),
+			[ & ] { return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ]; }
+		);
+		vecRadii.emplace_back( std::move( radii ) );
+
+		auto idAtoms = std::make_unique<std::vector<uint>>( sizeAtoms );
+		std::iota( idAtoms->begin(), idAtoms->end(), 0 );
+		vecIdAtoms.emplace_back( std::move( idAtoms ) );
+
+		auto idResidues = std::make_unique<std::vector<uint>>( sizeResidue );
+		std::iota( idResidues->begin(), idResidues->end(), 0 );
+		vecIdResidues.emplace_back( std::move( idResidues ) );
+
+		auto colorResidues = std::make_unique<std::vector<uchar>>( sizeResidue );
+		i				   = 0;
+		std::generate(
+			colorResidues->begin(),
+			colorResidues->end(),
+			[ & ] { return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] ); }
+		);
+		vecColorResidues.emplace_back( std::move( colorResidues ) );
+
+		return { &p_molecule.transform,
+				 &p_molecule.trajectory.frames.front(),
+				 vecColors.back().get(),
+				 vecRadii.back().get(),
+				 vecVisibilities.back().get(),
+				 vecSelections.back().get(),
+				 vecIdAtoms.back().get(),
+				 &p_molecule.bondPairAtomIndexes,
+				 &p_molecule.atomNames,
+				 vecIdResidues.back().get(),
+				 reinterpret_cast<const std::vector<uchar> *>( &p_molecule.residueSecondaryStructureTypes ),
+				 vecColorResidues.back().get(),
+				 &p_molecule.residueFirstAtomIndexes,
+				 &p_molecule.residueAtomCounts,
+				 &p_molecule.chainFirstResidues,
+				 &p_molecule.chainResidueCounts };
+	}
+
+	// Grid.
 	/*
-	const Mesh DEFAULT_MESH = { MAT4F_ID,
-								{ Vec3f( 0.5f, -0.5f, 0.f ), Vec3f( -0.5f, -0.5f, 0.f ), Vec3f( 0.f, 0.5f, 0.f ) },
-								{ Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) },
-								{ Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
-								  Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
-								  Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) },
-								{ 1, 1, 1, 1 },
-								{ 0, 0, 0, 0 },
-								{ 0, 0, 0, 0 },
-								{ 0, 1, 2 } };
-
-	const Molecule DEFAULT_MOLECULE
-		= { MAT4F_ID,
-			{ Vec3f( -2.f, 0.f, 0.f ), Vec3f( 2.f, 0.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) },
-			{ Util::Color::Rgba::random(), Util::Color::Rgba::random(), Util::Color::Rgba::random() },
-			{ 0.5f, 0.3f, 0.4 },
-			{ 1, 1, 1 },
-			{ 0, 0, 0 },
-			{ 0, 0, 0 },
-			{ 0, 1, 1, 2, 2, 0 }
-
-		  };
-	*/
-
 	Molecule generateAtomGrid( int p_size )
 	{
 		if ( p_size % 2 == 0 )
@@ -108,30 +162,34 @@ namespace VTX::Bench
 				 ids,
 				 bonds };
 	}
+	*/
 
 	// Skybox.
-	// 		const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
-	// 		const std::array<FilePath, 6> pathImages
-	// 			= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
-	// 				pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
-	// 		std::array<unsigned char *, 6> images;
-	// 		int							   width, height, nrChannels;
-	// 		try
-	// 		{
-	// 			for ( size_t i = 0; i < pathImages.size(); ++i )
-	// 			{
-	// 				images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
-	// 			}
-	// 			renderer.loadSkybox( images, width, height );
-	// 		}
-	// 		catch ( const std::exception & p_e )
-	// 		{
-	// 			VTX_ERROR( "Skybox not found: {}", p_e.what() );
-	// 		}
-	// 		for ( size_t i = 0; i < images.size(); ++i )
-	// 		{
-	// 			stbi_image_free( images[ i ] );
-	// 		}
+	/*
+	const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
+	const std::array<FilePath, 6> pathImages
+		= { pathSkybox / "right.jpg",  pathSkybox / "left.jpg",	 pathSkybox / "top.jpg",
+			pathSkybox / "bottom.jpg", pathSkybox / "front.jpg", pathSkybox / "back.jpg" };
+	std::array<unsigned char *, 6> images;
+	int							   width, height, nrChannels;
+	try
+	{
+		for ( size_t i = 0; i < pathImages.size(); ++i )
+		{
+			images[ i ] = stbi_load( pathImages[ i ].string().c_str(), &width, &height, &nrChannels, 0 );
+		}
+		renderer.loadSkybox( images, width, height );
+	}
+	catch ( const std::exception & p_e )
+	{
+		VTX_ERROR( "Skybox not found: {}", p_e.what() );
+	}
+	for ( size_t i = 0; i < images.size(); ++i )
+	{
+		stbi_image_free( images[ i ] );
+	}
+	*/
+
 } // namespace VTX::Bench
 
 #endif

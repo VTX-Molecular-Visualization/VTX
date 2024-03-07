@@ -88,7 +88,31 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
+			// Destroy/create if new size or other function?
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+		}
+
+		template<typename T>
+		inline void setData( const size_t p_size, const std::string & p_key )
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
+		}
+
+		inline void setData( const size_t p_size, const std::string & p_key )
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->setData( GLsizei( p_size ), GL_STATIC_DRAW );
+		}
+
+		template<typename T>
+		inline void setSubData( const std::vector<T> & p_data, const std::string & p_key, const size_t p_offset = 0 )
+		{
+			assert( _bos.find( p_key ) != _bos.end() );
+
+			_bos[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
 		}
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }

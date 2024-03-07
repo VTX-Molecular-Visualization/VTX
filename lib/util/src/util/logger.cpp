@@ -25,13 +25,15 @@ namespace VTX::Util
 
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string() );
+				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string()
+			);
 			fileSink->set_level( spdlog::level::trace );
 
 			// Logger.
 			std::vector<spdlog::sink_ptr> sinks { consoleSink, fileSink };
 			auto						  logger = std::make_shared<spdlog::async_logger>(
-				 "vtx_logger", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block );
+				 "vtx_logger", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
+			 );
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
 #ifdef VTX_PRODUCTION

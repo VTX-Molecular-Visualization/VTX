@@ -13,7 +13,7 @@
 #include <renderer/renderer.hpp>
 #include <stb_image_write.h>
 #include <util/logger.hpp>
-#include <util/types.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::Bench
 {
@@ -117,6 +117,50 @@ namespace VTX::Bench
 			ImGui::NewFrame();
 
 			// Menu bar.
+			_drawMenuBar( p_camera, p_renderer );
+
+			if ( _drawUi )
+			{
+				// Camera.
+				_drawCamera( p_camera );
+
+				// Times.
+				_drawDurations( p_renderer );
+
+				// Scene.
+				_drawScene( p_renderer );
+
+				// Node editor.
+				_drawNodeEditor( p_renderer );
+			}
+
+			// Render.
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+			SDL_GL_SwapWindow( _window );
+		}
+
+		bool getEvent( SDL_Event & p_event ) const
+		{
+			bool hasEvent = SDL_PollEvent( &p_event );
+			if ( hasEvent )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &p_event );
+			}
+			return hasEvent;
+		}
+
+		inline bool isUpdateScene() const { return _updateScene; }
+
+	  private:
+		SDL_Window *  _window	   = nullptr;
+		SDL_GLContext _glContext   = nullptr;
+		bool		  _vsync	   = true;
+		bool		  _drawUi	   = true;
+		bool		  _updateScene = false;
+
+		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer )
+		{
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				if ( ImGui::BeginMenu( "Shaders" ) )
@@ -154,7 +198,7 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( "JMol" ) )
 					{
-						p_renderer->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+						p_renderer->setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
@@ -162,7 +206,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
 						);
-						p_renderer->setColorLayout( colorLayout );
+						p_renderer->setProxyColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
@@ -170,7 +214,7 @@ namespace VTX::Bench
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
-						p_renderer->setColorLayout( colorLayout );
+						p_renderer->setProxyColorLayout( colorLayout );
 					}
 
 					ImGui::EndMenu();
@@ -223,26 +267,6 @@ namespace VTX::Bench
 
 				ImGui::EndMainMenuBar();
 			}
-
-			if ( _drawUi )
-			{
-				// Camera.
-				_drawCamera( p_camera );
-
-				// Times.
-				_drawDurations( p_renderer );
-
-				// Misc.
-				_drawScene( p_renderer );
-
-				// Node editor.
-				_drawNodeEditor( p_renderer );
-			}
-
-			// Render.
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-			SDL_GL_SwapWindow( _window );
 		}
 
 		void _drawCamera( Camera * const p_camera ) const
@@ -344,7 +368,7 @@ namespace VTX::Bench
 			if ( ImGui::Begin( "Scene" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-
+				ImGui::Checkbox( "Update", &_updateScene );
 				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
 				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
 				ImGui::Checkbox(
@@ -368,9 +392,44 @@ namespace VTX::Bench
 				);
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
+
+				size_t idMolecule = 0;
+				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
+				{
+					// Display transform.
+					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
+					{
+						// Display transform.
+						Mat4f transform = *proxyMolecule->transform;
+						ImGui::Text( "Transform" );
+						ImGui::InputFloat4( "", &transform[ 0 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 1 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 2 ][ 0 ] );
+						ImGui::InputFloat4( "", &transform[ 3 ][ 0 ] );
+
+						if ( ImGui::Button( "S" ) )
+						{
+							proxyMolecule->onSelect( true );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "U" ) )
+						{
+							proxyMolecule->onSelect( false );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "X" ) )
+						{
+							proxyMolecule->onRemove();
+						}
+
+						ImGui::TreePop();
+					}
+				}
 			}
 			ImGui::End();
 		}
+
+		void _drawUniforms() const {}
 
 		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 		{
@@ -503,194 +562,57 @@ namespace VTX::Bench
 							{
 							case E_TYPE::BOOL:
 							{
-								StructUniformValue<bool> descValue
-									= std::get<StructUniformValue<bool>>( uniform.value );
-
-								bool value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<bool>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( ImGui::Checkbox( uniform.name.c_str(), &value ) )
-								{
-									if ( isEditable )
-										p_renderer->setUniform( value, key );
-								}
-
+								_drawWidget<bool>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::BYTE:
+							{
+								_drawWidget<char>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::UBYTE:
+							{
+								_drawWidget<uchar>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::SHORT:
+							{
+								_drawWidget<short>( p_renderer, uniform, key, isEditable );
+								break;
+							}
+							case E_TYPE::USHORT:
+							{
+								_drawWidget<ushort>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::INT:
 							{
-								StructUniformValue<int> descValue = std::get<StructUniformValue<int>>( uniform.value );
-
-								int value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<int>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( descValue.minMax.has_value() )
-								{
-									StructUniformValue<int>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderInt( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
-								else
-								{
-									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
+								_drawWidget<int>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::UINT:
 							{
-								StructUniformValue<uint> descValue
-									= std::get<StructUniformValue<uint>>( uniform.value );
-
-								uint value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<uint>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( descValue.minMax.has_value() )
-								{
-									StructUniformValue<uint>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderInt(
-											 uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max
-										 ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
-								else
-								{
-									if ( ImGui::DragInt( uniform.name.c_str(), (int *)( &value ) ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
+								_drawWidget<uint>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::FLOAT:
 							{
-								StructUniformValue<float> descValue
-									= std::get<StructUniformValue<float>>( uniform.value );
-
-								float value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<float>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( descValue.minMax.has_value() )
-								{
-									StructUniformValue<float>::MinMax & minMax = descValue.minMax.value();
-									if ( ImGui::SliderFloat( uniform.name.c_str(), &value, minMax.min, minMax.max ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
-								else
-								{
-									if ( ImGui::InputFloat( uniform.name.c_str(), &value ) )
-									{
-										if ( isEditable )
-											p_renderer->setUniform( value, key );
-									}
-								}
+								_drawWidget<float>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::VEC2I:
 							{
-								StructUniformValue<Vec2i> descValue
-									= std::get<StructUniformValue<Vec2i>>( uniform.value );
-
-								Vec2i value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<Vec2i>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( ImGui::InputInt2( uniform.name.c_str(), (int *)&value ) )
-								{
-									if ( isEditable )
-										p_renderer->setUniform( value, key );
-								}
+								_drawWidget<Vec2i>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::VEC2F:
 							{
-								StructUniformValue<Vec2f> descValue
-									= std::get<StructUniformValue<Vec2f>>( uniform.value );
-
-								Vec2f value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<Vec2f>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( ImGui::InputFloat2( uniform.name.c_str(), (float *)&value ) )
-								{
-									if ( isEditable )
-										p_renderer->setUniform( value, key );
-								}
+								_drawWidget<Vec2f>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							case E_TYPE::COLOR4:
 							{
-								StructUniformValue<Util::Color::Rgba> descValue
-									= std::get<StructUniformValue<Util::Color::Rgba>>( uniform.value );
-
-								Util::Color::Rgba value;
-								if ( isEditable )
-								{
-									p_renderer->getUniform<Util::Color::Rgba>( value, key );
-								}
-								else
-								{
-									value = descValue.value;
-								}
-
-								if ( ImGui::ColorEdit4( uniform.name.c_str(), (float *)( &value ) ) )
-								{
-									if ( isEditable )
-										p_renderer->setUniform( value, key );
-								}
+								_drawWidget<Util::Color::Rgba>( p_renderer, uniform, key, isEditable );
 								break;
 							}
 							default: throw std::runtime_error( "widget not implemented" ); break;
@@ -794,21 +716,83 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		bool getEvent( SDL_Event & p_event ) const
+		template<typename T>
+		void _drawWidget(
+			Renderer::Renderer * const p_renderer,
+			const Renderer::Uniform &  p_uniform,
+			const std::string &		   p_key,
+			const bool				   p_isEditable
+		) const
 		{
-			bool hasEvent = SDL_PollEvent( &p_event );
-			if ( hasEvent )
-			{
-				ImGui_ImplSDL2_ProcessEvent( &p_event );
-			}
-			return hasEvent;
-		}
+			using namespace Renderer;
+			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
 
-	  private:
-		SDL_Window *  _window	 = nullptr;
-		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = true;
-		bool		  _drawUi	 = true;
+			T value;
+			if ( p_isEditable )
+			{
+				p_renderer->getUniform<T>( value, p_key );
+			}
+			else
+			{
+				value = descValue.value;
+			}
+
+			bool updated = false;
+
+			if constexpr ( std::is_same<T, bool>::value )
+			{
+				if ( ImGui::Checkbox( p_uniform.name.c_str(), &value ) )
+					updated = true;
+			}
+			else if constexpr ( is_vec2i<T>::value )
+			{
+				if ( ImGui::InputInt2( p_uniform.name.c_str(), (int *)&value ) )
+					updated = true;
+			}
+			else if constexpr ( is_vec2f<T>::value )
+			{
+				if ( ImGui::InputFloat2( p_uniform.name.c_str(), (float *)&value ) )
+					updated = true;
+			}
+			else if constexpr ( is_color4<T>::value )
+			{
+				if ( ImGui::ColorEdit4( p_uniform.name.c_str(), (float *)( &value ) ) )
+					updated = true;
+			}
+			else if ( descValue.minMax.has_value() )
+			{
+				const typename StructUniformValue<T>::MinMax & minMax = descValue.minMax.value();
+
+				if constexpr ( std::is_integral<T>::value )
+				{
+					if ( ImGui::SliderInt( p_uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max ) )
+						updated = true;
+				}
+				else if constexpr ( std::is_floating_point<T>::value )
+				{
+					if ( ImGui::SliderFloat( p_uniform.name.c_str(), (float *)( &value ), minMax.min, minMax.max ) )
+						updated = true;
+				}
+			}
+			else
+			{
+				if constexpr ( std::is_integral<T>::value )
+				{
+					if ( ImGui::DragInt( p_uniform.name.c_str(), (int *)( &value ) ) )
+						updated = true;
+				}
+				else if constexpr ( std::is_floating_point<T>::value )
+				{
+					if ( ImGui::DragFloat( p_uniform.name.c_str(), (float *)( &value ) ) )
+						updated = true;
+				}
+			}
+
+			if ( p_isEditable && updated )
+			{
+				p_renderer->setUniform( value, p_key );
+			}
+		}
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

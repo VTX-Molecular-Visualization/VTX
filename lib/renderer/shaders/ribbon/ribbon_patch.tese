@@ -7,13 +7,9 @@
 
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_model.glsl"
+#include "../layout_uniforms_representation.glsl"
 
 layout( quads, fractional_even_spacing ) in;
-
-// TODO: move that.
-uniform uint u_maxIndice;
-uniform vec3 u_camPosition;
-uniform uint u_colorBlendingMode;
 
 // In.
 in 
@@ -122,7 +118,9 @@ void main()
 	outData.viewPosition = vec3( uniformsModel[ inData[ 0 ].model ].matrixModelView * vec4( position, 1.f ) );
 	outData.normal = vec3( uniformsModel[ inData[ 0 ].model ].matrixNormal * vec4( normal, 1.f ) );
 	outData.color =  inData[ 1 ].color;
-	if(u_colorBlendingMode == 1) // Gradient.
+
+	uint colorBlendingMode	= uniformsRepresentation[ inData[ 1 ].representation ].ribbonColorBlendingMode;
+	if( colorBlendingMode == 1 ) // Gradient.
 	{
 		outData.color = mix( inData[ 1 ].color, inData[ 2 ].color, gl_TessCoord.x );
 	}
