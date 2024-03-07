@@ -37,6 +37,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
+	// The idea is to list output files from all previous job, in reverse chronological order. So we can access last
+	// files first. This is usefull because some job might need some files from a couple of jobs ago, but the last file
+	// of a given extension is always the right file. Therefore we can identify the right file to use for the job by
+	// taking the first one that matches the required extension.
+	struct CumulativeOuputFiles
+	{
+		std::vector<std::string *> fileStringPtrs;
+	};
+
 	// Execute gromacs with input arguments then check if job issued and error
 	//   Assumes relevant arguments have been provided and checked beforehand.
 	//   Assumes gromacs have been instructed on where to find data files (env. var. GMXLIB) as well.
