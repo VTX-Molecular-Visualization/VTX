@@ -222,9 +222,9 @@ namespace VTX::IO::Reader
 		if ( _readingData->_currentFrame.size() > 0 )
 		{
 			std::string propAtom
-				= std::to_string( _readingData->_currentFrame[ 0 ].properties().size() ) + " properties in atoms:";
-			for ( chemfiles::property_map::const_iterator it = _readingData->_currentFrame[ 0 ].properties().begin();
-				  it != _readingData->_currentFrame[ 0 ].properties().end();
+				= std::to_string( _readingData->_currentFrame[ 0 ].properties()->size() ) + " properties in atoms:";
+			for ( chemfiles::property_map::const_iterator it = _readingData->_currentFrame[ 0 ].properties()->begin();
+				  it != _readingData->_currentFrame[ 0 ].properties()->end();
 				  ++it )
 			{
 				propAtom += " " + it->first;
@@ -333,17 +333,17 @@ namespace VTX::IO::Reader
 	{
 		// Seems to be faster that way than using value_or function for string&.
 		const std::experimental::optional<const ::chemfiles::Property &> & optionalProperty
-			= _readingData->_currentAtom->properties().get( p_property );
+			= _readingData->_currentAtom->properties()->get( p_property );
 		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
 	}
 	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property, const double p_defaultValue )
 		const
 	{
-		return _readingData->_currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_double();
+		return _readingData->_currentAtom->properties()->get( p_property ).value_or( p_defaultValue ).as_double();
 	}
 	const bool Chemfiles::getCurrentAtomBoolProperty( const std::string & p_property, const bool p_defaultValue ) const
 	{
-		return _readingData->_currentAtom->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
+		return _readingData->_currentAtom->properties()->get( p_property ).value_or( p_defaultValue ).as_bool();
 	}
 
 	const std::string & Chemfiles::getCurrentAtomName() const { return _readingData->_currentAtom->name(); }
