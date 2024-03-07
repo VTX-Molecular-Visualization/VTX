@@ -51,7 +51,6 @@ namespace VTX::UI::QT
 		Core::BaseUIApplication::start( p_args );
 		_currentMode->enter();
 
-		_handleArgs( p_args );
 		_returnCode = exec();
 	}
 
