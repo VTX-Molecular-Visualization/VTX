@@ -6,7 +6,7 @@ namespace VTX::App::Core::UID
 	void UIDRegistration::clear()
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
-		_availableUIDs = Util::Math::RangeList<uid>( { UIDRange( 0, INVALID_UID - 1 ) } );
+		_availableUIDs = DEFAULT_RANGE_LIST();
 	}
 
 	uid UIDRegistration::_reserveValue()
