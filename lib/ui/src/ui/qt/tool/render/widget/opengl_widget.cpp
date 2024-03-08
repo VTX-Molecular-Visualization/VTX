@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		App::RENDERER().build( defaultFramebufferObject() );
 		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
-		App::RENDERER().setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		App::RENDERER().setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 		RendererQt renderer = QT_RENDERER();
 		renderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
