@@ -360,7 +360,8 @@ namespace VTX::Renderer::Context
 		// Unbind main ubo.
 		for ( const auto & [ name, ubo ] : _ssbos )
 		{
-			p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
+			auto * const uboPtr = ubo.get();
+			p_outInstructions.emplace_back( [ uboPtr ]() { uboPtr->unbind(); } );
 		}
 
 		// glFinish();

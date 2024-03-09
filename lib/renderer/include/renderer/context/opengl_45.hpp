@@ -48,13 +48,14 @@ namespace VTX::Renderer::Context
 		{
 			assert( _ssbos.find( p_key ) != _ssbos.end() );
 
-			VTX_DEBUG( "setUniforms {} size: {}", p_key, sizeof( T ) * p_data.size() );
-
 			// Auto scale ubos (useful?).
 			if ( _ssbos[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
-				VTX_WARNING(
-					"setUniforms {} resize: {} -> {}", p_key, _ssbos[ p_key ]->getSize(), sizeof( T ) * p_data.size()
+				VTX_DEBUG(
+					"Resizing uniform buffer {} : {} -> {}",
+					p_key,
+					_ssbos[ p_key ]->getSize(),
+					sizeof( T ) * p_data.size()
 				);
 				_ssbos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 			}
@@ -80,6 +81,9 @@ namespace VTX::Renderer::Context
 			// Scale if needed, else data will be overwritten.
 			if ( _bos[ p_key ]->getSize() != p_size * sizeof( T ) )
 			{
+				VTX_DEBUG(
+					"Resizing data buffer {} : {} -> {}", p_key, _bos[ p_key ]->getSize(), sizeof( T ) * p_size
+				);
 				_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
 			}
 		}

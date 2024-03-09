@@ -46,11 +46,11 @@ namespace VTX::Bench
 		const size_t									sizeResidue = p_molecule.residueOriginalIds.size();
 
 		// Generate.
-		static std::vector<std::unique_ptr<const std::vector<float>>> vecRadii;
-		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColors;
-		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdAtoms;
-		static std::vector<std::unique_ptr<const std::vector<uint>>>  vecIdResidues;
-		static std::vector<std::unique_ptr<const std::vector<uchar>>> vecColorResidues;
+		static std::vector<std::unique_ptr<std::vector<float>>> vecRadii;
+		static std::vector<std::unique_ptr<std::vector<uchar>>> vecColors;
+		static std::vector<std::unique_ptr<std::vector<uint>>>	vecIdAtoms;
+		static std::vector<std::unique_ptr<std::vector<uint>>>	vecIdResidues;
+		static std::vector<std::unique_ptr<std::vector<uchar>>> vecColorResidues;
 
 		auto   colorAtoms = std::make_unique<std::vector<uchar>>( sizeAtoms );
 		size_t i		  = 0;
