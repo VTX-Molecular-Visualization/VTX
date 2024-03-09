@@ -371,7 +371,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobRes
 		auto chans = jd.channelsLocker.open();
 		chans->stderr_
 			= "Some stuff blablaa\nMore stuff\n   Error for some reason : \nReason blabla reasons\nline return "
-			  "reaons\n\nNot the error text any more"
+			  "reaons\n\nNot the error text any more";
 	}
 	jd.expectedOutputFilesPtrs.clear();
 	checkJobResults( jd );

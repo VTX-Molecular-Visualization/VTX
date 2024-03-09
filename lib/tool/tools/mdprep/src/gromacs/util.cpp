@@ -69,6 +69,4 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 	}
 
-	void convert( const solvateInstructions &, GromacsJobData & ) noexcept {}
-
 } // namespace VTX::Tool::Mdprep::Gromacs

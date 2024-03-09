@@ -35,7 +35,7 @@ namespace
 	};
 	struct TestContext
 	{
-		IoPaths										   paths;
+		IoPaths									   paths;
 		VTX::Tool::Mdprep::Gromacs::GromacsJobData args;
 	};
 
@@ -120,10 +120,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsJob][pdb2gmx][1u
 	VTX::test::setup_env f;
 	check_pdb( setupTestContext( "1ubq" ) );
 }
-TEST_CASE(
-	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submitGromacsJob][pdb2gmx][1ubq][interactive][full][lys]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][full][lys]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env					  f;
@@ -141,10 +138,7 @@ TEST_CASE(
 	contextData.args.interactiveSettings = Pdb2gmxInputs( inputs );
 	check_pdb( contextData );
 }
-TEST_CASE(
-	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submitGromacsJob][pdb2gmx][1ubq][interactive][default]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][default]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env					  f;
@@ -178,5 +172,4 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submitGromacsJob][pdb2gmx][8h
 	check_pdb( setupTestContext( "8hu4.nolig" ) );
 }
 
-// TODO : check with interactive stuff
 // TODO : check with other forcefields as well
