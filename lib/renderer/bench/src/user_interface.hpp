@@ -727,15 +727,12 @@ namespace VTX::Bench
 			using namespace Renderer;
 			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
 
-			static T value = descValue.value;
-			if ( p_isEditable )
+			static std::map<std::string, T> values;
+			if ( values.find( p_key ) == values.end() )
 			{
-				// p_renderer->getUniform<T>( value, p_key );
+				values.emplace( p_key, descValue.value );
 			}
-			else
-			{
-				value = descValue.value;
-			}
+			T & value = values[ p_key ];
 
 			bool updated = false;
 
