@@ -10,7 +10,7 @@ struct Representation
 	float padding[ 2 ];
 };
 
-layout( std140, binding = 12 ) uniform UniformsRepresentation
+layout( std140, binding = 12 ) readonly buffer UniformsRepresentation
 {
-   Representation uniformsRepresentation[ 256 ];
+   Representation uniformsRepresentation[];
 };

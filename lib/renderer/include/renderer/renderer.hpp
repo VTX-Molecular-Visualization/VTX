@@ -85,16 +85,20 @@ namespace VTX::Renderer
 					  E_TYPE::VEC4F,
 					  StructUniformValue<Vec4f> { VEC4F_ZERO } },
 					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
-					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
+				  15 }
 			);
 
-			_renderGraph->addUniforms( { "Color layout",
-										 { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } } } );
+			_renderGraph->addUniforms(
+				{ "Color layout", { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 14, true }
+			);
 
 			_renderGraph->addUniforms(
 				{ "Models",
 				  { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } } }
+					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+				  13,
+				  true }
 			);
 
 			_renderGraph->addUniforms( { "Representations",
@@ -104,15 +108,9 @@ namespace VTX::Renderer
 										   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
 
 										   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
-										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } } } );
-		}
-
-		template<typename T>
-		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
-		{
-			assert( _context != nullptr );
-			_context->setUniform<T>( p_value, p_key );
-			setNeedUpdate( true );
+										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
+										 12,
+										 true } );
 		}
 
 		template<typename T>
@@ -303,6 +301,7 @@ namespace VTX::Renderer
 			Mat4f matrixView;
 			Mat4f matrixProjection;
 			Vec3f cameraPosition;
+			uint  padding;
 			Vec4f cameraClipInfos;
 			Vec2i mousePosition;
 			uint  isPerspective;

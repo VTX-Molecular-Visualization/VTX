@@ -44,6 +44,7 @@ namespace VTX::Renderer
 		_proxyColorLayout	  = nullptr;
 		_proxyRepresentations = nullptr;
 		_proxyRenderSettings  = nullptr;
+		_proxyVoxels		  = nullptr;
 
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
@@ -58,21 +59,24 @@ namespace VTX::Renderer
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
 		assert( _renderGraph->isBuilt() );
+		assert( p_proxy.matrixView );
+		assert( p_proxy.matrixProjection );
 
 		_proxyCamera = &p_proxy;
 
-		_context->setUniforms(
-			std::vector<_StructUBOCamera> { { *p_proxy.matrixView,
-											  *p_proxy.matrixProjection,
-											  p_proxy.cameraPosition,
-											  Vec4f(
-												  p_proxy.cameraNear * p_proxy.cameraFar,
-												  p_proxy.cameraFar,
-												  p_proxy.cameraFar - p_proxy.cameraNear,
-												  p_proxy.cameraNear
-											  ),
-											  p_proxy.mousePosition,
-											  p_proxy.isPerspective } },
+		_context->setUniforms<_StructUBOCamera>(
+			{ { *p_proxy.matrixView,
+				*p_proxy.matrixProjection,
+				p_proxy.cameraPosition,
+				0,
+				Vec4f(
+					p_proxy.cameraNear * p_proxy.cameraFar,
+					p_proxy.cameraFar,
+					p_proxy.cameraFar - p_proxy.cameraNear,
+					p_proxy.cameraNear
+				),
+				p_proxy.mousePosition,
+				p_proxy.isPerspective } },
 			"Camera"
 		);
 
@@ -193,7 +197,9 @@ namespace VTX::Renderer
 		assert( _renderGraph->isBuilt() );
 
 		_proxyColorLayout = &p_proxy;
-		_context->setUniforms( std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout" );
+		_context->setUniforms<Util::Color::Rgba>(
+			std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout"
+		);
 
 		setNeedUpdate( true );
 	}
@@ -736,6 +742,7 @@ namespace VTX::Renderer
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
 			assert( proxy->transform );
+			assert( _proxyCamera );
 
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );

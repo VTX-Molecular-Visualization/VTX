@@ -178,7 +178,7 @@ namespace VTX::Renderer
 			_context.reset( nullptr );
 		}
 
-		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace( p_uniforms ); }
+		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace_back( p_uniforms ); }
 
 	  private:
 		S				   _scheduler;

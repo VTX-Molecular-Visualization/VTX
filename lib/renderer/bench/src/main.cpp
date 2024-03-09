@@ -111,8 +111,6 @@ int main( int, char ** )
 			VTX_INFO( "Molecule {} added in {}s", p_name, time );
 		};
 
-		addMolecule( "4hhb" );
-
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			if ( p_key == SDL_SCANCODE_F1 )
@@ -174,7 +172,9 @@ int main( int, char ** )
 			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
 				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
-		renderer.setProxyRenderSettings( renderSettings );
+		// renderer.setProxyRenderSettings( renderSettings );
+
+		addMolecule( "4hhb" );
 
 		// Main loop.
 		while ( isRunning )

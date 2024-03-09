@@ -727,7 +727,7 @@ namespace VTX::Bench
 			using namespace Renderer;
 			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
 
-			T value;
+			static T value = descValue.value;
 			if ( p_isEditable )
 			{
 				// p_renderer->getUniform<T>( value, p_key );

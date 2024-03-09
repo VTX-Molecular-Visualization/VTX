@@ -1,4 +1,4 @@
-layout( std140, binding = 15 ) uniform UniformsCamera
+struct Camera
 {
     mat4 matrixView;    
     mat4 matrixProjection;
@@ -6,4 +6,9 @@ layout( std140, binding = 15 ) uniform UniformsCamera
     vec4 cameraClipInfos; // _near * _far, _far, _far - _near, _near
     ivec2 mousePosition;    
     uint isCameraPerspective;
-} uniformsCamera;
+};
+
+layout( std140, binding = 15 ) uniform UniformsCamera
+{
+    Camera uniformsCamera;
+};

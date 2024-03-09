@@ -46,16 +46,21 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		inline void setUniforms( const std::vector<T> & p_data, const std::string & p_key )
 		{
-			assert( _ubosShared.find( p_key ) != _ubosShared.end() );
+			assert( _ssbos.find( p_key ) != _ssbos.end() );
+
+			VTX_DEBUG( "setUniforms {} size: {}", p_key, sizeof( T ) * p_data.size() );
 
 			// Auto scale ubos (useful?).
-			if ( _ubosShared[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			if ( _ssbos[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
-				_ubosShared[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+				VTX_WARNING(
+					"setUniforms {} resize: {} -> {}", p_key, _ssbos[ p_key ]->getSize(), sizeof( T ) * p_data.size()
+				);
+				_ssbos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_ubosShared[ p_key ]->setSubData( p_data, 0 );
+				_ssbos[ p_key ]->setSubData( p_data );
 			}
 		}
 
@@ -72,7 +77,11 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
-			_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
+			// Scale if needed, else data will be overwritten.
+			if ( _bos[ p_key ]->getSize() != p_size * sizeof( T ) )
+			{
+				_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
+			}
 		}
 
 		template<typename T>
@@ -128,7 +137,7 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager>								  _programManager;
 		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
 		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::map<std::string, std::unique_ptr<GL::Buffer>>				  _ubosShared;
+		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _ssbos;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;

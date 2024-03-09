@@ -68,19 +68,22 @@ namespace VTX::Renderer::Context
 
 		_output = p_output;
 
-		// Create shared uniforms.
+		// Create shared uniform ssbos.
 		if ( p_uniforms.empty() == false )
 		{
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
-			uint binding = 15;
-			for ( const auto & [ name, uniforms ] : p_uniforms )
+
+			for ( const SharedUniform & uniform : p_uniforms )
 			{
-				auto			   pair = _ubosShared.emplace( name, std::make_unique<GL::Buffer>() );
-				GL::Buffer * const ubo	= ( pair.first->second ).get();
-				_createUniforms( ubo, uniforms );
-				p_outInstructions.emplace_back( [ ubo, binding ]() { ubo->bind( GL_UNIFORM_BUFFER, binding ); } );
-				binding--;
+				std::string name = uniform.name;
+				assert( _ssbos.find( name ) == _ssbos.end() );
+				_ssbos.emplace( name, std::make_unique<GL::Buffer>() );
+				GL::Buffer * const ubo = _ssbos[ name ].get();
+				_createUniforms( ubo, uniform.uniforms );
+				GLenum bufferType = uniform.isDynamic ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER;
+				uint   binding	  = uniform.binding;
+				p_outInstructions.emplace_back( [ ubo, bufferType, binding ]() { ubo->bind( bufferType, binding ); } );
 			}
 
 			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
@@ -355,7 +358,7 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind main ubo.
-		for ( const auto & [ name, ubo ] : _ubosShared )
+		for ( const auto & [ name, ubo ] : _ssbos )
 		{
 			p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
 		}

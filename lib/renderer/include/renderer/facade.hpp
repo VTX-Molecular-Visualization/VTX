@@ -68,7 +68,7 @@ namespace VTX::Renderer
 			return _renderer->getPickedIds( p_x, p_y );
 		}
 
-		// inline void setNeedUpdate( const bool p_value ) { _renderer->setNeedUpdate( p_value ); }
+		inline void setNeedUpdate( const bool p_value ) { _renderer->setNeedUpdate( p_value ); }
 
 	  private:
 		std::unique_ptr<Renderer> _renderer;

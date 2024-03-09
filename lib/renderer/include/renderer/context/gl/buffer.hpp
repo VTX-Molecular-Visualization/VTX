@@ -120,17 +120,6 @@ namespace VTX::Renderer::Context::GL
 			glNamedBufferData( _id, _size, &p_data, p_usage );
 		}
 
-		template<typename T>
-		inline void setData( const GLsizei p_size, const T & p_data, const GLenum p_usage )
-		{
-			assert( glIsBuffer( _id ) );
-			assert( p_size > 0 );
-			assert( _size != p_size );
-
-			_size = p_size;
-			glNamedBufferData( _id, _size, &p_data, p_usage );
-		}
-
 		inline void setData( const GLsizei p_size, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
@@ -163,7 +152,7 @@ namespace VTX::Renderer::Context::GL
 
 			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
 
-			assert( size <= _size );
+			assert( p_offset + size <= _size );
 
 			glNamedBufferSubData( _id, p_offset, size, p_vector.data() );
 		}
@@ -180,17 +169,6 @@ namespace VTX::Renderer::Context::GL
 
 			_size = size;
 			glNamedBufferStorage( _id, _size, p_vector.data(), p_flags );
-		}
-
-		template<typename T>
-		inline void setStorage( const GLsizei p_size, const T & p_data, const GLbitfield p_flags = 0 )
-		{
-			assert( glIsBuffer( _id ) );
-			assert( p_size > 0 );
-			assert( _size != p_size );
-
-			_size = p_size;
-			glNamedBufferStorage( _id, _size, &p_data, p_flags );
 		}
 
 		inline void setStorage( const GLsizei p_size, const GLbitfield p_flags = 0 )
