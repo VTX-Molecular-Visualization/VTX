@@ -14,6 +14,9 @@ namespace VTX::Util
 	  public:
 		using Func = std::function<void( const Args &... )>;
 
+		Callback()					 = default;
+		Callback( const Callback & ) = delete;
+
 		inline const Func * const add( const Func & p_callback )
 		{
 			_callbacks.push_back( std::make_unique<Func>( p_callback ) );
