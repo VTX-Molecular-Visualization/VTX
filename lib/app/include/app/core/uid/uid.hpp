@@ -10,7 +10,7 @@ namespace VTX::App::Core::UID
 	using uid	   = uint;
 	using UIDRange = Util::Math::Range<uid>;
 
-	inline const uid INVALID_UID = std::numeric_limits<uid>::max();
+	inline const uid INVALID_UID = 0;
 } // namespace VTX::App::Core::UID
 
 #endif

@@ -11,6 +11,16 @@ namespace VTX::App::Core::UID
 {
 	class UIDRegistration
 	{
+	  private:
+		inline static const Util::Math::RangeList<uid> DEFAULT_RANGE_LIST()
+		{
+			Util::Math::RangeList<uid> res
+				= Util::Math::RangeList<uid>( { UIDRange( 0, std::numeric_limits<uid>::max() ) } );
+			res.removeValue( INVALID_UID );
+
+			return res;
+		}
+
 	  public:
 		UIDRegistration() {};
 		~UIDRegistration() = default;
@@ -24,7 +34,7 @@ namespace VTX::App::Core::UID
 		void clear();
 
 	  private:
-		Util::Math::RangeList<uid> _availableUIDs = Util::Math::RangeList<uid>( { UIDRange( 0, INVALID_UID - 1 ) } );
+		Util::Math::RangeList<uid> _availableUIDs = DEFAULT_RANGE_LIST();
 		std::mutex				   _idMutex;
 
 		uid		 _reserveValue();

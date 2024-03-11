@@ -101,7 +101,7 @@ int main( int, char ** )
 					molecules.back()->transform
 						= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
 					IO::Util::SecondaryStructure::computeStride( *molecules.back() );
-					proxies.emplace_back( std::make_unique<Renderer::Proxy::Molecule>( proxify( *molecules.back() ) ) );
+					proxies.emplace_back( proxify( *molecules.back() ) );
 					renderer.addProxyMolecule( *proxies.back() );
 					directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
 					proxies.back()->onRepresentation( rand() % 4 );
