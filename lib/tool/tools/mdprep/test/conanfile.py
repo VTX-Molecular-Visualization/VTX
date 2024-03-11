@@ -24,6 +24,7 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
         self.requires("catch2/3.4.0")        
+        self.requires("gromacs/2024.0")        
         
     def generate(self):
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
@@ -33,19 +34,10 @@ class VTXRendererTestRecipe(ConanFile):
         cmake_layout(self)
 
     def build(self):
-        """
-        vtx_gromacs_shared = os.path.join(self.dependencies["vtx_tool_mdprep"].folders.build_folder, "vtx_gromacs")
-        ext = ".dll"
-        if self.settings.os == "iOS" :
-            ext = ".dylib"
-        if self.settings.os == "Linux" :
-            ext = ".so"
-        vtx_gromacs_shared += ext
-        """
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        #self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
+        # self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
 
     def package(self):
         cmake = CMake(self)
