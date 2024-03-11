@@ -20,29 +20,29 @@ TEST_CASE( "VTX_APP - UID", "[unit]" )
 	UIDRegistration registration = UIDRegistration();
 
 	value = registration.registerValue();
-	CHECK( value == 0 );
+	CHECK( value == 1 );
 
 	value = registration.registerValue();
-	CHECK( value == 1 );
+	CHECK( value == 2 );
 
 	range = registration.registerRange( 50 );
-	CHECK( range.getFirst() == 2 );
+	CHECK( range.getFirst() == 3 );
 	CHECK( range.getCount() == 50 );
 
-	registration.unregister( 1 );
+	registration.unregister( 2 );
 	value = registration.registerValue();
-	CHECK( value == 1 );
+	CHECK( value == 2 );
 
 	value = registration.registerValue();
-	CHECK( value == 52 );
+	CHECK( value == 53 );
 
 	registration.unregister( range );
 	value = registration.registerValue();
-	CHECK( value == 2 );
+	CHECK( value == 3 );
 	range = registration.registerRange( 50 );
-	CHECK( range.getFirst() == 53 );
+	CHECK( range.getFirst() == 54 );
 	range = registration.registerRange( 20 );
-	CHECK( range.getFirst() == 3 );
+	CHECK( range.getFirst() == 4 );
 
 	try
 	{
