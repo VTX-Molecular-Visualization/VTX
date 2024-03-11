@@ -308,9 +308,9 @@ namespace
 		if ( fs::is_directory( dir ) == false )
 			fs::create_directories( dir );
 		fs::path file = dir / p_name;
-		std::ofstream( dir.string() ) << "Some data\n";
-		p_jd.arguments.push_back( dir.string() );
-		p_jd.expectedOutputFilesPtrs.push_back( &p_jd.arguments.back() );
+		std::ofstream( file.string() ) << "Some data\n";
+		p_jd.arguments.push_back( file.string() );
+		p_jd.expectedOutputFilesIndexes.push_back( p_jd.arguments.size() - 1 );
 	}
 } // namespace
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
@@ -319,9 +319,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
 	GromacsJobData jd;
 
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == true );
-	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errorOccured == false );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
 {
@@ -331,11 +330,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][file
 	add_file( jd, "f1.tpr" );
 	add_file( jd, "f1.gro" );
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == true );
-	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errorOccured == false );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - not all ok", "[checkJobResults][files]" )
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - one file missing", "[checkJobResults][files]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	GromacsJobData jd;
@@ -345,8 +343,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - not all ok", "[checkJobResults][
 	add_file( jd, "f1.pdb" );
 	fs::remove( fs::path( jd.arguments.back() ) ); // one file is missing !
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == false );
-	CHECK( jd.report.error_occured == true );
+	CHECK( jd.report.errorOccured == true );
 	CHECK( jd.report.errors.size() == 1 );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][files]" )
@@ -357,11 +354,36 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobR
 	add_file( jd, "f1.tpr" );
 	add_file( jd, "f1.gro" );
 	add_file( jd, "f1.pdb" );
-	jd.expectedOutputFilesPtrs.clear();
+	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == true );
-	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errorOccured == false );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel", "[checkJobResults][channels]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+	{
+		auto chans	   = jd.channelsLocker.open();
+		chans->stderr_ = "No error found hehe\n\nNot a single one. Good job.";
+	}
+	jd.expectedOutputFilesIndexes.clear();
+	checkJobResults( jd );
+	CHECK( jd.report.errorOccured == false );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel but trap", "[checkJobResults][channels]" )
+{
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+	{
+		auto chans	   = jd.channelsLocker.open();
+		chans->stderr_ = "No Error found hehe\n\nNot a single one. Good job.";
+	}
+	jd.expectedOutputFilesIndexes.clear();
+	checkJobResults( jd );
+	CHECK( jd.report.errorOccured == false );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobResults][channels]" )
 {
@@ -373,11 +395,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobRes
 			= "Some stuff blablaa\nMore stuff\n   Error for some reason : \nReason blabla reasons\nline return "
 			  "reaons\n\nNot the error text any more";
 	}
-	jd.expectedOutputFilesPtrs.clear();
+	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == true );
-	CHECK( jd.report.error_occured == false );
-	CHECK( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errorOccured == true );
+	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobResults][channels][errormsg]" )
 {
@@ -393,10 +414,36 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobR
 		chans->stderr_ += errMsg;
 		chans->stderr_ += postFiller;
 	}
-	jd.expectedOutputFilesPtrs.clear();
+	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
-	CHECK( jd.report.allOutputOk == false );
-	CHECK( jd.report.error_occured == true );
-	CHECK_NOFAIL( jd.report.errors.empty() == jd.report.allOutputOk );
+	CHECK( jd.report.errorOccured == true );
+	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
 	CHECK( jd.report.errors[ 0 ] == errMsg );
+}
+TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[checkJobResults][channels][errormsg]" )
+{
+	const char * preFiller_1  = "Some stuff blablaa\nMore stuff\n";
+	const char * errMsg_1	  = "   Error for some reason : \nReason blabla reasons\nline return reaons\n\n";
+	const char * postFiller_1 = "Not the error text any more";
+	const char * preFiller_2  = "aaaaaaaaah More stuff lol\n...\n";
+	const char * errMsg_2	  = "   Error for some reason : \nReason number two : \ngit gud\n\n";
+	const char * postFiller_2 = "Not the error text one again";
+	using namespace VTX::Tool::Mdprep::Gromacs;
+	GromacsJobData jd;
+	{
+		auto chans	   = jd.channelsLocker.open();
+		chans->stderr_ = "";
+		chans->stderr_ += preFiller_1;
+		chans->stderr_ += errMsg_1;
+		chans->stderr_ += postFiller_1;
+		chans->stderr_ += preFiller_2;
+		chans->stderr_ += errMsg_2;
+		chans->stderr_ += postFiller_2;
+	}
+	jd.expectedOutputFilesIndexes.clear();
+	checkJobResults( jd );
+	CHECK( jd.report.errorOccured == true );
+	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
+	CHECK( jd.report.errors[ 0 ] == errMsg_1 );
+	CHECK( jd.report.errors[ 1 ] == errMsg_2 );
 }

@@ -19,17 +19,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 	};
 	struct JobReport
 	{
-		bool					 finished	   = false;
-		bool					 error_occured = false;
+		bool					 finished	  = false;
+		bool					 errorOccured = false;
 		std::vector<std::string> errors;
-		bool					 allOutputOk
-			= false; // Ouput file(s) are considered Ok if they exists in the file system and are non-null in size
 	};
 	struct GromacsJobData
 	{
 		std::vector<std::string> arguments;
-		std::vector<std::string *>
-			expectedOutputFilesPtrs; // Meant to point toward specific argument that hold path of output files to check
+		std::vector<size_t> expectedOutputFilesIndexes; // Meant to point toward specific argument indexes that hold
+														// path of output files to check
 		VTX::Util::DataLocker<Channels> channelsLocker;
 		JobReport						report;
 		std::optional<Inputs>

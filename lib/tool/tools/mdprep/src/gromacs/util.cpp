@@ -1,3 +1,5 @@
+#include <regex>
+//
 #include "tools/mdprep/gromacs/inputs.hpp"
 //
 #include "tools/mdprep/gromacs/gromacs.hpp"
@@ -46,27 +48,48 @@ namespace VTX::Tool::Mdprep::Gromacs
 		qputenv( "GMXLIB", env_arg );
 	}
 
+	namespace
+	{
+		void checkErrMsg( JobReport & p_report, const std::string & p_text ) noexcept
+		{
+			const std::regex errRegex { "^[ \t]*Error (.|[\r\n])*?\n\n" };
+			for ( auto it = std::sregex_iterator( p_text.begin(), p_text.end(), errRegex );
+				  it != std::sregex_iterator();
+				  ++it )
+			{
+				p_report.errors.push_back( it->operator[]( 0 ).str() );
+			}
+		}
+	} // namespace
+
 	void checkJobResults( GromacsJobData & p_in ) noexcept
 	{
-		// TODO Check for the error pattern
-
-		p_in.report.allOutputOk = true;
-		for ( auto & it : p_in.expectedOutputFilesPtrs )
 		{
-			fs::path f { *it };
-			if ( fs::is_regular_file( f ) == false )
+			auto channels = p_in.channelsLocker.open();
+			checkErrMsg( p_in.report, channels->stderr_ );
+			checkErrMsg( p_in.report, channels->stdout_ );
+		}
+
+		for ( auto & it : p_in.expectedOutputFilesIndexes )
+		{
+			fs::path f { p_in.arguments[ it ] };
+			if ( f.empty() )
+				continue;
+			if ( fs::exists( f ) == false || fs::is_regular_file( f ) == false )
 			{
-				p_in.report.allOutputOk = false;
-				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> not found.", *it ) );
+				p_in.report.errors.push_back(
+					fmt::format( "Expected output file <{}> not found.", p_in.arguments[ it ] )
+				);
 				break;
 			}
 			if ( fs::file_size( f ) == 0 )
 			{
-				p_in.report.allOutputOk = false;
-				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> is empty.", *it ) );
+				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> is empty.", p_in.arguments[ it ] )
+				);
 				break;
 			}
 		}
+		p_in.report.errorOccured = ( p_in.report.errors.empty() == false );
 	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
