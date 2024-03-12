@@ -139,6 +139,17 @@ namespace VTX::App
 				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postRenderCallback.call( p_elapsedTime ); } )
 			);
 		}
+
+		frameInfo.set(
+			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
+			Util::CHRONO_CPU(
+				[ this, p_elapsedTime ]()
+				{
+					_endOfFrameOneShotCallback.call();
+					_endOfFrameOneShotCallback.clear();
+				}
+			)
+		);
 	}
 	void VTXApp::stop() { _stop(); }
 

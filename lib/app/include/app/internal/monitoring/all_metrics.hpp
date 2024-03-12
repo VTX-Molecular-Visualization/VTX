@@ -17,5 +17,7 @@ namespace VTX::App::Internal::Monitoring
 	const size_t PRE_RENDER_DURATION_KEY  = Util::Hashing::hash( "PRE_RENDER_DURATION" );
 	const size_t RENDER_DURATION_KEY	  = Util::Hashing::hash( "RENDER_DURATION" );
 	const size_t POST_RENDER_DURATION_KEY = Util::Hashing::hash( "POST_RENDER_DURATION" );
+
+	const size_t END_OF_FRAME_ONE_SHOT_DURATION_KEY = Util::Hashing::hash( "END_OF_FRAME_ONE_SHOT_DURATION_KEY" );
 } // namespace VTX::App::Internal::Monitoring
 #endif

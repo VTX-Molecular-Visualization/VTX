@@ -3,6 +3,8 @@ set(SOURCES " ")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 add_executable(vtx_app_test ${SOURCES})
 
+configure_target(vtx_app_test)
+
 if (NOT DEFINED _VTX_APP_TEST_CONAN)
 	target_link_libraries(vtx_app_test PUBLIC vtx_util)
 	target_link_libraries(vtx_app_test PUBLIC vtx_renderer)

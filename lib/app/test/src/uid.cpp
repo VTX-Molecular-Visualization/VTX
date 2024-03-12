@@ -6,6 +6,7 @@
 #include <exception>
 #include <limits>
 #include <util/exceptions.hpp>
+#include <util/logger.hpp>
 
 TEST_CASE( "VTX_APP - UID", "[unit]" )
 {
@@ -48,11 +49,12 @@ TEST_CASE( "VTX_APP - UID", "[unit]" )
 	{
 		registration.registerRange( std::numeric_limits<uid>().max() );
 	}
-	catch ( const VTXException & p_e )
+	catch ( const VTXException & )
 	{
 	}
 	catch ( const std::exception & p_e )
 	{
+		VTX::VTX_ERROR( "Unhandled exception : {}", p_e.what() );
 		CHECK( false );
 	}
 

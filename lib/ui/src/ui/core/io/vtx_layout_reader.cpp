@@ -6,8 +6,9 @@ namespace VTX::UI::Core::IO
 	{
 		_result = Result();
 
-		ToolLayoutData layoutData;
+		// ToolLayoutData layoutData;
 		_result.layoutDescriptor.addTool( ToolDescriptor( "RENDER_WINDOW_KEY" ) );
+		_result.layoutDescriptor.addTool( ToolDescriptor( "CONSOLE_TOOL_KEY" ) );
 		_result.layoutDescriptor.addTool( ToolDescriptor( "UI_FEATURE_QUIT" ) );
 		_result.layoutDescriptor.addTool( ToolDescriptor( "MISCELLANEOUS_ORIENT_ON_FIRST_MOLECULE_LOADED" ) );
 	}

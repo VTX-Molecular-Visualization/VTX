@@ -2,9 +2,11 @@
 #define __VTX_UI_QT_QT_PANEL__
 
 #include "ui/core/base_panel.hpp"
+#include "ui/qt/concepts.hpp"
 #include "ui/qt/widget/base_manual_widget.hpp"
 #include <QDialog>
 #include <QDockWidget>
+#include <QSize>
 #include <QWidget>
 #include <type_traits>
 
@@ -39,7 +41,7 @@ namespace VTX::UI::QT
 		virtual void _changeVisibility( const bool p_visible ) = 0;
 	};
 
-	template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
+	template<QTWidgetConcept W>
 	class QtPanelTemplate : public QtPanel, public Widget::BaseManualWidget<W>
 	{
 	  public:
@@ -64,6 +66,9 @@ namespace VTX::UI::QT
 		// For tabified
 		Qt::DockWidgetArea defaultWidgetArea  = Qt::DockWidgetArea::NoDockWidgetArea;
 		Qt::Orientation	   defaultOrientation = Qt::Orientation::Vertical;
+
+	  protected:
+		QWidget * _instantiateMainWidget( const QSize & p_preferredSize, const QSize & p_minimalSize );
 	};
 
 	class QtFloatingWindowPanel : public QtPanelTemplate<QDialog>

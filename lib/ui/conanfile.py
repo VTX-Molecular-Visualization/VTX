@@ -41,8 +41,8 @@ class VTXUiRecipe(ConanFile):
         self.options["qt/*"].with_fontconfig = False
         self.options["qt/*"].with_icu = False
         self.options["qt/*"].with_harfbuzz = False
-        self.options["qt/*"].with_libjpeg = False
-        self.options["qt/*"].with_libpng = False
+        self.options["qt/*"].with_libjpeg = "libjpeg"
+        self.options["qt/*"].with_libpng = True
         self.options["qt/*"].with_sqlite3 = False
         self.options["qt/*"].with_mysql = False
         self.options["qt/*"].with_pq = False

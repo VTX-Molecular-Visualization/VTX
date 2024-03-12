@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_BASE_MENUTOOLBUTTON_SUBMENU_WIDGET__
 
 #include "menu_toolbutton_widget.hpp"
+#include "ui/qt/concepts.hpp"
 #include "ui/qt/ui_action/self_referenced_action.hpp"
 #include <QAction>
 #include <QMenu>
@@ -16,20 +17,24 @@ namespace VTX::UI::QT::Widget::MainMenu
 	  public:
 		void addAction( QAction * const p_action );
 
-		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		void addAction( const std::string & p_name,
-						const W * const		p_receiver,
-						void ( W::*p_action )() const,
-						const bool p_default = false )
+		template<QTWidgetConcept W>
+		void addAction(
+			const std::string & p_name,
+			const W * const		p_receiver,
+			void ( W::*p_action )() const,
+			const bool p_default = false
+		)
 		{
 			UIAction::SelfReferencedAction * const action
 				= new UIAction::SelfReferencedAction( QString::fromStdString( p_name ), _submenu );
 
 			p_receiver->connect( action, &QAction::triggered, p_receiver, p_action );
-			connect( action,
-					 &UIAction::SelfReferencedAction::triggeredSelf,
-					 this,
-					 &MenuToolButtonSubmenuWidget::_actionHasBeenTriggered );
+			connect(
+				action,
+				&UIAction::SelfReferencedAction::triggeredSelf,
+				this,
+				&MenuToolButtonSubmenuWidget::_actionHasBeenTriggered
+			);
 
 			_submenu->addAction( action );
 
@@ -37,20 +42,24 @@ namespace VTX::UI::QT::Widget::MainMenu
 				_setDefaultAction( action );
 		}
 
-		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		void addAction( const std::string & p_name,
-						const W * const		p_receiver,
-						void ( W::*p_action )(),
-						const bool p_default = false )
+		template<QTWidgetConcept W>
+		void addAction(
+			const std::string & p_name,
+			const W * const		p_receiver,
+			void ( W::*p_action )(),
+			const bool p_default = false
+		)
 		{
 			UIAction::SelfReferencedAction * const action
 				= new UIAction::SelfReferencedAction( QString::fromStdString( p_name ), _submenu );
 
 			p_receiver->connect( action, &QAction::triggered, p_receiver, p_action );
-			connect( action,
-					 &UIAction::SelfReferencedAction::triggeredSelf,
-					 this,
-					 &MenuToolButtonSubmenuWidget::_actionHasBeenTriggered );
+			connect(
+				action,
+				&UIAction::SelfReferencedAction::triggeredSelf,
+				this,
+				&MenuToolButtonSubmenuWidget::_actionHasBeenTriggered
+			);
 
 			_submenu->addAction( action );
 
