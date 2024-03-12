@@ -13,10 +13,8 @@ namespace
 {
 	std::string pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
 	{
-		const std::chrono::local_time time				 = std::chrono::current_zone()->to_local( p_timePoint );
-		const std::chrono::local_time timeFloorToSeconds = std::chrono::floor<std::chrono::seconds>( time );
-
-		return fmt::format( "{:%T}", timeFloorToSeconds );
+		const std::string timePointStr = fmt::format( "{:%T}", p_timePoint );
+		return timePointStr.substr( 0, 8 );
 	}
 	VTX::Util::LogInfo spdLogLogMsgToLogInfo( const spdlog::details::log_msg & p_msg )
 	{
