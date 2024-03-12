@@ -364,8 +364,6 @@ namespace VTX::Bench
 			lastTime							= now;
 			*/
 
-			const Renderer::StructInfos & infos = p_renderer->getInfos();
-
 			if ( ImGui::Begin( "Scene" ) )
 			{
 				// ImGui::Checkbox( "Perspective", &isPerspective );
@@ -380,20 +378,41 @@ namespace VTX::Bench
 				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
+				auto displayMemory = []( const size_t p_memory ) -> std::string
+				{
+					if ( p_memory < 1000 )
+					{
+						return fmt::format( "{}b", p_memory );
+					}
+					else if ( p_memory < 1000 * 1000 )
+					{
+						return fmt::format( "{}kb", p_memory / 1000 );
+					}
+					else if ( p_memory < 1000 * 1000 * 1000 )
+					{
+						return fmt::format( "{}Mb", p_memory / ( 1000 * 1000 ) );
+					}
+					else
+					{
+						return fmt::format( "{}Gb", p_memory / ( 1000 * 1000 * 1000 ) );
+					}
+				};
+
+				const Renderer::StructInfos & infos = p_renderer->getInfos();
 				ImGui::ProgressBar(
 					float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
 						/ infos.gpuMemoryInfoTotalAvailable,
 					ImVec2( 0.f, 0.f ),
 					fmt::format(
 						"{} / {}",
-						( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
-						infos.gpuMemoryInfoTotalAvailable
+						displayMemory( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
+						displayMemory( infos.gpuMemoryInfoTotalAvailable )
 					)
 						.c_str()
 				);
 
-				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-				ImGui::Text( "GPU memory" );
+				ImGui::Text( fmt::format( "Buffers: {}", displayMemory( infos.currentSizeBuffers ) ).c_str() );
+				ImGui::Text( fmt::format( "Textures: {}", displayMemory( infos.currentSizeTextures ) ).c_str() );
 
 				size_t idMolecule = 0;
 				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )

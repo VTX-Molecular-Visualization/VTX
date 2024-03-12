@@ -704,7 +704,7 @@ namespace VTX::Renderer::Context
 				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] = true;
 			}
 
-			VTX_DEBUG( "GL extension loaded: {}", extension );
+			// VTX_DEBUG( "GL extension loaded: {}", extension );
 		}
 	}
 
@@ -714,19 +714,53 @@ namespace VTX::Renderer::Context
 #if ( GL_NVX_gpu_memory_info == 1 )
 		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )
 		{
-			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &p_infos.gpuMemoryInfoDedicated );
-			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &p_infos.gpuMemoryInfoTotalAvailable );
-			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &p_infos.gpuMemoryInfoCurrentAvailable );
+			int gpuMemoryInfoDedicated, gpuMemoryInfoTotalAvailable, gpuMemoryInfoCurrentAvailable;
+
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &gpuMemoryInfoDedicated );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &gpuMemoryInfoTotalAvailable );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &gpuMemoryInfoCurrentAvailable );
+
+			p_infos.gpuMemoryInfoDedicated		  = gpuMemoryInfoDedicated * 1000ll;
+			p_infos.gpuMemoryInfoTotalAvailable	  = gpuMemoryInfoTotalAvailable * 1000ll;
+			p_infos.gpuMemoryInfoCurrentAvailable = gpuMemoryInfoCurrentAvailable * 1000ll;
 		}
 #endif
 #if ( GL_ATI_meminfo == 1 )
 		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] )
 		{
-			// TODO
+			// TODO?
+			// VBO_FREE_MEMORY_ATI 0x87FB
+			// TEXTURE_FREE_MEMORY_ATI 0x87FC
+			// RENDERBUFFER_FREE_MEMORY_ATI 0x87FD
 		}
-	}
 #endif
 
+		// Count total size used by buffers.
+		size_t totalSizeBuffers = 0;
+		for ( const auto & [ name, bo ] : _bos )
+		{
+			totalSizeBuffers += bo->getSize();
+		}
+		for ( const auto & [ name, ssbo ] : _ssbos )
+		{
+			totalSizeBuffers += ssbo->getSize();
+		}
+		for ( const auto & [ name, ubo ] : _ubos )
+		{
+			totalSizeBuffers += ubo->getSize();
+		}
+
+		// Count total size used by textures.
+		size_t totalSizeTextures = 0;
+		for ( const auto & [ name, texture ] : _textures )
+		{
+			size_t textureSize = texture->getWidth() * texture->getHeight() * _mapFormatSizes[ texture->getFormat() ];
+			totalSizeTextures += textureSize;
+		}
+
+		p_infos.currentSizeBuffers	= totalSizeBuffers;
+		p_infos.currentSizeTextures = totalSizeTextures;
+	}
 	void APIENTRY OpenGL45::_debugMessageCallback(
 		const GLenum   p_source,
 		const GLenum   p_type,
@@ -809,6 +843,11 @@ namespace VTX::Renderer::Context
 		{ E_FORMAT::R16F, GL_R16F },
 		{ E_FORMAT::R32F, GL_R32F },
 		{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },
+	};
+
+	std::map<const GLenum, const size_t> OpenGL45::_mapFormatSizes = {
+		{ GL_RGB16F, 6 }, { GL_RGBA16F, 8 }, { GL_RGBA32UI, 16 }, { GL_RGBA32F, 16 },			{ GL_RG32UI, 8 },
+		{ GL_R8, 1 },	  { GL_R16F, 2 },	 { GL_R32F, 4 },	  { GL_DEPTH_COMPONENT32F, 4 },
 	};
 
 	std::map<const E_WRAPPING, const GLint> OpenGL45::_mapWrappings = {

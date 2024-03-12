@@ -126,6 +126,7 @@ namespace VTX::Renderer::Context
 		static std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments;
 		static std::map<const E_PRIMITIVE, const GLenum>	  _mapPrimitives;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormats;
+		static std::map<const GLenum, const size_t>			  _mapFormatSizes;
 		static std::map<const E_WRAPPING, const GLint>		  _mapWrappings;
 		static std::map<const E_FILTERING, const GLint>		  _mapFilterings;
 		static std::map<const E_TYPE, const GLenum>			  _mapTypes;

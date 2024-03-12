@@ -100,6 +100,10 @@ namespace VTX::Renderer::Context::GL
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}
 
+		inline size_t getWidth() const { return _width; }
+		inline size_t getHeight() const { return _height; }
+		inline GLenum getFormat() const { return _format; }
+
 	  private:
 		GLuint _id	   = GL_INVALID_INDEX;
 		GLenum _target = 0;
