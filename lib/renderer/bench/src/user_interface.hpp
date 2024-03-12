@@ -363,7 +363,8 @@ namespace VTX::Bench
 			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
 			lastTime							= now;
 			*/
-			const Renderer::StructInfos & infos = p_renderer->infos;
+
+			const Renderer::StructInfos & infos = p_renderer->getInfos();
 
 			if ( ImGui::Begin( "Scene" ) )
 			{
@@ -390,6 +391,7 @@ namespace VTX::Bench
 					)
 						.c_str()
 				);
+
 				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
 				ImGui::Text( "GPU memory" );
 

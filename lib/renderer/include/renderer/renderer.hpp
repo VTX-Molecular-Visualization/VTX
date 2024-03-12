@@ -219,9 +219,15 @@ namespace VTX::Renderer
 		inline Proxy::Representations * getProxyRepresentations() { return _proxyRepresentations; }
 		inline Proxy::Voxels *			getProxyVoxels() { return _proxyVoxels; }
 
-		size_t		width;
-		size_t		height;
-		StructInfos infos;
+		inline StructInfos getInfos()
+		{
+			StructInfos infos;
+			_context->fillInfos( infos );
+			return infos;
+		}
+
+		size_t width;
+		size_t height;
 
 		size_t sizeAtoms   = 0;
 		size_t sizeBonds   = 0;

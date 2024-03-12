@@ -98,12 +98,7 @@ namespace VTX::Renderer::Context
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
-		inline void fillInfos( StructInfos & p_infos ) const
-		{
-			p_infos.gpuMemoryInfoDedicated		  = _openglInfos.gpuMemoryInfoDedicatedVidmemNVX;
-			p_infos.gpuMemoryInfoTotalAvailable	  = _openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX;
-			p_infos.gpuMemoryInfoCurrentAvailable = _openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX;
-		}
+		void fillInfos( StructInfos & p_infos ) const;
 
 		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const { return GL::CHRONO_GPU( p_task ); }
 

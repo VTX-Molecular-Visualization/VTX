@@ -103,8 +103,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	const Renderer::Proxy::Molecule & gpuProxyComponent
 		= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( moleculeEntity );
 
-	REQUIRE( gpuProxyComponent.atomIds != nullptr );
-	REQUIRE( ( ( *gpuProxyComponent.atomIds )[ 2 ] - ( *gpuProxyComponent.atomIds )[ 0 ] ) == uint( 2 ) );
+	REQUIRE( gpuProxyComponent.atomIds.empty() == false );
+	REQUIRE( ( ( gpuProxyComponent.atomIds )[ 2 ] - ( gpuProxyComponent.atomIds )[ 0 ] ) == uint( 2 ) );
 }
 
 TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )

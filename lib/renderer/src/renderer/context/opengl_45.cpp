@@ -699,28 +699,33 @@ namespace VTX::Renderer::Context
 			{
 				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
 			}
-			else if ( strcmp( "GL_ATI_meminfo", extension ) == 0 )
+			if ( strcmp( "GL_ATI_meminfo", extension ) == 0 )
 			{
-				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::GL_ATI_meminfo ] = true;
+				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] = true;
 			}
 
 			VTX_DEBUG( "GL extension loaded: {}", extension );
 		}
+	}
 
+	void OpenGL45::fillInfos( StructInfos & p_infos ) const
+	{
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
 		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )
 		{
-			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoDedicatedVidmemNVX );
-			glGetIntegerv(
-				GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &_openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX
-			);
-			glGetIntegerv(
-				GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &_openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX
-			);
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &p_infos.gpuMemoryInfoDedicated );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &p_infos.gpuMemoryInfoTotalAvailable );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &p_infos.gpuMemoryInfoCurrentAvailable );
 		}
 #endif
+#if ( GL_ATI_meminfo == 1 )
+		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] )
+		{
+			// TODO
+		}
 	}
+#endif
 
 	void APIENTRY OpenGL45::_debugMessageCallback(
 		const GLenum   p_source,

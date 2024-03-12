@@ -53,7 +53,6 @@ namespace VTX::Renderer
 		sizeBonds	= 0;
 		sizeRibbons = 0;
 		sizeVoxels	= 0;
-		infos		= StructInfos();
 	}
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
@@ -764,16 +763,13 @@ namespace VTX::Renderer
 		const float			 p_far
 	)
 	{
-		/*
-		Mat4f matrixProjectionOld;
-		getUniform( matrixProjectionOld, "Matrix projection" );
-		Mat4f matrixProjection = Util::Math::perspective(
-			Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
-		);
+		const Mat4f & matrixProjectionOld = *_proxyCamera->matrixProjection;
+		Mat4f		  matrixProjection	  = Util::Math::perspective(
+			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
+		   );
 		setUniform( matrixProjection, "Matrix projection" );
 		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
 		setUniform( matrixProjectionOld, "Matrix projection" );
-		*/
 	}
 
 } // namespace VTX::Renderer

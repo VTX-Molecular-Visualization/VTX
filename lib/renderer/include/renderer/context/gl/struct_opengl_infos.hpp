@@ -6,7 +6,7 @@ namespace VTX::Renderer::Context::GL
 	enum E_GL_EXTENSIONS
 	{
 		NVX_gpu_memory_info = 0,
-		GL_ATI_meminfo,
+		ATI_meminfo,
 		EXTENSIONS_COUNT
 	};
 
@@ -26,10 +26,6 @@ namespace VTX::Renderer::Context::GL
 		int glMaxUniformBlockSize;
 		int glMaxShaderStorageBlockSize;
 		int glMaxShaderStorageBufferBindings;
-
-		int gpuMemoryInfoDedicatedVidmemNVX;
-		int gpuMemoryInfoTotalAvailableMemoryNVX;
-		int gpuMemoryInfoCurrentAvailableVidMemNVX;
 
 		std::array<bool, E_GL_EXTENSIONS::EXTENSIONS_COUNT> glExtensions = { false };
 	};

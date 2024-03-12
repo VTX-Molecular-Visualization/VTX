@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.23)
 project(vtx_renderer)
 
 find_package(vtx_util CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
 
 set(_VTX_RENDERER_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)

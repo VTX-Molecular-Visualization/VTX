@@ -9,8 +9,8 @@ namespace VTX::Renderer::Proxy
 
 	struct Camera
 	{
-		const Mat4f * const matrixView;
-		const Mat4f * const matrixProjection;
+		const Mat4f * matrixView;
+		const Mat4f * matrixProjection;
 
 		const Vec3f & cameraPosition;
 		const Vec2i & mousePosition;

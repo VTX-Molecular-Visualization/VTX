@@ -20,7 +20,6 @@ class VTXRecipe(ConanFile):
         self.requires("cpr/1.10.5")
         self.requires("catch2/3.4.0")
         self.requires("chemfiles/0.10.4.1")
-        self.requires("glad/0.1.36")
         self.requires("sdl/2.28.3")
         self.requires("imgui/1.90.1")
         self.requires("stb/cci.20220909")
@@ -31,12 +30,7 @@ class VTXRecipe(ConanFile):
         self.requires("gromacs/2024.0") 
         self.requires("fmt/10.2.1")
 
-    def config_options(self):
-        self.options["glad/*"].shared = False
-        self.options["glad/*"].spec = "gl"
-        self.options["glad/*"].gl_profile = "core"
-        self.options["glad/*"].gl_version = 4.5
-        #self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
+    def config_options(self):        
         # Package options.
         self.options["qt/*"].shared = True
         self.options["qt/*"].opengl = "desktop"

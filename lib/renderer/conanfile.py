@@ -14,21 +14,14 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor", "shaders/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
-        self.requires("glad/0.1.36", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-        
-        self.options["glad/*"].shared = False
-        self.options["glad/*"].spec = "gl"
-        self.options["glad/*"].gl_profile = "core"
-        self.options["glad/*"].gl_version = 4.5
-        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
 
     def generate(self):
         copy(self, "*.cmake", self.source_folder, self.build_folder)

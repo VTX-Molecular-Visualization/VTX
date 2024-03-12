@@ -178,6 +178,14 @@ namespace VTX::Renderer
 			_context.reset( nullptr );
 		}
 
+		void patch( Instructions & p_outInstructions, InstructionsDurationRanges & p_outInstructionsDurationRanges )
+		{
+			assert( isBuilt() );
+
+			// Generate render queue.
+			_scheduler.schedule( _passes, _links, _output, _renderQueue );
+		}
+
 		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace_back( p_uniforms ); }
 
 	  private:

@@ -87,26 +87,21 @@ namespace VTX::Bench
 		);
 		vecColorResidues.emplace_back( std::move( colorResidues ) );
 
-		Renderer::Proxy::Molecule * resPtr = new Renderer::Proxy::Molecule {
+		return std::make_unique<Renderer::Proxy::Molecule>( Renderer::Proxy::Molecule {
 			&p_molecule.transform,
 			&p_molecule.trajectory.frames.front(),
-			vecColors.back().get(),
-			vecRadii.back().get(),
-			vecVisibilities.back().get(),
-			vecSelections.back().get(),
-			vecIdAtoms.back().get(),
 			&p_molecule.bondPairAtomIndexes,
 			&p_molecule.atomNames,
-			vecIdResidues.back().get(),
 			reinterpret_cast<const std::vector<uchar> *>( &p_molecule.residueSecondaryStructureTypes ),
-			vecColorResidues.back().get(),
 			&p_molecule.residueFirstAtomIndexes,
 			&p_molecule.residueAtomCounts,
 			&p_molecule.chainFirstResidues,
-			&p_molecule.chainResidueCounts
-		};
-
-		return std::unique_ptr<Renderer::Proxy::Molecule>( resPtr );
+			&p_molecule.chainResidueCounts,
+			*vecColors.back(),
+			*vecRadii.back(),
+			*vecIdAtoms.back(),
+			*vecColorResidues.back(),
+			*vecIdResidues.back() } );
 	}
 
 	// Grid.
