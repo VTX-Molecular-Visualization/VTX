@@ -77,7 +77,12 @@ namespace VTX::IO::Reader
 			return;
 
 		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
-		std::copy( p_atomPositions.begin(), p_atomPositions.end(), moleculeFrame.begin() );
+		const size_t atomCount = Util::Math::min( moleculeFrame.size(), p_atomPositions.size() );
+
+		for ( size_t i = 0; i < atomCount; i++ )
+		{
+			moleculeFrame[ i ] = p_atomPositions[ i ];
+		}
 	}
 
 	void LibChemfiles::_readTrajectoryFrames( chemfiles::Trajectory &								  p_trajectory,
