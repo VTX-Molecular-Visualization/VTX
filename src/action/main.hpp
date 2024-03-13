@@ -84,12 +84,14 @@ namespace VTX::Action::Main
 		{
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
+			_autoFindTrajectoryTargets = false;
 		}
 		explicit Open( const IO::FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets )
 		{
 			_trajectoryTargets.resize( p_targets.size() );
 			std::copy( p_targets.begin(), p_targets.end(), _trajectoryTargets.begin() );
 			_paths.emplace_back( p_trajectoryPath );
+			_autoFindTrajectoryTargets = false;
 		}
 
 		virtual void execute() override
@@ -136,16 +138,7 @@ namespace VTX::Action::Main
 					return;
 				}
 
-				const bool trajectoryTargetsForced = _trajectoryTargets.size() > 0;
-
-				if ( trajectoryTargetsForced )
-				{
-					for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
-					{
-						loader->addDynamicTarget( trajectoryTarget );
-					}
-				}
-				else
+				if ( _autoFindTrajectoryTargets )
 				{
 					for ( const Object3D::Scene::PairMoleculePtrFloat & molPair :
 						  VTXApp::get().getScene().getMolecules() )
@@ -153,8 +146,16 @@ namespace VTX::Action::Main
 						loader->addDynamicTarget( molPair.first );
 					}
 				}
+				else
+				{
+					for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+					{
+						loader->addDynamicTarget( trajectoryTarget );
+					}
+				}
 
-				loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
+				loader->setOpenTrajectoryAsMoleculeIfTargetFail( _autoFindTrajectoryTargets
+																 || _trajectoryTargets.size() == 0 );
 
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
@@ -201,7 +202,8 @@ namespace VTX::Action::Main
 		std::vector<IO::FilePath>			  _paths = std::vector<IO::FilePath>();
 		std::map<IO::FilePath, std::string *> _buffers;
 
-		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
+		bool						   _autoFindTrajectoryTargets = true;
+		std::vector<Model::Molecule *> _trajectoryTargets		  = std::vector<Model::Molecule *>();
 	};
 
 	class OpenApi : public BaseAction

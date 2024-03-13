@@ -178,7 +178,7 @@ namespace VTX::UI::Widget::Dialog
 		}
 		else if ( _createNewMoleculeRadioButton->isChecked() )
 		{
-			VTX_ACTION( new Action::Main::Open( _filepath ) );
+			VTX_ACTION( new Action::Main::Open( _filepath, {} ) );
 		}
 
 		close();
