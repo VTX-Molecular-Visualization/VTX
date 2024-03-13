@@ -1,11 +1,9 @@
 #include "camera.hpp"
 #include "input_manager.hpp"
+#include "scene.hpp"
 #include "user_interface.hpp"
-#include "util.hpp"
 #include <iostream>
-#include <numeric>
 #include <renderer/facade.hpp>
-#include <util/math.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -79,55 +77,26 @@ int main( int, char ** )
 		inputManager.callbackMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };
 
-		// Models/proxies.
-		std::vector<std::unique_ptr<Molecule>>					molecules;
-		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
-		std::vector<Vec3f>										directions;
-
-		auto addMolecule = [ & ]( const std::string & p_name )
-		{
-			float time = CHRONO_CPU(
-				[ & ]()
-				{
-					if ( p_name.find( '.' ) != std::string::npos )
-					{
-						molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( p_name ) ) );
-					}
-					else
-					{
-						molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( p_name ) ) );
-					}
-
-					molecules.back()->transform
-						= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-					IO::Util::SecondaryStructure::computeStride( *molecules.back() );
-					proxies.emplace_back( proxify( *molecules.back() ) );
-					renderer.addProxyMolecule( *proxies.back() );
-					directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
-					proxies.back()->onRepresentation( rand() % 4 );
-				}
-			);
-
-			VTX_INFO( "Molecule {} added in {}s", p_name, time );
-		};
+		// Scene.
+		Scene scene;
 
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			if ( p_key == SDL_SCANCODE_F1 )
 			{
-				addMolecule( "4hhb.pdb" );
+				renderer.addProxyMolecule( scene.addMolecule( "4hhb.pdb" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F2 )
 			{
-				addMolecule( "1aga.pdb" );
+				renderer.addProxyMolecule( scene.addMolecule( "1aga.pdb" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F3 )
 			{
-				addMolecule( "4v6x.mmtf" );
+				renderer.addProxyMolecule( scene.addMolecule( "4v6x.mmtf" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F4 )
 			{
-				addMolecule( "3j3q.mmtf" );
+				renderer.addProxyMolecule( scene.addMolecule( "3j3q.mmtf" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F5 )
 			{
@@ -174,7 +143,7 @@ int main( int, char ** )
 
 		// renderer.setProxyRenderSettings( renderSettings );
 
-		addMolecule( "4hhb" );
+		renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
 
 		// Main loop.
 		while ( isRunning )
@@ -185,12 +154,7 @@ int main( int, char ** )
 			// Update scene.
 			if ( ui.isUpdateScene() )
 			{
-				int i = 0;
-				for ( auto & molecule : molecules )
-				{
-					molecule->transform = Math::rotate( molecule->transform, deltaTime, directions[ i ] );
-					proxies[ i++ ]->onTransform();
-				}
+				scene.update( deltaTime );
 			}
 
 			// Renderer.

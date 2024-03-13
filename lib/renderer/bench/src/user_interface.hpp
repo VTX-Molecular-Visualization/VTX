@@ -273,8 +273,8 @@ namespace VTX::Bench
 		{
 			if ( ImGui::Begin( "Camera" ) )
 			{
-				float near				  = p_camera->getNear();
-				float far				  = p_camera->getFar();
+				float cameraNear		  = p_camera->getNear();
+				float cameraFar			  = p_camera->getFar();
 				float fov				  = p_camera->getFov();
 				float velocityTranslation = p_camera->getVelocityTranslation();
 				float velocityRotation	  = p_camera->getVelocityRotation();
@@ -282,13 +282,13 @@ namespace VTX::Bench
 				// static bool	 isPerspective = true;
 
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				if ( ImGui::SliderFloat( "Near", &near, Camera::NEAR_MIN, Camera::NEAR_MAX ) )
+				if ( ImGui::SliderFloat( "Near", &cameraNear, Camera::NEAR_MIN, Camera::NEAR_MAX ) )
 				{
-					p_camera->setNear( near );
+					p_camera->setNear( cameraNear );
 				}
-				if ( ImGui::SliderFloat( "Far", &far, Camera::FAR_MIN, Camera::FAR_MAX ) )
+				if ( ImGui::SliderFloat( "Far", &cameraFar, Camera::FAR_MIN, Camera::FAR_MAX ) )
 				{
-					p_camera->setFar( far );
+					p_camera->setFar( cameraFar );
 				}
 				if ( ImGui::SliderFloat( "Fov", &fov, Camera::FOV_MIN, Camera::FOV_MAX ) )
 				{
