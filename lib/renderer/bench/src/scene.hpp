@@ -36,8 +36,21 @@ namespace VTX::Bench
 			return *_proxies.back();
 		};
 
+		void removeMolecule( const size_t p_index )
+		{
+			_proxies[ p_index ]->onRemove();
+			_molecules.erase( _molecules.begin() + p_index );
+			_proxies.erase( _proxies.begin() + p_index );
+			_directions.erase( _directions.begin() + p_index );
+		}
+
 		void update( const float p_deltaTime )
 		{
+			if ( !isUpdate )
+			{
+				return;
+			}
+
 			int i = 0;
 			for ( auto & molecule : _molecules )
 			{
@@ -47,7 +60,12 @@ namespace VTX::Bench
 		}
 
 		inline const std::vector<std::unique_ptr<Core::Struct::Molecule>> & getMolecules() const { return _molecules; }
-		inline const std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> & getProxies() const { return _proxies; }
+		inline const std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> & getProxiesMolecules() const
+		{
+			return _proxies;
+		}
+
+		bool isUpdate = false;
 
 	  private:
 		std::vector<std::unique_ptr<Core::Struct::Molecule>>	_molecules;

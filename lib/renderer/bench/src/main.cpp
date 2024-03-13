@@ -1,6 +1,4 @@
-#include "camera.hpp"
 #include "input_manager.hpp"
-#include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/facade.hpp>
@@ -152,16 +150,13 @@ int main( int, char ** )
 			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
-			if ( ui.isUpdateScene() )
-			{
-				scene.update( deltaTime );
-			}
+			scene.update( deltaTime );
 
 			// Renderer.
 			renderer.render( time );
 
 			// UI.
-			ui.draw( &camera, &renderer );
+			ui.draw( &camera, &scene, &renderer );
 
 			// Events.
 			SDL_Event event;
