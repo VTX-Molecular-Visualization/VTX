@@ -66,6 +66,7 @@ function(vtx_copy_registered_data target)
 
 	endforeach()
 
+	message("VTX -- All copy targets have been added.")
 endfunction()
 	
 # All copies are cumulative until this function is called

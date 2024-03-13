@@ -35,8 +35,8 @@ namespace
 	};
 	struct TestContext
 	{
-		IoPaths										   paths;
-		VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs args;
+		IoPaths									   paths;
+		VTX::Tool::Mdprep::Gromacs::GromacsJobData args;
 	};
 
 	bool haveSameContent( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
@@ -74,7 +74,7 @@ namespace
 
 		CHECK_NOFAIL( fs::is_regular_file( out.paths.in ) );
 
-		out.args = VTX::Tool::Mdprep::Gromacs::GromacsCommandArgs { {
+		out.args = VTX::Tool::Mdprep::Gromacs::GromacsJobData { {
 			"pdb2gmx",
 			"-f",
 			out.paths.in.make_preferred().string(),
@@ -104,7 +104,7 @@ namespace
 	{
 		fs::path full_gmx_exe_path
 			= VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath();
-		VTX::Tool::Mdprep::Gromacs::submitGromacsCommand( full_gmx_exe_path, p_context.args );
+		VTX::Tool::Mdprep::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		CHECK( fs::exists( p_context.paths.outGro ) );
@@ -115,15 +115,12 @@ namespace
 	}
 
 } // namespace
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsCommand][pdb2gmx][1ubq]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsJob][pdb2gmx][1ubq]" )
 {
 	VTX::test::setup_env f;
 	check_pdb( setupTestContext( "1ubq" ) );
 }
-TEST_CASE(
-	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submitGromacsCommand][pdb2gmx][1ubq][interactive][full][lys]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][full][lys]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env					  f;
@@ -141,10 +138,7 @@ TEST_CASE(
 	contextData.args.interactiveSettings = Pdb2gmxInputs( inputs );
 	check_pdb( contextData );
 }
-TEST_CASE(
-	"VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6",
-	"[submitGromacsCommand][pdb2gmx][1ubq][interactive][default]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][default]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env					  f;
@@ -157,7 +151,7 @@ TEST_CASE(
 	contextData.args.interactiveSettings.emplace( std::move( inputs ) );
 	check_pdb( contextData );
 }
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsCommand][pdb2gmx][8hu4][interactive][slow]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsJob][pdb2gmx][8hu4][interactive][slow]" )
 {
 	using namespace VTX::Tool::Mdprep::Gromacs;
 	VTX::test::setup_env					  f;
@@ -172,11 +166,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsComman
 	check_pdb( contextData );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submitGromacsCommand][pdb2gmx][8hu4][slow]" )
+TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4", "[submitGromacsJob][pdb2gmx][8hu4][slow]" )
 {
 	VTX::test::setup_env f;
 	check_pdb( setupTestContext( "8hu4.nolig" ) );
 }
 
-// TODO : check with interactive stuff
 // TODO : check with other forcefields as well

@@ -22,7 +22,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			out.clear();
 		}
 
-		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
+		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsJobData & p_args ) noexcept
 		{
 			std::string unsentBuf, // Used when the stdout is not ready to be sent
 				bufErr, bufOut;
@@ -83,7 +83,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 			fillMissingString( p_proc.readAllStandardOutput(), bufOut );
 			fillMissingString( *channels, bufErr, bufOut );
 		}
-		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsCommandArgs & p_args ) noexcept
+		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsJobData & p_args ) noexcept
 		{
 			QByteArray bufErr, bufOut;
 
@@ -101,7 +101,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 	} // namespace
 
-	void submitGromacsCommand( const fs::path & p_gmxExe, GromacsCommandArgs & p_args )
+	void submitGromacsJob( const fs::path & p_gmxExe, GromacsJobData & p_args )
 	{
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
