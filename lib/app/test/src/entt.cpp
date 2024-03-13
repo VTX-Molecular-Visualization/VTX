@@ -5,6 +5,7 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/render/proxy_molecule.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -100,11 +101,13 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
-	const Renderer::Proxy::Molecule & gpuProxyComponent
-		= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( moleculeEntity );
+	const Component::Chemistry::Molecule & moleculeComponent
+		= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
 
-	REQUIRE( gpuProxyComponent.atomIds.empty() == false );
-	REQUIRE( ( ( gpuProxyComponent.atomIds )[ 2 ] - ( gpuProxyComponent.atomIds )[ 0 ] ) == uint( 2 ) );
+	const Component::Render::ProxyMolecule & gpuProxyComponent
+		= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
+
+	REQUIRE( gpuProxyComponent.getProxy().atomNames == &moleculeComponent.getMoleculeStruct().atomNames );
 }
 
 TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )

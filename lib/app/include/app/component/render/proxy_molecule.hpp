@@ -17,6 +17,9 @@ namespace VTX::App::Component::Render
 		ProxyMolecule();
 		void init();
 
+		VTX::Renderer::Proxy::Molecule &	   getProxy() { return *_proxyPtr; }
+		const VTX::Renderer::Proxy::Molecule & getProxy() const { return *_proxyPtr; }
+
 	  private:
 		std::vector<uchar> generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
 		std::vector<float> generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const;
