@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// taking the first one that matches the required extension.
 	struct CumulativeOuputFiles
 	{
-		std::vector<std::string *> fileStringPtrs;
+		std::vector<const std::string *> fileStringPtrs;
 	};
 
 	// Execute gromacs with input arguments then check if job issued and error
