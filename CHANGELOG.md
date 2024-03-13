@@ -8,7 +8,7 @@
 - Fix Memory leak when reading trajectory in SES representation.
 - Debug crazy camera movement after focusing render panel.
 
-## UI
+### UI
 
 - Display warning pop-up when trying to compute huge SES.
 - Add feedback when loading a molecule.
@@ -31,7 +31,7 @@
 - Optimize duplicate frame submenu.
 - Optimize selection.
 
-## UI
+### UI
 
 - Improve resize area of docked panels.
 
