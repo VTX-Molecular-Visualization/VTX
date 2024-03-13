@@ -5,9 +5,7 @@ namespace VTX::UI::QT::Controller
 {
 	void BaseShortcutController::init()
 	{
-		INPUT_MANAGER().onKeyPressed.addCallback(
-			this, [ this ]( Core::Input::Key p_key ) { _onKeyPressed( p_key ); }
-		);
+		INPUT_MANAGER().onKeyPressed += [ this ]( Core::Input::Key p_key ) { _onKeyPressed( p_key ); };
 	}
 
 	void BaseShortcutController::referenceShortcut( const Core::Input::Shortcut & p_shortcut )

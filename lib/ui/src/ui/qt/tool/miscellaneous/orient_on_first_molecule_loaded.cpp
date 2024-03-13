@@ -13,9 +13,8 @@ namespace VTX::UI::QT::Tool::Miscellaneous
 	OrientOnFirstMoleculeLoadedTool::OrientOnFirstMoleculeLoadedTool() : BaseQtTool() {}
 	void OrientOnFirstMoleculeLoadedTool::instantiateTool()
 	{
-		App::SCENE().onSceneItemAddedCallback().addCallback(
-			this, [ this ]( App::Component::Scene::SceneItemComponent & p_item ) { _onItemAddedInScene( p_item ); }
-		);
+		App::SCENE().onSceneItemAdded +=
+			[ this ]( const App::Component::Scene::SceneItemComponent & p_item ) { _onItemAddedInScene( p_item ); };
 	}
 
 	void OrientOnFirstMoleculeLoadedTool::_onItemAddedInScene( const App::Component::Scene::SceneItemComponent & p_item

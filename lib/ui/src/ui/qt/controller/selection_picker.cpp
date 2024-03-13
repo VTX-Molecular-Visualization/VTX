@@ -35,17 +35,14 @@ namespace VTX::UI::QT::Controller
 {
 	void SelectionPicker::init()
 	{
-		INPUT_MANAGER().onMouseLeftClicked.addCallback(
-			this, [ this ]( Vec2i p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); }
-		);
+		INPUT_MANAGER().onMouseLeftClicked +=
+			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseLeftDoubleClicked.addCallback(
-			this, [ this ]( Vec2i p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); }
-		);
+		INPUT_MANAGER().onMouseLeftDoubleClicked +=
+			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseRightClicked.addCallback(
-			this, [ this ]( Vec2i p_mousePosition ) { _onMouseRightClick( p_mousePosition ); }
-		);
+		INPUT_MANAGER().onMouseRightClicked +=
+			[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
 	}
 
 	void SelectionPicker::_onMouseLeftClick( const Vec2i & p_mousePos )

@@ -57,29 +57,27 @@ namespace VTX::App
 		_renderer = std::make_unique<Renderer::Facade>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
 
 		// Regsiter loop events
-		onUpdateCallback += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); }
+		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 
-		onPostUpdateCallback
-			+=
-			[]( const float p_elapsedTime ) { THREADING().lateUpdate(); }
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
-			// Event manager - Useless: nothing is delayed.
-			//_updateCallback.addCallback(
-			//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
-			//);
+		// Event manager - Useless: nothing is delayed.
+		//_updateCallback.addCallback(
+		//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
+		//);
 
-			// Useless while delayed actions are disabled
-			//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime );
-			//}
-			//);
+		// Useless while delayed actions are disabled
+		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime );
+		//}
+		//);
 
-			// TODO: use camera callbacks.
-			//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
-			//_renderCallback.addCallback(
-			//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
-			//);
+		// TODO: use camera callbacks.
+		//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
+		//_renderCallback.addCallback(
+		//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
+		//);
 
-			_tickChrono.start();
+		_tickChrono.start();
 
 		_handleArgs( p_args );
 
@@ -127,21 +125,20 @@ namespace VTX::App
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
-		// if ( _renderer->getRenderGraph().isBuilt() )
-		{
-			frameInfo.set(
-				Internal::Monitoring::PRE_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
-			);
-			frameInfo.set(
-				Internal::Monitoring::RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender p_elapsedTime ); } )
-			);
-			frameInfo.set(
-				Internal::Monitoring::POST_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
-			);
-		}
+		frameInfo.set(
+			Internal::Monitoring::PRE_RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
+		);
+
+		frameInfo.set(
+			Internal::Monitoring::RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender( p_elapsedTime ); } )
+		);
+
+		frameInfo.set(
+			Internal::Monitoring::POST_RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
+		);
 
 		frameInfo.set(
 			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,

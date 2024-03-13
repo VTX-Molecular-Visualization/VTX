@@ -7,11 +7,11 @@
 #include <QWheelEvent>
 #include <Qt>
 #include <app/application/system/system_registration.hpp>
-#include <app/core/callback_event.hpp>
 #include <app/core/system/base_system.hpp>
 #include <map>
 #include <queue>
 #include <set>
+#include <util/callback.hpp>
 #include <util/concepts.hpp>
 #include <util/types.hpp>
 
@@ -60,8 +60,8 @@ namespace VTX::UI::QT::Input
 		bool						isModifierExclusive( const ModifierFlag & p_modifier ) const;
 		void						clearKeyboardBuffer();
 
-		App::Core::CallbackEmitter<Key> onKeyPressed  = App::Core::CallbackEmitter<Key>();
-		App::Core::CallbackEmitter<Key> onKeyReleased = App::Core::CallbackEmitter<Key>();
+		Util::Callback<Key> onKeyPressed;
+		Util::Callback<Key> onKeyReleased;
 
 		// Mouse
 		void		  handleMouseEvent( const QMouseEvent & p_event );
@@ -75,9 +75,9 @@ namespace VTX::UI::QT::Input
 		const Vec2i & getMouseRightClickPosition() const;
 		int			  getDeltaMouseWheel() const;
 
-		App::Core::CallbackEmitter<Vec2i> onMouseLeftClicked	   = App::Core::CallbackEmitter<Vec2i>();
-		App::Core::CallbackEmitter<Vec2i> onMouseRightClicked	   = App::Core::CallbackEmitter<Vec2i>();
-		App::Core::CallbackEmitter<Vec2i> onMouseLeftDoubleClicked = App::Core::CallbackEmitter<Vec2i>();
+		Util::Callback<Vec2i> onMouseLeftClicked;
+		Util::Callback<Vec2i> onMouseRightClicked;
+		Util::Callback<Vec2i> onMouseLeftDoubleClicked;
 
 		// void registerEventReceiverKeyboard( VTX::Event::BaseEventReceiverKeyboard * const );
 		// void unregisterEventReceiverKeyboard( VTX::Event::BaseEventReceiverKeyboard * const );

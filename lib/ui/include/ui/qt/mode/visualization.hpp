@@ -6,8 +6,8 @@
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/mode/base_mode.hpp"
 #include "ui/qt/mode/mode_collection.hpp"
-#include <app/core/callback_event.hpp>
 #include <set>
+#include <util/callback.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::UI::QT::Mode
@@ -79,10 +79,8 @@ namespace VTX::UI::QT::Mode
 
 		// virtual void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
-		App::Core::CallbackEmitter<Controller::BaseCameraController &> onCameraControllerChange
-			= App::Core::CallbackEmitter<Controller::BaseCameraController &>();
-		App::Core::CallbackEmitter<Controller::BasePickerController &> onPickerControllerChange
-			= App::Core::CallbackEmitter<Controller::BasePickerController &>();
+		Util::Callback<Controller::BaseCameraController> onCameraController;
+		Util::Callback<Controller::BasePickerController> onPickerController;
 
 	  private:
 		std::set<std::unique_ptr<Controller::BaseController>> _cameraControllers

@@ -6,7 +6,7 @@ namespace VTX::UI::Core::Animation
 	BaseAnimation::BaseAnimation( const BaseAnimation & p_source )
 	{
 		_info	  = p_source._info;
-		onStopped = App::Core::CallbackEmitter<>();
+		onStopped = Util::Callback<>();
 	}
 	BaseAnimation::BaseAnimation( const BaseAnimationInfo & p_info ) { _info = p_info; }
 

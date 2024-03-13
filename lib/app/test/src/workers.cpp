@@ -44,15 +44,13 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 
 	float lastProgress = 0.f;
 
-	thread.onProgress +=
-		[ lastProgress ]( const float p_progress ) mutable
+	thread.onProgress += [ lastProgress ]( const float p_progress ) mutable
 	{
 		CHECK( lastProgress < p_progress );
 		lastProgress = p_progress;
-	}
+	};
 
-	Core::Worker::BaseThread & threadToWait
-		= THREADING().createThread( asyncOp );
+	Core::Worker::BaseThread & threadToWait = THREADING().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();

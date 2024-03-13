@@ -42,7 +42,7 @@ namespace VTX::App::Application
 	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
 		_itemIndexes.emplace_back( MAIN_REGISTRY().getEntity( p_item ) );
-		_onSceneItemAddedCallback.call( p_item );
+		onSceneItemAdded( p_item );
 	}
 
 	const Core::ECS::BaseEntity Scene::getItem( const size_t p_index ) const
@@ -70,7 +70,7 @@ namespace VTX::App::Application
 
 	void Scene::clear()
 	{
-		_onSceneItemAddedCallback.clear();
+		onSceneItemAdded.clear();
 
 		_itemIndexes.clear();
 		_itemIndexes.shrink_to_fit();

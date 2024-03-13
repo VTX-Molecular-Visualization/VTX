@@ -62,18 +62,13 @@ TEST_CASE( "VTX_APP - Monitoring", "[integration]" )
 
 	Test::Util::App::initApp();
 
-	VTXApp::get().onPreUpdate().addCallback(
-		&VTXApp::get(), []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); }
-	);
-	VTXApp::get().onUpdate().addCallback(
-		&VTXApp::get(), []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); }
-	);
-	VTXApp::get().onLateUpdate().addCallback(
-		&VTXApp::get(), []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 18 ) ); }
-	);
-	VTXApp::get().onPostUpdate().addCallback(
-		&VTXApp::get(), []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::nanoseconds( 500 ) ); }
-	);
+	VTXApp::get().onPreUpdate +=
+		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
+	VTXApp::get().onUpdate += []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
+	VTXApp::get().onLateUpdate +=
+		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 18 ) ); };
+	VTXApp::get().onPostUpdate +=
+		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::nanoseconds( 500 ) ); };
 
 	long long lastDisplayTimestamp = Util::Chrono::getTimestamp();
 

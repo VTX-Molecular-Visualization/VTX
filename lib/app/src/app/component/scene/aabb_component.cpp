@@ -17,7 +17,7 @@ namespace VTX::App::Component::Scene
 
 			_linkedTransform = &transformComponent;
 
-			_linkedTransform->onTransform += [ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); }
+			_linkedTransform->onTransform += [ this ]( const Util::Math::Transform & ) { _worldAabb.invalidate(); };
 		}
 	}
 

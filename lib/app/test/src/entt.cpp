@@ -63,13 +63,12 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	Test::Util::App::initApp();
 
 	CallbackTest addSceneItemTest = CallbackTest();
-	SCENE().onSceneItemAdded += [ &addSceneItemTest ]( Component::Scene::SceneItemComponent & p_sceneItem )
-	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); }
+	SCENE().onSceneItemAdded += [ &addSceneItemTest ]( const Component::Scene::SceneItemComponent & p_sceneItem )
+	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
 	// Create MoleculeEntity
-	const FilePath moleculePath
-		= IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
-	Action::Scene::LoadMolecule openAction = Action::Scene::LoadMolecule( moleculePath );
+	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	Action::Scene::LoadMolecule openAction	 = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );
@@ -88,8 +87,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 
 	CallbackTest renameTest = CallbackTest();
 
-	sceneItem.onName +=
-		[ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; } sceneItem.setName( "Zouzou" );
+	sceneItem.onName += [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; };
+	sceneItem.setName( "Zouzou" );
 
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );

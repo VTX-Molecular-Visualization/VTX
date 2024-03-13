@@ -95,15 +95,12 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		// _appendLog can be called from a different thread
 		// Qt events are not thread safe and need to be called from the main thread
 		// We delayed the scrollToBottom on main thread at the end of frame.
-		App::VTXApp::get().onEndOfFrameOneShot().addCallback(
-			this,
-			[ this ]()
-			{
-				_listWidgetMutex.lock();
-				_listWidget->scrollToBottom();
-				_listWidgetMutex.unlock();
-			}
-		);
+		App::VTXApp::get().onEndOfFrameOneShot += [ this ]()
+		{
+			_listWidgetMutex.lock();
+			_listWidget->scrollToBottom();
+			_listWidgetMutex.unlock();
+		};
 	}
 	void ConsoleWidget::_flush()
 	{
