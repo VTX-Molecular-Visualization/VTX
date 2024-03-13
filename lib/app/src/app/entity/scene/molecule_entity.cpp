@@ -47,6 +47,5 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
-		RENDERER().addProxyMolecule( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
 	}
 } // namespace VTX::App::Entity::Scene
