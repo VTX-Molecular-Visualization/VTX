@@ -32,9 +32,7 @@ namespace VTX::App::Component::Render
 
 		_transform = &transformComponent;
 
-		_transform->onTransformChanged.addCallback(
-			this, [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); }
-		);
+		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); }
 
 		_updateViewMatrix();
 		_updateProjectionMatrix();

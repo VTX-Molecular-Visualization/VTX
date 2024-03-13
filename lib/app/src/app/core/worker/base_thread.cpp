@@ -44,7 +44,7 @@ namespace VTX::App::Core::Worker
 	}
 	void BaseThread::stop()
 	{
-		progressCallback.clear();
+		onProgress.clear();
 
 		if ( _thread.joinable() )
 			_thread.detach();
@@ -60,7 +60,7 @@ namespace VTX::App::Core::Worker
 		if ( _progress != clampedValue )
 		{
 			_progress = clampedValue;
-			progressCallback.call( _progress );
+			onProgress( _progress );
 		}
 	}
 

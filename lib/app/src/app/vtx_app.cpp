@@ -57,26 +57,29 @@ namespace VTX::App
 		_renderer = std::make_unique<Renderer::Facade>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
 
 		// Regsiter loop events
-		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
+		onUpdateCallback += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); }
 
-		_postUpdateCallback.addCallback( this, []( const float p_elapsedTime ) { THREADING().lateUpdate(); } );
+		onPostUpdateCallback
+			+=
+			[]( const float p_elapsedTime ) { THREADING().lateUpdate(); }
 
-		// Event manager - Useless: nothing is delayed.
-		//_updateCallback.addCallback(
-		//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
-		//);
+			// Event manager - Useless: nothing is delayed.
+			//_updateCallback.addCallback(
+			//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
+			//);
 
-		// Useless while delayed actions are disabled
-		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime ); }
-		//);
+			// Useless while delayed actions are disabled
+			//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime );
+			//}
+			//);
 
-		// TODO: use camera callbacks.
-		//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
-		//_renderCallback.addCallback(
-		//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
-		//);
+			// TODO: use camera callbacks.
+			//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
+			//_renderCallback.addCallback(
+			//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
+			//);
 
-		_tickChrono.start();
+			_tickChrono.start();
 
 		_handleArgs( p_args );
 
@@ -109,34 +112,34 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _updateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _lateUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
 		// if ( _renderer->getRenderGraph().isBuilt() )
 		{
 			frameInfo.set(
 				Internal::Monitoring::PRE_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preRenderCallback.call( p_elapsedTime ); } )
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
 			);
 			frameInfo.set(
 				Internal::Monitoring::RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _renderCallback.call( p_elapsedTime ); } )
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender p_elapsedTime ); } )
 			);
 			frameInfo.set(
 				Internal::Monitoring::POST_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postRenderCallback.call( p_elapsedTime ); } )
+				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 			);
 		}
 
@@ -145,8 +148,8 @@ namespace VTX::App
 			Util::CHRONO_CPU(
 				[ this, p_elapsedTime ]()
 				{
-					_endOfFrameOneShotCallback.call();
-					_endOfFrameOneShotCallback.clear();
+					onEndOfFrameOneShot();
+					onEndOfFrameOneShot.clear();
 				}
 			)
 		);
