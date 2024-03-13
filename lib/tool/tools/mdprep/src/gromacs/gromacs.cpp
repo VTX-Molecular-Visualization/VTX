@@ -125,5 +125,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 			interactiveProcessManagement( proc, finished, p_args );
 		else
 			simpleProcessManagement( proc, finished, p_args );
+		p_args.report.finished = true;
 	}
 } // namespace VTX::Tool::Mdprep::Gromacs

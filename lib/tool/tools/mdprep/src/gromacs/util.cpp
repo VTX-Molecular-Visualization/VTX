@@ -6,6 +6,7 @@
 #include "tools/mdprep/gromacs/util.hpp"
 #include <qapplication.h>
 #include <util/exceptions.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
@@ -16,13 +17,7 @@ namespace VTX::Tool::Mdprep
 	{
 		if ( !g_executableDirectory.has_value() )
 		{
-			// int				 argc = 0;
-			// QCoreApplication app( argc, nullptr );
-			// QString			 qpath = app.applicationDirPath();
-			QString		qpath = QCoreApplication::applicationDirPath();
-			auto		tmp	  = qpath.toLocal8Bit();
-			std::string path_str( tmp.data(), tmp.size() );
-			g_executableDirectory.emplace( path_str );
+			g_executableDirectory = VTX::Util::Filesystem::getExecutableDir();
 			g_executableDirectory->make_preferred();
 		}
 		return g_executableDirectory.value();

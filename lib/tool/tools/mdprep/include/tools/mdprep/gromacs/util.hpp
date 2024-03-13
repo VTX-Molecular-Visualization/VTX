@@ -7,6 +7,7 @@ namespace fs = std::filesystem;
 namespace VTX::Tool::Mdprep
 {
 	// Return the absolute path of the directory containing VTX executable
+	// Path separator is garanteed to be the one prefered by the system
 	const fs::path & executableDirectory() noexcept;
 
 } // namespace VTX::Tool::Mdprep
