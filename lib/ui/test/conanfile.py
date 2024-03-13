@@ -22,7 +22,7 @@ class VTXUiTestRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("vtx_ui/1.0")
-        self.requires("catch2/3.4.0")
+        self.requires("catch2/3.5.3")
         
     def layout(self):
         cmake_layout(self)

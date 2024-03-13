@@ -279,9 +279,13 @@ namespace VTX::Renderer
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const
 		{
-			return std::distance(
+			size_t id = std::distance(
 				_proxiesMolecules.begin(), std::find( _proxiesMolecules.begin(), _proxiesMolecules.end(), p_proxy )
 			);
+
+			assert( id < _proxiesMolecules.size() );
+
+			return id;
 		}
 
 		// Cache.

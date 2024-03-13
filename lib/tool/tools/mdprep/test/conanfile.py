@@ -23,7 +23,7 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
-        self.requires("catch2/3.4.0")        
+        self.requires("catch2/3.5.3")        
         
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_tool_mdprep"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))

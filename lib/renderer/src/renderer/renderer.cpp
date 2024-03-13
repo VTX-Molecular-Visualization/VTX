@@ -124,12 +124,14 @@ namespace VTX::Renderer
 		{
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+
 			setUniform(
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
 		};
 
-		// TODO: onVisible to split in multi call or update flags if atomic granularity.
+		// TODO: onVisible to split in multi call.
+		
 
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{
@@ -184,6 +186,29 @@ namespace VTX::Renderer
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.offset );
 		};
+
+		/*
+		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+
+			for ( size_t i = 0; i < cacheSC.size; ++i )
+			{
+				cacheSC.flags[ i ] &= ~mask;
+				cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
+			}
+			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+
+			for ( size_t i = 0; i < cacheR.size; ++i )
+			{
+				cacheR.bufferFlags[ i ] &= ~mask;
+				cacheR.bufferFlags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
+			}
+			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+		};
+		*/
 	}
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
