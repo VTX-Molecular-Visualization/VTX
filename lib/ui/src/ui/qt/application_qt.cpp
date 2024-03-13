@@ -10,6 +10,7 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
+#include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 #include <util/math/transform.hpp>
 
