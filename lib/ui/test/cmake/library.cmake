@@ -1,4 +1,7 @@
-add_executable(vtx_ui_test "${CMAKE_CURRENT_LIST_DIR}/../src/main.cpp")
+set(SOURCES " ")
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
+add_executable(vtx_ui_test ${SOURCES})
+
 configure_target(vtx_ui_test)
 
 if (NOT DEFINED _VTX_UI_TEST_CONAN)

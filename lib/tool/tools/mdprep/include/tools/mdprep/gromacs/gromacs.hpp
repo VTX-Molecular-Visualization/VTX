@@ -17,19 +17,39 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string stdout_;
 		std::string stderr_;
 	};
-	struct GromacsCommandArgs
+	struct JobReport
 	{
-		std::vector<std::string>		arguments;
+		bool					 finished	  = false;
+		bool					 errorOccured = false;
+		std::vector<std::string> errors;
+	};
+	struct GromacsJobData
+	{
+		std::vector<std::string> arguments;
+		std::vector<size_t> expectedOutputFilesIndexes; // Meant to point toward specific argument indexes that hold
+														// path of output files to check
 		VTX::Util::DataLocker<Channels> channelsLocker;
+		JobReport						report;
 		std::optional<Inputs>
 			 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
-		bool operator==( const GromacsCommandArgs & ) const noexcept = default;
+		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
-	// Blindly execute gromacs with input arguments.
+	// The idea is to list output files from all previous job, in reverse chronological order. So we can access last
+	// files first. This is usefull because some job might need some files from a couple of jobs ago, but the last file
+	// of a given extension is always the right file. Therefore we can identify the right file to use for the job by
+	// taking the first one that matches the required extension.
+	struct CumulativeOuputFiles
+	{
+		std::vector<const std::string *> fileStringPtrs;
+	};
+
+	// Execute gromacs with input arguments then check if job issued and error
 	//   Assumes relevant arguments have been provided and checked beforehand.
 	//   Assumes gromacs have been instructed on where to find data files (env. var. GMXLIB) as well.
-	void submitGromacsCommand( const fs::path & p_gmx_exe, GromacsCommandArgs & p_args );
+	//   Error issued by the job can be a specific string in output channels or if expected output files doesn't exists
+	//   or are empty.
+	void submitGromacsJob( const fs::path & p_gmx_exe, GromacsJobData & p_args );
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif

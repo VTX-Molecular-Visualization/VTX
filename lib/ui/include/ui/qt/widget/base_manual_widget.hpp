@@ -2,12 +2,12 @@
 #define __VTX_UI_QT_WIDGET_BASE_MANUAL_WIDGET__
 
 #include "base_manual_widget_initializer.hpp"
-#include <QWidget>
+#include "ui/qt/concepts.hpp"
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget
 {
-	template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
+	template<QTWidgetConcept W>
 	class BaseManualWidget : public W, public BaseManualWidgetInitializer
 	{
 		NEW_ARCHI_VTX_WIDGET

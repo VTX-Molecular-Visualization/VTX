@@ -192,7 +192,8 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 		Application::Selection::MoleculeData & molData
 			= CURRENT_SELECTION().select<Application::Selection::MoleculeData>( selectableMol1 );
 
-		for ( size_t i = 0; i < mol1.getAtoms().size(); i += 2 )
+		const atom_index_t atomCount = atom_index_t( mol1.getAtoms().size() );
+		for ( atom_index_t i = 0; i < atomCount; i += 2 )
 		{
 			molData.selectAtom( *mol1.getAtom( i ) );
 		}

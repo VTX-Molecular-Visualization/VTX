@@ -43,8 +43,8 @@ class VTXRecipe(ConanFile):
         self.options["qt/*"].with_fontconfig = False
         self.options["qt/*"].with_icu = False
         self.options["qt/*"].with_harfbuzz = False
-        self.options["qt/*"].with_libjpeg = False
-        self.options["qt/*"].with_libpng = False
+        self.options["qt/*"].with_libjpeg = "libjpeg"
+        self.options["qt/*"].with_libpng = True
         self.options["qt/*"].with_sqlite3 = False
         self.options["qt/*"].with_mysql = False
         self.options["qt/*"].with_pq = False
@@ -114,6 +114,9 @@ class VTXRecipe(ConanFile):
 
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
         copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))    
+        
+        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
+        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
 
     def layout(self):
         cmake_layout(self)

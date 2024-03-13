@@ -463,14 +463,13 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	{
 		SERIALIZER().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
 	}
-	catch ( const IOException & e )
+	catch ( const IOException & )
 	{
-		VTX_INFO( "Deserialization from more recent version catched !" );
 		CHECK( true );
 	}
-	catch ( const std::exception & e )
+	catch ( const std::exception & p_e )
 	{
-		VTX_ERROR( "More recent file check fail : {}", e.what() );
+		VTX_ERROR( "More recent file check fail : {}", p_e.what() );
 		CHECK( false );
 	}
 }

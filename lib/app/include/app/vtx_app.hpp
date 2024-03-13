@@ -48,6 +48,8 @@ namespace VTX
 			Core::CallbackEmitter<float> & onRender() { return _renderCallback; };
 			Core::CallbackEmitter<float> & onPostRender() { return _postRenderCallback; };
 
+			Core::CallbackEmitter<> & onEndOfFrameOneShot() { return _endOfFrameOneShotCallback; };
+
 			inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
 			inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
 
@@ -89,6 +91,8 @@ namespace VTX
 			Core::CallbackEmitter<float> _preRenderCallback	 = Core::CallbackEmitter<float>();
 			Core::CallbackEmitter<float> _renderCallback	 = Core::CallbackEmitter<float>();
 			Core::CallbackEmitter<float> _postRenderCallback = Core::CallbackEmitter<float>();
+
+			Core::CallbackEmitter<> _endOfFrameOneShotCallback = Core::CallbackEmitter<>();
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update( const float p_elapsedTime );
