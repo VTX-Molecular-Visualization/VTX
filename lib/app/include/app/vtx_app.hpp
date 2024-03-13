@@ -2,11 +2,11 @@
 #define ___VTX_APP_VTX_APP___
 
 #include "app/application/_fwd.hpp"
-#include "app/core/callback_event.hpp"
 #include "app/core/monitoring/stats.hpp"
 #include "core/system/system_handler.hpp"
 #include <memory>
 #include <string>
+#include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/generic/base_static_singleton.hpp>
@@ -39,17 +39,6 @@ namespace VTX
 			void goToState( const std::string &, void * const = nullptr );
 			void stop();
 
-			Core::CallbackEmitter<float> & onPreUpdate() { return _preUpdateCallback; };
-			Core::CallbackEmitter<float> & onUpdate() { return _updateCallback; };
-			Core::CallbackEmitter<float> & onLateUpdate() { return _lateUpdateCallback; };
-			Core::CallbackEmitter<float> & onPostUpdate() { return _postUpdateCallback; };
-
-			Core::CallbackEmitter<float> & onPreRender() { return _preRenderCallback; };
-			Core::CallbackEmitter<float> & onRender() { return _renderCallback; };
-			Core::CallbackEmitter<float> & onPostRender() { return _postRenderCallback; };
-
-			Core::CallbackEmitter<> & onEndOfFrameOneShot() { return _endOfFrameOneShotCallback; };
-
 			inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
 			inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
 
@@ -71,6 +60,17 @@ namespace VTX
 			Application::Settings &		  getSettings();
 			const Application::Settings & getSettings() const;
 
+			Util::Callback<float> onPreUpdate;
+			Util::Callback<float> onUpdate;
+			Util::Callback<float> onLateUpdate;
+			Util::Callback<float> onPostUpdate;
+
+			Util::Callback<float> onPreRender;
+			Util::Callback<float> onRender;
+			Util::Callback<float> onPostRender;
+
+			Util::Callback<> onEndOfFrameOneShot;
+
 		  private:
 			Util::Chrono _tickChrono = Util::Chrono();
 
@@ -81,18 +81,7 @@ namespace VTX
 
 			std::unique_ptr<Application::Settings> _settings;
 
-			Core::Monitoring::Stats _stats = Core::Monitoring::Stats();
-
-			Core::CallbackEmitter<float> _preUpdateCallback	 = Core::CallbackEmitter<float>();
-			Core::CallbackEmitter<float> _updateCallback	 = Core::CallbackEmitter<float>();
-			Core::CallbackEmitter<float> _lateUpdateCallback = Core::CallbackEmitter<float>();
-			Core::CallbackEmitter<float> _postUpdateCallback = Core::CallbackEmitter<float>();
-
-			Core::CallbackEmitter<float> _preRenderCallback	 = Core::CallbackEmitter<float>();
-			Core::CallbackEmitter<float> _renderCallback	 = Core::CallbackEmitter<float>();
-			Core::CallbackEmitter<float> _postRenderCallback = Core::CallbackEmitter<float>();
-
-			Core::CallbackEmitter<> _endOfFrameOneShotCallback = Core::CallbackEmitter<>();
+			Core::Monitoring::Stats _stats;
 
 			void _handleArgs( const std::vector<std::string> & );
 			void _update( const float p_elapsedTime );

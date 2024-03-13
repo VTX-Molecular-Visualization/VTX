@@ -2,12 +2,12 @@
 #define __VTX_APP_APPLICATION_SETTINGS__
 
 #include "app/application/setting.hpp"
-#include "app/core/callback_event.hpp"
 #include "app/core/system/base_system.hpp"
 #include <cassert>
 #include <map>
 #include <memory>
 #include <string>
+#include <util/callback.hpp>
 
 namespace VTX::App::Application
 {
@@ -67,7 +67,7 @@ namespace VTX::App::Application
 				const std::unique_ptr<SettingChangeEvent<T>> eventData
 					= std::make_unique<SettingChangeEvent<T>>( p_key, previousValue, p_value );
 
-				onSettingChange.call( eventData.get() );
+				onSetting( *eventData );
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace VTX::App::Application
 		friend bool operator==( const Settings & p_lhs, const Settings & p_rhs );
 		friend bool operator!=( const Settings & p_lhs, const Settings & p_rhs );
 
-		Core::CallbackEmitter<BaseSettingChangeEvent *> onSettingChange;
+		Util::Callback<BaseSettingChangeEvent> onSetting;
 
 	  private:
 		// Mutable to allow bracket access in const functions (contains checked in asserts)

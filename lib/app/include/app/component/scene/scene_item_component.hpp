@@ -3,9 +3,9 @@
 
 #include "app/application/scene_utility.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/core/callback_event.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <string>
+#include <util/callback.hpp>
 
 namespace VTX::App::Component::Scene
 {
@@ -23,7 +23,7 @@ namespace VTX::App::Component::Scene
 			if ( _name != p_name )
 			{
 				_name = p_name;
-				_onNameChange.call( _name );
+				onName( _name );
 			}
 		};
 
@@ -38,14 +38,11 @@ namespace VTX::App::Component::Scene
 		void removeUpdateFunction( const std::string & p_key );
 
 		// Callbacks
-		Core::CallbackRegister<std::string &> & onNameChange() { return _onNameChange; }
+		Util::Callback<std::string> onName;
 
 	  private:
 		int			_persistentId = -1;
 		std::string _name		  = "";
-
-		// Callbacks
-		Core::CallbackEmitter<std::string &> _onNameChange = Core::CallbackEmitter<std::string &>();
 	};
 } // namespace VTX::App::Component::Scene
 #endif

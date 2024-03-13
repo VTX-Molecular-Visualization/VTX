@@ -4,13 +4,13 @@
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/render/_fwd.hpp"
 #include "app/component/scene/scene_item_component.hpp"
-#include "app/core/callback_event.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/system/base_system.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
 #include <functional>
 #include <string>
+#include <util/callback.hpp>
 #include <util/math/aabb.hpp>
 
 namespace VTX::App::Application
@@ -120,14 +120,11 @@ namespace VTX::App::Application
 			}
 		}
 
-		// Callbacks
-		Core::CallbackRegister<Component::Scene::SceneItemComponent &> & onSceneItemAddedCallback()
-		{
-			return _onSceneItemAddedCallback;
-		}
-
 		inline const Component::Render::Camera & getCamera() const { return *_camera; }
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
+
+		// Callbacks
+		Util::Callback<Component::Scene::SceneItemComponent> onSceneItemAdded;
 
 	  private:
 		int _persistentIDCounter = 0;
@@ -143,10 +140,6 @@ namespace VTX::App::Application
 		void _onSceneItemIsConstruct( Component::Scene::SceneItemComponent & p_sceneItemComponent );
 
 		void _applySceneID( Component::Scene::SceneItemComponent & p_item );
-
-		// Callbacks
-		Core::CallbackEmitter<Component::Scene::SceneItemComponent &> _onSceneItemAddedCallback
-			= Core::CallbackEmitter<Component::Scene::SceneItemComponent &>();
 	};
 } // namespace VTX::App::Application
 #endif

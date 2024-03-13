@@ -2,12 +2,12 @@
 #define __VTX_APP_CORE_WORKER_BASE_THREAD__
 
 #include "_fwd.hpp"
-#include "app/core/callback_event.hpp"
 #include <any>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <thread>
+#include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Worker
@@ -33,7 +33,7 @@ namespace VTX::App::Core::Worker
 		inline float getProgress() const { return _progress; }
 		void		 setProgress( const float p_value );
 
-		App::Core::CallbackEmitter<float> progressCallback = App::Core::CallbackEmitter<float>();
+		Util::Callback<float> onProgress;
 
 		template<typename T>
 		T getData() const
