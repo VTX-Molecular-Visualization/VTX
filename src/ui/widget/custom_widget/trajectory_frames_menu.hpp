@@ -62,6 +62,7 @@ namespace VTX
 			void _onFrameSelected( const QAction * const p_action );
 
 		  private:
+			void							 _resetScroll();
 			UIAction::SelfReferencedAction * _allFramesAction = nullptr;
 			bool							 _allFramesOption = false;
 

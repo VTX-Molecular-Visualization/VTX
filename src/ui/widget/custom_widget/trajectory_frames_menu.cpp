@@ -31,8 +31,13 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void TrajectoryFramesMenu::_setupSlots() {}
+	void TrajectoryFramesMenu::_setupSlots()
+	{
+		connect( this, &TrajectoryFramesMenu::aboutToHide, this, &TrajectoryFramesMenu::_resetScroll );
+	}
 	void TrajectoryFramesMenu::localize() {}
+
+	void TrajectoryFramesMenu::_resetScroll() { setActiveAction( *( actions().begin() ) ); }
 
 	uint TrajectoryFramesMenu::getFrameCount() const { return _frameCount; }
 
