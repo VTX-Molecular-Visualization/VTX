@@ -223,6 +223,19 @@ namespace VTX::Renderer
 		{
 			StructInfos infos;
 			_context->fillInfos( infos );
+
+			// Compute size of cached data.
+			size_t sizeCache = 0;
+			for ( const auto & [ proxy, cache ] : _cacheSpheresCylinders )
+			{
+				sizeCache += cache.currentSize();
+			}
+			for ( const auto & [ proxy, cache ] : _cacheRibbons )
+			{
+				sizeCache += cache.currentSize();
+			}
+			infos.currentSizeCPUCache = sizeCache;
+
 			return infos;
 		}
 
@@ -278,15 +291,12 @@ namespace VTX::Renderer
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataMolecules()
 		{
-			if ( _proxiesMolecules.empty() == false )
-			{
-				_refreshDataSpheresCylinders();
-				_refreshDataRibbons();
-				_refreshDataSES();
-				_refreshDataModels();
+			_refreshDataSpheresCylinders();
+			_refreshDataRibbons();
+			_refreshDataSES();
+			_refreshDataModels();
 
-				setNeedUpdate( true );
-			}
+			setNeedUpdate( true );
 		}
 
 		void _refreshDataSpheresCylinders();

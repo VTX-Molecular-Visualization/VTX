@@ -170,10 +170,7 @@ namespace VTX::Renderer
 			_cacheSpheresCylinders.erase( &p_proxy );
 			_cacheRibbons.erase( &p_proxy );
 
-			if ( _renderGraph->isBuilt() )
-			{
-				_refreshDataMolecules();
-			}
+			_refreshDataMolecules();
 		};
 
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
@@ -294,71 +291,81 @@ namespace VTX::Renderer
 			totalBonds += proxy->bonds->size();
 		}
 
-		// Create buffers.
-		_context->setData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
-		_context->setData<uchar>( totalAtoms, "SpheresCylindersColors" );
-		_context->setData<float>( totalAtoms, "SpheresCylindersRadii" );
-		_context->setData<uint>( totalAtoms, "SpheresCylindersIds" );
-		_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
-		_context->setData<ushort>( totalAtoms, "SpheresCylindersModels" );
-		_context->setData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
-		_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
-
-		size_t offsetAtoms = 0;
-		size_t offsetBonds = 0;
-		ushort modelId	   = 0;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		if ( _proxiesMolecules.empty() )
 		{
-			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
+			assert( totalAtoms == 0 );
+			assert( totalBonds == 0 );
+		}
+		else
+		{
+			// Create buffers.
+			_context->setData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
+			_context->setData<uchar>( totalAtoms, "SpheresCylindersColors" );
+			_context->setData<float>( totalAtoms, "SpheresCylindersRadii" );
+			_context->setData<uint>( totalAtoms, "SpheresCylindersIds" );
+			_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
+			_context->setData<ushort>( totalAtoms, "SpheresCylindersModels" );
+			_context->setData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
+			_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
 
-			const size_t atomCount = proxy->atomPositions->size();
-			const size_t bondCount = proxy->bonds->size();
-
-			// Fill buffers.
-			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
-
-			// Flags if not cached.
-			if ( cache.flags.empty() )
+			size_t offsetAtoms = 0;
+			size_t offsetBonds = 0;
+			ushort modelId	   = 0;
+			for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 			{
-				std::vector<uchar> atomFlags( atomCount );
-				for ( size_t i = 0; i < atomFlags.size(); ++i )
+				Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
+
+				const size_t atomCount = proxy->atomPositions->size();
+				const size_t bondCount = proxy->bonds->size();
+
+				// Fill buffers.
+				_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+				_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+				_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+				_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+
+				// Flags if not cached.
+				if ( cache.flags.empty() )
 				{
-					uchar flag = 0;
-					flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
-					flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
-					atomFlags[ i ] = flag;
+					std::vector<uchar> atomFlags( atomCount );
+					for ( size_t i = 0; i < atomFlags.size(); ++i )
+					{
+						uchar flag = 0;
+						flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+						flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
+						atomFlags[ i ] = flag;
+					}
+					cache.flags = atomFlags;
 				}
-				cache.flags = atomFlags;
+
+				// Representations if not cached.
+				if ( cache.representations.empty() )
+				{
+					cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
+				}
+
+				_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
+				_context->setSubData(
+					std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms
+				);
+				_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+
+				// Move bonds.
+				// TODO: caches bonds ?
+				std::vector<uint> bonds( bondCount );
+				for ( size_t i = 0; i < bondCount; ++i )
+				{
+					bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
+				}
+				_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
+
+				// Offsets.
+				cache.offset = offsetAtoms;
+				cache.size	 = atomCount;
+				offsetAtoms += atomCount;
+				offsetBonds += bondCount;
+				modelId++;
 			}
-
-			// Representations if not cached.
-			if ( cache.representations.empty() )
-			{
-				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
-			}
-
-			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-			_context->setSubData( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
-			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
-
-			// Move bonds.
-			// TODO: caches bonds ?
-			std::vector<uint> bonds( bondCount );
-			for ( size_t i = 0; i < bondCount; ++i )
-			{
-				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
-			}
-			_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
-
-			// Offsets.
-			cache.offset = offsetAtoms;
-			cache.size	 = atomCount;
-			offsetAtoms += atomCount;
-			offsetBonds += bondCount;
-			modelId++;
 		}
 
 		// Counters.
@@ -669,61 +676,68 @@ namespace VTX::Renderer
 			totalIndices += bufferIndices.size();
 		}
 
-		_context->setData<Vec4f>( totalCaPositions, "RibbonsPositions" );
-		_context->setData<Vec3f>( totalCaPositions, "RibbonsDirections" );
-		_context->setData<uchar>( totalCaPositions, "RibbonsTypes" );
-		_context->setData<uchar>( totalCaPositions, "RibbonsColors" );
-		_context->setData<uint>( totalCaPositions, "RibbonsIds" );
-		_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
-		_context->setData<ushort>( totalCaPositions, "RibbonsModels" );
-		_context->setData<uchar>( totalCaPositions, "RibbonsRepresentations" );
-		_context->setData<uint>( totalIndices, "RibbonsEbo" );
-
-		size_t offsetCaPositions = 0;
-		size_t offsetIndices	 = 0;
-		uchar  modelId			 = -1;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		size_t offsetIndices = 0;
+		if ( _proxiesMolecules.empty() || totalCaPositions == 0 )
 		{
-			modelId++;
-			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+			assert( totalIndices == 0 );
+		}
+		else
+		{
+			_context->setData<Vec4f>( totalCaPositions, "RibbonsPositions" );
+			_context->setData<Vec3f>( totalCaPositions, "RibbonsDirections" );
+			_context->setData<uchar>( totalCaPositions, "RibbonsTypes" );
+			_context->setData<uchar>( totalCaPositions, "RibbonsColors" );
+			_context->setData<uint>( totalCaPositions, "RibbonsIds" );
+			_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
+			_context->setData<ushort>( totalCaPositions, "RibbonsModels" );
+			_context->setData<uchar>( totalCaPositions, "RibbonsRepresentations" );
+			_context->setData<uint>( totalIndices, "RibbonsEbo" );
 
-			assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
-
-			if ( cache.bufferCaPositions.empty() == true )
+			size_t offsetCaPositions = 0;
+			uchar  modelId			 = -1;
+			for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 			{
-				continue;
+				modelId++;
+				Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+
+				assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
+
+				if ( cache.bufferCaPositions.empty() == true )
+				{
+					continue;
+				}
+
+				// Move indices.
+				// TODO: caches indices ?
+				std::vector<uint> indices = cache.bufferIndices;
+				for ( size_t i = 0; i < cache.bufferIndices.size(); ++i )
+				{
+					indices[ i ] += uint( offsetCaPositions );
+				}
+
+				if ( cache.representations.empty() )
+				{
+					cache.representations = std::vector<uchar>( cache.bufferCaPositions.size(), 0 );
+				}
+
+				_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
+				_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
+				_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
+				_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
+				_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
+				_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
+				_context->setSubData(
+					std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
+				);
+				_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
+				_context->setSubData( indices, "RibbonsEbo", offsetIndices );
+
+				// Offsets.
+				cache.offset = offsetCaPositions;
+				cache.size	 = cache.bufferCaPositions.size();
+				offsetCaPositions += cache.bufferCaPositions.size();
+				offsetIndices += cache.bufferIndices.size();
 			}
-
-			// Move indices.
-			// TODO: caches indices ?
-			std::vector<uint> indices = cache.bufferIndices;
-			for ( size_t i = 0; i < cache.bufferIndices.size(); ++i )
-			{
-				indices[ i ] += uint( offsetCaPositions );
-			}
-
-			if ( cache.representations.empty() )
-			{
-				cache.representations = std::vector<uchar>( cache.bufferCaPositions.size(), 0 );
-			}
-
-			_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
-			_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
-			_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
-			_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
-			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
-			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
-			_context->setSubData(
-				std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
-			);
-			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-			_context->setSubData( indices, "RibbonsEbo", offsetIndices );
-
-			// Offsets.
-			cache.offset = offsetCaPositions;
-			cache.size	 = cache.bufferCaPositions.size();
-			offsetCaPositions += cache.bufferCaPositions.size();
-			offsetIndices += cache.bufferIndices.size();
 		}
 
 		sizeRibbons = offsetIndices;

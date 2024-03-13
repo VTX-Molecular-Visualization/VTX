@@ -11,5 +11,7 @@ namespace VTX::Renderer
 
 		size_t currentSizeBuffers;
 		size_t currentSizeTextures;
+
+		size_t currentSizeCPUCache;
 	};
 } // namespace VTX::Renderer

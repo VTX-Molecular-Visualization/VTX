@@ -413,6 +413,7 @@ namespace VTX::Bench
 
 				ImGui::Text( fmt::format( "Buffers: {}", displayMemory( infos.currentSizeBuffers ) ).c_str() );
 				ImGui::Text( fmt::format( "Textures: {}", displayMemory( infos.currentSizeTextures ) ).c_str() );
+				ImGui::Text( fmt::format( "CPU cache: {}", displayMemory( infos.currentSizeCPUCache ) ).c_str() );
 
 				size_t idMolecule = 0;
 				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
