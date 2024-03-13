@@ -1,6 +1,6 @@
 #include "app/component/render/proxy_molecule.hpp"
+#include "app/application/system/ecs_system.hpp"
 #include "app/component/scene/transform_component.hpp"
-#include "app/vtx_app.hpp"
 #include <core/chemdb/atom.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>

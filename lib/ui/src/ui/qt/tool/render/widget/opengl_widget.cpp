@@ -29,13 +29,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		App::RENDERER().build( defaultFramebufferObject() );
 		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
 		App::RENDERER().setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
-
-		RendererQt renderer = QT_RENDERER();
-		renderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
-		renderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
-		renderer.get().setCameraPosition( App::SCENE().getCamera().getTransform().getPosition() );
-		renderer.get().setCameraClipInfos( App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar() );
-		renderer.get().setPerspective( App::SCENE().getCamera().isPerspective() );
 	}
 
 	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0.15f ); }
