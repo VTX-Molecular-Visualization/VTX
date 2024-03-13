@@ -20,9 +20,9 @@ namespace VTX::App::Component::Render
 	  private:
 		std::vector<uchar> generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
 		std::vector<float> generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<uint>  generateAtomUids( const Component::Chemistry::Molecule & p_molStruct ) const;
+		std::vector<uint>  generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const;
 		std::vector<uchar> generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<uint>  generateResidueUids( const Component::Chemistry::Molecule & p_molStruct ) const;
+		std::vector<uint>  generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const;
 
 		std::unique_ptr<VTX::Renderer::Proxy::Molecule> _proxyPtr = nullptr;
 	};

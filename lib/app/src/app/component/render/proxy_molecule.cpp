@@ -20,9 +20,9 @@ namespace VTX::App::Component::Render
 
 		const std::vector<uchar> atomColors	   = generateAtomColors( molStruct );
 		const std::vector<float> atomRadii	   = generateAtomRadii( molStruct );
-		const std::vector<uint>	 atomIds	   = generateAtomUids( molStruct );
+		const std::vector<uint>	 atomIds	   = generateAtomUids( molComp );
 		const std::vector<uchar> residueColors = generateResidueColors( molStruct );
-		const std::vector<uint>	 residueIds	   = generateResidueUids( molStruct );
+		const std::vector<uint>	 residueIds	   = generateResidueUids( molComp );
 
 		_proxyPtr = std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
 			&transformComp.getTransform().get(),
