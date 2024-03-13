@@ -11,9 +11,9 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::App::Render
+namespace VTX::App::Component::Render
 {
-	class GPUProxyBuilder;
+	class ProxyMolecule;
 }
 
 namespace VTX::App::Component::Chemistry
@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 			"Chemistry::MoleculeComponent"
 		};
 
-		friend App::Render::GPUProxyBuilder;
+		friend App::Component::Render::ProxyMolecule;
 		friend Chain;
 		friend Residue;
 		friend Atom;
@@ -104,11 +104,8 @@ namespace VTX::App::Component::Chemistry
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
-		std::vector<bool>  _atomVisibilities = std::vector<bool>();
-		std::vector<uchar> _atomColors		 = std::vector<uchar>();
-		std::vector<float> _atomRadii		 = std::vector<float>();
-		std::vector<uint>  _atomIds			 = std::vector<uint>();
-		std::vector<bool>  _atomSelections	 = std::vector<bool>();
+		std::vector<bool> _atomVisibilities = std::vector<bool>();
+		std::vector<bool> _atomSelections	= std::vector<bool>();
 
 		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
 		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();

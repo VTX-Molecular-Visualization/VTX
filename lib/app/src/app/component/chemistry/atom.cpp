@@ -27,7 +27,10 @@ namespace VTX::App::Component::Chemistry
 	const std::string & Atom::getName() const { return _moleculePtr->_moleculeStruct.atomNames[ _index ]; }
 	void Atom::setName( const std::string & p_name ) { _moleculePtr->_moleculeStruct.atomNames[ _index ] = p_name; }
 
-	float Atom::getVdwRadius() const { return _moleculePtr->_atomRadii[ _index ]; }
+	float Atom::getVdwRadius() const
+	{
+		return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _moleculePtr->_moleculeStruct.atomSymbols[ _index ] ) ];
+	}
 
 	const Vec3f & Atom::getLocalPosition() const
 	{

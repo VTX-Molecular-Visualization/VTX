@@ -72,23 +72,7 @@ namespace VTX::App::Component::Chemistry
 
 		_atomVisibilities.resize( p_atomCount, uint( true ) );
 
-		_atomColors.resize( p_atomCount, 0 );
-
-		_atomRadii.resize( p_atomCount, 0.f );
-		std::generate(
-			_atomRadii.begin(),
-			_atomRadii.end(),
-			[ this, i = 0 ]() mutable
-			{ return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _moleculeStruct.atomSymbols[ i ] ) ]; }
-		);
-
 		_atomUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_atomCount ) );
-
-		const uint offset = uint( _atomUidRange.getFirst() );
-
-		_atomIds.resize( p_atomCount, Core::UID::INVALID_UID );
-		std::generate( _atomIds.begin(), _atomIds.end(), [ this, offset, i = 0 ]() mutable { return offset + i++; } );
-
 		_atomSelections.resize( p_atomCount, uint( false ) );
 	}
 

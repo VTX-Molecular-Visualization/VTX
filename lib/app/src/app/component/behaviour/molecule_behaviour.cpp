@@ -4,6 +4,7 @@
 #include "app/application/settings.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
+#include "app/component/render/proxy_molecule.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/pickable.hpp"
 #include "app/component/scene/selectable.hpp"
@@ -13,8 +14,6 @@
 #include "app/core/trajectory_player/players.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
-#include "app/render/proxy_builder.hpp"
-#include <renderer/proxy/molecule.hpp>
 
 namespace VTX::App::Component::Behaviour
 {
@@ -61,10 +60,10 @@ namespace VTX::App::Component::Behaviour
 	}
 	void Molecule::_initGpuProxyComponent() const
 	{
-		Renderer::Proxy::Molecule & gpuProxyComponent
-			= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( _entity );
+		Component::Render::ProxyMolecule & gpuProxyComponent
+			= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( _entity );
 
-		App::Render::GPUProxyBuilder::fillProxy( _moleculeComponent, gpuProxyComponent );
+		gpuProxyComponent.init();
 	}
 	void Molecule::_initTrajectoryComponent() const
 	{
