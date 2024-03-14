@@ -314,6 +314,7 @@ namespace VTX::Renderer
 		// TODO: find a way to delete that?
 		struct _StructUBOCamera
 		{
+			// layout 140.
 			Mat4f matrixView;
 			Mat4f matrixProjection;
 			Vec3f cameraPosition;
@@ -323,18 +324,16 @@ namespace VTX::Renderer
 			uint  isPerspective;
 		};
 
-		struct _StructUBOColorLayout
-		{
-		};
-
 		struct _StructUBOModel
 		{
+			// layout 140.
 			Mat4f mv;
 			Mat4f n;
 		};
 
 		struct _StructUBORepresentation
 		{
+			// layout 430 (forced or renderdoc bug?).
 			float radiusSphereFixed;
 			float radiusSphereAdd;
 			uint  radiusFixed;
@@ -342,7 +341,7 @@ namespace VTX::Renderer
 
 			uint cylinderColorBlendingMode;
 			uint ribbonColorBlendingMode;
-			uint padding[ 2 ];
+			// uint padding[ 2 ];
 		};
 
 		inline void _render( const float p_time ) const

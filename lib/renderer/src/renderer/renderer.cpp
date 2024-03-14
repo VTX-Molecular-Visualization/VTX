@@ -106,6 +106,7 @@ namespace VTX::Renderer
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		assert( _renderGraph->isBuilt() );
+		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations->size() );
 
 		// If size max reached, do not add.
 		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
@@ -131,7 +132,6 @@ namespace VTX::Renderer
 		};
 
 		// TODO: onVisible to split in multi call.
-		
 
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{

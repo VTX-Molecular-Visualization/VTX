@@ -31,7 +31,6 @@ namespace VTX::Bench
 			IO::Util::SecondaryStructure::computeStride( *_molecules.back() );
 			_proxies.emplace_back( _proxify( *_molecules.back() ) );
 			_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
-			_proxies.back()->onRepresentation( rand() % 4 );
 
 			return *_proxies.back();
 		};
@@ -134,7 +133,8 @@ namespace VTX::Bench
 				*vecRadii.back(),
 				*vecIdAtoms.back(),
 				*vecColorResidues.back(),
-				*vecIdResidues.back() } );
+				*vecIdResidues.back(),
+				uint( rand() % 3 ) } );
 		}
 	};
 
