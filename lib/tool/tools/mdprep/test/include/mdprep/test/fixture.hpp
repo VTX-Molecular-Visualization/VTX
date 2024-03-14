@@ -42,6 +42,14 @@ namespace VTX::test
 
 		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.gro" ).string() };
 	};
+	struct Solvate
+	{
+		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
+													 / "1ubq_out_solvate" };
+
+		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.gro" ).string(),
+																  ( g_outputDir / "1ubq.top" ).string() };
+	};
 
 	inline std::vector<const std::string *> getPtrVectFromVect( const std::vector<std::string> & p_ )
 	{
