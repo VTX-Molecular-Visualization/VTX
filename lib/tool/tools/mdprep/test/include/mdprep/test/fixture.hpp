@@ -1,5 +1,7 @@
 #include <memory>
 #include <qapplication.h>
+#include <tools/mdprep/gromacs/inputs.hpp>
+//
 #include <tools/mdprep/gromacs/gromacs.hpp>
 #include <tools/mdprep/gromacs/util.hpp>
 

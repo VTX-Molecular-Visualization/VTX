@@ -4,11 +4,10 @@
 
 namespace VTX::test
 {
-	PrepareJobSetup::PrepareJobSetup( const char * p_rootDirName, const char * jobName )
+	PrepareJobSetup::PrepareJobSetup( const char * p_rootDirName, const char * jobName ) :
+		jobName( jobName ), rootDir( VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareJob" / p_rootDirName ),
+		jobDir( rootDir / jobName )
 	{
-		rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareJob" / p_rootDirName;
-		jobName = jobName;
-		jobDir	= rootDir / jobName;
 		if ( fs::exists( jobDir ) )
 			fs::remove_all( jobDir );
 	}
