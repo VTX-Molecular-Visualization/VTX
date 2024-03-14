@@ -1,4 +1,4 @@
-#include <regex>
+#include <re2/re2.h>
 //
 #include "tools/mdprep/gromacs/inputs.hpp"
 //
@@ -47,13 +47,25 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		void checkErrMsg( JobReport & p_report, const std::string & p_text ) noexcept
 		{
-			const std::regex errRegex { "^[ \t]*Error (.|[\r\n])*?\n\n" };
+			const RE2 pattern { "\n(( |\t)+Error (.|\n|\r)+?\n\n)" };
+
+			absl::string_view txt_view( p_text );
+			std::string		  hit;
+			std::string		  b1, b2;
+			while ( RE2::FindAndConsume( &txt_view, pattern, &hit ) )
+			{
+				p_report.errors.push_back( hit );
+			}
+			/*
+
+			const std::regex errRegex { "^[ \t]+Error (.|[\r\n])*?\n\n" };
 			for ( auto it = std::sregex_iterator( p_text.begin(), p_text.end(), errRegex );
 				  it != std::sregex_iterator();
 				  ++it )
 			{
 				p_report.errors.push_back( it->operator[]( 0 ).str() );
 			}
+			*/
 		}
 	} // namespace
 
@@ -86,6 +98,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 		}
 		p_in.report.errorOccured = ( p_in.report.errors.empty() == false );
 	}
-
 
 } // namespace VTX::Tool::Mdprep::Gromacs

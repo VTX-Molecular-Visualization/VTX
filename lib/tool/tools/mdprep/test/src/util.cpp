@@ -417,7 +417,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobR
 	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
 	CHECK( jd.report.errorOccured == true );
-	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
+	REQUIRE( jd.report.errors.empty() == !jd.report.errorOccured );
 	CHECK( jd.report.errors[ 0 ] == errMsg );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[checkJobResults][channels][errormsg]" )
@@ -443,7 +443,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[
 	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
 	CHECK( jd.report.errorOccured == true );
-	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
+	REQUIRE( jd.report.errors.empty() == !jd.report.errorOccured );
 	CHECK( jd.report.errors[ 0 ] == errMsg_1 );
 	CHECK( jd.report.errors[ 1 ] == errMsg_2 );
 }
