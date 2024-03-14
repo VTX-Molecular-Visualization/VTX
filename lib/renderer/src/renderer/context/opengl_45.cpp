@@ -64,7 +64,10 @@ namespace VTX::Renderer::Context
 		InstructionsDurationRanges & p_outInstructionsDurationRanges
 	)
 	{
-		assert( p_outInstructions.empty() );
+		// TODO: shading without blur?
+		// TODO: handle same pass remove/add
+		p_outInstructions.clear();
+		p_outInstructionsDurationRanges.clear();
 
 		_output = p_output;
 
@@ -77,12 +80,16 @@ namespace VTX::Renderer::Context
 			for ( const SharedUniform & uniform : p_uniforms )
 			{
 				std::string name = uniform.name;
-				assert( _ssbos.find( name ) == _ssbos.end() );
-				_ssbos.emplace( name, std::make_unique<GL::Buffer>() );
-				GL::Buffer * const ubo = _ssbos[ name ].get();
-				_createUniforms( ubo, uniform.uniforms );
-				GLenum bufferType = uniform.isDynamic ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER;
-				uint   binding	  = uniform.binding;
+
+				if ( _ssbos.find( name ) == _ssbos.end() )
+				{
+					_ssbos.emplace( name, std::make_unique<GL::Buffer>() );
+					_createUniforms( _ssbos[ name ].get(), uniform.uniforms );
+				}
+
+				GL::Buffer * const ubo		  = _ssbos[ name ].get();
+				GLenum			   bufferType = uniform.isDynamic ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER;
+				uint			   binding	  = uniform.binding;
 				p_outInstructions.emplace_back( [ ubo, bufferType, binding ]() { ubo->bind( bufferType, binding ); } );
 			}
 
@@ -95,43 +102,47 @@ namespace VTX::Renderer::Context
 			// Init resources.
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { descPassPtr->name,
 																					  p_outInstructions.size() } );
-			bool				isLastPass = descPassPtr == p_renderQueue.back();
-			std::vector<GLenum> drawBuffers;
-			bool				hasDepthComponent = false;
+			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
-			// Create input data.
-			_createInputs( descPassPtr );
-
-			// Create FBO.
-			if ( isLastPass == false )
+			// Check if already created.
+			if ( _fbos.find( descPassPtr ) == _fbos.end() )
 			{
-				_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
+				std::vector<GLenum> drawBuffers;
 
-				// Create outputs.
-				_createOuputs( descPassPtr, drawBuffers, hasDepthComponent );
+				// Create input data.
+				_createInputs( descPassPtr );
 
-				// Set draw buffers.
-				if ( drawBuffers.empty() == false )
+				// Create FBO.
+				if ( isLastPass == false )
 				{
-					_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
+					_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
+
+					// Create outputs.
+					_createOuputs( descPassPtr, drawBuffers );
+
+					// Set draw buffers.
+					if ( drawBuffers.empty() == false )
+					{
+						_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
+					}
 				}
-			}
 
-			// Create programs.
-			std::vector<uint> offsets;
-			for ( const Program & descProgram : descPassPtr->programs )
-			{
-				const GL::Program * const program = _programManager->createProgram(
-					descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
-				);
-
-				_programs.emplace( &descProgram, program );
-
-				// Uniforms.
-				if ( descProgram.uniforms.empty() == false )
+				// Create programs.
+				std::vector<uint> offsets;
+				for ( const Program & descProgram : descPassPtr->programs )
 				{
-					_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
-					_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
+					const GL::Program * const program = _programManager->createProgram(
+						descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
+					);
+
+					_programs.emplace( &descProgram, program );
+
+					// Uniforms.
+					if ( descProgram.uniforms.empty() == false )
+					{
+						_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
+						_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
+					}
 				}
 			}
 
@@ -139,6 +150,8 @@ namespace VTX::Renderer::Context
 			// Enqueue instructions.
 
 			// Enable options.
+			bool hasDepthComponent = _hasDepthComponent( descPassPtr );
+
 			if ( hasDepthComponent )
 			{
 				p_outInstructions.emplace_back(
@@ -533,11 +546,7 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::_createOuputs(
-		const Pass * const	  p_descPassPtr,
-		std::vector<GLenum> & p_drawBuffers,
-		bool &				  p_hasDepthComponent
-	)
+	void OpenGL45::_createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers )
 	{
 		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
 		{
@@ -548,10 +557,7 @@ namespace VTX::Renderer::Context
 
 				// Attach.
 				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
-				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
-				{
-					p_hasDepthComponent = true;
-				}
+				if ( channel == E_CHANNEL_OUTPUT::DEPTH ) {}
 				else
 				{
 					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
@@ -562,6 +568,22 @@ namespace VTX::Renderer::Context
 				throw std::runtime_error( "unknown descriptor type" );
 			}
 		}
+	}
+
+	bool OpenGL45::_hasDepthComponent( const Pass * const p_descPassPtr ) const
+	{
+		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
+		{
+			const IO & descIO = output.desc;
+			if ( std::holds_alternative<Attachment>( descIO ) )
+			{
+				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	void OpenGL45::_createAttachment( const IO & p_descIO )

@@ -6,11 +6,6 @@ namespace VTX::Renderer
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
-		if ( _context )
-		{
-			clean();
-		}
-
 		VTX_INFO(
 			"Renderer graph setup total time: {}",
 			Util::CHRONO_CPU(

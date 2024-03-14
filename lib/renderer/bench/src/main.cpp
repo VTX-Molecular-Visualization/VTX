@@ -69,8 +69,11 @@ int main( int, char ** )
 		inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			Vec2i ids = renderer.getPickedIds( p_x, p_y );
-			VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			if ( renderer.hasContext() )
+			{
+				Vec2i ids = renderer.getPickedIds( p_x, p_y );
+				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			}
 		};
 		inputManager.callbackMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };

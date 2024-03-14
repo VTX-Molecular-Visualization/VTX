@@ -33,7 +33,7 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Renderer::BUFFER_COUNT == 2 ) );
 			// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
@@ -325,7 +325,7 @@ namespace VTX::Bench
 
 		void _drawRenderer( Renderer::Renderer * const p_renderer )
 		{
-			if ( ImGui::Begin( "Renderer" ) )
+			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
 			{
 				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
 				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
@@ -448,6 +448,11 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
+						if ( ImGui::Button( "R" ) )
+						{
+							proxyMolecule->onRepresentation( rand() % 3 );
+						}
+						ImGui::SameLine();
 						if ( ImGui::Button( "X" ) )
 						{
 							// Don't remove from proxy directly, remove from scene before (after loop).
@@ -494,7 +499,7 @@ namespace VTX::Bench
 				{
 					p_renderer->build();
 				}
-				if ( ImGui::Button( "Clean" ) )
+				if ( ImGui::Button( "X" ) )
 				{
 					p_renderer->clean();
 				}
@@ -502,7 +507,14 @@ namespace VTX::Bench
 				RenderQueue & renderQueue = graph.getRenderQueue();
 				for ( const Pass * const pass : renderQueue )
 				{
-					ImGui::TextUnformatted( pass->name.c_str() );
+					if ( pass != nullptr )
+					{
+						ImGui::TextUnformatted( pass->name.c_str() );
+					}
+					else
+					{
+						ImGui::TextUnformatted( " [deleted] " );
+					}
 					ImGui::TextUnformatted( " -> " );
 				}
 				if ( renderQueue.empty() )
@@ -747,7 +759,6 @@ namespace VTX::Bench
 				// Check deleted node.
 				if ( passToDelete != nullptr )
 				{
-					p_renderer->clean();
 					graph.removePass( passToDelete );
 				}
 			}

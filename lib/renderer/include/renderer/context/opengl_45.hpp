@@ -173,11 +173,9 @@ namespace VTX::Renderer::Context
 
 		void _createInputs( const Pass * const p_descPassPtr );
 
-		void _createOuputs(
-			const Pass * const	  p_descPassPtr,
-			std::vector<GLenum> & p_drawBuffers,
-			bool &				  p_hasDepthComponent
-		);
+		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
+
+		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
 		void _createAttachment( const IO & p_descIO );
 

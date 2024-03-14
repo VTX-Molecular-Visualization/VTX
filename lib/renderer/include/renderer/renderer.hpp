@@ -144,8 +144,10 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		void build( const uint p_output = 0, void * p_loader = nullptr );
-		void clean();
+		void		build( const uint p_output = 0, void * p_loader = nullptr );
+		void		patch( const uint p_output = 0 );
+		void		clean();
+		inline bool hasContext() const { return _context != nullptr; }
 
 		inline void render( const float p_time )
 		{
@@ -202,7 +204,7 @@ namespace VTX::Renderer
 			_needUpdate = p_value;
 			if ( p_value == false )
 			{
-				_framesRemaining = _BUFFER_COUNT;
+				_framesRemaining = BUFFER_COUNT;
 			}
 		}
 
@@ -251,13 +253,13 @@ namespace VTX::Renderer
 		bool forceUpdate  = true;
 		bool logDurations = false;
 
-	  private:
-		const size_t _BUFFER_COUNT = 2;
+		static const size_t BUFFER_COUNT = 2;
 
+	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;
 		void *								 _loader		  = nullptr;
 		bool								 _needUpdate	  = false;
-		size_t								 _framesRemaining = _BUFFER_COUNT;
+		size_t								 _framesRemaining = BUFFER_COUNT;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
