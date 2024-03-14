@@ -1,18 +1,26 @@
 #include "app/component/render/proxy_camera.hpp"
+#include "app/application/system/ecs_system.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/component/scene/transform_component.hpp"
-#include "app/vtx_app.hpp"
-#include <core/chemdb/atom.hpp>
-#include <util/logger.hpp>
-#include <util/math.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Render
 {
 	ProxyCamera::ProxyCamera() {}
+	ProxyCamera::~ProxyCamera()
+	{
+		if ( _proxyPtr != nullptr )
+		{
+			//_proxyPtr->onRemove();
+		}
+	}
 
-	void ProxyCamera::init()
+	void ProxyCamera::setInRenderer( Renderer::Facade & p_renderer )
 	{
 		_generateProxy();
 		_initCallbacks();
+
+		p_renderer.setProxyCamera( *_proxyPtr );
 	}
 
 	void ProxyCamera::_generateProxy()
@@ -45,10 +53,10 @@ namespace VTX::App::Component::Render
 		cameraComp.onProjectionChange += [ this ]( CAMERA_PROJECTION p_projection )
 		{ _proxyPtr->onPerspective( p_projection == CAMERA_PROJECTION::PERSPECTIVE ); };
 
-		// Component::Scene::Transform & transformComp
-		//	= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
-		// transformComp.onTransformChanged += [ this ]( const Util::Math::Transform & p_transform )
-		//{ _proxyPtr->onCameraPosition( p_transform.getTranslationVector() ); };
+		Component::Scene::Transform & transformComp
+			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		transformComp.onTransform += [ this ]( const Util::Math::Transform & p_transform )
+		{ _proxyPtr->onCameraPosition( p_transform.getTranslationVector() ); };
 	}
 
 } // namespace VTX::App::Component::Render

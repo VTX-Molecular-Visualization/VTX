@@ -1,11 +1,11 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/_fwd.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
+#include <renderer/facade.hpp>
 #include <renderer/proxy/molecule.hpp>
-#include <util/callback.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -15,17 +15,16 @@ namespace VTX::App::Component::Render
 	{
 	  public:
 		ProxyMolecule();
-		void init();
+		~ProxyMolecule();
 
-		VTX::Renderer::Proxy::Molecule &	   getProxy() { return *_proxyPtr; }
-		const VTX::Renderer::Proxy::Molecule & getProxy() const { return *_proxyPtr; }
+		void addInRenderer( Renderer::Facade & p_renderer );
 
 	  private:
-		std::vector<uchar> generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<float> generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<uint>  generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const;
-		std::vector<uchar> generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<uint>  generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const;
+		std::vector<uchar> _generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
+		std::vector<float> _generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const;
+		std::vector<uint>  _generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const;
+		std::vector<uchar> _generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
+		std::vector<uint>  _generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const;
 
 		std::unique_ptr<VTX::Renderer::Proxy::Molecule> _proxyPtr = nullptr;
 	};

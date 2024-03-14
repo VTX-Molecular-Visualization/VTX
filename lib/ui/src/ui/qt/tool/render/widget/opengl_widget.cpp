@@ -4,6 +4,7 @@
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/proxy_camera.hpp>
+#include <app/component/render/proxy_molecule.hpp>
 #include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
 #include <core/chemdb/color.hpp>
@@ -21,18 +22,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( 0 );
 		QSurfaceFormat::setDefaultFormat( format );
-
-		// TO_REMOVE : Force update camera position
-		App::VTXApp::get().onUpdate += []( const float p_deltaTime )
-		{
-			const App::Component::Scene::Transform & transformComponent
-				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( App::SCENE().getCamera() );
-
-			const App::Component::Render::ProxyCamera & proxyComponent
-				= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
-
-			proxyComponent.getProxy().onCameraPosition( transformComponent.getPosition() );
-		};
 	}
 
 	OpenGLWidget::~OpenGLWidget() {}
@@ -42,9 +31,14 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		assert( context()->isValid() );
 
 		App::RENDERER().build( defaultFramebufferObject() );
-		App::VTXApp::get().onPostRender += [ this ]( const float p_deltaTime ) { update(); };
 		App::RENDERER().setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 		App::RENDERER().setProxyRepresentations( { VTX::Renderer::Proxy::Representation() } );
+
+		App::Component::Render::ProxyCamera & proxyCamera
+			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
+		proxyCamera.setInRenderer( App::RENDERER() );
+
+		App::VTXApp::get().onPostRender += [ this ]( const float p_deltaTime ) { update(); };
 	}
 
 	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0.15f ); }

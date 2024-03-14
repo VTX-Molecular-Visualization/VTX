@@ -51,7 +51,7 @@ namespace VTX::UI::QT
 
 	  protected:
 		void _initUI( const std::vector<std::string> & p_args ) override;
-		void _postInit( const std::vector<std::string> & p_args ) override;
+		void _startUI( const std::vector<std::string> & p_args ) override;
 
 		void _initQt();
 		void _instantiateMainWindow();

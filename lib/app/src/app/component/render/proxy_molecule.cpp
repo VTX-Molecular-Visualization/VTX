@@ -1,15 +1,22 @@
 #include "app/component/render/proxy_molecule.hpp"
 #include "app/application/system/ecs_system.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
-#include <util/logger.hpp>
-#include <util/math.hpp>
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Component::Render
 {
 	ProxyMolecule::ProxyMolecule() {}
+	ProxyMolecule::~ProxyMolecule()
+	{
+		if ( _proxyPtr != nullptr )
+		{
+			_proxyPtr->onRemove();
+		}
+	}
 
-	void ProxyMolecule::init()
+	void ProxyMolecule::addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::Molecule & molComp
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
@@ -18,11 +25,11 @@ namespace VTX::App::Component::Render
 		Component::Scene::Transform & transformComp
 			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
-		const std::vector<uchar> atomColors	   = generateAtomColors( molStruct );
-		const std::vector<float> atomRadii	   = generateAtomRadii( molStruct );
-		const std::vector<uint>	 atomIds	   = generateAtomUids( molComp );
-		const std::vector<uchar> residueColors = generateResidueColors( molStruct );
-		const std::vector<uint>	 residueIds	   = generateResidueUids( molComp );
+		const std::vector<uchar> atomColors	   = _generateAtomColors( molStruct );
+		const std::vector<float> atomRadii	   = _generateAtomRadii( molStruct );
+		const std::vector<uint>	 atomIds	   = _generateAtomUids( molComp );
+		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
+		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
 		_proxyPtr = std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
 			&transformComp.getTransform().get(),
@@ -41,16 +48,18 @@ namespace VTX::App::Component::Render
 			atomIds,
 			residueColors,
 			residueIds } );
+
+		p_renderer.addProxyMolecule( *_proxyPtr );
 	}
 
-	std::vector<uchar> ProxyMolecule::generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
 	{
 		std::vector<uchar> atomColors;
 		atomColors.resize( p_molStruct.getAtomCount(), 0 );
 
 		return atomColors;
 	}
-	std::vector<float> ProxyMolecule::generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<float> ProxyMolecule::_generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const
 	{
 		std::vector<float> atomRadii;
 
@@ -64,7 +73,7 @@ namespace VTX::App::Component::Render
 
 		return atomRadii;
 	}
-	std::vector<uint> ProxyMolecule::generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxyMolecule::_generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const
 	{
 		std::vector<uint> atomUids;
 		const uint		  offset = uint( p_molComp._atomUidRange.getFirst() );
@@ -74,14 +83,14 @@ namespace VTX::App::Component::Render
 
 		return atomUids;
 	}
-	std::vector<uchar> ProxyMolecule::generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<uchar> ProxyMolecule::_generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
 	{
 		std::vector<uchar> residueColors;
 		residueColors.resize( p_molStruct.getResidueCount(), 0 );
 
 		return residueColors;
 	}
-	std::vector<uint> ProxyMolecule::generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxyMolecule::_generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const
 	{
 		std::vector<uint> residueUids;
 		const uint		  offset = uint( p_molComp._residueUidRange.getFirst() );

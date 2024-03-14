@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_CAMERA__
 
-#include "app/component/render/camera.hpp"
 #include <memory>
+#include <renderer/facade.hpp>
 #include <renderer/proxy/camera.hpp>
 
 namespace VTX::App::Component::Render
@@ -11,10 +11,9 @@ namespace VTX::App::Component::Render
 	{
 	  public:
 		ProxyCamera();
-		void init();
+		~ProxyCamera();
 
-		VTX::Renderer::Proxy::Camera &		 getProxy() { return *_proxyPtr; }
-		const VTX::Renderer::Proxy::Camera & getProxy() const { return *_proxyPtr; }
+		void setInRenderer( Renderer::Facade & p_renderer );
 
 	  private:
 		void _generateProxy();

@@ -103,10 +103,8 @@ namespace VTX::UI::QT
 		_mainWindow = WidgetFactory::get().instantiateWidget<QT::MainWindow>( nullptr, "MainWindow" );
 	}
 
-	void ApplicationQt::_postInit( const std::vector<std::string> & p_args )
+	void ApplicationQt::_startUI( const std::vector<std::string> & p_args )
 	{
-		Core::BaseUIApplication::_postInit( p_args );
-
 		_mainWindow->show();
 		_mainWindow->initWindowLayout();
 	}

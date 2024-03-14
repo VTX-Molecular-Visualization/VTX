@@ -96,13 +96,13 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
-	const Component::Chemistry::Molecule & moleculeComponent
-		= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
+	// const Component::Chemistry::Molecule & moleculeComponent
+	//	= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
 
-	const Component::Render::ProxyMolecule & gpuProxyComponent
-		= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
+	// const Component::Render::ProxyMolecule & gpuProxyComponent
+	//	= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
 
-	REQUIRE( gpuProxyComponent.getProxy().atomNames == &moleculeComponent.getMoleculeStruct().atomNames );
+	// REQUIRE( gpuProxyComponent.getProxy().atomNames == &moleculeComponent.getMoleculeStruct().atomNames );
 }
 
 TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
