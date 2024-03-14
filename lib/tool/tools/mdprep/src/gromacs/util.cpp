@@ -87,4 +87,5 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_in.report.errorOccured = ( p_in.report.errors.empty() == false );
 	}
 
+
 } // namespace VTX::Tool::Mdprep::Gromacs
