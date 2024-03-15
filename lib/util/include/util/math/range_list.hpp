@@ -377,11 +377,12 @@ namespace VTX::Util::Math
 			return false;
 		}
 
-		void   clear() { _ranges.clear(); }
-		bool   isEmpty() const { return _ranges.size() == 0; }
-		size_t size() const
+		void clear() { _ranges.clear(); }
+		bool isEmpty() const { return _ranges.size() == 0; }
+
+		T count() const
 		{
-			size_t res = 0;
+			T res = 0;
 
 			for ( const Range<T> & range : _ranges )
 				res += range.getCount();

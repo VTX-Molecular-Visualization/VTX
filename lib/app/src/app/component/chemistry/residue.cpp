@@ -113,4 +113,21 @@ namespace VTX::App::Component::Chemistry
 		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), getAtomCount() );
 	}
 
+	bool Residue::isVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		return _moleculePtr->_visibleAtomIds.intersectWith( atomRange );
+	}
+	bool Residue::isFullyVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		return _moleculePtr->_visibleAtomIds.contains( atomRange );
+	}
+
+	void Residue::setVisible( const bool p_visible )
+	{
+		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		_moleculePtr->setVisible( atomRange, p_visible );
+	}
+
 } // namespace VTX::App::Component::Chemistry

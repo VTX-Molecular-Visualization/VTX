@@ -62,7 +62,7 @@ namespace VTX::App::Component::Behaviour
 		Component::Render::ProxyMolecule & gpuProxyComponent
 			= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( _entity );
 
-		gpuProxyComponent.addInRenderer( App::RENDERER() );
+		gpuProxyComponent.setup( App::RENDERER() );
 	}
 	void Molecule::_initTrajectoryComponent() const
 	{

@@ -34,7 +34,10 @@ namespace VTX::App::Application::Selection
 			   && _residueIds == castedOther._residueIds && _atomIds == castedOther._atomIds;
 	}
 
-	bool MoleculeData::isValid() const { return _chainIds.size() > 0 || _residueIds.size() > 0 || _atomIds.size() > 0; }
+	bool MoleculeData::isValid() const
+	{
+		return !( _chainIds.isEmpty() && _residueIds.isEmpty() && _atomIds.isEmpty() );
+	}
 
 	std::unique_ptr<SelectionData> MoleculeData::_cloneImpl() const
 	{
@@ -149,7 +152,7 @@ namespace VTX::App::Application::Selection
 		setCurrentObject( *_molecule );
 	}
 
-	bool MoleculeData::isFullySelected() const { return _atomIds.size() == _molecule->getAtoms().size(); }
+	bool MoleculeData::isFullySelected() const { return _atomIds.count() == _molecule->getAtoms().size(); }
 
 	// Chains ////////////////////////////////////////////////////////////////////////////////////////
 	void MoleculeData::referenceChain( const Chain & p_chain ) { _referenceChain( p_chain ); }
@@ -868,7 +871,7 @@ namespace VTX::App::Application::Selection
 		const int		  maxItemDisplayed = 20;
 
 		sStr << SelectionData::toString() << std::endl;
-		sStr << "Chains  (" << _chainIds.size() << '/' << _molecule->getChains().size() << ")" << std::endl;
+		sStr << "Chains  (" << _chainIds.count() << '/' << _molecule->getChains().size() << ")" << std::endl;
 
 		int counter = 0;
 
@@ -888,7 +891,7 @@ namespace VTX::App::Application::Selection
 		sStr << std::endl << std::endl;
 		counter = 0;
 
-		sStr << "Residues  (" << _residueIds.size() << '/' << _molecule->getResidues().size() << ")" << std::endl;
+		sStr << "Residues  (" << _residueIds.count() << '/' << _molecule->getResidues().size() << ")" << std::endl;
 		for ( const size_t residueId : _residueIds )
 		{
 			const Residue & residue = *_molecule->getResidue( residueId );
@@ -905,7 +908,7 @@ namespace VTX::App::Application::Selection
 		sStr << std::endl << std::endl;
 		counter = 0;
 
-		sStr << "Atoms  (" << _atomIds.size() << '/' << _molecule->getAtoms().size() << ")" << std::endl;
+		sStr << "Atoms  (" << _atomIds.count() << '/' << _molecule->getAtoms().size() << ")" << std::endl;
 		for ( const atom_index_t atomId : _atomIds )
 		{
 			const Atom & atom = *_molecule->getAtom( atomId );

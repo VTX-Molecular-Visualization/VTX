@@ -1,9 +1,9 @@
 #include "app/component/render/proxy_molecule.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <renderer/facade.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Render
 {
@@ -15,8 +15,13 @@ namespace VTX::App::Component::Render
 			_proxyPtr->onRemove();
 		}
 	}
+	void ProxyMolecule::setup( Renderer::Facade & p_renderer )
+	{
+		_addInRenderer( p_renderer );
+		_setupCallbacks();
+	}
 
-	void ProxyMolecule::addInRenderer( Renderer::Facade & p_renderer )
+	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::Molecule & molComp
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
@@ -50,6 +55,16 @@ namespace VTX::App::Component::Render
 			residueIds } );
 
 		p_renderer.addProxyMolecule( *_proxyPtr );
+	}
+	void ProxyMolecule::_setupCallbacks()
+	{
+		Component::Chemistry::Molecule & molecule
+			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+
+		molecule.onVisibilityChange +=
+			[ this ](
+				Component::Chemistry::AtomIndexRangeList p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
+			) { _applyOnVisibility( p_rangeList, p_applyMode ); };
 	}
 
 	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
@@ -102,4 +117,32 @@ namespace VTX::App::Component::Render
 
 		return residueUids;
 	}
+
+	void ProxyMolecule::_applyOnVisibility(
+		const Component::Chemistry::AtomIndexRangeList & p_rangeList,
+		const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
+	)
+	{
+		// Create copy to manage unconst rangelist required by onAtomVisibilities callback
+		Util::Math::RangeList<uint> castedRange = p_rangeList;
+
+		switch ( p_applyMode )
+		{
+		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxyPtr->onAtomVisibilities( castedRange, true ); break;
+
+		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxyPtr->onAtomVisibilities( castedRange, false ); break;
+
+		case App::Core::VISIBILITY_APPLY_MODE::SET:
+			_proxyPtr->onVisible( false );
+			_proxyPtr->onAtomVisibilities( castedRange, true );
+			break;
+
+		default:
+			throw VTXException(
+				"Unhandled Component::Chemistry::VISIBILITY_APPLY_MODE in ProxyMolecule::onVisibilityChange "
+				"callback."
+			);
+		}
+	}
+
 } // namespace VTX::App::Component::Render

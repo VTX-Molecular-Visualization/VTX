@@ -13,7 +13,7 @@ namespace VTX::App::Core::UID
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 
-		if ( _availableUIDs.size() == 0 )
+		if ( _availableUIDs.isEmpty() )
 			throw VTXException( "Unable to reserve UID." );
 
 		const uid res = _availableUIDs.rangeBegin()->getFirst();

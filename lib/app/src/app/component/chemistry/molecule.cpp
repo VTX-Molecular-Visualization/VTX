@@ -8,6 +8,7 @@
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
+#include <util/algorithm/range.hpp>
 #include <util/constants.hpp>
 
 namespace VTX::App::Component::Chemistry
@@ -70,10 +71,7 @@ namespace VTX::App::Component::Chemistry
 			[ this, n = 0 ]() mutable { return std::move( std::make_unique<Atom>( this, n++ ) ); }
 		);
 
-		_atomVisibilities.resize( p_atomCount, uint( true ) );
-
 		_atomUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_atomCount ) );
-		_atomSelections.resize( p_atomCount, uint( false ) );
 	}
 
 	void Molecule::initBonds( const size_t p_bondCount )
@@ -106,6 +104,86 @@ namespace VTX::App::Component::Chemistry
 	Residue * Molecule::getResidueFromUID( Core::UID::uid p_uid )
 	{
 		return getResidue( p_uid - _residueUidRange.getFirst() );
+	}
+
+	bool Molecule::isVisible() const { return !_visibleAtomIds.isEmpty(); }
+	bool Molecule::isFullyVisible() const { return _visibleAtomIds.count() == atom_index_t( _atoms.size() ); }
+
+	void Molecule::setVisible( const bool p_visible )
+	{
+		const AtomIndexRange atomRange = AtomIndexRange( 0, atom_index_t( _atoms.size() ) );
+
+		if ( p_visible )
+		{
+			_visibleAtomIds.addRange( atomRange );
+		}
+		else
+		{
+			// = _visibleAtomIds.removeRange( atomRange ), but quicker
+			_visibleAtomIds.clear();
+		}
+
+		const App::Core::VISIBILITY_APPLY_MODE applyMode
+			= p_visible ? App::Core::VISIBILITY_APPLY_MODE::SHOW : App::Core::VISIBILITY_APPLY_MODE::HIDE;
+		onVisibilityChange( AtomIndexRangeList( { atomRange } ), applyMode );
+	}
+	void Molecule::setVisible( const atom_index_t & p_atomId, bool p_visible )
+	{
+		App::Core::VISIBILITY_APPLY_MODE applyMode;
+
+		if ( p_visible )
+		{
+			_visibleAtomIds.addValue( p_atomId );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+		}
+		else
+		{
+			_visibleAtomIds.removeValue( p_atomId );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+		}
+
+		onVisibilityChange( AtomIndexRangeList( { AtomIndexRange( p_atomId ) } ), applyMode );
+	}
+	void Molecule::setVisible( const AtomIndexRange & p_atomRange, bool p_visible )
+	{
+		App::Core::VISIBILITY_APPLY_MODE applyMode;
+
+		if ( p_visible )
+		{
+			_visibleAtomIds.addRange( p_atomRange );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+		}
+		else
+		{
+			_visibleAtomIds.removeRange( p_atomRange );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+		}
+
+		onVisibilityChange( AtomIndexRangeList( { p_atomRange } ), applyMode );
+	}
+
+	void Molecule::setVisible( const AtomIndexRangeList & p_atomRange, bool p_visible )
+	{
+		App::Core::VISIBILITY_APPLY_MODE applyMode;
+
+		if ( p_visible )
+		{
+			Util::Algorithm::Range::mergeInSitu( _visibleAtomIds, p_atomRange );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+		}
+		else
+		{
+			Util::Algorithm::Range::substractInSitu( _visibleAtomIds, p_atomRange );
+			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+		}
+
+		onVisibilityChange( p_atomRange, applyMode );
+	}
+
+	void Molecule::setAtomVisibilities( const AtomIndexRangeList & p_visibility )
+	{
+		_visibleAtomIds = p_visibility;
+		onVisibilityChange( _visibleAtomIds, App::Core::VISIBILITY_APPLY_MODE::SET );
 	}
 
 } // namespace VTX::App::Component::Chemistry

@@ -4,9 +4,11 @@
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/core/uid/uid.hpp"
+#include <app/core/visibility/enum.hpp>
 #include <core/struct/molecule.hpp>
 #include <memory>
 #include <util/callback.hpp>
+#include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -18,6 +20,10 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
+
+	using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
+	using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
+
 	class Molecule
 	{
 	  private:
@@ -76,12 +82,16 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void				setPdbIdCode( const std::string & p_pdbIdCode ) { _pdbIdCode = p_pdbIdCode; }
 
-		bool getAtomVisibility( const size_t p_index ) const { return _atomVisibilities[ p_index ]; }
-		void setAtomVisibility( const size_t p_index, const bool p_visible )
-		{
-			_atomVisibilities[ p_index ] = p_visible;
-		}
-		const std::vector<bool> & getAtomVisibilities() const { return _atomVisibilities; }
+		bool isVisible() const;
+		bool isFullyVisible() const;
+
+		void setVisible( const bool p_visible );
+		void setVisible( const atom_index_t & p_atomId, bool p_visible );
+		void setVisible( const AtomIndexRange & p_atomRange, bool p_visible );
+		void setVisible( const AtomIndexRangeList & p_atomRange, bool p_visible );
+
+		const AtomIndexRangeList & getAtomVisibilities() const { return _visibleAtomIds; }
+		void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
 
 		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
 		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
@@ -91,7 +101,8 @@ namespace VTX::App::Component::Chemistry
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
 		Residue *					getResidueFromUID( Core::UID::uid p_uid );
 
-		Util::Callback<> onStruct;
+		Util::Callback<>													 onStruct;
+		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
 
 	  private:
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
@@ -104,8 +115,7 @@ namespace VTX::App::Component::Chemistry
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
-		std::vector<bool> _atomVisibilities = std::vector<bool>();
-		std::vector<bool> _atomSelections	= std::vector<bool>();
+		AtomIndexRangeList _visibleAtomIds = AtomIndexRangeList();
 
 		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
 		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();
