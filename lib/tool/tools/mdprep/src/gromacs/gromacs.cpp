@@ -24,7 +24,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 		void interactiveProcessManagement( QProcess & p_proc, bool & p_finished, GromacsJobData & p_args ) noexcept
 		{
-			std::string unsentBuf, // Used when the stdout is not ready to be sent
+			std::string unsentOutBuf, unsetErrBuf, // Used when the stdout is not ready to be sent
 				bufErr, bufOut;
 			const uint64_t MAXIMUM_WAITING_ITERATION_NUMBER = 10000;
 			uint64_t	   currentIterationNumber			= 0; // Used to kill the process if too long
@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 						fillMissingString( *channels, bufErr, bufOut );
 				}
 
-				p_proc.waitForReadyRead();
+				p_proc.waitForReadyRead( 10000 );
 
 				if ( currentIterationNumber > MAXIMUM_WAITING_ITERATION_NUMBER )
 				{
@@ -55,11 +55,12 @@ namespace VTX::Tool::Mdprep::Gromacs
 					continue;
 				}
 
-				fillMissingString( p_proc.readAllStandardError(), bufErr );
-				fillMissingString( p_proc.readAllStandardOutput(), unsentBuf );
+				fillMissingString( p_proc.readAllStandardError(), unsetErrBuf );
+				fillMissingString( p_proc.readAllStandardOutput(), unsentOutBuf );
 
-				size_t currentStdChannelSizeSum = savedChannelsSizeSum + bufErr.size() + unsentBuf.size();
-				bool   gromacsIsWaitingInputs	= p_args.interactiveSettings->isWaitingForInput( unsentBuf );
+				size_t currentStdChannelSizeSum = savedChannelsSizeSum + unsetErrBuf.size() + unsentOutBuf.size();
+				bool   gromacsIsWaitingInputs	= p_args.interactiveSettings->isWaitingForInput( unsentOutBuf )
+											  || p_args.interactiveSettings->isWaitingForInput( unsetErrBuf );
 
 				if ( gromacsIsWaitingInputs == false && currentStdChannelSizeSum == lastStdChannelSizeSum )
 				{
@@ -73,8 +74,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 				// From here, gromacs wait for us to write something
 
 				lastStdChannelSizeSum = currentStdChannelSizeSum;
-				bufOut += unsentBuf;
-				unsentBuf.clear();
+				bufOut += unsentOutBuf;
+				unsentOutBuf.clear();
+				bufErr += unsetErrBuf;
+				unsetErrBuf.clear();
 
 				p_args.interactiveSettings->enterInput( p_proc, bufOut, bufErr );
 			}
@@ -107,10 +110,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
 			qtArgs << QString( arg.c_str() );
-
-		std::string tmp;
-		for ( auto & arg : p_args.arguments )
-			( tmp += arg ) += " ";
 
 		bool	 finished = false;
 		QProcess proc;
