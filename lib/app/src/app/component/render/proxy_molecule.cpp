@@ -123,18 +123,15 @@ namespace VTX::App::Component::Render
 		const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
 	)
 	{
-		// Create copy to manage unconst rangelist required by onAtomVisibilities callback
-		Util::Math::RangeList<uint> castedRange = p_rangeList;
-
 		switch ( p_applyMode )
 		{
-		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxyPtr->onAtomVisibilities( castedRange, true ); break;
+		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxyPtr->onAtomVisibilities( p_rangeList, true ); break;
 
-		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxyPtr->onAtomVisibilities( castedRange, false ); break;
+		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxyPtr->onAtomVisibilities( p_rangeList, false ); break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::SET:
 			_proxyPtr->onVisible( false );
-			_proxyPtr->onAtomVisibilities( castedRange, true );
+			_proxyPtr->onAtomVisibilities( p_rangeList, true );
 			break;
 
 		default:

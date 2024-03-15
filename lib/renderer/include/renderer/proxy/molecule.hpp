@@ -28,17 +28,17 @@ namespace VTX::Renderer::Proxy
 
 		const uint idDefaultRepresentation = 0;
 
-		Util::Callback<>					 onTransform;	   // Move/rotate.
-		Util::Callback<bool>				 onVisible;		   // Show/hide the whole molecule.
-		Util::Callback<bool>				 onSelect;		   // Select/deselect the whole molecule.
-		Util::Callback<uint>				 onRepresentation; // Change the representation of the whole molecule.
-		Util::Callback<>					 onRemove;		   // Remove proxy.
-		Util::Callback<>					 onAtomPositions;  // Update dynamics.
-		Util::Callback<std::vector<uchar> &> onAtomColors;	   // Update colors (ATOM/CHAIN/RESIDUE)...
-		Util::Callback<std::vector<uchar> &> onResidueColors;  // Update colors (ATOM/CHAIN/RESIDUE)...
-		Util::Callback<Util::Math::RangeList<uint> &, bool> onAtomVisibilities; // Update atom visibility with ranges.
-		Util::Callback<Util::Math::RangeList<uint> &, bool> onAtomSelections;	// Update atom selection with ranges.
-		Util::Callback<Util::Math::RangeList<uint> &, uint>
+		Util::Callback<>				   onTransform;		 // Move/rotate.
+		Util::Callback<bool>			   onVisible;		 // Show/hide the whole molecule.
+		Util::Callback<bool>			   onSelect;		 // Select/deselect the whole molecule.
+		Util::Callback<uint>			   onRepresentation; // Change the representation of the whole molecule.
+		Util::Callback<>				   onRemove;		 // Remove proxy.
+		Util::Callback<>				   onAtomPositions;	 // Update dynamics.
+		Util::Callback<std::vector<uchar>> onAtomColors;	 // Update colors (ATOM/CHAIN/RESIDUE)...
+		Util::Callback<std::vector<uchar>> onResidueColors;	 // Update colors (ATOM/CHAIN/RESIDUE)...
+		Util::Callback<Util::Math::RangeList<uint>, bool> onAtomVisibilities; // Update atom visibility with ranges.
+		Util::Callback<Util::Math::RangeList<uint>, bool> onAtomSelections;	  // Update atom selection with ranges.
+		Util::Callback<Util::Math::RangeList<uint>, uint>
 			onAtomRepresentations; // Update atom representations with ranges.
 	};
 
