@@ -74,13 +74,15 @@ namespace VTX::App::Internal::Serialization
 	// TrajectoryPlayers
 	Util::JSon::Object serialize( const App::Core::TrajectoryPlayer::BasePlayer & p_player )
 	{
-		return { { "CURRENT_FRAME", p_player.getCurrentFrameIndex() },
+		return { { "COUNT", p_player.getCount() },
+				 { "CURRENT", p_player.getCurrent() },
 				 { "FPS", p_player.getFPS() },
 				 { "IS_PLAYING", p_player.isPlaying() } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::TrajectoryPlayer::BasePlayer & p_player )
 	{
-		p_player.setCurrentFrameIndex( SERIALIZER().deserializeField<size_t>( p_json, "CURRENT_FRAME" ) );
+		p_player.setCount( SERIALIZER().deserializeField<size_t>( p_json, "COUNT" ) );
+		p_player.setCurrent( SERIALIZER().deserializeField<size_t>( p_json, "CURRENT" ) );
 		p_player.setFPS( SERIALIZER().deserializeField<uint>( p_json, "FPS" ) );
 
 		if ( SERIALIZER().deserializeField<bool>( p_json, "IS_PLAYING", false ) )

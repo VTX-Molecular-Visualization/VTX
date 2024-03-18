@@ -3,6 +3,7 @@
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/application/system/ecs_system.hpp"
+#include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <renderer/facade.hpp>
@@ -63,6 +64,7 @@ namespace VTX::App::Component::Render
 	{
 		_applyVisibilityCallbacks();
 		_applySelectionCallbacks();
+		_applyAtomPositionCallbacks();
 	}
 
 	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
@@ -168,6 +170,23 @@ namespace VTX::App::Component::Render
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
 			_proxyPtr->onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
+	}
+	void ProxyMolecule::_applyAtomPositionCallbacks() const
+	{
+		if ( MAIN_REGISTRY().hasComponent<Component::Chemistry::Trajectory>( *this ) )
+		{
+			Component::Chemistry::Trajectory & trajectoryComponent
+				= MAIN_REGISTRY().getComponent<Component::Chemistry::Trajectory>( *this );
+
+			trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
+			{
+				Component::Chemistry::Molecule & moleculeComponent
+					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+
+				_proxyPtr->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
+				_proxyPtr->onAtomPositions();
+			};
+		}
 	}
 
 } // namespace VTX::App::Component::Render

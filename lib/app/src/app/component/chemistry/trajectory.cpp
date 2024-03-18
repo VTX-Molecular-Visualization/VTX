@@ -14,19 +14,28 @@ namespace VTX::App::Component::Chemistry
 
 	Trajectory::Trajectory( Molecule * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
 
-	size_t Trajectory::getCurrentFrame() const
+	size_t Trajectory::getCurrentFrame() const { return _moleculePtr->getTrajectory().currentFrameIndex; }
+	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		return _moleculePtr->getMoleculeStruct().trajectory.currentFrameIndex;
+		_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
 	}
 
-	size_t Trajectory::getFrameCount() const { return _moleculePtr->getMoleculeStruct().trajectory.frames.size(); }
+	size_t Trajectory::getFrameCount() const { return _moleculePtr->getTrajectory().frames.size(); }
 
 	void Trajectory::setPlayer( std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> & p_player )
 	{
 		const bool resetPlayer = _player == nullptr;
 
+		onFrameChange.clear();
+
 		_player = std::move( p_player );
-		_player->setTrajectory( _moleculePtr->getTrajectory() );
+		_player->setCount( _moleculePtr->getTrajectory().getFrameCount() );
+
+		_player->onFrameChange += [ this ]( const size_t p_frameIndex )
+		{
+			_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
+			onFrameChange( p_frameIndex );
+		};
 
 		if ( resetPlayer )
 			_player->reset();

@@ -37,6 +37,7 @@ namespace VTX::App::Component::Render
 
 		void _applyVisibilityCallbacks();
 		void _applySelectionCallbacks() const;
+		void _applyAtomPositionCallbacks() const;
 
 		std::unique_ptr<VTX::Renderer::Proxy::Molecule> _proxyPtr = nullptr;
 	};

@@ -3,7 +3,6 @@
 
 #include "base_player.hpp"
 #include "players.hpp"
-#include <string>
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
@@ -19,7 +18,6 @@ namespace VTX::App::Core::TrajectoryPlayer
 	  public:
 		Stop();
 		Stop( const Stop & p_source );
-		Stop( VTX::Core::Struct::Trajectory * const p_trajectory );
 
 		void play() override;
 

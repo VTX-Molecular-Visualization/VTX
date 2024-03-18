@@ -1,32 +1,44 @@
 #include "app/core/trajectory_player/base_player.hpp"
-#include <core/struct/trajectory.hpp>
+#include <util/math.hpp>
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	void BasePlayer::setTrajectory( VTX::Core::Struct::Trajectory & p_trajectory ) { _trajectoryPtr = &p_trajectory; }
+	void BasePlayer::setCount( const size_t p_count )
+	{
+		_count = p_count;
 
-	size_t BasePlayer::getCurrentFrameIndex() const
-	{
-		assert( isLinkedToTrajectory() );
-		return _trajectoryPtr->currentFrameIndex;
-	}
-	void BasePlayer::setCurrentFrameIndex( const size_t p_frameIndex )
-	{
-		assert( isLinkedToTrajectory() );
-		_trajectoryPtr->currentFrameIndex = p_frameIndex;
-	}
-	size_t BasePlayer::getFrameCount() const
-	{
-		assert( isLinkedToTrajectory() );
-		return _trajectoryPtr->frames.size();
+		if ( _current >= p_count )
+		{
+			_current = p_count - 1;
+			onFrameChange( _current );
+		}
 	}
 
-	void BasePlayer::play() { _isPlaying = true; }
-	void BasePlayer::pause() { _isPlaying = false; }
+	size_t BasePlayer::getCurrent() const { return _current; }
+	void   BasePlayer::setCurrent( const size_t p_frameIndex )
+	{
+		if ( _current = p_frameIndex )
+		{
+			_current = p_frameIndex;
+			onFrameChange( p_frameIndex );
+		}
+	}
+
+	void BasePlayer::play()
+	{
+		_isPlaying = true;
+		onPlay();
+	}
+	void BasePlayer::pause()
+	{
+		_isPlaying = false;
+		onPause();
+	}
 	void BasePlayer::stop()
 	{
-		pause();
+		_isPlaying = false;
 		reset();
+		onStop();
 	}
 
 	void BasePlayer::update( const float p_deltaTime )
@@ -42,22 +54,29 @@ namespace VTX::App::Core::TrajectoryPlayer
 		}
 		else
 		{
-			const size_t currentFrameIndex = getCurrentFrameIndex();
-			size_t		 nextFrameIndex	   = currentFrameIndex;
+			const size_t previousCurrent = _current;
+			size_t		 nextIndex		 = _current;
 
 			const float offset = 1.f / float( _fps );
 			while ( _trajectoryTimer >= offset )
 			{
-				nextFrameIndex++;
+				nextIndex++;
 				_trajectoryTimer -= offset;
 			}
 
-			if ( nextFrameIndex != currentFrameIndex )
+			if ( nextIndex != previousCurrent )
 			{
-				nextFrame( nextFrameIndex - currentFrameIndex );
+				nextFrame( nextIndex - previousCurrent );
 			}
 		}
 	}
 
-	void BasePlayer::setFPS( const uint p_fps ) { _fps = p_fps; }
+	void BasePlayer::setFPS( const uint p_fps )
+	{
+		if ( _fps != p_fps )
+		{
+			_fps = p_fps;
+			onFPSChange( p_fps );
+		}
+	}
 } // namespace VTX::App::Core::TrajectoryPlayer

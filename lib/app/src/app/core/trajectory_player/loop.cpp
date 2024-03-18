@@ -2,13 +2,11 @@
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	Loop::Loop( VTX::Core::Struct::Trajectory * const p_trajectory ) : BasePlayer( p_trajectory ) {}
-
-	void Loop::reset() { setCurrentFrameIndex( 0 ); }
-	void Loop::nextFrame( const size_t p_frameCount )
+	void Loop::reset() { setCurrent( 0 ); }
+	void Loop::nextFrame( const size_t p_count )
 	{
-		const size_t newFrameIndex = ( getCurrentFrameIndex() + p_frameCount ) % getFrameCount();
-		setCurrentFrameIndex( newFrameIndex );
+		const size_t newFrameIndex = ( getCurrent() + p_count ) % getCount();
+		setCurrent( newFrameIndex );
 	}
 
 } // namespace VTX::App::Core::TrajectoryPlayer
