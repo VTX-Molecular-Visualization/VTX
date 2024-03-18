@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
 #include "app/component/chemistry/molecule.hpp"
-#include <app/core/visibility/enum.hpp>
+#include "app/core/visibility/enum.hpp"
 #include <core/struct/molecule.hpp>
 #include <memory>
 #include <renderer/facade.hpp>
@@ -34,6 +34,9 @@ namespace VTX::App::Component::Render
 			const Component::Chemistry::AtomIndexRangeList & p_rangeList,
 			const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
 		);
+
+		void _applyVisibilityCallbacks();
+		void _applySelectionCallbacks() const;
 
 		std::unique_ptr<VTX::Renderer::Proxy::Molecule> _proxyPtr = nullptr;
 	};

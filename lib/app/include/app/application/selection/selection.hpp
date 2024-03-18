@@ -8,6 +8,7 @@
 #include <concepts>
 #include <map>
 #include <set>
+#include <util/callback.hpp>
 #include <util/concepts.hpp>
 #include <util/math/aabb.hpp>
 
@@ -287,16 +288,36 @@ namespace VTX::App::Application::Selection
 
 		SelectionData &		  getSelectionData( const Component::Scene::Selectable & p_selectableComponent );
 		const SelectionData & getSelectionData( const Component::Scene::Selectable & p_selectableComponent ) const;
+		template<SelectionDataConcept T>
+		T & getSelectionData( const Component::Scene::Selectable & p_selectableComponent )
+		{
+			return dynamic_cast<T &>( getSelectionData( p_selectableComponent ) );
+		}
+		template<SelectionDataConcept T>
+		const T & getSelectionData( const Component::Scene::Selectable & p_selectableComponent ) const
+		{
+			return dynamic_cast<T &>( getSelectionData( p_selectableComponent ) );
+		}
 
 		template<Core::ECS::ECS_Component C>
-		SelectionData & getSelectionData( const C & p_component )
+		SelectionData & getSelectionDataFromComponent( const C & p_component )
 		{
 			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
 		}
 		template<Core::ECS::ECS_Component C>
-		const SelectionData & getSelectionData( const C & p_component ) const
+		const SelectionData & getSelectionDataFromComponent( const C & p_component ) const
 		{
 			return getSelectionData( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
+		}
+		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
+		T & getSelectionDataFromComponent( const C & p_component )
+		{
+			return getSelectionData<T>( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
+		}
+		template<SelectionDataConcept T, Core::ECS::ECS_Component C>
+		const T & getSelectionDataFromComponent( const C & p_component ) const
+		{
+			return getSelectionData<T>( MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( p_component ) );
 		}
 
 		inline size_t getCount() const { return _items.size(); }
@@ -338,8 +359,9 @@ namespace VTX::App::Application::Selection
 
 		std::string toString() const;
 
-	  protected:
-		void _notifyDataChanged();
+		Util::Callback<SelectionData>		  onSelect;
+		Util::Callback<SelectionData>		  onDeselect;
+		Util::Callback<const SelectionData *> onCurrentObjectChange;
 
 	  private:
 		SelectionDataSet	  _items				= SelectionDataSet();
@@ -348,12 +370,8 @@ namespace VTX::App::Application::Selection
 		const std::unique_ptr<SelectionData> & _getSelectionDataPtr( const Component::Scene::Selectable & p_selectable
 		) const;
 
-		void _clearWithoutNotify();
-
-		// void _refreshMoleculeSelection( App::Old::Component::Chemistry::Molecule * const );
-
-		void _setCurrentObject( const SelectionData * const p_model, const bool p_notify = true );
-		void _clearCurrentObject( const bool p_notify = true );
+		void _setCurrentObject( const SelectionData * const p_model );
+		void _clearCurrentObject();
 	};
 
 } // namespace VTX::App::Application::Selection

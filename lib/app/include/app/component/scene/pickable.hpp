@@ -14,6 +14,12 @@ namespace VTX::App::Component::Scene
 	class Pickable : public Core::ECS::BaseComponent
 	{
 	  public:
+		enum PickType
+		{
+			SET,
+			TOGGLE
+		};
+
 		using PickableFunc = std::function<
 			std::unique_ptr<Application::Selection::SelectionData>( const Application::Selection::PickingInfo & )>;
 
@@ -26,15 +32,14 @@ namespace VTX::App::Component::Scene
 		Pickable();
 		~Pickable();
 
-		void pick(
-			const Application::Selection::PickingInfo &	   p_ids,
-			const Application::Selection::AssignmentType & p_assignmentType
-		) const;
+		void pick( const Application::Selection::PickingInfo & p_ids, const PickType p_pickType ) const;
 		bool isSelected( const Core::UID::uid & p_uid ) const;
 
 		void setPickingFunction( PickableFunc p_pickableFunc ) { _pickableFunc = p_pickableFunc; };
 
 	  private:
+		bool _isSelectionDataSelected( const Application::Selection::SelectionData & p_selectionData ) const;
+
 		PickableFunc _pickableFunc;
 	};
 } // namespace VTX::App::Component::Scene

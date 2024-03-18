@@ -94,15 +94,15 @@ namespace VTX::UI::QT::Controller
 	void SelectionPicker::_performSelection( const PickingInfo & p_pickingInfo ) const
 	{
 		// Append to selection if CTRL modifier pressed.
-		const App::Application::Selection::AssignmentType assignmentType
+		const App::Component::Scene::Pickable::PickType pickType
 			= INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Ctrl )
-				  ? App::Application::Selection::AssignmentType::APPEND
-				  : App::Application::Selection::AssignmentType::SET;
+				  ? App::Component::Scene::Pickable::PickType::TOGGLE
+				  : App::Component::Scene::Pickable::PickType::SET;
 
 		if ( !p_pickingInfo.hasValue() )
 		{
-			// Clear selection when the user clicks in void.
-			if ( assignmentType == App::Application::Selection::AssignmentType::SET )
+			// Clear selection when the user clicks in void without modfiers.
+			if ( pickType == App::Component::Scene::Pickable::PickType::SET )
 			{
 				App::CURRENT_SELECTION().clear();
 			}
@@ -112,7 +112,7 @@ namespace VTX::UI::QT::Controller
 			const auto pickableComponentOptional = _tryGetPickableFromUid( p_pickingInfo.getFirst() );
 
 			if ( pickableComponentOptional )
-				pickableComponentOptional->pick( p_pickingInfo, assignmentType );
+				pickableComponentOptional->pick( p_pickingInfo, pickType );
 		}
 	}
 

@@ -146,6 +146,8 @@ namespace VTX::App::Application::Selection
 			SelectionData & res = getSelectionData( p_selectableComponent );
 			res.selectAll();
 
+			onSelect( res );
+
 			_setCurrentObject( &res );
 
 			return res;
@@ -155,10 +157,14 @@ namespace VTX::App::Application::Selection
 			std::unique_ptr<Application::Selection::SelectionData> selectionItem
 				= p_selectableComponent.instantiateSelectionData();
 
-			auto it = _items.emplace( std::move( selectionItem ) );
-			_setCurrentObject( it.first->get() );
+			auto								   it				= _items.emplace( std::move( selectionItem ) );
+			const std::unique_ptr<SelectionData> & selectionDataPtr = *( it.first );
 
-			return **( it.first );
+			onSelect( *selectionDataPtr );
+
+			_setCurrentObject( selectionDataPtr.get() );
+
+			return *selectionDataPtr;
 		}
 	}
 	SelectionData & Selection::select(
@@ -175,6 +181,8 @@ namespace VTX::App::Application::Selection
 			SelectionData & res = getSelectionData( p_selectableComponent );
 			res.add( p_selectionData );
 
+			onSelect( res );
+
 			_setCurrentObject( &res );
 
 			return res;
@@ -185,10 +193,14 @@ namespace VTX::App::Application::Selection
 				= p_selectableComponent.instantiateSelectionData();
 			selectionItem->set( p_selectionData );
 
-			auto it = _items.emplace( std::move( selectionItem ) );
-			_setCurrentObject( it.first->get() );
+			auto								   it				= _items.emplace( std::move( selectionItem ) );
+			const std::unique_ptr<SelectionData> & selectionDataPtr = *( it.first );
 
-			return **( it.first );
+			onSelect( *selectionDataPtr );
+
+			_setCurrentObject( selectionDataPtr.get() );
+
+			return *selectionDataPtr;
 		}
 	}
 
@@ -207,6 +219,12 @@ namespace VTX::App::Application::Selection
 	void Selection::unselect( const Component::Scene::Selectable & p_selectableComponent )
 	{
 		const std::unique_ptr<SelectionData> & selItem = _getSelectionDataPtr( p_selectableComponent );
+
+		onDeselect( *selItem );
+
+		if ( _currentSelectionData == selItem.get() )
+			_clearCurrentObject();
+
 		_items.erase( selItem );
 	}
 
@@ -236,8 +254,15 @@ namespace VTX::App::Application::Selection
 
 	void Selection::clear()
 	{
-		_clearWithoutNotify();
-		_notifyDataChanged();
+		_clearCurrentObject();
+
+		while ( _items.size() > 0 )
+		{
+			const std::unique_ptr<SelectionData> & selectionData = *_items.begin();
+			onDeselect( *selectionData );
+
+			_items.erase( _items.begin() );
+		}
 	}
 
 	Util::Math::AABB Selection::getAABB() const
@@ -256,10 +281,6 @@ namespace VTX::App::Application::Selection
 		_setCurrentObject( _getSelectionDataPtr( p_item ).get() );
 	}
 	void Selection::setCurrentObject( const SelectionData & p_selectionData ) { _setCurrentObject( &p_selectionData ); }
-
-	void Selection::_notifyDataChanged() {}
-
-	void Selection::_clearWithoutNotify() { _items.clear(); }
 
 	SelectionData & Selection::getSelectionData( const Component::Scene::Selectable & p_selectable )
 	{
@@ -286,24 +307,20 @@ namespace VTX::App::Application::Selection
 		throw VTXException( "Selectable object not found in selection." );
 	}
 
-	void Selection::_setCurrentObject( const SelectionData * const p_selectionData, const bool p_notify )
+	void Selection::_setCurrentObject( const SelectionData * const p_selectionData )
 	{
 		if ( _currentSelectionData != p_selectionData )
 		{
 			_currentSelectionData = p_selectionData;
-
-			if ( p_notify )
-				_notifyDataChanged();
+			onCurrentObjectChange( p_selectionData );
 		}
 	}
-	void Selection::_clearCurrentObject( const bool p_notify )
+	void Selection::_clearCurrentObject()
 	{
 		if ( _currentSelectionData != nullptr )
 		{
 			_currentSelectionData = nullptr;
-
-			if ( p_notify )
-				_notifyDataChanged();
+			onCurrentObjectChange( nullptr );
 		}
 	}
 

@@ -33,6 +33,9 @@ namespace VTX::App::Application::Selection
 		Selection &		  getSaved( const std::string & p_name );
 
 	  private:
+		void _setCurrentSelection( const Selection & p_selection );
+		void _linkCallbackToSelectables();
+
 		std::unique_ptr<Selection> _currentSelection = std::make_unique<Selection>();
 
 		mutable std::map<std::string, std::unique_ptr<Selection>> _savedSelectionMap

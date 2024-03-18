@@ -1,4 +1,7 @@
 #include "app/component/render/proxy_molecule.hpp"
+#include "app/application/selection/molecule_data.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
@@ -58,13 +61,8 @@ namespace VTX::App::Component::Render
 	}
 	void ProxyMolecule::_setupCallbacks()
 	{
-		Component::Chemistry::Molecule & molecule
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
-
-		molecule.onVisibilityChange +=
-			[ this ](
-				Component::Chemistry::AtomIndexRangeList p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
-			) { _applyOnVisibility( p_rangeList, p_applyMode ); };
+		_applyVisibilityCallbacks();
+		_applySelectionCallbacks();
 	}
 
 	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
@@ -140,6 +138,36 @@ namespace VTX::App::Component::Render
 				"callback."
 			);
 		}
+	}
+
+	void ProxyMolecule::_applyVisibilityCallbacks()
+	{
+		Component::Chemistry::Molecule & molecule
+			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+
+		molecule.onVisibilityChange +=
+			[ this ](
+				Component::Chemistry::AtomIndexRangeList p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
+			) { _applyOnVisibility( p_rangeList, p_applyMode ); };
+	}
+	void ProxyMolecule::_applySelectionCallbacks() const
+	{
+		Component::Scene::Selectable & selectableComponent
+			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
+
+		selectableComponent.onSelect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
+		{
+			const Application::Selection::MoleculeData & castedSelectionData
+				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
+			_proxyPtr->onAtomSelections( castedSelectionData.getAtomIds(), true );
+		};
+
+		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
+		{
+			const Application::Selection::MoleculeData & castedSelectionData
+				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
+			_proxyPtr->onAtomSelections( castedSelectionData.getAtomIds(), false );
+		};
 	}
 
 } // namespace VTX::App::Component::Render
