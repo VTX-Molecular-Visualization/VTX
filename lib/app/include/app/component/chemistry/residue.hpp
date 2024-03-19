@@ -68,6 +68,8 @@ namespace VTX::App::Component::Chemistry
 
 		void setVisible( const bool p_visible );
 
+		void remove();
+
 	  private:
 		Molecule * _moleculePtr = nullptr;
 		size_t	   _index		= INVALID_INDEX;

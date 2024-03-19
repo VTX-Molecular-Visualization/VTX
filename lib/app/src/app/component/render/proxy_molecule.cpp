@@ -7,6 +7,7 @@
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <renderer/facade.hpp>
+#include <util/algorithm/range.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
@@ -153,10 +154,22 @@ namespace VTX::App::Component::Render
 		Component::Chemistry::Molecule & molecule
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
-		molecule.onVisibilityChange +=
-			[ this ](
-				Component::Chemistry::AtomIndexRangeList p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
-			) { _applyOnVisibility( p_rangeList, p_applyMode ); };
+		molecule.onVisibilityChange += [ this ](
+										   const Component::Chemistry::AtomIndexRangeList & p_rangeList,
+										   App::Core::VISIBILITY_APPLY_MODE					p_applyMode
+									   )
+		{
+			Component::Chemistry::Molecule & molecule
+				= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+
+			const Component::Chemistry::AtomIndexRangeList activeAtoms
+				= Util::Algorithm::Range::intersect( p_rangeList, molecule.getActiveAtoms() );
+
+			_applyOnVisibility( activeAtoms, p_applyMode );
+		};
+
+		molecule.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
+		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
 	void ProxyMolecule::_applySelectionCallbacks()
 	{

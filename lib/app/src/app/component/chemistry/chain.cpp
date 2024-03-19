@@ -68,4 +68,10 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->setVisible( atomRange, p_visible );
 	}
 
+	void Chain::remove()
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		_moleculePtr->remove( atomRange );
+	}
+
 } // namespace VTX::App::Component::Chemistry

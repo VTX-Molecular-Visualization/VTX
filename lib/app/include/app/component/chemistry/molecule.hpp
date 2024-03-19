@@ -88,10 +88,16 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const atom_index_t & p_atomId, bool p_visible );
 		void setVisible( const AtomIndexRange & p_atomRange, bool p_visible );
-		void setVisible( const AtomIndexRangeList & p_atomRange, bool p_visible );
+		void setVisible( const AtomIndexRangeList & p_atomRangeList, bool p_visible );
+
+		void remove( const atom_index_t & p_atomIndex );
+		void remove( const AtomIndexRange & p_atomRange );
+		void remove( const AtomIndexRangeList & p_atomRangeList );
 
 		const AtomIndexRangeList & getAtomVisibilities() const { return _visibleAtomIds; }
 		void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
+
+		const AtomIndexRangeList & getActiveAtoms() const { return _activeAtomIds; }
 
 		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
 		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
@@ -103,8 +109,16 @@ namespace VTX::App::Component::Chemistry
 
 		Util::Callback<>													 onStruct;
 		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
+		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
 
 	  private:
+		void _deleteTopologyPointers( const atom_index_t & p_atomIndex );
+		void _deleteTopologyPointers( const AtomIndexRange & p_atomRange );
+		void _refreshResidueRemovedState( const size_t p_residueIndex );
+		void _refreshChainRemovedState( const size_t p_chainIndex );
+
+		void _resizeTopologyVectors();
+
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 
 		std::vector<std::unique_ptr<Chain>>	  _chains;
@@ -116,6 +130,7 @@ namespace VTX::App::Component::Chemistry
 		std::string			  _pdbIdCode = "";
 
 		AtomIndexRangeList _visibleAtomIds = AtomIndexRangeList();
+		AtomIndexRangeList _activeAtomIds  = AtomIndexRangeList();
 
 		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
 		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();

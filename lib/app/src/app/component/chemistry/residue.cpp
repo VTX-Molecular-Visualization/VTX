@@ -130,4 +130,10 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->setVisible( atomRange, p_visible );
 	}
 
+	void Residue::remove()
+	{
+		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		_moleculePtr->remove( atomRange );
+	}
+
 } // namespace VTX::App::Component::Chemistry

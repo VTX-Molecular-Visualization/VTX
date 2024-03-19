@@ -11,6 +11,22 @@
 #include <util/algorithm/range.hpp>
 #include <util/constants.hpp>
 
+namespace
+{
+	template<typename T>
+	static void eraseEndingNullValues( std::vector<T> & p_vector )
+	{
+		typename std::vector<T>::const_reverse_iterator it = p_vector.crbegin();
+
+		while ( it != p_vector.crend() && ( *it ) == nullptr )
+		{
+			++it;
+		}
+
+		p_vector.erase( it.base(), p_vector.cend() );
+	}
+} // namespace
+
 namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
@@ -125,6 +141,7 @@ namespace VTX::App::Component::Chemistry
 
 		const App::Core::VISIBILITY_APPLY_MODE applyMode
 			= p_visible ? App::Core::VISIBILITY_APPLY_MODE::SHOW : App::Core::VISIBILITY_APPLY_MODE::HIDE;
+
 		onVisibilityChange( AtomIndexRangeList( { atomRange } ), applyMode );
 	}
 	void Molecule::setVisible( const atom_index_t & p_atomId, bool p_visible )
@@ -184,6 +201,104 @@ namespace VTX::App::Component::Chemistry
 	{
 		_visibleAtomIds = p_visibility;
 		onVisibilityChange( _visibleAtomIds, App::Core::VISIBILITY_APPLY_MODE::SET );
+	}
+
+	void Molecule::remove( const atom_index_t & p_atomIndex )
+	{
+		_activeAtomIds.removeValue( p_atomIndex );
+		_deleteTopologyPointers( p_atomIndex );
+		_resizeTopologyVectors();
+
+		onAtomRemoved( Util::Math::RangeList<atom_index_t>( p_atomIndex ) );
+	}
+	void Molecule::remove( const AtomIndexRange & p_atomRange )
+	{
+		_activeAtomIds.removeRange( p_atomRange );
+		_deleteTopologyPointers( p_atomRange );
+		_resizeTopologyVectors();
+
+		onAtomRemoved( Util::Math::RangeList<atom_index_t>( { p_atomRange } ) );
+	}
+	void Molecule::remove( const AtomIndexRangeList & p_atomRangeList )
+	{
+		Util::Algorithm::Range::substractInSitu( _activeAtomIds, p_atomRangeList );
+
+		for ( AtomIndexRangeList::RangeConstIterator it = p_atomRangeList.rangeBegin();
+			  it != p_atomRangeList.rangeEnd();
+			  it++ )
+		{
+			_deleteTopologyPointers( *it );
+		}
+		_resizeTopologyVectors();
+
+		onAtomRemoved( p_atomRangeList );
+	}
+
+	void Molecule::_deleteTopologyPointers( const atom_index_t & p_atomIndex )
+	{
+		_atoms[ p_atomIndex ] = nullptr;
+
+		const size_t residueIndex = _moleculeStruct.atomResidueIndexes[ p_atomIndex ];
+		_refreshResidueRemovedState( residueIndex );
+
+		const size_t chainIndex = _moleculeStruct.residueChainIndexes[ residueIndex ];
+		_refreshChainRemovedState( chainIndex );
+	}
+	void Molecule::_deleteTopologyPointers( const AtomIndexRange & p_atomRange )
+	{
+		for ( atom_index_t iAtom = p_atomRange.getFirst(); iAtom <= p_atomRange.getLast(); iAtom++ )
+			_atoms[ iAtom ] = nullptr;
+
+		const size_t firstResidueIndex = _moleculeStruct.atomResidueIndexes[ p_atomRange.getFirst() ];
+		const size_t lastResidueIndex  = _moleculeStruct.atomResidueIndexes[ p_atomRange.getLast() ];
+
+		for ( size_t iResidue = firstResidueIndex + 1; iResidue <= lastResidueIndex - 1; iResidue++ )
+			_residues[ iResidue ] = nullptr;
+
+		_refreshResidueRemovedState( firstResidueIndex );
+		_refreshResidueRemovedState( lastResidueIndex );
+
+		const size_t firstChainIndex = _moleculeStruct.residueChainIndexes[ firstResidueIndex ];
+		const size_t lastChainIndex	 = _moleculeStruct.atomResidueIndexes[ lastResidueIndex ];
+
+		for ( size_t iChain = firstChainIndex + 1; iChain <= lastChainIndex - 1; iChain++ )
+			_chains[ iChain ] = nullptr;
+
+		_refreshChainRemovedState( firstChainIndex );
+		_refreshChainRemovedState( lastChainIndex );
+	}
+
+	void Molecule::_refreshResidueRemovedState( const size_t p_residueIndex )
+	{
+		const Residue * const residue = getResidue( p_residueIndex );
+
+		if ( residue != nullptr )
+		{
+			const AtomIndexRange atomRange = AtomIndexRange( residue->getIndexFirstAtom(), residue->getAtomCount() );
+
+			if ( !_activeAtomIds.intersectWith( atomRange ) )
+				_residues[ p_residueIndex ] = nullptr;
+		}
+	}
+	void Molecule::_refreshChainRemovedState( const size_t p_chainIndex )
+	{
+		const Chain * const chain = getChain( p_chainIndex );
+
+		if ( chain != nullptr )
+		{
+			const AtomIndexRange atomRange
+				= AtomIndexRange::createFirstLast( chain->getIndexFirstAtom(), chain->getIndexLastAtom() );
+
+			if ( !_activeAtomIds.intersectWith( atomRange ) )
+				_chains[ p_chainIndex ] = nullptr;
+		}
+	}
+
+	void Molecule::_resizeTopologyVectors()
+	{
+		eraseEndingNullValues( _chains );
+		eraseEndingNullValues( _residues );
+		eraseEndingNullValues( _atoms );
 	}
 
 } // namespace VTX::App::Component::Chemistry
