@@ -25,3 +25,19 @@ if (NOT DEFINED _VTX_RENDERER_CONAN)
 else()
 	target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 endif()
+
+add_library(vtx_renderer_no_opengl)
+configure_target(vtx_renderer_no_opengl)
+
+target_sources(vtx_renderer_no_opengl
+	PRIVATE ${SOURCES}
+	PRIVATE ${SHADERS}
+	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
+
+if (NOT DEFINED _VTX_RENDERER_CONAN)
+	target_link_libraries(vtx_renderer_no_opengl vtx_util)
+else()
+	target_link_libraries(vtx_renderer_no_opengl PRIVATE vtx_util::vtx_util)
+endif()
+
+target_compile_definitions(vtx_renderer_no_opengl PUBLIC VTX_RENDERER_NO_OPENGL)

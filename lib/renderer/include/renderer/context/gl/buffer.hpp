@@ -1,9 +1,9 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_BUFFER__
 #define __VTX_RENDERER_CONTEXT_GL_BUFFER__
 
+#include "renderer/context/include_opengl.hpp"
 #include <cassert>
 #include <cstddef>
-#include <glad/glad.h>
 #include <iostream>
 #include <util/logger.hpp>
 #include <vector>
@@ -227,7 +227,7 @@ namespace VTX::Renderer::Context::GL
 			glUnmapNamedBuffer( _id );
 		}
 
-		inline size_t getSize() const { return _size; }
+		inline const GLsizei getSize() const { return _size; }
 
 	  private:
 		GLuint	_id		= GL_INVALID_INDEX;

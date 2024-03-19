@@ -7,10 +7,12 @@ namespace VTX::Renderer::Context
 		BaseContext { p_width, p_height, p_shaderPath }
 	{
 		// Load opengl 4.5.
+		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
 			throw GLException( "Failed to load OpenGL" );
 		}
+		// With glad integrated loader.
 		else if ( gladLoadGL() == 0 )
 		{
 			throw GLException( "Failed to load OpenGL" );

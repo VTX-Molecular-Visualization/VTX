@@ -9,7 +9,7 @@
 #include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
-#include <glad/glad.h>
+#include "renderer/context/include_opengl.hpp"
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
