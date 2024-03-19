@@ -30,7 +30,7 @@ namespace VTX::UI::Internal::Animation
 	class Translation : public UI::Core::Animation::BaseAnimation
 	{
 	  private:
-		inline static const float TRANSLATION_THRESHOLD = 1e-4f;
+		inline static const float TRANSLATION_THRESHOLD = 0.1f;
 
 	  public:
 		inline static const Util::Hashing::Hash ANIMATION_ID = Util::Hashing::hash( "INTERNAL_TRANSLATION" );
