@@ -32,6 +32,15 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// TODO Integrate this function on other prepareJob
 	// Return the first string with matching ending from the list.
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles &, const char * suffix ) noexcept;
+
+	// Return a string containing the text file's content.
+	// Doesn't check if the file isn't too large
+	std::string getFileContent( const fs::path & ) noexcept;
+
+	// Write string content into file.
+	// Erase file's currrent content if file already exists
+	void writeIntoFile( const fs::path &, const std::string & ) noexcept;
+
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif

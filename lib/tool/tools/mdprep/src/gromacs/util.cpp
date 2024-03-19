@@ -1,3 +1,4 @@
+#include <fstream>
 #include <re2/re2.h>
 //
 #include "tools/mdprep/gromacs/inputs.hpp"
@@ -109,6 +110,23 @@ namespace VTX::Tool::Mdprep::Gromacs
 		if ( firstSuffixedString != std::end( p_list.fileStringPtrs ) )
 			return *firstSuffixedString;
 		return nullptr;
+	}
+
+	std::string getFileContent( const fs::path & p_file ) noexcept
+	{
+		if ( fs::exists( p_file ) == false )
+			return {};
+		std::ifstream strm { p_file, std::ios::ate };
+		size_t		  fileSize = strm.tellg();
+		std::string	  out( fileSize, '\0' );
+		strm.seekg( 0 );
+		strm.read( out.data(), fileSize );
+		return out;
+	}
+
+	void writeIntoFile( const fs::path & p_file, const std::string & p_content ) noexcept
+	{
+		std::ofstream( p_file ) << p_content;
 	}
 
 } // namespace VTX::Tool::Mdprep::Gromacs
