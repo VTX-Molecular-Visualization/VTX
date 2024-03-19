@@ -26,6 +26,7 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried throug
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include)
 

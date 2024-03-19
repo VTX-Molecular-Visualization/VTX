@@ -99,4 +99,16 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_in.report.errorOccured = ( p_in.report.errors.empty() == false );
 	}
 
+	const std::string * getFirstFileOfType( const CumulativeOuputFiles & p_list, const char * extension ) noexcept
+	{
+		auto firstSuffixedString = std::find_if(
+			p_list.fileStringPtrs.begin(),
+			p_list.fileStringPtrs.end(),
+			[ extension = extension ]( const std::string * p_ ) { return p_->ends_with( extension ); }
+		);
+		if ( firstSuffixedString != std::end( p_list.fileStringPtrs ) )
+			return *firstSuffixedString;
+		return nullptr;
+	}
+
 } // namespace VTX::Tool::Mdprep::Gromacs

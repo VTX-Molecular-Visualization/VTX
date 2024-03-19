@@ -50,6 +50,13 @@ namespace VTX::test
 		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.gro" ).string(),
 																  ( g_outputDir / "1ubq.top" ).string() };
 	};
+	struct TrjConv
+	{
+		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
+													 / "1ubq_out_tjrconv" };
+
+		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.gro" ).string() };
+	};
 
 	inline std::vector<const std::string *> getPtrVectFromVect( const std::vector<std::string> & p_ )
 	{
@@ -58,5 +65,7 @@ namespace VTX::test
 			out.push_back( &it );
 		return out;
 	}
+
+	std::string getFileContent( const fs::path & p_file ) noexcept;
 
 } // namespace VTX::test

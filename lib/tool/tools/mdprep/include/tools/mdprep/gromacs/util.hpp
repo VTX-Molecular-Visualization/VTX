@@ -27,6 +27,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// there is no error message in any of the chanels.
 	void checkJobResults( GromacsJobData & ) noexcept;
 
+	struct CumulativeOuputFiles;
+
+	// TODO Integrate this function on other prepareJob
+	// Return the first string with matching ending from the list.
+	const std::string * getFirstFileOfType( const CumulativeOuputFiles &, const char * suffix ) noexcept;
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
