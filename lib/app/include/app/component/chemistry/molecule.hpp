@@ -94,6 +94,10 @@ namespace VTX::App::Component::Chemistry
 		void remove( const AtomIndexRange & p_atomRange );
 		void remove( const AtomIndexRangeList & p_atomRangeList );
 
+		size_t getRealChainCount() const { return _realChainCount; }
+		size_t getRealResidueCount() const { return _realResidueCount; }
+		size_t getRealAtomCount() const { return _realAtomCount; };
+
 		const AtomIndexRangeList & getAtomVisibilities() const { return _visibleAtomIds; }
 		void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
 
@@ -112,10 +116,17 @@ namespace VTX::App::Component::Chemistry
 		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
 
 	  private:
-		void _deleteTopologyPointers( const atom_index_t & p_atomIndex );
+		void _deleteTopologyPointers( const atom_index_t p_atomIndex );
 		void _deleteTopologyPointers( const AtomIndexRange & p_atomRange );
 		void _refreshResidueRemovedState( const size_t p_residueIndex );
 		void _refreshChainRemovedState( const size_t p_chainIndex );
+
+		void _internalDeleteAtom( const atom_index_t p_index );
+		void _internalDeleteAtoms( const AtomIndexRange & p_range );
+		void _internalDeleteResidue( const size_t p_index );
+		void _internalDeleteResidues( const Util::Math::Range<size_t> p_range );
+		void _internalDeleteChain( const size_t p_index );
+		void _internalDeleteChains( const Util::Math::Range<size_t> p_range );
 
 		void _resizeTopologyVectors();
 
@@ -125,6 +136,10 @@ namespace VTX::App::Component::Chemistry
 		std::vector<std::unique_ptr<Residue>> _residues;
 		std::vector<std::unique_ptr<Atom>>	  _atoms;
 		std::vector<std::unique_ptr<Bond>>	  _bonds;
+
+		size_t _realChainCount;
+		size_t _realResidueCount;
+		size_t _realAtomCount;
 
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";

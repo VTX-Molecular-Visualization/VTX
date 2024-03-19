@@ -60,6 +60,9 @@ namespace VTX::App::Component::Behaviour
 	}
 	void Molecule::_initGpuProxyComponent() const
 	{
+		if ( !MAIN_REGISTRY().hasComponent<Component::Render::ProxyMolecule>( _entity ) )
+			return;
+
 		Component::Render::ProxyMolecule & gpuProxyComponent
 			= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( _entity );
 
