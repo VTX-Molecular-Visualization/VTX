@@ -2,13 +2,13 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/renderer_qt.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/system/action_manager.hpp>
+#include <app/application/system/renderer.hpp>
 #include <app/component/scene/pickable.hpp>
 #include <app/core/ecs/registry.hpp>
 #include <optional>
@@ -47,7 +47,8 @@ namespace VTX::UI::QT::Controller
 
 	void SelectionPicker::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo = PickingInfo( QT_RENDERER().get().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo
+			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		_performSelection( pickingInfo );
 		_lastPickingInfo = pickingInfo;
@@ -55,7 +56,8 @@ namespace VTX::UI::QT::Controller
 
 	void SelectionPicker::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo = PickingInfo( QT_RENDERER().get().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo
+			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !_isTargetSelected( pickingInfo ) )
 		{
@@ -80,7 +82,8 @@ namespace VTX::UI::QT::Controller
 
 	void SelectionPicker::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo = PickingInfo( QT_RENDERER().get().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo
+			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
 			return;

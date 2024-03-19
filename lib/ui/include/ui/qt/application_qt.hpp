@@ -5,7 +5,6 @@
 #include "ui/environment.hpp"
 #include "ui/qt/input/_fwd.hpp"
 #include "ui/qt/mode/_fwd.hpp"
-#include "ui/qt/renderer_qt.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QEvent>
@@ -70,7 +69,6 @@ namespace VTX::UI::QT
 
 	inline ApplicationQt * const QT_APP() { return VTX::UI::Environment::get().getUIApp<VTX::UI::QT::ApplicationQt>(); }
 	Mode::BaseMode &			 MODE();
-	RendererQt					 QT_RENDERER();
 
 } // namespace VTX::UI::QT
 

@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
+#include "app/application/renderer/proxy_wrapper.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/core/visibility/enum.hpp"
 #include <core/struct/molecule.hpp>
-#include <memory>
 #include <renderer/facade.hpp>
 #include <renderer/proxy/molecule.hpp>
 #include <util/types.hpp>
@@ -36,10 +36,10 @@ namespace VTX::App::Component::Render
 		);
 
 		void _applyVisibilityCallbacks();
-		void _applySelectionCallbacks() const;
-		void _applyAtomPositionCallbacks() const;
+		void _applySelectionCallbacks();
+		void _applyAtomPositionCallbacks();
 
-		std::unique_ptr<VTX::Renderer::Proxy::Molecule> _proxyPtr = nullptr;
+		Application::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Molecule> _proxyWrapper;
 	};
 
 } // namespace VTX::App::Component::Render

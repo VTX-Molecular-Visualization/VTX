@@ -144,6 +144,5 @@ namespace VTX::UI::QT
 	}
 
 	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
-	RendererQt		 QT_RENDERER() { return RendererQt( App::RENDERER() ); };
 
 } // namespace VTX::UI::QT

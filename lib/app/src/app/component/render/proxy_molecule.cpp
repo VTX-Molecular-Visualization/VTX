@@ -14,9 +14,9 @@ namespace VTX::App::Component::Render
 	ProxyMolecule::ProxyMolecule() {}
 	ProxyMolecule::~ProxyMolecule()
 	{
-		if ( _proxyPtr != nullptr )
+		if ( _proxyWrapper.isValid() )
 		{
-			_proxyPtr->onRemove();
+			_proxyWrapper.accessor().proxy().onRemove();
 		}
 	}
 	void ProxyMolecule::setup( Renderer::Facade & p_renderer )
@@ -40,25 +40,27 @@ namespace VTX::App::Component::Render
 		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
-		_proxyPtr = std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
-			&transformComp.getTransform().get(),
+		std::unique_ptr<VTX::Renderer::Proxy::Molecule> proxyPtr
+			= std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
+				&transformComp.getTransform().get(),
 
-			&molStruct.trajectory.getCurrentFrame(),
-			&molStruct.bondPairAtomIndexes,
-			&molStruct.atomNames,
-			reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
-			&molStruct.residueFirstAtomIndexes,
-			&molStruct.residueAtomCounts,
-			&molStruct.chainFirstResidues,
-			&molStruct.chainResidueCounts,
+				&molStruct.trajectory.getCurrentFrame(),
+				&molStruct.bondPairAtomIndexes,
+				&molStruct.atomNames,
+				reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
+				&molStruct.residueFirstAtomIndexes,
+				&molStruct.residueAtomCounts,
+				&molStruct.chainFirstResidues,
+				&molStruct.chainResidueCounts,
 
-			atomColors,
-			atomRadii,
-			atomIds,
-			residueColors,
-			residueIds } );
+				atomColors,
+				atomRadii,
+				atomIds,
+				residueColors,
+				residueIds } );
 
-		p_renderer.addProxyMolecule( *_proxyPtr );
+		_proxyWrapper.setProxy( proxyPtr );
+		p_renderer.addProxyMolecule( _proxyWrapper.proxy() );
 	}
 	void ProxyMolecule::_setupCallbacks()
 	{
@@ -125,13 +127,17 @@ namespace VTX::App::Component::Render
 	{
 		switch ( p_applyMode )
 		{
-		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxyPtr->onAtomVisibilities( p_rangeList, true ); break;
+		case App::Core::VISIBILITY_APPLY_MODE::SHOW:
+			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, true );
+			break;
 
-		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxyPtr->onAtomVisibilities( p_rangeList, false ); break;
+		case App::Core::VISIBILITY_APPLY_MODE::HIDE:
+			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, false );
+			break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::SET:
-			_proxyPtr->onVisible( false );
-			_proxyPtr->onAtomVisibilities( p_rangeList, true );
+			_proxyWrapper.accessor().proxy().onVisible( false );
+			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, true );
 			break;
 
 		default:
@@ -152,7 +158,7 @@ namespace VTX::App::Component::Render
 				Component::Chemistry::AtomIndexRangeList p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
 			) { _applyOnVisibility( p_rangeList, p_applyMode ); };
 	}
-	void ProxyMolecule::_applySelectionCallbacks() const
+	void ProxyMolecule::_applySelectionCallbacks()
 	{
 		Component::Scene::Selectable & selectableComponent
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
@@ -161,17 +167,17 @@ namespace VTX::App::Component::Render
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyPtr->onAtomSelections( castedSelectionData.getAtomIds(), true );
+			_proxyWrapper.accessor().proxy().onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
 		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyPtr->onAtomSelections( castedSelectionData.getAtomIds(), false );
+			_proxyWrapper.accessor().proxy().onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
-	void ProxyMolecule::_applyAtomPositionCallbacks() const
+	void ProxyMolecule::_applyAtomPositionCallbacks()
 	{
 		if ( MAIN_REGISTRY().hasComponent<Component::Chemistry::Trajectory>( *this ) )
 		{
@@ -183,8 +189,8 @@ namespace VTX::App::Component::Render
 				Component::Chemistry::Molecule & moleculeComponent
 					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
-				_proxyPtr->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
-				_proxyPtr->onAtomPositions();
+				_proxyWrapper.accessor().proxy().atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
+				_proxyWrapper.accessor().proxy().onAtomPositions();
 			};
 		}
 	}
