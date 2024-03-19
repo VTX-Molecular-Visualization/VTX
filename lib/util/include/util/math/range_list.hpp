@@ -127,6 +127,14 @@ namespace VTX::Util::Math
 				addRange( range );
 			}
 		}
+		RangeList( const std::initializer_list<T> & p_values )
+		{
+			for ( const T value : p_values )
+			{
+				addValue( value );
+			}
+		}
+		RangeList( const T & p_value ) { addValue( p_value ); }
 
 		friend bool operator==( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 		{
@@ -377,11 +385,15 @@ namespace VTX::Util::Math
 			return false;
 		}
 
-		void   clear() { _ranges.clear(); }
-		bool   isEmpty() const { return _ranges.size() == 0; }
-		size_t size() const
+		T getFirst() const { return _ranges.cbegin()->getFirst(); }
+		T getLast() const { return _ranges.crbegin()->getLast(); }
+
+		void clear() { _ranges.clear(); }
+		bool isEmpty() const { return _ranges.size() == 0; }
+
+		T count() const
 		{
-			size_t res = 0;
+			T res = 0;
 
 			for ( const Range<T> & range : _ranges )
 				res += range.getCount();

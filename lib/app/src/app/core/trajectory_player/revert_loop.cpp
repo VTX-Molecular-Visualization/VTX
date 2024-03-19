@@ -2,20 +2,17 @@
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	RevertLoop::RevertLoop( VTX::Core::Struct::Trajectory * const p_trajectory ) : BasePlayer( p_trajectory ) {}
-
-	void RevertLoop::reset() { setCurrentFrameIndex( getFrameCount() - 1 ); }
-	void RevertLoop::nextFrame( const size_t p_frameCount )
+	void RevertLoop::reset() { setCurrent( getCount() - 1 ); }
+	void RevertLoop::nextFrame( const size_t p_count )
 	{
-		if ( p_frameCount > getCurrentFrameIndex() )
+		if ( p_count > getCurrent() )
 		{
-			const size_t newFrameIndex
-				= getFrameCount() - ( ( p_frameCount - getCurrentFrameIndex() ) % getFrameCount() );
-			setCurrentFrameIndex( newFrameIndex );
+			const size_t newFrameIndex = getCount() - ( ( p_count - getCurrent() ) % getCount() );
+			setCurrent( newFrameIndex );
 		}
 		else
 		{
-			setCurrentFrameIndex( getCurrentFrameIndex() - p_frameCount );
+			setCurrent( getCurrent() - p_count );
 		}
 	}
 

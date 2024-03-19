@@ -115,15 +115,10 @@ namespace VTX::App::Internal::Serialization
 		const Component::Chemistry::Molecule & moleculeComponent
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
 
-		// Store not visible atom indexes
-		Util::Math::RangeList<size_t> visibilities = Util::Algorithm::Range::generateIndexRangeList(
-			moleculeComponent.getAtomVisibilities(), []( const uint & p_visibility ) { return !p_visibility; }
-		);
-
 		return { { "PATH", SERIALIZER().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
 				 { "SECONDARY_STRUCTURE_FROM_FILE", p_component.isSecondaryStructureLoadedFromFile },
-				 { "VISIBILITY", SERIALIZER().serialize( visibilities ) } };
+				 { "VISIBILITY", SERIALIZER().serialize( moleculeComponent.getAtomVisibilities() ) } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::IO::MoleculeMetadata & p_component )
 	{
@@ -140,13 +135,10 @@ namespace VTX::App::Internal::Serialization
 
 		loader.readFile( path, moleculeComponent );
 
-		const Util::Math::RangeList<uint> visibilities
-			= SERIALIZER().deserializeField<Util::Math::RangeList<uint>>( p_json, "VISIBILITY" );
+		const Component::Chemistry::AtomIndexRangeList visibilities
+			= SERIALIZER().deserializeField<Component::Chemistry::AtomIndexRangeList>( p_json, "VISIBILITY" );
 
-		for ( const uint index : visibilities )
-		{
-			moleculeComponent.setAtomVisibility( index, false );
-		}
+		moleculeComponent.setAtomVisibilities( visibilities );
 	}
 
 	// TrajectoryComponent

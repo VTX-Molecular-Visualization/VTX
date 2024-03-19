@@ -25,6 +25,9 @@ namespace VTX::App::Component::Chemistry
 		atom_index_t getIndexSecondAtom() const;
 		void		 setIndexSecondAtom( const atom_index_t p_atomIndex );
 
+		bool isVisible() const;
+		void setVisible( const bool p_visible );
+
 	  private:
 		Molecule * _moleculePtr = nullptr;
 		size_t	   _index		= INVALID_INDEX;

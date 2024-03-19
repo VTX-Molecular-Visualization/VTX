@@ -311,12 +311,12 @@ namespace VTX::PythonBinding::API::Selection
 		const App::Application::Selection::MoleculeData::IndexRangeList & residueIDs
 			= p_moleculeSelectionData.getResidueIds();
 
-		if ( residueIDs.size() == 0 )
+		if ( residueIDs.isEmpty() )
 		{
 			const App::Application::Selection::MoleculeData::IndexRangeList & chainIDs
 				= p_moleculeSelectionData.getChainIds();
 
-			if ( chainIDs.size() == 0 )
+			if ( chainIDs.isEmpty() )
 			{
 				_addAtomsFollowingKwargs(
 					0, atom_index_t( molecule.getAtoms().size() - 1 ), molecule, p_moleculeSelectionData, p_kwargs

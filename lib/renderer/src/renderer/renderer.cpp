@@ -176,7 +176,7 @@ namespace VTX::Renderer
 			_context->setSubData( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.offset );
 		};
 
-		p_proxy.onAtomColors += [ this, &p_proxy ]( std::vector<uchar> & p_colors )
+		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.offset );

@@ -4,6 +4,7 @@
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/application/settings.hpp"
+#include "app/application/system/renderer.hpp"
 #include "app/application/system/threading.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
@@ -17,7 +18,6 @@
 #include "app/internal/monitoring/all_metrics.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
-#include <renderer/facade.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
@@ -54,7 +54,7 @@ namespace VTX::App
 		_systemHandlerPtr->reference( SCENE_KEY, &scene );
 
 		// Create renderer
-		_renderer = std::make_unique<Renderer::Facade>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
+		RENDERER().get().init();
 
 		// Regsiter loop events
 		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
@@ -181,14 +181,6 @@ namespace VTX::App
 		// }
 	}
 
-	// void VTXApp::_applyCameraUniforms() const
-	//{
-	//	// TODO: do not apply each frame, only when camera changes.
-	//	_renderer->setMatrixView( SCENE().getCamera().getViewMatrix() );
-	//	_renderer->setMatrixProjection( SCENE().getCamera().getProjectionMatrix() );
-	//	_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
-	// }
-
 	//	bool VTXApp::hasAnyModifications() const
 	//	{
 	//		const bool hasSavePath	   = !getScenePathData().getCurrentPath().empty();
@@ -246,7 +238,6 @@ namespace VTX::App
 	const Application::Settings & VTXApp::getSettings() const { return *_settings; }
 
 	Application::Scene &	SCENE() { return VTXApp::get().getScene(); }
-	Renderer::Facade &		RENDERER() { return VTXApp::get().getRenderer(); }
 	Application::Settings & SETTINGS() { return VTXApp::get().getSettings(); }
 
 } // namespace VTX::App

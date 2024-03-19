@@ -22,9 +22,5 @@ namespace VTX::App::Entity::Scene
 	{
 		Component::Render::Camera & camera = MAIN_REGISTRY().getComponent<Component::Render::Camera>( p_entity );
 		camera.init();
-
-		Component::Render::ProxyCamera & cameraProxy
-			= MAIN_REGISTRY().getComponent<Component::Render::ProxyCamera>( p_entity );
-		cameraProxy.init();
 	}
 } // namespace VTX::App::Entity::Scene

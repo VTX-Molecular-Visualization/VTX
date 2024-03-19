@@ -51,4 +51,21 @@ namespace VTX::App::Component::Chemistry
 		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), atomCount );
 	}
 
+	bool Chain::isVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		return _moleculePtr->_visibleAtomIds.intersectWith( atomRange );
+	}
+	bool Chain::isFullyVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		return _moleculePtr->_visibleAtomIds.contains( atomRange );
+	}
+
+	void Chain::setVisible( const bool p_visible )
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		_moleculePtr->setVisible( atomRange, p_visible );
+	}
+
 } // namespace VTX::App::Component::Chemistry

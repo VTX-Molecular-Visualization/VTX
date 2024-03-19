@@ -20,6 +20,8 @@ namespace VTX::Core::Struct
 		const Frame & getCurrentFrame() const { return frames[ currentFrameIndex ]; }
 		Frame &		  getCurrentFrame() { return frames[ currentFrameIndex ]; }
 
+		size_t getFrameCount() const { return frames.size(); }
+
 		std::vector<Frame> frames;
 		size_t			   currentFrameIndex = 0;
 	};

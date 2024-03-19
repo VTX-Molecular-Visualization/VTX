@@ -3,7 +3,6 @@
 
 #include "base_player.hpp"
 #include "players.hpp"
-#include <string>
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
@@ -19,7 +18,6 @@ namespace VTX::App::Core::TrajectoryPlayer
 	  public:
 		Once()						  = default;
 		Once( const Once & p_source ) = default;
-		Once( VTX::Core::Struct::Trajectory * const p_trajectory );
 
 		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
 		const CollectionKey &		getCollectionKey() const override { return COLLECTION_ID; }

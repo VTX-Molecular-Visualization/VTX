@@ -63,6 +63,11 @@ namespace VTX::App::Component::Chemistry
 
 		Iterator::AtomContainer atoms() const;
 
+		bool isVisible() const;
+		bool isFullyVisible() const;
+
+		void setVisible( const bool p_visible );
+
 	  private:
 		Molecule * _moleculePtr = nullptr;
 		size_t	   _index		= INVALID_INDEX;
