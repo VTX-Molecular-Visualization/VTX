@@ -29,39 +29,39 @@ namespace VTX::Renderer::Context
 		else
 		{
 			_getOpenglInfos();
-
-			// Program manager.
-			_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
-
-			// Init quad vao/vbo for deferred shading.
-			std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
-
-			_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
-			_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
-			auto & vao = _vaos[ "quad" ];
-			auto & vbo = _bos[ "quad" ];
-
-			vao->bind();
-			vao->enableAttribute( 0 );
-			vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
-			vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
-			vao->setAttributeBinding( 0, 0 );
-			vbo->setData( quad, GL_STATIC_DRAW );
-			vao->unbind();
-
-			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
-
-			glPatchParameteri( GL_PATCH_VERTICES, 4 );
-			glEnable( GL_LINE_SMOOTH );
-			glLineWidth( 4.f );
-
-			glEnable( GL_DEBUG_OUTPUT );
-			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			glDebugMessageCallback( _debugMessageCallback, nullptr );
-
-			VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
-			VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 		}
+
+		// Program manager.
+		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
+
+		// Init quad vao/vbo for deferred shading.
+		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
+
+		_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
+		_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
+		auto & vao = _vaos[ "quad" ];
+		auto & vbo = _bos[ "quad" ];
+
+		vao->bind();
+		vao->enableAttribute( 0 );
+		vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
+		vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
+		vao->setAttributeBinding( 0, 0 );
+		vbo->setData( quad, GL_STATIC_DRAW );
+		vao->unbind();
+
+		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+
+		glPatchParameteri( GL_PATCH_VERTICES, 4 );
+		glEnable( GL_LINE_SMOOTH );
+		glLineWidth( 4.f );
+
+		glEnable( GL_DEBUG_OUTPUT );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		glDebugMessageCallback( _debugMessageCallback, nullptr );
+
+		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
+		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 	}
 
 	void OpenGL45::build(

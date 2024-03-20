@@ -221,6 +221,7 @@ glDebugMessageCallback( void ( * )( GLenum, GLenum, GLuint, GLenum, GLsizei, con
 }
 static void			   glDepthFunc( GLenum ) {}
 static void			   glLineWidth( GLfloat ) {}
+static const GLubyte   placeholder[ 1 ] = { 0 };
 static const GLubyte * glGetString( GLenum ) { return nullptr; }
 static const GLubyte * glGetStringi( GLenum, GLuint ) { return nullptr; }
 static void			   glGetIntegerv( GLenum, GLint * ) {}
