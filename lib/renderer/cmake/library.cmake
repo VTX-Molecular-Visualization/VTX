@@ -31,7 +31,6 @@ configure_target(vtx_renderer_no_opengl)
 
 target_sources(vtx_renderer_no_opengl
 	PRIVATE ${SOURCES}
-	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
@@ -41,3 +40,5 @@ else()
 endif()
 
 target_compile_definitions(vtx_renderer_no_opengl PRIVATE VTX_RENDERER_NO_OPENGL)
+
+install(TARGETS vtx_renderer vtx_renderer_no_opengl FILE_SET public_headers)
