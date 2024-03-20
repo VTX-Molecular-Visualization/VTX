@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CHAIN__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include "app/component/chemistry/iterator/residue.hpp"
 #include <string>
@@ -42,6 +43,9 @@ namespace VTX::App::Component::Chemistry
 
 		const Util::Color::Rgba & getColor() const { return _defaultColor; };
 		void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
+
+		ResidueIndexRange getResidueRange() const;
+		AtomIndexRange	  getAtomRange() const;
 
 		Iterator::ResidueContainer residues() const;
 		Iterator::AtomContainer	   atoms() const;

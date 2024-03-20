@@ -108,6 +108,8 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
+	AtomIndexRange Residue::getAtomRange() const { return AtomIndexRange( getIndexFirstAtom(), getAtomCount() ); }
+
 	Iterator::AtomContainer Residue::atoms() const
 	{
 		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), getAtomCount() );

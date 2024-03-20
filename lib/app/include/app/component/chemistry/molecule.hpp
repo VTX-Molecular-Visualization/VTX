@@ -3,6 +3,7 @@
 
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
+#include "app/component/chemistry/index_types.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
 #include <core/struct/molecule.hpp>
@@ -20,10 +21,6 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
-
-	using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
-	using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
-
 	class Molecule
 	{
 	  private:
@@ -105,7 +102,8 @@ namespace VTX::App::Component::Chemistry
 
 		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
 		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
-		Atom *						getAtomFromUID( Core::UID::uid p_uid );
+
+		Atom * getAtomFromUID( Core::UID::uid p_uid );
 
 		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
@@ -124,9 +122,9 @@ namespace VTX::App::Component::Chemistry
 		void _internalDeleteAtom( const atom_index_t p_index );
 		void _internalDeleteAtoms( const AtomIndexRange & p_range );
 		void _internalDeleteResidue( const size_t p_index );
-		void _internalDeleteResidues( const Util::Math::Range<size_t> p_range );
+		void _internalDeleteResidues( const ResidueIndexRange & p_range );
 		void _internalDeleteChain( const size_t p_index );
-		void _internalDeleteChains( const Util::Math::Range<size_t> p_range );
+		void _internalDeleteChains( const ChainIndexRange & p_range );
 
 		void _resizeTopologyVectors();
 

@@ -1,7 +1,9 @@
 #include "app.hpp"
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
+#include <app/application/system/renderer.hpp>
 #include <app/vtx_app.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
 
@@ -13,6 +15,8 @@ namespace VTX::App::Test::Util
 		if ( !isInit )
 		{
 			VTXApp::get().start( {} );
+			REQUIRE_THROWS( RENDERER().facade().build() );
+
 			isInit = true;
 		}
 
