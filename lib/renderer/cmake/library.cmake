@@ -5,8 +5,8 @@ configure_target(vtx_renderer)
 
 set(HEADERS "")
 set(SOURCES "")
-set(GLAD_HEADERS "")
-set(GLAD_SOURCES "")
+#set(GLAD_HEADERS "")
+#set(GLAD_SOURCES "")
 set(SHADERS "")
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -15,10 +15,11 @@ file(GLOB_RECURSE GLAD_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/src/*")
 file(GLOB_RECURSE SHADERS "${CMAKE_CURRENT_LIST_DIR}/../shaders/*")
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES}
-	PRIVATE ${GLAD_SOURCES}
+	#PRIVATE ${GLAD_SOURCES}
 	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include" FILES ${GLAD_HEADERS})
+	#PUBLIC FILE_SET public_headers_glad TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include" FILES ${GLAD_HEADERS}
+)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
 	target_link_libraries(vtx_renderer vtx_util)

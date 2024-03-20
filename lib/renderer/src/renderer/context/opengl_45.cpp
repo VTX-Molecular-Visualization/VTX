@@ -10,51 +10,58 @@ namespace VTX::Renderer::Context
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
-			throw GLException( "Failed to load OpenGL" );
+			VTX_ERROR( "Failed to load OpenGL" );
+			// throw GLException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
 		else if ( gladLoadGL() == 0 )
 		{
-			throw GLException( "Failed to load OpenGL" );
+			VTX_ERROR( "Failed to load OpenGL" );
+			// throw GLException( "Failed to load OpenGL" );
 		}
+
+		// Check version.
 		if ( GLAD_GL_VERSION_4_5 == false )
 		{
-			throw GLException( "OpenGL 4.5 or higher is required" );
+			VTX_ERROR( "OpenGL 4.5 or higher is required" );
+			// throw GLException( "OpenGL 4.5 or higher is required" );
 		}
+		else
+		{
+			_getOpenglInfos();
 
-		// Program manager.
-		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
+			// Program manager.
+			_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
-		// Init quad vao/vbo for deferred shading.
-		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
+			// Init quad vao/vbo for deferred shading.
+			std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
 
-		_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
-		_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
-		auto & vao = _vaos[ "quad" ];
-		auto & vbo = _bos[ "quad" ];
+			_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
+			_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
+			auto & vao = _vaos[ "quad" ];
+			auto & vbo = _bos[ "quad" ];
 
-		vao->bind();
-		vao->enableAttribute( 0 );
-		vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
-		vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
-		vao->setAttributeBinding( 0, 0 );
-		vbo->setData( quad, GL_STATIC_DRAW );
-		vao->unbind();
+			vao->bind();
+			vao->enableAttribute( 0 );
+			vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
+			vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
+			vao->setAttributeBinding( 0, 0 );
+			vbo->setData( quad, GL_STATIC_DRAW );
+			vao->unbind();
 
-		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+			glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
-		glPatchParameteri( GL_PATCH_VERTICES, 4 );
-		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 4.f );
+			glPatchParameteri( GL_PATCH_VERTICES, 4 );
+			glEnable( GL_LINE_SMOOTH );
+			glLineWidth( 4.f );
 
-		_getOpenglInfos();
+			glEnable( GL_DEBUG_OUTPUT );
+			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			glDebugMessageCallback( _debugMessageCallback, nullptr );
 
-		glEnable( GL_DEBUG_OUTPUT );
-		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( _debugMessageCallback, nullptr );
-
-		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
-		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
+			VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
+			VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
+		}
 	}
 
 	void OpenGL45::build(

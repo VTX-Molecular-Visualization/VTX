@@ -34,7 +34,7 @@ struct gladGLversionStruct
 	int minor;
 };
 static struct gladGLversionStruct GLVersion;
-constexpr int					  GLAD_GL_VERSION_4_5 = 1;
+constexpr int					  GLAD_GL_VERSION_4_5 = 0;
 
 constexpr GLuint GL_BOOL							   = 0x8B56;
 constexpr GLuint GL_BYTE							   = 0x1400;
@@ -231,9 +231,9 @@ static void			   glFinish() {}
 static void			   glFlush() {}
 static void			   glPatchParameteri( GLenum, GLint ) {}
 
-static GLboolean glIsProgram( GLuint ) { return 0; }
-static GLboolean glIsShader( GLuint ) { return 0; }
-static GLuint	 glCreateProgram() { return 0; }
+static GLboolean glIsProgram( GLuint ) { return true; }
+static GLboolean glIsShader( GLuint ) { return true; }
+static GLuint	 glCreateProgram() { return true; }
 static void		 glAttachShader( GLuint, GLuint ) {}
 static void		 glLinkProgram( GLuint ) {}
 static void		 glUseProgram( GLuint ) {}
@@ -242,7 +242,7 @@ static void		 glDeleteProgram( GLuint ) {}
 static void		 glDeleteShader( GLuint ) {}
 static void		 glShaderSource( GLuint, GLsizei, const GLchar **, const GLint * ) {}
 static void		 glCompileShader( GLuint ) {}
-static GLuint	 glCreateShader( GLenum ) { return 0; }
+static GLuint	 glCreateShader( GLenum ) { return true; }
 static void		 glGetAttachedShaders( GLuint, GLsizei, GLsizei *, GLuint * ) {}
 static GLint	 glGetUniformLocation( GLuint, const GLchar * ) { return -1; }
 static void		 glGetProgramiv( GLuint, GLenum, GLint * ) {}
@@ -267,14 +267,14 @@ static void		 glUniform4iv( GLint, GLsizei, const GLint * ) {}
 static void		 glUniform4fv( GLint, GLsizei, const GLfloat * ) {}
 static void		 glUniformMatrix4fv( GLint, GLsizei, GLboolean, const GLfloat * ) {}
 
-static GLboolean glIsQuery( GLuint ) { return 0; }
+static GLboolean glIsQuery( GLuint ) { return true; }
 static void		 glCreateQueries( GLenum, GLsizei, GLuint * ) {}
 static void		 glDeleteQueries( GLsizei, const GLuint * ) {}
 static void		 glQueryCounter( GLuint, GLenum ) {}
 static void		 glGetQueryObjectiv( GLuint, GLenum, GLint * ) {}
 static void		 glGetQueryObjectui64v( GLuint, GLenum, GLuint64 * ) {}
 
-static GLboolean glIsBuffer( GLuint ) { return 0; }
+static GLboolean glIsBuffer( GLuint ) { return true; }
 static void		 glCreateBuffers( GLsizei, GLuint * ) {}
 static void		 glDeleteBuffers( GLsizei, const GLuint * ) {}
 static void		 glBindBuffer( GLenum, GLuint ) {}
@@ -288,10 +288,10 @@ static void *	 glMapNamedBuffer( GLuint, GLenum ) { return nullptr; }
 static void		 glUnmapNamedBuffer( GLuint ) {}
 static void *	 glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield ) { return nullptr; }
 
-static GLboolean glIsFramebuffer( GLuint ) { return 0; }
+static GLboolean glIsFramebuffer( GLuint ) { return true; }
 static void		 glCreateFramebuffers( GLsizei, GLuint * ) {}
 static void		 glBindFramebuffer( GLenum, GLuint ) {}
-static GLenum	 glCheckFramebufferStatus( GLenum ) { return 0; }
+static GLenum	 glCheckFramebufferStatus( GLenum ) { return true; }
 static void		 glDeleteFramebuffers( GLsizei, const GLuint * ) {}
 static void		 glNamedFramebufferTexture( GLuint, GLenum, GLuint, GLint ) {}
 static void		 glNamedFramebufferDrawBuffers( GLuint, GLsizei, const GLenum * ) {}
@@ -299,7 +299,7 @@ static void		 glNamedFramebufferReadBuffer( GLuint, GLenum ) {}
 static void		 glReadPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void * ) {}
 static void		 glReadnPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void * ) {}
 
-static GLboolean glIsVertexArray( GLuint ) { return 0; }
+static GLboolean glIsVertexArray( GLuint ) { return true; }
 static void		 glBindVertexArray( GLuint ) {}
 static void		 glCreateVertexArrays( GLsizei, GLuint * ) {}
 static void		 glDeleteVertexArrays( GLsizei, const GLuint * ) {}
@@ -315,7 +315,7 @@ static void		 glVertexArrayElementBuffer( GLuint, GLuint ) {}
 static void		 glMultiDrawArrays( GLenum, const GLint *, const GLsizei *, GLsizei ) {}
 static void		 glMultiDrawElements( GLenum, const GLsizei *, GLenum, const void * const *, GLsizei ) {}
 
-static GLboolean glIsTexture( GLuint ) { return 0; }
+static GLboolean glIsTexture( GLuint ) { return true; }
 static void		 glCreateTextures( GLenum, GLsizei, GLuint * ) {}
 static void		 glDeleteTextures( GLsizei, const GLuint * ) {}
 static void		 glBindTexture( GLenum, GLuint ) {}
