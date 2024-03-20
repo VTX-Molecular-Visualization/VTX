@@ -23,6 +23,7 @@ else()
 	target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 endif()
 
-catch_discover_tests(vtx_app_test)
+target_compile_definitions(vtx_app_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
+catch_discover_tests(vtx_app_test)
 vtx_copy_registered_data(vtx_app_test)

@@ -27,6 +27,8 @@ endif()
 target_link_libraries(vtx_ui_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_ui_test PRIVATE Catch2::Catch2WithMain)
 
+target_compile_definitions(vtx_ui_test PRIVATE VTX_RENDERER_NO_OPENGL)
+
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx_ui_test)
 
