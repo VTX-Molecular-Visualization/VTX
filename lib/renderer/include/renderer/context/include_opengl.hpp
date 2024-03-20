@@ -26,15 +26,15 @@ using GLuint64	   = unsigned long long int;
 
 #define APIENTRY
 using GLADloadproc = void * (*)( const char * );
-GLboolean					gladLoadGLLoader( GLADloadproc ) { return 0; }
-GLboolean					gladLoadGL() { return 0; }
+static GLboolean			gladLoadGLLoader( GLADloadproc ) { return 0; }
+static GLboolean			gladLoadGL() { return 0; }
 struct gladGLversionStruct
 {
 	int major;
 	int minor;
 };
-struct gladGLversionStruct GLVersion;
-constexpr int			   GLAD_GL_VERSION_4_5 = 1;
+static struct gladGLversionStruct GLVersion;
+constexpr int					  GLAD_GL_VERSION_4_5 = 1;
 
 constexpr GLuint GL_BOOL							   = 0x8B56;
 constexpr GLuint GL_BYTE							   = 0x1400;
@@ -210,120 +210,121 @@ constexpr GLuint GL_DEBUG_SEVERITY_MEDIUM		   = 0x9147;
 constexpr GLuint GL_DEBUG_SEVERITY_LOW			   = 0x9148;
 constexpr GLuint GL_DEBUG_SEVERITY_NOTIFICATION	   = 0x826B;
 
-void glEnable( GLenum ) {}
-void glDisable( GLenum ) {}
-void glClearColor( GLfloat, GLfloat, GLfloat, GLfloat ) {}
-void glClear( GLbitfield ) {}
-void glViewport( GLint, GLint, GLsizei, GLsizei ) {}
-void glDebugMessageCallback( void ( * )( GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *, const void * ), const void * )
+static void glEnable( GLenum ) {}
+static void glDisable( GLenum ) {}
+static void glClearColor( GLfloat, GLfloat, GLfloat, GLfloat ) {}
+static void glClear( GLbitfield ) {}
+static void glViewport( GLint, GLint, GLsizei, GLsizei ) {}
+static void
+glDebugMessageCallback( void ( * )( GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *, const void * ), const void * )
 {
 }
-void			glDepthFunc( GLenum ) {}
-void			glLineWidth( GLfloat ) {}
-const GLubyte * glGetString( GLenum ) { return nullptr; }
-const GLubyte * glGetStringi( GLenum, GLuint ) { return nullptr; }
-void			glGetIntegerv( GLenum, GLint * ) {}
-void			glGetIntegeri_v( GLenum, GLuint, GLint * ) {}
-void			glGetFloatv( GLenum, GLfloat * ) {}
-void			glGetError() {}
-void			glFinish() {}
-void			glFlush() {}
-void			glPatchParameteri( GLenum, GLint ) {}
+static void			   glDepthFunc( GLenum ) {}
+static void			   glLineWidth( GLfloat ) {}
+static const GLubyte * glGetString( GLenum ) { return nullptr; }
+static const GLubyte * glGetStringi( GLenum, GLuint ) { return nullptr; }
+static void			   glGetIntegerv( GLenum, GLint * ) {}
+static void			   glGetIntegeri_v( GLenum, GLuint, GLint * ) {}
+static void			   glGetFloatv( GLenum, GLfloat * ) {}
+static void			   glGetError() {}
+static void			   glFinish() {}
+static void			   glFlush() {}
+static void			   glPatchParameteri( GLenum, GLint ) {}
 
-GLboolean glIsProgram( GLuint ) { return 0; }
-GLboolean glIsShader( GLuint ) { return 0; }
-GLuint	  glCreateProgram() { return 0; }
-void	  glAttachShader( GLuint, GLuint ) {}
-void	  glLinkProgram( GLuint ) {}
-void	  glUseProgram( GLuint ) {}
-void	  glDetachShader( GLuint, GLuint ) {}
-void	  glDeleteProgram( GLuint ) {}
-void	  glDeleteShader( GLuint ) {}
-void	  glShaderSource( GLuint, GLsizei, const GLchar **, const GLint * ) {}
-void	  glCompileShader( GLuint ) {}
-GLuint	  glCreateShader( GLenum ) { return 0; }
-void	  glGetAttachedShaders( GLuint, GLsizei, GLsizei *, GLuint * ) {}
-GLint	  glGetUniformLocation( GLuint, const GLchar * ) { return -1; }
-void	  glGetProgramiv( GLuint, GLenum, GLint * ) {}
-void	  glGetProgramInfoLog( GLuint, GLsizei, GLsizei *, GLchar * ) {}
-void	  glGetShaderInfoLog( GLuint, GLsizei, GLsizei *, GLchar * ) {}
-void	  glGetShaderiv( GLuint, GLenum, GLint * ) {}
-void	  glUniform1ui( GLint, GLuint ) {}
-void	  glUniform1i( GLint, GLint ) {}
-void	  glUniform1f( GLint, GLfloat ) {}
-void	  glUniform2i( GLint, GLint, GLint ) {}
-void	  glUniform2f( GLint, GLfloat, GLfloat ) {}
-void	  glUniform2fv( GLint, GLsizei, const GLfloat * ) {}
-void	  glUniform2iv( GLint, GLsizei, const GLint * ) {}
-void	  glUniform3i( GLint, GLint, GLint, GLint ) {}
-void	  glUniform3f( GLint, GLfloat, GLfloat, GLfloat ) {}
-void	  glUniform3iv( GLint, GLsizei, const GLint * ) {}
-void	  glUniform3uiv( GLint, GLsizei, const GLuint * ) {}
-void	  glUniform3fv( GLint, GLsizei, const GLfloat * ) {}
-void	  glUniform4i( GLint, GLint, GLint, GLint, GLint ) {}
-void	  glUniform4f( GLint, GLfloat, GLfloat, GLfloat, GLfloat ) {}
-void	  glUniform4iv( GLint, GLsizei, const GLint * ) {}
-void	  glUniform4fv( GLint, GLsizei, const GLfloat * ) {}
-void	  glUniformMatrix4fv( GLint, GLsizei, GLboolean, const GLfloat * ) {}
+static GLboolean glIsProgram( GLuint ) { return 0; }
+static GLboolean glIsShader( GLuint ) { return 0; }
+static GLuint	 glCreateProgram() { return 0; }
+static void		 glAttachShader( GLuint, GLuint ) {}
+static void		 glLinkProgram( GLuint ) {}
+static void		 glUseProgram( GLuint ) {}
+static void		 glDetachShader( GLuint, GLuint ) {}
+static void		 glDeleteProgram( GLuint ) {}
+static void		 glDeleteShader( GLuint ) {}
+static void		 glShaderSource( GLuint, GLsizei, const GLchar **, const GLint * ) {}
+static void		 glCompileShader( GLuint ) {}
+static GLuint	 glCreateShader( GLenum ) { return 0; }
+static void		 glGetAttachedShaders( GLuint, GLsizei, GLsizei *, GLuint * ) {}
+static GLint	 glGetUniformLocation( GLuint, const GLchar * ) { return -1; }
+static void		 glGetProgramiv( GLuint, GLenum, GLint * ) {}
+static void		 glGetProgramInfoLog( GLuint, GLsizei, GLsizei *, GLchar * ) {}
+static void		 glGetShaderInfoLog( GLuint, GLsizei, GLsizei *, GLchar * ) {}
+static void		 glGetShaderiv( GLuint, GLenum, GLint * ) {}
+static void		 glUniform1ui( GLint, GLuint ) {}
+static void		 glUniform1i( GLint, GLint ) {}
+static void		 glUniform1f( GLint, GLfloat ) {}
+static void		 glUniform2i( GLint, GLint, GLint ) {}
+static void		 glUniform2f( GLint, GLfloat, GLfloat ) {}
+static void		 glUniform2fv( GLint, GLsizei, const GLfloat * ) {}
+static void		 glUniform2iv( GLint, GLsizei, const GLint * ) {}
+static void		 glUniform3i( GLint, GLint, GLint, GLint ) {}
+static void		 glUniform3f( GLint, GLfloat, GLfloat, GLfloat ) {}
+static void		 glUniform3iv( GLint, GLsizei, const GLint * ) {}
+static void		 glUniform3uiv( GLint, GLsizei, const GLuint * ) {}
+static void		 glUniform3fv( GLint, GLsizei, const GLfloat * ) {}
+static void		 glUniform4i( GLint, GLint, GLint, GLint, GLint ) {}
+static void		 glUniform4f( GLint, GLfloat, GLfloat, GLfloat, GLfloat ) {}
+static void		 glUniform4iv( GLint, GLsizei, const GLint * ) {}
+static void		 glUniform4fv( GLint, GLsizei, const GLfloat * ) {}
+static void		 glUniformMatrix4fv( GLint, GLsizei, GLboolean, const GLfloat * ) {}
 
-GLboolean glIsQuery( GLuint ) { return 0; }
-void	  glCreateQueries( GLenum, GLsizei, GLuint * ) {}
-void	  glDeleteQueries( GLsizei, const GLuint * ) {}
-void	  glQueryCounter( GLuint, GLenum ) {}
-void	  glGetQueryObjectiv( GLuint, GLenum, GLint * ) {}
-void	  glGetQueryObjectui64v( GLuint, GLenum, GLuint64 * ) {}
+static GLboolean glIsQuery( GLuint ) { return 0; }
+static void		 glCreateQueries( GLenum, GLsizei, GLuint * ) {}
+static void		 glDeleteQueries( GLsizei, const GLuint * ) {}
+static void		 glQueryCounter( GLuint, GLenum ) {}
+static void		 glGetQueryObjectiv( GLuint, GLenum, GLint * ) {}
+static void		 glGetQueryObjectui64v( GLuint, GLenum, GLuint64 * ) {}
 
-GLboolean glIsBuffer( GLuint ) { return 0; }
-void	  glCreateBuffers( GLsizei, GLuint * ) {}
-void	  glDeleteBuffers( GLsizei, const GLuint * ) {}
-void	  glBindBuffer( GLenum, GLuint ) {}
-void	  glBindBufferBase( GLenum, GLuint, GLuint ) {}
-void	  glBufferData( GLenum, GLsizeiptr, const GLvoid *, GLenum ) {}
-void	  glNamedBufferData( GLuint, GLsizeiptr, const GLvoid *, GLenum ) {}
-void	  glNamedBufferStorage( GLuint, GLsizeiptr, const GLvoid *, GLbitfield ) {}
-void	  glBufferSubData( GLenum, GLintptr, GLsizeiptr, const GLvoid * ) {}
-void	  glNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, const GLvoid * ) {}
-void *	  glMapNamedBuffer( GLuint, GLenum ) { return nullptr; }
-void	  glUnmapNamedBuffer( GLuint ) {}
-void *	  glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield ) { return nullptr; }
+static GLboolean glIsBuffer( GLuint ) { return 0; }
+static void		 glCreateBuffers( GLsizei, GLuint * ) {}
+static void		 glDeleteBuffers( GLsizei, const GLuint * ) {}
+static void		 glBindBuffer( GLenum, GLuint ) {}
+static void		 glBindBufferBase( GLenum, GLuint, GLuint ) {}
+static void		 glBufferData( GLenum, GLsizeiptr, const GLvoid *, GLenum ) {}
+static void		 glNamedBufferData( GLuint, GLsizeiptr, const GLvoid *, GLenum ) {}
+static void		 glNamedBufferStorage( GLuint, GLsizeiptr, const GLvoid *, GLbitfield ) {}
+static void		 glBufferSubData( GLenum, GLintptr, GLsizeiptr, const GLvoid * ) {}
+static void		 glNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, const GLvoid * ) {}
+static void *	 glMapNamedBuffer( GLuint, GLenum ) { return nullptr; }
+static void		 glUnmapNamedBuffer( GLuint ) {}
+static void *	 glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield ) { return nullptr; }
 
-GLboolean glIsFramebuffer( GLuint ) { return 0; }
-void	  glCreateFramebuffers( GLsizei, GLuint * ) {}
-void	  glBindFramebuffer( GLenum, GLuint ) {}
-GLenum	  glCheckFramebufferStatus( GLenum ) { return 0; }
-void	  glDeleteFramebuffers( GLsizei, const GLuint * ) {}
-void	  glNamedFramebufferTexture( GLuint, GLenum, GLuint, GLint ) {}
-void	  glNamedFramebufferDrawBuffers( GLuint, GLsizei, const GLenum * ) {}
-void	  glNamedFramebufferReadBuffer( GLuint, GLenum ) {}
-void	  glReadPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void * ) {}
-void	  glReadnPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void * ) {}
+static GLboolean glIsFramebuffer( GLuint ) { return 0; }
+static void		 glCreateFramebuffers( GLsizei, GLuint * ) {}
+static void		 glBindFramebuffer( GLenum, GLuint ) {}
+static GLenum	 glCheckFramebufferStatus( GLenum ) { return 0; }
+static void		 glDeleteFramebuffers( GLsizei, const GLuint * ) {}
+static void		 glNamedFramebufferTexture( GLuint, GLenum, GLuint, GLint ) {}
+static void		 glNamedFramebufferDrawBuffers( GLuint, GLsizei, const GLenum * ) {}
+static void		 glNamedFramebufferReadBuffer( GLuint, GLenum ) {}
+static void		 glReadPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void * ) {}
+static void		 glReadnPixels( GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void * ) {}
 
-GLboolean glIsVertexArray( GLuint ) { return 0; }
-void	  glBindVertexArray( GLuint ) {}
-void	  glCreateVertexArrays( GLsizei, GLuint * ) {}
-void	  glDeleteVertexArrays( GLsizei, const GLuint * ) {}
-void	  glVertexArrayAttribBinding( GLuint, GLuint, GLuint ) {}
-void	  glDrawArrays( GLenum, GLint, GLsizei ) {}
-void	  glDrawElements( GLenum, GLsizei, GLenum, const void * ) {}
-void	  glEnableVertexArrayAttrib( GLuint, GLuint ) {}
-void	  glVertexArrayVertexBuffer( GLuint, GLuint, GLuint, GLintptr, GLsizei ) {}
-void	  glVertexArrayAttribFormat( GLuint, GLuint, GLint, GLenum, GLboolean, GLuint ) {}
-void	  glVertexArrayAttribIFormat( GLuint, GLuint, GLint, GLenum, GLuint ) {}
-void	  glVertexArrayAttribLFormat( GLuint, GLuint, GLint, GLenum, GLuint ) {}
-void	  glVertexArrayElementBuffer( GLuint, GLuint ) {}
-void	  glMultiDrawArrays( GLenum, const GLint *, const GLsizei *, GLsizei ) {}
-void	  glMultiDrawElements( GLenum, const GLsizei *, GLenum, const void * const *, GLsizei ) {}
+static GLboolean glIsVertexArray( GLuint ) { return 0; }
+static void		 glBindVertexArray( GLuint ) {}
+static void		 glCreateVertexArrays( GLsizei, GLuint * ) {}
+static void		 glDeleteVertexArrays( GLsizei, const GLuint * ) {}
+static void		 glVertexArrayAttribBinding( GLuint, GLuint, GLuint ) {}
+static void		 glDrawArrays( GLenum, GLint, GLsizei ) {}
+static void		 glDrawElements( GLenum, GLsizei, GLenum, const void * ) {}
+static void		 glEnableVertexArrayAttrib( GLuint, GLuint ) {}
+static void		 glVertexArrayVertexBuffer( GLuint, GLuint, GLuint, GLintptr, GLsizei ) {}
+static void		 glVertexArrayAttribFormat( GLuint, GLuint, GLint, GLenum, GLboolean, GLuint ) {}
+static void		 glVertexArrayAttribIFormat( GLuint, GLuint, GLint, GLenum, GLuint ) {}
+static void		 glVertexArrayAttribLFormat( GLuint, GLuint, GLint, GLenum, GLuint ) {}
+static void		 glVertexArrayElementBuffer( GLuint, GLuint ) {}
+static void		 glMultiDrawArrays( GLenum, const GLint *, const GLsizei *, GLsizei ) {}
+static void		 glMultiDrawElements( GLenum, const GLsizei *, GLenum, const void * const *, GLsizei ) {}
 
-GLboolean glIsTexture( GLuint ) { return 0; }
-void	  glCreateTextures( GLenum, GLsizei, GLuint * ) {}
-void	  glDeleteTextures( GLsizei, const GLuint * ) {}
-void	  glBindTexture( GLenum, GLuint ) {}
-void	  glBindTextureUnit( GLuint, GLuint ) {}
-void	  glClearTexImage( GLuint, GLint, GLenum, GLenum, const void * ) {}
-void	  glGetTextureImage( GLuint, GLint, GLenum, GLenum, GLsizei, void * ) {}
-void	  glTextureParameteri( GLuint, GLenum, GLint ) {}
-void	  glTextureStorage2D( GLuint, GLsizei, GLenum, GLsizei, GLsizei ) {}
-void	  glTextureSubImage2D( GLuint, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void * ) {}
+static GLboolean glIsTexture( GLuint ) { return 0; }
+static void		 glCreateTextures( GLenum, GLsizei, GLuint * ) {}
+static void		 glDeleteTextures( GLsizei, const GLuint * ) {}
+static void		 glBindTexture( GLenum, GLuint ) {}
+static void		 glBindTextureUnit( GLuint, GLuint ) {}
+static void		 glClearTexImage( GLuint, GLint, GLenum, GLenum, const void * ) {}
+static void		 glGetTextureImage( GLuint, GLint, GLenum, GLenum, GLsizei, void * ) {}
+static void		 glTextureParameteri( GLuint, GLenum, GLint ) {}
+static void		 glTextureStorage2D( GLuint, GLsizei, GLenum, GLsizei, GLsizei ) {}
+static void		 glTextureSubImage2D( GLuint, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void * ) {}
 
 #endif
 
