@@ -1,11 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
-#include <renderer/context/opengl_45.hpp>
-#include <renderer/render_graph.hpp>
-#include <renderer/scheduler/depth_first_search.hpp>
+#include <renderer/renderer.hpp>
 
 TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 {
-	// 	using namespace VTX::Renderer;
+	// TODO: redo with new architecture and fixed scheduler.
+
+	using namespace VTX::Renderer;
+
 	// 	RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch> graph;
 	//
 	// 	// Passes.
@@ -33,4 +34,15 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 	// 	graph.addLink( "FXAA", "Depth", E_CHANNEL::COLOR_1 );
 	//
 	// 	REQUIRE_FALSE( graph.setup() );
+}
+
+TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
+{
+	using namespace VTX::Renderer;
+
+	Renderer renderer( 800, 600, "" );
+	// Verify that the context is not created (not possible without loader).
+	REQUIRE_THROWS( renderer.build() );
+
+	// TODO: test buffer sizes and others things.
 }
