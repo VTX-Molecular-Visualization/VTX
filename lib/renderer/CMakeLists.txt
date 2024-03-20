@@ -8,5 +8,5 @@ find_package(vtx_util CONFIG REQUIRED)
 set(_VTX_RENDERER_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
-install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
+install(TARGETS vtx_renderer vtx_renderer_no_opengl FILE_SET public_headers DESTINATION include)
 install(DIRECTORY shaders DESTINATION .)

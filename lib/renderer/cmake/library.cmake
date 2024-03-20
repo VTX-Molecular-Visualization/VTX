@@ -40,5 +40,3 @@ else()
 endif()
 
 target_compile_definitions(vtx_renderer_no_opengl PRIVATE VTX_RENDERER_NO_OPENGL)
-
-install(TARGETS vtx_renderer vtx_renderer_no_opengl FILE_SET public_headers)
