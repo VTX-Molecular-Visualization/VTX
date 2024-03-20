@@ -23,6 +23,15 @@ namespace VTX::Renderer
 				}
 			)
 		);
+
+		if ( _context == nullptr )
+		{
+			throw GLException( "Can not build renderer graph" );
+		}
+		else if ( _context->loaded == false )
+		{
+			throw GLException( "Context not loaded" );
+		}
 	}
 
 	void Renderer::clean()
@@ -52,7 +61,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 		assert( p_proxy.matrixView );
 		assert( p_proxy.matrixProjection );
 
@@ -100,7 +109,7 @@ namespace VTX::Renderer
 
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations->size() );
 
 		// If size max reached, do not add.
@@ -210,7 +219,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 
 		_proxyColorLayout = &p_proxy;
 		_context->setUniforms<Util::Color::Rgba>(
@@ -222,7 +231,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 
 		_proxyRepresentations = &p_proxy;
 
@@ -248,7 +257,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 
 		_proxyRenderSettings = &p_proxy;
 
@@ -277,7 +286,7 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
 	{
-		assert( _renderGraph->isBuilt() );
+		assert( hasContext() );
 
 		_proxyVoxels = &p_proxy;
 

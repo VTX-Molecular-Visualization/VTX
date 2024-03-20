@@ -21,7 +21,6 @@ namespace VTX::Renderer
 		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
 		inline const Output * getOutput() { return _output; }
 		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
-		inline bool			  isBuilt() { return _context != nullptr; }
 
 		inline bool isInRenderQueue( const Pass * const p_pass )
 		{

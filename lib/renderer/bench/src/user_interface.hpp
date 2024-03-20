@@ -529,7 +529,7 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = graph.isBuilt();
+				bool isBuilt = p_renderer->hasContext();
 
 				// DescPass nodes.
 				uint										 id = 0;

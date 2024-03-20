@@ -44,8 +44,7 @@ TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
 
 	Renderer renderer( 800, 600, Filesystem::getExecutableDir() / "shaders" );
 	// Verify that the context is not created (not possible without loader).
-	// REQUIRE_THROWS( renderer.build() );
-	renderer.build();
+	REQUIRE_THROWS( renderer.build() );
 
 	// TODO: test buffer sizes and others things.
 }

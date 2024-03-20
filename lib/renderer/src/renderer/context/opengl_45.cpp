@@ -6,6 +6,9 @@ namespace VTX::Renderer::Context
 	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
 		BaseContext { p_width, p_height, p_shaderPath }
 	{
+		assert( p_width > 0 );
+		assert( p_height > 0 );
+
 		// Load opengl 4.5.
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
@@ -29,6 +32,7 @@ namespace VTX::Renderer::Context
 		else
 		{
 			_getOpenglInfos();
+			loaded = true;
 		}
 
 		// Program manager.

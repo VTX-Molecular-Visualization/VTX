@@ -22,7 +22,6 @@ using GLchar	   = char;
 using GLsizeiptr   = int;
 using GLvoid	   = void;
 using GLintptr	   = long long int;
-using GLuint64	   = unsigned long long int;
 
 #define APIENTRY
 using GLADloadproc = void * (*)( const char * );
