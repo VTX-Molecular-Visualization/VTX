@@ -3,12 +3,12 @@ configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_TEST_CONAN)
 	target_link_libraries(vtx_renderer_test vtx_util)
-	target_link_libraries(vtx_renderer_test vtx_renderer)
+	target_link_libraries(vtx_renderer_test vtx_renderer_no_opengl)
 	target_link_libraries(vtx_renderer_test Catch2::Catch2WithMain)
 
 else()
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 	target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 endif()
 
