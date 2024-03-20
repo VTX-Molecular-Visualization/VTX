@@ -3,7 +3,9 @@
 
 #ifndef VTX_RENDERER_NO_OPENGL
 #include <glad/glad.h>
+constexpr bool gladLoaded = true;
 #else
+constexpr bool gladLoaded = false;
 
 using GLboolean	   = bool;
 using GLbyte	   = char;
