@@ -53,7 +53,7 @@ namespace VTX::test
 	struct TrjConv
 	{
 		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
-													 / "1ubq_out_tjrconv" };
+													 / "1ubq_out_trjconv" };
 
 		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.gro" ).string() };
 	};

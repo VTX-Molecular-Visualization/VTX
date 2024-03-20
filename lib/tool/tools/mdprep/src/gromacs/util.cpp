@@ -129,4 +129,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::ofstream( p_file ) << p_content;
 	}
 
+	void setLastArgumentAsExpectedOutputFile( GromacsJobData & p_ ) noexcept
+	{
+		p_.expectedOutputFilesIndexes.push_back( p_.arguments.size() - 1 );
+	}
+
 } // namespace VTX::Tool::Mdprep::Gromacs

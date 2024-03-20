@@ -41,6 +41,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Erase file's currrent content if file already exists
 	void writeIntoFile( const fs::path &, const std::string & ) noexcept;
 
+	struct GromacsJobData;
+	void setLastArgumentAsExpectedOutputFile( GromacsJobData & ) noexcept;
+
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
