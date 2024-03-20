@@ -12,5 +12,7 @@ else()
 	target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 endif()
 
+target_compile_definitions(vtx_renderer_test PRIVATE VTX_RENDERER_NO_OPENGL)
+
 vtx_copy_registered_data(vtx_renderer_test)
 catch_discover_tests(vtx_renderer_test)

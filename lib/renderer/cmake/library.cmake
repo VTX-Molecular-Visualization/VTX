@@ -39,6 +39,6 @@ else()
 	target_link_libraries(vtx_renderer_no_opengl PRIVATE vtx_util::vtx_util)
 endif()
 
-target_compile_definitions(vtx_renderer_no_opengl PUBLIC VTX_RENDERER_NO_OPENGL)
+target_compile_definitions(vtx_renderer_no_opengl PRIVATE VTX_RENDERER_NO_OPENGL)
 
 install(TARGETS vtx_renderer vtx_renderer_no_opengl FILE_SET public_headers)
