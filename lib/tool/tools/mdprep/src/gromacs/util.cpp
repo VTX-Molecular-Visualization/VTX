@@ -57,16 +57,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 			{
 				p_report.errors.push_back( hit );
 			}
-			/*
-
-			const std::regex errRegex { "^[ \t]+Error (.|[\r\n])*?\n\n" };
-			for ( auto it = std::sregex_iterator( p_text.begin(), p_text.end(), errRegex );
-				  it != std::sregex_iterator();
-				  ++it )
-			{
-				p_report.errors.push_back( it->operator[]( 0 ).str() );
-			}
-			*/
 		}
 	} // namespace
 
