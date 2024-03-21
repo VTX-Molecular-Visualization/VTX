@@ -25,7 +25,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context && _context->loaded == false )
+		if ( _context == nullptr || _context->loaded == false )
 		{
 			throw GLException( "Context not loaded" );
 		}
