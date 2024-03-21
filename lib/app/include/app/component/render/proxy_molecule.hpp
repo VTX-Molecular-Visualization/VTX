@@ -39,6 +39,8 @@ namespace VTX::App::Component::Render
 		void _applySelectionCallbacks();
 		void _applyAtomPositionCallbacks();
 
+		void _removeFromRenderer();
+
 		Application::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Molecule> _proxyWrapper;
 	};
 

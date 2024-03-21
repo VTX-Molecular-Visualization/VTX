@@ -106,6 +106,12 @@ namespace VTX::App::Application::ECS
 
 		bool isEmpty() const { return _registry.isEmpty(); }
 
+		template<Core::ECS::ECS_Component C, auto Func, typename Receiver>
+		void connectSignal( const App::Core::ECS::SIGNAL p_signal, Receiver * const p_receiver )
+		{
+			_registry.connectSignal<C, Func, Receiver>( p_signal, p_receiver );
+		}
+
 		template<Core::ECS::ECS_Component C>
 		void deleteAll()
 		{

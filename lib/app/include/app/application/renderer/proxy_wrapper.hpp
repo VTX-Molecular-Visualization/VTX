@@ -36,6 +36,8 @@ namespace VTX::App::Application::Renderer
 		T &			  proxy() { return *_proxyPtr; }
 		const T &	  proxy() const { return *_proxyPtr; }
 
+		void invalidate() { _proxyPtr = nullptr; }
+
 	  private:
 		std::unique_ptr<T> _proxyPtr = nullptr;
 	};
