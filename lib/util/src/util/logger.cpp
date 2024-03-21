@@ -81,5 +81,10 @@ namespace VTX::Util
 	}
 
 	void Logger::flush() { spdlog::flush_on( spdlog::level::trace ); }
+	void Logger::stop()
+	{
+		flush();
+		onPrintLog.clear();
+	}
 
 } // namespace VTX::Util
