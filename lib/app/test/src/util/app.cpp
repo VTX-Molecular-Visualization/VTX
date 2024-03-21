@@ -28,11 +28,13 @@ namespace VTX::App::Test::Util
 			proxyCamera.setInRenderer( renderer );
 
 			// Default representation.
-			Renderer::Proxy::Representation representation;
-			renderer.setProxyRepresentations( { representation } );
+			static Renderer::Proxy::Representation				representation;
+			static std::vector<Renderer::Proxy::Representation> representations = { representation };
+			renderer.setProxyRepresentations( representations );
 
 			// Default color layout.
-			renderer.setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+			static auto JMOL = VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
+			renderer.setProxyColorLayout( JMOL );
 
 			isInit = true;
 		}
