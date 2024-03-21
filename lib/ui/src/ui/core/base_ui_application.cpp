@@ -33,8 +33,9 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::_buildUI()
 	{
-		UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
-		reader.read();
+		const FilePath				  layoutPath = Util::Filesystem::getExecutableDir() / "data" / "tool_config.json";
+		UI::Core::IO::VTXLayoutReader reader	 = UI::Core::IO::VTXLayoutReader();
+		reader.read( layoutPath );
 
 		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
 		layoutBuilder.build( reader.getResult().layoutDescriptor );
