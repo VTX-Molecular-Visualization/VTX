@@ -44,6 +44,8 @@ TEST_CASE( "VTX_UI - Test", "[integration]" )
 		const std::string error = p_e.what();
 		VTX_ERROR( "{}", error );
 	}
+
+	VTX::Util::Logger::get().stop();
 }
 
 // TEST_CASE( "VTX_UI - Benchmark", "[.][perfs]" ) {}

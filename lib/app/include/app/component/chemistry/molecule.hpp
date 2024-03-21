@@ -3,6 +3,7 @@
 
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
+#include "app/component/chemistry/index_types.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
 #include <core/struct/molecule.hpp>
@@ -20,10 +21,6 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
-
-	using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
-	using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
-
 	class Molecule
 	{
 	  private:
@@ -88,14 +85,25 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const atom_index_t & p_atomId, bool p_visible );
 		void setVisible( const AtomIndexRange & p_atomRange, bool p_visible );
-		void setVisible( const AtomIndexRangeList & p_atomRange, bool p_visible );
+		void setVisible( const AtomIndexRangeList & p_atomRangeList, bool p_visible );
+
+		void remove( const atom_index_t & p_atomIndex );
+		void remove( const AtomIndexRange & p_atomRange );
+		void remove( const AtomIndexRangeList & p_atomRangeList );
+
+		size_t getRealChainCount() const { return _realChainCount; }
+		size_t getRealResidueCount() const { return _realResidueCount; }
+		size_t getRealAtomCount() const { return _realAtomCount; };
 
 		const AtomIndexRangeList & getAtomVisibilities() const { return _visibleAtomIds; }
 		void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
 
+		const AtomIndexRangeList & getActiveAtoms() const { return _activeAtomIds; }
+
 		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
 		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
-		Atom *						getAtomFromUID( Core::UID::uid p_uid );
+
+		Atom * getAtomFromUID( Core::UID::uid p_uid );
 
 		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
@@ -103,8 +111,23 @@ namespace VTX::App::Component::Chemistry
 
 		Util::Callback<>													 onStruct;
 		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
+		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
 
 	  private:
+		void _deleteTopologyPointers( const atom_index_t p_atomIndex );
+		void _deleteTopologyPointers( const AtomIndexRange & p_atomRange );
+		void _refreshResidueRemovedState( const size_t p_residueIndex );
+		void _refreshChainRemovedState( const size_t p_chainIndex );
+
+		void _internalDeleteAtom( const atom_index_t p_index );
+		void _internalDeleteAtoms( const AtomIndexRange & p_range );
+		void _internalDeleteResidue( const size_t p_index );
+		void _internalDeleteResidues( const ResidueIndexRange & p_range );
+		void _internalDeleteChain( const size_t p_index );
+		void _internalDeleteChains( const ChainIndexRange & p_range );
+
+		void _resizeTopologyVectors();
+
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 
 		std::vector<std::unique_ptr<Chain>>	  _chains;
@@ -112,10 +135,15 @@ namespace VTX::App::Component::Chemistry
 		std::vector<std::unique_ptr<Atom>>	  _atoms;
 		std::vector<std::unique_ptr<Bond>>	  _bonds;
 
+		size_t _realChainCount;
+		size_t _realResidueCount;
+		size_t _realAtomCount;
+
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
 		AtomIndexRangeList _visibleAtomIds = AtomIndexRangeList();
+		AtomIndexRangeList _activeAtomIds  = AtomIndexRangeList();
 
 		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
 		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();
