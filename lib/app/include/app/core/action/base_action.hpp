@@ -7,6 +7,7 @@
 
 namespace VTX::App::Core::Action
 {
+	// Abstract action from which all action must inherits.
 	class BaseAction
 	{
 	  public:
@@ -14,7 +15,6 @@ namespace VTX::App::Core::Action
 		virtual ~BaseAction() = default;
 
 		virtual void execute() = 0;
-		virtual void displayUsage() {}
 
 		const ACTION_TAG & getTag() const { return _tag; }
 

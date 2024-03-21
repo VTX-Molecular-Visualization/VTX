@@ -32,7 +32,7 @@ namespace VTX::App::Application
 		template<SceneItem T>
 		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
-			return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, T>();
+			return MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
 		void referenceItem( Component::Scene::SceneItemComponent & p_item );
@@ -131,6 +131,7 @@ namespace VTX::App::Application
 
 		void _computeAABB();
 		void _createDefaultPath();
+		void _createDefaultColorLayout();
 
 	  private:
 		Component::Render::Camera *		   _camera		= nullptr;

@@ -4,7 +4,6 @@
 #include "app/application/system/system_registration.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
-#include "app/core/system/base_system.hpp"
 #include <concepts>
 #include <list>
 #include <memory>
@@ -16,15 +15,12 @@ namespace VTX::App::Application::System
 	template<typename T>
 	concept UndonableActionConcept = std::derived_from<T, Core::Action::BaseActionUndonable>;
 	template<typename T>
-	concept ActionConcept = !
-	UndonableActionConcept<T> && std::derived_from<T, Core::Action::BaseAction>;
+	concept ActionConcept = std::derived_from<T, Core::Action::BaseAction> && ( !UndonableActionConcept<T> );
 
-	class ActionManager : public Core::System::BaseSystem
+	// Action manager is a system used to execute all the actions in VTX.
+	// Action manager must be used in order to handle undonable actions.
+	class ActionManager : public System::AutoRegistrateSystem<ActionManager>
 	{
-	  public:
-		inline static const System::SystemRegistration<ActionManager> SYSTEM
-			= System::SystemRegistration<ActionManager>();
-
 	  public:
 		using BaseAction		  = Core::Action::BaseAction;
 		using BaseActionUndonable = Core::Action::BaseActionUndonable;
@@ -36,6 +32,7 @@ namespace VTX::App::Application::System
 		ActionManager();
 		~ActionManager();
 
+		// Execute function A with args Args
 		template<ActionConcept A, typename... Args>
 		void execute( const Args &... p_args )
 		{

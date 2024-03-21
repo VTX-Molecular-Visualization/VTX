@@ -12,12 +12,14 @@
 
 namespace VTX::Util::Enum
 {
+	// Get name of an enum
 	template<EnumConcept E>
 	inline constexpr std::string_view enumName( const E & p_enum )
 	{
 		return magic_enum::enum_name( p_enum );
 	}
 
+	// Get an enum from its name
 	template<EnumConcept E>
 	inline constexpr E enumCast( const std::string & p_name )
 	{
@@ -45,6 +47,7 @@ namespace VTX::Util::Enum
 		return magic_enum::enum_value<E>( p_index );
 	}
 
+	// Cast an enum to an other enum using it's name
 	template<EnumConcept E1, EnumConcept E2>
 	inline constexpr E2 enumToAnother( const E1 & p_enum )
 	{

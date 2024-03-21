@@ -2,13 +2,13 @@
 #define __VTX_APP_INTERNAL_APPLICATION_SETTINGS__
 
 #include "app/application/selection/molecule_granularity.hpp"
-#include "app/application/settings.hpp"
+#include "app/application/settings/settings.hpp"
 #include "app/component/render/enum_camera.hpp"
 #include <string>
 
 namespace VTX::App::Internal::Application::Settings
 {
-	void initSettings( App::Application::Settings & p_setting );
+	void initSettings( App::Application::Settings::Settings & p_setting );
 
 	namespace Camera
 	{

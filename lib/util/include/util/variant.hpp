@@ -4,6 +4,7 @@
 #include <concepts>
 #include <map>
 #include <string>
+#include <type_traits>
 #include <util/concepts.hpp>
 #include <util/types.hpp>
 #include <variant>
@@ -21,7 +22,7 @@ namespace VTX::Util
 			|| std::same_as<Vec4f, T> );
 
 	template<typename T>
-	concept VariantPtrValue = (!VariantPlainValue<T>) && requires( T p_ptr ) { static_cast<void *>( p_ptr ); };
+	concept VariantPtrValue = (!VariantPlainValue<T>) && std::is_pointer<T>::value;
 
 	template<typename T>
 	concept VariantValueConcept = ( VariantPlainValue<T> || VariantPtrValue<T> );
@@ -47,6 +48,7 @@ namespace VTX::Util
 		}
 	} // namespace Variant
 
+	// Default VTX variant which contains VTX base types
 	class VTXVariant
 	{
 	  private:

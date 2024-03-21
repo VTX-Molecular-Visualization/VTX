@@ -8,6 +8,7 @@
 #include <pybind11/pybind11.h>
 #include <string>
 #include <util/exceptions.hpp>
+#include <vector>
 
 namespace VTX::PythonBinding
 {
@@ -42,10 +43,12 @@ namespace VTX::PythonBinding
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func p_function, const std::string & p_desc, Extra... p_extra )
 			{
-				_pyModule.def( p_name.c_str(),
-							   p_function,
-							   p_desc.c_str(),
-							   Pybind11ExtraConvertor::convertToPybind11Extra( std::forward<Extra>( p_extra ) )... );
+				_pyModule.def(
+					p_name.c_str(),
+					p_function,
+					p_desc.c_str(),
+					Pybind11ExtraConvertor::convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
+				);
 			}
 
 			void runFunction( const std::string & p_funcName ) const
@@ -65,6 +68,8 @@ namespace VTX::PythonBinding
 
 			void				displayInfo() const;
 			const std::string & getModulePath() const { return _modulePath; }
+
+			std::vector<std::string> getFunctionList() const;
 
 		  private:
 			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :

@@ -5,6 +5,8 @@
 #include "util/fmt/glm.hpp"
 #include "util/types.hpp"
 
+// This file contains implementations of fmt::formatter to allow logging of RGBA color
+
 // Color::Rgba inherit from glm::vec4f
 template<>
 struct fmt::formatter<VTX::Util::Color::Rgba> : fmt::formatter<VTX::Vec4f>

@@ -5,24 +5,12 @@
 #include "ui/qt/controller/base_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
 #include "ui/qt/mode/base_mode.hpp"
-#include "ui/qt/mode/mode_collection.hpp"
 #include <set>
 #include <util/callback.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::UI::QT::Mode
 {
-	// class VisualizationData
-	//{
-	//   public:
-	//	std::set<std::unique_ptr<Controller::BaseCameraController>> cameraControllers
-	//		= std::set<std::unique_ptr<Controller::BaseCameraController>>();
-	//	std::set<std::unique_ptr<Controller::BasePickerController>> pickerControllers
-	//		= std::set<std::unique_ptr<Controller::BasePickerController>>();
-	//	std::set<std::unique_ptr<Controller::BaseController>> otherControllers
-	//		= std::set<std::unique_ptr<Controller::BaseController>>();
-	// };
-
 	class Visualization : public BaseMode
 	{
 	  public:
@@ -44,8 +32,6 @@ namespace VTX::UI::QT::Mode
 		void addPickerController( std::unique_ptr<Controller::BaseController> & p_pickerControllerPtr );
 		void addController( std::unique_ptr<Controller::BaseController> & p_controllerPtr );
 
-		void applyNextCamera();
-
 		inline const Controller::BaseCameraController & getCurrentCameraController() const
 		{
 			return *_currentCameraController;
@@ -63,7 +49,6 @@ namespace VTX::UI::QT::Mode
 		void setCameraController( const App::Core::CollectionKey & p_controllerKey );
 		void setPickerController( const Util::Hashing::Hash & p_controllerHash );
 		void setPickerController( const App::Core::CollectionKey & p_controllerKey );
-		void resetCameraController();
 
 		const std::set<std::unique_ptr<Controller::BaseController>> & getCameraControllers() const
 		{
@@ -73,11 +58,6 @@ namespace VTX::UI::QT::Mode
 		{
 			return _pickerControllers;
 		}
-
-		// void orientCameraController( const App::Old::Component::Object3D::Helper::AABB & );
-		// void orientCameraController( const Vec3f & p_position, const Quatf & p_orientation );
-
-		// virtual void receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event ) override;
 
 		Util::Callback<Controller::BaseCameraController> onCameraController;
 		Util::Callback<Controller::BasePickerController> onPickerController;

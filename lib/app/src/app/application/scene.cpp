@@ -1,6 +1,8 @@
 #include "app/application/scene.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/component/render/camera.hpp"
+#include "app/component/render/proxy_color_layout.hpp"
+#include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
@@ -11,7 +13,7 @@ namespace VTX::App::Application
 {
 	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
-		return MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent>();
+		return MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
@@ -20,6 +22,7 @@ namespace VTX::App::Application
 		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
+		_createDefaultColorLayout();
 	}
 
 	Scene::~Scene() {}
@@ -82,6 +85,7 @@ namespace VTX::App::Application
 	{
 		clear();
 		_createDefaultPath();
+		_createDefaultColorLayout();
 	}
 
 	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const
@@ -229,7 +233,7 @@ namespace VTX::App::Application
 	void Scene::_computeAABB()
 	{
 		const Core::ECS::View view
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+			= MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
@@ -246,7 +250,7 @@ namespace VTX::App::Application
 		// (let that here instead of doing the exact same things in all states for the moment)
 
 		Core::ECS::View updatables
-			= MAIN_REGISTRY().getComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+			= MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
 		for ( const Core::ECS::BaseEntity entity : updatables )
 		{
@@ -298,6 +302,14 @@ namespace VTX::App::Application
 		//_defaultPath						= path;
 
 		// addPath( path );
+	}
+
+	void Scene::_createDefaultColorLayout()
+	{
+		Core::ECS::BaseEntity colorLayoutEntity = MAIN_REGISTRY().createEntity();
+		MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
+		Component::Render::ProxyColorLayout & proxy
+			= MAIN_REGISTRY().addComponent<Component::Render::ProxyColorLayout>( colorLayoutEntity );
 	}
 
 } // namespace VTX::App::Application

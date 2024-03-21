@@ -4,6 +4,8 @@
 #include "util/types.hpp"
 #include <fmt/format.h>
 
+// This file contains implementations of fmt::formatter to allow logging of glm structs (vec, mat and qua)
+
 // Taken from https://github.com/fmtlib/fmt/issues/3306
 template<glm::length_t L, typename T>
 struct fmt::formatter<glm::vec<L, T>> : fmt::formatter<T>

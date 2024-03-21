@@ -1,7 +1,6 @@
 #include "app/component/render/camera.hpp"
-#include "app/application/settings.hpp"
+#include "app/application/system/settings_system.hpp"
 #include "app/internal/application/settings.hpp"
-#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -12,13 +11,12 @@ namespace VTX::App::Component::Render
 	Camera::Camera() :
 		_near( Util::Math::max(
 			1e-1f,
-			VTXApp::get().getSettings().get<float>( NEAR_CLIP_KEY )
+			SETTINGS().get<float>( NEAR_CLIP_KEY )
 		) ), // Avoid to little value.
-		_far( Util::Math::max( _near, VTXApp::get().getSettings().get<float>( FAR_CLIP_KEY ) ) ),
-		_fov( VTXApp::get().getSettings().get<float>( FOV_KEY ) )
+		_far( Util::Math::max( _near, SETTINGS().get<float>( FAR_CLIP_KEY ) ) ),
+		_fov( SETTINGS().get<float>( FOV_KEY ) )
 	{
-		const CAMERA_PROJECTION & cameraProjection
-			= VTXApp::get().getSettings().get<CAMERA_PROJECTION>( PROJECTION_KEY );
+		const CAMERA_PROJECTION & cameraProjection = SETTINGS().get<CAMERA_PROJECTION>( PROJECTION_KEY );
 
 		_projection = cameraProjection;
 	}

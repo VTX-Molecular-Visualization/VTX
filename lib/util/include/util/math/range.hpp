@@ -8,6 +8,7 @@
 
 namespace VTX::Util::Math
 {
+	// Class which will manage a range of integral type (a Range has a start index and a count).
 	template<std::integral T>
 	class Range
 	{

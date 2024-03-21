@@ -2,6 +2,7 @@
 #include "app/application/system/action_manager.hpp"
 #include "ui/qt/tool/console/action/console.hpp"
 #include "ui/qt/widget/custom/dock_window_main_widget.hpp"
+#include "ui/qt/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
@@ -40,6 +41,8 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		sizePolicy.setVerticalStretch( 10 );
 		_listWidget->setSizePolicy( sizePolicy );
 
+		_commandLineWidget = WidgetFactory::get().instantiateWidget<CommandLinePrompt>( this, "_commandLineWidget" );
+
 		_clearWidget = new QPushButton( this );
 		_clearWidget->setText( "Clear" );
 		_clearWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
@@ -49,12 +52,17 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		buttonsLayout->addWidget( _clearWidget );
 		buttonsLayout->addStretch( 1000 );
 
-		QHBoxLayout * const mainLayout = new QHBoxLayout( mainWidget );
-		mainLayout->setSpacing( 5 );
-		mainLayout->setContentsMargins( 0, 0, 2, 0 );
+		QHBoxLayout * const logLayout = new QHBoxLayout();
+		logLayout->setSpacing( 5 );
+		logLayout->setContentsMargins( 0, 0, 2, 0 );
 
-		mainLayout->addWidget( _listWidget, 100 );
-		mainLayout->addLayout( buttonsLayout, 1 );
+		logLayout->addWidget( _listWidget, 100 );
+		logLayout->addLayout( buttonsLayout, 1 );
+
+		QVBoxLayout * const mainLayout = new QVBoxLayout( mainWidget );
+		mainLayout->setSpacing( 1 );
+		mainLayout->addLayout( logLayout, 100 );
+		mainLayout->addWidget( _commandLineWidget, 1 );
 
 		setWidget( mainWidget );
 	}

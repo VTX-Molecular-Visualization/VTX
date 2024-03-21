@@ -14,10 +14,6 @@
 
 namespace VTX::UI::QT
 {
-	namespace State
-	{
-		class StateMachine;
-	}
 	class MainWindow;
 
 	class ApplicationQt : public Core::BaseUIApplication, public QApplication
@@ -47,6 +43,8 @@ namespace VTX::UI::QT
 		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
 		bool notify( QObject * const, QEvent * const ) override;
+
+		void softQuit();
 
 	  protected:
 		void _initUI( const std::vector<std::string> & p_args ) override;

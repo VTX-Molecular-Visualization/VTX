@@ -13,6 +13,7 @@ namespace VTX::Util::Algorithm::Range
 	template<std::integral T>
 	using RangeList = Math::RangeList<T>;
 
+	// Merge two RangeList and return the result
 	template<std::integral T>
 	RangeList<T> merge( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
@@ -26,6 +27,8 @@ namespace VTX::Util::Algorithm::Range
 
 		return res;
 	}
+
+	// Merge RangeList p_other directly in p_obj
 	template<std::integral T>
 	void mergeInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
@@ -36,6 +39,7 @@ namespace VTX::Util::Algorithm::Range
 		}
 	}
 
+	// Substract RangeList p_rhs to p_lhs and return the result
 	template<std::integral T>
 	RangeList<T> substract( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
@@ -49,6 +53,7 @@ namespace VTX::Util::Algorithm::Range
 
 		return res;
 	}
+	// Substract directly RangeList p_other from p_obj
 	template<std::integral T>
 	void substractInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
@@ -59,6 +64,7 @@ namespace VTX::Util::Algorithm::Range
 		}
 	}
 
+	// Return intersection between two RangeList (items which are in p_lhs and in p_rhs )
 	template<std::integral T>
 	RangeList<T> intersect( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
 	{
@@ -103,24 +109,29 @@ namespace VTX::Util::Algorithm::Range
 		return RangeList<T>( newRange );
 	}
 
+	// Set p_obj as the intersection between itself and p_other
 	template<std::integral T>
 	void intersectInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = intersect( p_obj, p_other );
 	}
 
+	// Return exclusive between two RangeList (items which are in p_lhs but not in p_rhs and items which are in p_rhs
+	// but not in p_lhs  )
 	template<std::integral T>
 	Math::RangeList<T> exclusive( const Math::RangeList<T> & p_lhs, const Math::RangeList<T> & p_rhs )
 	{
 		return Details::Range::Exclusive( p_lhs, p_rhs ).getRes();
 	}
 
+	// Set p_obj as the exclusive between itself and p_other
 	template<std::integral T>
 	void exclusiveInSitu( RangeList<T> & p_obj, const RangeList<T> & p_other )
 	{
 		p_obj = Details::Range::Exclusive( p_obj, p_other ).getRes();
 	}
 
+	// Generate a RangeList of index from any container following a predicate on its items
 	template<Container C, std::predicate<typename C::value_type> Predicate>
 	RangeList<typename C::size_type> generateIndexRangeList( const C & p_container, const Predicate & p_predicate )
 	{

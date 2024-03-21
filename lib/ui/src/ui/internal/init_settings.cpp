@@ -3,7 +3,7 @@
 
 namespace VTX::UI::Internal
 {
-	void initSettings( App::Application::Settings & p_settings )
+	void initSettings( App::Application::Settings::Settings & p_settings )
 	{
 		// Camera Controller
 		p_settings.referenceSetting( Controller::TRANSLATION_SPEED_KEY, Controller::TRANSLATION_SPEED_DEFAULT );

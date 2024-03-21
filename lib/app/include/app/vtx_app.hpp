@@ -17,8 +17,7 @@ namespace VTX::App
 	class VTXApp final : public Util::Generic::BaseStaticSingleton<VTXApp>
 	{
 	  private:
-		inline static const Util::Hashing::Hash SETTINGS_KEY = Util::Hashing::hash( "SETTINGS" );
-		inline static const Util::Hashing::Hash SCENE_KEY	 = Util::Hashing::hash( "SCENE" );
+		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
 
 	  public:
 		VTXApp( StructPrivacyToken );
@@ -29,7 +28,6 @@ namespace VTX::App
 
 		void start( const std::vector<std::string> & );
 		void update( const float p_elapsedTime = 0 );
-		void goToState( const std::string &, void * const = nullptr );
 		void stop();
 
 		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
@@ -47,9 +45,6 @@ namespace VTX::App
 		Application::Scene &	   getScene();
 		const Application::Scene & getScene() const;
 
-		Application::Settings &		  getSettings();
-		const Application::Settings & getSettings() const;
-
 		Util::Callback<float> onPreUpdate;
 		Util::Callback<float> onUpdate;
 		Util::Callback<float> onLateUpdate;
@@ -61,13 +56,13 @@ namespace VTX::App
 
 		Util::Callback<> onEndOfFrameOneShot;
 
+		Util::Callback<> onStop;
+
 	  private:
 		Util::Chrono _tickChrono = Util::Chrono();
 
 		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
 			= std::make_shared<Core::System::SystemHandler>();
-
-		std::unique_ptr<Application::Settings> _settings;
 
 		Core::Monitoring::Stats _stats;
 
@@ -77,8 +72,7 @@ namespace VTX::App
 	};
 
 	// Convenient accessors
-	Application::Scene &	SCENE();
-	Application::Settings & SETTINGS();
+	Application::Scene & SCENE();
 } // namespace VTX::App
 
 #endif

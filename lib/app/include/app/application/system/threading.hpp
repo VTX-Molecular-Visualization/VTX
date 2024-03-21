@@ -7,16 +7,15 @@
 
 namespace VTX::App::Application::System
 {
-	class Threading final : public Core::System::BaseSystem, public Core::Worker::WorkerManager
+	class Threading final : public System::AutoRegistrateSystem<Threading>, public Core::Worker::WorkerManager
 	{
-	  public:
-		inline static const SystemRegistration<Threading> SYSTEM = SystemRegistration<Threading>();
 	};
 } // namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	// Access to the worker manager class in order to launch thread.
 	Core::Worker::WorkerManager & THREADING();
-}
+} // namespace VTX::App
 
 #endif

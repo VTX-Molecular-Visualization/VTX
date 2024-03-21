@@ -3,7 +3,6 @@
 
 namespace VTX::PythonBinding
 {
-
 	void LogRedirection::write( std::string str ) { VTX_INFO( "{}", str ); }
 	void LogRedirection::flush() { Util::Logger::get().flush(); }
 

@@ -1,8 +1,10 @@
 #include "ui/qt/main_window.hpp"
+#include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
+#include <app/application/scene.hpp>
 #include <io/internal/filesystem.hpp>
 
 namespace VTX::UI::QT
@@ -42,22 +44,6 @@ namespace VTX::UI::QT
 		return dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
 			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName )
 		);
-	}
-
-	void MainWindow::addShortcut( const std::string & p_shortcut, QAction * const p_action )
-	{
-		assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
-
-		p_action->setParent( this );
-
-		connect(
-			new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ),
-			&QShortcut::activated,
-			p_action,
-			&QAction::trigger
-		);
-
-		_shortcuts.emplace( p_shortcut );
 	}
 
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
@@ -192,6 +178,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::mouseMoveEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
 	void MainWindow::wheelEvent( QWheelEvent * const p_event ) { INPUT_MANAGER().handleMouseWheelEvent( *p_event ); }
+
 	void MainWindow::changeEvent( QEvent * const p_event )
 	{
 		QMainWindow::changeEvent( p_event );
@@ -199,6 +186,26 @@ namespace VTX::UI::QT
 		if ( p_event->type() == QEvent::ActivationChange && this->isActiveWindow() )
 		{
 			INPUT_MANAGER().clearKeyboardBuffer();
+		}
+	}
+	void MainWindow::closeEvent( QCloseEvent * const p_closeEvent )
+	{
+		// if ( App::SCENE().hasAnyModifications() )
+		//{
+		//	p_closeEvent->ignore();
+		//	Worker::CallbackThread callback = Worker::CallbackThread(
+		//		[]( const uint p_code )
+		//		{
+		//			if ( p_code )
+		//				VTXApp::get().quit();
+		//		}
+		//	);
+
+		//	UI::Dialog::leavingSessionDialog( callback );
+		//}
+		// else
+		{
+			p_closeEvent->accept();
 		}
 	}
 

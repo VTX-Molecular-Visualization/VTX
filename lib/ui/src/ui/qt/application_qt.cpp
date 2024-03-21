@@ -1,4 +1,6 @@
 #include "ui/qt/application_qt.hpp"
+#include "ui/internal/init_settings.hpp"
+#include "ui/internal/init_visualization_mode.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/mode/base_mode.hpp"
 #include "ui/qt/mode/visualization.hpp"
@@ -10,7 +12,7 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
-#include <app/vtx_app.hpp>
+#include <app/application/system/settings_system.hpp>
 #include <util/logger.hpp>
 #include <util/math/transform.hpp>
 
@@ -63,8 +65,10 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
+		Internal::initSettings( App::SETTINGS() );
+
 		//// Init Modes.
-		//_currentMode = Mode::ModeCollection::get().instantiateItem( _currentModeKey );
+		Internal::init( dynamic_cast<Mode::Visualization &>( *_currentMode ) );
 		_currentMode->enter();
 
 		// Create UI.
@@ -125,6 +129,8 @@ namespace VTX::UI::QT
 		{
 			delete _mainWindow;
 		}
+
+		_currentMode = nullptr;
 	}
 
 	bool ApplicationQt::notify( QObject * const receiver, QEvent * const event )
@@ -142,6 +148,8 @@ namespace VTX::UI::QT
 			return true;
 		}
 	}
+
+	void ApplicationQt::softQuit() { closeAllWindows(); }
 
 	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
 

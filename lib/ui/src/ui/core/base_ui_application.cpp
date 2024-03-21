@@ -33,8 +33,9 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::_buildUI()
 	{
-		UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
-		reader.read();
+		const FilePath				  layoutPath = Util::Filesystem::getExecutableDir() / "data" / "tool_config.json";
+		UI::Core::IO::VTXLayoutReader reader	 = UI::Core::IO::VTXLayoutReader();
+		reader.read( layoutPath );
 
 		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
 		layoutBuilder.build( reader.getResult().layoutDescriptor );
@@ -88,6 +89,7 @@ namespace VTX::UI::Core
 			// App::Application::VTX_ACTION( new App::Old::Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
+		onInitEnded();
 	}
 
 	void BaseUIApplication::update() { App::VTXApp::get().update(); }

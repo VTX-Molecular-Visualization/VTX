@@ -4,6 +4,8 @@
 #include "util/math/range.hpp"
 #include <fmt/format.h>
 
+// This file contains implementations of fmt::formatter to allow logging of Util::Math::Range
+
 template<std::integral T>
 struct fmt::formatter<VTX::Util::Math::Range<T>> : fmt::formatter<T>
 {

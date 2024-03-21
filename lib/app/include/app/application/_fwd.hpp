@@ -3,10 +3,6 @@
 
 namespace VTX::App::Application
 {
-	template<typename T>
-	class Setting;
-
-	class Settings;
 	class Scene;
 
 	namespace Action

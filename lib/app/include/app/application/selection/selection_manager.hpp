@@ -3,19 +3,14 @@
 
 #include "app/application/selection/selection.hpp"
 #include "app/application/system/system_registration.hpp"
-#include "app/core/system/base_system.hpp"
 #include <map>
 #include <memory>
 #include <string>
 
 namespace VTX::App::Application::Selection
 {
-	class SelectionManager : public Core::System::BaseSystem
+	class SelectionManager : public System::AutoRegistrateSystem<SelectionManager>
 	{
-	  public:
-		inline static const System::SystemRegistration<SelectionManager> SYSTEM
-			= System::SystemRegistration<SelectionManager>();
-
 	  public:
 		SelectionManager();
 		~SelectionManager();

@@ -5,11 +5,11 @@
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/system/system_registration.hpp"
-#include "app/core/system/base_system.hpp"
 
 namespace VTX::App::Application::System
 {
-	class ECSSystem : public Core::System::BaseSystem
+	// ECS System handle 3 sub-systems in order to manage ECS in VTX
+	class ECSSystem : public System::AutoRegistrateSystem<ECSSystem>
 	{
 	  public:
 		template<typename C>
@@ -23,8 +23,6 @@ namespace VTX::App::Application::System
 		};
 
 	  public:
-		inline static const SystemRegistration<ECSSystem> SYSTEM = SystemRegistration<ECSSystem>();
-
 		Application::ECS::RegistryManager		registryManager		  = Application::ECS::RegistryManager();
 		Application::ECS::ComponentMetaFunction componentMetaFunction = Application::ECS::ComponentMetaFunction();
 		Application::ECS::EntityDirector		entityDirector		  = Application::ECS::EntityDirector();
@@ -33,9 +31,15 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
-	Application::ECS::RegistryManager &		  MAIN_REGISTRY();
+	// MAIN_REGISTRY give access to the registry to create / get / delete entities and components
+	Application::ECS::RegistryManager & MAIN_REGISTRY();
+
+	// COMPONENT_META_FUNCTION give access to the meta functions on Components (i.e. Serialization)
 	Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION();
-	Application::ECS::EntityDirector &		  ENTITY_DIRECTOR();
+
+	// ENTITY_DIRECTOR Allows to instantiate ready to used object(an entity with all its necessary components linked on
+	// it and initialized.) It can also be used to customize object initialization.
+	Application::ECS::EntityDirector & ENTITY_DIRECTOR();
 } // namespace VTX::App
 
 #endif

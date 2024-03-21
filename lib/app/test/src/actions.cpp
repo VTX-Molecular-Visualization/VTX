@@ -2,8 +2,8 @@
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/settings.hpp>
 #include <app/application/system/action_manager.hpp>
+#include <app/application/system/settings_system.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/viewpoint.hpp>
 #include <app/core/action/base_action.hpp>
@@ -147,11 +147,11 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	Test::Util::App::initApp();
 
 	// Settings
-	const Application::Settings settings = SETTINGS();
+	const App::Application::Settings::Settings settings = SETTINGS();
 
 	SETTINGS().set<float>( Internal::Application::Settings::Camera::FAR_CLIP_KEY, 33.f );
 
-	const Application::Settings modifiedSettings = SETTINGS();
+	const App::Application::Settings::Settings modifiedSettings = SETTINGS();
 
 	if ( std::filesystem::exists( IO::Internal::Filesystem::getSettingJsonFile() ) )
 		std::filesystem::remove( IO::Internal::Filesystem::getSettingJsonFile() );

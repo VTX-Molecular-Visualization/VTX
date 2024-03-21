@@ -8,7 +8,9 @@
 #include <functional>
 #include <map>
 #include <typeindex>
+#include <util/exceptions.hpp>
 #include <util/json/json.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::Core::Serialization
 {
@@ -20,9 +22,10 @@ namespace VTX::App::Core::Serialization
 														} -> std::convertible_to<Util::JSon::BasicJSon>;
 												};
 	template<typename T>
-	concept DeserializableByDefaultConcept = requires( const Util::JSon::BasicJSon & p_json, T & p_obj ) {
-												 Internal::Serialization::deserialize( p_json, p_obj );
-											 };
+	concept DeserializableByDefaultConcept
+		= (!Util::JSon::BasicJSonConcept<T>) && requires( const Util::JSon::BasicJSon & p_json, T & p_obj ) {
+													Internal::Serialization::deserialize( p_json, p_obj );
+												};
 
 	class Serialization
 	{

@@ -1,8 +1,8 @@
 #include "app/component/behaviour/molecule_behaviour.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
-#include "app/application/settings.hpp"
 #include "app/application/system/renderer.hpp"
+#include "app/application/system/settings_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/render/proxy_molecule.hpp"
@@ -10,9 +10,9 @@
 #include "app/component/scene/pickable.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/uid_component.hpp"
-#include "app/core/trajectory_player/base_player.hpp"
-#include "app/core/trajectory_player/loop.hpp"
-#include "app/core/trajectory_player/players.hpp"
+#include "app/core/player/base_player.hpp"
+#include "app/core/player/loop.hpp"
+#include "app/core/player/players.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 
@@ -75,9 +75,9 @@ namespace VTX::App::Component::Behaviour
 			Component::Chemistry::Trajectory & trajectoryComponent
 				= MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( _entity, &_moleculeComponent );
 
-			std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> defaultPlayMode
-				= App::Core::TrajectoryPlayer::Players::get().instantiateItem<App::Core::TrajectoryPlayer::Loop>(
-					App::Core::TrajectoryPlayer::Loop::COLLECTION_ID
+			std::unique_ptr<App::Core::Player::BasePlayer> defaultPlayMode
+				= App::Core::Player::Players::get().instantiateItem<App::Core::Player::Loop>(
+					App::Core::Player::Loop::COLLECTION_ID
 				);
 
 			trajectoryComponent.setPlayer( defaultPlayMode );

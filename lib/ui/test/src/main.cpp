@@ -26,18 +26,18 @@ TEST_CASE( "VTX_UI - Test", "[integration]" )
 
 	try
 	{
-		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
-		VTX::UI::Environment::get().setUIApp( vtxApplication );
-		vtxApplication->init();
+		std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplicationPtr = UI::UIGenerator::createUI();
+		VTX::UI::Environment::get().setUIApp( vtxApplicationPtr.get() );
+		vtxApplicationPtr->init();
 
 		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 
 		// Uncomment to print inputs
 		// UI::Debug::PrintInputs();
 
-		vtxApplication->start( { molPath.string() } );
+		vtxApplicationPtr->start( { molPath.string() } );
 
-		VTX_INFO( "Return code : {}", vtxApplication->getReturnCode() );
+		VTX_INFO( "Return code : {}", vtxApplicationPtr->getReturnCode() );
 	}
 	catch ( const std::exception & p_e )
 	{
