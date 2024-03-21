@@ -137,8 +137,9 @@ namespace VTX::Renderer
 
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
-				VTX_ERROR( "{}", "The output of the last pass must be unique" );
-				return nullptr;
+				// Useless?
+				// VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				// return nullptr;
 			}
 
 			// Create context.

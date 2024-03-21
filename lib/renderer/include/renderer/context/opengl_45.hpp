@@ -171,9 +171,15 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		void _createInputs( const Pass * const p_descPassPtr );
+		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
 
 		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
+
+		const Output * const _getInputSource(
+			const Links &		  p_links,
+			const Pass * const	  p_pass,
+			const E_CHANNEL_INPUT p_channel
+		);
 
 		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 

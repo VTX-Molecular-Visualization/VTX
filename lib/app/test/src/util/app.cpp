@@ -4,6 +4,7 @@
 #include <app/application/system/renderer.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <core/chemdb/color.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
 
@@ -15,7 +16,15 @@ namespace VTX::App::Test::Util
 		if ( !isInit )
 		{
 			VTXApp::get().start( {} );
-			REQUIRE_THROWS( VTX::App::RENDERER_SYSTEM().facade().build() );
+
+			auto & renderer = VTX::App::RENDERER_SYSTEM().facade();
+			REQUIRE_THROWS( renderer.build() );
+
+			// TODO: use app.
+			Renderer::Proxy::Representation representation;
+			renderer.setProxyRepresentations( { representation } );
+			renderer.setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+
 			isInit = true;
 		}
 

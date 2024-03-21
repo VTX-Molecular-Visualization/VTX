@@ -100,7 +100,10 @@ void main()
 		lighting = ( diffuse + specular ) * cosTheta;
 	}
 
-	const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
+	const ivec2 ambientOcclusionTextureSize = textureSize( inTextureAmbientOcclusion, 0 );
+	const vec2 normalizedTexCoord = gl_FragCoord.xy / vec2( ambientOcclusionTextureSize );
+	const float ambientOcclusion = texture( inTextureAmbientOcclusion, normalizedTexCoord ).x;
+	//const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;

@@ -87,6 +87,7 @@ namespace VTX::Renderer::Context
 	)
 	{
 		// TODO: shading without blur?
+		// TODO: remove unused textures.
 		// TODO: handle same pass remove/add
 		p_outInstructions.clear();
 		p_outInstructionsDurationRanges.clear();
@@ -132,7 +133,7 @@ namespace VTX::Renderer::Context
 				std::vector<GLenum> drawBuffers;
 
 				// Create input data.
-				_createInputs( descPassPtr );
+				_createInputs( p_links, descPassPtr );
 
 				// Create FBO.
 				if ( isLastPass == false )
@@ -209,25 +210,6 @@ namespace VTX::Renderer::Context
 				}
 			}
 
-			// Find source for input.
-			auto findInputSrcInLinks
-				= [ &p_links, descPassPtr ]( const E_CHANNEL_INPUT p_channel ) -> const Output * const
-			{
-				const auto it = std::find_if(
-					p_links.begin(),
-					p_links.end(),
-					[ descPassPtr, p_channel ]( const std::unique_ptr<Link> & p_e )
-					{ return p_e->dest == descPassPtr && p_e->channelDest == p_channel; }
-				);
-
-				if ( it == p_links.end() )
-				{
-					return nullptr;
-				}
-
-				return &( it->get()->src->outputs[ it->get()->channelSrc ] );
-			};
-
 			// Bind inputs.
 			uint										channelMax = 0;
 			std::map<E_CHANNEL_INPUT, const IO * const> mapBoundAttachments;
@@ -237,7 +219,7 @@ namespace VTX::Renderer::Context
 
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					const Output * const src	   = findInputSrcInLinks( channel );
+					const Output * const src	   = _getInputSource( p_links, descPassPtr, channel );
 					const IO &			 descIOSrc = src->desc;
 
 					if ( uint( channel ) > channelMax )
@@ -409,10 +391,13 @@ namespace VTX::Renderer::Context
 		width  = p_width;
 		height = p_height;
 
+		VTX_DEBUG( "Resizing to {}x{}", width, height );
+
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
+			// Resize only output textures (inputs are fixed for now).
 			for ( const auto & [ channel, output ] : descPassPtr->outputs )
 			{
 				const IO & descIO = output.desc;
@@ -420,6 +405,10 @@ namespace VTX::Renderer::Context
 				{
 					if ( _textures.find( &descIO ) != _textures.end() )
 					{
+						auto & texture = _textures[ &descIO ];
+						VTX_DEBUG(
+							"Texture resized ({}x{} => {}x{})", texture->getWidth(), texture->getHeight(), width, height
+						);
 						_textures[ &descIO ]->resize( width, height );
 						_fbos[ descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
 					}
@@ -521,18 +510,19 @@ namespace VTX::Renderer::Context
 		assert( false );
 	}
 
-	void OpenGL45::_createInputs( const Pass * const p_descPassPtr )
+	void OpenGL45::_createInputs( const Links & p_links, const Pass * const p_descPassPtr )
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
 		{
 			const IO & descIO = input.desc;
 
-			// Create texture if data provided.
+			// Create texture if data provided and not linked.
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				const Attachment & attachment = std::get<Attachment>( descIO );
+				const Attachment &	 attachment = std::get<Attachment>( descIO );
+				const Output * const source		= _getInputSource( p_links, p_descPassPtr, channel );
 
-				if ( attachment.data != nullptr )
+				if ( source == nullptr && attachment.data != nullptr )
 				{
 					_createAttachment( descIO );
 				}
@@ -592,6 +582,27 @@ namespace VTX::Renderer::Context
 		}
 	}
 
+	const Output * const OpenGL45::_getInputSource(
+		const Links &		  p_links,
+		const Pass * const	  p_pass,
+		const E_CHANNEL_INPUT p_channel
+	)
+	{
+		const auto it = std::find_if(
+			p_links.begin(),
+			p_links.end(),
+			[ p_pass, p_channel ]( const std::unique_ptr<Link> & p_e )
+			{ return p_e->dest == p_pass && p_e->channelDest == p_channel; }
+		);
+
+		if ( it == p_links.end() )
+		{
+			return nullptr;
+		}
+
+		return &( it->get()->src->outputs[ it->get()->channelSrc ] );
+	}
+
 	bool OpenGL45::_hasDepthComponent( const Pass * const p_descPassPtr ) const
 	{
 		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
@@ -624,9 +635,11 @@ namespace VTX::Renderer::Context
 			)
 		);
 
+		auto & texture = _textures[ &p_descIO ];
+		VTX_DEBUG( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
 		if ( attachment.data != nullptr )
 		{
-			_textures[ &p_descIO ]->fill( attachment.data );
+			texture->fill( attachment.data );
 		}
 	}
 
