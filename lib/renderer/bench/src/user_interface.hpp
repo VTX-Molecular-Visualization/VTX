@@ -370,8 +370,18 @@ namespace VTX::Bench
 						.c_str()
 				);
 
-				ImGui::Text( fmt::format( "Buffers: {}", displayMemory( infos.currentSizeBuffers ) ).c_str() );
-				ImGui::Text( fmt::format( "Textures: {}", displayMemory( infos.currentSizeTextures ) ).c_str() );
+				ImGui::Text(
+					fmt::format(
+						"Buffers: {} ({})", displayMemory( infos.currentSizeBuffers ), infos.currentCountBuffers
+					)
+						.c_str()
+				);
+				ImGui::Text(
+					fmt::format(
+						"Textures: {} ({})", displayMemory( infos.currentSizeTextures ), infos.currentCountTextures
+					)
+						.c_str()
+				);
 				ImGui::Text( fmt::format( "CPU cache: {}", displayMemory( infos.currentSizeCPUCache ) ).c_str() );
 			}
 			ImGui::End();
@@ -760,6 +770,7 @@ namespace VTX::Bench
 				if ( passToDelete != nullptr )
 				{
 					graph.removePass( passToDelete );
+					passToDelete = nullptr;
 				}
 			}
 			ImGui::End();

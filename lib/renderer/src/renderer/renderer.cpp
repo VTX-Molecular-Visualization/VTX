@@ -6,6 +6,7 @@ namespace VTX::Renderer
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
+		// Build renderer graph.
 		VTX_INFO(
 			"Renderer graph setup total time: {}",
 			Util::CHRONO_CPU(
@@ -24,11 +25,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr )
-		{
-			throw GLException( "Can not build renderer graph" );
-		}
-		else if ( _context->loaded == false )
+		if ( _context && _context->loaded == false )
 		{
 			throw GLException( "Context not loaded" );
 		}

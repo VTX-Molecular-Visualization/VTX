@@ -134,10 +134,15 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
-		std::unique_ptr<GL::ProgramManager>								  _programManager;
-		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
-		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _ssbos;
+		RenderQueue _renderQueue;
+
+		template<typename T>
+		using Collection = std::unordered_map<std::string, std::unique_ptr<T>>;
+
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		Collection<GL::VertexArray>			_vaos;
+		Collection<GL::Buffer>				_bos;
+		Collection<GL::Buffer>				_ssbos;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;

@@ -86,9 +86,65 @@ namespace VTX::Renderer::Context
 		InstructionsDurationRanges & p_outInstructionsDurationRanges
 	)
 	{
-		// TODO: shading without blur?
-		// TODO: remove unused textures.
-		// TODO: handle same pass remove/add
+		// Compare render queue with previous one and delete resources.
+		for ( const Pass * const descPassPtr : _renderQueue )
+		{
+			/*
+			if ( std::find( p_renderQueue.begin(), p_renderQueue.end(), descPassPtr ) == p_renderQueue.end() )
+			{
+				// Delete fbo.
+				if ( _fbos.find( descPassPtr ) != _fbos.end() )
+				{
+					_fbos.erase( descPassPtr );
+				}
+
+				// Delete inputs.
+				for ( const auto & [ channel, input ] : descPassPtr->inputs )
+				{
+					const IO & descIO = input.desc;
+					if ( std::holds_alternative<Attachment>( descIO ) )
+					{
+						if ( _textures.find( &descIO ) != _textures.end() )
+						{
+							_textures.erase( &descIO );
+						}
+					}
+					else if ( std::holds_alternative<Data>( descIO ) )
+					{
+						const Data & data = std::get<Data>( descIO );
+
+						// if ( _vaos.find( input.name ) != _vaos.end() )
+						{
+							_vaos.erase( input.name );
+						}
+						for ( const Data::Entry & entry : data.entries )
+						{
+							_bos.erase( input.name + entry.name );
+						}
+						if ( _bos.find( input.name + "Ebo" ) != _bos.end() )
+						{
+							_bos.erase( input.name + "Ebo" );
+						}
+					}
+				}
+
+				// Delete outputs.
+				for ( const auto & [ channel, output ] : descPassPtr->outputs )
+				{
+					const IO & descIO = output.desc;
+					if ( std::holds_alternative<Attachment>( descIO ) )
+					{
+						if ( _textures.find( &descIO ) != _textures.end() )
+						{
+							_textures.erase( &descIO );
+						}
+					}
+				}
+			}
+			*/
+		}
+
+		// Clear instructions.
 		p_outInstructions.clear();
 		p_outInstructionsDurationRanges.clear();
 
@@ -128,7 +184,7 @@ namespace VTX::Renderer::Context
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
 			// Check if already created.
-			if ( _fbos.find( descPassPtr ) == _fbos.end() )
+			// assert( _fbos.find( descPassPtr ) == _fbos.end() );
 			{
 				std::vector<GLenum> drawBuffers;
 
@@ -384,6 +440,9 @@ namespace VTX::Renderer::Context
 		// glFinish();
 
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
+
+		// Backup render queue for next build.
+		_renderQueue = p_renderQueue;
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
@@ -403,6 +462,7 @@ namespace VTX::Renderer::Context
 				const IO & descIO = output.desc;
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
+					// TODO: check if still needed.
 					if ( _textures.find( &descIO ) != _textures.end() )
 					{
 						auto & texture = _textures[ &descIO ];
@@ -481,6 +541,8 @@ namespace VTX::Renderer::Context
 		const E_CHANNEL_OUTPUT p_channel
 	) const
 	{
+		// assert( std::find( _fbos.begin(), _fbos.end(), p_pass ) != _fbos.end() );
+
 		for ( auto & [ passPtr, fbo ] : _fbos )
 		{
 			if ( passPtr->name == p_pass )
@@ -622,6 +684,12 @@ namespace VTX::Renderer::Context
 	void OpenGL45::_createAttachment( const IO & p_descIO )
 	{
 		const Attachment & attachment = std::get<Attachment>( p_descIO );
+
+		if ( _textures.find( &p_descIO ) != _textures.end() )
+		{
+			return;
+		}
+
 		_textures.emplace(
 			&p_descIO,
 			std::make_unique<GL::Texture2D>(
@@ -658,7 +726,10 @@ namespace VTX::Renderer::Context
 			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
 							  + descUniform.name;
 
-			assert( _uniforms.find( key ) == _uniforms.end() );
+			if ( _uniforms.find( key ) != _uniforms.end() )
+			{
+				continue;
+			}
 
 			// Auto padding to 4, 8 or 16 bytes.
 			size_t padding = 0;
@@ -675,6 +746,7 @@ namespace VTX::Renderer::Context
 				padding = 16 - ( size % 16 );
 			}
 
+			assert( size > 0 );
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
 			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
@@ -685,7 +757,10 @@ namespace VTX::Renderer::Context
 		// Set totalSize.
 		size_t totalSize = offset;
 
-		assert( totalSize > 0 );
+		if ( totalSize == 0 )
+		{
+			return;
+		}
 
 		for ( const Uniform & descUniform : p_uniforms )
 		{
@@ -817,6 +892,9 @@ namespace VTX::Renderer::Context
 
 		p_infos.currentSizeBuffers	= totalSizeBuffers;
 		p_infos.currentSizeTextures = totalSizeTextures;
+
+		p_infos.currentCountBuffers	 = _bos.size() + _ssbos.size() + _ubos.size();
+		p_infos.currentCountTextures = _textures.size();
 	}
 	void APIENTRY OpenGL45::_debugMessageCallback(
 		const GLenum   p_source,

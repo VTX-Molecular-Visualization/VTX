@@ -35,6 +35,14 @@ namespace VTX::Renderer
 
 		void removePass( const Pass * const p_pass )
 		{
+			// Don't remove geometry pass.
+			// TODO: use a flag to set mandatory passes.
+			if ( p_pass->name == descPassGeometric.name )
+			{
+				VTX_ERROR( "Can not remove geometric pass" );
+				return;
+			}
+
 			std::erase_if(
 				_links,
 				[ &p_pass ]( const std::unique_ptr<Link> & p_e ) { return p_e->src == p_pass || p_e->dest == p_pass; }

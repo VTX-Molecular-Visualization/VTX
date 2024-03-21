@@ -145,7 +145,6 @@ namespace VTX::Renderer
 		}
 
 		void		build( const uint p_output = 0, void * p_loader = nullptr );
-		void		patch( const uint p_output = 0 );
 		void		clean();
 		inline bool hasContext() const { return _context != nullptr; }
 
@@ -248,7 +247,7 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
-		bool showVoxels	 = true;
+		bool showVoxels	 = false;
 
 		bool forceUpdate  = true;
 		bool logDurations = false;
