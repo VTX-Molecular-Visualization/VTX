@@ -501,6 +501,7 @@ namespace VTX::Renderer::Context
 		GL::Texture2D	texture(
 			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
 		  );
+
 		fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
 
 		resize( p_renderQueue, p_width, p_height );
