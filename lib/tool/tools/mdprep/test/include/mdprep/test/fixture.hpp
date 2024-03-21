@@ -62,7 +62,17 @@ namespace VTX::test
 		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
 													 / "1ubq_out_grompp" };
 
-		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.top" ).string(), ( g_outputDir / "1ubq.mdp" ).string() , ( g_outputDir / "1ubq.tpr" ).string() };
+		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.top" ).string(),
+																  ( g_outputDir / "1ubq.mdp" ).string(),
+																  ( g_outputDir / "1ubq.tpr" ).string() };
+	};
+	struct Genion
+	{
+		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
+													 / "1ubq_out_genion" };
+
+		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.top" ).string(),
+																  ( g_outputDir / "1ubq.gro" ).string() };
 	};
 
 	inline std::vector<const std::string *> getPtrVectFromVect( const std::vector<std::string> & p_ )
