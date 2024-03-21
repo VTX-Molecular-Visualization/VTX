@@ -132,7 +132,7 @@ namespace VTX::Bench
 				_drawDurations( p_renderer );
 
 				// Scene.
-				_drawScene( p_scene );
+				_drawScene( p_scene, p_renderer );
 
 				// Node editor.
 				_drawNodeEditor( p_renderer );
@@ -419,7 +419,7 @@ namespace VTX::Bench
 			}
 		}
 
-		void _drawScene( Scene * const p_scene )
+		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer )
 		{
 			/*
 			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
@@ -432,6 +432,11 @@ namespace VTX::Bench
 			if ( ImGui::Begin( "Scene" ) )
 			{
 				ImGui::Checkbox( "Update", &( p_scene->isUpdate ) );
+				ImGui::SameLine();
+				if ( ImGui::Button( "X all" ) )
+				{
+					p_scene->removeAllMolecules( p_renderer );
+				}
 
 				size_t idMolecule = 0;
 				int	   toDelete	  = -1;

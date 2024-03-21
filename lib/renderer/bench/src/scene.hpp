@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include <core/struct/molecule.hpp>
 #include <renderer/proxy/molecule.hpp>
+#include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math.hpp>
 
@@ -41,6 +42,22 @@ namespace VTX::Bench
 			_molecules.erase( _molecules.begin() + p_index );
 			_proxies.erase( _proxies.begin() + p_index );
 			_directions.erase( _directions.begin() + p_index );
+		}
+
+		// TODO: remove renderer from here.
+		void removeAllMolecules( Renderer::Renderer * const p_renderer )
+		{
+			std::vector<Renderer::Proxy::Molecule *> proxies;
+			for ( auto & proxy : _proxies )
+			{
+				proxies.push_back( proxy.get() );
+			}
+
+			p_renderer->removeProxyMolecules( proxies );
+
+			_molecules.clear();
+			_proxies.clear();
+			_directions.clear();
 		}
 
 		void update( const float p_deltaTime )

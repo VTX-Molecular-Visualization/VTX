@@ -118,20 +118,20 @@ namespace VTX::Renderer
 		_refreshDataMolecules();
 	}
 
-	void Renderer::addProxyMolecules( std::vector<Proxy::Molecule> & p_proxies )
+	void Renderer::addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
 	{
-		for ( Proxy::Molecule & proxy : p_proxies )
+		for ( Proxy::Molecule * proxy : p_proxies )
 		{
-			_addProxyMolecule( proxy );
+			_addProxyMolecule( *proxy );
 		}
 		_refreshDataMolecules();
 	}
 
-	void Renderer::removeProxyMolecules( std::vector<Proxy::Molecule> & p_proxies )
+	void Renderer::removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
 	{
-		for ( Proxy::Molecule & proxy : p_proxies )
+		for ( Proxy::Molecule * proxy : p_proxies )
 		{
-			_removeProxyMolecule( proxy );
+			_removeProxyMolecule( *proxy );
 		}
 		_refreshDataMolecules();
 	}

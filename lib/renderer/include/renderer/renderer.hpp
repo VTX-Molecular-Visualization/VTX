@@ -179,8 +179,8 @@ namespace VTX::Renderer
 
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void removeProxyMolecule( Proxy::Molecule & p_proxy );
-		void addProxyMolecules( std::vector<Proxy::Molecule> & p_proxies );
-		void removeProxyMolecules( std::vector<Proxy::Molecule> & p_proxies );
+		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
 
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
