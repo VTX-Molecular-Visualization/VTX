@@ -1,7 +1,7 @@
 #include "tools/mdprep/gromacs/pdb2gmx.hpp"
 #include <tools/mdprep/gromacs/inputs.hpp>
 //
-#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/job.hpp"
 #include "tools/mdprep/gromacs/util.hpp"
 #include <format>
 #include <regex>

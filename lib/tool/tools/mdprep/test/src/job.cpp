@@ -3,7 +3,7 @@
 #include "tools/mdprep/gromacs/inputs.hpp"
 //
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/gromacs/gromacs.hpp"
+#include "tools/mdprep/gromacs/job.hpp"
 #include "tools/mdprep/gromacs/pdb2gmx.hpp"
 #include "tools/mdprep/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>

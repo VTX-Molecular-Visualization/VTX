@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <util/logger.hpp>
 //
-#include <tools/mdprep/gromacs/gromacs.hpp>
+#include "tools/mdprep/gromacs/job.hpp"
 #include <tools/mdprep/gromacs/pdb2gmx.hpp>
 #include <tools/mdprep/gromacs/util.hpp>
 
