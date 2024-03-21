@@ -13,6 +13,8 @@ configure_target(vtx_tool_test)
 target_link_libraries(vtx_tool_test PRIVATE vtx_tool::vtx_tool)
 target_link_libraries(vtx_tool_test PRIVATE Catch2::Catch2WithMain)
 
+target_compile_definitions(vtx_tool_test PRIVATE VTX_RENDERER_NO_OPENGL)
+
 include(CTest)
 include(Catch)
 catch_discover_tests(vtx_tool_test)

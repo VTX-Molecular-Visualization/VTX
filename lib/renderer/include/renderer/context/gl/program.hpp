@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
-#include <glad/glad.h>
+#include "renderer/context/include_opengl.hpp"
 #include <util/math.hpp>
 #include <util/types.hpp>
 
@@ -21,9 +21,9 @@ namespace VTX::Renderer::Context::GL
 		inline const std::vector<FilePath> & getShaderPaths() const { return _shaderPaths; }
 		inline const std::string &			 getToInject() const { return _toInject; }
 
-		inline int getUniformLocation( const std::string & p_name ) const
+		inline GLuint getUniformLocation( const std::string & p_name ) const
 		{
-			const int loc = glGetUniformLocation( _id, p_name.c_str() );
+			const GLuint loc = glGetUniformLocation( _id, p_name.c_str() );
 #ifdef _DEBUG
 			/// TODO: handle it
 			// if ( loc == -1 )

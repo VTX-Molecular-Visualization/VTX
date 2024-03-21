@@ -2,8 +2,11 @@
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/system/renderer.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/component/render/proxy_camera.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <core/chemdb/color.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
 
@@ -15,7 +18,21 @@ namespace VTX::App::Test::Util
 		if ( !isInit )
 		{
 			VTXApp::get().start( {} );
-			REQUIRE_THROWS( RENDERER().facade().build() );
+
+			auto & renderer = RENDERER_SYSTEM().facade();
+			REQUIRE_THROWS( renderer.build() );
+
+			// Camera.
+			Component::Render::ProxyCamera & proxyCamera
+				= MAIN_REGISTRY().getComponent<Component::Render::ProxyCamera>( SCENE().getCamera() );
+			proxyCamera.setInRenderer( renderer );
+
+			// Default representation.
+			Renderer::Proxy::Representation representation;
+			renderer.setProxyRepresentations( { representation } );
+
+			// Default color layout.
+			renderer.setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 
 			isInit = true;
 		}

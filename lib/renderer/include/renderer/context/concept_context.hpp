@@ -14,6 +14,7 @@ namespace VTX::Renderer::Context
 		size_t	 width;
 		size_t	 height;
 		FilePath shaderPath;
+		bool	 loaded = false;
 	};
 
 	template<typename C>

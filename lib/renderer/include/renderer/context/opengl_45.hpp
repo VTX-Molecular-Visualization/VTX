@@ -9,7 +9,7 @@
 #include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
-#include <glad/glad.h>
+#include "renderer/context/include_opengl.hpp"
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -134,10 +134,15 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
-		std::unique_ptr<GL::ProgramManager>								  _programManager;
-		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
-		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _ssbos;
+		RenderQueue _renderQueue;
+
+		template<typename T>
+		using Collection = std::unordered_map<std::string, std::unique_ptr<T>>;
+
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		Collection<GL::VertexArray>			_vaos;
+		Collection<GL::Buffer>				_bos;
+		Collection<GL::Buffer>				_ssbos;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
@@ -171,13 +176,17 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		void _createInputs( const Pass * const p_descPassPtr );
+		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
 
-		void _createOuputs(
-			const Pass * const	  p_descPassPtr,
-			std::vector<GLenum> & p_drawBuffers,
-			bool &				  p_hasDepthComponent
+		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
+
+		const Output * const _getInputSource(
+			const Links &		  p_links,
+			const Pass * const	  p_pass,
+			const E_CHANNEL_INPUT p_channel
 		);
+
+		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
 		void _createAttachment( const IO & p_descIO );
 

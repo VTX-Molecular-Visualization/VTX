@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout, CMake
+from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 
 class VTXRendererTestRecipe(ConanFile):
     name = "vtx_renderer_test"
@@ -8,7 +8,7 @@ class VTXRendererTestRecipe(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
     
-    generators = "CMakeToolchain", "CMakeDeps"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "cmake/*"
     
@@ -16,6 +16,12 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_renderer/1.0")
         self.requires("catch2/3.5.3")        
+    
+    def generate(self):
+        tc = CMakeToolchain(self)
+        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
+        tc.cache_variables["DIR_SHADERS"] = dir_shaders
+        tc.generate()
         
     def layout(self):
         cmake_layout(self)

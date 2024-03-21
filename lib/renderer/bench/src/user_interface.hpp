@@ -4,6 +4,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "camera.hpp"
+#include "scene.hpp"
 #include <SDL.h>
 #include <core/chemdb/color.hpp>
 #include <imgui.h>
@@ -32,7 +33,7 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Renderer::BUFFER_COUNT == 2 ) );
 			// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
@@ -110,7 +111,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Camera * const p_camera, Renderer::Renderer * const p_renderer )
+		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -124,11 +125,14 @@ namespace VTX::Bench
 				// Camera.
 				_drawCamera( p_camera );
 
+				// Scene.
+				_drawRenderer( p_renderer );
+
 				// Times.
 				_drawDurations( p_renderer );
 
 				// Scene.
-				_drawScene( p_renderer );
+				_drawScene( p_scene );
 
 				// Node editor.
 				_drawNodeEditor( p_renderer );
@@ -150,14 +154,11 @@ namespace VTX::Bench
 			return hasEvent;
 		}
 
-		inline bool isUpdateScene() const { return _updateScene; }
-
 	  private:
-		SDL_Window *  _window	   = nullptr;
-		SDL_GLContext _glContext   = nullptr;
-		bool		  _vsync	   = true;
-		bool		  _drawUi	   = true;
-		bool		  _updateScene = false;
+		SDL_Window *  _window	 = nullptr;
+		SDL_GLContext _glContext = nullptr;
+		bool		  _vsync	 = true;
+		bool		  _drawUi	 = true;
 
 		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer )
 		{
@@ -322,52 +323,10 @@ namespace VTX::Bench
 			ImGui::End();
 		}
 
-		void _drawDurations( Renderer::Renderer * const p_renderer ) const
+		void _drawRenderer( Renderer::Renderer * const p_renderer )
 		{
-			using namespace Renderer;
-
-			if ( p_renderer->logDurations )
+			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
 			{
-				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
-
-				if ( ImGui::Begin( "Durations (ms)" ) )
-				{
-					auto max = std::max_element(
-						durations.begin(),
-						durations.end(),
-						[]( const InstructionsDurationRange & p_lhs, const InstructionsDurationRange & p_rhs )
-						{ return p_lhs.duration < p_rhs.duration; }
-					);
-
-					for ( size_t i = 0; i < durations.size(); ++i )
-					{
-						ImGui::ProgressBar(
-							durations[ i ].duration / max->duration,
-							ImVec2( 0.f, 0.f ),
-							std::to_string( durations[ i ].duration ).c_str()
-						);
-						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-						ImGui::Text( durations[ i ].name.c_str() );
-					}
-				}
-				ImGui::End();
-			}
-		}
-
-		void _drawScene( Renderer::Renderer * const p_renderer )
-		{
-			/*
-			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
-			static uint64_t		  lastTime		= 0;
-			const uint64_t		  now			= SDL_GetPerformanceCounter();
-			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
-			lastTime							= now;
-			*/
-
-			if ( ImGui::Begin( "Scene" ) )
-			{
-				// ImGui::Checkbox( "Perspective", &isPerspective );
-				ImGui::Checkbox( "Update", &_updateScene );
 				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
 				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
 				ImGui::Checkbox(
@@ -411,15 +370,75 @@ namespace VTX::Bench
 						.c_str()
 				);
 
-				ImGui::Text( fmt::format( "Buffers: {}", displayMemory( infos.currentSizeBuffers ) ).c_str() );
-				ImGui::Text( fmt::format( "Textures: {}", displayMemory( infos.currentSizeTextures ) ).c_str() );
+				ImGui::Text(
+					fmt::format(
+						"Buffers: {} ({})", displayMemory( infos.currentSizeBuffers ), infos.currentCountBuffers
+					)
+						.c_str()
+				);
+				ImGui::Text(
+					fmt::format(
+						"Textures: {} ({})", displayMemory( infos.currentSizeTextures ), infos.currentCountTextures
+					)
+						.c_str()
+				);
 				ImGui::Text( fmt::format( "CPU cache: {}", displayMemory( infos.currentSizeCPUCache ) ).c_str() );
+			}
+			ImGui::End();
+		}
+
+		void _drawDurations( Renderer::Renderer * const p_renderer ) const
+		{
+			using namespace Renderer;
+
+			if ( p_renderer->logDurations )
+			{
+				const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
+
+				if ( ImGui::Begin( "Durations (ms)" ) )
+				{
+					auto max = std::max_element(
+						durations.begin(),
+						durations.end(),
+						[]( const InstructionsDurationRange & p_lhs, const InstructionsDurationRange & p_rhs )
+						{ return p_lhs.duration < p_rhs.duration; }
+					);
+
+					for ( size_t i = 0; i < durations.size(); ++i )
+					{
+						ImGui::ProgressBar(
+							durations[ i ].duration / max->duration,
+							ImVec2( 0.f, 0.f ),
+							std::to_string( durations[ i ].duration ).c_str()
+						);
+						ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+						ImGui::Text( durations[ i ].name.c_str() );
+					}
+				}
+				ImGui::End();
+			}
+		}
+
+		void _drawScene( Scene * const p_scene )
+		{
+			/*
+			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
+			static uint64_t		  lastTime		= 0;
+			const uint64_t		  now			= SDL_GetPerformanceCounter();
+			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
+			lastTime							= now;
+			*/
+
+			if ( ImGui::Begin( "Scene" ) )
+			{
+				ImGui::Checkbox( "Update", &( p_scene->isUpdate ) );
 
 				size_t idMolecule = 0;
-				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
+				int	   toDelete	  = -1;
+				for ( const auto & proxyMolecule : p_scene->getProxiesMolecules() )
 				{
 					// Display transform.
-					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
+					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule ).c_str() ) )
 					{
 						// Display transform.
 						Mat4f transform = *proxyMolecule->transform;
@@ -439,13 +458,25 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
+						if ( ImGui::Button( "R" ) )
+						{
+							proxyMolecule->onRepresentation( rand() % 3 );
+						}
+						ImGui::SameLine();
 						if ( ImGui::Button( "X" ) )
 						{
-							proxyMolecule->onRemove();
+							// Don't remove from proxy directly, remove from scene before (after loop).
+							toDelete = int( idMolecule );
 						}
 
 						ImGui::TreePop();
 					}
+					idMolecule++;
+				}
+
+				if ( toDelete != -1 )
+				{
+					p_scene->removeMolecule( toDelete );
 				}
 			}
 			ImGui::End();
@@ -478,7 +509,7 @@ namespace VTX::Bench
 				{
 					p_renderer->build();
 				}
-				if ( ImGui::Button( "Clean" ) )
+				if ( ImGui::Button( "X" ) )
 				{
 					p_renderer->clean();
 				}
@@ -486,7 +517,14 @@ namespace VTX::Bench
 				RenderQueue & renderQueue = graph.getRenderQueue();
 				for ( const Pass * const pass : renderQueue )
 				{
-					ImGui::TextUnformatted( pass->name.c_str() );
+					if ( pass != nullptr )
+					{
+						ImGui::TextUnformatted( pass->name.c_str() );
+					}
+					else
+					{
+						ImGui::TextUnformatted( " [deleted] " );
+					}
 					ImGui::TextUnformatted( " -> " );
 				}
 				if ( renderQueue.empty() )
@@ -501,7 +539,7 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = graph.isBuilt();
+				bool isBuilt = p_renderer->hasContext();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -731,8 +769,8 @@ namespace VTX::Bench
 				// Check deleted node.
 				if ( passToDelete != nullptr )
 				{
-					p_renderer->clean();
 					graph.removePass( passToDelete );
+					passToDelete = nullptr;
 				}
 			}
 			ImGui::End();

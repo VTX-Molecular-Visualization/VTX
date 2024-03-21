@@ -21,7 +21,6 @@ namespace VTX::Renderer
 		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
 		inline const Output * getOutput() { return _output; }
 		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
-		inline bool			  isBuilt() { return _context != nullptr; }
 
 		inline bool isInRenderQueue( const Pass * const p_pass )
 		{
@@ -36,6 +35,14 @@ namespace VTX::Renderer
 
 		void removePass( const Pass * const p_pass )
 		{
+			// Don't remove geometry pass.
+			// TODO: use a flag to set mandatory passes.
+			if ( p_pass->name == descPassGeometric.name )
+			{
+				VTX_ERROR( "Can not remove geometric pass" );
+				return;
+			}
+
 			std::erase_if(
 				_links,
 				[ &p_pass ]( const std::unique_ptr<Link> & p_e ) { return p_e->src == p_pass || p_e->dest == p_pass; }
@@ -53,6 +60,7 @@ namespace VTX::Renderer
 			}
 
 			std::erase_if( _passes, [ &p_pass ]( const std::unique_ptr<Pass> & p_e ) { return p_e.get() == p_pass; } );
+			std::erase( _renderQueue, p_pass );
 		}
 
 		bool addLink(
@@ -108,11 +116,6 @@ namespace VTX::Renderer
 			const Handle				 p_output = 0
 		)
 		{
-			// TODO: check diff and clean only what is needed.
-			// + redo only routing?
-			// Clean all.
-			clean();
-
 			VTX_DEBUG( "{}", "Building render graph..." );
 
 			// Check ouptut.
@@ -142,13 +145,16 @@ namespace VTX::Renderer
 
 			if ( _renderQueue.back()->outputs.size() != 1 )
 			{
-				VTX_ERROR( "{}", "The output of the last pass must be unique" );
-				clean();
-				return nullptr;
+				// Useless?
+				// VTX_ERROR( "{}", "The output of the last pass must be unique" );
+				// return nullptr;
 			}
 
 			// Create context.
-			_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
+			if ( _context == nullptr )
+			{
+				_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
+			}
 
 			// Generate instructions.
 			try
@@ -163,7 +169,6 @@ namespace VTX::Renderer
 			{
 				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
 				p_outInstructions.clear();
-				clean();
 				return nullptr;
 			}
 
@@ -176,14 +181,6 @@ namespace VTX::Renderer
 		{
 			_renderQueue.clear();
 			_context.reset( nullptr );
-		}
-
-		void patch( Instructions & p_outInstructions, InstructionsDurationRanges & p_outInstructionsDurationRanges )
-		{
-			assert( isBuilt() );
-
-			// Generate render queue.
-			_scheduler.schedule( _passes, _links, _output, _renderQueue );
 		}
 
 		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace_back( p_uniforms ); }

@@ -67,7 +67,7 @@ jobs:
       run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
       shell: bash
         
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4.3.1
       env:
         PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
       with:

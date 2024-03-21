@@ -1,8 +1,8 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
 #define __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
 
+#include "renderer/context/include_opengl.hpp"
 #include <cassert>
-#include <glad/glad.h>
 
 namespace VTX::Renderer::Context::GL
 {
@@ -100,9 +100,9 @@ namespace VTX::Renderer::Context::GL
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}
 
-		inline size_t getWidth() const { return _width; }
-		inline size_t getHeight() const { return _height; }
-		inline GLenum getFormat() const { return _format; }
+		inline const GLsizei getWidth() const { return _width; }
+		inline const GLsizei getHeight() const { return _height; }
+		inline const GLenum	 getFormat() const { return _format; }
 
 	  private:
 		GLuint _id	   = GL_INVALID_INDEX;

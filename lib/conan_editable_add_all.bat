@@ -2,7 +2,6 @@
 conan editable add app
 conan editable add core
 conan editable add io
-conan editable add io/chemfiles
 conan editable add python_binding
 conan editable add renderer
 conan editable add tool

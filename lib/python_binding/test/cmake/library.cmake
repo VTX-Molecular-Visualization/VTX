@@ -21,6 +21,8 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 endif()
 
+target_compile_definitions(vtx_python_binding_test PRIVATE VTX_RENDERER_NO_OPENGL)
+
 # All other find_package call
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx_python_binding_test)

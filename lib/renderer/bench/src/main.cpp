@@ -1,6 +1,4 @@
-#include "camera.hpp"
 #include "input_manager.hpp"
-#include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/facade.hpp>
@@ -71,8 +69,11 @@ int main( int, char ** )
 		inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			Vec2i ids = renderer.getPickedIds( p_x, p_y );
-			VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			if ( renderer.hasContext() )
+			{
+				Vec2i ids = renderer.getPickedIds( p_x, p_y );
+				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			}
 		};
 		inputManager.callbackMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };
@@ -135,7 +136,9 @@ int main( int, char ** )
 		representation2.radiusFixed		  = false;
 		representation3.radiusSphereFixed = 0.1f;
 
-		renderer.setProxyRepresentations( { representation1, representation2, representation3 } );
+		std::vector<Renderer::Proxy::Representation> representations
+			= { representation1, representation2, representation3 };
+		renderer.setProxyRepresentations( representations );
 
 		Renderer::Proxy::RenderSettings renderSettings
 			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
@@ -152,16 +155,13 @@ int main( int, char ** )
 			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
-			if ( ui.isUpdateScene() )
-			{
-				scene.update( deltaTime );
-			}
+			scene.update( deltaTime );
 
 			// Renderer.
 			renderer.render( time );
 
 			// UI.
-			ui.draw( &camera, &renderer );
+			ui.draw( &camera, &scene, &renderer );
 
 			// Events.
 			SDL_Event event;

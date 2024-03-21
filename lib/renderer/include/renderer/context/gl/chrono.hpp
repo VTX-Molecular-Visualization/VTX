@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_CONTEXT_GL_CHRONO__
 
 #include <cassert>
-#include <glad/glad.h>
 #include <util/chrono.hpp>
 
 namespace VTX::Renderer::Context::GL

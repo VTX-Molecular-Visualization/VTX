@@ -144,8 +144,9 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		void build( const uint p_output = 0, void * p_loader = nullptr );
-		void clean();
+		void		build( const uint p_output = 0, void * p_loader = nullptr );
+		void		clean();
+		inline bool hasContext() const { return _context != nullptr; }
 
 		inline void render( const float p_time )
 		{
@@ -202,7 +203,7 @@ namespace VTX::Renderer
 			_needUpdate = p_value;
 			if ( p_value == false )
 			{
-				_framesRemaining = _BUFFER_COUNT;
+				_framesRemaining = BUFFER_COUNT;
 			}
 		}
 
@@ -214,10 +215,6 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
-		inline std::vector<Proxy::Molecule *> & getProxiesMolecules() { return _proxiesMolecules; }
-		// inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
-		inline Proxy::Representations * getProxyRepresentations() { return _proxyRepresentations; }
-		inline Proxy::Voxels *			getProxyVoxels() { return _proxyVoxels; }
 
 		inline StructInfos getInfos()
 		{
@@ -250,18 +247,18 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
-		bool showVoxels	 = true;
+		bool showVoxels	 = false;
 
 		bool forceUpdate  = true;
 		bool logDurations = false;
 
-	  private:
-		const size_t _BUFFER_COUNT = 2;
+		static const size_t BUFFER_COUNT = 2;
 
+	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;
 		void *								 _loader		  = nullptr;
 		bool								 _needUpdate	  = false;
-		size_t								 _framesRemaining = _BUFFER_COUNT;
+		size_t								 _framesRemaining = BUFFER_COUNT;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
@@ -318,6 +315,7 @@ namespace VTX::Renderer
 		// TODO: find a way to delete that?
 		struct _StructUBOCamera
 		{
+			// layout 140.
 			Mat4f matrixView;
 			Mat4f matrixProjection;
 			Vec3f cameraPosition;
@@ -327,18 +325,16 @@ namespace VTX::Renderer
 			uint  isPerspective;
 		};
 
-		struct _StructUBOColorLayout
-		{
-		};
-
 		struct _StructUBOModel
 		{
+			// layout 140.
 			Mat4f mv;
 			Mat4f n;
 		};
 
 		struct _StructUBORepresentation
 		{
+			// layout 430 (forced or renderdoc bug?).
 			float radiusSphereFixed;
 			float radiusSphereAdd;
 			uint  radiusFixed;
@@ -346,7 +342,7 @@ namespace VTX::Renderer
 
 			uint cylinderColorBlendingMode;
 			uint ribbonColorBlendingMode;
-			uint padding[ 2 ];
+			// uint padding[ 2 ];
 		};
 
 		inline void _render( const float p_time ) const
