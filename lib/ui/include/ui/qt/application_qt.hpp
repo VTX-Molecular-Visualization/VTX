@@ -48,6 +48,8 @@ namespace VTX::UI::QT
 
 		bool notify( QObject * const, QEvent * const ) override;
 
+		void softQuit();
+
 	  protected:
 		void _initUI( const std::vector<std::string> & p_args ) override;
 		void _startUI( const std::vector<std::string> & p_args ) override;

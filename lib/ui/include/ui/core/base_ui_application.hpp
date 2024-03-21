@@ -2,6 +2,7 @@
 #define __VTX_UI_CORE_BASE_UI_APPLICATION__
 
 #include <string>
+#include <util/callback.hpp>
 #include <vector>
 
 namespace VTX::UI::Core
@@ -17,10 +18,11 @@ namespace VTX::UI::Core
 		virtual void update();
 
 		virtual void stop();
-
 		virtual void quit();
 
 		int getReturnCode() const { return _returnCode; };
+
+		Util::Callback<> onInitEnded;
 
 	  protected:
 		int _returnCode = EXIT_SUCCESS;

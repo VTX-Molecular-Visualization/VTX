@@ -151,35 +151,14 @@ namespace VTX::App
 			)
 		);
 	}
-	void VTXApp::stop() { _stop(); }
-
-	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
+	void VTXApp::stop()
 	{
-		std::vector<FilePath>	 files	= std::vector<FilePath>();
-		std::vector<std::string> pdbIds = std::vector<std::string>();
+		onStop();
 
-		for ( const std::string & arg : p_args )
-		{
-			if ( arg.find( "." ) != std::string::npos )
-			{
-				files.emplace_back( FilePath( arg ) );
-			}
-			else
-			{
-				pdbIds.emplace_back( arg );
-			}
-		}
-
-		// if ( files.size() > 0 )
-		//{
-		//	VTX_ACTION<Action::Main::Open>( files );
-		// }
-
-		// for ( const std::string & pdbId : pdbIds )
-		//{
-		//	VTX_ACTION<Action::Main::OpenApi>( pdbId );
-		// }
+		_stop();
 	}
+
+	void VTXApp::_handleArgs( const std::vector<std::string> & p_args ) {}
 
 	//	bool VTXApp::hasAnyModifications() const
 	//	{

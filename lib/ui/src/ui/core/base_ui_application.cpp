@@ -88,6 +88,7 @@ namespace VTX::UI::Core
 			// App::Application::VTX_ACTION( new App::Old::Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
+		onInitEnded();
 	}
 
 	void BaseUIApplication::update() { App::VTXApp::get().update(); }

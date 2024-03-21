@@ -125,6 +125,8 @@ namespace VTX::UI::QT
 		{
 			delete _mainWindow;
 		}
+
+		_currentMode = nullptr;
 	}
 
 	bool ApplicationQt::notify( QObject * const receiver, QEvent * const event )
@@ -142,6 +144,8 @@ namespace VTX::UI::QT
 			return true;
 		}
 	}
+
+	void ApplicationQt::softQuit() { closeAllWindows(); }
 
 	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
 
