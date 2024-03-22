@@ -104,7 +104,7 @@ namespace VTX::Renderer
 			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
 	}
 
-#pragma region Molecules
+#pragma region Proxy molecules
 
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
@@ -242,7 +242,7 @@ namespace VTX::Renderer
 		_cacheRibbons.erase( &p_proxy );
 	}
 
-#pragma endregion Molecules
+#pragma endregion Proxy molecules
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
 
@@ -251,11 +251,14 @@ namespace VTX::Renderer
 		assert( hasContext() );
 
 		_proxyColorLayout = &p_proxy;
-		_context->setUniforms<Util::Color::Rgba>(
-			std::vector<Util::Color::Rgba>( p_proxy.begin(), p_proxy.end() ), "Color layout"
-		);
-
+		_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 		setNeedUpdate( true );
+
+		p_proxy.onChange += [ this, &p_proxy ]()
+		{
+			_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			setNeedUpdate( true );
+		};
 	}
 
 	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy )

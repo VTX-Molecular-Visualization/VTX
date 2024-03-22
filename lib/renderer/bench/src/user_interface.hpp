@@ -118,7 +118,7 @@ namespace VTX::Bench
 			ImGui::NewFrame();
 
 			// Menu bar.
-			_drawMenuBar( p_camera, p_renderer );
+			_drawMenuBar( p_camera, p_renderer, p_scene );
 
 			if ( _drawUi )
 			{
@@ -160,7 +160,7 @@ namespace VTX::Bench
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
 
-		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer )
+		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer, Scene * const p_scene )
 		{
 			if ( ImGui::BeginMainMenuBar() )
 			{
@@ -199,23 +199,23 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( "JMol" ) )
 					{
-						p_renderer->setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+						p_scene->setColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
 					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
 						);
-						p_renderer->setProxyColorLayout( colorLayout );
+						p_scene->setColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
 						std::generate(
 							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
 						);
-						p_renderer->setProxyColorLayout( colorLayout );
+						p_scene->setColorLayout( colorLayout );
 					}
 
 					ImGui::EndMenu();
