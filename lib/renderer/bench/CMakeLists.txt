@@ -16,4 +16,3 @@ set(_VTX_RENDERER_BENCH_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
 install(TARGETS vtx_renderer_bench)
-install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)

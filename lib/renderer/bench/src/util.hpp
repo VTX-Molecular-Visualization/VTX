@@ -21,7 +21,7 @@ namespace VTX::Bench
 		IO::Reader::Molecule   reader;
 		Core::Struct::Molecule molecule;
 
-		reader.readFile( VTX::Util::Filesystem::getExecutableDir() / p_filename, molecule );
+		reader.readFile( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, molecule );
 
 		return molecule;
 	}

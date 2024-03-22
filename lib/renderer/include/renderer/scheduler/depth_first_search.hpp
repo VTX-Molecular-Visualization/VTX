@@ -9,6 +9,7 @@ namespace VTX::Renderer::Scheduler
 	class DepthFirstSearch
 	{
 	  public:
+		// TODO: fix passes added but not linked to output.
 		void schedule(
 			Passes &			 p_passes,
 			const Links &		 p_links,

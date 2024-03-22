@@ -139,6 +139,9 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		using Collection = std::unordered_map<std::string, std::unique_ptr<T>>;
 
+		// TODO: merge all buffers in one collection.
+		// TODO: key handling.
+		// TODO: merge setData and setUniform?
 		std::unique_ptr<GL::ProgramManager> _programManager;
 		Collection<GL::VertexArray>			_vaos;
 		Collection<GL::Buffer>				_bos;
