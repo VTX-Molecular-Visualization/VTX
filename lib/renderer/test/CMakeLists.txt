@@ -5,6 +5,8 @@ project(vtx_renderer_test)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
 include(CTest)
