@@ -4,6 +4,7 @@
 #include "caches.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
+#include "proxy/camera.hpp"
 #include "proxy/color_layout.hpp"
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
@@ -47,13 +48,13 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction	 = [ this ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction	 = [ this ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction	 = [ this ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction	 = [ this ]() { return showVoxels ? sizeVoxels : 0; };
-			blurX->name										 = "BlurX";
-			blurY->name										 = "BlurY";
-			blurY->programs[ 0 ].uniforms.entries[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().countFunction = [ this ]() { return showAtoms ? sizeAtoms : 0; };
+			geo->programs[ 1 ].draw.value().countFunction = [ this ]() { return showBonds ? sizeBonds : 0; };
+			geo->programs[ 2 ].draw.value().countFunction = [ this ]() { return showRibbons ? sizeRibbons : 0; };
+			geo->programs[ 3 ].draw.value().countFunction = [ this ]() { return showVoxels ? sizeVoxels : 0; };
+			blurX->name									  = "BlurX";
+			blurY->name									  = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -76,44 +77,40 @@ namespace VTX::Renderer
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
-				{ { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Camera",
+				  { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
 					{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
 					  E_TYPE::VEC4F,
 					  StructUniformValue<Vec4f> { VEC4F_ZERO } },
 					{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
-					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } } }
+					{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
+				  15 }
 			);
 
 			_renderGraph->addUniforms(
-				{ { { "Color layout", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } },
-				  UNSIGNED_CHAR_MAX + 1 }
+				{ "Color layout", { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 14, true }
 			);
 
 			_renderGraph->addUniforms(
-				{ { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Models",
+				  { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
 					{ "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-				  UNSIGNED_SHORT_MAX + 1 }
+				  13,
+				  true }
 			);
 
-			_renderGraph->addUniforms( { { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
+			_renderGraph->addUniforms( { "Representations",
+										 { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
 										   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
 										   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
 
 										   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
 										   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
-										 UNSIGNED_CHAR_MAX + 1 } );
-		}
-
-		// Only first entry of the array saved on cpu.
-		template<typename T>
-		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key )
-		{
-			assert( _context != nullptr );
-			_context->setUniform<T>( p_value, p_key );
-			setNeedUpdate( true );
+										 12,
+										 true } );
 		}
 
 		template<typename T>
@@ -122,12 +119,6 @@ namespace VTX::Renderer
 			assert( _context != nullptr );
 			_context->setUniform<T>( p_value, p_key, p_size );
 			setNeedUpdate( true );
-		}
-
-		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key )
-		{
-			_context->getUniform<T>( p_value, p_key );
 		}
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
@@ -153,8 +144,9 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		void build( const uint p_output = 0, void * p_loader = nullptr );
-		void clean();
+		void		build( const uint p_output = 0, void * p_loader = nullptr );
+		void		clean();
+		inline bool hasContext() const { return _context != nullptr; }
 
 		inline void render( const float p_time )
 		{
@@ -183,37 +175,13 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _callbackReady += p_cb; }
-		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _callbackClean += p_cb; }
-
-		inline void setMatrixView( const Mat4f & p_view )
-		{
-			setUniform( p_view, "Matrix view" );
-
-			// Update model view matrices.
-			_refreshDataModels();
-		}
-
-		inline void setMatrixProjection( const Mat4f & p_proj ) { setUniform( p_proj, "Matrix projection" ); }
-
-		inline void setCameraPosition( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); }
-
-		inline void setCameraClipInfos( const float p_near, const float p_far )
-		{
-			setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" );
-		}
-
-		inline void setMousePosition( const Vec2i & p_position )
-		{
-			// setUniform( Vec2i { p_position.x, _height - p_position.y }, "Mouse position" );
-		}
-
-		inline void setPerspective( const bool p_perspective )
-		{
-			setUniform( uint( p_perspective ), "Is perspective" );
-		}
+		void setProxyCamera( Proxy::Camera & p_proxy );
 
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
+		void removeProxyMolecule( Proxy::Molecule & p_proxy );
+		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
@@ -240,7 +208,7 @@ namespace VTX::Renderer
 			_needUpdate = p_value;
 			if ( p_value == false )
 			{
-				_framesRemaining = _BUFFER_COUNT;
+				_framesRemaining = BUFFER_COUNT;
 			}
 		}
 
@@ -252,14 +220,29 @@ namespace VTX::Renderer
 		{
 			return _instructionsDurationRanges;
 		}
-		inline std::vector<Proxy::Molecule *> & getProxiesMolecules() { return _proxiesMolecules; }
-		// inline std::vector<Proxy::Mesh *> &			  getProxiesMeshes() { return _proxiesMeshes; }
-		inline Proxy::Representations * getProxyRepresentations() { return _proxyRepresentations; }
-		inline Proxy::Voxels *			getProxyVoxels() { return _proxyVoxels; }
 
-		size_t		width;
-		size_t		height;
-		StructInfos infos;
+		inline StructInfos getInfos()
+		{
+			StructInfos infos;
+			_context->fillInfos( infos );
+
+			// Compute size of cached data.
+			size_t sizeCache = 0;
+			for ( const auto & [ proxy, cache ] : _cacheSpheresCylinders )
+			{
+				sizeCache += cache.currentSize();
+			}
+			for ( const auto & [ proxy, cache ] : _cacheRibbons )
+			{
+				sizeCache += cache.currentSize();
+			}
+			infos.currentSizeCPUCache = sizeCache;
+
+			return infos;
+		}
+
+		size_t width;
+		size_t height;
 
 		size_t sizeAtoms   = 0;
 		size_t sizeBonds   = 0;
@@ -269,28 +252,25 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
-		bool showVoxels	 = true;
+		bool showVoxels	 = false;
 
 		bool forceUpdate  = true;
 		bool logDurations = false;
 
-	  private:
-		const size_t _BUFFER_COUNT = 2;
+		static const size_t BUFFER_COUNT = 2;
 
+	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;
 		void *								 _loader		  = nullptr;
 		bool								 _needUpdate	  = false;
-		size_t								 _framesRemaining = _BUFFER_COUNT;
+		size_t								 _framesRemaining = BUFFER_COUNT;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
 		Instructions						 _instructions;
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
-		// Callbacks.
-		Util::Callback<> _callbackReady;
-		Util::Callback<> _callbackClean;
-
 		// Proxies.
+		Proxy::Camera *				   _proxyCamera;
 		std::vector<Proxy::Molecule *> _proxiesMolecules;
 		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
 		Proxy::ColorLayout *	 _proxyColorLayout;
@@ -298,12 +278,19 @@ namespace VTX::Renderer
 		Proxy::RenderSettings *	 _proxyRenderSettings;
 		Proxy::Voxels *			 _proxyVoxels;
 
+		void _addProxyMolecule( Proxy::Molecule & p_proxy );
+		void _removeProxyMolecule( Proxy::Molecule & p_proxy );
+
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const
 		{
-			return std::distance(
+			size_t id = std::distance(
 				_proxiesMolecules.begin(), std::find( _proxiesMolecules.begin(), _proxiesMolecules.end(), p_proxy )
 			);
+
+			assert( id < _proxiesMolecules.size() );
+
+			return id;
 		}
 
 		// Cache.
@@ -333,14 +320,29 @@ namespace VTX::Renderer
 			SELECTION  = 1
 		};
 
+		// TODO: find a way to delete that?
+		struct _StructUBOCamera
+		{
+			// layout 140.
+			Mat4f matrixView;
+			Mat4f matrixProjection;
+			Vec3f cameraPosition;
+			uint  padding;
+			Vec4f cameraClipInfos;
+			Vec2i mousePosition;
+			uint  isPerspective;
+		};
+
 		struct _StructUBOModel
 		{
+			// layout 140.
 			Mat4f mv;
 			Mat4f n;
 		};
 
 		struct _StructUBORepresentation
 		{
+			// layout 430 (forced or renderdoc bug?).
 			float radiusSphereFixed;
 			float radiusSphereAdd;
 			uint  radiusFixed;
@@ -348,7 +350,7 @@ namespace VTX::Renderer
 
 			uint cylinderColorBlendingMode;
 			uint ribbonColorBlendingMode;
-			uint padding[ 2 ];
+			// uint padding[ 2 ];
 		};
 
 		inline void _render( const float p_time ) const

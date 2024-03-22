@@ -32,9 +32,7 @@ namespace VTX::App::Component::Render
 
 		_transform = &transformComponent;
 
-		_transform->onTransformChanged.addCallback(
-			this, [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); }
-		);
+		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
 
 		_updateViewMatrix();
 		_updateProjectionMatrix();
@@ -55,7 +53,7 @@ namespace VTX::App::Component::Render
 		_near = Util::Math::max( 1e-1f, p_near );
 
 		_updateProjectionMatrix();
-		onClipInfosChange.call( _near, _far );
+		onClipInfosChange( _near, _far );
 	}
 	void Camera::setFar( const float p_far )
 	{
@@ -63,7 +61,7 @@ namespace VTX::App::Component::Render
 		_far = Util::Math::max( 1e-1f, p_far );
 
 		_updateProjectionMatrix();
-		onClipInfosChange.call( _near, _far );
+		onClipInfosChange( _near, _far );
 	}
 
 	void Camera::setFov( const float p_fov )
@@ -118,7 +116,7 @@ namespace VTX::App::Component::Render
 	{
 		_projection = p_projection;
 
-		onProjectionChange.call( _projection );
+		onProjectionChange( _projection );
 
 		_updateViewMatrix();
 		_updateProjectionMatrix();
@@ -130,7 +128,7 @@ namespace VTX::App::Component::Render
 			_transform->getPosition(), _transform->getPosition() + _transform->getFront(), _transform->getUp()
 		);
 
-		onMatrixViewChange.call( _viewMatrix );
+		onMatrixViewChange( _viewMatrix );
 
 		if ( _projection == CAMERA_PROJECTION::ORTHOGRAPHIC )
 			_updateProjectionMatrix();
@@ -148,7 +146,7 @@ namespace VTX::App::Component::Render
 			break;
 		}
 
-		onMatrixProjectionChange.call( _projectionMatrix );
+		onMatrixProjectionChange( _projectionMatrix );
 		// App::Old::VTXApp::get().MASK |= App::Old::Render::VTX_MASK_CAMERA_UPDATED;
 	}
 

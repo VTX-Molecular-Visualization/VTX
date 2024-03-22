@@ -4,6 +4,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/molecule_metadata.hpp"
+#include "app/component/render/proxy_molecule.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/pickable.hpp"
 #include "app/component/scene/selectable.hpp"
@@ -25,7 +26,7 @@ namespace VTX::App::Entity::Scene
 		MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::AABB>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		MAIN_REGISTRY().addComponent<VTX::Renderer::Proxy::Molecule>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Render::ProxyMolecule>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::UIDComponent>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Selectable>( p_entity );
 		MAIN_REGISTRY().addComponent<Component::Scene::Pickable>( p_entity );
@@ -46,6 +47,5 @@ namespace VTX::App::Entity::Scene
 	)
 	{
 		SceneItemEntityBuilder::postSetup( p_entity, p_extraData );
-		RENDERER().addProxyMolecule( MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( p_entity ) );
 	}
 } // namespace VTX::App::Entity::Scene

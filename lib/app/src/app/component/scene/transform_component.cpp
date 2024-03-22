@@ -32,12 +32,12 @@ namespace VTX::App::Component::Scene
 	void Transform::setPosition( const Vec3f & p_position )
 	{
 		_transformReference->setTranslation( p_position );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::setPosition( const Mat4f & p_positionMat )
 	{
 		_transformReference->setTranslation( p_positionMat );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::localMove( const Vec3f & p_translation )
 	{
@@ -47,12 +47,12 @@ namespace VTX::App::Component::Scene
 		localTranslation = Util::Math::castMat3( _rotation ) * localTranslation;
 
 		_transformReference->setTranslation( _transformReference->getTranslationVector() + localTranslation );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::globalMove( const Vec3f & p_translation )
 	{
 		_transformReference->setTranslation( _transformReference->getTranslationVector() + p_translation );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::moveFront( const float p_distance ) { localMove( Internal::FRONT_AXIS * p_distance ); }
 	void Transform::moveRight( const float p_distance ) { localMove( Internal::RIGHT_AXIS * p_distance ); }
@@ -63,21 +63,21 @@ namespace VTX::App::Component::Scene
 		_transformReference->setRotation( p_euler );
 		_updateRotation();
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::setRotation( const Quatf & p_quat )
 	{
 		_transformReference->setRotation( p_quat );
 		_updateRotation( p_quat );
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::setRotation( const Mat4f & p_rotationMat )
 	{
 		_transformReference->setRotation( p_rotationMat );
 		_updateRotation();
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 
 	void Transform::localRotate( const Vec3f & p_euler )
@@ -90,7 +90,7 @@ namespace VTX::App::Component::Scene
 		_transformReference->rotate( p_angle, p_axis );
 		_updateRotation();
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::rotatePitch( const float p_angle ) { localRotate( Internal::RIGHT_AXIS * p_angle ); }
 	void Transform::rotateYaw( const float p_angle ) { localRotate( Internal::UP_AXIS * p_angle ); }
@@ -99,17 +99,17 @@ namespace VTX::App::Component::Scene
 	void Transform::setScale( const float & p_scale )
 	{
 		_transformReference->setScale( p_scale );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::setScale( const Vec3f & p_scaleVec )
 	{
 		_transformReference->setScale( p_scaleVec );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::setScale( const Mat4f & p_scaleMat )
 	{
 		_transformReference->setScale( p_scaleMat );
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 
 	Vec3f Transform::getPosition() const { return _transformReference->getTranslationVector(); }
@@ -131,7 +131,7 @@ namespace VTX::App::Component::Scene
 		_transformReference->setRotation( p_rotation );
 		_updateRotation( p_rotation );
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 	void Transform::set( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale )
 	{
@@ -141,7 +141,7 @@ namespace VTX::App::Component::Scene
 
 		_updateRotation( p_rotation );
 
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 
 	void Transform::setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
@@ -172,7 +172,7 @@ namespace VTX::App::Component::Scene
 	void Transform::applyTransform( const Util::Math::Transform & p_transform )
 	{
 		*_transformReference = p_transform;
-		onTransformChanged( *_transformReference );
+		onTransform( *_transformReference );
 	}
 
 } // namespace VTX::App::Component::Scene

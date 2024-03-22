@@ -2,40 +2,38 @@
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	PingPong::PingPong( VTX::Core::Struct::Trajectory * const p_trajectory ) : BasePlayer( p_trajectory ) {}
-
 	void PingPong::reset()
 	{
-		setCurrentFrameIndex( 0 );
+		setCurrent( 0 );
 		_forward = true;
 	}
 
-	void PingPong::nextFrame( const size_t p_frameCount )
+	void PingPong::nextFrame( const size_t p_count )
 	{
-		size_t newFrameIndex = getCurrentFrameIndex();
+		size_t newFrameIndex = getCurrent();
 
 		if ( _forward )
 		{
-			newFrameIndex += p_frameCount;
+			newFrameIndex += p_count;
 		}
 		else
 		{
-			if ( newFrameIndex < p_frameCount )
+			if ( newFrameIndex < p_count )
 			{
-				newFrameIndex = p_frameCount - newFrameIndex;
+				newFrameIndex = p_count - newFrameIndex;
 				_forward	  = !_forward;
 			}
 			else
 			{
-				newFrameIndex -= p_frameCount;
+				newFrameIndex -= p_count;
 			}
 		}
 
 		// Here forward always true
-		if ( newFrameIndex >= getFrameCount() )
+		if ( newFrameIndex >= getCount() )
 		{
-			const size_t roundCount = newFrameIndex / getFrameCount();
-			const size_t modulo		= newFrameIndex % ( getFrameCount() - 1 );
+			const size_t roundCount = newFrameIndex / getCount();
+			const size_t modulo		= newFrameIndex % ( getCount() - 1 );
 
 			_forward = ( roundCount % 2 == 0 );
 
@@ -45,10 +43,10 @@ namespace VTX::App::Core::TrajectoryPlayer
 			}
 			else
 			{
-				newFrameIndex = ( getFrameCount() - 1 ) - modulo;
+				newFrameIndex = ( getCount() - 1 ) - modulo;
 			}
 		}
 
-		setCurrentFrameIndex( newFrameIndex );
+		setCurrent( newFrameIndex );
 	}
 } // namespace VTX::App::Core::TrajectoryPlayer

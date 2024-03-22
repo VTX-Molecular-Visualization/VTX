@@ -300,10 +300,11 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	App::Component::Chemistry::Molecule & molecule
 		= VTXApp::get().getScene().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
 
-	for ( size_t i = molecule.getResidue( 1 )->getIndexFirstAtom(); i <= molecule.getResidue( 1 )->getIndexLastAtom();
+	for ( atom_index_t i = molecule.getResidue( 1 )->getIndexFirstAtom();
+		  i <= molecule.getResidue( 1 )->getIndexLastAtom();
 		  i++ )
 	{
-		molecule.setAtomVisibility( i, false );
+		molecule.getAtom( i )->setVisible( false );
 	}
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";

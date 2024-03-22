@@ -31,26 +31,18 @@ namespace VTX::Renderer
 
 		inline void setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-		inline void addCallbackReady( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackReady( p_cb ); }
-
-		inline void addCallbackClean( const Util::Callback<>::Func & p_cb ) { _renderer->addCallbackClean( p_cb ); }
-
-		inline void setMatrixView( const Mat4f & p_view ) { _renderer->setMatrixView( p_view ); }
-
-		inline void setMatrixProjection( const Mat4f & p_proj ) { _renderer->setMatrixProjection( p_proj ); }
-
-		inline void setCameraPosition( const Vec3f & p_position ) { _renderer->setCameraPosition( p_position ); }
-
-		inline void setCameraClipInfos( const float p_near, const float p_far )
-		{
-			_renderer->setCameraClipInfos( p_near, p_far );
-		}
-
-		inline void setMousePosition( const Vec2i & p_position ) { _renderer->setMousePosition( p_position ); }
-
-		inline void setPerspective( const bool p_perspective ) { _renderer->setPerspective( p_perspective ); }
+		inline void setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }
 
 		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
+		inline void removeProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->removeProxyMolecule( p_proxy ); }
+		inline void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+		{
+			_renderer->addProxyMolecules( p_proxies );
+		}
+		inline void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+		{
+			_renderer->removeProxyMolecules( p_proxies );
+		}
 
 		// inline void addProxyMesh( Proxy::Mesh & p_proxy ) { _renderer->addProxyMesh( p_proxy ); }
 
@@ -85,7 +77,7 @@ namespace VTX::Renderer
 			return _renderer->getPickedIds( p_x, p_y );
 		}
 
-		// inline void setNeedUpdate( const bool p_value ) { _renderer->setNeedUpdate( p_value ); }
+		inline void setNeedUpdate( const bool p_value ) { _renderer->setNeedUpdate( p_value ); }
 
 	  private:
 		std::unique_ptr<Renderer> _renderer;

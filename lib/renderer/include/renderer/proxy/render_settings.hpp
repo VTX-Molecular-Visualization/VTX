@@ -8,14 +8,8 @@ namespace VTX::Renderer::Proxy
 	// TODO: to handle multiples render settings in the same scene.
 	struct RenderSettings
 	{
-		std::optional<float> ssaoIntensity;
-
-		std::optional<Vec2i> blurXDirection;
-		std::optional<float> blurXSize;
-
-		std::optional<Vec2i> blurYDirection;
-		std::optional<float> blurYSize;
-
+		float			  ssaoIntensity;
+		float			  blurSize;
 		Util::Color::Rgba colorBackground;
 		Util::Color::Rgba colorLight;
 		Util::Color::Rgba colorFog;
@@ -26,11 +20,9 @@ namespace VTX::Renderer::Proxy
 		float			  fogNear;
 		float			  fogFar;
 		float			  fogDensity;
-
-		std::optional<Util::Color::Rgba> colorOutline;
-		std::optional<float>			 outlineSensitivity;
-		std::optional<float>			 outlineThickness;
-
+		Util::Color::Rgba colorOutline;
+		float			  outlineSensitivity;
+		uint			  outlineThickness;
 		Util::Color::Rgba colorSelection;
 
 		// TODO: callback for each modifiable value?

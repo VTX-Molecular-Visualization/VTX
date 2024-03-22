@@ -1,10 +1,11 @@
 #ifndef __VTX_APP_CORE_TRAJECTORY_PLAYER_BASE_PLAYER__
 #define __VTX_APP_CORE_TRAJECTORY_PLAYER_BASE_PLAYER__
 
+#include "app/component/chemistry/_fwd.hpp"
 #include "app/core/collection.hpp"
-#include <core/struct/trajectory.hpp>
 #include <memory>
 #include <string>
+#include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::TrajectoryPlayer
@@ -14,16 +15,14 @@ namespace VTX::App::Core::TrajectoryPlayer
 	  public:
 		BasePlayer()							  = default;
 		BasePlayer( const BasePlayer & p_source ) = default;
-		BasePlayer( VTX::Core::Struct::Trajectory * const p_trajectory ) : _trajectoryPtr( p_trajectory ) {}
 
 		virtual ~BasePlayer() = default;
 
-		bool isLinkedToTrajectory() const { return _trajectoryPtr != nullptr; }
-		void setTrajectory( VTX::Core::Struct::Trajectory & p_trajectory );
+		size_t getCount() const { return _count; }
+		void   setCount( const size_t p_count );
 
-		size_t getCurrentFrameIndex() const;
-		void   setCurrentFrameIndex( const size_t p_frameIndex );
-		size_t getFrameCount() const;
+		size_t getCurrent() const;
+		void   setCurrent( const size_t p_frameIndex );
 
 		virtual void play();
 		virtual void pause();
@@ -43,8 +42,15 @@ namespace VTX::App::Core::TrajectoryPlayer
 		virtual const std::string &			getDisplayName() const	 = 0;
 		virtual const CollectionKey &		getCollectionKey() const = 0;
 
+		Util::Callback<>	   onPlay;
+		Util::Callback<>	   onPause;
+		Util::Callback<>	   onStop;
+		Util::Callback<size_t> onFrameChange;
+		Util::Callback<uint>   onFPSChange;
+
 	  private:
-		VTX::Core::Struct::Trajectory * _trajectoryPtr = nullptr;
+		size_t _count	= 0;
+		size_t _current = 0;
 
 		bool  _isPlaying	   = true;
 		uint  _fps			   = 1u;

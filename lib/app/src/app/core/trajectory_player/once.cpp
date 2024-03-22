@@ -2,20 +2,18 @@
 
 namespace VTX::App::Core::TrajectoryPlayer
 {
-	Once::Once( VTX::Core::Struct::Trajectory * const p_trajectory ) : BasePlayer( p_trajectory ) {}
-
-	void Once::reset() { setCurrentFrameIndex( 0 ); }
-	void Once::nextFrame( const size_t p_frameCount )
+	void Once::reset() { setCurrent( 0 ); }
+	void Once::nextFrame( const size_t p_count )
 	{
-		const size_t newFrameIndex = getCurrentFrameIndex() + p_frameCount;
+		const size_t newFrameIndex = getCurrent() + p_count;
 
-		if ( newFrameIndex < getFrameCount() - 1 )
+		if ( newFrameIndex < getCount() - 1 )
 		{
-			setCurrentFrameIndex( newFrameIndex );
+			setCurrent( newFrameIndex );
 		}
 		else
 		{
-			setCurrentFrameIndex( getFrameCount() - 1 );
+			setCurrent( getCount() - 1 );
 			pause();
 		}
 	}

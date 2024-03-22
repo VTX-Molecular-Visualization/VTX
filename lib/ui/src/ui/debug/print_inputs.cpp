@@ -7,8 +7,8 @@ namespace VTX::UI::Debug
 {
 	PrintInputs::PrintInputs()
 	{
-		QT::INPUT_MANAGER().onKeyPressed.addCallback( this, [ this ]( Qt::Key p_key ) { _logKeyPressed( p_key ); } );
-		QT::INPUT_MANAGER().onKeyReleased.addCallback( this, [ this ]( Qt::Key p_key ) { _logKeyReleased( p_key ); } );
+		QT::INPUT_MANAGER().onKeyPressed += [ this ]( Qt::Key p_key ) { _logKeyPressed( p_key ); };
+		QT::INPUT_MANAGER().onKeyReleased += [ this ]( Qt::Key p_key ) { _logKeyReleased( p_key ); };
 	}
 
 	void PrintInputs::_logKeyPressed( Qt::Key p_key ) const

@@ -26,10 +26,11 @@ namespace VTX::Renderer
 		{ "Models", E_TYPE::USHORT, 1 },
 	} };
 
+	// TODO: compress all.
 	static const Data dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
-		{ "Radii", E_TYPE::FLOAT, 1 },
+		{ "Radii", E_TYPE::FLOAT, 1 }, // TODO: move to ubo or hardcode?
 		{ "Ids", E_TYPE::UINT, 1 },
 		{ "Flags", E_TYPE::UBYTE, 1 },
 		{ "Models", E_TYPE::USHORT, 1 },
@@ -141,11 +142,22 @@ namespace VTX::Renderer
 	};
 
 	// Shading.
+	static const std::vector<float> blurDefaultTexture( 1, 1.f );
+
 	static Pass descPassShading {
 		"Shading",
 		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
-				 { E_CHANNEL_INPUT::_2, { "Blur", imageR16F } } },
+				 { E_CHANNEL_INPUT::_2,
+				   { "Blur",
+					 Attachment { E_FORMAT::R16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  1,
+								  1,
+								  (void *)( blurDefaultTexture.data() ) } } } },
 		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "Shading",

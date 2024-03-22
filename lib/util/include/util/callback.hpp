@@ -14,21 +14,18 @@ namespace VTX::Util
 	  public:
 		using Func = std::function<void( const Args &... )>;
 
-		Callback()					 = default;
-		Callback( const Callback & ) = delete;
+		Callback() = default;
 
-		inline const Func * const add( const Func & p_callback )
-		{
-			_callbacks.push_back( std::make_unique<Func>( p_callback ) );
-			return _callbacks.back().get();
-		}
+		inline void add( const Func & p_callback ) { _callbacks.push_back( p_callback ); }
 
+		/*
 		inline void remove( const Func * const p_func )
 		{
 			std::erase_if(
 				_callbacks, [ &p_func ]( const std::unique_ptr<Func> & p_e ) { return p_e.get() == p_func; }
 			);
 		}
+		*/
 
 		inline void clear() { _callbacks.clear(); }
 
@@ -36,22 +33,22 @@ namespace VTX::Util
 		{
 			for ( const auto & callback : _callbacks )
 			{
-				assert( *callback );
-
-				( *callback )( p_args... );
+				callback( p_args... );
 			}
 		}
 
-		inline const Func * const operator+=( const Func & p_func ) { return add( p_func ); }
+		inline void operator+=( const Func & p_func ) { add( p_func ); }
 
+		/*
 		inline Callback & operator-=( const Func * const p_func )
 		{
 			remove( p_func );
 			return *this;
 		}
+		*/
 
 	  private:
-		std::vector<std::unique_ptr<Func>> _callbacks;
+		std::vector<Func> _callbacks;
 	};
 
 } // namespace VTX::Util

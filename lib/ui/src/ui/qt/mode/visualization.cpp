@@ -116,7 +116,7 @@ namespace VTX::UI::QT::Mode
 			controller->setActive( true );
 		}
 
-		App::VTXApp::get().onUpdate().addCallback( this, [ this ]( float p_deltaTime ) { update( p_deltaTime ); } );
+		App::VTXApp::get().onUpdate += [ this ]( float p_deltaTime ) { update( p_deltaTime ); };
 	}
 
 	void Visualization::update( float p_deltaTime )
@@ -151,7 +151,8 @@ namespace VTX::UI::QT::Mode
 			controller->setActive( false );
 		}
 
-		App::VTXApp::get().onUpdate().removeCallback( this );
+		// TODO: remove the callback from the app?
+		// App::VTXApp::get().onUpdate().removeCallback( this );
 	}
 
 	void Visualization::addCameraController( std::unique_ptr<Controller::BaseController> & p_cameraControllerPtr )
@@ -199,7 +200,7 @@ namespace VTX::UI::QT::Mode
 		getCurrentCameraController().setActive( false );
 		_affectCameraController( dynamic_cast<Controller::BaseCameraController *>( newControllerIt->get() ) );
 
-		onCameraControllerChange.call( *_currentCameraController );
+		onCameraController( *_currentCameraController );
 	}
 	void Visualization::setCameraController( const App::Core::CollectionKey & p_controllerKey )
 	{
@@ -223,7 +224,7 @@ namespace VTX::UI::QT::Mode
 		_currentPickerController = dynamic_cast<Controller::BasePickerController *>( newControllerIt->get() );
 		getCurrentPickerController().setActive( true );
 
-		onPickerControllerChange.call( *_currentPickerController );
+		onPickerController( *_currentPickerController );
 	}
 	void Visualization::setPickerController( const App::Core::CollectionKey & p_controllerKey )
 	{

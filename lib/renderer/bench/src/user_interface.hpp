@@ -4,6 +4,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "camera.hpp"
+#include "scene.hpp"
 #include <SDL.h>
 #include <core/chemdb/color.hpp>
 #include <imgui.h>
@@ -32,7 +33,7 @@ namespace VTX::Bench
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Renderer::BUFFER_COUNT == 2 ) );
 			// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
@@ -110,7 +111,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Camera * const p_camera, Renderer::Renderer * const p_renderer )
+		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
@@ -124,11 +125,14 @@ namespace VTX::Bench
 				// Camera.
 				_drawCamera( p_camera );
 
+				// Scene.
+				_drawRenderer( p_renderer );
+
 				// Times.
 				_drawDurations( p_renderer );
 
 				// Scene.
-				_drawScene( p_renderer );
+				_drawScene( p_scene, p_renderer );
 
 				// Node editor.
 				_drawNodeEditor( p_renderer );
@@ -150,14 +154,11 @@ namespace VTX::Bench
 			return hasEvent;
 		}
 
-		inline bool isUpdateScene() const { return _updateScene; }
-
 	  private:
-		SDL_Window *  _window	   = nullptr;
-		SDL_GLContext _glContext   = nullptr;
-		bool		  _vsync	   = true;
-		bool		  _drawUi	   = true;
-		bool		  _updateScene = false;
+		SDL_Window *  _window	 = nullptr;
+		SDL_GLContext _glContext = nullptr;
+		bool		  _vsync	 = true;
+		bool		  _drawUi	 = true;
 
 		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer )
 		{
@@ -273,8 +274,8 @@ namespace VTX::Bench
 		{
 			if ( ImGui::Begin( "Camera" ) )
 			{
-				float near				  = p_camera->getNear();
-				float far				  = p_camera->getFar();
+				float cameraNear		  = p_camera->getNear();
+				float cameraFar			  = p_camera->getFar();
 				float fov				  = p_camera->getFov();
 				float velocityTranslation = p_camera->getVelocityTranslation();
 				float velocityRotation	  = p_camera->getVelocityRotation();
@@ -282,13 +283,13 @@ namespace VTX::Bench
 				// static bool	 isPerspective = true;
 
 				// ImGui::Checkbox( "Perspective", &isPerspective );
-				if ( ImGui::SliderFloat( "Near", &near, Camera::NEAR_MIN, Camera::NEAR_MAX ) )
+				if ( ImGui::SliderFloat( "Near", &cameraNear, Camera::NEAR_MIN, Camera::NEAR_MAX ) )
 				{
-					p_camera->setNear( near );
+					p_camera->setNear( cameraNear );
 				}
-				if ( ImGui::SliderFloat( "Far", &far, Camera::FAR_MIN, Camera::FAR_MAX ) )
+				if ( ImGui::SliderFloat( "Far", &cameraFar, Camera::FAR_MIN, Camera::FAR_MAX ) )
 				{
-					p_camera->setFar( far );
+					p_camera->setFar( cameraFar );
 				}
 				if ( ImGui::SliderFloat( "Fov", &fov, Camera::FOV_MIN, Camera::FOV_MAX ) )
 				{
@@ -318,6 +319,70 @@ namespace VTX::Bench
 				{
 					p_camera->setVelocityZoom( velocityZoom );
 				}
+			}
+			ImGui::End();
+		}
+
+		void _drawRenderer( Renderer::Renderer * const p_renderer )
+		{
+			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
+			{
+				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
+				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
+				ImGui::Checkbox(
+					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
+				);
+				ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels );
+				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
+				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+
+				auto displayMemory = []( const size_t p_memory ) -> std::string
+				{
+					if ( p_memory < 1000 )
+					{
+						return fmt::format( "{}b", p_memory );
+					}
+					else if ( p_memory < 1000 * 1000 )
+					{
+						return fmt::format( "{}kb", p_memory / 1000 );
+					}
+					else if ( p_memory < 1000 * 1000 * 1000 )
+					{
+						return fmt::format( "{}Mb", p_memory / ( 1000 * 1000 ) );
+					}
+					else
+					{
+						return fmt::format( "{}Gb", p_memory / ( 1000 * 1000 * 1000 ) );
+					}
+				};
+
+				const Renderer::StructInfos & infos = p_renderer->getInfos();
+				ImGui::ProgressBar(
+					float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
+						/ infos.gpuMemoryInfoTotalAvailable,
+					ImVec2( 0.f, 0.f ),
+					fmt::format(
+						"{} / {}",
+						displayMemory( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
+						displayMemory( infos.gpuMemoryInfoTotalAvailable )
+					)
+						.c_str()
+				);
+
+				ImGui::Text(
+					fmt::format(
+						"Buffers: {} ({})", displayMemory( infos.currentSizeBuffers ), infos.currentCountBuffers
+					)
+						.c_str()
+				);
+				ImGui::Text(
+					fmt::format(
+						"Textures: {} ({})", displayMemory( infos.currentSizeTextures ), infos.currentCountTextures
+					)
+						.c_str()
+				);
+				ImGui::Text( fmt::format( "CPU cache: {}", displayMemory( infos.currentSizeCPUCache ) ).c_str() );
 			}
 			ImGui::End();
 		}
@@ -354,7 +419,7 @@ namespace VTX::Bench
 			}
 		}
 
-		void _drawScene( Renderer::Renderer * const p_renderer )
+		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer )
 		{
 			/*
 			static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
@@ -363,41 +428,22 @@ namespace VTX::Bench
 			const float			  deltaTime		= float( double( now - lastTime ) / sdlFrequency );
 			lastTime							= now;
 			*/
-			const Renderer::StructInfos & infos = p_renderer->infos;
 
 			if ( ImGui::Begin( "Scene" ) )
 			{
-				// ImGui::Checkbox( "Perspective", &isPerspective );
-				ImGui::Checkbox( "Update", &_updateScene );
-				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
-				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
-				ImGui::Checkbox(
-					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
-				);
-				ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels );
-				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
-				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
-				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
-
-				ImGui::ProgressBar(
-					float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
-						/ infos.gpuMemoryInfoTotalAvailable,
-					ImVec2( 0.f, 0.f ),
-					fmt::format(
-						"{} / {}",
-						( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
-						infos.gpuMemoryInfoTotalAvailable
-					)
-						.c_str()
-				);
-				ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-				ImGui::Text( "GPU memory" );
+				ImGui::Checkbox( "Update", &( p_scene->isUpdate ) );
+				ImGui::SameLine();
+				if ( ImGui::Button( "X all" ) )
+				{
+					p_scene->removeAllMolecules( p_renderer );
+				}
 
 				size_t idMolecule = 0;
-				for ( const auto & proxyMolecule : p_renderer->getProxiesMolecules() )
+				int	   toDelete	  = -1;
+				for ( const auto & proxyMolecule : p_scene->getProxiesMolecules() )
 				{
 					// Display transform.
-					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule++ ).c_str() ) )
+					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule ).c_str() ) )
 					{
 						// Display transform.
 						Mat4f transform = *proxyMolecule->transform;
@@ -417,13 +463,25 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
+						if ( ImGui::Button( "R" ) )
+						{
+							proxyMolecule->onRepresentation( rand() % 3 );
+						}
+						ImGui::SameLine();
 						if ( ImGui::Button( "X" ) )
 						{
-							proxyMolecule->onRemove();
+							// Don't remove from proxy directly, remove from scene before (after loop).
+							toDelete = int( idMolecule );
 						}
 
 						ImGui::TreePop();
 					}
+					idMolecule++;
+				}
+
+				if ( toDelete != -1 )
+				{
+					p_scene->removeMolecule( toDelete );
 				}
 			}
 			ImGui::End();
@@ -456,7 +514,7 @@ namespace VTX::Bench
 				{
 					p_renderer->build();
 				}
-				if ( ImGui::Button( "Clean" ) )
+				if ( ImGui::Button( "X" ) )
 				{
 					p_renderer->clean();
 				}
@@ -464,7 +522,14 @@ namespace VTX::Bench
 				RenderQueue & renderQueue = graph.getRenderQueue();
 				for ( const Pass * const pass : renderQueue )
 				{
-					ImGui::TextUnformatted( pass->name.c_str() );
+					if ( pass != nullptr )
+					{
+						ImGui::TextUnformatted( pass->name.c_str() );
+					}
+					else
+					{
+						ImGui::TextUnformatted( " [deleted] " );
+					}
 					ImGui::TextUnformatted( " -> " );
 				}
 				if ( renderQueue.empty() )
@@ -479,7 +544,7 @@ namespace VTX::Bench
 
 				ImNodes::BeginNodeEditor();
 
-				bool isBuilt = graph.isBuilt();
+				bool isBuilt = p_renderer->hasContext();
 
 				// DescPass nodes.
 				uint										 id = 0;
@@ -551,7 +616,7 @@ namespace VTX::Bench
 					for ( const Program & program : pass->programs )
 					{
 						// Uniforms.
-						for ( const Uniform & uniform : program.uniforms.entries )
+						for ( const Uniform & uniform : program.uniforms )
 						{
 							std::string key		   = pass->name + program.name + uniform.name;
 							bool		isEditable = isBuilt && isInRenderQueue;
@@ -709,8 +774,8 @@ namespace VTX::Bench
 				// Check deleted node.
 				if ( passToDelete != nullptr )
 				{
-					p_renderer->clean();
 					graph.removePass( passToDelete );
+					passToDelete = nullptr;
 				}
 			}
 			ImGui::End();
@@ -727,15 +792,12 @@ namespace VTX::Bench
 			using namespace Renderer;
 			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
 
-			T value;
-			if ( p_isEditable )
+			static std::map<std::string, T> values;
+			if ( values.find( p_key ) == values.end() )
 			{
-				p_renderer->getUniform<T>( value, p_key );
+				values.emplace( p_key, descValue.value );
 			}
-			else
-			{
-				value = descValue.value;
-			}
+			T & value = values[ p_key ];
 
 			bool updated = false;
 

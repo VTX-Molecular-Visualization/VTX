@@ -7,10 +7,9 @@ struct Representation
 
 	uint cylinderColorBlendingMode;
 	uint ribbonColorBlendingMode;
-	float padding[ 2 ];
 };
 
-layout( std140, binding = 12 ) uniform UniformsRepresentation
+layout( std430, binding = 12 ) readonly buffer UniformsRepresentation
 {
-   Representation uniformsRepresentation[ 256 ];
+   Representation uniformsRepresentation[];
 };

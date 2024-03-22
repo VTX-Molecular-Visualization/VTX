@@ -8,20 +8,19 @@ namespace VTX::Renderer::Proxy
 
 	struct Representation
 	{
-		bool  hasShphere		= true;
+		bool  hasSphere			= true;
 		float radiusSphereFixed = 0.4f;
 		float radiusSphereAdd	= 0.f;
 		bool  radiusFixed		= true;
 
-		bool  hasCylinder	 = true;
-		float radiusCylinder = 0.1f;
-		uint  cylinderColorBlendingMode;
+		bool  hasCylinder				= true;
+		float radiusCylinder			= 0.1f;
+		uint  cylinderColorBlendingMode = 0;
 
-		bool hasRibbon = true;
-		uint ribbonColorBlendingMode;
+		bool hasRibbon				 = true;
+		uint ribbonColorBlendingMode = 1;
 
-		bool  hasSes;
-		float sesResolution;
+		bool hasSes = false;
 
 		// TODO: update callbacks.
 	};

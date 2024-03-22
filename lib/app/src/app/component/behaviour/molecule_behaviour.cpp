@@ -2,8 +2,10 @@
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
 #include "app/application/settings.hpp"
+#include "app/application/system/renderer.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
+#include "app/component/render/proxy_molecule.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/pickable.hpp"
 #include "app/component/scene/selectable.hpp"
@@ -13,8 +15,6 @@
 #include "app/core/trajectory_player/players.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
-#include "app/render/proxy_builder.hpp"
-#include <renderer/proxy/molecule.hpp>
 
 namespace VTX::App::Component::Behaviour
 {
@@ -55,16 +55,18 @@ namespace VTX::App::Component::Behaviour
 		aabbComponent.init();
 		aabbComponent.setAABBComputationFunction( [ this ]() { return _computeMoleculeAABB(); } );
 
-		_moleculeComponent.onStructChange.addCallback(
-			this, [ this ]() { MAIN_REGISTRY().getComponent<Component::Scene::AABB>( _entity ).invalidateAABB(); }
-		);
+		_moleculeComponent.onStruct +=
+			[ this ]() { MAIN_REGISTRY().getComponent<Component::Scene::AABB>( _entity ).invalidateAABB(); };
 	}
 	void Molecule::_initGpuProxyComponent() const
 	{
-		Renderer::Proxy::Molecule & gpuProxyComponent
-			= MAIN_REGISTRY().getComponent<Renderer::Proxy::Molecule>( _entity );
+		if ( !MAIN_REGISTRY().hasComponent<Component::Render::ProxyMolecule>( _entity ) )
+			return;
 
-		App::Render::GPUProxyBuilder::fillProxy( _moleculeComponent, gpuProxyComponent );
+		Component::Render::ProxyMolecule & gpuProxyComponent
+			= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( _entity );
+
+		gpuProxyComponent.setup( App::RENDERER().facade() );
 	}
 	void Molecule::_initTrajectoryComponent() const
 	{

@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
@@ -61,7 +62,15 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::SecondaryStructure::TYPE getSecondaryStructure() const { return _ssType; }
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
 
+		AtomIndexRange			getAtomRange() const;
 		Iterator::AtomContainer atoms() const;
+
+		bool isVisible() const;
+		bool isFullyVisible() const;
+
+		void setVisible( const bool p_visible );
+
+		void remove();
 
 	  private:
 		Molecule * _moleculePtr = nullptr;

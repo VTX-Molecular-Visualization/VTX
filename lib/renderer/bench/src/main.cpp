@@ -1,11 +1,7 @@
-#include "camera.hpp"
 #include "input_manager.hpp"
 #include "user_interface.hpp"
-#include "util.hpp"
 #include <iostream>
-#include <numeric>
-#include <renderer/renderer.hpp>
-#include <util/math.hpp>
+#include <renderer/facade.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -38,14 +34,25 @@ int main( int, char ** )
 
 		// Renderer.
 		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
+		renderer.build();
 
 		// Camera.
-		Camera camera( WIDTH, HEIGHT );
+		Camera					camera( WIDTH, HEIGHT );
+		Renderer::Proxy::Camera proxyCamera { camera.getMatrixViewPtr(), camera.getMatrixProjectionPtr(),
+											  camera.getPosition(),		 VEC2I_ZERO,
+											  camera.getNear(),			 camera.getFar(),
+											  camera.isPerspective() };
+		renderer.setProxyCamera( proxyCamera );
+		camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixView(); };
+		camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixProjection(); };
+		camera.callbackTranslation += [ & ]( const Vec3f p_position ) { proxyCamera.onCameraPosition( p_position ); };
+		camera.callbackClipInfos +=
+			[ & ]( const float p_near, const float p_far ) { proxyCamera.onCameraNearFar( p_near, p_far ); };
+		camera.callbackPerspective +=
+			[ & ]( const bool p_isPerspective ) { proxyCamera.onPerspective( p_isPerspective ); };
 
 		// Input manager.
 		InputManager inputManager;
-
-		// Setup callbacks.
 		inputManager.callbackClose += [ &isRunning ]() { isRunning = false; };
 		inputManager.callbackTranslate +=
 			[ &camera, &ui ]( const Vec3i & p_delta ) { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); };
@@ -54,138 +61,47 @@ int main( int, char ** )
 		inputManager.callbackZoom +=
 			[ &camera, &ui ]( const int p_delta ) { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); };
 
-		const Callback<Mat4f>::Func *		   cbMatrixView		  = nullptr;
-		const Callback<Mat4f>::Func *		   cbMatrixProjection = nullptr;
-		const Callback<Vec3f>::Func *		   cbTranslation	  = nullptr;
-		const Callback<float, float>::Func *   cbClipInfos		  = nullptr;
-		const Callback<bool>::Func *		   cbPerspective	  = nullptr;
-		const Callback<size_t, size_t>::Func * cbResize			  = nullptr;
-		const Callback<>::Func *			   cbRestore		  = nullptr;
-		const Callback<size_t, size_t>::Func * cbMousePick		  = nullptr;
-		const Callback<Vec2i>::Func *		   cbMouseMotion	  = nullptr;
-
-		// Link camera and input manager with renderer when built.
-		renderer.addCallbackReady(
-			[ & ]()
-			{
-				renderer.setMatrixView( camera.getMatrixView() );
-				renderer.setMatrixProjection( camera.getMatrixProjection() );
-				renderer.setCameraPosition( camera.getPosition() );
-				renderer.setCameraClipInfos( camera.getNear(), camera.getFar() );
-				renderer.setPerspective( camera.isPerspective() );
-
-				cbMatrixView = camera.callbackMatrixView +=
-					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixView( p_matrix ); };
-				cbMatrixProjection = camera.callbackMatrixProjection +=
-					[ &renderer ]( const Mat4f & p_matrix ) { renderer.setMatrixProjection( p_matrix ); };
-				cbTranslation = camera.callbackTranslation +=
-					[ &renderer ]( const Vec3f p_position ) { renderer.setCameraPosition( p_position ); };
-				cbClipInfos = camera.callbackClipInfos += [ &renderer ]( const float p_near, const float p_far )
-				{ renderer.setCameraClipInfos( p_near, p_far ); };
-				cbPerspective = camera.callbackPerspective +=
-					[ &renderer ]( const bool p_isPerspective ) { renderer.setPerspective( p_isPerspective ); };
-
-				cbResize = inputManager.callbackResize +=
-					[ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-				{
-					renderer.resize( p_width, p_height );
-					camera.resize( p_width, p_height );
-				};
-				cbRestore	= inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
-				cbMousePick = inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
-				{
-					Vec2i ids = renderer.getPickedIds( p_x, p_y );
-					VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-				};
-				cbMouseMotion = inputManager.callbackMouseMotion +=
-					[ &renderer ]( const Vec2i & p_position ) { renderer.setMousePosition( p_position ); };
-			}
-		);
-
-		// Unlink when cleaned.
-		renderer.addCallbackClean(
-			[ & ]()
-			{
-				assert( cbMatrixView );
-				assert( cbMatrixProjection );
-				assert( cbTranslation );
-				assert( cbClipInfos );
-				assert( cbPerspective );
-				assert( cbResize );
-				assert( cbRestore );
-				assert( cbMousePick );
-				assert( cbMouseMotion );
-
-				camera.callbackMatrixView -= cbMatrixView;
-				camera.callbackMatrixProjection -= cbMatrixProjection;
-				camera.callbackTranslation -= cbTranslation;
-				camera.callbackClipInfos -= cbClipInfos;
-				camera.callbackPerspective -= cbPerspective;
-				inputManager.callbackResize -= cbResize;
-				inputManager.callbackRestore -= cbRestore;
-				inputManager.callbackMousePick -= cbMousePick;
-				inputManager.callbackMouseMotion -= cbMouseMotion;
-			}
-		);
-
-		// Build renderer.
-		renderer.build();
-
-		// Models/proxies.
-		std::vector<std::unique_ptr<Molecule>>					molecules;
-		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> proxies;
-		std::vector<Vec3f>										directions;
-
-		auto addMolecule = [ & ]( const std::string & p_name )
+		inputManager.callbackResize += [ &renderer, &camera ]( const size_t p_width, const size_t p_height )
 		{
-			float time = CHRONO_CPU(
-				[ & ]()
-				{
-					if ( p_name.find( '.' ) != std::string::npos )
-					{
-						molecules.emplace_back( std::make_unique<Molecule>( loadMolecule( p_name ) ) );
-					}
-					else
-					{
-						molecules.emplace_back( std::make_unique<Molecule>( downloadMolecule( p_name ) ) );
-					}
-
-					molecules.back()->transform
-						= Math::translate( molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-					IO::Util::SecondaryStructure::computeStride( *molecules.back() );
-					proxies.emplace_back( proxify( *molecules.back() ) );
-					renderer.addProxyMolecule( *proxies.back() );
-					directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
-					proxies.back()->onRepresentation( rand() % 4 );
-				}
-			);
-
-			VTX_INFO( "Molecule {} added in {}s", p_name, time );
+			renderer.resize( p_width, p_height );
+			camera.resize( p_width, p_height );
 		};
+		inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
+		inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
+		{
+			if ( renderer.hasContext() )
+			{
+				Vec2i ids = renderer.getPickedIds( p_x, p_y );
+				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			}
+		};
+		inputManager.callbackMouseMotion +=
+			[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };
 
-		addMolecule( "4hhb" );
+		// Scene.
+		Scene scene;
 
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			if ( p_key == SDL_SCANCODE_F1 )
 			{
-				addMolecule( "4hhb.pdb" );
+				renderer.addProxyMolecule( scene.addMolecule( "4hhb.pdb" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F2 )
 			{
-				addMolecule( "1aga.pdb" );
+				renderer.addProxyMolecule( scene.addMolecule( "1aga.pdb" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F3 )
 			{
-				addMolecule( "4v6x.mmtf" );
+				renderer.addProxyMolecule( scene.addMolecule( "4v6x.mmtf" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F4 )
 			{
-				addMolecule( "3j3q.mmtf" );
+				renderer.addProxyMolecule( scene.addMolecule( "3j3q.mmtf" ) );
 			}
 			else if ( p_key == SDL_SCANCODE_F5 )
 			{
-				VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+				static VTX::Core::ChemDB::Color::ColorLayout colorLayout;
 				std::generate( colorLayout.begin(), colorLayout.end(), [] { return Color::Rgba::random(); } );
 				renderer.setProxyColorLayout( colorLayout );
 			}
@@ -220,9 +136,17 @@ int main( int, char ** )
 		representation2.radiusFixed		  = false;
 		representation3.radiusSphereFixed = 0.1f;
 
-		renderer.setProxyRepresentations( { representation1, representation2, representation3 } );
+		std::vector<Renderer::Proxy::Representation> representations
+			= { representation1, representation2, representation3 };
+		renderer.setProxyRepresentations( representations );
 
-		// Generate random representation.
+		Renderer::Proxy::RenderSettings renderSettings
+			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
+				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
+
+		// renderer.setProxyRenderSettings( renderSettings );
+
+		renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
 
 		// Main loop.
 		while ( isRunning )
@@ -231,21 +155,13 @@ int main( int, char ** )
 			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
-			if ( ui.isUpdateScene() )
-			{
-				int i = 0;
-				for ( auto & molecule : molecules )
-				{
-					molecule->transform = Math::rotate( molecule->transform, deltaTime, directions[ i ] );
-					proxies[ i++ ]->onTransform();
-				}
-			}
+			scene.update( deltaTime );
 
 			// Renderer.
 			renderer.render( time );
 
 			// UI.
-			ui.draw( &camera, &renderer );
+			ui.draw( &camera, &scene, &renderer );
 
 			// Events.
 			SDL_Event event;

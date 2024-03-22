@@ -1,4 +1,5 @@
 #include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/molecule.hpp"
 
 namespace VTX::App::Component::Chemistry
@@ -18,5 +19,22 @@ namespace VTX::App::Component::Chemistry
 	void Bond::setIndexSecondAtom( const atom_index_t p_atomIndex )
 	{
 		_moleculePtr->_moleculeStruct.bondPairAtomIndexes[ _index * 2 + 1 ] = p_atomIndex;
+	}
+
+	bool Bond::isVisible() const
+	{
+		const Chemistry::Atom * const atom1 = _moleculePtr->getAtom( getIndexFirstAtom() );
+		const Chemistry::Atom * const atom2 = _moleculePtr->getAtom( getIndexSecondAtom() );
+
+		return atom1 != nullptr && atom1->isVisible() && atom2 != nullptr && atom2->isVisible();
+	}
+	void Bond::setVisible( const bool p_visible )
+	{
+		AtomIndexRangeList atomRange = AtomIndexRangeList();
+
+		atomRange.addValue( getIndexFirstAtom() );
+		atomRange.addValue( getIndexSecondAtom() );
+
+		_moleculePtr->setVisible( atomRange, p_visible );
 	}
 } // namespace VTX::App::Component::Chemistry

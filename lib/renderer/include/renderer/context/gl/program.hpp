@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
-#include <glad/glad.h>
+#include "renderer/context/include_opengl.hpp"
 #include <util/math.hpp>
 #include <util/types.hpp>
 
@@ -21,9 +21,9 @@ namespace VTX::Renderer::Context::GL
 		inline const std::vector<FilePath> & getShaderPaths() const { return _shaderPaths; }
 		inline const std::string &			 getToInject() const { return _toInject; }
 
-		inline int getUniformLocation( const std::string & p_name ) const
+		inline GLuint getUniformLocation( const std::string & p_name ) const
 		{
-			const int loc = glGetUniformLocation( _id, p_name.c_str() );
+			const GLuint loc = glGetUniformLocation( _id, p_name.c_str() );
 #ifdef _DEBUG
 			/// TODO: handle it
 			// if ( loc == -1 )
@@ -79,11 +79,13 @@ namespace VTX::Renderer::Context::GL
 			glUniform3f( getUniformLocation( p_name ), GLfloat( p_x ), GLfloat( p_y ), GLfloat( p_z ) );
 		}
 
-		inline void setVec4f( const std::string & p_name,
-							  const float		  p_x,
-							  const float		  p_y,
-							  const float		  p_z,
-							  const float		  p_w ) const
+		inline void setVec4f(
+			const std::string & p_name,
+			const float			p_x,
+			const float			p_y,
+			const float			p_z,
+			const float			p_w
+		) const
 		{
 			glUniform4f( getUniformLocation( p_name ), GLfloat( p_x ), GLfloat( p_y ), GLfloat( p_z ), GLfloat( p_w ) );
 		}
@@ -118,11 +120,8 @@ namespace VTX::Renderer::Context::GL
 			glUniform3i( getUniformLocation( p_name ), GLint( p_x ), GLint( p_y ), GLint( p_z ) );
 		}
 
-		inline void setVec4i( const std::string & p_name,
-							  const int			  p_x,
-							  const int			  p_y,
-							  const int			  p_z,
-							  const int			  p_w ) const
+		inline void setVec4i( const std::string & p_name, const int p_x, const int p_y, const int p_z, const int p_w )
+			const
 		{
 			glUniform4i( getUniformLocation( p_name ), GLint( p_x ), GLint( p_y ), GLint( p_z ), GLint( p_w ) );
 		}
@@ -139,7 +138,8 @@ namespace VTX::Renderer::Context::GL
 		inline void setVec3fArray( const std::string & p_name, const uint p_count, const Vec3f * p_array ) const
 		{
 			glUniform3fv(
-				getUniformLocation( p_name ), GLsizei( p_count ), reinterpret_cast<const GLfloat *>( p_array ) );
+				getUniformLocation( p_name ), GLsizei( p_count ), reinterpret_cast<const GLfloat *>( p_array )
+			);
 		}
 
 		void create( const std::string & );

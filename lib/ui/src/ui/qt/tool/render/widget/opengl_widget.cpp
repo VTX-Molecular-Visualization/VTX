@@ -1,10 +1,16 @@
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
 #include "ui/qt/application_qt.hpp"
 #include <QOpenGLContext>
+#include <app/application/renderer/renderer.hpp>
 #include <app/application/scene.hpp>
+#include <app/application/system/renderer.hpp>
 #include <app/component/render/camera.hpp>
+#include <app/component/render/proxy_camera.hpp>
+#include <app/component/render/proxy_molecule.hpp>
+#include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
 #include <core/chemdb/color.hpp>
+#include <renderer/proxy/representations.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
@@ -26,26 +32,55 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		assert( context()->isValid() );
 
-		App::RENDERER().build( defaultFramebufferObject() );
-		App::VTXApp::get().onPostRender().addCallback( this, [ this ]( float p_deltaTime ) { update(); } );
-		App::RENDERER().setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		_makeCurrentCounter++;
 
-		RendererQt renderer = QT_RENDERER();
-		renderer.get().setMatrixView( App::SCENE().getCamera().getViewMatrix() );
-		renderer.get().setMatrixProjection( App::SCENE().getCamera().getProjectionMatrix() );
-		renderer.get().setCameraPosition( App::SCENE().getCamera().getTransform().getPosition() );
-		renderer.get().setCameraClipInfos( App::SCENE().getCamera().getNear(), App::SCENE().getCamera().getFar() );
-		renderer.get().setPerspective( App::SCENE().getCamera().isPerspective() );
+		// We are in openGL context here => direct access to renderer
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+
+		rendererFacade.build( defaultFramebufferObject() );
+		rendererFacade.setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		rendererFacade.setProxyRepresentations( { VTX::Renderer::Proxy::Representation() } );
+
+		App::Component::Render::ProxyCamera & proxyCamera
+			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
+		proxyCamera.setInRenderer( rendererFacade );
+
+		App::RENDERER_SYSTEM().onGet += [ this ]()
+		{
+			if ( _makeCurrentCounter == 0 )
+				makeCurrent();
+
+			_makeCurrentCounter++;
+		};
+		App::RENDERER_SYSTEM().onRelease += [ this ]()
+		{
+			_makeCurrentCounter--;
+
+			if ( _makeCurrentCounter == 0 )
+				doneCurrent();
+		};
+
+		App::VTXApp::get().onPostRender += [ this ]( const float p_deltaTime ) { update(); };
+		_makeCurrentCounter--;
 	}
 
-	void OpenGLWidget::paintGL() { VTX::App::VTXApp::get().getRenderer().render( 0.15f ); }
+	void OpenGLWidget::paintGL()
+	{
+		_makeCurrentCounter++;
+		// We are in openGL context here => direct access to renderer
+		App::RENDERER_SYSTEM().facade().render( 0.15f );
+		_makeCurrentCounter--;
+	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
+		_makeCurrentCounter++;
 		App::SCENE().getCamera().setScreenSize( width(), height() );
 
-		RendererQt renderer = QT_RENDERER();
-		renderer.get().resize( p_width, p_height );
-		renderer.get().setOutput( defaultFramebufferObject() );
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+
+		rendererFacade.resize( p_width, p_height );
+		rendererFacade.setOutput( defaultFramebufferObject() );
+		_makeCurrentCounter--;
 	}
 } // namespace VTX::UI::QT::Tool::Render::Widget

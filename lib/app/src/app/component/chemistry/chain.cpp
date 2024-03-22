@@ -40,6 +40,15 @@ namespace VTX::App::Component::Chemistry
 		return lastResidue->getIndexLastAtom();
 	}
 
+	ResidueIndexRange Chain::getResidueRange() const
+	{
+		return ResidueIndexRange( getIndexFirstResidue(), getResidueCount() );
+	}
+	AtomIndexRange Chain::getAtomRange() const
+	{
+		return AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+	}
+
 	Iterator::ResidueContainer Chain::residues() const
 	{
 		return Iterator::ResidueContainer( _moleculePtr, getIndexFirstResidue(), getResidueCount() );
@@ -49,6 +58,29 @@ namespace VTX::App::Component::Chemistry
 	{
 		const atom_index_t atomCount = getIndexLastAtom() - getIndexFirstAtom() + 1;
 		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), atomCount );
+	}
+
+	bool Chain::isVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		return _moleculePtr->_visibleAtomIds.intersectWith( atomRange );
+	}
+	bool Chain::isFullyVisible() const
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		return _moleculePtr->_visibleAtomIds.contains( atomRange );
+	}
+
+	void Chain::setVisible( const bool p_visible )
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		_moleculePtr->setVisible( atomRange, p_visible );
+	}
+
+	void Chain::remove()
+	{
+		const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( getIndexFirstAtom(), getIndexLastAtom() );
+		_moleculePtr->remove( atomRange );
 	}
 
 } // namespace VTX::App::Component::Chemistry

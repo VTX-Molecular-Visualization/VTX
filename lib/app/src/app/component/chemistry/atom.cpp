@@ -27,7 +27,10 @@ namespace VTX::App::Component::Chemistry
 	const std::string & Atom::getName() const { return _moleculePtr->_moleculeStruct.atomNames[ _index ]; }
 	void Atom::setName( const std::string & p_name ) { _moleculePtr->_moleculeStruct.atomNames[ _index ] = p_name; }
 
-	float Atom::getVdwRadius() const { return _moleculePtr->_atomRadii[ _index ]; }
+	float Atom::getVdwRadius() const
+	{
+		return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _moleculePtr->_moleculeStruct.atomSymbols[ _index ] ) ];
+	}
 
 	const Vec3f & Atom::getLocalPosition() const
 	{
@@ -51,9 +54,6 @@ namespace VTX::App::Component::Chemistry
 	{
 		_moleculePtr->_moleculeStruct.atomSymbols[ _index ] = p_symbol;
 	}
-
-	bool Atom::isVisible() const { return _moleculePtr->_atomVisibilities[ _index ]; }
-	void Atom::setVisible( const bool p_visible ) { _moleculePtr->_atomVisibilities[ _index ] = p_visible; }
 
 	ChemDB::Atom::TYPE Atom::getType() const
 	{
@@ -82,4 +82,9 @@ namespace VTX::App::Component::Chemistry
 			break;
 		}
 	}
+
+	bool Atom::isVisible() const { return _moleculePtr->_visibleAtomIds.contains( _index ); }
+	void Atom::setVisible( const bool p_visible ) { _moleculePtr->setVisible( _index, p_visible ); }
+
+	void Atom::remove() { _moleculePtr->remove( _index ); }
 } // namespace VTX::App::Component::Chemistry

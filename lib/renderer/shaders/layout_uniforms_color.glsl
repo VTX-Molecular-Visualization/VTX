@@ -1,4 +1,4 @@
-layout( std140, binding = 14 ) uniform UniformsColor
+layout( std140, binding = 14 ) readonly buffer UniformsColor
 {
-   vec4 uniformsColor[ 256 ];
+   vec4 uniformsColor[];
 };

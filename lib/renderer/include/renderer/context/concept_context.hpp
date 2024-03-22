@@ -14,6 +14,7 @@ namespace VTX::Renderer::Context
 		size_t	 width;
 		size_t	 height;
 		FilePath shaderPath;
+		bool	 loaded = false;
 	};
 
 	template<typename C>
@@ -28,7 +29,7 @@ namespace VTX::Renderer::Context
 			  const RenderQueue &			p_renderQueue,
 			  const Links &					p_links,
 			  const Handle					p_output,
-			  const std::vector<Uniforms> & p_uniforms,
+			  const SharedUniforms &		p_uniforms,
 			  const std::string &			p_uniformKey,
 			  const std::vector<std::any> & p_data,
 			  const Util::Chrono::Task &	p_task,
@@ -60,9 +61,6 @@ namespace VTX::Renderer::Context
 				 } -> std::same_as<void>;
 				 {
 					 p_context.setUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.getUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.setData( p_data, p_uniformKey )

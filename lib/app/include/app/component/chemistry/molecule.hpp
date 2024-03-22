@@ -3,17 +3,20 @@
 
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/core/callback_event.hpp"
+#include "app/component/chemistry/index_types.hpp"
 #include "app/core/uid/uid.hpp"
+#include <app/core/visibility/enum.hpp>
 #include <core/struct/molecule.hpp>
 #include <memory>
+#include <util/callback.hpp>
+#include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::App::Render
+namespace VTX::App::Component::Render
 {
-	class GPUProxyBuilder;
+	class ProxyMolecule;
 }
 
 namespace VTX::App::Component::Chemistry
@@ -26,7 +29,7 @@ namespace VTX::App::Component::Chemistry
 			"Chemistry::MoleculeComponent"
 		};
 
-		friend App::Render::GPUProxyBuilder;
+		friend App::Component::Render::ProxyMolecule;
 		friend Chain;
 		friend Residue;
 		friend Atom;
@@ -76,24 +79,55 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void				setPdbIdCode( const std::string & p_pdbIdCode ) { _pdbIdCode = p_pdbIdCode; }
 
-		bool getAtomVisibility( const size_t p_index ) const { return _atomVisibilities[ p_index ]; }
-		void setAtomVisibility( const size_t p_index, const bool p_visible )
-		{
-			_atomVisibilities[ p_index ] = p_visible;
-		}
-		const std::vector<bool> & getAtomVisibilities() const { return _atomVisibilities; }
+		bool isVisible() const;
+		bool isFullyVisible() const;
+
+		void setVisible( const bool p_visible );
+		void setVisible( const atom_index_t & p_atomId, bool p_visible );
+		void setVisible( const AtomIndexRange & p_atomRange, bool p_visible );
+		void setVisible( const AtomIndexRangeList & p_atomRangeList, bool p_visible );
+
+		void remove( const atom_index_t & p_atomIndex );
+		void remove( const AtomIndexRange & p_atomRange );
+		void remove( const AtomIndexRangeList & p_atomRangeList );
+
+		size_t getRealChainCount() const { return _realChainCount; }
+		size_t getRealResidueCount() const { return _realResidueCount; }
+		size_t getRealAtomCount() const { return _realAtomCount; };
+
+		const AtomIndexRangeList & getAtomVisibilities() const { return _visibleAtomIds; }
+		void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
+
+		const AtomIndexRangeList & getActiveAtoms() const { return _activeAtomIds; }
 
 		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
 		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
-		Atom *						getAtomFromUID( Core::UID::uid p_uid );
+
+		Atom * getAtomFromUID( Core::UID::uid p_uid );
 
 		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
 		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
 		Residue *					getResidueFromUID( Core::UID::uid p_uid );
 
-		App::Core::CallbackEmitter<> onStructChange = App::Core::CallbackEmitter<>();
+		Util::Callback<>													 onStruct;
+		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
+		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
 
 	  private:
+		void _deleteTopologyPointers( const atom_index_t p_atomIndex );
+		void _deleteTopologyPointers( const AtomIndexRange & p_atomRange );
+		void _refreshResidueRemovedState( const size_t p_residueIndex );
+		void _refreshChainRemovedState( const size_t p_chainIndex );
+
+		void _internalDeleteAtom( const atom_index_t p_index );
+		void _internalDeleteAtoms( const AtomIndexRange & p_range );
+		void _internalDeleteResidue( const size_t p_index );
+		void _internalDeleteResidues( const ResidueIndexRange & p_range );
+		void _internalDeleteChain( const size_t p_index );
+		void _internalDeleteChains( const ChainIndexRange & p_range );
+
+		void _resizeTopologyVectors();
+
 		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
 
 		std::vector<std::unique_ptr<Chain>>	  _chains;
@@ -101,14 +135,15 @@ namespace VTX::App::Component::Chemistry
 		std::vector<std::unique_ptr<Atom>>	  _atoms;
 		std::vector<std::unique_ptr<Bond>>	  _bonds;
 
+		size_t _realChainCount;
+		size_t _realResidueCount;
+		size_t _realAtomCount;
+
 		Util::Math::Transform _transform = Util::Math::Transform();
 		std::string			  _pdbIdCode = "";
 
-		std::vector<bool>  _atomVisibilities = std::vector<bool>();
-		std::vector<uchar> _atomColors		 = std::vector<uchar>();
-		std::vector<float> _atomRadii		 = std::vector<float>();
-		std::vector<uint>  _atomIds			 = std::vector<uint>();
-		std::vector<bool>  _atomSelections	 = std::vector<bool>();
+		AtomIndexRangeList _visibleAtomIds = AtomIndexRangeList();
+		AtomIndexRangeList _activeAtomIds  = AtomIndexRangeList();
 
 		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
 		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();

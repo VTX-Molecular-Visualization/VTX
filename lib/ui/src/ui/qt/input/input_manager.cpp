@@ -43,16 +43,13 @@ namespace VTX::UI::QT::Input
 
 	InputManager::InputManager()
 	{
-		App::VTXApp::get().onPostUpdate().addCallback(
-			this,
-			[ this ]( const float p_deltaTime )
-			{
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
+		App::VTXApp::get().onPostUpdate += [ this ]( const float p_deltaTime )
+		{
+			_deltaMousePosition.x = 0;
+			_deltaMousePosition.y = 0;
 
-				_deltaMouseWheel = 0;
-			}
-		);
+			_deltaMouseWheel = 0;
+		};
 	}
 
 	InputManager::~InputManager() {}
@@ -74,7 +71,7 @@ namespace VTX::UI::QT::Input
 			if ( modifier != ModifierEnum::None )
 				_modifiers |= modifier;
 
-			onKeyPressed.call( key );
+			onKeyPressed( key );
 
 			break;
 		}
@@ -85,7 +82,7 @@ namespace VTX::UI::QT::Input
 			if ( modifier != ModifierEnum::None )
 				_modifiers &= !modifier;
 
-			onKeyReleased.call( key );
+			onKeyReleased( key );
 			break;
 		}
 
@@ -182,14 +179,14 @@ namespace VTX::UI::QT::Input
 			_mouseLeftPressed = false;
 			if ( _isLeftClickCanceled == false )
 			{
-				onMouseLeftClicked.call( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
+				onMouseLeftClicked( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
 			}
 			break;
 		case Qt::MouseButton::RightButton:
 			_mouseRightPressed = false;
 			if ( _isRightClickCanceled == false )
 			{
-				onMouseRightClicked.call( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
+				onMouseRightClicked( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
 			}
 			break;
 		case Qt::MouseButton::MiddleButton: _mouseMiddlePressed = false; break;
@@ -201,7 +198,7 @@ namespace VTX::UI::QT::Input
 		switch ( p_event.button() )
 		{
 		case Qt::MouseButton::LeftButton:
-			onMouseLeftDoubleClicked.call( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
+			onMouseLeftDoubleClicked( Vec2i( p_event.pos().x(), p_event.pos().y() ) );
 			_isLeftClickCanceled = true;
 			break;
 		case Qt::MouseButton::RightButton: break;

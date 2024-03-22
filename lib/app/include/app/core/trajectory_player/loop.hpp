@@ -1,9 +1,7 @@
 #ifndef __VTX_APP_CORE_TRAJECTORY_PLAYER_LOOP__
 #define __VTX_APP_CORE_TRAJECTORY_PLAYER_LOOP__
 
-#include "app/core/collection.hpp"
 #include "base_player.hpp"
-#include "ping_pong.hpp"
 #include "players.hpp"
 
 namespace VTX::App::Core::TrajectoryPlayer
@@ -20,7 +18,6 @@ namespace VTX::App::Core::TrajectoryPlayer
 	  public:
 		Loop()						  = default;
 		Loop( const Loop & p_source ) = default;
-		Loop( VTX::Core::Struct::Trajectory * const p_trajectory );
 
 		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
 		const CollectionKey &		getCollectionKey() const override { return COLLECTION_ID; }

@@ -7,6 +7,7 @@
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
 #include <memory>
+#include <util/callback.hpp>
 
 namespace VTX::App::Component::Scene
 {
@@ -37,10 +38,13 @@ namespace VTX::App::Component::Scene
 
 		std::unique_ptr<Application::Selection::SelectionData> instantiateSelectionData() const;
 
-	  private:
-		SelectionDataGenerator _selectionDataGenerator;
+		Util::Callback<Application::Selection::SelectionData> onSelect;
+		Util::Callback<Application::Selection::SelectionData> onDeselect;
 
+	  private:
 		std::unique_ptr<Application::Selection::SelectionData> _defaultSelectionDataGenerator();
+
+		SelectionDataGenerator _selectionDataGenerator;
 	};
 } // namespace VTX::App::Component::Scene
 #endif

@@ -34,6 +34,9 @@ namespace VTX
 
 			void _setupUi( const QString & p_name ) override {}
 			void _setupSlots() override {}
+
+		  private:
+			int _makeCurrentCounter = 0;
 		};
 	} // namespace UI::QT::Tool::Render::Widget
 

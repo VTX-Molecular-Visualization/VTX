@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_CONTEXT_GL_CHRONO__
 
 #include <cassert>
-#include <glad/glad.h>
 #include <util/chrono.hpp>
 
 namespace VTX::Renderer::Context::GL
@@ -51,7 +50,7 @@ namespace VTX::Renderer::Context::GL
 
 	inline const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
 	{
-		static Chrono c;
+		Chrono c;
 		c.start();
 		p_task();
 		c.stop();

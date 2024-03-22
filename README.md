@@ -1,5 +1,4 @@
 # VTX - High performance molecular visualization software
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/92826addf3074acabd1a9a58e0232577)](https://app.codacy.com/gh/VTX-Molecular-Visualization/VTX/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ## USER GUIDE
 

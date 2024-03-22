@@ -45,6 +45,7 @@ namespace VTX
 			}
 
 			void flush();
+			void stop();
 
 			Util::Callback<LogInfo> onPrintLog;
 		};

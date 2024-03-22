@@ -4,6 +4,7 @@
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/application/settings.hpp"
+#include "app/application/system/renderer.hpp"
 #include "app/application/system/threading.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
@@ -17,7 +18,6 @@
 #include "app/internal/monitoring/all_metrics.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
-#include <renderer/facade.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
@@ -54,12 +54,12 @@ namespace VTX::App
 		_systemHandlerPtr->reference( SCENE_KEY, &scene );
 
 		// Create renderer
-		_renderer = std::make_unique<Renderer::Facade>( 1920, 1080, Util::Filesystem::getExecutableDir() / "shaders" );
+		RENDERER().get().init();
 
 		// Regsiter loop events
-		_updateCallback.addCallback( this, []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); } );
+		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 
-		_postUpdateCallback.addCallback( this, []( const float p_elapsedTime ) { THREADING().lateUpdate(); } );
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
 		// Event manager - Useless: nothing is delayed.
 		//_updateCallback.addCallback(
@@ -67,7 +67,8 @@ namespace VTX::App
 		//);
 
 		// Useless while delayed actions are disabled
-		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime ); }
+		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime );
+		//}
 		//);
 
 		// TODO: use camera callbacks.
@@ -109,44 +110,43 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _updateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _lateUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
 		);
 		frameInfo.set(
 			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postUpdateCallback.call( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
-		// if ( _renderer->getRenderGraph().isBuilt() )
-		{
-			frameInfo.set(
-				Internal::Monitoring::PRE_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _preRenderCallback.call( p_elapsedTime ); } )
-			);
-			frameInfo.set(
-				Internal::Monitoring::RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _renderCallback.call( p_elapsedTime ); } )
-			);
-			frameInfo.set(
-				Internal::Monitoring::POST_RENDER_DURATION_KEY,
-				Util::CHRONO_CPU( [ this, p_elapsedTime ]() { _postRenderCallback.call( p_elapsedTime ); } )
-			);
-		}
+		frameInfo.set(
+			Internal::Monitoring::PRE_RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
+		);
+
+		frameInfo.set(
+			Internal::Monitoring::RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender( p_elapsedTime ); } )
+		);
+
+		frameInfo.set(
+			Internal::Monitoring::POST_RENDER_DURATION_KEY,
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
+		);
 
 		frameInfo.set(
 			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
 			Util::CHRONO_CPU(
 				[ this, p_elapsedTime ]()
 				{
-					_endOfFrameOneShotCallback.call();
-					_endOfFrameOneShotCallback.clear();
+					onEndOfFrameOneShot();
+					onEndOfFrameOneShot.clear();
 				}
 			)
 		);
@@ -180,14 +180,6 @@ namespace VTX::App
 		//	VTX_ACTION<Action::Main::OpenApi>( pdbId );
 		// }
 	}
-
-	// void VTXApp::_applyCameraUniforms() const
-	//{
-	//	// TODO: do not apply each frame, only when camera changes.
-	//	_renderer->setMatrixView( SCENE().getCamera().getViewMatrix() );
-	//	_renderer->setMatrixProjection( SCENE().getCamera().getProjectionMatrix() );
-	//	_renderer->setCameraClipInfos( SCENE().getCamera().getNear(), SCENE().getCamera().getFar() );
-	// }
 
 	//	bool VTXApp::hasAnyModifications() const
 	//	{
@@ -246,7 +238,6 @@ namespace VTX::App
 	const Application::Settings & VTXApp::getSettings() const { return *_settings; }
 
 	Application::Scene &	SCENE() { return VTXApp::get().getScene(); }
-	Renderer::Facade &		RENDERER() { return VTXApp::get().getRenderer(); }
 	Application::Settings & SETTINGS() { return VTXApp::get().getSettings(); }
 
 } // namespace VTX::App

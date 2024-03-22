@@ -9,7 +9,7 @@
 #include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
-#include <glad/glad.h>
+#include "renderer/context/include_opengl.hpp"
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -23,64 +23,46 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		void build(
-			const RenderQueue &			  p_renderQueue,
-			const Links &				  p_links,
-			const Handle				  p_output,
-			const std::vector<Uniforms> & p_uniforms,
-			Instructions &				  p_outInstructions,
-			InstructionsDurationRanges &  p_outInstructionsDurationRanges
+			const RenderQueue &			 p_renderQueue,
+			const Links &				 p_links,
+			const Handle				 p_output,
+			const SharedUniforms &		 p_uniforms,
+			Instructions &				 p_outInstructions,
+			InstructionsDurationRanges & p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
-		template<typename T>
-		inline void setUniform( const std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
-		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
-
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
-			auto * const						   src	 = p_value.data();
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
-			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize );
-		}
-
+		// TODO: naming more explicit?
 		template<typename T>
 		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
 			assert( _uniforms.find( p_key ) != _uniforms.end() );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			T * const							   dest	 = reinterpret_cast<T * const>( entry->value );
-			auto * const						   src	 = &p_value;
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
 		template<typename T>
-		inline void getUniform( T & p_value, const std::string & p_key, const size_t p_index = 0 )
+		inline void setUniforms( const std::vector<T> & p_data, const std::string & p_key )
 		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
+			assert( _ssbos.find( p_key ) != _ssbos.end() );
 
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			auto * const						   dest	 = &p_value;
-			T * const							   src	 = reinterpret_cast<T * const>( entry->value );
-
-			assert( src != nullptr && dest != nullptr && entry->size );
-
-			memcpy( dest, src, entry->size );
-		}
-
-		template<typename T>
-		inline void getUniform( std::vector<T> & p_value, const std::string & p_key, const size_t p_index = 0 )
-		{
-			// Cannot be done for the moment.
+			// Auto scale ubos (useful?).
+			if ( _ssbos[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			{
+				VTX_DEBUG(
+					"Resizing uniform buffer {} : {} -> {}",
+					p_key,
+					_ssbos[ p_key ]->getSize(),
+					sizeof( T ) * p_data.size()
+				);
+				_ssbos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+			}
+			else
+			{
+				_ssbos[ p_key ]->setSubData( p_data );
+			}
 		}
 
 		template<typename T>
@@ -88,7 +70,6 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
-			// Destroy/create if new size or other function?
 			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
@@ -97,14 +78,14 @@ namespace VTX::Renderer::Context
 		{
 			assert( _bos.find( p_key ) != _bos.end() );
 
-			_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
-		}
-
-		inline void setData( const size_t p_size, const std::string & p_key )
-		{
-			assert( _bos.find( p_key ) != _bos.end() );
-
-			_bos[ p_key ]->setData( GLsizei( p_size ), GL_STATIC_DRAW );
+			// Scale if needed, else data will be overwritten.
+			if ( _bos[ p_key ]->getSize() != p_size * sizeof( T ) )
+			{
+				VTX_DEBUG(
+					"Resizing data buffer {} : {} -> {}", p_key, _bos[ p_key ]->getSize(), sizeof( T ) * p_size
+				);
+				_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
+			}
 		}
 
 		template<typename T>
@@ -117,12 +98,7 @@ namespace VTX::Renderer::Context
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
-		inline void fillInfos( StructInfos & p_infos ) const
-		{
-			p_infos.gpuMemoryInfoDedicated		  = _openglInfos.gpuMemoryInfoDedicatedVidmemNVX;
-			p_infos.gpuMemoryInfoTotalAvailable	  = _openglInfos.gpuMemoryInfoTotalAvailableMemoryNVX;
-			p_infos.gpuMemoryInfoCurrentAvailable = _openglInfos.gpuMemoryInfoCurrentAvailableVidMemNVX;
-		}
+		void fillInfos( StructInfos & p_infos ) const;
 
 		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const { return GL::CHRONO_GPU( p_task ); }
 
@@ -150,6 +126,7 @@ namespace VTX::Renderer::Context
 		static std::map<const E_CHANNEL_OUTPUT, const GLenum> _mapAttachments;
 		static std::map<const E_PRIMITIVE, const GLenum>	  _mapPrimitives;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormats;
+		static std::map<const GLenum, const size_t>			  _mapFormatSizes;
 		static std::map<const E_WRAPPING, const GLint>		  _mapWrappings;
 		static std::map<const E_FILTERING, const GLint>		  _mapFilterings;
 		static std::map<const E_TYPE, const GLenum>			  _mapTypes;
@@ -157,10 +134,15 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
-		std::unique_ptr<GL::ProgramManager>								  _programManager;
-		std::unordered_map<std::string, std::unique_ptr<GL::VertexArray>> _vaos;
-		std::unordered_map<std::string, std::unique_ptr<GL::Buffer>>	  _bos;
-		std::vector<std::unique_ptr<GL::Buffer>>						  _ubosShared;
+		RenderQueue _renderQueue;
+
+		template<typename T>
+		using Collection = std::unordered_map<std::string, std::unique_ptr<T>>;
+
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		Collection<GL::VertexArray>			_vaos;
+		Collection<GL::Buffer>				_bos;
+		Collection<GL::Buffer>				_ssbos;
 
 		// TODO: check if mapping is useful.
 		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
@@ -175,21 +157,16 @@ namespace VTX::Renderer::Context
 			size_t		 size;
 			size_t		 padding;
 			size_t		 totalSize;
-			void *		 value;
 			_StructUniformEntry(
 				GL::Buffer * p_buffer,
 				const size_t p_offset,
 				const size_t p_size,
-				const size_t p_padding,
-				const size_t p_arraySize = 1
+				const size_t p_padding
 			) :
 				buffer( p_buffer ),
-				offset( p_offset ), size( p_size ), padding( p_padding ),
-				// Store only first value.
-				value( malloc( p_size ) )
+				offset( p_offset ), size( p_size ), padding( p_padding )
 			{
 			}
-			~_StructUniformEntry() { free( value ); }
 		};
 		std::unordered_map<std::string, std::unique_ptr<_StructUniformEntry>> _uniforms;
 
@@ -199,13 +176,17 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		void _createInputs( const Pass * const p_descPassPtr );
+		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
 
-		void _createOuputs(
-			const Pass * const	  p_descPassPtr,
-			std::vector<GLenum> & p_drawBuffers,
-			bool &				  p_hasDepthComponent
+		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
+
+		const Output * const _getInputSource(
+			const Links &		  p_links,
+			const Pass * const	  p_pass,
+			const E_CHANNEL_INPUT p_channel
 		);
+
+		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
 		void _createAttachment( const IO & p_descIO );
 

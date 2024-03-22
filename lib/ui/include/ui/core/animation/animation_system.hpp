@@ -45,7 +45,7 @@ namespace VTX::UI::Core::Animation
 			play();
 		}
 
-		App::Core::CallbackEmitter<> onStopped;
+		Util::Callback<> onStopped;
 
 	  private:
 		std::list<std::unique_ptr<BaseAnimation>> _animationSequence = std::list<std::unique_ptr<BaseAnimation>>();

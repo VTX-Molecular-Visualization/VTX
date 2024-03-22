@@ -105,11 +105,17 @@ namespace VTX::Renderer
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
 
-	struct Uniforms
+	using Uniforms = std::vector<Uniform>;
+
+	struct SharedUniform
 	{
-		std::vector<Uniform> entries;
-		size_t				 arraySize = 1;
+		std::string name;
+		Uniforms	uniforms;
+		char		binding;
+		bool		isDynamic = false;
 	};
+
+	using SharedUniforms = std::vector<SharedUniform>;
 
 	struct Program
 	{

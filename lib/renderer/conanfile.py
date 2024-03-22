@@ -14,28 +14,27 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "shaders/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
-        self.requires("glad/0.1.36", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-        
-        self.options["glad/*"].shared = False
-        self.options["glad/*"].spec = "gl"
-        self.options["glad/*"].gl_profile = "core"
-        self.options["glad/*"].gl_version = 4.5
-        self.options["glad/*"].extensions = ["GL_NVX_gpu_memory_info", "GL_ATI_meminfo"]
 
     def generate(self):
         copy(self, "*.cmake", self.source_folder, self.build_folder)
         
     def layout(self):
         cmake_layout(self)
-
+        
+        self.cpp.build.components["vtx_renderer"].libdirs = self.cpp.build.libdirs
+        #self.cpp.package.components["vtx_renderer"].includedirs = ["include", "vendor/glad/include"]
+        
+        self.cpp.build.components["vtx_renderer_no_opengl"].libdirs = self.cpp.build.libdirs
+        #self.cpp.package.components["vtx_renderer_no_opengl"].includedirs = ["include"]
+        
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -46,8 +45,17 @@ class VTXRendererRecipe(ConanFile):
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 
-    def package_info(self):
-        self.cpp_info.libs = ["vtx_renderer"]
+    def package_info(self):    
+        self.cpp_info.components["vtx_renderer"].libs = ["vtx_renderer"]
+        self.cpp_info.components["vtx_renderer"].set_property("cmake_target_name", "vtx_renderer::vtx_renderer")
+        self.cpp_info.components["vtx_renderer"].requires = ["vtx_util::vtx_util"]
+        #self.cpp_info.components["vtx_renderer"].includedirs = ["include", "vendor/glad/include"]
+
+        self.cpp_info.components["vtx_renderer_no_opengl"].libs = ["vtx_renderer_no_opengl"]
+        self.cpp_info.components["vtx_renderer_no_opengl"].set_property("cmake_target_name", "vtx_renderer::vtx_renderer_no_opengl")
+        self.cpp_info.components["vtx_renderer_no_opengl"].requires = ["vtx_util::vtx_util"]
+        #self.cpp_info.components["vtx_renderer_no_opengl"].includedirs = ["include"]
+        
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
         self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
         

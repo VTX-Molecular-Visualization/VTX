@@ -12,9 +12,7 @@ namespace VTX::UI::Core::Animation
 	{
 		_currentAnimationIt = _animationSequence.end();
 
-		App::VTXApp::get().onUpdate().addCallback(
-			this, [ this ]( const float p_deltaTime ) { update( p_deltaTime ); }
-		);
+		App::VTXApp::get().onUpdate += [ this ]( const float p_deltaTime ) { update( p_deltaTime ); };
 	}
 
 	void AnimationSystem::play()
@@ -44,7 +42,7 @@ namespace VTX::UI::Core::Animation
 
 	void AnimationSystem::_playAnimation()
 	{
-		( *_currentAnimationIt )->onStopped.addCallback( this, [ this ]() { _playNextAnimation(); } );
+		( *_currentAnimationIt )->onStopped += [ this ]() { _playNextAnimation(); };
 		( *_currentAnimationIt )->play();
 	}
 	void AnimationSystem::_playNextAnimation()
