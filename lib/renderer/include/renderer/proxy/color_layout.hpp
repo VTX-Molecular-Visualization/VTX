@@ -6,8 +6,13 @@
 
 namespace VTX::Renderer::Proxy
 {
-	using ColorLayout  = const std::array<Util::Color::Rgba, 256>;
-	using ColorLayouts = std::vector<ColorLayout>;
+
+	struct ColorLayout
+	{
+		const std::vector<Util::Color::Rgba> * colors;
+
+		Util::Callback<> onChange;
+	};
 
 } // namespace VTX::Renderer::Proxy
 
