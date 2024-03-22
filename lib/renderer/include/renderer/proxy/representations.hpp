@@ -22,10 +22,8 @@ namespace VTX::Renderer::Proxy
 
 		bool hasSes = false;
 
-		// TODO: update callbacks.
+		Util::Callback<> onChange;
 	};
-
-	using Representations = const std::vector<Representation>;
 
 } // namespace VTX::Renderer::Proxy
 

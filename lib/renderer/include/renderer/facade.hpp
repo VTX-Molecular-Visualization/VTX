@@ -31,8 +31,6 @@ namespace VTX::Renderer
 
 		inline void setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-		inline void setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }
-
 		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
 		inline void removeProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->removeProxyMolecule( p_proxy ); }
 		inline void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
@@ -44,14 +42,26 @@ namespace VTX::Renderer
 			_renderer->removeProxyMolecules( p_proxies );
 		}
 
-		// inline void addProxyMesh( Proxy::Mesh & p_proxy ) { _renderer->addProxyMesh( p_proxy ); }
+		inline void addProxyRepresentation( Proxy::Representation & p_proxy )
+		{
+			_renderer->addProxyRepresentation( p_proxy );
+		}
+		inline void removeProxyRepresentation( Proxy::Representation & p_proxy )
+		{
+			_renderer->removeProxyRepresentation( p_proxy );
+		}
+		inline void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
+		{
+			_renderer->addProxyRepresentations( p_proxies );
+		}
+		inline void removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
+		{
+			_renderer->removeProxyRepresentations( p_proxies );
+		}
+
+		inline void setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }
 
 		inline void setProxyColorLayout( Proxy::ColorLayout & p_proxy ) { _renderer->setProxyColorLayout( p_proxy ); }
-
-		inline void setProxyRepresentations( Proxy::Representations & p_proxy )
-		{
-			_renderer->setProxyRepresentations( p_proxy );
-		}
 
 		inline void setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 		{

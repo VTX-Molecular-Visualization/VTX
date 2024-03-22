@@ -41,11 +41,11 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesMolecules.clear();
-		_proxyCamera		  = nullptr;
-		_proxyColorLayout	  = nullptr;
-		_proxyRepresentations = nullptr;
-		_proxyRenderSettings  = nullptr;
-		_proxyVoxels		  = nullptr;
+		_proxyCamera	  = nullptr;
+		_proxyColorLayout = nullptr;
+		_proxyRepresentations.clear();
+		_proxyRenderSettings = nullptr;
+		_proxyVoxels		 = nullptr;
 
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
@@ -54,54 +54,6 @@ namespace VTX::Renderer
 		sizeBonds	= 0;
 		sizeRibbons = 0;
 		sizeVoxels	= 0;
-	}
-
-	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
-	{
-		assert( hasContext() );
-		assert( p_proxy.matrixView );
-		assert( p_proxy.matrixProjection );
-
-		_proxyCamera = &p_proxy;
-
-		_context->setUniforms<_StructUBOCamera>(
-			{ { *p_proxy.matrixView,
-				*p_proxy.matrixProjection,
-				p_proxy.cameraPosition,
-				0,
-				Vec4f(
-					p_proxy.cameraNear * p_proxy.cameraFar,
-					p_proxy.cameraFar,
-					p_proxy.cameraFar - p_proxy.cameraNear,
-					p_proxy.cameraNear
-				),
-				p_proxy.mousePosition,
-				p_proxy.isPerspective } },
-			"Camera"
-		);
-
-		p_proxy.onMatrixView += [ this, &p_proxy ]()
-		{
-			setUniform( *p_proxy.matrixView, "Matrix view" );
-			_refreshDataModels();
-		};
-
-		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
-
-		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); };
-
-		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
-
-		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
-		{
-			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
-		};
-
-		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
 	}
 
 #pragma region Proxy molecules
@@ -139,7 +91,7 @@ namespace VTX::Renderer
 	void Renderer::_addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		assert( hasContext() );
-		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations->size() );
+		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
 
 		// If size max reached, do not add.
 		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
@@ -244,7 +196,91 @@ namespace VTX::Renderer
 
 #pragma endregion Proxy molecules
 
-	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
+#pragma region Proxy representations
+
+	void Renderer::addProxyRepresentation( Proxy::Representation & p_proxy ) {}
+
+	void Renderer::removeProxyRepresentation( Proxy::Representation & p_proxy ) {}
+
+	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
+	{
+		assert( hasContext() );
+
+		_proxyRepresentations.insert(
+			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
+		);
+
+		std::vector<_StructUBORepresentation> representations;
+		for ( const Proxy::Representation * representation : p_proxies )
+		{
+			representations.emplace_back( _StructUBORepresentation { representation->radiusSphereFixed,
+																	 representation->radiusSphereAdd,
+																	 representation->radiusFixed,
+																	 representation->radiusCylinder,
+																	 representation->cylinderColorBlendingMode,
+																	 representation->ribbonColorBlendingMode } );
+		}
+
+		_context->setUniforms( representations, "Representations" );
+
+		// TODO: remove useless primitives with multi calls.
+		// TODO: compute ss if needed
+		// TODO: delete others ss from cache?
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies ) {}
+
+#pragma endregion Proxy representations
+
+	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
+	{
+		assert( hasContext() );
+		assert( p_proxy.matrixView );
+		assert( p_proxy.matrixProjection );
+
+		_proxyCamera = &p_proxy;
+
+		_context->setUniforms<_StructUBOCamera>(
+			{ { *p_proxy.matrixView,
+				*p_proxy.matrixProjection,
+				p_proxy.cameraPosition,
+				0,
+				Vec4f(
+					p_proxy.cameraNear * p_proxy.cameraFar,
+					p_proxy.cameraFar,
+					p_proxy.cameraFar - p_proxy.cameraNear,
+					p_proxy.cameraNear
+				),
+				p_proxy.mousePosition,
+				p_proxy.isPerspective } },
+			"Camera"
+		);
+
+		p_proxy.onMatrixView += [ this, &p_proxy ]()
+		{
+			setUniform( *p_proxy.matrixView, "Matrix view" );
+			_refreshDataModels();
+		};
+
+		p_proxy.onMatrixProjection +=
+			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
+
+		p_proxy.onCameraPosition +=
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); };
+
+		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
+		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+
+		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
+		{
+			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
+		};
+
+		p_proxy.onPerspective +=
+			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
+	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
@@ -259,32 +295,6 @@ namespace VTX::Renderer
 			_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 			setNeedUpdate( true );
 		};
-	}
-
-	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy )
-	{
-		assert( hasContext() );
-
-		_proxyRepresentations = &p_proxy;
-
-		std::vector<_StructUBORepresentation> representations;
-		for ( const Proxy::Representation & representation : p_proxy )
-		{
-			representations.emplace_back( _StructUBORepresentation { representation.radiusSphereFixed,
-																	 representation.radiusSphereAdd,
-																	 representation.radiusFixed,
-																	 representation.radiusCylinder,
-																	 representation.cylinderColorBlendingMode,
-																	 representation.ribbonColorBlendingMode } );
-		}
-
-		_context->setUniforms( representations, "Representations" );
-
-		// TODO: remove useless primitives with multi calls.
-		// TODO: compute ss if needed
-		// TODO: delete others ss from cache?
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )

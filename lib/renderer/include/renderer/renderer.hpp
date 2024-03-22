@@ -175,15 +175,18 @@ namespace VTX::Renderer
 			}
 		}
 
-		void setProxyCamera( Proxy::Camera & p_proxy );
-
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void removeProxyMolecule( Proxy::Molecule & p_proxy );
 		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
 		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
 
+		void addProxyRepresentation( Proxy::Representation & p_proxy );
+		void removeProxyRepresentation( Proxy::Representation & p_proxy );
+		void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
+		void removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
+
+		void setProxyCamera( Proxy::Camera & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
-		void setProxyRepresentations( Proxy::Representations & p_proxy );
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
@@ -270,13 +273,13 @@ namespace VTX::Renderer
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
 		// Proxies.
-		Proxy::Camera *				   _proxyCamera;
-		std::vector<Proxy::Molecule *> _proxiesMolecules;
-		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
-		Proxy::ColorLayout *	 _proxyColorLayout;
-		Proxy::Representations * _proxyRepresentations;
-		Proxy::RenderSettings *	 _proxyRenderSettings;
-		Proxy::Voxels *			 _proxyVoxels;
+
+		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
+		std::vector<Proxy::Representation *> _proxyRepresentations;
+		Proxy::Camera *						 _proxyCamera;
+		Proxy::ColorLayout *				 _proxyColorLayout;
+		Proxy::RenderSettings *				 _proxyRenderSettings;
+		Proxy::Voxels *						 _proxyVoxels;
 
 		void _addProxyMolecule( Proxy::Molecule & p_proxy );
 		void _removeProxyMolecule( Proxy::Molecule & p_proxy );
