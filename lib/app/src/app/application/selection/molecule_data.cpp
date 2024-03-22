@@ -637,6 +637,7 @@ namespace VTX::App::Application::Selection
 		const size_t residueCount	   = p_chain.getResidueCount();
 
 		_selectFullResidues( IndexRange( firstResidueIndex, residueCount ) );
+		_referenceChain( p_chain );
 	}
 	void MoleculeData::_referenceChains( const IndexRange & p_range ) { _chainIds.addRange( p_range ); }
 	void MoleculeData::_selectFullChains( const IndexRange & p_range )
