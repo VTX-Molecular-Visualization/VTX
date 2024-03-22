@@ -44,6 +44,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct GromacsJobData;
 	void setLastArgumentAsExpectedOutputFile( GromacsJobData & ) noexcept;
 
+	// return absolute path to a temporary directory that is guaranteed to be new and empty
+	fs::path createNewEmptyTempDirectory() noexcept;
+
 } // namespace VTX::Tool::Mdprep::Gromacs
 
 #endif
