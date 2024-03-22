@@ -14,9 +14,10 @@ namespace VTX::UI::Internal::Animation
 		_info.targetPtr->setRotation( _info.startRotation );
 
 		const float translationDistance = Util::Math::distance( _info.startPosition, _info.finalPosition );
-		const bool	needAnimation		= translationDistance > TRANSLATION_THRESHOLD;
+		const bool	skipAnimation
+			= translationDistance < TRANSLATION_THRESHOLD && _info.startRotation == _info.finalRotation;
 
-		if ( !needAnimation )
+		if ( skipAnimation )
 			stop();
 	}
 

@@ -1,5 +1,5 @@
 #include "ui/core/layout_builder.hpp"
-#include "ui/core/tool_registry.hpp"
+#include "ui/core/tool_handler.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::UI::Core
@@ -14,16 +14,16 @@ namespace VTX::UI::Core
 
 	void LayoutBuilder::_instantiateTool( const ToolDescriptor & p_toolDescriptor ) const
 	{
-		BaseVTXUITool * const tool = UI::Core::ToolRegistry::createInstance( p_toolDescriptor.getIdentifier() );
+		BaseVTXUITool * toolPtr = TOOL_HANDLER().create( p_toolDescriptor.getIdentifier() );
 
-		if ( tool == nullptr )
+		if ( toolPtr == nullptr )
 		{
 			VTX_ERROR( "Tool {} not loaded into VTX.", p_toolDescriptor.getIdentifier() );
 			return;
 		}
 
-		tool->setLayoutData( p_toolDescriptor.getLayoutData() );
-		tool->instantiateTool();
+		toolPtr->setLayoutData( p_toolDescriptor.getLayoutData() );
+		toolPtr->instantiateTool();
 	}
 
 } // namespace VTX::UI::Core

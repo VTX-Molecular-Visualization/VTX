@@ -2,6 +2,7 @@
 #define __VTX_UI_ACTION_ANIMATION__
 
 #include "ui/internal/animation/orient.hpp"
+#include "ui/internal/animation/reset_camera.hpp"
 #include <app/core/action/base_action.hpp>
 #include <util/math/aabb.hpp>
 #include <util/types.hpp>
@@ -25,8 +26,11 @@ namespace VTX::UI::Action::Animation
 	class ResetCamera final : public App::Core::Action::BaseAction
 	{
 	  public:
-		ResetCamera() {}
+		ResetCamera();
 		void execute() override;
+
+	  private:
+		const UI::Internal::Animation::ResetInfo _resetInfo;
 	};
 } // namespace VTX::UI::Action::Animation
 #endif

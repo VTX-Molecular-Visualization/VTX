@@ -28,6 +28,9 @@ namespace VTX::UI::Core
 		const ToolIdentifier & getIdentifier() const { return _identifier; }
 		const ToolLayoutData & getLayoutData() const { return _layoutData; }
 
+		void setIdentifier( const ToolIdentifier & p_identifier ) { _identifier = p_identifier; }
+		void setToolLayoutData( const ToolLayoutData & p_layoutData ) { _layoutData = p_layoutData; }
+
 	  private:
 		ToolIdentifier _identifier;
 		ToolLayoutData _layoutData = ToolLayoutData();

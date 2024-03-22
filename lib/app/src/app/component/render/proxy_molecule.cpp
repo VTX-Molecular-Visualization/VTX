@@ -13,17 +13,23 @@
 namespace VTX::App::Component::Render
 {
 	ProxyMolecule::ProxyMolecule() {}
-	ProxyMolecule::~ProxyMolecule()
-	{
-		if ( _proxyWrapper.isValid() )
-		{
-			_proxyWrapper.accessor().proxy().onRemove();
-		}
-	}
+	ProxyMolecule::~ProxyMolecule() { _removeFromRenderer(); }
 	void ProxyMolecule::setup( Renderer::Facade & p_renderer )
 	{
 		_addInRenderer( p_renderer );
 		_setupCallbacks();
+
+		MAIN_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
+			Core::ECS::SIGNAL::DESTROY, this
+		);
+	}
+	void ProxyMolecule::_removeFromRenderer()
+	{
+		if ( _proxyWrapper.isValid() )
+		{
+			_proxyWrapper.accessor().proxy().onRemove();
+			_proxyWrapper.invalidate();
+		}
 	}
 
 	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )

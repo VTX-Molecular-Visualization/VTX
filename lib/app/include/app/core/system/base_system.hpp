@@ -6,8 +6,8 @@ namespace VTX::App::Core::System
 	class BaseSystem
 	{
 	  public:
-		BaseSystem()  = default;
-		~BaseSystem() = default;
+		BaseSystem()		  = default;
+		virtual ~BaseSystem() = default;
 	};
 } // namespace VTX::App::Core::System
 

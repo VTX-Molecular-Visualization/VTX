@@ -23,9 +23,6 @@ namespace VTX::UI::QT::Tool
 		mainWindow->addDockWidgetAsTabified(
 			consoleWidget, Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical, true
 		);
-
-		// static_cast<QWidget *>( consoleWidget )->setVisible( true );
-		// consoleWidget->setBaseSize( { 200, 80 } );
 	}
 
 } // namespace VTX::UI::QT::Tool

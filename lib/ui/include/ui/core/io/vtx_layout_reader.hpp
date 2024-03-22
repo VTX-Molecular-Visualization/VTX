@@ -2,6 +2,7 @@
 #define __VTX_UI_CORE_IO_VTX_LAYOUT_READER__
 
 #include "ui/core/layout_descriptor.hpp"
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::Core::IO
@@ -15,7 +16,7 @@ namespace VTX::UI::Core::IO
 			LayoutDescriptor layoutDescriptor = LayoutDescriptor();
 		};
 
-		void read();
+		void read( const FilePath & p_filePath );
 
 		const Result & getResult() const { return _result; }
 

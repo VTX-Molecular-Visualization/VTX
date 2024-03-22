@@ -94,7 +94,9 @@ namespace VTX::UI::QT
 		void mouseDoubleClickEvent( QMouseEvent * const p_event ) override;
 		void mouseMoveEvent( QMouseEvent * const p_event ) override;
 		void wheelEvent( QWheelEvent * const p_event ) override;
+
 		void changeEvent( QEvent * const p_event ) override;
+		void closeEvent( QCloseEvent * const p_event ) override;
 
 	  private:
 		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;

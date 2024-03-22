@@ -61,6 +61,8 @@ namespace VTX::App
 
 		Util::Callback<> onEndOfFrameOneShot;
 
+		Util::Callback<> onStop;
+
 	  private:
 		Util::Chrono _tickChrono = Util::Chrono();
 

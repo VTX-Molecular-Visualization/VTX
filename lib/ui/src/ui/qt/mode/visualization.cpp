@@ -1,4 +1,5 @@
 #include "ui/qt/mode/visualization.hpp"
+#include "ui/helper/animation.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/base_controller.hpp"
 #include "ui/qt/controller/base_picker_controller.hpp"
@@ -11,6 +12,7 @@
 #include "ui/qt/controller/visualization_shortcut.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
+#include <app/internal/constants.hpp>
 #include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Mode
@@ -50,34 +52,6 @@ namespace VTX::UI::QT::Mode
 		addController( ptr );
 #endif
 	}
-
-	// void Visualization::init( VisualizationData & p_data )
-	//{
-	//	while ( p_data.cameraControllers.size() > 0 )
-	//	{
-	//		std::unique_ptr<Controller::BaseCameraController> & controllerPtr
-	//			= p_data.cameraControllers.extract( p_data.cameraControllers.begin() ).value();
-
-	//		addCameraController( controllerPtr );
-	//	}
-	//	while ( p_data.pickerControllers.size() > 0 )
-	//	{
-	//		std::unique_ptr<Controller::BasePickerController> & controllerPtr
-	//			= p_data.pickerControllers.extract( p_data.pickerControllers.begin() ).value();
-
-	//		addPickerController( controllerPtr );
-	//	}
-	//	while ( p_data.cameraControllers.size() > 0 )
-	//	{
-	//		std::unique_ptr<Controller::BaseController> & controllerPtr
-	//			= p_data.otherControllers.extract( p_data.otherControllers.begin() ).value();
-
-	//		addController( controllerPtr );
-	//	}
-
-	//	_currentCameraController = p_data.cameraControllers.begin()->get();
-	//	_currentPickerController = p_data.pickerControllers.begin()->get();
-	//}
 
 	void Visualization::enter()
 	{
@@ -245,77 +219,16 @@ namespace VTX::UI::QT::Mode
 
 	void Visualization::resetCameraController()
 	{
-		//// Reset camera.
-		// App::Old::Component::Render::Camera & camera = App::Old::VTXApp::get().getScene().getCamera();
+		App::Component::Render::Camera & camera	   = App::SCENE().getCamera();
+		const Util::Math::AABB &		 sceneAABB = App::SCENE().getAABB();
 
-		// const Vec3f defaultPos
-		//	= App::Old::VTXApp::get().getScene().getAABB().centroid()
-		//	  - App::Old::Component::CAMERA_FRONT_DEFAULT * App::Old::VTXApp::get().getScene().getAABB().radius()
-		//			/ (float)( tan( Util::Math::radians( camera.getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
-		// camera.reset( defaultPos );
+		const Vec3f resetPos = UI::Helper::Animation::computeCameraOrientPosition(
+			App::Internal::CAMERA_FRONT_DEFAULT, camera.getFov(), sceneAABB
+		);
 
-		//// Reset controllers.
-		// getController<Controller::Trackball>( UI::ID::Controller::TRACKBALL )->reset();
-		// getController<Controller::Freefly>( UI::ID::Controller::FREEFLY )->reset();
+		camera.reset( resetPos );
+
+		_currentCameraController->reset();
 	}
-
-	// void Visualization::orientCameraController( const App::Old::Component::Object3D::Helper::AABB & p_aabb )
-	//{
-	//	getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
-
-	//	// Override Trackball distance.
-	//	if ( _cameraController == UI::ID::Controller::FREEFLY )
-	//	{
-	//		const Controller::Freefly * const freefly
-	//			= getController<Controller::Freefly>( UI::ID::Controller::FREEFLY );
-	//		if ( freefly->isOrienting() )
-	//		{
-	//			getController<Controller::Trackball>( UI::ID::Controller::TRACKBALL )
-	//				->setDistanceForced( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() )
-	//				);
-	//		}
-	//	}
-	//}
-	// void Visualization::orientCameraController( const Vec3f & p_position, const Quatf & p_orientation )
-	//{
-	//	getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_position, p_orientation );
-
-	//	// Override Trackball distance.
-	//	if ( _cameraController == UI::ID::Controller::FREEFLY )
-	//	{
-	//		const Controller::Freefly * const freefly
-	//			= getController<Controller::Freefly>( UI::ID::Controller::FREEFLY );
-	//		if ( freefly->isOrienting() )
-	//		{
-	//			getController<Controller::Trackball>( UI::ID::Controller::TRACKBALL )
-	//				->setDistanceForced( Util::Math::distance( p_position, freefly->getOrientTargetPosition() ) );
-	//		}
-	//	}
-	//}
-
-	// void Visualization::receiveEvent( const VTX::App::Old::Core::Event::VTXEvent & p_event )
-	//{
-	//	// Recenter when add the first element in scene
-	//	if ( p_event.name == VTX::App::Old::Event::Global::MOLECULE_ADDED )
-	//	{
-	//		if ( App::Old::VTXApp::get().getScene().getMolecules().size() == 1
-	//			 && App::Old::VTXApp::get().getScene().getMeshes().size() == 0 )
-	//		{
-	//			const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> & castedEvent
-	//				= dynamic_cast<
-	//					const VTX::App::Old::Core::Event::VTXEventArg<App::Old::Component::Chemistry::Molecule *> &>(
-	//					p_event
-	//				);
-
-	//			orientCameraController( castedEvent.get()->getWorldAABB() );
-	//		}
-	//	}
-	//	else if ( p_event.name == VTX::App::Old::Event::Global::MESH_ADDED )
-	//	{
-	//		if ( App::Old::VTXApp::get().getScene().getMolecules().size() == 0
-	//			 && App::Old::VTXApp::get().getScene().getMeshes().size() == 1 )
-	//			resetCameraController();
-	//	}
-	//}
 
 } // namespace VTX::UI::QT::Mode

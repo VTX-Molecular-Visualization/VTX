@@ -1,0 +1,26 @@
+{
+	"DATA":{
+		"TOOLS": [
+			{
+				"IDENTIFIER": "RENDER_WINDOW_KEY"
+			},
+			{
+				"IDENTIFIER": "PYTX_TOOL_KEY"
+			},
+			{
+				"IDENTIFIER": "CONSOLE_TOOL_KEY"
+			},
+			{
+				"IDENTIFIER": "UI_FEATURE_QUIT"
+			},
+			{
+				"IDENTIFIER": "UI_FEATURE_VISUALIZATION"
+			},
+			{
+				"IDENTIFIER": "MISCELLANEOUS_ORIENT_ON_FIRST_MOLECULE_LOADED"
+			}
+		]
+	},
+	
+	"VERSION":{"MAJOR":1,"MINOR":0,"REVISION":0}
+}

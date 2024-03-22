@@ -2,6 +2,7 @@
 #define __VTX_UI_TOOL_CONSOLE_WIDGET_CONSOLE__
 
 #include "ui/qt/qt_panel.hpp"
+#include "ui/qt/tool/pytx/widget/command_line_prompt.hpp"
 #include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
@@ -16,6 +17,9 @@ namespace VTX::UI::QT::Tool::Console::Widget
 	class ConsoleWidget : public QtDockablePanel
 	{
 		NEW_ARCHI_VTX_WIDGET
+
+	  private:
+		using CommandLinePrompt = Tool::PyTX::Widget::CommandLinePrompt;
 
 	  public:
 		inline static const QColor CONSOLE_INFO_COLOR	  = QColor( "white" );
@@ -49,8 +53,9 @@ namespace VTX::UI::QT::Tool::Console::Widget
 
 		QColor _getMessageColor( const Util::LOG_LEVEL p_level );
 
-		QListWidget * _listWidget  = nullptr;
-		QPushButton * _clearWidget = nullptr;
+		QListWidget *		_listWidget		   = nullptr;
+		CommandLinePrompt * _commandLineWidget = nullptr;
+		QPushButton *		_clearWidget	   = nullptr;
 
 		std::mutex _listWidgetMutex = std::mutex();
 	};
