@@ -1,4 +1,5 @@
 #include "ui/internal/animation/orient.hpp"
+#include "ui/helper/animation.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/base_controller.hpp"
@@ -25,12 +26,9 @@ namespace VTX::UI::Internal::Animation
 		_translationInfo.startPosition = cameraTransformComponent.getTransform().getTranslationVector();
 		_translationInfo.startRotation = Util::Math::toQuat( cameraTransformComponent.getTransform().getRotation() );
 
-		const float orientTargetDistance
-			= p_targetAabb.radius()
-			  / float( std::tan( Util::Math::radians( p_camera.getFov() ) * ORIENT_ZOOM_FACTOR ) );
-
-		_translationInfo.finalPosition
-			= p_targetAabb.centroid() + ( -p_camera.getTransform().getFront() * orientTargetDistance );
+		_translationInfo.finalPosition = UI::Helper::Animation::computeCameraOrientPosition(
+			p_camera.getTransform().getFront(), p_camera.getFov(), p_targetAabb, ORIENT_ZOOM_FACTOR
+		);
 		_translationInfo.finalRotation = _translationInfo.startRotation;
 
 		_translationInfo.targetPtr = &cameraTransformComponent;

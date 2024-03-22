@@ -33,8 +33,12 @@ namespace VTX::UI::QT::Tool::UIFeatures
 
 	void QuitTool::_addButtonsInMainMenu()
 	{
+		UI::Core::ToolLayoutData mainMenuLayoutData = UI::Core::ToolLayoutData();
+		mainMenuLayoutData.tabName					= "File";
+		mainMenuLayoutData.blockName				= "Windows";
+
 		QT::MainWindow * const						mainWindow = &QT::QT_APP()->getMainWindow();
-		QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock  = mainWindow->getMainMenuToolBlock( getLayoutData() );
+		QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock  = mainWindow->getMainMenuToolBlock( mainMenuLayoutData );
 
 		QT::Widget::MainMenu::MenuToolButtonWidget * const quitButton
 			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
@@ -48,16 +52,19 @@ namespace VTX::UI::QT::Tool::UIFeatures
 
 	void QuitTool::_quit() { App::VTX_ACTION().execute<Action::Quit>(); }
 
-	class Binder final : public PythonBinding::Binder
+	namespace Quit
 	{
-	  public:
-		void bind( PythonBinding::PyTXModule & p_vtxmodule ) override
+		class Binder final : public PythonBinding::Binder
 		{
-			PythonBinding::Wrapper::Module commands = p_vtxmodule.commands();
-			commands.bindAction<Action::Quit>( "quit", "Quit the application." );
-		}
-	};
+		  public:
+			void bind( PythonBinding::PyTXModule & p_vtxmodule ) override
+			{
+				PythonBinding::Wrapper::Module & commands = p_vtxmodule.commands();
+				commands.bindAction<Action::Quit>( "quit", "Quit the application." );
+			}
+		};
+	} // namespace Quit
 
-	void QuitTool::_addCommands() const { PythonBinding::INTERPRETOR().addBinder<Binder>(); }
+	void QuitTool::_addCommands() const { PythonBinding::INTERPRETOR().addBinder<Quit::Binder>(); }
 
 } // namespace VTX::UI::QT::Tool::UIFeatures

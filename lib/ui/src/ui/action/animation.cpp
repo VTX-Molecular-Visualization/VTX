@@ -1,6 +1,5 @@
 #include "ui/action/animation.hpp"
 #include "ui/core/animation/animation_system.hpp"
-#include "ui/internal/animation/orient.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/controller_manager.hpp"
@@ -23,9 +22,9 @@ namespace VTX::UI::Action::Animation
 
 	void Orient::execute() { ANIMATION_SYSTEM().launchAnimation<UI::Internal::Animation::Orient>( _orientInfo ); }
 
+	ResetCamera::ResetCamera() : _resetInfo( App::SCENE().getCamera(), 0.f ) {}
 	void ResetCamera::execute()
 	{
-		// TODO real reset (see VTX 0.4.1)
-		App::SCENE().getCamera().getTransform().setPosition( VEC3F_ZERO );
+		ANIMATION_SYSTEM().launchAnimation<UI::Internal::Animation::ResetCamera>( _resetInfo );
 	}
 } // namespace VTX::UI::Action::Animation
