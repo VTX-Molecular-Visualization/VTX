@@ -39,4 +39,3 @@ else()
 endif()
 
 vtx_copy_registered_data(vtx_renderer_bench)
-
