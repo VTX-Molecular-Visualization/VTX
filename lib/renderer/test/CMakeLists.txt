@@ -16,3 +16,4 @@ set(_VTX_RENDERER_TEST_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
 install(TARGETS vtx_renderer_test)
+install(DIRECTORY data DESTINATION bin)
