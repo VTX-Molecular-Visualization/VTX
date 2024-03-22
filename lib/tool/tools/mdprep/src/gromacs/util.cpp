@@ -1,4 +1,5 @@
 #include <fstream>
+#include <random>
 #include <re2/re2.h>
 //
 #include "tools/mdprep/gromacs/inputs.hpp"
@@ -124,4 +125,20 @@ namespace VTX::Tool::Mdprep::Gromacs
 		p_.expectedOutputFilesIndexes.push_back( p_.arguments.size() - 1 );
 	}
 
+	fs::path createNewEmptyTempDirectory() noexcept
+	{
+		fs::path out = fs::temp_directory_path() / "VTX" / "tools" / "mdprep";
+		fs::create_directories( out );
+		std::random_device						rd;
+		std::mt19937							gen( rd() );
+		std::uniform_int_distribution<uint32_t> distrib( 0, 0xffffffff );
+		std::string								uniqueDirName { std::to_string( distrib( gen ) ) };
+		while ( fs::exists( out / uniqueDirName ) )
+		{
+			uniqueDirName = std::to_string( distrib( gen ) );
+		}
+		out /= uniqueDirName;
+		fs::create_directories( out );
+		return out.make_preferred();
+	}
 } // namespace VTX::Tool::Mdprep::Gromacs
