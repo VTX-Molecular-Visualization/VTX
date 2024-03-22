@@ -325,7 +325,6 @@ namespace VTX::Renderer
 
 		_context->setData( *p_proxy.mins, "VoxelsMins" );
 		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
-
 		sizeVoxels += uint( p_proxy.mins->size() );
 
 		setNeedUpdate( true );
@@ -349,6 +348,7 @@ namespace VTX::Renderer
 			totalBonds += proxy->bonds->size();
 		}
 
+		// TODO: if no data, set dummy buffer? +ribbon and others.
 		if ( _proxiesMolecules.empty() )
 		{
 			assert( totalAtoms == 0 );

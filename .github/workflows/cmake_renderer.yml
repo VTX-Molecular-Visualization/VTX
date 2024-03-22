@@ -45,13 +45,14 @@ jobs:
          
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --build=missing --settings=compiler.cppstd=20
+      run:  |
+        conan export ../core       
+        conan export ../io
+        conan create test --build=missing --settings=compiler.cppstd=20
       
     - name: Create benchmarker
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan export ../core       
-        conan export ../io
         conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Upload dependencies

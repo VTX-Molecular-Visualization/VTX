@@ -17,3 +17,4 @@ include(cmake/library.cmake)
 
 install(TARGETS vtx_renderer_bench)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
+install(DIRECTORY data DESTINATION bin)
