@@ -101,9 +101,9 @@ int main( int, char ** )
 			}
 			else if ( p_key == SDL_SCANCODE_F5 )
 			{
-				static VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+				VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
 				std::generate( colorLayout.begin(), colorLayout.end(), [] { return Color::Rgba::random(); } );
-				renderer.setProxyColorLayout( colorLayout );
+				scene.setColorLayout( colorLayout );
 			}
 		};
 
@@ -129,7 +129,7 @@ int main( int, char ** )
 		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
 		renderer.setProxyVoxels( proxyVoxels );
 
-		renderer.setProxyColorLayout( ChemDB::Color::COLOR_LAYOUT_JMOL );
+		renderer.setProxyColorLayout( scene.getProxyColorLayout() );
 
 		Renderer::Proxy::Representation representation1, representation2, representation3;
 

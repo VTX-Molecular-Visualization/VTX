@@ -2,6 +2,7 @@
 #define __VTX_BENCH_SCENE__
 
 #include "util.hpp"
+#include <core/chemdb/color.hpp>
 #include <core/struct/molecule.hpp>
 #include <renderer/proxy/molecule.hpp>
 #include <renderer/renderer.hpp>
@@ -14,6 +15,12 @@ namespace VTX::Bench
 	class Scene
 	{
 	  public:
+		Scene()
+		{
+			_colorLayout			 = Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
+			_proxyLayoutColor.colors = &_colorLayout;
+		}
+
 		Renderer::Proxy::Molecule & addMolecule( const std::string & p_name )
 		{
 			using namespace Util;
@@ -30,17 +37,17 @@ namespace VTX::Bench
 			_molecules.back()->transform
 				= Math::translate( _molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
 			IO::Util::SecondaryStructure::computeStride( *_molecules.back() );
-			_proxies.emplace_back( _proxify( *_molecules.back() ) );
+			_proxyMolecules.emplace_back( _proxify( *_molecules.back() ) );
 			_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
 
-			return *_proxies.back();
+			return *_proxyMolecules.back();
 		};
 
 		void removeMolecule( const size_t p_index )
 		{
-			_proxies[ p_index ]->onRemove();
+			_proxyMolecules[ p_index ]->onRemove();
 			_molecules.erase( _molecules.begin() + p_index );
-			_proxies.erase( _proxies.begin() + p_index );
+			_proxyMolecules.erase( _proxyMolecules.begin() + p_index );
 			_directions.erase( _directions.begin() + p_index );
 		}
 
@@ -48,7 +55,7 @@ namespace VTX::Bench
 		void removeAllMolecules( Renderer::Renderer * const p_renderer )
 		{
 			std::vector<Renderer::Proxy::Molecule *> proxies;
-			for ( auto & proxy : _proxies )
+			for ( auto & proxy : _proxyMolecules )
 			{
 				proxies.push_back( proxy.get() );
 			}
@@ -56,7 +63,7 @@ namespace VTX::Bench
 			p_renderer->removeProxyMolecules( proxies );
 
 			_molecules.clear();
-			_proxies.clear();
+			_proxyMolecules.clear();
 			_directions.clear();
 		}
 
@@ -71,22 +78,32 @@ namespace VTX::Bench
 			for ( auto & molecule : _molecules )
 			{
 				molecule->transform = Util::Math::rotate( molecule->transform, p_deltaTime, _directions[ i ] );
-				_proxies[ i++ ]->onTransform();
+				_proxyMolecules[ i++ ]->onTransform();
 			}
 		}
 
 		inline const std::vector<std::unique_ptr<Core::Struct::Molecule>> & getMolecules() const { return _molecules; }
 		inline const std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> & getProxiesMolecules() const
 		{
-			return _proxies;
+			return _proxyMolecules;
 		}
+		inline const Core::ChemDB::Color::ColorLayout & getColorLayout() const { return _colorLayout; }
+		inline void setColorLayout( const Core::ChemDB::Color::ColorLayout & p_colorLayout )
+		{
+			_colorLayout = p_colorLayout;
+			_proxyLayoutColor.onChange();
+		}
+		inline Renderer::Proxy::ColorLayout & getProxyColorLayout() { return _proxyLayoutColor; }
 
 		bool isUpdate = false;
 
 	  private:
 		std::vector<std::unique_ptr<Core::Struct::Molecule>>	_molecules;
-		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxies;
+		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxyMolecules;
 		std::vector<Vec3f>										_directions;
+
+		Core::ChemDB::Color::ColorLayout _colorLayout;
+		Renderer::Proxy::ColorLayout	 _proxyLayoutColor;
 
 		std::unique_ptr<Renderer::Proxy::Molecule> _proxify( const Core::Struct::Molecule & p_molecule )
 		{
