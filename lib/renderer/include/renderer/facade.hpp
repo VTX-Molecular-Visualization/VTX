@@ -34,6 +34,15 @@ namespace VTX::Renderer
 		inline void setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }
 
 		inline void addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
+		inline void removeProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->removeProxyMolecule( p_proxy ); }
+		inline void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+		{
+			_renderer->addProxyMolecules( p_proxies );
+		}
+		inline void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+		{
+			_renderer->removeProxyMolecules( p_proxies );
+		}
 
 		// inline void addProxyMesh( Proxy::Mesh & p_proxy ) { _renderer->addProxyMesh( p_proxy ); }
 

@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include <core/struct/molecule.hpp>
 #include <renderer/proxy/molecule.hpp>
+#include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math.hpp>
 
@@ -43,6 +44,22 @@ namespace VTX::Bench
 			_directions.erase( _directions.begin() + p_index );
 		}
 
+		// TODO: remove renderer from here.
+		void removeAllMolecules( Renderer::Renderer * const p_renderer )
+		{
+			std::vector<Renderer::Proxy::Molecule *> proxies;
+			for ( auto & proxy : _proxies )
+			{
+				proxies.push_back( proxy.get() );
+			}
+
+			p_renderer->removeProxyMolecules( proxies );
+
+			_molecules.clear();
+			_proxies.clear();
+			_directions.clear();
+		}
+
 		void update( const float p_deltaTime )
 		{
 			if ( !isUpdate )
@@ -77,47 +94,35 @@ namespace VTX::Bench
 			const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;
 			const size_t									sizeResidue = p_molecule.residueOriginalIds.size();
 
-			// Generate.
-			static std::vector<std::unique_ptr<std::vector<float>>> vecRadii;
-			static std::vector<std::unique_ptr<std::vector<uchar>>> vecColors;
-			static std::vector<std::unique_ptr<std::vector<uint>>>	vecIdAtoms;
-			static std::vector<std::unique_ptr<std::vector<uint>>>	vecIdResidues;
-			static std::vector<std::unique_ptr<std::vector<uchar>>> vecColorResidues;
-
-			auto   colorAtoms = std::make_unique<std::vector<uchar>>( sizeAtoms );
+			auto   atomColors = std::vector<uchar>( sizeAtoms );
 			size_t i		  = 0;
 			std::generate(
-				colorAtoms->begin(),
-				colorAtoms->end(),
+				atomColors.begin(),
+				atomColors.end(),
 				[ & ] { return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] ); }
 			);
-			vecColors.emplace_back( std::move( colorAtoms ) );
 
-			auto radii = std::make_unique<std::vector<float>>( sizeAtoms );
-			i		   = 0;
+			auto atomRadii = std::vector<float>( sizeAtoms );
+			i			   = 0;
 			std::generate(
-				radii->begin(),
-				radii->end(),
+				atomRadii.begin(),
+				atomRadii.end(),
 				[ & ] { return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ]; }
 			);
-			vecRadii.emplace_back( std::move( radii ) );
 
-			auto idAtoms = std::make_unique<std::vector<uint>>( sizeAtoms );
-			std::iota( idAtoms->begin(), idAtoms->end(), 0 );
-			vecIdAtoms.emplace_back( std::move( idAtoms ) );
+			auto atomIds = std::vector<uint>( sizeAtoms );
+			std::iota( atomIds.begin(), atomIds.end(), 0 );
 
-			auto idResidues = std::make_unique<std::vector<uint>>( sizeResidue );
-			std::iota( idResidues->begin(), idResidues->end(), 0 );
-			vecIdResidues.emplace_back( std::move( idResidues ) );
+			auto residueIds = std::vector<uint>( sizeResidue );
+			std::iota( residueIds.begin(), residueIds.end(), 0 );
 
-			auto colorResidues = std::make_unique<std::vector<uchar>>( sizeResidue );
+			auto residueColors = std::vector<uchar>( sizeResidue );
 			i				   = 0;
 			std::generate(
-				colorResidues->begin(),
-				colorResidues->end(),
+				residueColors.begin(),
+				residueColors.end(),
 				[ & ] { return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] ); }
 			);
-			vecColorResidues.emplace_back( std::move( colorResidues ) );
 
 			return std::make_unique<Renderer::Proxy::Molecule>( Renderer::Proxy::Molecule {
 				&p_molecule.transform,
@@ -129,11 +134,11 @@ namespace VTX::Bench
 				&p_molecule.residueAtomCounts,
 				&p_molecule.chainFirstResidues,
 				&p_molecule.chainResidueCounts,
-				*vecColors.back(),
-				*vecRadii.back(),
-				*vecIdAtoms.back(),
-				*vecColorResidues.back(),
-				*vecIdResidues.back(),
+				atomColors,
+				atomRadii,
+				atomIds,
+				residueColors,
+				residueIds,
 				uint( rand() % 3 ) } );
 		}
 	};

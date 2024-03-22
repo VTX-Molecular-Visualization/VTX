@@ -176,7 +176,12 @@ namespace VTX::Renderer
 		}
 
 		void setProxyCamera( Proxy::Camera & p_proxy );
+
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
+		void removeProxyMolecule( Proxy::Molecule & p_proxy );
+		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
 		void setProxyRepresentations( Proxy::Representations & p_proxy );
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
@@ -272,6 +277,9 @@ namespace VTX::Renderer
 		Proxy::Representations * _proxyRepresentations;
 		Proxy::RenderSettings *	 _proxyRenderSettings;
 		Proxy::Voxels *			 _proxyVoxels;
+
+		void _addProxyMolecule( Proxy::Molecule & p_proxy );
+		void _removeProxyMolecule( Proxy::Molecule & p_proxy );
 
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const

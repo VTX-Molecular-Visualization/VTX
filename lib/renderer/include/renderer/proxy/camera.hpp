@@ -12,11 +12,11 @@ namespace VTX::Renderer::Proxy
 		const Mat4f * matrixView;
 		const Mat4f * matrixProjection;
 
-		const Vec3f & cameraPosition;
-		const Vec2i & mousePosition;
-		const float	  cameraNear;
-		const float	  cameraFar;
-		const bool	  isPerspective;
+		const Vec3f cameraPosition;
+		const Vec2i mousePosition;
+		const float cameraNear;
+		const float cameraFar;
+		const bool	isPerspective;
 
 		Util::Callback<>			 onMatrixView;
 		Util::Callback<>			 onMatrixProjection;

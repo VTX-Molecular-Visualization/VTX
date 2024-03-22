@@ -104,7 +104,39 @@ namespace VTX::Renderer
 			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
 	}
 
+#pragma region Molecules
+
 	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
+	{
+		_addProxyMolecule( p_proxy );
+		_refreshDataMolecules();
+	}
+
+	void Renderer::removeProxyMolecule( Proxy::Molecule & p_proxy )
+	{
+		_removeProxyMolecule( p_proxy );
+		_refreshDataMolecules();
+	}
+
+	void Renderer::addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	{
+		for ( Proxy::Molecule * proxy : p_proxies )
+		{
+			_addProxyMolecule( *proxy );
+		}
+		_refreshDataMolecules();
+	}
+
+	void Renderer::removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	{
+		for ( Proxy::Molecule * proxy : p_proxies )
+		{
+			_removeProxyMolecule( *proxy );
+		}
+		_refreshDataMolecules();
+	}
+
+	void Renderer::_addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		assert( hasContext() );
 		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations->size() );
@@ -118,8 +150,6 @@ namespace VTX::Renderer
 		_proxiesMolecules.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
-
-		_refreshDataMolecules();
 
 		// Set up callbacks.
 		p_proxy.onTransform += [ this, &p_proxy ]()
@@ -167,14 +197,7 @@ namespace VTX::Renderer
 			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.offset );
 		};
 
-		p_proxy.onRemove += [ this, &p_proxy ]()
-		{
-			std::erase( _proxiesMolecules, &p_proxy );
-			_cacheSpheresCylinders.erase( &p_proxy );
-			_cacheRibbons.erase( &p_proxy );
-
-			_refreshDataMolecules();
-		};
+		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxyMolecule( p_proxy ); };
 
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
@@ -211,6 +234,15 @@ namespace VTX::Renderer
 		};
 		*/
 	}
+
+	void Renderer::_removeProxyMolecule( Proxy::Molecule & p_proxy )
+	{
+		std::erase( _proxiesMolecules, &p_proxy );
+		_cacheSpheresCylinders.erase( &p_proxy );
+		_cacheRibbons.erase( &p_proxy );
+	}
+
+#pragma endregion Molecules
 
 	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
 
