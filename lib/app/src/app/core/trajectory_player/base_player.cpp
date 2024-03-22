@@ -17,7 +17,7 @@ namespace VTX::App::Core::TrajectoryPlayer
 	size_t BasePlayer::getCurrent() const { return _current; }
 	void   BasePlayer::setCurrent( const size_t p_frameIndex )
 	{
-		if ( _current = p_frameIndex )
+		if ( _current != p_frameIndex )
 		{
 			_current = p_frameIndex;
 			onFrameChange( p_frameIndex );
