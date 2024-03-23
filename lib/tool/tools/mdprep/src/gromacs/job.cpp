@@ -106,6 +106,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	void submitGromacsJob( const fs::path & p_gmxExe, GromacsJobData & p_args )
 	{
+		auto		tmp = qgetenv( "GMXLIB" );
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
