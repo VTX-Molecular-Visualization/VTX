@@ -3,9 +3,11 @@
 #include <QOpenGLContext>
 #include <app/application/renderer/renderer.hpp>
 #include <app/application/scene.hpp>
+#include <app/application/system/ecs_system.hpp>
 #include <app/application/system/renderer.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/proxy_camera.hpp>
+#include <app/component/render/proxy_color_layout.hpp>
 #include <app/component/render/proxy_molecule.hpp>
 #include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
@@ -38,7 +40,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
 
 		rendererFacade.build( defaultFramebufferObject() );
-		rendererFacade.setProxyColorLayout( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL );
+		App::Component::Render::ProxyColorLayout & colorLayout
+			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
+		colorLayout.setup( rendererFacade );
+		rendererFacade.setProxyColorLayout( colorLayout.getProxy().proxy() );
 		rendererFacade.setProxyRepresentations( { VTX::Renderer::Proxy::Representation() } );
 
 		App::Component::Render::ProxyCamera & proxyCamera

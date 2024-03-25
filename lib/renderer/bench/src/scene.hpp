@@ -18,7 +18,7 @@ namespace VTX::Bench
 		Scene()
 		{
 			_colorLayout			 = Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
-			_proxyLayoutColor.colors = &_colorLayout;
+			_proxyLayoutColor.colors = &( _colorLayout.layout );
 		}
 
 		Renderer::Proxy::Molecule & addMolecule( const std::string & p_name )

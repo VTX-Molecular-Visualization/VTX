@@ -101,8 +101,10 @@ int main( int, char ** )
 			}
 			else if ( p_key == SDL_SCANCODE_F5 )
 			{
-				VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
-				std::generate( colorLayout.begin(), colorLayout.end(), [] { return Color::Rgba::random(); } );
+				VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+				std::generate(
+					colorLayout.layout.begin(), colorLayout.layout.end(), [] { return Color::Rgba::random(); }
+				);
 				scene.setColorLayout( colorLayout );
 			}
 		};

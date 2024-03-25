@@ -79,7 +79,7 @@ namespace VTX::App::Core::ECS
 		}
 
 		template<ECS_Component Type, ECS_Component... Other>
-		View<Type, Other...> getComponents() const
+		View<Type, Other...> findComponents() const
 		{
 			return View<Type, Other...>( _enttRegistry );
 		}

@@ -33,8 +33,9 @@ namespace VTX::App::Test::Util
 			renderer.setProxyRepresentations( representations );
 
 			// Default color layout.
-			static auto JMOL = VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
-			renderer.setProxyColorLayout( JMOL );
+			static auto							JMOL			= VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
+			static Renderer::Proxy::ColorLayout jmolColorLayout = { &JMOL.layout };
+			renderer.setProxyColorLayout( jmolColorLayout );
 
 			isInit = true;
 		}
