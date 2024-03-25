@@ -3,6 +3,7 @@
 
 #include "util.hpp"
 #include <core/chemdb/color.hpp>
+#include <core/struct/color_layout.hpp>
 #include <core/struct/molecule.hpp>
 #include <renderer/proxy/molecule.hpp>
 #include <renderer/renderer.hpp>
@@ -87,8 +88,8 @@ namespace VTX::Bench
 		{
 			return _proxyMolecules;
 		}
-		inline const Core::ChemDB::Color::ColorLayout & getColorLayout() const { return _colorLayout; }
-		inline void setColorLayout( const Core::ChemDB::Color::ColorLayout & p_colorLayout )
+		inline const Core::Struct::ColorLayout & getColorLayout() const { return _colorLayout; }
+		inline void								 setColorLayout( const Core::Struct::ColorLayout & p_colorLayout )
 		{
 			_colorLayout = p_colorLayout;
 			_proxyLayoutColor.onChange();
@@ -102,8 +103,8 @@ namespace VTX::Bench
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxyMolecules;
 		std::vector<Vec3f>										_directions;
 
-		Core::ChemDB::Color::ColorLayout _colorLayout;
-		Renderer::Proxy::ColorLayout	 _proxyLayoutColor;
+		Core::Struct::ColorLayout	 _colorLayout;
+		Renderer::Proxy::ColorLayout _proxyLayoutColor;
 
 		std::unique_ptr<Renderer::Proxy::Molecule> _proxify( const Core::Struct::Molecule & p_molecule )
 		{

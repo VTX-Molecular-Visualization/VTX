@@ -2,8 +2,8 @@
 #define __VTX_APP_COMPONENT_RENDER_PROXY_COLOR_LAYOUT__
 
 #include "app/application/renderer/proxy_wrapper.hpp"
-#include <core/chemdb/color.hpp>
 #include <renderer/facade.hpp>
+#include <renderer/proxy/color_layout.hpp>
 #include <util/types.hpp>
 #include <vector>
 

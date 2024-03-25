@@ -1,6 +1,7 @@
 #include "app/component/render/proxy_color_layout.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/representation/color_layout.hpp"
+#include <core/chemdb/color.hpp>
 
 namespace VTX::App::Component::Render
 {

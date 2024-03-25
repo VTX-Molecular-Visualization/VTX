@@ -203,7 +203,7 @@ namespace VTX::Bench
 					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						VTX::Core::Struct::ColorLayout colorLayout;
 						std::generate(
 							colorLayout.layout.begin(),
 							colorLayout.layout.end(),
@@ -213,7 +213,7 @@ namespace VTX::Bench
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout;
+						VTX::Core::Struct::ColorLayout colorLayout;
 						std::generate(
 							colorLayout.layout.begin(),
 							colorLayout.layout.end(),

@@ -1,6 +1,6 @@
-#include "core/chemdb/color.hpp"
+#include "core/struct/color_layout.hpp"
 
-namespace VTX::Core::ChemDB::Color
+namespace VTX::Core::Struct
 {
 	ColorLayout::ColorLayout() { layout.resize( LAYOUT_SIZE ); }
 	ColorLayout::ColorLayout( const std::vector<Util::Color::Rgba> & p_layout )
@@ -9,4 +9,4 @@ namespace VTX::Core::ChemDB::Color
 		layout = p_layout;
 	}
 
-} // namespace VTX::Core::ChemDB::Color
+} // namespace VTX::Core::Struct

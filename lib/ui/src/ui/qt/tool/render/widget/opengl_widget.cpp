@@ -11,7 +11,6 @@
 #include <app/component/render/proxy_molecule.hpp>
 #include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
-#include <core/chemdb/color.hpp>
 #include <renderer/proxy/representations.hpp>
 #include <util/logger.hpp>
 
