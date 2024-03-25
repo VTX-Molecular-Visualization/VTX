@@ -10,7 +10,15 @@
 
 namespace VTX::Core::ChemDB::Color
 {
-	using ColorLayout = std::vector<Util::Color::Rgba>;
+	class ColorLayout
+	{
+	  public:
+		static inline const size_t LAYOUT_SIZE = 256;
+
+		ColorLayout();
+		ColorLayout( const std::vector<Util::Color::Rgba> & p_layout );
+		std::vector<Util::Color::Rgba> layout;
+	};
 
 	constexpr int LAYOUT_OFFSET_ATOMS	 = 0;
 	constexpr int LAYOUT_OFFSET_RESIDUES = 130;

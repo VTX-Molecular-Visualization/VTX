@@ -1,6 +1,6 @@
-#include "app/core/trajectory_player/revert_loop.hpp"
+#include "app/core/player/revert_loop.hpp"
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	void RevertLoop::reset() { setCurrent( getCount() - 1 ); }
 	void RevertLoop::nextFrame( const size_t p_count )
@@ -16,4 +16,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		}
 	}
 
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player

@@ -1,4 +1,4 @@
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	class BasePlayer;
 
@@ -8,4 +8,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 	class PingPong;
 	class RevertLoop;
 	class RevertOnce;
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player
