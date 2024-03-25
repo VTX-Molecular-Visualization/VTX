@@ -1,12 +1,13 @@
-#ifndef __VTX_APP_APPLICATION_SETTING__
-#define __VTX_APP_APPLICATION_SETTING__
+#ifndef __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
+#define __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
 
 #include "app/application/system/serializer.hpp"
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <util/json/basic_json.hpp>
 
-namespace VTX::App::Application
+namespace VTX::App::Application::Settings
 {
 	class BaseSetting
 	{
@@ -71,6 +72,5 @@ namespace VTX::App::Application
 		T				 _value;
 		std::optional<T> _defaultValue;
 	};
-
-} // namespace VTX::App::Application
+} // namespace VTX::App::Application::Settings
 #endif

@@ -10,8 +10,8 @@
 namespace VTX::App::Internal::Serialization
 {
 	// Scene
-	Util::JSon::Object serialize( const Application::Scene & );
-	void			   deserialize( const Util::JSon::Object &, Application::Scene & );
+	Util::JSon::Object serialize( const App::Application::Scene & );
+	void			   deserialize( const Util::JSon::Object &, App::Application::Scene & );
 
 	// SceneItemComponent
 	Util::JSon::Object serialize( const Component::Scene::SceneItemComponent & p_component );

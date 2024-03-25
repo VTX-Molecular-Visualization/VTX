@@ -5,7 +5,6 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
-#include <app/application/settings.hpp>
 
 namespace VTX::UI::QT::Controller
 {

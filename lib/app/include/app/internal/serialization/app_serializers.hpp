@@ -2,6 +2,7 @@
 #define __VTX_APP_INTERNAL_SERIALIZATION_APP_SERIALIZERS__
 
 #include "app/application/_fwd.hpp"
+#include "app/application/settings/_fwd.hpp"
 #include "app/core/player/_fwd.hpp"
 #include "app/core/serialization/version.hpp"
 #include <util/json/json.hpp>
@@ -22,8 +23,8 @@ namespace VTX::App::Internal::Serialization
 	void			   deserialize( const Util::JSon::Object &, VTXApp & );
 
 	// Settings
-	Util::JSon::Object serialize( const App::Application::Settings & );
-	void			   deserialize( const Util::JSon::Object &, App::Application::Settings & );
+	Util::JSon::Object serialize( const App::Application::Settings::Settings & );
+	void			   deserialize( const Util::JSon::Object &, App::Application::Settings::Settings & );
 
 	// TrajectoryPlayers
 	Util::JSon::Object serialize( const App::Core::Player::BasePlayer & );

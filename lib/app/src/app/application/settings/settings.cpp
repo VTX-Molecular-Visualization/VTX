@@ -1,6 +1,6 @@
-#include "app/application/settings.hpp"
+#include "app/application/settings/settings.hpp"
 
-namespace VTX::App::Application
+namespace VTX::App::Application::Settings
 {
 	Settings::Settings( const Settings & p_source )
 	{
@@ -46,4 +46,4 @@ namespace VTX::App::Application
 
 		return false;
 	}
-} // namespace VTX::App::Application
+} // namespace VTX::App::Application::Settings

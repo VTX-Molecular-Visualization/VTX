@@ -1,5 +1,5 @@
 #include "util/app.hpp"
-#include <app/application/settings.hpp>
+#include <app/application/settings/settings.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -17,7 +17,7 @@ TEST_CASE( "VTX_APP - Settings", "[integration]" )
 		THREE
 	};
 
-	Application::Settings settings = Application::Settings();
+	Application::Settings::Settings settings = Application::Settings::Settings();
 
 	// Bool
 	settings.referenceSetting( "BOOL_SETTING", true );

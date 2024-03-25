@@ -1,4 +1,6 @@
-#include "app/application/settings.hpp"
+#include "app/internal/serialization/app_serializers.hpp"
+#include "app/application/settings/base_setting.hpp"
+#include "app/application/settings/settings.hpp"
 #include "app/application/system/serializer.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/once.hpp"
@@ -6,7 +8,6 @@
 #include "app/core/player/revert_loop.hpp"
 #include "app/core/player/revert_once.hpp"
 #include "app/core/player/stop.hpp"
-#include "app/internal/serialization/all_serializers.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Internal::Serialization
@@ -28,9 +29,15 @@ namespace VTX::App::Internal::Serialization
 	void deserialize( const Util::JSon::Object & p_json, VTXApp & p_app ) { throw NotImplementedException(); }
 
 	// Settings
-	Util::JSon::Object serialize( const App::Application::Settings & p_settings )
+	template<typename T>
+	void deserializeSetting( const Util::JSon::Object & p_json, T & p_setting )
 	{
-		const Application::Settings::SettingMap & settingMap = p_settings.getSettingMap();
+		p_setting.deserialize( p_json );
+	}
+
+	Util::JSon::Object serialize( const App::Application::Settings::Settings & p_settings )
+	{
+		const App::Application::Settings::Settings::SettingMap & settingMap = p_settings.getSettingMap();
 
 		Util::JSon::Object settingMapJSon = Util::JSon::Object();
 
@@ -41,9 +48,9 @@ namespace VTX::App::Internal::Serialization
 
 		return { { "MAP", settingMapJSon } };
 	}
-	void deserialize( const Util::JSon::Object & p_json, App::Application::Settings & p_settings )
+	void deserialize( const Util::JSon::Object & p_json, App::Application::Settings::Settings & p_settings )
 	{
-		const Application::Settings::SettingMap & settingMap = p_settings.getSettingMap();
+		const App::Application::Settings::Settings::SettingMap & settingMap = p_settings.getSettingMap();
 
 		if ( !p_json.contains( "MAP" ) )
 			throw( IOException( "Unreadable Setting file." ) );

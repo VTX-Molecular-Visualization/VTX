@@ -1,35 +1,17 @@
-#ifndef __VTX_APP_APPLICATION_SETTINGS__
-#define __VTX_APP_APPLICATION_SETTINGS__
+#ifndef __VTX_APP_APPLICATION_SETTINGS_SETTINGS__
+#define __VTX_APP_APPLICATION_SETTINGS_SETTINGS__
 
-#include "app/application/setting.hpp"
-#include "app/core/system/base_system.hpp"
+#include "app/application/settings/base_setting.hpp"
+#include "app/application/settings/setting_change_info.hpp"
 #include <cassert>
 #include <map>
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
 
-namespace VTX::App::Application
+namespace VTX::App::Application::Settings
 {
-	class BaseSettingChangeEvent
-	{
-	  public:
-		BaseSettingChangeEvent( const std::string & p_key ) : key( p_key ) {};
-		const std::string key;
-	};
-
-	template<typename T>
-	class SettingChangeEvent : public BaseSettingChangeEvent
-	{
-	  public:
-		SettingChangeEvent( const std::string & p_key, const T & p_oldValue, const T & p_newValue ) :
-			BaseSettingChangeEvent( p_key ), oldValue( p_oldValue ), newValue( p_newValue ) {};
-
-		const T & oldValue;
-		const T & newValue;
-	};
-
-	class Settings : public Core::System::BaseSystem
+	class Settings
 	{
 	  public:
 		using SettingMap = std::map<std::string, std::unique_ptr<BaseSetting>>;
@@ -47,14 +29,14 @@ namespace VTX::App::Application
 		}
 
 		template<typename T>
-		const T & get( const std::string p_key ) const
+		const T & get( const std::string & p_key ) const
 		{
 			assert( _settings.contains( p_key ) );
 			return _getConstSetting<T>( p_key ).get();
 		}
 
 		template<typename T>
-		void set( const std::string p_key, const T & p_value )
+		void set( const std::string & p_key, const T & p_value )
 		{
 			assert( _settings.contains( p_key ) );
 
@@ -63,11 +45,7 @@ namespace VTX::App::Application
 			if ( previousValue != p_value )
 			{
 				_getSetting<T>( p_key ).set( p_value );
-
-				const std::unique_ptr<SettingChangeEvent<T>> eventData
-					= std::make_unique<SettingChangeEvent<T>>( p_key, previousValue, p_value );
-
-				onSetting( *eventData );
+				onSetting( SettingChangeInfo<T>( p_key, previousValue, p_value ) );
 			}
 		}
 
@@ -80,7 +58,7 @@ namespace VTX::App::Application
 		friend bool operator==( const Settings & p_lhs, const Settings & p_rhs );
 		friend bool operator!=( const Settings & p_lhs, const Settings & p_rhs );
 
-		Util::Callback<BaseSettingChangeEvent> onSetting;
+		Util::Callback<BaseSettingChangeInfo> onSetting;
 
 	  private:
 		// Mutable to allow bracket access in const functions (contains checked in asserts)
@@ -98,5 +76,6 @@ namespace VTX::App::Application
 		}
 	};
 
-} // namespace VTX::App::Application
+} // namespace VTX::App::Application::Settings
+
 #endif
