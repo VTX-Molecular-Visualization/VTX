@@ -30,6 +30,10 @@ namespace VTX::Tool::Mdprep
 namespace VTX::Tool::Mdprep::Gromacs
 {
 
+	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept
+	{
+		p_text.replace( p_text.find( p_pattern ), strnlen_s( p_pattern, 0xff ), p_repl );
+	}
 	const fs::path g_defaultFfDirectoryRelativePath
 		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
 	const fs::path & defaultFfDirectoryRelativePath() noexcept { return g_defaultFfDirectoryRelativePath; }
@@ -37,6 +41,11 @@ namespace VTX::Tool::Mdprep::Gromacs
 	const fs::path g_defaultGmxBinaryRelativePath
 		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx.exe" ).make_preferred();
 	const fs::path & defaultGmxBinaryRelativePath() noexcept { return g_defaultGmxBinaryRelativePath; }
+
+	const fs::path g_defaultGmxTemplatesRelativePath
+		= fs::path { "data" } / "tools" / "mdprep" / "gromacs" / "templates";
+
+	const fs::path & defaultGmxTemplatesRelativePath() noexcept { return g_defaultGmxTemplatesRelativePath; }
 
 	void declareFfDirectory( const std::filesystem::path & p_path ) noexcept
 	{

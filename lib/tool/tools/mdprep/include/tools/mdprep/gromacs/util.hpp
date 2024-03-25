@@ -14,11 +14,17 @@ namespace VTX::Tool::Mdprep
 
 namespace VTX::Tool::Mdprep::Gromacs
 {
+	struct GromacsJobData;
+	struct CumulativeOuputFiles;
+
 	// Return the position of default forcefields packaged with vtx, relative to the vtx executable folder
 	const fs::path & defaultFfDirectoryRelativePath() noexcept;
 
 	// Return the position of gmx binary relative to the vtx executable folder
 	const fs::path & defaultGmxBinaryRelativePath() noexcept;
+
+	// Return the position of templates folder relative to the vtx executable folder
+	const fs::path & defaultGmxTemplatesRelativePath() noexcept;
 
 	// Show gromacs where to look for forcefields
 	void declareFfDirectory( const fs::path & ) noexcept;
@@ -26,8 +32,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Fill the job report with results on the job data. Aims to indentify if all expected output files are here and if
 	// there is no error message in any of the chanels.
 	void checkJobResults( GromacsJobData & ) noexcept;
-
-	struct CumulativeOuputFiles;
 
 	// TODO Integrate this function on other prepareJob
 	// Return the first string with matching ending from the list.
@@ -41,11 +45,13 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Erase file's currrent content if file already exists
 	void writeIntoFile( const fs::path &, const std::string & ) noexcept;
 
-	struct GromacsJobData;
 	void setLastArgumentAsExpectedOutputFile( GromacsJobData & ) noexcept;
 
 	// return absolute path to a temporary directory that is guaranteed to be new and empty
 	fs::path createNewEmptyTempDirectory() noexcept;
+
+	// replace null-terminated characters by the repl argument into the string
+	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::Gromacs
 
