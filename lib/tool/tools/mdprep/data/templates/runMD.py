@@ -67,7 +67,7 @@ _runMinimizationFailed = False
 
 def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
-    cmdStr = "gmx mdrun -v -deffnm em > em.txt"
+    cmdStr = "gmx mdrun -v -deffnm em %s > em.txt" % ("-nb gpu" if GpuAvailable else "")
     def printFailure(msg):
         print("failed with error : <%s>" % msg)
         print(logErrMsg % "em.log", "em.txt")   
