@@ -10,8 +10,8 @@
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/core/trajectory_player/base_player.hpp"
-#include "app/core/trajectory_player/players.hpp"
+#include "app/core/player/base_player.hpp"
+#include "app/core/player/players.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 #include <util/algorithm/range.hpp>
 #include <util/math/range_list.hpp>
@@ -158,8 +158,8 @@ namespace VTX::App::Internal::Serialization
 			return;
 		}
 
-		std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> playerPtr
-			= App::Core::TrajectoryPlayer::Players::get().instantiateItem( playerName );
+		std::unique_ptr<App::Core::Player::BasePlayer> playerPtr
+			= App::Core::Player::Players::get().instantiateItem( playerName );
 		p_component.setPlayer( playerPtr );
 
 		SERIALIZER().deserialize( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );

@@ -79,7 +79,7 @@ namespace VTX::App::Core::ECS
 		}
 
 		template<ECS_Component Type, ECS_Component... Other>
-		View<Type, Other...> getComponents() const
+		View<Type, Other...> findComponents() const
 		{
 			return View<Type, Other...>( _enttRegistry );
 		}
@@ -110,9 +110,9 @@ namespace VTX::App::Core::ECS
 		{
 			switch ( p_signal )
 			{
-			case SIGNAL::CONSTRUCT: _enttRegistry.on_construct<C>().connect<Func>( p_receiver ); break;
-			case SIGNAL::UPDATE: _enttRegistry.on_update<C>().connect<Func>( p_receiver ); break;
-			case SIGNAL::DESTROY: _enttRegistry.on_destroy<C>().connect<Func>( p_receiver ); break;
+			case SIGNAL::CONSTRUCT: _enttRegistry.on_construct<C>().template connect<Func>( p_receiver ); break;
+			case SIGNAL::UPDATE: _enttRegistry.on_update<C>().template connect<Func>( p_receiver ); break;
+			case SIGNAL::DESTROY: _enttRegistry.on_destroy<C>().template connect<Func>( p_receiver ); break;
 			}
 		}
 

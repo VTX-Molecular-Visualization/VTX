@@ -203,17 +203,21 @@ namespace VTX::Bench
 					}
 					if ( ImGui::MenuItem( "Random" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
+						VTX::Core::Struct::ColorLayout colorLayout;
 						std::generate(
-							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::random(); }
+							colorLayout.layout.begin(),
+							colorLayout.layout.end(),
+							[] { return Util::Color::Rgba::random(); }
 						);
 						p_scene->setColorLayout( colorLayout );
 					}
 					if ( ImGui::MenuItem( "Random pastel" ) )
 					{
-						VTX::Core::ChemDB::Color::ColorLayout colorLayout( 255 );
+						VTX::Core::Struct::ColorLayout colorLayout;
 						std::generate(
-							colorLayout.begin(), colorLayout.end(), [] { return Util::Color::Rgba::randomPastel(); }
+							colorLayout.layout.begin(),
+							colorLayout.layout.end(),
+							[] { return Util::Color::Rgba::randomPastel(); }
 						);
 						p_scene->setColorLayout( colorLayout );
 					}

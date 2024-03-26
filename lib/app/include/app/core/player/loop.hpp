@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_TRAJECTORY_PLAYER_LOOP__
-#define __VTX_APP_CORE_TRAJECTORY_PLAYER_LOOP__
+#ifndef __VTX_APP_CORE_PLAYER_LOOP__
+#define __VTX_APP_CORE_PLAYER_LOOP__
 
-#include "base_player.hpp"
-#include "players.hpp"
+#include "app/core/player/base_player.hpp"
+#include "app/core/player/players.hpp"
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	class Loop : public BasePlayer
 	{
@@ -26,5 +26,5 @@ namespace VTX::App::Core::TrajectoryPlayer
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
 	};
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player
 #endif

@@ -87,9 +87,22 @@ namespace VTX::App::Application::ECS
 		}
 
 		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
-		Core::ECS::View<Type, Other...> getComponents() const
+		Type & findComponent()
 		{
-			return _registry.getComponents<Type, Other...>();
+			Core::ECS::View<Type, Other...> view = _registry.findComponents<Type, Other...>();
+			return getComponent<Type>( *( view.begin() ) );
+		}
+		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
+		const Type & findComponent() const
+		{
+			Core::ECS::View<Type, Other...> view = _registry.findComponents<Type, Other...>();
+			return getComponent<Type>( *( view.begin() ) );
+		}
+
+		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
+		Core::ECS::View<Type, Other...> findComponents() const
+		{
+			return _registry.findComponents<Type, Other...>();
 		}
 
 		template<Core::ECS::ECS_Component C>

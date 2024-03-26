@@ -4,9 +4,9 @@
 #include <app/application/system/renderer.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/proxy_camera.hpp>
+#include <app/component/render/proxy_color_layout.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/chemdb/color.hpp>
 #include <io/internal/filesystem.hpp>
 #include <string>
 
@@ -33,8 +33,10 @@ namespace VTX::App::Test::Util
 			renderer.setProxyRepresentations( representations );
 
 			// Default color layout.
-			static auto JMOL = VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
-			renderer.setProxyColorLayout( JMOL );
+			Component::Render::ProxyColorLayout & proxyColorLayout
+				= MAIN_REGISTRY().findComponent<Component::Render::ProxyColorLayout>();
+			proxyColorLayout.setup( renderer );
+			renderer.setProxyColorLayout( proxyColorLayout.getProxy().proxy() );
 
 			isInit = true;
 		}

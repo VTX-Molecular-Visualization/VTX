@@ -3,7 +3,7 @@
 
 #include "_fwd.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/core/trajectory_player/base_player.hpp"
+#include "app/core/player/base_player.hpp"
 #include "enum_trajectory.hpp"
 #include <util/callback.hpp>
 
@@ -28,8 +28,8 @@ namespace VTX::App::Component::Chemistry
 
 		size_t getFrameCount() const;
 
-		App::Core::TrajectoryPlayer::BasePlayer & getPlayer() const { return *_player; }
-		void setPlayer( std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> & p_player );
+		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
+		void							setPlayer( std::unique_ptr<App::Core::Player::BasePlayer> & p_player );
 
 		Util::Callback<size_t> onFrameChange;
 
@@ -37,8 +37,8 @@ namespace VTX::App::Component::Chemistry
 		void _update( const float p_deltaTime );
 		void _referenceUpdateFunction();
 
-		Molecule *												 _moleculePtr = nullptr;
-		std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> _player	  = nullptr;
+		Molecule *									   _moleculePtr = nullptr;
+		std::unique_ptr<App::Core::Player::BasePlayer> _player		= nullptr;
 	};
 } // namespace VTX::App::Component::Chemistry
 #endif

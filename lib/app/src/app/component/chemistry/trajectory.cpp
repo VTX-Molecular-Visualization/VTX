@@ -22,7 +22,7 @@ namespace VTX::App::Component::Chemistry
 
 	size_t Trajectory::getFrameCount() const { return _moleculePtr->getTrajectory().frames.size(); }
 
-	void Trajectory::setPlayer( std::unique_ptr<App::Core::TrajectoryPlayer::BasePlayer> & p_player )
+	void Trajectory::setPlayer( std::unique_ptr<App::Core::Player::BasePlayer> & p_player )
 	{
 		const bool resetPlayer = _player == nullptr;
 

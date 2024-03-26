@@ -2,7 +2,7 @@
 #include "util/app.hpp"
 #include <app/action/application.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/settings.hpp>
+#include <app/application/system/settings_system.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -343,7 +343,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
-	Application::Settings settings = Application::Settings();
+	App::Application::Settings::Settings settings = App::Application::Settings::Settings();
 
 	settings.referenceSetting( "INT_SETTING", 0 );
 	settings.referenceSetting( "FLOAT_SETTING", 0.f );
@@ -391,12 +391,12 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
 
 	// Setting version check
-	Application::Settings settingsV0 = Application::Settings();
+	App::Application::Settings::Settings settingsV0 = App::Application::Settings::Settings();
 	settingsV0.referenceSetting<int>( "SETTING_1", 0 );
 	settingsV0.referenceSetting<int>( "SETTING_2", 0 );
 	settingsV0.referenceSetting<std::string>( "SETTING_3", "<default>" );
 
-	Application::Settings settingsV1 = Application::Settings();
+	App::Application::Settings::Settings settingsV1 = App::Application::Settings::Settings();
 	settingsV1.referenceSetting<int>( "SETTING_1", 0 ); // This setting has been kept
 	// settingsV1.referenceSetting<int>( "SETTING_2" ); // This setting has been removed
 	settingsV1.referenceSetting<float>( "SETTING_3", 0.f );						// This setting has changed type
@@ -413,9 +413,10 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settingsV1.get<float>( "SETTING_3" ) == 0.f );					  // Don't change (type issue)
 	CHECK( settingsV1.get<std::string>( "SETTING_4" ) == "<set_4_default>" ); // Don't change (doesn't exists before)
 
-	SERIALIZER().registerUpgrade<Application::Settings>(
+	SERIALIZER().registerUpgrade<App::Application::Settings::Settings>(
 		{ 1, 0, 0 },
-		[]( Util::JSon::Object & p_json, Application::Settings & p_settings ) { p_json[ "MAP" ][ "SETTING_3" ] = 12.f; }
+		[]( Util::JSon::Object & p_json, App::Application::Settings::Settings & p_settings )
+		{ p_json[ "MAP" ][ "SETTING_3" ] = 12.f; }
 	);
 
 	reader.read();

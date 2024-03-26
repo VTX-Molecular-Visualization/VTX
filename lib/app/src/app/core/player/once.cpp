@@ -1,6 +1,6 @@
-#include "app/core/trajectory_player/once.hpp"
+#include "app/core/player/once.hpp"
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	void Once::reset() { setCurrent( 0 ); }
 	void Once::nextFrame( const size_t p_count )
@@ -18,4 +18,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		}
 	}
 
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player

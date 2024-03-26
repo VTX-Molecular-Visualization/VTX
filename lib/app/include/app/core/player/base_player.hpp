@@ -1,14 +1,13 @@
-#ifndef __VTX_APP_CORE_TRAJECTORY_PLAYER_BASE_PLAYER__
-#define __VTX_APP_CORE_TRAJECTORY_PLAYER_BASE_PLAYER__
+#ifndef __VTX_APP_CORE_PLAYER_BASE_PLAYER__
+#define __VTX_APP_CORE_PLAYER_BASE_PLAYER__
 
-#include "app/component/chemistry/_fwd.hpp"
 #include "app/core/collection.hpp"
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	class BasePlayer
 	{
@@ -56,5 +55,5 @@ namespace VTX::App::Core::TrajectoryPlayer
 		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
 	};
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player
 #endif

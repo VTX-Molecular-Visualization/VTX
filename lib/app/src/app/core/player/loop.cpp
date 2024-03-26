@@ -1,6 +1,6 @@
-#include "app/core/trajectory_player/loop.hpp"
+#include "app/core/player/loop.hpp"
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	void Loop::reset() { setCurrent( 0 ); }
 	void Loop::nextFrame( const size_t p_count )
@@ -9,4 +9,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 		setCurrent( newFrameIndex );
 	}
 
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player

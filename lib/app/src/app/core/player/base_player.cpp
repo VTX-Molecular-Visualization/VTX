@@ -1,7 +1,7 @@
-#include "app/core/trajectory_player/base_player.hpp"
+#include "app/core/player/base_player.hpp"
 #include <util/math.hpp>
 
-namespace VTX::App::Core::TrajectoryPlayer
+namespace VTX::App::Core::Player
 {
 	void BasePlayer::setCount( const size_t p_count )
 	{
@@ -79,4 +79,4 @@ namespace VTX::App::Core::TrajectoryPlayer
 			onFPSChange( p_fps );
 		}
 	}
-} // namespace VTX::App::Core::TrajectoryPlayer
+} // namespace VTX::App::Core::Player

@@ -2,7 +2,6 @@
 #define __VTX_BENCH_UTIL__
 
 #include <core/chemdb/atom.hpp>
-#include <core/chemdb/color.hpp>
 #include <core/chemdb/secondary_structure.hpp>
 #include <io/reader/molecule.hpp>
 #include <io/util/secondary_structure.hpp>
