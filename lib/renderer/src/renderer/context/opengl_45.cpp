@@ -44,7 +44,6 @@ namespace VTX::Renderer::Context
 			loaded = true;
 		}
 
-		/*
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
@@ -76,7 +75,6 @@ namespace VTX::Renderer::Context
 
 		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
-		*/
 	}
 
 	void OpenGL45::build(
@@ -189,7 +187,7 @@ namespace VTX::Renderer::Context
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
 			// Check if already created.
-			// assert( _fbos.find( descPassPtr ) == _fbos.end() );
+			// assert( _framebuffers.contains( _getKey( *descPassPtr ) ) == false );
 			{
 				std::vector<GLenum> drawBuffers;
 
@@ -614,18 +612,20 @@ namespace VTX::Renderer::Context
 				const Data & data = std::get<Data>( descIO );
 
 				// Create vao.
-				const Key keyFbo = _getKey( *p_descPassPtr );
-				_vertexArrays.emplace( input.name, std::make_unique<GL::VertexArray>() );
-				_buffers.emplace( input.name + "Ebo", std::make_unique<GL::Buffer>() );
-				auto & vaoData = _vertexArrays[ input.name ];
-				auto & eboData = _buffers[ input.name + "Ebo" ];
+				const Key keyVao = _getKey( *p_descPassPtr );
+				const Key keyEbo = _getKey( input, true );
+				_vertexArrays.emplace( keyVao, std::make_unique<GL::VertexArray>() );
+				_buffers.emplace( keyEbo, std::make_unique<GL::Buffer>() );
+				auto & vaoData = _vertexArrays[ keyVao ];
+				auto & eboData = _buffers[ keyEbo ];
 				vaoData->bindElementBuffer( *eboData );
 
 				GLuint chan = 0;
 				for ( const Data::Entry & entry : data.entries )
 				{
-					_buffers.emplace( input.name + entry.name, std::make_unique<GL::Buffer>() );
-					auto & vbo = _buffers[ input.name + entry.name ];
+					const Key keyData = _getKey( input, entry );
+					_buffers.emplace( keyData, std::make_unique<GL::Buffer>() );
+					auto & vbo = _buffers[ keyData ];
 					vaoData->enableAttribute( chan );
 					vaoData->setVertexBuffer(
 						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.nativeType ] )
@@ -744,10 +744,9 @@ namespace VTX::Renderer::Context
 		for ( const Uniform & descUniform : p_uniforms )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
-			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
-							  + descUniform.name;
+			std::string key	 = _getKey( p_descPass, p_descProgram, descUniform );
 
-			if ( _uniforms.find( key ) != _uniforms.end() )
+			if ( _uniforms.contains( key ) )
 			{
 				continue;
 			}
@@ -785,8 +784,7 @@ namespace VTX::Renderer::Context
 
 		for ( const Uniform & descUniform : p_uniforms )
 		{
-			std::string key = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
-							  + descUniform.name;
+			std::string key				= _getKey( p_descPass, p_descProgram, descUniform );
 			_uniforms[ key ]->totalSize = totalSize;
 		}
 

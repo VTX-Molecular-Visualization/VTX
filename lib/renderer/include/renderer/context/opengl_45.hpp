@@ -181,16 +181,30 @@ namespace VTX::Renderer::Context
 		GL::StructOpenglInfos _openglInfos;
 
 		// Keys.
-		inline Key _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
-		inline Key _getKey( const Pass & p_pass ) const { return p_pass.name; }
-		inline Key _getKey( const Program & p_program ) const { return p_program.name; }
-		inline Key _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
+		const std::string _KEY_EBO_SUFFIX = "Idx";
+		inline Key		  _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
+		inline Key		  _getKey( const Pass & p_pass ) const { return p_pass.name; }
+		inline Key		  _getKey( const Program & p_program ) const { return p_program.name; }
+		inline Key		  _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
 		{
-			return p_draw.name + ( p_isIndice ? "Idx" : "" );
+			return p_draw.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
 		}
 		inline Key _getKey( const IO & p_io, const Pass & p_pass, const uint p_chan ) const
 		{
 			return p_pass.name + std::to_string( p_chan );
+		}
+		inline Key _getKey( const Input & p_input, const bool p_isIndice = false ) const
+		{
+			return p_input.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
+		}
+		inline Key _getKey( const Input & p_input, const Data::Entry & p_entry ) const
+		{
+			return p_input.name + p_entry.name;
+		}
+		inline Key _getKey( const Pass * const p_pass, const Program * const p_program, const Uniform & p_uniform )
+			const
+		{
+			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_uniform.name;
 		}
 
 		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
@@ -218,15 +232,12 @@ namespace VTX::Renderer::Context
 		void _setUniformDefaultValue(
 			const Uniform &		  p_descUniform,
 			const Program * const p_descProgram = nullptr,
-			const Pass * const	  p_descPassPtr = nullptr
+			const Pass * const	  p_descPass	= nullptr
 		)
 		{
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
-			// TODO: move.
-			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
-							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
-
+			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
 			setUniform<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 
