@@ -36,6 +36,7 @@ namespace VTX::Renderer::Context
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		// TODO: naming more explicit?
+		// TODO: merge setData and setUniform?
 		template<typename T>
 		inline void setUniform( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
@@ -143,9 +144,6 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		using CollectionPtr = std::unordered_map<Key, const T * const>;
 
-		// TODO: merge all buffers in one collection.
-		// TODO: key handling.
-		// TODO: merge setData and setUniform?
 		CollectionPtr<Pass>			_descPasses;
 		Collection<GL::VertexArray> _vertexArrays;
 		Collection<GL::Buffer>		_buffers;
