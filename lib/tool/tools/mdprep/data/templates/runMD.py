@@ -7,8 +7,8 @@ minimTprInput = "em.tpr"
 nvtMdpInput = "nvt.mdp"
 nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
-
 GpuAvailable = False
+
 
 def doesPgmExists(command : str):
     try:
@@ -62,14 +62,38 @@ def checkFolder():
         return False
     return True
     
+logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
+_runMinimizationFailed = False
 
 def runMinimization():
-
-
-    return
-
+    # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
+    cmdStr = "gmx mdrun -v -deffnm em > em.txt"
+    def printFailure(msg):
+        print("failed with error : <%s>" % msg)
+        print(logErrMsg % "em.log", "em.txt")   
+        
+    print("Starting gromacs Energy Minimzation. You can check out gromacs's progression in the em.log file.")
+    try:
+        print("Minimizing ... " endl="")
+        rc = subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT)
+        if rc.a.returncode != 0:
+            printFailure(rc.stdout)
+            _runMinimizationFailed = True
+        else:
+            print("done !")
+    except Exception:
+        _runMinimizationFailed = True
+        if ("stdout" in dir(Exception):
+            printFailure(Exception.stdout if Exception.stdout != None else "")
+        else:
+            printFailure("Gromacs ended without saying anything.")
+            
+        
 def isMinimizationOk():
-    return False
+    return (
+        (not _runMinimizationFailed) 
+        and (getMdRootDir() / "em.gro").is_file()
+    )
     
 def runNvtEquil():
     return
@@ -100,22 +124,22 @@ def runMD():
         
     runMinimization()
     if isMinimizationOk() == False:
-        print("Minimization (1st step) failed. Please refer to minim.log for more details.")
+        print("Minimization (1st step) failed. Please refer to em.txt and em.log for more details.")
         return
     
     runNvtEquil()
     if isNvtEquilOk() == False:
-        print("Nvt Equilibration (2nd step) failed. Please refer to nvt.log for more details.")
+        print("Nvt Equilibration (2nd step) failed. Please refer to nvt.txt and nvt.log for more details.")
         return
     
     runNptEquil()
     if isNptEquilOk() == False:
-        print("Npt Equilibration (3rd step) failed. Please refer to npt.log for more details.")
+        print("Npt Equilibration (3rd step) failed. Please refer to npt.txt and npt.log for more details.")
         return
     
     runProd()
     if isProdOk() == False:
-        print("Production (last step) failed. Please refer to prod.log for more details.")
+        print("Production (last step) failed. Please refer to prod.txt and prod.log for more details.")
         return
     
     print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO
