@@ -377,7 +377,7 @@ namespace VTX::Renderer
 			_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
 			_context->setData<ushort>( totalAtoms, "SpheresCylindersModels" );
 			_context->setData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
-			_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
+			_context->setData<uint>( totalBonds, "SpheresCylindersIdx" );
 
 			size_t offsetAtoms = 0;
 			size_t offsetBonds = 0;
@@ -428,7 +428,7 @@ namespace VTX::Renderer
 				{
 					bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 				}
-				_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
+				_context->setSubData( bonds, "SpheresCylindersIdx", offsetBonds );
 
 				// Offsets.
 				cache.offset = offsetAtoms;
@@ -762,7 +762,7 @@ namespace VTX::Renderer
 			_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
 			_context->setData<ushort>( totalCaPositions, "RibbonsModels" );
 			_context->setData<uchar>( totalCaPositions, "RibbonsRepresentations" );
-			_context->setData<uint>( totalIndices, "RibbonsEbo" );
+			_context->setData<uint>( totalIndices, "RibbonsIdx" );
 
 			size_t offsetCaPositions = 0;
 			uchar  modelId			 = -1;
@@ -801,7 +801,7 @@ namespace VTX::Renderer
 					std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
 				);
 				_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-				_context->setSubData( indices, "RibbonsEbo", offsetIndices );
+				_context->setSubData( indices, "RibbonsIdx", offsetIndices );
 
 				// Offsets.
 				cache.offset = offsetCaPositions;

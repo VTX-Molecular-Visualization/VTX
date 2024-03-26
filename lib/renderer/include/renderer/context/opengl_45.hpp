@@ -184,14 +184,17 @@ namespace VTX::Renderer::Context
 		const std::string _KEY_EBO_SUFFIX = "Idx";
 		inline Key		  _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
 		inline Key		  _getKey( const Pass & p_pass ) const { return p_pass.name; }
-		inline Key		  _getKey( const Program & p_program ) const { return p_program.name; }
-		inline Key		  _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
+		inline Key		  _getKey( const Pass * const p_pass, const Program & p_program ) const
+		{
+			return ( p_pass ? p_pass->name : "" ) + p_program.name;
+		}
+		inline Key _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
 		{
 			return p_draw.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
 		}
-		inline Key _getKey( const IO & p_io, const Pass & p_pass, const uint p_chan ) const
+		inline Key _getKey( const Pass & p_pass, const bool p_isInput, const uint p_chan ) const
 		{
-			return p_pass.name + std::to_string( p_chan );
+			return p_pass.name + ( p_isInput ? "In" : "Out" ) + std::to_string( p_chan );
 		}
 		inline Key _getKey( const Input & p_input, const bool p_isIndice = false ) const
 		{
@@ -211,7 +214,7 @@ namespace VTX::Renderer::Context
 
 		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
 
-		const Output * const _getInputSource(
+		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
 			const Links &		  p_links,
 			const Pass * const	  p_pass,
 			const E_CHANNEL_INPUT p_channel
@@ -219,7 +222,7 @@ namespace VTX::Renderer::Context
 
 		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
-		void _createAttachment( const IO & p_descIO, const Key p_key );
+		void _createTexture( const IO & p_descIO, const Key p_key );
 
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
