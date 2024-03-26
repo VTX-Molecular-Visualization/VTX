@@ -19,6 +19,8 @@ namespace VTX::Renderer::Context
 	class OpenGL45 : public BaseContext
 	{
 	  public:
+		using Key = std::string;
+
 		OpenGL45() = delete;
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
@@ -35,65 +37,65 @@ namespace VTX::Renderer::Context
 
 		// TODO: naming more explicit?
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
+		inline void setUniform( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
-			assert( _uniforms.find( p_key ) != _uniforms.end() );
+			assert( _uniforms.contains( p_key ) );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
 		template<typename T>
-		inline void setUniforms( const std::vector<T> & p_data, const std::string & p_key )
+		inline void setUniforms( const std::vector<T> & p_data, const Key & p_key )
 		{
-			assert( _ssbos.find( p_key ) != _ssbos.end() );
+			assert( _buffers.contains( p_key ) );
 
 			// Auto scale ubos (useful?).
-			if ( _ssbos[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
 				VTX_DEBUG(
 					"Resizing uniform buffer {} : {} -> {}",
 					p_key,
-					_ssbos[ p_key ]->getSize(),
+					_buffers[ p_key ]->getSize(),
 					sizeof( T ) * p_data.size()
 				);
-				_ssbos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_ssbos[ p_key ]->setSubData( p_data );
+				_buffers[ p_key ]->setSubData( p_data );
 			}
 		}
 
 		template<typename T>
-		inline void setData( const std::vector<T> & p_data, const std::string & p_key )
+		inline void setData( const std::vector<T> & p_data, const Key & p_key )
 		{
-			assert( _bos.find( p_key ) != _bos.end() );
+			assert( _buffers.contains( p_key ) );
 
-			_bos[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+			_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 		}
 
 		template<typename T>
-		inline void setData( const size_t p_size, const std::string & p_key )
+		inline void setData( const size_t p_size, const Key & p_key )
 		{
-			assert( _bos.find( p_key ) != _bos.end() );
+			assert( _buffers.contains( p_key ) );
 
 			// Scale if needed, else data will be overwritten.
-			if ( _bos[ p_key ]->getSize() != p_size * sizeof( T ) )
+			if ( _buffers[ p_key ]->getSize() != p_size * sizeof( T ) )
 			{
 				VTX_DEBUG(
-					"Resizing data buffer {} : {} -> {}", p_key, _bos[ p_key ]->getSize(), sizeof( T ) * p_size
+					"Resizing data buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_size
 				);
-				_bos[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
+				_buffers[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
 			}
 		}
 
 		template<typename T>
-		inline void setSubData( const std::vector<T> & p_data, const std::string & p_key, const size_t p_offset = 0 )
+		inline void setSubData( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
 		{
-			assert( _bos.find( p_key ) != _bos.end() );
+			assert( _buffers.contains( p_key ) );
 
-			_bos[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
+			_buffers[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
 		}
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
@@ -119,7 +121,7 @@ namespace VTX::Renderer::Context
 			const std::string &	   p_pass,
 			const E_CHANNEL_OUTPUT p_channel
 
-		) const;
+		);
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
@@ -134,24 +136,21 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
 		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
 
-		RenderQueue _renderQueue;
+		const Key _KEY_QUAD = "main_quad";
 
 		template<typename T>
-		using Collection = std::unordered_map<std::string, std::unique_ptr<T>>;
+		using Collection = std::unordered_map<Key, std::unique_ptr<T>>;
+		template<typename T>
+		using CollectionPtr = std::unordered_map<Key, const T * const>;
 
 		// TODO: merge all buffers in one collection.
 		// TODO: key handling.
 		// TODO: merge setData and setUniform?
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		Collection<GL::VertexArray>			_vaos;
-		Collection<GL::Buffer>				_bos;
-		Collection<GL::Buffer>				_ssbos;
-
-		// TODO: check if mapping is useful.
-		std::unordered_map<const IO *, std::unique_ptr<GL::Texture2D>>	   _textures;
-		std::unordered_map<const Program *, const GL::Program * const>	   _programs;
-		std::unordered_map<const Pass *, std::unique_ptr<GL::Framebuffer>> _fbos;
-		std::unordered_map<const Program *, std::unique_ptr<GL::Buffer>>   _ubos;
+		CollectionPtr<Pass>			_descPasses;
+		Collection<GL::VertexArray> _vertexArrays;
+		Collection<GL::Buffer>		_buffers;
+		Collection<GL::Framebuffer> _framebuffers;
+		Collection<GL::Texture2D>	_textures;
 
 		struct _StructUniformEntry
 		{
@@ -171,13 +170,28 @@ namespace VTX::Renderer::Context
 			{
 			}
 		};
-		std::unordered_map<std::string, std::unique_ptr<_StructUniformEntry>> _uniforms;
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		CollectionPtr<GL::Program>			_programs;
+		Collection<_StructUniformEntry>		_uniforms;
 
 		// Output.
 		Handle _output;
 
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
+
+		// Keys.
+		inline Key _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
+		inline Key _getKey( const Pass & p_pass ) const { return p_pass.name; }
+		inline Key _getKey( const Program & p_program ) const { return p_program.name; }
+		inline Key _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
+		{
+			return p_draw.name + ( p_isIndice ? "Idx" : "" );
+		}
+		inline Key _getKey( const IO & p_io, const Pass & p_pass, const uint p_chan ) const
+		{
+			return p_pass.name + std::to_string( p_chan );
+		}
 
 		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
 
@@ -191,7 +205,7 @@ namespace VTX::Renderer::Context
 
 		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
-		void _createAttachment( const IO & p_descIO );
+		void _createAttachment( const IO & p_descIO, const Key p_key );
 
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
@@ -209,6 +223,7 @@ namespace VTX::Renderer::Context
 		{
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
+			// TODO: move.
 			std::string key = ( p_descPassPtr ? p_descPassPtr->name : "" )
 							  + ( p_descProgram ? p_descProgram->name : "" ) + p_descUniform.name;
 

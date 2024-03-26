@@ -16,7 +16,7 @@ namespace VTX::Renderer
 		_7,
 	};
 
-	enum struct E_CHANNEL_OUTPUT
+	enum struct E_CHANNEL_OUTPUT : unsigned int
 	{
 		COLOR_0,
 		COLOR_1,

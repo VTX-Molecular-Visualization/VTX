@@ -22,6 +22,8 @@ namespace VTX::Renderer::Proxy
 
 		bool hasSes = false;
 
+		// TODO: id layout color.
+
 		Util::Callback<> onChange;
 	};
 
