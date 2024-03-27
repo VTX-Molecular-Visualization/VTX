@@ -35,8 +35,6 @@ namespace VTX::Renderer::Context
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
-		// TODO: naming more explicit?
-		// TODO: merge setData and setUniform?
 		template<typename T>
 		inline void setData( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
@@ -47,12 +45,32 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
+		inline void reserveData( const size_t p_size, const Key & p_key )
+		{
+			assert( _buffers.contains( p_key ) );
+
+			const size_t size = p_size > 0 ? p_size : 1;
+
+			// Scale if needed, else data will be overwritten.
+			if ( _buffers[ p_key ]->getSize() != size * sizeof( T ) )
+			{
+				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * size );
+				_buffers[ p_key ]->setData( GLsizei( size * sizeof( T ) ), GL_STATIC_DRAW );
+			}
+		}
+
+		template<typename T>
 		inline void setData( const std::vector<T> & p_data, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
+			// Set dummy.
+			if ( p_data.size() == 0 )
+			{
+				reserveData<int>( 0, p_key );
+			}
 			// Auto scale.
-			if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
 				VTX_DEBUG(
 					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
@@ -62,19 +80,6 @@ namespace VTX::Renderer::Context
 			else
 			{
 				_buffers[ p_key ]->setSubData( p_data );
-			}
-		}
-
-		template<typename T>
-		inline void setData( const size_t p_size, const Key & p_key )
-		{
-			assert( _buffers.contains( p_key ) );
-
-			// Scale if needed, else data will be overwritten.
-			if ( _buffers[ p_key ]->getSize() != p_size * sizeof( T ) )
-			{
-				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_size );
-				_buffers[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
 			}
 		}
 
