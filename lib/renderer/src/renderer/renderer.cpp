@@ -109,12 +109,15 @@ namespace VTX::Renderer
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setUniform(
+			setValue(
 				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
 			);
 		};
 
-		// TODO: onVisible to split in multi call.
+		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
+		{
+			// TODO: split in multi calls.
+		};
 
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{
@@ -162,6 +165,19 @@ namespace VTX::Renderer
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.offset );
 		};
+
+		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
+			_context->setSubData( p_colors, "RibbonsColors", cacheR.offset );
+		};
+
+		// TODO:
+		// onAtomVisibilities
+		// onAtomSelections
+		// onAtomRepresentations
+		// onAtomColorsRange
+		// onResidueColorsRange
 
 		/*
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
@@ -260,18 +276,18 @@ namespace VTX::Renderer
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
-			setUniform( *p_proxy.matrixView, "Matrix view" );
+			setValue( *p_proxy.matrixView, "Matrix view" );
 			_refreshDataModels();
 		};
 
 		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
+			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "Matrix projection" ); };
 
 		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); };
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "Camera position" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
@@ -279,7 +295,7 @@ namespace VTX::Renderer
 		};
 
 		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
+			[ this, &p_proxy ]( const bool p_perspective ) { setValue( p_perspective, "Is perspective" ); };
 	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
@@ -303,23 +319,23 @@ namespace VTX::Renderer
 
 		_proxyRenderSettings = &p_proxy;
 
-		setUniform( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-		setUniform( p_proxy.blurSize, "BlurXBlurSize" );
-		setUniform( p_proxy.blurSize, "BlurYBlurSize" );
-		setUniform( p_proxy.colorBackground, "ShadingShadingBackground color" );
-		setUniform( p_proxy.colorLight, "ShadingShadingLight color" );
-		setUniform( p_proxy.colorFog, "ShadingShadingFog color" );
-		setUniform( p_proxy.shadingMode, "ShadingShadingMode" );
-		setUniform( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
-		setUniform( p_proxy.shininess, "ShadingShadingShininess" );
-		setUniform( p_proxy.toonSteps, "ShadingShadingToon steps" );
-		setUniform( p_proxy.fogNear, "ShadingShadingFog near" );
-		setUniform( p_proxy.fogFar, "ShadingShadingFog far" );
-		setUniform( p_proxy.fogDensity, "ShadingShadingFog density" );
-		setUniform( p_proxy.colorOutline, "OutlineOutlineColor" );
-		setUniform( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-		setUniform( p_proxy.outlineThickness, "OutlineOutlineThickness" );
-		setUniform( p_proxy.colorSelection, "SelectionSelectionColor" );
+		setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
+		setValue( p_proxy.blurSize, "BlurXBlurSize" );
+		setValue( p_proxy.blurSize, "BlurYBlurSize" );
+		setValue( p_proxy.colorBackground, "ShadingShadingBackground color" );
+		setValue( p_proxy.colorLight, "ShadingShadingLight color" );
+		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
+		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
+		setValue( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
+		setValue( p_proxy.shininess, "ShadingShadingShininess" );
+		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
+		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
+		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
+		setValue( p_proxy.fogDensity, "ShadingShadingFog density" );
+		setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
+		setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
+		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
 
 		// TODO: disable/enable ssao, outline, etc.
 
@@ -835,9 +851,9 @@ namespace VTX::Renderer
 		Mat4f		  matrixProjection	  = Util::Math::perspective(
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
-		setUniform( matrixProjection, "Matrix projection" );
+		setValue( matrixProjection, "Matrix projection" );
 		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
-		setUniform( matrixProjectionOld, "Matrix projection" );
+		setValue( matrixProjectionOld, "Matrix projection" );
 	}
 
 } // namespace VTX::Renderer

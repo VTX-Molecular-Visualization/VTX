@@ -856,7 +856,7 @@ namespace VTX::Bench
 
 			if ( p_isEditable && updated )
 			{
-				p_renderer->setUniform( value, p_key );
+				p_renderer->setValue( value, p_key );
 			}
 		}
 

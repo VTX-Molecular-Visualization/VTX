@@ -34,8 +34,9 @@ namespace VTX::Renderer::Context
 			  const std::any &				p_value,
 			  const std::vector<std::any> & p_data,
 			  const size_t					p_size,
-			  const Util::Chrono::Task &	p_task,
 			  const size_t					p_index,
+			  const size_t					p_offset,
+			  const Util::Chrono::Task &	p_task,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
 			  StructInfos &					p_infos,
@@ -57,16 +58,17 @@ namespace VTX::Renderer::Context
 					 p_context.setOutput( p_output )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setData( p_value, p_key, p_index )
+					 p_context.setValue( p_value, p_key, p_index )
 				 } -> std::same_as<void>;
+				 // TODO: templated type not deductible.
+				 //{
+				 //	 p_context.reserveData( p_size, p_key )
+				 //} -> std::same_as<void>;
 				 {
 					 p_context.setData( p_data, p_key )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setData( p_size, p_key )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.setSubData( p_data, p_key, p_index )
+					 p_context.setSubData( p_data, p_key, p_offset )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.fillInfos( p_infos )

@@ -35,8 +35,10 @@ namespace VTX::Renderer::Context
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
 
+		inline void setOutput( const Handle p_output ) { _output = p_output; }
+
 		template<typename T>
-		inline void setData( const T & p_value, const Key & p_key, const size_t p_index = 0 )
+		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
 			assert( _uniforms.contains( p_key ) );
 
@@ -49,13 +51,15 @@ namespace VTX::Renderer::Context
 		{
 			assert( _buffers.contains( p_key ) );
 
-			const size_t size = p_size > 0 ? p_size : 1;
+			// Set dummy.
+			size_t size = sizeof( T ) * p_size;
+			size		= size > 0 ? size : 1;
 
-			// Scale if needed, else data will be overwritten.
-			if ( _buffers[ p_key ]->getSize() != size * sizeof( T ) )
+			// Scale if needed.
+			if ( _buffers[ p_key ]->getSize() != size )
 			{
-				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * size );
-				_buffers[ p_key ]->setData( GLsizei( size * sizeof( T ) ), GL_STATIC_DRAW );
+				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
+				_buffers[ p_key ]->setData( GLsizei( size ), GL_STATIC_DRAW );
 			}
 		}
 
@@ -67,7 +71,7 @@ namespace VTX::Renderer::Context
 			// Set dummy.
 			if ( p_data.size() == 0 )
 			{
-				reserveData<int>( 0, p_key );
+				reserveData<char>( 0, p_key );
 			}
 			// Auto scale.
 			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
@@ -90,8 +94,6 @@ namespace VTX::Renderer::Context
 
 			_buffers[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
 		}
-
-		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
 		void fillInfos( StructInfos & p_infos ) const;
 
@@ -231,7 +233,7 @@ namespace VTX::Renderer::Context
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
 			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
-			setData<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
+			setValue<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 
 		void				 _getOpenglInfos();

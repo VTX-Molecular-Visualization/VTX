@@ -114,10 +114,10 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_size = 0 )
+		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
 			assert( _context != nullptr );
-			_context->setData<T>( p_value, p_key, p_size );
+			_context->setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
 		}
 
@@ -273,7 +273,6 @@ namespace VTX::Renderer
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
 		// Proxies.
-
 		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
 		Proxy::Camera *						 _proxyCamera;
@@ -295,6 +294,16 @@ namespace VTX::Renderer
 
 			return id;
 		}
+
+		// Draw ranges.
+		template<typename T>
+		struct _DrawRange
+		{
+			std::vector<T>	  indices;
+			std::vector<uint> counts;
+		};
+		using _DrawRangeArrays	 = _DrawRange<uint>;
+		using _DrawRangeElements = _DrawRange<void *>;
 
 		// Cache.
 		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
