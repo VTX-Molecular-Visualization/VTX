@@ -43,7 +43,9 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
 		colorLayout.setup( rendererFacade );
 		rendererFacade.setProxyColorLayout( colorLayout.getProxy().proxy() );
-		rendererFacade.setProxyRepresentations( { VTX::Renderer::Proxy::Representation() } );
+		static VTX::Renderer::Proxy::Representation			representation;
+		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
+		rendererFacade.addProxyRepresentations( representations );
 
 		App::Component::Render::ProxyCamera & proxyCamera
 			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
