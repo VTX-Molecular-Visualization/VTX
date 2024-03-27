@@ -30,12 +30,12 @@ namespace VTX::Renderer::Context
 			  const Links &					p_links,
 			  const Handle					p_output,
 			  const SharedUniforms &		p_uniforms,
-			  const std::string &			p_uniformKey,
+			  const std::string &			p_key,
+			  const std::any &				p_value,
 			  const std::vector<std::any> & p_data,
+			  const size_t					p_size,
 			  const Util::Chrono::Task &	p_task,
-			  const uchar &					p_uniformIndex,
-			  UniformValue &				p_uniformValue,
-			  std::vector<UniformValue> &	p_uniformValues,
+			  const size_t					p_index,
 			  Instructions &				p_instructions,
 			  InstructionsDurationRanges &	p_instructionsDurationRanges,
 			  StructInfos &					p_infos,
@@ -57,13 +57,16 @@ namespace VTX::Renderer::Context
 					 p_context.setOutput( p_output )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setUniform( p_uniformValues, p_uniformKey )
+					 p_context.setData( p_value, p_key, p_index )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setUniform( p_uniformValue, p_uniformKey, p_uniformIndex )
+					 p_context.setData( p_data, p_key )
 				 } -> std::same_as<void>;
 				 {
-					 p_context.setData( p_data, p_uniformKey )
+					 p_context.setData( p_size, p_key )
+				 } -> std::same_as<void>;
+				 {
+					 p_context.setSubData( p_data, p_key, p_index )
 				 } -> std::same_as<void>;
 				 {
 					 p_context.fillInfos( p_infos )

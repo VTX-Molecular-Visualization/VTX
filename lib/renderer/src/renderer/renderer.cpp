@@ -221,7 +221,7 @@ namespace VTX::Renderer
 																	 representation->ribbonColorBlendingMode } );
 		}
 
-		_context->setUniforms( representations, "Representations" );
+		_context->setData( representations, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -242,7 +242,7 @@ namespace VTX::Renderer
 
 		_proxyCamera = &p_proxy;
 
-		_context->setUniforms<_StructUBOCamera>(
+		_context->setData<_StructUBOCamera>(
 			{ { *p_proxy.matrixView,
 				*p_proxy.matrixProjection,
 				p_proxy.cameraPosition,
@@ -287,12 +287,12 @@ namespace VTX::Renderer
 		assert( hasContext() );
 
 		_proxyColorLayout = &p_proxy;
-		_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+		_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChange += [ this, &p_proxy ]()
 		{
-			_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 			setNeedUpdate( true );
 		};
 	}
@@ -835,7 +835,7 @@ namespace VTX::Renderer
 
 		if ( models.empty() == false )
 		{
-			_context->setUniforms( models, "Models" );
+			_context->setData( models, "Models" );
 		}
 	}
 

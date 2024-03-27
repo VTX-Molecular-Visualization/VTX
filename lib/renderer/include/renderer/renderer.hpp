@@ -117,7 +117,7 @@ namespace VTX::Renderer
 		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_size = 0 )
 		{
 			assert( _context != nullptr );
-			_context->setUniform<T>( p_value, p_key, p_size );
+			_context->setData<T>( p_value, p_key, p_size );
 			setNeedUpdate( true );
 		}
 

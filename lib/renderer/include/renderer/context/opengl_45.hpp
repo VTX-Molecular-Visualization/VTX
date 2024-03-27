@@ -38,7 +38,7 @@ namespace VTX::Renderer::Context
 		// TODO: naming more explicit?
 		// TODO: merge setData and setUniform?
 		template<typename T>
-		inline void setUniform( const T & p_value, const Key & p_key, const size_t p_index = 0 )
+		inline void setData( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
 			assert( _uniforms.contains( p_key ) );
 
@@ -47,18 +47,15 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void setUniforms( const std::vector<T> & p_data, const Key & p_key )
+		inline void setData( const std::vector<T> & p_data, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			// Auto scale ubos (useful?).
+			// Auto scale.
 			if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
 				VTX_DEBUG(
-					"Resizing uniform buffer {} : {} -> {}",
-					p_key,
-					_buffers[ p_key ]->getSize(),
-					sizeof( T ) * p_data.size()
+					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
 				);
 				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
 			}
@@ -69,14 +66,6 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename T>
-		inline void setData( const std::vector<T> & p_data, const Key & p_key )
-		{
-			assert( _buffers.contains( p_key ) );
-
-			_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
-		}
-
-		template<typename T>
 		inline void setData( const size_t p_size, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
@@ -84,9 +73,7 @@ namespace VTX::Renderer::Context
 			// Scale if needed, else data will be overwritten.
 			if ( _buffers[ p_key ]->getSize() != p_size * sizeof( T ) )
 			{
-				VTX_DEBUG(
-					"Resizing data buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_size
-				);
+				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_size );
 				_buffers[ p_key ]->setData( GLsizei( p_size * sizeof( T ) ), GL_STATIC_DRAW );
 			}
 		}
@@ -239,7 +226,7 @@ namespace VTX::Renderer::Context
 			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
 
 			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
-			setUniform<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
+			setData<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
 
 		void				 _getOpenglInfos();
