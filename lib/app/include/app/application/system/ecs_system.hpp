@@ -5,12 +5,11 @@
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/system/system_registration.hpp"
-#include "app/core/system/base_system.hpp"
 
 namespace VTX::App::Application::System
 {
 	// ECS System handle 3 sub-systems in order to manage ECS in VTX
-	class ECSSystem : public Core::System::BaseSystem
+	class ECSSystem : public System::AutoRegistrateSystem<ECSSystem>
 	{
 	  public:
 		template<typename C>
@@ -24,8 +23,6 @@ namespace VTX::App::Application::System
 		};
 
 	  public:
-		inline static const SystemRegistration<ECSSystem> SYSTEM = SystemRegistration<ECSSystem>();
-
 		Application::ECS::RegistryManager		registryManager		  = Application::ECS::RegistryManager();
 		Application::ECS::ComponentMetaFunction componentMetaFunction = Application::ECS::ComponentMetaFunction();
 		Application::ECS::EntityDirector		entityDirector		  = Application::ECS::EntityDirector();
