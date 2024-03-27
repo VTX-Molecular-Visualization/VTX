@@ -74,6 +74,15 @@ namespace VTX::test
 		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.top" ).string(),
 																  ( g_outputDir / "1ubq.gro" ).string() };
 	};
+	struct Grompp2
+	{
+		inline static const fs::path & g_outputDir { VTX::Tool::Mdprep::executableDirectory() / "data"
+													 / "1ubq_out_grompp2" };
+
+		inline static const std::vector<std::string> g_fileList { ( g_outputDir / "1ubq.top" ).string(),
+																  ( g_outputDir / "1ubq.mdp" ).string(),
+																  ( g_outputDir / "1ubq.tpr" ).string() };
+	};
 
 	inline std::vector<const std::string *> getPtrVectFromVect( const std::vector<std::string> & p_ )
 	{
