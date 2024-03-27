@@ -37,7 +37,8 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	// Access the serializer to serialize / deserialize objects, or directly read / write file in json.
 	Application::System::Serializer & SERIALIZER();
-}
+} // namespace VTX::App
 
 #endif
