@@ -9,8 +9,7 @@
 
 namespace VTX::App::Application::System
 {
-	// SystemRegistration is a class which must be declared as static member of any BaseSystem to automatically
-	// registrate itself to the SystemHandler
+	// Automating system registration to VTXApp systemHandler at launch when declared as static member of a BaseSystem
 	template<typename T>
 	class SystemRegistration
 	{
@@ -28,6 +27,7 @@ namespace VTX::App::Application::System
 		const Util::Hashing::Hash _hash;
 	};
 
+	// VTX systems must inherits from AutoRegistrateSystem<T> in order to registrate them directly in the SystemHandler
 	template<typename T>
 	class AutoRegistrateSystem : public Core::System::BaseSystem
 	{

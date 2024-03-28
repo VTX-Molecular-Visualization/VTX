@@ -11,6 +11,7 @@ namespace VTX::App::Application::System
 	class Serializer final : public System::AutoRegistrateSystem<Serializer>, public Core::Serialization::Serialization
 	{
 	  public:
+		// Directly read a file at path p_path and deserialize it in p_obj object.
 		template<typename T>
 		void readObject( const FilePath & p_path, T & p_obj )
 		{
@@ -20,6 +21,7 @@ namespace VTX::App::Application::System
 			serializedObject.read();
 		}
 
+		// Directly serialize an object p_obj and write the json file at p_path
 		template<typename T>
 		void writeObject( const FilePath & p_path, const T & p_obj )
 		{

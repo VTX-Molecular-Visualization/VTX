@@ -13,7 +13,8 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	// Access to UIDSystem to get / release UIDs.
 	Application::System::UIDSystem & UID_SYSTEM();
-}
+} // namespace VTX::App
 
 #endif
