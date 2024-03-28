@@ -125,11 +125,11 @@ namespace VTX::UI::QT::Tool::Console::Widget
 
 		switch ( p_level )
 		{
-		case Util::LOG_LEVEL::DEBUG: res = CONSOLE_DEBUG_COLOR; break;
-		case Util::LOG_LEVEL::INFO: res = CONSOLE_INFO_COLOR; break;
-		case Util::LOG_LEVEL::WARNING: res = CONSOLE_WARNING_COLOR; break;
-		case Util::LOG_LEVEL::ERROR: res = CONSOLE_ERROR_COLOR; break;
-		case Util::LOG_LEVEL::CRITICAL: res = CONSOLE_CRITICAL_COLOR; break;
+		case Util::LOG_LEVEL::LOG_DEBUG: res = CONSOLE_DEBUG_COLOR; break;
+		case Util::LOG_LEVEL::LOG_INFO: res = CONSOLE_INFO_COLOR; break;
+		case Util::LOG_LEVEL::LOG_WARNING: res = CONSOLE_WARNING_COLOR; break;
+		case Util::LOG_LEVEL::LOG_ERROR: res = CONSOLE_ERROR_COLOR; break;
+		case Util::LOG_LEVEL::LOG_CRITICAL: res = CONSOLE_CRITICAL_COLOR; break;
 		default: res = QColor(); break;
 		}
 

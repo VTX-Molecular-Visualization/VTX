@@ -15,12 +15,12 @@ namespace VTX
 	{
 		enum class LOG_LEVEL : int
 		{
-			TRACE	 = spdlog::level::trace,
-			DEBUG	 = spdlog::level::debug,
-			INFO	 = spdlog::level::info,
-			WARNING	 = spdlog::level::warn,
-			ERROR	 = spdlog::level::err,
-			CRITICAL = spdlog::level::critical
+			LOG_TRACE	 = spdlog::level::trace,
+			LOG_DEBUG	 = spdlog::level::debug,
+			LOG_INFO	 = spdlog::level::info,
+			LOG_WARNING	 = spdlog::level::warn,
+			LOG_ERROR	 = spdlog::level::err,
+			LOG_CRITICAL = spdlog::level::critical
 		};
 
 		struct LogInfo
@@ -55,37 +55,37 @@ namespace VTX
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::TRACE, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::DEBUG, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::INFO, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::WARNING, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::ERROR, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::CRITICAL, p_fmt, std::forward<Args>( p_args )... );
+		Util::Logger::get().log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
 	}
 } // namespace VTX
 

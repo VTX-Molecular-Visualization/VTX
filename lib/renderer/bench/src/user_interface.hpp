@@ -467,7 +467,17 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
-						if ( ImGui::Button( "R" ) )
+						if ( ImGui::Button( "V" ) )
+						{
+							proxyMolecule->onVisible( false );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "V" ) )
+						{
+							proxyMolecule->onVisible( true );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "Rep" ) )
 						{
 							proxyMolecule->onRepresentation( rand() % 3 );
 						}

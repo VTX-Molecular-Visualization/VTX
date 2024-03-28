@@ -9,7 +9,7 @@
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
 #include "proxy/render_settings.hpp"
-#include "proxy/representations.hpp"
+#include "proxy/representation.hpp"
 #include "proxy/voxels.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"

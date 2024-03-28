@@ -11,7 +11,7 @@
 #include <app/component/render/proxy_molecule.hpp>
 #include <app/component/scene/transform_component.hpp>
 #include <app/vtx_app.hpp>
-#include <renderer/proxy/representations.hpp>
+#include <renderer/proxy/representation.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
