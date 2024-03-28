@@ -2,6 +2,7 @@
 #define __VTX_TOOL_TOOLS_MDPREP_JOBS__
 
 #include <filesystem>
+#include <functional>
 #include <optional>
 #include <string>
 #include <util/datalocker.hpp>
@@ -23,17 +24,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 		bool					 errorOccured = false;
 		std::vector<std::string> errors;
 	};
-	struct GromacsJobData
-	{
-		std::vector<std::string> arguments;
-		std::vector<size_t> expectedOutputFilesIndexes; // Meant to point toward specific argument indexes that hold
-														// path of output files to check
-		VTX::Util::DataLocker<Channels> channelsLocker;
-		JobReport						report;
-		std::optional<Inputs>
-			 interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
-		bool operator==( const GromacsJobData & ) const noexcept = default;
-	};
 
 	// The idea is to list output files from all previous job, in reverse chronological order. So we can access last
 	// files first. This is usefull because some job might need some files from a couple of jobs ago, but the last file
@@ -42,6 +32,20 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct CumulativeOuputFiles
 	{
 		std::vector<const std::string *> fileStringPtrs;
+	};
+
+	struct GromacsJobData
+	{
+		std::vector<std::string> arguments;
+		std::vector<size_t> expectedOutputFilesIndexes; // Meant to point toward specific argument indexes that hold
+														// path of output files to check
+		VTX::Util::DataLocker<Channels> channelsLocker;
+		JobReport						report;
+		std::optional<Inputs>
+			interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
+		std::function<void( const fs::path &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
+			= []( const fs::path &, GromacsJobData &, CumulativeOuputFiles & ) {};
+		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
 	// Execute gromacs with input arguments then check if job issued and error
