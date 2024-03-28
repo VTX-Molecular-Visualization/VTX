@@ -23,9 +23,11 @@ namespace VTX::UI::QT::Tool::PyTX::Widget
 		void _setupSlots() override;
 
 	  private:
+		void _setupCompleter();
 		void _launchCommand();
 
-		QLineEdit * _promptWidget = nullptr;
+		QLineEdit *	 _promptWidget = nullptr;
+		QCompleter * _completer	   = nullptr;
 	};
 } // namespace VTX::UI::QT::Tool::PyTX::Widget
 #endif

@@ -32,5 +32,30 @@ namespace VTX::PythonBinding::Wrapper
 		}
 	}
 
+	std::vector<std::string> Module::getFunctionList() const
+	{
+		std::vector<std::string> res = std::vector<std::string>();
+
+		try
+		{
+			auto				 dirObj		 = _pyModule.attr( "dir" );
+			auto				 direReturn	 = dirObj();
+			const pybind11::list commandList = direReturn.cast<pybind11::list>();
+
+			res.reserve( commandList.size() );
+
+			for ( const auto & value : commandList )
+			{
+				res.emplace_back( value.cast<std::string>() );
+			}
+		}
+		catch ( const pybind11::error_already_set & e )
+		{
+			VTX_ERROR( "getFunctionList fail : {}", e.what() );
+		}
+
+		return res;
+	}
+
 	Module::~Module() = default;
 } // namespace VTX::PythonBinding::Wrapper
