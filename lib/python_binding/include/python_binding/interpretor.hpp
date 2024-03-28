@@ -3,7 +3,6 @@
 
 #include "python_binding/binder.hpp"
 #include <app/application/system/system_registration.hpp>
-#include <app/core/system/base_system.hpp>
 #include <memory>
 #include <string>
 #include <util/types.hpp>
@@ -15,12 +14,8 @@ namespace VTX::PythonBinding
 		class Module;
 	}
 
-	class Interpretor : public App::Core::System::BaseSystem
+	class Interpretor : public App::Application::System::AutoRegistrateSystem<Interpretor>
 	{
-	  public:
-		inline static const App::Application::System::SystemRegistration<Interpretor> SYSTEM
-			= App::Application::System::SystemRegistration<Interpretor>();
-
 	  public:
 		Interpretor();
 		~Interpretor();

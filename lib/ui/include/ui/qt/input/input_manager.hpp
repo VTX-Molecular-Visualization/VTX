@@ -7,7 +7,6 @@
 #include <QWheelEvent>
 #include <Qt>
 #include <app/application/system/system_registration.hpp>
-#include <app/core/system/base_system.hpp>
 #include <map>
 #include <queue>
 #include <set>
@@ -19,12 +18,8 @@ namespace VTX::UI::QT::Input
 {
 	using namespace UI::Core::Input;
 
-	class InputManager : public App::Core::System::BaseSystem
+	class InputManager : public App::Application::System::AutoRegistrateSystem<InputManager>
 	{
-	  public:
-		inline static App::Application::System::SystemRegistration<InputManager> SYSTEM
-			= App::Application::System::SystemRegistration<InputManager>();
-
 	  private:
 		inline static const int CLICK_MAX_DISTANCE = 3;
 

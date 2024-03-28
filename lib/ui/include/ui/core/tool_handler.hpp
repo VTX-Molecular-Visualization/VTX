@@ -2,18 +2,14 @@
 #define __VTX_UI_CORE_TOOL_HANDLER__
 
 #include <app/application/system/system_registration.hpp>
-#include <app/core/system/base_system.hpp>
 #include <ui/core/base_ui_tool.hpp>
 #include <ui/core/layout_descriptor.hpp>
 #include <vector>
 
 namespace VTX::UI::Core
 {
-	class ToolHandler : public App::Core::System::BaseSystem
+	class ToolHandler : public App::Application::System::AutoRegistrateSystem<ToolHandler>
 	{
-	  public:
-		inline static const App::Application::System::SystemRegistration<ToolHandler> SYSTEM {};
-
 	  public:
 		ToolHandler();
 		~ToolHandler();

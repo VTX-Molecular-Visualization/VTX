@@ -3,7 +3,6 @@
 
 #include "ui/core/animation/base_animation.hpp"
 #include <app/application/system/system_registration.hpp>
-#include <app/core/system/base_system.hpp>
 #include <concepts>
 #include <list>
 #include <memory>
@@ -14,12 +13,8 @@ namespace VTX::UI::Core::Animation
 	template<class T>
 	concept AnimationConcept = std::derived_from<T, BaseAnimation>;
 
-	class AnimationSystem : public App::Core::System::BaseSystem
+	class AnimationSystem : public App::Application::System::AutoRegistrateSystem<AnimationSystem>
 	{
-	  public:
-		inline static const App::Application::System::SystemRegistration<AnimationSystem> SYSTEM
-			= App::Application::System::SystemRegistration<AnimationSystem>();
-
 	  public:
 		AnimationSystem();
 		~AnimationSystem() = default;

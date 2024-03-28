@@ -5,6 +5,7 @@
 
 namespace VTX::App::Core::Action
 {
+	// Abstract undonable action
 	class BaseActionUndonable : public App::Core::Action::BaseAction
 	{
 	  public:

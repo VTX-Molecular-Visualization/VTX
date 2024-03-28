@@ -5,15 +5,11 @@
 #include "app/core/io/reader/serialized_object.hpp"
 #include "app/core/io/writer/serialized_object.hpp"
 #include "app/core/serialization/serialization.hpp"
-#include "app/core/system/base_system.hpp"
 
 namespace VTX::App::Application::System
 {
-	class Serializer final : public Core::System::BaseSystem, public Core::Serialization::Serialization
+	class Serializer final : public System::AutoRegistrateSystem<Serializer>, public Core::Serialization::Serialization
 	{
-	  public:
-		inline static const SystemRegistration<Serializer> SYSTEM = SystemRegistration<Serializer>();
-
 	  public:
 		template<typename T>
 		void readObject( const FilePath & p_path, T & p_obj )
@@ -37,7 +33,8 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	// Access the serializer to serialize / deserialize objects, or directly read / write file in json.
 	Application::System::Serializer & SERIALIZER();
-}
+} // namespace VTX::App
 
 #endif

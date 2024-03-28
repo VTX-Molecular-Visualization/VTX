@@ -4,17 +4,13 @@
 #include "app/application/renderer/renderer.hpp"
 #include "app/application/renderer/renderer_accessor.hpp"
 #include "app/application/system/system_registration.hpp"
-#include "app/core/system/base_system.hpp"
 #include <renderer/facade.hpp>
 #include <util/callback.hpp>
 
 namespace VTX::App::Application::System
 {
-	class Renderer : public Core::System::BaseSystem
+	class Renderer : public System::AutoRegistrateSystem<Renderer>
 	{
-	  public:
-		inline static const System::SystemRegistration<Renderer> SYSTEM = System::SystemRegistration<Renderer>();
-
 	  public:
 		Renderer() = default;
 		Application::Renderer::RendererAccessor accessor();
@@ -31,7 +27,11 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
-	Application::System::Renderer &			RENDERER_SYSTEM();
+	// RENDERER_SYSTEM give an access the System::Renderer object
+	Application::System::Renderer & RENDERER_SYSTEM();
+
+	// RENDERER return an accessor to the Renderer::Facade object with onGet/onRelease functions called (to activate
+	// openGLContext for example)
 	Application::Renderer::RendererAccessor RENDERER();
 } // namespace VTX::App
 #endif
