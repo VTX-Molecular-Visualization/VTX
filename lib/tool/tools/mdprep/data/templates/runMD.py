@@ -9,10 +9,12 @@ nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
 GpuAvailable = False
 
+def submitCmd(cmdStr: str):
+    return subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT, capture_output=False)
 
 def doesPgmExists(command : str):
     try:
-        subprocess.check_output(command)
+        submitCmd(command)
         return True
     except Exception:
         return False 
@@ -37,7 +39,7 @@ def checkSystem():
         print("Error : gmx binary not found in PATH. Ask help from the system manager.")
         return False
         
-    if isGmxInPath() == False:
+    if isGmxlibDefined() == False:
         print("Warning : Environment variable GMXLIB not defined. It is not mandatory to run gromacs. However if the MD fails to start, it would be worth investigating this first.")
         
     GpuAvailable = isGpuAvailable()
@@ -67,26 +69,27 @@ _runMinimizationFailed = False
 
 def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
-    cmdStr = "gmx mdrun -v -deffnm em %s > em.txt" % ("-nb gpu" if GpuAvailable else "")
+    cmdStr = "gmx mdrun -v -deffnm em %s" % ("-nb gpu" if GpuAvailable else "")
     def printFailure(msg):
         print("failed with error : <%s>" % msg)
-        print(logErrMsg % "em.log", "em.txt")   
+        print(logErrMsg % ("em.log", "em.txt"))   
         
     print("Starting gromacs Energy Minimzation. You can check out gromacs's progression in the em.log file.")
     try:
-        print("Minimizing ... " endl="")
-        rc = subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT)
-        if rc.a.returncode != 0:
+        print("Minimizing ... ", end="", flush=True)
+        rc = submitCmd(cmdStr)
+        Path("em.txt").write_bytes(rc.stdout)
+        if rc.returncode != 0:
             printFailure(rc.stdout)
             _runMinimizationFailed = True
         else:
             print("done !")
     except Exception:
         _runMinimizationFailed = True
-        if ("stdout" in dir(Exception):
+        if ("stdout" in dir(Exception)):
             printFailure(Exception.stdout if Exception.stdout != None else "")
         else:
-            printFailure("Gromacs ended without saying anything.")
+            printFailure(repr(Exception))
             
         
 def isMinimizationOk():
@@ -120,7 +123,7 @@ def runMD():
     os.chdir(getMdRootDir()) # Make sure we are on the right directory before doing anything
     if checkSystem() == False or checkFolder() == False:
         print("VTX runMD.py failed to start MD. Please check error above for more details.")
-        
+        return
         
     runMinimization()
     if isMinimizationOk() == False:

@@ -121,6 +121,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 		std::string	  out( fileSize, '\0' );
 		strm.seekg( 0 );
 		strm.read( out.data(), fileSize );
+		while ( out.back() == '\0' )
+			out.pop_back();
+
 		return out;
 	}
 
