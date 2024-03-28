@@ -1,3 +1,5 @@
+// TODO Move this controller in dedicated tool
+
 // #ifndef __VTX_UI_QT_CONTROLLER_MEASUREMENT_PICKER__
 // #define __VTX_UI_QT_CONTROLLER_MEASUREMENT_PICKER__
 //

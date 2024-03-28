@@ -1,9 +1,9 @@
 #include "ui/qt/tool/ui_features/visualization_tool.hpp"
 #include "ui/action/animation.hpp"
 #include "ui/action/visualization.hpp"
+#include "ui/internal/controller/camera/freefly.hpp"
+#include "ui/internal/controller/camera/trackball.hpp"
 #include "ui/qt/application_qt.hpp"
-#include "ui/qt/controller/freefly.hpp"
-#include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/tool/pytx/details/include_python_binding.hpp"
@@ -80,12 +80,15 @@ namespace VTX::UI::QT::Tool::UIFeatures
 
 	void VisualizationTool::_setTrackball() const
 	{
-		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>( Controller::Trackball::COLLECTION_ID
+		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>(
+			Internal::Controller::Camera::Trackball::COLLECTION_ID
 		);
 	}
 	void VisualizationTool::_setFreefly() const
 	{
-		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>( Controller::Freefly::COLLECTION_ID );
+		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>(
+			Internal::Controller::Camera::Freefly::COLLECTION_ID
+		);
 	}
 
 	namespace Visualization

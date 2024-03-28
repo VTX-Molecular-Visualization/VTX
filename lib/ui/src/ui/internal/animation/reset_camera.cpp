@@ -4,7 +4,6 @@
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/controller/base_controller.hpp"
 #include "ui/qt/controller/base_picker_controller.hpp"
-#include "ui/qt/controller/camera_animation_controller.hpp"
 #include "ui/qt/mode/visualization.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/system/ecs_system.hpp>

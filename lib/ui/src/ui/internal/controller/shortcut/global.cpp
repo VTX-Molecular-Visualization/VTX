@@ -1,10 +1,10 @@
-#include "ui/qt/controller/global_shortcut.hpp"
+#include "ui/internal/controller/shortcut/global.hpp"
 #include "ui/core/input/keys.hpp"
 #include <app/action/application.hpp>
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Shortcut
 {
-	void GlobalShortcut::init()
+	void Global::init()
 	{
 		BaseShortcutController::init();
 
@@ -18,4 +18,4 @@ namespace VTX::UI::QT::Controller
 							 Core::Input::Shortcut::callAction<App::Action::Application::SaveScene>() } );
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Shortcut

@@ -1,4 +1,4 @@
-#include "ui/qt/controller/trackball.hpp"
+#include "ui/internal/controller/camera/trackball.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
@@ -10,7 +10,7 @@
 #include <util/math.hpp>
 #include <util/types.hpp>
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Camera
 {
 	void Trackball::init()
 	{
@@ -209,4 +209,4 @@ namespace VTX::UI::QT::Controller
 		_velocity = VEC3F_ZERO;
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Camera

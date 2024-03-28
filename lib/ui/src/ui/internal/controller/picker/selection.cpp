@@ -1,4 +1,4 @@
-#include "ui/qt/controller/selection_picker.hpp"
+#include "ui/internal/controller/picker/selection.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
@@ -31,9 +31,9 @@ namespace
 	}
 } // namespace
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Picker
 {
-	void SelectionPicker::init()
+	void Selection::init()
 	{
 		INPUT_MANAGER().onMouseLeftClicked +=
 			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
@@ -45,16 +45,18 @@ namespace VTX::UI::QT::Controller
 			[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
 	}
 
-	void SelectionPicker::_onMouseLeftClick( const Vec2i & p_mousePos )
+	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
 			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+
+		VTX_INFO( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
 		_performSelection( pickingInfo );
 		_lastPickingInfo = pickingInfo;
 	}
 
-	void SelectionPicker::_onMouseRightClick( const Vec2i & p_mousePos )
+	void Selection::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
 			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
@@ -80,7 +82,7 @@ namespace VTX::UI::QT::Controller
 		}
 	}
 
-	void SelectionPicker::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
+	void Selection::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
 			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
@@ -94,7 +96,7 @@ namespace VTX::UI::QT::Controller
 		}
 	}
 
-	void SelectionPicker::_performSelection( const PickingInfo & p_pickingInfo ) const
+	void Selection::_performSelection( const PickingInfo & p_pickingInfo ) const
 	{
 		// Append to selection if CTRL modifier pressed.
 		const App::Component::Scene::Pickable::PickType pickType
@@ -119,7 +121,7 @@ namespace VTX::UI::QT::Controller
 		}
 	}
 
-	bool SelectionPicker::_isTargetSelected( const PickingInfo & p_pickingInfo ) const
+	bool Selection::_isTargetSelected( const PickingInfo & p_pickingInfo ) const
 	{
 		bool res = false;
 
@@ -142,4 +144,4 @@ namespace VTX::UI::QT::Controller
 		return res;
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Picker

@@ -1,12 +1,11 @@
-#include "ui/qt/controller/freefly.hpp"
-#include "ui/internal/all_settings.hpp"
+#include "ui/internal/controller/camera/freefly.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Camera
 {
 	void Freefly::init()
 	{
@@ -101,4 +100,4 @@ namespace VTX::UI::QT::Controller
 		getCamera().getTransform().localMove( translation );
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Camera
