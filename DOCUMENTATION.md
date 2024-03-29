@@ -14,37 +14,73 @@ Pour une bonne lecture de cette doc sur VSCode, installez l'extension plantUML(j
 
 Le module App s'occupe de gérer les articulations entre les structures de Core et le renderer, ainsi que de gérer plusieurs systèmes structurant le logiciel VTX.
 
-Il est scindé en plusieurs dossiers en fonction du niveau d'accessibilité des features.
+### Hierarchie de fichier
 
-- "core" contient les structures abstraites et minimales des différents systèmes présent dans App.
+le code source de App est divisé en plusieurs dossiers :
 
-- "application" contient les systèmes ayant attrait à l'application VTX.
+- "core" contient les structures abstraites et minimales des différents systèmes utilisé dans le module. Les fonctionnalités implémentée dans Core ne doivent pas nécessité de code en dehors de leur dossier (ou d'un autre dossier de Core si c'est le sens de la feature).
 
-- "component" contient l'ensemble des components utilisé par l'ECS
+- "application" va contenir l'ensemble des systèmes liés à l'application VTX, implémentant pour la plupart les structures contenues dans core.
 
-- "entity" contient les fonctions pour générer les entités complexe possédant plusieurs composants intéragissant entre-eux.
+- "component" contient l'ensemble des components utilisé par l'ECS, réparti par selon leur champ d'action (chemistry pour les components lié à la chimie, scene pour les composants de scene, etc..)
 
-- "internal" contient des paramétrisations ou des actions utilisants les systèmes de "application" spécifique à VTX (i.e la liste des settings de VTX, les fonctions de serialisation, etc)
+- "entity" contient les fonctions permettant de générer les entités complexes possédant plusieurs composants intéragissant entre-eux.
 
-- "helper" contient des fonctions utilitaire pour factoriser des fonctionnalités un peu plus poussé.
+- "internal" contient des paramétrisations ou des procédures utilisants les systèmes de "application" spécifique à VTX (i.e la liste des settings de VTX, les fonctions de serialisation, etc)
 
-- "action" contient les différentes action permise par VTX. Les actions sont les fonctionnalités que peux lancer l'utilisateur dans le logiciel.
+- "helper" contient des fonctions utilitaires pour factoriser des fonctionnalités un peu plus poussé.
 
-Outre ces dossiers, app contient deux fichiers à sa racine : vtx_app, qui est le point d'entrée et le coeur du module, et info qui des données statiques informant sur la version de VTX.
+- "action" contient les différentes actions permises par VTX. Les actions sont les fonctionnalités que peux lancer l'utilisateur dans le logiciel. Ce sont les points d'entrée pour les interactions avec le module VTX_APP
+
+Outre ces dossiers, app contient deux fichiers à sa racine : vtx_app, qui est le point d'entrée et le singleton qui gère la durée de vie du module, et info qui contient uniquement des données statiques informant sur la version de VTX.
 
 ## Architecture
 
-Globalement le module VTX_APP est composé de systèmes plus ou moins indépendants centralisés dans un SystemHandler afin que l'environnement VTX puisse facilement être partagé dans l'environnement Python. Le singleton VTXApp s'occupe de stocker le SystemHandler et de gérer l'initialisation, la boucle logique et la destruction du logiciel.
+Globalement le module VTX_APP est composé de systèmes plus ou moins indépendants centralisés dans un SystemHandler afin que l'environnement VTX puisse facilement être partagé dans l'environnement Python. Le singleton VTXApp s'occupe de stocker le SystemHandler et de gérer l'initialisation, la boucle logique et la destruction du module.
 Parmi les systèmes, on peut notamment recenser la scène, l'entity component system, le serializer, l'action manager...
 
 ### Structure d'un système
 
-Chaque système hérite de BaseSystem et possède un membre static "SystemRegistration" lui permettant de s'enregistrer automatiquement et directement auprès du SystemHandler. Chaque système possède une ou plusieurs fonction facilitatrice pour accéder facilement dans le code aux features désirées. (par exemple, le système ECS possède une fonction pour accéder au registre, une fonction pour accéder à l'entityBuilder et une fonction pour accéder aux metafonctions des components)
+Chaque système hérite de BaseSystem et possède un membre static "SystemRegistration" lui permettant de s'enregistrer automatiquement et directement auprès du SystemHandler. Chaque système possède une ou plusieurs fonction facilitatrice pour accéder aisément depuis n'importe quel namespace aux features désirées.
 
+Diagramme de classe d'un système
+```plantuml
+@startuml
+skinparam packageStyle rectangle
+
+class VTXApp
+
+package Core::System
+{
+    abstract BaseSystem
+    class SystemHandler
+}
+
+package Application::System
+{
+    class AutoRegistrationSystem
+    class SystemRegistration
+
+    class ImplementedSystem
+}
+
+AutoRegistrationSystem <|-- ImplementedSystem
+BaseSystem <|-- AutoRegistrationSystem
+SystemRegistration *--left AutoRegistrationSystem : static
+SystemHandler <-- SystemRegistration : registrate
+SystemHandler *-- VTXApp
+BaseSystem *--right SystemHandler
+circle "IMPLEMENTED_SYSTEM_ACCESS()" as IMPLEMENTED_SYSTEM_ACCESS
+IMPLEMENTED_SYSTEM_ACCESS --up ImplementedSystem : get
+
+@enduml
+```
+
+Diagramme de séquence d'initialisation d'un système
 ```plantuml
 @startuml
 
-BaseSystem -> SystemRegistration : static constructor
+ImplementedSystem -> SystemRegistration : static constructor
 SystemRegistration -> VTXApp : get()
 VTXApp -> SystemHandler : getSystemHandler()
 SystemHandler -> SystemRegistration : return
@@ -53,6 +89,7 @@ SystemRegistration -> SystemHandler : registration
 @enduml
 ```
 
+Diagramme de séquence de l'accès dans le code à un système
 ```plantuml
 @startuml
 
@@ -66,20 +103,75 @@ SystemHandler -> Anywhere : return
 @enduml
 ```
 
-### Liste des systèmes
+### Rendu de molecule
 
-La fonctionnalité principale de VTX est de faire du rendu de molécule. Ceci va être fait via l'utilisation de 3 systèmes principaux : Le renderer, la scène et l'entity component system.
+La fonctionnalité principale de VTX est de faire du rendu de molécule. Ceci va être fait via l'utilisation de 3 systèmes principaux : Le renderer, la scène et l'entity component system (ECS).
+
+Synthétiquement la scène est l'objet qui va référencer les différents objets de scène instanciés. Ces objets sont créés en utilisant l'ECS. Ce sont donc des entités possédant un ou plusieurs component permettant de définir son comportement. L'un de ces components va servir d'interfaçage avec le Renderer qui lui va s'occuper de communiquer avec le module VTX_RENDERER pour permettre l'affichage de ces objets.
+
+### Liste des systèmes
 
 #### RENDERER()
 
-Le renderer permet l'accès aux features du module VTX_RENDERER via la classe VTX::Renderer::Facade. Un petit système est mis en place pour appeler des callbacks avant d'accéder et release l'accès au renderer pour gérer l'activation du context openGL.
+Le rendu à proprement parlé n'est pas géré par VTX_APP, mais le module communique avec la classe Renderer::Facade du module VTX_RENDERER pour généré et paramétrer le context openGL.
+Cette tâche est opérée par le système Renderer.
+
+Renderer instantie la facade VTX::Renderer::Facade qui sera utilisée par le rendu. Un petit système est mis en place pour appeler des callbacks avant d'accéder et release l'accès au renderer pour gérer l'activation du context openGL.
 
 RENDERER() permet un accès simplifié à la facade en intégrant l'appel des callbacks d'accès.
 RENDERER_SYSTEM() permet d'accéder directement au système et potentiellement au renderer sans passé par les callbacks.
 
+```plantuml
+@startuml
+
+skinparam packageStyle rectangle
+
+package VTX::Renderer
+{
+    class Facade
+}
+
+package Core::System
+{
+    abstract BaseSystem
+}
+
+package Application::Renderer
+{
+    class Renderer
+    class RendererAccessor
+}
+
+package Application::System
+{
+    class RendererSystem
+    {
+        --
+		+ Renderer get()
+		+ Renderer::Facade facade()
+        --
+        + Callback<> onGet
+        + Callback<> onRelease
+    }
+}
+
+Facade *-- Renderer
+Renderer o-- RendererAccessor
+Renderer *-- RendererSystem
+RendererAccessor <--right RendererSystem 
+BaseSystem <|-- RendererSystem
+
+circle "RENDERER_SYSTEM()" as RENDERER_SYSTEM
+circle "RENDERER()" as RENDERER
+RENDERER_SYSTEM --up RendererSystem : get
+RENDERER --up RendererAccessor : get (from RendererSystem)
+
+@enduml
+```
+
 #### SCENE()
 
-Dans VTX, la scène n'est en fait qu'un ensemble de fonctions facilitatrice pour pouvoir accéder aux objets de scène (Entity possédant un component "SceneItemComponent"). Sa fonction d'update va permettre la mise à jour de l'état des différents SceneItemComponent.
+Dans VTX, la scène est en fait un component ne contenant qu'un ensemble de fonctions facilitatrice pour pouvoir accéder aux objets de scène (Entity possédant un component "SceneItemComponent"). Sa fonction d'update va permettre la mise à jour de l'état des différents SceneItemComponent.
 
 #### ECS
 
@@ -87,8 +179,8 @@ l'Entity Component System (ECS) est un système permettant de stocker, de lier d
 
 Nous utilisons la lib EnTT pour gérer ça.
 EnTT implémente l'ECS en 3 parties
-- Les entités (entt::entity) : Dans les faits, c'est juste un id unique
-- Les composants : dans entt, cela peut-être n'importe quel class / struct. Ce sont eux qui vont contenir les données et les comportements affectés aux entités
+- Les entités (entt::entity) : C'est une simple id unique servant d'identifiant
+- Les composants : dans entt, cela peut-être n'importe quel class / struct avec de la donnée (une struct vide cause une assert). Ce sont eux qui vont contenir les données et les comportements affectés aux entités.
 - Le registre (entt::registry) : C'est la structure de donnée qui va stocker les différents components par type et qui va rattacher chacun de ces components à une entité.
 
 Dans VTX, nous suivons cet implémentation avec Core::ECS::BaseEntity pour les entités (id unique), Core::ECS::BaseComponent pour les composants (pour permettre des comportements globaux sur l'ensemble des composants au besoin) et Core::ECS::Registry, le registre qui contient l'ensemble des components de l'application.
@@ -102,16 +194,18 @@ Ce système est accessible via la fonction ENTITY_DIRECTOR(). Il permet de modif
 
 Doc EnTT : https://github.com/skypjack/entt/wiki/Crash-Course:-core-functionalities
 
-##### Génération d'une entité
+##### Génération d'une entité complexe
 
-Pour générer une entité, il faut enregistrer les différentes étapes de construction à l'EntityDirector. Il y a trois étape :
+Les objets que nous manipulons dans VTX peuvent posséder un certains nombre de components. Pour faciliter leur création et les rendre modulaire, nous avons un sous-système dédié dans ECS_SYSTEM appelé l'EntityDirector.
+
+la génération d'une entité se fait en 3 étapes sur lesquelles des tool externes peuvent ajouter leur propre séquence d'initialisation :
 1) AddComponent : Ajout de l'ensemble des composants 
 2) Setup : Initialisation des composants (indépendant ou entre eux).
-3) PostSetup : Actions qui ne peuvent être faites qu'une fois l'ensemble des composants initialisé
+3) PostSetup : Actions qui ne peuvent être faites qu'une fois l'ensemble des composants initialisés
 
 Pour les entités complexes, on peut ajouter un composant dédié qui peut s'occuper de l'initialisation de tous les composants (Appelé "XxxBehaviour" dans VTX (i.e. MoleculeBehaviour)).
 
-Dans VTX_App, une fonction présente dans Internal::ECS::SetupEntityDirector permet l'initialisation de l'ensemble des entités de App. Ensuite des tools externe peuvent ajouter des fonctions dans les différentes étapes de construction pour rajouter des components par défaut aux entités.
+Dans VTX_App, une fonction présente dans Internal::ECS::SetupEntityDirector permet l'initialisation de l'ensemble des entités de App. Ensuite des tools externes peuvent ajouter des fonctions dans les différentes étapes de construction pour rajouter des components par défaut aux entités.
 
 Initialisation de l'EntityDirector
 ```plantuml
@@ -158,7 +252,7 @@ EntityBuilder -> ExternalComponent : external postInit step
 
 ##### Accès à un component
 
-L'accès à un component sur une entité se fait assez facilement via MAIN_REGISTRY().
+L'accès à un component sur une entité se fait en accédant au registre via la fonction facilitatrice MAIN_REGISTRY() de l'ECS_SYSTEM.
 Il suffit d'appeler la fonction template getComponent avec le type de component désiré et en paramètre une entité, ou un autre composant de l'entité.
 
 Pour récupérer un groupe de composant (par exemple, tous le SceneItemComposant pour faire un parcours de l'ensemble des objets de la scène), il y a la fonction findComposants qui peut prendre de un à plusieurs type et qui retourne une View.
