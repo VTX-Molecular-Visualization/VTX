@@ -122,8 +122,8 @@ def checkFolder():
     
 def runJob(cmd: str, fileStem: str, jobFailedSignal: callable):
     logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
-    def printFailure(msg):
-        print("failed with error : <%s>" % msg)
+    def printFailure(msg = None):
+        print("failed with error : <%s>" % ("Too big to be printed" if len(msg)> 50 else msg ))
         print(logErrMsg % ("%s.log" % fileStem, "%s.txt" % fileStem))   
         
     try:
@@ -161,10 +161,27 @@ def runNvtEquil():
     print("Preparing NVT Equilibration run ...", flush=True, end="")
     cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr"
     
-    return
+    def jobFailedSignal():
+        nvtJob.preparationFailed = True
+    
+    runJob(cmdStr, "nvt_prep", jobFailedSignal)
+    
+    if (nvtJob.preparationFailed == True):
+        return
+    
+    print("Starting NVT Equilibration run ...", flush=True, end="")
+    cmdStr = "gmx mdrun -deffnm nvt %s" % getResourceString()
+    
+    def jobFailedSignal():
+        nvtJob.runFailed = True
+    
+    runJob(cmdStr, "nvt", jobFailedSignal)
     
 def isNvtEquilOk():
-    return False
+    return (
+        (nvtJob.preparationFailed == False and nvtJob.runFailed == False)
+        and (getMdRootDir() / "nvt.gro").is_file()
+    )
     
 def runNptEquil():
     return
