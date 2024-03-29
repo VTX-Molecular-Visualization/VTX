@@ -28,7 +28,6 @@ namespace VTX::App
 
 		void start( const std::vector<std::string> & );
 		void update( const float p_elapsedTime = 0 );
-		void goToState( const std::string &, void * const = nullptr );
 		void stop();
 
 		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
