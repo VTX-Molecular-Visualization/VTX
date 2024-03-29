@@ -1,6 +1,18 @@
+import argparse
 import subprocess
 import os
 from pathlib import Path
+
+###############################################################################################################
+# ______  ___ _____ ___   ______ _____ _   _ _____ _____ _____ _____ _   _                                    #
+# |  _  \/ _ \_   _/ _ \  |  _  \_   _| | | |_   _/  ___|_   _|  _  | \ | |                                   #
+# | | | / /_\ \| |/ /_\ \ | | | | | | | | | | | | \ `--.  | | | | | |  \| |                                   #
+# | | | |  _  || ||  _  | | | | | | | | | | | | |  `--. \ | | | | | | . ` |                                   #
+# | |/ /| | | || || | | | | |/ / _| |_\ \_/ /_| |_/\__/ /_| |_\ \_/ / |\  |                                   #
+# |___/ \_| |_/\_/\_| |_/ |___/  \___/ \___/ \___/\____/ \___/ \___/\_| \_/                                   #
+#                                                                                                             #
+###############################################################################################################
+
 
 fileStem = "${fileStem}" # templated variable
 minimTprInput = "em.tpr"
@@ -8,6 +20,7 @@ nvtMdpInput = "nvt.mdp"
 nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
 GpuAvailable = False
+args = None # meant to hold kv of user argument
 
 class Job:
     preparationFailed = False
@@ -15,7 +28,31 @@ class Job:
 
 emJob = Job()
 nvtJob = Job()
+nptJob = Job()
+prodJob = Job()
 
+
+###############################################################################################################
+#  ____________ _____ _____  ___________ _   _______ _____  ______ _____ _   _ _____ _____ _____ _____ _   _  #
+# | ___ \ ___ \  _  /  __ \|  ___|  _  \ | | | ___ \  ___| |  _  \_   _| | | |_   _/  ___|_   _|  _  | \ | |  #
+# | |_/ / |_/ / | | | /  \/| |__ | | | | | | | |_/ / |__   | | | | | | | | | | | | \ `--.  | | | | | |  \| |  #
+# |  __/|    /| | | | |    |  __|| | | | | | |    /|  __|  | | | | | | | | | | | |  `--. \ | | | | | | . ` |  #
+# | |   | |\ \\ \_/ / \__/\| |___| |/ /| |_| | |\ \| |___  | |/ / _| |_\ \_/ /_| |_/\__/ /_| |_\ \_/ / |\  |  #
+# \_|   \_| \_|\___/ \____/\____/|___/  \___/\_| \_\____/  |___/  \___/ \___/ \___/\____/ \___/ \___/\_| \_/  #
+#                                                                                                             #
+###############################################################################################################
+                                                                                                          
+
+def parseArgs():
+    parser = argparse.ArgumentParser(
+        prog="runMd.py",
+        description= "VTX Molecular Dynamics Runner for Gromacs\nRun all MD simulations steps on system prepared by VTX",
+    )
+    parser.add_argument("--pass-gpu-check", action="store_true", default=False, dest="ignore_gpu_check", help="runMD.py will consider that a gpu is available.")
+    parser.add_argument("-gpu_id", dest="gpu_id", default=None, help="Name of the GPU(s) to aim for. Will be forwarded to mdrun.")
+    parser.add_argument("-nt", dest="nt", default=None , help="Number of thread to start. Usually correlate with the number of CPU core used. Will be forwarded to mdrun.")
+    return parser.parse_args()
+    
 def submitCmd(cmdStr: str, stdoutFilePath : Path=None):
     rc = subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT, capture_output=False)
     if stdoutFilePath is not None:
@@ -29,14 +66,21 @@ def doesPgmExists(command : str):
     except Exception:
         return False 
 
-def getGpuString():
-    return ("-nb gpu" if GpuAvailable else "")
+def getResourceString():
+    outStr = ("-nt %s" % args.nt if args.nt is not None and args.nt != "" else "")
+    if GpuAvailable:
+        if outStr != "":
+            outStr += " "
+        outStr = "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None and args.gpu_id != "" else "") 
+        
+    return outStr
 
 def isGmxInPath():
     return doesPgmExists("gmx")
-    
+  
+# Coslty operation. Storing the result is a good idea  
 def isGpuAvailable():
-    return doesPgmExists("nvidia-smi")
+    return args.ignore_gpu_check or doesPgmExists("nvidia-smi")
     
 def getMdRootDir():
     return Path(__file__).parent.resolve()
@@ -76,31 +120,30 @@ def checkFolder():
         return False
     return True
     
-_runMinimizationFailed = False
-
-def runJob(cmd: str, fileStem: str, jobFailedSignal: Callable):
+def runJob(cmd: str, fileStem: str, jobFailedSignal: callable):
     logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
     def printFailure(msg):
         print("failed with error : <%s>" % msg)
         print(logErrMsg % ("%s.log" % fileStem, "%s.txt" % fileStem))   
         
     try:
-        rc = submitCmd(cmdStr, Path("%s.txt" % fileStem))
+        rc = submitCmd(cmd, Path("%s.txt" % fileStem))
         if rc.returncode != 0:
             printFailure(rc.stdout)
             jobFailedSignal()
         else:
-            print("done !")
-    except Exception:
+            print("done")
+    except Exception as e:
+        print()
         jobFailedSignal()
-        if ("stdout" in dir(Exception)):
-            printFailure(Exception.stdout if Exception.stdout != None else "")
+        if ("stdout" in dir(e)):
+            printFailure(e.stdout if e.stdout != None else "")
         else:
-            printFailure(repr(Exception))
+            printFailure(repr(e))
 
 def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
-    cmdStr = "gmx mdrun -v -deffnm em %s" % ("-nb gpu" if GpuAvailable else "")
+    cmdStr = "gmx mdrun -v -deffnm em %s" % getResourceString()
     print("Starting Energy Minimization ... ", end="", flush=True)
     
     def jobFailedSignal():
@@ -110,12 +153,13 @@ def runMinimization():
         
 def isMinimizationOk():
     return (
-        (not _runMinimizationFailed) 
+        (not emJob.runFailed) 
         and (getMdRootDir() / "em.gro").is_file()
     )
     
 def runNvtEquil():
     print("Preparing NVT Equilibration run ...", flush=True, end="")
+    cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr"
     
     return
     
@@ -167,7 +211,6 @@ def runMD():
     return
     
     
-    
-    
 if __name__ == "__main__":
+    args = parseArgs()
     runMD()
