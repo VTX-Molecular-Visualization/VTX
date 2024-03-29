@@ -63,11 +63,10 @@ namespace VTX::Renderer
 				  { E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
 				  { E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
 				  { E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
-		Programs {
-			{ "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS, nullptr } },
-			{ "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, nullptr, true } },
-			{ "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, nullptr, true } },
-			{ "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS, nullptr } } },
+		Programs { { "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS } },
+				   { "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
+				   { "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
+				   { "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS } } },
 		{ E_SETTING::CLEAR }
 	};
 

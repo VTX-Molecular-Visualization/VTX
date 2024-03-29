@@ -93,14 +93,18 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
-	using CountFunction = std::function<size_t()>;
-
 	struct Draw
 	{
-		std::string	  name;
-		E_PRIMITIVE	  primitive;
-		CountFunction countFunction;
-		bool		  useIndices = false;
+		std::string name;
+		E_PRIMITIVE primitive;
+		bool		useIndices = false;
+
+		struct Range
+		{
+			std::vector<void *> offsets;
+			std::vector<uint>	counts;
+		};
+		Range * ranges = nullptr;
 	};
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;

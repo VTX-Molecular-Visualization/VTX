@@ -48,13 +48,13 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction = [ this ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction = [ this ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction = [ this ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction = [ this ]() { return showVoxels ? sizeVoxels : 0; };
-			blurX->name									  = "BlurX";
-			blurY->name									  = "BlurY";
-			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().ranges	 = &_drawRangeSpheres;
+			geo->programs[ 1 ].draw.value().ranges	 = &_drawRangeCylinders;
+			geo->programs[ 2 ].draw.value().ranges	 = &_drawRangeRibbons;
+			geo->programs[ 3 ].draw.value().ranges	 = &_drawRangeVoxels;
+			blurX->name								 = "BlurX";
+			blurY->name								 = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
 			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
@@ -247,10 +247,12 @@ namespace VTX::Renderer
 		size_t width;
 		size_t height;
 
+		/*
 		size_t sizeAtoms   = 0;
 		size_t sizeBonds   = 0;
 		size_t sizeRibbons = 0;
 		size_t sizeVoxels  = 0;
+		*/
 
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
@@ -296,14 +298,10 @@ namespace VTX::Renderer
 		}
 
 		// Draw ranges.
-		template<typename T>
-		struct _DrawRange
-		{
-			std::vector<T>	  indices;
-			std::vector<uint> counts;
-		};
-		using _DrawRangeArrays	 = _DrawRange<uint>;
-		using _DrawRangeElements = _DrawRange<void *>;
+		Draw::Range _drawRangeSpheres;
+		Draw::Range _drawRangeCylinders;
+		Draw::Range _drawRangeRibbons;
+		Draw::Range _drawRangeVoxels;
 
 		// Cache.
 		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;

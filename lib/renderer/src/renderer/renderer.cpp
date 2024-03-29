@@ -50,10 +50,12 @@ namespace VTX::Renderer
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
 
-		sizeAtoms	= 0;
-		sizeBonds	= 0;
-		sizeRibbons = 0;
-		sizeVoxels	= 0;
+		_drawRangeSpheres.counts.clear();
+		_drawRangeSpheres.offsets.clear();
+		_drawRangeCylinders.counts.clear();
+		_drawRangeCylinders.offsets.clear();
+		_drawRangeRibbons.counts.clear();
+		_drawRangeRibbons.offsets.clear();
 	}
 
 #pragma region Proxy molecules
@@ -109,9 +111,7 @@ namespace VTX::Renderer
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setValue(
-				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
-			);
+			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy ) );
 		};
 
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
@@ -354,7 +354,9 @@ namespace VTX::Renderer
 
 		_context->setData( *p_proxy.mins, "VoxelsMins" );
 		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
-		sizeVoxels += uint( p_proxy.mins->size() );
+
+		_drawRangeVoxels.offsets = { 0 };
+		_drawRangeVoxels.counts	 = { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -444,8 +446,10 @@ namespace VTX::Renderer
 		}
 
 		// Counters.
-		sizeAtoms = totalAtoms;
-		sizeBonds = totalBonds;
+		_drawRangeSpheres.offsets	= { 0 };
+		_drawRangeSpheres.counts	= { uint( totalAtoms ) };
+		_drawRangeCylinders.offsets = { 0 };
+		_drawRangeCylinders.counts	= { uint( totalBonds ) };
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -813,7 +817,8 @@ namespace VTX::Renderer
 			offsetIndices += cache.bufferIndices.size();
 		}
 
-		sizeRibbons = offsetIndices;
+		_drawRangeRibbons.offsets = { 0 };
+		_drawRangeRibbons.counts  = { uint( offsetIndices ) };
 	}
 
 	void Renderer::_refreshDataSES()

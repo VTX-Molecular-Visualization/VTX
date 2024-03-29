@@ -363,6 +363,12 @@ namespace VTX::Renderer::Context
 				{
 					const Draw &			draw = descProgram.draw.value();
 					GL::VertexArray * const vao	 = _vertexArrays[ _getKey( draw ) ].get();
+
+					assert( draw.ranges != nullptr );
+
+					GLenum					  primitive = _mapPrimitives[ draw.primitive ];
+					const Draw::Range * const ranges	= draw.ranges;
+
 					// Element.
 					if ( draw.useIndices )
 					{
@@ -370,17 +376,21 @@ namespace VTX::Renderer::Context
 						assert( _buffers.contains( keyEbo ) );
 
 						GL::Buffer * const ebo = _buffers[ keyEbo ].get();
+
 						p_outInstructions.emplace_back(
-							[ this, program, &draw, vao, ebo ]()
+							[ this, program, vao, ebo, primitive, ranges ]()
 							{
-								size_t count = draw.countFunction();
-								if ( count > 0 )
+								if ( ranges->counts.size() > 0 )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
 									program->use();
-									vao->drawElement(
-										_mapPrimitives[ draw.primitive ], GLsizei( count ), GL_UNSIGNED_INT
+									vao->multiDrawElement(
+										primitive,
+										(GLsizei *)( ranges->counts.data() ),
+										GL_UNSIGNED_INT,
+										(GLvoid **)( ranges->offsets.data() ),
+										GLsizei( ranges->counts.size() )
 									);
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -392,14 +402,18 @@ namespace VTX::Renderer::Context
 					else
 					{
 						p_outInstructions.emplace_back(
-							[ this, program, &draw, vao ]()
+							[ this, program, vao, primitive, ranges ]()
 							{
-								size_t count = draw.countFunction();
-								if ( count > 0 )
+								if ( ranges->counts.size() > 0 )
 								{
 									vao->bind();
 									program->use();
-									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( count ) );
+									vao->multiDrawArray(
+										primitive,
+										(GLint *)( ranges->offsets.data() ),
+										(GLsizei *)( ranges->counts.data() ),
+										GLsizei( ranges->counts.size() )
+									);
 									vao->unbind();
 								}
 							}
