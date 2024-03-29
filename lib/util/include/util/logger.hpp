@@ -23,6 +23,7 @@ namespace VTX
 			CRITICAL = spdlog::level::critical
 		};
 
+		// Log info sent by callback
 		struct LogInfo
 		{
 			LOG_LEVEL	level;

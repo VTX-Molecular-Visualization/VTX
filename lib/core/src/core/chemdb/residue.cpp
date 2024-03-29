@@ -1,22 +1,16 @@
 #include "core/chemdb/residue.hpp"
 #include <algorithm>
-#include <util/enum.hpp>
 #include <optional>
+#include <util/enum.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Core::ChemDB::Residue
 {
 
 	const SYMBOL getSymbolFromShortName( const std::string & p_residueName )
 	{
-		std::string upcasedName = std::string( p_residueName.begin(), p_residueName.end() );
-
 		// Upcase residue name
-		std::transform(
-			p_residueName.begin(),
-			p_residueName.end(),
-			upcasedName.begin(),
-			[]( unsigned char c ) { return std::toupper( c ); }
-		);
+		std::string upcasedName = Util::String::toUpper( p_residueName );
 
 		for ( int i = 0; i < int( SYMBOL::COUNT ); i++ )
 		{
@@ -29,15 +23,7 @@ namespace VTX::Core::ChemDB::Residue
 
 	const SYMBOL getSymbolFromName( const std::string & p_residueName )
 	{
-		std::string upcasedName = std::string( p_residueName.begin(), p_residueName.end() );
-
-		// Upcase residue name
-		std::transform(
-			p_residueName.begin(),
-			p_residueName.end(),
-			upcasedName.begin(),
-			[]( unsigned char c ) { return std::toupper( c ); }
-		);
+		std::string upcasedName = Util::String::toUpper( p_residueName );
 
 		// Convert name
 		const std::optional symbol = magic_enum::enum_cast<ChemDB::Residue::SYMBOL>( upcasedName );
@@ -49,7 +35,7 @@ namespace VTX::Core::ChemDB::Residue
 		std::string formattedName = std::string( p_residueName.begin(), p_residueName.end() );
 		formattedName[ 0 ]		  = std::toupper( formattedName[ 0 ] );
 
-		// Upcase residue name
+		// Downcase residue name
 		std::transform(
 			++p_residueName.begin(),
 			p_residueName.end(),
@@ -90,13 +76,7 @@ namespace VTX::Core::ChemDB::Residue
 
 	bool checkIfStandardFromName( const std::string & p_residueSymbol )
 	{
-		std::string residueSymbol = p_residueSymbol;
-		std::transform(
-			residueSymbol.begin(),
-			residueSymbol.end(),
-			residueSymbol.begin(),
-			[]( unsigned char c ) { return std::toupper( c ); }
-		);
+		const std::string residueSymbol = Util::String::toUpper( p_residueSymbol );
 
 		return std::find(
 				   std::begin( ChemDB::Residue::SYMBOL_STR ), std::end( ChemDB::Residue::SYMBOL_STR ), residueSymbol

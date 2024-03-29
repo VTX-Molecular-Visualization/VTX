@@ -64,9 +64,17 @@ namespace VTX::Util::String
 
 	uint strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
 
-	void toUpper( std::string & inout )
+	void toUpper( std::string & p_str )
 	{
-		std::transform( inout.begin(), inout.end(), inout.begin(), []( char & c ) { return std::toupper( c ); } );
+		std::transform( p_str.begin(), p_str.end(), p_str.begin(), []( char & c ) { return std::toupper( c ); } );
+	}
+
+	std::string toUpper( const std::string & p_str )
+	{
+		std::string upcasedStr = std::string( p_str.begin(), p_str.end() );
+		Util::String::toUpper( upcasedStr );
+
+		return upcasedStr;
 	}
 
 } // namespace VTX::Util::String
