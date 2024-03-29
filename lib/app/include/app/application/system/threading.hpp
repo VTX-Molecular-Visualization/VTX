@@ -14,7 +14,8 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	// Access to the worker manager class in order to launch thread.
 	Core::Worker::WorkerManager & THREADING();
-}
+} // namespace VTX::App
 
 #endif

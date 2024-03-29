@@ -321,6 +321,7 @@ SerializedObject va automatiquement ajouter le numéro de version de VTX dans le
 
 ```plantuml
 @startuml
+skinparam packageStyle rectangle
 
 package Core
 {
@@ -760,3 +761,169 @@ User -> User : Inifinite Happiness
 VTXApp est la classe principal du module. Il contient un accès à la scene ainsi que
 
 ## UI
+
+### Architecture
+
+L'architecture de l'UI est divisée en 2 parties : Une partie abstraite qui pourrait être commune à l'ensemble des UIs, et une partie dédiée à une UI concrète (dans notre cas Qt).
+Ainsi, la plupart des objets Qt héritent d'une classe abstraite dans UI::Core. Dans les faits, c'est relou à maintenir et ça n'a pas été bien maintenu tout le long du developpement. Je pense que la séparation n'est pas forcement la bonne et qu'il faudrait peut-être uniquement séparer le contenu "executif (les actions, la manipulation des données de VTXApp)" du contenu purement UI.
+
+### Initialisation
+
+Actuellement, VTX_UI est pensé pour générer plusieurs UI en fonction d'une directive de pre-proc (VTX_UI_STYLE défini temporairement dans "UI::UIGenerator.hpp"). L'idée est de pouvoir initialiser uniformément l'application peut importe l'UI choisie (CommandLine, Qt, autre).
+
+Le schéma suivant récapitule les étapes d'initialisation
+```plantuml
+@startuml
+
+actor User
+participant main
+participant include_tools.hpp
+participant UIGenerator
+participant AbstractUIApplication
+participant ApplicationQT
+participant Environment
+participant VTXApp
+participant MainWindow
+participant LayoutReader
+participant LayoutBuilder
+participant ToolHandler
+participant ToolRegistry
+participant ExternalPlugin
+
+User -> main : launch VTX
+main -> include_tools.hpp : include 
+include_tools.hpp -> ExternalPlugin : include
+ExternalPlugin -> ToolRegistry : registrate
+main -> UIGenerator : createUI
+UIGenerator -> ApplicationQT : instantiate
+ApplicationQT -> main : return
+main -> Environment : reference
+main -> AbstractUIApplication : init
+AbstractUIApplication -> ApplicationQT : init
+main -> AbstractUIApplication : start (args)
+AbstractUIApplication -> VTXApp : start(args)
+AbstractUIApplication -> ApplicationQT : initUI
+ApplicationQT -> MainWindow : create
+AbstractUIApplication -> LayoutReader : read tool_config.json
+LayoutReader -> AbstractUIApplication : return LayoutDescriptor from json
+AbstractUIApplication -> LayoutBuilder : build UI layout with LayoutDescriptor
+LayoutBuilder -> ToolHandler : createTool
+ToolHandler -> ToolRegistry : createTool
+ToolRegistry -> ExternalPlugin : instantiate
+ToolRegistry -> ExternalPlugin : init
+ExternalPlugin -> MainWindow : Add Panel / Buttons ...
+ToolRegistry -> ToolHandler : return tool
+ToolHandler -> ToolHandler : store tool
+AbstractUIApplication -> ApplicationQT : startUI
+ApplicationQT -> MainWindow : show
+ApplicationQT -> ApplicationQT : UI loop
+
+@enduml
+```
+
+### Mode
+
+Dans l'UI, le mode est une configuration de VTX permettant un set de controllers et d'actions spécifique. Par défaut le mode de VTX est "Visualization" et est adapté à la visualization de molécule 3D. C'est l'unique mode implémenté pour le moment. Dans le futur, on pourrait imaginer un mode spécifique pour faire de l'illustration sur une image rendue, ou un mode spéciale pour l'édition de vidéos.
+
+### Inputs
+
+La réception des inputs utilisateurs (clavier + souris) est laissé à la discrétion de la bibliothèque d'UI utilisé. Un wrapper devra être fait pour envoyer les événements d'inputs à l'InputManager qui va ensuite les traiter et executer les callbacks correspondantes.
+Les controllers ou n'importe quel autre objet peut ajouter sa propre callback pour réagir aux événements envoyés par l'InputManager. 
+
+De base dans Qt, chaque widget peut récupérer les événements d'inputs qui ne seront reçu que si le widget en question a le focus. Pour coller avec le système VTX, les inputs vont être capté depuis la MainWindow (qui a toujours le focus tant que l'appli à le focus) puis être transmis à l'InputManager.
+Les widgets qui veulent récupérer l'input devront tester au besoin si ils ont bien le focus avant d'executer l'action correspondante.
+Passer par un système centralisé permet de mieux gérer l'état du clavier lorsque l'application perd le focus par exemple.
+
+Schéma d'un input executé via l'interface Qt
+```plantuml
+@startuml
+
+actor User
+participant ApplicationQt
+participant QtEventManager
+participant MainWindow
+participant InputManager
+participant AnyController
+
+User -> ApplicationQt : launch VTX
+ApplicationQt -> AnyController : Init
+AnyController -> InputManager : add onKeyPressed callback
+...
+User -> QtEventManager : press Key F1
+QtEventManager -> MainWindow : send KeyboardEvent 
+MainWindow -> InputManager : send KeyboardEvent
+InputManager -> InputManager : treat KeyboardEvent
+InputManager -> AnyController : onKeyPressed(F1)
+AnyController -> AnyController : DoStuff
+AnyController -> User : Something happened, user happy
+
+@enduml
+```
+
+### Controllers
+
+Les controllers sont des objets qui récupèrent les inputs de l'utilisateur afin d'effectuer des actions concrètes dans le logiciel. Dans VTX, on considère 3 types de controllers : Les CameraControllers qui permettent le contrôle de la camera, les PickerControllers qui gèrent le picking dans la scène et les ShortcutsControllers qui lient des actions à des séquences de touche (touche unique ou touche + modifier).
+
+Selon le type de controller que l'on souhaite créer, il faut créer une classe héritant de Controller::BaseCameraController, Controller::BasePickerController ou Controller::BaseShortcutController. Si on souhaite créer un autre type de controller particulier, on peut hériter directement de BaseController.
+
+Actuellement dans VTX, deux CameraController sont disponible (Trackball et Freefly), un PickerController (SelectionPicker) et trois ShortcutControllers (GlobalShortcut, VisualizationShortcut et DebugShortcut).
+
+Diagramme de classe des Controllers
+```plantuml
+@startuml
+skinparam packageStyle rectangle
+
+package UI
+{
+    package Core::Controller
+    {
+        abstract BaseController
+        abstract BaseCameraController
+        abstract BasePickerController
+        abstract BaseShortcutController
+    }
+
+    package Internal::Controller
+    {
+        class Freefly
+        class Trackball
+        
+        class SelectionPicker
+
+        class GlobalShortcut
+        class VisualizationShortcut
+        class DebugShortcut
+    }
+}
+
+package Tool::Measurement::Controller
+{
+    class MeasurementPicker
+}
+
+BaseController <|-- BaseCameraController
+BaseController <|-- BasePickerController
+BaseController <|-- BaseShortcutController
+
+BaseCameraController <|-- Freefly
+BaseCameraController <|-- Trackball
+
+BasePickerController <|-- SelectionPicker
+BasePickerController <|-- MeasurementPicker
+
+BaseShortcutController <|-- GlobalShortcut
+BaseShortcutController <|-- VisualizationShortcut
+BaseShortcutController <|-- DebugShortcut
+
+@enduml
+```
+### Animation (move to App ?)
+
+Le module UI pourvoit un système d'animation. Le principe est de pouvoir lancer une succession d'animations sur un ou plusieurs objets afin de créer un petit film ou bien de modifier les données de certains objets sur une durée longue.
+
+Pour cela, le système est composé d'une fonction BaseAnimation qui fourni le set minimale de fonction pour s'interfacer avec l'AnimationSystem afin de pouvoir jouer ou arrêter une animation.
+
+Un set d'animation est disponible par défaut dans le dossier Internal/Animation. Il contient actuellement une animation de Translation ainsi que l'animation pour effectuer l'Orient et le Reset de la camera. La rotation des molécules pourrait aussi être ajoutée ici, mais il faudrait peut-être rajouter une fonctionnalité à l'AnimationSystème pour qu'il puisse plusieurs séquence d'animation en parallèle.
+
+### Tools
+
