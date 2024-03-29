@@ -21,6 +21,7 @@ namespace VTX::UI::Core::Animation
 
 		void play();
 		void stop();
+		bool isPlaying() const;
 
 		void update( const float p_deltaTime );
 

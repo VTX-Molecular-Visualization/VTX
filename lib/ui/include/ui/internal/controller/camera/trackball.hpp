@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_CONTROLLER_TRACKBALL__
-#define __VTX_UI_QT_CONTROLLER_TRACKBALL__
+#ifndef __VTX_UI_INTERNAL_CONTROLLER_CAMERA_TRACKBALL__
+#define __VTX_UI_INTERNAL_CONTROLLER_CAMERA_TRACKBALL__
 
 #include "ui/core/input/key_mapping.hpp"
 #include "ui/internal/all_settings.hpp"
@@ -9,8 +9,11 @@
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Camera
 {
+	using namespace VTX::UI::QT;
+	using namespace VTX::UI::QT::Controller;
+
 	class Trackball : public BaseCameraController
 	{
 	  public:
@@ -68,5 +71,5 @@ namespace VTX::UI::QT::Controller
 
 		bool _needUpdate = false;
 	};
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Camera
 #endif

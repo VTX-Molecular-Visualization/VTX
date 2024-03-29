@@ -49,7 +49,6 @@ namespace VTX::UI::QT::Mode
 		void setCameraController( const App::Core::CollectionKey & p_controllerKey );
 		void setPickerController( const Util::Hashing::Hash & p_controllerHash );
 		void setPickerController( const App::Core::CollectionKey & p_controllerKey );
-		void resetCameraController();
 
 		const std::set<std::unique_ptr<Controller::BaseController>> & getCameraControllers() const
 		{

@@ -1,10 +1,10 @@
-#include "ui/qt/controller/debug_shortcut.hpp"
+#include "ui/internal/controller/shortcut/debug.hpp"
 #include "ui/core/input/keys.hpp"
 #include <app/action/debug.hpp>
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Shortcut
 {
-	void DebugShortcut::init()
+	void Debug::init()
 	{
 		BaseShortcutController::init();
 
@@ -18,4 +18,4 @@ namespace VTX::UI::QT::Controller
 							 Core::Input::Shortcut::callAction<App::Action::Debug::PrintCameraInfo>() } );
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Shortcut

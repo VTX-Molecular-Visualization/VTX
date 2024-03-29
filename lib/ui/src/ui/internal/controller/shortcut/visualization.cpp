@@ -1,13 +1,14 @@
-#include "ui/qt/controller/visualization_shortcut.hpp"
-#include "ui/action/animation.hpp"
 #include "ui/action/visualization.hpp"
+#include "ui/action/animation.hpp"
+#include "ui/core/animation/animation_system.hpp"
+#include "ui/internal/controller/shortcut/visualization.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/system/action_manager.hpp>
 
-namespace VTX::UI::QT::Controller
+namespace VTX::UI::Internal::Controller::Shortcut
 {
-	void VisualizationShortcut::init()
+	void Visualization::init()
 	{
 		BaseShortcutController::init();
 
@@ -25,15 +26,26 @@ namespace VTX::UI::QT::Controller
 								 else
 									 _callOrientOnSelection();
 							 } } );
+
+		// TODO Maybe move that in a controller dedicated for the animator which activate / deactivate itself when the
+		// Animator Play / Stop
+		referenceShortcut( { { Core::Input::Key::Key_Escape },
+							 [ this ]()
+							 {
+								 if ( ANIMATION_SYSTEM().isPlaying() )
+								 {
+									 ANIMATION_SYSTEM().stop();
+								 }
+							 } } );
 	}
 
-	void VisualizationShortcut::_callOrientOnScene() const
+	void Visualization::_callOrientOnScene() const
 	{
 		App::VTX_ACTION().execute<Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
-	void VisualizationShortcut::_callOrientOnSelection() const
+	void Visualization::_callOrientOnSelection() const
 	{
 		App::VTX_ACTION().execute<Action::Animation::Orient>( App::CURRENT_SELECTION().getAABB() );
 	}
 
-} // namespace VTX::UI::QT::Controller
+} // namespace VTX::UI::Internal::Controller::Shortcut

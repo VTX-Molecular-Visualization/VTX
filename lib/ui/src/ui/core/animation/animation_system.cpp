@@ -1,10 +1,4 @@
 #include "ui/core/animation/animation_system.hpp"
-#include "ui/qt/application_qt.hpp"
-#include "ui/qt/controller/base_camera_controller.hpp"
-#include "ui/qt/controller/base_picker_controller.hpp"
-#include "ui/qt/controller/controller_manager.hpp"
-#include "ui/qt/mode/base_mode.hpp"
-#include "ui/qt/mode/visualization.hpp"
 
 namespace VTX::UI::Core::Animation
 {
@@ -24,11 +18,18 @@ namespace VTX::UI::Core::Animation
 	}
 	void AnimationSystem::stop()
 	{
+		if ( _isPlaying && _currentAnimationIt != _animationSequence.end() )
+		{
+			( *_currentAnimationIt )->stop();
+		}
+
 		_isPlaying			= false;
 		_currentAnimationIt = _animationSequence.end();
 
 		onStopped();
 	}
+
+	bool AnimationSystem::isPlaying() const { return _isPlaying; }
 
 	void AnimationSystem::update( const float p_deltaTime )
 	{
