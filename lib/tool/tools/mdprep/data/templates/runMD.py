@@ -9,8 +9,17 @@ nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
 GpuAvailable = False
 
-def submitCmd(cmdStr: str):
-    return subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT, capture_output=False)
+class Job:
+    preparationFailed = False
+    runFailed = False
+
+nvtJob = Job()
+
+def submitCmd(cmdStr: str, stdoutFilePath : Path=None):
+    rc = subprocess.run(cmdStr, shell=True, stdout= subprocess.PIPE, stderr= subprocess.STDOUT, capture_output=False)
+    if stdoutFilePath is not None:
+        stdoutFilePath.write_bytes(rc.stdout)
+    return rc
 
 def doesPgmExists(command : str):
     try:
@@ -18,7 +27,9 @@ def doesPgmExists(command : str):
         return True
     except Exception:
         return False 
-    
+
+def getGpuString():
+    return ("-nb gpu" if GpuAvailable else "")
 
 def isGmxInPath():
     return doesPgmExists("gmx")
@@ -64,33 +75,32 @@ def checkFolder():
         return False
     return True
     
-logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
 _runMinimizationFailed = False
 
-def runMinimization():
-    # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
-    cmdStr = "gmx mdrun -v -deffnm em %s" % ("-nb gpu" if GpuAvailable else "")
+def runJob(cmd: str, fileStem: str, jobFailedSignal: Callable):
+    logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
     def printFailure(msg):
         print("failed with error : <%s>" % msg)
-        print(logErrMsg % ("em.log", "em.txt"))   
+        print(logErrMsg % ("%s.log" % fileStem, "%s.txt" % fileStem))   
         
-    print("Starting gromacs Energy Minimzation. You can check out gromacs's progression in the em.log file.")
     try:
-        print("Minimizing ... ", end="", flush=True)
-        rc = submitCmd(cmdStr)
-        Path("em.txt").write_bytes(rc.stdout)
+        rc = submitCmd(cmdStr, Path("%s.txt" % fileStem))
         if rc.returncode != 0:
             printFailure(rc.stdout)
-            _runMinimizationFailed = True
+            jobFailedSignal()
         else:
             print("done !")
     except Exception:
-        _runMinimizationFailed = True
+        jobFailedSignal()
         if ("stdout" in dir(Exception)):
             printFailure(Exception.stdout if Exception.stdout != None else "")
         else:
             printFailure(repr(Exception))
-            
+
+def runMinimization():
+    # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
+    cmdStr = "gmx mdrun -v -deffnm em %s" % ("-nb gpu" if GpuAvailable else "")
+    print("Starting Energy Minimization ... ", end="", flush=True)
         
 def isMinimizationOk():
     return (
@@ -99,6 +109,13 @@ def isMinimizationOk():
     )
     
 def runNvtEquil():
+    print("Preparing NVT Equilibration run ...", flush=True, end="")
+    try:
+        rc = submitCmd("gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr")
+        if rc.returncode != 0:
+            nvtJob.preparationFailed = True
+
+
     return
     
 def isNvtEquilOk():
@@ -145,7 +162,7 @@ def runMD():
         print("Production (last step) failed. Please refer to prod.txt and prod.log for more details.")
         return
     
-    print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO
+    print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO [trajectory file]
     return
     
     
