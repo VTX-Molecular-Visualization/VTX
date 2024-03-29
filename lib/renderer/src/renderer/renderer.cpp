@@ -50,12 +50,12 @@ namespace VTX::Renderer
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
 
-		_drawRangeSpheres.counts.clear();
-		_drawRangeSpheres.offsets.clear();
-		_drawRangeCylinders.counts.clear();
-		_drawRangeCylinders.offsets.clear();
-		_drawRangeRibbons.counts.clear();
-		_drawRangeRibbons.offsets.clear();
+		drawRangeSpheres.counts.clear();
+		drawRangeSpheres.offsets.clear();
+		drawRangeCylinders.counts.clear();
+		drawRangeCylinders.offsets.clear();
+		drawRangeRibbons.counts.clear();
+		drawRangeRibbons.offsets.clear();
 	}
 
 #pragma region Proxy molecules
@@ -355,8 +355,8 @@ namespace VTX::Renderer
 		_context->setData( *p_proxy.mins, "VoxelsMins" );
 		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
-		_drawRangeVoxels.offsets = { 0 };
-		_drawRangeVoxels.counts	 = { uint( p_proxy.mins->size() ) };
+		drawRangeVoxels.offsets = { 0 };
+		drawRangeVoxels.counts	 = { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -446,10 +446,10 @@ namespace VTX::Renderer
 		}
 
 		// Counters.
-		_drawRangeSpheres.offsets	= { 0 };
-		_drawRangeSpheres.counts	= { uint( totalAtoms ) };
-		_drawRangeCylinders.offsets = { 0 };
-		_drawRangeCylinders.counts	= { uint( totalBonds ) };
+		drawRangeSpheres.offsets	= { 0 };
+		drawRangeSpheres.counts	= { uint( totalAtoms ) };
+		drawRangeCylinders.offsets = { 0 };
+		drawRangeCylinders.counts	= { uint( totalBonds ) };
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -817,8 +817,8 @@ namespace VTX::Renderer
 			offsetIndices += cache.bufferIndices.size();
 		}
 
-		_drawRangeRibbons.offsets = { 0 };
-		_drawRangeRibbons.counts  = { uint( offsetIndices ) };
+		drawRangeRibbons.offsets = { 0 };
+		drawRangeRibbons.counts  = { uint( offsetIndices ) };
 	}
 
 	void Renderer::_refreshDataSES()

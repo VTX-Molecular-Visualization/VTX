@@ -93,6 +93,7 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
+	using NeedRenderFunc = std::function<bool()>;
 	struct Draw
 	{
 		std::string name;
@@ -105,6 +106,8 @@ namespace VTX::Renderer
 			std::vector<uint>	counts;
 		};
 		Range * ranges = nullptr;
+
+		NeedRenderFunc needRenderFunc;
 	};
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;

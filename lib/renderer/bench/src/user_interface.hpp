@@ -331,15 +331,29 @@ namespace VTX::Bench
 		{
 			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
 			{
-				// ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
-				// ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
-				// ImGui::Checkbox(
-				//	fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
-				//);
-				// ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels
-				// );
-				//
-				//  ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+				size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+				for ( auto count : p_renderer->drawRangeSpheres.counts )
+				{
+					sizeAtoms += count;
+				}
+				for ( auto count : p_renderer->drawRangeCylinders.counts )
+				{
+					sizeBonds += count;
+				}
+				for ( auto count : p_renderer->drawRangeRibbons.counts )
+				{
+					sizeRibbons += count;
+				}
+				for ( auto count : p_renderer->drawRangeVoxels.counts )
+				{
+					sizeVoxels += count;
+				}
+
+				ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
+				ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
+				ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), &p_renderer->showRibbons );
+				ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), &p_renderer->showVoxels );
+
 				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 

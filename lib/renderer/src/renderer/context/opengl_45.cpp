@@ -366,8 +366,9 @@ namespace VTX::Renderer::Context
 
 					assert( draw.ranges != nullptr );
 
-					GLenum					  primitive = _mapPrimitives[ draw.primitive ];
-					const Draw::Range * const ranges	= draw.ranges;
+					GLenum					  primitive		= _mapPrimitives[ draw.primitive ];
+					const Draw::Range * const ranges		= draw.ranges;
+					const NeedRenderFunc &	  needRenderFun = draw.needRenderFunc;
 
 					// Element.
 					if ( draw.useIndices )
@@ -378,9 +379,9 @@ namespace VTX::Renderer::Context
 						GL::Buffer * const ebo = _buffers[ keyEbo ].get();
 
 						p_outInstructions.emplace_back(
-							[ this, program, vao, ebo, primitive, ranges ]()
+							[ this, program, vao, ebo, primitive, ranges, needRenderFun ]()
 							{
-								if ( ranges->counts.size() > 0 )
+								if ( needRenderFun && needRenderFun() )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
@@ -402,9 +403,9 @@ namespace VTX::Renderer::Context
 					else
 					{
 						p_outInstructions.emplace_back(
-							[ this, program, vao, primitive, ranges ]()
+							[ this, program, vao, primitive, ranges, needRenderFun ]()
 							{
-								if ( ranges->counts.size() > 0 )
+								if ( needRenderFun && needRenderFun() )
 								{
 									vao->bind();
 									program->use();

@@ -48,10 +48,18 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().ranges	 = &_drawRangeSpheres;
-			geo->programs[ 1 ].draw.value().ranges	 = &_drawRangeCylinders;
-			geo->programs[ 2 ].draw.value().ranges	 = &_drawRangeRibbons;
-			geo->programs[ 3 ].draw.value().ranges	 = &_drawRangeVoxels;
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
 			blurX->name								 = "BlurX";
 			blurY->name								 = "BlurY";
 			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
@@ -247,13 +255,6 @@ namespace VTX::Renderer
 		size_t width;
 		size_t height;
 
-		/*
-		size_t sizeAtoms   = 0;
-		size_t sizeBonds   = 0;
-		size_t sizeRibbons = 0;
-		size_t sizeVoxels  = 0;
-		*/
-
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
@@ -263,6 +264,12 @@ namespace VTX::Renderer
 		bool logDurations = false;
 
 		static const size_t BUFFER_COUNT = 2;
+
+		// Draw ranges.
+		Draw::Range drawRangeSpheres;
+		Draw::Range drawRangeCylinders;
+		Draw::Range drawRangeRibbons;
+		Draw::Range drawRangeVoxels;
 
 	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;
@@ -296,12 +303,6 @@ namespace VTX::Renderer
 
 			return id;
 		}
-
-		// Draw ranges.
-		Draw::Range _drawRangeSpheres;
-		Draw::Range _drawRangeCylinders;
-		Draw::Range _drawRangeRibbons;
-		Draw::Range _drawRangeVoxels;
 
 		// Cache.
 		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
