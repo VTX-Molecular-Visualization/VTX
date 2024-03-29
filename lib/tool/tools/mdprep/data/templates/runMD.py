@@ -13,6 +13,7 @@ class Job:
     preparationFailed = False
     runFailed = False
 
+emJob = Job()
 nvtJob = Job()
 
 def submitCmd(cmdStr: str, stdoutFilePath : Path=None):
@@ -101,6 +102,11 @@ def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
     cmdStr = "gmx mdrun -v -deffnm em %s" % ("-nb gpu" if GpuAvailable else "")
     print("Starting Energy Minimization ... ", end="", flush=True)
+    
+    def jobFailedSignal():
+        emJob.runFailed = True
+        
+    runJob(cmdStr, "em", jobFailedSignal)
         
 def isMinimizationOk():
     return (
@@ -110,12 +116,7 @@ def isMinimizationOk():
     
 def runNvtEquil():
     print("Preparing NVT Equilibration run ...", flush=True, end="")
-    try:
-        rc = submitCmd("gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr")
-        if rc.returncode != 0:
-            nvtJob.preparationFailed = True
-
-
+    
     return
     
 def isNvtEquilOk():
