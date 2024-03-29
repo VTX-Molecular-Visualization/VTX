@@ -4,8 +4,6 @@ Pour une bonne lecture de cette doc sur VSCode, installez l'extension plantUML(j
 
 # VTX_UTIL
 
-## Présentation
-
 # VTX_CORE
 
 # VTX_CORE
@@ -101,6 +99,8 @@ La fonction MAIN_REGISTRY dans Application::System::ECSSystem permet d'accéder 
 Les différents objets de VTX sont donc une composition de plusieurs Component interdépendants assurant le bon comportement de l'objet. Avec les modules UI et Tool, on a parfois besoin de modifier la génération d'un objet (par exemple, ajouter par défaut un component sur une molécule). Pour gérer ces cas-là, nous avons un système appelé EntityDirector qui va permettre de créé l'entité avec ses composants par défaut et l'initialiser de manière modulaire.
 
 Ce système est accessible via la fonction ENTITY_DIRECTOR(). Il permet de modifier le processus de création d'une entité, ainsi que de créer les entités, avec tous leurs composants initialisés.
+
+Doc EnTT : https://github.com/skypjack/entt/wiki/Crash-Course:-core-functionalities
 
 ##### Génération d'une entité
 
@@ -760,12 +760,170 @@ User -> User : Inifinite Happiness
 
 VTXApp est la classe principal du module. Il contient un accès à la scene ainsi que
 
+## PYTHON_BINDING
+
+ est de pouvoir fournir à l'utilisateur la possibilité d'executer ses propres scripts python, ainsi que d'executer les actions prédéfini dans VTX via un prompt dans l'interface.
+Le système est pensé pour être extensible depuis les tools.
+
+Le rôle de PYTHON_BINDING est de gérer la connection CPP - Python, de fournir des outils pour executer des script externe et facilement lier des actions à des commandes python executable depuis l'interpreteur. PYTHON_BINDING devrait fournir aussi l'implémentation de l'API VTX pour le scripting en python. 
+
+Pour gérer cela, nous avons décidé d'utiliser la bibliothèque pybind11 pour générer l'API VTX et son interpreteur embarqué pour executer les commandes python.
+
+Concrêtement, on va créer un module python en utilisant la macro PYBIND11_MODULE de pybind11.
+
+Ce module (appelé PyTX) est divisé en 3 sous-modules : Core, API et Commands.
+- Core va contenir les classes et fonctions minimales d'utilisation ( Classe de redirection des logs, le partage du SystemHandler, et les fonctions d'ajout de commandes et de modules ).
+- API va contenir les classes et les membres des classes de VTX que l'on veut exposer pour l'écriture de scripts.
+- Commands va contenir l'ensemble des fonctions qui pourront être appelée depuis l'interpreteur python.
+
+Dans la macro PYBIND11_MODULE on défini la hiérarchie des modules, on implémente les fonctions minimales d'utilisation dans Core et on implémente l'API pour VTXApp dans le sous-module API. Les commandes et le reste de l'API sera ensuite chargé et peuplé par VTX et les différents outils branchés à VTX.
+
+Le système Interpretor (accessible via la fonction INTERPRETOR()) est l'élément central de ce module. Il va s'occuper d'initialiser le module Python, centraliser les différents Binders implémenté pour lier les fonctionnalités de VTX au Python, instancier l'interpreteur Python et executer les scripts avec pybind11.
+
+Diagramme de classe
+```plantuml
+@startuml
+
+package pybind11
+{
+    class scoped_interpreter
+}
+
+circle PyTX_PythonModule
+
+package VTX::App
+{
+    class AppActions
+    class Selection
+}
+
+circle PyTX_PythonModule
+
+package VTX::App
+{
+    class AppActions
+}
+
+package PythonBinding
+{
+    class Interpretor
+    {
+        + init()
+        + addBinder<BinderConcept>()
+        + runCommand(std::string)
+        + runScript(FilePath)
+        --
+        - Interpretor::Impl _impl
+    }
+
+    class InterpretorImpl
+    {
+        - std::vector<Binder> _binders
+        - PyTXModule _pyTXModule
+    }
+
+    class PyTXModule
+    {
+		+ Wrapper::Module core()
+		+ Wrapper::Module commands()    
+    }
+    class Binder
+    {
+		+ bind( PyTXModule & p_pytxModule )
+		+ importHeaders()
+    }
+
+    package Binding
+    {
+        class VTXAppBinder
+        {
+            + bind( PyTXModule & p_vtxmodule )
+        }
+
+        circle "vtx_api" as VTXApi
+        circle "vtx_module.cpp" as VTXModuleCpp
+    }
+
+    package Wrapper
+    {
+        class Arg
+        class Function
+        class Module
+        class Object
+    }
+}
+
+package ExternalTool
+{
+
+}
+
+InterpretorImpl +-- Interpretor
+Binder *-- InterpretorImpl
+PyTXModule *-- InterpretorImpl
+PyTX_PythonModule <-- InterpretorImpl : import generated 
+Binder <|-- VTXAppBinder
+VTXAppBinder ---up AppActions : Describe all App actions in a binder
+pybind11 <-- Wrapper
+
+VTXModuleCpp <-- pybind11 : read
+VTXApi <-- VTXModuleCpp : read
+PyTX_PythonModule <-- VTXApi : generate
+
+circle "INTERPRETOR()" as INTERPRETOR
+INTERPRETOR --up Interpretor : get()
+
+@enduml
+```
+
+Diagramme de séquence
+```plantuml
+@startuml
+
+actor User
+User -> VTX : run VTX
+VTX -> Interpretor : static registration
+Interpretor -> Systemhandler : Registrate
+Systemhandler -> Interpretor : instantiate
+Interpretor -> pybind11 : import PyTX
+pybind11 -> VTXModule.hpp : interpret
+VTXModule.hpp -> PyTXPythonModule : create Module
+VTXModule.hpp -> VTXAPI : read
+VTXAPI -> PyTXPythonModule : bind API
+pybind11 -> PyTX.py : generate from PyTXPythonModule
+Interpretor -> PyTXPythonModule : share SystemHandlerPtr
+Interpretor -> pybind11 : run "pytx_init.py"
+VTX -> Interpretor : add VTXAppBinder
+Interpretor -> VTXAppBinder : instantiate and store
+VTX -> Interpretor : init()
+Interpretor -> VTXAppBinder : bind()
+VTXAppBinder -> PyTXPythonModule : bind actions
+Interpretor -> Interpretor : import Commands from PyTXPythonModule
+Interpretor -> VTXAppBinder : importHeaders()
+...
+...
+...
+User -> Interpretor : runCommand()
+Interpretor -> pybind11 : exec(Command)
+pybind11 -> PyTXPythonModule : exec command
+PyTXPythonModule -> VTXAppBinder : call binded action
+@enduml
+```
+
+### Module Python externe
+
+
+Doc Pybind11 : https://pybind11.readthedocs.io/en/stable/
+
+
 ## UI
 
 ### Architecture
 
 L'architecture de l'UI est divisée en 2 parties : Une partie abstraite qui pourrait être commune à l'ensemble des UIs, et une partie dédiée à une UI concrète (dans notre cas Qt).
 Ainsi, la plupart des objets Qt héritent d'une classe abstraite dans UI::Core. Dans les faits, c'est relou à maintenir et ça n'a pas été bien maintenu tout le long du developpement. Je pense que la séparation n'est pas forcement la bonne et qu'il faudrait peut-être uniquement séparer le contenu "executif (les actions, la manipulation des données de VTXApp)" du contenu purement UI.
+
+Doc de Qt : https://doc.qt.io/qt-6/qwidget.html
 
 ### Initialisation
 
