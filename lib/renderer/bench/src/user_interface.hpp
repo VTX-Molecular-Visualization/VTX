@@ -542,7 +542,14 @@ namespace VTX::Bench
 				}
 				if ( ImGui::Button( "Build" ) )
 				{
-					p_renderer->build();
+					try
+					{
+						p_renderer->build();
+					}
+					catch ( const std::exception & e )
+					{
+						VTX_ERROR( "{}", e.what() );
+					}
 				}
 				if ( ImGui::Button( "X" ) )
 				{

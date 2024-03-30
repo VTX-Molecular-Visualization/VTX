@@ -87,6 +87,7 @@ namespace VTX::Renderer::Context
 	)
 	{
 		// TODO: Compare render queue with previous one and delete resources.
+		// OR: store created then delete diff.
 		// for ( const Pass * const descPassPtr : _renderQueue )
 		{
 			/*
@@ -148,6 +149,15 @@ namespace VTX::Renderer::Context
 		p_outInstructions.clear();
 		p_outInstructionsDurationRanges.clear();
 
+		// Set passes.
+		_descPasses.clear();
+		for ( const Pass * const descPassPtr : p_renderQueue )
+		{
+			const Key keyPass = _getKey( *descPassPtr );
+			_descPasses.emplace( keyPass, descPassPtr );
+		}
+
+		// Output.
 		_output = p_output;
 
 		// Create shared buffers.
@@ -183,8 +193,7 @@ namespace VTX::Renderer::Context
 			// Init resources.
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { descPassPtr->name,
 																					  p_outInstructions.size() } );
-			const Key keyPass = _getKey( *descPassPtr );
-			_descPasses.emplace( keyPass, descPassPtr );
+			const Key  keyPass	  = _getKey( *descPassPtr );
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
 			// Check if already created.
@@ -253,12 +262,13 @@ namespace VTX::Renderer::Context
 			if ( isLastPass == false )
 			{
 				GL::Framebuffer * const fbo = _framebuffers[ keyPass ].get();
-				p_outInstructions.emplace_back( [ this, fbo ]() { fbo->bind( GL_DRAW_FRAMEBUFFER ); } );
+				p_outInstructions.emplace_back( [ fbo ]() { fbo->bind( GL_DRAW_FRAMEBUFFER ); } );
 			}
 			else
 			{
-				p_outInstructions.emplace_back( [ this ]()
-												{ GL::Framebuffer::bindDefault( _output, GL_DRAW_FRAMEBUFFER ); } );
+				Handle output = _output;
+				p_outInstructions.emplace_back( [ output ]()
+												{ GL::Framebuffer::bindDefault( output, GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Settings.
@@ -347,7 +357,7 @@ namespace VTX::Renderer::Context
 					assert( buffer != nullptr );
 
 					p_outInstructions.emplace_back(
-						[ this, buffer, channelMax ]()
+						[ buffer, channelMax ]()
 						{
 							// Bind local ubo after last input.
 							buffer->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
@@ -379,9 +389,9 @@ namespace VTX::Renderer::Context
 						GL::Buffer * const ebo = _buffers[ keyEbo ].get();
 
 						p_outInstructions.emplace_back(
-							[ this, program, vao, ebo, primitive, ranges, needRenderFun ]()
+							[ program, vao, ebo, primitive, ranges, needRenderFun ]()
 							{
-								if ( needRenderFun && needRenderFun() )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
@@ -403,9 +413,9 @@ namespace VTX::Renderer::Context
 					else
 					{
 						p_outInstructions.emplace_back(
-							[ this, program, vao, primitive, ranges, needRenderFun ]()
+							[ program, vao, primitive, ranges, needRenderFun ]()
 							{
-								if ( needRenderFun && needRenderFun() )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									program->use();

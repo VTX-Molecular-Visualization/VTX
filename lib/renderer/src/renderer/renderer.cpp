@@ -117,6 +117,7 @@ namespace VTX::Renderer
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
 		{
 			// TODO: split in multi calls.
+			// TODO: use range list.
 		};
 
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
@@ -356,7 +357,7 @@ namespace VTX::Renderer
 		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
 
 		drawRangeVoxels.offsets = { 0 };
-		drawRangeVoxels.counts	 = { uint( p_proxy.mins->size() ) };
+		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -446,10 +447,10 @@ namespace VTX::Renderer
 		}
 
 		// Counters.
-		drawRangeSpheres.offsets	= { 0 };
-		drawRangeSpheres.counts	= { uint( totalAtoms ) };
+		drawRangeSpheres.offsets   = { 0 };
+		drawRangeSpheres.counts	   = { uint( totalAtoms ) };
 		drawRangeCylinders.offsets = { 0 };
-		drawRangeCylinders.counts	= { uint( totalBonds ) };
+		drawRangeCylinders.counts  = { uint( totalBonds ) };
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -818,7 +819,7 @@ namespace VTX::Renderer
 		}
 
 		drawRangeRibbons.offsets = { 0 };
-		drawRangeRibbons.counts  = { uint( offsetIndices ) };
+		drawRangeRibbons.counts	 = { uint( offsetIndices ) };
 	}
 
 	void Renderer::_refreshDataSES()
