@@ -202,9 +202,19 @@ namespace VTX::Renderer::Context
 			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_uniform.name;
 		}
 
-		void _createInputs( const Links & p_links, const Pass * const p_descPassPtr );
+		void _createInputs(
+			const Links &	   p_links,
+			const Pass * const p_descPassPtr,
+			std::vector<Key> & p_vertexArrays,
+			std::vector<Key> & p_buffers,
+			std::vector<Key> & p_textures
+		);
 
-		void _createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers );
+		void _createOuputs(
+			const Pass * const	  p_descPassPtr,
+			std::vector<GLenum> & p_drawBuffers,
+			std::vector<Key> &	  p_textures
+		);
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
 			const Links &		  p_links,
@@ -214,13 +224,15 @@ namespace VTX::Renderer::Context
 
 		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
 
-		void _createTexture( const IO & p_descIO, const Key p_key );
+		void _createTexture( const IO & p_descIO, const Key p_key, std::vector<Key> & p_textures );
 
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
 			const Uniforms &	  p_uniforms,
+			std::vector<Key> &	  p_uniformKeys,
 			const Program * const p_descProgram = nullptr,
 			const Pass * const	  p_descPassPtr = nullptr
+
 		);
 
 		template<typename T>
@@ -235,6 +247,15 @@ namespace VTX::Renderer::Context
 			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
 			setValue<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
 		}
+
+		void _purgeResources(
+			const std::vector<Key> & vertexArrays,
+			const std::vector<Key> & buffers,
+			const std::vector<Key> & framebuffers,
+			const std::vector<Key> & textures,
+			const std::vector<Key> & programs,
+			const std::vector<Key> & uniforms
+		);
 
 		void				 _getOpenglInfos();
 		static void APIENTRY _debugMessageCallback(
