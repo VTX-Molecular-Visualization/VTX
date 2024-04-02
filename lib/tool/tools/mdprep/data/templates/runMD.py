@@ -206,22 +206,22 @@ def runMD():
         
     runMinimization()
     if isMinimizationOk() == False:
-        print("Minimization (1st step) failed. Please refer to em.txt and em.log for more details.")
+        print("Minimization (1st step) failed.")
         return
     
     runNvtEquil()
     if isNvtEquilOk() == False:
-        print("Nvt Equilibration (2nd step) failed. Please refer to nvt.txt and nvt.log for more details.")
+        print("Nvt Equilibration (2nd step) failed.")
         return
     
     runNptEquil()
     if isNptEquilOk() == False:
-        print("Npt Equilibration (3rd step) failed. Please refer to npt.txt and npt.log for more details.")
+        print("Npt Equilibration (3rd step) failed.")
         return
     
     runProd()
     if isProdOk() == False:
-        print("Production (last step) failed. Please refer to prod.txt and prod.log for more details.")
+        print("Production (last step) failed.")
         return
     
     print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO [trajectory file]
