@@ -5,6 +5,7 @@
 
 namespace VTX::PythonBinding::Wrapper
 {
+	// Manage Pybind11 "Extra" arguments
 	class Pybind11ExtraConvertor
 	{
 	  public:

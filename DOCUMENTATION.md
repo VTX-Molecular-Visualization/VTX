@@ -1,4 +1,4 @@
-Pour une bonne lecture de cette doc sur VSCode, installez l'extension plantUML(jebbs.plantuml).
+Pour une bonne lecture de cette doc sur VSCode, installez l'extension plantUML (jebbs.plantuml) puis affichez la preview (Ctrl + Shift + V)
 
 # VTX
 
@@ -194,6 +194,34 @@ Ce système est accessible via la fonction ENTITY_DIRECTOR(). Il permet de modif
 
 Doc EnTT : https://github.com/skypjack/entt/wiki/Crash-Course:-core-functionalities
 
+##### Créer / Détruire des entités ou des components
+
+La création et la destruction des entités et des components se fait par le registre accessible via la fonction facilitatrice MAIN_REGISTRY() de l'ECS_SYSTEM.
+
+La création d'une entité se fait simplement en appelant la fonction createEntity du registre.
+```cpp
+Core::ECS::BaseEntity newEntity = MAIN_REGISTRY().createEntity();
+```
+
+Une fois l'entité créée, il est possible de lui accrocher des composants en appelant la fonction addComponent<ComponentType> du registre, en fournissant une entité en paramètre.
+il est aussi possible de fournir directement un composant en paramètre. A ce moment là, le composant sera ajouter sur l'entité liée au composant passé en paramètre.
+```cpp
+Component1 & component1 = MAIN_REGISTRY().addComponent<Component1>(newEntity);
+Component2 & component2 = MAIN_REGISTRY().addComponent<Component2>(newEntity);
+Component3 & component3 = MAIN_REGISTRY().addComponent<Component3>(component2);
+```
+
+Pour supprimer un composant, nous avons la fonction removeComponent qui prend le type du composant à détruire et l'entité sur laquelle est le composant en paramètre.
+
+```cpp
+MAIN_REGISTRY().removeComponent<Component3>(newEntity);
+```
+
+Enfin, il est possible de détruire une entité et l'ensemble de ses composants via la fonction destroyEntity du registre.
+```cpp
+MAIN_REGISTRY().destroyEntity(newEntity);
+```
+
 ##### Génération d'une entité complexe
 
 Les objets que nous manipulons dans VTX peuvent posséder un certains nombre de components. Pour faciliter leur création et les rendre modulaire, nous avons un sous-système dédié dans ECS_SYSTEM appelé l'EntityDirector.
@@ -213,8 +241,8 @@ Initialisation de l'EntityDirector
 
 VTXApp -> Internal_SetupEntityDirector : setup()
 Internal_SetupEntityDirector -> EntityDirector : setup functions for each entity (unique key)
-ExternalTool -> EntityDirector : add setup function to entity
-ExternalTool -> EntityDirector : add new entity & setup functions for it
+ExternalTool1 -> EntityDirector : add setup function to existing entity
+ExternalTool2 -> EntityDirector : add new entity & setup functions for it
 
 @enduml
 ```
@@ -243,22 +271,39 @@ EntityBuilder -> ExternalComponent : external add_component step
 EntityBuilder -> ComponentBehaviour : init step
 ComponentBehaviour -> SomeComponents : complex initialisation
 EntityBuilder -> ExternalComponent : external init step
-ExternalComponent -> SomeComponents : Modulate initialisation (optional)
+ExternalComponent -> SomeComponents : Customize initialisation (optional)
 EntityBuilder -> ComponentBehaviour : postInit step
 EntityBuilder -> ExternalComponent : external postInit step
 
 @enduml
 ```
 
-##### Accès à un component
+##### Accès à une entity ou un component
 
-L'accès à un component sur une entité se fait en accédant au registre via la fonction facilitatrice MAIN_REGISTRY() de l'ECS_SYSTEM.
-Il suffit d'appeler la fonction template getComponent avec le type de component désiré et en paramètre une entité, ou un autre composant de l'entité.
+Comme leur création et leur destruction, l'accès aux entités et aux components se fait par le registre (accessible via la fonction facilitatrice MAIN_REGISTRY() de l'ECS_SYSTEM).
 
-Pour récupérer un groupe de composant (par exemple, tous le SceneItemComposant pour faire un parcours de l'ensemble des objets de la scène), il y a la fonction findComposants qui peut prendre de un à plusieurs type et qui retourne une View.
+Pour récupérer une entité depuis un component, on peut appeler la fonction getEntity qui prends en paramètre un composants. La fonction retournera l'entité sur laquelle est accroché le component.
+```cpp
+const Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( _moleculeComponent );
+```
+
+L'accès à un component sur une entité se fait grâce à la fonction template getComponent avec le type de component désiré et en paramètre une entité, ou un autre composant de l'entité.
+```cpp
+const Component1 & component1 = MAIN_REGISTRY().getComponent<Component1>( entity );
+```
+
+Il est possible de tester si une entité possède un certain type de composant en appelant la fonction hasComponentsur cette entité.
+```cpp
+if ( MAIN_REGISTRY().hasComponent<Component1>( entity ) )
+{
+    // Do something
+}
+```
+
+La fonction findComponents permet de récupérer tous les composants d'un même type sur l'ensemble des entités (par exemple, tous le SceneItemComposant pour faire un parcours de l'ensemble des objets de la scène). findComponents peut prendre un à plusieurs type et retourne une View.
 Cette view peut ensuite être parcourue entité par entité pour ensuite itérer sur le composant voulu.
-Exemple : accès à l'ensemble des AABBs de la scène pour calculer l'AABB global de la scène.
 
+Exemple : accès à l'ensemble des AABBs de la scène pour calculer l'AABB global de la scène.
 ```cpp
 const Core::ECS::View view
     = MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
@@ -272,14 +317,11 @@ for ( const Core::ECS::BaseEntity entity : view )
 }
 ```
 
-Note : La fonction "hasComponent" permet de vérifier si un component existe bien sur une entité.
-
 ##### Signaux
 
-EnTT permet implémente un système de signal pour transmettre les événements de création, de destruction et d'update des components. Cela peut permettre d'updater un component si un autre a été modifié ou de prioriser les destructions.
+EnTT implémente un système de signal transmettant les événements de création, de destruction et d'update des components. Cela peut notamment permettre d'updater un component si un autre a été modifié ou de prioriser les destructions.
 
-Exemple pour supprimer le proxy molecule avant la molécule elle-même (et ne pas se retrouver avec des pointeurs invalides à la destruction du proxy)
-
+Exemple : Suppression du proxy molecule avant la molécule elle-même (et ne pas se retrouver avec des pointeurs invalides à la destruction du proxy)
 ```cpp
 MAIN_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
     Core::ECS::SIGNAL::DESTROY, this
@@ -288,7 +330,7 @@ MAIN_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_r
 
 #### ACTION_MANAGER
 
-L'action manager est le système permettant de lancer des actions. Ce système d'action permet de factoriser des comportements lancé depuis plusieurs endroits de l'interface utilisateur.
+L'action manager est le système permettant de lancer des actions. Ce système d'action permet de factoriser des comportements lancés depuis plusieurs endroits de l'interface utilisateur.
 Il permet aussi de garder une trace des différentes actions lancées pour permettre un undo/redo (TODO) ou encore d'enregistrer et reproduire un comportement complexe (TODO).
 
 ```plantuml
@@ -352,7 +394,7 @@ ActionManager -> ActionManager : push action (if undoable)
 #### UID_SYSTEM
 
 Le système d'uid (Unique IDentifier) est un petit système permettant de distribuer un ou plusieurs (dans un range) identifiant unique pour permettre ensuite l'identification ou la récupération d'un objet à partir de cet identifiant.
-Les UID sont actuellement utilisé pour retrouver un atom ou un résidu depuis le renderer avec la fonction de picking.
+Les UID sont actuellement utilisé pour retrouver un atome ou un résidu depuis le renderer avec la fonction de picking.
 
 ```plantuml
 @startuml
@@ -526,13 +568,13 @@ Serializer -> Anywhere : Object
 
 #### SETTINGS
 
-La paramétrisation des différents modules / objets de VTX peut se faire via les settings. Le principe des settings est de pouvoir être facilement accessible depuis n'importe où dans le code, modulaire pour qu'un développeur puisse facilement ajouter les settings  des outils qu'il dévelope et serialisable afin de récupérer les données d'une session à l'autre.
+La paramétrisation des différents modules / objets de VTX peut se faire via les settings. Le principe des settings est de pouvoir être facilement accessible depuis n'importe où dans le code, modulaire pour qu'un développeur puisse facilement ajouter les settings des outils qu'il dévelope et serialisable afin de récupérer les données d'une session à l'autre.
 
 Un setting peut-être de n'importe quel type du moment qu'il implémente les fonctions serialize, deserialize et qu'il contienne une valeur par défaut.
 
 L'ensemble des settings sont stockés dans une map reliant un setting à une clé unique.
 
-Note : le lien direct avec la sérialisation fait que les settings sont directement implémenté dans le namespace Application. Il faudrait peut-être voir à décorreler la sérialization du système de settings en soit pour une archi plus propre.
+Note : le lien direct avec la sérialisation fait que les settings sont directement implémentés dans le namespace Application. Il faudrait peut-être voir à décorreler la sérialization du système de settings pour une archi plus propre.
 
 ```plantuml
 @startuml
@@ -600,9 +642,9 @@ SETTINGS --up SettingsSystem : get
 #### SELECTION
 
 La selection est un objet permettant de connaître l'état actuel de la selection, sauver et appliquer des sélections sauvées.
-Peuvent être sélectionné des entités équipé d'un composant Selectable. A ce composant est associé un objet héritant de SelectionData permettant une sélection de sous-objets de l'entité.
+Peuvent être sélectionné des entités équipés d'un composant Selectable. A ce composant est associé un objet héritant de SelectionData permettant de gérer une sous-sélection de l'objet.
 Ce système un peu plus complexe a été choisi pour éviter d'avoir un comportement de sélection sur chaque atome/résidu/chaine d'une molécule, mais uniquement sur la molécule qui va gérer ses sous-séléctions (par soucis de mémoire et de rapidité de loading).
-Ainsi, au lieu d'avoir un bool par atom, on va gérer les sélection avec des ranges d'index.
+Ainsi, au lieu d'avoir un bool par atome, on va gérer les sélections avec des ranges d'index.
 
 ```plantuml
 @startuml
@@ -755,22 +797,20 @@ TODO
 
 ### Components
 
-Les components définisse l
+Chaque component défini une brique de comportement qui une fois lié aux autres components définira le comportement général de l'entité. EnTT, la bibliothèque d'ECS que nous utilisons ne permet pas de récupérer les types enfants d'un type défini. Ainsi certains component propose une interface générale de fonctionnement avec des pointeurs de fonctions qu'il faudra définir lors de la génération de l'entité.
+Tous les components (à l'exception de la scène ???) sont définis dans le dossier component du module VTX_APP. Ils sont classés selon leurs fonctionnalités.
 
 #### Scene::Transform
 
 Gestion du Transform d'une entité. Un transform est défini par défaut, mais il est possible de référencer un autre transform si un autre component possède déjà un transform.
-
-Plusieurs fonctions facilitatrice sont disponible pour manipuler le transform.
-
-Possède la callback onTransform pour signaler une modification dans le transform.
+Ce component contient aussi plusieurs fonctions de manipulation sur le transform, ainsi qu'une callback onTransform signalant une modification dans le transform. (Rajouter un mask pour définir les composantes du transform modifiée ?)
 
 #### Scene::AABB
 
 **Scene::Transform nécessaire pour calculer la world AABB**
 
-Gestion de la BoundingBox d'une entité. Si un transform est affecté à l'entity, le composant peut aussi calculer l'AABB world en plus de l'AABB locale.
-L'utilisateur doit définir la fonction de calcul de l'AABB. Lorsqu'une modification a été fait dans le code, il faut appeler la fonction "invalidateAABB" afin de recalculer l'AABB lors de la prochaine demande.
+Gestion de l'Axis Aligned Bounding Box d'une entité. Si un component Scene::Transform est attaché à l'entité, le composant pourra aussi calculer l'AABB world en plus de l'AABB locale.
+L'utilisateur doit initialiser la fonction de calcul de l'AABB. Lorsqu'une modification imlique de recalculer la AABB, il faut appeler la fonction "invalidateAABB". Ainsi, lors de la prochaine demande d'AABB, elle sera recalculée.
 
 #### Scene::Selectable
 
@@ -784,22 +824,69 @@ Composant portant les uids liés à l'objet.
 
 **Nécessite Scene::Selectable et Scene::UIDComponent**
 
-Gestion de la sélection de l'objet à partir des informations récupérés par l'action de picking. L'utilisateur doit définir la fonction qui va générer la SelectionData à partir des infos de picking.
+Gestion de la sélection de l'objet à partir des informations d'uid récupérés par l'action de picking. L'utilisateur doit définir la fonction qui va générer la SelectionData à partir des infos de picking.
 
 #### Scene::SceneItemComponent
 
 Composant par défaut sur chaque objet de la scène. Il expose les fonctions minimales pour être manipulé par la scène. C'est à dire un nom et un id persistant pour la sauvegarde.
-Ce component permet aussi de généré le composant Updatable et faire des actions à chaque update de la scène (obsolète ?, utiliser VTXApp::onUpdate plutôt ?).
+Ce component permet aussi de générer le composant Updatable et faire des actions à chaque update de la scène (obsolète ?, utiliser VTXApp::onUpdate plutôt ?).
+
+#### Scene::Enable
+
+**A relinker**
+
+Component gérant l'état actif ou inactif d'une entité.
 
 #### ECS::EntityInfoComponent
 
-Composant ajouté par défaut par le RegistryManager sur chacune des entités créé. Il conserve la liste des id uniques persistents des components de l'entité sur laquelle il est attaché.
+Composant ajouté par défaut par le RegistryManager sur chacune des entités créé. Il conserve la liste des id uniques persistents des components de l'entité sur laquelle il est attaché. (Nécessaire pour la sérialisation.)
 
 #### Chemistry::Molecule
 
 Composant stockant les données de la molécule (VTX::Core::Struct::Molecule)
 
-### Cas concret : Molecule
+#### Behaviour::Molecule
+
+Ce composant permet d'initialiser l'ensemble des composants de la molécule dans le bon ordre et de gérer les intéractions entre les composants via les callbacks qu'ils exposent.
+
+#### IO::MoleculeMetadata
+
+Component ajouté lors du loading de la molécule qui va contenir le path de la molécule, son code pdb ainsi que les meta-données des fichiers de configuration.
+Ce component doit être attaché à une entité possédant un component "Chemistry::Molecule".
+
+#### IO::SceneFileInfo
+
+**A relinker**
+
+Ce composant contient les informations de sauvegarde de la scène (path, modification).
+Il doit être attaché à une entité possédant un component "Scene".
+
+#### Render::Camera
+
+**Nécessite Scene::Transform**
+
+Component portant les données de la camera (near clip & far clip, FOV, screen size, aspect ratio, projection, target, view & projection matrix).
+Ce component expose plusieurs callback pour réagir à la modification de certaines de ces données (onMatrixViewChange, onMatrixProjectionChange, onClipInfosChange et onProjectionChange).
+
+#### Render::Proxy...
+
+Les component ProxyMolecule, ProxyCamera, etc sont les components comportant les données relatives aux proxies définis dans VTX_RENDERER permettant la liaison entre les données de App et le Renderer.
+L'accès aux proxy de renerer se fait via un Wrapper implicitant l'appel des callbacks makeCurrent et donCurrent du Renderer.
+
+#### Render::Viewpoint
+
+**A relinker**
+
+Component portant les données spécifiques aux viewpoints. (Le transform doit être géré par le component dédié. Il doit y avoir ici la target à set à la camera).
+
+#### Representation::ColorLayout
+
+**WIP**
+
+Component portant les données spécifiques aux Layout de couleurs. Il est possible de mettre à jour une ou toutes les couleurs.
+Une callback est invoquée lorsqu'il y a un changement sur les couleurs du layout.
+
+### Cas concret d'une entité complexe : la Molecule
 
 #### Création
 
@@ -852,18 +939,18 @@ User -> User : Inifinite Happiness
 @enduml
 ```
 
-VTXApp est la classe principal du module. Il contient un accès à la scene ainsi que
-
 ## PYTHON_BINDING
 
- est de pouvoir fournir à l'utilisateur la possibilité d'executer ses propres scripts python, ainsi que d'executer les actions prédéfini dans VTX via un prompt dans l'interface.
-Le système est pensé pour être extensible depuis les tools.
+Ce module fourni à l'utilisateur la possibilité d'executer ses propres scripts python, ainsi que d'executer les actions prédéfinis dans VTX via un prompt dans l'interface.
+Le système est pensé pour qu'il puisse être étendu depuis les tools.
 
 Le rôle de PYTHON_BINDING est de gérer la connection CPP - Python, de fournir des outils pour executer des script externe et facilement lier des actions à des commandes python executable depuis l'interpreteur. PYTHON_BINDING devrait fournir aussi l'implémentation de l'API VTX pour le scripting en python. 
 
-Pour gérer cela, nous avons décidé d'utiliser la bibliothèque pybind11 pour générer l'API VTX et son interpreteur embarqué pour executer les commandes python.
+Pour gérer cela, nous avons décidé d'utiliser la bibliothèque pybind11 pour générer l'API python de VTX, ainsi que l'interpreteur que la bibliothèque embarque pour executer les commandes python.
 
-Concrêtement, on va créer un module python en utilisant la macro PYBIND11_MODULE de pybind11.
+Concrètement, on va créer un module python en utilisant la macro PYBIND11_MODULE de pybind11.
+
+Doc Pybind11 : https://pybind11.readthedocs.io/en/stable/
 
 Ce module (appelé PyTX) est divisé en 3 sous-modules : Core, API et Commands.
 - Core va contenir les classes et fonctions minimales d'utilisation ( Classe de redirection des logs, le partage du SystemHandler, et les fonctions d'ajout de commandes et de modules ).
@@ -1004,11 +1091,33 @@ PyTXPythonModule -> VTXAppBinder : call binded action
 @enduml
 ```
 
-### Module Python externe
+### Binding et API
 
+La déclaration des fonctionnalités de VTXApp à pybind11 pour la génération de l'API Python se fait dans le fichier vtx_module.cpp . Celui-ci contient la macro PYBIND11_MODULE où les sous-modules seront déclaré, puis un appel à la fonction apiModule de vtx_api va peupler le sous-module API avec les fonctionnalités liées à VTXApp.
+Pour éviter un fichier kilométrique, chaque fonctionnalité de VTXApp pourra être splittée dans un fichier qui pourra être placé dans le dossier "binders".
+L'implémentation de fonctionnalité un peu plus complexe pourra être développé dans le dossier "api" puis pourra être intégré au module depuis le fichier correspondant dans le dossier "binding/binders"
 
-Doc Pybind11 : https://pybind11.readthedocs.io/en/stable/
+le dossier contient aussi la classe VTXAppBinder, qui va linker les actions de App à une commande dans le sous-module Command (qui pourra ensuite être appelé depuis l'interpreteur.).
 
+### API de sélection
+
+Afin d'avoir un objet de sélection qui puisse être généré et utilisable dans les commandes, nous avons mis en place une classe SelectionInterpretor modulaire qui va généré un objet de sélection à partir d'une chaîne de caractères. 
+
+MoleculeInterpretor est une classe qui va être attachée à SelectionInterpretor et qui va générer un objet App::Selection::MoleculeData correspondant aux paramètres passé à la fonction "select".
+
+L'ajout d'une classe SelectionWrapper pour l'API va nous permettre d'implémenter un ensemble de fonctionnalité pour manipuler plus facilement les sélections depuis l'API Python.
+
+### Wrapper
+
+Les différents types issus de pybind11 et nécessitant d'être lu depuis des modules externes sont wrapper dans les différentes classes définies dans le dossier Wrapper.
+
+### Logging
+
+La classe LogRedirection contient les fonctions write et flush nécessaires à la redirection des logs issus de l'interpreteur Python. Le binding de cette classe est décrit dans vtx_module.cpp et les fonctionnalités sont linkée dans la fonction "initializePythonModule()" de la classe Interpretor::Impl .
+
+### Actions
+
+Le module VTX_PYTHON_BINDING possède une action : "RunScript" qui permet de lancer le script au chemin fourni.
 
 ## UI
 
@@ -1177,5 +1286,45 @@ Pour cela, le système est composé d'une fonction BaseAnimation qui fourni le s
 
 Un set d'animation est disponible par défaut dans le dossier Internal/Animation. Il contient actuellement une animation de Translation ainsi que l'animation pour effectuer l'Orient et le Reset de la camera. La rotation des molécules pourrait aussi être ajoutée ici, mais il faudrait peut-être rajouter une fonctionnalité à l'AnimationSystème pour qu'il puisse plusieurs séquence d'animation en parallèle.
 
+### QT - Widgets
+
+Les widgets custom que nous créons suivent un déroulé spécial. Ils doivent hériter de "QT::Widget::BaseManualWidget", déclarer la macro NEW_ARCHI_VTX_WIDGET (à renommer bien sûr), déclarer leur constructeur en protected (le friend avec la factory est géré par la macro) et implémenter les fonctions virtuels _setupUi, _setupSlots et localize si nécessaire. La fonction _setupUi va contenir l'instantiation et la mise en layout des différents éléments de l'UI. La fonction _setupSlots contiendra les liens entre les events envoyés par les éléments d'UI et les actions à lancé dans VTX et enfin la fonction localize s'occupera de mettre à jour les textes en utilisant le fichier de localisation.
+
+L'instantiation d'un Widget se fera via la fonction instantiateWidget<> de la factory QT::WidgetFactory.
+
+Cette architecture permet de bien séquencer l'initialisation d'un widget, et permet d'intercaler des fonctions lors de la création de n'importe quel widget.
+
 ### Tools
 
+L'ensemble des fonctionnalités de l'UI sont implémentées dans le dossier qt/tool (bouger tout ça dans un dossier "features" ou autre directement à la racine ? )
+Les tools peuvent-être interdépendant (trouver le moyen de bien gérer ça).
+
+#### Render
+
+Le tool render s'occupe de gérer le rendu. Pour Qt, cela signifie d'ajouter le widget QOpenGLWidget à la MainWindow, d'initialiser le Renderer lorsque QOpenGLWidget est initialisé, et de linker le contexte OpenGL du widget à celui du renderer afin d'afficher le résultat du rendu dans le widget.
+Les fonctions touchant au context openGL de QOpenGLWidget ne peuvent être appelée que dans les fonctions initGL et paintGL. Autrement, il est possible d'appeler les fonctions makeCurrent et doneCurrent de QOpenGLWidget pour pouvoir toucher au rendu en dehors de ces fonctions. Ainsi, le RendererSystem nous permet de linké l'appel à ces fonctions aux callbacks onGet et onRelease qui sont appelé chaque fois qu'on fait appel au renderer dans le code. 
+
+#### Console
+
+Implémentation de la console récupérant les logs et permettant le lancement de commandes Python. La console se référence en tant que DockingPanel à la MainWindow et va se linker aux callbacks émisent par le logger.
+
+#### PyTX
+
+PyTX est le tool incluant le module VTX_PYTHON_BINDING dans l'UI.
+Ce tool fourni aussi un widget pour pouvoir lancer des commandes Python. Globalement, c'est un champ texte assortis de plusieurs fonctionnalités pour permettre une utilisation efficace (TODO : Autocomplétion, Défilement de l'historique avec les flèches haut et bas, fonctionnalités d'aides / affichage des descriptions des commandes)
+
+#### UI_FEATURES
+
+Dans ce dossier sont déclaré divers outils ayant attrait à l'UI en particulier. Cela contient les fonctionnalités directement lié à la fenêtre (i.e quitter l'appli, TODO : fullscreen, liste des fenêtres accessibles, fenêtre d'info, etc), ou aux fonctionnalités UI (Mode / Controllers).
+
+#### MISCELLANEOUS
+
+Ce dossier contient divers micro-plugins qui ne trouvent pas leur place dans les autres catégories. Actuellement, il contient la fonctionnalité permettant un orient automatique lors du loading de la première molécule dans la scène. (TODO : étendre au premier SceneItem avec un AABB valide d'instancié ?)
+
+
+# Resources
+
+VSCode plantUML extension : jebbs.plantuml
+Doc EnTT : https://github.com/skypjack/entt/wiki/Crash-Course:-core-functionalities
+Doc Pybind11 : https://pybind11.readthedocs.io/en/stable/
+Doc Qt : https://doc.qt.io/qt-6/qwidget.html
