@@ -13,7 +13,6 @@
 #include <QDockWidget>
 #include <QKeySequence>
 #include <QMainWindow>
-#include <QShortcut>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -46,20 +45,6 @@ namespace VTX::UI::QT
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
 		QT::Widget::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const Core::ToolLayoutData & layoutData );
-
-		void addShortcut( const std::string & p_shortcut, QAction * const p_action );
-
-		template<typename Obj, typename Func>
-		void addShortcut( const std::string & p_shortcut, Obj p_obj, Func p_func )
-		{
-			assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
-
-			connect(
-				new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ), &QShortcut::activated, p_obj, p_func
-			);
-
-			_shortcuts.emplace( p_shortcut );
-		}
 
 		Core::WindowMode getWindowMode();
 		void			 setWindowMode( const Core::WindowMode & p_mode );
@@ -100,8 +85,6 @@ namespace VTX::UI::QT
 
 	  private:
 		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
-
-		std::unordered_set<std::string> _shortcuts = std::unordered_set<std::string>();
 
 		// Actions.
 		void _onDockWindowVisibilityChange( bool p_visible );

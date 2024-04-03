@@ -46,22 +46,6 @@ namespace VTX::UI::QT
 		);
 	}
 
-	void MainWindow::addShortcut( const std::string & p_shortcut, QAction * const p_action )
-	{
-		assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
-
-		p_action->setParent( this );
-
-		connect(
-			new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ),
-			&QShortcut::activated,
-			p_action,
-			&QAction::trigger
-		);
-
-		_shortcuts.emplace( p_shortcut );
-	}
-
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
 	{
 		QFile stylesheetFile( p_stylesheetPath );
