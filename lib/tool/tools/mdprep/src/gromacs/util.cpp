@@ -102,13 +102,23 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles & p_list, const char * extension ) noexcept
 	{
-		auto firstSuffixedString = std::find_if(
-			p_list.fileStringPtrs.begin(),
-			p_list.fileStringPtrs.end(),
-			[ extension = extension ]( const std::string * p_ ) { return p_->ends_with( extension ); }
-		);
-		if ( firstSuffixedString != std::end( p_list.fileStringPtrs ) )
-			return *firstSuffixedString;
+		return getFileOfType( p_list, 1, extension );
+	}
+
+	const std::string * getFileOfType(
+		const CumulativeOuputFiles & p_list,
+		const size_t &				 n,
+		const char *				 suffix
+	) noexcept
+	{
+		size_t suffixSeen = 0;
+		for ( auto & it_fileStrPtr : p_list.fileStringPtrs )
+		{
+			if ( it_fileStrPtr->ends_with( suffix ) )
+				suffixSeen++;
+			if ( suffixSeen == n )
+				return it_fileStrPtr;
+		}
 		return nullptr;
 	}
 

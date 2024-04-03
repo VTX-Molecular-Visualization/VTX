@@ -37,6 +37,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Return the first string with matching ending from the list.
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles &, const char * suffix ) noexcept;
 
+	// Return the n-th string with matching ending from the list.
+	const std::string * getFileOfType( const CumulativeOuputFiles &, const size_t & n, const char * suffix ) noexcept;
+
 	// Return a string containing the text file's content.
 	// Doesn't check if the file isn't too large
 	std::string getFileContent( const fs::path & ) noexcept;

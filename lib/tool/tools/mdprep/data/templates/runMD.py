@@ -158,7 +158,7 @@ def isMinimizationOk():
     )
     
 def runNvtEquil():
-    print("Preparing NVT Equilibration run ...", flush=True, end="")
+    print("Preparing NVT Equilibration ... ", flush=True, end="")
     cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr"
     
     def jobFailedSignal():
@@ -169,7 +169,7 @@ def runNvtEquil():
     if (nvtJob.preparationFailed == True):
         return
     
-    print("Starting NVT Equilibration run ...", flush=True, end="")
+    print("Starting NVT Equilibration ...", flush=True, end="")
     cmdStr = "gmx mdrun -deffnm nvt %s" % getResourceString()
     
     def jobFailedSignal():
@@ -184,16 +184,59 @@ def isNvtEquilOk():
     )
     
 def runNptEquil():
-    return
+    print("Preparing NPT Equilibration ...", flush=True, end="")
+    cmdStr = "gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p topol.top -o npt.tpr"
+    
+    def jobFailedSignal():
+        nptJob.preparationFailed = True
+    
+    runJob(cmdStr, "npt_prep", jobFailedSignal)
+    
+    if (nvtJob.preparationFailed == True):
+        return
+    
+    print("Starting NPT Equilibration ...", flush=True, end="")
+    cmdStr = "gmx mdrun -deffnm npt %s" % getResourceString()
+    
+    def jobFailedSignal():
+        nptJob.runFailed = True
+    
+    runJob(cmdStr, "npt", jobFailedSignal)
     
 def isNptEquilOk():
-    return False
+    return (
+        (nptJob.preparationFailed == False and nptJob.runFailed == False)
+        and (getMdRootDir() / "npt.gro").is_file()
+    )
     
 def runProd():
-    return
+    print("Preparing Production run ... ", flush=True, end="")
+    cmdStr = "gmx grompp -f prod.mdp -c npt.gro -p topol.top -o prod.tpr"
+    
+    def jobFailedSignal():
+        prodJob.preparationFailed = True
+    
+    runJob(cmdStr, "prod_prep", jobFailedSignal)
+    
+    if prodJob.preparationFailed :
+        return
+    
+    if (nvtJob.preparationFailed == True):
+        return
+    
+    print("Starting Production run ... ", flush=True, end="")
+    cmdStr = "gmx mdrun -deffnm prod %s" % getResourceString()
+    
+    def jobFailedSignal():
+        prodJob.runFailed = True
+    
+    runJob(cmdStr, "prod", jobFailedSignal)
     
 def isProdOk():
-    return False
+    return (
+        (prodJob.preparationFailed == False and prodJob.runFailed == False)
+        and (getMdRootDir() / "prod.gro").is_file()
+    )
     
 # Main function of the script
 # Will run minimzation, nvt equil, npt equil then production
