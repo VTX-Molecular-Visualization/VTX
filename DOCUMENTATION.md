@@ -1128,9 +1128,58 @@ Ainsi, la plupart des objets Qt héritent d'une classe abstraite dans UI::Core. 
 
 Doc de Qt : https://doc.qt.io/qt-6/qwidget.html
 
+Architecture de l'UI QT
+```plantuml
+@startuml
+skinparam packageStyle rectangle
+
+package UI::Core
+{
+    abstract BaseUIApplication
+    abstract BaseMainWindow
+    class BaseVTXPanel
+}
+
+package UI::QT
+{
+    class ApplicationQT
+    class MainWindow
+    class QtPanel
+    class QtPanelTemplate<W>
+    class QtDockablePanel
+    class QtFloatingWindowPanel
+}
+
+package Qt
+{
+    class QApplication
+    class QMainWindow
+    class QMainMenu
+    class QDockWidget
+    class QDialog
+}
+
+BaseUIApplication <|-- ApplicationQT
+QApplication <|-- ApplicationQT
+BaseMainWindow <|-- MainWindow
+QMainWindow <|-- MainWindow
+BaseVTXPanel <|-- QtPanel
+QtPanel <|-- QtPanelTemplate
+QtPanelTemplate <|-- QtDockablePanel
+QDockWidget <|-- QtDockablePanel
+QtPanelTemplate <|-- QtFloatingWindowPanel
+QDialog <|-- QtFloatingWindowPanel
+
+MainWindow *--up ApplicationQT
+QtPanel *--left MainWindow
+QMainMenu *-- MainWindow
+
+@enduml
+```
+
 ### Initialisation
 
-Actuellement, VTX_UI est pensé pour générer plusieurs UI en fonction d'une directive de pre-proc (VTX_UI_STYLE défini temporairement dans "UI::UIGenerator.hpp"). L'idée est de pouvoir initialiser uniformément l'application peut importe l'UI choisie (CommandLine, Qt, autre).
+Actuellement, VTX_UI est pensé pour générer plusieurs UI en fonction d'une directive de pre-processeur (VTX_UI_STYLE défini temporairement dans "UI::UIGenerator.hpp"). L'idée est de pouvoir initialiser uniformément l'application peut importe l'UI choisie (CommandLine, Qt, autre).
 
 Le schéma suivant récapitule les étapes d'initialisation
 ```plantuml
@@ -1140,7 +1189,7 @@ actor User
 participant main
 participant include_tools.hpp
 participant UIGenerator
-participant AbstractUIApplication
+participant BaseUIApplication
 participant ApplicationQT
 participant Environment
 participant VTXApp
@@ -1159,15 +1208,15 @@ main -> UIGenerator : createUI
 UIGenerator -> ApplicationQT : instantiate
 ApplicationQT -> main : return
 main -> Environment : reference
-main -> AbstractUIApplication : init
-AbstractUIApplication -> ApplicationQT : init
-main -> AbstractUIApplication : start (args)
-AbstractUIApplication -> VTXApp : start(args)
-AbstractUIApplication -> ApplicationQT : initUI
+main -> BaseUIApplication : init
+BaseUIApplication -> ApplicationQT : init
+main -> BaseUIApplication : start (args)
+BaseUIApplication -> VTXApp : start(args)
+BaseUIApplication -> ApplicationQT : initUI
 ApplicationQT -> MainWindow : create
-AbstractUIApplication -> LayoutReader : read tool_config.json
-LayoutReader -> AbstractUIApplication : return LayoutDescriptor from json
-AbstractUIApplication -> LayoutBuilder : build UI layout with LayoutDescriptor
+BaseUIApplication -> LayoutReader : read tool_config.json
+LayoutReader -> BaseUIApplication : return LayoutDescriptor from json
+BaseUIApplication -> LayoutBuilder : build UI layout with LayoutDescriptor
 LayoutBuilder -> ToolHandler : createTool
 ToolHandler -> ToolRegistry : createTool
 ToolRegistry -> ExternalPlugin : instantiate
@@ -1175,7 +1224,7 @@ ToolRegistry -> ExternalPlugin : init
 ExternalPlugin -> MainWindow : Add Panel / Buttons ...
 ToolRegistry -> ToolHandler : return tool
 ToolHandler -> ToolHandler : store tool
-AbstractUIApplication -> ApplicationQT : startUI
+BaseUIApplication -> ApplicationQT : startUI
 ApplicationQT -> MainWindow : show
 ApplicationQT -> ApplicationQT : UI loop
 
@@ -1278,6 +1327,7 @@ BaseShortcutController <|-- DebugShortcut
 
 @enduml
 ```
+
 ### Animation (move to App ?)
 
 Le module UI pourvoit un système d'animation. Le principe est de pouvoir lancer une succession d'animations sur un ou plusieurs objets afin de créer un petit film ou bien de modifier les données de certains objets sur une durée longue.
@@ -1298,6 +1348,10 @@ Cette architecture permet de bien séquencer l'initialisation d'un widget, et pe
 
 L'ensemble des fonctionnalités de l'UI sont implémentées dans le dossier qt/tool (bouger tout ça dans un dossier "features" ou autre directement à la racine ? )
 Les tools peuvent-être interdépendant (trouver le moyen de bien gérer ça).
+
+Un tool hérite de UI::Core::BaseVTXUITool (pour un tool Qt, de BaseQtTool, qui va assuré un héritage avec QObject aussi et permettre d gérer la parentalité du tool comme un Widget).
+Il doit contenir un identifiant statique `inline static const UI::Core::ToolIdentifier TOOL_KEY = "CONSOLE_TOOL_KEY";`, un membre statique pour s'enregistrer auprès du ToolHandler `inline static const UI::Core::ToolRegistry::Registration<ConsoleTool> _reg { TOOL_KEY };`
+et overrider la fonction instantiateTool() qui sera appelé lors de l'instantiation du tool. Cette fonction va contenir la création de toutes les composantes du tools (Panneaux / Boutons à rajouter à la main window, menu contextuels, shortcuts, commandes, etc...)
 
 #### Render
 
