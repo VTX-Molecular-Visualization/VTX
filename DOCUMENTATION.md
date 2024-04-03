@@ -6,7 +6,9 @@ Pour une bonne lecture de cette doc sur VSCode, installez l'extension plantUML (
 
 # VTX_CORE
 
-# VTX_CORE
+# VTX_IO
+
+# VTX_RENDER
 
 # VTX_APP
 
@@ -18,19 +20,19 @@ Le module App s'occupe de gérer les articulations entre les structures de Core 
 
 le code source de App est divisé en plusieurs dossiers :
 
-- "core" contient les structures abstraites et minimales des différents systèmes utilisé dans le module. Les fonctionnalités implémentée dans Core ne doivent pas nécessité de code en dehors de leur dossier (ou d'un autre dossier de Core si c'est le sens de la feature).
+- "core" contient les structures abstraites et minimales des différents systèmes utilisés dans le module. Les fonctionnalités implémentées dans Core ne doivent pas nécessiter de code en dehors de leur propre dossier (ou d'un autre dossier de Core si c'est le sens de la feature).
 
 - "application" va contenir l'ensemble des systèmes liés à l'application VTX, implémentant pour la plupart les structures contenues dans core.
 
-- "component" contient l'ensemble des components utilisé par l'ECS, réparti par selon leur champ d'action (chemistry pour les components lié à la chimie, scene pour les composants de scene, etc..)
+- "component" contient l'ensemble des components utilisés par l'ECS, réparties selon leur champ d'action (chemistry pour les components lié à la chimie, scene pour les composants de scene, etc..)
 
 - "entity" contient les fonctions permettant de générer les entités complexes possédant plusieurs composants intéragissant entre-eux.
 
 - "internal" contient des paramétrisations ou des procédures utilisants les systèmes de "application" spécifique à VTX (i.e la liste des settings de VTX, les fonctions de serialisation, etc)
 
-- "helper" contient des fonctions utilitaires pour factoriser des fonctionnalités un peu plus poussé.
+- "helper" contient des fonctions utilitaires pour factoriser des fonctionnalités un peu plus poussées.
 
-- "action" contient les différentes actions permises par VTX. Les actions sont les fonctionnalités que peux lancer l'utilisateur dans le logiciel. Ce sont les points d'entrée pour les interactions avec le module VTX_APP
+- "action" contient les différentes actions pouvant être lancées sur VTX. Les actions sont les fonctionnalités que peux executer l'utilisateur dans le logiciel. Ce sont les points d'entrées pour les interactions avec le module VTX_APP.
 
 Outre ces dossiers, app contient deux fichiers à sa racine : vtx_app, qui est le point d'entrée et le singleton qui gère la durée de vie du module, et info qui contient uniquement des données statiques informant sur la version de VTX.
 
@@ -41,7 +43,7 @@ Parmi les systèmes, on peut notamment recenser la scène, l'entity component sy
 
 ### Structure d'un système
 
-Chaque système hérite de BaseSystem et possède un membre static "SystemRegistration" lui permettant de s'enregistrer automatiquement et directement auprès du SystemHandler. Chaque système possède une ou plusieurs fonction facilitatrice pour accéder aisément depuis n'importe quel namespace aux features désirées.
+Chaque système hérite de BaseSystem et possède un membre static "SystemRegistration" lui permettant de s'enregistrer automatiquement et directement auprès du SystemHandler. Chaque système possède une ou plusieurs fonctions facilitatrices pour accéder aisément depuis n'importe quel namespace aux features désirées.
 
 Diagramme de classe d'un système
 ```plantuml
