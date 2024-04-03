@@ -32,6 +32,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	struct CumulativeOuputFiles
 	{
 		std::vector<const std::string *> fileStringPtrs;
+		fs::path						 lastUncompiledTop;
 	};
 
 	struct GromacsJobData

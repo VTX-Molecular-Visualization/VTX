@@ -19,6 +19,8 @@ minimTprInput = "em.tpr"
 nvtMdpInput = "nvt.mdp"
 nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
+prodTop = "topol.top"
+posresTop = "posres.top"
 GpuAvailable = False
 args = None # meant to hold kv of user argument
 
@@ -99,9 +101,18 @@ def checkSystem():
         print("Warning : Environment variable GMXLIB not defined. It is not mandatory to run gromacs. However if the MD fails to start, it would be worth investigating this first.")
         
     GpuAvailable = isGpuAvailable()
-    if GpuAvailable:
+    if args.ignore_gpu_check:
+        print("GPU check ignored. Trying to run gromacs in GPU mode.")  
+    elif GpuAvailable:
         print("Graphics Processing Unit found. Running gromacs in GPU mode.")
+    else:
+        print("No Graphics Processing Unit found. Running gromacs in CPU mode.")
         
+    if args.gpu_id is not None:
+        print("Asking Gromacs to run on <%s>." % args.gpu_id)
+    if args.nt is not None:
+        print("Asking Gromacs to make at most %s threads." % args.nt)
+    
     return True
 
 def checkFolder():
@@ -116,6 +127,12 @@ def checkFolder():
         print(errMsg % nptMdpInput)
         return False
     if (getMdRootDir() / prodMdpInput).is_file() == False:
+        print(errMsg % prodMdpInput)
+        return False
+    if (getMdRootDir() / posresTop).is_file() == False:
+        print(errMsg % prodMdpInput)
+        return False
+    if (getMdRootDir() / prodTop).is_file() == False:
         print(errMsg % prodMdpInput)
         return False
     return True
@@ -159,7 +176,7 @@ def isMinimizationOk():
     
 def runNvtEquil():
     print("Preparing NVT Equilibration ... ", flush=True, end="")
-    cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr"
+    cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p %s -o nvt.tpr" % posresTop
     
     def jobFailedSignal():
         nvtJob.preparationFailed = True
@@ -185,7 +202,7 @@ def isNvtEquilOk():
     
 def runNptEquil():
     print("Preparing NPT Equilibration ...", flush=True, end="")
-    cmdStr = "gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p topol.top -o npt.tpr"
+    cmdStr = "gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p %s -o npt.tpr" % posresTop
     
     def jobFailedSignal():
         nptJob.preparationFailed = True
@@ -211,7 +228,7 @@ def isNptEquilOk():
     
 def runProd():
     print("Preparing Production run ... ", flush=True, end="")
-    cmdStr = "gmx grompp -f prod.mdp -c npt.gro -p topol.top -o prod.tpr"
+    cmdStr = "gmx grompp -f prod.mdp -c npt.gro -p %s -o prod.tpr" % prodTop
     
     def jobFailedSignal():
         prodJob.preparationFailed = True
@@ -237,6 +254,11 @@ def isProdOk():
         (prodJob.preparationFailed == False and prodJob.runFailed == False)
         and (getMdRootDir() / "prod.gro").is_file()
     )
+    
+def runTrjConv():
+    return #TODO
+    
+    
     
 # Main function of the script
 # Will run minimzation, nvt equil, npt equil then production
@@ -266,6 +288,8 @@ def runMD():
     if isProdOk() == False:
         print("Production (last step) failed.")
         return
+        
+    runTrjConv()
     
     print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO [trajectory file]
     return

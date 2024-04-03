@@ -1,5 +1,6 @@
 title                   = NPT Equilibration
-define                  = -DPOSRES  ; position restrain the protein
+; VTX rq : Topology files are precompiling onto preparation's machine. A dedicated .top with posres written in it will be used.
+;define                  = -DPOSRES  ; position restrain the protein
 ; Run parameters
 integrator              = md        ; leap-frog integrator
 nsteps                  = ${nsteps} ; Number of steps
