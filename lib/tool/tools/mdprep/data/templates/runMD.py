@@ -32,6 +32,7 @@ emJob = Job()
 nvtJob = Job()
 nptJob = Job()
 prodJob = Job()
+resultJob = Job()
 
 
 ###############################################################################################################
@@ -63,10 +64,12 @@ def submitCmd(cmdStr: str, stdoutFilePath : Path=None):
 
 def doesPgmExists(command : str):
     try:
-        submitCmd(command)
-        return True
+        rc = submitCmd(command)
+        if rc.returncode == 0:
+            return True
     except Exception:
         return False 
+    return False
 
 def getResourceString():
     outStr = ("-nt %s" % args.nt if args.nt is not None and args.nt != "" else "")
@@ -255,11 +258,19 @@ def isProdOk():
         and (getMdRootDir() / "prod.gro").is_file()
     )
     
+# Run trjconv on the prod run results
 def runTrjConv():
-    return #TODO
+    print("Writing usable results ... ", flush=True, end="")
+    cmdStr = "gmx trjconv -f prod.xtc -s prod.tpr -o result.pdb -center -pbc mol -ur compact -conect"
     
+    def jobFailedSignal():
+        resultJob.runFailed = True
     
+    runJob(cmdStr, "results", jobFailedSignal)
     
+def isTrjconvOk():
+    return resultJob.runFailed == False
+
 # Main function of the script
 # Will run minimzation, nvt equil, npt equil then production
 # Files will have a standard name (i.e. name after the gromacs introduction tutorial)
@@ -290,8 +301,11 @@ def runMD():
         return
         
     runTrjConv()
+    if isTrjconvOk() == False:
+        print("Result production failed. Your data is not lost. Please seek advice on how to exploit your raw results.")
+        
     
-    print("MD simulation for %s system finished successfully. To visualize the trajectory, load the [trajectory file] into VTX." % fileStem) # TODO [trajectory file]
+    print("MD simulation for %s system finished successfully. To visualize the trajectory, load the result.pdb into VTX." % fileStem) # TODO [trajectory file]
     return
     
     
