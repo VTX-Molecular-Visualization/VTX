@@ -19,7 +19,7 @@ namespace VTX::test
 		p_out.fileStringPtrs.reserve( p_out.fileStringPtrs.size() + p_in.size() );
 		for ( auto & it : p_in )
 		{
-			if ( it.ends_with( ".top" ) == true )
+			if ( p_out.lastUncompiledTop.empty() && it.ends_with( ".top" ) == true )
 				p_out.lastUncompiledTop = it;
 			p_out.fileStringPtrs.push_back( &it );
 		}
