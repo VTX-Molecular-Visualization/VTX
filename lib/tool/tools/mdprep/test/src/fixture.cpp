@@ -11,11 +11,18 @@ namespace VTX::test
 		if ( fs::exists( jobDir ) )
 			fs::remove_all( jobDir );
 	}
-	void fill( const std::vector<std::string> & p_in, std::vector<const std::string *> & p_out ) noexcept
+	void fill(
+		const std::vector<std::string> &				   p_in,
+		VTX::Tool::Mdprep::Gromacs::CumulativeOuputFiles & p_out
+	) noexcept
 	{
-		p_out.reserve( p_out.size() + p_in.size() );
+		p_out.fileStringPtrs.reserve( p_out.fileStringPtrs.size() + p_in.size() );
 		for ( auto & it : p_in )
-			p_out.push_back( &it );
+		{
+			if ( it.ends_with( ".top" ) == true )
+				p_out.lastUncompiledTop = it;
+			p_out.fileStringPtrs.push_back( &it );
+		}
 	}
 	std::string getFileContent( const fs::path & p_file ) noexcept
 	{

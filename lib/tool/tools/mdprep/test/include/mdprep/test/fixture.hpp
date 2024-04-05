@@ -33,7 +33,7 @@ namespace VTX::test
 	};
 
 	// Put a pointer to each of the input string into the pointer vector
-	void fill( const std::vector<std::string> &, std::vector<const std::string *> & ) noexcept;
+	void fill( const std::vector<std::string> &, VTX::Tool::Mdprep::Gromacs::CumulativeOuputFiles & ) noexcept;
 
 	struct Editconf
 	{
