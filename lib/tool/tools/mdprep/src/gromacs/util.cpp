@@ -58,7 +58,7 @@ namespace VTX::Tool::Mdprep::Gromacs
 	{
 		void checkErrMsg( JobReport & p_report, const std::string & p_text ) noexcept
 		{
-			const RE2 pattern { "\n(( |\t)+Error (.|\n|\r)+?\n\n)" };
+			const RE2 pattern { "(((Fatal +)|(\n( |\t)+))(E|e)rror(.|\n|\r)+?\r?\n)\r?\n" };
 
 			absl::string_view txt_view( p_text );
 			std::string		  hit;
