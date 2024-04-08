@@ -65,6 +65,10 @@ namespace VTX::Tool::Mdprep::Gromacs
 			std::string		  b1, b2;
 			while ( RE2::FindAndConsume( &txt_view, pattern, &hit ) )
 			{
+				while ( hit.starts_with( '\n' ) || hit.starts_with( '\r' ) || hit.starts_with( '\t' ) )
+					hit.erase( hit.begin() );
+				while ( hit.ends_with( '\n' ) || hit.ends_with( '\r' ) )
+					hit.pop_back();
 				p_report.errors.push_back( hit );
 			}
 		}
