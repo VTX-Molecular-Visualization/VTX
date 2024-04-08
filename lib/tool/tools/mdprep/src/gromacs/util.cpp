@@ -32,7 +32,9 @@ namespace VTX::Tool::Mdprep::Gromacs
 
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept
 	{
-		p_text.replace( p_text.find( p_pattern ), strnlen_s( p_pattern, 0xff ), p_repl );
+		size_t replPos = p_text.find( p_pattern );
+		if ( replPos != std::string::npos )
+			p_text.replace( replPos, strnlen_s( p_pattern, 0xff ), p_repl );
 	}
 	const fs::path g_defaultFfDirectoryRelativePath
 		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();

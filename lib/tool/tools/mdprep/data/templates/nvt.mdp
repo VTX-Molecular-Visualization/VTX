@@ -4,12 +4,12 @@ title                   = NVT equilibration
 ; Run parameters
 integrator              = md        ; leap-frog integrator
 nsteps                  = ${nsteps} ; Number of steps
-dt                      = 0.002     ; 2 fs
+dt                      = ${dt}     ; 2 fs
 ; Output control
-nstxout                 = 500       ; save coordinates every 1.0 ps
-nstvout                 = 500       ; save velocities every 1.0 ps
-nstenergy               = 500       ; save energies every 1.0 ps
-nstlog                  = 500       ; update log file every 1.0 ps
+nstxout                 = ${nstxout}         ; save coordinates every 1.0 ps
+nstvout                 = ${nstvout}         ; save velocities every 1.0 ps
+nstenergy               = ${nstenergy}       ; save energies every 1.0 ps
+nstlog                  = ${nstlog}         ; update log file every 1.0 ps
 ; Bond parameters
 continuation            = no        ; first dynamics run
 constraint_algorithm    = lincs     ; holonomic constraints 

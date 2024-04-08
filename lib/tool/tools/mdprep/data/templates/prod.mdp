@@ -2,14 +2,14 @@ title                   = hCTD_single_copy_1us
 ; Run parameters
 integrator              = md        ; leap-frog integrator
 nsteps                  = ${nsteps} ; Number of steps
-dt                      = 0.002     ; 2 fs
+dt                      = ${dt}     ; 2 fs
 ; Output control
-nstxout                 = 0       ; save coordinates every 1.0 ps 
-nstvout                 = 0         ; 0 for output frequency of nstxout,
+nstxout                 = ${nstxout}       ; save coordinates every 1.0 ps 
+nstvout                 = ${nstvout}         ; 0 for output frequency of nstxout,
 nstfout                 = 0         ; nstvout, and nstfout
-nstenergy               = 500     ; save energies every 1.0 ps
-nstlog                  = 500      ; update log file every 1.0 ps
-nstxout-compressed      = 2500      ; save compressed coordinates every 5.0 ps
+nstenergy               = ${nstenergy}     ; save energies every 1.0 ps
+nstlog                  = ${nstlog}      ; update log file every 1.0 ps
+nstxout-compressed      = ${nstxout-compressed}      ; save compressed coordinates every 5.0 ps
 compressed-x-grps       = System    ; save the whole system
 ; Bond parameters
 continuation            = yes       ; Restarting after NPT 

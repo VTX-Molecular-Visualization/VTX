@@ -266,7 +266,7 @@ def runTrjConv():
     def jobFailedSignal():
         resultJob.runFailed = True
     
-    runJob(cmdStr, "results", jobFailedSignal)
+    #runJob(cmdStr, "results", jobFailedSignal)
     
 def isTrjconvOk():
     return resultJob.runFailed == False
