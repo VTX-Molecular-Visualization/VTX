@@ -57,40 +57,11 @@ namespace VTX::App
 
 		// Regsiter loop events
 		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
-
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
-
-		// Event manager - Useless: nothing is delayed.
-		//_updateCallback.addCallback(
-		//	this, []( const float p_elapsedTime ) { Event::EventManager::get().update( p_elapsedTime ); }
-		//);
-
-		// Useless while delayed actions are disabled
-		//_updateCallback.addCallback( this, []( const float p_elapsedTime ) { VTX_ACTION().update( p_elapsedTime );
-		//}
-		//);
-
-		// TODO: use camera callbacks.
-		//_preRenderCallback.addCallback( this, [ this ]( const float p_elapsedTime ) { _applyCameraUniforms(); } );
-		//_renderCallback.addCallback(
-		//	this, [ this ]( const float p_elapsedTime ) { _renderer->render( p_elapsedTime ); }
-		//);
 
 		_tickChrono.start();
 
 		_handleArgs( p_args );
-
-#ifndef VTX_PRODUCTION
-		if ( p_args.size() == 0 )
-		{
-			// VTX_ACTION(
-			//	 new Action::Main::Open( Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
-			//).absolute() ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
-		}
-#endif
 	}
 
 	void VTXApp::update( const float p_elapsedTime )
@@ -185,26 +156,7 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
 		// Old::Application::Selection::SelectionManager::get().deleteModel();
-
-		// if ( _scene != nullptr )
-		//{
-		//	delete _scene;
-		// }
 	}
-
-	void VTXApp::goToState( const std::string & p_name, void * const p_arg ) {}
-
-	// void VTXApp::deleteAtEndOfFrame( const Component::Generic::BaseAutoDelete * const p_object )
-	//{
-	//	_deleteAtEndOfFrameObjects.emplace_back( p_object );
-	// }
-	// void VTXApp::_applyEndOfFrameDeletes()
-	//{
-	//	for ( const Component::Generic::BaseAutoDelete * const p_object : _deleteAtEndOfFrameObjects )
-	//		p_object->autoDelete();
-
-	//	_deleteAtEndOfFrameObjects.clear();
-	//}
 
 	Application::Scene &	   VTXApp::getScene() { return _systemHandlerPtr->get<Application::Scene>( SCENE_KEY ); }
 	const Application::Scene & VTXApp::getScene() const

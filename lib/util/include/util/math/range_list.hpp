@@ -10,6 +10,7 @@
 
 namespace VTX::Util::Math
 {
+	// Class to describe a list of Range, managing merge and split when items are added / removed
 	template<std::integral T>
 	class RangeList
 	{
@@ -17,6 +18,7 @@ namespace VTX::Util::Math
 		using RangeIterator		 = typename std::list<Range<T>>::iterator;
 		using RangeConstIterator = typename std::list<Range<T>>::const_iterator;
 
+		// Iterator throw each value of all the ranges
 		struct Iterator
 		{
 			using ListIt = typename std::list<Range<T>>::const_iterator;
@@ -92,20 +94,14 @@ namespace VTX::Util::Math
 			mutable bool _initialized = false;
 		};
 
-	  private:
-		enum class ADD_STATE : int
-		{
-			UNDONE,
-			STARTED,
-			DONE
-		};
-
 	  public:
-		static RangeList<T> fromList( const std::vector<T> & p_list )
+		// Generate RangeList from any container
+		template<ContainerOfType<T> ContainerType>
+		static RangeList<T> fromList( const ContainerType & p_container )
 		{
 			RangeList res = RangeList();
 
-			for ( T value : p_list )
+			for ( T value : p_container )
 				res.addValue( value );
 
 			return res;
@@ -177,6 +173,14 @@ namespace VTX::Util::Math
 
 		void addRange( const Range<T> & p_range )
 		{
+			// Enum to keep trace of current operation during add function
+			enum class ADD_STATE : int
+			{
+				UNDONE,
+				STARTED,
+				DONE
+			};
+
 			auto	  it			  = _ranges.begin();
 			ADD_STATE addState		  = ADD_STATE::UNDONE;
 			auto	  modifiedRangeIt = _ranges.end();
@@ -295,6 +299,7 @@ namespace VTX::Util::Math
 		Iterator begin() const { return Iterator( _ranges.begin() ); }
 		Iterator end() const { return Iterator( _ranges.end() ); }
 
+		// Keep ability to iterate on Range
 		RangeIterator	   rangeBegin() { return _ranges.begin(); }
 		RangeIterator	   rangeEnd() { return _ranges.end(); }
 		RangeConstIterator rangeBegin() const { return _ranges.begin(); }
@@ -391,6 +396,7 @@ namespace VTX::Util::Math
 		void clear() { _ranges.clear(); }
 		bool isEmpty() const { return _ranges.size() == 0; }
 
+		// Return value count (use size to get Range count)
 		T count() const
 		{
 			T res = 0;
@@ -400,6 +406,9 @@ namespace VTX::Util::Math
 
 			return res;
 		}
+
+		// Return value count (use size to get Range count)
+		size_t rangeCount() const { return _ranges.size(); }
 
 	  private:
 		std::list<Range<T>> _ranges = std::list<Range<T>>();

@@ -2,11 +2,11 @@
 #define __VTX_APP_COMPONENT_SCENE_ENABLE__
 
 #include "app/application/system/ecs_system.hpp"
-#include "app/ecs/core/base_component.hpp"
+#include "app/core/ecs/base_component.hpp"
 
 namespace VTX::App::Component::Scene
 {
-	class EnableComponent : public ECS::Core::BaseComponent
+	class EnableComponent : public Core::ECS::BaseComponent
 	{
 	  private:
 		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<EnableComponent> registration {

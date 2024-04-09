@@ -14,10 +14,6 @@
 
 namespace VTX::UI::QT
 {
-	namespace State
-	{
-		class StateMachine;
-	}
 	class MainWindow;
 
 	class ApplicationQt : public Core::BaseUIApplication, public QApplication

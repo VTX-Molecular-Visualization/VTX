@@ -59,6 +59,7 @@ namespace VTX
 	// https://en.cppreference.com/w/cpp/container/vector_bool
 	|| std::same_as<ContainerType, std::vector<bool>>;
 
+	// Concept to template any container of ValueType
 	template<typename ContainerType, typename ValueType>
 	concept ContainerOfType = requires( ContainerType p_container ) {
 								  requires Container<ContainerType>;

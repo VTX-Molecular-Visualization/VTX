@@ -48,6 +48,7 @@ namespace VTX::Util
 		}
 	} // namespace Variant
 
+	// Default VTX variant which contains VTX base types
 	class VTXVariant
 	{
 	  private:

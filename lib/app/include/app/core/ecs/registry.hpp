@@ -24,6 +24,7 @@ namespace VTX::App::Core::ECS
 		Registry() = default;
 
 		BaseEntity createEntity() { return BaseEntity( _enttRegistry.create() ); }
+		void	   destroyEntity( const BaseEntity p_entity ) { _enttRegistry.destroy( p_entity ); }
 
 		template<ECS_Component C>
 		inline BaseEntity getEntity( const C & p_component ) const
