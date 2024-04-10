@@ -824,7 +824,18 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataSES()
 	{
-		// TODO.
+		auto generateAtomList = [] {};
+
+		size_t totalVertices = 0;
+		size_t totalIndices	 = 0;
+
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		{
+			// Assert.
+
+			// Compute data if not cached.
+			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+		}
 	}
 
 	void Renderer::_refreshDataModels()

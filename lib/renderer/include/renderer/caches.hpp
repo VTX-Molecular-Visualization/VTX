@@ -63,25 +63,38 @@ namespace VTX::Renderer::Cache
 			totalSize += bufferIds.size() * sizeof( uint );
 			totalSize += bufferFlags.size() * sizeof( uchar );
 			totalSize += bufferIndices.size() * sizeof( uint );
-
-			for ( const auto & pair : residueToIndices )
-			{
-				totalSize += sizeof( uint )
-							 * 2; // Assuming each map entry takes sizeof(uint) for key and sizeof(uint) for value
-			}
-
-			for ( const auto & pair : residueToPositions )
-			{
-				totalSize += sizeof( uint )
-							 * 2; // Assuming each map entry takes sizeof(uint) for key and sizeof(uint) for value
-			}
+			totalSize += residueToIndices.size() * ( sizeof( uint ) * 2 );
+			totalSize += residueToPositions.size() * ( sizeof( uint ) * 2 );
 
 			for ( const auto & pair : data )
 			{
-				totalSize
-					+= pair.second.size() * sizeof( uint ); // Assuming the elements in the vector are of type uint
+				totalSize += ( pair.second.size() + 1 ) * sizeof( uint );
 			}
 
+			totalSize += representations.size() * sizeof( uchar );
+
+			return totalSize;
+		}
+	};
+
+	struct SES : public RangedCache
+	{
+		std::vector<Vec3f> positions;
+		std::vector<uchar> colors;
+		std::vector<uint>  ids;
+		std::vector<uchar> flags;
+		std::vector<uint>  indices;
+		std::vector<uchar> representations;
+
+		size_t currentSize() const
+		{
+			size_t totalSize = sizeof( SES );
+
+			totalSize += positions.size() * sizeof( Vec3f );
+			totalSize += colors.size() * sizeof( uchar );
+			totalSize += ids.size() * sizeof( uint );
+			totalSize += flags.size() * sizeof( uchar );
+			totalSize += indices.size() * sizeof( uint );
 			totalSize += representations.size() * sizeof( uchar );
 
 			return totalSize;

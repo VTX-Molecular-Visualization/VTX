@@ -17,15 +17,6 @@ namespace VTX::Renderer
 	static const Attachment imageR8 { E_FORMAT::R8 };
 
 	// Data.
-	static const Data dataTriangles { {
-		{ "Positions", E_TYPE::FLOAT, 3 },
-		{ "Normales", E_TYPE::FLOAT, 3 },
-		{ "Colors", E_TYPE::UBYTE, 1 },
-		{ "Ids", E_TYPE::UINT, 1 },
-		{ "Flags", E_TYPE::UBYTE, 1 },
-		{ "Models", E_TYPE::USHORT, 1 },
-	} };
-
 	// TODO: compress all.
 	static const Data dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
@@ -41,6 +32,16 @@ namespace VTX::Renderer
 		{ "Positions", E_TYPE::FLOAT, 4 },
 		{ "Directions", E_TYPE::FLOAT, 3 },
 		{ "Types", E_TYPE::UBYTE, 1 },
+		{ "Colors", E_TYPE::UBYTE, 1 },
+		{ "Ids", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UBYTE, 1 },
+		{ "Models", E_TYPE::USHORT, 1 },
+		{ "Representations", E_TYPE::UBYTE, 1 },
+	} };
+
+	static const Data dataTriangles { {
+		{ "Positions", E_TYPE::FLOAT, 3 },
+		{ "Normales", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
 		{ "Ids", E_TYPE::UINT, 1 },
 		{ "Flags", E_TYPE::UBYTE, 1 },
@@ -206,6 +207,22 @@ namespace VTX::Renderer
 									E_TYPE::FLOAT,
 									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
 								  { "Thickness",
+									E_TYPE::UINT,
+									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
+	};
+
+	// Glow.
+	static Pass descPassGlow {
+		"Glow",
+		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } }, { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs { { "Gow",
+					 std::vector<FilePath> { "default.vert", "glow.frag" },
+					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+								  { "Sensitivity",
+									E_TYPE::FLOAT,
+									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+								  { "Size",
 									E_TYPE::UINT,
 									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
 	};
