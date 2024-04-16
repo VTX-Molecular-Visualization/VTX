@@ -40,13 +40,13 @@ namespace VTX::Renderer::Cache
 	struct Ribbon : public RangedCache
 	{
 		bool							  isEmpty = false;
-		std::vector<Vec4f>				  bufferCaPositions;
-		std::vector<Vec3f>				  bufferCaODirections;
-		std::vector<uchar>				  bufferSSTypes;
-		std::vector<uchar>				  bufferColors;
-		std::vector<uint>				  bufferIds;
-		std::vector<uchar>				  bufferFlags;
-		std::vector<uint>				  bufferIndices;
+		std::vector<Vec4f>				  positions;
+		std::vector<Vec3f>				  directions;
+		std::vector<uchar>				  ssTypes;
+		std::vector<uchar>				  colors;
+		std::vector<uint>				  ids;
+		std::vector<uchar>				  flags;
+		std::vector<uint>				  indices;
 		std::map<uint, uint>			  residueToIndices;
 		std::map<uint, uint>			  residueToPositions;
 		std::map<uint, std::vector<uint>> data; // Chain to residues.
@@ -56,13 +56,13 @@ namespace VTX::Renderer::Cache
 		{
 			size_t totalSize = sizeof( Ribbon );
 
-			totalSize += bufferCaPositions.size() * sizeof( Vec4f );
-			totalSize += bufferCaODirections.size() * sizeof( Vec3f );
-			totalSize += bufferSSTypes.size() * sizeof( uchar );
-			totalSize += bufferColors.size() * sizeof( uchar );
-			totalSize += bufferIds.size() * sizeof( uint );
-			totalSize += bufferFlags.size() * sizeof( uchar );
-			totalSize += bufferIndices.size() * sizeof( uint );
+			totalSize += positions.size() * sizeof( Vec4f );
+			totalSize += directions.size() * sizeof( Vec3f );
+			totalSize += ssTypes.size() * sizeof( uchar );
+			totalSize += colors.size() * sizeof( uchar );
+			totalSize += ids.size() * sizeof( uint );
+			totalSize += flags.size() * sizeof( uchar );
+			totalSize += indices.size() * sizeof( uint );
 			totalSize += residueToIndices.size() * ( sizeof( uint ) * 2 );
 			totalSize += residueToPositions.size() * ( sizeof( uint ) * 2 );
 
@@ -79,6 +79,7 @@ namespace VTX::Renderer::Cache
 
 	struct SES : public RangedCache
 	{
+		bool			   isEmpty = false;
 		std::vector<Vec3f> positions;
 		std::vector<uchar> colors;
 		std::vector<uint>  ids;

@@ -307,6 +307,7 @@ namespace VTX::Renderer
 		// Cache.
 		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 		std::map<const Proxy::Molecule * const, Cache::Ribbon>		   _cacheRibbons;
+		std::map<const Proxy::Molecule * const, Cache::SES>			   _cacheSES;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataMolecules()

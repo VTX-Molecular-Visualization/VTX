@@ -67,7 +67,7 @@ namespace VTX::Renderer::Context
 
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 4.f );
+		glLineWidth( 1.f );
 
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );

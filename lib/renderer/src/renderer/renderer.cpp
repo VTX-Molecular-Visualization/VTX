@@ -1,5 +1,9 @@
 #include "renderer/renderer.hpp"
 #include "util/math.hpp"
+#include "util/math/aabb.hpp"
+#include "util/math/grid.hpp"
+#include "util/math/range.hpp"
+#include "util/math/range_list.hpp"
 
 namespace VTX::Renderer
 {
@@ -135,10 +139,10 @@ namespace VTX::Renderer
 
 			for ( size_t i = 0; i < cacheR.size; ++i )
 			{
-				cacheR.bufferFlags[ i ] &= ~mask;
-				cacheR.bufferFlags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+				cacheR.flags[ i ] &= ~mask;
+				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+			_context->setSubData( cacheR.flags, "RibbonsFlags", cacheR.offset );
 		};
 
 		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
@@ -476,10 +480,11 @@ namespace VTX::Renderer
 
 			// Compute data if not cached.
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-			if ( cache.bufferCaPositions.empty() == false || cache.isEmpty )
+			if ( cache.positions.empty() == false || cache.isEmpty )
 			{
-				totalCaPositions += cache.bufferCaPositions.size();
-				totalIndices += cache.bufferIndices.size();
+				// ??
+				totalCaPositions += cache.positions.size();
+				totalIndices += cache.indices.size();
 				continue;
 			}
 
@@ -492,15 +497,15 @@ namespace VTX::Renderer
 
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
-			std ::vector<Vec4f> & bufferCaPositions = cache.bufferCaPositions;
+			std ::vector<Vec4f> & bufferCaPositions = cache.positions;
 			// Ca -> O directions.
-			std::vector<Vec3f> & bufferCaODirections = cache.bufferCaODirections;
+			std::vector<Vec3f> & bufferCaODirections = cache.directions;
 			// Secondary structure types.
-			std::vector<uchar> &				bufferSSTypes	   = cache.bufferSSTypes;
-			std::vector<uchar> &				bufferColors	   = cache.bufferColors;
-			std::vector<uint> &					bufferIds		   = cache.bufferIds;
-			std::vector<uchar> &				bufferFlags		   = cache.bufferFlags;
-			std::vector<uint> &					bufferIndices	   = cache.bufferIndices;
+			std::vector<uchar> &				bufferSSTypes	   = cache.ssTypes;
+			std::vector<uchar> &				bufferColors	   = cache.colors;
+			std::vector<uint> &					bufferIds		   = cache.ids;
+			std::vector<uchar> &				bufferFlags		   = cache.flags;
+			std::vector<uint> &					bufferIndices	   = cache.indices;
 			std::map<uint, uint> &				residueToIndices   = cache.residueToIndices;
 			std::map<uint, uint> &				residueToPositions = cache.residueToPositions;
 			std::map<uint, std::vector<uint>> & data			   = cache.data;
@@ -779,43 +784,43 @@ namespace VTX::Renderer
 			modelId++;
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
 
-			assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
+			assert( cache.isEmpty || cache.positions.size() > 0 );
 
-			if ( cache.bufferCaPositions.empty() == true )
+			if ( cache.positions.empty() == true )
 			{
 				continue;
 			}
 
 			// Move indices.
 			// TODO: caches indices ?
-			std::vector<uint> indices = cache.bufferIndices;
-			for ( size_t i = 0; i < cache.bufferIndices.size(); ++i )
+			std::vector<uint> indices = cache.indices;
+			for ( size_t i = 0; i < cache.indices.size(); ++i )
 			{
 				indices[ i ] += uint( offsetCaPositions );
 			}
 
 			if ( cache.representations.empty() )
 			{
-				cache.representations = std::vector<uchar>( cache.bufferCaPositions.size(), 0 );
+				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
 			}
 
-			_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
-			_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
-			_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
-			_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
-			_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
-			_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
+			_context->setSubData( cache.positions, "RibbonsPositions", offsetCaPositions );
+			_context->setSubData( cache.directions, "RibbonsDirections", offsetCaPositions );
+			_context->setSubData( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
+			_context->setSubData( cache.colors, "RibbonsColors", offsetCaPositions );
+			_context->setSubData( cache.ids, "RibbonsIds", offsetCaPositions );
+			_context->setSubData( cache.flags, "RibbonsFlags", offsetCaPositions );
 			_context->setSubData(
-				std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
+				std::vector<ushort>( cache.positions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
 			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
 			_context->setSubData( indices, "RibbonsIdx", offsetIndices );
 
 			// Offsets.
 			cache.offset = offsetCaPositions;
-			cache.size	 = cache.bufferCaPositions.size();
-			offsetCaPositions += cache.bufferCaPositions.size();
-			offsetIndices += cache.bufferIndices.size();
+			cache.size	 = cache.positions.size();
+			offsetCaPositions += cache.positions.size();
+			offsetIndices += cache.indices.size();
 		}
 
 		drawRangeRibbons.offsets = { 0 };
@@ -824,18 +829,150 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataSES()
 	{
-		auto generateAtomList = [] {};
+		using namespace Util;
+
+		struct _InputData
+		{
+			std::vector<uint> atomList;
+			Util::Math::AABB  aabb;
+			float			  maxRadius = 0.f;
+		};
+
+		auto _generateInputData = []( const std::vector<size_t> & p_categoryChainIds,
+									  const std::vector<uint> *	  p_residueFirstAtomIndexes,
+									  const std::vector<uint> *	  p_residueAtomCounts,
+									  const std::vector<size_t> * p_chainFirstResidues,
+									  const std::vector<size_t> * p_chainResidueCounts,
+									  const std::vector<Vec3f> *  p_atomPositions,
+									  const std::vector<float> &  p_atomRadii )
+		{
+			_InputData data;
+
+			for ( size_t chainIdx : p_categoryChainIds )
+			{
+				size_t idxFirstResidue = ( *p_chainFirstResidues )[ chainIdx ];
+				size_t residueCount	   = ( *p_chainResidueCounts )[ chainIdx ];
+
+				for ( size_t residueIdx = idxFirstResidue; residueIdx < idxFirstResidue + residueCount; ++residueIdx )
+				{
+					size_t idxFirstAtom = ( *p_residueFirstAtomIndexes )[ residueIdx ];
+					size_t atomCount	= ( *p_residueAtomCounts )[ residueIdx ];
+
+					for ( size_t i = idxFirstAtom; i < idxFirstAtom + atomCount; ++i )
+					{
+						data.atomList.emplace_back( uint( i ) );
+						data.aabb.extend( ( *p_atomPositions )[ i ] );
+						data.maxRadius = std::max( data.maxRadius, p_atomRadii[ i ] );
+					}
+				}
+			}
+
+			return data;
+		};
+
+		Chrono chrono;
+		chrono.start();
 
 		size_t totalVertices = 0;
 		size_t totalIndices	 = 0;
 
+		const float PROBE_RADIUS = 1.4f;
+		const float VOXEL_SIZE	 = 0.4f;
+
 		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
-			// Assert.
+			// TODO: asserts.
 
-			// Compute data if not cached.
-			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
+			// TODO: Compute data only if not cached.
+			Cache::SES & cache = _cacheSES[ proxy ];
+
+			// Compute input data from category chain ids.
+			_InputData data = _generateInputData(
+				proxy->categoryPolymerChainIds,
+				proxy->residueFirstAtomIndexes,
+				proxy->residueAtomCounts,
+				proxy->chainFirstResidues,
+				proxy->chainResidueCounts,
+				proxy->atomPositions,
+				proxy->atomRadii
+			);
+
+			// Sort atoms in acceleration grid.
+			const float atomGridCellSize = PROBE_RADIUS + data.maxRadius;
+			const Vec3f gridMin			 = data.aabb.getMin() - atomGridCellSize;
+			const Vec3f gridMax			 = data.aabb.getMax() + atomGridCellSize;
+
+			const Vec3f gridSize	 = gridMax - gridMin;
+			Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
+
+			Math::Grid gridAtoms( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+
+			std::vector<std::vector<uint>> atomGridDataTmp( gridAtoms.getCellCount(), std::vector<uint>() );
+
+			const std::vector<Vec3f> & atomPositions = *proxy->atomPositions;
+
+			// Store atom indices in acceleration grid.
+			std::vector<Vec4f> atomPositionsVdW( atomPositions.size() );
+			for ( const uint idx : data.atomList )
+			{
+				/*
+				if ( _category->getMoleculePtr()->getAtom( idx ) == nullptr )
+				{
+					continue;
+				}
+				*/
+
+				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
+
+				if ( hash >= atomGridDataTmp.size() )
+				{
+					continue;
+				}
+
+				atomGridDataTmp[ hash ].emplace_back( idx );
+				atomPositionsVdW[ idx ] = Vec4f( atomPositions[ idx ], proxy->atomRadii[ idx ] );
+			}
+
+			// Linerize data in 1D arrays.
+			// TODO: Use Math::Range.
+			struct Range
+			{
+				uint first;
+				uint count;
+			};
+
+			std::vector<Range> atomGridDataSorted( gridAtoms.getCellCount(), Range { 0, 0 } );
+			std::vector<uint>  atomIndexSorted;
+
+			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
+			{
+				const std::vector<uint> & data = atomGridDataTmp[ i ];
+				if ( data.empty() == false )
+				{
+					atomGridDataSorted[ i ] = Range { uint( atomIndexSorted.size() ), uint( data.size() ) };
+					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
+				}
+			}
+
+			// Free tmp memory.
+			atomGridDataTmp.clear();
+			atomGridDataTmp.shrink_to_fit();
+
+			// Compute SES grid and compute SDF.
+			Vec3i	   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
+			Math::Grid gridSES( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
+
+			// Debug display.
+			auto voxels = gridAtoms.toVoxels();
+			_context->setData( voxels.first, "VoxelsMins" );
+			_context->setData( voxels.second, "VoxelsMaxs" );
+
+			drawRangeVoxels.offsets = { 0 };
+			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
 		}
+
+		chrono.stop();
+		VTX_DEBUG( "SES: {}s", chrono.elapsedTime() );
 	}
 
 	void Renderer::_refreshDataModels()
