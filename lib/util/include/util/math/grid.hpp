@@ -2,6 +2,7 @@
 #define __VTX_UTIL_MATH_GRID__
 
 #include "util/types.hpp"
+#include <vector>
 
 namespace VTX::Util::Math
 {
