@@ -66,8 +66,8 @@ namespace VTX::Renderer
 		bool addLink(
 			Pass * const			 p_passSrc,
 			Pass * const			 p_passDest,
-			const E_CHANNEL_OUTPUT & p_channelSrc  = E_CHANNEL_OUTPUT::COLOR_0,
-			const E_CHANNEL_INPUT &	 p_channelDest = E_CHANNEL_INPUT::_0
+			const E_CHAN_OUT & p_channelSrc  = E_CHAN_OUT::COLOR_0,
+			const E_CHAN_IN &	 p_channelDest = E_CHAN_IN::_0
 		)
 		{
 			// Check I/O existence.

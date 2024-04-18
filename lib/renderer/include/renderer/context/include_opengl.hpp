@@ -183,6 +183,7 @@ constexpr GLuint GL_MAX_SHADER_STORAGE_BLOCK_SIZE	   = 0x90DE;
 constexpr GLuint GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = 0x90DD;
 constexpr GLuint GL_MAX_TEXTURE_SIZE				   = 0x0D33;
 constexpr GLuint GL_MAX_UNIFORM_BLOCK_SIZE			   = 0x8A30;
+constexpr GLuint GL_MAX_UNIFORM_BUFFER_BINDINGS		   = 0x8A2F;
 constexpr GLuint GL_NUM_EXTENSIONS					   = 0x821D;
 constexpr GLuint GL_RENDERER						   = 0x1F01;
 constexpr GLuint GL_SHADING_LANGUAGE_VERSION		   = 0x8B8C;

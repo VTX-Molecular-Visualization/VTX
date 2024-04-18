@@ -3,7 +3,6 @@
 #include "util/math/aabb.hpp"
 #include "util/math/grid.hpp"
 #include "util/math/range.hpp"
-#include "util/math/range_list.hpp"
 
 namespace VTX::Renderer
 {
@@ -450,11 +449,12 @@ namespace VTX::Renderer
 			modelId++;
 		}
 
-		// Counters.
-		drawRangeSpheres.offsets   = { 0 };
-		drawRangeSpheres.counts	   = { uint( totalAtoms ) };
-		drawRangeCylinders.offsets = { 0 };
-		drawRangeCylinders.counts  = { uint( totalBonds ) };
+		// Ranges.
+		drawRangeSpheresRL	 = { 0, uint( totalAtoms ) };
+		drawRangeCylindersRL = { 0, uint( totalBonds ) };
+
+		drawRangeSpheresRL.toVectors<uint, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+		drawRangeCylindersRL.toVectors<uint, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -830,6 +830,7 @@ namespace VTX::Renderer
 	void Renderer::_refreshDataSES()
 	{
 		using namespace Util;
+		using namespace Math;
 
 		struct _InputData
 		{
@@ -934,22 +935,15 @@ namespace VTX::Renderer
 			}
 
 			// Linerize data in 1D arrays.
-			// TODO: Use Math::Range.
-			struct Range
-			{
-				uint first;
-				uint count;
-			};
-
-			std::vector<Range> atomGridDataSorted( gridAtoms.getCellCount(), Range { 0, 0 } );
-			std::vector<uint>  atomIndexSorted;
+			std::vector<Range<uint>> atomGridDataSorted( gridAtoms.getCellCount(), Range<uint> { 0, 0 } );
+			std::vector<uint>		 atomIndexSorted;
 
 			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
 			{
 				const std::vector<uint> & data = atomGridDataTmp[ i ];
 				if ( data.empty() == false )
 				{
-					atomGridDataSorted[ i ] = Range { uint( atomIndexSorted.size() ), uint( data.size() ) };
+					atomGridDataSorted[ i ] = Range<uint> { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
 				}
 			}
@@ -969,6 +963,10 @@ namespace VTX::Renderer
 
 			drawRangeVoxels.offsets = { 0 };
 			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
+
+			/////////////////////
+			// Worker: create SDF.
+			// Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
 		}
 
 		chrono.stop();

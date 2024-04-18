@@ -587,8 +587,8 @@ namespace VTX::Bench
 				uint										 id = 0;
 				std::map<const Input * const, uint>			 mapIdInput;
 				std::map<const Output * const, uint>		 mapIdOutput;
-				std::map<const uint, const E_CHANNEL_OUTPUT> mapIdChannelOutput;
-				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
+				std::map<const uint, const E_CHAN_OUT> mapIdChannelOutput;
+				std::map<const uint, const E_CHAN_IN>	 mapIdChannelInput;
 				std::map<const uint, Pass *>				 mapIdDescPass;
 				std::map<const uint, Link *>				 mapIdDescLink;
 				const Pass *								 passToDelete = nullptr;

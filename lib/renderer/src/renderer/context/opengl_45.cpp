@@ -249,8 +249,8 @@ namespace VTX::Renderer::Context
 			}
 
 			// Bind inputs.
-			uint								 channelMax = 0;
-			std::map<E_CHANNEL_INPUT, const Key> mapBoundAttachments;
+			uint						   channelMax = 0;
+			std::map<E_CHAN_IN, const Key> mapBoundAttachments;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
 				const IO & descIO = input.desc;
@@ -341,9 +341,9 @@ namespace VTX::Renderer::Context
 
 					assert( draw.ranges != nullptr );
 
-					GLenum					  primitive		= _mapPrimitives[ draw.primitive ];
-					const Draw::Range * const ranges		= draw.ranges;
-					const NeedRenderFunc &	  needRenderFun = draw.needRenderFunc;
+					GLenum				   primitive	 = _mapPrimitives[ draw.primitive ];
+					Draw::Range * const	   ranges		 = draw.ranges;
+					const NeedRenderFunc & needRenderFun = draw.needRenderFunc;
 
 					// Element.
 					if ( draw.useIndices )
@@ -386,7 +386,7 @@ namespace VTX::Renderer::Context
 									program->use();
 									vao->multiDrawArray(
 										primitive,
-										(GLint *)( ranges->offsets.data() ),
+										(GLint *)( ( ranges->offsets.data() ) ),
 										(GLsizei *)( ranges->counts.data() ),
 										GLsizei( ranges->counts.size() )
 									);
@@ -566,11 +566,11 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::getTextureData(
-		std::any &			   p_textureData,
-		const size_t		   p_x,
-		const size_t		   p_y,
-		const Key &			   p_key,
-		const E_CHANNEL_OUTPUT p_channel
+		std::any &		 p_textureData,
+		const size_t	 p_x,
+		const size_t	 p_y,
+		const Key &		 p_key,
+		const E_CHAN_OUT p_channel
 	)
 	{
 		assert( _framebuffers.contains( p_key ) );
@@ -695,7 +695,7 @@ namespace VTX::Renderer::Context
 
 				auto & fbo = _framebuffers[ keyFbo ];
 				fbo->attachTexture( *_textures[ keyTexture ], _mapAttachments[ channel ] );
-				if ( channel == E_CHANNEL_OUTPUT::DEPTH ) {}
+				if ( channel == E_CHAN_OUT::DEPTH ) {}
 				else
 				{
 					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
@@ -709,9 +709,9 @@ namespace VTX::Renderer::Context
 	}
 
 	std::optional<std::pair<const Output * const, const OpenGL45::Key>> OpenGL45::_getInputTextureKey(
-		const Links &		  p_links,
-		const Pass * const	  p_pass,
-		const E_CHANNEL_INPUT p_channel
+		const Links &	   p_links,
+		const Pass * const p_pass,
+		const E_CHAN_IN	   p_channel
 	)
 	{
 		const auto it = std::find_if(
@@ -751,7 +751,7 @@ namespace VTX::Renderer::Context
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
+				if ( channel == E_CHAN_OUT::DEPTH )
 				{
 					return true;
 				}
@@ -935,6 +935,10 @@ namespace VTX::Renderer::Context
 		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
 		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
+		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
+		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, &_openglInfos.glMaxUniformBufferBindings );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
 		glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_openglInfos.glMaxTextureSize );
 		glGetIntegerv( GL_MAX_PATCH_VERTICES, &_openglInfos.glMaxPatchVertices );
 		glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &_openglInfos.glMaxTessGenLevel );
@@ -945,9 +949,6 @@ namespace VTX::Renderer::Context
 		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &_openglInfos.glMaxComputeWorkGroupSize[ 1 ] );
 		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &_openglInfos.glMaxComputeWorkGroupSize[ 2 ] );
 		glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
-		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
-		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
-		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
 
 		// Extensions.
 		GLint numExtensions = 0;
@@ -1077,11 +1078,11 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	std::map<const E_CHANNEL_OUTPUT, const GLenum> OpenGL45::_mapAttachments = {
-		{ E_CHANNEL_OUTPUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
-		{ E_CHANNEL_OUTPUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
-		{ E_CHANNEL_OUTPUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
-		{ E_CHANNEL_OUTPUT::DEPTH, GL_DEPTH_ATTACHMENT },
+	std::map<const E_CHAN_OUT, const GLenum> OpenGL45::_mapAttachments = {
+		{ E_CHAN_OUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
+		{ E_CHAN_OUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
+		{ E_CHAN_OUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
+		{ E_CHAN_OUT::DEPTH, GL_DEPTH_ATTACHMENT },
 	};
 
 	std::map<const E_PRIMITIVE, const GLenum> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },

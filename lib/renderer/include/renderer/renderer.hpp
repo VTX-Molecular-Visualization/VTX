@@ -16,6 +16,7 @@
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/math/range_list.hpp>
 
 namespace VTX::Renderer
 {
@@ -65,23 +66,23 @@ namespace VTX::Renderer
 			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
-			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( geo, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( ssao, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( blurX, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( blurY, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( shading, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( geo, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( outline, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( depth, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( selection, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
@@ -210,7 +211,7 @@ namespace VTX::Renderer
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
-			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHAN_OUT::COLOR_2 );
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
@@ -266,10 +267,16 @@ namespace VTX::Renderer
 		static const size_t BUFFER_COUNT = 2;
 
 		// Draw ranges.
+		// TODO: test render time with/without ranges/multidraw.
+		using RangeList = Util::Math::RangeList<uint>;
+		RangeList	drawRangeSpheresRL;
+		RangeList	drawRangeCylindersRL;
 		Draw::Range drawRangeSpheres;
 		Draw::Range drawRangeCylinders;
 		Draw::Range drawRangeRibbons;
 		Draw::Range drawRangeVoxels;
+
+		// TODO: currentSize proxies and ranges?
 
 	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;

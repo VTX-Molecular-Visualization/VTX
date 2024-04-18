@@ -102,8 +102,9 @@ namespace VTX::Renderer
 
 		struct Range
 		{
-			std::vector<void *> offsets;
-			std::vector<uint>	counts;
+			// std::vector<void *> offsets;
+			std::vector<uint> offsets;
+			std::vector<uint> counts;
 		};
 		Range * ranges = nullptr;
 
@@ -134,8 +135,8 @@ namespace VTX::Renderer
 		std::string			suffix;
 	};
 
-	using Inputs   = std::unordered_map<E_CHANNEL_INPUT, Input>;
-	using Outputs  = std::unordered_map<E_CHANNEL_OUTPUT, Output>;
+	using Inputs   = std::unordered_map<E_CHAN_IN, Input>;
+	using Outputs  = std::unordered_map<E_CHAN_OUT, Output>;
 	using Programs = std::vector<Program>;
 
 	struct Pass
@@ -149,10 +150,10 @@ namespace VTX::Renderer
 
 	struct Link
 	{
-		Pass *			 src;
-		Pass *			 dest;
-		E_CHANNEL_OUTPUT channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0;
-		E_CHANNEL_INPUT	 channelDest = E_CHANNEL_INPUT::_0;
+		Pass *	   src;
+		Pass *	   dest;
+		E_CHAN_OUT channelSrc  = E_CHAN_OUT::COLOR_0;
+		E_CHAN_IN  channelDest = E_CHAN_IN::_0;
 	};
 
 	using Passes = std::vector<std::unique_ptr<Pass>>;

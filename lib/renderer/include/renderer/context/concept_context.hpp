@@ -42,7 +42,7 @@ namespace VTX::Renderer::Context
 			  StructInfos &					p_infos,
 			  std::vector<uchar> &			p_image,
 			  const std::string &			p_pass,
-			  const E_CHANNEL_OUTPUT		p_channel,
+			  const E_CHAN_OUT		p_channel,
 			  std::any &					p_textureData
 
 		  ) {
