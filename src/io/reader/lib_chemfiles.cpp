@@ -241,11 +241,11 @@ namespace VTX::IO::Reader
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )
 		{
-			if ( frame[ 0 ].properties().size() > 0 )
+			if ( frame[ 0 ].properties() )
 			{
-				std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
-				for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties().begin();
-					  it != frame[ 0 ].properties().end();
+				std::string propAtom = std::to_string( frame[ 0 ].properties()->size() ) + " properties in atoms:";
+				for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties()->begin();
+					  it != frame[ 0 ].properties()->end();
 					  ++it )
 				{
 					propAtom += " " + it->first;
@@ -496,10 +496,13 @@ namespace VTX::IO::Reader
 				if ( _isThreadInterrupted() )
 					return;
 
-				const uint				atomId = uint( *it );
-				const chemfiles::Atom & atom   = topology[ atomId ];
-				uint					atomType;
-				atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
+				const uint				atomId	 = uint( *it );
+				const chemfiles::Atom & atom	 = topology[ atomId ];
+				uint					atomType = -1;
+				if ( atom.properties() )
+				{
+					atomType = uint( atom.properties()->get( "atom_type" ).value_or( -1 ).as_double() );
+				}
 
 				// Create atom.
 				Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
