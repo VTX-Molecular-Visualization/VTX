@@ -257,7 +257,21 @@ def isProdOk():
         (prodJob.preparationFailed == False and prodJob.runFailed == False)
         and (getMdRootDir() / "prod.gro").is_file()
     )
-    
+  
+def waitForInputAndReturnOutput(proc):
+    proc.stdout.seek(0, io.SEEK_END)
+    s = str(proc.stdout.peek().decode("utf-8"));
+    i = 0
+    while not s.endswith("Select a group: "):
+        if (i > 100000): 
+            raise Exception("Waited to much for trjconv")
+        time.sleep(0.1)
+        i+=1
+        proc.stdout.seek(0, io.SEEK_END)
+        s += str(proc.stdout.peek().decode("utf-8"));
+        
+    return s
+
 # Run trjconv on the prod run results
 def runTrjConv():
     print("Writing usable results ... ", flush=True, end="")
@@ -266,8 +280,68 @@ def runTrjConv():
     def jobFailedSignal():
         resultJob.runFailed = True
     
-    #runJob(cmdStr, "results", jobFailedSignal)
+    stdoutFilePath = Path("trjconv.txt")
+    logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
+    fileStem = "trjconv"
+    def printFailure(msg = None):
+        print("failed with error : <%s>" % ("Too big to be printed" if len(msg)> 100 else msg ))
+        print(logErrMsg % ("%s.log" % fileStem, "%s.txt" % fileStem))   
     
+    try:
+        proc = subprocess.Popen(cmdStr, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        
+        while not proc.stdout.readable():
+            continue
+        
+        protein_query = waitForInputAndReturnOutput(proc)
+        groupListPattern = "\r?\n(Group(.|\r|\n)+?)Select a group:"
+        centeringGroupList = re.search(groupListPattern, protein_query)
+        if (centeringGroupList is None):
+            raise Exception("Gromacs was not understood : Centering Group didn't match")
+            
+        centeringGroupList = centeringGroupList.group(0)
+        
+        proteinPattern = "Group +?(\\d+) *?\\( *Protein *\\)"
+        proteinOptionMatch = re.search(proteinPattern, centeringGroupList)
+        
+        if (proteinOptionMatch is None):
+            raise Exception("Gromacs was not understood : Protein option not found.")
+        
+        proteinOption = proteinOptionMatch.group(1)
+        proteinOption += '\n'
+        
+        proc.stdin.write(proteinOption.encode())
+        proc.stdin.flush()
+        time.sleep(1)
+        
+        write_query = waitForInputAndReturnOutput(proc)
+        
+        system_pattern = "Group +?(\\d+) *?\\( *System *\\)"
+        systemOptionMatch = re.search(system_pattern, write_query)
+        
+        if (systemOptionMatch is None):
+            raise Exception("Gromacs was not understood : System option not found.")
+        
+        systemOption = systemOptionMatch.group(1)
+        systemOption += '\n'
+        
+        proc.stdin.write(systemOption.encode())
+        proc.stdin.flush()
+        proc.wait(10000)
+        
+        if proc.returncode != 0:
+            printFailure(proc.stdout.read().decode("utf-8"))
+            jobFailedSignal()
+        else:
+            print("done")
+    except Exception as e:
+        print()
+        jobFailedSignal()
+        if ("stdout" in dir(e)):
+            printFailure(e.stdout if e.stdout != None else "")
+        else:
+            printFailure(repr(e))
+       
 def isTrjconvOk():
     return resultJob.runFailed == False
 
