@@ -110,26 +110,28 @@ namespace VTX::Renderer::Context
 		);
 
 		void getTextureData(
-			std::any &			   p_textureData,
-			const size_t		   p_x,
-			const size_t		   p_y,
-			const std::string &	   p_pass,
-			const E_CHAN_OUT p_channel
+			std::any &			p_textureData,
+			const size_t		p_x,
+			const size_t		p_y,
+			const std::string & p_pass,
+			const E_CHAN_OUT	p_channel
 
 		);
 
+		void compute( const ComputePass & p_pass ) const;
+
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
-		static std::map<const E_CHAN_OUT, const GLenum> _mapAttachments;
-		static std::map<const E_PRIMITIVE, const GLenum>	  _mapPrimitives;
-		static std::map<const E_FORMAT, const GLenum>		  _mapFormats;
-		static std::map<const GLenum, const size_t>			  _mapFormatSizes;
-		static std::map<const E_WRAPPING, const GLint>		  _mapWrappings;
-		static std::map<const E_FILTERING, const GLint>		  _mapFilterings;
-		static std::map<const E_TYPE, const GLenum>			  _mapTypes;
-		static std::map<const E_TYPE, const size_t>			  _mapTypeSizes;
-		static std::map<const E_FORMAT, const E_TYPE>		  _mapFormatTypes;
-		static std::map<const E_FORMAT, const GLenum>		  _mapFormatInternalTypes;
+		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
+		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
+		static std::map<const E_FORMAT, const GLenum>	 _mapFormats;
+		static std::map<const GLenum, const size_t>		 _mapFormatSizes;
+		static std::map<const E_WRAPPING, const GLint>	 _mapWrappings;
+		static std::map<const E_FILTERING, const GLint>	 _mapFilterings;
+		static std::map<const E_TYPE, const GLenum>		 _mapTypes;
+		static std::map<const E_TYPE, const size_t>		 _mapTypeSizes;
+		static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
+		static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
 
 		const Key _KEY_QUAD = "main_quad";
 
@@ -217,9 +219,9 @@ namespace VTX::Renderer::Context
 		);
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
-			const Links &		  p_links,
-			const Pass * const	  p_pass,
-			const E_CHAN_IN p_channel
+			const Links &	   p_links,
+			const Pass * const p_pass,
+			const E_CHAN_IN	   p_channel
 		);
 
 		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;

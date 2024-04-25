@@ -361,19 +361,19 @@ namespace VTX::Bench
 				{
 					if ( p_memory < 1000 )
 					{
-						return fmt::format( "{}b", p_memory );
+						return fmt::format( "{}B", p_memory );
 					}
 					else if ( p_memory < 1000 * 1000 )
 					{
-						return fmt::format( "{}kb", p_memory / 1000 );
+						return fmt::format( "{}kB", p_memory / 1000 );
 					}
 					else if ( p_memory < 1000 * 1000 * 1000 )
 					{
-						return fmt::format( "{}Mb", p_memory / ( 1000 * 1000 ) );
+						return fmt::format( "{}MB", p_memory / ( 1000 * 1000 ) );
 					}
 					else
 					{
-						return fmt::format( "{}Gb", p_memory / ( 1000 * 1000 * 1000 ) );
+						return fmt::format( "{}GB", p_memory / ( 1000 * 1000 * 1000 ) );
 					}
 				};
 
@@ -584,14 +584,14 @@ namespace VTX::Bench
 				bool isBuilt = p_renderer->hasContext();
 
 				// DescPass nodes.
-				uint										 id = 0;
-				std::map<const Input * const, uint>			 mapIdInput;
-				std::map<const Output * const, uint>		 mapIdOutput;
+				uint								   id = 0;
+				std::map<const Input * const, uint>	   mapIdInput;
+				std::map<const Output * const, uint>   mapIdOutput;
 				std::map<const uint, const E_CHAN_OUT> mapIdChannelOutput;
-				std::map<const uint, const E_CHAN_IN>	 mapIdChannelInput;
-				std::map<const uint, Pass *>				 mapIdDescPass;
-				std::map<const uint, Link *>				 mapIdDescLink;
-				const Pass *								 passToDelete = nullptr;
+				std::map<const uint, const E_CHAN_IN>  mapIdChannelInput;
+				std::map<const uint, Pass *>		   mapIdDescPass;
+				std::map<const uint, Link *>		   mapIdDescLink;
+				const Pass *						   passToDelete = nullptr;
 
 				for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
 				{

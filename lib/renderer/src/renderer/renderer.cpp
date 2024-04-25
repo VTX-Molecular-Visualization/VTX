@@ -967,6 +967,21 @@ namespace VTX::Renderer
 			/////////////////////
 			// Worker: create SDF.
 			// Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
+			struct SESGridData
+			{
+				float sdf;
+				int	  nearestAtom;
+			};
+
+			std::vector<SESGridData> bufferSesGridData( gridSES.getCellCount() );
+
+			auto computePass
+				= ComputePass { Program { "ses/create_sdf.comp" },
+								{ { atomGridDataSorted.size() * sizeof( Range<uint> ), atomGridDataSorted.data() } },
+								{ { bufferSesGridData.size() * sizeof( SESGridData ), bufferSesGridData.data() } },
+								uint( 12 ) };
+
+			_context->compute( computePass );
 		}
 
 		chrono.stop();

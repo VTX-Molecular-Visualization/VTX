@@ -148,6 +148,26 @@ namespace VTX::Renderer
 		std::vector<E_SETTING> settings;
 	};
 
+	constexpr int LOCAL_SIZE_X = 256;
+	constexpr int LOCAL_SIZE_Y = 1;
+	constexpr int LOCAL_SIZE_Z = 1;
+
+	struct ComputePass
+	{
+		Program program;
+
+		struct IO
+		{
+			size_t size;
+			void * data;
+		};
+
+		std::vector<IO> inputs;
+		std::vector<IO> outputs;
+
+		std::variant<Vec3i, size_t> size;
+	};
+
 	struct Link
 	{
 		Pass *	   src;

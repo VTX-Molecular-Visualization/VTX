@@ -175,7 +175,6 @@ namespace VTX::Renderer::Context
 			}
 
 			// Create programs.
-			std::vector<uint> offsets;
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
 				const GL::Program * const program = _programManager->createProgram(
@@ -596,6 +595,52 @@ namespace VTX::Renderer::Context
 			&p_textureData
 		);
 		fbo->unbind();
+	}
+
+	void OpenGL45::compute( const ComputePass & p_pass ) const
+	{
+		// TODO: Create program and uniforms (refacto build).
+		//
+		// Create and bind buffers.
+		uint binding = 0;
+		for ( auto & output : p_pass.outputs )
+		{
+			GL::Buffer buffer( GLsizei( output.size ), output.data );
+			buffer.bind( GL_SHADER_STORAGE_BUFFER, binding );
+		}
+		for ( auto & input : p_pass.inputs )
+		{
+			GL::Buffer buffer( GLsizei( input.size ), input.data );
+			buffer.bind( GL_SHADER_STORAGE_BUFFER, binding );
+		}
+
+		// TODO: use program.
+
+		// Compute size and dispath.
+		uint x, y, z;
+		if ( std::holds_alternative<Vec3i>( p_pass.size ) )
+		{
+			Vec3i v = std::get<Vec3i>( p_pass.size );
+			x		= v.x;
+			y		= v.y;
+			z		= v.z;
+		}
+		else if ( std::holds_alternative<size_t>( p_pass.size ) )
+		{
+			// TODO: disatch on other dimensions.
+			size_t	  size			  = std::get<size_t>( p_pass.size );
+			const int workGroupNeeded = int( ( float( size ) / LOCAL_SIZE_X ) + 1.f );
+			assert( workGroupNeeded <= _openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+			x = std::min( workGroupNeeded, _openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+			y = 1;
+			z = 1;
+		}
+
+		assert( x && y && z );
+
+		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+		glDispatchCompute( x, y, z );
+		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 	}
 
 	void OpenGL45::_createInputs(
