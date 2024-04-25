@@ -6,7 +6,7 @@
 
 namespace VTX::Util::SolventExcludedSurface
 {
-	bool checkSESMemory( const Model::Category & p_category )
+	std::pair<bool, size_t> checkSESMemory( const Model::Category & p_category )
 	{
 		memory_size_type memory = 0;
 
@@ -41,7 +41,7 @@ namespace VTX::Util::SolventExcludedSurface
 
 		VTX_DEBUG( "Estimated needed vram: {}mo", memory / 1000000.f );
 
-		return memory > SMALL_SES_MEMORY_THRESHOLD;
+		return { memory > SMALL_SES_MEMORY_THRESHOLD, memory };
 	}
 
 } // namespace VTX::Util::SolventExcludedSurface

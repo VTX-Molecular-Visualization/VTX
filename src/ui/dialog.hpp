@@ -53,7 +53,7 @@ namespace VTX
 			static void importRepresentationPresetDialog();
 			static void importRenderEffectPresetDialog();
 
-			static bool bigSESComputationWarning();
+			static bool bigSESComputationWarning( const size_t p_estimatedSize );
 
 			static void openGLInitializationFail();
 			static void unhandledException();

@@ -51,21 +51,21 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		bool	   reallyApplyPreset = true;
 		const bool isTryingToApplySES
 			= Model::Representation::RepresentationLibrary::get().getRepresentation( _id )->getRepresentationType()
 			  == Generic::REPRESENTATION::SES;
 
-		bool isBigSES = false;
 		if ( isTryingToApplySES )
 		{
-			CATEGORY_ENUM categoryEnum;
+			std::unordered_set<Model::Category *> categories;
+			CATEGORY_ENUM						  categoryEnum;
+
 			for ( const Model::Selection::PairMoleculeIds & moleculeData : selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 				if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
-					for ( const Model::Category * const category : molecule.getCategories() )
+					for ( Model::Category * category : molecule.getCategories() )
 					{
 						categoryEnum = category->getCategoryEnum();
 
@@ -74,13 +74,9 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 						if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 						{
-							if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
-								continue;
-
-							if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+							if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 							{
-								isBigSES = true;
-								break;
+								categories.emplace( category );
 							}
 						}
 					}
@@ -96,11 +92,9 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 							categoryEnum			   = category->getCategoryEnum();
 							if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 							{
-								if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
-									 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
+								if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 								{
-									isBigSES = true;
-									break;
+									categories.emplace( category );
 								}
 							}
 						}
@@ -113,19 +107,12 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 									= residue->getMoleculePtr()->getCategoryFromChain( *residue->getChainPtr() );
 								categoryEnum = category->getCategoryEnum();
 
-								if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
-								{
-									// All in the same category.
-									break;
-								}
-
 								if ( categoryEnum == CATEGORY_ENUM::POLYMER
 									 || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 								{
-									if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+									if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 									{
-										isBigSES = true;
-										break;
+										categories.emplace( category );
 									}
 								}
 							}
@@ -133,17 +120,18 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 					}
 				}
 			}
+
+			for ( Model::Category * category : categories )
+			{
+				auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+				if ( isBig && Dialog::bigSESComputationWarning( memory ) == false )
+				{
+					return;
+				}
+			}
 		}
 
-		if ( isTryingToApplySES && isBigSES )
-		{
-			reallyApplyPreset = Dialog::bigSESComputationWarning();
-		}
-
-		if ( reallyApplyPreset )
-		{
-			VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( selection, _id ) );
-		}
+		VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( selection, _id ) );
 	}
 
 	void RepresentationPresetButton::_applyRepresentationOnScene()
@@ -160,7 +148,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 			= Model::Representation::RepresentationLibrary::get().getRepresentation( _id )->getRepresentationType()
 			  == Generic::REPRESENTATION::SES;
 
-		bool isBigSES = false;
+		bool   isBigSES			= false;
+		size_t estimatedSESSize = 0;
 
 		if ( isTryingToApplySES )
 		{
@@ -171,10 +160,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 					const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 					{
-						if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
-							 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
+						auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+						if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false && isBig )
 						{
-							isBigSES = true;
+							isBigSES		 = true;
+							estimatedSESSize = memory;
 							break;
 						}
 					}
@@ -187,7 +177,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		if ( isTryingToApplySES && isBigSES )
 		{
-			reallyApplyPreset = Dialog::bigSESComputationWarning();
+			reallyApplyPreset = Dialog::bigSESComputationWarning( estimatedSESSize );
 		}
 
 		if ( reallyApplyPreset )

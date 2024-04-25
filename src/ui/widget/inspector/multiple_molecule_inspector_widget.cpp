@@ -337,18 +337,18 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		bool	   reallyApplyPreset  = true;
 		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
 											.getRepresentation( p_presetIndex )
 											->getRepresentationType()
 										== Generic::REPRESENTATION::SES;
 
-		bool isBigSES = false;
 		if ( isTryingToApplySES )
 		{
+			std::unordered_set<Model::Category *> categories;
+
 			for ( Model::Molecule * molecule : getTargets() )
 			{
-				for ( const Model::Category * const category : molecule->getCategories() )
+				for ( Model::Category * category : molecule->getCategories() )
 				{
 					if ( category->getChains().empty() )
 						continue;
@@ -356,33 +356,27 @@ namespace VTX::UI::Widget::Inspector
 					const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 					{
-						if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) )
-							continue;
-
-						if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+						if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 						{
-							isBigSES = true;
-							break;
+							categories.emplace( category );
 						}
 					}
 				}
 			}
+			for ( Model::Category * category : categories )
+			{
+				auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+				if ( isBig && Dialog::bigSESComputationWarning( memory ) == false )
+				{
+					refresh( SectionFlag::REPRESENTATION );
+					return;
+				}
+			}
 		}
 
-		if ( isTryingToApplySES && isBigSES )
-		{
-			reallyApplyPreset = Dialog::bigSESComputationWarning();
-		}
-
-		if ( reallyApplyPreset )
-		{
-			VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
-		}
-		else
-		{
-			refresh( SectionFlag::REPRESENTATION );
-		}
+		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
+
 	void MultipleMoleculeWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
 		const Model::Representation::MEMBER_FLAG &				  p_flag ) const

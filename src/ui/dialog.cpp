@@ -313,10 +313,31 @@ namespace VTX::UI
 		}
 	}
 
-	bool Dialog::bigSESComputationWarning()
+	bool Dialog::bigSESComputationWarning( const size_t p_estimatedSize )
 	{
+		auto displayMemory = []( const size_t p_memory ) -> std::string
+		{
+			if ( p_memory < 1000 )
+			{
+				return fmt::format( "{}B", p_memory );
+			}
+			else if ( p_memory < 1000 * 1000 )
+			{
+				return fmt::format( "{}KB", p_memory / 1000 );
+			}
+			else if ( p_memory < 1000 * 1000 * 1000 )
+			{
+				return fmt::format( "{}MB", p_memory / ( 1000 * 1000 ) );
+			}
+			else
+			{
+				return fmt::format( "{}GB", p_memory / ( 1000 * 1000 * 1000 ) );
+			}
+		};
+
 		const std::string msg
-			= "You are going to compute a big SES which may overload your GPU's memory.\n Do you want to continue ?";
+			= "You are going to compute a big SES which may overload your GPU's memory.\nRequired memory estimation: "
+			  + displayMemory( p_estimatedSize ) + ".\nDo you want to continue? ";
 
 		const int res
 			= QMessageBox::warning( &VTXApp::get().getMainWindow(),
@@ -330,7 +351,7 @@ namespace VTX::UI
 
 	void Dialog::openGLInitializationFail()
 	{
-		std::string msg
+		const std::string msg
 			= "Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility.";
 		VTX_ERROR( msg );
 

@@ -129,33 +129,34 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuMolecule::_applyRepresentationAction( const int p_representationIndex )
 	{
-		bool	   reallyApplyPreset  = true;
 		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
 											.getRepresentation( p_representationIndex )
 											->getRepresentationType()
 										== Generic::REPRESENTATION::SES;
 
-		bool isBigSES = false;
 		if ( isTryingToApplySES )
 		{
-			for ( const Model::Category * const category : _target->getCategories() )
+			std::unordered_set<Model::Category *> categories;
+			for ( Model::Category * category : _target->getCategories() )
 			{
 				const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 				{
-					if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
-						 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
+					if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 					{
-						isBigSES = true;
-						break;
+						categories.emplace( category );
 					}
 				}
 			}
-		}
 
-		if ( isTryingToApplySES && isBigSES )
-		{
-			reallyApplyPreset = Dialog::bigSESComputationWarning();
+			for ( Model::Category * category : categories )
+			{
+				auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+				if ( isBig && Dialog::bigSESComputationWarning( memory ) == false )
+				{
+					return;
+				}
+			}
 		}
 
 		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( *_target, p_representationIndex ) );

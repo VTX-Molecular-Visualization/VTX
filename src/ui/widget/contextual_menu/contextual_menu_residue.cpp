@@ -69,7 +69,6 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuResidue::_applyRepresentationAction( const int p_representationIndex )
 	{
-		bool	   reallyApplyPreset  = true;
 		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
 											.getRepresentation( p_representationIndex )
 											->getRepresentationType()
@@ -81,18 +80,18 @@ namespace VTX::UI::Widget::ContextualMenu
 			const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 			if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 			{
-				if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false
-					 && Util::SolventExcludedSurface::checkSESMemory( *category ) )
+				if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
 				{
-					reallyApplyPreset = Dialog::bigSESComputationWarning();
+					auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+					if ( isBig && Dialog::bigSESComputationWarning( memory ) == false )
+					{
+						return;
+					}
 				}
 			}
 		}
 
-		if ( reallyApplyPreset )
-		{
-			VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *_target, p_representationIndex ) );
-		}
+		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -264,7 +264,6 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		bool	   reallyApplyPreset  = true;
 		const bool isTryingToApplySES = Model::Representation::RepresentationLibrary::get()
 											.getRepresentation( p_presetIndex )
 											->getRepresentationType()
@@ -281,29 +280,26 @@ namespace VTX::UI::Widget::Inspector
 				if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 				{
 					if ( category->getMolecule()->hasSolventExcludedSurface( categoryEnum ) == false )
+					{
 						categories.emplace( category );
+					}
 				}
 			}
 
 			for ( Model::Category * category : categories )
 			{
-				if ( Util::SolventExcludedSurface::checkSESMemory( *category ) )
+				auto [ isBig, memory ] = Util::SolventExcludedSurface::checkSESMemory( *category );
+				if ( isBig && Dialog::bigSESComputationWarning( memory ) == false )
 				{
-					reallyApplyPreset = Dialog::bigSESComputationWarning();
-					break;
+					refresh( SectionFlag::REPRESENTATION );
+					return;
 				}
 			}
 		}
 
-		if ( reallyApplyPreset )
-		{
-			VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
-		}
-		else
-		{
-			refresh( SectionFlag::REPRESENTATION );
-		}
+		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
+
 	void MultipleChainWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
 		const Model::Representation::MEMBER_FLAG &				  p_flag )
