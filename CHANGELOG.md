@@ -1,5 +1,21 @@
 # Change Log
 
+## [0.4.3] (beta) - 2024-04-29
+
+### Debug
+
+- Fix import trajectory pop-up.
+- Fix trajectory loading with inconsistent atom count.
+- Fix frame selection dropdown.
+
+### UI
+
+- Improve SES warning pop-up.
+
+### Other
+
+- Update chemfiles lib.
+
 ## [0.4.2] (beta) - 2024-02-29
 
 ### Debug
