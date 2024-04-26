@@ -1,5 +1,8 @@
 import argparse
 import subprocess
+import time
+import re
+import io
 import os
 from pathlib import Path
 
@@ -34,6 +37,7 @@ nptJob = Job()
 prodJob = Job()
 resultJob = Job()
 
+taskDeclarationSize = 35 # Control the size of the task messages displayed (for the . filling feature)
 
 ###############################################################################################################
 #  ____________ _____ _____  ___________ _   _______ _____  ______ _____ _   _ _____ _____ _____ _____ _   _  #
@@ -140,6 +144,15 @@ def checkFolder():
         return False
     return True
     
+# print the formated task message
+def printTaskDeclarationMessage(msg:str):
+    msg += " "
+    while len(msg) < taskDeclarationSize:
+        msg += "."
+    msg += " "
+    
+    print(msg, end="", flush=True)
+
 def runJob(cmd: str, fileStem: str, jobFailedSignal: callable):
     logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
     def printFailure(msg = None):
@@ -164,7 +177,7 @@ def runJob(cmd: str, fileStem: str, jobFailedSignal: callable):
 def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
     cmdStr = "gmx mdrun -v -deffnm em %s" % getResourceString()
-    print("Starting Energy Minimization ... ", end="", flush=True)
+    printTaskDeclarationMessage("Starting Energy Minimization")
     
     def jobFailedSignal():
         emJob.runFailed = True
@@ -178,7 +191,7 @@ def isMinimizationOk():
     )
     
 def runNvtEquil():
-    print("Preparing NVT Equilibration ... ", flush=True, end="")
+    printTaskDeclarationMessage("Preparing NVT Equilibration")
     cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p %s -o nvt.tpr" % posresTop
     
     def jobFailedSignal():
@@ -189,7 +202,7 @@ def runNvtEquil():
     if (nvtJob.preparationFailed == True):
         return
     
-    print("Starting NVT Equilibration ...", flush=True, end="")
+    printTaskDeclarationMessage("Starting NVT Equilibration")
     cmdStr = "gmx mdrun -deffnm nvt %s" % getResourceString()
     
     def jobFailedSignal():
@@ -204,7 +217,7 @@ def isNvtEquilOk():
     )
     
 def runNptEquil():
-    print("Preparing NPT Equilibration ...", flush=True, end="")
+    printTaskDeclarationMessage("Preparing NPT Equilibration")
     cmdStr = "gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p %s -o npt.tpr" % posresTop
     
     def jobFailedSignal():
@@ -215,7 +228,7 @@ def runNptEquil():
     if (nvtJob.preparationFailed == True):
         return
     
-    print("Starting NPT Equilibration ...", flush=True, end="")
+    printTaskDeclarationMessage("Starting NPT Equilibration")
     cmdStr = "gmx mdrun -deffnm npt %s" % getResourceString()
     
     def jobFailedSignal():
@@ -230,7 +243,7 @@ def isNptEquilOk():
     )
     
 def runProd():
-    print("Preparing Production run ... ", flush=True, end="")
+    printTaskDeclarationMessage("Preparing Production run")
     cmdStr = "gmx grompp -f prod.mdp -c npt.gro -p %s -o prod.tpr" % prodTop
     
     def jobFailedSignal():
@@ -244,7 +257,7 @@ def runProd():
     if (nvtJob.preparationFailed == True):
         return
     
-    print("Starting Production run ... ", flush=True, end="")
+    printTaskDeclarationMessage("Starting Production run")
     cmdStr = "gmx mdrun -deffnm prod %s" % getResourceString()
     
     def jobFailedSignal():
@@ -257,91 +270,116 @@ def isProdOk():
         (prodJob.preparationFailed == False and prodJob.runFailed == False)
         and (getMdRootDir() / "prod.gro").is_file()
     )
-  
-def waitForInputAndReturnOutput(proc):
-    proc.stdout.seek(0, io.SEEK_END)
-    s = str(proc.stdout.peek().decode("utf-8"));
-    i = 0
-    while not s.endswith("Select a group: "):
-        if (i > 100000): 
-            raise Exception("Waited to much for trjconv")
-        time.sleep(0.1)
-        i+=1
-        proc.stdout.seek(0, io.SEEK_END)
-        s += str(proc.stdout.peek().decode("utf-8"));
-        
-    return s
 
 # Run trjconv on the prod run results
 def runTrjConv():
-    print("Writing usable results ... ", flush=True, end="")
-    cmdStr = "gmx trjconv -f prod.xtc -s prod.tpr -o result.pdb -center -pbc mol -ur compact -conect"
+    """
+    Tjrconv is different from other functions as it asks questions to the caller.
+    The goal of this function is to not only call trjconv, but to answer its questions as well.
+    For more flexibility, we will analyse the questions with regex in order to find the right answer for most systems.
+    The first question is about which group of atom we should use for centering.
+    The second question is to determine atoms that will be written in the output file
+    """
+    
+    # Analyse the stdout of process in argument and check if the trjconv gromacs process is waiting for user input
+    def waitForInputAndReturnOutput(proc):
+        proc.stdout.seek(0, io.SEEK_END)
+        s = str(proc.stdout.peek().decode("utf-8"));
+        i = 0
+        while not s.endswith("Select a group: "):
+            if (i > 100000): 
+                raise Exception("Waited to much for trjconv")
+            time.sleep(0.1)
+            i+=1
+            proc.stdout.seek(0, io.SEEK_END)
+            s += str(proc.stdout.peek().decode("utf-8"));
+            
+        return s
     
     def jobFailedSignal():
         resultJob.runFailed = True
-    
-    stdoutFilePath = Path("trjconv.txt")
+        
     logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
-    fileStem = "trjconv"
+    _fileStem = "trjconv"
     def printFailure(msg = None):
         print("failed with error : <%s>" % ("Too big to be printed" if len(msg)> 100 else msg ))
-        print(logErrMsg % ("%s.log" % fileStem, "%s.txt" % fileStem))   
+        print(logErrMsg % ("%s.log" % _fileStem, "%s.txt" % _fileStem))   
     
-    try:
-        proc = subprocess.Popen(cmdStr, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        
-        while not proc.stdout.readable():
-            continue
-        
-        protein_query = waitForInputAndReturnOutput(proc)
-        groupListPattern = "\r?\n(Group(.|\r|\n)+?)Select a group:"
-        centeringGroupList = re.search(groupListPattern, protein_query)
-        if (centeringGroupList is None):
-            raise Exception("Gromacs was not understood : Centering Group didn't match")
+    # Execute command do all tedious interactions with trjconv (Protein then System)
+    def executeTrjconvCommand(command:str):
+        try:
+            # We start the process
+            proc = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             
-        centeringGroupList = centeringGroupList.group(0)
-        
-        proteinPattern = "Group +?(\\d+) *?\\( *Protein *\\)"
-        proteinOptionMatch = re.search(proteinPattern, centeringGroupList)
-        
-        if (proteinOptionMatch is None):
-            raise Exception("Gromacs was not understood : Protein option not found.")
-        
-        proteinOption = proteinOptionMatch.group(1)
-        proteinOption += '\n'
-        
-        proc.stdin.write(proteinOption.encode())
-        proc.stdin.flush()
-        time.sleep(1)
-        
-        write_query = waitForInputAndReturnOutput(proc)
-        
-        system_pattern = "Group +?(\\d+) *?\\( *System *\\)"
-        systemOptionMatch = re.search(system_pattern, write_query)
-        
-        if (systemOptionMatch is None):
-            raise Exception("Gromacs was not understood : System option not found.")
-        
-        systemOption = systemOptionMatch.group(1)
-        systemOption += '\n'
-        
-        proc.stdin.write(systemOption.encode())
-        proc.stdin.flush()
-        proc.wait(10000)
-        
-        if proc.returncode != 0:
-            printFailure(proc.stdout.read().decode("utf-8"))
+            # We wait for the output to be readable
+            while not proc.stdout.readable():
+                continue
+            
+            # We wait for gromacs to phrase its question
+            protein_query = waitForInputAndReturnOutput(proc)
+            groupListPattern = "\r?\n(Group(.|\r|\n)+?)Select a group:"
+            centeringGroupList = re.search(groupListPattern, protein_query)
+            if (centeringGroupList is None):
+                raise Exception("Gromacs was not understood : Centering Group didn't match")
+                
+            centeringGroupList = centeringGroupList.group(0)
+            
+            proteinPattern = "Group +?(\\d+) *?\\( *Protein *\\)" # Aims to extract the number to give trjconv for the Protein answer
+            proteinOptionMatch = re.search(proteinPattern, centeringGroupList)
+            
+            if (proteinOptionMatch is None):
+                raise Exception("Gromacs was not understood : Protein option not found.")
+            
+            proteinOption = proteinOptionMatch.group(1)
+            proteinOption += '\n'
+            
+            proc.stdin.write(proteinOption.encode())
+            proc.stdin.flush() # If we don't do that, trjconv doesn't take it sometimes
+            time.sleep(1) 
+            
+            write_query = waitForInputAndReturnOutput(proc)
+            
+            system_pattern = "Group +?(\\d+) *?\\( *System *\\)" # Aims to extract the number to give trjconv for the System answer
+            systemOptionMatch = re.search(system_pattern, write_query)
+            
+            if (systemOptionMatch is None):
+                raise Exception("Gromacs was not understood : System option not found.")
+            
+            systemOption = systemOptionMatch.group(1)
+            systemOption += '\n'
+            
+            proc.stdin.write(systemOption.encode())
+            proc.stdin.flush()
+            proc.wait(10000)
+            
+            if proc.returncode != 0:
+                printFailure(proc.stdout.read().decode("utf-8"))
+                jobFailedSignal()
+            else:
+                print("done")
+            return True
+        except Exception as e:
+            print()
             jobFailedSignal()
-        else:
-            print("done")
-    except Exception as e:
-        print()
-        jobFailedSignal()
-        if ("stdout" in dir(e)):
-            printFailure(e.stdout if e.stdout != None else "")
-        else:
-            printFailure(repr(e))
-       
+            if ("stdout" in dir(e)):
+                printFailure(e.stdout if e.stdout != None else "")
+            else:
+                printFailure(repr(e))
+                
+        return False
+    
+    struct_cmd = "gmx trjconv -f npt.gro -s npt.tpr -o %s.pdb -center -pbc mol -ur compact -conect" % fileStem
+    traj_cmd = "gmx trjconv -f prod.xtc -s prod.tpr -o %s_traj.xtc -center -pbc mol -ur compact" % fileStem
+    
+    
+    printTaskDeclarationMessage("Writing structure to read")
+    if (executeTrjconvCommand(struct_cmd) == False):
+        return
+        
+    printTaskDeclarationMessage("Writing trajectory to load")
+    if (executeTrjconvCommand(traj_cmd) == False):
+        return
+    
 def isTrjconvOk():
     return resultJob.runFailed == False
 
@@ -378,8 +416,8 @@ def runMD():
     if isTrjconvOk() == False:
         print("Result production failed. Your data is not lost. Please seek advice on how to exploit your raw results.")
         
+    print("MD simulation for %s system finished successfully.\nTo visualize the trajectory, load the <%s.pdb> into VTX then the <%s_traj.xtc> (associate it with the %s)." % tuple(fileStem for i in range(4)))
     
-    print("MD simulation for %s system finished successfully. To visualize the trajectory, load the result.pdb into VTX." % fileStem) # TODO [trajectory file]
     return
     
     
