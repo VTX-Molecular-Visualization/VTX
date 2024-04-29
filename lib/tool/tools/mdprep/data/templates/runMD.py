@@ -26,6 +26,7 @@ prodTop = "topol.top"
 posresTop = "posres.top"
 GpuAvailable = False
 args = None # meant to hold kv of user argument
+gmxCmdAlias = "gmx"
 
 class Job:
     preparationFailed = False
@@ -57,6 +58,8 @@ def parseArgs():
     )
     parser.add_argument("--pass-gpu-check", action="store_true", default=False, dest="ignore_gpu_check", help="runMD.py will consider that a gpu is available.")
     parser.add_argument("-gpu_id", dest="gpu_id", default=None, help="Name of the GPU(s) to aim for. Will be forwarded to mdrun.")
+    parser.add_argument("-gmx_path", dest="gmx_path", default=None, help="Path of the gmx executable. If not provided, will use the one in the path environment variable.")
+    parser.add_argument("-gmx_lib", dest="gmx_lib", default=None, help="Path of the gmx top folder. If not provided, will use GMXLIB environment variable.")
     parser.add_argument("-nt", dest="nt", default=None , help="Number of thread to start. Usually correlate with the number of CPU core used. Will be forwarded to mdrun.")
     return parser.parse_args()
     
@@ -100,11 +103,23 @@ def isGmxlibDefined():
 
 # Check current system to make sure if gromacs can run and how. Then return True if the system can run    
 def checkSystem():
-    if isGmxInPath() == False:
-        print("Error : gmx binary not found in PATH. Ask help from the system manager.")
+    if args.gmx_path is not None and Path(args.gmx_path).is_file() == False:
+        print("Error : gmx binary not found in <%s>. Please check if the provided path leads to it." % args.gmx_path)
         return False
         
-    if isGmxlibDefined() == False:
+    if args.gmx_path is not None:
+        global gmxCmdAlias 
+        gmxCmdAlias = args.gmx_path
+        
+    if args.gmx_path is None and isGmxInPath() == False:
+        print("Error : gmx binary not found in PATH. Ask help from the system manager.")
+        return False
+      
+    if args.gmx_lib is not None and Path(args.gmx_lib).is_dir() == False:
+        print("Error : Provided forcefield directory <%s> not found." % args.gmx_lib)
+        return False
+        
+    if args.gmx_lib is None and isGmxlibDefined() == False:
         print("Warning : Environment variable GMXLIB not defined. It is not mandatory to run gromacs. However if the MD fails to start, it would be worth investigating this first.")
         
     GpuAvailable = isGpuAvailable()
@@ -176,7 +191,7 @@ def runJob(cmd: str, fileStem: str, jobFailedSignal: callable):
 
 def runMinimization():
     # Minimzation is the part that should be ready from the get-go. So we just need to start mdrun and wait
-    cmdStr = "gmx mdrun -v -deffnm em %s" % getResourceString()
+    cmdStr = "%s mdrun -v -deffnm em %s" % (gmxCmdAlias, getResourceString())
     printTaskDeclarationMessage("Starting Energy Minimization")
     
     def jobFailedSignal():
@@ -192,7 +207,7 @@ def isMinimizationOk():
     
 def runNvtEquil():
     printTaskDeclarationMessage("Preparing NVT Equilibration")
-    cmdStr = "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p %s -o nvt.tpr" % posresTop
+    cmdStr = "%s grompp -f nvt.mdp -c em.gro -r em.gro -p %s -o nvt.tpr" % (gmxCmdAlias, posresTop)
     
     def jobFailedSignal():
         nvtJob.preparationFailed = True
@@ -203,7 +218,7 @@ def runNvtEquil():
         return
     
     printTaskDeclarationMessage("Starting NVT Equilibration")
-    cmdStr = "gmx mdrun -deffnm nvt %s" % getResourceString()
+    cmdStr = "%s mdrun -deffnm nvt %s" % (gmxCmdAlias, getResourceString())
     
     def jobFailedSignal():
         nvtJob.runFailed = True
@@ -218,7 +233,7 @@ def isNvtEquilOk():
     
 def runNptEquil():
     printTaskDeclarationMessage("Preparing NPT Equilibration")
-    cmdStr = "gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p %s -o npt.tpr" % posresTop
+    cmdStr = "%s grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p %s -o npt.tpr" % (gmxCmdAlias, posresTop)
     
     def jobFailedSignal():
         nptJob.preparationFailed = True
@@ -229,7 +244,7 @@ def runNptEquil():
         return
     
     printTaskDeclarationMessage("Starting NPT Equilibration")
-    cmdStr = "gmx mdrun -deffnm npt %s" % getResourceString()
+    cmdStr = "%s mdrun -deffnm npt %s" % (gmxCmdAlias, getResourceString())
     
     def jobFailedSignal():
         nptJob.runFailed = True
@@ -244,7 +259,7 @@ def isNptEquilOk():
     
 def runProd():
     printTaskDeclarationMessage("Preparing Production run")
-    cmdStr = "gmx grompp -f prod.mdp -c npt.gro -p %s -o prod.tpr" % prodTop
+    cmdStr = "%s grompp -f prod.mdp -c npt.gro -p %s -o prod.tpr" % (gmxCmdAlias, prodTop)
     
     def jobFailedSignal():
         prodJob.preparationFailed = True
@@ -258,7 +273,7 @@ def runProd():
         return
     
     printTaskDeclarationMessage("Starting Production run")
-    cmdStr = "gmx mdrun -deffnm prod %s" % getResourceString()
+    cmdStr = "%s mdrun -deffnm prod %s" % (gmxCmdAlias, getResourceString())
     
     def jobFailedSignal():
         prodJob.runFailed = True
@@ -368,8 +383,8 @@ def runTrjConv():
                 
         return False
     
-    struct_cmd = "gmx trjconv -f npt.gro -s npt.tpr -o %s.pdb -center -pbc mol -ur compact -conect" % fileStem
-    traj_cmd = "gmx trjconv -f prod.xtc -s prod.tpr -o %s_traj.xtc -center -pbc mol -ur compact" % fileStem
+    struct_cmd = "%s trjconv -f npt.gro -s npt.tpr -o %s.pdb -center -pbc mol -ur compact -conect" % (gmxCmdAlias, fileStem)
+    traj_cmd = "%s trjconv -f prod.xtc -s prod.tpr -o %s_traj.xtc -center -pbc mol -ur compact" % (gmxCmdAlias, fileStem)
     
     
     printTaskDeclarationMessage("Writing structure to read")
