@@ -83,7 +83,7 @@ def getResourceString():
     if GpuAvailable:
         if outStr != "":
             outStr += " "
-        outStr = "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None and args.gpu_id != "" else "") 
+        outStr = "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None else "") 
         
     return outStr
 
@@ -119,9 +119,13 @@ def checkSystem():
         print("Error : Provided forcefield directory <%s> not found." % args.gmx_lib)
         return False
         
+    if args.gmx_lib is not None :
+        os.environ["GMXLIB"] = args.gmx_lib
+        
     if args.gmx_lib is None and isGmxlibDefined() == False:
         print("Warning : Environment variable GMXLIB not defined. It is not mandatory to run gromacs. However if the MD fails to start, it would be worth investigating this first.")
         
+    global GpuAvailable
     GpuAvailable = isGpuAvailable()
     if args.ignore_gpu_check:
         print("GPU check ignored. Trying to run gromacs in GPU mode.")  
