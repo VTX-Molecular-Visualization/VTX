@@ -13,7 +13,7 @@
 ;	Data prefix:  C:\Users\Valen\.conan2\p\b\groma28c53cd5bab9f\p
 ;	Working dir:  C:\Users\Valen\dev\vtx\dev\build\Debug
 ;	Command line:
-;	  gmx pdb2gmx -f C:\Users\Valen\dev\vtx\dev\build\Debug\data\1ubq.pdb -o C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.conf.gro -p C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.topol.top -i C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.posre.itp -q C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.clean.pdb -n C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.index.ndx -ff amber03 -water tip3p -lys
+;	  gmx pdb2gmx -f C:\Users\Valen\dev\vtx\dev\build\Debug\data\1ubq.pdb -o C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.conf.gro -p C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.topol.top -i C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.itp -q C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.clean.pdb -n C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.index.ndx -ff amber03 -water tip3p -lys
 ;	Force field data was read from:
 ;	C:\Users\Valen\dev\vtx\dev\build\Debug\data\tools\mdprep\gromacs\top
 ;
@@ -24,7 +24,7 @@
 ;
 
 ; Include forcefield parameters
-#include "C:\Users\Valen\dev\vtx\dev\build\Debug\data\tools\mdprep\gromacs\top\amber03.ff/forcefield.itp"
+#include "amber03.ff/forcefield.itp"
 
 [ moleculetype ]
 ; Name            nrexcl
@@ -11613,11 +11613,11 @@ Protein_chain_A     3
 
 ; Include Position restraint file
 #ifdef POSRES
-#include "C:/Users/Valen/dev/vtx/dev/build/Debug/out/1ubq/1ubq.posre.itp"
+#include "1ubq.itp"
 #endif
 
 ; Include water topology
-#include "C:/Users/Valen/dev/vtx/dev/build/Debug/data/tools/mdprep/gromacs/top/amber03.ff/tip3p.itp"
+#include "amber03.ff/tip3p.itp"
 
 #ifdef POSRES_WATER
 ; Position restraint for each water oxygen
@@ -11627,7 +11627,7 @@ Protein_chain_A     3
 #endif
 
 ; Include topology for ions
-#include "C:/Users/Valen/dev/vtx/dev/build/Debug/data/tools/mdprep/gromacs/top/amber03.ff/ions.itp"
+#include "amber03.ff/ions.itp"
 
 [ system ]
 ; Name

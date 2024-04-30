@@ -32,6 +32,7 @@ namespace VTX::test
 																  ( g_outputDir / "1ubq.top" ).string() };
 	};
 
+
 	// Put a pointer to each of the input string into the pointer vector
 	void fill( const std::vector<std::string> &, VTX::Tool::Mdprep::Gromacs::CumulativeOuputFiles & ) noexcept;
 

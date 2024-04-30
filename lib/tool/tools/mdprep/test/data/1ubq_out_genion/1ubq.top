@@ -13,7 +13,7 @@
 ;	Data prefix:  C:\Users\Valen\.conan2\p\b\groma28c53cd5bab9f\p
 ;	Working dir:  C:\Users\Valen\dev\vtx\dev\build\Debug
 ;	Command line:
-;	  gmx pdb2gmx -f C:\Users\Valen\dev\vtx\dev\build\Debug\data\1ubq.pdb -o C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.conf.gro -p C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.topol.top -i C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.posre.itp -q C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.clean.pdb -n C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.index.ndx -ff amber03 -water tip3p -lys
+;	  gmx pdb2gmx -f C:\Users\Valen\dev\vtx\dev\build\Debug\data\1ubq.pdb -o C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.conf.gro -p C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.topol.top -i C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.itp -q C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.clean.pdb -n C:\Users\Valen\dev\vtx\dev\build\Debug\out\1ubq\1ubq.index.ndx -ff amber03 -water tip3p -lys
 ;	Force field data was read from:
 ;	C:\Users\Valen\dev\vtx\dev\build\Debug\data\tools\mdprep\gromacs\top
 ;
