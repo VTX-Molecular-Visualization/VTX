@@ -102,8 +102,8 @@ namespace VTX::Renderer
 
 		struct Range
 		{
-			// std::vector<void *> offsets;
-			std::vector<uint> offsets;
+			std::vector<void *> offsets;
+			// std::vector<uint> offsets;
 			std::vector<uint> counts;
 		};
 		Range * ranges = nullptr;
@@ -156,16 +156,15 @@ namespace VTX::Renderer
 	{
 		Program program;
 
-		struct IO
+		struct Data
 		{
 			size_t size;
 			void * data;
+			uint   binding;
 		};
 
-		std::vector<IO> inputs;
-		std::vector<IO> outputs;
-
-		std::variant<Vec3i, size_t> size;
+		std::vector<ComputePass::Data *> data;
+		std::variant<Vec3i, size_t>		 size;
 	};
 
 	struct Link

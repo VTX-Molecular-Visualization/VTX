@@ -118,7 +118,8 @@ namespace VTX::Renderer::Context
 
 		);
 
-		void compute( const ComputePass & p_pass ) const;
+		void compute( const ComputePass & p_pass );
+		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
 
 	  private:
 		// TODO: find a better solution (magic enum explodes compile time).
@@ -167,6 +168,8 @@ namespace VTX::Renderer::Context
 		std::unique_ptr<GL::ProgramManager> _programManager;
 		CollectionPtr<GL::Program>			_programs;
 		Collection<_StructUniformEntry>		_uniforms;
+
+		std::map<ComputePass::Data * const, std::unique_ptr<GL::Buffer>> _computeBuffers;
 
 		// Output.
 		Handle _output;

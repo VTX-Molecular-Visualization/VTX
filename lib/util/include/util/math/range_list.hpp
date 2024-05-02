@@ -390,8 +390,8 @@ namespace VTX::Util::Math
 			return false;
 		}
 
-		T getFirst() const { return _ranges.cbegin()->getFirst(); }
-		T getLast() const { return _ranges.crbegin()->getLast(); }
+		inline T getFirst() const { return _ranges.cbegin()->getFirst(); }
+		inline T getLast() const { return _ranges.crbegin()->getLast(); }
 
 		void clear() { _ranges.clear(); }
 		bool isEmpty() const { return _ranges.size() == 0; }
@@ -427,8 +427,8 @@ namespace VTX::Util::Math
 			size_t i = 0;
 			for ( const Range<T> & range : _ranges )
 			{
-				p_starts[ i ] = static_cast<T1>( range.getFirst() );
-				p_counts[ i ] = static_cast<T2>( range.getCount() );
+				p_starts[ i ] = T1( range.getFirst() );
+				p_counts[ i ] = T2( range.getCount() );
 				i++;
 			}
 		}

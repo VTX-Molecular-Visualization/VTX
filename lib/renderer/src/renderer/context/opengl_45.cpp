@@ -597,24 +597,30 @@ namespace VTX::Renderer::Context
 		fbo->unbind();
 	}
 
-	void OpenGL45::compute( const ComputePass & p_pass ) const
+	void OpenGL45::compute( const ComputePass & p_pass )
 	{
 		// TODO: Create program and uniforms (refacto build).
-		//
+		const Program & descProgram = p_pass.program;
+
+		std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+									  + "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+									  + "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+
+		const GL::Program * const program
+			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
+
 		// Create and bind buffers.
-		uint binding = 0;
-		for ( auto & output : p_pass.outputs )
+		for ( ComputePass::Data * const data : p_pass.data )
 		{
-			GL::Buffer buffer( GLsizei( output.size ), output.data );
-			buffer.bind( GL_SHADER_STORAGE_BUFFER, binding );
-		}
-		for ( auto & input : p_pass.inputs )
-		{
-			GL::Buffer buffer( GLsizei( input.size ), input.data );
-			buffer.bind( GL_SHADER_STORAGE_BUFFER, binding );
+			if ( _computeBuffers.contains( data ) == false )
+			{
+				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data ) );
+			}
+
+			_computeBuffers[ data ]->bind( GL_SHADER_STORAGE_BUFFER, data->binding );
 		}
 
-		// TODO: use program.
+		program->use();
 
 		// Compute size and dispath.
 		uint x, y, z;
@@ -641,6 +647,27 @@ namespace VTX::Renderer::Context
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 		glDispatchCompute( x, y, z );
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+		// Unbind buffers.
+		for ( ComputePass::Data * const data : p_pass.data )
+		{
+			_computeBuffers[ data ]->unbind();
+		}
+	}
+
+	void OpenGL45::clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers )
+	{
+		if ( p_buffers.has_value() )
+		{
+			for ( ComputePass::Data * const data : p_buffers.value() )
+			{
+				_computeBuffers.erase( data );
+			}
+		}
+		else
+		{
+			_computeBuffers.clear();
+		}
 	}
 
 	void OpenGL45::_createInputs(

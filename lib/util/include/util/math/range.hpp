@@ -36,9 +36,9 @@ namespace VTX::Util::Math
 			return p_lhs._start != p_rhs._start || p_lhs._count != p_rhs._count;
 		}
 
-		T getFirst() const { return _start; };
-		T getLast() const { return _start + _count - ONE; };
-		T getCount() const { return _count; };
+		inline T getFirst() const { return _start; };
+		inline T getLast() const { return _start + _count - ONE; };
+		inline T getCount() const { return _count; };
 
 		bool contains( const T p_value ) const { return ( p_value >= _start ) && ( p_value < ( _start + _count ) ); }
 		bool contains( const std::vector<T> & p_values ) const

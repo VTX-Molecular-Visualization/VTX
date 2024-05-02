@@ -36,8 +36,8 @@ namespace VTX::Bench
 				_molecules.emplace_back( std::make_unique<Core::Struct::Molecule>( downloadMolecule( p_name ) ) );
 			}
 
-			//_molecules.back()->transform
-			//	= Math::translate( _molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
+			_molecules.back()->transform
+				= Math::translate( _molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
 			IO::Util::SecondaryStructure::computeStride( *_molecules.back() );
 			_proxyMolecules.emplace_back( _proxify( *_molecules.back() ) );
 			_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );

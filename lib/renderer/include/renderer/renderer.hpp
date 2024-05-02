@@ -30,9 +30,7 @@ namespace VTX::Renderer
 			const size_t	 p_height,
 			const FilePath & p_shaderPath,
 			void *			 p_loader = nullptr
-		) :
-			width( p_width ),
-			height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+		) : width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
 			// Graph.
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
@@ -268,7 +266,7 @@ namespace VTX::Renderer
 
 		// Draw ranges.
 		// TODO: test render time with/without ranges/multidraw.
-		using RangeList = Util::Math::RangeList<uint>;
+		using RangeList = Util::Math::RangeList<size_t>;
 		RangeList	drawRangeSpheresRL;
 		RangeList	drawRangeCylindersRL;
 		Draw::Range drawRangeSpheres;

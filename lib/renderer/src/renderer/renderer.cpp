@@ -450,11 +450,16 @@ namespace VTX::Renderer
 		}
 
 		// Ranges.
-		drawRangeSpheresRL	 = { 0, uint( totalAtoms ) };
-		drawRangeCylindersRL = { 0, uint( totalBonds ) };
+		drawRangeSpheresRL.clear();
+		drawRangeCylindersRL.clear();
 
-		drawRangeSpheresRL.toVectors<uint, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
-		drawRangeCylindersRL.toVectors<uint, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
+		// TODO: refresh with cache, with a threshold to switch between multi call and shader variable.
+
+		drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
+		drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
+
+		drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+		drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -973,15 +978,29 @@ namespace VTX::Renderer
 				int	  nearestAtom;
 			};
 
-			std::vector<SESGridData> bufferSesGridData( gridSES.getCellCount() );
+			ComputePass::Data bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
+			ComputePass::Data bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
+														 atomGridDataSorted.data(),
+														 1 };
+			ComputePass::Data bufferAtomIndexSorted(
+				atomIndexSorted.size() * sizeof( uint ), atomIndexSorted.data(), 2
+			);
+			ComputePass::Data bufferAtomPosition(
+				atomPositionsVdW.size() * sizeof( Vec4f ), atomPositionsVdW.data(), 3
+			);
 
-			auto computePass
-				= ComputePass { Program { "ses/create_sdf.comp" },
-								{ { atomGridDataSorted.size() * sizeof( Range<uint> ), atomGridDataSorted.data() } },
-								{ { bufferSesGridData.size() * sizeof( SESGridData ), bufferSesGridData.data() } },
-								uint( 12 ) };
+			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
+										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
+
+			auto computePass = ComputePass {
+				Program { "CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, Uniforms { /* TODO */ } },
+				{ &bufferSesGridData, &bufferAtomGridDataSorted, &bufferAtomIndexSorted, &bufferAtomPosition },
+				sizeCreateSDF
+			};
 
 			_context->compute( computePass );
+
+			_context->clearComputeBuffers();
 		}
 
 		chrono.stop();
