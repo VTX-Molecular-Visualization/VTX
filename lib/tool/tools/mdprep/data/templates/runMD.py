@@ -296,9 +296,9 @@ def runTrjConv():
     """
     Tjrconv is different from other functions as it asks questions to the caller.
     The goal of this function is to not only call trjconv, but to answer its questions as well.
-    For more flexibility, we will analyse the questions with regex in order to find the right answer for most systems.
-    The first question is about which group of atom we should use for centering.
-    The second question is to determine atoms that will be written in the output file
+    For more flexibility, we will analyse the questions with regex in order to find the right answer for most systems. (Windows only)
+    The first question is about which group of atom we should use for centering. (Shall be the Protein)
+    The second question is to determine atoms that will be written in the output file. (Shall be the all System)
     """
     
     # Analyse the stdout of process in argument and check if the trjconv gromacs process is waiting for user input
@@ -329,7 +329,7 @@ def runTrjConv():
                 continue
             time.sleep(5) 
             
-            # In linux, we assume that 1 is for the Protein and 0 is for the system. The result is way less flexible than for the non-unix version
+            # In Unix, we assume that 1 is for the Protein and 0 is for the system. The result is way less flexible than for the non-unix version
             proc.communicate(input="1\n0\n".encode()) 
             
             proc.wait(10000)
