@@ -24,7 +24,7 @@ nptMdpInput = "npt.mdp"
 prodMdpInput = "prod.mdp"
 prodTop = "topol.top"
 posresTop = "posres.top"
-GpuAvailable = False
+UseGpu = False
 args = None # meant to hold kv of user argument
 gmxCmdAlias = "gmx"
 
@@ -57,6 +57,7 @@ def parseArgs():
         description= "VTX Molecular Dynamics Runner for Gromacs\nRun all MD simulations steps on system prepared by VTX",
     )
     parser.add_argument("--pass-gpu-check", action="store_true", default=False, dest="ignore_gpu_check", help="runMD.py will consider that a gpu is available.")
+    parser.add_argument("--cpu-mode", action="store_true", default=False, dest="cpu_mode", help="runMD.py will run on cpu regardless of the system's capabilities.")
     parser.add_argument("-gpu_id", dest="gpu_id", default=None, help="Name of the GPU(s) to aim for. Will be forwarded to mdrun.")
     parser.add_argument("-gmx_path", dest="gmx_path", default=None, help="Path of the gmx executable. If not provided, will use the one in the path environment variable.")
     parser.add_argument("-gmx_lib", dest="gmx_lib", default=None, help="Path of the gmx top folder. If not provided, will use GMXLIB environment variable.")
@@ -80,7 +81,7 @@ def doesPgmExists(command : str):
 
 def getResourceString():
     outStr = ("-nt %s" % args.nt if args.nt is not None and args.nt != "" else "")
-    if GpuAvailable:
+    if UseGpu:
         if outStr != "":
             outStr += " "
         outStr = "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None else "") 
@@ -125,11 +126,11 @@ def checkSystem():
     if args.gmx_lib is None and isGmxlibDefined() == False:
         print("Warning : Environment variable GMXLIB not defined. It is not mandatory to run gromacs. However if the MD fails to start, it would be worth investigating this first.")
         
-    global GpuAvailable
-    GpuAvailable = isGpuAvailable()
+    global UseGpu
+    UseGpu = args.cpu_mode == False and isGpuAvailable()
     if args.ignore_gpu_check:
         print("GPU check ignored. Trying to run gromacs in GPU mode.")  
-    elif GpuAvailable:
+    elif UseGpu:
         print("Graphics Processing Unit found. Running gromacs in GPU mode.")
     else:
         print("No Graphics Processing Unit found. Running gromacs in CPU mode.")
@@ -318,11 +319,6 @@ def runTrjConv():
     def jobFailedSignal():
         resultJob.runFailed = True
         
-    logErrMsg = "Please refer to the %s and %s file to understand what went wrong."
-    _fileStem = "trjconv"
-    def printFailure(msg = None):
-        print("failed with error : <%s>" % ("Too big to be printed" if len(msg)> 100 else msg ))
-        print(logErrMsg % ("%s.log" % _fileStem, "%s.txt" % _fileStem))   
     
     # Execute command do all tedious interactions with trjconv (Protein then System)
     def executeTrjconvCommand(command:str):
@@ -390,6 +386,13 @@ def runTrjConv():
     struct_cmd = "%s trjconv -f npt.gro -s npt.tpr -o %s.pdb -center -pbc mol -ur compact -conect" % (gmxCmdAlias, fileStem)
     traj_cmd = "%s trjconv -f prod.xtc -s prod.tpr -o %s_traj.xtc -center -pbc mol -ur compact" % (gmxCmdAlias, fileStem)
     
+    logErrMsg = "Please refer to the %s file to understand what went wrong."
+    _fileStem = "trjconv"
+    def printFailure(msg = None):
+        print(logErrMsg % ("%s.txt" % _fileStem))   
+        print("failed with error : <%s>" % msg)
+        print("Here are the tjrconv commands you need to run to process the raw results : \n\n%s\n%s\n\nFor each of those commands, when prompted, select 'Protein' then 'System'." % (struct_cmd, traj_cmd))
+
     
     printTaskDeclarationMessage("Writing structure to read")
     if (executeTrjconvCommand(struct_cmd) == False):
@@ -433,7 +436,7 @@ def runMD():
         
     runTrjConv()
     if isTrjconvOk() == False:
-        print("Result production failed. Your data is not lost. Please seek advice on how to exploit your raw results.")
+        print("Result workup failed. Your data is not lost. Please seek advice on how to exploit your raw results or follow steps above.")
         
     print("MD simulation for %s system finished successfully.\nTo visualize the trajectory, load the <%s.pdb> into VTX then the <%s_traj.xtc> (associate it with the %s)." % tuple(fileStem for i in range(4)))
     
