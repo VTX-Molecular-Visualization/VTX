@@ -318,9 +318,7 @@ def runTrjConv():
     
     def jobFailedSignal():
         resultJob.runFailed = True
-        
     
-    # Execute command do all tedious interactions with trjconv (Protein then System)
     def executeTrjconvCommand(command:str):
         try:
             # We start the process
@@ -329,42 +327,11 @@ def runTrjConv():
             # We wait for the output to be readable
             while not proc.stdout.readable():
                 continue
+            time.sleep(5) 
             
-            # We wait for gromacs to phrase its question
-            protein_query = waitForInputAndReturnOutput(proc)
-            groupListPattern = "\r?\n(Group(.|\r|\n)+?)Select a group:"
-            centeringGroupList = re.search(groupListPattern, protein_query)
-            if (centeringGroupList is None):
-                raise Exception("Gromacs was not understood : Centering Group didn't match")
-                
-            centeringGroupList = centeringGroupList.group(0)
+            # In linux, we assume that 1 is for the Protein and 0 is for the system. The result is way less flexible than for the non-unix version
+            proc.communicate(input="1\n0\n".encode()) 
             
-            proteinPattern = "Group +?(\\d+) *?\\( *Protein *\\)" # Aims to extract the number to give trjconv for the Protein answer
-            proteinOptionMatch = re.search(proteinPattern, centeringGroupList)
-            
-            if (proteinOptionMatch is None):
-                raise Exception("Gromacs was not understood : Protein option not found.")
-            
-            proteinOption = proteinOptionMatch.group(1)
-            proteinOption += '\n'
-            
-            proc.stdin.write(proteinOption.encode())
-            proc.stdin.flush() # If we don't do that, trjconv doesn't take it sometimes
-            time.sleep(1) 
-            
-            write_query = waitForInputAndReturnOutput(proc)
-            
-            system_pattern = "Group +?(\\d+) *?\\( *System *\\)" # Aims to extract the number to give trjconv for the System answer
-            systemOptionMatch = re.search(system_pattern, write_query)
-            
-            if (systemOptionMatch is None):
-                raise Exception("Gromacs was not understood : System option not found.")
-            
-            systemOption = systemOptionMatch.group(1)
-            systemOption += '\n'
-            
-            proc.stdin.write(systemOption.encode())
-            proc.stdin.flush()
             proc.wait(10000)
             
             if proc.returncode != 0:
@@ -382,6 +349,73 @@ def runTrjConv():
                 printFailure(repr(e))
                 
         return False
+        
+    if os.name == "nt":
+         # We define different function for unix as it doesn't actually support subprocess multiple input writting
+        # Execute command do all tedious interactions with trjconv (Protein then System)
+        def executeTrjconvCommand(command:str):
+            try:
+                # We start the process
+                proc = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                
+                # We wait for the output to be readable
+                while not proc.stdout.readable():
+                    continue
+                
+                # We wait for gromacs to phrase its question
+                protein_query = waitForInputAndReturnOutput(proc)
+                groupListPattern = "\r?\n(Group(.|\r|\n)+?)Select a group:"
+                centeringGroupList = re.search(groupListPattern, protein_query)
+                if (centeringGroupList is None):
+                    raise Exception("Gromacs was not understood : Centering Group didn't match")
+                    
+                centeringGroupList = centeringGroupList.group(0)
+                
+                proteinPattern = "Group +?(\\d+) *?\\( *Protein *\\)" # Aims to extract the number to give trjconv for the Protein answer
+                proteinOptionMatch = re.search(proteinPattern, centeringGroupList)
+                
+                if (proteinOptionMatch is None):
+                    raise Exception("Gromacs was not understood : Protein option not found.")
+                
+                proteinOption = proteinOptionMatch.group(1)
+                proteinOption += '\n'
+                
+                proc.stdin.write(proteinOption.encode())
+                proc.stdin.flush() # If we don't do that, trjconv doesn't take it sometimes
+                time.sleep(1) 
+                
+                write_query = waitForInputAndReturnOutput(proc)
+                
+                system_pattern = "Group +?(\\d+) *?\\( *System *\\)" # Aims to extract the number to give trjconv for the System answer
+                systemOptionMatch = re.search(system_pattern, write_query)
+                
+                if (systemOptionMatch is None):
+                    raise Exception("Gromacs was not understood : System option not found.")
+                
+                systemOption = systemOptionMatch.group(1)
+                systemOption += '\n'
+                
+                proc.stdin.write(systemOption.encode())
+                proc.stdin.flush()
+                proc.wait(10000)
+                
+                if proc.returncode != 0:
+                    printFailure(proc.stdout.read().decode("utf-8"))
+                    jobFailedSignal()
+                else:
+                    print("done")
+                return True
+            except Exception as e:
+                print()
+                jobFailedSignal()
+                if ("stdout" in dir(e)):
+                    printFailure(e.stdout if e.stdout != None else "")
+                else:
+                    printFailure(repr(e))
+                    
+            return False
+        
+        
     
     struct_cmd = "%s trjconv -f npt.gro -s npt.tpr -o %s.pdb -center -pbc mol -ur compact -conect" % (gmxCmdAlias, fileStem)
     traj_cmd = "%s trjconv -f prod.xtc -s prod.tpr -o %s_traj.xtc -center -pbc mol -ur compact" % (gmxCmdAlias, fileStem)
