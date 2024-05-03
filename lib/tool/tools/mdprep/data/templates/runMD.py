@@ -80,11 +80,11 @@ def doesPgmExists(command : str):
     return False
 
 def getResourceString():
-    outStr = ("-nt %s" % args.nt if args.nt is not None and args.nt != "" else "")
+    outStr = ("-nt %s " % args.nt if args.nt is not None and args.nt != "" else "")
     if UseGpu:
         if outStr != "":
             outStr += " "
-        outStr = "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None else "") 
+        outStr += "-nb gpu %s" % ("-gpu_id %s" % args.gpu_id if args.gpu_id is not None else "") 
         
     return outStr
 
