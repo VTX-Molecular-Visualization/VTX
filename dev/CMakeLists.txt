@@ -82,6 +82,9 @@ include("${DIR_LIBS}/ui/test/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
+# Tool.
+include("${DIR_LIBS}/tool/cmake/library.cmake")
+
 # MdPrep.
 include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
