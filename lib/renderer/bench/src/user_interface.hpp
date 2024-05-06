@@ -478,12 +478,12 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( true );
 						}
 						ImGui::SameLine();
-						if ( ImGui::Button( "U" ) )
+						if ( ImGui::Button( "US" ) )
 						{
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
-						if ( ImGui::Button( "V" ) )
+						if ( ImGui::Button( "UV" ) )
 						{
 							proxyMolecule->onVisible( false );
 						}

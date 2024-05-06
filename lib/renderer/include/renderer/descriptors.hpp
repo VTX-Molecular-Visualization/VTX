@@ -103,8 +103,7 @@ namespace VTX::Renderer
 		struct Range
 		{
 			std::vector<void *> offsets;
-			// std::vector<uint> offsets;
-			std::vector<uint> counts;
+			std::vector<uint>	counts;
 		};
 		Range * ranges = nullptr;
 
@@ -161,6 +160,7 @@ namespace VTX::Renderer
 			size_t size;
 			void * data;
 			uint   binding;
+			bool   overwrite = false; // TODO: force data?
 		};
 
 		std::vector<ComputePass::Data *> data;

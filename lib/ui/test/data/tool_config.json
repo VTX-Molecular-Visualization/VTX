@@ -11,6 +11,9 @@
 				"IDENTIFIER": "CONSOLE_TOOL_KEY"
 			},
 			{
+				"IDENTIFIER": "SCENE_TOOL_KEY"
+			},
+			{
 				"IDENTIFIER": "UI_FEATURE_QUIT"
 			},
 			{

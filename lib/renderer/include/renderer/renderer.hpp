@@ -269,6 +269,7 @@ namespace VTX::Renderer
 		using RangeList = Util::Math::RangeList<size_t>;
 		RangeList	drawRangeSpheresRL;
 		RangeList	drawRangeCylindersRL;
+		RangeList	drawRangeRibbonsRL;
 		Draw::Range drawRangeSpheres;
 		Draw::Range drawRangeCylinders;
 		Draw::Range drawRangeRibbons;

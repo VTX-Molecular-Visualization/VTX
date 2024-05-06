@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CACHES__
 
 #include <map>
+#include <util/math/range.hpp>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
@@ -14,14 +15,10 @@ namespace VTX::Renderer::Cache
 	// template<typename T>
 	// using CompressedData = std::variant<T, std::vector<T>>;
 
-	struct RangedCache
+	struct SphereCylinder
 	{
-		size_t offset = 0;
-		size_t size	  = 0;
-	};
-
-	struct SphereCylinder : public RangedCache
-	{
+		Util::Math::Range<size_t> rangeSpheres;
+		Util::Math::Range<size_t> rangeCylinders;
 		// TODO: optimize when same data.
 		std::vector<uchar> flags;
 		std::vector<uchar> representations;
@@ -37,8 +34,9 @@ namespace VTX::Renderer::Cache
 		}
 	};
 
-	struct Ribbon : public RangedCache
+	struct Ribbon
 	{
+		Util::Math::Range<size_t>		  range;
 		bool							  isEmpty = false;
 		std::vector<Vec4f>				  positions;
 		std::vector<Vec3f>				  directions;
@@ -77,7 +75,7 @@ namespace VTX::Renderer::Cache
 		}
 	};
 
-	struct SES : public RangedCache
+	struct SES
 	{
 		bool			   isEmpty = false;
 		std::vector<Vec3f> positions;
