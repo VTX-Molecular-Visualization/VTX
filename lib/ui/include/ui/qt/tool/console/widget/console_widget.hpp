@@ -2,9 +2,9 @@
 #define __VTX_UI_TOOL_CONSOLE_WIDGET_CONSOLE__
 
 #include "ui/qt/qt_panel.hpp"
-#include "ui/qt/tool/pytx/widget/command_line_prompt.hpp"
 #include <QColor>
 #include <QDockWidget>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
 #include <QSize>
@@ -18,10 +18,8 @@ namespace VTX::UI::QT::Tool::Console::Widget
 	{
 		NEW_ARCHI_VTX_WIDGET
 
-	  private:
-		using CommandLinePrompt = Tool::PyTX::Widget::CommandLinePrompt;
-
 	  public:
+		// TODO: move to style.
 		inline static const QColor CONSOLE_INFO_COLOR	  = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	  = QColor( "white" );
 		inline static const QColor CONSOLE_WARNING_COLOR  = QColor( "yellow" );
@@ -46,17 +44,21 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		void _setupSlots() override;
 
 	  private:
-		void _appendLog( const Util::LogInfo & p_logInfo );
-		void _flush();
+		// Logs.
+		QListWidget * _listWidget	   = nullptr;
+		std::mutex	  _listWidgetMutex = std::mutex();
 
-		void _clearConsoleAction();
-
+		void   _appendLog( const Util::LogInfo & p_logInfo );
+		void   _flush();
+		void   _clearConsoleAction();
 		QColor _getMessageColor( const Util::LOG_LEVEL p_level );
 
-		QListWidget *		_listWidget		   = nullptr;
-		CommandLinePrompt * _commandLineWidget = nullptr;
+		// Command line.
+		QLineEdit *	 _promptWidget = nullptr;
+		QCompleter * _completer	   = nullptr;
 
-		std::mutex _listWidgetMutex = std::mutex();
+		void _setupCompleter();
+		void _launchCommand();
 	};
 } // namespace VTX::UI::QT::Tool::Console::Widget
 #endif

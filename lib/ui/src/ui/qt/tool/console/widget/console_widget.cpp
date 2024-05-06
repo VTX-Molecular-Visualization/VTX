@@ -1,9 +1,10 @@
 #include "ui/qt/tool/console/widget/console_widget.hpp"
 #include "app/application/system/action_manager.hpp"
 #include "ui/qt/tool/console/action/console.hpp"
+#include "ui/qt/tool/pytx/details/include_python_binding.hpp"
 #include "ui/qt/widget/custom/dock_window_main_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <QHBoxLayout>
+#include <QCompleter>
 #include <QMenu>
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
@@ -33,13 +34,16 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		_listWidget = new QListWidget( this );
 		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
-		_commandLineWidget = WidgetFactory::get().instantiateWidget<CommandLinePrompt>( this, "_commandLineWidget" );
+		_promptWidget = new QLineEdit( this );
+		_promptWidget->setPlaceholderText( ">" );
+
+		_promptWidget->setCompleter( _completer );
+		_promptWidget->setClearButtonEnabled( true );
 
 		QVBoxLayout * const mainLayout = new QVBoxLayout( mainWidget );
-		mainLayout->setSpacing( 0 );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 		mainLayout->addWidget( _listWidget );
-		mainLayout->addWidget( _commandLineWidget );
+		mainLayout->addWidget( _promptWidget );
 
 		setWidget( mainWidget );
 	}
@@ -66,6 +70,8 @@ namespace VTX::UI::QT::Tool::Console::Widget
 				menu.exec( _listWidget->mapToGlobal( p_pos ) );
 			}
 		);
+
+		connect( _promptWidget, &QLineEdit::returnPressed, this, &ConsoleWidget::_launchCommand );
 	}
 
 	void ConsoleWidget::localize()
@@ -128,5 +134,44 @@ namespace VTX::UI::QT::Tool::Console::Widget
 	}
 
 	void ConsoleWidget::_clearConsoleAction() { App::VTX_ACTION().execute<Action::ClearConsole>(); }
+
+	void ConsoleWidget::_launchCommand()
+	{
+		if ( _promptWidget->text().isEmpty() )
+			return;
+
+		const std::string command = _promptWidget->text().toStdString();
+
+		try
+		{
+			PythonBinding::INTERPRETOR().runCommand( command );
+		}
+		catch ( CommandException & p_e )
+		{
+			_promptWidget->clear();
+			throw p_e;
+		}
+
+		_promptWidget->clear();
+	}
+
+	void ConsoleWidget::_setupCompleter()
+	{
+		// std::vector<std::string> allCommands = PythonBinding::INTERPRETOR().getModule().commands().getFunctionList();
+
+		QStringList strList = QStringList();
+
+		strList.emplaceBack( "resetCamera()" );
+		strList.emplaceBack( "quit()" );
+
+		// for ( const std::string & str : allCommands )
+		//{
+		//	strList.emplaceBack( QString::fromStdString( str ) );
+		// }
+
+		_completer = new QCompleter( strList, this );
+		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
+		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
+	}
 
 } // namespace VTX::UI::QT::Tool::Console::Widget
