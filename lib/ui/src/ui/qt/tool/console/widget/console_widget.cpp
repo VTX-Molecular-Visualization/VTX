@@ -4,6 +4,7 @@
 #include "ui/qt/widget/custom/dock_window_main_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QHBoxLayout>
+#include <QMenu>
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
 #include <util/enum.hpp>
@@ -30,39 +31,15 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		QWidget * const mainWidget = _instantiateMainWidget( CONSOLE_PREFERRED_SIZE, CONSOLE_MINIMUM_SIZE );
 
 		_listWidget = new QListWidget( this );
-		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
-
-		QSizePolicy sizePolicy = QSizePolicy(
-			QSizePolicy::Policy::MinimumExpanding,
-			QSizePolicy::Policy::MinimumExpanding,
-			QSizePolicy::ControlType::Frame
-		);
-		sizePolicy.setHorizontalStretch( 10 );
-		sizePolicy.setVerticalStretch( 10 );
-		_listWidget->setSizePolicy( sizePolicy );
+		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
 		_commandLineWidget = WidgetFactory::get().instantiateWidget<CommandLinePrompt>( this, "_commandLineWidget" );
 
-		_clearWidget = new QPushButton( this );
-		_clearWidget->setText( "Clear" );
-		_clearWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
-
-		QVBoxLayout * const buttonsLayout = new QVBoxLayout();
-		buttonsLayout->setContentsMargins( 0, 0, 0, 0 );
-		buttonsLayout->addWidget( _clearWidget );
-		buttonsLayout->addStretch( 1000 );
-
-		QHBoxLayout * const logLayout = new QHBoxLayout();
-		logLayout->setSpacing( 5 );
-		logLayout->setContentsMargins( 0, 0, 2, 0 );
-
-		logLayout->addWidget( _listWidget, 100 );
-		logLayout->addLayout( buttonsLayout, 1 );
-
 		QVBoxLayout * const mainLayout = new QVBoxLayout( mainWidget );
-		mainLayout->setSpacing( 1 );
-		mainLayout->addLayout( logLayout, 100 );
-		mainLayout->addWidget( _commandLineWidget, 1 );
+		mainLayout->setSpacing( 0 );
+		mainLayout->setContentsMargins( 0, 0, 0, 0 );
+		mainLayout->addWidget( _listWidget );
+		mainLayout->addWidget( _commandLineWidget );
 
 		setWidget( mainWidget );
 	}
@@ -76,14 +53,28 @@ namespace VTX::UI::QT::Tool::Console::Widget
 
 	void ConsoleWidget::_setupSlots()
 	{
-		connect( _clearWidget, &QPushButton::clicked, this, &ConsoleWidget::_clearConsoleAction );
-	};
+		connect(
+			_listWidget,
+			&QListWidget::customContextMenuRequested,
+			this,
+			[ & ]( QPoint p_pos )
+			{
+				QMenu			menu( this );
+				QAction * const clearAction = new QAction( "Clear", this );
+				connect( clearAction, &QAction::triggered, this, &ConsoleWidget::_clearConsoleAction );
+				menu.addAction( clearAction );
+				menu.exec( _listWidget->mapToGlobal( p_pos ) );
+			}
+		);
+	}
+
 	void ConsoleWidget::localize()
 	{
 		// Qt translate (not use currently)
 		// setWindowTitle( QCoreApplication::translate( "ConsoleWidget", "Console", nullptr ) );
 		setWindowTitle( "Console" );
-	};
+	}
+
 	void ConsoleWidget::_appendLog( const Util::LogInfo & p_logInfo )
 	{
 		const std::string message

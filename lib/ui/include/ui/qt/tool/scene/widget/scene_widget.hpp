@@ -9,6 +9,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		NEW_ARCHI_VTX_WIDGET
 
+	  public:
+		void localize() override;
+
 	  protected:
 		SceneWidget( QWidget * p_parent = nullptr );
 		~SceneWidget() = default;

@@ -55,7 +55,6 @@ namespace VTX::UI::QT::Tool::Console::Widget
 
 		QListWidget *		_listWidget		   = nullptr;
 		CommandLinePrompt * _commandLineWidget = nullptr;
-		QPushButton *		_clearWidget	   = nullptr;
 
 		std::mutex _listWidgetMutex = std::mutex();
 	};

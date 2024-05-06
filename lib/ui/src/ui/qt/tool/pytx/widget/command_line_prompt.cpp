@@ -13,19 +13,14 @@ namespace VTX::UI::QT::Tool::PyTX::Widget
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		setContentsMargins( 0, 0, 0, 0 );
-
-		QLabel * const promptLabel = new QLabel( this );
-		promptLabel->setText( "Command >" );
-
 		_promptWidget = new QLineEdit( this );
-		_promptWidget->setPlaceholderText( "Write command here ( e.g. select( mol_n='1AGA' )" );
+		_promptWidget->setPlaceholderText( "> command" );
 
 		_promptWidget->setCompleter( _completer );
 		_promptWidget->setClearButtonEnabled( true );
 
 		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
-		horizontalLayout->addWidget( promptLabel, 1 );
+		horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout->addWidget( _promptWidget, 100 );
 	}
 
