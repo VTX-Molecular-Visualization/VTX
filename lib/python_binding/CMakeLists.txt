@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx_python_binding)
 
+set(PYBIND11_FINDPYTHON ON)
+
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
