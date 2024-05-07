@@ -9,6 +9,7 @@
 #include "ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
+#include "ui/qt/widget/status/status_bar.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
@@ -84,7 +85,8 @@ namespace VTX::UI::QT
 		void closeEvent( QCloseEvent * const p_event ) override;
 
 	  private:
-		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
+		QT::Widget::MainMenu::MainMenuBar *		 _mainMenuBar;
+		QT::Widget::Status::StatusBar* _statusBar;
 
 		// Actions.
 		void _onDockWindowVisibilityChange( bool p_visible );

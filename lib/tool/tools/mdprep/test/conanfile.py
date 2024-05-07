@@ -23,7 +23,7 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
-        self.requires("catch2/3.5.3")        
+        self.requires("catch2/3.6.0")        
         self.requires("gromacs/2024.0")        
         
     def generate(self):

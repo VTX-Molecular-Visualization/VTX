@@ -16,7 +16,7 @@ class VTXIOTestConan(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
-        self.requires("catch2/3.5.3")
+        self.requires("catch2/3.6.0")
         
     def layout(self):
         cmake_layout(self)

@@ -5,6 +5,8 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx)
 
+set(PYBIND11_FINDPYTHON ON)
+
 find_package(glm  REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)

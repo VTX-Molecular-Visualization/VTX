@@ -26,6 +26,9 @@ namespace VTX::UI::QT
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 
+		_statusBar = WidgetFactory::get().instantiateWidget<QT::Widget::Status::StatusBar>( this, "statusBar" );
+		setStatusBar( _statusBar );
+
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
 		_loadStyleSheet( ":/stylesheet_ui.css" );
