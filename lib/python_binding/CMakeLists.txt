@@ -1,5 +1,6 @@
 message("vtx_python_binding")
 cmake_minimum_required(VERSION 3.23)
+set(PYBIND11_FINDPYTHON ON)
 
 project(vtx_python_binding)
 
