@@ -2,9 +2,9 @@
 #define __VTX_UI_TOOL_CONSOLE_WIDGET_CONSOLE__
 
 #include "ui/qt/qt_panel.hpp"
+#include "ui/qt/tool/pytx/widget/command_line_prompt.hpp"
 #include <QColor>
 #include <QDockWidget>
-#include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
 #include <QSize>
@@ -44,6 +44,8 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		void _setupSlots() override;
 
 	  private:
+		using CommandLinePrompt = Tool::PyTX::Widget::CommandLinePrompt;
+
 		// Logs.
 		QListWidget * _listWidget	   = nullptr;
 		std::mutex	  _listWidgetMutex = std::mutex();
@@ -54,8 +56,7 @@ namespace VTX::UI::QT::Tool::Console::Widget
 		QColor _getMessageColor( const Util::LOG_LEVEL p_level );
 
 		// Command line.
-		QLineEdit *	 _promptWidget = nullptr;
-		QCompleter * _completer	   = nullptr;
+		CommandLinePrompt * _promptWidget = nullptr;
 
 		void _setupCompleter();
 		void _launchCommand();
