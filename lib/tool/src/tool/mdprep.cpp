@@ -1,4 +1,5 @@
 #include "tool/mdprep.hpp"
+#include "tools/mdprep/mdprep.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/tool/pytx/details/include_python_binding.hpp"
@@ -11,6 +12,11 @@
 
 namespace VTX::Tool
 {
+
+	struct ToolMdprep::Data
+	{
+		VTX::Tool::Mdprep::MainWindow mainWindow;
+	};
 
 	ToolMdprep::ToolMdprep() {}
 	void ToolMdprep::instantiateTool()
@@ -32,12 +38,18 @@ namespace VTX::Tool
 			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&toolBlock, "MdPrepButton"
 			);
-		// button->setData( "MD prep", ":/sprite/info_button.png", Qt::Orientation::Vertical );
 		button->setData( "MD prep", ":/sprite/icon_tool_mdprep_mainButton.png", Qt::Orientation::Vertical );
 		button->setTriggerAction( this, &ToolMdprep::_openMdPrepWindow );
 
 		toolBlock.pushButton( *button );
 	}
-	void ToolMdprep::_openMdPrepWindow() { VTX_INFO( "Opening ToolMdprep window" ); }
+	void ToolMdprep::_openMdPrepWindow()
+	{
+		VTX_INFO( "Opening ToolMdprep window" );
+		_data.reset( new Data() );
+		_data->mainWindow.show();
+	}
+
+	void VTX::Tool::ToolMdprep::Del::operator()( Data * p_ ) const noexcept { delete p_; }
 
 } // namespace VTX::Tool

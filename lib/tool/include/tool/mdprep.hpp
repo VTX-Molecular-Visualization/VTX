@@ -23,6 +23,13 @@ namespace VTX::Tool
 	  private:
 		void _addButtonsInMenu();
 		void _openMdPrepWindow();
+
+		struct Data;
+		struct Del
+		{
+			void operator()( Data * ) const noexcept;
+		};
+		std::unique_ptr<Data, Del> _data = nullptr;
 	};
 } // namespace VTX::Tool
 
