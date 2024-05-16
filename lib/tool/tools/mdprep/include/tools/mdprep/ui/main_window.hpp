@@ -9,6 +9,7 @@ namespace VTX::Tool::Mdprep::ui
 	enum class E_MD_ENGINE
 	{
 		gromacs,
+		anotherone,
 		COUNT
 	};
 	constexpr const size_t MD_ENGINE_NUMBER = static_cast<size_t>( E_MD_ENGINE::COUNT );

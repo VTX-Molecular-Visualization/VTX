@@ -8,17 +8,17 @@
 #include "ui/qt/widget_factory.hpp"
 #include <app/application/system/action_manager.hpp>
 #include <app/core/action/base_action.hpp>
+#include <optional>
 #include <util/logger.hpp>
-
 namespace VTX::Tool
 {
 
 	struct ToolMdprep::Data
 	{
-		VTX::Tool::Mdprep::MainWindow mainWindow;
+		std::optional<VTX::Tool::Mdprep::MainWindow> mainWindow = std::nullopt;
 	};
 
-	ToolMdprep::ToolMdprep() {}
+	ToolMdprep::ToolMdprep() : _data( new Data() ) {}
 	void ToolMdprep::instantiateTool()
 	{
 		VTX_INFO( "Instantiate ToolMdprep" );
@@ -46,8 +46,8 @@ namespace VTX::Tool
 	void ToolMdprep::_openMdPrepWindow()
 	{
 		VTX_INFO( "Opening ToolMdprep window" );
-		_data.reset( new Data() );
-		_data->mainWindow.show();
+		_data->mainWindow.emplace();
+		_data->mainWindow->show();
 	}
 
 	void VTX::Tool::ToolMdprep::Del::operator()( Data * p_ ) const noexcept { delete p_; }

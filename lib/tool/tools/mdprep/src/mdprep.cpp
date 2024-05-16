@@ -11,9 +11,21 @@ namespace VTX::QT::Mdprep
 {
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
-	  private:
 		inline static const QSize PREFERRED_SIZE { 640, 720 };
-		virtual void			  _setupUi( const QString & p_name )
+
+		QComboBox * _w_mdEngine			= nullptr;
+		int			_mdEngineCurrentIdx = 0;
+
+		std::vector<std::string> _forcefieldCollection;
+
+		// Problem : we must support multiple engines with some common fields and some different ones.
+		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
+		// untouched We separate fields in two categories : Base settings and Advanced Settings. In both of those
+		// categories, it will be common field, and engine-specific fields. I should instanciate an object that frame
+		// engine-specific fields. Don't forget that we need to connect and disconnect events on change. So the object
+		// framing the engine-specific behavior shall be responsible of this as well.
+
+		virtual void _setupUi( const QString & p_name )
 		{
 			auto		_t = p_name.toLatin1();
 			std::string v( _t.begin(), _t.end() );
@@ -31,33 +43,28 @@ namespace VTX::QT::Mdprep
 			QVBoxLayout * windowLayout = new QVBoxLayout( mainWidget );
 			windowLayout->setContentsMargins( 0, 0, 0, 0 );
 
-			QComboBox * engineList = new QComboBox;
+			_w_mdEngine = new QComboBox;
 			for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
-				engineList->addItem( QString( it ) );
-
-			QWidget * mainContainer = new QWidget( this );
-			mainContainer->setStyleSheet( "border: 1px solid red" );
-			mainContainer->setSizePolicy( QSizePolicy( QSizePolicy ::Expanding, QSizePolicy ::Expanding ) );
-			windowLayout->addWidget( mainContainer, 1 );
-			QHBoxLayout * hLayout = new QHBoxLayout( mainContainer );
-
-			auto layoutToAddThoseTextboxTo = hLayout;
-
-			QLineEdit * textbox = new QLineEdit();
-			textbox->setText( "textbox" );
-			// QFormLayout * layout = new QFormLayout( this );
-			// layout->addRow( tr( "&Textbox:" ), textbox );
-			// layout->addRow( tr( "&Textbox2:" ), textbox2 );
-			// hLayout->addLayout( layout );
-			layoutToAddThoseTextboxTo->addWidget( engineList, 1 );
-			layoutToAddThoseTextboxTo->addWidget( textbox, 1 );
+				_w_mdEngine->addItem( QString( it ) );
+			_w_mdEngine->setCurrentIndex( _mdEngineCurrentIdx );
+			windowLayout->addWidget( _w_mdEngine, 1 );
 		}
-		virtual void _setupSlots() { VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" ); }
+		void _updateFormEngine( int idx ) noexcept
+		{
+			_mdEngineCurrentIdx = idx;
+			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
+		}
+		virtual void _setupSlots()
+		{
+			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
+			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateFormEngine );
+		}
 
 	  public:
 		MainWindow( QWidget * const p_parent = nullptr ) : UI::QT::QtDockablePanel( p_parent )
 		{
 			_setupUi( "Is this parameter useful ?" );
+			_setupSlots();
 		}
 	};
 } // namespace VTX::QT::Mdprep
