@@ -62,17 +62,104 @@ namespace VTX
 	// Concept to template any container of ValueType
 	template<typename ContainerType, typename ValueType>
 	concept ContainerOfType = requires( ContainerType p_container ) {
-								  requires Container<ContainerType>;
-								  {
-									  *( p_container.begin() )
-									  } -> std::convertible_to<ValueType>;
-							  };
+		requires Container<ContainerType>;
+		{
+			*( p_container.begin() )
+		} -> std::convertible_to<ValueType>;
+	};
 
 	template<typename EnumType>
 	concept EnumConcept = std::is_enum<EnumType>::value;
 
 	template<typename StringType>
 	concept StringConcept = requires( StringType & p_strLike ) { std::string( p_strLike ); };
+
+	// Following struct are defined in order to create a concept later on.
+
+	template<class T>
+	struct RemoveConst
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveConst<const T>
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveRef
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveRef<T &>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveConstRef
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveConstRef<const T &>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveGlobalRef
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveGlobalRef<T &&>
+	{
+		typedef T type;
+	};
+
+	// Remove const, reference, global reference, and a combination of the 3 from a type.
+	template<class T>
+	struct RemoveTypeAlterations
+	{
+		typedef T type;
+	};
+
+	template<class T>
+	struct RemoveTypeAlterations<T &>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveTypeAlterations<T &&>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveTypeAlterations<const T &>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveTypeAlterations<const T &&>
+	{
+		typedef T type;
+	};
+	template<class T>
+	struct RemoveTypeAlterations<const T>
+	{
+		typedef T type;
+	};
+
+	// Compare two types and return true if they are the same, regardless of their const-ness and reference-ness
+	template<typename LEFT, typename RIGHT>
+	concept SameUnalteredType
+		= std::same_as<typename RemoveTypeAlterations<LEFT>::type, typename RemoveTypeAlterations<RIGHT>::type>;
+
 } // namespace VTX
 
 #endif
