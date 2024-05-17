@@ -16,6 +16,11 @@ namespace VTX::Tool::Mdprep::ui
 	constexpr const char * string( const E_MD_ENGINE & ) noexcept;
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings();
+
+	class MdEngineForm;
+	struct FormLayouts;
+	MdEngineForm form( const E_MD_ENGINE &, FormLayouts ) noexcept;
+
 } // namespace VTX::Tool::Mdprep::ui
 
 #endif

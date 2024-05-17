@@ -1,4 +1,7 @@
 #include "tools/mdprep/mdprep.hpp"
+#include "tools/mdprep/ui/md_engine_form.hpp"
+//
+#include "tools/mdprep/ui/form_data.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
 #include <qcombobox.h>
 #include <qformlayout.h>
@@ -14,11 +17,12 @@ namespace VTX::QT::Mdprep
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
 		inline static const QSize PREFERRED_SIZE { 640, 720 };
-
-		QComboBox * _w_mdEngine			= nullptr;
-		int			_mdEngineCurrentIdx = 0;
-
-		std::vector<std::string> _forcefieldCollection;
+		QComboBox *				  _w_mdEngine		   = nullptr;
+		QFormLayout *			  _basicParamLayout	   = nullptr;
+		QFormLayout *			  _advancedParamLayout = nullptr;
+		std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngineForm>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER> _forms;
+		int _mdEngineCurrentIdx = 0;
+		;
 
 		// Problem : we must support multiple engines with some common fields and some different ones.
 		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
@@ -67,6 +71,10 @@ namespace VTX::QT::Mdprep
 		MainWindow( QWidget * const p_parent = nullptr ) : UI::QT::QtDockablePanel( p_parent )
 		{
 			_setupUi( "Is this parameter useful ?" );
+			_forms[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
+				static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
+				{ _basicParamLayout, _advancedParamLayout }
+			);
 			_setupSlots();
 		}
 	};

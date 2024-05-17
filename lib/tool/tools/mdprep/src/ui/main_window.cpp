@@ -1,3 +1,8 @@
+#include "tools/mdprep/ui/form_data.hpp"
+//
+#include "tools/mdprep/ui/engine_form_gromacs.hpp"
+#include "tools/mdprep/ui/md_engine_form.hpp"
+//
 #include "tools/mdprep/ui/main_window.hpp"
 
 namespace VTX::Tool::Mdprep::ui
@@ -26,4 +31,13 @@ namespace VTX::Tool::Mdprep::ui
 	constexpr const std::array<const char *, MD_ENGINE_NUMBER> g_mdEngineStrings = createMdEngineStringList();
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings() { return g_mdEngineStrings; }
+
+	MdEngineForm form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
+	{
+		switch ( p_engine )
+		{
+		case E_MD_ENGINE::gromacs: return { EngineFormGromacs( std::move( p_layout ) ) };
+		default: return { EngineFormGromacs( std::move( p_layout ) ) }; // Default is gromacs. Period.
+		}
+	}
 } // namespace VTX::Tool::Mdprep::ui

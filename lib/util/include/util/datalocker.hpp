@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <optional>
+#include <util/concepts.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::Util
@@ -77,19 +78,6 @@ namespace VTX::Util
 
 		ReservedData( ReservedDataType & d, std::mutex & m ) : _dataPtr( &d ), _lock( m ) {}
 		ReservedData() = delete;
-
-		// Used when we try to refence the non-const version of the type
-		template<class T>
-		struct RemoveConst
-		{
-			typedef T type;
-		};
-
-		template<class T>
-		struct RemoveConst<const T>
-		{
-			typedef T type;
-		};
 
 		friend DataLocker<ReservedDataType>;
 		friend DataLocker<typename RemoveConst<ReservedDataType>::type>; // Very nice trick to befriend a datalocker
