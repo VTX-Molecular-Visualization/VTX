@@ -9,6 +9,8 @@
 
 namespace VTX::QT::Mdprep
 {
+	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
+	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
 		inline static const QSize PREFERRED_SIZE { 640, 720 };
@@ -20,7 +22,7 @@ namespace VTX::QT::Mdprep
 
 		// Problem : we must support multiple engines with some common fields and some different ones.
 		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
-		// untouched We separate fields in two categories : Base settings and Advanced Settings. In both of those
+		// untouched. We separate fields in two categories : Base settings and Advanced Settings. In both of those
 		// categories, it will be common field, and engine-specific fields. I should instanciate an object that frame
 		// engine-specific fields. Don't forget that we need to connect and disconnect events on change. So the object
 		// framing the engine-specific behavior shall be responsible of this as well.
@@ -43,6 +45,7 @@ namespace VTX::QT::Mdprep
 			QVBoxLayout * windowLayout = new QVBoxLayout( mainWidget );
 			windowLayout->setContentsMargins( 0, 0, 0, 0 );
 
+			// following content is meant to be moved eventually
 			_w_mdEngine = new QComboBox;
 			for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
 				_w_mdEngine->addItem( QString( it ) );
