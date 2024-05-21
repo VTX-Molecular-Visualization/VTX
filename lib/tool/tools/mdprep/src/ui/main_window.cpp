@@ -50,11 +50,11 @@ namespace VTX::Tool::Mdprep::ui
 		QTabWidget * wTab = new QTabWidget();
 		p_layout->addWidget( wTab );
 
-		basicParamContainer	   = new QWidget();
-		advancedParamContainer = new QWidget();
+		containerParamBasic	   = new QWidget();
+		containerParamAdvanced = new QWidget();
 
-		wTab->addTab( basicParamContainer, "Basic Settings" );
-		wTab->addTab( advancedParamContainer, "Advanced Settings" );
+		wTab->addTab( containerParamBasic, "Basic Settings" );
+		wTab->addTab( containerParamAdvanced, "Advanced Settings" );
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

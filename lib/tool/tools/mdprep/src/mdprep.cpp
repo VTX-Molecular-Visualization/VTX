@@ -1,15 +1,18 @@
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
-#include "tools/mdprep/ui/basic_form.hpp"
 #include "tools/mdprep/ui/form_data.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
-#include <qcombobox.h>
-#include <qformlayout.h>
-#include <qlineedit.h>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <util/logger.hpp>
+//
+#include "tools/mdprep/ui/basic_form.hpp"
+//
+#include <qcombobox.h>
+#include <qformlayout.h>
+#include <qlineedit.h>
+//
 
 namespace VTX::QT::Mdprep
 {
@@ -61,6 +64,7 @@ namespace VTX::QT::Mdprep
 			windowLayout->addWidget( _w_mdEngine, 1 );
 
 			_fieldOrganizer.setupUi( windowLayout );
+			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
 		}
 		void _updateFormEngine( int idx ) noexcept
 		{
@@ -71,7 +75,8 @@ namespace VTX::QT::Mdprep
 
 			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
 				_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
-					static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ), _fieldOrganizer.layouts
+					static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
+					{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
 				);
 			_formsMd[ _mdEngineCurrentIdx ]->activate();
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );

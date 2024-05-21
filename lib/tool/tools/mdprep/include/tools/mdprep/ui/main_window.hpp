@@ -27,8 +27,8 @@ namespace VTX::Tool::Mdprep::ui
 	class MdFieldsOrganizer
 	{
 	  public:
-		QWidget * basicParamContainer	 = nullptr;
-		QWidget * advancedParamContainer = nullptr;
+		QWidget * containerParamBasic	 = nullptr;
+		QWidget * containerParamAdvanced = nullptr;
 
 		// Construct only for data allocation
 		MdFieldsOrganizer() = default;
