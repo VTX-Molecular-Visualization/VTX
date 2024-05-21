@@ -18,10 +18,12 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	void fillMenu( QMenu &							p_menu,
-				   const int						p_enumSize,
-				   const std::vector<std::string> & p_names,
-				   const bool						p_actionCheckable )
+	void fillMenu(
+		QMenu &							 p_menu,
+		const int						 p_enumSize,
+		const std::vector<std::string> & p_names,
+		const bool						 p_actionCheckable
+	)
 	{
 		for ( int i = 0; i < p_enumSize; i++ )
 		{
@@ -31,6 +33,14 @@ namespace VTX::UI::QT::Util
 
 			p_menu.addAction( action );
 		}
+	}
+
+	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept
+	{
+		QLabel * wlabel = new QLabel( p_label );
+		wlabel->setToolTip( p_helpTooltip );
+		wlabel->setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
+		return wlabel;
 	}
 
 } // namespace VTX::UI::QT::Util
