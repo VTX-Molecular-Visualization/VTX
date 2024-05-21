@@ -1,6 +1,7 @@
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
+#include "tools/mdprep/ui/basic_form.hpp"
 #include "tools/mdprep/ui/form_data.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
 #include <qcombobox.h>
@@ -16,13 +17,16 @@ namespace VTX::QT::Mdprep
 	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
+		using FormCollection
+			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngineForm>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+
 		inline static const QSize PREFERRED_SIZE { 640, 720 };
-		QComboBox *				  _w_mdEngine		   = nullptr;
-		QFormLayout *			  _basicParamLayout	   = nullptr;
-		QFormLayout *			  _advancedParamLayout = nullptr;
-		std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngineForm>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER> _forms;
-		int _mdEngineCurrentIdx = 0;
-		;
+		QComboBox *				  _w_mdEngine = nullptr;
+
+		VTX::Tool::Mdprep::ui::MdFieldsOrganizer _fieldOrganizer;
+		VTX::Tool::Mdprep::ui::MdBasicParamForm	 _formBasic;
+		FormCollection							 _formsMd;
+		int										 _mdEngineCurrentIdx = 0;
 
 		// Problem : we must support multiple engines with some common fields and some different ones.
 		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
@@ -55,10 +59,21 @@ namespace VTX::QT::Mdprep
 				_w_mdEngine->addItem( QString( it ) );
 			_w_mdEngine->setCurrentIndex( _mdEngineCurrentIdx );
 			windowLayout->addWidget( _w_mdEngine, 1 );
+
+			_fieldOrganizer.setupUi( windowLayout );
 		}
 		void _updateFormEngine( int idx ) noexcept
 		{
+			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() )
+				_formsMd[ _mdEngineCurrentIdx ]->deactivate();
+
 			_mdEngineCurrentIdx = idx;
+
+			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
+				_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
+					static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ), _fieldOrganizer.layouts
+				);
+			_formsMd[ _mdEngineCurrentIdx ]->activate();
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
 		virtual void _setupSlots()
@@ -71,10 +86,7 @@ namespace VTX::QT::Mdprep
 		MainWindow( QWidget * const p_parent = nullptr ) : UI::QT::QtDockablePanel( p_parent )
 		{
 			_setupUi( "Is this parameter useful ?" );
-			_forms[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
-				static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
-				{ _basicParamLayout, _advancedParamLayout }
-			);
+			_updateFormEngine( 0 );
 			_setupSlots();
 		}
 	};

@@ -4,6 +4,10 @@
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
 #include "tools/mdprep/ui/main_window.hpp"
+//
+#include <qformlayout.h>
+#include <qlayout.h>
+#include <qtabwidget.h>
 
 namespace VTX::Tool::Mdprep::ui
 {
@@ -40,4 +44,17 @@ namespace VTX::Tool::Mdprep::ui
 		default: return { EngineFormGromacs( std::move( p_layout ) ) }; // Default is gromacs. Period.
 		}
 	}
+
+	void MdFieldsOrganizer::setupUi( QLayout * p_layout ) noexcept
+	{
+		QTabWidget * wTab = new QTabWidget();
+		p_layout->addWidget( wTab );
+
+		basicParamContainer	   = new QWidget();
+		advancedParamContainer = new QWidget();
+
+		wTab->addTab( basicParamContainer, "Basic Settings" );
+		wTab->addTab( advancedParamContainer, "Advanced Settings" );
+	}
+
 } // namespace VTX::Tool::Mdprep::ui
