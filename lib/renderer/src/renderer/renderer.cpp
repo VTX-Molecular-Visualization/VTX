@@ -1006,12 +1006,12 @@ namespace VTX::Renderer
 			ComputePass::Data bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
 														 atomGridDataSorted.data(),
 														 1 };
-			ComputePass::Data bufferAtomIndexSorted(
-				atomIndexSorted.size() * sizeof( uint ), atomIndexSorted.data(), 2
-			);
-			ComputePass::Data bufferAtomPosition(
-				atomPositionsVdW.size() * sizeof( Vec4f ), atomPositionsVdW.data(), 3
-			);
+			ComputePass::Data bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
+													  atomIndexSorted.data(),
+													  2 };
+			ComputePass::Data bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
+												   atomPositionsVdW.data(),
+												   3 };
 
 			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
 										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
