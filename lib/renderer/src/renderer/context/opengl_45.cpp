@@ -230,9 +230,8 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				Handle output = _output;
-				p_outInstructions.emplace_back( [ output ]()
-												{ GL::Framebuffer::bindDefault( output, GL_DRAW_FRAMEBUFFER ); } );
+				p_outInstructions.emplace_back( [ this ]()
+												{ GL::Framebuffer::bindDefault( _output, GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Settings.
