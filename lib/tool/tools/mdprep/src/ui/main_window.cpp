@@ -47,6 +47,8 @@ namespace VTX::Tool::Mdprep::ui
 
 	void MdFieldsOrganizer::setupUi( QLayout * p_layout ) noexcept
 	{
+		// At first IU wanted to put all advanced settings in a collapsible panel but it seems unintuitive to create one
+		// with Qt so I decided to make tabs instead. But it shall be easy to change in the future if we want to.
 		QTabWidget * wTab = new QTabWidget();
 		p_layout->addWidget( wTab );
 

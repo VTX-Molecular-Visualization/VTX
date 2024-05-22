@@ -46,7 +46,7 @@ namespace VTX::QT::Mdprep
 			QWidget * const mainWidget = _instantiateMainWidget( PREFERRED_SIZE, PREFERRED_SIZE );
 
 			UI::QT::QtDockablePanel::_setupUi( p_name );
-
+			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
 			setWindowState( Qt::WindowState::WindowActive );
@@ -79,6 +79,12 @@ namespace VTX::QT::Mdprep
 					{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
 				);
 			_formsMd[ _mdEngineCurrentIdx ]->activate();
+
+			const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData * engineSpecificData = nullptr;
+			_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
+			if ( engineSpecificData )
+				_formBasic.update( *engineSpecificData );
+
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
 		virtual void _setupSlots()
