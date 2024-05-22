@@ -8,6 +8,7 @@
 #include <QEvent>
 #include <QImage>
 #include <QLabel>
+#include <QLayout>
 #include <QMenu>
 #include <QPixmap>
 #include <QString>
@@ -118,6 +119,7 @@ namespace VTX::UI::QT::Util
 		return QBitmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
 	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept;
+	void	 addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
 
 } // namespace VTX::UI::QT::Util
 

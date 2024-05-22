@@ -42,5 +42,19 @@ namespace VTX::UI::QT::Util
 		wlabel->setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 		return wlabel;
 	}
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept
+	{
+		QHBoxLayout * qLilLayout = new QHBoxLayout;
+		p_dest->addLayout( qLilLayout );
+		QLabel * qlabel = new QLabel( p_label );
+		QFont	 font	= qlabel->font();
+		font.setPointSize( font.pointSize() + 4 );
+		qlabel->setFont( font );
+		auto qLine = new QFrame;
+		qLine->setFrameShape( QFrame::HLine );
+		qLine->setFrameShadow( QFrame::Sunken );
+		qLilLayout->addWidget( qlabel );
+		qLilLayout->addWidget( qLine, 1 );
+	}
 
 } // namespace VTX::UI::QT::Util
