@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::ui
 		case E_MD_ENGINE::gromacs: return { "Gromacs" };
 		default: break;
 		}
-		return "Please provide a user string for the MD engine"; // For developers that add new MD Engine support
+		return "DEBUUUG"; // For developers that add new MD Engine support
 	}
 	namespace
 	{
@@ -36,12 +36,24 @@ namespace VTX::Tool::Mdprep::ui
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings() { return g_mdEngineStrings; }
 
+	namespace
+	{
+		class NoopForm
+		{
+		  public:
+			NoopForm() = default;
+			void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& ) const noexcept {}
+			void activate() noexcept {}
+			void deactivate() noexcept {}
+		};
+	} // namespace
+
 	MdEngineForm form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
 	{
 		switch ( p_engine )
 		{
 		case E_MD_ENGINE::gromacs: return { EngineFormGromacs( std::move( p_layout ) ) };
-		default: return { EngineFormGromacs( std::move( p_layout ) ) }; // Default is gromacs. Period.
+		default: return { NoopForm() }; // Default is gromacs. Period.
 		}
 	}
 

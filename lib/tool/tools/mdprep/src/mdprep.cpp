@@ -16,6 +16,8 @@
 
 namespace VTX::QT::Mdprep
 {
+
+
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
@@ -23,7 +25,7 @@ namespace VTX::QT::Mdprep
 		using FormCollection
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngineForm>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
-		inline static const QSize PREFERRED_SIZE { 640, 720 };
+		inline static const QSize PREFERRED_SIZE { 500, 720 };
 		QComboBox *				  _w_mdEngine = nullptr;
 
 		VTX::Tool::Mdprep::ui::MdFieldsOrganizer _fieldOrganizer;
@@ -50,20 +52,42 @@ namespace VTX::QT::Mdprep
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
 			setWindowState( Qt::WindowState::WindowActive );
-			const QSize winsize = QSize( 640, 720 );
+			const QSize winsize = PREFERRED_SIZE;
 			resize( winsize );
 
-			QVBoxLayout * windowLayout = new QVBoxLayout( mainWidget );
-			windowLayout->setContentsMargins( 0, 0, 0, 0 );
+			QVBoxLayout * qLayoutWindow = new QVBoxLayout( mainWidget );
+			qLayoutWindow->setContentsMargins( 0, 0, 0, 0 );
+			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
+
+			QHBoxLayout * qLayoutCentering = new QHBoxLayout;
+			qLayoutWindow->addLayout( qLayoutCentering );
 
 			// following content is meant to be moved eventually
 			_w_mdEngine = new QComboBox;
 			for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
 				_w_mdEngine->addItem( QString( it ) );
 			_w_mdEngine->setCurrentIndex( _mdEngineCurrentIdx );
-			windowLayout->addWidget( _w_mdEngine, 1 );
 
-			_fieldOrganizer.setupUi( windowLayout );
+			qLayoutCentering->addStretch( 1 );
+
+			QFormLayout * qLayoutFormEngine = new QFormLayout;
+			qLayoutCentering->addLayout( qLayoutFormEngine );
+			QLabel * qLabelMdEngine = new QLabel( "Choose your MD engine" );
+			{
+				auto font = qLabelMdEngine->font();
+				font.setPointSize( font.pointSize() + 2 );
+				qLabelMdEngine->setFont( font );
+				font = _w_mdEngine->font();
+				font.setPointSize( font.pointSize() + 2 );
+				_w_mdEngine->setFont( font );
+			}
+			qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
+
+			qLayoutCentering->addStretch( 1 );
+
+			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
+
+			_fieldOrganizer.setupUi( qLayoutWindow );
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
 		}
 		void _updateFormEngine( int idx ) noexcept
@@ -80,10 +104,12 @@ namespace VTX::QT::Mdprep
 				);
 			_formsMd[ _mdEngineCurrentIdx ]->activate();
 
-			const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData * engineSpecificData = nullptr;
-			_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
-			if ( engineSpecificData )
-				_formBasic.update( *engineSpecificData );
+			{
+				const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData * engineSpecificData = nullptr;
+				_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
+				if ( engineSpecificData )
+					_formBasic.update( *engineSpecificData );
+			}
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
