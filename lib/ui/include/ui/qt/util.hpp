@@ -112,7 +112,7 @@ namespace VTX::UI::QT::Util
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
 	{
-		return QBitmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
+		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
 
 } // namespace VTX::UI::QT::Util

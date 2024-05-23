@@ -15,11 +15,9 @@ configure_target(vtx_tool)
 
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
-file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
 file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 target_sources(vtx_tool
 	PRIVATE ${SOURCES}
-	PRIVATE ${QT_FORMS}
 	PRIVATE ${QT_RESOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
