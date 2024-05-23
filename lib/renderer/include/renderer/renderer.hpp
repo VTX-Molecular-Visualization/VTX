@@ -30,9 +30,7 @@ namespace VTX::Renderer
 			const size_t	 p_height,
 			const FilePath & p_shaderPath,
 			void *			 p_loader = nullptr
-		) :
-			width( p_width ),
-			height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+		) : width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 		{
 			// Graph.
 			_renderGraph = std::make_unique<RenderGraphOpenGL45>();
@@ -170,7 +168,7 @@ namespace VTX::Renderer
 					_render( p_time );
 				}
 
-				if ( not forceUpdate )
+				if ( forceUpdate == false )
 				{
 					if ( _needUpdate )
 					{
@@ -218,7 +216,7 @@ namespace VTX::Renderer
 		inline void setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
-			if ( not p_value )
+			if ( p_value == false )
 			{
 				_framesRemaining = BUFFER_COUNT;
 			}

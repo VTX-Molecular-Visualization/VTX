@@ -9,14 +9,18 @@ namespace VTX::Renderer::Context
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
-		if ( not gladLoaded )
+		if ( gladLoaded )
+		{
+			VTX_WARNING( "GLAD loaded" );
+		}
+		else
 		{
 			VTX_WARNING( "GLAD not loaded" );
 		}
 
 		// Load opengl 4.5.
 		// With external loader.
-		if ( p_proc and gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
 			VTX_ERROR( "Failed to load OpenGL" );
 			// throw GLException( "Failed to load OpenGL" );
@@ -29,7 +33,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// Check version.
-		if ( not GLAD_GL_VERSION_4_5 )
+		if ( GLAD_GL_VERSION_4_5 == false )
 		{
 			VTX_ERROR( "OpenGL 4.5 or higher is required" );
 			// throw GLException( "OpenGL 4.5 or higher is required" );
@@ -108,7 +112,7 @@ namespace VTX::Renderer::Context
 		_output = p_output;
 
 		// Create shared buffers.
-		if ( not p_uniforms.empty() )
+		if ( p_uniforms.empty() == false )
 		{
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
@@ -118,7 +122,7 @@ namespace VTX::Renderer::Context
 				const Key keyBuffer = _getKey( uniform );
 				buffers.push_back( keyBuffer );
 
-				if ( not _buffers.contains( keyBuffer ) )
+				if ( _buffers.contains( keyBuffer ) == false )
 				{
 					_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 				}
@@ -150,12 +154,12 @@ namespace VTX::Renderer::Context
 			_createInputs( p_links, descPassPtr, vertexArrays, buffers, textures );
 
 			// Create FBO.
-			if ( not isLastPass )
+			if ( isLastPass == false )
 			{
 				Key keyFramebuffer = _getKey( *descPassPtr );
 				framebuffers.push_back( keyFramebuffer );
 
-				if ( not _framebuffers.contains( keyFramebuffer ) )
+				if ( _framebuffers.contains( keyFramebuffer ) == false )
 				{
 					_framebuffers.emplace( keyFramebuffer, std::make_unique<GL::Framebuffer>() );
 				}
@@ -164,7 +168,7 @@ namespace VTX::Renderer::Context
 				_createOuputs( descPassPtr, drawBuffers, textures );
 
 				// Set draw buffers.
-				if ( not drawBuffers.empty() )
+				if ( drawBuffers.empty() == false )
 				{
 					_framebuffers[ keyFramebuffer ]->setDrawBuffers( drawBuffers );
 				}
@@ -180,18 +184,18 @@ namespace VTX::Renderer::Context
 				const Key keyProgram = _getKey( descPassPtr, descProgram );
 				programs.push_back( keyProgram );
 
-				if ( not _programs.contains( keyProgram ) )
+				if ( _programs.contains( keyProgram ) == false )
 				{
 					_programs.emplace( keyProgram, program );
 				}
 
 				// Uniforms.
-				if ( not descProgram.uniforms.empty() )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					const Key keyBuffer = _getKey( descPassPtr, descProgram );
 					buffers.push_back( keyBuffer );
 
-					if ( not _buffers.contains( keyBuffer ) )
+					if ( _buffers.contains( keyBuffer ) == false )
 					{
 						_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 					}
@@ -219,7 +223,7 @@ namespace VTX::Renderer::Context
 			}
 
 			// Bind fbo.
-			if ( not isLastPass )
+			if ( isLastPass == false )
 			{
 				GL::Framebuffer * const fbo = _framebuffers[ keyPass ].get();
 				p_outInstructions.emplace_back( [ fbo ]() { fbo->bind( GL_DRAW_FRAMEBUFFER ); } );
@@ -308,7 +312,7 @@ namespace VTX::Renderer::Context
 			{
 				const Key keyProgram = _getKey( descPassPtr, descProgram );
 
-				if ( not descProgram.uniforms.empty() )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					assert( _buffers.contains( keyProgram ) );
 
@@ -350,7 +354,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ program, vao, ebo, primitive, ranges, needRenderFun ]()
 							{
-								if ( needRenderFun == nullptr or needRenderFun() )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
@@ -374,7 +378,7 @@ namespace VTX::Renderer::Context
 						p_outInstructions.emplace_back(
 							[ program, vao, primitive, ranges, needRenderFun ]()
 							{
-								if ( needRenderFun == nullptr or needRenderFun() )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									program->use();
@@ -406,7 +410,7 @@ namespace VTX::Renderer::Context
 					);
 				}
 
-				if ( not descProgram.uniforms.empty() )
+				if ( descProgram.uniforms.empty() == false )
 				{
 					assert( _buffers.contains( keyProgram ) );
 					GL::Buffer * ubo = _buffers[ keyProgram ].get();
@@ -424,7 +428,7 @@ namespace VTX::Renderer::Context
 			}
 
 			// Unbind fbo.
-			if ( not isLastPass )
+			if ( isLastPass == false )
 			{
 				const Key k = _getKey( *descPassPtr );
 				assert( _framebuffers.contains( k ) );
@@ -607,7 +611,7 @@ namespace VTX::Renderer::Context
 		// Create and bind buffers.
 		for ( ComputePass::Data * const data : p_pass.data )
 		{
-			if ( not _computeBuffers.contains( data ) )
+			if ( _computeBuffers.contains( data ) == false )
 			{
 				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data ) );
 			}
@@ -637,7 +641,7 @@ namespace VTX::Renderer::Context
 			z = 1;
 		}
 
-		assert( x and y and z );
+		assert( x && y && z );
 
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 		glDispatchCompute( x, y, z );
@@ -683,7 +687,7 @@ namespace VTX::Renderer::Context
 				const Attachment & attachment = std::get<Attachment>( descIO );
 				const auto		   src		  = _getInputTextureKey( p_links, p_descPassPtr, channel );
 
-				if ( not src.has_value() and attachment.data != nullptr )
+				if ( src.has_value() == false && attachment.data != nullptr )
 				{
 					_createTexture( descIO, _getKey( *p_descPassPtr, true, uint( channel ) ), p_textures );
 				}
@@ -700,12 +704,12 @@ namespace VTX::Renderer::Context
 				p_vertexArrays.push_back( keyVao );
 				p_buffers.push_back( keyEbo );
 
-				if ( not _vertexArrays.contains( keyVao ) )
+				if ( _vertexArrays.contains( keyVao ) == false )
 				{
 					_vertexArrays.emplace( keyVao, std::make_unique<GL::VertexArray>() );
 				}
 
-				if ( not _buffers.contains( keyEbo ) )
+				if ( _buffers.contains( keyEbo ) == false )
 				{
 					_buffers.emplace( keyEbo, std::make_unique<GL::Buffer>() );
 				}
@@ -721,7 +725,7 @@ namespace VTX::Renderer::Context
 					const Key keyData = _getKey( input, entry );
 					p_buffers.push_back( keyData );
 
-					if ( not _buffers.contains( keyData ) )
+					if ( _buffers.contains( keyData ) == false )
 					{
 						_buffers.emplace( keyData, std::make_unique<GL::Buffer>() );
 					}
@@ -785,7 +789,7 @@ namespace VTX::Renderer::Context
 			p_links.begin(),
 			p_links.end(),
 			[ p_pass, p_channel ]( const std::unique_ptr<Link> & p_e )
-			{ return p_e->dest == p_pass and p_e->channelDest == p_channel; }
+			{ return p_e->dest == p_pass && p_e->channelDest == p_channel; }
 		);
 
 		if ( it == p_links.end() )
@@ -833,7 +837,7 @@ namespace VTX::Renderer::Context
 
 		p_textures.push_back( p_key );
 
-		if ( not _textures.contains( p_key ) )
+		if ( _textures.contains( p_key ) == false )
 		{
 			_textures.emplace(
 				p_key,
@@ -887,11 +891,11 @@ namespace VTX::Renderer::Context
 			{
 				padding = 4 - ( size % 4 );
 			}
-			else if ( size > 4 and size % 8 != 0 )
+			else if ( size > 4 && size % 8 != 0 )
 			{
 				padding = 8 - ( size % 8 );
 			}
-			else if ( size > 8 and size % 16 != 0 )
+			else if ( size > 8 && size % 16 != 0 )
 			{
 				padding = 16 - ( size % 16 );
 			}
