@@ -19,7 +19,7 @@ class VTXRecipe(ConanFile):
         self.requires("magic_enum/0.9.5")
         self.requires("cpr/1.10.5")
         self.requires("catch2/3.6.0")
-        self.requires("chemfiles/0.10.4.1")
+        self.requires("chemfiles/0.10.4.2")
         self.requires("sdl/2.30.2")
         self.requires("imgui/1.90.5")
         self.requires("stb/cci.20230920")
