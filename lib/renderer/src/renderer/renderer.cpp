@@ -28,7 +28,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr || _context->loaded == false )
+		if ( _context == nullptr or not _context->loaded )
 		{
 			throw GLException( "Context not loaded" );
 		}
@@ -507,7 +507,7 @@ namespace VTX::Renderer
 
 			// Compute data if not cached.
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-			if ( cache.positions.empty() == false || cache.isEmpty )
+			if ( not cache.positions.empty() or cache.isEmpty )
 			{
 				// ??
 				totalCaPositions += cache.positions.size();
@@ -751,14 +751,14 @@ namespace VTX::Renderer
 
 					/*
 					visibilities.emplace_back( uint(
-						_molecule->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
-						&& O->isVisible()
+						_molecule->isVisible() and chain->isVisible() and residue->isVisible() and CA->isVisible()
+						and O->isVisible()
 					) );
 					*/
 
 					/*
 					if ( residueLast != -1
-						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
+						 and residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
 					{
 						_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, types, colors, flags, ids
 					); createVectors = true;
@@ -789,7 +789,7 @@ namespace VTX::Renderer
 		}
 
 		size_t offsetIndices = 0;
-		if ( _proxiesMolecules.empty() || totalCaPositions == 0 )
+		if ( _proxiesMolecules.empty() or totalCaPositions == 0 )
 		{
 			assert( totalIndices == 0 );
 		}
@@ -811,7 +811,7 @@ namespace VTX::Renderer
 			modelId++;
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
 
-			assert( cache.isEmpty || cache.positions.size() > 0 );
+			assert( cache.isEmpty or cache.positions.size() > 0 );
 
 			if ( cache.positions.empty() == true )
 			{
@@ -970,7 +970,7 @@ namespace VTX::Renderer
 			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
 			{
 				const std::vector<uint> & data = atomGridDataTmp[ i ];
-				if ( data.empty() == false )
+				if ( not data.empty() )
 				{
 					atomGridDataSorted[ i ] = Range<uint> { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );

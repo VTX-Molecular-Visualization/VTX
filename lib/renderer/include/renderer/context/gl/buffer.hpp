@@ -96,7 +96,7 @@ namespace VTX::Renderer::Context::GL
 		inline void setData( const std::vector<T> & p_vector, const GLenum p_usage )
 		{
 			assert( glIsBuffer( _id ) );
-			assert( p_vector.empty() == false );
+			assert( not p_vector.empty() );
 
 			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
 
@@ -160,7 +160,7 @@ namespace VTX::Renderer::Context::GL
 		inline void setStorage( const std::vector<T> & p_vector, const GLbitfield p_flags = 0 )
 		{
 			assert( glIsBuffer( _id ) );
-			assert( p_vector.empty() == false );
+			assert( not p_vector.empty() );
 
 			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
 

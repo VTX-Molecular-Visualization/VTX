@@ -61,7 +61,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 
 			// Init ImGui.
-			if ( IMGUI_CHECKVERSION() == false )
+			if ( not IMGUI_CHECKVERSION() )
 			{
 				throw std::runtime_error( "IMGUI_CHECKVERSION() failed" );
 			}
@@ -69,11 +69,11 @@ namespace VTX::Bench
 			ImGui::CreateContext();
 			ImGui::StyleColorsDark();
 
-			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
+			if ( not ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) )
 			{
 				throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
 			}
-			if ( ImGui_ImplOpenGL3_Init( "#version 450 core" ) == false )
+			if ( not ImGui_ImplOpenGL3_Init( "#version 450 core" ) )
 			{
 				throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
 			}
@@ -329,7 +329,7 @@ namespace VTX::Bench
 
 		void _drawRenderer( Renderer::Renderer * const p_renderer )
 		{
-			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
+			if ( ImGui::Begin( "Renderer" ) and p_renderer->hasContext() )
 			{
 				size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
 				for ( auto count : p_renderer->drawRangeSpheres.counts )
@@ -656,7 +656,7 @@ namespace VTX::Bench
 						for ( const Uniform & uniform : program.uniforms )
 						{
 							std::string key		   = pass->name + program.name + uniform.name;
-							bool		isEditable = isBuilt && isInRenderQueue;
+							bool		isEditable = isBuilt and isInRenderQueue;
 
 							// ImGui::Text( uniform.name.c_str() );
 							ImGui::SetNextItemWidth( 150 );
@@ -887,7 +887,7 @@ namespace VTX::Bench
 				}
 			}
 
-			if ( p_isEditable && updated )
+			if ( p_isEditable and updated )
 			{
 				p_renderer->setValue( value, p_key );
 			}

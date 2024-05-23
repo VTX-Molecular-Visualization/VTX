@@ -74,7 +74,7 @@ namespace VTX::Renderer::Scheduler
 			std::vector<size_t> sorted;
 			for ( size_t index = 0; index < passes.size(); ++index )
 			{
-				if ( visited[ index ] == false )
+				if ( not visited[ index ] )
 				{
 					_depthFirstSearch( p_passes, adjacentList, index, visited, onStack, isCyclic, sorted );
 					if ( isCyclic )
@@ -120,7 +120,7 @@ namespace VTX::Renderer::Scheduler
 					return;
 				}
 
-				if ( p_visited[ neighbour ] == false )
+				if ( not p_visited[ neighbour ] )
 				{
 					_depthFirstSearch(
 						p_passes, p_adjacencyLists, neighbour, p_visited, p_onStack, p_isCyclic, p_sorted
