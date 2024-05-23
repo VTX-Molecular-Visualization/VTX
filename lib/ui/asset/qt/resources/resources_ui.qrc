@@ -136,6 +136,7 @@
 	<file>sprite/windows_icon.png</file>
 	<file>stylesheet_ui.css</file>
 	<file>stylesheet_ui_linux.css</file>
+	<file>stylesheet_ui_mac.css</file>
 	<file>stylesheet_ui_windows.css</file>
 	<file>video/video_intro.gif</file>
 </qresource>

@@ -15,6 +15,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				static_cast<QTreeWidget *>( nullptr ), QStringList( QString( "item: %1" ).arg( i ) )
 			) );
 		insertTopLevelItems( 0, items );
+
+		/*
+		MAIN_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
+			Core::ECS::SIGNAL::DESTROY, this
+		);
+		*/
 	}
 
 	void SceneTreeWidget::_setupSlots() {}

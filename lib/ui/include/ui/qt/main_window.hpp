@@ -67,7 +67,7 @@ namespace VTX::UI::QT
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
-		void appendStylesheet( const char * p_stylesheetPath );
+		// void appendStylesheet( const char * p_stylesheetPath );
 
 	  protected:
 		void _setupUi( const QString & p_name ) override;
@@ -85,8 +85,8 @@ namespace VTX::UI::QT
 		void closeEvent( QCloseEvent * const p_event ) override;
 
 	  private:
-		QT::Widget::MainMenu::MainMenuBar *		 _mainMenuBar;
-		QT::Widget::Status::StatusBar* _statusBar;
+		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar;
+		QT::Widget::Status::StatusBar *		_statusBar;
 
 		// Actions.
 		void _onDockWindowVisibilityChange( bool p_visible );
@@ -94,7 +94,7 @@ namespace VTX::UI::QT
 		void _updatePicker() const;
 
 		// Functions.
-		void _loadStyleSheet( const char * p_stylesheetPath );
+		void _loadTheme();
 
 		Core::WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 		std::string		 _getWindowTitle() const;

@@ -31,7 +31,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( ":/stylesheet_ui.css" );
+		_loadTheme();
 	}
 
 	void MainWindow::initWindowLayout() {}
@@ -49,15 +49,37 @@ namespace VTX::UI::QT
 		);
 	}
 
-	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
+	void MainWindow::_loadTheme()
 	{
-		QFile stylesheetFile( p_stylesheetPath );
+		// TODO: move to style constants.
+		// Load main stylesheet.
+		QFile stylesheetFile( ":/stylesheet_ui.css" );
 		stylesheetFile.open( QFile::ReadOnly );
 
-		const QString stylesheet = stylesheetFile.readAll();
+		QString stylesheet = stylesheetFile.readAll();
+
+		// Load os-specific stylesheet.
+#if _WIN32
+		QFile stylesheetOSFile( ":/stylesheet_ui_windows.css" );
+#elif __linux__
+		QFile stylesheetOSFile( ":/stylesheet_ui_linux.css" );
+#elif __APPLE__
+		QFile stylesheetOSFile( ":/stylesheet_ui_mac.css" );
+#else
+		QFile stylesheetOSFile();
+		assert( true );
+#endif
+
+		stylesheetOSFile.open( QFile::ReadOnly );
+		stylesheet += '\n' + stylesheetOSFile.readAll();
+
+		// Load theme and apply to stylesheet.
+
+		// Set stylesheet to app.
 		setStyleSheet( stylesheet );
 	}
 
+	/*
 	void MainWindow::appendStylesheet( const char * p_stylesheetPath )
 	{
 		QFile stylesheetFile( p_stylesheetPath );
@@ -68,6 +90,7 @@ namespace VTX::UI::QT
 
 		setStyleSheet( newStylesheet );
 	}
+	*/
 
 	void MainWindow::_setupSlots() {}
 	void MainWindow::localize() { setWindowTitle( "VTX" ); }

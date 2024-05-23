@@ -40,6 +40,7 @@ namespace VTX::IO::Internal::Filesystem
 	inline const FilePath getLibrariesDir() { return getExecutableDir() / "libraries"; }
 	inline const FilePath getRepresentationsLibraryDir() { return getLibrariesDir() / "representations"; }
 	inline const FilePath getRenderEffectPresetsLibraryDir() { return getLibrariesDir() / "render_effects"; }
+	inline const FilePath getThemesLibraryDir() { return getLibrariesDir() / "themes"; }
 	inline const FilePath getInternalDataDir() { return getExecutableDir() / "data"; }
 	inline const FilePath getResidueDataDir() { return getInternalDataDir() / "residue_data"; }
 
