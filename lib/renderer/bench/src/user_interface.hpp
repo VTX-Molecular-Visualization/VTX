@@ -61,7 +61,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 
 			// Init ImGui.
-			if ( IMGUI_CHECKVERSION() == false )
+			if ( not IMGUI_CHECKVERSION() )
 			{
 				throw std::runtime_error( "IMGUI_CHECKVERSION() failed" );
 			}
@@ -69,11 +69,11 @@ namespace VTX::Bench
 			ImGui::CreateContext();
 			ImGui::StyleColorsDark();
 
-			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
+			if ( not ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) )
 			{
 				throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
 			}
-			if ( ImGui_ImplOpenGL3_Init( "#version 450 core" ) == false )
+			if ( not ImGui_ImplOpenGL3_Init( "#version 450 core" ) )
 			{
 				throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
 			}

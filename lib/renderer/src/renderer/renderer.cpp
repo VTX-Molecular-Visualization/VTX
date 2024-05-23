@@ -28,7 +28,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr || _context->loaded == false )
+		if ( _context == nullptr || not _context->loaded )
 		{
 			throw GLException( "Context not loaded" );
 		}
@@ -507,7 +507,7 @@ namespace VTX::Renderer
 
 			// Compute data if not cached.
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-			if ( cache.positions.empty() == false || cache.isEmpty )
+			if ( not cache.positions.empty() || cache.isEmpty )
 			{
 				// ??
 				totalCaPositions += cache.positions.size();
@@ -970,7 +970,7 @@ namespace VTX::Renderer
 			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
 			{
 				const std::vector<uint> & data = atomGridDataTmp[ i ];
-				if ( data.empty() == false )
+				if ( not data.empty() )
 				{
 					atomGridDataSorted[ i ] = Range<uint> { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );

@@ -64,10 +64,10 @@ namespace VTX::Renderer
 		}
 
 		bool addLink(
-			Pass * const			 p_passSrc,
-			Pass * const			 p_passDest,
-			const E_CHAN_OUT & p_channelSrc  = E_CHAN_OUT::COLOR_0,
-			const E_CHAN_IN &	 p_channelDest = E_CHAN_IN::_0
+			Pass * const	   p_passSrc,
+			Pass * const	   p_passDest,
+			const E_CHAN_OUT & p_channelSrc	 = E_CHAN_OUT::COLOR_0,
+			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
 		)
 		{
 			// Check I/O existence.
@@ -81,7 +81,7 @@ namespace VTX::Renderer
 				visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc
 			);
 
-			if ( areCompatible == false )
+			if ( not areCompatible )
 			{
 				VTX_WARNING( "{}", "Descriptors are not compatible" );
 				return false;
