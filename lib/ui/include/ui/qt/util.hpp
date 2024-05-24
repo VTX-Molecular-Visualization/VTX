@@ -15,6 +15,8 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
+#include <qformlayout.h>
+#include <qlineedit.h>
 #include <set>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -121,6 +123,18 @@ namespace VTX::UI::QT::Util
 	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept;
 	void	 addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
 
+	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
+
+	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input but with a label next
+	// to the field
+	void addUInt64FieldWithRightLabel(
+		QFormLayout * p_dest,
+		const char *  p_label,
+		const char *  p_tooltip,
+		QLineEdit **  p_out_field,
+		QLabel **	  p_out_label
+	) noexcept;
 } // namespace VTX::UI::QT::Util
 
 #endif

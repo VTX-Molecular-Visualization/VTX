@@ -7,6 +7,7 @@
 #include <ui/qt/main_window.hpp>
 #include <util/logger.hpp>
 //
+#include "tools/mdprep/ui/advanced_form.hpp"
 #include "tools/mdprep/ui/basic_form.hpp"
 //
 #include <qcombobox.h>
@@ -28,10 +29,11 @@ namespace VTX::QT::Mdprep
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
 		QComboBox *				  _w_mdEngine = nullptr;
 
-		VTX::Tool::Mdprep::ui::MdFieldsOrganizer _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::MdBasicParamForm	 _formBasic;
-		FormCollection							 _formsMd;
-		int										 _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::ui::MdFieldsOrganizer   _fieldOrganizer;
+		VTX::Tool::Mdprep::ui::MdBasicParamForm	   _formBasic;
+		VTX::Tool::Mdprep::ui::MdAdvancedParamForm _formAdvanced;
+		FormCollection							   _formsMd;
+		int										   _mdEngineCurrentIdx = 0;
 
 		// Problem : we must support multiple engines with some common fields and some different ones.
 		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
@@ -89,6 +91,7 @@ namespace VTX::QT::Mdprep
 
 			_fieldOrganizer.setupUi( qLayoutWindow );
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
+			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
 			qLayoutWindow->addWidget( new QPushButton( "Button" ) );
 		}
 		void _updateFormEngine( int idx ) noexcept

@@ -1,4 +1,5 @@
 #include "ui/qt/util.hpp"
+#include "ui/qt/validator.hpp"
 #include <QAction>
 
 namespace VTX::UI::QT::Util
@@ -56,5 +57,32 @@ namespace VTX::UI::QT::Util
 		qLilLayout->addWidget( qlabel );
 		qLilLayout->addWidget( qLine, 1 );
 	}
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept
+	{
+		QLineEdit * out = new QLineEdit();
+		out->setValidator( new VTX::UI::QT::QUInt64Validator( out ) );
+		p_dest->addRow( UI::QT::Util::createLabelWithHelpTooltip( p_label, p_tooltip ), out );
+		return out;
+	}
 
+	void addUInt64FieldWithRightLabel(
+		QFormLayout * p_dest,
+		const char *  p_label,
+		const char *  p_tooltip,
+		QLineEdit **  p_out_field,
+		QLabel **	  p_out_label
+	) noexcept
+	{
+		*p_out_field				  = new QLineEdit();
+		*p_out_label				  = new QLabel;
+		QWidget *	  qRightCol		  = new QWidget;
+		QHBoxLayout * qRightColLayout = new QHBoxLayout( qRightCol );
+		qRightColLayout->setContentsMargins( 0, 0, 0, 0 );
+		qRightColLayout->addWidget( *p_out_field, 1 );
+		qRightColLayout->addWidget( *p_out_label, 1 );
+
+		( *p_out_field )->setValidator( new VTX::UI::QT::QUInt64Validator( *p_out_field ) );
+
+		p_dest->addRow( UI::QT::Util::createLabelWithHelpTooltip( p_label, p_tooltip ), qRightCol );
+	}
 } // namespace VTX::UI::QT::Util
