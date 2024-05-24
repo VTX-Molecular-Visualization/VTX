@@ -40,9 +40,14 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		class NoopForm
 		{
+			VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData _data;
+
 		  public:
 			NoopForm() = default;
-			void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& ) const noexcept {}
+			void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& p_ptr ) const noexcept
+			{
+				p_ptr = &_data;
+			}
 			void activate() noexcept {}
 			void deactivate() noexcept {}
 		};

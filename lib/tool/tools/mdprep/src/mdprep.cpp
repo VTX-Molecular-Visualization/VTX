@@ -12,11 +12,11 @@
 #include <qcombobox.h>
 #include <qformlayout.h>
 #include <qlineedit.h>
+#include <qpushbutton.h>
 //
 
 namespace VTX::QT::Mdprep
 {
-
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
@@ -89,6 +89,7 @@ namespace VTX::QT::Mdprep
 
 			_fieldOrganizer.setupUi( qLayoutWindow );
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
+			qLayoutWindow->addWidget( new QPushButton( "Button" ) );
 		}
 		void _updateFormEngine( int idx ) noexcept
 		{
