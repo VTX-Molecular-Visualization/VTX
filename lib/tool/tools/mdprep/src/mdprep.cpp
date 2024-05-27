@@ -121,6 +121,10 @@ namespace VTX::QT::Mdprep
 		{
 			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
 			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateFormEngine );
+			_formAdvanced.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdAdvancedDataSample & p_data )
+									 { _formBasic.update( p_data ); } );
+			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
+								  { _formAdvanced.update( p_data ); } );
 		}
 
 	  public:
