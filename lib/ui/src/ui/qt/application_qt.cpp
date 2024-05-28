@@ -25,7 +25,7 @@ namespace VTX::UI::QT
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
 
 		// Init resources
-		Q_INIT_RESOURCE( resources_ui );
+		// Q_INIT_RESOURCE( resources_ui );
 	}
 
 	int ZERO = 0;
