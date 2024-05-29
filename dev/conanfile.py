@@ -139,7 +139,7 @@ class VTXRecipe(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure()
+        cmake.configure(None, None, ["--graphviz=graph.dot"])
         cmake.build()
 
     def package(self):

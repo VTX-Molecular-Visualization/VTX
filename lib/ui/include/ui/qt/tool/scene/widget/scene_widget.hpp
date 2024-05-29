@@ -22,8 +22,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	  private:
 		SceneTreeWidget * _treeWidget;
-
-
 	};
 } // namespace VTX::UI::QT::Tool::Scene::Widget
 
