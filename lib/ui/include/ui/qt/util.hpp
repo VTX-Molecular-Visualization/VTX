@@ -121,7 +121,21 @@ namespace VTX::UI::QT::Util
 		return QBitmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
 	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept;
-	void	 addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
+	class LabelWithHelper
+	{
+	  public:
+		enum class E_QUESTIONMARK_POSITION
+		{
+			left,
+			right
+		};
+		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
+		QWidget * container = nullptr;
+		QLabel *  label		= nullptr;
+
+	  private:
+	};
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
 
 	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
 	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;

@@ -1,6 +1,9 @@
 #include "ui/qt/util.hpp"
 #include "ui/qt/validator.hpp"
 #include <QAction>
+#include <qevent.h>
+#include <qpushbutton.h>
+#include <qtoolbutton.h>
 
 namespace VTX::UI::QT::Util
 {
@@ -33,6 +36,96 @@ namespace VTX::UI::QT::Util
 			action->setCheckable( p_actionCheckable );
 
 			p_menu.addAction( action );
+		}
+	}
+	class QHoverableQuestionMark : public QPushButton
+	{
+		int		  m_count = 0;
+		QWidget * popup	  = nullptr;
+
+	  public:
+		QHoverableQuestionMark( const char * p_popupText ) : QPushButton()
+		{
+			setIcon( QIcon( ":/sprite/citations_icon_hovered.png" ) );
+			setAttribute( Qt::WA_Hover );
+
+			auto label = new QLabel( p_popupText );
+			label->setTextFormat( Qt::RichText );
+
+			popup = new QWidget;
+			popup->setWindowFlag( Qt::ToolTip );
+			auto layout = new QHBoxLayout( popup );
+			layout->addWidget( label );
+		}
+		void enterEvent( QEnterEvent * event ) { QWidget::enterEvent( event ); }
+
+		void leaveEvent( QEvent * event ) { QWidget::leaveEvent( event ); }
+		void hoverEnter( QHoverEvent * p_event )
+		{
+			auto p = p_event->globalPosition().toPoint();
+			if ( p.isNull() || ( p.x() == -1 && p.y() == -1 ) )
+				return;
+			popup->move( p_event->globalPosition().toPoint() );
+			setText( QString::asprintf( "{%d, %d}", p.x(), p.y() ) );
+			popup->show();
+		}
+
+		void hoverLeave( QHoverEvent * event )
+		{
+			popup->hide();
+			setText( "leaved" );
+		}
+
+		void hoverMove( QHoverEvent * p_event )
+		{
+			auto p = p_event->globalPosition().toPoint();
+			if ( p.isNull() || ( p.x() == -1 && p.y() == -1 ) )
+				return;
+			popup->move( p_event->globalPosition().toPoint() );
+			setText( QString::asprintf( "{%d, %d}", p.x(), p.y() ) );
+		}
+		bool event( QEvent * e )
+		{
+			switch ( e->type() )
+			{
+			case QEvent::HoverEnter:
+				hoverEnter( reinterpret_cast<QHoverEvent *>( e ) );
+				return true;
+				break;
+			case QEvent::HoverLeave:
+				hoverLeave( reinterpret_cast<QHoverEvent *>( e ) );
+				return true;
+				break;
+			case QEvent::HoverMove:
+				hoverMove( reinterpret_cast<QHoverEvent *>( e ) );
+				return true;
+				break;
+			default: break;
+			}
+			return QWidget::event( e );
+		}
+	};
+	LabelWithHelper::LabelWithHelper(
+		const char *					p_label,
+		const char *					p_helper,
+		const E_QUESTIONMARK_POSITION & p_postion
+	) :
+		container( new QWidget ),
+		label( new QLabel( p_label ) )
+	{
+		QHBoxLayout *			 layout		  = new QHBoxLayout( container );
+		QHoverableQuestionMark * questionMark = new QHoverableQuestionMark( p_helper );
+		layout->setContentsMargins( { 0, 0, 0, 0 } );
+
+		if ( p_postion == E_QUESTIONMARK_POSITION::left )
+		{
+			layout->addWidget( questionMark );
+			layout->addWidget( label );
+		}
+		else
+		{
+			layout->addWidget( label );
+			layout->addWidget( questionMark );
 		}
 	}
 
