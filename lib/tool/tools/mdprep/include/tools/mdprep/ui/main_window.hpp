@@ -27,6 +27,12 @@ namespace VTX::Tool::Mdprep::ui
 	class MdFieldsOrganizer
 	{
 	  public:
+		enum class E_FORM_MODE
+		{
+			basic,
+			advanced,
+			COUNT
+		};
 		QWidget * containerParamBasic	 = nullptr;
 		QWidget * containerParamAdvanced = nullptr;
 
@@ -34,7 +40,16 @@ namespace VTX::Tool::Mdprep::ui
 		MdFieldsOrganizer() = default;
 
 		// Do the work. layouts won't be nullptr after that.
-		void setupUi( QLayout * ) noexcept;
+		void setupUi( QLayout *, const E_FORM_MODE & ) noexcept;
+
+		void switchFormMode() noexcept;
+
+	  private:
+		E_FORM_MODE _mode = E_FORM_MODE::basic;
+		QPushButton * _buttonViewSwitch = nullptr;
+
+		void _changeModeBasic() noexcept;
+		void _changeModeAdvanced() noexcept;
 	};
 
 } // namespace VTX::Tool::Mdprep::ui

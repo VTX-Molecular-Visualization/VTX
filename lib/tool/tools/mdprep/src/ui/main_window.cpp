@@ -3,11 +3,12 @@
 #include "tools/mdprep/ui/engine_form_gromacs.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
-#include "tools/mdprep/ui/main_window.hpp"
-//
 #include <qformlayout.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 #include <qtabwidget.h>
+//
+#include "tools/mdprep/ui/main_window.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {
@@ -62,18 +63,54 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void MdFieldsOrganizer::setupUi( QLayout * p_layout ) noexcept
+	void MdFieldsOrganizer::setupUi( QLayout * p_layout, const E_FORM_MODE & p_mode ) noexcept
 	{
-		// At first IU wanted to put all advanced settings in a collapsible panel but it seems unintuitive to create one
-		// with Qt so I decided to make tabs instead. But it shall be easy to change in the future if we want to.
-		QTabWidget * wTab = new QTabWidget();
-		p_layout->addWidget( wTab );
-
+		_buttonViewSwitch		   = new QPushButton;
+		QWidget * wButtonContainer = new QWidget;
+		p_layout->addWidget( wButtonContainer );
+		QHBoxLayout * qLayoutButton = new QHBoxLayout( wButtonContainer );
+		qLayoutButton->setContentsMargins( { 0, 0, 0, 0 } );
+		qLayoutButton->addStretch( 1 );
+		qLayoutButton->addWidget( _buttonViewSwitch );
+		QObject::connect( _buttonViewSwitch, &QPushButton::clicked, [ & ]() { this->switchFormMode(); } );
 		containerParamBasic	   = new QWidget();
 		containerParamAdvanced = new QWidget();
+		p_layout->addWidget( containerParamBasic );
+		p_layout->addWidget( containerParamAdvanced );
 
-		wTab->addTab( containerParamBasic, "Basic Settings" );
-		wTab->addTab( containerParamAdvanced, "Advanced Settings" );
+		_mode = p_mode;
+		if ( _mode == E_FORM_MODE::basic )
+			_changeModeBasic();
+		else
+			_changeModeAdvanced();
+	}
+
+	void MdFieldsOrganizer::switchFormMode() noexcept
+	{
+		if ( _mode == E_FORM_MODE::basic )
+		{
+			_changeModeAdvanced();
+			_mode = E_FORM_MODE::advanced;
+		}
+		else
+		{
+			_changeModeBasic();
+			_mode = E_FORM_MODE::basic;
+		}
+	}
+
+	void MdFieldsOrganizer::_changeModeBasic() noexcept
+	{
+		_buttonViewSwitch->setText( "Switch to Advanced view" );
+		containerParamAdvanced->hide();
+		containerParamBasic->show();
+	}
+
+	void MdFieldsOrganizer::_changeModeAdvanced() noexcept
+	{
+		_buttonViewSwitch->setText( "Switch to Simple view" );
+		containerParamBasic->hide();
+		containerParamAdvanced->show();
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

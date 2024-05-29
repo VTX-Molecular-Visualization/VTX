@@ -1,3 +1,8 @@
+#include <qcombobox.h>
+#include <qformlayout.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
+//
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
@@ -9,11 +14,6 @@
 //
 #include "tools/mdprep/ui/advanced_form.hpp"
 #include "tools/mdprep/ui/basic_form.hpp"
-//
-#include <qcombobox.h>
-#include <qformlayout.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
 //
 
 namespace VTX::QT::Mdprep
@@ -89,7 +89,7 @@ namespace VTX::QT::Mdprep
 
 			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
 
-			_fieldOrganizer.setupUi( qLayoutWindow );
+			_fieldOrganizer.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::MdFieldsOrganizer::E_FORM_MODE::basic );
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
 			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
 			qLayoutWindow->addWidget( new QPushButton( "Button" ) );
