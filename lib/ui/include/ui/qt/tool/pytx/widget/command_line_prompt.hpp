@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_TOOL_PYTX_WIDGET_COMMAND_LINE_PROMPT__
 #define __VTX_UI_TOOL_PYTX_WIDGET_COMMAND_LINE_PROMPT__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QWidget>
 
 namespace VTX::UI::QT::Tool::PyTX::Widget
 {
-	class CommandLinePrompt : public QT::Widget::BaseManualWidget<QLineEdit>
+	class CommandLinePrompt : public QT::Core::BaseManualWidget<QLineEdit>
 	{
 		NEW_ARCHI_VTX_WIDGET
 

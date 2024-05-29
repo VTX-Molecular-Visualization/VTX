@@ -4,7 +4,7 @@
 // Before QOpenGLWidget to use glad instead of QOpenGLFunctions.
 #include <renderer/facade.hpp>
 //
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QOpenGLWidget>
 #include <QWidget>
 
@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace UI::QT::Tool::Render::Widget
 	{
-		class OpenGLWidget : public QT::Widget::BaseManualWidget<QOpenGLWidget>
+		class OpenGLWidget : public QT::Core::BaseManualWidget<QOpenGLWidget>
 		{
 			NEW_ARCHI_VTX_WIDGET
 

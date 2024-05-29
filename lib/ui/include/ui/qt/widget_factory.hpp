@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_WIDGETFACTORY__
 #define __VTX_UI_QT_WIDGETFACTORY__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
-#include "ui/qt/widget/base_manual_widget_initializer.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget_initializer.hpp"
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>
@@ -21,7 +21,7 @@ namespace VTX::UI::QT
 		}
 
 	  public:
-		template<typename W, typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
+		template<typename W, typename = std::enable_if<std::is_base_of<Core::BaseManualWidgetInitializer, W>::value>>
 		W * const instantiateWidget( QWidget * const p_parent, const std::string & p_name ) const
 		{
 			W * const res = new W( p_parent );
@@ -31,9 +31,10 @@ namespace VTX::UI::QT
 			return res;
 		}
 
-		template<typename W,
-				 typename P1,
-				 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
+		template<
+			typename W,
+			typename P1,
+			typename = std::enable_if<std::is_base_of<Core::BaseManualWidgetInitializer, W>::value>>
 		W * const instantiateWidget( QWidget * const p_parent, P1 p_param1, const std::string & p_name ) const
 		{
 			// Parent can be optional in most of widget, so we reference it at the end of the params

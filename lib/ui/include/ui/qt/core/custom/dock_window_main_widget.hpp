@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <optional>
 
-namespace VTX::UI::QT::Widget::Custom
+namespace VTX::UI::QT::Core::Custom
 {
 	class DockWindowMainWidget : public QWidget
 	{
@@ -24,5 +24,5 @@ namespace VTX::UI::QT::Widget::Custom
 		std::optional<QSize> _overriddenMinimumSizeHint = std::nullopt;
 	};
 
-} // namespace VTX::UI::QT::Widget::Custom
+} // namespace VTX::UI::QT::Core::Custom
 #endif

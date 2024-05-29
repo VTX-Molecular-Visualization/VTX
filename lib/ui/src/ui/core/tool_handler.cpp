@@ -1,6 +1,6 @@
 #include "ui/core/tool_handler.hpp"
 #include "ui/core/tool_registry.hpp"
-#include "ui/qt/widget/custom/dock_window_main_widget.hpp"
+#include "ui/qt/core/custom/dock_window_main_widget.hpp"
 
 namespace VTX::UI::Core
 {

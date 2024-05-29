@@ -1,11 +1,11 @@
-#include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
+#include "ui/qt/core/main_menu/menu_tooltab_widget.hpp"
 #include "ui/qt/style.hpp"
-#include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
+#include "ui/qt/core/main_menu/menu_toolblock_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QLabel>
 #include <QPixmap>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	MenuTooltabWidget::MenuTooltabWidget( QWidget * p_parent ) :
 		VTX::UI::Core::MainMenu::MainMenuTooltab(), BaseManualWidget( p_parent )
@@ -52,4 +52,4 @@ namespace VTX::UI::QT::Widget::MainMenu
 		_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, separator );
 		_horizontalLayout->insertSpacing( _horizontalLayout->count() - 1, 3 );
 	}
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu

@@ -1,9 +1,9 @@
-#include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
+#include "ui/qt/core/main_menu/menu_toolblock_widget.hpp"
+#include "ui/qt/core/main_menu/menu_tooltab_widget.hpp"
 #include <QBoxLayout>
 #include <QSizePolicy>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	///// MenuToolBlockWidget::TmpGridStructure /////
 	// MenuToolBlockWidget::TmpGridStructure::~TmpGridStructure() {}
@@ -87,9 +87,11 @@ namespace VTX::UI::QT::Widget::MainMenu
 		_connectNavigationEventToButton( p_toolButton1 );
 		_connectNavigationEventToButton( p_toolButton2 );
 	}
-	void MenuToolBlockWidget::pushButton( MenuToolButtonWidget & p_toolButton1,
-										  MenuToolButtonWidget & p_toolButton2,
-										  MenuToolButtonWidget & p_toolButton3 )
+	void MenuToolBlockWidget::pushButton(
+		MenuToolButtonWidget & p_toolButton1,
+		MenuToolButtonWidget & p_toolButton2,
+		MenuToolButtonWidget & p_toolButton3
+	)
 	{
 		UI::Core::MainMenu::MainMenuToolBlock::pushButton( p_toolButton1, p_toolButton2, p_toolButton3 );
 
@@ -112,25 +114,33 @@ namespace VTX::UI::QT::Widget::MainMenu
 
 	void MenuToolBlockWidget::_connectNavigationEventToButton( MenuToolButtonWidget & p_toolButton ) const
 	{
-		connect( &p_toolButton.arrowNavigation,
-				 &Navigation::ArrowNavigation::navigateToLeft,
-				 this,
-				 &MenuToolBlockWidget::_navigationToLeft );
+		connect(
+			&p_toolButton.arrowNavigation,
+			&Navigation::ArrowNavigation::navigateToLeft,
+			this,
+			&MenuToolBlockWidget::_navigationToLeft
+		);
 
-		connect( &p_toolButton.arrowNavigation,
-				 &Navigation::ArrowNavigation::navigateToRight,
-				 this,
-				 &MenuToolBlockWidget::_navigationToRight );
+		connect(
+			&p_toolButton.arrowNavigation,
+			&Navigation::ArrowNavigation::navigateToRight,
+			this,
+			&MenuToolBlockWidget::_navigationToRight
+		);
 
-		connect( &p_toolButton.arrowNavigation,
-				 &Navigation::ArrowNavigation::navigateToUp,
-				 this,
-				 &MenuToolBlockWidget::_navigationToUp );
+		connect(
+			&p_toolButton.arrowNavigation,
+			&Navigation::ArrowNavigation::navigateToUp,
+			this,
+			&MenuToolBlockWidget::_navigationToUp
+		);
 
-		connect( &p_toolButton.arrowNavigation,
-				 &Navigation::ArrowNavigation::navigateToDown,
-				 this,
-				 &MenuToolBlockWidget::_navigationToDown );
+		connect(
+			&p_toolButton.arrowNavigation,
+			&Navigation::ArrowNavigation::navigateToDown,
+			this,
+			&MenuToolBlockWidget::_navigationToDown
+		);
 	}
 
 	void MenuToolBlockWidget::_navigationToLeft() const
@@ -142,7 +152,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		int				focusedItemRowSpan;
 		int				focusedItemColumnSpan;
 		_gridLayout->getItemPosition(
-			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan );
+			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan
+		);
 
 		focusedItemColumn -= focusedItemColumnSpan;
 		focusedItemRow += focusedItemRow == 0 ? 0 : ( focusedItemRowSpan - 1 ) / 2;
@@ -155,10 +166,12 @@ namespace VTX::UI::QT::Widget::MainMenu
 		else
 		{
 			const MenuToolBlockWidget * previousToolBlock = dynamic_cast<const MenuToolBlockWidget *>(
-				getTooltab() == nullptr ? this : getTooltab()->getPreviousToolBlock( this ) );
+				getTooltab() == nullptr ? this : getTooltab()->getPreviousToolBlock( this )
+			);
 
 			QLayoutItem * previousItem = previousToolBlock->_gridLayout->itemAtPosition(
-				focusedItemRow, previousToolBlock->_gridLayout->columnCount() - 1 );
+				focusedItemRow, previousToolBlock->_gridLayout->columnCount() - 1
+			);
 
 			const bool			   nextItemIsValid = previousItem != nullptr && previousItem->widget()->isEnabled();
 			MenuToolButtonWidget * newFocusedWidget;
@@ -189,7 +202,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		int				focusedItemRowSpan;
 		int				focusedItemColumnSpan;
 		_gridLayout->getItemPosition(
-			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan );
+			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan
+		);
 
 		focusedItemColumn += focusedItemColumnSpan;
 		focusedItemRow += focusedItemRow == 0 ? 0 : ( focusedItemRowSpan - 1 ) / 2;
@@ -202,7 +216,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		else
 		{
 			const MenuToolBlockWidget * nextToolBlock = dynamic_cast<const MenuToolBlockWidget *>(
-				getTooltab() == nullptr ? this : getTooltab()->getNextToolBlock( this ) );
+				getTooltab() == nullptr ? this : getTooltab()->getNextToolBlock( this )
+			);
 
 			QLayoutItem * nextItem		  = nextToolBlock->_gridLayout->itemAtPosition( focusedItemRow, 0 );
 			const bool	  nextItemIsValid = nextItem != nullptr && nextItem->widget()->isEnabled();
@@ -234,7 +249,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		int				focusedItemRowSpan;
 		int				focusedItemColumnSpan;
 		_gridLayout->getItemPosition(
-			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan );
+			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan
+		);
 
 		focusedItemRow -= focusedItemRowSpan;
 
@@ -258,7 +274,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		int				focusedItemRowSpan;
 		int				focusedItemColumnSpan;
 		_gridLayout->getItemPosition(
-			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan );
+			focusedItemIndex, &focusedItemRow, &focusedItemColumn, &focusedItemRowSpan, &focusedItemColumnSpan
+		);
 
 		focusedItemRow += focusedItemRowSpan;
 
@@ -281,9 +298,11 @@ namespace VTX::UI::QT::Widget::MainMenu
 		newFocusedItem->widget()->setFocus( Qt::FocusReason::TabFocusReason );
 	}
 
-	MenuToolButtonWidget * MenuToolBlockWidget::_findPreviousButton( const MenuToolBlockWidget * const p_toolBlock,
-																	 QLayoutItem * const			   p_item,
-																	 const int						   p_row ) const
+	MenuToolButtonWidget * MenuToolBlockWidget::_findPreviousButton(
+		const MenuToolBlockWidget * const p_toolBlock,
+		QLayoutItem * const				  p_item,
+		const int						  p_row
+	) const
 	{
 		const MenuToolBlockWidget * toolBlockSeeker		= p_toolBlock;
 		bool						previousItemIsValid = false;
@@ -308,10 +327,12 @@ namespace VTX::UI::QT::Widget::MainMenu
 
 			if ( !previousItemIsValid )
 			{
-				toolBlockSeeker = dynamic_cast<const MenuToolBlockWidget *>(
-					getTooltab()->getPreviousToolBlock( toolBlockSeeker ) );
+				toolBlockSeeker
+					= dynamic_cast<const MenuToolBlockWidget *>( getTooltab()->getPreviousToolBlock( toolBlockSeeker )
+					);
 				previousItem = toolBlockSeeker->_gridLayout->itemAtPosition(
-					p_row, toolBlockSeeker->_gridLayout->columnCount() - 1 );
+					p_row, toolBlockSeeker->_gridLayout->columnCount() - 1
+				);
 				previousItemIndex = toolBlockSeeker->_gridLayout->indexOf( previousItem );
 			}
 
@@ -319,9 +340,11 @@ namespace VTX::UI::QT::Widget::MainMenu
 
 		return previousItemIsValid ? dynamic_cast<MenuToolButtonWidget *>( previousItem->widget() ) : nullptr;
 	}
-	MenuToolButtonWidget * MenuToolBlockWidget::_findNextButton( const MenuToolBlockWidget * const p_toolBlock,
-																 QLayoutItem * const			   p_item,
-																 const int						   p_row ) const
+	MenuToolButtonWidget * MenuToolBlockWidget::_findNextButton(
+		const MenuToolBlockWidget * const p_toolBlock,
+		QLayoutItem * const				  p_item,
+		const int						  p_row
+	) const
 	{
 		const MenuToolBlockWidget * toolBlockSeeker = p_toolBlock;
 		bool						nextItemIsValid = false;
@@ -396,4 +419,4 @@ namespace VTX::UI::QT::Widget::MainMenu
 	}
 	void MenuToolBlockWidget::_setupSlots() {}
 	void MenuToolBlockWidget::localize() {}
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu

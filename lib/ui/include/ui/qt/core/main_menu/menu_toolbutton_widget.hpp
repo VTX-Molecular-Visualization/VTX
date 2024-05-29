@@ -3,12 +3,12 @@
 
 #include "ui/core/main_menu/main_menu_toolbutton.hpp"
 #include "ui/qt/navigation/arrow_navigation.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QToolButton>
 #include <QWidget>
 #include <type_traits>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	class MenuToolButtonWidget : public UI::Core::MainMenu::MainMenuToolButton, public BaseManualWidget<QToolButton>
 	{
@@ -53,5 +53,5 @@ namespace VTX::UI::QT::Widget::MainMenu
 	  private:
 		bool _hasActiveFeedback = false;
 	};
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu
 #endif

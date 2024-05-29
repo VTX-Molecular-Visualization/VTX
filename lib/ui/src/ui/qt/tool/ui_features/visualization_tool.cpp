@@ -4,11 +4,11 @@
 #include "ui/internal/controller/camera/freefly.hpp"
 #include "ui/internal/controller/camera/trackball.hpp"
 #include "ui/qt/application_qt.hpp"
+#include "ui/qt/core/main_menu/menu_toolblock_widget.hpp"
+#include "ui/qt/core/main_menu/menu_toolbutton_widget.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/tool/pytx/details/include_python_binding.hpp"
-#include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection_manager.hpp>
@@ -35,31 +35,31 @@ namespace VTX::UI::QT::Tool::UIFeatures
 		navigationLayout.tabName				  = "Visualization";
 		navigationLayout.blockName				  = "Navigation";
 
-		QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock = mainWindow->getMainMenuToolBlock( navigationLayout );
+		QT::Core::MainMenu::MenuToolBlockWidget & toolBlock = mainWindow->getMainMenuToolBlock( navigationLayout );
 
-		QT::Widget::MainMenu::MenuToolButtonWidget * const resetCameraButton
-			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+		QT::Core::MainMenu::MenuToolButtonWidget * const resetCameraButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MenuToolButtonWidget>(
 				&toolBlock, "resetCameraButton"
 			);
 		resetCameraButton->setData( "Reset", ":/sprite/camera_recenter_icon.png", Qt::Orientation::Horizontal );
 		resetCameraButton->setTriggerAction( this, &VisualizationTool::_resetCamera );
 
-		QT::Widget::MainMenu::MenuToolButtonWidget * const orientCameraButton
-			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+		QT::Core::MainMenu::MenuToolButtonWidget * const orientCameraButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MenuToolButtonWidget>(
 				&toolBlock, "orientCameraButton"
 			);
 		orientCameraButton->setData( "Orient", ":/sprite/camera_orient_icon.png", Qt::Orientation::Horizontal );
 		orientCameraButton->setTriggerAction( this, &VisualizationTool::_orientCamera );
 
-		QT::Widget::MainMenu::MenuToolButtonWidget * const trackballButton
-			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+		QT::Core::MainMenu::MenuToolButtonWidget * const trackballButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MenuToolButtonWidget>(
 				&toolBlock, "trackballButton"
 			);
 		trackballButton->setData( "Trackball", ":/sprite/camera_trackball_mode.png", Qt::Orientation::Horizontal );
 		trackballButton->setTriggerAction( this, &VisualizationTool::_setTrackball );
 
-		QT::Widget::MainMenu::MenuToolButtonWidget * const freeflyButton
-			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+		QT::Core::MainMenu::MenuToolButtonWidget * const freeflyButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MenuToolButtonWidget>(
 				&toolBlock, "freeflyButton"
 			);
 		freeflyButton->setData( "Freefly", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );

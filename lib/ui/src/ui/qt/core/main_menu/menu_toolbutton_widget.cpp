@@ -1,11 +1,11 @@
-#include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
+#include "ui/qt/core/main_menu/menu_toolbutton_widget.hpp"
 #include "ui/qt/style.hpp"
 #include <QKeyEvent>
 #include <QLayout>
 #include <QPalette>
 #include <util/logger.hpp>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	MenuToolButtonWidget::MenuToolButtonWidget( QWidget * p_parent ) :
 		UI::Core::MainMenu::MainMenuToolButton(), BaseManualWidget( p_parent ) {};
@@ -92,4 +92,4 @@ namespace VTX::UI::QT::Widget::MainMenu
 			BaseManualWidget::keyPressEvent( p_event );
 	}
 
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu

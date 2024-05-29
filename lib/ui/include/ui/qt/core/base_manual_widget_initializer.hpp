@@ -11,7 +11,7 @@ namespace VTX::UI::QT
 
 #define NEW_ARCHI_VTX_WIDGET friend ::VTX::UI::QT::WidgetFactory;
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Core
 {
 	class BaseManualWidgetInitializer
 	{
@@ -36,6 +36,6 @@ namespace VTX::UI::QT::Widget
 		virtual void _setupUi( const QString & p_name ) = 0;
 		virtual void _setupSlots()						= 0;
 	};
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Core
 
 #endif

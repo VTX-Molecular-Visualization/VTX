@@ -4,7 +4,7 @@
 #include "ui/core/define.hpp"
 #include "ui/qt/qt_panel.hpp"
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QFocusEvent>
 #include <QVBoxLayout>
 #include <QWidget>

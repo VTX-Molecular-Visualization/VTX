@@ -1,26 +1,26 @@
-#include "ui/qt/widget/main_menu/main_menu_bar.hpp"
+#include "ui/qt/core/main_menu/main_menu_bar.hpp"
+#include "ui/qt/core/main_menu/menu_tooltab_widget.hpp"
 #include "ui/qt/util.hpp"
-#include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QFont>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
-	MainMenuBar::MainMenuBar( QWidget * p_parent ) : Core::MainMenu::MainMenuBar(), BaseManualWidget( p_parent ) {}
+	MainMenuBar::MainMenuBar( QWidget * p_parent ) : UI::Core::MainMenu::MainMenuBar(), BaseManualWidget( p_parent ) {}
 
-	Core::MainMenu::MainMenuTooltab * MainMenuBar::_instantiateTab() const
+	UI::Core::MainMenu::MainMenuTooltab * MainMenuBar::_instantiateTab() const
 	{
 		MenuTooltabWidget * const tooltab
 			= WidgetFactory::get().instantiateWidget<MenuTooltabWidget>( _tabWidget, "main_menu_tool_tab" );
 		return tooltab;
 	}
 
-	void MainMenuBar::_addTab( const Core::WidgetKey & p_tabID, Core::MainMenu::MainMenuTooltab * const p_tab )
+	void MainMenuBar::_addTab( const UI::Core::WidgetKey & p_tabID, UI::Core::MainMenu::MainMenuTooltab * const p_tab )
 	{
-		Core::MainMenu::MainMenuBar::_addTab( p_tabID, p_tab );
+		UI::Core::MainMenu::MainMenuBar::_addTab( p_tabID, p_tab );
 
-		QT::Widget::MainMenu::MenuTooltabWidget * const qtToolTab
-			= dynamic_cast<QT::Widget::MainMenu::MenuTooltabWidget *>( p_tab );
+		QT::Core::MainMenu::MenuTooltabWidget * const qtToolTab
+			= dynamic_cast<QT::Core::MainMenu::MenuTooltabWidget *>( p_tab );
 		_tabWidget->addTab( qtToolTab, QString::fromStdString( p_tabID ) );
 	}
 
@@ -69,4 +69,4 @@ namespace VTX::UI::QT::Widget::MainMenu
 	void MainMenuBar::_setupSlots() {}
 	void MainMenuBar::localize() {}
 
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu

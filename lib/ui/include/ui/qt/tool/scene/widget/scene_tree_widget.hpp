@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_QT_TOOL_SCENE_WIDGET_SCENE_TREE_WIDGET__
 #define __VTX_UI_QT_TOOL_SCENE_WIDGET_SCENE_TREE_WIDGET__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QTreeWidget>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
-	class SceneTreeWidget : public QT::Widget::BaseManualWidget<QTreeWidget>
+	class SceneTreeWidget : public QT::Core::BaseManualWidget<QTreeWidget>
 	{
 		NEW_ARCHI_VTX_WIDGET
 

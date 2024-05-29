@@ -26,7 +26,7 @@ namespace VTX::UI::QT
 	}
 
 	int ZERO = 0;
-	ApplicationQt::ApplicationQt() : Core::BaseUIApplication(), QApplication( ZERO, nullptr )
+	ApplicationQt::ApplicationQt() : UI::Core::BaseUIApplication(), QApplication( ZERO, nullptr )
 	{
 		connect( this, &QCoreApplication::aboutToQuit, this, &ApplicationQt::stop );
 	}
@@ -38,13 +38,13 @@ namespace VTX::UI::QT
 		std::filesystem::create_directory( path );
 		VTX::Util::Logger::get().init( path );
 
-		Core::BaseUIApplication::init();
+		UI::Core::BaseUIApplication::init();
 
 		_currentMode = std::make_unique<Mode::Visualization>();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
-		Core::BaseUIApplication::start( p_args );
+		UI::Core::BaseUIApplication::start( p_args );
 		_currentMode->enter();
 
 		_returnCode = exec();
@@ -55,7 +55,7 @@ namespace VTX::UI::QT
 		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
 		_elapsedTimer.restart();
 
-		Core::BaseUIApplication::update();
+		UI::Core::BaseUIApplication::update();
 	}
 
 	void ApplicationQt::quit() { QApplication::quit(); };

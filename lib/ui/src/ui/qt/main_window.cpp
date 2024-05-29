@@ -23,10 +23,10 @@ namespace VTX::UI::QT
 		refreshWindowTitle();
 		setContextMenuPolicy( Qt::ContextMenuPolicy::PreventContextMenu );
 
-		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
+		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 
-		_statusBar = WidgetFactory::get().instantiateWidget<QT::Widget::Status::StatusBar>( this, "statusBar" );
+		_statusBar = WidgetFactory::get().instantiateWidget<QT::Core::Status::StatusBar>( this, "statusBar" );
 		setStatusBar( _statusBar );
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
@@ -36,15 +36,16 @@ namespace VTX::UI::QT
 
 	void MainWindow::initWindowLayout() {}
 
-	QT::Widget::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const Core::ToolLayoutData & layoutData )
-	{
-		return dynamic_cast<QT::Widget::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
-	}
-	QT::Widget::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
-		const Core::ToolLayoutData & layoutData
+	QT::Core::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData
 	)
 	{
-		return dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
+		return dynamic_cast<QT::Core::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
+	}
+	QT::Core::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
+		const UI::Core::ToolLayoutData & layoutData
+	)
+	{
+		return dynamic_cast<VTX::UI::QT::Core::MainMenu::MenuToolBlockWidget &>(
 			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName )
 		);
 	}
@@ -178,18 +179,18 @@ namespace VTX::UI::QT
 			p_window->hide();
 	}
 
-	Core::WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
+	UI::Core::WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
 	{
-		Core::WindowMode res;
+		UI::Core::WindowMode res;
 
 		if ( p_state & Qt::WindowState::WindowFullScreen )
-			res = Core::WindowMode::Fullscreen;
+			res = UI::Core::WindowMode::Fullscreen;
 		else if ( p_state & Qt::WindowState::WindowMaximized )
-			res = Core::WindowMode::Maximized;
+			res = UI::Core::WindowMode::Maximized;
 		else if ( p_state & Qt::WindowState::WindowMinimized )
-			res = Core::WindowMode::Minimized;
+			res = UI::Core::WindowMode::Minimized;
 		else
-			res = Core::WindowMode::Windowed;
+			res = UI::Core::WindowMode::Windowed;
 
 		return res;
 	}

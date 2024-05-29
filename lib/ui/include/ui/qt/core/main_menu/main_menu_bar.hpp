@@ -2,14 +2,14 @@
 #define __VTX_UI_QT_MAIN_MENU_BAR__
 
 #include "ui/core/main_menu/main_menu_bar.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QMenuBar>
 #include <QResizeEvent>
 #include <QTabWidget>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
-	class MainMenuBar : public Core::MainMenu::MainMenuBar, public BaseManualWidget<QMenuBar>
+	class MainMenuBar : public UI::Core::MainMenu::MainMenuBar, public BaseManualWidget<QMenuBar>
 	{
 		NEW_ARCHI_VTX_WIDGET
 
@@ -17,9 +17,9 @@ namespace VTX::UI::QT::Widget::MainMenu
 		void		localize() override;
 		inline void setCurrentTab( int p_index ) override { _tabWidget->setCurrentIndex( 0 ); };
 
-		Core::MainMenu::MainMenuTooltab * _instantiateTab() const override;
+		UI::Core::MainMenu::MainMenuTooltab * _instantiateTab() const override;
 
-		void _addTab( const Core::WidgetKey & p_tabID, Core::MainMenu::MainMenuTooltab * const p_tab ) override;
+		void _addTab( const UI::Core::WidgetKey & p_tabID, UI::Core::MainMenu::MainMenuTooltab * const p_tab ) override;
 
 	  protected:
 		MainMenuBar( QWidget * p_parent );
@@ -32,6 +32,6 @@ namespace VTX::UI::QT::Widget::MainMenu
 	  private:
 		QTabWidget * _tabWidget = nullptr;
 	};
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu
 
 #endif

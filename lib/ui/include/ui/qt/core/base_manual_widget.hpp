@@ -5,7 +5,7 @@
 #include "ui/qt/concepts.hpp"
 #include <type_traits>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Core
 {
 	template<QTWidgetConcept W>
 	class BaseManualWidget : public W, public BaseManualWidgetInitializer
@@ -17,6 +17,6 @@ namespace VTX::UI::QT::Widget
 
 		virtual void _setupUi( const QString & p_name ) override { W::setObjectName( p_name ); }
 	};
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Core
 
 #endif

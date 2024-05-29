@@ -1,6 +1,6 @@
-#include "ui/qt/widget/custom/dock_window_main_widget.hpp"
+#include "ui/qt/core/custom/dock_window_main_widget.hpp"
 
-namespace VTX::UI::QT::Widget::Custom
+namespace VTX::UI::QT::Core::Custom
 {
 	DockWindowMainWidget::DockWindowMainWidget(
 		const QSize & p_sizeHint,
@@ -32,4 +32,4 @@ namespace VTX::UI::QT::Widget::Custom
 		setMinimumSize( p_sizeHint );
 	};
 
-} // namespace VTX::UI::QT::Widget::Custom
+} // namespace VTX::UI::QT::Core::Custom

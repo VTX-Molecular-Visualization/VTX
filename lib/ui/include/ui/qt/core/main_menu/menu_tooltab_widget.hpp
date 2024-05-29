@@ -2,13 +2,13 @@
 #define __VTX_UI_QT_WIDGET_MENU_TOOLTAB__
 
 #include "ui/core/main_menu/main_menu_tooltab.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include "menu_toolblock_widget.hpp"
 #include <QHBoxLayout>
 #include <QString>
 #include <QWidget>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	class MenuTooltabWidget : public VTX::UI::Core::MainMenu::MainMenuTooltab, public BaseManualWidget<QWidget>
 	{
@@ -30,5 +30,5 @@ namespace VTX::UI::QT::Widget::MainMenu
 	  private:
 		QHBoxLayout * _horizontalLayout = nullptr;
 	};
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu
 #endif

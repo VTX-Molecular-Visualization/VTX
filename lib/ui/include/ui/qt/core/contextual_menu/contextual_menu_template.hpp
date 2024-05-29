@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_WIDGET_CONTEXTUAL_MENU_TEMPLATE__
 #define __VTX_UI_QT_WIDGET_CONTEXTUAL_MENU_TEMPLATE__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QAction>
 #include <QMenu>
 #include <QString>
 #include <list>
 
-namespace VTX::UI::QT::Widget::ContextualMenu
+namespace VTX::UI::QT::Core::ContextualMenu
 {
 	class BaseContextualMenu : public BaseManualWidget<QMenu>
 	{
@@ -62,6 +62,6 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		T * _target = nullptr;
 	};
 
-} // namespace VTX::UI::QT::Widget::ContextualMenu
+} // namespace VTX::UI::QT::Core::ContextualMenu
 
 #endif

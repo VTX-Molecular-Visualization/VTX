@@ -16,7 +16,7 @@ namespace VTX::UI::QT
 {
 	class MainWindow;
 
-	class ApplicationQt : public Core::BaseUIApplication, public QApplication
+	class ApplicationQt : public UI::Core::BaseUIApplication, public QApplication
 	{
 	  public:
 		static void configure();

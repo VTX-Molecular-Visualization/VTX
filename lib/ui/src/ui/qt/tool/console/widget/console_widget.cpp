@@ -2,7 +2,7 @@
 #include "app/application/system/action_manager.hpp"
 #include "ui/qt/tool/console/action/console.hpp"
 #include "ui/qt/tool/pytx/details/include_python_binding.hpp"
-#include "ui/qt/widget/custom/dock_window_main_widget.hpp"
+#include "ui/qt/core/custom/dock_window_main_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QCompleter>
 #include <QMenu>

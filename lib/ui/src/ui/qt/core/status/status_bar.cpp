@@ -1,7 +1,7 @@
-#include "ui/qt/widget/status/status_bar.hpp"
+#include "ui/qt/core/status/status_bar.hpp"
 #include <QHBoxLayout>
 
-namespace VTX::UI::QT::Widget::Status
+namespace VTX::UI::QT::Core::Status
 {
 	StatusBar::StatusBar( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
@@ -42,4 +42,4 @@ namespace VTX::UI::QT::Widget::Status
 
 	void StatusBar::localize() {}
 
-} // namespace VTX::UI::QT::Widget::Status
+} // namespace VTX::UI::QT::Core::Status

@@ -8,7 +8,7 @@
 #include <QMenu>
 #include <type_traits>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	class MenuToolButtonSubmenuWidget : public MenuToolButtonWidget
 	{
@@ -86,5 +86,5 @@ namespace VTX::UI::QT::Widget::MainMenu
 		QMenu *	  _submenu		 = nullptr;
 		QAction * _defaultAction = nullptr;
 	};
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu
 #endif

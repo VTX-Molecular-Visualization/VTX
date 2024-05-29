@@ -3,14 +3,14 @@
 
 #include "ui/core/main_menu/main_menu_toolblock.hpp"
 #include "menu_toolbutton_widget.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	class MenuToolBlockWidget : public UI::Core::MainMenu::MainMenuToolBlock, public BaseManualWidget<QWidget>
 	{
@@ -69,5 +69,5 @@ namespace VTX::UI::QT::Widget::MainMenu
 		void _navigationToUp() const;
 		void _navigationToDown() const;
 	};
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu
 #endif

@@ -1,6 +1,6 @@
-#include "ui/qt/widget/contextual_menu/contextual_menu_template.hpp"
+#include "ui/qt/core/contextual_menu/contextual_menu_template.hpp"
 
-namespace VTX::UI::QT::Widget::ContextualMenu
+namespace VTX::UI::QT::Core::ContextualMenu
 {
 	QAction * BaseContextualMenu::addSection( const QString &				p_sectionName,
 											  const SECTION_POSITION_HINT & p_positionHint )
@@ -108,4 +108,4 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		return res;
 	}
-} // namespace VTX::UI::QT::Widget::ContextualMenu
+} // namespace VTX::UI::QT::Core::ContextualMenu

@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_STATUS_BAR__
 #define __VTX_UI_QT_STATUS_BAR__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QLabel>
 #include <QProgressBar>
 #include <QStatusBar>
 #include <QTimer>
 
-namespace VTX::UI::QT::Widget::Status
+namespace VTX::UI::QT::Core::Status
 {
 	class StatusBar : public BaseManualWidget<QStatusBar>
 	{
@@ -30,5 +30,5 @@ namespace VTX::UI::QT::Widget::Status
 		QLabel *	   _infoLabel	= nullptr;
 	};
 
-} // namespace VTX::UI::QT::Widget::Status
+} // namespace VTX::UI::QT::Core::Status
 #endif

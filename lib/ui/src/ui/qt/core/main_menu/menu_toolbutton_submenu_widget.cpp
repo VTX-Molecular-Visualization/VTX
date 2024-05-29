@@ -1,6 +1,6 @@
-#include "ui/qt/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
+#include "ui/qt/core/main_menu/menu_toolbutton_submenu_widget.hpp"
 
-namespace VTX::UI::QT::Widget::MainMenu
+namespace VTX::UI::QT::Core::MainMenu
 {
 	void MenuToolButtonSubmenuWidget::_setupUi( const QString & p_name )
 	{
@@ -48,4 +48,4 @@ namespace VTX::UI::QT::Widget::MainMenu
 		_setDefaultAction( p_action );
 	}
 
-} // namespace VTX::UI::QT::Widget::MainMenu
+} // namespace VTX::UI::QT::Core::MainMenu

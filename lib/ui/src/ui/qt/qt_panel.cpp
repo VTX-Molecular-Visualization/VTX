@@ -1,5 +1,5 @@
 #include "ui/qt/qt_panel.hpp"
-#include "ui/qt/widget/custom/dock_window_main_widget.hpp"
+#include "ui/qt/core/custom/dock_window_main_widget.hpp"
 
 namespace VTX::UI::QT
 {
@@ -13,8 +13,8 @@ namespace VTX::UI::QT
 
 	QWidget * QtDockablePanel::_instantiateMainWidget( const QSize & p_preferredSize, const QSize & p_minimalSize )
 	{
-		Widget::Custom::DockWindowMainWidget * mainWidget
-			= new Widget::Custom::DockWindowMainWidget( p_preferredSize, p_minimalSize, this );
+		Core::Custom::DockWindowMainWidget * mainWidget
+			= new Core::Custom::DockWindowMainWidget( p_preferredSize, p_minimalSize, this );
 
 		return mainWidget;
 	}

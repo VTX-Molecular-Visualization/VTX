@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_QT_WIDGET_BASE_DIALOG__
 #define __VTX_UI_QT_WIDGET_BASE_DIALOG__
 
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QDialog>
 #include <QWidget>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Core
 {
 	class BaseDialog : public BaseManualWidget<QDialog>
 	{
@@ -15,6 +15,6 @@ namespace VTX::UI::QT::Widget
 			setAttribute( Qt::WA_DeleteOnClose );
 		}
 	};
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Core
 
 #endif

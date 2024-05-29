@@ -51,21 +51,23 @@ namespace VTX::UI::QT::Util
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
 
-	static QVariant widgetKeyToQVariant( const Core::WidgetKey & p_key )
+	static QVariant widgetKeyToQVariant( const UI::Core::WidgetKey & p_key )
 	{
 		return QVariant( QString::fromStdString( p_key ) );
 	}
-	static Core::WidgetKey QVariantTowWidgetKey( const QVariant & p_variant )
+	static UI::Core::WidgetKey QVariantTowWidgetKey( const QVariant & p_variant )
 	{
-		return static_cast<Core::WidgetKey>( p_variant.toString().toStdString() );
+		return static_cast<UI::Core::WidgetKey>( p_variant.toString().toStdString() );
 	}
 
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
-	void fillMenu( QMenu &							p_menu,
-				   const int						p_enumSize,
-				   const std::vector<std::string> & p_names,
-				   const bool						p_actionCheckable = false );
+	void fillMenu(
+		QMenu &							 p_menu,
+		const int						 p_enumSize,
+		const std::vector<std::string> & p_names,
+		const bool						 p_actionCheckable = false
+	);
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Util::Color::Rgba & p_color )
 	{
