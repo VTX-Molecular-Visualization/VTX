@@ -23,9 +23,6 @@ namespace VTX::UI::QT
 		// Setup some Qt static configuration.
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
-
-		// Init resources
-		// Q_INIT_RESOURCE( resources_ui );
 	}
 
 	int ZERO = 0;

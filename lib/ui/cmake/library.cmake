@@ -9,19 +9,16 @@ find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 
+set(QT_RESOURCES_PATH ${CMAKE_CURRENT_LIST_DIR}/../asset/qt/resources)
+
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_LIST_DIR}/../include/*)
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../src/*)
-file(GLOB_RECURSE QT_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/../asset/qt/resources/*)
+file(GLOB_RECURSE QT_RESOURCES ${QT_RESOURCES_PATH}/*)
 target_sources(vtx_ui
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/../include FILES ${HEADERS})
 	
-qt_add_resources(
-	vtx_ui
-	vtx_qt_resources_ui
-	BASE ${CMAKE_CURRENT_LIST_DIR}/../asset/qt/resources/
-    FILES ${QT_RESOURCES}
-)
+qt_add_resources(vtx_ui vtx_qt_resources_ui BASE ${QT_RESOURCES_PATH} FILES ${QT_RESOURCES})
 
 if (NOT DEFINED _VTX_UI_CONAN)
 	target_link_libraries(vtx_ui PUBLIC vtx_util)

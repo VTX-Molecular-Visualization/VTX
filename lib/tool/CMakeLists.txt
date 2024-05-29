@@ -13,19 +13,16 @@ configure_qt()
 add_library(vtx_tool)
 configure_target(vtx_tool)
 
+set(QT_RESOURCES_PATH asset/qt/resources)
+
 file(GLOB_RECURSE HEADERS include/*)
 file(GLOB_RECURSE SOURCES src/*)
-file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*)
+file(GLOB_RECURSE QT_RESOURCES ${QT_RESOURCES_PATH}/*)
 target_sources(vtx_tool
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS include FILES ${HEADERS})
 
-qt_add_resources(
-	vtx_tool
-	vtx_qt_resources_tool
-	BASE asset/qt/resources/
-    FILES ${QT_RESOURCES}
-)
+qt_add_resources(vtx_tool vtx_qt_resources_tool BASE ${QT_RESOURCES_PATH} FILES ${QT_RESOURCES})
 
 target_link_libraries(vtx_tool PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_tool PRIVATE vtx_app::vtx_app)
