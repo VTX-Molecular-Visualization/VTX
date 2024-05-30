@@ -2,6 +2,7 @@
 #include "ui/qt/validator.hpp"
 #include <QAction>
 #include <qevent.h>
+#include <qfont.h>
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
 
@@ -48,12 +49,15 @@ namespace VTX::UI::QT::Util
 		{
 			setIcon( QIcon( ":/sprite/citations_icon_hovered.png" ) );
 			setAttribute( Qt::WA_Hover );
-
+			setFlat( true );
+			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 			auto label = new QLabel( p_popupText );
 			label->setTextFormat( Qt::RichText );
 
 			popup = new QWidget;
+			popup->setAttribute( Qt::WA_TransparentForMouseEvents );
 			popup->setWindowFlag( Qt::ToolTip );
+			// popup->setWindowFlag( Qt::WindowTransparentForInput );
 			auto layout = new QHBoxLayout( popup );
 			layout->addWidget( label );
 		}
@@ -63,26 +67,18 @@ namespace VTX::UI::QT::Util
 		void hoverEnter( QHoverEvent * p_event )
 		{
 			auto p = p_event->globalPosition().toPoint();
-			if ( p.isNull() || ( p.x() == -1 && p.y() == -1 ) )
-				return;
-			popup->move( p_event->globalPosition().toPoint() );
-			setText( QString::asprintf( "{%d, %d}", p.x(), p.y() ) );
+			p += QPoint( 5, 5 );
+			popup->move( p );
 			popup->show();
 		}
 
-		void hoverLeave( QHoverEvent * event )
-		{
-			popup->hide();
-			setText( "leaved" );
-		}
+		void hoverLeave( QHoverEvent * event ) { popup->hide(); }
 
 		void hoverMove( QHoverEvent * p_event )
 		{
 			auto p = p_event->globalPosition().toPoint();
-			if ( p.isNull() || ( p.x() == -1 && p.y() == -1 ) )
-				return;
-			popup->move( p_event->globalPosition().toPoint() );
-			setText( QString::asprintf( "{%d, %d}", p.x(), p.y() ) );
+			p += QPoint( 5, 5 );
+			popup->move( p );
 		}
 		bool event( QEvent * e )
 		{
@@ -120,11 +116,11 @@ namespace VTX::UI::QT::Util
 		if ( p_postion == E_QUESTIONMARK_POSITION::left )
 		{
 			layout->addWidget( questionMark );
-			layout->addWidget( label );
+			layout->addWidget( label, 1 );
 		}
 		else
 		{
-			layout->addWidget( label );
+			layout->addWidget( label, 1 );
 			layout->addWidget( questionMark );
 		}
 	}
