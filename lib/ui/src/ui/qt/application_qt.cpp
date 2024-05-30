@@ -5,7 +5,7 @@
 #include "ui/qt/mode/base_mode.hpp"
 #include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/style.hpp"
-#include "ui/qt/tool/render/dialog.hpp"
+#include "ui/qt/widget/renderer/dialog.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QCoreApplication>
 #include <QIcon>

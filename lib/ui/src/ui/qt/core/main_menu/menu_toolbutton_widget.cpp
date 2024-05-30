@@ -12,16 +12,20 @@ namespace VTX::UI::QT::Core::MainMenu
 
 	void MenuToolButtonWidget::setName( const QString & p_name ) { setText( p_name ); }
 
-	void MenuToolButtonWidget::setData( const QString &		  p_name,
-										const QString &		  p_iconUrl,
-										const Qt::Orientation p_orientation )
+	void MenuToolButtonWidget::setData(
+		const QString &		  p_name,
+		const QString &		  p_iconUrl,
+		const Qt::Orientation p_orientation
+	)
 	{
 		const QIcon & icon = p_iconUrl.isEmpty() ? QIcon() : QIcon::fromTheme( p_iconUrl );
 		setData( p_name, icon, p_orientation );
 	}
-	void MenuToolButtonWidget::setData( const QString &		  p_name,
-										const QIcon &		  p_icon,
-										const Qt::Orientation p_orientation )
+	void MenuToolButtonWidget::setData(
+		const QString &		  p_name,
+		const QIcon &		  p_icon,
+		const Qt::Orientation p_orientation
+	)
 	{
 		if ( !p_name.isEmpty() )
 			setText( p_name );
@@ -71,16 +75,18 @@ namespace VTX::UI::QT::Core::MainMenu
 		switch ( p_orientation )
 		{
 		case Qt::Orientation::Horizontal:
-			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextBesideIcon );
+			// setToolButtonStyle( QT::WidgetButtonStyle::ToolButtonTextBesideIcon );
 			setContentsMargins( 2, 2, 2, 2 );
 			break;
 		case Qt::Orientation::Vertical:
-			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextUnderIcon );
+			// setToolButtonStyle( QT::WidgetButtonStyle::ToolButtonTextUnderIcon );
 			setContentsMargins( 10, 2, 10, 2 );
 			break;
 		default:
-			VTX_WARNING( "Orientation {} not managed in BaseMenuToolButtonWidget::updateButtonStyle. Apply Default.",
-						 int( p_orientation ) );
+			VTX_WARNING(
+				"Orientation {} not managed in BaseMenuToolButtonWidget::updateButtonStyle. Apply Default.",
+				int( p_orientation )
+			);
 			_updateButtonStyle( Qt::Orientation::Vertical );
 			break;
 		}

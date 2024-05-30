@@ -3,8 +3,8 @@
 // #include "ui/qt/main_window.hpp"
 // #include "ui/qt/state/state_machine.hpp"
 // #include "ui/qt/state/visualization.hpp"
-// #include "ui/qt/tool/keys.hpp"
-// #include "ui/qt/tool/render/widget/render_widget.hpp"
+// #include "ui/qt/widget/keys.hpp"
+// #include "ui/qt/widget/render/widget/render_widget.hpp"
 // #include <QPoint>
 //
 //// #include <app/old/action/measurement.hpp>

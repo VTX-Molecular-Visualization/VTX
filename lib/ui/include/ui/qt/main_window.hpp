@@ -10,6 +10,7 @@
 #include "ui/qt/core/main_menu/menu_tooltab_widget.hpp"
 #include "ui/qt/core/status/status_bar.hpp"
 #include "ui/qt/qt_panel.hpp"
+#include "ui/qt/widget/renderer/panel.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
@@ -40,8 +41,8 @@ namespace VTX::UI::QT
 		void initWindowLayout();
 		void refreshWindowTitle();
 
-		QT::Tool::Render::Widget::RenderWidget *			 getRender();
-		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
+		QT::Widget::Renderer::Panel *			  getRender();
+		const QT::Widget::Renderer::Panel * const getRender() const;
 
 		Core::MainMenu::MainMenuBar &			  getMainMenu() override { return *_mainMenuBar; }
 		QT::Core::MainMenu::MenuTooltabWidget &	  getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData );

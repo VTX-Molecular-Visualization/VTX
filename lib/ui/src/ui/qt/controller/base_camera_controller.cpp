@@ -1,7 +1,7 @@
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/tool/render/widget/render_widget.hpp"
+#include "ui/qt/widget/renderer/panel.hpp"
 
 namespace VTX::UI::QT::Controller
 {

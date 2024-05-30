@@ -1,8 +1,8 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
-#include "ui/qt/tool/render/widget/render_widget.hpp"
 #include "ui/qt/util.hpp"
+#include "ui/qt/widget/renderer_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <app/application/scene.hpp>
 #include <io/internal/filesystem.hpp>
@@ -96,13 +96,13 @@ namespace VTX::UI::QT
 	void MainWindow::_setupSlots() {}
 	void MainWindow::localize() { setWindowTitle( "VTX" ); }
 
-	QT::Tool::Render::Widget::RenderWidget * MainWindow::getRender()
+	QT::Widget::Renderer::Panel * MainWindow::getRender()
 	{
-		return getPanel<QT::Tool::Render::Widget::RenderWidget>( "RENDER_WINDOW_KEY" );
+		return getPanel<QT::Widget::Renderer::Panel>( "RENDER_WINDOW_KEY" );
 	}
-	const QT::Tool::Render::Widget::RenderWidget * const MainWindow::getRender() const
+	const QT::Widget::Renderer::Panel * const MainWindow::getRender() const
 	{
-		return getPanel<QT::Tool::Render::Widget::RenderWidget>( "RENDER_WINDOW_KEY" );
+		return getPanel<QT::Widget::Renderer::Panel>( "RENDER_WINDOW_KEY" );
 	}
 
 	void		MainWindow::refreshWindowTitle() { setWindowTitle( QString::fromStdString( _getWindowTitle() ) ); }

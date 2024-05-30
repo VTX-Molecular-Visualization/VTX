@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_TEST_INCLUDE_TOOLS__
 #define __VTX_UI_TEST_INCLUDE_TOOLS__
 
-#include <ui/qt/tool/console_tool.hpp>
-#include <ui/qt/tool/miscellaneous/orient_on_first_molecule_loaded.hpp>
-#include <ui/qt/tool/pytx_tool.hpp>
-#include <ui/qt/tool/render_window.hpp>
-#include <ui/qt/tool/scene_tool.hpp>
-#include <ui/qt/tool/ui_features/quit_tool.hpp>
-#include <ui/qt/tool/ui_features/visualization_tool.hpp>
+#include <ui/qt/widget/console_widget.hpp>
+#include <ui/qt/widget/miscellaneous/orient_on_first_molecule_loaded.hpp>
+#include <ui/qt/widget/pytx_widget.hpp>
+#include <ui/qt/widget/renderer_widget.hpp>
+#include <ui/qt/widget/scene_widget.hpp>
+#include <ui/qt/widget/ui_features/quit.hpp>
+#include <ui/qt/widget/ui_features/visualization.hpp>
 
 #endif
