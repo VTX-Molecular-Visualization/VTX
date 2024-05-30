@@ -57,7 +57,7 @@ namespace VTX::UI::QT::Widget::Console
 			_listWidget,
 			&QListWidget::customContextMenuRequested,
 			this,
-			[ & ]( QPoint p_pos )
+			[ & ]( const QPoint & p_pos )
 			{
 				QMenu			menu( this );
 				QAction * const clearAction = new QAction( "Clear", this );

@@ -3,6 +3,7 @@
 
 #include "ui/qt/core/base_manual_widget.hpp"
 #include <QTreeWidget>
+#include <app/component/scene/scene_item_component.hpp>
 
 namespace VTX::UI::QT::Widget::Scene
 {
@@ -13,12 +14,17 @@ namespace VTX::UI::QT::Widget::Scene
 	  public:
 		void localize() override;
 
+		void addTopLevelMolecule( const App::Component::Scene::SceneItemComponent & p_item );
+
 	  protected:
 		Tree( QWidget * p_parent = nullptr );
 		~Tree() = default;
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+	  private:
+		void _resetTreeItem( QTreeWidgetItem * const p_item );
 	};
 } // namespace VTX::UI::QT::Widget::Scene
 

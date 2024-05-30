@@ -5,6 +5,8 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/application/scene.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -12,6 +14,7 @@ namespace VTX::UI::QT::Widget
 
 	void SceneWidget::instantiateTool()
 	{
+		// Add panel.
 		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
 		QT::Widget::Scene::Panel * const sceneWidget
@@ -21,6 +24,19 @@ namespace VTX::UI::QT::Widget
 		mainWindow->addDockWidgetAsTabified(
 			sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Vertical, true
 		);
+
+		// Connect callbacks.
+		App::SCENE().onSceneItemAdded += [ sceneWidget ]( const App::Component::Scene::SceneItemComponent & p_item )
+		{
+			if ( App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
+			{
+				sceneWidget->getTreeWidget()->addTopLevelMolecule( p_item );
+				sceneWidget->getTreeWidget()->addTopLevelMolecule( p_item );
+				sceneWidget->getTreeWidget()->addTopLevelMolecule( p_item );
+				sceneWidget->getTreeWidget()->addTopLevelMolecule( p_item );
+				sceneWidget->getTreeWidget()->addTopLevelMolecule( p_item );
+			}
+		}; // namespace VTX::UI::QT::Widget
 	}
 
 } // namespace VTX::UI::QT::Widget

@@ -13,6 +13,9 @@ namespace VTX::UI::QT::Widget::Scene
 	  public:
 		void localize() override;
 
+		inline const Tree * const getTreeWidget() const { return _treeWidget; }
+		inline Tree * const		  getTreeWidget() { return _treeWidget; }
+
 	  protected:
 		Panel( QWidget * p_parent = nullptr );
 		~Panel() = default;

@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget::Miscellaneous
 	) const
 	{
 		// Added item not a molecule => return
-		if ( !App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
+		if ( not App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
 		{
 			return;
 		}
