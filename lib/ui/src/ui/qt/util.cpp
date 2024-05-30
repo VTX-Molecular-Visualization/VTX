@@ -50,6 +50,9 @@ namespace VTX::UI::QT::Util
 			setIcon( QIcon( ":/sprite/citations_icon_hovered.png" ) );
 			setAttribute( Qt::WA_Hover );
 			setFlat( true );
+			setMaximumHeight( iconSize().height() );
+			setMaximumWidth( iconSize().width() );
+			setIconSize( iconSize() * 0.75 );
 			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 			auto label = new QLabel( p_popupText );
 			label->setTextFormat( Qt::RichText );
@@ -124,6 +127,7 @@ namespace VTX::UI::QT::Util
 			layout->addWidget( questionMark );
 		}
 	}
+	LabelWithHelper::operator QWidget *() { return container; }
 
 	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept
 	{
@@ -150,7 +154,13 @@ namespace VTX::UI::QT::Util
 	{
 		QLineEdit * out = new QLineEdit();
 		out->setValidator( new VTX::UI::QT::QUInt64Validator( out ) );
-		p_dest->addRow( UI::QT::Util::createLabelWithHelpTooltip( p_label, p_tooltip ), out );
+
+		p_dest->addRow(
+			VTX::UI::QT::Util::LabelWithHelper(
+				p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
+			),
+			out
+		);
 		return out;
 	}
 

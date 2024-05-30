@@ -132,6 +132,7 @@ namespace VTX::UI::QT::Util
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
 		QWidget * container = nullptr;
 		QLabel *  label		= nullptr;
+		operator QWidget *();
 
 	  private:
 	};
