@@ -44,10 +44,16 @@ namespace VTX::App::Component::Render
 		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
+		// devjla
+		std::vector<Vec3f> tmpFrame;
+		molStruct.trajectory.getCurrentFrame( tmpFrame );
+
 		_proxy = std::make_unique<VTX::Renderer::Proxy::System>( VTX::Renderer::Proxy::System {
 			&transformComp.getTransform().get(),
 
-			&molStruct.trajectory.getCurrentFrame(),
+			// devjla
+			// &molStruct.trajectory.getCurrentFrame(),
+			const_cast<const std::vector<Vec3f> *>( &tmpFrame ),
 			&molStruct.bondPairAtomIndexes,
 			&molStruct.atomNames,
 			reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
@@ -216,7 +222,12 @@ namespace VTX::App::Component::Render
 				Component::Chemistry::System & systemComponent
 					= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-				_proxy->atomPositions = &systemComponent.getTrajectory().getCurrentFrame();
+				// devjla
+				// FIXME
+				//_proxy->atomPositions = &systemComponent.getTrajectory().getCurrentFrame();
+				VTX::Core::Struct::Frame currentFrame;
+				if ( systemComponent.getTrajectory().getCurrentFrame( currentFrame ) )
+					_proxy->atomPositions = &currentFrame;
 				_proxy->onAtomPositions();
 			};
 		}

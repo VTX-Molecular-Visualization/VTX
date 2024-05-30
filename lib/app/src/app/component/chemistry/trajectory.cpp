@@ -19,7 +19,13 @@ namespace VTX::App::Component::Chemistry
 		_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
 	}
 
-	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
+	// devjla
+	// FIXME obviously wrong
+	// size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
+	size_t Trajectory::getFrameCount() const
+	{ 
+		return _systemPtr->getTrajectory().frames.GetTotalElements();
+	}
 
 	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
 	{

@@ -2,6 +2,7 @@
 #define __VTX_CORE_STRUCT_TRAJECTORY__
 
 #include <util/types.hpp>
+#include <core/struct/frame_data.hpp>
 #include <vector>
 
 namespace VTX::Core::Struct
@@ -14,18 +15,36 @@ namespace VTX::Core::Struct
 	{
 		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
-			Frame & frame = frames[ p_systemFrameIndex ];
+			// Frame & frame = frames[ p_systemFrameIndex ];
+			Frame	initFrame;
+			Frame & frame = frames.WriteElement( initFrame );
 			frame.resize( p_atomPositions.size() );
 
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
 		}
 
-		const Frame & getCurrentFrame() const { return frames[ currentFrameIndex ]; }
-		Frame &		  getCurrentFrame() { return frames[ currentFrameIndex ]; }
+		// devjla
+		/* const Frame & getCurrentFrame() const { return frames[ currentFrameIndex ]; }
+		Frame &		  getCurrentFrame() { return frames[ currentFrameIndex ]; } */
+		/* const Frame & getCurrentFrame() const
+		{
+			Frame frame;
+			if ( frames.ReadElement( frame ) )
+				return frame;
+		} */
+		bool getCurrentFrame( Frame & requestedFrame )
+		{
+			if ( frames.ReadElement( requestedFrame ) )
+				return true;
+			else
+				return false;
+		}
 
-		size_t getFrameCount() const { return frames.size(); }
+		//size_t getFrameCount() const { return frames.size(); }
+		size_t getFrameCount() const { return frames.GetTotalElements(); }
 
-		std::vector<Frame> frames;
+		//std::vector<Frame> frames;
+		FrameData frames;
 		size_t			   currentFrameIndex = 0;
 	};
 

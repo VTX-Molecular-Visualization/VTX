@@ -41,11 +41,15 @@ namespace VTX::IO::Reader
 
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
-		p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
+		// devjla
+		// p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
+		p_system.trajectory.frames.SetTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
+		// devjla
+		// VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
+		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames.GetModelFrame();
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
@@ -305,12 +309,17 @@ namespace VTX::IO::Reader
 		timeReadingFrames.stop();
 		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
+		// devjla
+		// FIXME do we need to erase potential empty frames at the end of the circular buffer?
+		// need to check frame size somewhere else, circular buffer size wont change
 		// Erase supernumeraries frames
 		for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemFirstFrame : p_targets )
 		{
-			VTX::Core::Struct::System &		system   = *( pairSystemFirstFrame.first );
+			VTX::Core::Struct::System &	system   = *( pairMoleculeFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
-			if ( trajectory.frames.back().size() == 0 )
+
+			trajectory.frames.EraseEmptyFrames();
+			/* if ( trajectory.frames.back().size() == 0 )
 			{
 				do
 				{
@@ -318,7 +327,7 @@ namespace VTX::IO::Reader
 				} while ( trajectory.frames.back().size() == 0 );
 
 				trajectory.frames.shrink_to_fit();
-			}
+			} */
 		}
 	}
 

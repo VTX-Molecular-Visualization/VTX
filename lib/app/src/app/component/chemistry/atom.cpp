@@ -38,7 +38,10 @@ namespace VTX::App::Component::Chemistry
 	}
 	const Vec3f & Atom::getLocalPosition( const size_t & p_frameIndex ) const
 	{
-		return _systemPtr->getTrajectory().frames[ p_frameIndex ][ _index ];
+		// devjla
+		// return _systemPtr->getTrajectory().frames[ p_frameIndex ][ _index ];
+		// return _systemPtr->getTrajectory().frames.GetElement( p_frameIndex )[ _index ];
+		return _systemPtr->getTrajectory().frames.ReadElement()[ _index ];
 	}
 	Vec3f Atom::getWorldPosition() const
 	{
