@@ -10,6 +10,7 @@
 #include "tools/mdprep/ui/main_window.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
+#include <ui/qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
 #include "tools/mdprep/ui/advanced_form.hpp"
@@ -128,9 +129,10 @@ namespace VTX::QT::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent = nullptr ) : UI::QT::QtDockablePanel( p_parent )
+		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent )
+		// MainWindow( QWidget * const p_parent, const std::string & p_name ) : UI::QT::QtDockablePanel( p_parent )
 		{
-			_setupUi( "Is this parameter useful ?" );
+			_setupUi( QString::fromStdString( "name" ) );
 			_updateFormEngine( 0 );
 			_setupSlots();
 		}
@@ -142,11 +144,15 @@ namespace VTX::Tool::Mdprep
 
 	class MainWindow::_impl
 	{
-		VTX::QT::Mdprep::MainWindow _win { &VTX::UI::QT::QT_APP()->getMainWindow() };
+		VTX::QT::Mdprep::MainWindow * _win
+			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::QT::Mdprep::MainWindow>(
+				reinterpret_cast<QWidget *>( &VTX::UI::QT::QT_APP()->getMainWindow() ),
+				"MdPrep Tool"
+			);
 
 	  public:
 		_impl() {}
-		void show() noexcept { _win.show(); }
+		void show() noexcept { _win->show(); }
 	};
 	MainWindow::MainWindow() : _pimpl( new MainWindow::_impl() ) {}
 
