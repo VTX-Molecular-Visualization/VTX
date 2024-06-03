@@ -17,7 +17,6 @@ target_compile_definitions(vtx_tool_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
 include(CTest)
 include(Catch)
-set(CMAKE_CATCH_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
-catch_discover_tests(vtx_tool_test)
+catch_discover_tests(vtx_tool_test DISCOVERY_MODE PRE_TEST)
 
 install(TARGETS vtx_tool_test)
