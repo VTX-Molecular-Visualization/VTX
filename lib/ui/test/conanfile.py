@@ -43,7 +43,7 @@ class VTXUiTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        cmake.test()
+        cmake.test(None, None, ["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
