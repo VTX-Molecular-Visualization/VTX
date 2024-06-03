@@ -29,4 +29,5 @@ vtx_copy_registered_data(vtx_python_binding_test)
 
 include(CTest)
 include(Catch)
+set(CMAKE_CATCH_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
 catch_discover_tests(vtx_python_binding_test)

@@ -25,5 +25,6 @@ endif()
 
 target_compile_definitions(vtx_app_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
+set(CMAKE_CATCH_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
 catch_discover_tests(vtx_app_test)
 vtx_copy_registered_data(vtx_app_test)

@@ -31,6 +31,7 @@ target_include_directories(vtx_tool_mdprep_test PRIVATE ${CMAKE_CURRENT_LIST_DIR
 
 include(CTest)
 include(Catch)
+set(CMAKE_CATCH_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
 catch_discover_tests(vtx_tool_mdprep_test)
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "data")
 
