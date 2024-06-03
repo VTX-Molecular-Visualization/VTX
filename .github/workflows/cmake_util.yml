@@ -46,8 +46,10 @@ jobs:
       run: conan create test --build=missing --settings=compiler.cppstd=20
       
     - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
       uses: threeal/ctest-action@v1.0.0
+      with:
+        test-dir: ${{env.CMAKELISTS_DIR}}/build
+        build-config: Release
                
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}
