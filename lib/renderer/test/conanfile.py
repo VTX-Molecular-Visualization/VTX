@@ -26,7 +26,7 @@ class VTXRendererTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        cmake.test(None, None, ["--output-on-failure"])
+        cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
