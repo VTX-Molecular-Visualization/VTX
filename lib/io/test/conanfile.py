@@ -25,7 +25,7 @@ class VTXIOTestConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        self.run("ctest --rerun-failed --output-on-failure")
+        cmake.test()
     
     def package(self):
         cmake = CMake(self)

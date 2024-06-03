@@ -37,7 +37,7 @@ class VTXRendererTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
+        cmake.test() # TODO uncomment this when build is stable
 
     def package(self):
         cmake = CMake(self)
