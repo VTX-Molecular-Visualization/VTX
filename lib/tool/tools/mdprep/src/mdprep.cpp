@@ -9,6 +9,7 @@
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
+#include "tools/mdprep/ui/basic_form_settings_dialog.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
@@ -96,6 +97,8 @@ namespace VTX::QT::Mdprep
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
 			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
 			qLayoutWindow->addWidget( new QPushButton( "Button" ) );
+
+			_updateFormEngine( 0 );
 		}
 		void _updateFormEngine( int idx ) noexcept
 		{
@@ -134,9 +137,8 @@ namespace VTX::QT::Mdprep
 		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent )
 		// MainWindow( QWidget * const p_parent, const std::string & p_name ) : UI::QT::QtDockablePanel( p_parent )
 		{
-			_setupUi( QString::fromStdString( "name" ) );
-			_updateFormEngine( 0 );
-			_setupSlots();
+			//_setupUi( QString::fromStdString( "name" ) );
+			//_setupSlots();
 		}
 	};
 } // namespace VTX::QT::Mdprep
