@@ -12,7 +12,7 @@ class VTXRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
+    exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
     
     def requirements(self):
         self.requires("vtx_app/1.0")
@@ -24,6 +24,9 @@ class VTXRecipe(ConanFile):
         self.requires("vtx_ui/1.0")
         self.requires("vtx_util/1.0")
 
+    def layout(self):
+        cmake_layout(self)
+        
     def generate(self):
         tc = CMakeToolchain(self)
         dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
@@ -35,15 +38,7 @@ class VTXRecipe(ConanFile):
         tc.generate()
 
         copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(
-            self
-            , "*"
-            , os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data")
-            , os.path.join(self.build_folder, "data")
-        )
-
-    def layout(self):
-        cmake_layout(self)
+        copy(self, "*", os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data"), os.path.join(self.build_folder, "data"))
 
     def build(self):
         cmake = CMake(self)

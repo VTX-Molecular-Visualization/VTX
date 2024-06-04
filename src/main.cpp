@@ -1,4 +1,5 @@
 #include "vtx_tool_include.hpp"
+#include <io/internal/filesystem.hpp>
 #include <string>
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
@@ -8,46 +9,46 @@
 #include <util/types.hpp>
 #include <vector>
 
-using namespace VTX;
-
 #ifdef _WIN32
-// Force GPU (NVIDIA/AMD).
-#include <windows.h>
 extern "C"
 {
-	__declspec( dllexport ) DWORD NvOptimusEnablement				 = 0x00000001;
+	__declspec( dllexport ) uint32_t NvOptimusEnablement			 = 0x00000001;
 	__declspec( dllexport ) int AmdPowerXpressRequestHighPerformance = 1;
 }
-#ifdef VTX_PRODUCTION
-// Hide console.
-#pragma comment( linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup" )
 #endif
-#endif
+
+// #ifdef VTX_PRODUCTION
+//  Hide console.
+// #pragma comment( linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup" )
+// #endif
 
 int main( int p_argc, char * p_argv[] )
 {
+	using namespace VTX;
+
 	try
 	{
 		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
 		Util::Logger::get().init( logDir );
-		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
-		VTX::UI::Environment::get().setUIApp( vtxApplication );
+
+		std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
+		VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
 		vtxApplication->init();
 
-		const std::vector<std::string> args( p_argv, p_argv + p_argc );
-		vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
+		// const std::vector<std::string> args( p_argv, p_argv + p_argc );
+		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
 
+		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
+		vtxApplication->start( { molPath.string() } );
+
+		VTX::Util::Logger::get().stop();
 		return vtxApplication->getReturnCode();
 	}
 	catch ( const std::exception & p_e )
 	{
 		const std::string error = p_e.what();
 		VTX_ERROR( "{}", error );
-
-#ifdef VTX_PRODUCTION
-		UI::Dialog::unhandledException();
-#else
+		VTX::Util::Logger::get().stop();
 		return EXIT_FAILURE;
-#endif
 	}
 }

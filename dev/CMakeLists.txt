@@ -88,3 +88,9 @@ include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 # MdPrep test.
 include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
 
+vtx_clear_registered_copies()
+
+# VTX.
+include("../cmake/library.cmake")
+
+vtx_clear_registered_copies()
