@@ -3,10 +3,12 @@
 #include <qlineedit.h>
 #include <qpushbutton.h>
 //
+#include "tools/mdprep/gateway/form_data.hpp"
+#include "tools/mdprep/ui/shared.hpp"
+//
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
 //
-#include "tools/mdprep/ui/form_data.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>

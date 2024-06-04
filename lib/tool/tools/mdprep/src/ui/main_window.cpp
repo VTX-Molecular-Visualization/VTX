@@ -1,4 +1,5 @@
-#include "tools/mdprep/ui/form_data.hpp"
+#include "tools/mdprep/gateway/form_data.hpp"
+#include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/ui/engine_form_gromacs.hpp"
 #include "tools/mdprep/ui/md_engine_form.hpp"
@@ -12,6 +13,8 @@
 
 namespace VTX::Tool::Mdprep::ui
 {
+	using namespace VTX::Tool::Mdprep::Gateway;
+
 	constexpr const char * string( const E_MD_ENGINE & p_ ) noexcept
 	{
 		switch ( p_ )

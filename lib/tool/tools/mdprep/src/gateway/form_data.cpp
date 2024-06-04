@@ -1,6 +1,6 @@
-#include "tools/mdprep/ui/form_data.hpp"
+#include "tools/mdprep/gateway/form_data.hpp"
 
-namespace VTX::Tool::Mdprep::ui
+namespace VTX::Tool::Mdprep::Gateway
 {
 	const char * string( const E_MD_DURATION_UNIT & p_ ) noexcept
 	{
@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	const double  multiplierPicoSeconds( const E_MD_DURATION_UNIT & p_ ) noexcept
+	const double multiplierPicoSeconds( const E_MD_DURATION_UNIT & p_ ) noexcept
 	{
 		switch ( p_ )
 		{
@@ -27,4 +27,4 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-} // namespace VTX::Tool::Mdprep::ui
+} // namespace VTX::Tool::Mdprep::Gateway
