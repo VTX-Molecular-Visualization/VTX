@@ -132,6 +132,14 @@ namespace VTX::QT::Mdprep
 									 { _formBasic.update( p_data ); } );
 			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
 								  { _formAdvanced.update( p_data ); } );
+			_formBasic.subscribe(
+				[ & ]()
+				{
+					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
+					_formsMd[ _mdEngineCurrentIdx ]->get( p );
+					return p;
+				}
+			);
 		}
 
 	  public:
