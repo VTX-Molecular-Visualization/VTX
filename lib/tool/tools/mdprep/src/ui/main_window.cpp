@@ -1,5 +1,8 @@
+#include "tools/mdprep/gateway/backend_gromacs.hpp"
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/ui/shared.hpp"
+//
+#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
 #include "tools/mdprep/ui/field_placer_gromacs.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
@@ -48,12 +51,13 @@ namespace VTX::Tool::Mdprep::ui
 
 		  public:
 			NoopForm() = default;
-			void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& p_ptr ) const noexcept
+			inline void get( MdEngineSpecificFieldPlacer & p_ptr ) noexcept {}
+			inline void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& p_ptr ) const noexcept
 			{
 				p_ptr = &_data;
 			}
-			void activate() noexcept {}
-			void deactivate() noexcept {}
+			inline void activate() noexcept {}
+			inline void deactivate() noexcept {}
 		};
 	} // namespace
 
@@ -62,7 +66,7 @@ namespace VTX::Tool::Mdprep::ui
 		switch ( p_engine )
 		{
 		case E_MD_ENGINE::gromacs: return { GromacsFieldPlacer( std::move( p_layout ) ) };
-		default: return { NoopForm() }; // Default is gromacs. Period.
+		default: return { NoopForm() };
 		}
 	}
 
