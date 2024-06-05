@@ -19,9 +19,9 @@ namespace VTX::Tool::Mdprep::ui
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings();
 
-	class MdEngineForm;
+	class MdEngineFieldPlacer;
 	struct FormLayouts;
-	MdEngineForm form( const E_MD_ENGINE &, FormLayouts ) noexcept;
+	MdEngineFieldPlacer form( const E_MD_ENGINE &, FormLayouts ) noexcept;
 
 	// Class responsible for settings up the MD UI with respect of basic VS advanced MD parameters
 	class MdFieldsOrganizer

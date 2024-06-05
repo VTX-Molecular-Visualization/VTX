@@ -1,8 +1,8 @@
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/ui/shared.hpp"
 //
-#include "tools/mdprep/ui/engine_form_gromacs.hpp"
-#include "tools/mdprep/ui/md_engine_form.hpp"
+#include "tools/mdprep/ui/field_placer_gromacs.hpp"
+#include "tools/mdprep/ui/md_engine_field_placer.hpp"
 //
 #include <qformlayout.h>
 #include <qlayout.h>
@@ -57,11 +57,11 @@ namespace VTX::Tool::Mdprep::ui
 		};
 	} // namespace
 
-	MdEngineForm form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
+	MdEngineFieldPlacer form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
 	{
 		switch ( p_engine )
 		{
-		case E_MD_ENGINE::gromacs: return { EngineFormGromacs( std::move( p_layout ) ) };
+		case E_MD_ENGINE::gromacs: return { GromacsFieldPlacer( std::move( p_layout ) ) };
 		default: return { NoopForm() }; // Default is gromacs. Period.
 		}
 	}

@@ -7,7 +7,8 @@
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/mdprep.hpp"
-#include "tools/mdprep/ui/md_engine_form.hpp"
+#include "tools/mdprep/ui/md_engine_field_placer.hpp"
+#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
 #include "tools/mdprep/ui/basic_form_settings_dialog.hpp"
 #include "tools/mdprep/ui/main_window.hpp"
@@ -27,8 +28,8 @@ namespace VTX::QT::Mdprep
 	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
-		using FormCollection
-			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngineForm>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+		using FormCollection = std::
+			array<std::optional<VTX::Tool::Mdprep::ui::MdEngineFieldPlacer>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
 		QComboBox *				  _w_mdEngine = nullptr;
@@ -134,12 +135,7 @@ namespace VTX::QT::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent )
-		// MainWindow( QWidget * const p_parent, const std::string & p_name ) : UI::QT::QtDockablePanel( p_parent )
-		{
-			//_setupUi( QString::fromStdString( "name" ) );
-			//_setupSlots();
-		}
+		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent ) {}
 	};
 } // namespace VTX::QT::Mdprep
 
