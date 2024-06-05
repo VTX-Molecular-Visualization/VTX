@@ -133,10 +133,10 @@ namespace VTX::QT::Mdprep
 			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
 								  { _formAdvanced.update( p_data ); } );
 			_formBasic.subscribe(
-				[ & ]()
+				[ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
 				{
 					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
-					_formsMd[ _mdEngineCurrentIdx ]->get( p );
+					_formsMd[ _mdEngineCurrentIdx ]->get( p, p_section );
 					return p;
 				}
 			);

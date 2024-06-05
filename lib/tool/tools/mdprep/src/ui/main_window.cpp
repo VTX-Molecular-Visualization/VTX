@@ -51,7 +51,10 @@ namespace VTX::Tool::Mdprep::ui
 
 		  public:
 			NoopForm() = default;
-			inline void get( MdEngineSpecificFieldPlacer & p_ptr ) noexcept {}
+			inline void
+			get( MdEngineSpecificFieldPlacer & p_ptr, const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & ) noexcept
+			{
+			}
 			inline void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData *& p_ptr ) const noexcept
 			{
 				p_ptr = &_data;
