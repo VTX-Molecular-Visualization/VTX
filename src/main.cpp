@@ -10,8 +10,6 @@
 #include <vector>
 
 #ifdef _WIN32
-// #include <Windows.h>
-
 extern "C"
 {
 	__declspec( dllexport ) uint32_t NvOptimusEnablement			 = 0x00000001;

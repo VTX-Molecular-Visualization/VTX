@@ -3,10 +3,10 @@
 #include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
-#include <util/enum.hpp>
 #include <map>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::IO::Reader
@@ -100,6 +100,7 @@ namespace VTX::IO::Reader
 
 			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 
+			// TODO: delete?
 			// int symbolValue;
 
 			// if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
@@ -129,6 +130,10 @@ namespace VTX::IO::Reader
 			//}
 
 			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
+			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+			{
+				p_molecule.residueUnknownNames[ residueIdx ] = residueName;
+			}
 
 			const std::string secondaryStructure
 				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" );

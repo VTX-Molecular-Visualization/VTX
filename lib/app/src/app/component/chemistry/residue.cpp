@@ -69,10 +69,41 @@ namespace VTX::App::Component::Chemistry
 
 	const std::string & Residue::getShortName() const
 	{
-		return ChemDB::Residue::SYMBOL_SHORT_STR[ int( getSymbol() ) ];
+		ChemDB::Residue::SYMBOL symbol = getSymbol();
+		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+		{
+			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+		}
+		else
+		{
+			return ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+		}
 	}
-	const std::string & Residue::getName() const { return ChemDB::Residue::SYMBOL_STR[ int( getSymbol() ) ]; }
-	const std::string & Residue::getLongName() const { return ChemDB::Residue::SYMBOL_NAME[ int( getSymbol() ) ]; }
+	const std::string & Residue::getName() const
+	{
+		ChemDB::Residue::SYMBOL symbol = getSymbol();
+		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+		{
+			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+		}
+		else
+		{
+			return ChemDB::Residue::SYMBOL_STR[ int( symbol ) ];
+		}
+	}
+
+	const std::string & Residue::getLongName() const
+	{
+		ChemDB::Residue::SYMBOL symbol = getSymbol();
+		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+		{
+			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+		}
+		else
+		{
+			return ChemDB::Residue::SYMBOL_NAME[ int( symbol ) ];
+		}
+	}
 
 	ChemDB::Atom::TYPE Residue::getAtomType() const
 	{

@@ -53,6 +53,7 @@ namespace VTX::Core::Struct
 		std::vector<size_t>							  residueBondCounts;
 		std::vector<size_t>							  residueOriginalIds;
 		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes;
+		std::vector<std::string>					  residueUnknownNames;
 
 		void   initResidues( const size_t p_count );
 		size_t getResidueCount() const;
