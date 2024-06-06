@@ -25,26 +25,47 @@ namespace VTX::UI::QT::Widget::Scene
 
 	void Tree::_setupSlots()
 	{
+		// itemExpanded.
 		connect(
 			this,
 			&QTreeWidget::itemExpanded,
 			this,
 			[ & ]( QTreeWidgetItem * const p_item )
 			{
+				// Get item depth.
+				int				  depth	 = 0;
+				QTreeWidgetItem * parent = p_item;
+				while ( parent->parent() )
+				{
+					++depth;
+					parent = parent->parent();
+				}
+
+				assert( _loadFuncs.contains( parent ) );
+
 				// Remove placeholder.
 				assert( p_item->childCount() == 1 );
 				delete p_item->takeChild( 0 );
 
-				// Add 5 placeholder children.
-				for ( int i = 0; i < 5; ++i )
+				// Load children.
+				const LoadFunc & loadFunc = _loadFuncs.at( parent );
+				const auto		 data	  = loadFunc( depth, p_item->data( 0, Qt::UserRole ).value<WidgetData>() );
+				for ( const auto & d : data )
 				{
+					// TODO: factorise with top level.
 					QTreeWidgetItem * child = new QTreeWidgetItem( p_item );
-					_resetTreeItem( child );
-					child->setText( 0, QString::fromUtf8( "Item" ) );
+					child->setText( 0, QString::fromUtf8( d.name + " (%1)" ).arg( d.childrenCount ) );
+					child->setData( 0, Qt::UserRole, QVariant::fromValue( d.data ) );
+
+					if ( d.childrenCount != 0 )
+					{
+						_resetTreeItem( child );
+					}
 				}
 			}
 		);
 
+		// itemCollapsed.
 		connect(
 			this,
 			&QTreeWidget::itemCollapsed,
@@ -52,29 +73,13 @@ namespace VTX::UI::QT::Widget::Scene
 			[ this ]( QTreeWidgetItem * const p_item ) { _resetTreeItem( p_item ); }
 		);
 
+		// customContextMenuRequested.
 		connect( this, &QTreeWidget::customContextMenuRequested, this, []( const QPoint & p_pos ) {} );
-	}
-
-	void Tree::addTopLevelMolecule( const App::Component::Scene::SceneItemComponent & p_item )
-	{
-		QTreeWidgetItem * item = new QTreeWidgetItem();
-
-		static Qt::ItemFlags flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
-
-		item->setFlags( flags );
-		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_item.getPersistentSceneID() ) );
-		item->setText( 0, QString::fromUtf8( p_item.getName() ) );
-		// item->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
-		item->setCheckState( 0, Qt::Checked );
-
-		_resetTreeItem( item );
-		addTopLevelItem( item );
 	}
 
 	void Tree::_resetTreeItem( QTreeWidgetItem * const p_item )
 	{
 		// Remove all children.
-
 		while ( p_item->childCount() > 0 )
 		{
 			delete p_item->takeChild( 0 );
