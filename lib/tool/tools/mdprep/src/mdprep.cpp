@@ -116,7 +116,7 @@ namespace VTX::QT::Mdprep
 			_formsMd[ _mdEngineCurrentIdx ]->activate();
 
 			{
-				const VTX::Tool::Mdprep::ui::EngineSpecificCommonFormData * engineSpecificData = nullptr;
+				const VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation * engineSpecificData = nullptr;
 				_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
 				if ( engineSpecificData )
 					_formBasic.update( *engineSpecificData );
