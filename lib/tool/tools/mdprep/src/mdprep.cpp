@@ -2,6 +2,7 @@
 #include <qformlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <qtextdocument.h>
 //
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/ui/shared.hpp"
@@ -89,7 +90,6 @@ namespace VTX::QT::Mdprep
 				_w_mdEngine->setFont( font );
 			}
 			qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
-
 			qLayoutCentering->addStretch( 1 );
 
 			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
@@ -97,7 +97,26 @@ namespace VTX::QT::Mdprep
 			_fieldOrganizer.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::MdFieldsOrganizer::E_FORM_MODE::basic );
 			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
 			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
-			qLayoutWindow->addWidget( new QPushButton( "Button" ) );
+
+			QLabel *			qExplainatoryText = new QLabel;
+			static const char * buttonLabel		  = "Prepare system";
+			qExplainatoryText->setText( QString::asprintf(
+				"Pushing the <i>%s</i> button will use every <b>visible</b> object of the system and will attempts to "
+				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <b>VTX doesn't support</b> "
+				"yet "
+				"automatic MD preparation for <b>small organic molecules</b>. Hence, any visible non-biologic entity "
+				"is likely cause preparation failure.",
+				buttonLabel
+			) );
+			qExplainatoryText->setWordWrap( true );
+			qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
+			qLayoutWindow->addWidget( qExplainatoryText );
+			QPushButton * qStartButton = new QPushButton;
+			QFont		  f			   = qStartButton->font();
+			f.setPointSize( f.pointSize() + 2 );
+			qStartButton->setFont( f );
+			qStartButton->setText( buttonLabel );
+			qLayoutWindow->addWidget( qStartButton );
 
 			_updateFormEngine( 0 );
 		}
