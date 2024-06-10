@@ -103,9 +103,8 @@ namespace VTX::QT::Mdprep
 			qExplainatoryText->setText( QString::asprintf(
 				"Pushing the <i>%s</i> button will use every <b>visible</b> object of the system and will attempts to "
 				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <b>VTX doesn't support "
-				"yet</b> "
-				"automatic MD preparation for <b>small organic molecules</b>. Hence, any visible non-biological entity "
-				"is likely cause preparation failure. Please mind the automatic check result.",
+				"yet</b> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
+				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
 				buttonLabel
 			) );
 			qExplainatoryText->setWordWrap( true );
