@@ -1,22 +1,14 @@
 #ifndef __VTX_UI_QT_TOOL_UI_FEATURES_QUIT__
 #define __VTX_UI_QT_TOOL_UI_FEATURES_QUIT__
 
-#include "ui/core/tool_registry.hpp"
-#include "ui/qt/base_qt_widget.hpp"
+#include <QObject>
 
 namespace VTX::UI::QT::Widget::UIFeatures
 {
-	class QuitTool : public BaseQtTool
+	class QuitTool : public QObject
 	{
 	  public:
-		inline static const UI::Core::ToolIdentifier TOOL_KEY = "UI_FEATURE_QUIT";
-
-	  private:
-		inline static const UI::Core::ToolRegistry::Registration<QuitTool> _reg { TOOL_KEY };
-
-	  public:
 		QuitTool();
-		void instantiateTool() override;
 
 	  private:
 		void _addButtonsInMainMenu();

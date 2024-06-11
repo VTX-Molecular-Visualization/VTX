@@ -6,9 +6,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	RendererWidget::RendererWidget() : BaseQtTool() {}
-
-	void RendererWidget::instantiateTool()
+	RendererWidget::RendererWidget()
 	{
 		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 

@@ -261,7 +261,7 @@ namespace VTX::Renderer
 		bool showRibbons = true;
 		bool showVoxels	 = false;
 
-		bool forceUpdate  = true;
+		bool forceUpdate  = false;
 		bool logDurations = false;
 
 		static const size_t BUFFER_COUNT = 2;

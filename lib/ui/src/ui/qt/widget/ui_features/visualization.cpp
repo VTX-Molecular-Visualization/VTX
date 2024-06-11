@@ -19,9 +19,7 @@
 
 namespace VTX::UI::QT::Widget::UIFeatures
 {
-	VisualizationTool::VisualizationTool() : BaseQtTool() {}
-
-	void VisualizationTool::instantiateTool()
+	VisualizationTool::VisualizationTool()
 	{
 		_addButtonsInMainMenu();
 		_addCommands();

@@ -8,16 +8,14 @@
 
 namespace VTX::UI::QT::Widget
 {
-	ConsoleWidget::ConsoleWidget() : BaseQtTool() {}
-
-	void ConsoleWidget::instantiateTool()
+	ConsoleWidget::ConsoleWidget()
 	{
 		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
 		QT::Widget::Console::Panel * const consoleWidget
 			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::Console::Panel>( mainWindow, "consoleWidget" );
 
-		mainWindow->referencePanel( CONSOLE_PANEL_KEY, consoleWidget );
+		mainWindow->referencePanel( ConsoleWidget::CONSOLE_PANEL_KEY, consoleWidget );
 		mainWindow->addDockWidgetAsTabified(
 			consoleWidget, Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical, true
 		);

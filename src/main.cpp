@@ -40,7 +40,7 @@ int main( int p_argc, char * p_argv[] )
 		// const std::vector<std::string> args( p_argv, p_argv + p_argc );
 		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
 
-		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "1AGA.mmtf";
+		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "md_0_1.gro";
 		vtxApplication->start( { molPath.string() } );
 
 		VTX::Util::Logger::get().stop();

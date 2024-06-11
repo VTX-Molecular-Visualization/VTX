@@ -4,9 +4,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	PyTXWidget::PyTXWidget() : BaseQtTool() {}
-
-	void PyTXWidget::instantiateTool()
+	PyTXWidget::PyTXWidget()
 	{
 		PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 		QT_APP()->onInitEnded += []() { PythonBinding::INTERPRETOR().init(); };

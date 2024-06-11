@@ -6,8 +6,8 @@
 
 namespace VTX::UI::Core
 {
-	using ToolIdentifier									   = std::string;
-	inline static const ToolIdentifier UNKNOWN_TOOL_IDENTIFIER = "";
+	// using ToolIdentifier									   = std::string;
+	// inline static const ToolIdentifier UNKNOWN_TOOL_IDENTIFIER = "";
 
 	class ToolLayoutData
 	{
@@ -18,6 +18,7 @@ namespace VTX::UI::Core
 		std::string contextualMenuName;
 	};
 
+	/*
 	class ToolDescriptor
 	{
 	  public:
@@ -45,6 +46,7 @@ namespace VTX::UI::Core
 	  private:
 		std::vector<ToolDescriptor> _tools;
 	};
+	*/
 
 } // namespace VTX::UI::Core
 

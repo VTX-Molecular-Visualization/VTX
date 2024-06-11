@@ -23,9 +23,7 @@ namespace VTX::UI::QT::Widget::UIFeatures
 		};
 	} // namespace Action
 
-	QuitTool::QuitTool() : BaseQtTool() {}
-
-	void QuitTool::instantiateTool()
+	QuitTool::QuitTool()
 	{
 		_addButtonsInMainMenu();
 		_addCommands();

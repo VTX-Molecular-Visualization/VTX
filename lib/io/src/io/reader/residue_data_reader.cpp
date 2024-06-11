@@ -2,6 +2,7 @@
 #include "io/internal/filesystem.hpp"
 #include "io/struct/bond_data.hpp"
 #include <util/filesystem.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::IO::Reader
 {
@@ -9,8 +10,9 @@ namespace VTX::IO::Reader
 	{
 		const FilePath filepath = Internal::Filesystem::getResidueDataFilePath( p_residueSymbol );
 
-		if ( !std::filesystem::exists( filepath ) )
+		if ( not std::filesystem::exists( filepath ) )
 		{
+			VTX_WARNING( "Residue data file not found: {}", filepath.string() );
 			return false;
 		}
 

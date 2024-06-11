@@ -1,6 +1,4 @@
 #include "ui/core/base_ui_application.hpp"
-#include "ui/core/io/vtx_layout_reader.hpp"
-#include "ui/core/layout_builder.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/system/action_manager.hpp>
@@ -33,12 +31,14 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::_buildUI()
 	{
+		/*
 		const FilePath				  layoutPath = Util::Filesystem::getExecutableDir() / "data" / "tool_config.json";
 		UI::Core::IO::VTXLayoutReader reader	 = UI::Core::IO::VTXLayoutReader();
 		reader.read( layoutPath );
 
 		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
 		layoutBuilder.build( reader.getResult().layoutDescriptor );
+		*/
 	}
 
 	void BaseUIApplication::_postInit( const std::vector<std::string> & p_args )

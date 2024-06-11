@@ -13,9 +13,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	SceneWidget::SceneWidget() : BaseQtTool() {}
-
-	void SceneWidget::instantiateTool()
+	SceneWidget::SceneWidget()
 	{
 		using namespace App::Component::Scene;
 		using namespace Scene;
@@ -25,7 +23,7 @@ namespace VTX::UI::QT::Widget
 
 		Panel * const sceneWidget = QT::WidgetFactory::get().instantiateWidget<Panel>( mainWindow, "sceneWidget" );
 
-		mainWindow->referencePanel( SCENE_PANEL_KEY, sceneWidget );
+		mainWindow->referencePanel( "SCENE_PANEL_KEY", sceneWidget );
 		mainWindow->addDockWidgetAsTabified(
 			sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Vertical, true
 		);
