@@ -28,9 +28,9 @@ namespace VTX::App::Test::Util
 			proxyCamera.setInRenderer( renderer );
 
 			// Default representation.
-			static Renderer::Proxy::Representation				representation;
-			static std::vector<Renderer::Proxy::Representation> representations = { representation };
-			renderer.setProxyRepresentations( representations );
+			static Renderer::Proxy::Representation		   representation;
+			std::vector<Renderer::Proxy::Representation *> representations { &representation };
+			renderer.addProxyRepresentations( representations );
 
 			// Default color layout.
 			Component::Render::ProxyColorLayout & proxyColorLayout

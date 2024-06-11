@@ -3,7 +3,7 @@
 
 #include "ui/core/base_panel.hpp"
 #include "ui/qt/concepts.hpp"
-#include "ui/qt/widget/base_manual_widget.hpp"
+#include "ui/qt/core/base_manual_widget.hpp"
 #include <QDialog>
 #include <QDockWidget>
 #include <QSize>
@@ -12,7 +12,7 @@
 
 namespace VTX::UI::QT
 {
-	class QtPanel : public Core::BasePanel
+	class QtPanel : public UI::Core::BasePanel
 	{
 	  public:
 		enum class PANEL_TYPE : int
@@ -42,10 +42,10 @@ namespace VTX::UI::QT
 	};
 
 	template<QTWidgetConcept W>
-	class QtPanelTemplate : public QtPanel, public Widget::BaseManualWidget<W>
+	class QtPanelTemplate : public QtPanel, public Core::BaseManualWidget<W>
 	{
 	  public:
-		QtPanelTemplate( QWidget * const p_parent = nullptr ) : QtPanel(), Widget::BaseManualWidget<W>( p_parent ) {}
+		QtPanelTemplate( QWidget * const p_parent = nullptr ) : QtPanel(), Core::BaseManualWidget<W>( p_parent ) {}
 		virtual bool isVisible() const override { return W::isVisible(); };
 
 		void localize() override { W::setWindowTitle( QString::fromStdString( name ) ); };

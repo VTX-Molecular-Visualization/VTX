@@ -1,5 +1,8 @@
 #include "renderer/renderer.hpp"
 #include "util/math.hpp"
+#include "util/math/aabb.hpp"
+#include "util/math/grid.hpp"
+#include "util/math/range.hpp"
 
 namespace VTX::Renderer
 {
@@ -25,7 +28,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr || _context->loaded == false )
+		if ( _context == nullptr || not _context->loaded )
 		{
 			throw GLException( "Context not loaded" );
 		}
@@ -41,67 +44,21 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesMolecules.clear();
-		_proxyCamera		  = nullptr;
-		_proxyColorLayout	  = nullptr;
-		_proxyRepresentations = nullptr;
-		_proxyRenderSettings  = nullptr;
-		_proxyVoxels		  = nullptr;
+		_proxyCamera	  = nullptr;
+		_proxyColorLayout = nullptr;
+		_proxyRepresentations.clear();
+		_proxyRenderSettings = nullptr;
+		_proxyVoxels		 = nullptr;
 
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
 
-		sizeAtoms	= 0;
-		sizeBonds	= 0;
-		sizeRibbons = 0;
-		sizeVoxels	= 0;
-	}
-
-	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
-	{
-		assert( hasContext() );
-		assert( p_proxy.matrixView );
-		assert( p_proxy.matrixProjection );
-
-		_proxyCamera = &p_proxy;
-
-		_context->setUniforms<_StructUBOCamera>(
-			{ { *p_proxy.matrixView,
-				*p_proxy.matrixProjection,
-				p_proxy.cameraPosition,
-				0,
-				Vec4f(
-					p_proxy.cameraNear * p_proxy.cameraFar,
-					p_proxy.cameraFar,
-					p_proxy.cameraFar - p_proxy.cameraNear,
-					p_proxy.cameraNear
-				),
-				p_proxy.mousePosition,
-				p_proxy.isPerspective } },
-			"Camera"
-		);
-
-		p_proxy.onMatrixView += [ this, &p_proxy ]()
-		{
-			setUniform( *p_proxy.matrixView, "Matrix view" );
-			_refreshDataModels();
-		};
-
-		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setUniform( *p_proxy.matrixProjection, "Matrix projection" ); };
-
-		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setUniform( p_position, "Camera position" ); };
-
-		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setUniform( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
-
-		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
-		{
-			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
-		};
-
-		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setUniform( p_perspective, "Is perspective" ); };
+		drawRangeSpheres.counts.clear();
+		drawRangeSpheres.offsets.clear();
+		drawRangeCylinders.counts.clear();
+		drawRangeCylinders.offsets.clear();
+		drawRangeRibbons.counts.clear();
+		drawRangeRibbons.offsets.clear();
 	}
 
 #pragma region Proxy molecules
@@ -139,7 +96,7 @@ namespace VTX::Renderer
 	void Renderer::_addProxyMolecule( Proxy::Molecule & p_proxy )
 	{
 		assert( hasContext() );
-		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations->size() );
+		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
 
 		// If size max reached, do not add.
 		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
@@ -157,12 +114,32 @@ namespace VTX::Renderer
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setUniform(
-				_StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy )
-			);
+			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy ) );
 		};
 
-		// TODO: onVisible to split in multi call.
+		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
+		{
+			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
+			auto & rangeCylinders = _cacheSpheresCylinders[ &p_proxy ].rangeCylinders;
+			auto & rangeRibbons	  = _cacheRibbons[ &p_proxy ].range;
+
+			if ( p_visible )
+			{
+				drawRangeSpheresRL.addRange( rangeSpheres );
+				drawRangeCylindersRL.addRange( rangeCylinders );
+				drawRangeRibbonsRL.addRange( rangeRibbons );
+			}
+			else
+			{
+				drawRangeSpheresRL.removeRange( rangeSpheres );
+				drawRangeCylindersRL.removeRange( rangeCylinders );
+				drawRangeRibbonsRL.removeRange( rangeRibbons );
+			}
+
+			drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+			drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
+			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
+		};
 
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{
@@ -170,19 +147,19 @@ namespace VTX::Renderer
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
 
-			for ( size_t i = 0; i < cacheSC.size; ++i )
+			for ( size_t i = 0; i < cacheSC.rangeSpheres.getCount(); ++i )
 			{
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
-			for ( size_t i = 0; i < cacheR.size; ++i )
+			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
 			{
-				cacheR.bufferFlags[ i ] &= ~mask;
-				cacheR.bufferFlags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+				cacheR.flags[ i ] &= ~mask;
+				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+			_context->setSubData( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
 		};
 
 		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
@@ -190,11 +167,13 @@ namespace VTX::Renderer
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 
-			cacheSC.representations = std::vector<uchar>( cacheSC.size, p_representation );
-			cacheR.representations	= std::vector<uchar>( cacheR.size, p_representation );
+			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
+			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
 
-			_context->setSubData( cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.offset );
-			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.offset );
+			_context->setSubData(
+				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
+			);
+			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
 		};
 
 		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxyMolecule( p_proxy ); };
@@ -202,14 +181,29 @@ namespace VTX::Renderer
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.offset );
+			_context->setSubData(
+				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
+			);
 		};
 
 		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.offset );
+			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
 		};
+
+		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
+			_context->setSubData( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+		};
+
+		// TODO:
+		// onAtomVisibilities
+		// onAtomSelections
+		// onAtomRepresentations
+		// onAtomColorsRange
+		// onResidueColorsRange
 
 		/*
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
@@ -244,41 +238,32 @@ namespace VTX::Renderer
 
 #pragma endregion Proxy molecules
 
-	// void Renderer::addProxyMeshes( Proxy::Mesh & p_proxy ) {}
+#pragma region Proxy representations
 
-	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
+	void Renderer::addProxyRepresentation( Proxy::Representation & p_proxy ) {}
+
+	void Renderer::removeProxyRepresentation( Proxy::Representation & p_proxy ) {}
+
+	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
 	{
 		assert( hasContext() );
 
-		_proxyColorLayout = &p_proxy;
-		_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
-		setNeedUpdate( true );
-
-		p_proxy.onChange += [ this, &p_proxy ]()
-		{
-			_context->setUniforms<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
-			setNeedUpdate( true );
-		};
-	}
-
-	void Renderer::setProxyRepresentations( Proxy::Representations & p_proxy )
-	{
-		assert( hasContext() );
-
-		_proxyRepresentations = &p_proxy;
+		_proxyRepresentations.insert(
+			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
+		);
 
 		std::vector<_StructUBORepresentation> representations;
-		for ( const Proxy::Representation & representation : p_proxy )
+		for ( const Proxy::Representation * representation : p_proxies )
 		{
-			representations.emplace_back( _StructUBORepresentation { representation.radiusSphereFixed,
-																	 representation.radiusSphereAdd,
-																	 representation.radiusFixed,
-																	 representation.radiusCylinder,
-																	 representation.cylinderColorBlendingMode,
-																	 representation.ribbonColorBlendingMode } );
+			representations.emplace_back( _StructUBORepresentation { representation->radiusSphereFixed,
+																	 representation->radiusSphereAdd,
+																	 representation->radiusFixed,
+																	 representation->radiusCylinder,
+																	 representation->cylinderColorBlendingMode,
+																	 representation->ribbonColorBlendingMode } );
 		}
 
-		_context->setUniforms( representations, "Representations" );
+		_context->setData( representations, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -287,29 +272,96 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
+	void Renderer::removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies ) {}
+
+#pragma endregion Proxy representations
+
+	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
+	{
+		assert( hasContext() );
+		assert( p_proxy.matrixView );
+		assert( p_proxy.matrixProjection );
+
+		_proxyCamera = &p_proxy;
+
+		_context->setData<_StructUBOCamera>(
+			{ { *p_proxy.matrixView,
+				*p_proxy.matrixProjection,
+				p_proxy.cameraPosition,
+				0,
+				Vec4f(
+					p_proxy.cameraNear * p_proxy.cameraFar,
+					p_proxy.cameraFar,
+					p_proxy.cameraFar - p_proxy.cameraNear,
+					p_proxy.cameraNear
+				),
+				p_proxy.mousePosition,
+				p_proxy.isPerspective } },
+			"Camera"
+		);
+
+		p_proxy.onMatrixView += [ this, &p_proxy ]()
+		{
+			setValue( *p_proxy.matrixView, "Matrix view" );
+			_refreshDataModels();
+		};
+
+		p_proxy.onMatrixProjection +=
+			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "Matrix projection" ); };
+
+		p_proxy.onCameraPosition +=
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "Camera position" ); };
+
+		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
+		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+
+		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
+		{
+			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
+		};
+
+		p_proxy.onPerspective +=
+			[ this, &p_proxy ]( const bool p_perspective ) { setValue( p_perspective, "Is perspective" ); };
+	}
+
+	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
+	{
+		assert( hasContext() );
+
+		_proxyColorLayout = &p_proxy;
+		_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+		setNeedUpdate( true );
+
+		p_proxy.onChange += [ this, &p_proxy ]()
+		{
+			_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			setNeedUpdate( true );
+		};
+	}
+
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
 		assert( hasContext() );
 
 		_proxyRenderSettings = &p_proxy;
 
-		setUniform( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-		setUniform( p_proxy.blurSize, "BlurXBlurSize" );
-		setUniform( p_proxy.blurSize, "BlurYBlurSize" );
-		setUniform( p_proxy.colorBackground, "ShadingShadingBackground color" );
-		setUniform( p_proxy.colorLight, "ShadingShadingLight color" );
-		setUniform( p_proxy.colorFog, "ShadingShadingFog color" );
-		setUniform( p_proxy.shadingMode, "ShadingShadingMode" );
-		setUniform( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
-		setUniform( p_proxy.shininess, "ShadingShadingShininess" );
-		setUniform( p_proxy.toonSteps, "ShadingShadingToon steps" );
-		setUniform( p_proxy.fogNear, "ShadingShadingFog near" );
-		setUniform( p_proxy.fogFar, "ShadingShadingFog far" );
-		setUniform( p_proxy.fogDensity, "ShadingShadingFog density" );
-		setUniform( p_proxy.colorOutline, "OutlineOutlineColor" );
-		setUniform( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-		setUniform( p_proxy.outlineThickness, "OutlineOutlineThickness" );
-		setUniform( p_proxy.colorSelection, "SelectionSelectionColor" );
+		setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
+		setValue( p_proxy.blurSize, "BlurXBlurSize" );
+		setValue( p_proxy.blurSize, "BlurYBlurSize" );
+		setValue( p_proxy.colorBackground, "ShadingShadingBackground color" );
+		setValue( p_proxy.colorLight, "ShadingShadingLight color" );
+		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
+		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
+		setValue( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
+		setValue( p_proxy.shininess, "ShadingShadingShininess" );
+		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
+		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
+		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
+		setValue( p_proxy.fogDensity, "ShadingShadingFog density" );
+		setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
+		setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
+		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
 
 		// TODO: disable/enable ssao, outline, etc.
 
@@ -328,7 +380,9 @@ namespace VTX::Renderer
 
 		_context->setData( *p_proxy.mins, "VoxelsMins" );
 		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
-		sizeVoxels += uint( p_proxy.mins->size() );
+
+		drawRangeVoxels.offsets = { 0 };
+		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -351,87 +405,83 @@ namespace VTX::Renderer
 			totalBonds += proxy->bonds->size();
 		}
 
-		// TODO: if no data, set dummy buffer? +ribbon and others.
-		if ( _proxiesMolecules.empty() )
-		{
-			assert( totalAtoms == 0 );
-			assert( totalBonds == 0 );
-		}
-		else
-		{
-			// Create buffers.
-			_context->setData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
-			_context->setData<uchar>( totalAtoms, "SpheresCylindersColors" );
-			_context->setData<float>( totalAtoms, "SpheresCylindersRadii" );
-			_context->setData<uint>( totalAtoms, "SpheresCylindersIds" );
-			_context->setData<uchar>( totalAtoms, "SpheresCylindersFlags" );
-			_context->setData<ushort>( totalAtoms, "SpheresCylindersModels" );
-			_context->setData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
-			_context->setData<uint>( totalBonds, "SpheresCylindersEbo" );
+		// Create buffers.
+		_context->reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
+		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
+		_context->reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
+		_context->reserveData<uint>( totalAtoms, "SpheresCylindersIds" );
+		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersFlags" );
+		_context->reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
+		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
+		_context->reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
 
-			size_t offsetAtoms = 0;
-			size_t offsetBonds = 0;
-			ushort modelId	   = 0;
-			for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		size_t offsetAtoms = 0;
+		size_t offsetBonds = 0;
+		ushort modelId	   = 0;
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		{
+			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
+
+			const size_t atomCount = proxy->atomPositions->size();
+			const size_t bondCount = proxy->bonds->size();
+
+			// Fill buffers.
+			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+			_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+
+			// Flags if not cached.
+			if ( cache.flags.empty() )
 			{
-				Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
-
-				const size_t atomCount = proxy->atomPositions->size();
-				const size_t bondCount = proxy->bonds->size();
-
-				// Fill buffers.
-				_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-				_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-				_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-				_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
-
-				// Flags if not cached.
-				if ( cache.flags.empty() )
+				std::vector<uchar> atomFlags( atomCount );
+				for ( size_t i = 0; i < atomFlags.size(); ++i )
 				{
-					std::vector<uchar> atomFlags( atomCount );
-					for ( size_t i = 0; i < atomFlags.size(); ++i )
-					{
-						uchar flag = 0;
-						flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
-						flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
-						atomFlags[ i ] = flag;
-					}
-					cache.flags = atomFlags;
+					uchar flag = 0;
+					flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+					flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
+					atomFlags[ i ] = flag;
 				}
-
-				// Representations if not cached.
-				if ( cache.representations.empty() )
-				{
-					cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
-				}
-
-				_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-				_context->setSubData(
-					std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms
-				);
-				_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
-
-				// Move bonds.
-				// TODO: caches bonds ?
-				std::vector<uint> bonds( bondCount );
-				for ( size_t i = 0; i < bondCount; ++i )
-				{
-					bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
-				}
-				_context->setSubData( bonds, "SpheresCylindersEbo", offsetBonds );
-
-				// Offsets.
-				cache.offset = offsetAtoms;
-				cache.size	 = atomCount;
-				offsetAtoms += atomCount;
-				offsetBonds += bondCount;
-				modelId++;
+				cache.flags = atomFlags;
 			}
+
+			// Representations if not cached.
+			if ( cache.representations.empty() )
+			{
+				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
+			}
+
+			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
+			_context->setSubData( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+
+			// Move bonds.
+			std::vector<uint> bonds( bondCount );
+			for ( size_t i = 0; i < bondCount; ++i )
+			{
+				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
+			}
+			_context->setSubData( bonds, "SpheresCylindersIdx", offsetBonds );
+
+			// Offsets.
+			cache.rangeSpheres	 = Util::Math::Range<size_t> { offsetAtoms, atomCount };
+			cache.rangeCylinders = Util::Math::Range<size_t> { offsetBonds, bondCount };
+			offsetAtoms += atomCount;
+			offsetBonds += bondCount;
+			modelId++;
 		}
 
-		// Counters.
-		sizeAtoms = totalAtoms;
-		sizeBonds = totalBonds;
+		// Ranges.
+		drawRangeSpheresRL.clear();
+		drawRangeCylindersRL.clear();
+
+		// TODO: refresh with cache, with a threshold to switch between multi call and shader variable.
+
+		drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
+		drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
+
+		drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+		drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -457,10 +507,11 @@ namespace VTX::Renderer
 
 			// Compute data if not cached.
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-			if ( cache.bufferCaPositions.empty() == false || cache.isEmpty )
+			if ( not cache.positions.empty() || cache.isEmpty )
 			{
-				totalCaPositions += cache.bufferCaPositions.size();
-				totalIndices += cache.bufferIndices.size();
+				// ??
+				totalCaPositions += cache.positions.size();
+				totalIndices += cache.indices.size();
 				continue;
 			}
 
@@ -473,15 +524,15 @@ namespace VTX::Renderer
 
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
-			std ::vector<Vec4f> & bufferCaPositions = cache.bufferCaPositions;
+			std ::vector<Vec4f> & bufferCaPositions = cache.positions;
 			// Ca -> O directions.
-			std::vector<Vec3f> & bufferCaODirections = cache.bufferCaODirections;
+			std::vector<Vec3f> & bufferCaODirections = cache.directions;
 			// Secondary structure types.
-			std::vector<uchar> &				bufferSSTypes	   = cache.bufferSSTypes;
-			std::vector<uchar> &				bufferColors	   = cache.bufferColors;
-			std::vector<uint> &					bufferIds		   = cache.bufferIds;
-			std::vector<uchar> &				bufferFlags		   = cache.bufferFlags;
-			std::vector<uint> &					bufferIndices	   = cache.bufferIndices;
+			std::vector<uchar> &				bufferSSTypes	   = cache.ssTypes;
+			std::vector<uchar> &				bufferColors	   = cache.colors;
+			std::vector<uint> &					bufferIds		   = cache.ids;
+			std::vector<uchar> &				bufferFlags		   = cache.flags;
+			std::vector<uint> &					bufferIndices	   = cache.indices;
 			std::map<uint, uint> &				residueToIndices   = cache.residueToIndices;
 			std::map<uint, uint> &				residueToPositions = cache.residueToPositions;
 			std::map<uint, std::vector<uint>> & data			   = cache.data;
@@ -742,71 +793,242 @@ namespace VTX::Renderer
 		{
 			assert( totalIndices == 0 );
 		}
-		else
+
+		_context->reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
+		_context->reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
+		_context->reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
+		_context->reserveData<uchar>( totalCaPositions, "RibbonsColors" );
+		_context->reserveData<uint>( totalCaPositions, "RibbonsIds" );
+		_context->reserveData<uchar>( totalCaPositions, "RibbonsFlags" );
+		_context->reserveData<ushort>( totalCaPositions, "RibbonsModels" );
+		_context->reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
+		_context->reserveData<uint>( totalIndices, "RibbonsIdx" );
+
+		size_t offsetCaPositions = 0;
+		uchar  modelId			 = -1;
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
 		{
-			_context->setData<Vec4f>( totalCaPositions, "RibbonsPositions" );
-			_context->setData<Vec3f>( totalCaPositions, "RibbonsDirections" );
-			_context->setData<uchar>( totalCaPositions, "RibbonsTypes" );
-			_context->setData<uchar>( totalCaPositions, "RibbonsColors" );
-			_context->setData<uint>( totalCaPositions, "RibbonsIds" );
-			_context->setData<uchar>( totalCaPositions, "RibbonsFlags" );
-			_context->setData<ushort>( totalCaPositions, "RibbonsModels" );
-			_context->setData<uchar>( totalCaPositions, "RibbonsRepresentations" );
-			_context->setData<uint>( totalIndices, "RibbonsEbo" );
+			modelId++;
+			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
 
-			size_t offsetCaPositions = 0;
-			uchar  modelId			 = -1;
-			for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+			assert( cache.isEmpty || cache.positions.size() > 0 );
+
+			if ( cache.positions.empty() == true )
 			{
-				modelId++;
-				Cache::Ribbon & cache = _cacheRibbons[ proxy ];
-
-				assert( cache.isEmpty || cache.bufferCaPositions.size() > 0 );
-
-				if ( cache.bufferCaPositions.empty() == true )
-				{
-					continue;
-				}
-
-				// Move indices.
-				// TODO: caches indices ?
-				std::vector<uint> indices = cache.bufferIndices;
-				for ( size_t i = 0; i < cache.bufferIndices.size(); ++i )
-				{
-					indices[ i ] += uint( offsetCaPositions );
-				}
-
-				if ( cache.representations.empty() )
-				{
-					cache.representations = std::vector<uchar>( cache.bufferCaPositions.size(), 0 );
-				}
-
-				_context->setSubData( cache.bufferCaPositions, "RibbonsPositions", offsetCaPositions );
-				_context->setSubData( cache.bufferCaODirections, "RibbonsDirections", offsetCaPositions );
-				_context->setSubData( cache.bufferSSTypes, "RibbonsTypes", offsetCaPositions );
-				_context->setSubData( cache.bufferColors, "RibbonsColors", offsetCaPositions );
-				_context->setSubData( cache.bufferIds, "RibbonsIds", offsetCaPositions );
-				_context->setSubData( cache.bufferFlags, "RibbonsFlags", offsetCaPositions );
-				_context->setSubData(
-					std::vector<ushort>( cache.bufferCaPositions.size(), modelId ), "RibbonsModels", offsetCaPositions
-				);
-				_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-				_context->setSubData( indices, "RibbonsEbo", offsetIndices );
-
-				// Offsets.
-				cache.offset = offsetCaPositions;
-				cache.size	 = cache.bufferCaPositions.size();
-				offsetCaPositions += cache.bufferCaPositions.size();
-				offsetIndices += cache.bufferIndices.size();
+				continue;
 			}
+
+			// Move indices.
+			// TODO: caches indices ?
+			std::vector<uint> indices = cache.indices;
+			for ( size_t i = 0; i < cache.indices.size(); ++i )
+			{
+				indices[ i ] += uint( offsetCaPositions );
+			}
+
+			if ( cache.representations.empty() )
+			{
+				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
+			}
+
+			_context->setSubData( cache.positions, "RibbonsPositions", offsetCaPositions );
+			_context->setSubData( cache.directions, "RibbonsDirections", offsetCaPositions );
+			_context->setSubData( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
+			_context->setSubData( cache.colors, "RibbonsColors", offsetCaPositions );
+			_context->setSubData( cache.ids, "RibbonsIds", offsetCaPositions );
+			_context->setSubData( cache.flags, "RibbonsFlags", offsetCaPositions );
+			_context->setSubData(
+				std::vector<ushort>( cache.positions.size(), modelId ), "RibbonsModels", offsetCaPositions
+			);
+			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
+			_context->setSubData( indices, "RibbonsIdx", offsetIndices );
+
+			// Offsets.
+			cache.range = Util::Math::Range<size_t> { offsetCaPositions, cache.positions.size() };
+			offsetCaPositions += cache.positions.size();
+			offsetIndices += cache.indices.size();
 		}
 
-		sizeRibbons = offsetIndices;
+		// Ranges.
+		drawRangeRibbonsRL.clear();
+		drawRangeRibbonsRL.addRange( Util::Math::Range<size_t> { 0, uint( offsetIndices ) } );
+		drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
 	}
 
 	void Renderer::_refreshDataSES()
 	{
-		// TODO.
+		return;
+		using namespace Util;
+		using namespace Math;
+
+		struct _InputData
+		{
+			std::vector<uint> atomList;
+			Util::Math::AABB  aabb;
+			float			  maxRadius = 0.f;
+		};
+
+		auto _generateInputData = []( const std::vector<size_t> & p_categoryChainIds,
+									  const std::vector<uint> *	  p_residueFirstAtomIndexes,
+									  const std::vector<uint> *	  p_residueAtomCounts,
+									  const std::vector<size_t> * p_chainFirstResidues,
+									  const std::vector<size_t> * p_chainResidueCounts,
+									  const std::vector<Vec3f> *  p_atomPositions,
+									  const std::vector<float> &  p_atomRadii )
+		{
+			_InputData data;
+
+			for ( size_t chainIdx : p_categoryChainIds )
+			{
+				size_t idxFirstResidue = ( *p_chainFirstResidues )[ chainIdx ];
+				size_t residueCount	   = ( *p_chainResidueCounts )[ chainIdx ];
+
+				for ( size_t residueIdx = idxFirstResidue; residueIdx < idxFirstResidue + residueCount; ++residueIdx )
+				{
+					size_t idxFirstAtom = ( *p_residueFirstAtomIndexes )[ residueIdx ];
+					size_t atomCount	= ( *p_residueAtomCounts )[ residueIdx ];
+
+					for ( size_t i = idxFirstAtom; i < idxFirstAtom + atomCount; ++i )
+					{
+						data.atomList.emplace_back( uint( i ) );
+						data.aabb.extend( ( *p_atomPositions )[ i ] );
+						data.maxRadius = std::max( data.maxRadius, p_atomRadii[ i ] );
+					}
+				}
+			}
+
+			return data;
+		};
+
+		Chrono chrono;
+		chrono.start();
+
+		size_t totalVertices = 0;
+		size_t totalIndices	 = 0;
+
+		const float PROBE_RADIUS = 1.4f;
+		const float VOXEL_SIZE	 = 0.4f;
+
+		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		{
+			// TODO: asserts.
+
+			// TODO: Compute data only if not cached.
+			Cache::SES & cache = _cacheSES[ proxy ];
+
+			// Compute input data from category chain ids.
+			_InputData data = _generateInputData(
+				proxy->categoryPolymerChainIds,
+				proxy->residueFirstAtomIndexes,
+				proxy->residueAtomCounts,
+				proxy->chainFirstResidues,
+				proxy->chainResidueCounts,
+				proxy->atomPositions,
+				proxy->atomRadii
+			);
+
+			// Sort atoms in acceleration grid.
+			const float atomGridCellSize = PROBE_RADIUS + data.maxRadius;
+			const Vec3f gridMin			 = data.aabb.getMin() - atomGridCellSize;
+			const Vec3f gridMax			 = data.aabb.getMax() + atomGridCellSize;
+
+			const Vec3f gridSize	 = gridMax - gridMin;
+			Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
+
+			Math::Grid gridAtoms( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+
+			std::vector<std::vector<uint>> atomGridDataTmp( gridAtoms.getCellCount(), std::vector<uint>() );
+
+			const std::vector<Vec3f> & atomPositions = *proxy->atomPositions;
+
+			// Store atom indices in acceleration grid.
+			std::vector<Vec4f> atomPositionsVdW( atomPositions.size() );
+			for ( const uint idx : data.atomList )
+			{
+				/*
+				if ( _category->getMoleculePtr()->getAtom( idx ) == nullptr )
+				{
+					continue;
+				}
+				*/
+
+				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
+
+				if ( hash >= atomGridDataTmp.size() )
+				{
+					continue;
+				}
+
+				atomGridDataTmp[ hash ].emplace_back( idx );
+				atomPositionsVdW[ idx ] = Vec4f( atomPositions[ idx ], proxy->atomRadii[ idx ] );
+			}
+
+			// Linerize data in 1D arrays.
+			std::vector<Range<uint>> atomGridDataSorted( gridAtoms.getCellCount(), Range<uint> { 0, 0 } );
+			std::vector<uint>		 atomIndexSorted;
+
+			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
+			{
+				const std::vector<uint> & data = atomGridDataTmp[ i ];
+				if ( not data.empty() )
+				{
+					atomGridDataSorted[ i ] = Range<uint> { uint( atomIndexSorted.size() ), uint( data.size() ) };
+					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
+				}
+			}
+
+			// Free tmp memory.
+			atomGridDataTmp.clear();
+			atomGridDataTmp.shrink_to_fit();
+
+			// Compute SES grid and compute SDF.
+			Vec3i	   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
+			Math::Grid gridSES( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
+
+			// Debug display.
+			auto voxels = gridAtoms.toVoxels();
+			_context->setData( voxels.first, "VoxelsMins" );
+			_context->setData( voxels.second, "VoxelsMaxs" );
+
+			drawRangeVoxels.offsets = { 0 };
+			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
+
+			/////////////////////
+			// Worker: create SDF.
+			// Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
+			struct SESGridData
+			{
+				float sdf;
+				int	  nearestAtom;
+			};
+
+			ComputePass::Data bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
+			ComputePass::Data bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
+														 atomGridDataSorted.data(),
+														 1 };
+			ComputePass::Data bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
+													  atomIndexSorted.data(),
+													  2 };
+			ComputePass::Data bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
+												   atomPositionsVdW.data(),
+												   3 };
+
+			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
+										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
+
+			auto computePass = ComputePass {
+				Program { "CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, Uniforms { /* TODO */ } },
+				{ &bufferSesGridData, &bufferAtomGridDataSorted, &bufferAtomIndexSorted, &bufferAtomPosition },
+				sizeCreateSDF
+			};
+
+			_context->compute( computePass );
+
+			_context->clearComputeBuffers();
+		}
+
+		chrono.stop();
+		VTX_DEBUG( "SES: {}s", chrono.elapsedTime() );
 	}
 
 	void Renderer::_refreshDataModels()
@@ -823,10 +1045,7 @@ namespace VTX::Renderer
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}
 
-		if ( models.empty() == false )
-		{
-			_context->setUniforms( models, "Models" );
-		}
+		_context->setData( models, "Models" );
 	}
 
 	void Renderer::snapshot(
@@ -842,9 +1061,9 @@ namespace VTX::Renderer
 		Mat4f		  matrixProjection	  = Util::Math::perspective(
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
-		setUniform( matrixProjection, "Matrix projection" );
+		setValue( matrixProjection, "Matrix projection" );
 		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
-		setUniform( matrixProjectionOld, "Matrix projection" );
+		setValue( matrixProjectionOld, "Matrix projection" );
 	}
 
 } // namespace VTX::Renderer

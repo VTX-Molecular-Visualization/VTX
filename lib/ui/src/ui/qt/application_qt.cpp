@@ -5,7 +5,7 @@
 #include "ui/qt/mode/base_mode.hpp"
 #include "ui/qt/mode/visualization.hpp"
 #include "ui/qt/style.hpp"
-#include "ui/qt/tool/render/dialog.hpp"
+#include "ui/qt/widget/renderer/dialog.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QCoreApplication>
 #include <QIcon>
@@ -23,13 +23,10 @@ namespace VTX::UI::QT
 		// Setup some Qt static configuration.
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
-
-		// Init resources
-		Q_INIT_RESOURCE( resources_ui );
 	}
 
 	int ZERO = 0;
-	ApplicationQt::ApplicationQt() : Core::BaseUIApplication(), QApplication( ZERO, nullptr )
+	ApplicationQt::ApplicationQt() : UI::Core::BaseUIApplication(), QApplication( ZERO, nullptr )
 	{
 		connect( this, &QCoreApplication::aboutToQuit, this, &ApplicationQt::stop );
 	}
@@ -41,13 +38,13 @@ namespace VTX::UI::QT
 		std::filesystem::create_directory( path );
 		VTX::Util::Logger::get().init( path );
 
-		Core::BaseUIApplication::init();
+		UI::Core::BaseUIApplication::init();
 
 		_currentMode = std::make_unique<Mode::Visualization>();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
-		Core::BaseUIApplication::start( p_args );
+		UI::Core::BaseUIApplication::start( p_args );
 		_currentMode->enter();
 
 		_returnCode = exec();
@@ -58,7 +55,7 @@ namespace VTX::UI::QT
 		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
 		_elapsedTimer.restart();
 
-		Core::BaseUIApplication::update();
+		UI::Core::BaseUIApplication::update();
 	}
 
 	void ApplicationQt::quit() { QApplication::quit(); };

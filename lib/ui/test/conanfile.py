@@ -16,13 +16,8 @@ class VTXUiTestRecipe(ConanFile):
     
     def requirements(self):
         self.requires("vtx_util/1.0")
-        self.requires("vtx_core/1.0")
-        self.requires("vtx_renderer/1.0")
-        self.requires("vtx_io/1.0")
-        self.requires("vtx_app/1.0")
-        self.requires("vtx_python_binding/1.0")
         self.requires("vtx_ui/1.0")
-        self.requires("catch2/3.5.3")
+        self.requires("catch2/3.6.0")
         
     def layout(self):
         cmake_layout(self)
@@ -43,7 +38,7 @@ class VTXUiTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        self.run("ctest --rerun-failed --output-on-failure")
+        cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)

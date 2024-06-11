@@ -183,6 +183,7 @@ constexpr GLuint GL_MAX_SHADER_STORAGE_BLOCK_SIZE	   = 0x90DE;
 constexpr GLuint GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = 0x90DD;
 constexpr GLuint GL_MAX_TEXTURE_SIZE				   = 0x0D33;
 constexpr GLuint GL_MAX_UNIFORM_BLOCK_SIZE			   = 0x8A30;
+constexpr GLuint GL_MAX_UNIFORM_BUFFER_BINDINGS		   = 0x8A2F;
 constexpr GLuint GL_NUM_EXTENSIONS					   = 0x821D;
 constexpr GLuint GL_RENDERER						   = 0x1F01;
 constexpr GLuint GL_SHADING_LANGUAGE_VERSION		   = 0x8B8C;
@@ -190,6 +191,7 @@ constexpr GLuint GL_VENDOR							   = 0x1F00;
 constexpr GLuint GL_VERSION							   = 0x1F02;
 constexpr GLuint GL_SHADER_STORAGE_BUFFER			   = 0x90D2;
 constexpr GLuint GL_UNIFORM_BUFFER					   = 0x8A11;
+constexpr GLuint GL_SHADER_STORAGE_BARRIER_BIT		   = 0x00002000;
 
 constexpr GLuint GL_DEBUG_SOURCE_API			   = 0x8246;
 constexpr GLuint GL_DEBUG_SOURCE_WINDOW_SYSTEM	   = 0x8247;
@@ -327,6 +329,9 @@ static void		 glGetTextureImage( GLuint, GLint, GLenum, GLenum, GLsizei, void * 
 static void		 glTextureParameteri( GLuint, GLenum, GLint ) {}
 static void		 glTextureStorage2D( GLuint, GLsizei, GLenum, GLsizei, GLsizei ) {}
 static void		 glTextureSubImage2D( GLuint, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void * ) {}
+
+static void glMemoryBarrier( GLbitfield ) {}
+static void glDispatchCompute( GLuint, GLuint, GLuint ) {}
 
 #endif
 

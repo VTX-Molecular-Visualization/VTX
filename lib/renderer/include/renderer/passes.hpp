@@ -17,15 +17,6 @@ namespace VTX::Renderer
 	static const Attachment imageR8 { E_FORMAT::R8 };
 
 	// Data.
-	static const Data dataTriangles { {
-		{ "Positions", E_TYPE::FLOAT, 3 },
-		{ "Normales", E_TYPE::FLOAT, 3 },
-		{ "Colors", E_TYPE::UBYTE, 1 },
-		{ "Ids", E_TYPE::UINT, 1 },
-		{ "Flags", E_TYPE::UBYTE, 1 },
-		{ "Models", E_TYPE::USHORT, 1 },
-	} };
-
 	// TODO: compress all.
 	static const Data dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
@@ -48,6 +39,16 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
+	static const Data dataTriangles { {
+		{ "Positions", E_TYPE::FLOAT, 3 },
+		{ "Normales", E_TYPE::FLOAT, 3 },
+		{ "Colors", E_TYPE::UBYTE, 1 },
+		{ "Ids", E_TYPE::UINT, 1 },
+		{ "Flags", E_TYPE::UBYTE, 1 },
+		{ "Models", E_TYPE::USHORT, 1 },
+		{ "Representations", E_TYPE::UBYTE, 1 },
+	} };
+
 	static const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
 	// Passes.
@@ -55,26 +56,25 @@ namespace VTX::Renderer
 	// Geometric.
 	static Pass descPassGeometric {
 		"Geometric",
-		Inputs { { E_CHANNEL_INPUT::_0, { "SpheresCylinders", dataSpheresCylinders } },
-				 { E_CHANNEL_INPUT::_1, { "Ribbons", dataRibbons } },
-				 { E_CHANNEL_INPUT::_2, { "Triangles", dataTriangles } },
-				 { E_CHANNEL_INPUT::_3, { "Voxels", dataVoxels } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "Geometry", imageRGBA32UI } },
-				  { E_CHANNEL_OUTPUT::COLOR_1, { "Color", imageRGBA16F } },
-				  { E_CHANNEL_OUTPUT::COLOR_2, { "Picking", imageRG32UI } },
-				  { E_CHANNEL_OUTPUT::DEPTH, { "Depth", imageD32F } } },
-		Programs {
-			{ "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS, nullptr } },
-			{ "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, nullptr, true } },
-			{ "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, nullptr, true } },
-			{ "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS, nullptr } } },
+		Inputs { { E_CHAN_IN::_0, { "SpheresCylinders", dataSpheresCylinders } },
+				 { E_CHAN_IN::_1, { "Ribbons", dataRibbons } },
+				 { E_CHAN_IN::_2, { "Triangles", dataTriangles } },
+				 { E_CHAN_IN::_3, { "Voxels", dataVoxels } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "Geometry", imageRGBA32UI } },
+				  { E_CHAN_OUT::COLOR_1, { "Color", imageRGBA16F } },
+				  { E_CHAN_OUT::COLOR_2, { "Picking", imageRG32UI } },
+				  { E_CHAN_OUT::DEPTH, { "Depth", imageD32F } } },
+		Programs { { "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS } },
+				   { "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
+				   { "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
+				   { "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS } } },
 		{ E_SETTING::CLEAR }
 	};
 
 	// Linearize depth.
 	static Pass descPassDepth { "Linearize depth",
-								Inputs { { E_CHANNEL_INPUT::_0, { "Depth", imageD32F } } },
-								Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR32F } } },
+								Inputs { { E_CHAN_IN::_0, { "Depth", imageD32F } } },
+								Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR32F } } },
 								Programs { { "LinearizeDepth",
 											 std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } };
 
@@ -101,8 +101,8 @@ namespace VTX::Renderer
 
 	static Pass descPassSSAO {
 		"SSAO",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
-				 { E_CHANNEL_INPUT::_1,
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
 				   { "Noise",
 					 Attachment { E_FORMAT::RGB16F,
 								  E_WRAPPING::REPEAT,
@@ -113,8 +113,8 @@ namespace VTX::Renderer
 								  noiseTextureSize,
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
-				 { E_CHANNEL_INPUT::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR8 } } },
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
@@ -128,8 +128,8 @@ namespace VTX::Renderer
 	// Blur.
 	static Pass descPassBlur {
 		"Blur",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } }, { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageR16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
 		Programs {
 			{ "Blur",
 			  std::vector<FilePath> { "default.vert", "blur.frag" },
@@ -146,9 +146,9 @@ namespace VTX::Renderer
 
 	static Pass descPassShading {
 		"Shading",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
-				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
-				 { E_CHANNEL_INPUT::_2,
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } },
+				 { E_CHAN_IN::_2,
 				   { "Blur",
 					 Attachment { E_FORMAT::R16F,
 								  E_WRAPPING::REPEAT,
@@ -158,7 +158,7 @@ namespace VTX::Renderer
 								  1,
 								  1,
 								  (void *)( blurDefaultTexture.data() ) } } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "Shading",
 			  std::vector<FilePath> { "default.vert", "shading.frag" },
@@ -198,8 +198,8 @@ namespace VTX::Renderer
 	// Outline.
 	static Pass descPassOutline {
 		"Outline",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } }, { E_CHANNEL_INPUT::_1, { "Depth", imageR32F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Outline",
 					 std::vector<FilePath> { "default.vert", "outline.frag" },
 					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
@@ -211,13 +211,29 @@ namespace VTX::Renderer
 									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
 	};
 
+	// Glow.
+	static Pass descPassGlow {
+		"Glow",
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs { { "Gow",
+					 std::vector<FilePath> { "default.vert", "glow.frag" },
+					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+								  { "Sensitivity",
+									E_TYPE::FLOAT,
+									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+								  { "Size",
+									E_TYPE::UINT,
+									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
+	};
+
 	// Selection.
 	static Pass descPassSelection {
 		"Selection",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
-				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } },
-				 { E_CHANNEL_INPUT::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } },
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Selection",
 					 std::vector<FilePath> { "default.vert", "selection.frag" },
 					 Uniforms { { { "Color",
@@ -227,16 +243,16 @@ namespace VTX::Renderer
 
 	// FXAA.
 	static Pass desPassFXAA { "FXAA",
-							  Inputs { { E_CHANNEL_INPUT::_0, { "Image", imageRGBA16F } } },
-							  Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+							  Inputs { { E_CHAN_IN::_0, { "Image", imageRGBA16F } } },
+							  Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 							  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" } } } };
 
 	// Pixelize.
 	static Pass descPassPixelize {
 		"Pixelize",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Geometry", imageRGBA32UI } },
-				 { E_CHANNEL_INPUT::_1, { "Color", imageRGBA16F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Pixelize",
 					 std::vector<FilePath> { "default.vert", "pixelize.frag" },
 					 Uniforms { { { "Size",
@@ -248,8 +264,8 @@ namespace VTX::Renderer
 	// CRT.
 	static Pass descPassCRT {
 		"CRT",
-		Inputs { { E_CHANNEL_INPUT::_0, { "Color", imageRGBA16F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "CRT",
 			  std::vector<FilePath> { "default.vert", "crt.frag" },
@@ -279,8 +295,8 @@ namespace VTX::Renderer
 	// Chromatic aberration.
 	static Pass descPassChromaticAberration {
 		"Chromatic aberration",
-		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "Chromatic aberration",
 			  std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
@@ -301,8 +317,8 @@ namespace VTX::Renderer
 	// Colorize.
 	static Pass descPassColorize {
 		"Colorize",
-		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "Colorize",
 			  std::vector<FilePath> { "default.vert", "colorize.frag" },
@@ -312,8 +328,8 @@ namespace VTX::Renderer
 	// Debug.
 	static Pass descPassDebug {
 		"Debug",
-		Inputs { { E_CHANNEL_INPUT::_0, { "", imageRGBA16F } } },
-		Outputs { { E_CHANNEL_OUTPUT::COLOR_0, { "", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {
 			{ "Debug",
 			  std::vector<FilePath> { "default.vert", "debug.frag" },

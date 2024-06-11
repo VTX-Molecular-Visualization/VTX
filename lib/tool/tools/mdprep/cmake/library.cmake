@@ -11,12 +11,9 @@ set(QT_RESOURCES "")
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 message("mdprep headers : <${HEADERS}>")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
-file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
-file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
+
 target_sources(vtx_tool_mdprep
 	PRIVATE ${SOURCES}
-	PRIVATE ${QT_FORMS}
-	PRIVATE ${QT_RESOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 

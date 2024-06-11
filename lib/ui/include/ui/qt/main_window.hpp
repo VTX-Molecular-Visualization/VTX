@@ -5,10 +5,12 @@
 #include "ui/core/base_panel.hpp"
 #include "ui/core/define.hpp"
 #include "ui/core/layout_descriptor.hpp"
+#include "ui/qt/core/main_menu/main_menu_bar.hpp"
+#include "ui/qt/core/main_menu/menu_toolblock_widget.hpp"
+#include "ui/qt/core/main_menu/menu_tooltab_widget.hpp"
+#include "ui/qt/core/status/status_bar.hpp"
 #include "ui/qt/qt_panel.hpp"
-#include "ui/qt/widget/main_menu/main_menu_bar.hpp"
-#include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
+#include "ui/qt/widget/renderer/panel.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
@@ -23,7 +25,7 @@ namespace VTX::UI::QT
 		class RenderWidget;
 	}
 
-	class MainWindow : public VTX::UI::QT::Widget::BaseManualWidget<QMainWindow>, public VTX::UI::Core::BaseMainWindow
+	class MainWindow : public VTX::UI::QT::Core::BaseManualWidget<QMainWindow>, public VTX::UI::Core::BaseMainWindow
 	{
 		Q_OBJECT
 
@@ -39,16 +41,16 @@ namespace VTX::UI::QT
 		void initWindowLayout();
 		void refreshWindowTitle();
 
-		QT::Tool::Render::Widget::RenderWidget *			 getRender();
-		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
+		QT::Widget::Renderer::Panel *			  getRender();
+		const QT::Widget::Renderer::Panel * const getRender() const;
 
-		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
-		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
-		QT::Widget::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const Core::ToolLayoutData & layoutData );
+		Core::MainMenu::MainMenuBar &			  getMainMenu() override { return *_mainMenuBar; }
+		QT::Core::MainMenu::MenuTooltabWidget &	  getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData );
+		QT::Core::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const UI::Core::ToolLayoutData & layoutData );
 
-		Core::WindowMode getWindowMode();
-		void			 setWindowMode( const Core::WindowMode & p_mode );
-		void			 toggleWindowState();
+		UI::Core::WindowMode getWindowMode();
+		void				 setWindowMode( const UI::Core::WindowMode & p_mode );
+		void				 toggleWindowState();
 
 		void addDockWidgetAsTabified(
 			QDockWidget * const p_dockWidget,
@@ -66,7 +68,7 @@ namespace VTX::UI::QT
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
-		void appendStylesheet( const char * p_stylesheetPath );
+		// void appendStylesheet( const char * p_stylesheetPath );
 
 	  protected:
 		void _setupUi( const QString & p_name ) override;
@@ -84,7 +86,8 @@ namespace VTX::UI::QT
 		void closeEvent( QCloseEvent * const p_event ) override;
 
 	  private:
-		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
+		QT::Core::MainMenu::MainMenuBar * _mainMenuBar;
+		QT::Core::Status::StatusBar *	  _statusBar;
 
 		// Actions.
 		void _onDockWindowVisibilityChange( bool p_visible );
@@ -92,10 +95,10 @@ namespace VTX::UI::QT
 		void _updatePicker() const;
 
 		// Functions.
-		void _loadStyleSheet( const char * p_stylesheetPath );
+		void _loadTheme();
 
-		Core::WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
-		std::string		 _getWindowTitle() const;
+		UI::Core::WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
+		std::string			 _getWindowTitle() const;
 
 		void _delayRestoreState();
 		void _restoreStateDelayedAction();

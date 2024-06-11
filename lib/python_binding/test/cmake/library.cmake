@@ -29,4 +29,4 @@ vtx_copy_registered_data(vtx_python_binding_test)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(vtx_python_binding_test)
+catch_discover_tests(vtx_python_binding_test DISCOVERY_MODE PRE_TEST)

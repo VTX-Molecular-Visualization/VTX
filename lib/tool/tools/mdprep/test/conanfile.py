@@ -23,7 +23,7 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
-        self.requires("catch2/3.5.3")        
+        self.requires("catch2/3.6.0")        
         self.requires("gromacs/2024.0")        
         
     def generate(self):
@@ -37,7 +37,7 @@ class VTXRendererTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        self.run("ctest --rerun-failed --output-on-failure") # TODO uncomment this when build is stable
+        cmake.ctest(["--output-on-failure"]) # TODO uncomment this when build is stable
 
     def package(self):
         cmake = CMake(self)

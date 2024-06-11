@@ -138,9 +138,9 @@ int main( int, char ** )
 		representation2.radiusFixed		  = false;
 		representation3.radiusSphereFixed = 0.1f;
 
-		std::vector<Renderer::Proxy::Representation> representations
-			= { representation1, representation2, representation3 };
-		renderer.setProxyRepresentations( representations );
+		std::vector<Renderer::Proxy::Representation *> representations
+			= { &representation1, &representation2, &representation3 };
+		renderer.addProxyRepresentations( representations );
 
 		Renderer::Proxy::RenderSettings renderSettings
 			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,

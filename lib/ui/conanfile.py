@@ -23,91 +23,104 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("qt/6.6.1", transitive_headers=True)
+        self.requires("qt/6.6.3", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
-            del self.options.fPIC
-
+            del self.options.fPIC            
+            
         # Package options.
-        self.options["qt/*"].shared = True
-        self.options["qt/*"].opengl = "desktop"
-        self.options["qt/*"].with_vulkan = False
-        self.options["qt/*"].openssl = False
-        self.options["qt/*"].with_pcre2 = True
-        self.options["qt/*"].with_glib = False
-        self.options["qt/*"].with_doubleconversion = True
-        self.options["qt/*"].with_freetype = False
-        self.options["qt/*"].with_fontconfig = False
-        self.options["qt/*"].with_icu = False
-        self.options["qt/*"].with_harfbuzz = False
-        self.options["qt/*"].with_libjpeg = "libjpeg"
-        self.options["qt/*"].with_libpng = True
-        self.options["qt/*"].with_sqlite3 = False
-        self.options["qt/*"].with_mysql = False
-        self.options["qt/*"].with_pq = False
-        self.options["qt/*"].with_odbc = False
-        self.options["qt/*"].with_zstd = False
-        self.options["qt/*"].with_brotli = False
-        self.options["qt/*"].with_dbus = False
-        self.options["qt/*"].with_libalsa = False
-        self.options["qt/*"].with_openal = False
-        self.options["qt/*"].with_gstreamer = False
-        self.options["qt/*"].with_pulseaudio = False
-        self.options["qt/*"].with_gssapi = False
-        self.options["qt/*"].with_md4c = False
-        self.options["qt/*"].with_x11 = False
-        # Qt modules.
-        self.options["qt/*"].qtsvg = False
-        self.options["qt/*"].qtdeclarative = False
-        self.options["qt/*"].qttools = False
-        self.options["qt/*"].qttranslations = False
-        self.options["qt/*"].qtdoc = False
-        self.options["qt/*"].qtwayland = False
-        self.options["qt/*"].qtquickcontrols2 = False
-        self.options["qt/*"].qtquicktimeline = False
-        self.options["qt/*"].qtquick3d = False
-        self.options["qt/*"].qtshadertools = False
-        self.options["qt/*"].qt5compat = False
-        self.options["qt/*"].qtactiveqt = False
-        self.options["qt/*"].qtcharts = False
-        self.options["qt/*"].qtdatavis3d = False
-        self.options["qt/*"].qtlottie = False
-        self.options["qt/*"].qtscxml = False
-        self.options["qt/*"].qtvirtualkeyboard = False
-        self.options["qt/*"].qt3d = False
-        self.options["qt/*"].qtimageformats = True
-        self.options["qt/*"].qtnetworkauth = False
-        self.options["qt/*"].qtcoap = False
-        self.options["qt/*"].qtmqtt = False
-        self.options["qt/*"].qtopcua = False
-        self.options["qt/*"].qtmultimedia = False
-        self.options["qt/*"].qtlocation = False
-        self.options["qt/*"].qtsensors = False
-        self.options["qt/*"].qtconnectivity = False
-        self.options["qt/*"].qtserialbus = False
-        self.options["qt/*"].qtserialport = False
-        self.options["qt/*"].qtwebsockets = False
-        self.options["qt/*"].qtwebchannel = False
-        self.options["qt/*"].qtwebengine = False
-        self.options["qt/*"].qtwebview = False
-        self.options["qt/*"].qtremoteobjects = False
-        self.options["qt/*"].qtpositioning = False
-        self.options["qt/*"].qtlanguageserver = False
-        self.options["qt/*"].qtspeech = False
-        self.options["qt/*"].qthttpserver = False
-        self.options["qt/*"].qtquick3dphysics = False
-        self.options["qt/*"].qtgrpc = False
-        self.options["qt/*"].qtquickeffectmaker = False
-        self.options["qt/*"].qtgraphs = False
-        # Qt features.
-        #self.options["qt/*"].disabled_features:qmake qml-animation qml-debug qml-delegate-model qml-devtools qml-itemmodel qml-jit qml-list-model qml-locale qml-network qml-object-model qml-preview qml-profiler qml-table-model qml-worker-script qml-xml-http-request qml-xmllistmodel qt3d-animation qt3d-extras qt3d-input qt3d-logic qt3d-opengl-renderer qt3d-render qt3d-rhi-renderer qt3d-simd-avx2 qt3d-simd-sse2 qtattributionsscanner qtdiag qtpdf-build qtpdf-quick-build qtpdf-widgets-build qtplugininfo qtwebengine-build qtwebengine-core-build qtwebengine-quick-build qtwebengine-widgets-build quick-animatedimage quick-canvas quick-designer quick-draganddrop quick-flipable quick-gridview quick-listview quick-particles quick-path quick-pathview quick-positioners quick-repeater quick-shadereffect quick-sprite quick-tableview quick-treeview quickcontrols2-fusion quickcontrols2-imagine quickcontrols2-ios quickcontrols2-macos quickcontrols2-material quickcontrols2-universal quickcontrols2-windows quicktemplates2-calendar quicktemplates2-hover quicktemplates2-multitouch radiobutton raster-64bit raster-fp regularexpression relocatable resizehandler rubberband sanitize_fuzzer_no_link scrollarea scrollbar scroller scxml-ecmascriptdatamodel sessionmanager settings sha3-fast sharedmemory shortcut sizegrip slider socks5 sortfilterproxymodel spinbox splashscreen splitter sqlmodel sspi stackedwidget standarditemmodel statemachine statusbar statustip stringlistmodel style-stylesheet syntaxhighlighter systemsemaphore systemtrayicon tabbar tabletevent tableview tablewidget tabwidget temporaryfile testlib_selfcover textbrowser textdate textedit texthtmlparser textmarkdownreader textmarkdownwriter textodfwriter thread timezone toolbar toolbox toolbutton tooltip topleveldomain translation transposeproxymodel treeview treewidget tuiotouch udpsocket undocommand undogroup undostack undoview valgrind validator wayland-compositor-quick wayland-text-input-v4-wip webengine-developer-build webengine-embedded-build webengine-extensions webengine-full-debug-info webengine-jumbo-build webengine-kerberos webengine-native-spellchecker webengine-pepper-plugins webengine-printing-and-pdf webengine-proprietary-codecs webengine-sanitizer webengine-spellchecker webengine-webchannel webengine-webrtc webengine-webrtc-pipewire whatsthis wheelevent widgettextcontrol windeployqt wizard xmlstream xmlstreamreader xmlstreamwriter
-
+        self.options["qt"].shared = True
+        self.options["qt"].opengl = "desktop"
+        self.options["qt"].with_vulkan = False
+        self.options["qt"].openssl = True
+        self.options["qt"].with_pcre2 = True
+        self.options["qt"].with_glib = False
+        self.options["qt"].with_doubleconversion = True
+        self.options["qt"].with_freetype = True
+        self.options["qt"].with_fontconfig = False
+        self.options["qt"].with_icu = False
+        self.options["qt"].with_harfbuzz = False
+        self.options["qt"].with_libjpeg = "libjpeg"
+        self.options["qt"].with_libpng = True
+        self.options["qt"].with_sqlite3 = False
+        self.options["qt"].with_mysql = False
+        self.options["qt"].with_pq = False
+        self.options["qt"].with_odbc = False
+        self.options["qt"].with_zstd = False
+        self.options["qt"].with_brotli = False
+        self.options["qt"].with_dbus = False
+        self.options["qt"].with_libalsa = False
+        self.options["qt"].with_openal = False
+        self.options["qt"].with_gstreamer = False
+        self.options["qt"].with_pulseaudio = False
+        self.options["qt"].with_gssapi = False
+        self.options["qt"].with_md4c = False
+        self.options["qt"].with_x11 = False
+        self.options["qt"].with_egl = False
+        
+        self.options["qt"].gui = True
+        self.options["qt"].widgets = True
+        
+        self.options["qt"].device: None
+        self.options["qt"].cross_compile: None
+        self.options["qt"].sysroot: None
+        #self.options["qt"].multiconfiguration: True
+        self.options["qt"].disabled_features = ""
+        
+        # Qt modules.        
+        self.options["qt"].essential_modules = False;
+        self.options["qt"].addon_modules = False;
+        self.options["qt"].deprecated_modules = False;
+        self.options["qt"].preview_modules = False;
+        
+        self.options["qt"].qtsvg = False
+        self.options["qt"].qtdeclarative = False
+        self.options["qt"].qttools = False
+        self.options["qt"].qttranslations = False
+        self.options["qt"].qtdoc = False
+        self.options["qt"].qtwayland = False
+        self.options["qt"].qtquickcontrols2 = False
+        self.options["qt"].qtquicktimeline = False
+        self.options["qt"].qtquick3d = False
+        self.options["qt"].qtshadertools = False
+        self.options["qt"].qt5compat = False
+        self.options["qt"].qtactiveqt = False
+        self.options["qt"].qtcharts = False
+        self.options["qt"].qtdatavis3d = False
+        self.options["qt"].qtlottie = False
+        self.options["qt"].qtscxml = False
+        self.options["qt"].qtvirtualkeyboard = False
+        self.options["qt"].qt3d = False
+        self.options["qt"].qtimageformats = True
+        self.options["qt"].qtnetworkauth = False
+        self.options["qt"].qtcoap = False
+        self.options["qt"].qtmqtt = False
+        self.options["qt"].qtopcua = False
+        self.options["qt"].qtmultimedia = False
+        self.options["qt"].qtlocation = False
+        self.options["qt"].qtsensors = False
+        self.options["qt"].qtconnectivity = False
+        self.options["qt"].qtserialbus = False
+        self.options["qt"].qtserialport = False
+        self.options["qt"].qtwebsockets = False
+        self.options["qt"].qtwebchannel = False
+        self.options["qt"].qtwebengine = False
+        self.options["qt"].qtwebview = False
+        self.options["qt"].qtremoteobjects = False
+        self.options["qt"].qtpositioning = False
+        self.options["qt"].qtlanguageserver = False
+        self.options["qt"].qtspeech = False
+        self.options["qt"].qthttpserver = False
+        self.options["qt"].qtquick3dphysics = False
+        self.options["qt"].qtgrpc = False
+        self.options["qt"].qtquickeffectmaker = False
+        self.options["qt"].qtgraphs = False
         
     def layout(self):
         cmake_layout(self)      
 
-    def generate(self):
+    def generate(self):    
         tc = CMakeToolchain(self)
         tc.generate()
         

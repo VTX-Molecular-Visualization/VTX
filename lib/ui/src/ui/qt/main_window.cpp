@@ -1,8 +1,8 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
-#include "ui/qt/tool/render/widget/render_widget.hpp"
 #include "ui/qt/util.hpp"
+#include "ui/qt/widget/renderer_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <app/application/scene.hpp>
 #include <io/internal/filesystem.hpp>
@@ -23,38 +23,64 @@ namespace VTX::UI::QT
 		refreshWindowTitle();
 		setContextMenuPolicy( Qt::ContextMenuPolicy::PreventContextMenu );
 
-		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
+		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Core::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
+
+		_statusBar = WidgetFactory::get().instantiateWidget<QT::Core::Status::StatusBar>( this, "statusBar" );
+		setStatusBar( _statusBar );
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( ":/stylesheet_ui.css" );
+		_loadTheme();
 	}
 
 	void MainWindow::initWindowLayout() {}
 
-	QT::Widget::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const Core::ToolLayoutData & layoutData )
-	{
-		return dynamic_cast<QT::Widget::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
-	}
-	QT::Widget::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
-		const Core::ToolLayoutData & layoutData
+	QT::Core::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData
 	)
 	{
-		return dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
+		return dynamic_cast<QT::Core::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
+	}
+	QT::Core::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
+		const UI::Core::ToolLayoutData & layoutData
+	)
+	{
+		return dynamic_cast<VTX::UI::QT::Core::MainMenu::MenuToolBlockWidget &>(
 			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName )
 		);
 	}
 
-	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
+	void MainWindow::_loadTheme()
 	{
-		QFile stylesheetFile( p_stylesheetPath );
+		// TODO: move to style constants.
+		// Load main stylesheet.
+		QFile stylesheetFile( ":/stylesheet_ui.css" );
 		stylesheetFile.open( QFile::ReadOnly );
 
-		const QString stylesheet = stylesheetFile.readAll();
+		QString stylesheet = stylesheetFile.readAll();
+
+		// Load os-specific stylesheet.
+#if _WIN32
+		QFile stylesheetOSFile( ":/stylesheet_ui_windows.css" );
+#elif __linux__
+		QFile stylesheetOSFile( ":/stylesheet_ui_linux.css" );
+#elif __APPLE__
+		QFile stylesheetOSFile( ":/stylesheet_ui_mac.css" );
+#else
+		QFile stylesheetOSFile();
+		assert( true );
+#endif
+
+		stylesheetOSFile.open( QFile::ReadOnly );
+		stylesheet += '\n' + stylesheetOSFile.readAll();
+
+		// Load theme and apply to stylesheet.
+
+		// Set stylesheet to app.
 		setStyleSheet( stylesheet );
 	}
 
+	/*
 	void MainWindow::appendStylesheet( const char * p_stylesheetPath )
 	{
 		QFile stylesheetFile( p_stylesheetPath );
@@ -65,17 +91,18 @@ namespace VTX::UI::QT
 
 		setStyleSheet( newStylesheet );
 	}
+	*/
 
 	void MainWindow::_setupSlots() {}
 	void MainWindow::localize() { setWindowTitle( "VTX" ); }
 
-	QT::Tool::Render::Widget::RenderWidget * MainWindow::getRender()
+	QT::Widget::Renderer::Panel * MainWindow::getRender()
 	{
-		return getPanel<QT::Tool::Render::Widget::RenderWidget>( "RENDER_WINDOW_KEY" );
+		return getPanel<QT::Widget::Renderer::Panel>( "RENDER_WINDOW_KEY" );
 	}
-	const QT::Tool::Render::Widget::RenderWidget * const MainWindow::getRender() const
+	const QT::Widget::Renderer::Panel * const MainWindow::getRender() const
 	{
-		return getPanel<QT::Tool::Render::Widget::RenderWidget>( "RENDER_WINDOW_KEY" );
+		return getPanel<QT::Widget::Renderer::Panel>( "RENDER_WINDOW_KEY" );
 	}
 
 	void		MainWindow::refreshWindowTitle() { setWindowTitle( QString::fromStdString( _getWindowTitle() ) ); }
@@ -152,18 +179,18 @@ namespace VTX::UI::QT
 			p_window->hide();
 	}
 
-	Core::WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
+	UI::Core::WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
 	{
-		Core::WindowMode res;
+		UI::Core::WindowMode res;
 
 		if ( p_state & Qt::WindowState::WindowFullScreen )
-			res = Core::WindowMode::Fullscreen;
+			res = UI::Core::WindowMode::Fullscreen;
 		else if ( p_state & Qt::WindowState::WindowMaximized )
-			res = Core::WindowMode::Maximized;
+			res = UI::Core::WindowMode::Maximized;
 		else if ( p_state & Qt::WindowState::WindowMinimized )
-			res = Core::WindowMode::Minimized;
+			res = UI::Core::WindowMode::Minimized;
 		else
-			res = Core::WindowMode::Windowed;
+			res = UI::Core::WindowMode::Windowed;
 
 		return res;
 	}

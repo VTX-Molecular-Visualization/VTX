@@ -3,7 +3,7 @@
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/style.hpp"
-#include "ui/qt/tool/render/widget/render_widget.hpp"
+#include "ui/qt/widget/renderer/panel.hpp"
 #include <app/application/scene.hpp>
 #include <util/fmt/glm.hpp>
 #include <util/logger.hpp>

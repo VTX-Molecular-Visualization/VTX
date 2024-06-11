@@ -2,7 +2,7 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/input/input_manager.hpp"
 #include "ui/qt/main_window.hpp"
-#include "ui/qt/tool/render/widget/render_widget.hpp"
+#include "ui/qt/widget/renderer/panel.hpp"
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
 #include <app/application/selection/selection.hpp>
@@ -67,7 +67,7 @@ namespace VTX::UI::Internal::Controller::Picker
 			_lastPickingInfo = pickingInfo;
 		}
 
-		const QT::Tool::Render::Widget::RenderWidget * const renderWidget = QT_APP()->getMainWindow().getRender();
+		const QT::Widget::Renderer::Panel * const renderWidget = QT_APP()->getMainWindow().getRender();
 		const QPoint position = renderWidget->mapToGlobal( QPoint( p_mousePos.x, p_mousePos.y ) );
 
 		if ( App::CURRENT_SELECTION().isEmpty() )

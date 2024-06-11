@@ -3,6 +3,7 @@
 
 #include "util.hpp"
 #include <core/chemdb/color.hpp>
+#include <core/struct/category.hpp>
 #include <core/struct/color_layout.hpp>
 #include <core/struct/molecule.hpp>
 #include <renderer/proxy/molecule.hpp>
@@ -112,8 +113,8 @@ namespace VTX::Bench
 			const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;
 			const size_t									sizeResidue = p_molecule.residueOriginalIds.size();
 
-			auto   atomColors = std::vector<uchar>( sizeAtoms );
-			size_t i		  = 0;
+			std::vector<uchar> atomColors( sizeAtoms );
+			size_t			   i = 0;
 			std::generate(
 				atomColors.begin(),
 				atomColors.end(),
@@ -128,19 +129,27 @@ namespace VTX::Bench
 				[ & ] { return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ]; }
 			);
 
-			auto atomIds = std::vector<uint>( sizeAtoms );
+			std::vector<uint> atomIds( sizeAtoms );
 			std::iota( atomIds.begin(), atomIds.end(), 0 );
 
-			auto residueIds = std::vector<uint>( sizeResidue );
+			std::vector<uint> residueIds( sizeResidue );
 			std::iota( residueIds.begin(), residueIds.end(), 0 );
 
-			auto residueColors = std::vector<uchar>( sizeResidue );
-			i				   = 0;
+			std::vector<uchar> residueColors( sizeResidue );
+			i = 0;
 			std::generate(
 				residueColors.begin(),
 				residueColors.end(),
 				[ & ] { return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] ); }
 			);
+
+			const Core::Struct::Category & categoryPolymer
+				= p_molecule.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
+			const Core::Struct::Category & categoryCarbohydrate
+				= p_molecule.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
+
+			const std::vector<size_t> & polymerChainIds		 = categoryPolymer.getLinkedChains();
+			const std::vector<size_t> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
 
 			return std::make_unique<Renderer::Proxy::Molecule>( Renderer::Proxy::Molecule {
 				&p_molecule.transform,
@@ -157,6 +166,8 @@ namespace VTX::Bench
 				atomIds,
 				residueColors,
 				residueIds,
+				polymerChainIds,
+				carbohydrateChainIds,
 				uint( rand() % 3 ) } );
 		}
 	};

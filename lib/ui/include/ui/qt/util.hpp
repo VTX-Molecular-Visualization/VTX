@@ -55,13 +55,13 @@ namespace VTX::UI::QT::Util
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
 
-	static QVariant widgetKeyToQVariant( const Core::WidgetKey & p_key )
+	static QVariant widgetKeyToQVariant( const UI::Core::WidgetKey & p_key )
 	{
 		return QVariant( QString::fromStdString( p_key ) );
 	}
-	static Core::WidgetKey QVariantTowWidgetKey( const QVariant & p_variant )
+	static UI::Core::WidgetKey QVariantTowWidgetKey( const QVariant & p_variant )
 	{
-		return static_cast<Core::WidgetKey>( p_variant.toString().toStdString() );
+		return static_cast<UI::Core::WidgetKey>( p_variant.toString().toStdString() );
 	}
 
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
@@ -118,7 +118,7 @@ namespace VTX::UI::QT::Util
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
 	{
-		return QBitmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
+		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
 	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept;
 	class LabelWithHelper

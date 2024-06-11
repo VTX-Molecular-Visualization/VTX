@@ -390,8 +390,8 @@ namespace VTX::Util::Math
 			return false;
 		}
 
-		T getFirst() const { return _ranges.cbegin()->getFirst(); }
-		T getLast() const { return _ranges.crbegin()->getLast(); }
+		inline T getFirst() const { return _ranges.cbegin()->getFirst(); }
+		inline T getLast() const { return _ranges.crbegin()->getLast(); }
 
 		void clear() { _ranges.clear(); }
 		bool isEmpty() const { return _ranges.size() == 0; }
@@ -410,8 +410,31 @@ namespace VTX::Util::Math
 		// Return value count (use size to get Range count)
 		size_t rangeCount() const { return _ranges.size(); }
 
+		size_t currentSize() const
+		{
+			size_t totalSize = sizeof( RangeList<T> );
+			totalSize += _ranges.size() * sizeof( Range<T> );
+
+			return totalSize;
+		}
+
+		template<typename T1, typename T2>
+		void toVectors( std::vector<T1> & p_starts, std::vector<T2> & p_counts ) const
+		{
+			p_starts.resize( _ranges.size() );
+			p_counts.resize( _ranges.size() );
+
+			size_t i = 0;
+			for ( const Range<T> & range : _ranges )
+			{
+				p_starts[ i ] = T1( range.getFirst() );
+				p_counts[ i ] = T2( range.getCount() );
+				i++;
+			}
+		}
+
 	  private:
-		std::list<Range<T>> _ranges = std::list<Range<T>>();
+		std::list<Range<T>> _ranges;
 	};
 } // namespace VTX::Util::Math
 

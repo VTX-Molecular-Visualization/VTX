@@ -16,6 +16,10 @@ namespace VTX::Core::Struct
 	{
 		return *( categories[ size_t( p_categoryType ) ] );
 	}
+	const Struct::Category & Molecule::getCategory( const ChemDB::Category::TYPE p_categoryType ) const
+	{
+		return *( categories[ size_t( p_categoryType ) ] );
+	}
 
 	// Chain data
 	void Molecule::initChains( const size_t p_count )

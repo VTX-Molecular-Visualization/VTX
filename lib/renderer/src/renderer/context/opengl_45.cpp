@@ -33,7 +33,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// Check version.
-		if ( GLAD_GL_VERSION_4_5 == false )
+		if ( not GLAD_GL_VERSION_4_5 )
 		{
 			VTX_ERROR( "OpenGL 4.5 or higher is required" );
 			// throw GLException( "OpenGL 4.5 or higher is required" );
@@ -50,10 +50,10 @@ namespace VTX::Renderer::Context
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
 
-		_vaos.emplace( "quad", std::make_unique<GL::VertexArray>() );
-		_bos.emplace( "quad", std::make_unique<GL::Buffer>() );
-		auto & vao = _vaos[ "quad" ];
-		auto & vbo = _bos[ "quad" ];
+		_vertexArrays.emplace( _KEY_QUAD, std::make_unique<GL::VertexArray>() );
+		_buffers.emplace( _KEY_QUAD, std::make_unique<GL::Buffer>() );
+		auto & vao = _vertexArrays[ _KEY_QUAD ];
+		auto & vbo = _buffers[ _KEY_QUAD ];
 
 		vao->bind();
 		vao->enableAttribute( 0 );
@@ -67,7 +67,7 @@ namespace VTX::Renderer::Context
 
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 4.f );
+		glLineWidth( 1.f );
 
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -86,90 +86,54 @@ namespace VTX::Renderer::Context
 		InstructionsDurationRanges & p_outInstructionsDurationRanges
 	)
 	{
-		// Compare render queue with previous one and delete resources.
-		for ( const Pass * const descPassPtr : _renderQueue )
-		{
-			/*
-			if ( std::find( p_renderQueue.begin(), p_renderQueue.end(), descPassPtr ) == p_renderQueue.end() )
-			{
-				// Delete fbo.
-				if ( _fbos.find( descPassPtr ) != _fbos.end() )
-				{
-					_fbos.erase( descPassPtr );
-				}
-
-				// Delete inputs.
-				for ( const auto & [ channel, input ] : descPassPtr->inputs )
-				{
-					const IO & descIO = input.desc;
-					if ( std::holds_alternative<Attachment>( descIO ) )
-					{
-						if ( _textures.find( &descIO ) != _textures.end() )
-						{
-							_textures.erase( &descIO );
-						}
-					}
-					else if ( std::holds_alternative<Data>( descIO ) )
-					{
-						const Data & data = std::get<Data>( descIO );
-
-						// if ( _vaos.find( input.name ) != _vaos.end() )
-						{
-							_vaos.erase( input.name );
-						}
-						for ( const Data::Entry & entry : data.entries )
-						{
-							_bos.erase( input.name + entry.name );
-						}
-						if ( _bos.find( input.name + "Ebo" ) != _bos.end() )
-						{
-							_bos.erase( input.name + "Ebo" );
-						}
-					}
-				}
-
-				// Delete outputs.
-				for ( const auto & [ channel, output ] : descPassPtr->outputs )
-				{
-					const IO & descIO = output.desc;
-					if ( std::holds_alternative<Attachment>( descIO ) )
-					{
-						if ( _textures.find( &descIO ) != _textures.end() )
-						{
-							_textures.erase( &descIO );
-						}
-					}
-				}
-			}
-			*/
-		}
+		// Store created items to free no more used later.
+		std::vector<Key> vertexArrays;
+		std::vector<Key> buffers;
+		std::vector<Key> framebuffers;
+		std::vector<Key> textures;
+		std::vector<Key> programs;
+		std::vector<Key> uniforms;
+		vertexArrays.push_back( _KEY_QUAD );
+		buffers.push_back( _KEY_QUAD );
 
 		// Clear instructions.
 		p_outInstructions.clear();
 		p_outInstructionsDurationRanges.clear();
 
+		// Set passes.
+		_descPasses.clear();
+		for ( const Pass * const descPassPtr : p_renderQueue )
+		{
+			const Key keyPass = _getKey( *descPassPtr );
+			_descPasses.emplace( keyPass, descPassPtr );
+		}
+
+		// Output.
 		_output = p_output;
 
-		// Create shared uniform ssbos.
-		if ( p_uniforms.empty() == false )
+		// Create shared buffers.
+		if ( not p_uniforms.empty() )
 		{
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
 
 			for ( const SharedUniform & uniform : p_uniforms )
 			{
-				std::string name = uniform.name;
+				const Key keyBuffer = _getKey( uniform );
+				buffers.push_back( keyBuffer );
 
-				if ( _ssbos.find( name ) == _ssbos.end() )
+				if ( not _buffers.contains( keyBuffer ) )
 				{
-					_ssbos.emplace( name, std::make_unique<GL::Buffer>() );
-					_createUniforms( _ssbos[ name ].get(), uniform.uniforms );
+					_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 				}
+				_createUniforms( _buffers[ keyBuffer ].get(), uniform.uniforms, uniforms );
 
-				GL::Buffer * const ubo		  = _ssbos[ name ].get();
+				assert( _buffers.contains( keyBuffer ) );
+				GL::Buffer * const buffer	  = _buffers[ keyBuffer ].get();
 				GLenum			   bufferType = uniform.isDynamic ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER;
 				uint			   binding	  = uniform.binding;
-				p_outInstructions.emplace_back( [ ubo, bufferType, binding ]() { ubo->bind( bufferType, binding ); } );
+				p_outInstructions.emplace_back( [ buffer, bufferType, binding ]()
+												{ buffer->bind( bufferType, binding ); } );
 			}
 
 			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
@@ -181,47 +145,63 @@ namespace VTX::Renderer::Context
 			// Init resources.
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { descPassPtr->name,
 																					  p_outInstructions.size() } );
+			const Key  keyPass	  = _getKey( *descPassPtr );
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
-			// Check if already created.
-			// assert( _fbos.find( descPassPtr ) == _fbos.end() );
+			std::vector<GLenum> drawBuffers;
+
+			// Create input data.
+			_createInputs( p_links, descPassPtr, vertexArrays, buffers, textures );
+
+			// Create FBO.
+			if ( not isLastPass )
 			{
-				std::vector<GLenum> drawBuffers;
+				Key keyFramebuffer = _getKey( *descPassPtr );
+				framebuffers.push_back( keyFramebuffer );
 
-				// Create input data.
-				_createInputs( p_links, descPassPtr );
-
-				// Create FBO.
-				if ( isLastPass == false )
+				if ( not _framebuffers.contains( keyFramebuffer ) )
 				{
-					_fbos.emplace( descPassPtr, std::make_unique<GL::Framebuffer>() );
-
-					// Create outputs.
-					_createOuputs( descPassPtr, drawBuffers );
-
-					// Set draw buffers.
-					if ( drawBuffers.empty() == false )
-					{
-						_fbos[ descPassPtr ]->setDrawBuffers( drawBuffers );
-					}
+					_framebuffers.emplace( keyFramebuffer, std::make_unique<GL::Framebuffer>() );
 				}
 
-				// Create programs.
-				std::vector<uint> offsets;
-				for ( const Program & descProgram : descPassPtr->programs )
+				// Create outputs.
+				_createOuputs( descPassPtr, drawBuffers, textures );
+
+				// Set draw buffers.
+				if ( not drawBuffers.empty() )
 				{
-					const GL::Program * const program = _programManager->createProgram(
-						descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
-					);
+					_framebuffers[ keyFramebuffer ]->setDrawBuffers( drawBuffers );
+				}
+			}
 
-					_programs.emplace( &descProgram, program );
+			// Create programs.
+			for ( const Program & descProgram : descPassPtr->programs )
+			{
+				const GL::Program * const program = _programManager->createProgram(
+					descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
+				);
 
-					// Uniforms.
-					if ( descProgram.uniforms.empty() == false )
+				const Key keyProgram = _getKey( descPassPtr, descProgram );
+				programs.push_back( keyProgram );
+
+				if ( not _programs.contains( keyProgram ) )
+				{
+					_programs.emplace( keyProgram, program );
+				}
+
+				// Uniforms.
+				if ( not descProgram.uniforms.empty() )
+				{
+					const Key keyBuffer = _getKey( descPassPtr, descProgram );
+					buffers.push_back( keyBuffer );
+
+					if ( not _buffers.contains( keyBuffer ) )
 					{
-						_ubos.emplace( &descProgram, std::make_unique<GL::Buffer>() );
-						_createUniforms( _ubos[ &descProgram ].get(), descProgram.uniforms, &descProgram, descPassPtr );
+						_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 					}
+					_createUniforms(
+						_buffers[ keyBuffer ].get(), descProgram.uniforms, uniforms, &descProgram, descPassPtr
+					);
 				}
 			}
 
@@ -243,15 +223,16 @@ namespace VTX::Renderer::Context
 			}
 
 			// Bind fbo.
-			if ( isLastPass == false )
+			if ( not isLastPass )
 			{
-				p_outInstructions.emplace_back( [ this, descPassPtr ]()
-												{ _fbos[ descPassPtr ]->bind( GL_DRAW_FRAMEBUFFER ); } );
+				GL::Framebuffer * const fbo = _framebuffers[ keyPass ].get();
+				p_outInstructions.emplace_back( [ fbo ]() { fbo->bind( GL_DRAW_FRAMEBUFFER ); } );
 			}
 			else
 			{
-				p_outInstructions.emplace_back( [ this ]()
-												{ GL::Framebuffer::bindDefault( _output, GL_DRAW_FRAMEBUFFER ); } );
+				const Handle * const output = &_output;
+				p_outInstructions.emplace_back( [ output ]()
+												{ GL::Framebuffer::bindDefault( *output, GL_DRAW_FRAMEBUFFER ); } );
 			}
 
 			// Settings.
@@ -267,16 +248,15 @@ namespace VTX::Renderer::Context
 			}
 
 			// Bind inputs.
-			uint										channelMax = 0;
-			std::map<E_CHANNEL_INPUT, const IO * const> mapBoundAttachments;
+			uint						   channelMax = 0;
+			std::map<E_CHAN_IN, const Key> mapBoundAttachments;
 			for ( const auto & [ channel, input ] : descPassPtr->inputs )
 			{
 				const IO & descIO = input.desc;
 
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					const Output * const src	   = _getInputSource( p_links, descPassPtr, channel );
-					const IO &			 descIOSrc = src->desc;
+					const auto src = _getInputTextureKey( p_links, descPassPtr, channel );
 
 					if ( uint( channel ) > channelMax )
 					{
@@ -284,15 +264,20 @@ namespace VTX::Renderer::Context
 					}
 
 					// Bind linked texture.
-					if ( src != nullptr )
+					if ( src.has_value() )
 					{
+						const IO & descIOSrc = src.value().first->desc;
+
 						if ( std::holds_alternative<Attachment>( descIOSrc ) )
 						{
-							p_outInstructions.emplace_back(
-								[ this, channel = channel, &descIOSrc ]()
-								{ _textures[ &descIOSrc ]->bindToUnit( GLuint( channel ) ); }
-							);
-							mapBoundAttachments.emplace( channel, &descIOSrc );
+							const Key keyTexture = src.value().second;
+							assert( _textures.contains( keyTexture ) );
+
+							GL::Texture2D * const texture = _textures[ keyTexture ].get();
+
+							p_outInstructions.emplace_back( [ texture, channel = channel ]()
+															{ texture->bindToUnit( GLuint( channel ) ); } );
+							mapBoundAttachments.emplace( channel, keyTexture );
 						}
 						else
 						{
@@ -306,10 +291,14 @@ namespace VTX::Renderer::Context
 
 						if ( attachment.data != nullptr )
 						{
-							p_outInstructions.emplace_back( [ this, channel = channel, &descIO ]()
-															{ _textures[ &descIO ]->bindToUnit( GLuint( channel ) ); }
-							);
-							mapBoundAttachments.emplace( channel, &descIO );
+							const Key keyTexture = _getKey( *descPassPtr, true, uint( channel ) );
+							assert( _textures.contains( keyTexture ) );
+
+							GL::Texture2D * const texture = _textures[ keyTexture ].get();
+
+							p_outInstructions.emplace_back( [ texture, channel = channel ]()
+															{ texture->bindToUnit( GLuint( channel ) ); } );
+							mapBoundAttachments.emplace( channel, keyTexture );
 						}
 						else
 						{
@@ -322,39 +311,61 @@ namespace VTX::Renderer::Context
 			// Programs.
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
-				if ( descProgram.uniforms.empty() == false )
+				const Key keyProgram = _getKey( descPassPtr, descProgram );
+
+				if ( not descProgram.uniforms.empty() )
 				{
-					assert( _ubos.find( &descProgram ) != _ubos.end() );
+					assert( _buffers.contains( keyProgram ) );
+
+					GL::Buffer * const buffer = _buffers[ keyProgram ].get();
+					assert( buffer != nullptr );
+
 					p_outInstructions.emplace_back(
-						[ this, &descProgram, channelMax ]()
+						[ buffer, channelMax ]()
 						{
 							// Bind local ubo after last input.
-							_ubos[ &descProgram ]->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
+							buffer->bind( GL_UNIFORM_BUFFER, channelMax + 1 );
 						}
 					);
 				}
 
-				auto & program = _programs[ &descProgram ];
+				assert( _programs.contains( keyProgram ) );
+				const GL::Program * const program = _programs[ keyProgram ];
+
 				// Draw custom.
 				if ( descProgram.draw.has_value() )
 				{
-					const Draw & draw = descProgram.draw.value();
-					auto &		 vao  = _vaos[ draw.name ];
+					const Draw &			draw = descProgram.draw.value();
+					GL::VertexArray * const vao	 = _vertexArrays[ _getKey( draw ) ].get();
+
+					assert( draw.ranges != nullptr );
+
+					GLenum				   primitive	 = _mapPrimitives[ draw.primitive ];
+					Draw::Range * const	   ranges		 = draw.ranges;
+					const NeedRenderFunc & needRenderFun = draw.needRenderFunc;
+
 					// Element.
 					if ( draw.useIndices )
 					{
-						auto & ebo = _bos[ draw.name + "Ebo" ];
+						const Key keyEbo = _getKey( draw, true );
+						assert( _buffers.contains( keyEbo ) );
+
+						GL::Buffer * const ebo = _buffers[ keyEbo ].get();
+
 						p_outInstructions.emplace_back(
-							[ this, &program, &draw, &vao, &ebo ]()
+							[ program, vao, ebo, primitive, ranges, needRenderFun ]()
 							{
-								size_t count = draw.countFunction();
-								if ( count > 0 )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									vao->bindElementBuffer( *ebo );
 									program->use();
-									vao->drawElement(
-										_mapPrimitives[ draw.primitive ], GLsizei( count ), GL_UNSIGNED_INT
+									vao->multiDrawElement(
+										primitive,
+										(GLsizei *)( ranges->counts.data() ),
+										GL_UNSIGNED_INT,
+										(GLvoid **)( ranges->offsets.data() ),
+										GLsizei( ranges->counts.size() )
 									);
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -366,14 +377,18 @@ namespace VTX::Renderer::Context
 					else
 					{
 						p_outInstructions.emplace_back(
-							[ this, &program, &draw, &vao ]()
+							[ program, vao, primitive, ranges, needRenderFun ]()
 							{
-								size_t count = draw.countFunction();
-								if ( count > 0 )
+								if ( needRenderFun == nullptr || needRenderFun() )
 								{
 									vao->bind();
 									program->use();
-									vao->drawArray( _mapPrimitives[ draw.primitive ], 0, GLsizei( count ) );
+									vao->multiDrawArray(
+										primitive,
+										(GLint *)( ( ranges->offsets.data() ) ),
+										(GLsizei *)( ranges->counts.data() ),
+										GLsizei( ranges->counts.size() )
+									);
 									vao->unbind();
 								}
 							}
@@ -383,9 +398,10 @@ namespace VTX::Renderer::Context
 				// Or quad.
 				else
 				{
-					auto & vao = _vaos[ "quad" ];
+					assert( _vertexArrays.contains( _KEY_QUAD ) );
+					GL::VertexArray * const vao = _vertexArrays[ _KEY_QUAD ].get();
 					p_outInstructions.emplace_back(
-						[ &program, &vao ]()
+						[ program, vao ]()
 						{
 							vao->bind();
 							program->use();
@@ -395,24 +411,30 @@ namespace VTX::Renderer::Context
 					);
 				}
 
-				if ( descProgram.uniforms.empty() == false )
+				if ( not descProgram.uniforms.empty() )
 				{
-					auto & ubo = _ubos[ &descProgram ];
-					p_outInstructions.emplace_back( [ &ubo ]() { ubo->unbind(); } );
+					assert( _buffers.contains( keyProgram ) );
+					GL::Buffer * ubo = _buffers[ keyProgram ].get();
+					p_outInstructions.emplace_back( [ ubo ]() { ubo->unbind(); } );
 				}
 			}
 
 			// Unbind inputs.
-			for ( const auto & [ channel, descIOPtr ] : mapBoundAttachments )
+			for ( const auto & [ channel, keyTexture ] : mapBoundAttachments )
 			{
-				p_outInstructions.emplace_back( [ this, channel = channel, descIOPtr = descIOPtr ]()
-												{ _textures[ descIOPtr ]->unbindFromUnit( GLuint( channel ) ); } );
+				assert( _textures.contains( keyTexture ) );
+				GL::Texture2D * const texture = _textures[ keyTexture ].get();
+				p_outInstructions.emplace_back( [ texture, channel = channel ]()
+												{ texture->unbindFromUnit( GLuint( channel ) ); } );
 			}
 
 			// Unbind fbo.
-			if ( isLastPass == false )
+			if ( not isLastPass )
 			{
-				p_outInstructions.emplace_back( [ this, descPassPtr ]() { _fbos[ descPassPtr ]->unbind(); } );
+				const Key k = _getKey( *descPassPtr );
+				assert( _framebuffers.contains( k ) );
+				GL::Framebuffer * const fbo = _framebuffers[ k ].get();
+				p_outInstructions.emplace_back( [ fbo ]() { fbo->unbind(); } );
 			}
 			else
 			{
@@ -430,19 +452,19 @@ namespace VTX::Renderer::Context
 
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
-		// Unbind main ubo.
-		for ( const auto & [ name, ubo ] : _ssbos )
+		// Unbind shared buffers.
+		for ( const SharedUniform & uniform : p_uniforms )
 		{
-			auto * const uboPtr = ubo.get();
-			p_outInstructions.emplace_back( [ uboPtr ]() { uboPtr->unbind(); } );
+			const Key k = _getKey( uniform );
+			assert( _buffers.contains( k ) );
+			GL::Buffer * const buffer = _buffers[ k ].get();
+			p_outInstructions.emplace_back( [ buffer ]() { buffer->unbind(); } );
 		}
-
-		// glFinish();
 
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 
-		// Backup render queue for next build.
-		_renderQueue = p_renderQueue;
+		// Purge unused resources.
+		_purgeResources( vertexArrays, buffers, framebuffers, textures, programs, uniforms );
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
@@ -463,14 +485,22 @@ namespace VTX::Renderer::Context
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
 					// TODO: check if still needed.
-					if ( _textures.find( &descIO ) != _textures.end() )
+
+					const Key keyTexture = _getKey( *descPassPtr, false, uint( channel ) );
+					const Key keyFbo	 = _getKey( *descPassPtr );
+
+					if ( _textures.contains( keyTexture ) )
 					{
-						auto & texture = _textures[ &descIO ];
+						auto & texture = _textures[ keyTexture ];
+
+						assert( _framebuffers.contains( keyFbo ) );
+						auto & fbo = _framebuffers[ keyFbo ];
+
 						VTX_DEBUG(
 							"Texture resized ({}x{} => {}x{})", texture->getWidth(), texture->getHeight(), width, height
 						);
-						_textures[ &descIO ]->resize( width, height );
-						_fbos[ descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
+						texture->resize( width, height );
+						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
 					}
 				}
 				else
@@ -535,45 +565,118 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::getTextureData(
-		std::any &			   p_textureData,
-		const size_t		   p_x,
-		const size_t		   p_y,
-		const std::string &	   p_pass,
-		const E_CHANNEL_OUTPUT p_channel
-	) const
+		std::any &		 p_textureData,
+		const size_t	 p_x,
+		const size_t	 p_y,
+		const Key &		 p_key,
+		const E_CHAN_OUT p_channel
+	)
 	{
-		// assert( std::find( _fbos.begin(), _fbos.end(), p_pass ) != _fbos.end() );
+		assert( _framebuffers.contains( p_key ) );
 
-		for ( auto & [ passPtr, fbo ] : _fbos )
-		{
-			if ( passPtr->name == p_pass )
-			{
-				const IO & descIO = passPtr->outputs.at( p_channel ).desc;
+		auto &			   fbo	  = _framebuffers[ p_key ];
+		const Pass * const pass	  = _descPasses[ p_key ];
+		const IO &		   descIO = pass->outputs.at( p_channel ).desc;
 
-				assert( std::holds_alternative<Attachment>( descIO ) );
+		assert( std::holds_alternative<Attachment>( descIO ) );
 
-				const Attachment & attachment = std::get<Attachment>( descIO );
-				const E_FORMAT	   format	  = attachment.format;
+		const Attachment & attachment = std::get<Attachment>( descIO );
+		const E_FORMAT	   format	  = attachment.format;
 
-				fbo->bind( GL_READ_FRAMEBUFFER );
-				fbo->setReadBuffer( _mapAttachments[ p_channel ] );
-				glReadPixels(
-					GLint( p_x ),
-					GLint( p_y ),
-					1,
-					1,
-					_mapFormatInternalTypes[ format ],
-					_mapTypes[ _mapFormatTypes[ format ] ],
-					&p_textureData
-				);
-				fbo->unbind();
-				return;
-			}
-		}
-		assert( false );
+		fbo->bind( GL_READ_FRAMEBUFFER );
+		fbo->setReadBuffer( _mapAttachments[ p_channel ] );
+		glReadPixels(
+			GLint( p_x ),
+			GLint( p_y ),
+			1,
+			1,
+			_mapFormatInternalTypes[ format ],
+			_mapTypes[ _mapFormatTypes[ format ] ],
+			&p_textureData
+		);
+		fbo->unbind();
 	}
 
-	void OpenGL45::_createInputs( const Links & p_links, const Pass * const p_descPassPtr )
+	void OpenGL45::compute( const ComputePass & p_pass )
+	{
+		// TODO: Create program and uniforms (refacto build).
+		const Program & descProgram = p_pass.program;
+
+		std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+									  + "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+									  + "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+
+		const GL::Program * const program
+			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
+
+		// Create and bind buffers.
+		for ( ComputePass::Data * const data : p_pass.data )
+		{
+			if ( not _computeBuffers.contains( data ) )
+			{
+				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data ) );
+			}
+
+			_computeBuffers[ data ]->bind( GL_SHADER_STORAGE_BUFFER, data->binding );
+		}
+
+		program->use();
+
+		// Compute size and dispath.
+		uint x, y, z;
+		if ( std::holds_alternative<Vec3i>( p_pass.size ) )
+		{
+			Vec3i v = std::get<Vec3i>( p_pass.size );
+			x		= v.x;
+			y		= v.y;
+			z		= v.z;
+		}
+		else if ( std::holds_alternative<size_t>( p_pass.size ) )
+		{
+			// TODO: disatch on other dimensions.
+			size_t	  size			  = std::get<size_t>( p_pass.size );
+			const int workGroupNeeded = int( ( float( size ) / LOCAL_SIZE_X ) + 1.f );
+			assert( workGroupNeeded <= _openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+			x = std::min( workGroupNeeded, _openglInfos.glMaxComputeWorkGroupCount[ 0 ] );
+			y = 1;
+			z = 1;
+		}
+
+		assert( x && y && z );
+
+		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+		glDispatchCompute( x, y, z );
+		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+		// Unbind buffers.
+		for ( ComputePass::Data * const data : p_pass.data )
+		{
+			_computeBuffers[ data ]->unbind();
+		}
+	}
+
+	void OpenGL45::clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers )
+	{
+		if ( p_buffers.has_value() )
+		{
+			for ( ComputePass::Data * const data : p_buffers.value() )
+			{
+				_computeBuffers.erase( data );
+			}
+		}
+		else
+		{
+			_computeBuffers.clear();
+		}
+	}
+
+	void OpenGL45::_createInputs(
+		const Links &	   p_links,
+		const Pass * const p_descPassPtr,
+		std::vector<Key> & p_vertexArrays,
+		std::vector<Key> & p_buffers,
+		std::vector<Key> & p_textures
+	)
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
 		{
@@ -582,12 +685,12 @@ namespace VTX::Renderer::Context
 			// Create texture if data provided and not linked.
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				const Attachment &	 attachment = std::get<Attachment>( descIO );
-				const Output * const source		= _getInputSource( p_links, p_descPassPtr, channel );
+				const Attachment & attachment = std::get<Attachment>( descIO );
+				const auto		   src		  = _getInputTextureKey( p_links, p_descPassPtr, channel );
 
-				if ( source == nullptr && attachment.data != nullptr )
+				if ( not src.has_value() && attachment.data != nullptr )
 				{
-					_createAttachment( descIO );
+					_createTexture( descIO, _getKey( *p_descPassPtr, true, uint( channel ) ), p_textures );
 				}
 			}
 			// Create vao if data provided.
@@ -596,17 +699,39 @@ namespace VTX::Renderer::Context
 				const Data & data = std::get<Data>( descIO );
 
 				// Create vao.
-				_vaos.emplace( input.name, std::make_unique<GL::VertexArray>() );
-				_bos.emplace( input.name + "Ebo", std::make_unique<GL::Buffer>() );
-				auto & vaoData = _vaos[ input.name ];
-				auto & eboData = _bos[ input.name + "Ebo" ];
+				const Key keyVao = _getKey( input );
+				const Key keyEbo = _getKey( input, true );
+
+				p_vertexArrays.push_back( keyVao );
+				p_buffers.push_back( keyEbo );
+
+				if ( not _vertexArrays.contains( keyVao ) )
+				{
+					_vertexArrays.emplace( keyVao, std::make_unique<GL::VertexArray>() );
+				}
+
+				if ( not _buffers.contains( keyEbo ) )
+				{
+					_buffers.emplace( keyEbo, std::make_unique<GL::Buffer>() );
+				}
+
+				auto & vaoData = _vertexArrays[ keyVao ];
+				auto & eboData = _buffers[ keyEbo ];
+
 				vaoData->bindElementBuffer( *eboData );
 
 				GLuint chan = 0;
 				for ( const Data::Entry & entry : data.entries )
 				{
-					_bos.emplace( input.name + entry.name, std::make_unique<GL::Buffer>() );
-					auto & vbo = _bos[ input.name + entry.name ];
+					const Key keyData = _getKey( input, entry );
+					p_buffers.push_back( keyData );
+
+					if ( not _buffers.contains( keyData ) )
+					{
+						_buffers.emplace( keyData, std::make_unique<GL::Buffer>() );
+					}
+
+					auto & vbo = _buffers[ keyData ];
 					vaoData->enableAttribute( chan );
 					vaoData->setVertexBuffer(
 						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.nativeType ] )
@@ -621,18 +746,28 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::_createOuputs( const Pass * const p_descPassPtr, std::vector<GLenum> & p_drawBuffers )
+	void OpenGL45::_createOuputs(
+		const Pass * const	  p_pass,
+		std::vector<GLenum> & p_drawBuffers,
+		std::vector<Key> &	  p_textures
+	)
 	{
-		for ( const auto & [ channel, output ] : p_descPassPtr->outputs )
+		for ( const auto & [ channel, output ] : p_pass->outputs )
 		{
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				_createAttachment( descIO );
+				const Key keyTexture = _getKey( *p_pass, false, uint( channel ) );
+				_createTexture( descIO, keyTexture, p_textures );
 
 				// Attach.
-				_fbos[ p_descPassPtr ]->attachTexture( *_textures[ &descIO ], _mapAttachments[ channel ] );
-				if ( channel == E_CHANNEL_OUTPUT::DEPTH ) {}
+				const Key keyFbo = _getKey( *p_pass );
+				assert( _framebuffers.contains( keyFbo ) );
+				assert( _textures.contains( keyTexture ) );
+
+				auto & fbo = _framebuffers[ keyFbo ];
+				fbo->attachTexture( *_textures[ keyTexture ], _mapAttachments[ channel ] );
+				if ( channel == E_CHAN_OUT::DEPTH ) {}
 				else
 				{
 					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
@@ -645,10 +780,10 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	const Output * const OpenGL45::_getInputSource(
-		const Links &		  p_links,
-		const Pass * const	  p_pass,
-		const E_CHANNEL_INPUT p_channel
+	std::optional<std::pair<const Output * const, const OpenGL45::Key>> OpenGL45::_getInputTextureKey(
+		const Links &	   p_links,
+		const Pass * const p_pass,
+		const E_CHAN_IN	   p_channel
 	)
 	{
 		const auto it = std::find_if(
@@ -660,10 +795,25 @@ namespace VTX::Renderer::Context
 
 		if ( it == p_links.end() )
 		{
-			return nullptr;
+			return std::nullopt;
 		}
 
-		return &( it->get()->src->outputs[ it->get()->channelSrc ] );
+		const Output & srcOutput = ( it->get()->src->outputs[ it->get()->channelSrc ] );
+
+		const Pass * srcPass = nullptr;
+		for ( const auto & [ key, pass ] : _descPasses )
+		{
+			for ( const auto & [ channel, output ] : pass->outputs )
+			{
+				if ( &output == &srcOutput )
+				{
+					srcPass = pass;
+				}
+			}
+		}
+
+		assert( srcPass != nullptr );
+		return std::make_pair( &srcOutput, _getKey( *srcPass, false, uint( it->get()->channelSrc ) ) );
 	}
 
 	bool OpenGL45::_hasDepthComponent( const Pass * const p_descPassPtr ) const
@@ -673,7 +823,7 @@ namespace VTX::Renderer::Context
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				if ( channel == E_CHANNEL_OUTPUT::DEPTH )
+				if ( channel == E_CHAN_OUT::DEPTH )
 				{
 					return true;
 				}
@@ -682,41 +832,45 @@ namespace VTX::Renderer::Context
 		return false;
 	}
 
-	void OpenGL45::_createAttachment( const IO & p_descIO )
+	void OpenGL45::_createTexture( const IO & p_descIO, const Key p_key, std::vector<Key> & p_textures )
 	{
 		const Attachment & attachment = std::get<Attachment>( p_descIO );
 
-		if ( _textures.find( &p_descIO ) != _textures.end() )
-		{
-			return;
-		}
+		p_textures.push_back( p_key );
 
-		_textures.emplace(
-			&p_descIO,
-			std::make_unique<GL::Texture2D>(
-				attachment.width.has_value() ? attachment.width.value() : width,
-				attachment.height.has_value() ? attachment.height.value() : height,
-				_mapFormats[ attachment.format ],
-				_mapWrappings[ attachment.wrappingS ],
-				_mapWrappings[ attachment.wrappingT ],
-				_mapFilterings[ attachment.filteringMin ],
-				_mapFilterings[ attachment.filteringMag ]
-			)
-		);
-
-		auto & texture = _textures[ &p_descIO ];
-		VTX_DEBUG( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
-		if ( attachment.data != nullptr )
+		if ( not _textures.contains( p_key ) )
 		{
-			texture->fill( attachment.data );
+			_textures.emplace(
+				p_key,
+				std::make_unique<GL::Texture2D>(
+					attachment.width.has_value() ? attachment.width.value() : width,
+					attachment.height.has_value() ? attachment.height.value() : height,
+					_mapFormats[ attachment.format ],
+					_mapWrappings[ attachment.wrappingS ],
+					_mapWrappings[ attachment.wrappingT ],
+					_mapFilterings[ attachment.filteringMin ],
+					_mapFilterings[ attachment.filteringMag ]
+				)
+			);
+
+			auto & texture = _textures[ p_key ];
+			assert( texture != nullptr );
+
+			VTX_DEBUG( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
+			if ( attachment.data != nullptr )
+			{
+				texture->fill( attachment.data );
+			}
 		}
 	}
 
 	void OpenGL45::_createUniforms(
 		GL::Buffer * const	  p_ubo,
 		const Uniforms &	  p_uniforms,
+		std::vector<Key> &	  p_uniformKeys,
 		const Program * const p_descProgram,
 		const Pass * const	  p_descPass
+
 	)
 	{
 		// Create uniform entries.
@@ -724,10 +878,10 @@ namespace VTX::Renderer::Context
 		for ( const Uniform & descUniform : p_uniforms )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
-			std::string key	 = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
-							  + descUniform.name;
+			std::string key	 = _getKey( p_descPass, p_descProgram, descUniform );
+			p_uniformKeys.emplace_back( key );
 
-			if ( _uniforms.find( key ) != _uniforms.end() )
+			if ( _uniforms.contains( key ) )
 			{
 				continue;
 			}
@@ -748,6 +902,7 @@ namespace VTX::Renderer::Context
 			}
 
 			assert( size > 0 );
+
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
 			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
@@ -765,8 +920,7 @@ namespace VTX::Renderer::Context
 
 		for ( const Uniform & descUniform : p_uniforms )
 		{
-			std::string key = ( p_descPass ? p_descPass->name : "" ) + ( p_descProgram ? p_descProgram->name : "" )
-							  + descUniform.name;
+			std::string key				= _getKey( p_descPass, p_descProgram, descUniform );
 			_uniforms[ key ]->totalSize = totalSize;
 		}
 
@@ -800,6 +954,52 @@ namespace VTX::Renderer::Context
 		}
 	}
 
+	void OpenGL45::_purgeResources(
+		const std::vector<Key> & vertexArrays,
+		const std::vector<Key> & buffers,
+		const std::vector<Key> & framebuffers,
+		const std::vector<Key> & textures,
+		const std::vector<Key> & programs,
+		const std::vector<Key> & uniforms
+	)
+	{
+		std::erase_if(
+			_vertexArrays,
+			[ &vertexArrays ]( const auto & p )
+			{ return std::find( vertexArrays.begin(), vertexArrays.end(), p.first ) == vertexArrays.end(); }
+		);
+
+		std::erase_if(
+			_buffers,
+			[ &buffers ]( const auto & p )
+			{ return std::find( buffers.begin(), buffers.end(), p.first ) == buffers.end(); }
+		);
+
+		std::erase_if(
+			_framebuffers,
+			[ &framebuffers ]( const auto & p )
+			{ return std::find( framebuffers.begin(), framebuffers.end(), p.first ) == framebuffers.end(); }
+		);
+
+		std::erase_if(
+			_textures,
+			[ &textures ]( const auto & p )
+			{ return std::find( textures.begin(), textures.end(), p.first ) == textures.end(); }
+		);
+
+		std::erase_if(
+			_programs,
+			[ &programs ]( const auto & p )
+			{ return std::find( programs.begin(), programs.end(), p.first ) == programs.end(); }
+		);
+
+		std::erase_if(
+			_uniforms,
+			[ &uniforms ]( const auto & p )
+			{ return std::find( uniforms.begin(), uniforms.end(), p.first ) == uniforms.end(); }
+		);
+	}
+
 	void OpenGL45::_getOpenglInfos()
 	{
 		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
@@ -807,6 +1007,10 @@ namespace VTX::Renderer::Context
 		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
 		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
+		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
+		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, &_openglInfos.glMaxUniformBufferBindings );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
+		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
 		glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_openglInfos.glMaxTextureSize );
 		glGetIntegerv( GL_MAX_PATCH_VERTICES, &_openglInfos.glMaxPatchVertices );
 		glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &_openglInfos.glMaxTessGenLevel );
@@ -817,9 +1021,6 @@ namespace VTX::Renderer::Context
 		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &_openglInfos.glMaxComputeWorkGroupSize[ 1 ] );
 		glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &_openglInfos.glMaxComputeWorkGroupSize[ 2 ] );
 		glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
-		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
-		glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &_openglInfos.glMaxShaderStorageBlockSize );
-		glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &_openglInfos.glMaxShaderStorageBufferBindings );
 
 		// Extensions.
 		GLint numExtensions = 0;
@@ -870,22 +1071,14 @@ namespace VTX::Renderer::Context
 
 		// Count total size used by buffers.
 		size_t totalSizeBuffers = 0;
-		for ( const auto & [ name, bo ] : _bos )
+		for ( const auto & [ key, buffer ] : _buffers )
 		{
-			totalSizeBuffers += bo->getSize();
-		}
-		for ( const auto & [ name, ssbo ] : _ssbos )
-		{
-			totalSizeBuffers += ssbo->getSize();
-		}
-		for ( const auto & [ name, ubo ] : _ubos )
-		{
-			totalSizeBuffers += ubo->getSize();
+			totalSizeBuffers += buffer->getSize();
 		}
 
 		// Count total size used by textures.
 		size_t totalSizeTextures = 0;
-		for ( const auto & [ name, texture ] : _textures )
+		for ( const auto & [ key, texture ] : _textures )
 		{
 			size_t textureSize = texture->getWidth() * texture->getHeight() * _mapFormatSizes[ texture->getFormat() ];
 			totalSizeTextures += textureSize;
@@ -894,7 +1087,7 @@ namespace VTX::Renderer::Context
 		p_infos.currentSizeBuffers	= totalSizeBuffers;
 		p_infos.currentSizeTextures = totalSizeTextures;
 
-		p_infos.currentCountBuffers	 = _bos.size() + _ssbos.size() + _ubos.size();
+		p_infos.currentCountBuffers	 = _buffers.size();
 		p_infos.currentCountTextures = _textures.size();
 	}
 	void APIENTRY OpenGL45::_debugMessageCallback(
@@ -957,11 +1150,11 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	std::map<const E_CHANNEL_OUTPUT, const GLenum> OpenGL45::_mapAttachments = {
-		{ E_CHANNEL_OUTPUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
-		{ E_CHANNEL_OUTPUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
-		{ E_CHANNEL_OUTPUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
-		{ E_CHANNEL_OUTPUT::DEPTH, GL_DEPTH_ATTACHMENT },
+	std::map<const E_CHAN_OUT, const GLenum> OpenGL45::_mapAttachments = {
+		{ E_CHAN_OUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
+		{ E_CHAN_OUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
+		{ E_CHAN_OUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
+		{ E_CHAN_OUT::DEPTH, GL_DEPTH_ATTACHMENT },
 	};
 
 	std::map<const E_PRIMITIVE, const GLenum> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },

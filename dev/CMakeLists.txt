@@ -1,4 +1,5 @@
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+set(PYBIND11_FINDPYTHON ON)
 
 message("vtx")
 cmake_minimum_required(VERSION 3.23)
@@ -91,4 +92,9 @@ include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
 # Tool.
 include("${DIR_LIBS}/tool/cmake/library.cmake")
 
+vtx_clear_registered_copies()
 
+# VTX.
+include("../cmake/library.cmake")
+
+vtx_clear_registered_copies()

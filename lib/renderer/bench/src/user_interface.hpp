@@ -61,7 +61,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 
 			// Init ImGui.
-			if ( IMGUI_CHECKVERSION() == false )
+			if ( not IMGUI_CHECKVERSION() )
 			{
 				throw std::runtime_error( "IMGUI_CHECKVERSION() failed" );
 			}
@@ -69,11 +69,11 @@ namespace VTX::Bench
 			ImGui::CreateContext();
 			ImGui::StyleColorsDark();
 
-			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
+			if ( not ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) )
 			{
 				throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
 			}
-			if ( ImGui_ImplOpenGL3_Init( "#version 450 core" ) == false )
+			if ( not ImGui_ImplOpenGL3_Init( "#version 450 core" ) )
 			{
 				throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
 			}
@@ -331,13 +331,29 @@ namespace VTX::Bench
 		{
 			if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
 			{
-				ImGui::Checkbox( fmt::format( "{} atoms", p_renderer->sizeAtoms ).c_str(), &p_renderer->showAtoms );
-				ImGui::Checkbox( fmt::format( "{} bonds", p_renderer->sizeBonds ).c_str(), &p_renderer->showBonds );
-				ImGui::Checkbox(
-					fmt::format( "{} ribbons", p_renderer->sizeRibbons ).c_str(), &p_renderer->showRibbons
-				);
-				ImGui::Checkbox( fmt::format( "{} voxels", p_renderer->sizeVoxels ).c_str(), &p_renderer->showVoxels );
-				// ImGui::Text( fmt::format( "{} FPS", int( 1.f / deltaTime ) ).c_str() );
+				size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+				for ( auto count : p_renderer->drawRangeSpheres.counts )
+				{
+					sizeAtoms += count;
+				}
+				for ( auto count : p_renderer->drawRangeCylinders.counts )
+				{
+					sizeBonds += count;
+				}
+				for ( auto count : p_renderer->drawRangeRibbons.counts )
+				{
+					sizeRibbons += count;
+				}
+				for ( auto count : p_renderer->drawRangeVoxels.counts )
+				{
+					sizeVoxels += count;
+				}
+
+				ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
+				ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
+				ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), &p_renderer->showRibbons );
+				ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), &p_renderer->showVoxels );
+
 				ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 				ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -345,19 +361,19 @@ namespace VTX::Bench
 				{
 					if ( p_memory < 1000 )
 					{
-						return fmt::format( "{}b", p_memory );
+						return fmt::format( "{}B", p_memory );
 					}
 					else if ( p_memory < 1000 * 1000 )
 					{
-						return fmt::format( "{}kb", p_memory / 1000 );
+						return fmt::format( "{}kB", p_memory / 1000 );
 					}
 					else if ( p_memory < 1000 * 1000 * 1000 )
 					{
-						return fmt::format( "{}Mb", p_memory / ( 1000 * 1000 ) );
+						return fmt::format( "{}MB", p_memory / ( 1000 * 1000 ) );
 					}
 					else
 					{
-						return fmt::format( "{}Gb", p_memory / ( 1000 * 1000 * 1000 ) );
+						return fmt::format( "{}GB", p_memory / ( 1000 * 1000 * 1000 ) );
 					}
 				};
 
@@ -462,12 +478,22 @@ namespace VTX::Bench
 							proxyMolecule->onSelect( true );
 						}
 						ImGui::SameLine();
-						if ( ImGui::Button( "U" ) )
+						if ( ImGui::Button( "US" ) )
 						{
 							proxyMolecule->onSelect( false );
 						}
 						ImGui::SameLine();
-						if ( ImGui::Button( "R" ) )
+						if ( ImGui::Button( "UV" ) )
+						{
+							proxyMolecule->onVisible( false );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "V" ) )
+						{
+							proxyMolecule->onVisible( true );
+						}
+						ImGui::SameLine();
+						if ( ImGui::Button( "Rep" ) )
 						{
 							proxyMolecule->onRepresentation( rand() % 3 );
 						}
@@ -516,7 +542,14 @@ namespace VTX::Bench
 				}
 				if ( ImGui::Button( "Build" ) )
 				{
-					p_renderer->build();
+					try
+					{
+						p_renderer->build();
+					}
+					catch ( const std::exception & e )
+					{
+						VTX_ERROR( "{}", e.what() );
+					}
 				}
 				if ( ImGui::Button( "X" ) )
 				{
@@ -551,14 +584,14 @@ namespace VTX::Bench
 				bool isBuilt = p_renderer->hasContext();
 
 				// DescPass nodes.
-				uint										 id = 0;
-				std::map<const Input * const, uint>			 mapIdInput;
-				std::map<const Output * const, uint>		 mapIdOutput;
-				std::map<const uint, const E_CHANNEL_OUTPUT> mapIdChannelOutput;
-				std::map<const uint, const E_CHANNEL_INPUT>	 mapIdChannelInput;
-				std::map<const uint, Pass *>				 mapIdDescPass;
-				std::map<const uint, Link *>				 mapIdDescLink;
-				const Pass *								 passToDelete = nullptr;
+				uint								   id = 0;
+				std::map<const Input * const, uint>	   mapIdInput;
+				std::map<const Output * const, uint>   mapIdOutput;
+				std::map<const uint, const E_CHAN_OUT> mapIdChannelOutput;
+				std::map<const uint, const E_CHAN_IN>  mapIdChannelInput;
+				std::map<const uint, Pass *>		   mapIdDescPass;
+				std::map<const uint, Link *>		   mapIdDescLink;
+				const Pass *						   passToDelete = nullptr;
 
 				for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
 				{
@@ -856,7 +889,7 @@ namespace VTX::Bench
 
 			if ( p_isEditable && updated )
 			{
-				p_renderer->setUniform( value, p_key );
+				p_renderer->setValue( value, p_key );
 			}
 		}
 

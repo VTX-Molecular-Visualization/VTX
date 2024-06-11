@@ -4,7 +4,7 @@
 namespace VTX::Renderer
 {
 
-	enum struct E_CHANNEL_INPUT
+	enum struct E_CHAN_IN
 	{
 		_0,
 		_1,
@@ -16,7 +16,7 @@ namespace VTX::Renderer
 		_7,
 	};
 
-	enum struct E_CHANNEL_OUTPUT
+	enum struct E_CHAN_OUT : unsigned int
 	{
 		COLOR_0,
 		COLOR_1,

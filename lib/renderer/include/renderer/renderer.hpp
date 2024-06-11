@@ -9,13 +9,14 @@
 #include "proxy/mesh.hpp"
 #include "proxy/molecule.hpp"
 #include "proxy/render_settings.hpp"
-#include "proxy/representations.hpp"
+#include "proxy/representation.hpp"
 #include "proxy/voxels.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/math/range_list.hpp>
 
 namespace VTX::Renderer
 {
@@ -48,32 +49,40 @@ namespace VTX::Renderer
 			Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
 
 			// Setup values.
-			geo->programs[ 0 ].draw.value().countFunction = [ this ]() { return showAtoms ? sizeAtoms : 0; };
-			geo->programs[ 1 ].draw.value().countFunction = [ this ]() { return showBonds ? sizeBonds : 0; };
-			geo->programs[ 2 ].draw.value().countFunction = [ this ]() { return showRibbons ? sizeRibbons : 0; };
-			geo->programs[ 3 ].draw.value().countFunction = [ this ]() { return showVoxels ? sizeVoxels : 0; };
-			blurX->name									  = "BlurX";
-			blurY->name									  = "BlurY";
-			blurY->programs[ 0 ].uniforms[ 0 ].value	  = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+			blurX->name								 = "BlurX";
+			blurY->name								 = "BlurY";
+			blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
 
 			// Links.
-			_renderGraph->addLink( geo, depth, E_CHANNEL_OUTPUT::DEPTH, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( geo, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, ssao, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( ssao, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, blurX, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( blurX, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, blurY, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( geo, shading, E_CHANNEL_OUTPUT::COLOR_1, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( blurY, shading, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( shading, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( depth, outline, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( geo, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->addLink( outline, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_1 );
-			_renderGraph->addLink( depth, selection, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_2 );
-			_renderGraph->addLink( selection, fxaa, E_CHANNEL_OUTPUT::COLOR_0, E_CHANNEL_INPUT::_0 );
-			_renderGraph->setOutput( &fxaa->outputs[ E_CHANNEL_OUTPUT::COLOR_0 ] );
+			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
 
 			// Shared uniforms.
 			_renderGraph->addUniforms(
@@ -114,10 +123,10 @@ namespace VTX::Renderer
 		}
 
 		template<typename T>
-		inline void setUniform( const T & p_value, const std::string & p_key, const size_t p_size = 0 )
+		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
 			assert( _context != nullptr );
-			_context->setUniform<T>( p_value, p_key, p_size );
+			_context->setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
 		}
 
@@ -161,7 +170,7 @@ namespace VTX::Renderer
 					_render( p_time );
 				}
 
-				if ( forceUpdate == false )
+				if ( not forceUpdate )
 				{
 					if ( _needUpdate )
 					{
@@ -175,15 +184,18 @@ namespace VTX::Renderer
 			}
 		}
 
-		void setProxyCamera( Proxy::Camera & p_proxy );
-
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void removeProxyMolecule( Proxy::Molecule & p_proxy );
 		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
 		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
 
+		void addProxyRepresentation( Proxy::Representation & p_proxy );
+		void removeProxyRepresentation( Proxy::Representation & p_proxy );
+		void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
+		void removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
+
+		void setProxyCamera( Proxy::Camera & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
-		void setProxyRepresentations( Proxy::Representations & p_proxy );
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
@@ -199,14 +211,14 @@ namespace VTX::Renderer
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
-			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHANNEL_OUTPUT::COLOR_2 );
+			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHAN_OUT::COLOR_2 );
 			return std::any_cast<Vec2i>( idsAny );
 		}
 
 		inline void setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
-			if ( p_value == false )
+			if ( not p_value )
 			{
 				_framesRemaining = BUFFER_COUNT;
 			}
@@ -244,11 +256,6 @@ namespace VTX::Renderer
 		size_t width;
 		size_t height;
 
-		size_t sizeAtoms   = 0;
-		size_t sizeBonds   = 0;
-		size_t sizeRibbons = 0;
-		size_t sizeVoxels  = 0;
-
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
@@ -258,6 +265,19 @@ namespace VTX::Renderer
 		bool logDurations = false;
 
 		static const size_t BUFFER_COUNT = 2;
+
+		// Draw ranges.
+		// TODO: test render time with/without ranges/multidraw.
+		using RangeList = Util::Math::RangeList<size_t>;
+		RangeList	drawRangeSpheresRL;
+		RangeList	drawRangeCylindersRL;
+		RangeList	drawRangeRibbonsRL;
+		Draw::Range drawRangeSpheres;
+		Draw::Range drawRangeCylinders;
+		Draw::Range drawRangeRibbons;
+		Draw::Range drawRangeVoxels;
+
+		// TODO: currentSize proxies and ranges?
 
 	  private:
 		Context::OpenGL45 *					 _context		  = nullptr;
@@ -270,13 +290,12 @@ namespace VTX::Renderer
 		InstructionsDurationRanges			 _instructionsDurationRanges;
 
 		// Proxies.
-		Proxy::Camera *				   _proxyCamera;
-		std::vector<Proxy::Molecule *> _proxiesMolecules;
-		// std::vector<Proxy::Mesh *>	   _proxiesMeshes;
-		Proxy::ColorLayout *	 _proxyColorLayout;
-		Proxy::Representations * _proxyRepresentations;
-		Proxy::RenderSettings *	 _proxyRenderSettings;
-		Proxy::Voxels *			 _proxyVoxels;
+		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
+		std::vector<Proxy::Representation *> _proxyRepresentations;
+		Proxy::Camera *						 _proxyCamera;
+		Proxy::ColorLayout *				 _proxyColorLayout;
+		Proxy::RenderSettings *				 _proxyRenderSettings;
+		Proxy::Voxels *						 _proxyVoxels;
 
 		void _addProxyMolecule( Proxy::Molecule & p_proxy );
 		void _removeProxyMolecule( Proxy::Molecule & p_proxy );
@@ -296,6 +315,7 @@ namespace VTX::Renderer
 		// Cache.
 		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 		std::map<const Proxy::Molecule * const, Cache::Ribbon>		   _cacheRibbons;
+		std::map<const Proxy::Molecule * const, Cache::SES>			   _cacheSES;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataMolecules()

@@ -19,12 +19,12 @@ namespace VTX::Core::Struct
 			_linkedChains.erase( std::find( _linkedChains.begin(), _linkedChains.end(), p_chainIndex ) );
 		}
 
-		const ChemDB::Category::TYPE & getCategory() { return _categoryEnum; }
-		const std::vector<size_t> &	   getLinkedChains() { return _linkedChains; }
+		const ChemDB::Category::TYPE & getCategory() const { return _categoryEnum; }
+		const std::vector<size_t> &	   getLinkedChains() const { return _linkedChains; }
 
 	  private:
 		ChemDB::Category::TYPE _categoryEnum = ChemDB::Category::TYPE::UNKNOWN;
-		std::vector<size_t>	   _linkedChains = std::vector<size_t>();
+		std::vector<size_t>	   _linkedChains;
 	};
 
 } // namespace VTX::Core::Struct

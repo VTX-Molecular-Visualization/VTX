@@ -93,14 +93,21 @@ namespace VTX::Renderer
 		UniformValue value;
 	};
 
-	using CountFunction = std::function<size_t()>;
-
+	using NeedRenderFunc = std::function<bool()>;
 	struct Draw
 	{
-		std::string	  name;
-		E_PRIMITIVE	  primitive;
-		CountFunction countFunction;
-		bool		  useIndices = false;
+		std::string name;
+		E_PRIMITIVE primitive;
+		bool		useIndices = false;
+
+		struct Range
+		{
+			std::vector<void *> offsets;
+			std::vector<uint>	counts;
+		};
+		Range * ranges = nullptr;
+
+		NeedRenderFunc needRenderFunc;
 	};
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
@@ -127,8 +134,8 @@ namespace VTX::Renderer
 		std::string			suffix;
 	};
 
-	using Inputs   = std::unordered_map<E_CHANNEL_INPUT, Input>;
-	using Outputs  = std::unordered_map<E_CHANNEL_OUTPUT, Output>;
+	using Inputs   = std::unordered_map<E_CHAN_IN, Input>;
+	using Outputs  = std::unordered_map<E_CHAN_OUT, Output>;
 	using Programs = std::vector<Program>;
 
 	struct Pass
@@ -140,12 +147,32 @@ namespace VTX::Renderer
 		std::vector<E_SETTING> settings;
 	};
 
+	constexpr int LOCAL_SIZE_X = 256;
+	constexpr int LOCAL_SIZE_Y = 1;
+	constexpr int LOCAL_SIZE_Z = 1;
+
+	struct ComputePass
+	{
+		Program program;
+
+		struct Data
+		{
+			size_t size;
+			void * data;
+			uint   binding;
+			bool   overwrite = false; // TODO: force data?
+		};
+
+		std::vector<ComputePass::Data *> data;
+		std::variant<Vec3i, size_t>		 size;
+	};
+
 	struct Link
 	{
-		Pass *			 src;
-		Pass *			 dest;
-		E_CHANNEL_OUTPUT channelSrc	 = E_CHANNEL_OUTPUT::COLOR_0;
-		E_CHANNEL_INPUT	 channelDest = E_CHANNEL_INPUT::_0;
+		Pass *	   src;
+		Pass *	   dest;
+		E_CHAN_OUT channelSrc  = E_CHAN_OUT::COLOR_0;
+		E_CHAN_IN  channelDest = E_CHAN_IN::_0;
 	};
 
 	using Passes = std::vector<std::unique_ptr<Pass>>;
