@@ -29,4 +29,4 @@ else()
 endif()
 target_link_libraries(vtx_tool PRIVATE Eigen3::Eigen)
 
-apply_qt_options(vtx_tool)
+#apply_qt_options(vtx_tool)
