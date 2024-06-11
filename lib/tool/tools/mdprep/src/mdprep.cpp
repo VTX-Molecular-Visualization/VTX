@@ -135,7 +135,7 @@ namespace VTX::QT::Mdprep
 
 			{
 				const VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation * engineSpecificData = nullptr;
-				_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
+				//_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
 				if ( engineSpecificData )
 					_formBasic.update( *engineSpecificData );
 			}

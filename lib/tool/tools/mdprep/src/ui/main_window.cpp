@@ -3,6 +3,7 @@
 //
 #include "tools/mdprep/gateway/backend_gromacs.hpp"
 #include "tools/mdprep/gateway/form_data.hpp"
+#include "tools/mdprep/gateway/shared.hpp"
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -48,9 +49,10 @@ namespace VTX::Tool::Mdprep::ui
 
 	namespace
 	{
+
 		class NoopForm
 		{
-			VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation _data;
+			Gateway::EngineSpecificCommonInformation _data;
 
 		  public:
 			NoopForm() = default;
@@ -58,12 +60,13 @@ namespace VTX::Tool::Mdprep::ui
 			get( MdEngineSpecificFieldPlacer & p_ptr, const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & ) noexcept
 			{
 			}
-			inline void get( const VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation *& p_ptr ) const noexcept
+			inline void get( const Gateway::EngineSpecificCommonInformation *& p_ptr ) const noexcept
 			{
 				p_ptr = &_data;
 			}
-			inline void activate() noexcept {}
-			inline void deactivate() noexcept {}
+			inline void		   activate() noexcept {}
+			inline void		   deactivate() noexcept {}
+			friend inline void get( const NoopForm &, Gateway::EngineSpecificCommonInformation & ) noexcept {}
 		};
 	} // namespace
 
