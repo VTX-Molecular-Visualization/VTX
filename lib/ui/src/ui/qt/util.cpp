@@ -129,13 +129,6 @@ namespace VTX::UI::QT::Util
 	}
 	LabelWithHelper::operator QWidget *() { return container; }
 
-	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept
-	{
-		QLabel * wlabel = new QLabel( p_label );
-		wlabel->setToolTip( p_helpTooltip );
-		wlabel->setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
-		return wlabel;
-	}
 	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept
 	{
 		QHBoxLayout * qLilLayout = new QHBoxLayout;
@@ -162,26 +155,5 @@ namespace VTX::UI::QT::Util
 			out
 		);
 		return out;
-	}
-
-	void addUInt64FieldWithRightLabel(
-		QFormLayout * p_dest,
-		const char *  p_label,
-		const char *  p_tooltip,
-		QLineEdit **  p_out_field,
-		QLabel **	  p_out_label
-	) noexcept
-	{
-		*p_out_field				  = new QLineEdit();
-		*p_out_label				  = new QLabel;
-		QWidget *	  qRightCol		  = new QWidget;
-		QHBoxLayout * qRightColLayout = new QHBoxLayout( qRightCol );
-		qRightColLayout->setContentsMargins( 0, 0, 0, 0 );
-		qRightColLayout->addWidget( *p_out_field, 1 );
-		qRightColLayout->addWidget( *p_out_label, 1 );
-
-		( *p_out_field )->setValidator( new VTX::UI::QT::QUInt64Validator( *p_out_field ) );
-
-		p_dest->addRow( UI::QT::Util::createLabelWithHelpTooltip( p_label, p_tooltip ), qRightCol );
 	}
 } // namespace VTX::UI::QT::Util

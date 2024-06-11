@@ -120,7 +120,9 @@ namespace VTX::UI::QT::Util
 	{
 		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
-	QLabel * createLabelWithHelpTooltip( const char * p_label, const char * p_helpTooltip ) noexcept;
+
+	// Class responsible for creating a label with tooltip as a question mark ? button next to it.
+	// Implicitly convert in QWidget pointer which refers to the container of both the label and the question mark.
 	class LabelWithHelper
 	{
 	  public:
@@ -133,23 +135,14 @@ namespace VTX::UI::QT::Util
 		QWidget * container = nullptr;
 		QLabel *  label		= nullptr;
 		operator QWidget *();
-
-	  private:
 	};
+
+	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.
 	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
 
 	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
 	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
 
-	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input but with a label next
-	// to the field
-	void addUInt64FieldWithRightLabel(
-		QFormLayout * p_dest,
-		const char *  p_label,
-		const char *  p_tooltip,
-		QLineEdit **  p_out_field,
-		QLabel **	  p_out_label
-	) noexcept;
 } // namespace VTX::UI::QT::Util
 
 #endif
