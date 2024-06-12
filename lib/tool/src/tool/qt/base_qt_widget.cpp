@@ -1,4 +1,4 @@
-#include "ui/qt/base_qt_widget.hpp"
+#include "tool/qt/base_qt_widget.hpp"
 
 namespace VTX::UI::QT
 {

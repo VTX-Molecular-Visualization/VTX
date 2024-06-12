@@ -1,5 +1,5 @@
-#include "ui/core/io/vtx_layout_reader.hpp"
-#include "ui/core/serialization/ui_core_serializers.hpp"
+#include "tool/core/io/vtx_layout_reader.hpp"
+#include "tool/core/serialization/ui_core_serializers.hpp"
 #include <app/application/system/serializer.hpp>
 
 namespace VTX::UI::Core::IO

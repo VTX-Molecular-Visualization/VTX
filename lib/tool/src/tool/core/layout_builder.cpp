@@ -1,5 +1,5 @@
-#include "ui/core/layout_builder.hpp"
-#include "ui/core/tool_handler.hpp"
+#include "tool/core/layout_builder.hpp"
+#include "tool/core/tool_handler.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::UI::Core

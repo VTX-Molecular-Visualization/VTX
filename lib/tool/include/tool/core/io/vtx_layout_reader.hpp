@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_IO_VTX_LAYOUT_READER__
 #define __VTX_UI_CORE_IO_VTX_LAYOUT_READER__
 
-#include "ui/core/layout_descriptor.hpp"
+#include "tool/core/layout_descriptor.hpp"
 #include <util/types.hpp>
 #include <vector>
 

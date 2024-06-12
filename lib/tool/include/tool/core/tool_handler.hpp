@@ -2,8 +2,8 @@
 #define __VTX_UI_CORE_TOOL_HANDLER__
 
 #include <app/application/system/system_registration.hpp>
-#include <ui/core/base_ui_tool.hpp>
-#include <ui/core/layout_descriptor.hpp>
+#include <tool/core/base_ui_tool.hpp>
+#include <tool/core/layout_descriptor.hpp>
 #include <vector>
 
 namespace VTX::UI::Core

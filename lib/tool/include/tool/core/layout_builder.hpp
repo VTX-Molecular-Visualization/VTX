@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_LAYOUT_BUILDER__
 #define __VTX_UI_CORE_LAYOUT_BUILDER__
 
-#include "ui/core/layout_descriptor.hpp"
+#include "tool/core/layout_descriptor.hpp"
 #include <vector>
 
 namespace VTX::UI::Core

@@ -19,9 +19,9 @@ class VTXToolRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
-        self.requires("vtx_ui/1.0")
-        self.requires("eigen/3.4.0")          
-        self.requires("vtx_tool_mdprep/1.0")       
+        self.requires("vtx_ui/1.0")                  
+        self.requires("vtx_tool_mdprep/1.0")
+        self.requires("eigen/3.4.0")
         
     def generate(self):
         copy(

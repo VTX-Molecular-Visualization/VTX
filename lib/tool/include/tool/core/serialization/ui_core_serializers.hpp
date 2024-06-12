@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_SERIALIZATION_UI_CORE_SERIALIZERS__
 #define __VTX_UI_CORE_SERIALIZATION_UI_CORE_SERIALIZERS__
 
-#include "ui/core/layout_descriptor.hpp"
+#include "tool/core/layout_descriptor.hpp"
 #include <util/json/json.hpp>
 #include <vector>
 

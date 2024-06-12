@@ -8,7 +8,6 @@ if (NOT DEFINED _VTX_RENDERER_TEST_CONAN)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_core)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_io)
 	target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
-
 else()
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
