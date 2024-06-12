@@ -2,7 +2,7 @@
 #define __VTX_TOOL_MDPREP_REGISTRATION__
 
 #include "ui/core/tool_registry.hpp"
-#include "ui/qt/base_qt_tool.hpp"
+#include "ui/qt/base_qt_widget.hpp"
 
 namespace VTX::Tool
 {
