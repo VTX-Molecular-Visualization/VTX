@@ -1,6 +1,7 @@
 #ifndef __VTX_INCLUDE_TOOLS__
 #define __VTX_INCLUDE_TOOLS__
 
+#include <tool/mdprep.hpp>
 #include <ui/qt/widget/console_widget.hpp>
 #include <ui/qt/widget/miscellaneous/orient_on_first_molecule_loaded.hpp>
 #include <ui/qt/widget/pytx_widget.hpp>
