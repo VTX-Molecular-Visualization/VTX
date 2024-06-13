@@ -4,11 +4,12 @@
 #include "tools/mdprep/gateway/backend_gromacs.hpp"
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/gateway/shared.hpp"
+#include "tools/mdprep/ui/md_engine_factory.hpp"
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
-#include "tools/mdprep/ui/field_placer_gromacs.hpp"
+#include "tools/mdprep/ui/gromacs_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 //
 #include <qformlayout.h>
@@ -21,40 +22,6 @@
 namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
-
-	constexpr const char * string( const E_MD_ENGINE & p_ ) noexcept
-	{
-		switch ( p_ )
-		{
-		case E_MD_ENGINE::gromacs: return { "Gromacs" };
-		default: break;
-		}
-		return "DEBUUUG"; // For developers that add new MD Engine support
-	}
-	namespace
-	{
-		constexpr std::array<const char *, MD_ENGINE_NUMBER> createMdEngineStringList()
-		{
-			std::array<const char *, MD_ENGINE_NUMBER> out;
-			for ( int i = 0; i < MD_ENGINE_NUMBER; i++ )
-			{
-				out[ i ] = string( static_cast<E_MD_ENGINE>( i ) );
-			}
-			return out;
-		}
-	} // namespace
-	constexpr const std::array<const char *, MD_ENGINE_NUMBER> g_mdEngineStrings = createMdEngineStringList();
-
-	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings() { return g_mdEngineStrings; }
-
-	MdEngineFieldPlacer form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
-	{
-		switch ( p_engine )
-		{
-		case E_MD_ENGINE::gromacs: return { GromacsFieldPlacer( std::move( p_layout ) ) };
-		default: return {};
-		}
-	}
 
 	void MdFieldsOrganizer::setupUi( QLayout * p_layout, const E_FORM_MODE & p_mode ) noexcept
 	{

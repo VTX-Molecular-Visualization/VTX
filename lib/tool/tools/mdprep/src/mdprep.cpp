@@ -8,6 +8,7 @@
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/mdprep.hpp"
+#include "tools/mdprep/ui/md_engine_factory.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
@@ -126,11 +127,11 @@ namespace VTX::QT::Mdprep
 
 			_mdEngineCurrentIdx = idx;
 
-			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
-				_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
-					static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
-					{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
-				);
+			// if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
+			//	_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
+			//		static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
+			//		{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
+			//	);
 			_formsMd[ _mdEngineCurrentIdx ]->activate();
 
 			{

@@ -8,20 +8,9 @@ class QWidget;
 
 namespace VTX::Tool::Mdprep::ui
 {
-	enum class E_MD_ENGINE
-	{
-		gromacs,
-		anotherone,
-		COUNT
-	};
-	constexpr const size_t MD_ENGINE_NUMBER = static_cast<size_t>( E_MD_ENGINE::COUNT );
-	constexpr const char * string( const E_MD_ENGINE & ) noexcept;
-
-	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings();
 
 	class MdEngineFieldPlacer;
 	struct FormLayouts;
-	MdEngineFieldPlacer form( const E_MD_ENGINE &, FormLayouts ) noexcept;
 
 	// Class responsible for settings up the MD UI with respect of basic VS advanced MD parameters
 	class MdFieldsOrganizer
@@ -45,7 +34,7 @@ namespace VTX::Tool::Mdprep::ui
 		void switchFormMode() noexcept;
 
 	  private:
-		E_FORM_MODE _mode = E_FORM_MODE::basic;
+		E_FORM_MODE	  _mode				= E_FORM_MODE::basic;
 		QPushButton * _buttonViewSwitch = nullptr;
 
 		void _changeModeBasic() noexcept;
