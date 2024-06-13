@@ -47,35 +47,12 @@ namespace VTX::Tool::Mdprep::ui
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings() { return g_mdEngineStrings; }
 
-	namespace
-	{
-
-		class NoopForm
-		{
-			Gateway::EngineSpecificCommonInformation _data;
-
-		  public:
-			NoopForm() = default;
-			inline void
-			get( MdEngineSpecificFieldPlacer & p_ptr, const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & ) noexcept
-			{
-			}
-			inline void get( const Gateway::EngineSpecificCommonInformation *& p_ptr ) const noexcept
-			{
-				p_ptr = &_data;
-			}
-			inline void		   activate() noexcept {}
-			inline void		   deactivate() noexcept {}
-			friend inline void get( const NoopForm &, Gateway::EngineSpecificCommonInformation & ) noexcept {}
-		};
-	} // namespace
-
 	MdEngineFieldPlacer form( const E_MD_ENGINE & p_engine, FormLayouts p_layout ) noexcept
 	{
 		switch ( p_engine )
 		{
 		case E_MD_ENGINE::gromacs: return { GromacsFieldPlacer( std::move( p_layout ) ) };
-		default: return { NoopForm() };
+		default: return {};
 		}
 	}
 
