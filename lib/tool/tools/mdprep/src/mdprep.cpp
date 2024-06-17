@@ -8,6 +8,7 @@
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/mdprep.hpp"
+#include "tools/mdprep/ui/md_engine.hpp"
 #include "tools/mdprep/ui/md_engine_factory.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -30,8 +31,8 @@ namespace VTX::QT::Mdprep
 	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
-		using FormCollection = std::
-			array<std::optional<VTX::Tool::Mdprep::ui::MdEngineFieldPlacer>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+		using EngineCollection
+			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
 		QComboBox *				  _w_mdEngine = nullptr;
@@ -39,8 +40,9 @@ namespace VTX::QT::Mdprep
 		VTX::Tool::Mdprep::ui::MdFieldsOrganizer   _fieldOrganizer;
 		VTX::Tool::Mdprep::ui::MdBasicParamForm	   _formBasic;
 		VTX::Tool::Mdprep::ui::MdAdvancedParamForm _formAdvanced;
-		FormCollection							   _formsMd;
+		EngineCollection						   _mdEngines;
 		int										   _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer _formEngine;
 
 		// Problem : we must support multiple engines with some common fields and some different ones.
 		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
@@ -122,23 +124,22 @@ namespace VTX::QT::Mdprep
 		}
 		void _updateFormEngine( int idx ) noexcept
 		{
-			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() )
-				_formsMd[ _mdEngineCurrentIdx ]->deactivate();
-
 			_mdEngineCurrentIdx = idx;
+			_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
 
-			// if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
-			//	_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
+			// if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() == false )
+			//	_mdEngines[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
 			//		static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
 			//		{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
 			//	);
-			_formsMd[ _mdEngineCurrentIdx ]->activate();
+			_formEngine.activate();
 
 			{
-				const VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation * engineSpecificData = nullptr;
-				//_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
-				if ( engineSpecificData )
-					_formBasic.update( *engineSpecificData );
+				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
+				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
+				//_mdEngines[ _mdEngineCurrentIdx ]->get( engineSpecificData );
+				// if ( engineSpecificData )
+				//	_formBasic.update( *engineSpecificData );
 			}
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
@@ -155,7 +156,7 @@ namespace VTX::QT::Mdprep
 				[ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
 				{
 					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
-					//_formsMd[ _mdEngineCurrentIdx ]->get( p, p_section );
+					//_mdEngines[ _mdEngineCurrentIdx ]->get( p, p_section );
 					return p;
 				}
 			);
