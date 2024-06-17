@@ -104,9 +104,9 @@ namespace VTX::QT::Mdprep
 			QLabel *			qExplainatoryText = new QLabel;
 			static const char * buttonLabel		  = "Prepare system";
 			qExplainatoryText->setText( QString::asprintf(
-				"Pushing the <i>%s</i> button will use every <b>visible</b> object of the system and will attempts to "
-				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <b>VTX doesn't support "
-				"yet</b> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
+				"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system and attempts to "
+				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <i>VTX doesn't support "
+				"yet</ib> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
 				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
 				buttonLabel
 			) );
@@ -133,22 +133,20 @@ namespace VTX::QT::Mdprep
 					_mdEngines[ _mdEngineCurrentIdx ].value()
 				);
 			}
-
-			_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
-
-			// if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() == false )
-			//	_mdEngines[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
-			//		static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
-			//		{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
-			//	);
-			_formEngine.activate();
+			{
+				_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
+				_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
+				VTX::Tool::Mdprep::ui::FormLayouts layouts;
+				_formAdvanced.get( layouts );
+				_formBasic.get( layouts );
+				_formEngine.assign( std::move( layouts ) );
+				_formEngine.activate();
+			}
 
 			{
 				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
 				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
-				//_mdEngines[ _mdEngineCurrentIdx ]->get( engineSpecificData );
-				// if ( engineSpecificData )
-				//	_formBasic.update( *engineSpecificData );
+				_formBasic.update( engineSpecificData );
 			}
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
