@@ -163,7 +163,7 @@ namespace VTX::QT::Mdprep
 				[ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
 				{
 					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
-					//_mdEngines[ _mdEngineCurrentIdx ]->get( p, p_section );
+					_mdEngines[ _mdEngineCurrentIdx ]->get( p_section, p );
 					return p;
 				}
 			);
