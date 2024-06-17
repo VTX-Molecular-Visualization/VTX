@@ -125,6 +125,15 @@ namespace VTX::QT::Mdprep
 		void _updateFormEngine( int idx ) noexcept
 		{
 			_mdEngineCurrentIdx = idx;
+			if ( not _mdEngines[ _mdEngineCurrentIdx ].has_value() )
+			{
+				_mdEngines[ _mdEngineCurrentIdx ].emplace();
+				VTX::Tool::Mdprep::ui::get(
+					static_cast<VTX::Tool::Mdprep::ui::E_MD_ENGINE>( _mdEngineCurrentIdx ),
+					_mdEngines[ _mdEngineCurrentIdx ].value()
+				);
+			}
+
 			_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
 
 			// if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() == false )
