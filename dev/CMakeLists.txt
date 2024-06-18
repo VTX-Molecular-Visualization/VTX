@@ -82,6 +82,11 @@ include("${DIR_LIBS}/ui/test/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
+# UI Qt.
+include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
+
+vtx_clear_registered_copies()
+
 # Tool.
 include("${DIR_LIBS}/tool/cmake/library.cmake")
 

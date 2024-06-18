@@ -166,4 +166,6 @@ namespace VTX::App
 
 	Application::Scene & SCENE() { return VTXApp::get().getScene(); }
 
+	Mode::BaseMode & MODE() { return VTXApp::get().getCurrentMode(); }
+
 } // namespace VTX::App

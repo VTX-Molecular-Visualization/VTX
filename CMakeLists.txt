@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx)
 
+find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
@@ -10,7 +11,7 @@ find_package(vtx_python_binding CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_tool CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
-find_package(vtx_util CONFIG REQUIRED)
+find_package(vtx_ui_qt CONFIG REQUIRED)
 
 set(_VTX_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")

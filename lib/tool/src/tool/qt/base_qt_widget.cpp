@@ -2,5 +2,5 @@
 
 namespace VTX::UI::QT
 {
-	BaseQtTool::BaseQtTool() : VTX::UI::Core::BaseVTXUITool(), QObject() {}
+	BaseQtTool::BaseQtTool() : VTX::UI::Core::BaseVTXUITool() /*, QObject()*/ {}
 } // namespace VTX::UI::QT

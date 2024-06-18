@@ -1,5 +1,5 @@
 #include "ui/debug/print_inputs.hpp"
-#include "ui/qt/input/input_manager.hpp"
+#include "app/core/input/input_manager.hpp"
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
@@ -7,16 +7,16 @@ namespace VTX::UI::Debug
 {
 	PrintInputs::PrintInputs()
 	{
-		QT::INPUT_MANAGER().onKeyPressed += [ this ]( Qt::Key p_key ) { _logKeyPressed( p_key ); };
-		QT::INPUT_MANAGER().onKeyReleased += [ this ]( Qt::Key p_key ) { _logKeyReleased( p_key ); };
+		App::INPUT_MANAGER().onKeyPressed += [ this ]( App::Core::Input::Key p_key ) { _logKeyPressed( p_key ); };
+		App::INPUT_MANAGER().onKeyReleased += [ this ]( App::Core::Input::Key p_key ) { _logKeyReleased( p_key ); };
 	}
 
-	void PrintInputs::_logKeyPressed( Qt::Key p_key ) const
+	void PrintInputs::_logKeyPressed( App::Core::Input::Key p_key ) const
 	{
-		VTX_DEBUG( "Key pressed : {}", Util::Enum::enumName<Qt::Key>( p_key ) );
+		VTX_DEBUG( "Key pressed : {}", Util::Enum::enumName<App::Core::Input::Key>( p_key ) );
 	}
-	void PrintInputs::_logKeyReleased( Qt::Key p_key ) const
+	void PrintInputs::_logKeyReleased( App::Core::Input::Key p_key ) const
 	{
-		VTX_DEBUG( "Key released : {}", Util::Enum::enumName<Qt::Key>( p_key ) );
+		VTX_DEBUG( "Key released : {}", Util::Enum::enumName<App::Core::Input::Key>( p_key ) );
 	}
 } // namespace VTX::UI::Debug

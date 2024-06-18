@@ -3,6 +3,7 @@
 
 #include "app/application/_fwd.hpp"
 #include "app/core/monitoring/stats.hpp"
+#include "app/mode/base_mode.hpp"
 #include "core/system/system_handler.hpp"
 #include <memory>
 #include <string>
@@ -45,6 +46,9 @@ namespace VTX::App
 		Application::Scene &	   getScene();
 		const Application::Scene & getScene() const;
 
+		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
+		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
+
 		Util::Callback<float> onPreUpdate;
 		Util::Callback<float> onUpdate;
 		Util::Callback<float> onLateUpdate;
@@ -64,6 +68,9 @@ namespace VTX::App
 		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
 			= std::make_shared<Core::System::SystemHandler>();
 
+		std::unique_ptr<Mode::BaseMode> _currentMode;
+		std::string						_currentModeKey = "MODE_VISUALIZATION";
+
 		Core::Monitoring::Stats _stats;
 
 		void _handleArgs( const std::vector<std::string> & );
@@ -73,6 +80,7 @@ namespace VTX::App
 
 	// Convenient accessors
 	Application::Scene & SCENE();
+	Mode::BaseMode &	 MODE();
 } // namespace VTX::App
 
 #endif

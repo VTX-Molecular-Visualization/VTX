@@ -15,6 +15,7 @@ class VTXRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
     
     def requirements(self):
+        self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
@@ -22,7 +23,7 @@ class VTXRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_tool/1.0")
         self.requires("vtx_ui/1.0")
-        self.requires("vtx_util/1.0")
+        self.requires("vtx_ui_qt/1.0")
 
     def layout(self):
         cmake_layout(self)

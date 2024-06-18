@@ -1,3 +1,4 @@
+/*
 #ifndef __VTX_UI_CORE_VTX_APP__
 #define __VTX_UI_CORE_VTX_APP__
 
@@ -20,3 +21,4 @@ namespace VTX::UI
 } // namespace VTX::UI
 
 #endif
+*/

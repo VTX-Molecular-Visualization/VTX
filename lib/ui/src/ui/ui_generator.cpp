@@ -1,6 +1,7 @@
+/*
 #include "ui/ui_generator.hpp"
 #if VTX_UI_STYLE == VTX_UI_STYLE_QT
-#include "ui/qt/application_qt.hpp"
+#include "application_qt.hpp"
 #endif
 
 namespace VTX::UI
@@ -22,3 +23,4 @@ namespace VTX::UI
 	}
 
 } // namespace VTX::UI
+*/

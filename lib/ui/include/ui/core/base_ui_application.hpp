@@ -20,7 +20,7 @@ namespace VTX::UI::Core
 		virtual void stop();
 		virtual void quit();
 
-		int getReturnCode() const { return _returnCode; };
+		inline int getReturnCode() const { return _returnCode; };
 
 		Util::Callback<> onInitEnded;
 
