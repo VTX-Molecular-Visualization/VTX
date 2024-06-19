@@ -14,7 +14,7 @@
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
 #include "tools/mdprep/ui/basic_form_settings_dialog.hpp"
-#include "tools/mdprep/ui/main_window.hpp"
+#include "tools/mdprep/ui/md_field_organizer.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget_factory.hpp>
@@ -43,13 +43,6 @@ namespace VTX::QT::Mdprep
 		EngineCollection						   _mdEngines;
 		int										   _mdEngineCurrentIdx = 0;
 		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer _formEngine;
-
-		// Problem : we must support multiple engines with some common fields and some different ones.
-		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
-		// untouched. We separate fields in two categories : Base settings and Advanced Settings. In both of those
-		// categories, it will be common field, and engine-specific fields. I should instanciate an object that frame
-		// engine-specific fields. Don't forget that we need to connect and disconnect events on change. So the object
-		// framing the engine-specific behavior shall be responsible of this as well.
 
 		virtual void _setupUi( const QString & p_name )
 		{
@@ -106,7 +99,7 @@ namespace VTX::QT::Mdprep
 			qExplainatoryText->setText( QString::asprintf(
 				"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system and attempts to "
 				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <i>VTX doesn't support "
-				"yet</ib> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
+				"yet</i> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
 				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
 				buttonLabel
 			) );

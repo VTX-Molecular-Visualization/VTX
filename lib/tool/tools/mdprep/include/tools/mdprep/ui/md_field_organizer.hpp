@@ -8,8 +8,6 @@ class QWidget;
 
 namespace VTX::Tool::Mdprep::ui
 {
-
-	class MdEngineFieldPlacer;
 	struct FormLayouts;
 
 	// Class responsible for settings up the MD UI with respect of basic VS advanced MD parameters

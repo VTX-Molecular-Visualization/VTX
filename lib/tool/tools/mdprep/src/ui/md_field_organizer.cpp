@@ -17,7 +17,7 @@
 #include <qpushbutton.h>
 #include <qtabwidget.h>
 //
-#include "tools/mdprep/ui/main_window.hpp"
+#include "tools/mdprep/ui/md_field_organizer.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {
