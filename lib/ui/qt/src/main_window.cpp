@@ -1,10 +1,10 @@
 #include "main_window.hpp"
 #include "application_qt.hpp"
-#include "input/input_manager.hpp"
 #include "util.hpp"
 #include "widget/renderer_widget.hpp"
 #include "widget_factory.hpp"
 #include <app/application/scene.hpp>
+#include <app/core/input/input_manager.hpp>
 #include <io/internal/filesystem.hpp>
 
 namespace VTX::UI::QT
@@ -195,16 +195,34 @@ namespace VTX::UI::QT
 		return res;
 	}
 
-	void MainWindow::keyPressEvent( QKeyEvent * const p_event ) { INPUT_MANAGER().handleKeyboardEvent( *p_event ); }
-	void MainWindow::keyReleaseEvent( QKeyEvent * const p_event ) { INPUT_MANAGER().handleKeyboardEvent( *p_event ); }
-	void MainWindow::mousePressEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
-	void MainWindow::mouseReleaseEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
+	void MainWindow::keyPressEvent( QKeyEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleKeyboardEvent( *p_event );
+	}
+	void MainWindow::keyReleaseEvent( QKeyEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleKeyboardEvent( *p_event );
+	}
+	void MainWindow::mousePressEvent( QMouseEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleMouseEvent( *p_event );
+	}
+	void MainWindow::mouseReleaseEvent( QMouseEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleMouseEvent( *p_event );
+	}
 	void MainWindow::mouseDoubleClickEvent( QMouseEvent * const p_event )
 	{
-		INPUT_MANAGER().handleMouseEvent( *p_event );
+		// App::INPUT_MANAGER().handleMouseEvent( *p_event );
 	}
-	void MainWindow::mouseMoveEvent( QMouseEvent * const p_event ) { INPUT_MANAGER().handleMouseEvent( *p_event ); }
-	void MainWindow::wheelEvent( QWheelEvent * const p_event ) { INPUT_MANAGER().handleMouseWheelEvent( *p_event ); }
+	void MainWindow::mouseMoveEvent( QMouseEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleMouseEvent( *p_event );
+	}
+	void MainWindow::wheelEvent( QWheelEvent * const p_event )
+	{
+		// App::INPUT_MANAGER().handleMouseWheelEvent( *p_event );
+	}
 
 	void MainWindow::changeEvent( QEvent * const p_event )
 	{
@@ -212,7 +230,7 @@ namespace VTX::UI::QT
 
 		if ( p_event->type() == QEvent::ActivationChange && this->isActiveWindow() )
 		{
-			INPUT_MANAGER().clearKeyboardBuffer();
+			App::INPUT_MANAGER().clearKeyboardBuffer();
 		}
 	}
 	void MainWindow::closeEvent( QCloseEvent * const p_closeEvent )

@@ -1,13 +1,22 @@
-#include "vtx_tool_include.hpp"
+//#include "vtx_tool_include.hpp"
 #include <io/internal/filesystem.hpp>
 #include <string>
 #include <ui/core/base_ui_application.hpp>
-#include <ui/environment.hpp>
-#include <ui/ui_generator.hpp>
+//#include <ui/environment.hpp>
+//#include <ui/ui_generator.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
+
+// TODO: move to conan.
+#define VTX_UI_QT
+
+#ifdef VTX_UI_QT
+//#include <qt/>
+#else
+#endif
+
 
 #ifdef _WIN32
 extern "C"
@@ -33,18 +42,19 @@ int main( int p_argc, char * p_argv[] )
 		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
 		Util::Logger::get().init( logDir );
 
-		std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
-		VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
-		vtxApplication->init();
+		//std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
+		//VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
+		//vtxApplication->init();
 
 		// const std::vector<std::string> args( p_argv, p_argv + p_argc );
 		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
 
 		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "md_0_1.gro";
-		vtxApplication->start( { molPath.string() } );
+		//vtxApplication->start( { molPath.string() } );
 
 		VTX::Util::Logger::get().stop();
-		return vtxApplication->getReturnCode();
+		return 0;
+		//vtxApplication->getReturnCode();
 	}
 	catch ( const std::exception & p_e )
 	{

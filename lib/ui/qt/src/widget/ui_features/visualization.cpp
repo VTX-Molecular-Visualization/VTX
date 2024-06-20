@@ -1,19 +1,19 @@
 #include "widget/ui_features/visualization.hpp"
-#include "ui/action/animation.hpp"
-#include "ui/action/visualization.hpp"
-#include "ui/internal/controller/camera/freefly.hpp"
-#include "ui/internal/controller/camera/trackball.hpp"
 #include "application_qt.hpp"
 #include "core/main_menu/menu_toolblock_widget.hpp"
 #include "core/main_menu/menu_toolbutton_widget.hpp"
 #include "main_window.hpp"
-#include "mode/visualization.hpp"
 #include "widget/pytx/include_python_binding.hpp"
 #include "widget_factory.hpp"
+#include <app/action/animation.hpp>
+#include <app/action/visualization.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/system/action_manager.hpp>
+#include <app/controller/camera/freefly.hpp>
+#include <app/controller/camera/trackball.hpp>
 #include <app/core/action/base_action.hpp>
+#include <app/mode/visualization.hpp>
 #include <app/vtx_app.hpp>
 #include <string>
 
@@ -67,25 +67,25 @@ namespace VTX::UI::QT::Widget::UIFeatures
 		toolBlock.pushButton( *trackballButton, *freeflyButton );
 	}
 
-	void VisualizationTool::_resetCamera() const { App::VTX_ACTION().execute<Action::Animation::ResetCamera>(); }
+	void VisualizationTool::_resetCamera() const { App::VTX_ACTION().execute<App::Action::Animation::ResetCamera>(); }
 	void VisualizationTool::_orientCamera() const
 	{
 		if ( App::CURRENT_SELECTION().isEmpty() )
-			App::VTX_ACTION().execute<Action::Animation::Orient>( App::SCENE().getAABB() );
+			App::VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 		else
-			App::VTX_ACTION().execute<Action::Animation::Orient>( App::CURRENT_SELECTION().getAABB() );
+			App::VTX_ACTION().execute<App::Action::Animation::Orient>( App::CURRENT_SELECTION().getAABB() );
 	}
 
 	void VisualizationTool::_setTrackball() const
 	{
-		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>(
-			Internal::Controller::Camera::Trackball::COLLECTION_ID
+		App::VTX_ACTION().execute<App::Action::Visualization::ChangeCameraController>(
+			App::Controller::Camera::Trackball::COLLECTION_ID
 		);
 	}
 	void VisualizationTool::_setFreefly() const
 	{
-		App::VTX_ACTION().execute<Action::Visualization::ChangeCameraController>(
-			Internal::Controller::Camera::Freefly::COLLECTION_ID
+		App::VTX_ACTION().execute<App::Action::Visualization::ChangeCameraController>(
+			App::Controller::Camera::Freefly::COLLECTION_ID
 		);
 	}
 
@@ -98,10 +98,10 @@ namespace VTX::UI::QT::Widget::UIFeatures
 			{
 				PythonBinding::Wrapper::Module & commands = p_vtxmodule.commands();
 
-				commands.bindAction<Action::Animation::ResetCamera>(
+				commands.bindAction<App::Action::Animation::ResetCamera>(
 					"reset_camera", "Reset the camera position and orientation."
 				);
-				commands.bindAction<Action::Visualization::ChangeCameraController, std::string>(
+				commands.bindAction<App::Action::Visualization::ChangeCameraController, std::string>(
 					"set_camera_controller", "Set the camera controller."
 				);
 			}

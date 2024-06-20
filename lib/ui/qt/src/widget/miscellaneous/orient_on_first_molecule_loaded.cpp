@@ -1,5 +1,5 @@
 #include "widget/miscellaneous/orient_on_first_molecule_loaded.hpp"
-#include "ui/action/animation.hpp"
+#include <app/action/animation.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/system/action_manager.hpp>
 #include <app/application/system/ecs_system.hpp>
@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Widget::Miscellaneous
 
 			const App::Component::Scene::AABB & moleculeAABB
 				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::AABB>( p_item );
-			App::VTX_ACTION().execute<Action::Animation::Orient>( moleculeAABB.getWorldAABB() );
+			App::VTX_ACTION().execute<App::Action::Animation::Orient>( moleculeAABB.getWorldAABB() );
 		};
 	}
 } // namespace VTX::UI::QT::Widget::Miscellaneous

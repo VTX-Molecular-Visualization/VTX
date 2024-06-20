@@ -1,9 +1,6 @@
 #include "application_qt.hpp"
 #include "main_window.hpp"
-#include "mode/base_mode.hpp"
-#include "mode/visualization.hpp"
 #include "style.hpp"
-#include "ui/internal/init_visualization_mode.hpp"
 #include "widget/renderer/dialog.hpp"
 #include "widget_factory.hpp"
 #include <QCoreApplication>
@@ -12,7 +9,10 @@
 #include <QPalette>
 #include <QStyleFactory>
 #include <app/application/system/settings_system.hpp>
-#include <ui/core/init_settings.hpp>
+#include <app/core/init_settings.hpp>
+#include <app/core/init_visualization_mode.hpp>
+#include <app/mode/base_mode.hpp>
+#include <app/mode/visualization.hpp>
 #include <util/logger.hpp>
 #include <util/math/transform.hpp>
 
@@ -40,12 +40,12 @@ namespace VTX::UI::QT
 
 		UI::Core::BaseUIApplication::init();
 
-		_currentMode = std::make_unique<Mode::Visualization>();
+		//_currentMode = std::make_unique<App::Mode::Visualization>();
 	}
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
 		UI::Core::BaseUIApplication::start( p_args );
-		_currentMode->enter();
+		//_currentMode->enter();
 
 		_returnCode = exec();
 	}
@@ -65,8 +65,8 @@ namespace VTX::UI::QT
 		Internal::initSettings( App::SETTINGS() );
 
 		//// Init Modes.
-		Internal::init( dynamic_cast<Mode::Visualization &>( *_currentMode ) );
-		_currentMode->enter();
+		// App::Core::init( dynamic_cast<App::Mode::Visualization &>( *_currentMode ) );
+		//_currentMode->enter();
 
 		// Create UI.
 		_initQt();
@@ -127,7 +127,7 @@ namespace VTX::UI::QT
 			delete _mainWindow;
 		}
 
-		_currentMode = nullptr;
+		//_currentMode = nullptr;
 	}
 
 	bool ApplicationQt::notify( QObject * const receiver, QEvent * const event )
@@ -148,6 +148,6 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::softQuit() { closeAllWindows(); }
 
-	Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
+	// App::Mode::BaseMode & MODE() { return QT_APP()->getCurrentMode(); }
 
 } // namespace VTX::UI::QT
