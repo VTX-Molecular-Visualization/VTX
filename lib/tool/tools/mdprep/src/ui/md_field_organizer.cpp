@@ -23,7 +23,13 @@ namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
 
-	void MdFieldsOrganizer::setupUi( QLayout * p_layout, const E_FORM_MODE & p_mode ) noexcept
+	namespace
+	{
+		inline void setTextBasic( QPushButton * p_ ) noexcept { p_->setText( "Switch to Simple view" ); }
+		inline void setTextAdvanced( QPushButton * p_ ) noexcept { p_->setText( "Switch to Advanced view" ); }
+	} // namespace
+
+	void FormSwitchButton::setupUi( QLayout * p_layout, const E_FORM_MODE & p_mode ) noexcept
 	{
 		_buttonViewSwitch		   = new QPushButton;
 		QWidget * wButtonContainer = new QWidget;
@@ -33,19 +39,20 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutButton->addStretch( 1 );
 		qLayoutButton->addWidget( _buttonViewSwitch );
 		QObject::connect( _buttonViewSwitch, &QPushButton::clicked, [ & ]() { this->switchFormMode(); } );
-		containerParamBasic	   = new QWidget();
-		containerParamAdvanced = new QWidget();
-		p_layout->addWidget( containerParamBasic );
-		p_layout->addWidget( containerParamAdvanced );
-
 		_mode = p_mode;
-		if ( _mode == E_FORM_MODE::basic )
-			_changeModeBasic();
-		else
-			_changeModeAdvanced();
+		switch ( _mode )
+		{
+		case VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::basic: setTextAdvanced( _buttonViewSwitch ); break;
+		case VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::advanced: setTextBasic( _buttonViewSwitch ); break;
+		default: break;
+		}
 	}
 
-	void MdFieldsOrganizer::switchFormMode() noexcept
+	void FormSwitchButton::subscribeBasicSwitch( Callback p_ ) { _switchToBasic = std::move( p_ ); }
+
+	void FormSwitchButton::subscribeAdvancedSwitch( Callback p_ ) { _switchToAdvanced = std::move( p_ ); }
+
+	void FormSwitchButton::switchFormMode() noexcept
 	{
 		if ( _mode == E_FORM_MODE::basic )
 		{
@@ -59,18 +66,16 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void MdFieldsOrganizer::_changeModeBasic() noexcept
+	void FormSwitchButton::_changeModeBasic() noexcept
 	{
-		_buttonViewSwitch->setText( "Switch to Advanced view" );
-		containerParamAdvanced->hide();
-		containerParamBasic->show();
+		setTextAdvanced( _buttonViewSwitch );
+		_switchToBasic();
 	}
 
-	void MdFieldsOrganizer::_changeModeAdvanced() noexcept
+	void FormSwitchButton::_changeModeAdvanced() noexcept
 	{
-		_buttonViewSwitch->setText( "Switch to Simple view" );
-		containerParamBasic->hide();
-		containerParamAdvanced->show();
+		setTextBasic( _buttonViewSwitch );
+		_switchToAdvanced();
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

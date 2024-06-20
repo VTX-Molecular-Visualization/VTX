@@ -2,6 +2,7 @@
 #define __VTX_TOOL_TOOLS_MDPREP_UI_MAINWINDOW__
 
 #include <array>
+#include <functional>
 #include <string>
 
 class QWidget;
@@ -11,7 +12,7 @@ namespace VTX::Tool::Mdprep::ui
 	struct FormLayouts;
 
 	// Class responsible for settings up the MD UI with respect of basic VS advanced MD parameters
-	class MdFieldsOrganizer
+	class FormSwitchButton
 	{
 	  public:
 		enum class E_FORM_MODE
@@ -20,20 +21,21 @@ namespace VTX::Tool::Mdprep::ui
 			advanced,
 			COUNT
 		};
-		QWidget * containerParamBasic	 = nullptr;
-		QWidget * containerParamAdvanced = nullptr;
-
-		// Construct only for data allocation
-		MdFieldsOrganizer() = default;
+		using Callback	   = std::function<void()>;
+		FormSwitchButton() = default;
 
 		// Do the work. layouts won't be nullptr after that.
-		void setupUi( QLayout *, const E_FORM_MODE & ) noexcept;
+		void setupUi( QLayout *, const E_FORM_MODE &) noexcept;
 
+		void subscribeBasicSwitch( Callback );
+		void subscribeAdvancedSwitch( Callback );
 		void switchFormMode() noexcept;
 
 	  private:
 		E_FORM_MODE	  _mode				= E_FORM_MODE::basic;
 		QPushButton * _buttonViewSwitch = nullptr;
+		Callback	  _switchToBasic;
+		Callback	  _switchToAdvanced;
 
 		void _changeModeBasic() noexcept;
 		void _changeModeAdvanced() noexcept;

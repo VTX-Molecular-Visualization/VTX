@@ -35,14 +35,16 @@ namespace VTX::QT::Mdprep
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
-		QComboBox *				  _w_mdEngine = nullptr;
+		QComboBox *				  _w_mdEngine	 = nullptr;
+		QWidget *				  _formContainer = nullptr;
 
-		VTX::Tool::Mdprep::ui::MdFieldsOrganizer   _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::MdBasicParamForm	   _formBasic;
-		VTX::Tool::Mdprep::ui::MdAdvancedParamForm _formAdvanced;
-		EngineCollection						   _mdEngines;
-		int										   _mdEngineCurrentIdx = 0;
-		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer _formEngine;
+		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
+		VTX::Tool::Mdprep::ui::FormSwitchButton					  _switchButton;
+		std::optional<VTX::Tool::Mdprep::ui::MdBasicParamForm>	  _formBasic;
+		std::optional<VTX::Tool::Mdprep::ui::MdAdvancedParamForm> _formAdvanced;
+		EngineCollection										  _mdEngines;
+		int														  _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer				  _formEngine;
 
 		virtual void _setupUi( const QString & p_name )
 		{
@@ -88,11 +90,14 @@ namespace VTX::QT::Mdprep
 			qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
 			qLayoutCentering->addStretch( 1 );
 
-			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
+			_switchButton.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::basic );
 
-			_fieldOrganizer.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::MdFieldsOrganizer::E_FORM_MODE::basic );
-			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
-			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
+			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
+			_formContainer = new QWidget;
+			qLayoutWindow->addWidget( _formContainer );
+
+			// By default we display the basic form
+			_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter() );
 
 			QLabel *			qExplainatoryText = new QLabel;
 			static const char * buttonLabel		  = "Prepare system";
@@ -113,9 +118,9 @@ namespace VTX::QT::Mdprep
 			qStartButton->setText( buttonLabel );
 			qLayoutWindow->addWidget( qStartButton );
 
-			_updateFormEngine( 0 );
+			_updateMdEngine( 0 );
 		}
-		void _updateFormEngine( int idx ) noexcept
+		void _updateMdEngine( int idx ) noexcept
 		{
 			_mdEngineCurrentIdx = idx;
 			if ( not _mdEngines[ _mdEngineCurrentIdx ].has_value() )
@@ -130,24 +135,57 @@ namespace VTX::QT::Mdprep
 				_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
 				_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
 				VTX::Tool::Mdprep::ui::FormLayouts layouts;
-				_formAdvanced.get( layouts );
-				_formBasic.get( layouts );
+				if ( _formAdvanced.has_value() )
+					_formAdvanced->get( layouts );
+				if ( _formBasic.has_value() )
+					_formBasic->get( layouts );
 				_formEngine.assign( std::move( layouts ) );
 				_formEngine.activate();
 			}
-
+			/*
 			{
 				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
 				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
 				_formBasic.update( engineSpecificData );
 			}
+			*/
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
-		virtual void _setupSlots()
+		std::function<
+			VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
+		_SpecificFieldPlacerGetter() noexcept
+		{
+			return [ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
+			{
+				VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
+				_mdEngines[ _mdEngineCurrentIdx ]->get( p_section, p );
+				return p;
+			};
+		}
+		void _setupSlots()
 		{
 			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
-			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateFormEngine );
+			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateMdEngine );
+			_switchButton.subscribeBasicSwitch(
+				[ & ]
+				{
+					VTX::Tool::Mdprep::Gateway::MdParameters param;
+					_formAdvanced->get( param );
+					_formAdvanced.reset();
+					_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter(), param );
+				}
+			);
+			_switchButton.subscribeAdvancedSwitch(
+				[ & ]
+				{
+					VTX::Tool::Mdprep::Gateway::MdParameters param;
+					_formBasic->get( param );
+					_formBasic.reset();
+					_formAdvanced.emplace( _formContainer, param );
+				}
+			);
+			/*
 			_formAdvanced.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdAdvancedDataSample & p_data )
 									 { _formBasic.update( p_data ); } );
 			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
@@ -160,6 +198,7 @@ namespace VTX::QT::Mdprep
 					return p;
 				}
 			);
+			*/
 		}
 
 	  public:
