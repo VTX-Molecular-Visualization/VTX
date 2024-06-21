@@ -147,7 +147,7 @@ namespace VTX::QT::Mdprep
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
-		std::function<
+		inline std::function<
 			VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
 		_SpecificFieldPlacerGetter() noexcept
 		{
@@ -169,6 +169,7 @@ namespace VTX::QT::Mdprep
 		}
 		inline void _setFormBasic()
 		{
+			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			if ( _formAdvanced.has_value() )
 			{
@@ -176,10 +177,16 @@ namespace VTX::QT::Mdprep
 				_formAdvanced.reset();
 			}
 			_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter(), param );
+
+			VTX::Tool::Mdprep::ui::FormLayouts layouts;
+			_formBasic->get( layouts );
+			_formEngine.assign( layouts );
+			_formEngine.activate();
 			_updateFormBasic();
 		}
 		inline void _setFormAdvanced()
 		{
+			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			if ( _formBasic.has_value() )
 			{
@@ -187,7 +194,10 @@ namespace VTX::QT::Mdprep
 				_formBasic.reset();
 			}
 			_formAdvanced.emplace( _formContainer, param );
-
+			VTX::Tool::Mdprep::ui::FormLayouts layouts;
+			_formAdvanced->get( layouts );
+			_formEngine.assign( layouts );
+			_formEngine.activate();
 			// VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation data;
 			// VTX::Tool::Mdprep::ui::get( *_mdEngines[ _mdEngineCurrentIdx ], data );
 			//_formAdvanced->update( data );
