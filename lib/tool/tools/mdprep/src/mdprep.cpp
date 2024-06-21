@@ -97,7 +97,7 @@ namespace VTX::QT::Mdprep
 			qLayoutWindow->addWidget( _formContainer );
 
 			// By default we display the basic form
-			_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter() );
+			_setFormBasic();
 
 			QLabel *			qExplainatoryText = new QLabel;
 			static const char * buttonLabel		  = "Prepare system";
@@ -120,7 +120,7 @@ namespace VTX::QT::Mdprep
 
 			_updateMdEngine( 0 );
 		}
-		void _updateMdEngine( int idx ) noexcept
+		inline void _updateMdEngine( int idx ) noexcept
 		{
 			_mdEngineCurrentIdx = idx;
 			if ( not _mdEngines[ _mdEngineCurrentIdx ].has_value() )
@@ -142,13 +142,8 @@ namespace VTX::QT::Mdprep
 				_formEngine.assign( std::move( layouts ) );
 				_formEngine.activate();
 			}
-			/*
-			{
-				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
-				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
-				_formBasic.update( engineSpecificData );
-			}
-			*/
+
+			_updateFormBasic();
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
@@ -163,42 +158,46 @@ namespace VTX::QT::Mdprep
 				return p;
 			};
 		}
+		inline void _updateFormBasic()
+		{
+			if ( _formBasic.has_value() && _mdEngines[ _mdEngineCurrentIdx ].has_value() )
+			{
+				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
+				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
+				_formBasic->update( engineSpecificData );
+			}
+		}
+		inline void _setFormBasic()
+		{
+			VTX::Tool::Mdprep::Gateway::MdParameters param;
+			if ( _formAdvanced.has_value() )
+			{
+				_formAdvanced->get( param );
+				_formAdvanced.reset();
+			}
+			_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter(), param );
+			_updateFormBasic();
+		}
+		inline void _setFormAdvanced()
+		{
+			VTX::Tool::Mdprep::Gateway::MdParameters param;
+			if ( _formBasic.has_value() )
+			{
+				_formBasic->get( param );
+				_formBasic.reset();
+			}
+			_formAdvanced.emplace( _formContainer, param );
+
+			// VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation data;
+			// VTX::Tool::Mdprep::ui::get( *_mdEngines[ _mdEngineCurrentIdx ], data );
+			//_formAdvanced->update( data );
+		}
 		void _setupSlots()
 		{
 			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
 			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateMdEngine );
-			_switchButton.subscribeBasicSwitch(
-				[ & ]
-				{
-					VTX::Tool::Mdprep::Gateway::MdParameters param;
-					_formAdvanced->get( param );
-					_formAdvanced.reset();
-					_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter(), param );
-				}
-			);
-			_switchButton.subscribeAdvancedSwitch(
-				[ & ]
-				{
-					VTX::Tool::Mdprep::Gateway::MdParameters param;
-					_formBasic->get( param );
-					_formBasic.reset();
-					_formAdvanced.emplace( _formContainer, param );
-				}
-			);
-			/*
-			_formAdvanced.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdAdvancedDataSample & p_data )
-									 { _formBasic.update( p_data ); } );
-			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
-								  { _formAdvanced.update( p_data ); } );
-			_formBasic.subscribe(
-				[ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
-				{
-					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
-					_mdEngines[ _mdEngineCurrentIdx ]->get( p_section, p );
-					return p;
-				}
-			);
-			*/
+			_switchButton.subscribeBasicSwitch( [ & ] { this->_setFormBasic(); } );
+			_switchButton.subscribeAdvancedSwitch( [ & ] { this->_setFormAdvanced(); } );
 		}
 
 	  public:
