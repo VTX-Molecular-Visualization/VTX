@@ -8,19 +8,28 @@
 
 namespace VTX::UI::Core
 {
+	struct LayoutDescriptor
+	{
+		struct ButtonDescriptor
+		{
+			std::string		 name;
+			Util::Callback<> callback;
+		};
+	};
+
 	class BaseUIApplication : public App::VTXApp
 	{
 	  public:
 		BaseUIApplication();
 
-		virtual void start( const std::vector<std::string> & p_args );
-		virtual void stop() {}
+		void start( const std::vector<std::string> & p_args ) override;
+		void stop() override;
 
 	  protected:
-		void _buildUI();
-
-		virtual void _initUI( const std::vector<std::string> & p_args )	 = 0;
-		virtual void _startUI( const std::vector<std::string> & p_args ) = 0;
+		// TODO: concept?
+		virtual void _init( const std::vector<std::string> & p_args )  = 0;
+		virtual void _build( const LayoutDescriptor & )				   = 0;
+		virtual void _start( const std::vector<std::string> & p_args ) = 0;
 	};
 
 } // namespace VTX::UI::Core

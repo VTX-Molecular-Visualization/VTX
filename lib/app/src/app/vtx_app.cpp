@@ -68,6 +68,11 @@ namespace VTX::App
 
 		_handleArgs( p_args );
 
+		// Internal::initSettings( App::SETTINGS() );
+
+		//_currentMode = std::make_unique<App::Mode::Visualization>();
+		//_currentMode->enter();
+
 		onStart();
 	}
 

@@ -15,22 +15,16 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::start( const std::vector<std::string> & p_args )
 	{
-		_initUI( p_args );
-		_buildUI();
-		_startUI( p_args );
+		VTXApp::start( p_args );
+
+		LayoutDescriptor layoutDescriptor;
+
+		_init( p_args );
+		_build( layoutDescriptor );
+		_start( p_args );
+
+		onStartUI();
 	}
 
-	void BaseUIApplication::_buildUI()
-	{
-		// TODO;
-		/*
-		const FilePath				  layoutPath = Util::Filesystem::getExecutableDir() / "data" / "tool_config.json";
-		UI::Core::IO::VTXLayoutReader reader	 = UI::Core::IO::VTXLayoutReader();
-		reader.read( layoutPath );
-
-		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
-		layoutBuilder.build( reader.getResult().layoutDescriptor );
-		*/
-	}
-
+	void BaseUIApplication::stop() { VTXApp::stop(); }
 } // namespace VTX::UI::Core

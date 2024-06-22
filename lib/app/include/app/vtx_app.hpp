@@ -51,6 +51,7 @@ namespace VTX::App
 		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
 		Util::Callback<> onStart;
+		Util::Callback<> onStartUI;
 
 		Util::Callback<float> onPreUpdate;
 		Util::Callback<float> onUpdate;
