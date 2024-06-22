@@ -2,7 +2,7 @@
 #include "app/core/animation/animation_system.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/core/collection.hpp>
+#include <util/collection.hpp>
 
 namespace VTX::App::Action::Animation
 {

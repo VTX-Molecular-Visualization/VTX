@@ -12,7 +12,7 @@ namespace VTX::App::Controller::Shortcut
 	class Visualization final : public Core::Controller::BaseShortcutController
 	{
 	  public:
-		inline static const App::Core::CollectionKey COLLECTION_ID		  = "CONTROLLER_SHORTCUT_VISUALIZATION";
+		inline static const Util::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_SHORTCUT_VISUALIZATION";
 		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
 
 	  private:

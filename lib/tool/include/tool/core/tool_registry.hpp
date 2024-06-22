@@ -3,11 +3,11 @@
 
 #include "base_ui_tool.hpp"
 #include "layout_descriptor.hpp"
-#include <app/core/collection.hpp>
 #include <functional>
 #include <map>
 #include <memory>
 #include <type_traits>
+#include <util/collection.hpp>
 
 namespace VTX::UI::Core
 {

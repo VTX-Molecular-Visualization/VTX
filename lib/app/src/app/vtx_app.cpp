@@ -68,7 +68,7 @@ namespace VTX::App
 
 		_handleArgs( p_args );
 
-		onAppReady();
+		onStart();
 	}
 
 	void VTXApp::update( const float p_elapsedTime )

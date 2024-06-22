@@ -1,9 +1,9 @@
 #include "app/action/visualization.hpp"
-#include "app/core/collection.hpp"
 #include "app/core/controller/base_camera_controller.hpp"
 #include "app/core/controller/controller_manager.hpp"
 #include "app/mode/base_mode.hpp"
 #include "app/mode/visualization.hpp"
+#include <util/collection.hpp>
 
 namespace VTX::App::Action::Visualization
 {

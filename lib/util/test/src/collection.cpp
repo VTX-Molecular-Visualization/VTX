@@ -1,7 +1,7 @@
-#include <app/core/collection.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
+#include <util/collection.hpp>
 #include <util/hashing.hpp>
 
 namespace
@@ -16,7 +16,7 @@ namespace
 		virtual std::unique_ptr<BaseClass> clone() const = 0;
 	};
 
-	using CollectionTest = VTX::App::Core::Collection<BaseClass>;
+	using CollectionTest = VTX::Util::Collection<BaseClass>;
 	class DerivedClass1 final : public BaseClass
 	{
 	  private:
@@ -62,50 +62,51 @@ namespace
 TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 {
 	using namespace VTX;
-	using namespace VTX::App;
+	using namespace VTX::Util;
 
 	std::unique_ptr<BaseClass> ptr = nullptr;
 
-	ptr = CollectionTest::get().instantiateItem( "DerivedClass1" );
+	auto & collection = CollectionTest::get();
+
+	ptr = collection.instantiateItem( "DerivedClass1" );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 1 );
 
-	ptr = CollectionTest::get().instantiateItem( "DerivedClass2" );
+	ptr = collection.instantiateItem( "DerivedClass2" );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 2 );
 
-	ptr = CollectionTest::get().instantiateItem( "DerivedClass3" );
+	ptr = collection.instantiateItem( "DerivedClass3" );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 3 );
 
-	ptr = CollectionTest::get().instantiateItem( "DerivedClass100" );
+	ptr = collection.instantiateItem( "DerivedClass100" );
 	CHECK( ptr == nullptr );
 
-	ptr = CollectionTest::get().instantiateItem( Util::Hashing::hash( "DerivedClass1" ) );
+	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass1" ) );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 1 );
 
-	ptr = CollectionTest::get().instantiateItem( Util::Hashing::hash( "DerivedClass2" ) );
+	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass2" ) );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 2 );
 
-	ptr = CollectionTest::get().instantiateItem( Util::Hashing::hash( "DerivedClass3" ) );
+	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass3" ) );
 	CHECK( ptr != nullptr );
 	CHECK( ptr->getValue() == 3 );
 
-	ptr = CollectionTest::get().instantiateItem( Util::Hashing::hash( "DerivedClass100" ) );
+	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass100" ) );
 	CHECK( ptr == nullptr );
 
-	std::unique_ptr<DerivedClass1> ptrDerivedClass1
-		= CollectionTest::get().instantiateItem<DerivedClass1>( "DerivedClass1" );
+	std::unique_ptr<DerivedClass1> ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass1" );
 	REQUIRE( ptrDerivedClass1 != nullptr );
 
-	ptrDerivedClass1 = CollectionTest::get().instantiateItem<DerivedClass1>( "DerivedClass2" );
+	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass2" );
 	REQUIRE( ptrDerivedClass1 == nullptr );
 
-	ptrDerivedClass1 = CollectionTest::get().instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass1" ) );
+	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass1" ) );
 	REQUIRE( ptrDerivedClass1 != nullptr );
 
-	ptrDerivedClass1 = CollectionTest::get().instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass2" ) );
+	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass2" ) );
 	REQUIRE( ptrDerivedClass1 == nullptr );
 };

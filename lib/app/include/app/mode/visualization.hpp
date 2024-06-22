@@ -49,12 +49,12 @@ namespace VTX::App::Mode
 			return *_currentPickerController;
 		}
 
-		Core::Controller::BaseController & getController( const App::Core::CollectionKey & p_controllerKey );
+		Core::Controller::BaseController & getController( const Util::CollectionKey & p_controllerKey );
 
 		void setCameraController( const Util::Hashing::Hash & p_controllerKey );
-		void setCameraController( const App::Core::CollectionKey & p_controllerKey );
+		void setCameraController( const Util::CollectionKey & p_controllerKey );
 		void setPickerController( const Util::Hashing::Hash & p_controllerHash );
-		void setPickerController( const App::Core::CollectionKey & p_controllerKey );
+		void setPickerController( const Util::CollectionKey & p_controllerKey );
 
 		const std::set<std::unique_ptr<Core::Controller::BaseController>> & getCameraControllers() const
 		{

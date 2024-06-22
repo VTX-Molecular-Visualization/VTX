@@ -13,7 +13,7 @@ namespace VTX::App::Controller::Camera
 	class Freefly : public Core::Controller::BaseCameraController
 	{
 	  public:
-		inline static const Core::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_FREEFLY";
+		inline static const Util::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_FREEFLY";
 		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
 
 	  private:

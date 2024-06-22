@@ -15,8 +15,8 @@ namespace VTX::App::Controller::Camera
 	class Trackball : public Core::Controller::BaseCameraController
 	{
 	  public:
-		inline static const Core::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_TRACKBALL";
-		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
+		inline static const Util::CollectionKey COLLECTION_ID		 = "CONTROLLER_TRACKBALL";
+		inline static const Util::Hashing::Hash HASHED_COLLECTION_ID = Util::Hashing::hash( COLLECTION_ID );
 
 	  private:
 		inline static const Core::Controller::ControllerCollection::Registration<Trackball> _reg { COLLECTION_ID };

@@ -21,14 +21,14 @@ namespace VTX::App::Core::System
 		~SystemHandler() = default;
 
 		template<SystemConcept T>
-		inline void store( const Util::Hashing::Hash & p_hash )
+		void store( const Util::Hashing::Hash & p_hash )
 		{
 			assert( not _systems.contains( p_hash ) );
 			const std::unique_ptr<BaseSystem> & ptr = _storage.emplace_back( std::make_unique<T>() );
 			_systems.emplace( p_hash, ptr.get() );
 		}
 
-		inline void reference( const Util::Hashing::Hash & p_hash, BaseSystem * p_systemPtr )
+		void reference( const Util::Hashing::Hash & p_hash, BaseSystem * p_systemPtr )
 		{
 			assert( not _systems.contains( p_hash ) );
 			_systems.emplace( p_hash, p_systemPtr );

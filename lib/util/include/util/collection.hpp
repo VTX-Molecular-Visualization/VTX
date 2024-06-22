@@ -1,14 +1,14 @@
 #ifndef __VTX_APP_CORE_COLLECTION__
 #define __VTX_APP_CORE_COLLECTION__
 
+#include "util/generic/base_static_singleton.hpp"
+#include "util/hashing.hpp"
 #include <concepts>
 #include <functional>
 #include <map>
 #include <memory>
-#include <util/generic/base_static_singleton.hpp>
-#include <util/hashing.hpp>
 
-namespace VTX::App::Core
+namespace VTX::Util
 {
 	using CollectionKey = std::string;
 
@@ -80,5 +80,5 @@ namespace VTX::App::Core
 		std::map<Util::Hashing::Hash, std::unique_ptr<T>> _collection;
 	};
 
-} // namespace VTX::App::Core
+} // namespace VTX::Util
 #endif

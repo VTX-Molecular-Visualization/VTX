@@ -93,7 +93,7 @@ namespace VTX::App::Mode
 		_otherControllers.emplace( std::move( p_controllerPtr ) );
 	}
 
-	Core::Controller::BaseController & Visualization::getController( const App::Core::CollectionKey & p_controllerKey )
+	Core::Controller::BaseController & Visualization::getController( const Util::CollectionKey & p_controllerKey )
 	{
 		const auto controllerIt = std::find_if(
 			_otherControllers.begin(),
@@ -125,7 +125,7 @@ namespace VTX::App::Mode
 
 		onCameraController( *_currentCameraController );
 	}
-	void Visualization::setCameraController( const App::Core::CollectionKey & p_controllerKey )
+	void Visualization::setCameraController( const Util::CollectionKey & p_controllerKey )
 	{
 		setCameraController( Util::Hashing::hash( p_controllerKey ) );
 	}
@@ -149,7 +149,7 @@ namespace VTX::App::Mode
 
 		onPickerController( *_currentPickerController );
 	}
-	void Visualization::setPickerController( const App::Core::CollectionKey & p_controllerKey )
+	void Visualization::setPickerController( const Util::CollectionKey & p_controllerKey )
 	{
 		setPickerController( Util::Hashing::hash( p_controllerKey ) );
 	}
