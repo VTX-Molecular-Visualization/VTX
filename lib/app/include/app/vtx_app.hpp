@@ -15,21 +15,22 @@
 
 namespace VTX::App
 {
-	class VTXApp final : public Util::Generic::BaseStaticSingleton<VTXApp>
+	class VTXApp
 	{
+		friend class Util::Generic::UniqueInstance<VTXApp>;
+
 	  private:
 		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
 
 	  public:
-		VTXApp( StructPrivacyToken );
 		VTXApp( std::initializer_list<int> ) = delete;
 		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
-		~VTXApp();
+		virtual ~VTXApp();
 
-		void start( const std::vector<std::string> & );
-		void update( const float p_elapsedTime = 0 );
-		void stop();
+		virtual void start( const std::vector<std::string> & );
+		void		 update( const float p_elapsedTime = 0 );
+		virtual void stop();
 
 		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
 		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
@@ -49,6 +50,8 @@ namespace VTX::App
 		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
+		Util::Callback<> onAppReady;
+
 		Util::Callback<float> onPreUpdate;
 		Util::Callback<float> onUpdate;
 		Util::Callback<float> onLateUpdate;
@@ -62,9 +65,11 @@ namespace VTX::App
 
 		Util::Callback<> onStop;
 
-	  private:
-		Util::Chrono _tickChrono = Util::Chrono();
+	  protected:
+		VTXApp();
 
+	  private:
+		Util::Chrono								 _tickChrono = Util::Chrono();
 		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
 			= std::make_shared<Core::System::SystemHandler>();
 
@@ -82,5 +87,10 @@ namespace VTX::App
 	Application::Scene & SCENE();
 	Mode::BaseMode &	 MODE();
 } // namespace VTX::App
+
+namespace VTX
+{
+	inline App::VTXApp & APP() { return Util::Generic::UniqueInstance<App::VTXApp>::get(); }
+} // namespace VTX
 
 #endif

@@ -23,7 +23,7 @@ namespace VTX::PythonBinding
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
 
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
-			vtxCoreModule.attr( "_init" )( App::VTXApp::get().getSystemHandlerPtr() );
+			vtxCoreModule.attr( "_init" )( APP().getSystemHandlerPtr() );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / "pytx_init.py";

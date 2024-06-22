@@ -25,7 +25,7 @@ namespace VTX::App::Mode
 			controller->setActive( true );
 		}
 
-		App::VTXApp::get().onUpdate += [ this ]( float p_deltaTime ) { update( p_deltaTime ); };
+		APP().onUpdate += [ this ]( float p_deltaTime ) { update( p_deltaTime ); };
 	}
 
 	void Visualization::update( float p_deltaTime )
@@ -61,7 +61,7 @@ namespace VTX::App::Mode
 		}
 
 		// TODO: remove the callback from the app?
-		// App::VTXApp::get().onUpdate().removeCallback( this );
+		// APP().onUpdate().removeCallback( this );
 	}
 
 	void Visualization::addCameraController( std::unique_ptr<Core::Controller::BaseController> & p_cameraControllerPtr )

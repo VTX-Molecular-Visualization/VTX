@@ -26,7 +26,7 @@ namespace
 
 namespace VTX::Util
 {
-	Logger::Logger( StructPrivacyToken p_token ) {}
+	Logger::Logger() {}
 
 	void Logger::init( const std::filesystem::path & p_logDir )
 	{

@@ -46,7 +46,7 @@ namespace VTX::App::Core::Input
 
 	InputManager::InputManager()
 	{
-		App::VTXApp::get().onPostUpdate += [ this ]( const float p_deltaTime )
+		APP().onPostUpdate += [ this ]( const float p_deltaTime )
 		{
 			_deltaMousePosition.x = 0;
 			_deltaMousePosition.y = 0;

@@ -18,9 +18,9 @@ namespace VTX::App::Application::System
 			//{
 			// case ACTION_TAG::MODIFY_SCENE:
 			//	if ( isActionUndonable )
-			//		App::Old::VTXApp::get().getScenePathData().incrementSceneModifications();
+			//		App::Old::APP().getScenePathData().incrementSceneModifications();
 			//	else // if the action is not undoable, it make a permanent modification on scene
-			//		App::Old::VTXApp::get().getScenePathData().forceSceneModifications();
+			//		App::Old::APP().getScenePathData().forceSceneModifications();
 			//	break;
 			// case ACTION_TAG::NONE:
 			// default: break;
@@ -43,9 +43,9 @@ namespace VTX::App::Application::System
 			//{
 			// case ACTION_TAG::MODIFY_SCENE:
 			//	if ( isActionUndonable )
-			//		App::Old::VTXApp::get().getScenePathData().incrementSceneModifications();
+			//		App::Old::APP().getScenePathData().incrementSceneModifications();
 			//	else // if the action is not undoable, it make a permanent modification on scene
-			//		App::Old::VTXApp::get().getScenePathData().forceSceneModifications();
+			//		App::Old::APP().getScenePathData().forceSceneModifications();
 			//	break;
 			// case ACTION_TAG::NONE:
 			// default: break;
@@ -81,7 +81,7 @@ namespace VTX::App::Application::System
 		// VTX_EVENT( "UNDO_ACTION", *actionToUndo );
 		// switch ( actionToUndo->getTag() )
 		//{
-		// case ACTION_TAG::MODIFY_SCENE: App::Old::VTXApp::get().getScenePathData().decrementSceneModifications();
+		// case ACTION_TAG::MODIFY_SCENE: App::Old::APP().getScenePathData().decrementSceneModifications();
 		// break; case ACTION_TAG::NONE: default: break;
 		// }
 	}
@@ -103,7 +103,7 @@ namespace VTX::App::Application::System
 		// VTX_EVENT( "REDO_ACTION", *actionToUndo );
 		// switch ( actionToRedo->getTag() )
 		//{
-		// case ACTION_TAG::MODIFY_SCENE: App::Old::VTXApp::get().getScenePathData().incrementSceneModifications();
+		// case ACTION_TAG::MODIFY_SCENE: App::Old::APP().getScenePathData().incrementSceneModifications();
 		// break; case ACTION_TAG::NONE: default: break;
 		//}
 	}
@@ -124,9 +124,9 @@ namespace VTX::App::Application::System
 			// const std::unique_ptr<BaseActionUndonable> & purgedAction = _bufferUndo.back();
 			//  VTX_EVENT( "PURGE_ACTION", *purgedAction );
 			//  If we loose the last action which modify scene before saving, the scene can't return to unmodified
-			//  state if ( App::Old::VTXApp::get().getScenePathData().getSceneModificationsCounter() < 0 )
+			//  state if ( App::Old::APP().getScenePathData().getSceneModificationsCounter() < 0 )
 			//{
-			//	App::Old::VTXApp::get().getScenePathData().forceSceneModifications();
+			//	App::Old::APP().getScenePathData().forceSceneModifications();
 			// }
 
 			_bufferUndo.pop_back();

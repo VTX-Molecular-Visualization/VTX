@@ -19,11 +19,11 @@ namespace VTX::App::Test::Util
 		{
 			const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 			std::filesystem::create_directory( path );
-			VTX::Util::Logger::get().init( path );
+			LOGGER().init( path );
 
 			PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 
-			VTXApp::get().start( {} );
+			APP().start( {} );
 			isInit = true;
 		}
 

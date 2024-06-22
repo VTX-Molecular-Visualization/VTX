@@ -1,38 +1,26 @@
 #ifndef __VTX_UI_CORE_BASE_UI_APPLICATION__
 #define __VTX_UI_CORE_BASE_UI_APPLICATION__
 
+#include <app/vtx_app.hpp>
 #include <string>
 #include <util/callback.hpp>
 #include <vector>
 
 namespace VTX::UI::Core
 {
-	class BaseUIApplication
+	class BaseUIApplication : public App::VTXApp
 	{
 	  public:
 		BaseUIApplication();
 
-		virtual void init();
 		virtual void start( const std::vector<std::string> & p_args );
-
-		virtual void update();
-
-		virtual void stop();
-		virtual void quit();
-
-		inline int getReturnCode() const { return _returnCode; };
-
-		Util::Callback<> onInitEnded;
+		virtual void stop() {}
 
 	  protected:
-		int _returnCode = EXIT_SUCCESS;
+		void _buildUI();
 
-		virtual void _initVTXApp( const std::vector<std::string> & p_args );
-		virtual void _initUI( const std::vector<std::string> & p_args ) = 0;
-		void		 _buildUI();
+		virtual void _initUI( const std::vector<std::string> & p_args )	 = 0;
 		virtual void _startUI( const std::vector<std::string> & p_args ) = 0;
-
-		virtual void _postInit( const std::vector<std::string> & p_args );
 	};
 
 } // namespace VTX::UI::Core

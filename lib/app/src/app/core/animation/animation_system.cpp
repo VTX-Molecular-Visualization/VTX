@@ -6,7 +6,7 @@ namespace VTX::App::Core::Animation
 	{
 		_currentAnimationIt = _animationSequence.end();
 
-		App::VTXApp::get().onUpdate += [ this ]( const float p_deltaTime ) { update( p_deltaTime ); };
+		APP().onUpdate += [ this ]( const float p_deltaTime ) { update( p_deltaTime ); };
 	}
 
 	void AnimationSystem::play()

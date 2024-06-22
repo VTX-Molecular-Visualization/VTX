@@ -13,7 +13,7 @@ namespace VTX::App::Action::Application
 	void NewScene::execute()
 	{
 		SCENE().reset();
-		// App::Old::VTXApp::get().getScenePathData().clearCurrentPath();
+		// App::Old::APP().getScenePathData().clearCurrentPath();
 	}
 
 	void OpenScene::execute()
@@ -23,7 +23,7 @@ namespace VTX::App::Action::Application
 		Internal::IO::Reader::SceneLoader loader = Internal::IO::Reader::SceneLoader();
 		loader.readFile( _path, SCENE() );
 
-		// App::Old::VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+		// App::Old::APP().getScenePathData().setCurrentPath( _path, true );
 	}
 
 	void SaveScene::execute()
@@ -35,7 +35,7 @@ namespace VTX::App::Action::Application
 
 		// if ( _path.extension() == "vtx" )
 		//{
-		//	App::Old::VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+		//	App::Old::APP().getScenePathData().setCurrentPath( _path, true );
 		//	VTX_EVENT( VTX::App::Old::Event::Global::SCENE_SAVED );
 		// }
 		// else

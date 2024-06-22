@@ -30,5 +30,16 @@ namespace VTX::Util::Generic
 		BaseStaticSingleton() = default;
 	};
 
+	template<typename T>
+	class UniqueInstance final
+	{
+	  public:
+		static T & get()
+		{
+			static T instance;
+			return instance;
+		}
+	};
+
 } // namespace VTX::Util::Generic
 #endif

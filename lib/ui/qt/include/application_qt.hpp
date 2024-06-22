@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "ui/core/base_ui_application.hpp"
-#include "ui/environment.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QEvent>
@@ -57,7 +56,11 @@ namespace VTX::UI::QT
 		uint		  _tickCounter	= 0u;
 	};
 
-	inline ApplicationQt * const QT_APP() { return VTX::UI::Environment::get().getUIApp<VTX::UI::QT::ApplicationQt>(); }
+	inline ApplicationQt * const QT_APP()
+	{
+		return nullptr;
+		// VTX::UI::Environment::get().getUIApp<VTX::UI::QT::ApplicationQt>();
+	}
 
 } // namespace VTX::UI::QT
 

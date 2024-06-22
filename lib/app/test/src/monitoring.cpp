@@ -13,7 +13,7 @@ void displaySimpleInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Core::Monitoring::Stats & stats = VTXApp::get().getStats();
+	const Core::Monitoring::Stats & stats = APP().getStats();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
@@ -28,7 +28,7 @@ void displayFullInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Core::Monitoring::Stats & stats = VTXApp::get().getStats();
+	const Core::Monitoring::Stats & stats = APP().getStats();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
@@ -62,19 +62,19 @@ TEST_CASE( "VTX_APP - Monitoring", "[integration]" )
 
 	Test::Util::App::initApp();
 
-	VTXApp::get().onPreUpdate +=
+	APP().onPreUpdate +=
 		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
-	VTXApp::get().onUpdate += []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
-	VTXApp::get().onLateUpdate +=
+	APP().onUpdate += []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
+	APP().onLateUpdate +=
 		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 18 ) ); };
-	VTXApp::get().onPostUpdate +=
+	APP().onPostUpdate +=
 		[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::nanoseconds( 500 ) ); };
 
 	long long lastDisplayTimestamp = Util::Chrono::getTimestamp();
 
 	for ( int i = 0; i < 200; i++ )
 	{
-		VTXApp::get().update();
+		APP().update();
 
 		const long long currentTimestamp = Util::Chrono::getTimestamp();
 		if ( ( currentTimestamp - lastDisplayTimestamp ) >= 1000 )

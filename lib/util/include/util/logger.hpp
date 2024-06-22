@@ -31,10 +31,11 @@ namespace VTX
 			std::string message;
 		};
 
-		class Logger final : public Generic::BaseStaticSingleton<Logger>
+		class Logger final
 		{
+			friend class Generic::UniqueInstance<Logger>;
+
 		  public:
-			explicit Logger( StructPrivacyToken p_token );
 			Logger( std::initializer_list<int> ) = delete;
 
 			void init( const FilePath & p_logPath = Filesystem::getExecutableDir() );
@@ -49,44 +50,49 @@ namespace VTX
 			void stop();
 
 			Util::Callback<LogInfo> onPrintLog;
+
+		  private:
+			Logger();
 		};
 
 	} // namespace Util
 
+	inline Util::Logger & LOGGER() { return Util::Generic::UniqueInstance<Util::Logger>::get(); }
+
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER().log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
 	}
 } // namespace VTX
 
