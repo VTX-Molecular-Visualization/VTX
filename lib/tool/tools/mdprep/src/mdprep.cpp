@@ -13,15 +13,15 @@
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
-#include "tools/mdprep/ui/basic_form_settings_dialog.hpp"
-#include "tools/mdprep/ui/md_field_organizer.hpp"
+#include "tools/mdprep/ui/form_basic_settings_dialog.hpp"
+#include "tools/mdprep/ui/form_switch_button.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
-#include "tools/mdprep/ui/advanced_form.hpp"
-#include "tools/mdprep/ui/basic_form.hpp"
+#include "tools/mdprep/ui/form_advanced.hpp"
+#include "tools/mdprep/ui/form_basic.hpp"
 //
 
 namespace VTX::QT::Mdprep
@@ -39,12 +39,12 @@ namespace VTX::QT::Mdprep
 		QWidget *				  _formContainer = nullptr;
 
 		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::FormSwitchButton					  _switchButton;
-		std::optional<VTX::Tool::Mdprep::ui::MdBasicParamForm>	  _formBasic;
-		std::optional<VTX::Tool::Mdprep::ui::MdAdvancedParamForm> _formAdvanced;
-		EngineCollection										  _mdEngines;
-		int														  _mdEngineCurrentIdx = 0;
-		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer				  _formEngine;
+		VTX::Tool::Mdprep::ui::FormSwitchButton			   _switchButton;
+		std::optional<VTX::Tool::Mdprep::ui::FormBasic>	   _formBasic;
+		std::optional<VTX::Tool::Mdprep::ui::FormAdvanced> _formAdvanced;
+		EngineCollection								   _mdEngines;
+		int												   _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer		   _formEngine;
 
 		virtual void _setupUi( const QString & p_name )
 		{
