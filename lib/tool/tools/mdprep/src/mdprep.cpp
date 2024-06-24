@@ -24,6 +24,8 @@
 #include "tools/mdprep/ui/form_basic.hpp"
 //
 
+// TODO : write generic type for form, as they actually have the same responsibility and need the same kind of stuff.
+
 namespace VTX::QT::Mdprep
 {
 
