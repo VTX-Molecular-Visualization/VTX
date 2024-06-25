@@ -122,7 +122,7 @@ class VTXUiRecipe(ConanFile):
         
         copy(self, "*.cmake", self.source_folder, self.build_folder)
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
 
     def build(self):
         cmake = CMake(self)
