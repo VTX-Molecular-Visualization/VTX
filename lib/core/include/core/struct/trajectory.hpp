@@ -40,6 +40,11 @@ namespace VTX::Core::Struct
 				return false;
 		}
 
+		Frame& getModelFrame(void)
+		{ 
+			return frames.GetModelFrame();
+		}
+
 		//size_t getFrameCount() const { return frames.size(); }
 		size_t getFrameCount() const { return frames.GetTotalElements(); }
 

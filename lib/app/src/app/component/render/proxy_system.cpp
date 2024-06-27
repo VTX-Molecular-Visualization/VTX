@@ -45,8 +45,7 @@ namespace VTX::App::Component::Render
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
 		// devjla
-		std::vector<Vec3f> tmpFrame;
-		molStruct.trajectory.getCurrentFrame( tmpFrame );
+		std::vector<Vec3f> tmpFrame = molStruct.trajectory.getModelFrame();
 
 		_proxy = std::make_unique<VTX::Renderer::Proxy::System>( VTX::Renderer::Proxy::System {
 			&transformComp.getTransform().get(),
