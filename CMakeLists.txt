@@ -13,6 +13,12 @@ find_package(vtx_tool CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Gui REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
+
 set(_VTX_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 

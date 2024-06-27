@@ -21,8 +21,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("vtx_app/1.0")
-        self.requires("vtx_python_binding/1.0")
+        self.requires("vtx_app/1.0")        
         
     def config_options(self):
         if self.settings.os == "Windows":

@@ -27,6 +27,7 @@ namespace VTX::UI::QT::Widget::UIFeatures
 
 	void VisualizationTool::_addButtonsInMainMenu()
 	{
+		/*
 		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
 		UI::Core::ToolLayoutData navigationLayout = UI::Core::ToolLayoutData();
@@ -65,6 +66,7 @@ namespace VTX::UI::QT::Widget::UIFeatures
 
 		toolBlock.pushButton( *resetCameraButton, *orientCameraButton );
 		toolBlock.pushButton( *trackballButton, *freeflyButton );
+		*/
 	}
 
 	void VisualizationTool::_resetCamera() const { App::VTX_ACTION().execute<App::Action::Animation::ResetCamera>(); }
@@ -91,6 +93,7 @@ namespace VTX::UI::QT::Widget::UIFeatures
 
 	namespace Visualization
 	{
+		/*
 		class Binder final : public PythonBinding::Binder
 		{
 		  public:
@@ -106,8 +109,12 @@ namespace VTX::UI::QT::Widget::UIFeatures
 				);
 			}
 		};
+		*/
 	} // namespace Visualization
 
-	void VisualizationTool::_addCommands() const { PythonBinding::INTERPRETOR().addBinder<Visualization::Binder>(); }
+	void VisualizationTool::_addCommands() const
+	{
+		// PythonBinding::INTERPRETOR().addBinder<Visualization::Binder>();
+	}
 
 } // namespace VTX::UI::QT::Widget::UIFeatures

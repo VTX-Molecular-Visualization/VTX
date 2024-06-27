@@ -21,18 +21,14 @@
 #include <io/internal/filesystem.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
-
 namespace VTX::App
 {
-	VTXApp::VTXApp()
-	{
-		//
-		VTX_INFO( "VTXApp::VTXApp" );
-	}
+
+	VTXApp::VTXApp() { VTX_DEBUG( "VTXApp::VTXApp()" ); }
 
 	VTXApp::~VTXApp() = default;
 
-	void VTXApp::start( const std::vector<std::string> & p_args )
+	void VTXApp::start( const Args & p_args )
 	{
 		VTX_INFO( "Starting application: {}", IO::Internal::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
@@ -66,7 +62,7 @@ namespace VTX::App
 
 		_tickChrono.start();
 
-		_handleArgs( p_args );
+		//_handleArgs( p_args );
 
 		// Internal::initSettings( App::SETTINGS() );
 

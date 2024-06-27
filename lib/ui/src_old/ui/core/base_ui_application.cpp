@@ -4,20 +4,20 @@
 #include <app/application/system/action_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
-#include <python_binding/action.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Core
 {
-	BaseUIApplication::BaseUIApplication() : App::VTXApp() { VTX_DEBUG( "BaseUIApplication::BaseUIApplication()" ); }
+	BaseUIApplication::BaseUIApplication() : App::VTXApp() {}
 
 	void BaseUIApplication::start( const std::vector<std::string> & p_args )
 	{
 		VTXApp::start( p_args );
 
-		LayoutDescriptor layoutDescriptor;
+		LayoutDescriptor layoutDescriptor
+			= { LayoutDescriptor::Buttons { { "button1", "tab1", "block1" }, { "button2", "tab2", "block2" } } };
 
 		_init( p_args );
 		_build( layoutDescriptor );
@@ -26,5 +26,10 @@ namespace VTX::UI::Core
 		onStartUI();
 	}
 
-	void BaseUIApplication::stop() { VTXApp::stop(); }
+	void BaseUIApplication::stop()
+	{
+		// Stop UI before App?
+		_stop();
+		VTXApp::stop();
+	}
 } // namespace VTX::UI::Core

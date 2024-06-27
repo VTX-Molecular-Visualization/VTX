@@ -43,8 +43,8 @@ namespace VTX::IO::Reader
 		p_molecule.initResidues( p_chemfileStruct.getResidueCount() );
 		p_molecule.initAtoms( p_chemfileStruct.getAtomCount() );
 
-		VTX::Core::Struct::Frame & modelFrame = p_molecule.trajectory.frames[ 0 ];
-		modelFrame.resize( p_chemfileStruct.getAtomCount() );
+		// VTX::Core::Struct::Frame & modelFrame = p_molecule.trajectory.frames[ 0 ];
+		// modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
 		{
@@ -141,7 +141,7 @@ namespace VTX::IO::Reader
 				default: break;
 				}
 
-				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
+				// modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
 			}
 
 			// TODO: Useless?
@@ -374,9 +374,9 @@ namespace VTX::IO::Reader
 		{
 			return ChemDB::Atom::TYPE::SOLVENT;
 		}
-		else if ( std::find( _configuration->ionResidueSymbols.begin(),
-							 _configuration->ionResidueSymbols.end(),
-							 residueSymbol )
+		else if ( std::find(
+					  _configuration->ionResidueSymbols.begin(), _configuration->ionResidueSymbols.end(), residueSymbol
+				  )
 				  != _configuration->ionResidueSymbols.end() )
 		{
 			return ChemDB::Atom::TYPE::ION;

@@ -31,6 +31,7 @@ namespace VTX::UI::QT::Widget::PyTX
 
 		const std::string command = text().toStdString();
 
+		/*
 		try
 		{
 			PythonBinding::INTERPRETOR().runCommand( command );
@@ -42,6 +43,7 @@ namespace VTX::UI::QT::Widget::PyTX
 		}
 
 		clear();
+		*/
 	}
 
 	void CommandLinePrompt::_setupCompleter()

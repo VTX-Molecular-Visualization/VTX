@@ -30,17 +30,17 @@ namespace VTX::UI::QT
 		setStatusBar( _statusBar );
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
-
-		_loadTheme();
 	}
 
 	void MainWindow::initWindowLayout() {}
 
+	/*
 	QT::Core::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData
 	)
 	{
 		return dynamic_cast<QT::Core::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
 	}
+
 	QT::Core::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
 		const UI::Core::ToolLayoutData & layoutData
 	)
@@ -48,48 +48,6 @@ namespace VTX::UI::QT
 		return dynamic_cast<VTX::UI::QT::Core::MainMenu::MenuToolBlockWidget &>(
 			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName )
 		);
-	}
-
-	void MainWindow::_loadTheme()
-	{
-		// TODO: move to style constants.
-		// Load main stylesheet.
-		QFile stylesheetFile( ":/stylesheet_ui.css" );
-		stylesheetFile.open( QFile::ReadOnly );
-
-		QString stylesheet = stylesheetFile.readAll();
-
-		// Load os-specific stylesheet.
-#if _WIN32
-		QFile stylesheetOSFile( ":/stylesheet_ui_windows.css" );
-#elif __linux__
-		QFile stylesheetOSFile( ":/stylesheet_ui_linux.css" );
-#elif __APPLE__
-		QFile stylesheetOSFile( ":/stylesheet_ui_mac.css" );
-#else
-		QFile stylesheetOSFile();
-		assert( true );
-#endif
-
-		stylesheetOSFile.open( QFile::ReadOnly );
-		stylesheet += '\n' + stylesheetOSFile.readAll();
-
-		// Load theme and apply to stylesheet.
-
-		// Set stylesheet to app.
-		setStyleSheet( stylesheet );
-	}
-
-	/*
-	void MainWindow::appendStylesheet( const char * p_stylesheetPath )
-	{
-		QFile stylesheetFile( p_stylesheetPath );
-		stylesheetFile.open( QFile::ReadOnly );
-
-		const QString stylesheetContent = stylesheetFile.readAll();
-		const QString newStylesheet		= styleSheet() + '\n' + stylesheetContent;
-
-		setStyleSheet( newStylesheet );
 	}
 	*/
 

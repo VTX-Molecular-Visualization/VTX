@@ -76,10 +76,17 @@ namespace VTX::Bench
 				return;
 			}
 
-			int i = 0;
+			int			i			 = 0;
+			static uint currentFrame = 0;
+
 			for ( auto & molecule : _molecules )
 			{
 				molecule->transform = Util::Math::rotate( molecule->transform, p_deltaTime, _directions[ i ] );
+
+				//_proxyMolecules[ i ]->atomPositions
+				//	= &molecule->trajectory.frames[ currentFrame++ % molecule->trajectory.frames.size() ];
+				//_proxyMolecules[ i ]->onAtomPositions();
+
 				_proxyMolecules[ i++ ]->onTransform();
 			}
 		}

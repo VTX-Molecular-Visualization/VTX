@@ -28,5 +28,10 @@ else()
 	target_link_libraries(vtx PRIVATE vtx_tool::vtx_tool)
 endif()
 
+target_link_libraries(vtx PRIVATE Qt6::Core)
+target_link_libraries(vtx PRIVATE Qt6::Gui)
+target_link_libraries(vtx PRIVATE Qt6::Widgets)
+target_link_libraries(vtx PRIVATE Qt6::OpenGLWidgets)
+
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx)

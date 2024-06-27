@@ -460,7 +460,8 @@ namespace VTX::Bench
 
 				size_t idMolecule = 0;
 				int	   toDelete	  = -1;
-				for ( const auto & proxyMolecule : p_scene->getProxiesMolecules() )
+
+				for ( auto & proxyMolecule : p_scene->getProxiesMolecules() )
 				{
 					// Display transform.
 					if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule ).c_str() ) )

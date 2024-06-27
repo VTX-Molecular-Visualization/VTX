@@ -23,7 +23,7 @@ namespace VTX::App::Test::Util
 
 			PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 
-			APP().start( {} );
+			APP().start( { 0, nullptr } );
 			isInit = true;
 		}
 

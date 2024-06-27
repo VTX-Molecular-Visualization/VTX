@@ -4,6 +4,7 @@
 #include "app/application/_fwd.hpp"
 #include "app/core/monitoring/stats.hpp"
 #include "app/mode/base_mode.hpp"
+#include "args.hpp"
 #include "core/system/system_handler.hpp"
 #include <memory>
 #include <string>
@@ -28,7 +29,7 @@ namespace VTX::App
 		VTXApp & operator=( const VTXApp & ) = delete;
 		virtual ~VTXApp();
 
-		virtual void start( const std::vector<std::string> & );
+		virtual void start( const Args & );
 		void		 update( const float p_elapsedTime = 0 );
 		virtual void stop();
 

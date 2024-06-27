@@ -6,9 +6,34 @@
 
 namespace VTX::UI::Core
 {
+	struct LayoutDescriptor
+	{
+		struct Button
+		{
+			std::string name;
+
+			std::string tabName;
+			std::string blockName;
+
+			// TODO: bind action (check python binders)
+			// Util::Callback<> callback;
+		};
+		using Buttons = std::vector<Button>;
+
+		// TODO
+		struct Panel
+		{
+		};
+		using Panels = std::vector<Panel>;
+
+		Buttons buttons;
+		Panels	panels;
+	};
+
 	// using ToolIdentifier									   = std::string;
 	// inline static const ToolIdentifier UNKNOWN_TOOL_IDENTIFIER = "";
 
+	/*
 	class ToolLayoutData
 	{
 	  public:
@@ -17,6 +42,7 @@ namespace VTX::UI::Core
 
 		std::string contextualMenuName;
 	};
+	*/
 
 	/*
 	class ToolDescriptor

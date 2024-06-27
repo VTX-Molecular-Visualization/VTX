@@ -19,10 +19,7 @@
 namespace VTX::UI::QT
 {
 	int ZERO = 0;
-	ApplicationQt::ApplicationQt() : UI::Core::BaseUIApplication() //, QApplication( ZERO, nullptr )
-	{
-		VTX_DEBUG( "ApplicationQt::ApplicationQt()" );
-	}
+	ApplicationQt::ApplicationQt() : UI::Core::BaseUIApplication() {}
 
 	ApplicationQt::~ApplicationQt()
 	{
@@ -44,8 +41,7 @@ namespace VTX::UI::QT
 		// App::Core::init( dynamic_cast<App::Mode::Visualization &>( *_currentMode ) );
 		//_currentMode->enter();
 
-		/*		setWindowIcon( QIcon( ":/sprite/logo.png" ) );
-
+		/*
 		setStyle( QString::fromStdString( Style::DEFAULT_STYLE_FACTORY ) );
 
 		QPalette appPalette = palette();
@@ -55,6 +51,9 @@ namespace VTX::UI::QT
 
 		_qApplication = new QApplication( ZERO, nullptr );
 		_qApplication->connect( _qApplication, &QApplication::aboutToQuit, [ this ]() { BaseUIApplication::stop(); } );
+
+		_loadTheme();
+		_qApplication->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
 
 		_mainWindow = WidgetFactory::get().instantiateWidget<QT::MainWindow>( nullptr, "MainWindow" );
 	}
@@ -90,9 +89,49 @@ namespace VTX::UI::QT
 	}
 	*/
 
-	void ApplicationQt::softQuit()
+	void ApplicationQt::_stop() { _qApplication->closeAllWindows(); }
+
+	void ApplicationQt::_loadTheme()
 	{
-		// closeAllWindows();
+		// TODO: move to style constants.
+		// Load main stylesheet.
+		QFile stylesheetFile( ":/stylesheet_ui.css" );
+		stylesheetFile.open( QFile::ReadOnly );
+
+		QString stylesheet = stylesheetFile.readAll();
+
+		// Load os-specific stylesheet.
+#if _WIN32
+		QFile stylesheetOSFile( ":/stylesheet_ui_windows.css" );
+#elif __linux__
+		QFile stylesheetOSFile( ":/stylesheet_ui_linux.css" );
+#elif __APPLE__
+		QFile stylesheetOSFile( ":/stylesheet_ui_mac.css" );
+#else
+		QFile stylesheetOSFile();
+		assert( true );
+#endif
+
+		stylesheetOSFile.open( QFile::ReadOnly );
+		stylesheet += '\n' + stylesheetOSFile.readAll();
+
+		// Load theme and apply to stylesheet.
+
+		// Set stylesheet to app.
+		_qApplication->setStyleSheet( stylesheet );
 	}
+
+	/*
+	void ApplicationQt::appendStylesheet( const char * p_stylesheetPath )
+	{
+		QFile stylesheetFile( p_stylesheetPath );
+		stylesheetFile.open( QFile::ReadOnly );
+
+		const QString stylesheetContent = stylesheetFile.readAll();
+		const QString newStylesheet		= styleSheet() + '\n' + stylesheetContent;
+
+		setStyleSheet( newStylesheet );
+	}
+	*/
 
 } // namespace VTX::UI::QT

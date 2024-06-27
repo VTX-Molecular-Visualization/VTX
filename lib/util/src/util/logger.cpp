@@ -28,7 +28,7 @@ namespace VTX::Util
 {
 	Logger::Logger() {}
 
-	void Logger::init( const std::filesystem::path & p_logDir )
+	void Logger::init( const std::filesystem::path & p_logDir, const bool p_debug )
 	{
 		try
 		{
@@ -36,11 +36,7 @@ namespace VTX::Util
 
 			// Console sink.
 			auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-#ifdef VTX_PRODUCTION
-			consoleSink->set_level( spdlog::level::info );
-#else
-			consoleSink->set_level( spdlog::level::debug );
-#endif
+			consoleSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
@@ -51,11 +47,8 @@ namespace VTX::Util
 			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>(
 				[ this ]( const spdlog::details::log_msg & p_msg ) { onPrintLog( spdLogLogMsgToLogInfo( p_msg ) ); }
 			);
-#ifdef VTX_PRODUCTION
-			callbackSink->set_level( spdlog::level::info );
-#else
-			callbackSink->set_level( spdlog::level::debug );
-#endif
+
+			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
 			std::vector<spdlog::sink_ptr> sinks { consoleSink, fileSink, callbackSink };
@@ -64,11 +57,7 @@ namespace VTX::Util
 			 );
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
-#ifdef VTX_PRODUCTION
-			logger->flush_on( spdlog::level::info );
-#else
-			logger->flush_on( spdlog::level::trace );
-#endif
+			logger->flush_on( p_debug ? spdlog::level::trace : spdlog::level::info );
 
 			spdlog::set_default_logger( logger );
 

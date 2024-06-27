@@ -38,7 +38,7 @@ namespace VTX
 		  public:
 			Logger( std::initializer_list<int> ) = delete;
 
-			void init( const FilePath & p_logPath = Filesystem::getExecutableDir() );
+			void init( const FilePath & p_logPath = Filesystem::getExecutableDir(), const bool p_debug = false );
 
 			template<typename... Args>
 			void log( const LOG_LEVEL p_logLevel, const fmt::format_string<Args...> p_fmt, Args &&... p_args )

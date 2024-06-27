@@ -147,8 +147,9 @@ int main( int, char ** )
 				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
 		// renderer.setProxyRenderSettings( renderSettings );
-
-		renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+		
+		// renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+		renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
 
 		// Main loop.
 		while ( isRunning )

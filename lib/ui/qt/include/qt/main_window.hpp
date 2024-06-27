@@ -1,115 +1,174 @@
 #ifndef __VTX_UI_QT_MAIN_WINDOW__
 #define __VTX_UI_QT_MAIN_WINDOW__
 
-#include "ui/core/base_main_window.hpp"
-#include "ui/core/base_panel.hpp"
-#include "ui/core/define.hpp"
-#include "ui/core/layout_descriptor.hpp"
-#include "core/main_menu/main_menu_bar.hpp"
-#include "core/main_menu/menu_toolblock_widget.hpp"
-#include "core/main_menu/menu_tooltab_widget.hpp"
-#include "core/status/status_bar.hpp"
-#include "qt_panel.hpp"
-#include "widget/renderer/panel.hpp"
-#include <QCloseEvent>
+#include "dock_widget/console.hpp"
+#include "menu/file.hpp"
+#include "menu/view.hpp"
+#include "tool_bar/camera.hpp"
 #include <QDockWidget>
-#include <QKeySequence>
 #include <QMainWindow>
-#include <unordered_set>
-#include <util/types.hpp>
+#include <QMenuBar>
+#include <QStatusBar>
+#include <QToolbar>
+#include <ui/descriptors.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT
 {
-	namespace Tool::Render::Widget
-	{
-		class RenderWidget;
-	}
 
-	class MainWindow : public VTX::UI::QT::Core::BaseManualWidget<QMainWindow>, public VTX::UI::Core::BaseMainWindow
+	class MainWindow : public QMainWindow //, public BaseMainWindow
 	{
 		Q_OBJECT
 
-	  private:
-		inline static const int QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT = 10;
-
 	  public:
-		MainWindow( QWidget * p_parent = nullptr );
-		~MainWindow();
+		MainWindow() : QMainWindow()
+		{
+			// Size.
+			resize( 1920, 1080 );
 
-		void localize() override;
+			setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+		}
 
-		void initWindowLayout();
-		void refreshWindowTitle();
+		virtual ~MainWindow() {}
 
-		QT::Widget::Renderer::Panel *			  getRender();
-		const QT::Widget::Renderer::Panel * const getRender() const;
+		void build()
+		{
+			// Main menu.
+			// File.
+			_createMenu<Menu::File>();
 
-		Core::MainMenu::MainMenuBar &			  getMainMenu() override { return *_mainMenuBar; }
-		QT::Core::MainMenu::MenuTooltabWidget &	  getMainMenuToolTab( const UI::Core::ToolLayoutData & layoutData );
-		QT::Core::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const UI::Core::ToolLayoutData & layoutData );
+			// Edit.
+			QMenu * editMenu = menuBar()->addMenu( "Edit" );
 
-		UI::Core::WindowMode getWindowMode();
-		void				 setWindowMode( const UI::Core::WindowMode & p_mode );
-		void				 toggleWindowState();
+			// View.
+			_createMenu<Menu::View>();
 
-		void addDockWidgetAsTabified(
-			QDockWidget * const p_dockWidget,
-			Qt::DockWidgetArea	p_area,
-			Qt::Orientation		p_orientation,
-			const bool			p_visible = true
-		);
-		void addDockWidgetAsTabified(
-			QDockWidget * const p_dockWidget,
-			QDockWidget * const p_neighbour,
-			Qt::Orientation		p_orientation,
-			const bool			p_visible
-		);
-		void addDockWidgetAsFloating( QDockWidget * const p_dockWidget, const QSize & p_size, const bool p_visible );
+			// Help.
+			QMenu * helpMenu = menuBar()->addMenu( "Help" );
+			helpMenu->addAction( new QAction( "Documentation" ) );
+			helpMenu->addAction( new QAction( "Report a bug" ) );
+			helpMenu->addAction( new QAction( "Check for updates" ) );
+			helpMenu->addAction( new QAction( "About" ) );
 
-		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
+			// Toolbars.
+			// Camera.
+			QToolBar * visuToolBar = addToolBar( "Camera" );
+			visuToolBar->addAction( new QAction( "Perspective" ) );
+			visuToolBar->addSeparator();
+			visuToolBar->addAction( new QAction( "Trackball" ) );
+			visuToolBar->addAction( new QAction( "Freefly" ) );
+			visuToolBar->addSeparator();
+			visuToolBar->addAction( new QAction( "Orient" ) );
+			visuToolBar->addAction( new QAction( "Reset" ) );
 
-		// void appendStylesheet( const char * p_stylesheetPath );
+			// Snapshot.
+			QToolBar * editToolBar = addToolBar( "Snapshot" );
+			editToolBar->addAction( new QAction( "Quick snapshot" ) );
+			editToolBar->addAction( new QAction( "Export image" ) );
 
-	  protected:
-		void _setupUi( const QString & p_name ) override;
-		void _setupSlots() override;
+			// Viewpoints.
+			QToolBar * viewpointsToolBar = addToolBar( "Viewpoints" );
+			viewpointsToolBar->addAction( new QAction( "Create" ) );
+			viewpointsToolBar->addAction( new QAction( "Delete" ) );
 
-		void keyPressEvent( QKeyEvent * const p_event ) override;
-		void keyReleaseEvent( QKeyEvent * const p_event ) override;
-		void mousePressEvent( QMouseEvent * const p_event ) override;
-		void mouseReleaseEvent( QMouseEvent * const p_event ) override;
-		void mouseDoubleClickEvent( QMouseEvent * const p_event ) override;
-		void mouseMoveEvent( QMouseEvent * const p_event ) override;
-		void wheelEvent( QWheelEvent * const p_event ) override;
+			// Render settings.
+			QToolBar * renderToolBar = addToolBar( "Render settings" );
+			renderToolBar->addAction( new QAction( "Background color" ) );
+			renderToolBar->addAction( new QAction( "Preset" ) );
 
-		void changeEvent( QEvent * const p_event ) override;
-		void closeEvent( QCloseEvent * const p_event ) override;
+			// Main area : opengl widget.
+			setCentralWidget( new QWidget( this ) );
+
+			QDockWidget * dockWidget = new QDockWidget( "Scene", this );
+			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			dockWidget->setFeatures(
+				QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable
+			);
+			addDockWidget( Qt::LeftDockWidgetArea, dockWidget );
+
+			// Dock widgets.
+			dockWidget = new QDockWidget( "Inspector", this );
+			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
+
+			dockWidget = new QDockWidget( "Render settings", this );
+			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
+
+			dockWidget = new QDockWidget( "Representations", this );
+			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
+
+			dockWidget = new QDockWidget( "Options", this );
+			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
+
+			_createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+
+			dockWidget = new QDockWidget( "Sequence", this );
+			dockWidget->setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
+			dockWidget->setWidget( new QWidget( this ) );
+			addDockWidget( Qt::TopDockWidgetArea, dockWidget );
+
+			// Status bar.
+			QStatusBar * status = statusBar();
+			status->showMessage( "Ready" );
+		}
+
+		void addMenuAction( const MenuAction & p_ma )
+		{
+			for ( QMenu * const menu : menuBar()->findChildren<QMenu *>() )
+			{
+				if ( menu->title().toStdString() == p_ma.idMenu )
+				{
+					// TODO: connect action/callback.
+					menu->addAction( new QAction( QString::fromStdString( p_ma.name ) ) );
+					return;
+				}
+			}
+
+			throw std::runtime_error( "Menu not found." );
+		}
+
+		void addToolBarAction( const ToolBarAction & p_tba )
+		{
+			for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
+			{
+				VTX_DEBUG( "{}", toolbar->windowTitle().toStdString() );
+				if ( toolbar->windowTitle().toStdString() == p_tba.idToolBar )
+				{
+					// TODO: connect action/callback.
+					toolbar->addAction( new QAction( QString::fromStdString( p_tba.name ) ) );
+					return;
+				}
+			}
+
+			throw std::runtime_error( "Tool bar not found." );
+		}
 
 	  private:
-		QT::Core::MainMenu::MainMenuBar * _mainMenuBar;
-		QT::Core::Status::StatusBar *	  _statusBar;
+		template<typename M>
+		void _createMenu()
+		{
+			menuBar()->addMenu( new M( menuBar() ) );
+		}
 
-		// Actions.
-		void _onDockWindowVisibilityChange( bool p_visible );
+		template<typename TB>
+		void _createToolBar()
+		{
+			menuBar()->addToolBar( new TB( this ) );
+		}
 
-		void _updatePicker() const;
-
-		// Functions.
-		void _loadTheme();
-
-		UI::Core::WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
-		std::string			 _getWindowTitle() const;
-
-		void _delayRestoreState();
-		void _restoreStateDelayedAction();
-
-		// When we restore a layout where a windows has not been set (new feature since the last launch ?), the
-		// window has a default size of 0. This function will check that and display it at the preferred size of the
-		// window.
-		void _checkUnknownFloatableWindows();
-		void _checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize );
-
-		QTimer * _restoreStateTimer = nullptr;
+		template<typename DW>
+		void _createDockWidget( const Qt::DockWidgetArea & p_area )
+		{
+			addDockWidget( p_area, new DW( this ) );
+		}
 	};
 
 } // namespace VTX::UI::QT

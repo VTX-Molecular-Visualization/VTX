@@ -10,19 +10,6 @@
 
 namespace VTX::UI::QT::Widget::UIFeatures
 {
-	namespace Action
-	{
-		class Quit final : public App::Core::Action::BaseAction
-		{
-		  public:
-			Quit() {};
-			void execute() override
-			{
-				APP().onEndOfFrameOneShot += []() { QT_APP()->softQuit(); };
-			};
-		};
-	} // namespace Action
-
 	QuitTool::QuitTool()
 	{
 		_addButtonsInMainMenu();
@@ -31,7 +18,7 @@ namespace VTX::UI::QT::Widget::UIFeatures
 
 	void QuitTool::_addButtonsInMainMenu()
 	{
-		UI::Core::ToolLayoutData mainMenuLayoutData = UI::Core::ToolLayoutData();
+		/*		UI::Core::ToolLayoutData mainMenuLayoutData = UI::Core::ToolLayoutData();
 		mainMenuLayoutData.tabName					= "File";
 		mainMenuLayoutData.blockName				= "Windows";
 
@@ -46,12 +33,14 @@ namespace VTX::UI::QT::Widget::UIFeatures
 		quitButton->setTriggerAction( this, &QuitTool::_quit );
 
 		toolBlock.pushButton( *quitButton );
+		*/
 	}
 
-	void QuitTool::_quit() { App::VTX_ACTION().execute<Action::Quit>(); }
+	void QuitTool::_quit() {}
 
 	namespace Quit
 	{
+		/*
 		class Binder final : public PythonBinding::Binder
 		{
 		  public:
@@ -61,8 +50,12 @@ namespace VTX::UI::QT::Widget::UIFeatures
 				commands.bindAction<Action::Quit>( "quit", "Quit the application." );
 			}
 		};
+		*/
 	} // namespace Quit
 
-	void QuitTool::_addCommands() const { PythonBinding::INTERPRETOR().addBinder<Quit::Binder>(); }
+	void QuitTool::_addCommands() const
+	{
+		// PythonBinding::INTERPRETOR().addBinder<Quit::Binder>();
+	}
 
 } // namespace VTX::UI::QT::Widget::UIFeatures

@@ -6,8 +6,8 @@ namespace VTX::UI::QT::Widget
 {
 	PyTXWidget::PyTXWidget()
 	{
-		PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-		// QT_APP()->onInitEnded += []() { PythonBinding::INTERPRETOR().init(); };
+		// PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		//  QT_APP()->onInitEnded += []() { PythonBinding::INTERPRETOR().init(); };
 	}
 
 } // namespace VTX::UI::QT::Widget

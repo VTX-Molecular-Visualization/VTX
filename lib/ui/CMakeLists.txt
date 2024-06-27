@@ -7,7 +7,6 @@ find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
-find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::PyTX)
 
 set(_VTX_UI_CONAN " ")
 include("./cmake/library.cmake")

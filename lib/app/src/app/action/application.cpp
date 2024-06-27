@@ -86,4 +86,15 @@ namespace VTX::App::Action::Application
 			}
 		}
 	}
+
+	void Quit::execute()
+	{
+		APP().onEndOfFrameOneShot += []() { APP().stop(); };
+	}
+
+	void RunScript::execute()
+	{
+		// INTERPRETOR().runScript( _path );
+
+	} // namespace VTX::App::Action::Application
 } // namespace VTX::App::Action::Application

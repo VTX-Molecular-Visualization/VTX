@@ -17,7 +17,7 @@ namespace VTX::App::Test::Util
 		static bool isInit;
 		if ( !isInit )
 		{
-			APP().start( {} );
+			APP().start( { 0, nullptr } );
 
 			auto & renderer = RENDERER_SYSTEM().facade();
 			REQUIRE_THROWS( renderer.build() );

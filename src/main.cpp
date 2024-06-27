@@ -1,6 +1,5 @@
 #include <io/internal/filesystem.hpp>
 #include <string>
-#include <ui/core/base_ui_application.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -10,7 +9,7 @@
 #define VTX_UI_QT
 
 #ifdef VTX_UI_QT
-#include <qt/application_qt.hpp>
+#include <qt/application.hpp>
 #else
 #endif
 
@@ -34,16 +33,32 @@ int main( int p_argc, char * p_argv[] )
 
 	try
 	{
-		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
-		LOGGER().init( logDir );
+		App::Args args( p_argc, p_argv );
 
-#ifdef VTX_UI_QT
-		auto * app = UI::QT::QT_APP();
-#else
-		auto * app = &APP();
+		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
+
+		bool debug = args.has( "-debug" );
+#ifdef _DEBUG
+		debug = true;
 #endif
 
-		app->start( { p_argv, p_argv + p_argc } );
+		LOGGER().init( logDir, debug );
+
+		std::unique_ptr<App::VTXApp> app;
+#ifdef VTX_UI_QT
+		if ( not args.has( "-no-gui" ) )
+		{
+			app = std::make_unique<VTX::UI::QT::Application>();
+		}
+		else
+		{
+			app = std::unique_ptr<App::VTXApp>( &APP() );
+		}
+#else
+		app = std::unique_ptr<App::VTXApp>( &APP() );
+#endif
+
+		app->start( args );
 
 		// std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
 		// VTX::UI::Environment::get().setUIApp( vtxApplication.get() );

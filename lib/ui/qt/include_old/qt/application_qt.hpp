@@ -12,9 +12,6 @@ namespace VTX::UI::QT
 
 	class ApplicationQt : public UI::Core::BaseUIApplication
 	{
-	  private:
-		inline static const std::string INPUT_MANAGER_KEY = "INPUT_MANAGER";
-
 	  public:
 		ApplicationQt();
 		ApplicationQt( const ApplicationQt & )			   = delete;
@@ -26,16 +23,17 @@ namespace VTX::UI::QT
 
 		// bool notify( QObject * const, QEvent * const ) override;
 
-		void softQuit();
-
 	  protected:
 		void _init( const std::vector<std::string> & p_args ) override;
 		void _build( const UI::Core::LayoutDescriptor & p_layout ) override;
 		void _start( const std::vector<std::string> & p_args ) override;
+		void _stop() override;
 
 	  private:
 		QApplication * _qApplication;
 		MainWindow *   _mainWindow;
+
+		void _loadTheme();
 	};
 
 	inline ApplicationQt * const QT_APP() { return &Util::Generic::UniqueInstance<ApplicationQt>::get(); }
