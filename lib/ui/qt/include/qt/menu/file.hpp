@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_MENU_FILE__
 #define __VTX_UI_QT_MENU_FILE__
 
+#include "qt/helper.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -11,19 +12,21 @@ namespace VTX::UI::QT::Menu
 	  public:
 		File( QWidget * p_parent ) : QMenu( "File", p_parent )
 		{
-			addAction( new QAction( "New" ) );
+			using namespace Helper;
+
+			addQAction( this, { "New", "Create a new project" } );
 			addSeparator();
-			addAction( new QAction( "Download" ) );
+			addQAction( this, { "Download", "Download structure from PDB id" } );
 			addSeparator();
-			addAction( new QAction( "Open" ) );
-			addAction( new QAction( "Open recent" ) );
-			addAction( new QAction( "Save" ) );
-			addAction( new QAction( "Save as..." ) );
+			addQAction( this, { "Open", "Open a project or a molecular file" } );
+			addQAction( this, { "Open recent" } );
+			addQAction( this, { "Save", "Save project" } );
+			addQAction( this, { "Save as...", "Copy project in a new save" } );
 			addSeparator();
-			addAction( new QAction( "Import" ) );
-			addAction( new QAction( "Export" ) );
+			addQAction( this, { "Import" } );
+			addQAction( this, { "Export" } );
 			addSeparator();
-			addAction( new QAction( "Quit" ) );
+			addQAction( this, { "Quit", "Exit software" } );
 		}
 		virtual ~File() {}
 

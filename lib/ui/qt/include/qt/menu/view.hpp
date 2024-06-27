@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_MENU_VIEW__
 #define __VTX_UI_QT_MENU_VIEW__
 
+#include "qt/helper.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -11,25 +12,24 @@ namespace VTX::UI::QT::Menu
 	  public:
 		View( QWidget * p_parent ) : QMenu( "View", p_parent )
 		{
-			addAction( new QAction( "Console" ) );
-			addAction( new QAction( "Inspector" ) );
-			addAction( new QAction( "Options" ) );
-			addAction( new QAction( "Renderer" ) );
-			addAction( new QAction( "Render settings" ) );
-			addAction( new QAction( "Representations" ) );
-			addAction( new QAction( "Sequence" ) );
-			addAction( new QAction( "Scene" ) );
+			using namespace Helper;
+
+			addQAction( this, { "Console", "Show/hide console window" } );
+			addQAction( this, { "Inspector", "Show/hide inspector window" } );
+			addQAction( this, { "Options", "Show/hide options window" } );
+			addQAction( this, { "Renderer", "Show/hide renderer window" } );
+			addQAction( this, { "Render settings", "Show/hide render settings window" } );
+			addQAction( this, { "Representations", "Show/hide representations window" } );
+			addQAction( this, { "Sequence", "Show/hide sequence window" } );
+			addQAction( this, { "Scene", "Show/hide scene window" } );
 			addSeparator();
-			QMenu * viewOverlayMenu = addMenu( "Overlay" );
-			addSeparator();
-			addAction( new QAction( "Fullscreen" ) );
+			addQAction( this, { "Fullscreen" } );
 
 			// Set action checkables.
 			for ( QAction * action : actions() )
 			{
 				action->setCheckable( true );
 				action->setChecked( true );
-				action->setStatusTip( "Show/hide " + action->text().toLower() );
 			}
 		}
 

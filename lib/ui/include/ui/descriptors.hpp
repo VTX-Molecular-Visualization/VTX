@@ -12,20 +12,25 @@ namespace VTX::UI
 	{
 	};
 
+	struct Action
+	{
+		std::string				   name;
+		std::optional<std::string> tip	= std::nullopt;
+		std::optional<std::string> icon = std::nullopt;
+		// callback or vtx action
+		// std::optional<App::Core::Input::Shortcut> shortcut;
+	};
+
 	struct MenuAction
 	{
-		WidgetId	idMenu;
-		std::string name;
-		std::string tip;
-		std::string icon;
-		// std::optional<App::Core::Input::Shortcut> shortcut;
-		// callback or vtx action
+		WidgetId idMenu;
+		Action	 action;
 	};
 
 	struct ToolBarAction
 	{
-		WidgetId	idToolBar;
-		std::string name;
+		WidgetId idToolBar;
+		Action	 action;
 	};
 
 	struct DockPanel

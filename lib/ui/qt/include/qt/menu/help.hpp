@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_MENU_HELP__
 #define __VTX_UI_QT_MENU_HELP__
 
+#include "qt/helper.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -11,11 +12,14 @@ namespace VTX::UI::QT::Menu
 	  public:
 		Help( QWidget * p_parent ) : QMenu( "Help", p_parent )
 		{
-			addAction( new QAction( "Documentation" ) );
-			addAction( new QAction( "Report a bug" ) );
-			addAction( new QAction( "Check for updates" ) );
-			addAction( new QAction( "About" ) );
+			using namespace Helper;
+
+			addQAction( this, { "Documentation", "Open documentation in your browser" } );
+			addQAction( this, { "Report a bug", "Open " } );
+			addQAction( this, { "Check for updates", "Check our server for a new version" } );
+			addQAction( this, { "About" } );
 		}
+
 		virtual ~Help() {}
 
 	  private:

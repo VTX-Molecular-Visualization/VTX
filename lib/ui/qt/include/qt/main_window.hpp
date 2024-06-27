@@ -2,15 +2,22 @@
 #define __VTX_UI_QT_MAIN_WINDOW__
 
 #include "dock_widget/console.hpp"
+#include "dock_widget/inspector.hpp"
+#include "dock_widget/options.hpp"
+#include "dock_widget/render_settings.hpp"
+#include "dock_widget/representations.hpp"
+#include "dock_widget/scene.hpp"
+#include "dock_widget/sequence.hpp"
+#include "helper.hpp"
 #include "menu/file.hpp"
 #include "menu/help.hpp"
 #include "menu/view.hpp"
+#include "status_bar.hpp"
 #include "tool_bar/camera.hpp"
+#include "tool_bar/snapshot.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
-#include <QStatusBar>
-#include <QToolbar>
 #include <ui/descriptors.hpp>
 #include <util/logger.hpp>
 
@@ -35,67 +42,25 @@ namespace VTX::UI::QT
 		void build()
 		{
 			// Main menu.
-			_createMenu<Menu::File>();
-			_createMenu<Menu::View>();
-			_createMenu<Menu::View>();
-			_createMenu<Menu::Help>();
+			createMenu<Menu::File>();
+			createMenu<Menu::View>();
+			createMenu<Menu::Help>();
 
 			// Toolbars.
-			_createToolBar<ToolBar::Camera>();
-
-			// Snapshot.
-			QToolBar * editToolBar = addToolBar( "Snapshot" );
-			editToolBar->addAction( new QAction( "Quick snapshot" ) );
-			editToolBar->addAction( new QAction( "Export image" ) );
-
-			// Viewpoints.
-			QToolBar * viewpointsToolBar = addToolBar( "Viewpoints" );
-			viewpointsToolBar->addAction( new QAction( "Create" ) );
-			viewpointsToolBar->addAction( new QAction( "Delete" ) );
-
-			// Render settings.
-			QToolBar * renderToolBar = addToolBar( "Render settings" );
-			renderToolBar->addAction( new QAction( "Background color" ) );
-			renderToolBar->addAction( new QAction( "Preset" ) );
+			createToolBar<ToolBar::Camera>();
+			createToolBar<ToolBar::Snapshot>();
 
 			// Main area : opengl widget.
 			setCentralWidget( new QWidget( this ) );
 
-			QDockWidget * dockWidget = new QDockWidget( "Scene", this );
-			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			dockWidget->setFeatures(
-				QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable
-			);
-			addDockWidget( Qt::LeftDockWidgetArea, dockWidget );
-
 			// Dock widgets.
-			dockWidget = new QDockWidget( "Inspector", this );
-			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
-
-			dockWidget = new QDockWidget( "Render settings", this );
-			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
-
-			dockWidget = new QDockWidget( "Representations", this );
-			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
-
-			dockWidget = new QDockWidget( "Options", this );
-			dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			addDockWidget( Qt::RightDockWidgetArea, dockWidget );
-
-			_createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
-
-			dockWidget = new QDockWidget( "Sequence", this );
-			dockWidget->setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
-			dockWidget->setWidget( new QWidget( this ) );
-			addDockWidget( Qt::TopDockWidgetArea, dockWidget );
+			createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+			createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+			createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
+			createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
+			createDockWidget<DockWidget::Representations>( Qt::RightDockWidgetArea );
+			createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+			createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
 
 			// Status bar.
 			QStatusBar * status = statusBar();
@@ -108,8 +73,7 @@ namespace VTX::UI::QT
 			{
 				if ( menu->title().toStdString() == p_ma.idMenu )
 				{
-					// TODO: connect action/callback.
-					menu->addAction( new QAction( QString::fromStdString( p_ma.name ) ) );
+					Helper::addQAction( menu, p_ma.action );
 					return;
 				}
 			}
@@ -123,8 +87,7 @@ namespace VTX::UI::QT
 			{
 				if ( toolbar->windowTitle().toStdString() == p_tba.idToolBar )
 				{
-					// TODO: connect action/callback.
-					toolbar->addAction( new QAction( QString::fromStdString( p_tba.name ) ) );
+					Helper::addQAction( toolbar, p_tba.action );
 					return;
 				}
 			}
@@ -132,21 +95,20 @@ namespace VTX::UI::QT
 			throw std::runtime_error( "Tool bar not found." );
 		}
 
-	  private:
 		template<typename M>
-		void _createMenu()
+		void createMenu()
 		{
 			menuBar()->addMenu( new M( menuBar() ) );
 		}
 
 		template<typename TB>
-		void _createToolBar()
+		void createToolBar()
 		{
 			addToolBar( new TB( this ) );
 		}
 
 		template<typename DW>
-		void _createDockWidget( const Qt::DockWidgetArea & p_area )
+		void createDockWidget( const Qt::DockWidgetArea & p_area )
 		{
 			addDockWidget( p_area, new DW( this ) );
 		}
