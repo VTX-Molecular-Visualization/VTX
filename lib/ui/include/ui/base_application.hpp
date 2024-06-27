@@ -20,11 +20,11 @@ namespace VTX::UI
 
 		void start( const App::Args & p_args ) override
 		{
-			VTXApp::start( p_args );
-
 			_init( p_args );
 			_mainWindow = std::make_unique<MW>();
 			_mainWindow->build();
+
+			VTXApp::start( p_args );
 			_start();
 		}
 		void stop() override

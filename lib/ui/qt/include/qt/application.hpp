@@ -2,20 +2,21 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "main_window.hpp"
+#include <QApplication>
 #include <QPointer>
+#include <QSplashScreen>
 #include <ui/base_application.hpp>
 
-class QApplication;
 class QMenu;
 class QToolBar;
 
 namespace VTX::UI::QT
 {
 
-	class Application : public UI::BaseApplication<MainWindow>
+	class Application : public UI::BaseApplication<MainWindow>, public QApplication
 	{
 	  public:
-		Application() : UI::BaseApplication<MainWindow>() { VTX_DEBUG( "Application()" ); }
+		Application();
 		virtual ~Application() {}
 
 		// Add widgets.
@@ -39,14 +40,17 @@ namespace VTX::UI::QT
 
 	  protected:
 		// Override.
-		void _init( const App::Args & p_args ) override;
+		void _init( const App::Args & ) override;
 		void _start() override;
 		void _stop() override;
 
 	  private:
-		QPointer<QApplication> _qApplication;
+		// QPointer<QApplication>	_qApplication;
+		QPointer<QSplashScreen> _splash;
+		void					_loadTheme();
 
-		void _loadTheme();
+		int _staticConfigurationLauncher;
+		int _staticConfiguration();
 	};
 
 } // namespace VTX::UI::QT

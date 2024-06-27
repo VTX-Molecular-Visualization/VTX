@@ -121,7 +121,6 @@ namespace VTX::UI::QT
 		{
 			for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
 			{
-				VTX_DEBUG( "{}", toolbar->windowTitle().toStdString() );
 				if ( toolbar->windowTitle().toStdString() == p_tba.idToolBar )
 				{
 					// TODO: connect action/callback.

@@ -19,7 +19,8 @@ namespace VTX::UI::QT::Resources
 	constexpr QStringView FILE_STYLESHEET_MACOS	 = u":/stylesheet_ui_mac.css";
 
 	//  Sprites.
-	constexpr QStringView ICON_LOGO = u":/sprite/logo.png";
+	constexpr QStringView SPRITE_SPLASH = u":/sprite/splash.png";
+	constexpr QStringView SPRITE_LOGO	= u":/sprite/logo.png";
 } // namespace VTX::UI::QT::Resources
 
 #endif

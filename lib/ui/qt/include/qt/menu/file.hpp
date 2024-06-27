@@ -13,6 +13,8 @@ namespace VTX::UI::QT::Menu
 		{
 			addAction( new QAction( "New" ) );
 			addSeparator();
+			addAction( new QAction( "Download" ) );
+			addSeparator();
 			addAction( new QAction( "Open" ) );
 			addAction( new QAction( "Open recent" ) );
 			addAction( new QAction( "Save" ) );
