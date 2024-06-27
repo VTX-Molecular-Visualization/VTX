@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 #define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 
+#include "qt/base_widget.hpp"
 #include <QDockWidget>
 #include <QListWidget>
 #include <QMenu>
@@ -13,10 +14,10 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Console : public QDockWidget
+	class Console : public BaseWidget<Console, QDockWidget>
 	{
 	  public:
-		Console( QWidget * p_parent ) : QDockWidget( "Console", p_parent )
+		Console( QWidget * p_parent ) : BaseWidget<Console, QDockWidget>( "Console", p_parent )
 		{
 			setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
@@ -67,7 +68,9 @@ namespace VTX::UI::QT::DockWidget
 			const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
 
 			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
-			newItem->setData( Qt::ForegroundRole, _getMessageColor( p_logInfo.level ) );
+
+			// TODO: use palellete color.
+			// newItem->setData( Qt::ForegroundRole, _getMessageColor( p_logInfo.level ) );
 			newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
 
 			_listWidgetMutex.lock();
@@ -100,7 +103,7 @@ namespace VTX::UI::QT::DockWidget
 		QColor _getMessageColor( const Util::LOG_LEVEL p_level )
 		{
 			QColor res;
-
+			// TODO: use palellete color.
 			/*
 			switch ( p_level )
 			{

@@ -1,16 +1,17 @@
 #ifndef __VTX_UI_QT_MENU_FILE__
 #define __VTX_UI_QT_MENU_FILE__
 
+#include "qt/base_widget.hpp"
 #include "qt/helper.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
 {
 
-	class File : public QMenu
+	class File : public BaseWidget<File, QMenu>
 	{
 	  public:
-		File( QWidget * p_parent ) : QMenu( "File", p_parent )
+		File( QWidget * p_parent ) : BaseWidget<File, QMenu>( "File", p_parent )
 		{
 			using namespace Helper;
 

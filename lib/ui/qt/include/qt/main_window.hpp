@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_MAIN_WINDOW__
 #define __VTX_UI_QT_MAIN_WINDOW__
 
+#include "base_widget.hpp"
 #include "dock_widget/console.hpp"
 #include "dock_widget/inspector.hpp"
 #include "dock_widget/options.hpp"
@@ -24,12 +25,10 @@
 namespace VTX::UI::QT
 {
 
-	class MainWindow : public QMainWindow //, public BaseMainWindow
+	class MainWindow : public BaseWidget<MainWindow, QMainWindow>
 	{
-		Q_OBJECT
-
 	  public:
-		MainWindow() : QMainWindow()
+		MainWindow() : BaseWidget<MainWindow, QMainWindow>(), _statusBar( this )
 		{
 			// Size.
 			resize( 1920, 1080 );
@@ -63,8 +62,8 @@ namespace VTX::UI::QT
 			createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
 
 			// Status bar.
-			QStatusBar * status = statusBar();
-			status->showMessage( "Ready" );
+			setStatusBar( &_statusBar );
+			_statusBar.showMessage( "Ready" );
 		}
 
 		void addMenuAction( const MenuAction & p_ma )
@@ -112,6 +111,9 @@ namespace VTX::UI::QT
 		{
 			addDockWidget( p_area, new DW( this ) );
 		}
+
+	  private:
+		StatusBar _statusBar;
 	};
 
 } // namespace VTX::UI::QT

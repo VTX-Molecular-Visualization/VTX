@@ -24,14 +24,14 @@ namespace VTX::UI::QT
 		int zero	  = 0;
 		_qApplication = new QApplication( zero, nullptr );
 
-		_qApplication->setWindowIcon( QIcon( SPRITE_LOGO.toString() ) );
-		_qApplication->setApplicationDisplayName( APPLICATION_DISPLAY_NAME.toString() );
-		_qApplication->setApplicationName( APPLICATION_NAME.toString() );
-		_qApplication->setApplicationVersion( APPLICATION_VERSION.toString() );
-		_qApplication->setOrganizationName( ORGANIZATION_NAME.toString() );
-		_qApplication->setOrganizationDomain( ORGANIZATION_DOMAIN.toString() );
+		_qApplication->setWindowIcon( QIcon( SPRITE_LOGO ) );
+		_qApplication->setApplicationDisplayName( APPLICATION_DISPLAY_NAME );
+		_qApplication->setApplicationName( APPLICATION_NAME );
+		_qApplication->setApplicationVersion( APPLICATION_VERSION );
+		_qApplication->setOrganizationName( ORGANIZATION_NAME );
+		_qApplication->setOrganizationDomain( ORGANIZATION_DOMAIN );
 
-		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH.toString() ) );
+		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
 		_qSplashScreen->show();
 		_qSplashScreen->showMessage( "Loading..." );
 
@@ -86,17 +86,17 @@ namespace VTX::UI::QT
 		using namespace Resources;
 
 		// Load main stylesheet.
-		QFile stylesheetFile( FILE_STYLESHEET.toString() );
+		QFile stylesheetFile( FILE_STYLESHEET );
 		stylesheetFile.open( QFile::ReadOnly );
 		QString stylesheet = stylesheetFile.readAll();
 
 		// Load os-specific stylesheet.
 #if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINOWS.toString() );
+		QFile stylesheetOSFile( FILE_STYLESHEET_WINOWS );
 #elif __linux__
-		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.toString() );
+		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX );
 #elif __APPLE__
-		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.toString() );
+		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS );
 #else
 		QFile stylesheetOSFile();
 		assert( true );
@@ -108,7 +108,8 @@ namespace VTX::UI::QT
 		// TODO: Load theme file and apply to stylesheet.
 
 		// Set stylesheet to app.
-		_qApplication->setStyleSheet( stylesheet );
+		//_qApplication->setStyleSheet( stylesheet );
+		_qApplication->setStyle( "fusion" );
 	}
 
 	void Application::addMenu( QMenu * const p_menu ) { _mainWindow->menuBar()->addMenu( p_menu ); }

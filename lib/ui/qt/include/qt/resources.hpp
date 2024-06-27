@@ -5,22 +5,31 @@
 
 namespace VTX::UI::QT::Resources
 {
-	constexpr QStringView APPLICATION_DISPLAY_NAME = u"VTX";
-	constexpr QStringView APPLICATION_NAME		   = u"VTX";
-	constexpr QStringView ORGANIZATION_NAME		   = u"VTX Consortium";
-	constexpr QStringView ORGANIZATION_DOMAIN	   = u"vtx.drugdesign.fr";
+	const QString APPLICATION_DISPLAY_NAME = "VTX";
+	const QString APPLICATION_NAME		   = "VTX";
+	const QString ORGANIZATION_NAME		   = "VTX Consortium";
+	const QString ORGANIZATION_DOMAIN	   = "vtx.drugdesign.fr";
 	// TODO: use App constants.
-	constexpr QStringView APPLICATION_VERSION = u"1.0";
+	const QString APPLICATION_VERSION = "1.0";
 
 	// Stylesheets.
-	constexpr QStringView FILE_STYLESHEET		 = u":/stylesheet_ui.css";
-	constexpr QStringView FILE_STYLESHEET_WINOWS = u":/stylesheet_ui_windows.css";
-	constexpr QStringView FILE_STYLESHEET_LINUX	 = u":/stylesheet_ui_linux.css";
-	constexpr QStringView FILE_STYLESHEET_MACOS	 = u":/stylesheet_ui_mac.css";
+	const QString FILE_STYLESHEET		 = ":/stylesheet_ui.css";
+	const QString FILE_STYLESHEET_WINOWS = ":/stylesheet_ui_windows.css";
+	const QString FILE_STYLESHEET_LINUX	 = ":/stylesheet_ui_linux.css";
+	const QString FILE_STYLESHEET_MACOS	 = ":/stylesheet_ui_mac.css";
 
 	//  Sprites.
-	constexpr QStringView SPRITE_SPLASH = u":/sprite/splash.png";
-	constexpr QStringView SPRITE_LOGO	= u":/sprite/logo.png";
+	const QString SPRITE_SPLASH = ":/sprite/splash.png";
+	const QString SPRITE_LOGO	= ":/sprite/logo.png";
+
+	const QString SPRITE_CAMERA_PERSPECTIVE	 = ":/sprite/camera/perspective.png";
+	const QString SPRITE_CAMERA_ORTHOGRAPHIC = ":/sprite/camera/orthographic.png";
+	const QString SPRITE_CAMERA_TRACKBALL	 = ":/sprite/camera/trackball.png";
+	const QString SPRITE_CAMERA_FREEFLY		 = ":/sprite/camera/freefly.png";
+	const QString SPRITE_CAMERA_ORIENT		 = ":/sprite/camera/orient.png";
+	const QString SPRITE_CAMERA_RESET		 = ":/sprite/camera/reset.png";
+
+	const QString SPRITE_SNAPSHOT = ":/sprite/snapshot/snapshot.png";
 } // namespace VTX::UI::QT::Resources
 
 #endif
