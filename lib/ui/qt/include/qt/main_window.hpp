@@ -3,6 +3,7 @@
 
 #include "dock_widget/console.hpp"
 #include "menu/file.hpp"
+#include "menu/help.hpp"
 #include "menu/view.hpp"
 #include "tool_bar/camera.hpp"
 #include <QDockWidget>
@@ -34,32 +35,13 @@ namespace VTX::UI::QT
 		void build()
 		{
 			// Main menu.
-			// File.
 			_createMenu<Menu::File>();
-
-			// Edit.
-			QMenu * editMenu = menuBar()->addMenu( "Edit" );
-
-			// View.
 			_createMenu<Menu::View>();
-
-			// Help.
-			QMenu * helpMenu = menuBar()->addMenu( "Help" );
-			helpMenu->addAction( new QAction( "Documentation" ) );
-			helpMenu->addAction( new QAction( "Report a bug" ) );
-			helpMenu->addAction( new QAction( "Check for updates" ) );
-			helpMenu->addAction( new QAction( "About" ) );
+			_createMenu<Menu::View>();
+			_createMenu<Menu::Help>();
 
 			// Toolbars.
-			// Camera.
-			QToolBar * visuToolBar = addToolBar( "Camera" );
-			visuToolBar->addAction( new QAction( "Perspective" ) );
-			visuToolBar->addSeparator();
-			visuToolBar->addAction( new QAction( "Trackball" ) );
-			visuToolBar->addAction( new QAction( "Freefly" ) );
-			visuToolBar->addSeparator();
-			visuToolBar->addAction( new QAction( "Orient" ) );
-			visuToolBar->addAction( new QAction( "Reset" ) );
+			_createToolBar<ToolBar::Camera>();
 
 			// Snapshot.
 			QToolBar * editToolBar = addToolBar( "Snapshot" );
@@ -161,7 +143,7 @@ namespace VTX::UI::QT
 		template<typename TB>
 		void _createToolBar()
 		{
-			menuBar()->addToolBar( new TB( this ) );
+			addToolBar( new TB( this ) );
 		}
 
 		template<typename DW>

@@ -6,7 +6,9 @@
 namespace VTX::UI::QT::Resources
 {
 	constexpr QStringView APPLICATION_DISPLAY_NAME = u"VTX";
-	constexpr QStringView APPLICATION_NAME		   = u"VTX : High performance molecular visualization software";
+	constexpr QStringView APPLICATION_NAME		   = u"VTX";
+	constexpr QStringView ORGANIZATION_NAME		   = u"VTX Consortium";
+	constexpr QStringView ORGANIZATION_DOMAIN	   = u"vtx.drugdesign.fr";
 	// TODO: use App constants.
 	constexpr QStringView APPLICATION_VERSION = u"1.0";
 

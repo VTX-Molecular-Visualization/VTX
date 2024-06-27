@@ -58,8 +58,6 @@ int main( int p_argc, char * p_argv[] )
 		app = std::unique_ptr<App::VTXApp>( &APP() );
 #endif
 
-		app->start( args );
-
 		// std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
 		// VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
 		// vtxApplication->init();
@@ -68,7 +66,9 @@ int main( int p_argc, char * p_argv[] )
 		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
 
 		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "md_0_1.gro";
-		// vtxApplication->start( { molPath.string() } );
+		// args.add( molPath.string() );
+
+		app->start( args );
 
 		LOGGER().stop();
 		return 0;

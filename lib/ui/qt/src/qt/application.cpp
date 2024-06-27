@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
+#include <QSettings>
 
 namespace VTX::UI::QT
 {
@@ -26,6 +27,8 @@ namespace VTX::UI::QT
 		_qApplication->setApplicationDisplayName( APPLICATION_DISPLAY_NAME.toString() );
 		_qApplication->setApplicationName( APPLICATION_NAME.toString() );
 		_qApplication->setApplicationVersion( APPLICATION_VERSION.toString() );
+		_qApplication->setOrganizationName( ORGANIZATION_NAME.toString() );
+		_qApplication->setOrganizationDomain( ORGANIZATION_DOMAIN.toString() );
 
 		_loadTheme();
 
@@ -44,11 +47,24 @@ namespace VTX::UI::QT
 		addMenuAction( MenuAction { "File", "MENU HOOK TEST" } );
 		addToolBarAction( ToolBarAction { "Camera", "TOOL BAR HOOK TEST" } );
 
+		// Restore settings.
+		QSettings settings;
+		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );
+		_mainWindow->restoreState( settings.value( "windowState" ).toByteArray() );
+
+		// Show app.
 		_mainWindow->show();
 		_qApplication->exec();
 	}
 
-	void Application::_stop() {}
+	void Application::_stop()
+	{
+		// Save settings.
+		QSettings settings;
+		settings.setValue( "geometry", _mainWindow->saveGeometry() );
+		settings.setValue( "windowState", _mainWindow->saveState() );
+		settings.sync();
+	}
 
 	void Application::_loadTheme()
 	{

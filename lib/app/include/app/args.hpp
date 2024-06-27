@@ -16,6 +16,8 @@ namespace VTX::App
 			return std::find( _args.begin(), _args.end(), p_arg ) != _args.end();
 		}
 
+		inline void add( const std::string & p_arg ) { _args.push_back( p_arg ); }
+
 	  private:
 		std::vector<std::string> _args;
 	};
