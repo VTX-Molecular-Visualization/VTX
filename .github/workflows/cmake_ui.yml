@@ -48,9 +48,6 @@ jobs:
         conan export ../python_binding
         conan create . --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
     
-# TODO: tests without gui?
-    
-    - name: Upload dependencies
+    - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: |
-        conan upload qt -r=cano7782
+      run: conan create test --build=missing --settings=compiler.cppstd=20
