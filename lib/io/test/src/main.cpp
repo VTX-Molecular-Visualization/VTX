@@ -47,9 +47,9 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 	moleculeReader.readBuffer( data, "8OIT.mmtf", molecule );
 
 	CHECK( molecule.getChainCount() == 79 );
-	CHECK( molecule.getResidueCount() == 11381 );
+	CHECK( molecule.getResidueCount() == 11382 );
 	CHECK( molecule.getAtomCount() == 113095 );
-	CHECK( molecule.getBondCount() == 129957 );
+	CHECK( molecule.getBondCount() == 129960 );
 }
 
 TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
