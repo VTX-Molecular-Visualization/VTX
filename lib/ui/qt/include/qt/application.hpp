@@ -19,25 +19,6 @@ namespace VTX::UI::QT
 		Application();
 		virtual ~Application() {}
 
-		// Add widgets.
-		void addMenu( QMenu * const );
-		void addToolBar( QToolBar * const );
-		void addDockWidget( Qt::DockWidgetArea, QDockWidget * const );
-		void addDialog( QDialog * const );
-
-		// Create widgets.
-		template<class M>
-		void createMenu()
-		{
-			_mainWindow->menuBar()->addMenu( new M( _mainWindow ) );
-		}
-
-		template<class T>
-		void createToolBar()
-		{
-			_mainWindow->menuBar()->addToolBar( new T( _mainWindow ) );
-		}
-
 	  protected:
 		// Override.
 		void _init( const App::Args & ) override;

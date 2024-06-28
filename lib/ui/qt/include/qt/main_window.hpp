@@ -95,21 +95,27 @@ namespace VTX::UI::QT
 		}
 
 		template<typename M>
-		void createMenu()
+		M * createMenu()
 		{
-			menuBar()->addMenu( new M( menuBar() ) );
+			M * const menu = new M( menuBar() );
+			menuBar()->addMenu( menu );
+			return menu;
 		}
 
 		template<typename TB>
-		void createToolBar()
+		TB * createToolBar()
 		{
-			addToolBar( new TB( this ) );
+			TB * const toolBar = new TB( this );
+			addToolBar( toolBar );
+			return toolBar;
 		}
 
 		template<typename DW>
-		void createDockWidget( const Qt::DockWidgetArea & p_area )
+		DW * createDockWidget( const Qt::DockWidgetArea & p_area )
 		{
-			addDockWidget( p_area, new DW( this ) );
+			DW * const dockWidget = new DW( this );
+			addDockWidget( p_area, dockWidget );
+			return dockWidget;
 		}
 
 	  private:

@@ -53,8 +53,8 @@ namespace VTX::UI::QT
 	void Application::_start()
 	{
 		// TEST: add meta action.
-		addMenuAction( MenuAction { "File", "MENU HOOK TEST" } );
-		addToolBarAction( ToolBarAction { "Camera", "TOOL BAR HOOK TEST" } );
+		// addMenuAction( MenuAction { "File", "MENU HOOK TEST" } );
+		// addToolBarAction( ToolBarAction { "Camera", "TOOL BAR HOOK TEST" } );
 
 		// Restore settings.
 		QSettings settings;
@@ -112,12 +112,4 @@ namespace VTX::UI::QT
 		_qApplication->setStyle( "fusion" );
 	}
 
-	void Application::addMenu( QMenu * const p_menu ) { _mainWindow->menuBar()->addMenu( p_menu ); }
-
-	void Application::addToolBar( QToolBar * const p_toolBar ) { _mainWindow->addToolBar( p_toolBar ); }
-
-	void Application::addDockWidget( const Qt::DockWidgetArea p_area, QDockWidget * const p_dockWidget )
-	{
-		_mainWindow->addDockWidget( p_area, p_dockWidget );
-	}
 } // namespace VTX::UI::QT
