@@ -23,6 +23,8 @@
 #include "tools/mdprep/ui/form_advanced.hpp"
 #include "tools/mdprep/ui/form_basic.hpp"
 //
+#include "tools/mdprep/ui/form.hpp"
+//
 
 // TODO : write generic type for form, as they actually have the same responsibility and need the same kind of stuff.
 
@@ -41,12 +43,11 @@ namespace VTX::QT::Mdprep
 		QWidget *				  _formContainer = nullptr;
 
 		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::FormSwitchButton			   _switchButton;
-		std::optional<VTX::Tool::Mdprep::ui::FormBasic>	   _formBasic;
-		std::optional<VTX::Tool::Mdprep::ui::FormAdvanced> _formAdvanced;
-		EngineCollection								   _mdEngines;
-		int												   _mdEngineCurrentIdx = 0;
-		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer		   _formEngine;
+		VTX::Tool::Mdprep::ui::FormSwitchButton	   _switchButton;
+		VTX::Tool::Mdprep::ui::Form				   _currentForm;
+		EngineCollection						   _mdEngines;
+		int										   _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer _formEngine;
 
 		virtual void _setupUi( const QString & p_name )
 		{
@@ -137,15 +138,12 @@ namespace VTX::QT::Mdprep
 				_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
 				_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
 				VTX::Tool::Mdprep::ui::FormLayouts layouts;
-				if ( _formAdvanced.has_value() )
-					_formAdvanced->get( layouts );
-				if ( _formBasic.has_value() )
-					_formBasic->get( layouts );
+				_currentForm.get( layouts );
 				_formEngine.assign( std::move( layouts ) );
 				_formEngine.activate();
 			}
 
-			_updateFormBasic();
+			_updateForm();
 
 			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
@@ -160,49 +158,41 @@ namespace VTX::QT::Mdprep
 				return p;
 			};
 		}
-		inline void _updateFormBasic()
+		inline void _updateForm()
 		{
-			if ( _formBasic.has_value() && _mdEngines[ _mdEngineCurrentIdx ].has_value() )
+			if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() )
 			{
 				VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
 				VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
-				_formBasic->update( engineSpecificData );
+				_currentForm.update( engineSpecificData );
 			}
 		}
 		inline void _setFormBasic()
 		{
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
-			if ( _formAdvanced.has_value() )
-			{
-				_formAdvanced->get( param );
-				_formAdvanced.reset();
-			}
-			_formBasic.emplace( _formContainer, _SpecificFieldPlacerGetter(), param );
+			_currentForm.get( param );
+			_currentForm = VTX::Tool::Mdprep::ui::Form(
+				VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param )
+			);
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
-			_formBasic->get( layouts );
+			_currentForm.get( layouts );
 			_formEngine.assign( layouts );
 			_formEngine.activate();
-			_updateFormBasic();
+			_updateForm();
 		}
 		inline void _setFormAdvanced()
 		{
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
-			if ( _formBasic.has_value() )
-			{
-				_formBasic->get( param );
-				_formBasic.reset();
-			}
-			_formAdvanced.emplace( _formContainer, param );
+			_currentForm.get( param );
+			_currentForm = VTX::Tool::Mdprep::ui::Form( VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, param ) );
+
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
-			_formAdvanced->get( layouts );
+			_currentForm.get( layouts );
 			_formEngine.assign( layouts );
 			_formEngine.activate();
-			// VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation data;
-			// VTX::Tool::Mdprep::ui::get( *_mdEngines[ _mdEngineCurrentIdx ], data );
-			//_formAdvanced->update( data );
 		}
 		void _setupSlots()
 		{
