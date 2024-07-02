@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 //
+#include <ui/qt/util.hpp>
+//
 #include "tools/mdprep/gateway/backend_gromacs.hpp"
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/gateway/shared.hpp"

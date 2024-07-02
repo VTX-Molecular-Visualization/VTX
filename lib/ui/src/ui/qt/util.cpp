@@ -108,9 +108,7 @@ namespace VTX::UI::QT::Util
 		const char *					p_label,
 		const char *					p_helper,
 		const E_QUESTIONMARK_POSITION & p_postion
-	) :
-		container( new QWidget ),
-		label( new QLabel( p_label ) )
+	) : container( new QWidget ), label( new QLabel( p_label ) )
 	{
 		QHBoxLayout *			 layout		  = new QHBoxLayout( container );
 		QHoverableQuestionMark * questionMark = new QHoverableQuestionMark( p_helper );
@@ -155,5 +153,39 @@ namespace VTX::UI::QT::Util
 			out
 		);
 		return out;
+	}
+
+	ObjectOwnership::ObjectOwnership( QObject * p_ ) noexcept : _obj( p_ ) {}
+
+	void ObjectOwnership::release() noexcept { _obj = nullptr; }
+
+	ObjectOwnership::~ObjectOwnership()
+	{
+		if ( _obj )
+			_obj->deleteLater();
+	}
+
+	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept : _obj( p_._obj ) { p_.release(); }
+
+	ObjectOwnership & ObjectOwnership::operator=( QObject * p_ ) noexcept
+	{
+		if ( _obj )
+			_obj->deleteLater();
+
+		_obj = p_;
+
+		return *this;
+	}
+
+	ObjectOwnership & ObjectOwnership::operator=( ObjectOwnership && p_ ) noexcept
+	{
+		if ( &p_ == this )
+			return *this;
+
+		if ( _obj )
+			_obj->deleteLater();
+		_obj = p_._obj;
+		p_.release();
+		return *this;
 	}
 } // namespace VTX::UI::QT::Util

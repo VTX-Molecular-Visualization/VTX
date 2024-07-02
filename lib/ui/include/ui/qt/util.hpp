@@ -143,6 +143,25 @@ namespace VTX::UI::QT::Util
 	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
 	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
 
+	// Class responsible for deleting a widget on deletion. This class will follow ownership transfer for move
+	// sementics and won't be copyable.
+	class ObjectOwnership
+	{
+		QObject * _obj = nullptr;
+
+	  public:
+		ObjectOwnership() = default;
+		ObjectOwnership( QObject * ) noexcept;
+		void release() noexcept;
+
+		ObjectOwnership & operator=( QObject * ) noexcept;
+
+		~ObjectOwnership();
+		ObjectOwnership( ObjectOwnership && ) noexcept;
+		ObjectOwnership & operator=( ObjectOwnership && ) noexcept;
+		ObjectOwnership( const ObjectOwnership & )			   = delete;
+		ObjectOwnership & operator=( const ObjectOwnership & ) = delete;
+	};
 } // namespace VTX::UI::QT::Util
 
 #endif

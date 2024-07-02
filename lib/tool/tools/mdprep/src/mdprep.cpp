@@ -17,6 +17,7 @@
 #include "tools/mdprep/ui/form_switch_button.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
+#include <ui/qt/util.hpp>
 #include <ui/qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
