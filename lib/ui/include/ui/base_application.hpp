@@ -27,12 +27,6 @@ namespace VTX::UI
 			VTXApp::start( p_args );
 			_start();
 		}
-		void stop() override
-		{
-			_stop();
-
-			VTXApp::stop();
-		}
 
 		void addMenuAction( const MenuAction & p_ma ) { _mainWindow->addMenuAction( p_ma ); }
 		void addToolBarAction( const ToolBarAction & p_tba ) { _mainWindow->addToolBarAction( p_tba ); }
@@ -44,7 +38,6 @@ namespace VTX::UI
 
 		virtual void _init( const App::Args & ) = 0;
 		virtual void _start()					= 0;
-		virtual void _stop()					= 0;
 	};
 
 } // namespace VTX::UI

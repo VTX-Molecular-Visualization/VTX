@@ -136,7 +136,7 @@ int main( int, char ** )
 		Renderer::Proxy::Representation representation1, representation2, representation3;
 
 		representation2.radiusFixed		  = false;
-		representation3.radiusSphereFixed = 0.1f;
+		representation3.radiusSphereFixed = 1.5f;
 
 		std::vector<Renderer::Proxy::Representation *> representations
 			= { &representation1, &representation2, &representation3 };
@@ -147,9 +147,9 @@ int main( int, char ** )
 				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
 		// renderer.setProxyRenderSettings( renderSettings );
-		
-		// renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
-		renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
+
+		renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+		// renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
 
 		// Main loop.
 		while ( isRunning )

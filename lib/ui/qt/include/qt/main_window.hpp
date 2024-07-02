@@ -13,12 +13,15 @@
 #include "menu/file.hpp"
 #include "menu/help.hpp"
 #include "menu/view.hpp"
+#include "opengl_widget.hpp"
 #include "status_bar.hpp"
 #include "tool_bar/camera.hpp"
 #include "tool_bar/snapshot.hpp"
+#include <QDialog>
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
+#include <QPointer>
 #include <ui/descriptors.hpp>
 #include <util/logger.hpp>
 
@@ -28,7 +31,7 @@ namespace VTX::UI::QT
 	class MainWindow : public BaseWidget<MainWindow, QMainWindow>
 	{
 	  public:
-		MainWindow() : BaseWidget<MainWindow, QMainWindow>(), _statusBar( this )
+		MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
 		{
 			// Size.
 			resize( 1920, 1080 );
@@ -50,7 +53,12 @@ namespace VTX::UI::QT
 			createToolBar<ToolBar::Snapshot>();
 
 			// Main area : opengl widget.
-			setCentralWidget( new QWidget( this ) );
+			//_openGLWidget = new OpenGLWidget( this );
+			// setCentralWidget( _openGLWidget );
+			auto * centerPanel = new QDockWidget( "Renderer" );
+			// Set black background.
+			centerPanel->setStyleSheet( "background-color: black" );
+			setCentralWidget( centerPanel );
 
 			// Dock widgets.
 			createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
@@ -62,8 +70,15 @@ namespace VTX::UI::QT
 			createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
 
 			// Status bar.
-			setStatusBar( &_statusBar );
-			_statusBar.showMessage( "Ready" );
+			_statusBar = new StatusBar( this );
+			setStatusBar( _statusBar );
+
+			// Demo.
+			addMenuAction( MenuAction { "Tool 1", "Action 1" } );
+			addMenuAction( MenuAction { "Tool 1", "Action 2" } );
+
+			addToolBarAction( ToolBarAction { "Tool 1", "Action 1" } );
+			addToolBarAction( ToolBarAction { "Tool 1", "Action 2" } );
 		}
 
 		void addMenuAction( const MenuAction & p_ma )
@@ -77,7 +92,8 @@ namespace VTX::UI::QT
 				}
 			}
 
-			throw std::runtime_error( "Menu not found." );
+			QMenu * const menu = menuBar()->addMenu( p_ma.idMenu.c_str() );
+			Helper::addQAction( menu, p_ma.action );
 		}
 
 		void addToolBarAction( const ToolBarAction & p_tba )
@@ -91,7 +107,9 @@ namespace VTX::UI::QT
 				}
 			}
 
-			throw std::runtime_error( "Tool bar not found." );
+			QToolBar * const toolbar = new QToolBar( p_tba.idToolBar.c_str(), this );
+			addToolBar( toolbar );
+			Helper::addQAction( toolbar, p_tba.action );
 		}
 
 		template<typename M>
@@ -119,7 +137,8 @@ namespace VTX::UI::QT
 		}
 
 	  private:
-		StatusBar _statusBar;
+		QPointer<OpenGLWidget> _openGLWidget;
+		QPointer<StatusBar>	   _statusBar;
 	};
 
 } // namespace VTX::UI::QT

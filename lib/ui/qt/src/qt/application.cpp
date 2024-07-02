@@ -7,12 +7,17 @@
 #include <QIcon>
 #include <QSettings>
 #include <QSplashScreen>
+// #include <app/action/application.hpp>
+// #include <app/application/system/action_manager.hpp>
+//  TODO: move to app or don't make internal.
+#include <io/internal/filesystem.hpp>
 
 namespace VTX::UI::QT
 {
 
-	int zero = 0;
 	Application::Application() : UI::BaseApplication<MainWindow>() { VTX_DEBUG( "Application()" ); }
+
+	Application::~Application() { _saveSettings(); }
 
 	void Application::_init( const App::Args & p_args )
 	{
@@ -38,47 +43,20 @@ namespace VTX::UI::QT
 		_loadTheme();
 
 		// TODO: move to parent.
-
 		// Internal::initSettings( App::SETTINGS() );
 		// App::Core::init( dynamic_cast<App::Mode::Visualization &>( *_currentMode ) );
 		//_currentMode->enter();
-
 		// createMenu<Menu::File>();
 
-		_qApplication->connect(
-			_qApplication, &QApplication::aboutToQuit, [ this ]() { BaseApplication<MainWindow>::stop(); }
-		);
+		_qApplication->connect( _qApplication, &QApplication::aboutToQuit, [ this ]() { stop(); } );
 	}
 
 	void Application::_start()
 	{
-		// TEST: add meta action.
-		// addMenuAction( MenuAction { "File", "MENU HOOK TEST" } );
-		// addToolBarAction( ToolBarAction { "Camera", "TOOL BAR HOOK TEST" } );
-
-		// Restore settings.
-		QSettings settings;
-		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );
-		_mainWindow->restoreState( settings.value( "windowState" ).toByteArray() );
-
-		// Show app.
+		_restoreSettings();
 		_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
 		_qApplication->exec();
-	}
-
-	void Application::_stop()
-	{
-		// Save settings.
-		QSettings settings;
-		settings.setValue( "geometry", _mainWindow->saveGeometry() );
-		settings.setValue( "windowState", _mainWindow->saveState() );
-		settings.sync();
-
-		if ( settings.status() != QSettings::NoError )
-		{
-			VTX_ERROR( "Failed to save Qt settings." );
-		}
 	}
 
 	void Application::_loadTheme()
@@ -110,6 +88,45 @@ namespace VTX::UI::QT
 		// Set stylesheet to app.
 		//_qApplication->setStyleSheet( stylesheet );
 		_qApplication->setStyle( "fusion" );
+
+		QPalette palette = _qApplication->palette();
+
+		/*
+		palette.setBrush( QPalette::Window, Qt::Dense3Pattern );
+		palette.setBrush( QPalette::WindowText, Qt::white );
+		palette.setBrush( QPalette::Base, QColor( 25, 25, 25 ) );
+		palette.setBrush( QPalette::AlternateBase, QColor( 53, 53, 53 ) );
+		palette.setBrush( QPalette::ToolTipBase, Qt::white );
+		palette.setBrush( QPalette::ToolTipText, Qt::white );
+		palette.setBrush( QPalette::Text, Qt::white );
+		palette.setBrush( QPalette::Button, QColor( 53, 53, 53 ) );
+		palette.setBrush( QPalette::ButtonText, Qt::white );
+		palette.setBrush( QPalette::BrightText, Qt::red );
+		palette.setBrush( QPalette::Highlight, QColor( 142, 45, 197 ).lighter() );
+		palette.setBrush( QPalette::HighlightedText, Qt::black );
+		*/
+
+		_qApplication->setPalette( palette );
+	}
+
+	void Application::_saveSettings()
+	{
+		QSettings settings;
+		settings.setValue( "geometry", _mainWindow->saveGeometry() );
+		settings.setValue( "windowState", _mainWindow->saveState() );
+		settings.sync();
+
+		if ( settings.status() != QSettings::NoError )
+		{
+			throw std::runtime_error( "Failed to save Qt settings." );
+		}
+	}
+
+	void Application::_restoreSettings()
+	{
+		QSettings settings;
+		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );
+		_mainWindow->restoreState( settings.value( "windowState" ).toByteArray() );
 	}
 
 } // namespace VTX::UI::QT

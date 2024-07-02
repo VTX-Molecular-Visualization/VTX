@@ -35,7 +35,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		App::Args args( p_argc, p_argv );
 
-		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir();
+		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir() / "logs";
 
 		bool debug = args.has( "-debug" );
 #ifdef _DEBUG

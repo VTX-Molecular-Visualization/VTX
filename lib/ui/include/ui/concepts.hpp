@@ -6,7 +6,6 @@
 
 namespace VTX::UI
 {
-
 	template<typename MW>
 	concept ConceptMainWindow =
 		// std::is_base_of<BaseMainWindow, MW>::value &&

@@ -17,6 +17,7 @@
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/internal/monitoring/all_metrics.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
+#include "app/mode/visualization.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/filesystem.hpp>
@@ -66,8 +67,8 @@ namespace VTX::App
 
 		// Internal::initSettings( App::SETTINGS() );
 
-		//_currentMode = std::make_unique<App::Mode::Visualization>();
-		//_currentMode->enter();
+		_currentMode = std::make_unique<App::Mode::Visualization>();
+		_currentMode->enter();
 
 		onStart();
 	}

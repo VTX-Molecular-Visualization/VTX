@@ -31,7 +31,7 @@ namespace VTX::App
 
 		virtual void start( const Args & );
 		void		 update( const float p_elapsedTime = 0 );
-		virtual void stop();
+		void		 stop();
 
 		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
 		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };

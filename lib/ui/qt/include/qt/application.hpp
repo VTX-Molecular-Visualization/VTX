@@ -17,18 +17,20 @@ namespace VTX::UI::QT
 	{
 	  public:
 		Application();
-		virtual ~Application() {}
+		virtual ~Application();
 
 	  protected:
 		// Override.
 		void _init( const App::Args & ) override;
 		void _start() override;
-		void _stop() override;
 
 	  private:
 		QPointer<QApplication>	_qApplication;
 		QPointer<QSplashScreen> _qSplashScreen;
-		void					_loadTheme();
+
+		void _loadTheme();
+		void _saveSettings();
+		void _restoreSettings();
 	};
 
 } // namespace VTX::UI::QT

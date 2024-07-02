@@ -7,7 +7,7 @@ namespace VTX::UI::QT::Resources
 {
 	const QString APPLICATION_DISPLAY_NAME = "VTX";
 	const QString APPLICATION_NAME		   = "VTX";
-	const QString ORGANIZATION_NAME		   = "VTX Consortium";
+	const QString ORGANIZATION_NAME		   = "VTX";
 	const QString ORGANIZATION_DOMAIN	   = "vtx.drugdesign.fr";
 	// TODO: use App constants.
 	const QString APPLICATION_VERSION = "1.0";

@@ -76,8 +76,8 @@ namespace VTX::Bench
 				return;
 			}
 
-			int			i			 = 0;
-			static uint currentFrame = 0;
+			int i = 0;
+			// static uint currentFrame = 0;
 
 			for ( auto & molecule : _molecules )
 			{

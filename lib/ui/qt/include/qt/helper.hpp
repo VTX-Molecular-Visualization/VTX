@@ -16,6 +16,7 @@ namespace VTX::UI::QT::Helper
 		{
 			action->setStatusTip( p_action.tip.value().c_str() );
 			action->setToolTip( p_action.tip.value().c_str() );
+			action->setWhatsThis( p_action.tip.value().c_str() );
 		}
 		if ( p_action.icon.has_value() )
 		{
@@ -25,9 +26,15 @@ namespace VTX::UI::QT::Helper
 		return action;
 	}
 
-	inline void addQAction( QWidget * const p_parent, const UI::Action & p_action )
+	static QAction * addQAction( QWidget * const p_parent, const UI::Action & p_action )
 	{
-		p_parent->addAction( toQAction( p_action ) );
+		QAction * const action = toQAction( p_action );
+		p_parent->addAction( action );
+
+		// Connect signal.
+		// QObject::connect( action, &QAction::triggered, p_action.callback );
+
+		return action;
 	}
 
 } // namespace VTX::UI::QT::Helper
