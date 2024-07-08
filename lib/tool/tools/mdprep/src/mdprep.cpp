@@ -27,8 +27,6 @@
 #include "tools/mdprep/ui/form.hpp"
 //
 
-// TODO : write generic type for form, as they actually have the same responsibility and need the same kind of stuff.
-
 namespace VTX::QT::Mdprep
 {
 
@@ -52,9 +50,8 @@ namespace VTX::QT::Mdprep
 
 		virtual void _setupUi( const QString & p_name )
 		{
-			auto		_t = p_name.toLatin1();
-			std::string v( _t.begin(), _t.end() );
-			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupUi : <{}>", v );
+			auto			_t = p_name.toLatin1();
+			std::string		v( _t.begin(), _t.end() );
 			QWidget * const mainWidget = _instantiateMainWidget( PREFERRED_SIZE, PREFERRED_SIZE );
 
 			UI::QT::QtDockablePanel::_setupUi( p_name );
@@ -145,8 +142,6 @@ namespace VTX::QT::Mdprep
 			}
 
 			_updateForm();
-
-			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
 		}
 		inline std::function<
 			VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
@@ -173,9 +168,8 @@ namespace VTX::QT::Mdprep
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
-			_currentForm = VTX::Tool::Mdprep::ui::Form(
-				VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param )
-			);
+			_currentForm.reset();
+			_currentForm = VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
@@ -188,16 +182,17 @@ namespace VTX::QT::Mdprep
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
-			_currentForm = VTX::Tool::Mdprep::ui::Form( VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, param ) );
+			_currentForm.reset();
+			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, param );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
 			_formEngine.assign( layouts );
 			_formEngine.activate();
+			_updateForm();
 		}
 		void _setupSlots()
 		{
-			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
 			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateMdEngine );
 			_switchButton.subscribeBasicSwitch( [ & ] { this->_setFormBasic(); } );
 			_switchButton.subscribeAdvancedSwitch( [ & ] { this->_setFormAdvanced(); } );

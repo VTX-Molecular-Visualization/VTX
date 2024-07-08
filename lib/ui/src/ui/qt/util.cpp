@@ -162,7 +162,8 @@ namespace VTX::UI::QT::Util
 	ObjectOwnership::~ObjectOwnership()
 	{
 		if ( _obj )
-			_obj->deleteLater();
+			delete _obj;
+		//_obj->deleteLater();
 	}
 
 	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept : _obj( p_._obj ) { p_.release(); }
@@ -170,7 +171,8 @@ namespace VTX::UI::QT::Util
 	ObjectOwnership & ObjectOwnership::operator=( QObject * p_ ) noexcept
 	{
 		if ( _obj )
-			_obj->deleteLater();
+			delete _obj;
+		//_obj->deleteLater();
 
 		_obj = p_;
 
@@ -183,7 +185,8 @@ namespace VTX::UI::QT::Util
 			return *this;
 
 		if ( _obj )
-			_obj->deleteLater();
+			delete _obj;
+		//_obj->deleteLater();
 		_obj = p_._obj;
 		p_.release();
 		return *this;
