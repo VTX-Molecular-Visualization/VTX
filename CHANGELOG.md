@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.4.4] (beta) - 2024-07-09
+
+### Other
+
+- Change download API to https://files.rcsb.org.
+
 ## [0.4.3] (beta) - 2024-04-29
 
 ### Debug
