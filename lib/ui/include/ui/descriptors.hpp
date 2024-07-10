@@ -20,7 +20,9 @@ namespace VTX::UI
 
 		// std::optional<App::Core::Input::Shortcut> shortcut;
 
-		void setTrigger( const TriggerFunction & p_trigger ) { trigger = p_trigger; }
+		// void setTrigger( const TriggerFunction & p_trigger ) { trigger = p_trigger; }
+
+		std::optional<std::string> group = std::nullopt;
 	};
 
 	using WidgetId = std::string;

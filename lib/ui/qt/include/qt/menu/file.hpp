@@ -39,6 +39,10 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::System::Export>();
 			addSeparator();
 			addAction<Action::System::Quit>();
+
+			addSeparator();
+			addAction<Action::Camera::CameraPerspective>();
+			addAction<Action::Camera::CameraOrthographic>();
 		}
 		virtual ~File() {}
 

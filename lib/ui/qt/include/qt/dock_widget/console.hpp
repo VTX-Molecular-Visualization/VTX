@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 
 #include "qt/base_widget.hpp"
+#include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
 #include <QMenu>
@@ -69,8 +70,20 @@ namespace VTX::UI::QT::DockWidget
 
 			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
 
-			// TODO: use palellete color.
-			// newItem->setData( Qt::ForegroundRole, _getMessageColor( p_logInfo.level ) );
+			// TODO: Use palette color?
+			if ( p_logInfo.level == Util::LOG_LEVEL::LOG_ERROR )
+			{
+				newItem->setForeground( Qt::red );
+			}
+			else if ( p_logInfo.level == Util::LOG_LEVEL::LOG_WARNING )
+			{
+				newItem->setForeground( Qt::yellow );
+			}
+			else if ( p_logInfo.level == Util::LOG_LEVEL::LOG_DEBUG )
+			{
+				newItem->setForeground( Qt::green );
+			}
+
 			newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
 
 			_listWidgetMutex.lock();
@@ -98,25 +111,6 @@ namespace VTX::UI::QT::DockWidget
 			_listWidget->removeItemWidget( itemToRemove );
 			_listWidgetMutex.unlock();
 			delete itemToRemove;
-		}
-
-		QColor _getMessageColor( const Util::LOG_LEVEL p_level )
-		{
-			QColor res;
-			// TODO: use palellete color.
-			/*
-			switch ( p_level )
-			{
-			 case Util::LOG_LEVEL::LOG_DEBUG: res = CONSOLE_DEBUG_COLOR; break;
-			 case Util::LOG_LEVEL::LOG_INFO: res = CONSOLE_INFO_COLOR; break;
-			 case Util::LOG_LEVEL::LOG_WARNING: res = CONSOLE_WARNING_COLOR; break;
-			 case Util::LOG_LEVEL::LOG_ERROR: res = CONSOLE_ERROR_COLOR; break;
-			 case Util::LOG_LEVEL::LOG_CRITICAL: res = CONSOLE_CRITICAL_COLOR; break;
-			default: res = QColor(); break;
-			}
-			*/
-
-			return res;
 		}
 	};
 

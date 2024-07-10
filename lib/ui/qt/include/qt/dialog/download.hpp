@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Dialog
 
 			QVBoxLayout * layout = new QVBoxLayout( this );
 
-			// Url.
+			// URL.
 			QLabel *	labelURL	= new QLabel( "Server URL", this );
 			QComboBox * comboBoxURL = new QComboBox( this );
 			comboBoxURL->setEditable( true );
@@ -47,8 +47,8 @@ namespace VTX::UI::QT::Dialog
 			_loadHistory( _SETTING_KEY_URL, comboBoxURL );
 			_loadHistory( _SETTING_KEY_PDB, comboBoxPDB );
 
-			// Avoid losing default url if not in history.
-			if ( comboBoxURL->findText( _DEFAULT_URL.c_str() ) == -1 )
+			// FIXME: Avoid losing default url if not in history.
+			if ( comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
 			{
 				comboBoxURL->addItem( _DEFAULT_URL.c_str() );
 			}

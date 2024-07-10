@@ -107,6 +107,7 @@ namespace VTX::UI::QT
 		palette.setBrush( QPalette::Button, QColor( 53, 53, 53 ) );
 		palette.setBrush( QPalette::ButtonText, Qt::white );
 		palette.setBrush( QPalette::BrightText, Qt::red );
+		 palette.setColor(QPalette::Link, QColor(0, 0, 255));
 		palette.setBrush( QPalette::Highlight, QColor( 142, 45, 197 ).lighter() );
 		palette.setBrush( QPalette::HighlightedText, Qt::black );
 		*/

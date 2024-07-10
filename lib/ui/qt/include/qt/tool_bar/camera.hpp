@@ -12,7 +12,8 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget<Camera, QToolBar>( "Camera", p_parent )
 		{
-			addAction<Action::Camera::ChangeProjection>();
+			addAction<Action::Camera::CameraPerspective>();
+			addAction<Action::Camera::CameraOrthographic>();
 			addSeparator();
 			addAction<Action::Camera::Trackball>();
 			addAction<Action::Camera::Freefly>();

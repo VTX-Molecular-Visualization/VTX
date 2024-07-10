@@ -4,6 +4,7 @@
 #include "helper.hpp"
 #include "resources.hpp"
 #include <QAction>
+#include <QActionGroup>
 #include <app/action/application.hpp>
 #include <app/application/system/action_manager.hpp>
 #include <ui/descriptors.hpp>
@@ -14,7 +15,8 @@ namespace VTX::UI::QT
 	template<typename A>
 	concept ConceptAction = std::is_base_of_v<UI::Action, A>;
 
-	static std::map<std::string, QAction *> ACTIONS;
+	static std::map<std::string, QAction *>		 ACTIONS;
+	static std::map<std::string, QActionGroup *> ACTION_GROUPS;
 
 	template<ConceptAction T>
 	static QAction * const ACTION()
@@ -43,6 +45,18 @@ namespace VTX::UI::QT
 			if ( action.icon.has_value() )
 			{
 				qAction->setIcon( QIcon( action.icon.value().c_str() ) );
+			}
+			// Group.
+			if ( action.group.has_value() )
+			{
+				std::string group = action.group.value();
+				if ( not ACTION_GROUPS.contains( group ) )
+				{
+					ACTION_GROUPS[ group ] = new QActionGroup( nullptr );
+				}
+
+				qAction->setCheckable( true );
+				ACTION_GROUPS[ group ]->addAction( qAction );
 			}
 			// Action.
 			if ( action.trigger.has_value() )
@@ -135,14 +149,25 @@ namespace VTX::UI::QT
 		// Camera.
 		namespace Camera
 		{
-
-			struct ChangeProjection : public UI::Action
+			struct CameraOrthographic : public UI::Action
 			{
-				ChangeProjection()
+				CameraOrthographic()
 				{
-					name = "Perspective";
-					tip	 = "Change projection mode (perspective/orthographic)";
-					icon = ":/sprite/camera/perspective.png";
+					name  = "Orthographic";
+					tip	  = "Change projection mode (perspective/orthographic)";
+					icon  = ":/sprite/camera/orthographic.png";
+					group = "CameraProjection";
+				}
+			};
+
+			struct CameraPerspective : public UI::Action
+			{
+				CameraPerspective()
+				{
+					name  = "Perspective";
+					tip	  = "Change projection mode (perspective/orthographic)";
+					icon  = ":/sprite/camera/perspective.png";
+					group = "CameraProjection";
 				}
 			};
 
@@ -150,9 +175,10 @@ namespace VTX::UI::QT
 			{
 				Trackball()
 				{
-					name = "Trackball";
-					tip	 = "Use Trackball controller";
-					icon = ":/sprite/camera/trackball.png";
+					name  = "Trackball";
+					tip	  = "Use Trackball controller";
+					icon  = ":/sprite/camera/trackball.png";
+					group = "CameraController";
 				}
 			};
 
@@ -160,9 +186,10 @@ namespace VTX::UI::QT
 			{
 				Freefly()
 				{
-					name = "Freefly";
-					tip	 = "Use Freefly controller";
-					icon = ":/sprite/camera/freefly.png";
+					name  = "Freefly";
+					tip	  = "Use Freefly controller";
+					icon  = ":/sprite/camera/freefly.png";
+					group = "CameraController";
 				}
 			};
 
