@@ -162,6 +162,10 @@ namespace VTX::UI::QT::Util
 		ObjectOwnership( const ObjectOwnership & )			   = delete;
 		ObjectOwnership & operator=( const ObjectOwnership & ) = delete;
 	};
+
+	// Extract uint64 number from input textbox, or UINT64_MAX if the number couldn't be red. Do nothing if src is
+	// nullptr.
+	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept;
 } // namespace VTX::UI::QT::Util
 
 #endif

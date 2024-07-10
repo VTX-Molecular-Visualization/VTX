@@ -191,4 +191,21 @@ namespace VTX::UI::QT::Util
 		p_.release();
 		return *this;
 	}
+	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept
+	{
+		if ( p_src == nullptr )
+			return;
+		try
+		{
+			p_dest = std::stoull( p_src->text().toStdString() );
+		}
+		catch ( std::invalid_argument & )
+		{
+			p_dest = UINT64_MAX;
+		}
+		catch ( std::out_of_range & )
+		{
+			p_dest = UINT64_MAX;
+		}
+	}
 } // namespace VTX::UI::QT::Util
