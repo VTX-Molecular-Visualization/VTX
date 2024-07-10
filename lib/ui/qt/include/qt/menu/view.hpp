@@ -13,8 +13,7 @@ namespace VTX::UI::QT::Menu
 	  public:
 		View( QWidget * p_parent ) : BaseWidget<View, QMenu>( "View", p_parent )
 		{
-			using namespace Helper;
-
+			/*
 			addQAction( this, { "Console", "Show/hide console window" } );
 			addQAction( this, { "Inspector", "Show/hide inspector window" } );
 			addQAction( this, { "Options", "Show/hide options window" } );
@@ -32,6 +31,7 @@ namespace VTX::UI::QT::Menu
 				action->setCheckable( true );
 				action->setChecked( true );
 			}
+			*/
 		}
 
 		virtual ~View() {}

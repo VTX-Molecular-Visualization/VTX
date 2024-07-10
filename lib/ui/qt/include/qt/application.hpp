@@ -13,11 +13,11 @@ class QSplashScreen;
 namespace VTX::UI::QT
 {
 
-	class Application : public UI::BaseApplication<MainWindow>
+	class Application final : public UI::BaseApplication<MainWindow>
 	{
 	  public:
 		Application();
-		virtual ~Application();
+		~Application();
 
 	  protected:
 		// Override.

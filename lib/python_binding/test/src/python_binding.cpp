@@ -2,11 +2,11 @@
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
+#include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
-#include <io/internal/filesystem.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <sstream>
@@ -18,7 +18,7 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 {
 	using namespace VTX;
 
-	const FilePath	  scriptPath   = IO::Internal::Filesystem::getInternalDataDir() / ( p_scriptName + ".py" );
+	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / ( p_scriptName + ".py" );
 	std::stringstream ssCommandRun = std::stringstream();
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
@@ -36,8 +36,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );
 
-	const FilePath moleculePath
-		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
 	App::Action::Application::Open openAction = App::Action::Application::Open( moleculePath );
 	openAction.execute();
@@ -64,7 +63,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 		VTX_ERROR( "bad exception catch : {}", e.what() );
 	}
 
-	const FilePath scriptPath = IO::Internal::Filesystem::getInternalDataDir() / "script_test.py";
+	const FilePath scriptPath = App::Filesystem::getInternalDataDir() / "script_test.py";
 
 	try
 	{
@@ -75,7 +74,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 		VTX_INFO( "{}", e.what() );
 	}
 
-	const FilePath badScriptPath = IO::Internal::Filesystem::getInternalDataDir() / "bad_script_test.py";
+	const FilePath badScriptPath = App::Filesystem::getInternalDataDir() / "bad_script_test.py";
 
 	try
 	{
@@ -96,7 +95,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration]" )
 
 	interpretor.runCommand( ssCommandRun.str() );
 
-	const FilePath scenePath = IO::Internal::Filesystem::getInternalDataDir() / "scene_test.vtx";
+	const FilePath scenePath = App::Filesystem::getInternalDataDir() / "scene_test.vtx";
 
 	if ( std::filesystem::exists( scenePath ) )
 		std::filesystem::remove( scenePath );
@@ -130,8 +129,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath
-		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
 	VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();

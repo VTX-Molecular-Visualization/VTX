@@ -7,12 +7,12 @@
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/render/proxy_molecule.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
+#include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <entt/entt.hpp>
 #include <functional>
-#include <io/internal/filesystem.hpp>
 #include <renderer/proxy/molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
@@ -67,7 +67,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
 	// Create MoleculeEntity
-	const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	const FilePath				moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 	Action::Scene::LoadMolecule openAction	 = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
@@ -116,7 +116,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	Test::Util::App::initApp();
 
 	// Create MoleculeEntity
-	const FilePath moleculePath = IO::Internal::Filesystem::getInternalDataDir() / moleculePathname;
+	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 
 	Action::Scene::LoadMolecule openAction = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();

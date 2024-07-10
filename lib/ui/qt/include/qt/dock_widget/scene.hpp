@@ -98,7 +98,7 @@ namespace VTX::UI::QT::DockWidget
 			_tree->setHeaderHidden( true );
 			_tree->setSelectionMode( QAbstractItemView::ExtendedSelection );
 			_tree->setRootIsDecorated( true );
-			_tree->setItemsExpandable( true );
+			//_tree->setItemsExpandable( true );
 			_tree->setAnimated( true );
 			_tree->setIndentation( 20 );
 			_tree->setSortingEnabled( false );
@@ -107,7 +107,7 @@ namespace VTX::UI::QT::DockWidget
 			_tree->setAutoScroll( true );
 			_tree->setAutoScrollMargin( 16 );
 			_tree->setAutoFillBackground( true );
-			_tree->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+			//_tree->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 			_tree->setLineWidth( 1 );
 			_tree->setMidLineWidth( 0 );
 			_tree->setFocusPolicy( Qt::FocusPolicy::StrongFocus );
@@ -117,7 +117,7 @@ namespace VTX::UI::QT::DockWidget
 			_tree->setDragEnabled( false );
 			_tree->setDragDropMode( QAbstractItemView::DragDropMode::NoDragDrop );
 			_tree->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-			_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
+			//_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
 			_tree->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 			_tree->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 			_tree->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );

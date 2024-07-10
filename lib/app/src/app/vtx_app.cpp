@@ -13,25 +13,26 @@
 #include "app/core/worker/worker_manager.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
+#include "app/filesystem.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/internal/monitoring/all_metrics.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
 #include <exception>
-#include <io/internal/filesystem.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+
 namespace VTX::App
 {
 
-	VTXApp::VTXApp() { VTX_DEBUG( "VTXApp::VTXApp()" ); }
+	VTXApp::VTXApp() { VTX_DEBUG( "VTXApp()" ); }
 
-	VTXApp::~VTXApp() = default;
+	VTXApp::~VTXApp() { VTX_DEBUG( "~VTXApp()" ); }
 
 	void VTXApp::start( const Args & p_args )
 	{
-		VTX_INFO( "Starting application: {}", IO::Internal::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Starting application: {}", Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		//// Create Databases
 		//_representationLibrary
@@ -130,8 +131,11 @@ namespace VTX::App
 			)
 		);
 	}
+
 	void VTXApp::stop()
 	{
+		VTX_DEBUG( "VTXApp::stop()" );
+
 		onStop();
 
 		_stop();

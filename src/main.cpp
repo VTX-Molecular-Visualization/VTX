@@ -1,4 +1,4 @@
-#include <io/internal/filesystem.hpp>
+#include <app/filesystem.hpp>
 #include <string>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -35,7 +35,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		App::Args args( p_argc, p_argv );
 
-		const FilePath logDir = VTX::Util::Filesystem::getExecutableDir() / "logs";
+		const FilePath logDir = VTX::App::Filesystem::getLogsDir();
 
 		bool debug = args.has( "-debug" );
 #ifdef _DEBUG
@@ -65,7 +65,7 @@ int main( int p_argc, char * p_argv[] )
 		// const std::vector<std::string> args( p_argv, p_argv + p_argc );
 		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
 
-		const FilePath molPath = IO::Internal::Filesystem::getInternalDataDir() / "md_0_1.gro";
+		const FilePath molPath = App::Filesystem::getInternalDataDir() / "md_0_1.gro";
 		// args.add( molPath.string() );
 
 		app->start( args );

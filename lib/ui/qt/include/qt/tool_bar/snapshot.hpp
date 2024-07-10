@@ -14,12 +14,14 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		Snapshot( QWidget * p_parent ) : BaseWidget<Snapshot, QToolBar>( "Snapshot", p_parent )
 		{
+			/*
 			using namespace Helper;
 
 			addQAction( this, { "Snapshot", "Save current image", Resources::SPRITE_SNAPSHOT.toStdString() } );
 			addQAction(
 				this, { "Export image", "Open dialog to export image", Resources::SPRITE_SNAPSHOT.toStdString() }
 			);
+			*/
 		}
 
 		virtual ~Snapshot() {}

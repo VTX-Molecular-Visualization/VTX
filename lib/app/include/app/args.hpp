@@ -1,5 +1,5 @@
-#ifndef ___VTX_APP_ARGS___
-#define ___VTX_APP_ARGS___
+#ifndef __VTX_APP_ARGS__
+#define __VTX_APP_ARGS__
 
 #include <string>
 #include <vector>

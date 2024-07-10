@@ -1,4 +1,5 @@
 #include "app/internal/util/molecule.hpp"
+#include "app/filesystem.hpp"
 #include <sstream>
 
 namespace VTX::App::Internal::Util::Molecule
@@ -8,7 +9,9 @@ namespace VTX::App::Internal::Util::Molecule
 		VTX::IO::Reader::ResidueDataReader reader = IO::Reader::ResidueDataReader();
 		VTX::IO::Struct::ResidueData	   residueData;
 
-		if ( reader.readResidueData( p_residueSymbol, residueData ) )
+		if ( reader.readResidueData(
+				 Filesystem::getResidueDataFilePath( p_residueSymbol ), p_residueSymbol, residueData
+			 ) )
 			mapLoadedResidueData.emplace( p_residueSymbol, residueData );
 		else
 			mapLoadedResidueData.emplace( p_residueSymbol, IO::Struct::ResidueData::DEFAULT );

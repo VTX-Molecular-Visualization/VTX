@@ -1,9 +1,9 @@
 #include "util/app.hpp"
 #include <app/action/scene.hpp>
+#include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <io/internal/filesystem.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <sstream>
@@ -20,13 +20,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath
-		= IO::Internal::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
 	App::Action::Scene::LoadMolecule loadMoleculeAction = App::Action::Scene::LoadMolecule( moleculePath );
 	loadMoleculeAction.execute();
 
-	const FilePath	  scriptPath   = IO::Internal::Filesystem::getInternalDataDir() / "test_api.py";
+	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / "test_api.py";
 	std::stringstream ssCommandRun = std::stringstream();
 
 	ssCommandRun << "runScript(" << scriptPath << " )";

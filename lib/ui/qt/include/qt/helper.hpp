@@ -2,13 +2,15 @@
 #define __VTX_UI_QT_HELPER__
 
 #include <QAction>
+#include <QWidget>
 #include <ui/descriptors.hpp>
 
 namespace VTX::UI::QT::Helper
 {
-
+	/*
 	static QAction * const toQAction( const UI::Action & p_action )
 	{
+
 		QAction * const action = new QAction();
 
 		action->setText( p_action.name.c_str() );
@@ -36,6 +38,7 @@ namespace VTX::UI::QT::Helper
 
 		return action;
 	}
+	*/
 
 } // namespace VTX::UI::QT::Helper
 

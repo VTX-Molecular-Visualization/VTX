@@ -2,8 +2,6 @@
 #define __VTX_UI_QT_TOOL_BAR_CAMERA__
 
 #include "qt/base_widget.hpp"
-#include "qt/helper.hpp"
-#include "qt/resources.hpp"
 #include <QToolBar>
 
 namespace VTX::UI::QT::ToolBar
@@ -14,24 +12,13 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget<Camera, QToolBar>( "Camera", p_parent )
 		{
-			using namespace Helper;
-
-			addQAction(
-				this,
-				{ "Perspective",
-				  "Change projection mode (perspective/orthographic)",
-				  Resources::SPRITE_CAMERA_PERSPECTIVE.toStdString() }
-			);
+			addAction<Action::Camera::ChangeProjection>();
 			addSeparator();
-			addQAction(
-				this, { "Trackball", "Use Trackball controller", Resources::SPRITE_CAMERA_TRACKBALL.toStdString() }
-			);
-			addQAction( this, { "Freefly", "Use Freefly controller", Resources::SPRITE_CAMERA_FREEFLY.toStdString() } );
+			addAction<Action::Camera::Trackball>();
+			addAction<Action::Camera::Freefly>();
 			addSeparator();
-			addQAction(
-				this, { "Orient", "Orient camera on selection", Resources::SPRITE_CAMERA_ORIENT.toStdString() }
-			);
-			addQAction( this, { "Reset", "Reset camera", Resources::SPRITE_CAMERA_RESET.toStdString() } );
+			addAction<Action::Camera::Orient>();
+			addAction<Action::Camera::Reset>();
 		}
 
 		virtual ~Camera() {}

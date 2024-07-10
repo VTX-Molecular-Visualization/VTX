@@ -16,7 +16,7 @@ namespace VTX::UI
 	{
 	  public:
 		BaseApplication() : VTXApp() { VTX_DEBUG( "BaseApplication()" ); }
-		virtual ~BaseApplication() {}
+		virtual ~BaseApplication() { VTX_DEBUG( "~BaseApplication()" ); }
 
 		void start( const App::Args & p_args ) override
 		{
@@ -28,10 +28,10 @@ namespace VTX::UI
 			_start();
 		}
 
-		void addMenuAction( const MenuAction & p_ma ) { _mainWindow->addMenuAction( p_ma ); }
-		void addToolBarAction( const ToolBarAction & p_tba ) { _mainWindow->addToolBarAction( p_tba ); }
+		// void addMenuAction( const MenuAction & p_ma ) { _mainWindow->addMenuAction( p_ma ); }
+		// void addToolBarAction( const ToolBarAction & p_tba ) { _mainWindow->addToolBarAction( p_tba ); }
 
-		inline MW * getMainWindow() { return _mainWindow.get(); }
+		// inline MW * const getMainWindow() { return _mainWindow.get(); }
 
 	  protected:
 		std::unique_ptr<MW> _mainWindow;

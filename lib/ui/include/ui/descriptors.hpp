@@ -6,22 +6,26 @@
 
 namespace VTX::UI
 {
-	using WidgetId = std::string;
-
-	struct BaseMainWindow
-	{
-	};
 
 	struct Action
 	{
 		std::string				   name;
 		std::optional<std::string> tip	= std::nullopt;
 		std::optional<std::string> icon = std::nullopt;
-		// callback or vtx action
+
+		// Or a custom function in App::Action.
+
+		using TriggerFunction				   = std::function<void()>;
+		std::optional<TriggerFunction> trigger = std::nullopt;
+
 		// std::optional<App::Core::Input::Shortcut> shortcut;
+
+		void setTrigger( const TriggerFunction & p_trigger ) { trigger = p_trigger; }
 	};
 
+	using WidgetId = std::string;
 
+	/*
 	struct MenuAction
 	{
 		WidgetId idMenu;
@@ -33,6 +37,7 @@ namespace VTX::UI
 		WidgetId idToolBar;
 		Action	 action;
 	};
+	*/
 
 	struct DockPanel
 	{

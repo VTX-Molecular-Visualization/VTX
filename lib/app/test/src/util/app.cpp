@@ -5,9 +5,9 @@
 #include <app/component/render/camera.hpp>
 #include <app/component/render/proxy_camera.hpp>
 #include <app/component/render/proxy_color_layout.hpp>
+#include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <io/internal/filesystem.hpp>
 #include <string>
 
 namespace VTX::App::Test::Util
@@ -47,7 +47,7 @@ namespace VTX::App::Test::Util
 	void App::loadMolecule( const std::string & p_moleculePath )
 	{
 		// Create MoleculeEntity
-		const FilePath				moleculePath = IO::Internal::Filesystem::getInternalDataDir() / p_moleculePath;
+		const FilePath				moleculePath	   = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
 		Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
 		loadMoleculeAction.execute();
 	}

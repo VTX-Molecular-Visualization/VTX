@@ -6,17 +6,19 @@
 
 namespace VTX::IO::Reader
 {
-	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, Struct::ResidueData & p_residueData )
+	bool ResidueDataReader::readResidueData(
+		const FilePath &	  p_filepath,
+		const std::string &	  p_residueSymbol,
+		Struct::ResidueData & p_residueData
+	)
 	{
-		const FilePath filepath = Internal::Filesystem::getResidueDataFilePath( p_residueSymbol );
-
-		if ( not std::filesystem::exists( filepath ) )
+		if ( not std::filesystem::exists( p_filepath ) )
 		{
-			VTX_WARNING( "Residue data file not found: {}", filepath.string() );
+			VTX_WARNING( "Residue data file not found: {}", p_filepath.string() );
 			return false;
 		}
 
-		std::string residueFileData = VTX::Util::Filesystem::readPath( filepath );
+		std::string residueFileData = VTX::Util::Filesystem::readPath( p_filepath );
 
 		std::stringstream stream = std::stringstream( residueFileData );
 

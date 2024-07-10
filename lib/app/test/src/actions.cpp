@@ -9,11 +9,11 @@
 #include <app/core/action/base_action.hpp>
 #include <app/core/action/base_action_undonable.hpp>
 #include <app/core/ecs/base_entity.hpp>
+#include <app/filesystem.hpp>
 #include <app/internal/application/settings.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <io/internal/filesystem.hpp>
 #include <util/filesystem.hpp>
 
 namespace VTX::App::Test
@@ -153,12 +153,12 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 
 	const App::Application::Settings::Settings modifiedSettings = SETTINGS();
 
-	if ( std::filesystem::exists( IO::Internal::Filesystem::getSettingJsonFile() ) )
-		std::filesystem::remove( IO::Internal::Filesystem::getSettingJsonFile() );
+	if ( std::filesystem::exists( Filesystem::getSettingJsonFile() ) )
+		std::filesystem::remove( Filesystem::getSettingJsonFile() );
 
-	CHECK( !std::filesystem::exists( IO::Internal::Filesystem::getSettingJsonFile() ) );
+	CHECK( !std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
 	VTX_ACTION().execute<Action::Application::SaveSettings>();
-	CHECK( std::filesystem::exists( IO::Internal::Filesystem::getSettingJsonFile() ) );
+	CHECK( std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
 	CHECK( SETTINGS() == modifiedSettings );
 
 	VTX_ACTION().execute<Action::Application::ResetSettings>();

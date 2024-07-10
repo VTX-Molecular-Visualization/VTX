@@ -9,6 +9,7 @@ namespace VTX::App::Application::System
 	ActionManager::~ActionManager() = default;
 	void ActionManager::execute( std::unique_ptr<BaseAction> & p_actionPtr )
 	{
+		VTX_DEBUG( "ActionManager::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
 			p_actionPtr->execute();
@@ -34,6 +35,7 @@ namespace VTX::App::Application::System
 	}
 	void ActionManager::execute( std::unique_ptr<BaseActionUndonable> & p_actionPtr )
 	{
+		VTX_DEBUG( "ActionManager::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
 			p_actionPtr->execute();

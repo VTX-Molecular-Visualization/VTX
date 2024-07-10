@@ -9,15 +9,18 @@
 #include <QSplashScreen>
 // #include <app/action/application.hpp>
 // #include <app/application/system/action_manager.hpp>
-//  TODO: move to app or don't make internal.
-#include <io/internal/filesystem.hpp>
+#include <app/filesystem.hpp>
 
 namespace VTX::UI::QT
 {
 
 	Application::Application() : UI::BaseApplication<MainWindow>() { VTX_DEBUG( "Application()" ); }
 
-	Application::~Application() { _saveSettings(); }
+	Application::~Application()
+	{
+		VTX_DEBUG( "~Application()" );
+		_saveSettings();
+	}
 
 	void Application::_init( const App::Args & p_args )
 	{
@@ -35,6 +38,8 @@ namespace VTX::UI::QT
 		_qApplication->setApplicationVersion( APPLICATION_VERSION );
 		_qApplication->setOrganizationName( ORGANIZATION_NAME );
 		_qApplication->setOrganizationDomain( ORGANIZATION_DOMAIN );
+
+		QSettings::setDefaultFormat( QSettings::IniFormat );
 
 		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
 		_qSplashScreen->show();
@@ -111,7 +116,11 @@ namespace VTX::UI::QT
 
 	void Application::_saveSettings()
 	{
-		QSettings settings;
+		QSettings settings(
+			QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat
+		);
+
+		VTX_INFO( "Saving settings: {}", settings.fileName().toStdString() );
 		settings.setValue( "geometry", _mainWindow->saveGeometry() );
 		settings.setValue( "windowState", _mainWindow->saveState() );
 		settings.sync();
@@ -124,7 +133,11 @@ namespace VTX::UI::QT
 
 	void Application::_restoreSettings()
 	{
-		QSettings settings;
+		QSettings settings(
+			QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat
+		);
+
+		VTX_INFO( "Restoring settings: {}", settings.fileName().toStdString() );
 		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );
 		_mainWindow->restoreState( settings.value( "windowState" ).toByteArray() );
 	}

@@ -1,5 +1,6 @@
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
+#include <app/filesystem.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
@@ -20,7 +21,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	interpretor.runCommand( "new_command()" );
 
-	const FilePath scriptPath = IO::Internal::Filesystem::getInternalDataDir() / "custom_module.py";
+	const FilePath						 scriptPath	  = App::Filesystem::getInternalDataDir() / "custom_module.py";
 	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
 	customModule.displayInfo();

@@ -56,8 +56,6 @@ namespace VTX::UI::QT
 			//_openGLWidget = new OpenGLWidget( this );
 			// setCentralWidget( _openGLWidget );
 			auto * centerPanel = new QDockWidget( "Renderer" );
-			// Set black background.
-			centerPanel->setStyleSheet( "background-color: black" );
 			setCentralWidget( centerPanel );
 
 			// Dock widgets.
@@ -74,13 +72,16 @@ namespace VTX::UI::QT
 			setStatusBar( _statusBar );
 
 			// Demo.
+			/*
 			addMenuAction( MenuAction { "Tool 1", "Action 1" } );
 			addMenuAction( MenuAction { "Tool 1", "Action 2" } );
 
 			addToolBarAction( ToolBarAction { "Tool 1", "Action 1" } );
 			addToolBarAction( ToolBarAction { "Tool 1", "Action 2" } );
+			*/
 		}
 
+		/*
 		void addMenuAction( const MenuAction & p_ma )
 		{
 			for ( QMenu * const menu : menuBar()->findChildren<QMenu *>() )
@@ -111,6 +112,7 @@ namespace VTX::UI::QT
 			addToolBar( toolbar );
 			Helper::addQAction( toolbar, p_tba.action );
 		}
+		*/
 
 		template<typename M>
 		M * createMenu()
