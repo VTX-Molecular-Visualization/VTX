@@ -5,13 +5,6 @@
 
 namespace VTX::UI::QT::Resources
 {
-	const QString APPLICATION_DISPLAY_NAME = "VTX";
-	const QString APPLICATION_NAME		   = "VTX";
-	const QString ORGANIZATION_NAME		   = "VTX";
-	const QString ORGANIZATION_DOMAIN	   = "vtx.drugdesign.fr";
-	// TODO: use App constants.
-	const QString APPLICATION_VERSION = "1.0";
-
 	// Stylesheets.
 	const QString FILE_STYLESHEET		 = ":/stylesheet_ui.css";
 	const QString FILE_STYLESHEET_WINOWS = ":/stylesheet_ui_windows.css";

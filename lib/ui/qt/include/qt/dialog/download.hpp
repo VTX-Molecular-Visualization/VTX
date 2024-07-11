@@ -124,6 +124,8 @@ namespace VTX::UI::QT::Dialog
 		const std::string _DEFAULT_URL	   = "https://files.rcsb.org/download/" + _PDB_ID_TEMPLATE + ".pdb ";
 		const std::string _SETTING_KEY_URL = "dialogDownloadURLHistory";
 		const std::string _SETTING_KEY_PDB = "dialogDownloadPDBHistory";
+		// TODO: move to settings.
+		const uint _MAX_HISTORY_SIZE = 10;
 
 		void _loadHistory( const std::string & p_key, QComboBox * const p_comboBox )
 		{
@@ -136,11 +138,18 @@ namespace VTX::UI::QT::Dialog
 		{
 			QSettings	settings;
 			QStringList history = settings.value( p_key.c_str() ).toStringList();
+			// Remove duplicates.
 			if ( history.contains( p_value.c_str() ) )
 			{
 				history.removeAll( p_value.c_str() );
 			}
+			// Prepend the last one.
 			history.prepend( p_value.c_str() );
+			// Limit to 10.
+			while ( history.size() > _MAX_HISTORY_SIZE )
+			{
+				history.removeLast();
+			}
 			settings.setValue( p_key.c_str(), history );
 		}
 	};

@@ -10,6 +10,8 @@
 // #include <app/action/application.hpp>
 // #include <app/application/system/action_manager.hpp>
 #include <app/filesystem.hpp>
+#include <app/infos.hpp>
+#include <util/enum.hpp>
 
 namespace VTX::UI::QT
 {
@@ -19,12 +21,21 @@ namespace VTX::UI::QT
 	Application::~Application()
 	{
 		VTX_DEBUG( "~Application()" );
-		_saveSettings();
+
+		try
+		{
+			_saveSettings();
+		}
+		catch ( const std::exception & e )
+		{
+			VTX_ERROR( "Failed to save settings: {}", e.what() );
+		}
 	}
 
 	void Application::_init( const App::Args & p_args )
 	{
 		using namespace Resources;
+		using namespace VTX::App::Info;
 
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
@@ -33,11 +44,11 @@ namespace VTX::UI::QT
 		_qApplication = new QApplication( zero, nullptr );
 
 		_qApplication->setWindowIcon( QIcon( SPRITE_LOGO ) );
-		_qApplication->setApplicationDisplayName( APPLICATION_DISPLAY_NAME );
-		_qApplication->setApplicationName( APPLICATION_NAME );
-		_qApplication->setApplicationVersion( APPLICATION_VERSION );
-		_qApplication->setOrganizationName( ORGANIZATION_NAME );
-		_qApplication->setOrganizationDomain( ORGANIZATION_DOMAIN );
+		_qApplication->setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME ) );
+		_qApplication->setApplicationName( QString::fromStdString( APPLICATION_NAME ) );
+		_qApplication->setApplicationVersion( QString::fromStdString( APPLICATION_VERSION ) );
+		_qApplication->setOrganizationName( QString::fromStdString( ORGANIZATION_NAME ) );
+		_qApplication->setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN ) );
 
 		QSettings::setDefaultFormat( QSettings::IniFormat );
 
@@ -58,7 +69,15 @@ namespace VTX::UI::QT
 
 	void Application::_start()
 	{
-		_restoreSettings();
+		try
+		{
+			_restoreSettings();
+		}
+		catch ( const std::exception & e )
+		{
+			VTX_ERROR( "Failed to restore settings: {}", e.what() );
+		}
+
 		_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
 		_qApplication->exec();
@@ -128,7 +147,7 @@ namespace VTX::UI::QT
 
 		if ( settings.status() != QSettings::NoError )
 		{
-			throw std::runtime_error( "Failed to save Qt settings." );
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( settings.status() ) ) );
 		}
 	}
 
@@ -137,6 +156,11 @@ namespace VTX::UI::QT
 		QSettings settings(
 			QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat
 		);
+
+		if ( settings.status() != QSettings::NoError )
+		{
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( settings.status() ) ) );
+		}
 
 		VTX_INFO( "Restoring settings: {}", settings.fileName().toStdString() );
 		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );

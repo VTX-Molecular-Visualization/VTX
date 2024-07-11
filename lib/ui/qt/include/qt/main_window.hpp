@@ -10,12 +10,15 @@
 #include "dock_widget/scene.hpp"
 #include "dock_widget/sequence.hpp"
 #include "helper.hpp"
+#include "menu/camera.hpp"
 #include "menu/file.hpp"
 #include "menu/help.hpp"
+#include "menu/theme.hpp"
 #include "menu/view.hpp"
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
 #include "tool_bar/camera.hpp"
+#include "tool_bar/file.hpp"
 #include "tool_bar/snapshot.hpp"
 #include <QDialog>
 #include <QDockWidget>
@@ -45,10 +48,13 @@ namespace VTX::UI::QT
 		{
 			// Main menu.
 			createMenu<Menu::File>();
+			createMenu<Menu::Camera>();
 			createMenu<Menu::View>();
+			createMenu<Menu::Theme>();
 			createMenu<Menu::Help>();
 
 			// Toolbars.
+			createToolBar<ToolBar::File>();
 			createToolBar<ToolBar::Camera>();
 			createToolBar<ToolBar::Snapshot>();
 
@@ -59,17 +65,29 @@ namespace VTX::UI::QT
 			setCentralWidget( centerPanel );
 
 			// Dock widgets.
-			createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
-			createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-			createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
-			createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
-			createDockWidget<DockWidget::Representations>( Qt::RightDockWidgetArea );
-			createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 			createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
+
+			auto * dwScene			 = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+			auto * dwRepresentations = createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
+			tabifyDockWidget( dwScene, dwRepresentations );
+			dwScene->raise();
+
+			auto * dwInspector		= createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+			auto * dwRenderSettings = createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
+			auto * dwOptions		= createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
+			tabifyDockWidget( dwInspector, dwRenderSettings );
+			tabifyDockWidget( dwInspector, dwOptions );
+			dwInspector->raise();
+
+			createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
 			// Status bar.
 			_statusBar = new StatusBar( this );
 			setStatusBar( _statusBar );
+
+			// Backup default geometry and state.
+			_defaultGeometry = saveGeometry();
+			_defaultState	 = saveState();
 
 			// Demo.
 			/*
@@ -138,9 +156,19 @@ namespace VTX::UI::QT
 			return dockWidget;
 		}
 
+		void resetLayout()
+		{
+			restoreGeometry( _defaultGeometry );
+			restoreState( _defaultState );
+		}
+
 	  private:
 		QPointer<OpenGLWidget> _openGLWidget;
 		QPointer<StatusBar>	   _statusBar;
+
+		// TODO: keep like that or re-tabify?
+		QByteArray _defaultGeometry;
+		QByteArray _defaultState;
 	};
 
 } // namespace VTX::UI::QT

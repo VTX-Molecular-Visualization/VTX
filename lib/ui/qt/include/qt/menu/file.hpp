@@ -17,12 +17,12 @@ namespace VTX::UI::QT::Menu
 			addSeparator();
 
 			// Connect to dialog.
-			auto * downloadAction = addAction<Action::System::Download>();
+			auto * aDownload = addAction<Action::System::Download>();
 			connect(
-				downloadAction,
+				aDownload,
 				&QAction::triggered,
 				this,
-				[ & ]()
+				[]()
 				{
 					Dialog::Download dialog;
 					dialog.exec();
@@ -39,10 +39,6 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::System::Export>();
 			addSeparator();
 			addAction<Action::System::Quit>();
-
-			addSeparator();
-			addAction<Action::Camera::CameraPerspective>();
-			addAction<Action::Camera::CameraOrthographic>();
 		}
 		virtual ~File() {}
 

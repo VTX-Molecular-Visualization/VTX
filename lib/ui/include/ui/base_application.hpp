@@ -31,7 +31,7 @@ namespace VTX::UI
 		// void addMenuAction( const MenuAction & p_ma ) { _mainWindow->addMenuAction( p_ma ); }
 		// void addToolBarAction( const ToolBarAction & p_tba ) { _mainWindow->addToolBarAction( p_tba ); }
 
-		// inline MW * const getMainWindow() { return _mainWindow.get(); }
+		inline MW * const getMainWindow() { return _mainWindow.get(); }
 
 	  protected:
 		std::unique_ptr<MW> _mainWindow;

@@ -37,7 +37,7 @@ namespace VTX::UI::QT
 
 namespace VTX
 {
-	inline UI::QT::Application & APP_QT() { return static_cast<UI::QT::Application &>( APP() ); }
+	inline UI::QT::Application & APP_QT() { return Util::Generic::UniqueInstance<UI::QT::Application>::get(); }
 } // namespace VTX
 
 #endif

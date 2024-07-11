@@ -3,8 +3,11 @@
 
 #include "actions.hpp"
 #include <QWidget>
+#include <iostream>
 #include <map>
 #include <string>
+#include <syncstream>
+#include <thread>
 #include <typeinfo>
 #include <util/logger.hpp>
 
@@ -13,7 +16,7 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	static std::map<std::string, QWidget *> WIDGETS;
+	extern std::map<std::string, QWidget *> WIDGETS;
 
 	template<ConceptWidget T>
 	static T * const WIDGET()

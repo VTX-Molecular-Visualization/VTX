@@ -24,6 +24,7 @@ namespace VTX::App
 		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
 
 	  public:
+		VTXApp();
 		VTXApp( std::initializer_list<int> ) = delete;
 		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
@@ -68,8 +69,6 @@ namespace VTX::App
 		Util::Callback<> onStop;
 
 	  protected:
-		VTXApp();
-
 	  private:
 		Util::Chrono								 _tickChrono = Util::Chrono();
 		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
@@ -93,6 +92,7 @@ namespace VTX::App
 namespace VTX
 {
 	inline App::VTXApp & APP() { return Util::Generic::UniqueInstance<App::VTXApp>::get(); }
+	// using APP = App::VTXApp;
 } // namespace VTX
 
 #endif

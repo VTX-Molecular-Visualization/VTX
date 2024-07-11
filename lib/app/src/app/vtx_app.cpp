@@ -54,6 +54,7 @@ namespace VTX::App
 
 		// TODO better way to manage this
 		_systemHandlerPtr->reference( SCENE_KEY, &scene );
+		VTX_DEBUG( "Scene loaded" );
 
 		// Create renderer
 		RENDERER().get().init();

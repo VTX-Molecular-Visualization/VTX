@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_DESCRIPTORS__
 #define __VTX_UI_DESCRIPTORS__
 
-#include <app/core/input/keys.hpp>
+#include <functional>
 #include <string>
 
 namespace VTX::UI
@@ -10,19 +10,14 @@ namespace VTX::UI
 	struct Action
 	{
 		std::string				   name;
-		std::optional<std::string> tip	= std::nullopt;
-		std::optional<std::string> icon = std::nullopt;
+		std::optional<std::string> group = std::nullopt;
+		std::optional<std::string> tip	 = std::nullopt;
+		std::optional<std::string> icon	 = std::nullopt;
+		std::optional<std::string> shortcut;
 
 		// Or a custom function in App::Action.
-
 		using TriggerFunction				   = std::function<void()>;
 		std::optional<TriggerFunction> trigger = std::nullopt;
-
-		// std::optional<App::Core::Input::Shortcut> shortcut;
-
-		// void setTrigger( const TriggerFunction & p_trigger ) { trigger = p_trigger; }
-
-		std::optional<std::string> group = std::nullopt;
 	};
 
 	using WidgetId = std::string;
@@ -40,14 +35,6 @@ namespace VTX::UI
 		Action	 action;
 	};
 	*/
-
-	struct DockPanel
-	{
-	};
-
-	struct Modal
-	{
-	};
 
 } // namespace VTX::UI
 
