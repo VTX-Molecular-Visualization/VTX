@@ -168,7 +168,7 @@ namespace VTX::QT::Mdprep
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
-			_currentForm.reset();
+			_currentForm.close();
 			_currentForm = VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
@@ -182,8 +182,8 @@ namespace VTX::QT::Mdprep
 			_formEngine.deactivate();
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
-			_currentForm.reset();
-			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, param );
+			_currentForm.close();
+			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, _SpecificFieldPlacerGetter(), param );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );

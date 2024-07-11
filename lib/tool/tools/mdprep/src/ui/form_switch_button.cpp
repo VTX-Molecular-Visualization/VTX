@@ -1,19 +1,6 @@
 #include <string>
 #include <vector>
 //
-#include <ui/qt/util.hpp>
-//
-#include "tools/mdprep/gateway/backend_gromacs.hpp"
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/gateway/shared.hpp"
-#include "tools/mdprep/ui/md_engine_factory.hpp"
-#include "tools/mdprep/ui/shared.hpp"
-//
-#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
-//
-#include "tools/mdprep/ui/gromacs_field_placer.hpp"
-#include "tools/mdprep/ui/md_engine_field_placer.hpp"
-//
 #include <qformlayout.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
@@ -23,7 +10,6 @@
 
 namespace VTX::Tool::Mdprep::ui
 {
-	using namespace VTX::Tool::Mdprep::Gateway;
 
 	namespace
 	{
