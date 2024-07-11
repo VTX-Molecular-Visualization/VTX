@@ -61,10 +61,6 @@ int main( int p_argc, char * p_argv[] )
 		app = std::unique_ptr<App::VTXApp>( &APP() );
 #endif
 
-		// print app memory adress.
-		VTX_DEBUG( "App at: {}", reinterpret_cast<void *>( app ) );
-		VTX_DEBUG( "App: {}", reinterpret_cast<void *>( &APP() ) );
-
 		// std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
 		// VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
 		// vtxApplication->init();

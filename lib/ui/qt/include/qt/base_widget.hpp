@@ -2,6 +2,8 @@
 #define __VTX_UI_QT_BASE_WIDGET__
 
 #include "actions.hpp"
+#include <QGuiApplication>
+#include <QScreen>
 #include <QWidget>
 #include <iostream>
 #include <map>
@@ -50,6 +52,21 @@ namespace VTX::UI::QT
 			QAction * const action = ACTION<T>();
 			QWidget::addAction( action );
 			return action;
+		}
+
+		void center()
+		{
+			// Center.
+			// Get the screen geometry
+			QScreen * screen		 = QGuiApplication::primaryScreen();
+			QRect	  screenGeometry = screen->geometry();
+
+			// Get the main window geometry
+			int x = ( screenGeometry.width() - this->width() ) / 2;
+			int y = ( screenGeometry.height() - this->height() ) / 2;
+
+			// Move the main window to the center of the screen
+			this->move( x, y );
 		}
 	};
 

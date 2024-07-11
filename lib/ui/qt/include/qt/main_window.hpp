@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
+#include <QScreen>
 #include <ui/descriptors.hpp>
 #include <util/logger.hpp>
 
@@ -158,8 +159,10 @@ namespace VTX::UI::QT
 
 		void resetLayout()
 		{
+			// Restore geometry and state.
 			restoreGeometry( _defaultGeometry );
 			restoreState( _defaultState );
+			center();
 		}
 
 	  private:

@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Theme::Dark>();
 			addSeparator();
 			auto * aReset = addAction<Action::Theme::ResetLayout>();
-			connect( aReset, &QAction::triggered, this, [ this ]() { _resetLayout(); } );
+			connect( aReset, &QAction::triggered, this, &Theme::_resetLayout );
 		}
 		virtual ~Theme() {}
 
