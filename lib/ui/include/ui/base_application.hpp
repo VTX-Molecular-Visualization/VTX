@@ -28,8 +28,15 @@ namespace VTX::UI
 			_start();
 		}
 
-		// void addMenuAction( const MenuAction & p_ma ) { _mainWindow->addMenuAction( p_ma ); }
-		// void addToolBarAction( const ToolBarAction & p_tba ) { _mainWindow->addToolBarAction( p_tba ); }
+		inline void addMenuAction( const WidgetId & p_menu, const WidgetId & p_action )
+		{
+			_mainWindow->addMenuAction( p_menu, p_action );
+		}
+
+		inline void addToolBarAction( const WidgetId & p_toolbar, const WidgetId & p_action )
+		{
+			_mainWindow->addToolBarAction( p_toolbar, p_action );
+		}
 
 		inline MW * const getMainWindow() { return _mainWindow.get(); }
 

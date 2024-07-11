@@ -8,6 +8,7 @@
 #include <app/action/application.hpp>
 #include <app/application/system/action_manager.hpp>
 #include <ui/descriptors.hpp>
+#include <util/hashing.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT
@@ -15,69 +16,20 @@ namespace VTX::UI::QT
 	template<typename A>
 	concept ConceptAction = std::is_base_of_v<UI::Action, A>;
 
-	inline std::map<std::string, QAction *>		 ACTIONS;
-	inline std::map<std::string, QActionGroup *> ACTION_GROUPS;
+	inline std::unordered_map<Util::Hashing::Hash, QAction *> ACTIONS;
+	inline std::unordered_map<std::string, QActionGroup *>	  ACTION_GROUPS;
 
-	template<ConceptAction T>
-	QAction * const ACTION()
+	QAction * const ACTION( const Util::Hashing::Hash & p_hash, const UI::Action & p_action );
+
+	inline QAction * const ACTION( const UI::Action & p_action )
 	{
-		const std::string name = typeid( T ).name();
+		return ACTION( Util::Hashing::hash( &p_action ), p_action );
+	}
 
-		if ( not ACTIONS.contains( name ) )
-		{
-			T		  action;
-			QAction * qAction = new QAction();
-			ACTIONS[ name ]	  = qAction;
-
-			VTX_TRACE( "Action created: {}", name );
-
-			// Name.
-			qAction->setText( action.name.c_str() );
-			// Group.
-			if ( action.group.has_value() )
-			{
-				std::string group = action.group.value();
-				if ( not ACTION_GROUPS.contains( group ) )
-				{
-					ACTION_GROUPS[ group ] = new QActionGroup( nullptr );
-				}
-
-				qAction->setCheckable( true );
-				ACTION_GROUPS[ group ]->addAction( qAction );
-			}
-			// Tip.
-			if ( action.tip.has_value() )
-			{
-				QString tip = action.tip.value().c_str();
-
-				if ( action.shortcut.has_value() )
-				{
-					tip.append( " (" + action.shortcut.value() + ")" );
-				}
-
-				qAction->setStatusTip( tip );
-				qAction->setToolTip( tip );
-				qAction->setWhatsThis( tip );
-			}
-			// Icon.
-			if ( action.icon.has_value() )
-			{
-				qAction->setIcon( QIcon( action.icon.value().c_str() ) );
-			}
-			// Shortcut.
-			if ( action.shortcut.has_value() )
-			{
-				qAction->setShortcut( QKeySequence( action.shortcut.value().c_str() ) );
-			}
-			// Action.
-			if ( action.trigger.has_value() )
-			{
-				QObject::connect( qAction, &QAction::triggered, action.trigger.value() );
-			}
-			// TODO: shortcut.
-		}
-
-		return ACTIONS[ typeid( T ).name() ];
+	template<ConceptAction A>
+	inline QAction * const ACTION()
+	{
+		return ACTION( Util::Hashing::hash( typeid( A ).name() ), A() );
 	}
 
 	namespace Action

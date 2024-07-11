@@ -18,16 +18,16 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	inline std::map<std::string, QWidget *> WIDGETS;
+	inline std::unordered_map<std::string, QWidget *> WIDGETS;
 
-	template<ConceptWidget T>
-	T * const WIDGET()
+	template<ConceptWidget W>
+	W * const WIDGET()
 	{
-		const std::string name = typeid( T ).name();
+		const std::string name = typeid( W ).name();
 
 		assert( WIDGETS.contains( name ) );
 
-		return static_cast<T * const>( WIDGETS[ name ] );
+		return static_cast<W * const>( WIDGETS[ name ] );
 	}
 
 	template<typename T, ConceptWidget W>
@@ -40,7 +40,7 @@ namespace VTX::UI::QT
 			const std::string name = typeid( T ).name();
 			W::setObjectName( name );
 			WIDGETS[ name ] = this;
-			VTX_TRACE( "Widget created: {}", name );
+			VTX_TRACE( "UI widget created: {}", name );
 		}
 
 		virtual ~BaseWidget() { WIDGETS.erase( typeid( T ).name() ); }
@@ -54,16 +54,18 @@ namespace VTX::UI::QT
 			return action;
 		}
 
-		void center()
+		void center( const QWidget * const p_w = nullptr )
 		{
 			// Center.
 			// Get the screen geometry
-			QScreen * screen		 = QGuiApplication::primaryScreen();
-			QRect	  screenGeometry = screen->geometry();
+			QScreen * screen   = QGuiApplication::primaryScreen();
+			QRect	  geometry = screen->geometry();
+
+			if ( p_w ) {}
 
 			// Get the main window geometry
-			int x = ( screenGeometry.width() - this->width() ) / 2;
-			int y = ( screenGeometry.height() - this->height() ) / 2;
+			int x = ( geometry.width() - this->width() ) / 2;
+			int y = ( geometry.height() - this->height() ) / 2;
 
 			// Move the main window to the center of the screen
 			this->move( x, y );

@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSettings>
+#include <QVBoxLayout>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Dialog

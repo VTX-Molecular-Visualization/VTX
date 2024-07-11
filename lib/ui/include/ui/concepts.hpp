@@ -7,13 +7,11 @@
 namespace VTX::UI
 {
 	template<typename MW>
-	concept ConceptMainWindow =
-		// std::is_base_of<BaseMainWindow, MW>::value &&
-		requires( MW p_mw /* MenuAction p_menuAction, ToolBarAction p_toolBarAction*/ ) {
-			{ p_mw.build() } -> std::same_as<void>;
-			//{ p_mw.addMenuAction( p_menuAction ) } -> std::same_as<void>;
-			//{ p_mw.addToolBarAction( p_toolBarAction ) } -> std::same_as<void>;
-		};
+	concept ConceptMainWindow = requires( MW p_mw, WidgetId p_id, Action p_action ) {
+		{ p_mw.build() } -> std::same_as<void>;
+		{ p_mw.addMenuAction( p_id, p_action ) } -> std::same_as<void>;
+		{ p_mw.addToolBarAction( p_id, p_action ) } -> std::same_as<void>;
+	};
 
 } // namespace VTX::UI
 
