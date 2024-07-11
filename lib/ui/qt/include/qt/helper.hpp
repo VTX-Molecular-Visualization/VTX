@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::Helper
 {
 	/*
-	static QAction * const toQAction( const UI::Action & p_action )
+	QAction * const toQAction( const UI::Action & p_action )
 	{
 
 		QAction * const action = new QAction();
@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Helper
 		return action;
 	}
 
-	static QAction * addQAction( QWidget * const p_parent, const UI::Action & p_action )
+	QAction * addQAction( QWidget * const p_parent, const UI::Action & p_action )
 	{
 		QAction * const action = toQAction( p_action );
 		p_parent->addAction( action );
@@ -41,7 +41,7 @@ namespace VTX::UI::QT::Helper
 	*/
 
 	/*
-	static Qt::Key keyToQKey( const App::Core::Input::Key & p_key )
+	Qt::Key keyToQKey( const App::Core::Input::Key & p_key )
 	{
 		static std::unordered_map<App::Core::Input::Key, Qt::Key> mapping
 			= { { App::Core::Input::Key::Key_A, Qt::Key_A },

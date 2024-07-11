@@ -18,10 +18,10 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	extern std::map<std::string, QWidget *> WIDGETS;
+	inline std::map<std::string, QWidget *> WIDGETS;
 
 	template<ConceptWidget T>
-	static T * const WIDGET()
+	T * const WIDGET()
 	{
 		const std::string name = typeid( T ).name();
 

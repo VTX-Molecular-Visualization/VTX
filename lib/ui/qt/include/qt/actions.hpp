@@ -15,11 +15,11 @@ namespace VTX::UI::QT
 	template<typename A>
 	concept ConceptAction = std::is_base_of_v<UI::Action, A>;
 
-	extern std::map<std::string, QAction *>		 ACTIONS;
-	extern std::map<std::string, QActionGroup *> ACTION_GROUPS;
+	inline std::map<std::string, QAction *>		 ACTIONS;
+	inline std::map<std::string, QActionGroup *> ACTION_GROUPS;
 
 	template<ConceptAction T>
-	static QAction * const ACTION()
+	QAction * const ACTION()
 	{
 		const std::string name = typeid( T ).name();
 

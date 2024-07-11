@@ -193,7 +193,7 @@ namespace VTX::UI::QT::DockWidget
 
 			auto * p = item->parent();
 
-			static Qt::ItemFlags flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
+			Qt::ItemFlags flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
 
 			item->setFlags( flags );
 			item->setData( 0, Qt::UserRole, QVariant::fromValue( p_data.data ) );
