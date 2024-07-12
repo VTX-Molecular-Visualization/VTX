@@ -117,9 +117,10 @@ namespace VTX::UI::QT
 			{
 				Quit()
 				{
-					name	= "Quit";
-					tip		= "Exit software";
-					trigger = []() { App::VTX_ACTION().execute<App::Action::Application::Quit>(); };
+					name	 = "Quit";
+					tip		 = "Exit software";
+					trigger	 = []() { App::VTX_ACTION().execute<App::Action::Application::Quit>(); };
+					shortcut = "Ctrl+Q";
 				}
 			};
 		} // namespace System
@@ -190,6 +191,7 @@ namespace VTX::UI::QT
 					name = "Orient";
 					tip	 = "Orient camera on selection";
 					icon = ":/sprite/camera/orient.png";
+					// trigger = []() { App::VTX_ACTION().execute<App::Action::Scene::OrientCamera>(); };
 				}
 			};
 

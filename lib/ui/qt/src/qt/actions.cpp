@@ -11,7 +11,7 @@ namespace VTX::UI::QT
 			QAction * qAction = new QAction();
 			ACTIONS[ p_hash ] = qAction;
 
-			VTX_DEBUG( "UI action created: {}", p_action.name );
+			VTX_TRACE( "UI action created: {}", p_action.name );
 
 			// Name.
 			qAction->setText( p_action.name.c_str() );

@@ -43,15 +43,34 @@ namespace VTX::UI::QT
 		_loadTheme();
 	}
 
-	Application::~Application()
+	Application::~Application() {}
+
+	/*
+	bool Application::event( QEvent * event )
+	{
+		// Handle quit event.
+		if ( event->type() == QEvent::Close )
+		{
+			App::VTX_ACTION().execute<App::Action::Application::Quit>();
+			QApplication::quit();
+			return true;
+		}
+
+		return false;
+
+	}
+	*/
+
+	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
 	{
 		try
 		{
-			_saveSettings();
+			return QApplication::notify( p_receiver, p_event );
 		}
-		catch ( const std::exception & e )
+		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Failed to save settings: {}", e.what() );
+			VTX_ERROR( "{}", p_e.what() );
+			return true;
 		}
 	}
 
@@ -76,21 +95,31 @@ namespace VTX::UI::QT
 		{
 			_timer.stop();
 			_elapsedTimer.invalidate();
-
 			_mainWindow->close();
 			QApplication::quit();
 		};
 
 		// Run main loop.
 		connect(
-			this, &QCoreApplication::aboutToQuit, [] { App::VTX_ACTION().execute<App::Action::Application::Quit>(); }
+			this,
+			&QCoreApplication::aboutToQuit,
+			[ this ]
+			{
+				try
+				{
+					_saveSettings();
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "Failed to save settings: {}", e.what() );
+				}
+			}
 		);
 		connect( &_timer, &QTimer::timeout, [ this ] { update( _elapsedTimer.elapsed() ); } );
 		_timer.start( 0 );
 		_elapsedTimer.start();
 
 		// Then block.
-		VTX_INFO( "Show user interface" );
 		exec();
 	}
 

@@ -66,7 +66,7 @@ namespace VTX::UI::QT
 				doneCurrent();
 		};
 
-		// APP().onPostRender += [ this ]( const float p_deltaTime ) { update(); };
+		APP().onRender += [ this ]( const float p_deltaTime ) { update(); };
 		_makeCurrentCounter--;
 	}
 

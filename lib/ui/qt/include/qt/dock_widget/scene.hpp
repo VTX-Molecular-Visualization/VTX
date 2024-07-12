@@ -5,6 +5,11 @@
 #include <QDockWidget>
 #include <QPointer>
 #include <QTreeWidget>
+#include <app/application/scene.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/component/scene/scene_item_component.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -97,32 +102,14 @@ namespace VTX::UI::QT::DockWidget
 			_tree->setUniformRowHeights( true );
 			_tree->setHeaderHidden( true );
 			_tree->setSelectionMode( QAbstractItemView::ExtendedSelection );
-			_tree->setRootIsDecorated( true );
-			//_tree->setItemsExpandable( true );
-			_tree->setAnimated( true );
-			_tree->setIndentation( 20 );
-			_tree->setSortingEnabled( false );
-			_tree->setWordWrap( true );
-			_tree->setAlternatingRowColors( true );
-			_tree->setAutoScroll( true );
-			_tree->setAutoScrollMargin( 16 );
-			_tree->setAutoFillBackground( true );
-			//_tree->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-			_tree->setLineWidth( 1 );
-			_tree->setMidLineWidth( 0 );
-			_tree->setFocusPolicy( Qt::FocusPolicy::StrongFocus );
-			_tree->setTabKeyNavigation( false );
-			_tree->setAcceptDrops( false );
-			_tree->setDropIndicatorShown( false );
-			_tree->setDragEnabled( false );
-			_tree->setDragDropMode( QAbstractItemView::DragDropMode::NoDragDrop );
+			//_tree->setSelectionBehavior( SelectionBehavior::SelectRows );
 			_tree->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-			//_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
+			_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
 			_tree->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 			_tree->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 			_tree->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+			//_tree->setEditTriggers( EditTrigger::SelectedClicked );
 			_tree->setExpandsOnDoubleClick( true );
-			// TODO: setSelectionModel
 
 			// itemExpanded.
 			_tree->connect(
@@ -177,10 +164,76 @@ namespace VTX::UI::QT::DockWidget
 				_tree.get(), &QTreeWidget::customContextMenuRequested, this, []( const QPoint & p_pos ) {}
 			);
 
-			// Set placeholder data.
-			QTreeWidgetItem * item = new QTreeWidgetItem( _tree.get() );
-			item->setText( 0, QString::fromUtf8( "Loading..." ) );
-			_tree->addTopLevelItem( item );
+			// Connect callbacks.
+			using namespace App::Component::Scene;
+			App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_item )
+			{
+				if ( App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
+				{
+					auto & molecule = App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_item );
+
+					// Add with concept.
+					addTopLevelData(
+						TreeItemData { p_item.getName(),
+									   WidgetData( p_item.getPersistentSceneID() ),
+									   molecule.getChains().size() },
+						LoadFunc(
+							[ &p_item,
+							  &molecule ]( const uint p_level, const WidgetData p_data ) -> std::vector<TreeItemData>
+							{
+								std::vector<TreeItemData> data;
+
+								switch ( p_level )
+								{
+								case 0: // Load chains.
+								{
+									WidgetData index = 0;
+									for ( auto & chain : molecule.getChains() )
+									{
+										data.push_back( TreeItemData {
+											chain->getName(), index++, chain->getResidueCount() } );
+									}
+								}
+								break;
+
+								case 1: // Load residues.
+								{
+									auto * chain = molecule.getChain( p_data );
+									assert( chain );
+									for ( size_t index = chain->getIndexFirstResidue();
+										  index <= chain->getIndexLastResidue();
+										  ++index )
+									{
+										auto * residue = molecule.getResidue( index );
+										data.push_back( TreeItemData {
+											residue->getName(), index, residue->getAtomCount() } );
+									}
+								}
+								break;
+
+								case 2: // Load atoms.
+								{
+									auto * residue = molecule.getResidue( p_data );
+									assert( residue );
+									for ( size_t index = residue->getIndexFirstAtom();
+										  index <= residue->getIndexLastAtom();
+										  ++index )
+									{
+										auto * atom = molecule.getAtom( atom_index_t( index ) );
+										data.push_back( TreeItemData { atom->getName(), index, 0 } );
+									}
+								}
+								break;
+
+								default: assert( true ); break;
+								}
+
+								return data;
+							}
+						)
+					);
+				}
+			};
 
 			setWidget( _tree.get() );
 		}

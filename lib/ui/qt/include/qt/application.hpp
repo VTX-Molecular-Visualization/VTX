@@ -24,6 +24,9 @@ namespace VTX::UI::QT
 
 		static void configure();
 
+		// bool event( QEvent * event ) override;
+		bool notify( QObject * const, QEvent * const ) override;
+
 	  protected:
 		// Override BaseApplication.
 		void _start() override;

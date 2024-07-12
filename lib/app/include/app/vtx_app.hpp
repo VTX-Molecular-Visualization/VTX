@@ -46,17 +46,16 @@ namespace VTX::App
 		inline Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode &	getCurrentMode() const { return *_currentMode; }
 
-		inline static Util::Callback<>		onStart;
-		inline static Util::Callback<>		onStartUI;
-		inline static Util::Callback<float> onPreUpdate;
+		// inline static Util::Callback<> onStart;
+		// inline static Util::Callback<float> onPreUpdate;
 		inline static Util::Callback<float> onUpdate;
-		inline static Util::Callback<float> onLateUpdate;
+		// inline static Util::Callback<float> onLateUpdate;
 		inline static Util::Callback<float> onPostUpdate;
-		inline static Util::Callback<float> onPreRender;
+		// inline static Util::Callback<float> onPreRender;
 		inline static Util::Callback<float> onRender;
-		inline static Util::Callback<float> onPostRender;
-		inline static Util::Callback<>		onEndOfFrameOneShot;
-		inline static Util::Callback<>		onStop;
+		// inline static Util::Callback<float> onPostRender;
+		inline static Util::Callback<> onEndOfFrameOneShot;
+		inline static Util::Callback<> onStop;
 
 	  protected:
 	  private:

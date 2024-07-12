@@ -103,14 +103,21 @@ namespace VTX::App
 	{
 		Core::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
 
+		/*
 		frameInfo.set(
 			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
 		);
+		*/
+
+		/*
 		frameInfo.set(
 			Internal::Monitoring::UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onUpdate( p_elapsedTime ); } )
 		);
+		*/
+
+		/*
 		frameInfo.set(
 			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
@@ -119,21 +126,26 @@ namespace VTX::App
 			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
+		*/
 
+		/*
 		frameInfo.set(
 			Internal::Monitoring::PRE_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
 		);
+		*/
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender( p_elapsedTime ); } )
 		);
 
+		/*
 		frameInfo.set(
 			Internal::Monitoring::POST_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 		);
+		*/
 
 		frameInfo.set(
 			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
