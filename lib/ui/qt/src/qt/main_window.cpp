@@ -41,10 +41,8 @@ namespace VTX::UI::QT
 		createToolBar<ToolBar::Snapshot>();
 
 		// Main area : opengl widget.
-		//_openGLWidget = new OpenGLWidget( this );
-		// setCentralWidget( _openGLWidget );
-		auto * centerPanel = new QDockWidget( "Renderer" );
-		setCentralWidget( centerPanel );
+		_openGLWidget = new OpenGLWidget( this );
+		setCentralWidget( _openGLWidget );
 
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );

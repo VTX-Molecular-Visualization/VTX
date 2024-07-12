@@ -26,9 +26,9 @@
 namespace VTX::App
 {
 
-	VTXApp::VTXApp() { VTX_DEBUG( "VTXApp()" ); }
+	VTXApp::VTXApp() {}
 
-	VTXApp::~VTXApp() { VTX_DEBUG( "~VTXApp()" ); }
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::start( const Args & p_args )
 	{
