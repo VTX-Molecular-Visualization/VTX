@@ -71,7 +71,8 @@ namespace VTX::UI::QT
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
-		// Demo.
+		// Tool test.
+		/*
 		UI::Action action3 { "Action 3" };
 		addMenuAction( "Tool 1", { "Action 1" } );
 		addMenuAction( "Tool 1", { "Action 2" } );
@@ -80,6 +81,7 @@ namespace VTX::UI::QT
 		addToolBarAction( "Tool 1", { "Action 1" } );
 		addToolBarAction( "Tool 1", { "Action 2" } );
 		addToolBarAction( "Tool 1", action3 );
+		*/
 	}
 
 	void MainWindow::addMenuAction( const WidgetId & p_menu, const UI::Action & p_action )

@@ -44,18 +44,18 @@ int main( int p_argc, char * p_argv[] )
 
 		LOGGER().init( logDir, debug );
 
-		// std::unique_ptr<App::VTXApp> app;
-		App::VTXApp * app;
+		std::unique_ptr<App::VTXApp> app;
+		// App::VTXApp * app;
 #ifdef VTX_UI_QT
 		if ( not args.has( "-no-gui" ) )
 		{
-			// app = std::make_unique<VTX::UI::QT::Application>();
-			app = &APP_QT();
+			app = std::make_unique<VTX::UI::QT::Application>();
+			// app = &APP_QT();
 		}
 		else
 		{
-			app = &APP();
-			// app = std::unique_ptr<App::VTXApp>( &APP() );
+			// app = &APP();
+			app = std::make_unique<App::VTXApp>();
 		}
 #else
 		app = std::unique_ptr<App::VTXApp>( &APP() );

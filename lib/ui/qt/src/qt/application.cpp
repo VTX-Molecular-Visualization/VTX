@@ -7,8 +7,6 @@
 #include <QIcon>
 #include <QSettings>
 #include <QSplashScreen>
-// #include <app/action/application.hpp>
-// #include <app/application/system/action_manager.hpp>
 #include <app/filesystem.hpp>
 #include <app/infos.hpp>
 #include <util/enum.hpp>
@@ -71,6 +69,7 @@ namespace VTX::UI::QT
 	{
 		try
 		{
+			// Restore settings after main window is built.
 			_restoreSettings();
 		}
 		catch ( const std::exception & e )
@@ -78,6 +77,7 @@ namespace VTX::UI::QT
 			VTX_ERROR( "Failed to restore settings: {}", e.what() );
 		}
 
+		// Run.
 		_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
 		_qApplication->exec();

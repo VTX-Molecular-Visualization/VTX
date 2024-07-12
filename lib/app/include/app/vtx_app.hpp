@@ -11,23 +11,20 @@
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
-#include <util/generic/base_static_singleton.hpp>
+// #include <util/generic/base_static_singleton.hpp>
 #include <vector>
 
 namespace VTX::App
 {
 	class VTXApp
 	{
-		friend class Util::Generic::UniqueInstance<VTXApp>;
+		// friend class Util::Generic::UniqueInstance<VTXApp>;
 
 	  private:
 		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
 
 	  public:
 		VTXApp();
-		VTXApp( std::initializer_list<int> ) = delete;
-		VTXApp( const VTXApp & )			 = delete;
-		VTXApp & operator=( const VTXApp & ) = delete;
 		virtual ~VTXApp();
 
 		virtual void start( const Args & );
@@ -52,32 +49,33 @@ namespace VTX::App
 		inline Mode::BaseMode &		  getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode & getCurrentMode() const { return *_currentMode; }
 
-		Util::Callback<> onStart;
-		Util::Callback<> onStartUI;
+		inline static Util::Callback<> onStart;
+		inline static Util::Callback<> onStartUI;
 
-		Util::Callback<float> onPreUpdate;
-		Util::Callback<float> onUpdate;
-		Util::Callback<float> onLateUpdate;
-		Util::Callback<float> onPostUpdate;
+		inline static Util::Callback<float> onPreUpdate;
+		inline static Util::Callback<float> onUpdate;
+		inline static Util::Callback<float> onLateUpdate;
+		inline static Util::Callback<float> onPostUpdate;
 
-		Util::Callback<float> onPreRender;
-		Util::Callback<float> onRender;
-		Util::Callback<float> onPostRender;
+		inline static Util::Callback<float> onPreRender;
+		inline static Util::Callback<float> onRender;
+		inline static Util::Callback<float> onPostRender;
 
-		Util::Callback<> onEndOfFrameOneShot;
+		inline static Util::Callback<> onEndOfFrameOneShot;
 
-		Util::Callback<> onStop;
+		inline static Util::Callback<> onStop;
 
 	  protected:
 	  private:
-		Util::Chrono								 _tickChrono = Util::Chrono();
-		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
+		inline static Util::Chrono _tickChrono;
+
+		inline static std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
 			= std::make_shared<Core::System::SystemHandler>();
 
-		std::unique_ptr<Mode::BaseMode> _currentMode;
-		std::string						_currentModeKey = "MODE_VISUALIZATION";
+		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
+		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
 
-		Core::Monitoring::Stats _stats;
+		inline static Core::Monitoring::Stats _stats;
 
 		void _handleArgs( const std::vector<std::string> & );
 		void _update( const float p_elapsedTime );
@@ -91,8 +89,8 @@ namespace VTX::App
 
 namespace VTX
 {
-	inline App::VTXApp & APP() { return Util::Generic::UniqueInstance<App::VTXApp>::get(); }
-	// using APP = App::VTXApp;
+	// inline App::VTXApp & APP() { return Util::Generic::UniqueInstance<App::VTXApp>::get(); }
+	using APP = App::VTXApp;
 } // namespace VTX
 
 #endif

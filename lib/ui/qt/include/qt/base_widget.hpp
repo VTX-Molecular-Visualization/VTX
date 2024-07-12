@@ -56,18 +56,11 @@ namespace VTX::UI::QT
 
 		void center( const QWidget * const p_w = nullptr )
 		{
-			// Center.
-			// Get the screen geometry
-			QScreen * screen   = QGuiApplication::primaryScreen();
-			QRect	  geometry = screen->geometry();
+			// Get geometry of the widget, or screen if not specified.
+			QRect geometry = p_w ? p_w->geometry() : QGuiApplication::primaryScreen()->geometry();
 
-			if ( p_w ) {}
-
-			// Get the main window geometry
 			int x = ( geometry.width() - this->width() ) / 2;
 			int y = ( geometry.height() - this->height() ) / 2;
-
-			// Move the main window to the center of the screen
 			this->move( x, y );
 		}
 	};
