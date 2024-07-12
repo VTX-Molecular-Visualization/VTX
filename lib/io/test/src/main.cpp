@@ -34,7 +34,7 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string url = "https://mmtf.rcsb.org/v1.0/full/8OIT";
+	const std::string url = "https://files.rcsb.org/download/8OIT";
 
 	std::string data;
 	Util::Network::httpRequestGet( url, data );
