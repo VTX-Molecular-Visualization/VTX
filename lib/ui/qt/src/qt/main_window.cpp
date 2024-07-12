@@ -28,6 +28,8 @@ namespace VTX::UI::QT
 
 	void MainWindow::build()
 	{
+		VTX_INFO( "Build main window" );
+
 		// Main menu.
 		createMenu<Menu::File>();
 		createMenu<Menu::Camera>();

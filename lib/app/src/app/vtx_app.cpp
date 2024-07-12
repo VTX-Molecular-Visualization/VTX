@@ -37,6 +37,8 @@ namespace VTX::App
 
 	void VTXApp::init()
 	{
+		VTX_INFO( "Init application" );
+
 		//_systemHandler = std::make_unique<Core::System::SystemHandler>();
 
 		Internal::Application::Settings::initSettings( SETTINGS() );
@@ -61,8 +63,7 @@ namespace VTX::App
 
 	void VTXApp::start( const Args & p_args )
 	{
-		VTX_INFO( "Starting application: {}", Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
-		VTX_INFO( "Arguments: {}", p_args.toString() );
+		VTX_INFO( "Starting application: {}", p_args.toString() );
 
 		// Regsiter loop events
 		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
@@ -148,7 +149,19 @@ namespace VTX::App
 
 	void VTXApp::stop()
 	{
-		_stop();
+		SCENE().reset();
+
+		//// Prevent events throw for nothing when quitting app
+		// Old::Manager::EventManager::get().freezeEvent( true );
+		//  Manager::WorkerManager::get().stopAll();
+
+		//_setting.backup();
+
+		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
+		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
+
+		// Old::Application::Selection::SelectionManager::get().deleteModel();
+
 		onStop();
 	}
 
@@ -200,22 +213,6 @@ namespace VTX::App
 	//		return hasSavePath && sceneHasChanged;
 	// #endif
 	//	}
-
-	void VTXApp::_stop()
-	{
-		//_timer.stop();
-
-		//// Prevent events throw for nothing when quitting app
-		// Old::Manager::EventManager::get().freezeEvent( true );
-		//  Manager::WorkerManager::get().stopAll();
-
-		//_setting.backup();
-
-		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
-		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
-
-		// Old::Application::Selection::SelectionManager::get().deleteModel();
-	}
 
 	Application::Scene &	   VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
 	const Application::Scene & VTXApp::getScene() const { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }

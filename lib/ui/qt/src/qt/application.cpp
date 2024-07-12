@@ -28,6 +28,7 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace VTX::App::Info;
 
+		VTX_INFO( "Show splashscreen" );
 		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
 		_qSplashScreen->show();
 		_qSplashScreen->showMessage( "Loading..." );
@@ -70,6 +71,7 @@ namespace VTX::UI::QT
 		_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
 
+		// On quit.
 		onStop += [ this ]
 		{
 			_timer.stop();
@@ -88,6 +90,7 @@ namespace VTX::UI::QT
 		_elapsedTimer.start();
 
 		// Then block.
+		VTX_INFO( "Show user interface" );
 		exec();
 	}
 

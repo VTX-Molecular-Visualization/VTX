@@ -69,7 +69,6 @@ namespace VTX::App
 
 		void _handleArgs( const Args & p_args );
 		void _update( const float p_elapsedTime );
-		void _stop();
 	};
 
 	// Convenient accessors
