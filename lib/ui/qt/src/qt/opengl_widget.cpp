@@ -37,6 +37,7 @@ namespace VTX::UI::QT
 		// We are in openGL context here => direct access to renderer
 		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
 
+		// TODO: do not build there.
 		rendererFacade.build( defaultFramebufferObject() );
 		App::Component::Render::ProxyColorLayout & colorLayout
 			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();

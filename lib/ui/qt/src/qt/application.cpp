@@ -5,7 +5,6 @@
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
-#include <QSettings>
 #include <QSplashScreen>
 #include <app/filesystem.hpp>
 #include <app/infos.hpp>
@@ -13,13 +12,38 @@
 
 namespace VTX::UI::QT
 {
+	// Need to be called before QApplication constructor.
+	void Application::configure()
+	{
+		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
+	}
 
-	Application::Application() : UI::BaseApplication<MainWindow>() { VTX_DEBUG( "Application()" ); }
+	// Create QApplication with zero argc and nullptr argv.
+	int zero = 0;
+	Application::Application() :
+		UI::BaseApplication<MainWindow>(), QApplication( zero, nullptr ),
+		_settings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat )
+	{
+		using namespace Resources;
+		using namespace VTX::App::Info;
+
+		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
+		_qSplashScreen->show();
+		_qSplashScreen->showMessage( "Loading..." );
+
+		setWindowIcon( QIcon( SPRITE_LOGO ) );
+		setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME ) );
+		setApplicationName( QString::fromStdString( APPLICATION_NAME ) );
+		setApplicationVersion( QString::fromStdString( APPLICATION_VERSION ) );
+		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME ) );
+		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN ) );
+
+		_loadTheme();
+	}
 
 	Application::~Application()
 	{
-		VTX_DEBUG( "~Application()" );
-
 		try
 		{
 			_saveSettings();
@@ -28,41 +52,6 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to save settings: {}", e.what() );
 		}
-	}
-
-	void Application::_init( const App::Args & p_args )
-	{
-		using namespace Resources;
-		using namespace VTX::App::Info;
-
-		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
-
-		int zero	  = 0;
-		_qApplication = new QApplication( zero, nullptr );
-
-		_qApplication->setWindowIcon( QIcon( SPRITE_LOGO ) );
-		_qApplication->setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME ) );
-		_qApplication->setApplicationName( QString::fromStdString( APPLICATION_NAME ) );
-		_qApplication->setApplicationVersion( QString::fromStdString( APPLICATION_VERSION ) );
-		_qApplication->setOrganizationName( QString::fromStdString( ORGANIZATION_NAME ) );
-		_qApplication->setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN ) );
-
-		QSettings::setDefaultFormat( QSettings::IniFormat );
-
-		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
-		_qSplashScreen->show();
-		_qSplashScreen->showMessage( "Loading..." );
-
-		_loadTheme();
-
-		// TODO: move to parent.
-		// Internal::initSettings( App::SETTINGS() );
-		// App::Core::init( dynamic_cast<App::Mode::Visualization &>( *_currentMode ) );
-		//_currentMode->enter();
-		// createMenu<Menu::File>();
-
-		_qApplication->connect( _qApplication, &QApplication::aboutToQuit, [ this ]() { stop(); } );
 	}
 
 	void Application::_start()
@@ -77,10 +66,29 @@ namespace VTX::UI::QT
 			VTX_ERROR( "Failed to restore settings: {}", e.what() );
 		}
 
-		// Run.
+		// Show.
 		_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
-		_qApplication->exec();
+
+		onStop += [ this ]
+		{
+			_timer.stop();
+			_elapsedTimer.invalidate();
+
+			_mainWindow->close();
+			QApplication::quit();
+		};
+
+		// Run main loop.
+		connect(
+			this, &QCoreApplication::aboutToQuit, [] { App::VTX_ACTION().execute<App::Action::Application::Quit>(); }
+		);
+		connect( &_timer, &QTimer::timeout, [ this ] { update( _elapsedTimer.elapsed() ); } );
+		_timer.start( 0 );
+		_elapsedTimer.start();
+
+		// Then block.
+		exec();
 	}
 
 	void Application::_loadTheme()
@@ -111,9 +119,9 @@ namespace VTX::UI::QT
 
 		// Set stylesheet to app.
 		//_qApplication->setStyleSheet( stylesheet );
-		_qApplication->setStyle( "fusion" );
+		setStyle( "fusion" );
 
-		QPalette palette = _qApplication->palette();
+		QPalette p = palette();
 
 		/*
 		palette.setBrush( QPalette::Window, Qt::Dense3Pattern );
@@ -131,40 +139,32 @@ namespace VTX::UI::QT
 		palette.setBrush( QPalette::HighlightedText, Qt::black );
 		*/
 
-		_qApplication->setPalette( palette );
+		setPalette( p );
 	}
 
 	void Application::_saveSettings()
 	{
-		QSettings settings(
-			QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat
-		);
+		VTX_INFO( "Saving settings: {}", _settings.fileName().toStdString() );
+		_settings.setValue( "geometry", _mainWindow->saveGeometry() );
+		_settings.setValue( "windowState", _mainWindow->saveState() );
+		_settings.sync();
 
-		VTX_INFO( "Saving settings: {}", settings.fileName().toStdString() );
-		settings.setValue( "geometry", _mainWindow->saveGeometry() );
-		settings.setValue( "windowState", _mainWindow->saveState() );
-		settings.sync();
-
-		if ( settings.status() != QSettings::NoError )
+		if ( _settings.status() != QSettings::NoError )
 		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( settings.status() ) ) );
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( _settings.status() ) ) );
 		}
 	}
 
 	void Application::_restoreSettings()
 	{
-		QSettings settings(
-			QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat
-		);
-
-		if ( settings.status() != QSettings::NoError )
+		if ( _settings.status() != QSettings::NoError )
 		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( settings.status() ) ) );
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( _settings.status() ) ) );
 		}
 
-		VTX_INFO( "Restoring settings: {}", settings.fileName().toStdString() );
-		_mainWindow->restoreGeometry( settings.value( "geometry" ).toByteArray() );
-		_mainWindow->restoreState( settings.value( "windowState" ).toByteArray() );
+		VTX_INFO( "Restoring settings: {}", _settings.fileName().toStdString() );
+		_mainWindow->restoreGeometry( _settings.value( "geometry" ).toByteArray() );
+		_mainWindow->restoreState( _settings.value( "windowState" ).toByteArray() );
 	}
 
 } // namespace VTX::UI::QT

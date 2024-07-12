@@ -15,12 +15,12 @@ namespace VTX::UI
 	class BaseApplication : public App::VTXApp
 	{
 	  public:
-		BaseApplication() : VTXApp() { VTX_DEBUG( "BaseApplication()" ); }
-		virtual ~BaseApplication() { VTX_DEBUG( "~BaseApplication()" ); }
+		BaseApplication() : VTXApp() {}
+		virtual ~BaseApplication() {}
 
 		void start( const App::Args & p_args ) override
 		{
-			_init( p_args );
+			//_init( p_args );
 			_mainWindow = std::make_unique<MW>();
 			_mainWindow->build();
 
@@ -43,8 +43,8 @@ namespace VTX::UI
 	  protected:
 		std::unique_ptr<MW> _mainWindow;
 
-		virtual void _init( const App::Args & ) = 0;
-		virtual void _start()					= 0;
+		// virtual void _init( const App::Args & ) = 0;
+		virtual void _start() = 0;
 	};
 
 } // namespace VTX::UI

@@ -1,8 +1,11 @@
 #include "app/vtx_app.hpp"
+#include "app/action/application.hpp"
+#include "app/action/scene.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
+#include "app/application/system/action_manager.hpp"
 #include "app/application/system/renderer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/application/system/threading.hpp"
@@ -20,6 +23,8 @@
 #include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
 #include <exception>
+#include <io/internal/filesystem.hpp>
+#include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
@@ -30,22 +35,11 @@ namespace VTX::App
 
 	VTXApp::~VTXApp() {}
 
-	void VTXApp::start( const Args & p_args )
+	void VTXApp::init()
 	{
-		VTX_INFO( "Starting application: {}", Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
-
-		//// Create Databases
-		//_representationLibrary
-		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
-		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
-		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
+		//_systemHandler = std::make_unique<Core::System::SystemHandler>();
 
 		Internal::Application::Settings::initSettings( SETTINGS() );
-
-		// Load settings.
-		// VTX_ACTION<Action::Setting::Load>();
-		//_setting.loadRecentPaths();
-
 		Internal::ECS::setupEntityDirector();
 
 		// Create scene.
@@ -53,31 +47,50 @@ namespace VTX::App
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// TODO better way to manage this
-		_systemHandlerPtr->reference( SCENE_KEY, &scene );
-		VTX_DEBUG( "Scene loaded" );
+		_systemHandler->reference( SCENE_KEY, &scene );
 
 		// Create renderer
 		RENDERER().get().init();
+
+		//// Create Databases
+		//_representationLibrary
+		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
+		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
+		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
+	}
+
+	void VTXApp::start( const Args & p_args )
+	{
+		VTX_INFO( "Starting application: {}", Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Arguments: {}", p_args.toString() );
 
 		// Regsiter loop events
 		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
-		_tickChrono.start();
-
-		//_handleArgs( p_args );
-
+		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
 		_currentMode = std::make_unique<App::Mode::Visualization>();
 		_currentMode->enter();
 
-		onStart();
+		// Run main loop.
+
+		// If GUI is disabled, handle args now.
+		if ( p_args.has( "-no-gui" ) )
+		{
+			_handleArgs( p_args );
+		}
+		else
+		{
+			onEndOfFrameOneShot += [ this, &p_args ]() { _handleArgs( p_args ); };
+		}
 	}
 
 	void VTXApp::update( const float p_elapsedTime )
 	{
-		const float deltaTime = p_elapsedTime > 0 ? p_elapsedTime : _tickChrono.intervalTime();
+		const float deltaTime = 0.15f;
+		// p_elapsedTime > 0 ? p_elapsedTime : _timer.intervalTime();
 
 		Core::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
 		frameInfo.set(
@@ -135,66 +148,45 @@ namespace VTX::App
 
 	void VTXApp::stop()
 	{
-		VTX_DEBUG( "VTXApp::stop()" );
-
-		onStop();
-
 		_stop();
+		onStop();
 	}
 
-	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
+	void VTXApp::_handleArgs( const Args & p_args )
 	{
-		/*
+		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
+		for ( const std::string & p_arg : p_args.all() )
+		{
+			// If argument is an existing file
+			if ( std::filesystem::exists( p_arg ) )
+			{
+				const FilePath		 path	  = FilePath( p_arg );
+				const FILE_TYPE_ENUM fileType = IO::Internal::Filesystem::getFileTypeFromFilePath( path );
 
-			using FILE_TYPE_ENUM = VTX::IO::Internal::Filesystem::FILE_TYPE_ENUM;
-				for ( const std::string & p_arg : p_args )
+				try
 				{
-					// If argument is an existing file
-					if ( std::filesystem::exists( p_arg ) )
+					switch ( fileType )
 					{
-						const FilePath		 path	  = FilePath( p_arg );
-						const FILE_TYPE_ENUM fileType = VTX::IO::Internal::Filesystem::getFileTypeFromFilePath( path );
+					case FILE_TYPE_ENUM::MOLECULE:
+					case FILE_TYPE_ENUM::TRAJECTORY:
+						App::VTX_ACTION().execute<App::Action::Scene::LoadMolecule>( p_arg );
+						break;
 
-						try
-						{
-							switch ( fileType )
-							{
-							case FILE_TYPE_ENUM::MOLECULE:
-							case FILE_TYPE_ENUM::TRAJECTORY:
-								App::VTX_ACTION().execute<App::Action::Scene::LoadMolecule>( p_arg );
-								break;
+					case FILE_TYPE_ENUM::SCENE:
+						App::VTX_ACTION().execute<App::Action::Application::OpenScene>( p_arg );
+						break;
 
-							case FILE_TYPE_ENUM::SCENE:
-								App::VTX_ACTION().execute<App::Action::Application::OpenScene>( p_arg );
-								break;
-
-							case FILE_TYPE_ENUM::SCRIPT:
-								App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( p_arg );
-								break;
-
-							default: throw IOException( "Unrecognized file" );
-							}
-						}
-						catch ( const IOException & p_e )
-						{
-							VTX_ERROR( "Can't open file '{}' : {}.", p_arg, p_e.what() );
-							break;
-						}
+					case FILE_TYPE_ENUM::SCRIPT:
+						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( p_arg );
+						break;
 					}
 				}
-
-		#ifndef VTX_PRODUCTION
-				if ( p_args.size() == 0 )
+				catch ( const IOException & p_e )
 				{
-					// VTX_ACTION(
-					//	 new App::Old::Action::Main::Open( Util::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
-		).absolute() )
-					//);
-					// App::Application::VTX_ACTION( new App::Old::Action::Main::OpenApi( "1aga" ) );
+					VTX_ERROR( "Can't open file '{}' : {}.", p_arg, p_e.what() );
 				}
-		#endif
-
-		*/
+			}
+		}
 	}
 
 	//	bool VTXApp::hasAnyModifications() const
@@ -211,7 +203,7 @@ namespace VTX::App
 
 	void VTXApp::_stop()
 	{
-		_tickChrono.stop();
+		//_timer.stop();
 
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );
@@ -225,11 +217,8 @@ namespace VTX::App
 		// Old::Application::Selection::SelectionManager::get().deleteModel();
 	}
 
-	Application::Scene &	   VTXApp::getScene() { return _systemHandlerPtr->get<Application::Scene>( SCENE_KEY ); }
-	const Application::Scene & VTXApp::getScene() const
-	{
-		return _systemHandlerPtr->get<Application::Scene>( SCENE_KEY );
-	}
+	Application::Scene &	   VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
+	const Application::Scene & VTXApp::getScene() const { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
 
 	Application::Scene & SCENE() { return APP().getScene(); }
 

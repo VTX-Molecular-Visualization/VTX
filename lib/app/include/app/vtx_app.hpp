@@ -9,17 +9,13 @@
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
-#include <util/chrono.hpp>
 #include <util/exceptions.hpp>
-// #include <util/generic/base_static_singleton.hpp>
 #include <vector>
 
 namespace VTX::App
 {
 	class VTXApp
 	{
-		// friend class Util::Generic::UniqueInstance<VTXApp>;
-
 	  private:
 		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
 
@@ -27,18 +23,21 @@ namespace VTX::App
 		VTXApp();
 		virtual ~VTXApp();
 
+		void		 init();
 		virtual void start( const Args & );
 		void		 update( const float p_elapsedTime = 0 );
 		void		 stop();
 
-		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
-		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
+		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandler; }
+		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandler; }
+		// inline Core::System::SystemHandler * const getSystemHandlerPtr() { return _systemHandler.get(); }
 
-		inline std::shared_ptr<Core::System::SystemHandler> & getSystemHandlerPtr() { return _systemHandlerPtr; };
+		/*
 		inline void referenceSystemHandler( std::shared_ptr<Core::System::SystemHandler> p_systemHandlerPtr )
 		{
 			_systemHandlerPtr = p_systemHandlerPtr;
 		};
+		*/
 
 		const Core::Monitoring::Stats & getStats() const { return _stats; }
 		Core::Monitoring::Stats &		getStats() { return _stats; }
@@ -61,15 +60,14 @@ namespace VTX::App
 
 	  protected:
 	  private:
-		inline static Util::Chrono								   _tickChrono;
-		inline static std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
-			= std::make_shared<Core::System::SystemHandler>();
+		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
+			= std::make_unique<Core::System::SystemHandler>();
 
 		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
 		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
 		inline static Core::Monitoring::Stats		  _stats;
 
-		void _handleArgs( const std::vector<std::string> & );
+		void _handleArgs( const Args & p_args );
 		void _update( const float p_elapsedTime );
 		void _stop();
 	};
@@ -81,7 +79,6 @@ namespace VTX::App
 
 namespace VTX
 {
-	// inline App::VTXApp & APP() { return Util::Generic::UniqueInstance<App::VTXApp>::get(); }
 	using APP = App::VTXApp;
 } // namespace VTX
 

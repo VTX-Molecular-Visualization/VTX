@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ARGS__
 #define __VTX_APP_ARGS__
 
+#include <numeric>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,18 @@ namespace VTX::App
 		}
 
 		inline void add( const std::string & p_arg ) { _args.push_back( p_arg ); }
+
+		inline const std::vector<std::string> & all() const { return _args; }
+
+		inline std::string toString() const
+		{
+			std::string str;
+			for ( const auto & arg : _args )
+			{
+				str += arg + " ";
+			}
+			return str;
+		}
 
 	  private:
 		std::vector<std::string> _args;

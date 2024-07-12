@@ -2,31 +2,38 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "main_window.hpp"
+#include <QApplication>
+#include <QElapsedTimer>
 #include <QPointer>
+#include <QSettings>
+#include <QTimer>
 #include <ui/base_application.hpp>
 
 class QMenu;
 class QToolBar;
-class QApplication;
 class QSplashScreen;
 
 namespace VTX::UI::QT
 {
 
-	class Application final : public UI::BaseApplication<MainWindow>
+	class Application final : public UI::BaseApplication<MainWindow>, QApplication
 	{
 	  public:
 		Application();
 		~Application();
 
+		static void configure();
+
 	  protected:
-		// Override.
-		void _init( const App::Args & ) override;
+		// Override BaseApplication.
 		void _start() override;
 
 	  private:
-		QPointer<QApplication>	_qApplication;
 		QPointer<QSplashScreen> _qSplashScreen;
+
+		QSettings	  _settings;
+		QTimer		  _timer;
+		QElapsedTimer _elapsedTimer;
 
 		void _loadTheme();
 		void _saveSettings();
@@ -34,10 +41,5 @@ namespace VTX::UI::QT
 	};
 
 } // namespace VTX::UI::QT
-
-namespace VTX
-{
-	inline UI::QT::Application & APP_QT() { return Util::Generic::UniqueInstance<UI::QT::Application>::get(); }
-} // namespace VTX
 
 #endif

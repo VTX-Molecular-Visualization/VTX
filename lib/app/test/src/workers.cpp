@@ -6,6 +6,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <thread>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 

@@ -45,31 +45,24 @@ int main( int p_argc, char * p_argv[] )
 		LOGGER().init( logDir, debug );
 
 		std::unique_ptr<App::VTXApp> app;
-		// App::VTXApp * app;
 #ifdef VTX_UI_QT
 		if ( not args.has( "-no-gui" ) )
 		{
-			app = std::make_unique<VTX::UI::QT::Application>();
-			// app = &APP_QT();
+			UI::QT::Application::configure();
+			app = std::make_unique<UI::QT::Application>();
 		}
 		else
 		{
-			// app = &APP();
 			app = std::make_unique<App::VTXApp>();
 		}
 #else
 		app = std::unique_ptr<App::VTXApp>( &APP() );
 #endif
 
-		// std::unique_ptr<VTX::UI::Core::BaseUIApplication> vtxApplication = UI::UIGenerator::createUI();
-		// VTX::UI::Environment::get().setUIApp( vtxApplication.get() );
-		// vtxApplication->init();
+		app->init();
 
-		// const std::vector<std::string> args( p_argv, p_argv + p_argc );
-		// vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
-
-		const FilePath molPath = App::Filesystem::getInternalDataDir() / "md_0_1.gro";
-		// args.add( molPath.string() );
+		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
+		args.add( molPath.string() );
 
 		app->start( args );
 
