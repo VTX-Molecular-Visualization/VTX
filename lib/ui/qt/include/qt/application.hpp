@@ -7,6 +7,7 @@
 #include <QPointer>
 #include <QSettings>
 #include <QTimer>
+#include <app/filesystem.hpp>
 #include <ui/base_application.hpp>
 
 class QMenu;
@@ -15,6 +16,8 @@ class QSplashScreen;
 
 namespace VTX::UI::QT
 {
+	inline QSettings SETTINGS
+		= QSettings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat );
 
 	class Application final : public UI::BaseApplication<MainWindow>, QApplication
 	{
@@ -32,17 +35,14 @@ namespace VTX::UI::QT
 		void _start() override;
 
 	  private:
+		QTimer					_timer;
+		QElapsedTimer			_elapsedTimer;
 		QPointer<QSplashScreen> _qSplashScreen;
-
-		QSettings	  _settings;
-		QTimer		  _timer;
-		QElapsedTimer _elapsedTimer;
 
 		void _loadTheme();
 		void _saveSettings();
 		void _restoreSettings();
 	};
-
 } // namespace VTX::UI::QT
 
 #endif

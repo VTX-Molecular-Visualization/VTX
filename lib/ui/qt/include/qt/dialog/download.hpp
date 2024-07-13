@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_DIALOG_DOWNLOAD__
 #define __VTX_UI_QT_DIALOG_DOWNLOAD__
 
+#include "qt/application.hpp"
 #include "qt/base_widget.hpp"
 #include <QComboBox>
 #include <QDialog>
@@ -130,15 +131,13 @@ namespace VTX::UI::QT::Dialog
 
 		void _loadHistory( const std::string & p_key, QComboBox * const p_comboBox )
 		{
-			QSettings	settings;
-			QStringList history = settings.value( p_key.c_str() ).toStringList();
+			QStringList history = SETTINGS.value( p_key.c_str() ).toStringList();
 			p_comboBox->addItems( history );
 		}
 
 		void _saveHistory( const std::string & p_key, const std::string & p_value )
 		{
-			QSettings	settings;
-			QStringList history = settings.value( p_key.c_str() ).toStringList();
+			QStringList history = SETTINGS.value( p_key.c_str() ).toStringList();
 			// Remove duplicates.
 			if ( history.contains( p_value.c_str() ) )
 			{
@@ -151,7 +150,7 @@ namespace VTX::UI::QT::Dialog
 			{
 				history.removeLast();
 			}
-			settings.setValue( p_key.c_str(), history );
+			SETTINGS.setValue( p_key.c_str(), history );
 		}
 	};
 

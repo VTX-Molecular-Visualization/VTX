@@ -6,7 +6,6 @@
 #include <QFile>
 #include <QIcon>
 #include <QSplashScreen>
-#include <app/filesystem.hpp>
 #include <app/infos.hpp>
 #include <util/enum.hpp>
 
@@ -21,9 +20,8 @@ namespace VTX::UI::QT
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
-	Application::Application() :
-		UI::BaseApplication<MainWindow>(), QApplication( zero, nullptr ),
-		_settings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat )
+	Application::Application() : UI::BaseApplication<MainWindow>(), QApplication( zero, nullptr )
+
 	{
 		using namespace Resources;
 		using namespace VTX::App::Info;
@@ -176,27 +174,27 @@ namespace VTX::UI::QT
 
 	void Application::_saveSettings()
 	{
-		VTX_INFO( "Saving settings: {}", _settings.fileName().toStdString() );
-		_settings.setValue( "geometry", _mainWindow->saveGeometry() );
-		_settings.setValue( "windowState", _mainWindow->saveState() );
-		_settings.sync();
+		VTX_INFO( "Saving settings: {}", SETTINGS.fileName().toStdString() );
+		SETTINGS.setValue( "geometry", _mainWindow->saveGeometry() );
+		SETTINGS.setValue( "windowState", _mainWindow->saveState() );
+		SETTINGS.sync();
 
-		if ( _settings.status() != QSettings::NoError )
+		if ( SETTINGS.status() != QSettings::NoError )
 		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( _settings.status() ) ) );
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( SETTINGS.status() ) ) );
 		}
 	}
 
 	void Application::_restoreSettings()
 	{
-		if ( _settings.status() != QSettings::NoError )
+		if ( SETTINGS.status() != QSettings::NoError )
 		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( _settings.status() ) ) );
+			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( SETTINGS.status() ) ) );
 		}
 
-		VTX_INFO( "Restoring settings: {}", _settings.fileName().toStdString() );
-		_mainWindow->restoreGeometry( _settings.value( "geometry" ).toByteArray() );
-		_mainWindow->restoreState( _settings.value( "windowState" ).toByteArray() );
+		VTX_INFO( "Restoring settings: {}", SETTINGS.fileName().toStdString() );
+		_mainWindow->restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
+		_mainWindow->restoreState( SETTINGS.value( "windowState" ).toByteArray() );
 	}
 
 } // namespace VTX::UI::QT
