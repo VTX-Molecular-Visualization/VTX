@@ -10,7 +10,7 @@ namespace VTX::UI::QT::Dialog
 	class About : public BaseWidget<About, QDialog>
 	{
 	  public:
-		About( QWidget * p_parent ) : BaseWidget<About, QDialog>( p_parent )
+		About( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "About" );
 			setFixedSize( 400, 200 );
