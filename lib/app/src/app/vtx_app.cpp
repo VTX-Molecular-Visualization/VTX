@@ -22,6 +22,11 @@
 #include "app/internal/monitoring/all_metrics.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
+#include <app/application/scene.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/component/render/proxy_camera.hpp>
+#include <app/component/render/proxy_color_layout.hpp>
+#include <app/component/render/proxy_molecule.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/chrono.hpp>
@@ -65,6 +70,22 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", p_args.toString() );
 
+		///////////
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+		rendererFacade.build();
+		App::Component::Render::ProxyColorLayout & colorLayout
+			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
+		colorLayout.setup( rendererFacade );
+		rendererFacade.setProxyColorLayout( colorLayout.getProxy().proxy() );
+		static VTX::Renderer::Proxy::Representation			representation;
+		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
+		rendererFacade.addProxyRepresentations( representations );
+
+		App::Component::Render::ProxyCamera & proxyCamera
+			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
+		proxyCamera.setInRenderer( rendererFacade );
+		////////////
+		//
 		// Regsiter loop events
 		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
@@ -135,15 +156,13 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onRender( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { RENDERER_SYSTEM().facade().render( p_elapsedTime ); } )
 		);
 
-		/*
 		frameInfo.set(
 			Internal::Monitoring::POST_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 		);
-		*/
 
 		frameInfo.set(
 			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,

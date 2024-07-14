@@ -36,7 +36,7 @@ namespace VTX::App::Component::Render
 		_updateProjectionMatrix();
 	}
 
-	void Camera::setScreenSize( const uint p_width, const uint p_height )
+	void Camera::setScreenSize( const size_t p_width, const size_t p_height )
 	{
 		_screenWidth  = p_width;
 		_screenHeight = p_height;

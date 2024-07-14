@@ -53,10 +53,10 @@ namespace VTX::App
 		// inline static Util::Callback<float> onLateUpdate;
 		inline static Util::Callback<float> onPostUpdate;
 		// inline static Util::Callback<float> onPreRender;
-		inline static Util::Callback<float> onRender;
-		// inline static Util::Callback<float> onPostRender;
-		inline static Util::Callback<> onEndOfFrameOneShot;
-		inline static Util::Callback<> onStop;
+		// inline static Util::Callback<float> onRender;
+		inline static Util::Callback<float> onPostRender;
+		inline static Util::Callback<>		onEndOfFrameOneShot;
+		inline static Util::Callback<>		onStop;
 
 	  private:
 		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler

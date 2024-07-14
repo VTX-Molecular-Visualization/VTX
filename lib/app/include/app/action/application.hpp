@@ -113,6 +113,21 @@ namespace VTX::App::Action::Application
 		void execute() override;
 	};
 
+	class Resize final : public Core::Action::BaseAction
+	{
+	  public:
+		Resize( const size_t p_width, const size_t p_height, const uint p_output = 0 ) :
+			_width( p_width ), _height( p_height ), _output( p_output )
+		{
+		}
+		void execute() override;
+
+	  private:
+		const size_t _width;
+		const size_t _height;
+		const uint	 _output;
+	};
+
 	class RunScript : public Core::Action::BaseAction
 	{
 	  public:

@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_QT_OPENGL_WIDGET__
 #define __VTX_UI_QT_OPENGL_WIDGET__
 
-#include "app/application/system/renderer.hpp"
 #include "qt/base_widget.hpp"
 #include <QOpenGLContext>
 #include <QOpenGLPaintDevice>
@@ -9,11 +8,6 @@
 #include <QPointer>
 #include <QResizeEvent>
 #include <QWindow>
-#include <app/application/scene.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/component/render/proxy_camera.hpp>
-#include <app/component/render/proxy_color_layout.hpp>
-#include <app/component/render/proxy_molecule.hpp>
 
 namespace VTX::UI::QT
 {

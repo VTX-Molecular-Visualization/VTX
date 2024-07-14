@@ -1,12 +1,14 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/system/renderer.hpp"
 #include "app/application/system/serializer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/filesystem.hpp"
 #include "app/internal/io/reader/scene_loader.hpp"
 #include "app/internal/io/writer/scene_writer.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
+#include <app/component/render/camera.hpp>
 
 namespace VTX::App::Action::Application
 {
@@ -90,6 +92,14 @@ namespace VTX::App::Action::Application
 	void Quit::execute()
 	{
 		APP().onEndOfFrameOneShot += []() { APP().stop(); };
+	}
+
+	void Resize::execute()
+	{
+		App::SCENE().getCamera().setScreenSize( _width, _height );
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+		rendererFacade.resize( _width, _height );
+		rendererFacade.setOutput( _output );
 	}
 
 	void RunScript::execute()

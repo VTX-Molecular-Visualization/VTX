@@ -22,9 +22,9 @@ namespace VTX::App::Component::Render
 		inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 		inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
 
-		inline const uint  getScreenWidth() const { return _screenWidth; }
-		inline const uint  getScreenHeight() const { return _screenHeight; }
-		inline const float getAspectRatio() const { return _aspectRatio; }
+		inline const size_t getScreenWidth() const { return _screenWidth; }
+		inline const size_t getScreenHeight() const { return _screenHeight; }
+		inline const float	getAspectRatio() const { return _aspectRatio; }
 
 		inline const float getNear() const { return _near; }
 		inline const float getFar() const { return _far; }
@@ -37,7 +37,7 @@ namespace VTX::App::Component::Render
 
 		const bool isPerspective() const { return _projection == CAMERA_PROJECTION::PERSPECTIVE; }
 
-		void setScreenSize( const uint p_width, const uint p_height );
+		void setScreenSize( const size_t p_width, const size_t p_height );
 
 		void setNear( const float p_near );
 		void setFar( const float p_far );
@@ -59,12 +59,12 @@ namespace VTX::App::Component::Render
 		Util::Callback<CAMERA_PROJECTION> onProjectionChange;
 
 	  protected:
-		uint  _screenWidth	= 1u;
-		uint  _screenHeight = 1u;
-		float _aspectRatio	= 1.f;
-		float _near			= 1e-1f;
-		float _far			= 1e4f;
-		float _fov			= 60.f;
+		size_t _screenWidth	 = 0;
+		size_t _screenHeight = 0;
+		float  _aspectRatio	 = 1.f;
+		float  _near		 = 1e-1f;
+		float  _far			 = 1e4f;
+		float  _fov			 = 60.f;
 
 		Component::Scene::Transform * _transform = nullptr;
 
