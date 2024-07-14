@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_MAIN_WINDOW__
 
 #include "base_widget.hpp"
-#include "qt/opengl_widget.hpp"
-#include "qt/status_bar.hpp"
+#include "opengl_widget.hpp"
+#include "status_bar.hpp"
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
@@ -20,6 +20,7 @@ namespace VTX::UI::QT
 		virtual ~MainWindow() {}
 
 		void build();
+		void init();
 		void addMenuAction( const WidgetId & p_menu, const UI::Action & p_action );
 		void addToolBarAction( const WidgetId & p_toolbar, const UI::Action & p_action );
 

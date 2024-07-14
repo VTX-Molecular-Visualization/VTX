@@ -51,7 +51,7 @@ namespace VTX::App
 		// TODO better way to manage this
 		_systemHandler->reference( SCENE_KEY, &scene );
 
-		// Create renderer
+		// Create renderer.
 		RENDERER().get().init();
 
 		//// Create Databases
@@ -74,8 +74,6 @@ namespace VTX::App
 
 		_currentMode = std::make_unique<App::Mode::Visualization>();
 		_currentMode->enter();
-
-		// Run main loop.
 
 		// If GUI is disabled, handle args now.
 		if ( p_args.has( "-no-gui" ) )

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
+#include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <vector>
 
@@ -57,7 +58,6 @@ namespace VTX::App
 		inline static Util::Callback<> onEndOfFrameOneShot;
 		inline static Util::Callback<> onStop;
 
-	  protected:
 	  private:
 		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
 			= std::make_unique<Core::System::SystemHandler>();

@@ -23,6 +23,7 @@ namespace VTX::UI
 			//_init( p_args );
 			_mainWindow = std::make_unique<MW>();
 			_mainWindow->build();
+			_mainWindow->init();
 
 			VTXApp::start( p_args );
 			_start();

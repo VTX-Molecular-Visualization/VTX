@@ -59,8 +59,8 @@ namespace VTX::UI::QT
 			// Get geometry of the widget, or screen if not specified.
 			QRect geometry = p_w ? p_w->geometry() : QGuiApplication::primaryScreen()->geometry();
 
-			int x = ( geometry.width() - this->width() ) / 2;
-			int y = ( geometry.height() - this->height() ) / 2;
+			const int x = ( geometry.width() - this->width() ) / 2;
+			const int y = ( geometry.height() - this->height() ) / 2;
 			this->move( x, y );
 		}
 	};

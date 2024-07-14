@@ -6,13 +6,10 @@
 #include <QElapsedTimer>
 #include <QPointer>
 #include <QSettings>
+#include <QSplashScreen>
 #include <QTimer>
 #include <app/filesystem.hpp>
 #include <ui/base_application.hpp>
-
-class QMenu;
-class QToolBar;
-class QSplashScreen;
 
 namespace VTX::UI::QT
 {

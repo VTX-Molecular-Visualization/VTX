@@ -103,10 +103,10 @@ namespace VTX::UI::QT::DockWidget
 			_tree->setHeaderHidden( true );
 			_tree->setSelectionMode( QAbstractItemView::ExtendedSelection );
 			//_tree->setSelectionBehavior( SelectionBehavior::SelectRows );
-			_tree->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-			_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
-			_tree->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-			_tree->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
+			//_tree->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
+			//_tree->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
+			//_tree->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
+			//_tree->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 			_tree->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 			//_tree->setEditTriggers( EditTrigger::SelectedClicked );
 			_tree->setExpandsOnDoubleClick( true );

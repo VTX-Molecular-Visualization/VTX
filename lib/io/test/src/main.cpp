@@ -34,7 +34,7 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string url = "https://files.rcsb.org/download/8OIT";
+	const std::string url = "https://files.rcsb.org/download/4hhb.pdb";
 
 	std::string data;
 	Util::Network::httpRequestGet( url, data );
@@ -46,9 +46,9 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 
 	moleculeReader.readBuffer( data, "8OIT.mmtf", molecule );
 
-	CHECK( molecule.getChainCount() == 79 );
-	CHECK( molecule.getResidueCount() == 11382 );
-	CHECK( molecule.getAtomCount() == 113095 );
+	CHECK( molecule.getChainCount() == 14 );
+	CHECK( molecule.getResidueCount() == 801 );
+	CHECK( molecule.getAtomCount() == 4779 );
 	CHECK( molecule.getBondCount() == 129960 );
 }
 

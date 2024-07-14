@@ -9,15 +9,6 @@ namespace VTX::Renderer::Context
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
-		if ( gladLoaded )
-		{
-			VTX_WARNING( "GLAD loaded" );
-		}
-		else
-		{
-			VTX_WARNING( "GLAD not loaded" );
-		}
-
 		// Load opengl 4.5.
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
@@ -36,13 +27,16 @@ namespace VTX::Renderer::Context
 		if ( not GLAD_GL_VERSION_4_5 )
 		{
 			VTX_ERROR( "OpenGL 4.5 or higher is required" );
-			// throw GLException( "OpenGL 4.5 or higher is required" );
+			throw GLException( "OpenGL 4.5 or higher is required" );
 		}
 		else
 		{
 			_getOpenglInfos();
 			loaded = true;
 		}
+
+		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
+		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
@@ -72,9 +66,6 @@ namespace VTX::Renderer::Context
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
-
-		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
-		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 	}
 
 	void OpenGL45::build(

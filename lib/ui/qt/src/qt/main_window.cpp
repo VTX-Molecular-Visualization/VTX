@@ -33,7 +33,7 @@ namespace VTX::UI::QT
 		// Main menu.
 		createMenu<Menu::File>();
 		createMenu<Menu::Camera>();
-		createMenu<Menu::View>();
+		// createMenu<Menu::View>();
 		createMenu<Menu::Theme>();
 		createMenu<Menu::Help>();
 
@@ -83,6 +83,8 @@ namespace VTX::UI::QT
 		addToolBarAction( "Tool 1", action3 );
 		*/
 	}
+
+	void MainWindow::init() { _openGLWidget->init(); }
 
 	void MainWindow::addMenuAction( const WidgetId & p_menu, const UI::Action & p_action )
 	{

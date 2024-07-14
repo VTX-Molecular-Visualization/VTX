@@ -5,7 +5,6 @@
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
-#include <QSplashScreen>
 #include <app/infos.hpp>
 #include <util/enum.hpp>
 
@@ -27,9 +26,9 @@ namespace VTX::UI::QT
 		using namespace VTX::App::Info;
 
 		VTX_INFO( "Show splashscreen" );
-		_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
-		_qSplashScreen->show();
-		_qSplashScreen->showMessage( "Loading..." );
+		//_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
+		//_qSplashScreen->show();
+		//_qSplashScreen->showMessage( "Loading..." );
 
 		setWindowIcon( QIcon( SPRITE_LOGO ) );
 		setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME ) );
@@ -85,7 +84,8 @@ namespace VTX::UI::QT
 		}
 
 		// Show.
-		_qSplashScreen->finish( _mainWindow.get() );
+		//_qSplashScreen->finish( _mainWindow.get() );
+		_mainWindow->init();
 		_mainWindow->show();
 
 		// On quit.
@@ -177,12 +177,13 @@ namespace VTX::UI::QT
 		VTX_INFO( "Saving settings: {}", SETTINGS.fileName().toStdString() );
 		SETTINGS.setValue( "geometry", _mainWindow->saveGeometry() );
 		SETTINGS.setValue( "windowState", _mainWindow->saveState() );
-		SETTINGS.sync();
 
 		if ( SETTINGS.status() != QSettings::NoError )
 		{
 			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( SETTINGS.status() ) ) );
 		}
+
+		SETTINGS.sync();
 	}
 
 	void Application::_restoreSettings()
