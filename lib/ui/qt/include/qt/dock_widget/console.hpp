@@ -91,25 +91,24 @@ namespace VTX::UI::QT::DockWidget
 			_listWidgetMutex.unlock();
 
 			if ( _listWidget->count() > _LOG_COUNT )
+			{
 				_flush();
+			}
 
 			// _appendLog can be called from a different thread
 			// Qt events are not thread safe and need to be called from the main thread
 			// We delayed the scrollToBottom on main thread at the end of frame.
-			APP().onEndOfFrameOneShot += [ this ]()
-			{
-				_listWidgetMutex.lock();
-				_listWidget->scrollToBottom();
-				_listWidgetMutex.unlock();
-			};
+			_listWidgetMutex.lock();
+			APP().onEndOfFrameOneShot += [ this ]() { _listWidget->scrollToBottom(); };
+			_listWidgetMutex.unlock();
 		}
 
 		void _flush()
 		{
 			QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
-			_listWidgetMutex.lock();
+			//_listWidgetMutex.lock();
 			_listWidget->removeItemWidget( itemToRemove );
-			_listWidgetMutex.unlock();
+			//_listWidgetMutex.unlock();
 			delete itemToRemove;
 		}
 	};

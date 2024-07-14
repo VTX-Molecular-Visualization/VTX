@@ -76,7 +76,7 @@ namespace VTX::UI::QT
 		try
 		{
 			// Restore settings after main window is built.
-			_restoreSettings();
+			//_restoreSettings();
 		}
 		catch ( const std::exception & e )
 		{
@@ -85,7 +85,6 @@ namespace VTX::UI::QT
 
 		// Show.
 		//_qSplashScreen->finish( _mainWindow.get() );
-		_mainWindow->init();
 		_mainWindow->show();
 
 		// On quit.
@@ -97,7 +96,7 @@ namespace VTX::UI::QT
 			QApplication::quit();
 		};
 
-		// Run main loop.
+		// Connect quit action.
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
@@ -113,7 +112,9 @@ namespace VTX::UI::QT
 				}
 			}
 		);
-		connect( &_timer, &QTimer::timeout, [ this ] { update( _elapsedTimer.elapsed() ); } );
+
+		// Run main loop.
+		connect( &_timer, &QTimer::timeout, [ this ] { VTXApp::update( _elapsedTimer.elapsed() ); } );
 		_timer.start( 0 );
 		_elapsedTimer.start();
 

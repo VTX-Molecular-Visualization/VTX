@@ -57,8 +57,6 @@ namespace VTX::UI::QT
 
 	OpenGLWidget::~OpenGLWidget() { _context->doneCurrent(); }
 
-	void OpenGLWidget::init() {}
-
 	void OpenGLWidget::render()
 	{
 		if ( not _device )

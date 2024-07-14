@@ -8,6 +8,7 @@
 namespace VTX::App::Core::Action
 {
 	// Abstract action from which all action must inherits.
+	// Can specify
 	class BaseAction
 	{
 	  public:
@@ -20,6 +21,8 @@ namespace VTX::App::Core::Action
 
 	  protected:
 		ACTION_TAG _tag;
+
+		// TODO: add static callback there?
 	};
 
 } // namespace VTX::App::Core::Action

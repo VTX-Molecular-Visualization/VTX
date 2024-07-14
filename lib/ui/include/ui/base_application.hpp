@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_BASE_APPLICATION__
 #define __VTX_UI_BASE_APPLICATION__
 
+#include "actions.hpp"
 #include "concepts.hpp"
-#include "descriptors.hpp"
 #include <any>
 #include <app/vtx_app.hpp>
 #include <string>
@@ -23,7 +23,7 @@ namespace VTX::UI
 			//_init( p_args );
 			_mainWindow = std::make_unique<MW>();
 			_mainWindow->build();
-			_mainWindow->init();
+			onUI();
 
 			VTXApp::start( p_args );
 			_start();
@@ -40,6 +40,8 @@ namespace VTX::UI
 		}
 
 		inline MW * const getMainWindow() { return _mainWindow.get(); }
+
+		inline static Util::Callback<> onUI;
 
 	  protected:
 		std::unique_ptr<MW> _mainWindow;

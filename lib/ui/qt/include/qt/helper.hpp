@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_HELPER__
 
 #include <Qt>
-#include <ui/descriptors.hpp>
 #include <unordered_map>
 
 namespace VTX::UI::QT::Helper

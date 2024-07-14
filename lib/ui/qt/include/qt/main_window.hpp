@@ -4,10 +4,11 @@
 #include "base_widget.hpp"
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
+#include "ui/concepts.hpp"
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
-#include <ui/descriptors.hpp>
+#include <ui/actions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT
@@ -20,9 +21,8 @@ namespace VTX::UI::QT
 		virtual ~MainWindow() {}
 
 		void build();
-		void init();
-		void addMenuAction( const WidgetId & p_menu, const UI::Action & p_action );
-		void addToolBarAction( const WidgetId & p_toolbar, const UI::Action & p_action );
+		void addMenuAction( const WidgetId & p_menu, const UI::DescAction & p_action );
+		void addToolBarAction( const WidgetId & p_toolbar, const UI::DescAction & p_action );
 
 		template<typename M>
 		M * createMenu()

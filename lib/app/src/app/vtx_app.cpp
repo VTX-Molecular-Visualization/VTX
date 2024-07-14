@@ -96,15 +96,7 @@ namespace VTX::App
 		_currentMode = std::make_unique<App::Mode::Visualization>();
 		_currentMode->enter();
 
-		// If GUI is disabled, handle args now.
-		if ( p_args.has( "-no-gui" ) )
-		{
-			_handleArgs( p_args );
-		}
-		else
-		{
-			onEndOfFrameOneShot += [ this, &p_args ]() { _handleArgs( p_args ); };
-		}
+		_handleArgs( p_args );
 	}
 
 	void VTXApp::update( const float p_elapsedTime )

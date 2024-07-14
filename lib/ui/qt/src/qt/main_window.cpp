@@ -84,9 +84,7 @@ namespace VTX::UI::QT
 		*/
 	}
 
-	void MainWindow::init() { _openGLWidget->init(); }
-
-	void MainWindow::addMenuAction( const WidgetId & p_menu, const UI::Action & p_action )
+	void MainWindow::addMenuAction( const WidgetId & p_menu, const UI::DescAction & p_action )
 	{
 		for ( QMenu * const menu : menuBar()->findChildren<QMenu *>() )
 		{
@@ -101,7 +99,7 @@ namespace VTX::UI::QT
 		menu->addAction( ACTION( p_action ) );
 	}
 
-	void MainWindow::addToolBarAction( const WidgetId & p_toolbar, const UI::Action & p_action )
+	void MainWindow::addToolBarAction( const WidgetId & p_toolbar, const UI::DescAction & p_action )
 	{
 		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
 		{

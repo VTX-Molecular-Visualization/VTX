@@ -487,9 +487,6 @@ namespace VTX::Renderer::Context
 						assert( _framebuffers.contains( keyFbo ) );
 						auto & fbo = _framebuffers[ keyFbo ];
 
-						VTX_DEBUG(
-							"Texture resized ({}x{} => {}x{})", texture->getWidth(), texture->getHeight(), width, height
-						);
 						texture->resize( width, height );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
 					}

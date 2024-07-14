@@ -12,10 +12,12 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "Camera", p_parent )
 		{
-			addAction<Action::System::New>();
-			addAction<Action::System::Download>();
-			addAction<Action::System::Open>();
-			addAction<Action::System::Save>();
+			using namespace UI::Action;
+
+			addAction<System::New>();
+			addAction<System::Download>();
+			addAction<System::Open>();
+			addAction<System::Save>();
 		}
 
 		virtual ~File() {}

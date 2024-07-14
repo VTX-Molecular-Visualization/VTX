@@ -12,8 +12,8 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		Snapshot( QWidget * p_parent ) : BaseWidget<Snapshot, QToolBar>( "Snapshot", p_parent )
 		{
-			addAction<Action::Snapshot::Snapshot>();
-			addAction<Action::Snapshot::Export>();
+			addAction<UI::Action::Snapshot::Snapshot>();
+			addAction<UI::Action::Snapshot::Export>();
 		}
 
 		virtual ~Snapshot() {}
