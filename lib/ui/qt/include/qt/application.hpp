@@ -24,7 +24,8 @@ namespace VTX::UI::QT
 
 		static void configure();
 
-		// bool event( QEvent * event ) override;
+		// bool event( QEvent * ) override;
+		// Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  protected:

@@ -24,12 +24,12 @@ namespace VTX::UI::QT::Dialog
 
 	  private:
 		// TODO: move to json.
-		const std::string _PDB_ID_TEMPLATE = "[PDB_ID]";
-		const std::string _DEFAULT_URL	   = "https://files.rcsb.org/download/" + _PDB_ID_TEMPLATE + ".pdb ";
-		const std::string _SETTING_KEY_URL = "dialogDownloadURLHistory";
-		const std::string _SETTING_KEY_PDB = "dialogDownloadPDBHistory";
+		inline static const std::string _PDB_ID_TEMPLATE = "[PDB_ID]";
+		inline static const std::string _DEFAULT_URL = "https://files.rcsb.org/download/" + _PDB_ID_TEMPLATE + ".pdb ";
+		inline static const std::string _SETTING_KEY_URL = "dialogDownloadURLHistory";
+		inline static const std::string _SETTING_KEY_PDB = "dialogDownloadPDBHistory";
 		// TODO: move to settings.
-		const uint _MAX_HISTORY_SIZE = 10;
+		inline static const uint _MAX_HISTORY_SIZE = 10;
 
 		void _loadHistory( const std::string & p_key, QComboBox * const p_comboBox );
 		void _saveHistory( const std::string & p_key, const std::string & p_value );

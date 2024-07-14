@@ -20,9 +20,12 @@ namespace VTX::UI::QT
 		MainWindow();
 		virtual ~MainWindow() {}
 
+		void closeEvent( QCloseEvent * p_event ) override;
+
 		void build();
 		void addMenuAction( const WidgetId & p_menu, const UI::DescAction & p_action );
 		void addToolBarAction( const WidgetId & p_toolbar, const UI::DescAction & p_action );
+		void resetLayout();
 
 		template<typename M>
 		M * createMenu()
@@ -47,8 +50,6 @@ namespace VTX::UI::QT
 			addDockWidget( p_area, dockWidget );
 			return dockWidget;
 		}
-
-		void resetLayout();
 
 	  private:
 		QPointer<OpenGLWidget> _openGLWidget;

@@ -159,9 +159,7 @@ namespace VTX::Renderer::Context
 				const size_t p_offset,
 				const size_t p_size,
 				const size_t p_padding
-			) :
-				buffer( p_buffer ),
-				offset( p_offset ), size( p_size ), padding( p_padding )
+			) : buffer( p_buffer ), offset( p_offset ), size( p_size ), padding( p_padding )
 			{
 			}
 		};

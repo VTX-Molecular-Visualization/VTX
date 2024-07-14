@@ -123,4 +123,11 @@ namespace VTX::UI::QT
 		center();
 	}
 
+	void MainWindow::closeEvent( QCloseEvent * p_event )
+	{
+		VTX_DEBUG( "Qt main window close event" );
+		// App::VTX_ACTION().execute<App::Action::Application::Quit>();
+		p_event->accept();
+		QApplication::quit();
+	}
 } // namespace VTX::UI::QT

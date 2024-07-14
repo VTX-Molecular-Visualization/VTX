@@ -36,6 +36,7 @@ namespace VTX::UI::QT
 		setApplicationVersion( QString::fromStdString( APPLICATION_VERSION ) );
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN ) );
+		// setQuitOnLastWindowClosed( false );
 
 		_loadTheme();
 	}
@@ -43,20 +44,21 @@ namespace VTX::UI::QT
 	Application::~Application() {}
 
 	/*
-	bool Application::event( QEvent * event )
+	bool Application::event( QEvent * p_event )
 	{
 		// Handle quit event.
-		if ( event->type() == QEvent::Close )
+
+		if ( p_event->type() == QEvent::Close )
 		{
-			App::VTX_ACTION().execute<App::Action::Application::Quit>();
-			QApplication::quit();
-			return true;
+			VTX_DEBUG( "Qt application close event" );
+			// App::VTX_ACTION().execute<App::Action::Application::Quit>();
+			// QApplication::quit();
+			// return true;
 		}
 
 		return false;
-
 	}
-	*/
+*/
 
 	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
 	{
@@ -76,7 +78,7 @@ namespace VTX::UI::QT
 		try
 		{
 			// Restore settings after main window is built.
-			//_restoreSettings();
+			_restoreSettings();
 		}
 		catch ( const std::exception & e )
 		{
@@ -90,10 +92,8 @@ namespace VTX::UI::QT
 		// On quit.
 		onStop += [ this ]
 		{
-			_timer.stop();
-			_elapsedTimer.invalidate();
+			VTX_DEBUG( "Qt stop callback" );
 			_mainWindow->close();
-			QApplication::quit();
 		};
 
 		// Connect quit action.
@@ -102,6 +102,8 @@ namespace VTX::UI::QT
 			&QCoreApplication::aboutToQuit,
 			[ this ]
 			{
+				VTX_DEBUG( "QCoreApplication::aboutToQuit" );
+
 				try
 				{
 					_saveSettings();
@@ -120,6 +122,8 @@ namespace VTX::UI::QT
 
 		// Then block.
 		exec();
+		VTX_DEBUG( "Qt loop exited" );
+		_timer.stop();
 	}
 
 	void Application::_loadTheme()

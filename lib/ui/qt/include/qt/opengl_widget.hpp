@@ -16,7 +16,7 @@ namespace VTX::UI::QT
 	{
 	  public:
 		OpenGLWidget( QWidget * p_parent );
-		~OpenGLWidget();
+		virtual ~OpenGLWidget();
 
 		void render();
 		void resizeEvent( QResizeEvent * p_event ) override;
