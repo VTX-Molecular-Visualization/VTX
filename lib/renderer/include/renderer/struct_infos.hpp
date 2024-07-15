@@ -1,3 +1,6 @@
+#ifndef __VTX_STRUCT_INFOS__
+#define __VTX_STRUCT_INFOS__
+
 #include <array>
 #include <string>
 
@@ -5,6 +8,8 @@ namespace VTX::Renderer
 {
 	struct StructInfos
 	{
+		std::string renderer;
+
 		long long gpuMemoryInfoDedicated;
 		long long gpuMemoryInfoTotalAvailable;
 		long long gpuMemoryInfoCurrentAvailable;
@@ -17,3 +22,5 @@ namespace VTX::Renderer
 		size_t currentSizeCPUCache;
 	};
 } // namespace VTX::Renderer
+
+#endif

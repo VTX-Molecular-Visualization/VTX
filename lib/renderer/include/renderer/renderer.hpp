@@ -143,7 +143,7 @@ namespace VTX::Renderer
 			return _instructionsDurationRanges;
 		}
 
-		inline StructInfos getInfos()
+		inline StructInfos getInfos() const
 		{
 			StructInfos infos;
 			_context->fillInfos( infos );

@@ -1032,6 +1032,8 @@ namespace VTX::Renderer::Context
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const
 	{
+		p_infos.renderer = _openglInfos.glRenderer;
+
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
 		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )

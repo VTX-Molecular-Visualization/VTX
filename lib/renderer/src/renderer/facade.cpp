@@ -79,4 +79,8 @@ namespace VTX::Renderer
 
 	void Facade::setNeedUpdate( const bool p_value ) { _renderer->setNeedUpdate( p_value ); }
 
+	StructInfos Facade::getInfos() const { return _renderer->getInfos(); }
+
+	Util::Callback<> & Facade::onReady() { return _renderer->onReady; }
+
 } // namespace VTX::Renderer

@@ -121,6 +121,10 @@ namespace VTX::Renderer
 		{
 			throw GLException( "Context not loaded" );
 		}
+		else
+		{
+			onReady();
+		}
 	}
 
 	void Renderer::clean()
