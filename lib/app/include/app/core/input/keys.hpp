@@ -78,7 +78,7 @@ namespace VTX::App::Core::Input
 
 		Key_Escape,
 
-		Key_Undefined
+		Key_Unkown
 	};
 
 	enum ModifierEnum

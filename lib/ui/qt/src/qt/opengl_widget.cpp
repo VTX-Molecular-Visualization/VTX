@@ -12,14 +12,20 @@ namespace VTX::UI::QT
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( 0 );
-		format.setDepthBufferSize( 24 );
-		format.setStencilBufferSize( 8 );
-		QSurfaceFormat::setDefaultFormat( format );
+		// format.setDepthBufferSize( 24 );
+		// format.setStencilBufferSize( 8 );
+
+		// format.setRedBufferSize( 32 );
+		// format.setGreenBufferSize( 32 );
+		// format.setBlueBufferSize( 32 );
+		// format.setAlphaBufferSize( 32 );
+
+		// QSurfaceFormat::setDefaultFormat( format );
 
 		// Create context.
 		_context = new QOpenGLContext();
 		_context->setFormat( format );
-		//_context->setShareContext( nullptr );
+		_context->setShareContext( nullptr );
 		_context->create();
 
 		if ( not _context->isValid() )
@@ -48,11 +54,16 @@ namespace VTX::UI::QT
 		// setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
 		// Connect signals.
-		APP().onPostRender += [ this ]( const float p_deltaTime )
+		APP().onPostRender += [ this ]( const float )
 		{
 			render();
-			// update();
+			update();
+			//_container->update();
+			//_surface->requestUpdate();
 		};
+
+		// Connect signals.
+		// connect( _surface, &QWindow::requestUpdate, this, &OpenGLWidget::render );
 	}
 
 	OpenGLWidget::~OpenGLWidget() { _context->doneCurrent(); }
@@ -64,8 +75,8 @@ namespace VTX::UI::QT
 			_device = new QOpenGLPaintDevice();
 		}
 
-		_device->setSize( size() * _surface->devicePixelRatio() );
-		_device->setDevicePixelRatio( _surface->devicePixelRatio() );
+		//_device->setSize( size() * _surface->devicePixelRatio() );
+		//_device->setDevicePixelRatio( _surface->devicePixelRatio() );
 
 		// QPainter painter( _device );
 		// render( &painter );

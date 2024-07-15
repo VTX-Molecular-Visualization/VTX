@@ -15,6 +15,7 @@
 
 namespace VTX::App
 {
+
 	class VTXApp
 	{
 	  private:
@@ -26,7 +27,7 @@ namespace VTX::App
 
 		void		 init();
 		virtual void start( const Args & );
-		void		 update( const float p_elapsedTime = 0 );
+		void		 update( const float p_deltaTime, const float p_elapsedTime );
 		void		 stop();
 
 		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandler; }
@@ -49,7 +50,7 @@ namespace VTX::App
 
 		// inline static Util::Callback<> onStart;
 		// inline static Util::Callback<float> onPreUpdate;
-		inline static Util::Callback<float> onUpdate;
+		inline static Util::Callback<float, float> onUpdate;
 		// inline static Util::Callback<float> onLateUpdate;
 		inline static Util::Callback<float> onPostUpdate;
 		// inline static Util::Callback<float> onPreRender;
@@ -67,12 +68,13 @@ namespace VTX::App
 		inline static Core::Monitoring::Stats		  _stats;
 
 		void _handleArgs( const Args & p_args );
-		void _update( const float p_elapsedTime );
+		void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
 
 	// Convenient accessors
-	Application::Scene & SCENE();
-	Mode::BaseMode &	 MODE();
+	Application::Scene &	  SCENE();
+	Mode::BaseMode &		  MODE();
+	Core::Monitoring::Stats & STATS();
 } // namespace VTX::App
 
 namespace VTX

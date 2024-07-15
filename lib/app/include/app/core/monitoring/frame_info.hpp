@@ -48,7 +48,7 @@ namespace VTX::App::Core::Monitoring
 	  private:
 		long long _timestamp;
 
-		std::map<Util::Hashing::Hash, Util::VTXVariant> _metricsMap = std::map<Util::Hashing::Hash, Util::VTXVariant>();
+		std::map<Util::Hashing::Hash, Util::VTXVariant> _metricsMap;
 	};
 } // namespace VTX::App::Core::Monitoring
 #endif

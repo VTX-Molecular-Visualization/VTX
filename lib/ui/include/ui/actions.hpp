@@ -1,7 +1,9 @@
 #ifndef __VTX_UI_DESCRIPTORS__
 #define __VTX_UI_DESCRIPTORS__
 
+#include <app/action/animation.hpp>
 #include <app/action/application.hpp>
+#include <app/application/scene.hpp>
 #include <app/application/system/action_manager.hpp>
 #include <functional>
 #include <string>
@@ -181,7 +183,8 @@ namespace VTX::UI
 					name = "Orient";
 					tip	 = "Orient camera on selection";
 					icon = ":/sprite/camera/orient.png";
-					// trigger = []() { App::VTX_ACTION().execute<App::Action::Scene::OrientCamera>(); };
+					trigger
+						= []() { App::VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() ); };
 				}
 			};
 
@@ -189,9 +192,10 @@ namespace VTX::UI
 			{
 				Reset()
 				{
-					name = "Reset";
-					tip	 = "Reset camera";
-					icon = ":/sprite/camera/reset.png";
+					name	= "Reset";
+					tip		= "Reset camera";
+					icon	= ":/sprite/camera/reset.png";
+					trigger = []() { App::VTX_ACTION().execute<App::Action::Animation::ResetCamera>(); };
 				}
 			};
 		} // namespace Camera

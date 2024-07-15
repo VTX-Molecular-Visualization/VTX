@@ -47,9 +47,9 @@ namespace VTX::App::Core::Animation
 
 		if ( MODE().getName() == Mode::Visualization::ID )
 		{
-			Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
-			visualizationMode.getCurrentCameraController().setActive( false );
-			visualizationMode.getCurrentPickerController().setActive( false );
+			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
+			// visualizationMode.getCurrentCameraController().setActive( false );
+			// visualizationMode.getCurrentPickerController().setActive( false );
 		}
 	}
 
@@ -66,9 +66,9 @@ namespace VTX::App::Core::Animation
 
 		if ( MODE().getName() == Mode::Visualization::ID )
 		{
-			Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
-			visualizationMode.getCurrentCameraController().setActive( true );
-			visualizationMode.getCurrentPickerController().setActive( true );
+			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
+			// visualizationMode.getCurrentCameraController().setActive( true );
+			// visualizationMode.getCurrentPickerController().setActive( true );
 		}
 	}
 } // namespace VTX::App::Core::Animation

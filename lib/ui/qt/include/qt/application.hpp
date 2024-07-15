@@ -3,13 +3,13 @@
 
 #include "main_window.hpp"
 #include <QApplication>
-#include <QElapsedTimer>
 #include <QPointer>
 #include <QSettings>
 #include <QSplashScreen>
 #include <QTimer>
 #include <app/filesystem.hpp>
 #include <ui/base_application.hpp>
+#include <util/chrono.hpp>
 
 namespace VTX::UI::QT
 {
@@ -34,7 +34,8 @@ namespace VTX::UI::QT
 
 	  private:
 		QTimer					_timer;
-		QElapsedTimer			_elapsedTimer;
+		Util::Chrono			_elapsedTimer;
+		Util::Chrono			_deltaTimer;
 		QPointer<QSplashScreen> _qSplashScreen;
 
 		void _loadTheme();

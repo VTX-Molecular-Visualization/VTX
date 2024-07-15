@@ -32,11 +32,14 @@ namespace VTX::UI::QT::Helper
 			{ Qt::Key::Key_F11, App::Core::Input::Key::Key_F11 }, { Qt::Key::Key_F12, App::Core::Input::Key::Key_F12 },
 		};
 
-		assert( keyMap.contains( p_key ) );
-
-		App::Core::Input::Key key = keyMap[ p_key ];
-
-		return key;
+		if ( keyMap.contains( p_key ) )
+		{
+			return keyMap[ p_key ];
+		}
+		else
+		{
+			return App::Core::Input::Key::Key_Unkown;
+		}
 	}
 
 	App::Core::Input::KeyEvent qKeyEventToKeyEvent( const QKeyEvent & p_event )
@@ -68,7 +71,7 @@ namespace VTX::UI::QT::Helper
 		case QEvent::MouseButtonRelease: event.type = App::Core::Input::MouseEvent::Type::Release; break;
 		case QEvent::MouseMove: event.type = App::Core::Input::MouseEvent::Type::Move; break;
 		case QEvent::MouseButtonDblClick: event.type = App::Core::Input::MouseEvent::Type::DoubleClick; break;
-		default: assert( false ); break;
+		default: break;
 		}
 
 		switch ( p_event.button() )
@@ -76,7 +79,7 @@ namespace VTX::UI::QT::Helper
 		case Qt::LeftButton: event.button = App::Core::Input::MouseEvent::Button::Left; break;
 		case Qt::RightButton: event.button = App::Core::Input::MouseEvent::Button::Right; break;
 		case Qt::MiddleButton: event.button = App::Core::Input::MouseEvent::Button::Middle; break;
-		default: assert( false ); break;
+		default: break;
 		}
 
 		return event;

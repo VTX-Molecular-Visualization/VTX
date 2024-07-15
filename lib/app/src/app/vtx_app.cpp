@@ -1,4 +1,5 @@
 #include "app/vtx_app.hpp"
+#include "app/action/animation.hpp"
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/ecs/entity_director.hpp"
@@ -11,6 +12,10 @@
 #include "app/application/system/threading.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
+#include "app/component/render/proxy_camera.hpp"
+#include "app/component/render/proxy_color_layout.hpp"
+#include "app/component/render/proxy_molecule.hpp"
+#include "app/controller/camera/trackball.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/worker/worker_manager.hpp"
@@ -22,11 +27,6 @@
 #include "app/internal/monitoring/all_metrics.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/render/camera.hpp>
-#include <app/component/render/proxy_camera.hpp>
-#include <app/component/render/proxy_color_layout.hpp>
-#include <app/component/render/proxy_molecule.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/chrono.hpp>
@@ -87,7 +87,7 @@ namespace VTX::App
 		////////////
 		//
 		// Regsiter loop events
-		onUpdate += []( const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
+		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
 		// ?
@@ -99,18 +99,19 @@ namespace VTX::App
 		_handleArgs( p_args );
 	}
 
-	void VTXApp::update( const float p_elapsedTime )
+	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		const float deltaTime = 0.15f;
-		// p_elapsedTime > 0 ? p_elapsedTime : _timer.intervalTime();
+		// Log times.
+		// VTX_DEBUG( "Delta time: {} ms, Elapsed time: {} ms", p_deltaTime, p_elapsedTime );
 
 		Core::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
 		frameInfo.set(
-			Internal::Monitoring::TICK_RATE_KEY, Util::CHRONO_CPU( [ this, deltaTime ]() { _update( deltaTime ); } )
+			Internal::Monitoring::TICK_RATE_KEY,
+			Util::CHRONO_CPU( [ this, p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
 		);
 	}
 
-	void VTXApp::_update( const float p_elapsedTime )
+	void VTXApp::_update( const float p_deltaTime, const float p_elapsedTime )
 	{
 		Core::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
 
@@ -121,23 +122,22 @@ namespace VTX::App
 		);
 		*/
 
-		/*
 		frameInfo.set(
 			Internal::Monitoring::UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onUpdate( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
 		);
-		*/
 
 		/*
 		frameInfo.set(
 			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
 		);
+		*/
+
 		frameInfo.set(
 			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
-		*/
 
 		/*
 		frameInfo.set(
@@ -238,8 +238,8 @@ namespace VTX::App
 	Application::Scene &	   VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
 	const Application::Scene & VTXApp::getScene() const { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
 
-	Application::Scene & SCENE() { return APP().getScene(); }
-
-	Mode::BaseMode & MODE() { return APP().getCurrentMode(); }
+	Application::Scene &	  SCENE() { return APP().getScene(); }
+	Mode::BaseMode &		  MODE() { return APP().getCurrentMode(); }
+	Core::Monitoring::Stats & STATS() { return APP().getStats(); }
 
 } // namespace VTX::App

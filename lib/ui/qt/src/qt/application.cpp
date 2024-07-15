@@ -116,11 +116,20 @@ namespace VTX::UI::QT
 		);
 
 		// Run main loop.
-		connect( &_timer, &QTimer::timeout, [ this ] { VTXApp::update( _elapsedTimer.elapsed() ); } );
+		connect(
+			&_timer,
+			&QTimer::timeout,
+			[ this ]
+			{
+				static const float S_TO_MS = 1e3;
+				VTXApp::update( _deltaTimer.intervalTime() * S_TO_MS, _elapsedTimer.elapsedTime() * S_TO_MS );
+			}
+		);
 		_timer.start( 0 );
 		_elapsedTimer.start();
+		_deltaTimer.start();
 
-		// Then block.
+		// Then block to run Qt events loop.
 		exec();
 		VTX_DEBUG( "Qt loop exited" );
 		_timer.stop();

@@ -15,8 +15,7 @@ namespace VTX::App::Core::Animation
 		App::Component::Render::Camera & p_camera,
 		const float						 p_duration,
 		const Util::Math::AABB &		 p_targetAabb
-	) :
-		camera( p_camera )
+	) : camera( p_camera )
 	{
 		App::Component::Scene::Transform & cameraTransformComponent
 			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
@@ -42,8 +41,7 @@ namespace VTX::App::Core::Animation
 		const Vec3f &					 p_finalPosition,
 		const Quatf &					 p_finalRotation,
 		const Vec3f &					 p_targetPosition
-	) :
-		camera( p_camera )
+	) : camera( p_camera )
 	{
 		App::Component::Scene::Transform & cameraTransformComponent
 			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
@@ -72,9 +70,9 @@ namespace VTX::App::Core::Animation
 
 		if ( MODE().getName() == Mode::Visualization::ID )
 		{
-			Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
-			visualizationMode.getCurrentCameraController().setActive( false );
-			visualizationMode.getCurrentPickerController().setActive( false );
+			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
+			// visualizationMode.getCurrentCameraController().setActive( false );
+			// visualizationMode.getCurrentPickerController().setActive( false );
 		}
 	}
 
@@ -91,9 +89,9 @@ namespace VTX::App::Core::Animation
 
 		if ( MODE().getName() == Mode::Visualization::ID )
 		{
-			Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
-			visualizationMode.getCurrentCameraController().setActive( true );
-			visualizationMode.getCurrentPickerController().setActive( true );
+			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
+			// visualizationMode.getCurrentCameraController().setActive( true );
+			// visualizationMode.getCurrentPickerController().setActive( true );
 		}
 	}
 } // namespace VTX::App::Core::Animation

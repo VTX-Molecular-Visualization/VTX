@@ -12,7 +12,7 @@ namespace VTX::App::Action::Animation
 	class Orient final : public App::Core::Action::BaseAction
 	{
 	  private:
-		inline static float ORIENT_DURATION = 0.5f;
+		inline static float ORIENT_DURATION = 500.f;
 
 	  public:
 		Orient( const Util::Math::AABB & p_targetAABB );
