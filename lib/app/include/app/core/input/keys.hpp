@@ -36,6 +36,17 @@ namespace VTX::App::Core::Input
 		Key_Y,
 		Key_Z,
 
+		Key_0,
+		Key_1,
+		Key_2,
+		Key_3,
+		Key_4,
+		Key_5,
+		Key_6,
+		Key_7,
+		Key_8,
+		Key_9,
+
 		Key_Semicolon,
 		Key_Comma,
 
@@ -66,6 +77,8 @@ namespace VTX::App::Core::Input
 		Key_F12,
 
 		Key_Escape,
+
+		Key_Undefined
 	};
 
 	enum ModifierEnum

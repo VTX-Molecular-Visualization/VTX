@@ -124,6 +124,9 @@ namespace VTX::App::Core::Input
 		// void _flushEventKeyboard( QKeyEvent * const, const App::Old::VTX_ID & );
 		// void _flushEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
 		// void _flushEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
+
+		void _logKeyPressed( App::Core::Input::Key p_key ) const;
+		void _logKeyReleased( App::Core::Input::Key p_key ) const;
 	};
 } // namespace VTX::App::Core::Input
 

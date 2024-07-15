@@ -1,5 +1,6 @@
 #include "app/core/input/input_manager.hpp"
 #include <app/vtx_app.hpp>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -7,6 +8,7 @@ namespace VTX::App::Core::Input
 {
 	KeyboardLayout InputManager::getKeyboardLayout()
 	{
+		// TODO: Implement this function
 		/*
 		switch ( QT_APP()->inputMethod()->locale().language() )
 		{
@@ -24,6 +26,7 @@ namespace VTX::App::Core::Input
 
 		switch ( getKeyboardLayout() )
 		{
+			// TODO: not sure this is needed if we use native keycodes?
 		case KeyboardLayout::AZERTY:
 			switch ( p_key )
 			{
@@ -46,6 +49,8 @@ namespace VTX::App::Core::Input
 
 	InputManager::InputManager()
 	{
+		// TODO: consume events, no auto clear.
+		/*
 		APP().onPostUpdate += [ this ]( const float p_deltaTime )
 		{
 			_deltaMousePosition.x = 0;
@@ -53,6 +58,10 @@ namespace VTX::App::Core::Input
 
 			_deltaMouseWheel = 0;
 		};
+		*/
+
+		onKeyPressed += [ this ]( Key p_key ) { _logKeyPressed( p_key ); };
+		onKeyReleased += [ this ]( Key p_key ) { _logKeyReleased( p_key ); };
 	}
 
 	InputManager::~InputManager() {}
@@ -271,6 +280,15 @@ namespace VTX::App::Core::Input
 	//{
 	//	Controller::BaseKeyboardController::clearKey( p_key );
 	// }
+
+	void InputManager::_logKeyPressed( Key p_key ) const
+	{
+		VTX_DEBUG( "Key pressed : {}", Util::Enum::enumName<Key>( p_key ) );
+	}
+	void InputManager::_logKeyReleased( Key p_key ) const
+	{
+		VTX_DEBUG( "Key released : {}", Util::Enum::enumName<Key>( p_key ) );
+	}
 
 } // namespace VTX::App::Core::Input
 

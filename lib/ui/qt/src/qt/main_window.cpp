@@ -18,7 +18,7 @@
 namespace VTX::UI::QT
 {
 
-	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
+	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr ), _inputManager( App::INPUT_MANAGER() )
 	{
 		// Size.
 		resize( 1920, 1080 );
@@ -122,6 +122,8 @@ namespace VTX::UI::QT
 		restoreState( _defaultState );
 		center();
 	}
+
+	void MainWindow::changeEvent( QEvent * const p_event ) { VTX_DEBUG( "Qt main window change event" ); }
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
