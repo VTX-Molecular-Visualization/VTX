@@ -57,7 +57,7 @@ namespace VTX::App
 		_systemHandler->reference( SCENE_KEY, &scene );
 
 		// Create renderer.
-		RENDERER().get().init();
+		RENDERER().init();
 
 		//// Create Databases
 		//_representationLibrary
@@ -71,7 +71,7 @@ namespace VTX::App
 		VTX_INFO( "Starting application: {}", p_args.toString() );
 
 		///////////
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
 		rendererFacade.build();
 		App::Component::Render::ProxyColorLayout & colorLayout
 			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
@@ -148,7 +148,7 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { RENDERER_SYSTEM().facade().render( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { RENDERER().facade().render( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(

@@ -61,7 +61,7 @@ int main( int p_argc, char * p_argv[] )
 
 		app->init();
 
-		const FilePath molPath = App::Filesystem::getInternalDataDir() / "4v6x.mmtf";
+		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1aga.mmtf";
 		args.add( molPath.string() );
 
 		app->start( args );

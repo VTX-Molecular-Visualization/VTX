@@ -1,11 +1,9 @@
 #ifndef __VTX_APP_APPLICATION_SYSTEM_RENDERER__
 #define __VTX_APP_APPLICATION_SYSTEM_RENDERER__
 
-#include "app/application/renderer/renderer.hpp"
-#include "app/application/renderer/renderer_accessor.hpp"
 #include "app/application/system/system_registration.hpp"
+#include <app/filesystem.hpp>
 #include <renderer/facade.hpp>
-#include <util/callback.hpp>
 
 namespace VTX::App::Application::System
 {
@@ -13,25 +11,23 @@ namespace VTX::App::Application::System
 	{
 	  public:
 		Renderer() = default;
-		Application::Renderer::RendererAccessor accessor();
-		VTX::Renderer::Facade &					facade();
 
-		Util::Callback<> onGet;
-		Util::Callback<> onRelease;
+		void init()
+		{
+			const FilePath shaderDir = Filesystem::getShadersDir();
+			_facade					 = std::make_unique<VTX::Renderer::Facade>( 1, 1, shaderDir );
+		}
+
+		inline VTX::Renderer::Facade & facade() { return *_facade; }
 
 	  private:
-		Application::Renderer::Renderer _renderer;
+		std::unique_ptr<VTX::Renderer::Facade> _facade;
 	};
 
 } // namespace VTX::App::Application::System
 
 namespace VTX::App
 {
-	// RENDERER_SYSTEM give an access the System::Renderer object
-	Application::System::Renderer & RENDERER_SYSTEM();
-
-	// RENDERER return an accessor to the Renderer::Facade object with onGet/onRelease functions called (to activate
-	// openGLContext for example)
-	Application::Renderer::RendererAccessor RENDERER();
+	Application::System::Renderer & RENDERER();
 } // namespace VTX::App
 #endif

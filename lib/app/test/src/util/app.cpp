@@ -19,7 +19,7 @@ namespace VTX::App::Test::Util
 		{
 			APP().start( { 0, nullptr } );
 
-			auto & renderer = RENDERER_SYSTEM().facade();
+			auto & renderer = RENDERER().facade();
 			REQUIRE_THROWS( renderer.build() );
 
 			// Camera.
