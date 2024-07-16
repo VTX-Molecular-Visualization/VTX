@@ -29,6 +29,14 @@ namespace VTX::UI::QT
 
 	namespace Action
 	{
+		struct ShowToolbarText : public DescAction
+		{
+			ShowToolbarText()
+			{
+				name = "Show toolbar text";
+				tip	 = "Show/hide text beside tool buttons";
+			}
+		};
 
 	} // namespace Action
 

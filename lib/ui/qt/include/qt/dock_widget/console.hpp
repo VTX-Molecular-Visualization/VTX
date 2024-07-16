@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 
 #include "qt/base_widget.hpp"
+#include "qt/line_edit/command_launcher.hpp"
 #include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
@@ -28,6 +29,8 @@ namespace VTX::UI::QT::DockWidget
 
 		QListWidget * _listWidget	   = nullptr;
 		std::mutex	  _listWidgetMutex = std::mutex();
+
+		QPointer<LineEdit::CommandLauncher> _commandLauncher;
 
 		void _appendLog( const Util::LogInfo & p_logInfo );
 		void _flush();

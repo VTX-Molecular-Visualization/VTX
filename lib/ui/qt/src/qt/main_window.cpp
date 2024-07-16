@@ -23,7 +23,19 @@ namespace VTX::UI::QT
 		// Size.
 		resize( 1920, 1080 );
 
+		// Set all settings.
 		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+		setDockNestingEnabled( false );
+		setAnimated( true );
+		setUnifiedTitleAndToolBarOnMac( true );
+
+		//  Features.
+		setTabShape( QTabWidget::Rounded );
+
+		// setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
+		// setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+		setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
+		setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 	}
 
 	void MainWindow::build()
@@ -59,7 +71,7 @@ namespace VTX::UI::QT
 		auto * dwOptions		= createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		tabifyDockWidget( dwInspector, dwRenderSettings );
 		tabifyDockWidget( dwInspector, dwOptions );
-		dwInspector->raise();
+		dwOptions->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 

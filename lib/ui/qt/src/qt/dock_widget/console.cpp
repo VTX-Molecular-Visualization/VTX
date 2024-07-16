@@ -7,15 +7,15 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
-		QWidget * const mainWidget = new QWidget( this );
-		_listWidget				   = new QListWidget( this );
+		QWidget * const widget = new QWidget( this );
+		_listWidget			   = new QListWidget( this );
 		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
 		// Set widget.
-		QVBoxLayout * const mainLayout = new QVBoxLayout( mainWidget );
+		QVBoxLayout * const mainLayout = new QVBoxLayout( widget );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 		mainLayout->addWidget( _listWidget );
-		setWidget( mainWidget );
+		setWidget( widget );
 
 		connect(
 			_listWidget,
@@ -32,6 +32,10 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		LOGGER().onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
+
+		// Command launcher.
+		_commandLauncher = new LineEdit::CommandLauncher( this );
+		mainLayout->addWidget( _commandLauncher );
 	}
 
 	void Console::clear()

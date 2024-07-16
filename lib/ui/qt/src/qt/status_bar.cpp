@@ -8,18 +8,18 @@ namespace VTX::UI::QT
 
 	StatusBar::StatusBar( QWidget * p_parent ) : BaseWidget<StatusBar, QStatusBar>( p_parent )
 	{
-		auto * vendorLabel = new QLabel( this );
-		vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-
 		auto * fpsLabel = new QLabel( this );
 		fpsLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+
+		auto * vendorLabel = new QLabel( this );
+		vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		// QWidget * spacer = new QWidget( this );
 		// spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 
 		// addPermanentWidget( spacer );
-		addPermanentWidget( vendorLabel );
 		addPermanentWidget( fpsLabel );
+		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
 		auto & renderer = App::RENDERER().facade();
@@ -36,7 +36,7 @@ namespace VTX::UI::QT
 			{
 				const float tickrate = App::STATS().getAverage<float>( App::Internal::Monitoring::TICK_RATE_KEY );
 
-				fpsLabel->setText( QString( "FPS: %1" ).arg( uint( 1.f / tickrate ) ) );
+				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1.f / tickrate ) ) );
 			}
 		);
 		timer->start( 1000 );

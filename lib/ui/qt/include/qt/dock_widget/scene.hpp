@@ -3,7 +3,9 @@
 
 #include "qt/base_widget.hpp"
 #include <QDockWidget>
+#include <QLineEdit>
 #include <QPointer>
+#include <QToolBar>
 #include <QTreeWidget>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
@@ -94,6 +96,25 @@ namespace VTX::UI::QT::DockWidget
 		Scene( QWidget * p_parent ) : BaseWidget<Scene, QDockWidget>( "Scene", p_parent )
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
+			// Create grid layout.
+			auto * widget = new QWidget( this );
+			auto * layout = new QVBoxLayout( widget );
+			layout->setContentsMargins( 0, 0, 0, 0 );
+
+			widget->setLayout( layout );
+			setWidget( widget );
+
+			// Search bar.
+			auto * searchBar = new QLineEdit( widget );
+			searchBar->setPlaceholderText( "Search..." );
+			layout->addWidget( searchBar );
+
+			// Toolbar.
+			// auto * toolbar = new QToolBar( widget );
+			// layout->addWidget( toolbar );
+			// toolbar->addAction( "A" );
+			// toolbar->addAction( "O" );
 
 			// Setup tree.
 			_tree = new QTreeWidget( this );
@@ -235,7 +256,7 @@ namespace VTX::UI::QT::DockWidget
 				}
 			};
 
-			setWidget( _tree.get() );
+			layout->addWidget( _tree.get() );
 		}
 
 		virtual ~Scene() {}
