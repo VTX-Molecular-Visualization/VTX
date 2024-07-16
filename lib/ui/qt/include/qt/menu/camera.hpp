@@ -12,16 +12,13 @@ namespace VTX::UI::QT::Menu
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget<Camera, QMenu>( "Camera", p_parent )
 		{
-			QMenu * projectionMenu = addMenu( "Projection" );
-			projectionMenu->addAction( ACTION<UI::Action::Camera::Perspective>() );
-			projectionMenu->addAction( ACTION<UI::Action::Camera::Orthographic>() );
-
-			QMenu * controllerMenu = addMenu( "Controller" );
-			controllerMenu->addAction( ACTION<UI::Action::Camera::Trackball>() );
-			controllerMenu->addAction( ACTION<UI::Action::Camera::Freefly>() );
-
+			addAction<UI::Action::Camera::Perspective>();
+			addAction<UI::Action::Camera::Orthographic>();
+			addSeparator();
+			addAction<UI::Action::Camera::Trackball>();
+			addAction<UI::Action::Camera::Freefly>();
+			addSeparator();
 			addAction<UI::Action::Camera::Orient>();
-			addAction<UI::Action::Camera::Reset>();
 		}
 		virtual ~Camera() {}
 

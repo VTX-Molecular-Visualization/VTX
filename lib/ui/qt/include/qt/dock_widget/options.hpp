@@ -27,6 +27,8 @@ namespace VTX::UI::QT::DockWidget
 
 			auto * gbInterface	   = new QGroupBox( "Interface", widget );
 			auto * layoutInterface = new QVBoxLayout( widget );
+			layout->setContentsMargins( 0, 0, 0, 0 );
+			layout->setSizeConstraint( QLayout::SetMinAndMaxSize );
 
 			// Use action?
 
@@ -56,10 +58,6 @@ namespace VTX::UI::QT::DockWidget
 
 			gbInterface->setLayout( layoutInterface );
 			layout->addWidget( gbInterface );
-
-			// Set layout size adapted to content.
-			layout->setSizeConstraint( QLayout::SetFixedSize );
-			// layoutInterface->setSizeConstraint( QLayout::SetFixedSize );
 		}
 
 		virtual ~Options() {}

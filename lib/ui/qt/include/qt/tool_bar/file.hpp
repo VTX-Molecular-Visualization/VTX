@@ -14,10 +14,15 @@ namespace VTX::UI::QT::ToolBar
 		{
 			using namespace UI::Action;
 
+			setLayout( new QGridLayout() );
+
 			addAction<System::New>();
 			addAction<System::Download>();
 			addAction<System::Open>();
 			addAction<System::Save>();
+
+			// Set tool button small.
+			// setToolButtonStyle( Qt::ToolButtonIconOnly );
 		}
 
 		virtual ~File() {}
