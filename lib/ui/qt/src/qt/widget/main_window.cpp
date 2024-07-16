@@ -24,7 +24,6 @@ namespace VTX::UI::QT::Widget
 		resize( 1920, 1080 );
 
 		// Set all settings.
-		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 		setDockNestingEnabled( false );
 		setAnimated( true );
 		setUnifiedTitleAndToolBarOnMac( true );
@@ -144,4 +143,21 @@ namespace VTX::UI::QT::Widget
 		p_event->accept();
 		QApplication::quit();
 	}
+
+	void MainWindow::save()
+	{
+		SETTINGS.setValue( "geometry", saveGeometry() );
+		SETTINGS.setValue( "windowState", saveState() );
+		SETTINGS.setValue( "showToolBarText", toolButtonStyle() == Qt::ToolButtonTextUnderIcon );
+	}
+
+	void MainWindow::restore()
+	{
+		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
+		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
+		setToolButtonStyle(
+			SETTINGS.value( "showToolBarText", true ).toBool() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly
+		);
+	}
+
 } // namespace VTX::UI::QT::Widget

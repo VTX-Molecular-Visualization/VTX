@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QDockWidget>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 namespace VTX::UI::QT::DockWidget
@@ -27,7 +28,7 @@ namespace VTX::UI::QT::DockWidget
 			auto * layoutInterface = new QVBoxLayout( widget );
 
 			// Use action?
-			auto * aToolbarText = ACTION<Action::ShowToolbarText>();
+			auto * aToolbarText = ACTION<Action::ShowToolBarText>();
 			aToolbarText->setCheckable( true );
 			aToolbarText->setChecked( true );
 			QObject::connect(
@@ -35,9 +36,16 @@ namespace VTX::UI::QT::DockWidget
 				&QAction::triggered,
 				[ aToolbarText ]() { VTX_INFO( "Show toolbar text: {}", aToolbarText->isChecked() ); }
 			);
-			widget->addAction( aToolbarText );
 
-			// layoutInterface->addWidget( aToolbarText );
+			auto * cbToolbarText = new QCheckBox( aToolbarText->text(), gbInterface );
+
+			auto * tbToolbarText = new QToolButton( gbInterface );
+			tbToolbarText->setDefaultAction( aToolbarText );
+			tbToolbarText->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+			tbToolbarText->setCheckable( true );
+
+			layoutInterface->addWidget( tbToolbarText );
+
 			gbInterface->setLayout( layoutInterface );
 			layout->addWidget( gbInterface );
 

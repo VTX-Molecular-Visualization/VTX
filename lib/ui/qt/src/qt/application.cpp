@@ -6,7 +6,6 @@
 #include <QFile>
 #include <QIcon>
 #include <app/infos.hpp>
-#include <util/enum.hpp>
 
 namespace VTX::UI::QT
 {
@@ -78,7 +77,7 @@ namespace VTX::UI::QT
 		try
 		{
 			// Restore settings after main window is built.
-			_restoreSettings();
+			SETTINGS.restore();
 		}
 		catch ( const std::exception & e )
 		{
@@ -106,7 +105,7 @@ namespace VTX::UI::QT
 
 				try
 				{
-					_saveSettings();
+					SETTINGS.save();
 				}
 				catch ( const std::exception & e )
 				{
@@ -134,6 +133,10 @@ namespace VTX::UI::QT
 		VTX_DEBUG( "Qt loop exited" );
 		_timer.stop();
 	}
+
+	void Application::save() {}
+
+	void Application::restore() {}
 
 	void Application::_loadTheme()
 	{
@@ -184,32 +187,6 @@ namespace VTX::UI::QT
 		*/
 
 		setPalette( p );
-	}
-
-	void Application::_saveSettings()
-	{
-		VTX_INFO( "Saving settings: {}", SETTINGS.fileName().toStdString() );
-		SETTINGS.setValue( "geometry", _mainWindow->saveGeometry() );
-		SETTINGS.setValue( "windowState", _mainWindow->saveState() );
-
-		if ( SETTINGS.status() != QSettings::NoError )
-		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( SETTINGS.status() ) ) );
-		}
-
-		SETTINGS.sync();
-	}
-
-	void Application::_restoreSettings()
-	{
-		if ( SETTINGS.status() != QSettings::NoError )
-		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( SETTINGS.status() ) ) );
-		}
-
-		VTX_INFO( "Restoring settings: {}", SETTINGS.fileName().toStdString() );
-		_mainWindow->restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
-		_mainWindow->restoreState( SETTINGS.value( "windowState" ).toByteArray() );
 	}
 
 } // namespace VTX::UI::QT

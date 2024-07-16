@@ -1,9 +1,10 @@
 #ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 #define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 
+#include "opengl_widget.hpp"
 #include "qt/base_widget.hpp"
 #include "qt/helper.hpp"
-#include "opengl_widget.hpp"
+#include "qt/settings.hpp"
 #include "status_bar.hpp"
 #include "ui/concepts.hpp"
 #include <QMainWindow>
@@ -16,7 +17,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class MainWindow : public BaseWidget<MainWindow, QMainWindow>
+	class MainWindow : public BaseWidget<MainWindow, QMainWindow>, public Savable
 	{
 	  public:
 		MainWindow();
@@ -89,6 +90,9 @@ namespace VTX::UI::QT::Widget
 			return dockWidget;
 		}
 
+		void save() override;
+		void restore() override;
+
 	  private:
 		QPointer<OpenGLWidget> _openGLWidget;
 		QPointer<StatusBar>	   _statusBar;
@@ -100,6 +104,6 @@ namespace VTX::UI::QT::Widget
 		App::Core::Input::InputManager & _inputManager;
 	};
 
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget
 
 #endif

@@ -1,22 +1,18 @@
 #ifndef __VTX_UI_QT_APPLICATION__
 #define __VTX_UI_QT_APPLICATION__
 
+#include "settings.hpp"
 #include "widget/main_window.hpp"
 #include <QApplication>
 #include <QPointer>
-#include <QSettings>
 #include <QSplashScreen>
 #include <QTimer>
-#include <app/filesystem.hpp>
 #include <ui/base_application.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX::UI::QT
 {
-	inline QSettings SETTINGS
-		= QSettings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat );
-
-	class Application final : public UI::BaseApplication<Widget::MainWindow>, QApplication
+	class Application final : public UI::BaseApplication<Widget::MainWindow>, public QApplication, public Savable
 	{
 	  public:
 		Application();
@@ -27,6 +23,9 @@ namespace VTX::UI::QT
 		// bool event( QEvent * ) override;
 		// Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;
+
+		void save() override;
+		void restore() override;
 
 	  protected:
 		// Override BaseApplication.
@@ -39,8 +38,6 @@ namespace VTX::UI::QT
 		QPointer<QSplashScreen> _qSplashScreen;
 
 		void _loadTheme();
-		void _saveSettings();
-		void _restoreSettings();
 	};
 } // namespace VTX::UI::QT
 

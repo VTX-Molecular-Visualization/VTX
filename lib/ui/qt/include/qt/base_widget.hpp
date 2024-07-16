@@ -5,12 +5,6 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QWidget>
-#include <iostream>
-#include <map>
-#include <string>
-#include <syncstream>
-#include <thread>
-#include <typeinfo>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT

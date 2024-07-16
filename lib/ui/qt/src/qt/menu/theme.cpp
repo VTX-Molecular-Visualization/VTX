@@ -7,7 +7,7 @@ namespace VTX::UI::QT::Menu
 	void Theme::_resetLayout()
 	{
 		WIDGET<Widget::MainWindow>()->resetLayout();
-		VTX_DEBUG( "Layout reseted" );
+		VTX_INFO( "Layout reseted" );
 	}
 
 } // namespace VTX::UI::QT::Menu
