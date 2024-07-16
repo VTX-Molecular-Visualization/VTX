@@ -5,8 +5,12 @@ project(vtx_tool)
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_ui CONFIG REQUIRED)
-find_package(vtx_tool_mdprep REQUIRED)
+find_package(vtx_tool CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(vtx_tool_mdprep REQUIRED)
+
+set(_VTX_TOOL_CONAN "")
+include(cmake/library.cmake)
 
 set(_VTX_TOOL_CONAN " ")
 include("./cmake/library.cmake")

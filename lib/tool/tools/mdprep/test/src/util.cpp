@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <util/logger.hpp>
 //
-#include <tools/mdprep/gromacs/gromacs.hpp>
+#include "tools/mdprep/gromacs/job.hpp"
 #include <tools/mdprep/gromacs/pdb2gmx.hpp>
 #include <tools/mdprep/gromacs/util.hpp>
 
@@ -400,6 +400,19 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobRes
 	CHECK( jd.report.errorOccured == true );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+namespace
+{
+	std::string cleanErrMsg( const char * p_str )
+	{
+		std::string out( p_str );
+
+		while ( out.starts_with( '\n' ) || out.starts_with( '\r' ) || out.starts_with( '\t' ) )
+			out.erase( out.begin() );
+		while ( out.ends_with( '\n' ) || out.ends_with( '\r' ) )
+			out.pop_back();
+		return out;
+	}
+} // namespace
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobResults][channels][errormsg]" )
 {
 	const char * preFiller	= "Some stuff blablaa\nMore stuff\n";
@@ -417,8 +430,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobR
 	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
 	CHECK( jd.report.errorOccured == true );
-	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
-	CHECK( jd.report.errors[ 0 ] == errMsg );
+	REQUIRE( jd.report.errors.empty() == !jd.report.errorOccured );
+	CHECK( jd.report.errors[ 0 ] == cleanErrMsg( errMsg ) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[checkJobResults][channels][errormsg]" )
 {
@@ -443,7 +456,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[
 	jd.expectedOutputFilesIndexes.clear();
 	checkJobResults( jd );
 	CHECK( jd.report.errorOccured == true );
-	CHECK_NOFAIL( jd.report.errors.empty() == !jd.report.errorOccured );
-	CHECK( jd.report.errors[ 0 ] == errMsg_1 );
-	CHECK( jd.report.errors[ 1 ] == errMsg_2 );
+	REQUIRE( jd.report.errors.empty() == !jd.report.errorOccured );
+	CHECK( jd.report.errors[ 0 ] == cleanErrMsg( errMsg_1 ) );
+	CHECK( jd.report.errors[ 1 ] == cleanErrMsg( errMsg_2 ) );
 }

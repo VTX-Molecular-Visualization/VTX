@@ -24,6 +24,7 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(re2 CONFIG REQUIRED)
 
 include(CTest)
 include(Catch)
@@ -100,6 +101,9 @@ include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
 
 # MdPrep test.
 include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
+
+# Tool.
+include("${DIR_LIBS}/tool/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 

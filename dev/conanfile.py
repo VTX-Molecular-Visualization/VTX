@@ -29,6 +29,7 @@ class VTXRecipe(ConanFile):
         self.requires("eigen/3.4.0") 
         self.requires("gromacs/2024.0") 
         self.requires("fmt/10.2.1")
+        self.requires("re2/20231101")
 
     def config_options(self):        
         # Package options.

@@ -10,10 +10,10 @@
 // C++20 static polymorphism with concepts.
 template<typename T>
 concept canUse = requires( T t ) {
-					 {
-						 t.use()
-						 } -> std::same_as<void>;
-				 };
+	{
+		t.use()
+	} -> std::same_as<void>;
+};
 
 template<canUse T>
 class BaseClass : public T
@@ -118,4 +118,32 @@ TEST_CASE( "Util::Concepts", "[unit]" )
 	stringFunc( std::string( "Youpi" ) );
 	stringFunc( "Youpi" );
 	stringFunc( std::string_view( "Youpi" ) );
+}
+
+namespace
+{
+	class A
+	{
+	};
+	class B : public A
+	{
+	};
+	class C
+	{
+		A _a;
+
+	  public:
+		C( A a ) : _a( a ) {};
+	};
+} // namespace
+TEST_CASE( "Util Concept SameUnalteredType", "[SameUnalteredType]" )
+{
+	CHECK( VTX::SameUnalteredType<A, A> );
+	CHECK( VTX::SameUnalteredType<A, const A> );
+	CHECK( VTX::SameUnalteredType<A, const A &> );
+	CHECK( VTX::SameUnalteredType<A, const A &&> );
+	CHECK( VTX::SameUnalteredType<A, A &> );
+	CHECK( VTX::SameUnalteredType<A, A &&> );
+	CHECK( VTX::SameUnalteredType<A, B> == false );
+	CHECK( VTX::SameUnalteredType<A, C> == false );
 }

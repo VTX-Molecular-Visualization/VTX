@@ -21,6 +21,9 @@
 			},
 			{
 				"IDENTIFIER": "MISCELLANEOUS_ORIENT_ON_FIRST_MOLECULE_LOADED"
+			},
+			{
+				"IDENTIFIER": "TOOL_MDPREP"
 			}
 		]
 	},

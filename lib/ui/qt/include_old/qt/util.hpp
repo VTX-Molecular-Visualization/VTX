@@ -7,12 +7,16 @@
 #include <QComboBox>
 #include <QEvent>
 #include <QImage>
+#include <QLabel>
+#include <QLayout>
 #include <QMenu>
 #include <QPixmap>
 #include <QString>
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
+#include <qformlayout.h>
+#include <qlineedit.h>
 #include <set>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -116,6 +120,28 @@ namespace VTX::UI::QT::Util
 	{
 		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
 	}
+
+	// Class responsible for creating a label with tooltip as a question mark ? button next to it.
+	// Implicitly convert in QWidget pointer which refers to the container of both the label and the question mark.
+	class LabelWithHelper
+	{
+	  public:
+		enum class E_QUESTIONMARK_POSITION
+		{
+			left,
+			right
+		};
+		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
+		QWidget * container = nullptr;
+		QLabel *  label		= nullptr;
+		operator QWidget *();
+	};
+
+	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
+
+	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
 
 } // namespace VTX::UI::QT::Util
 
