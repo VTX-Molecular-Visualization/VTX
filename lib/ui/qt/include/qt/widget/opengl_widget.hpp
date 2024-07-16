@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_OPENGL_WIDGET__
-#define __VTX_UI_QT_OPENGL_WIDGET__
+#ifndef __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
+#define __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
 
 #include "qt/base_widget.hpp"
 #include <QOpenGLContext>
@@ -9,7 +9,7 @@
 #include <QResizeEvent>
 #include <QWindow>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget
 {
 	// Reimplement a custom OpenGL widget to avoid the use of QOpenGLWidget.
 	class OpenGLWidget : public QT::BaseWidget<OpenGLWidget, QWidget>

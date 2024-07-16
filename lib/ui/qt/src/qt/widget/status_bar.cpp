@@ -1,9 +1,9 @@
-#include "qt/status_bar.hpp"
+#include "qt/widget/status_bar.hpp"
 #include "app/internal/monitoring/all_metrics.hpp"
 #include <app/application/system/renderer.hpp>
 #include <app/vtx_app.hpp>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget
 {
 
 	StatusBar::StatusBar( QWidget * p_parent ) : BaseWidget<StatusBar, QStatusBar>( p_parent )
@@ -42,4 +42,4 @@ namespace VTX::UI::QT
 		timer->start( 1000 );
 	}
 
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget

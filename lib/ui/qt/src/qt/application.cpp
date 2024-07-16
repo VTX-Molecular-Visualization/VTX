@@ -1,7 +1,7 @@
 #include "qt/application.hpp"
-#include "qt/main_window.hpp"
 #include "qt/menu/file.hpp"
 #include "qt/resources.hpp"
+#include "qt/widget/main_window.hpp"
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
@@ -19,7 +19,7 @@ namespace VTX::UI::QT
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
-	Application::Application() : UI::BaseApplication<MainWindow>(), QApplication( zero, nullptr )
+	Application::Application() : UI::BaseApplication<Widget::MainWindow>(), QApplication( zero, nullptr )
 
 	{
 		using namespace Resources;

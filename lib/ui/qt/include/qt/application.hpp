@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_APPLICATION__
 #define __VTX_UI_QT_APPLICATION__
 
-#include "main_window.hpp"
+#include "widget/main_window.hpp"
 #include <QApplication>
 #include <QPointer>
 #include <QSettings>
@@ -16,7 +16,7 @@ namespace VTX::UI::QT
 	inline QSettings SETTINGS
 		= QSettings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat );
 
-	class Application final : public UI::BaseApplication<MainWindow>, QApplication
+	class Application final : public UI::BaseApplication<Widget::MainWindow>, QApplication
 	{
 	  public:
 		Application();

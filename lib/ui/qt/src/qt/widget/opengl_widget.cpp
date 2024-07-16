@@ -1,6 +1,6 @@
-#include "qt/opengl_widget.hpp"
+#include "qt/widget/opengl_widget.hpp"
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget
 {
 
 	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseWidget( p_parent )
@@ -11,9 +11,9 @@ namespace VTX::UI::QT
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( 0 );
-		// format.setDepthBufferSize( 24 );
-		// format.setStencilBufferSize( 8 );
+		// format.setSwapInterval( 0 );
+		//  format.setDepthBufferSize( 24 );
+		//  format.setStencilBufferSize( 8 );
 
 		// format.setRedBufferSize( 32 );
 		// format.setGreenBufferSize( 32 );
@@ -108,4 +108,4 @@ namespace VTX::UI::QT
 		*/
 	}
 
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget

@@ -1,4 +1,4 @@
-#include "qt/main_window.hpp"
+#include "qt/widget/main_window.hpp"
 #include "qt/dock_widget/console.hpp"
 #include "qt/dock_widget/inspector.hpp"
 #include "qt/dock_widget/options.hpp"
@@ -15,7 +15,7 @@
 #include "qt/tool_bar/file.hpp"
 #include "qt/tool_bar/snapshot.hpp"
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget
 {
 
 	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr ), _inputManager( App::INPUT_MANAGER() )
@@ -144,4 +144,4 @@ namespace VTX::UI::QT
 		p_event->accept();
 		QApplication::quit();
 	}
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget

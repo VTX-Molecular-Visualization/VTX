@@ -7,7 +7,7 @@ namespace VTX::UI::QT::LineEdit
 {
 	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
-		setPlaceholderText( ">" );
+		setPlaceholderText( "/command" );
 		_setupCompleter();
 		setCompleter( _completer );
 		setClearButtonEnabled( true );

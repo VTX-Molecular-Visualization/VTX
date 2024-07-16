@@ -1,8 +1,8 @@
-#ifndef __VTX_UI_QT_MAIN_WINDOW__
-#define __VTX_UI_QT_MAIN_WINDOW__
+#ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
+#define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 
-#include "base_widget.hpp"
-#include "helper.hpp"
+#include "qt/base_widget.hpp"
+#include "qt/helper.hpp"
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
 #include "ui/concepts.hpp"
@@ -13,7 +13,7 @@
 #include <ui/actions.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget
 {
 
 	class MainWindow : public BaseWidget<MainWindow, QMainWindow>
