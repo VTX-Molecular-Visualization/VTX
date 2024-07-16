@@ -61,7 +61,8 @@ int main( int p_argc, char * p_argv[] )
 
 		app->init();
 
-		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1aga.mmtf";
+		// const FilePath molPath = "C:/Users/Samar/Desktop/cell_structure/cell_structure/cell_annotated.gro";
+		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1aga.pdb";
 		args.add( molPath.string() );
 
 		app->start( args );

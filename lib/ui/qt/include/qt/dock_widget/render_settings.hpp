@@ -13,6 +13,12 @@ namespace VTX::UI::QT::DockWidget
 		RenderSettings( QWidget * p_parent ) : BaseWidget<RenderSettings, QDockWidget>( "Render settings", p_parent )
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
+			auto * widget = new QWidget( this );
+			auto * layout = new QVBoxLayout( widget );
+			layout->setContentsMargins( 0, 0, 0, 0 );
+			layout->setSizeConstraint( QLayout::SetNoConstraint );
+			setWidget( widget );
 		}
 
 		virtual ~RenderSettings() {}

@@ -29,6 +29,7 @@ namespace VTX::UI::QT
 
 	namespace Action
 	{
+
 		struct ShowToolBarText : public DescAction
 		{
 			ShowToolBarText()

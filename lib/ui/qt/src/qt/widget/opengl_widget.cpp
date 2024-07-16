@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Widget
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		// format.setSwapInterval( 0 );
+		format.setSwapInterval( 0 );
 		//  format.setDepthBufferSize( 24 );
 		//  format.setStencilBufferSize( 8 );
 
@@ -57,7 +57,7 @@ namespace VTX::UI::QT::Widget
 		APP().onPostRender += [ this ]( const float )
 		{
 			render();
-			update();
+			// update();
 			//_container->update();
 			//_surface->requestUpdate();
 		};
@@ -70,10 +70,10 @@ namespace VTX::UI::QT::Widget
 
 	void OpenGLWidget::render()
 	{
-		if ( not _device )
-		{
-			_device = new QOpenGLPaintDevice();
-		}
+		// if ( not _device )
+		//{
+		//_device = new QOpenGLPaintDevice();
+		//}
 
 		//_device->setSize( size() * _surface->devicePixelRatio() );
 		//_device->setDevicePixelRatio( _surface->devicePixelRatio() );

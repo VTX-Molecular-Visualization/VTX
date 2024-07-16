@@ -128,7 +128,7 @@ namespace VTX::UI
 					group	 = "CameraProjection";
 					tip		 = "Change projection mode (perspective/orthographic)";
 					icon	 = ":/sprite/camera/orthographic.png";
-					shortcut = "Ctrl+Shift+O";
+					shortcut = "Alt+O";
 				}
 			};
 
@@ -140,7 +140,7 @@ namespace VTX::UI
 					group	 = "CameraProjection";
 					tip		 = "Change projection mode (perspective/orthographic)";
 					icon	 = ":/sprite/camera/perspective.png";
-					shortcut = "Ctrl+Shift+P";
+					shortcut = "Alt+P";
 				}
 			};
 
@@ -156,7 +156,7 @@ namespace VTX::UI
 					group	 = "CameraController";
 					tip		 = "Use Trackball controller";
 					icon	 = ":/sprite/camera/trackball.png";
-					shortcut = "Ctrl+Shift+T";
+					shortcut = "Alt+T";
 				}
 			};
 
@@ -168,7 +168,7 @@ namespace VTX::UI
 					group	 = "CameraController";
 					tip		 = "Use Freefly controller";
 					icon	 = ":/sprite/camera/freefly.png";
-					shortcut = "Ctrl+Shift+F";
+					shortcut = "Alt+F";
 				}
 			};
 

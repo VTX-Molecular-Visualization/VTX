@@ -97,12 +97,11 @@ namespace VTX::UI::QT::DockWidget
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-			// Create grid layout.
+			// Create layout.
 			auto * widget = new QWidget( this );
 			auto * layout = new QVBoxLayout( widget );
 			layout->setContentsMargins( 0, 0, 0, 0 );
-
-			widget->setLayout( layout );
+			layout->setSizeConstraint( QLayout::SetNoConstraint );
 			setWidget( widget );
 
 			// Search bar.

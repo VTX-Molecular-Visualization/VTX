@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget
 		resize( 1920, 1080 );
 
 		// Set all settings.
-		setDockNestingEnabled( false );
+		setDockNestingEnabled( true );
 		setAnimated( true );
 		setUnifiedTitleAndToolBarOnMac( true );
 
@@ -70,7 +70,7 @@ namespace VTX::UI::QT::Widget
 		auto * dwOptions		= createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		tabifyDockWidget( dwInspector, dwRenderSettings );
 		tabifyDockWidget( dwInspector, dwOptions );
-		dwOptions->raise();
+		dwRenderSettings->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
@@ -148,16 +148,12 @@ namespace VTX::UI::QT::Widget
 	{
 		SETTINGS.setValue( "geometry", saveGeometry() );
 		SETTINGS.setValue( "windowState", saveState() );
-		SETTINGS.setValue( "showToolBarText", toolButtonStyle() == Qt::ToolButtonTextUnderIcon );
 	}
 
 	void MainWindow::restore()
 	{
 		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
 		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
-		setToolButtonStyle(
-			SETTINGS.value( "showToolBarText", true ).toBool() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly
-		);
 	}
 
 } // namespace VTX::UI::QT::Widget
