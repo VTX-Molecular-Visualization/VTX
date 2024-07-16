@@ -32,9 +32,6 @@ include(Catch)
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
 
-# Util test.
-include("${DIR_LIBS}/util/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Core.
@@ -85,25 +82,6 @@ vtx_clear_registered_copies()
 
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
-
-vtx_clear_registered_copies()
-
-# Tool.
-include("${DIR_LIBS}/tool/cmake/library.cmake")
-
-# Tool test.
-include("${DIR_LIBS}/tool/test/cmake/library.cmake")
-
-vtx_clear_registered_copies()
-
-# MdPrep.
-include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
-
-# MdPrep test.
-include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
-
-# Tool.
-include("${DIR_LIBS}/tool/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 

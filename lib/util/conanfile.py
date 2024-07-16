@@ -22,7 +22,8 @@ class VTXUtilRecipe(ConanFile):
         self.requires("spdlog/1.14.1", transitive_headers=True)
         self.requires("nlohmann_json/3.11.3", transitive_headers=True)
         self.requires("magic_enum/0.9.5", transitive_headers=True)
-        self.requires("cpr/1.10.5", transitive_headers=True)         
+        self.requires("cpr/1.10.5", transitive_headers=True)  
+        self.requires("catch2/3.6.0")        
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,6 +40,7 @@ class VTXUtilRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
