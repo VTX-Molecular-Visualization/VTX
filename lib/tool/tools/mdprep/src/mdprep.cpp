@@ -4,7 +4,10 @@
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 //
+#include "tools/mdprep/gateway/engine_job_manager.hpp"
 #include "tools/mdprep/gateway/form_data.hpp"
+#include "tools/mdprep/gateway/shared.hpp"
+#include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/shared.hpp"
 //
 #include "tools/mdprep/mdprep.hpp"
@@ -42,11 +45,12 @@ namespace VTX::QT::Mdprep
 		QWidget *				  _formContainer = nullptr;
 
 		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::FormSwitchButton	   _switchButton;
-		VTX::Tool::Mdprep::ui::Form				   _currentForm;
-		EngineCollection						   _mdEngines;
-		int										   _mdEngineCurrentIdx = 0;
-		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer _formEngine;
+		VTX::Tool::Mdprep::ui::FormSwitchButton		 _switchButton;
+		VTX::Tool::Mdprep::ui::Form					 _currentForm;
+		EngineCollection							 _mdEngines;
+		int											 _mdEngineCurrentIdx = 0;
+		VTX::Tool::Mdprep::Gateway::EngineJobManager _jobManager;
+		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer	 _formEngine;
 
 		virtual void _setupUi( const QString & p_name )
 		{
@@ -135,6 +139,7 @@ namespace VTX::QT::Mdprep
 			{
 				_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
 				_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
+				_mdEngines[ _mdEngineCurrentIdx ]->get( _jobManager );
 				VTX::Tool::Mdprep::ui::FormLayouts layouts;
 				_currentForm.get( layouts );
 				_formEngine.assign( std::move( layouts ) );
@@ -169,7 +174,8 @@ namespace VTX::QT::Mdprep
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
 			_currentForm.close();
-			_currentForm = VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param );
+			_currentForm
+				= VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param, _jobManager );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
