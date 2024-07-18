@@ -9,6 +9,7 @@
 #include "tools/mdprep/gateway/shared.hpp"
 #include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/shared.hpp"
+#include "util/sentry.hpp"
 //
 #include "tools/mdprep/mdprep.hpp"
 #include "tools/mdprep/ui/md_engine.hpp"
@@ -189,7 +190,9 @@ namespace VTX::QT::Mdprep
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
 			_currentForm.close();
-			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced( _formContainer, _SpecificFieldPlacerGetter(), param );
+			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced(
+				_formContainer, _SpecificFieldPlacerGetter(), param, _jobManager
+			);
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );

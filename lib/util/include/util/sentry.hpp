@@ -18,6 +18,7 @@ namespace VTX::Util
 		SentryTarget & operator=( SentryTarget && ) noexcept;
 		SentryTarget & operator=( const SentryTarget & ) noexcept = delete;
 
+		// Spawn a new sentry that watch this object's instance
 		Sentry newSentry() noexcept;
 
 	  private:
@@ -32,6 +33,7 @@ namespace VTX::Util
 	  public:
 		Sentry() = delete;
 
+		// Returns wether the target still exists
 		operator bool() noexcept;
 
 	  private:
