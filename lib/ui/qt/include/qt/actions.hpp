@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QActionGroup>
 #include <ui/actions.hpp>
+#include <util/generic/base_static_singleton.hpp>
 #include <util/hashing.hpp>
 
 namespace VTX::UI::QT

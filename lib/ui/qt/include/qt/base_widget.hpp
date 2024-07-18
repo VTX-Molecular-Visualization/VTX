@@ -12,6 +12,8 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
+	// using WIDGET_TEST = Util::Generic::SharedCollection<QWidget *>;
+
 	inline std::unordered_map<std::string, QWidget *> WIDGETS;
 
 	template<ConceptWidget W>
@@ -24,8 +26,16 @@ namespace VTX::UI::QT
 		return static_cast<W * const>( WIDGETS[ name ] );
 	}
 
+	/*
+	template<ConceptWidget W>
+	W * const WIDGET()
+	{
+		return static_cast<W *>( BaseWidget::get<W *>() );
+	}
+	*/
+
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W
+	class BaseWidget : public W, public Util::Generic::SharedCollection<QWidget *>
 	{
 	  public:
 		template<typename... Args>

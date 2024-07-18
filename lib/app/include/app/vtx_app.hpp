@@ -59,6 +59,10 @@ namespace VTX::App
 		inline static Util::Callback<>		onEndOfFrameOneShot;
 		inline static Util::Callback<>		onStop;
 
+		// TODO:
+		inline static Util::Callback<> onStartBlockingOperation;
+		inline static Util::Callback<> onStopBlockingOperation;
+
 	  private:
 		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
 			= std::make_unique<Core::System::SystemHandler>();

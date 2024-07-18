@@ -10,7 +10,7 @@ namespace VTX::UI::QT::DockWidget
 	class Inspector : public BaseWidget<Inspector, QDockWidget>
 	{
 	  public:
-		Inspector( QWidget * p_parent ) : BaseWidget<Inspector, QDockWidget>( "Inspector", p_parent )
+		Inspector( QWidget * p_parent ) : BaseWidget<Inspector, QDockWidget>( "Selection", p_parent )
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		}
