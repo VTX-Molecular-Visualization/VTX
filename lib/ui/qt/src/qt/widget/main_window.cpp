@@ -97,6 +97,7 @@ namespace VTX::UI::QT::Widget
 		{
 			_progressDialog = new Dialog::Progress( p_text );
 			_progressDialog->show();
+			QCoreApplication::processEvents();
 		};
 		APP().onUpdateBlockingOperation += [ this ]( const float p_value ) { _progressDialog->setValue( p_value ); };
 		APP().onEndBlockingOperation += [ this ]()

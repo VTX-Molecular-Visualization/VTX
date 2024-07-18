@@ -19,7 +19,7 @@ namespace VTX::App::Action::Application
 
 		APP().onStartBlockingOperation( "Opening files" );
 
-		APP().onUpdateBlockingOperation( 0.01f );
+		APP().onUpdateBlockingOperation( 0.f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 		APP().onUpdateBlockingOperation( 0.25f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
