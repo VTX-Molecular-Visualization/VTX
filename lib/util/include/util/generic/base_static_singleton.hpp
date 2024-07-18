@@ -2,6 +2,8 @@
 #define __VTX_UTIL_GENERIC_BASE_STATIC_SINGLETON__
 
 #include <initializer_list>
+#include <unordered_map>
+#include <util/hashing.hpp>
 
 namespace VTX::Util::Generic
 {
@@ -39,6 +41,32 @@ namespace VTX::Util::Generic
 			static T instance;
 			return instance;
 		}
+	};
+
+	/*
+	template<typename C>
+	concept ConceptCollectable = requires( C p_c ) {
+		{ p_c.create() } -> std::same_as<C>;
+	};
+	*/
+
+	template<typename C>
+	class SharedCollection
+	{
+	  public:
+		template<typename T>
+		inline static T get()
+		{
+			auto hash = Util::Hashing::hash( typeid( T ).name() );
+			if ( not _COLLECTION.contains( hash ) )
+			{
+				_COLLECTION[ hash ] = C();
+			}
+			return _COLLECTION[ hash ];
+		}
+
+	  private:
+		inline static std::unordered_map<Util::Hashing::Hash, C> _COLLECTION;
 	};
 
 } // namespace VTX::Util::Generic

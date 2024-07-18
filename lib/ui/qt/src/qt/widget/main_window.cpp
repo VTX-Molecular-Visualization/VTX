@@ -1,4 +1,5 @@
 #include "qt/widget/main_window.hpp"
+#include "qt/dialog/progress.hpp"
 #include "qt/dock_widget/console.hpp"
 #include "qt/dock_widget/inspector.hpp"
 #include "qt/dock_widget/options.hpp"
@@ -14,6 +15,7 @@
 #include "qt/tool_bar/camera.hpp"
 #include "qt/tool_bar/file.hpp"
 #include "qt/tool_bar/snapshot.hpp"
+#include <QApplication>
 
 namespace VTX::UI::QT::Widget
 {
@@ -27,6 +29,7 @@ namespace VTX::UI::QT::Widget
 		setDockNestingEnabled( true );
 		setAnimated( true );
 		setUnifiedTitleAndToolBarOnMac( true );
+		setTabPosition( Qt::AllDockWidgetAreas, QTabWidget::North );
 
 		//  Features.
 		setTabShape( QTabWidget::Rounded );
@@ -53,6 +56,17 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::Camera>();
 		createToolBar<ToolBar::Snapshot>();
 
+		// Add combobox in toobar.
+		/*
+		QComboBox * comboBox = new QComboBox( this );
+		comboBox->addItem( "Item 1" );
+		comboBox->addItem( "Item 2" );
+		comboBox->addItem( "Item 3" );
+		comboBox->addItem( "Item 4" );
+		comboBox->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+		// toolBarArea( Qt::TopToolBarArea ).addWidget( comboBox );
+		*/
+
 		// Main area : opengl widget.
 		_openGLWidget = new OpenGLWidget( this );
 		setCentralWidget( _openGLWidget );
@@ -77,6 +91,23 @@ namespace VTX::UI::QT::Widget
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
+
+		// Connect progress dialog.
+		APP().onStartBlockingOperation += [ this ]( const std::string & p_text )
+		{
+			_progressDialog = new Dialog::Progress( p_text );
+			_progressDialog->show();
+		};
+		APP().onUpdateBlockingOperation += [ this ]( const float p_value ) { _progressDialog->setValue( p_value ); };
+		APP().onEndBlockingOperation += [ this ]()
+		{
+			if ( _progressDialog )
+			{
+				_progressDialog->close();
+				delete _progressDialog;
+				_progressDialog = nullptr;
+			}
+		};
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();

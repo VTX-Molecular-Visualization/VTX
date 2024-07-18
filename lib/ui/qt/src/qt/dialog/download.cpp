@@ -1,4 +1,11 @@
 #include "qt/dialog/download.hpp"
+#include "qt/application.hpp"
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSettings>
+#include <QVBoxLayout>
 
 namespace VTX::UI::QT::Dialog
 {

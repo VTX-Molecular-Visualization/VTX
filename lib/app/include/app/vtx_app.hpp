@@ -48,6 +48,7 @@ namespace VTX::App
 		inline Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode &	getCurrentMode() const { return *_currentMode; }
 
+		// Main loop calllbacks.
 		// inline static Util::Callback<> onStart;
 		// inline static Util::Callback<float> onPreUpdate;
 		inline static Util::Callback<float, float> onUpdate;
@@ -59,9 +60,12 @@ namespace VTX::App
 		inline static Util::Callback<>		onEndOfFrameOneShot;
 		inline static Util::Callback<>		onStop;
 
-		// TODO:
-		inline static Util::Callback<> onStartBlockingOperation;
-		inline static Util::Callback<> onStopBlockingOperation;
+		// Progress dialog callbacks.
+		inline static Util::Callback<std::string> onStartBlockingOperation;
+		inline static Util::Callback<float>		  onUpdateBlockingOperation;
+		inline static Util::Callback<>			  onEndBlockingOperation;
+
+		// TODO: thread callbacks?
 
 	  private:
 		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler

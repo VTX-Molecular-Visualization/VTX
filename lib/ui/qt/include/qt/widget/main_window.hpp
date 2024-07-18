@@ -11,6 +11,7 @@
 #include <QMenuBar>
 #include <QPointer>
 #include <app/core/input/input_manager.hpp>
+#include <qt/dialog/progress.hpp>
 #include <ui/actions.hpp>
 #include <util/logger.hpp>
 
@@ -94,8 +95,9 @@ namespace VTX::UI::QT::Widget
 		void restore() override;
 
 	  private:
-		QPointer<OpenGLWidget> _openGLWidget;
-		QPointer<StatusBar>	   _statusBar;
+		QPointer<OpenGLWidget>	   _openGLWidget;
+		QPointer<StatusBar>		   _statusBar;
+		QPointer<Dialog::Progress> _progressDialog;
 
 		// TODO: keep like that or re-tabify?
 		QByteArray _defaultGeometry;

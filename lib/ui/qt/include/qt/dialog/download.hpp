@@ -1,16 +1,9 @@
 #ifndef __VTX_UI_QT_DIALOG_DOWNLOAD__
 #define __VTX_UI_QT_DIALOG_DOWNLOAD__
 
-#include "qt/application.hpp"
 #include "qt/base_widget.hpp"
 #include <QComboBox>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSettings>
-#include <QVBoxLayout>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Dialog
