@@ -6,6 +6,8 @@
 #include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
+//
+#include "tools/mdprep/ui/form_basic/data.hpp"
 #include "tools/mdprep/ui/shared.hpp"
 #include <app/vtx_app.hpp>
 #include <ui/qt/util.hpp>
@@ -17,23 +19,12 @@
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
-	EventManager::EventManager(
-		MdParameters				 p_data,
-		SpecificFieldsPlacerCallback p_callback,
-		InputChecker				 p_inputChecker
-	) noexcept :
-		parameters( std::move( p_data ) ), inputChecker( std::move( p_inputChecker ) ),
-		_mdEngineFieldPlacerCallback( std::move( p_callback ) )
-	{
-	}
+	EventManager::EventManager( Data & p_ ) noexcept : _data( &p_ ) {}
 
 	EventManager::~EventManager() { _disconnectAll( _uiObjects ); }
 
 	EventManager::EventManager( EventManager && p_ ) noexcept :
-		parameters( std::move( p_.parameters ) ), inputChecker( std::move( p_.inputChecker ) ),
-		lastFormData( std::move( p_.lastFormData ) ),
-		_mdEngineFieldPlacerCallback( std::move( p_._mdEngineFieldPlacerCallback ) ),
-		_settingsDialog( std::move( p_._settingsDialog ) ), _sentry( std::move( p_._sentry ) )
+		_data( p_._data ), _settingsDialog( std::move( p_._settingsDialog ) ), _sentry( std::move( p_._sentry ) )
 	{
 		_disconnectAll( p_._uiObjects );
 		std::swap( p_._uiObjects, _uiObjects );
@@ -49,11 +40,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		if ( &p_ == this )
 			return *this;
 
-		parameters					 = std::move( p_.parameters );
-		lastFormData				 = std::move( p_.lastFormData );
-		_mdEngineFieldPlacerCallback = std::move( p_._mdEngineFieldPlacerCallback );
-		_settingsDialog				 = std::move( p_._settingsDialog );
-		_sentry						 = std::move( p_._sentry );
+		_data			= p_._data;
+		_settingsDialog = std::move( p_._settingsDialog );
+		_sentry			= std::move( p_._sentry );
 		_disconnectAll( _uiObjects );
 		_disconnectAll( p_._uiObjects );
 		_uiObjects = std::move( p_._uiObjects );
@@ -147,38 +136,54 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	}
 	void EventManager::_openSettingsMinimization() noexcept
 	{
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
+		SpecificFieldsPlacerCallback * callback = nullptr;
+		_data->get( callback );
 		_settingsDialog.emplace(
 			_uiObjects._buttonMinimizationSettings,
 			"Minimization Settings",
-			&parameters.minimization,
-			_mdEngineFieldPlacerCallback( E_FIELD_SECTION::minimization )
+			&params->minimization,
+			( *callback )( E_FIELD_SECTION::minimization )
 		);
 	}
 	void EventManager::_openSettingsNvt() noexcept
 	{
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
+		SpecificFieldsPlacerCallback * callback = nullptr;
+		_data->get( callback );
 		_settingsDialog.emplace(
 			_uiObjects._buttonEquilibrationNvtSettings,
 			"Nvt Equilibration Settings",
-			&parameters.nvt,
-			_mdEngineFieldPlacerCallback( E_FIELD_SECTION::equilibrationNvt )
+			&params->nvt,
+			( *callback )( E_FIELD_SECTION::equilibrationNvt )
 		);
 	}
 	void EventManager::_openSettingsNpt() noexcept
 	{
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
+		SpecificFieldsPlacerCallback * callback = nullptr;
+		_data->get( callback );
 		_settingsDialog.emplace(
 			_uiObjects._buttonEquilibrationNptSettings,
 			"Npt Equilibration Settings",
-			&parameters.npt,
-			_mdEngineFieldPlacerCallback( E_FIELD_SECTION::equilibrationNpt )
+			&params->npt,
+			( *callback )( E_FIELD_SECTION::equilibrationNpt )
 		);
 	}
 	void EventManager::_openSettingsProd() noexcept
 	{
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
+		SpecificFieldsPlacerCallback * callback = nullptr;
+		_data->get( callback );
 		_settingsDialog.emplace(
 			_uiObjects._buttonProductionSettings,
 			"Production run Settings",
-			&parameters.prod,
-			_mdEngineFieldPlacerCallback( E_FIELD_SECTION::production )
+			&params->prod,
+			( *callback )( E_FIELD_SECTION::production )
 		);
 	}
 	namespace
@@ -195,12 +200,18 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	} // namespace
 	void EventManager::_openSettingsSystem() noexcept
 	{
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
+		SpecificFieldsPlacerCallback * callback = nullptr;
+		_data->get( callback );
+		Gateway::EngineSpecificCommonInformation * info = nullptr;
+		_data->get( info );
 		_settingsDialog.emplace(
 			_uiObjects._buttonSystemSettings,
 			"System Settings",
-			&parameters.system,
-			_mdEngineFieldPlacerCallback( E_FIELD_SECTION::system ),
-			lastFormData,
+			&params->system,
+			( *callback )( E_FIELD_SECTION::system ),
+			*info,
 			ApplyVisitorBasic( [ & ]() { this->startInputCheck(); } )
 		);
 	}
@@ -216,7 +227,11 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 		};
 		_uiObjects._layoutSystemCheckMsg->addWidget( _uiObjects._labelSystemCheck );
-		this->inputChecker.checkInputs( this->parameters, _getSystemCallback() );
+		InputChecker *			inputChecker = nullptr;
+		Gateway::MdParameters * params		 = nullptr;
+		_data->get( params );
+		_data->get( inputChecker );
+		inputChecker->checkInputs( *params, _getSystemCallback() );
 	}
 	namespace
 	{

@@ -13,8 +13,6 @@ namespace VTX::UI::QT::Util
 } // namespace VTX::UI::QT::Util
 namespace VTX::Tool::Mdprep::Gateway
 {
-	struct MdBasicDataSample;
-	struct MdAdvancedDataSample;
 	struct MdParameters;
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
@@ -26,20 +24,19 @@ namespace VTX::Tool::Mdprep::ui
 } // namespace VTX::Tool::Mdprep::ui
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
+
+	class Data;
 	class SettingsDialog;
+	using SpecificFieldsPlacerCallback = std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )>;
 
 	using namespace VTX::Tool::Mdprep::Gateway;
 
-	using SpecificFieldsPlacerCallback = std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )>;
 	// Class responsible for managing event connection resource
 	class EventManager
 	{
 	  public:
-		Gateway::EngineSpecificCommonInformation lastFormData;
-		MdParameters							 parameters;
-		InputChecker							 inputChecker;
 
-		EventManager( MdParameters, SpecificFieldsPlacerCallback, InputChecker ) noexcept;
+		EventManager( Data & ) noexcept;
 		EventManager() = delete;
 		~EventManager();
 		EventManager( EventManager && ) noexcept;
@@ -56,9 +53,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void startInputCheck() noexcept;
 
 	  private:
-		SpecificFieldsPlacerCallback		   _mdEngineFieldPlacerCallback;
+		Data *						  _data;
 		std::optional<SettingsDialog> _settingsDialog = std::nullopt;
-		VTX::Util::SentryTarget				   _sentry;
+		VTX::Util::SentryTarget		  _sentry;
 		struct UiObjects
 		{
 			QPushButton *					   _buttonMinimizationSettings	   = nullptr;
