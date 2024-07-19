@@ -17,7 +17,6 @@
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
-#include "tools/mdprep/ui/form_basic_settings_dialog.hpp"
 #include "tools/mdprep/ui/form_switch_button.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
@@ -26,7 +25,7 @@
 #include <util/logger.hpp>
 //
 #include "tools/mdprep/ui/form_advanced.hpp"
-#include "tools/mdprep/ui/form_basic.hpp"
+#include "tools/mdprep/ui/form_basic/form_basic.hpp"
 //
 #include "tools/mdprep/ui/form.hpp"
 //
@@ -175,8 +174,9 @@ namespace VTX::QT::Mdprep
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
 			_currentForm.close();
-			_currentForm
-				= VTX::Tool::Mdprep::ui::FormBasic( _formContainer, _SpecificFieldPlacerGetter(), param, _jobManager );
+			_currentForm = VTX::Tool::Mdprep::ui::form_basic::FormBasic(
+				_formContainer, _SpecificFieldPlacerGetter(), param, _jobManager
+			);
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
