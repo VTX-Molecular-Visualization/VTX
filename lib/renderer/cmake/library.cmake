@@ -42,7 +42,13 @@ file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
 configure_target(vtx_renderer_test)
 
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
+if (NOT DEFINED _VTX_RENDERER_CONAN)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
+else()
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
+endif()
+
+target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer_no_opengl)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
 catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
