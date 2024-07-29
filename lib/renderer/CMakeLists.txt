@@ -9,7 +9,7 @@ include(CTest)
 include(Catch)
 
 set(_VTX_RENDERER_CONAN " ") # So the right target name can be linked
-include(cmake/library.cmake)
+include ("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_renderer vtx_renderer_no_opengl FILE_SET public_headers DESTINATION include)
 install(DIRECTORY shaders DESTINATION .)

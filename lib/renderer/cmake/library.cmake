@@ -1,5 +1,6 @@
 include("${CMAKE_CURRENT_LIST_DIR}/copy_shaders.cmake")
 
+# Lib.
 add_library(vtx_renderer)
 configure_target(vtx_renderer)
 
@@ -16,25 +17,12 @@ target_sources(vtx_renderer
 	#PUBLIC FILE_SET public_headers_glad TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include" FILES ${GLAD_HEADERS}
 )
 
-if (NOT DEFINED _VTX_RENDERER_CONAN)
-	target_link_libraries(vtx_renderer vtx_util)
-else()
-	target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
-endif()
-
+# Lib without opengl for CI.
 add_library(vtx_renderer_no_opengl)
 configure_target(vtx_renderer_no_opengl)
-
 target_sources(vtx_renderer_no_opengl
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
-
-if (NOT DEFINED _VTX_RENDERER_CONAN)
-	target_link_libraries(vtx_renderer_no_opengl vtx_util)
-else()
-	target_link_libraries(vtx_renderer_no_opengl PRIVATE vtx_util::vtx_util)
-endif()
-
 target_compile_definitions(vtx_renderer_no_opengl PRIVATE VTX_RENDERER_NO_OPENGL)
 
 # Tests.
@@ -43,8 +31,12 @@ add_executable(vtx_renderer_test ${TESTS})
 configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
+	target_link_libraries(vtx_renderer vtx_util)
+	target_link_libraries(vtx_renderer_no_opengl vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
 else()
+	target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_renderer_no_opengl PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
 endif()
 
