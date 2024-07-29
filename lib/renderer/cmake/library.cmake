@@ -3,11 +3,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/copy_shaders.cmake")
 add_library(vtx_renderer)
 configure_target(vtx_renderer)
 
-set(HEADERS "")
-set(SOURCES "")
-#set(GLAD_HEADERS "")
-#set(GLAD_SOURCES "")
-set(SHADERS "")
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE GLAD_HEADERS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include/*")
@@ -41,3 +36,13 @@ else()
 endif()
 
 target_compile_definitions(vtx_renderer_no_opengl PRIVATE VTX_RENDERER_NO_OPENGL)
+
+# Tests.
+file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+add_executable(vtx_renderer_test ${TESTS})
+configure_target(vtx_renderer_test)
+
+target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
+target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+
+catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)

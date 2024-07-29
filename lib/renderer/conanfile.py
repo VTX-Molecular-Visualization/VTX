@@ -14,10 +14,11 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*", "test/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
+        self.requires("catch2/3.6.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,6 +40,7 @@ class VTXRendererRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)

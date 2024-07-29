@@ -48,9 +48,6 @@ vtx_clear_registered_copies()
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
 
-# Renderer test.
-include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
-
 # Renderer bench.
 include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
 
