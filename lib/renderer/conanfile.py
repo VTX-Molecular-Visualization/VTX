@@ -39,11 +39,11 @@ class VTXRendererRecipe(ConanFile):
     def build(self):
         cmake = CMake(self)
         cmake.configure()
-        cmake.build()
-        cmake.ctest(["--output-on-failure"])
+        cmake.build()        
 
     def package(self):
         cmake = CMake(self)
+        cmake.ctest(["--output-on-failure"])
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 
@@ -56,8 +56,10 @@ class VTXRendererRecipe(ConanFile):
         self.cpp_info.components["vtx_renderer_no_opengl"].libs = ["vtx_renderer_no_opengl"]
         self.cpp_info.components["vtx_renderer_no_opengl"].set_property("cmake_target_name", "vtx_renderer::vtx_renderer_no_opengl")
         self.cpp_info.components["vtx_renderer_no_opengl"].requires = ["vtx_util::vtx_util"]
-        #self.cpp_info.components["vtx_renderer_no_opengl"].includedirs = ["include"]
-        
+        #self.cpp_info.components["vtx_renderer_no_opengl"].includedirs = ["include"]        
+       
+        self.cpp_info.components["vtx_renderer_test"].requires = ["catch2::catch2"]
+         
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
         self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
         

@@ -39,11 +39,11 @@ class VTXUtilRecipe(ConanFile):
     def build(self):
         cmake = CMake(self)
         cmake.configure()
-        cmake.build()
-        cmake.ctest(["--output-on-failure"])
+        cmake.build()        
 
     def package(self):
         cmake = CMake(self)
+        cmake.ctest(["--output-on-failure"])
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 

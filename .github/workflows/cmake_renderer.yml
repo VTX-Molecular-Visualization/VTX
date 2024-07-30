@@ -54,6 +54,7 @@ jobs:
         conan upload sdl -r=cano7782
         conan upload imgui -r=cano7782
         conan upload stb -r=cano7782
+        conan upload catch2 -r=cano7782
 
     - name: Read package path from output.json
       id: read_package_path
