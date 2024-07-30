@@ -10,8 +10,8 @@ class VTXUtilRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps", "CMakeToolchain"
     
@@ -23,7 +23,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("nlohmann_json/3.11.3", transitive_headers=True)
         self.requires("magic_enum/0.9.5", transitive_headers=True)
         self.requires("cpr/1.10.5", transitive_headers=True)  
-        self.requires("catch2/3.6.0")        
+        self.requires("catch2/3.6.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,11 +39,12 @@ class VTXUtilRecipe(ConanFile):
     def build(self):
         cmake = CMake(self)
         cmake.configure()
-        cmake.build()        
+        cmake.build()
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
-        cmake = CMake(self)
-        cmake.ctest(["--output-on-failure"])
+        cmake = CMake(self)        
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 
