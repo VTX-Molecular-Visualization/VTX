@@ -1,10 +1,7 @@
 set(_VTX_RENDERER_BENCH_VENDOR_DIR "${CMAKE_CURRENT_LIST_DIR}/../vendor")
-set(SOURCES "")
+
 # There is currently 2 vendor type of files : those that are statically bound to the project tree (imnodes) referred here as VENDOR_STATIC
 # And those copied by the build system, referred here as VENDORS_DYNAMIC. 
-set(VENDORS_STATIC "")
-set(VENDORS_DYNAMIC "")
-
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE VENDORS_STATIC "${_VTX_RENDERER_BENCH_VENDOR_DIR}/imnodes/*")
 file(GLOB_RECURSE VENDORS_DYNAMIC ./vendor/*)
