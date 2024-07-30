@@ -7,17 +7,18 @@ class VTXIORecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("chemfiles/0.10.4.2")
+        self.requires("catch2/3.6.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -30,6 +31,8 @@ class VTXIORecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)

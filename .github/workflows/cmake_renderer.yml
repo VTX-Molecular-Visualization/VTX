@@ -48,7 +48,7 @@ jobs:
       run:  |
         conan export ../core
         conan export ../io
-        conan create bench --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create bench -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}

@@ -42,8 +42,4 @@ jobs:
       run:  |
         conan export ../util
         conan export ../core
-        conan create . --build=missing --settings=compiler.cppstd=20
-   
-    - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --build=missing --settings=compiler.cppstd=20 
+        conan create . -b missing -s compiler.cppstd=20 -o vtx_io/*:test=True

@@ -40,9 +40,6 @@ include("${DIR_LIBS}/core/cmake/library.cmake")
 # IO.
 include("${DIR_LIBS}/io/cmake/library.cmake")
 
-# IO test.
-include("${DIR_LIBS}/io/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Renderer.
