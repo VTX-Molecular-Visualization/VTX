@@ -62,5 +62,5 @@ class VTXRendererRecipe(ConanFile):
         self.cpp_info.components["vtx_renderer_test"].requires = ["catch2::catch2"]
          
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
+        #self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
         
