@@ -39,7 +39,7 @@ jobs:
            
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create . --build=missing --settings=compiler.cppstd=20
+      run: conan create . -o vtx_util/*:test=True -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True
                
     - name: Upload dependencies
       working-directory: ${{env.CMAKELISTS_DIR}}

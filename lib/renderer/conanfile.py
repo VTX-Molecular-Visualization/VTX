@@ -9,8 +9,8 @@ class VTXRendererRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps", "CMakeToolchain"
     
@@ -39,7 +39,9 @@ class VTXRendererRecipe(ConanFile):
     def build(self):
         cmake = CMake(self)
         cmake.configure()
-        cmake.build()        
+        cmake.build() 
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
