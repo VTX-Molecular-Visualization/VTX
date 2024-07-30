@@ -1,4 +1,3 @@
-include ("${CMAKE_CURRENT_LIST_DIR}/copy_data.cmake")
 set(_VTX_RENDERER_BENCH_VENDOR_DIR "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 set(SOURCES "")
 # There is currently 2 vendor type of files : those that are statically bound to the project tree (imnodes) referred here as VENDOR_STATIC
@@ -37,5 +36,3 @@ else()
 	target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
 	#target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
 endif()
-
-vtx_copy_registered_data(vtx_renderer_bench)
