@@ -1,4 +1,4 @@
-name: CMake App
+name: Lib App
 
 on:
   push:
