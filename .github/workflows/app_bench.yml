@@ -6,7 +6,7 @@ on:
     paths: ['app/bench/**','lib/renderer/**', '.github/workflows/app_bench.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/app/bench
+  ROOT_DIR: ${{github.workspace}}
 
 jobs:
   build:
@@ -38,24 +38,23 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Create package
-      working-directory: ${{env.CMAKELISTS_DIR}}
+      working-directory: ${{env.ROOT_DIR}}
       run:  |
-        conan export ../../lib/util
-        conan export ../../lib/renderer
-        conan export ../..//lib/core
-        conan export ../..//lib/io
-        conan create bench -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan export lib/util
+        conan export lib/renderer
+        conan export lib/core
+        conan export lib/io
+        conan create app/bench -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Upload dependencies
       run: |
         conan upload sdl -r=cano7782
         conan upload imgui -r=cano7782
         conan upload stb -r=cano7782
-        conan upload catch2 -r=cano7782
 
     - name: Read package path from output.json
       id: read_package_path
-      working-directory: ${{env.CMAKELISTS_DIR}}
+      working-directory: ${{env.ROOT_DIR}}
       run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
       shell: bash
         

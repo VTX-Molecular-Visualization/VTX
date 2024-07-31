@@ -52,5 +52,6 @@ jobs:
     #  run: conan create test --build=missing --settings=compiler.cppstd=20
       
     - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload pybind11 -r=cano7782

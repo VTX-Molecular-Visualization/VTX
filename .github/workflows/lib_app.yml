@@ -6,7 +6,7 @@ on:
     paths: ['lib/app/**', '.github/workflows/lib_app.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/app
+  LIB_DIR: ${{github.workspace}}/lib
 
 jobs:
   build:
@@ -40,16 +40,17 @@ jobs:
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan export ../util
-        conan export ../core
-        conan export ../io
-        conan export ../renderer
-        conan create . --build=missing --settings=compiler.cppstd=20
+        conan export util
+        conan export core
+        conan export io
+        conan export renderer
+        conan create app --build=missing --settings=compiler.cppstd=20
         
     - name: Test
       working-directory: ${{env.CMAKELISTS_DIR}}
       run: conan create test --build=missing --settings=compiler.cppstd=20
       
     - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload entt -r=cano7782

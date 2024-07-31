@@ -42,6 +42,7 @@ jobs:
       run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True
                
     - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload glm -r=cano7782
         conan upload spdlog -r=cano7782
