@@ -148,8 +148,8 @@ int main( int, char ** )
 
 		// renderer.setProxyRenderSettings( renderSettings );
 
-		renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
-		// renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
+		// renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+		//  renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
 
 		// Main loop.
 		while ( isRunning )

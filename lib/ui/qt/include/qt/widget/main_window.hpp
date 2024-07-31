@@ -6,13 +6,12 @@
 #include "qt/helper.hpp"
 #include "qt/settings.hpp"
 #include "status_bar.hpp"
-#include "ui/concepts.hpp"
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
 #include <app/core/input/input_manager.hpp>
+#include <app/ui/concepts.hpp>
 #include <qt/dialog/progress.hpp>
-#include <ui/actions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -25,8 +24,8 @@ namespace VTX::UI::QT::Widget
 		virtual ~MainWindow() {}
 
 		void build();
-		void addMenuAction( const WidgetId & p_menu, const UI::DescAction & p_action );
-		void addToolBarAction( const WidgetId & p_toolbar, const UI::DescAction & p_action );
+		void addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action );
+		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
 		void resetLayout();
 
 		inline void keyPressEvent( QKeyEvent * const p_event ) override

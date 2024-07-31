@@ -3,7 +3,7 @@
 
 namespace VTX::UI::QT
 {
-	QAction * const ACTION( const Util::Hashing::Hash & p_hash, const UI::DescAction & p_action )
+	QAction * const ACTION( const Util::Hashing::Hash & p_hash, const App::UI::DescAction & p_action )
 	{
 		if ( not ACTIONS.contains( p_hash ) )
 		{

@@ -12,12 +12,12 @@ namespace VTX::UI::QT::Menu
 	  public:
 		Theme( QWidget * p_parent ) : BaseWidget<Theme, QMenu>( "Theme", p_parent )
 		{
-			addAction<UI::Action::Theme::System>();
+			addAction<Action::Theme::System>();
 			addSeparator();
-			addAction<UI::Action::Theme::Light>();
-			addAction<UI::Action::Theme::Dark>();
+			addAction<Action::Theme::Light>();
+			addAction<Action::Theme::Dark>();
 			addSeparator();
-			auto * aReset = addAction<UI::Action::Theme::ResetLayout>();
+			auto * aReset = addAction<Action::Theme::ResetLayout>();
 			connect( aReset, &QAction::triggered, this, &Theme::_resetLayout );
 		}
 		virtual ~Theme() {}

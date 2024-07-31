@@ -10,7 +10,6 @@ find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_python_binding CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_tool CONFIG REQUIRED)
-find_package(vtx_ui CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 
 find_package(Qt6 COMPONENTS Core REQUIRED)

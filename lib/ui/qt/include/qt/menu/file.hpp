@@ -13,13 +13,11 @@ namespace VTX::UI::QT::Menu
 	  public:
 		File( QWidget * p_parent ) : BaseWidget<File, QMenu>( "File", p_parent )
 		{
-			using namespace UI::Action;
-
-			addAction<System::New>();
+			addAction<Action::System::New>();
 			addSeparator();
 
 			// Connect to dialog.
-			auto * aDownload = addAction<System::Download>();
+			auto * aDownload = addAction<Action::System::Download>();
 			connect(
 				aDownload,
 				&QAction::triggered,
@@ -32,15 +30,15 @@ namespace VTX::UI::QT::Menu
 			);
 
 			addSeparator();
-			addAction<System::Open>();
-			addAction<System::OpenRecent>();
-			addAction<System::Save>();
-			addAction<System::SaveAs>();
+			addAction<Action::System::Open>();
+			addAction<Action::System::OpenRecent>();
+			addAction<Action::System::Save>();
+			addAction<Action::System::SaveAs>();
 			addSeparator();
-			addAction<System::Import>();
-			addAction<System::Export>();
+			addAction<Action::System::Import>();
+			addAction<Action::System::Export>();
 			addSeparator();
-			addAction<System::Quit>();
+			addAction<Action::System::Quit>();
 		}
 		virtual ~File() {}
 

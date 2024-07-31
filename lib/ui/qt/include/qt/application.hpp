@@ -7,12 +7,12 @@
 #include <QPointer>
 #include <QSplashScreen>
 #include <QTimer>
-#include <ui/base_application.hpp>
+#include <app/ui/base_application.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX::UI::QT
 {
-	class Application final : public UI::BaseApplication<Widget::MainWindow>, public QApplication, public Savable
+	class Application final : public App::UI::BaseApplication<Widget::MainWindow>, public QApplication, public Savable
 	{
 	  public:
 		Application();

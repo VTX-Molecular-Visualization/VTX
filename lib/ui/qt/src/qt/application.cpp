@@ -18,7 +18,7 @@ namespace VTX::UI::QT
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
-	Application::Application() : UI::BaseApplication<Widget::MainWindow>(), QApplication( zero, nullptr )
+	Application::Application() : App::UI::BaseApplication<Widget::MainWindow>(), QApplication( zero, nullptr )
 
 	{
 		using namespace Resources;

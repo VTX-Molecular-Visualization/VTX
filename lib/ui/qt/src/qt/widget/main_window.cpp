@@ -128,7 +128,7 @@ namespace VTX::UI::QT::Widget
 		*/
 	}
 
-	void MainWindow::addMenuAction( const WidgetId & p_menu, const UI::DescAction & p_action )
+	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
 	{
 		for ( QMenu * const menu : menuBar()->findChildren<QMenu *>() )
 		{
@@ -143,7 +143,7 @@ namespace VTX::UI::QT::Widget
 		menu->addAction( ACTION( p_action ) );
 	}
 
-	void MainWindow::addToolBarAction( const WidgetId & p_toolbar, const UI::DescAction & p_action )
+	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action )
 	{
 		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
 		{

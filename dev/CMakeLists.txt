@@ -66,14 +66,6 @@ include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
-# UI.
-include("${DIR_LIBS}/ui/cmake/library.cmake")
-
-# UI test.
-include("${DIR_LIBS}/ui/test/cmake/library.cmake")
-
-vtx_clear_registered_copies()
-
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
 

@@ -32,7 +32,7 @@ namespace VTX::UI::QT::DockWidget
 
 			// Use action?
 
-			auto * aToolbarText = ACTION<Action::ShowToolBarText>();
+			auto * aToolbarText = ACTION<Action::Option::ShowToolBarText>();
 			aToolbarText->setCheckable( true );
 			aToolbarText->setChecked( true );
 			QObject::connect(
@@ -62,11 +62,14 @@ namespace VTX::UI::QT::DockWidget
 
 		virtual ~Options() {}
 
-		void save() override { SETTINGS.setValue( "showToolBarText", ACTION<Action::ShowToolBarText>()->isChecked() ); }
+		void save() override
+		{
+			SETTINGS.setValue( "showToolBarText", ACTION<Action::Option::ShowToolBarText>()->isChecked() );
+		}
 
 		void restore() override
 		{
-			ACTION<Action::ShowToolBarText>()->setChecked( SETTINGS.value( "showToolBarText", true ).toBool() );
+			ACTION<Action::Option::ShowToolBarText>()->setChecked( SETTINGS.value( "showToolBarText", true ).toBool() );
 		}
 
 	  private:
