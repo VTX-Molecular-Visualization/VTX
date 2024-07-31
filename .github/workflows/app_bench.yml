@@ -3,7 +3,7 @@ name: App Bench
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
-    paths: ['app/bench/**','lib/renderer/**', '.github/workflows/app_bench.yml']
+    paths: ['app/bench/**', '.github/workflows/app_bench.yml']
 
 env:
   ROOT_DIR: ${{github.workspace}}

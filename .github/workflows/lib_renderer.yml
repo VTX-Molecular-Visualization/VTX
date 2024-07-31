@@ -42,10 +42,3 @@ jobs:
       run:  |
         conan export util         
         conan create renderer -b missing -s compiler.cppstd=20 -o vtx_renderer/*:test=True
-
-    - name: Upload dependencies
-      working-directory: ${{env.LIB_DIR}}    
-      run: |
-        conan upload sdl -r=cano7782
-        conan upload imgui -r=cano7782
-        conan upload stb -r=cano7782
