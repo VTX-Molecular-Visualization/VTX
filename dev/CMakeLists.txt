@@ -75,6 +75,6 @@ include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
 vtx_clear_registered_copies()
 
 # VTX.
-include("../cmake/library.cmake")
+include("${DIR_APPS}/vtx/cmake/library.cmake")
 
 vtx_clear_registered_copies()
