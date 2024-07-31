@@ -1,4 +1,7 @@
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
+set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
+
 set(PYBIND11_FINDPYTHON ON)
 
 message("vtx")
@@ -45,8 +48,8 @@ vtx_clear_registered_copies()
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
 
-# Renderer bench.
-include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
+# Bench.
+include("${DIR_APPS}/bench/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 

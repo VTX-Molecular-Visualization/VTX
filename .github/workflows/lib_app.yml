@@ -1,12 +1,12 @@
-name: CMake Core
+name: CMake App
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
-    paths: ['lib/core/**', '.github/workflows/cmake_core.yml']
+    paths: ['lib/app/**', '.github/workflows/lib_app.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/core
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/app
 
 jobs:
   build:
@@ -25,20 +25,31 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-
+        
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
     - name: Create default profile
-      run: conan profile detect
-      
+      run: conan profile detect --force
+
     - name: Add custom remote
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
- 
+
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
-      run: |
+      run:  |
         conan export ../util
+        conan export ../core
+        conan export ../io
+        conan export ../renderer
         conan create . --build=missing --settings=compiler.cppstd=20
+        
+    - name: Test
+      working-directory: ${{env.CMAKELISTS_DIR}}
+      run: conan create test --build=missing --settings=compiler.cppstd=20
+      
+    - name: Upload dependencies
+      run: |
+        conan upload entt -r=cano7782

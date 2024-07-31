@@ -1,12 +1,12 @@
-name: CMake Renderer
+name: App Bench
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
-    paths: ['lib/renderer/**', '.github/workflows/cmake_renderer.yml']
+    paths: ['app/bench/**','lib/renderer/**', '.github/workflows/app_bench.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/renderer
+  CMAKELISTS_DIR: ${{github.workspace}}/app/bench
 
 jobs:
   build:
@@ -40,18 +40,13 @@ jobs:
     - name: Create package
       working-directory: ${{env.CMAKELISTS_DIR}}
       run:  |
-        conan export ../util         
-        conan create . -b missing -s compiler.cppstd=20 -o vtx_renderer/*:test=True
-      
-    - name: Create benchmarker
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run:  |
-        conan export ../core
-        conan export ../io
+        conan export ../../lib/util
+        conan export ../../lib/renderer
+        conan export ../..//lib/core
+        conan export ../..//lib/io
         conan create bench -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Upload dependencies
-      working-directory: ${{env.CMAKELISTS_DIR}}
       run: |
         conan upload sdl -r=cano7782
         conan upload imgui -r=cano7782
