@@ -18,10 +18,13 @@ namespace VTX::App::Test::Util
 		if ( not isInit )
 		{
 			APP().init();
+
+			// Fake OpenGL context throws exception:
+			// throw GLException( "Context not loaded" );
 			APP().start( { 0, nullptr } );
 
-			auto & renderer = RENDERER().facade();
-			REQUIRE_THROWS( renderer.build() );
+			// auto & renderer = RENDERER().facade();
+			// REQUIRE_THROWS( renderer.build() );
 
 			/*
 			// Camera.

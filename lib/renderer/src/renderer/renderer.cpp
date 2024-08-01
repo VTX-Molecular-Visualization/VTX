@@ -117,14 +117,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr || not _context->loaded )
-		{
-			throw GLException( "Context not loaded" );
-		}
-		else
-		{
-			onReady();
-		}
+		onReady();
 	}
 
 	void Renderer::clean()

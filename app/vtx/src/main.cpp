@@ -11,6 +11,7 @@
 #ifdef VTX_UI_QT
 #include <qt/application.hpp>
 #else
+#include <app/vtx_app.hpp>
 #endif
 
 #ifdef _WIN32
@@ -56,8 +57,11 @@ int main( int p_argc, char * p_argv[] )
 			app = std::make_unique<App::VTXApp>();
 		}
 #else
-		app = std::unique_ptr<App::VTXApp>( &APP() );
+		app = std::make_unique<App::VTXApp>();
+		// TODO: how to create opengl context?
 #endif
+
+		assert( app != nullptr );
 
 		app->init();
 
@@ -73,7 +77,7 @@ int main( int p_argc, char * p_argv[] )
 	catch ( const std::exception & p_e )
 	{
 		const std::string error = p_e.what();
-		VTX_ERROR( "{}", error );
+		VTX_ERROR( "Unhandled exception: {}", error );
 		LOGGER().stop();
 		return EXIT_FAILURE;
 	}

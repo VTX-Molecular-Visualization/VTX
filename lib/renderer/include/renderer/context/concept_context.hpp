@@ -14,7 +14,6 @@ namespace VTX::Renderer::Context
 		size_t	 width;
 		size_t	 height;
 		FilePath shaderPath;
-		bool	 loaded = false;
 	};
 
 	template<typename C>
@@ -52,43 +51,23 @@ namespace VTX::Renderer::Context
 						 p_renderQueue, p_links, p_output, p_uniforms, p_instructions, p_instructionsDurationRanges
 					 )
 				 } -> std::same_as<void>;
-				 {
-					 p_context.resize( p_renderQueue, p_width, p_height )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.setOutput( p_output )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.setValue( p_value, p_key, p_index )
-				 } -> std::same_as<void>;
+				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;
+				 { p_context.setOutput( p_output ) } -> std::same_as<void>;
+				 { p_context.setValue( p_value, p_key, p_index ) } -> std::same_as<void>;
 				 // TODO: templated type not deductible.
 				 //{
 				 //	 p_context.reserveData( p_size, p_key )
 				 //} -> std::same_as<void>;
-				 {
-					 p_context.setData( p_data, p_key )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.setSubData( p_data, p_key, p_offset )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.fillInfos( p_infos )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.measureTaskDuration( p_task )
-				 } -> std::same_as<float>;
-				 {
-					 p_context.compileShaders()
-				 } -> std::same_as<void>;
+				 { p_context.setData( p_data, p_key ) } -> std::same_as<void>;
+				 { p_context.setSubData( p_data, p_key, p_offset ) } -> std::same_as<void>;
+				 { p_context.fillInfos( p_infos ) } -> std::same_as<void>;
+				 { p_context.measureTaskDuration( p_task ) } -> std::same_as<float>;
+				 { p_context.compileShaders() } -> std::same_as<void>;
 				 {
 					 p_context.snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height )
 				 } -> std::same_as<void>;
-				 {
-					 p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel )
-				 } -> std::same_as<void>;
-				 {
-					 p_context.compute( p_computePass )
-				 } -> std::same_as<void>;
+				 { p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel ) } -> std::same_as<void>;
+				 { p_context.compute( p_computePass ) } -> std::same_as<void>;
 			 };
 
 } // namespace VTX::Renderer::Context

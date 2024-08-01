@@ -13,26 +13,22 @@ namespace VTX::Renderer::Context
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
-			VTX_ERROR( "Failed to load OpenGL" );
-			// throw GLException( "Failed to load OpenGL" );
+			throw GLException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
 		else if ( gladLoadGL() == 0 )
 		{
-			VTX_ERROR( "Failed to load OpenGL" );
-			// throw GLException( "Failed to load OpenGL" );
+			throw GLException( "Failed to load OpenGL" );
 		}
 
 		// Check version.
 		if ( not GLAD_GL_VERSION_4_5 )
 		{
-			VTX_ERROR( "OpenGL 4.5 or higher is required" );
 			throw GLException( "OpenGL 4.5 or higher is required" );
 		}
 		else
 		{
 			_getOpenglInfos();
-			loaded = true;
 		}
 
 		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
