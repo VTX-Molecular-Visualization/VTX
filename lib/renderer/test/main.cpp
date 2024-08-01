@@ -43,8 +43,9 @@ TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
 	using namespace VTX::Util;
 
 	Renderer renderer( 800, 600, Filesystem::getExecutableDir() / "shaders" );
-	// Verify that the context is not created (not possible without loader).
-	REQUIRE_THROWS( renderer.build() );
 
+	renderer.build();
+
+	renderer.resize( 1024, 768 );
 	// TODO: test buffer sizes and others things.
 }
