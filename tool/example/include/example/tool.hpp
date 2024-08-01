@@ -9,7 +9,7 @@ namespace VTX::Tool::Example
 	{
 	  public:
 		Tool();
-		virtual ~Tool();
+		~Tool();
 	};
 
 } // namespace VTX::Tool::Example
