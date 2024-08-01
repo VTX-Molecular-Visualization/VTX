@@ -23,7 +23,7 @@ namespace VTX::App::Application::Settings
 		template<typename T>
 		void referenceSetting( const std::string & p_key, const T & p_defaultValue = T() )
 		{
-			assert( !_settings.contains( p_key ) );
+			assert( not _settings.contains( p_key ) );
 
 			_settings[ p_key ] = std::make_unique<Setting<T>>( p_defaultValue, p_defaultValue );
 		}

@@ -15,13 +15,15 @@ namespace VTX::App::Test::Util
 	void App::initApp()
 	{
 		static bool isInit;
-		if ( !isInit )
+		if ( not isInit )
 		{
+			APP().init();
 			APP().start( { 0, nullptr } );
 
 			auto & renderer = RENDERER().facade();
 			REQUIRE_THROWS( renderer.build() );
 
+			/*
 			// Camera.
 			Component::Render::ProxyCamera & proxyCamera
 				= MAIN_REGISTRY().getComponent<Component::Render::ProxyCamera>( SCENE().getCamera() );
@@ -37,6 +39,7 @@ namespace VTX::App::Test::Util
 				= MAIN_REGISTRY().findComponent<Component::Render::ProxyColorLayout>();
 			proxyColorLayout.setup( renderer );
 			renderer.setProxyColorLayout( proxyColorLayout.getProxy().proxy() );
+			*/
 
 			isInit = true;
 		}

@@ -9,7 +9,7 @@ namespace VTX::App::Core::Animation::Helper
 		const float				 p_zoomFactor
 	)
 	{
-		const float orientTargetDistance = p_target.radius() / std::tanf( Util::Math::radians( p_fov ) * p_zoomFactor );
+		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
 		return p_target.centroid() - ( p_forward * orientTargetDistance );
 	}
 } // namespace VTX::App::Core::Animation::Helper
