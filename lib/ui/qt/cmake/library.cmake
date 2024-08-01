@@ -18,10 +18,14 @@ qt_add_resources(vtx_ui_qt vtx_qt_resources_ui BASE ${QT_RESOURCES_PATH} FILES $
 if (NOT DEFINED _VTX_UI_QT_CONAN)
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_util)
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_app)
+	target_link_libraries(vtx_ui_qt PRIVATE vtx_renderer)
+	target_link_libraries(vtx_ui_qt PRIVATE vtx_core)
 
 else()
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_app::vtx_app)
+	target_link_libraries(vtx_ui_qt PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_ui_qt PRIVATE vtx_core::vtx_core)
 endif()
 
 target_link_libraries(vtx_ui_qt PRIVATE Qt6::Core)

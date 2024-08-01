@@ -38,17 +38,13 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Create package
-      working-directory: ${{env.CMAKELISTS_DIR}}
+      working-directory: ${{env.LIB_DIR}}
       run:  |
         conan export util
         conan export core
         conan export io
         conan export renderer
-        conan create app --build=missing --settings=compiler.cppstd=20
-        
-    - name: Test
-      working-directory: ${{env.CMAKELISTS_DIR}}
-      run: conan create test --build=missing --settings=compiler.cppstd=20
+        conan create app -b missing -s compiler.cppstd=20 -o vtx_app/*:test=True
       
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}

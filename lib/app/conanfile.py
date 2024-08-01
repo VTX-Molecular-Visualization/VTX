@@ -7,12 +7,12 @@ class VTXAppRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
 
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -20,6 +20,7 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         self.requires("entt/3.13.0", transitive_headers=True)
+        self.requires("catch2/3.6.0")
         
     def config_options(self):
         if self.settings.os == "Windows":

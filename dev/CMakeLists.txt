@@ -56,9 +56,6 @@ vtx_clear_registered_copies()
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
 
-# App test.
-include("${DIR_LIBS}/app/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Python binding.
