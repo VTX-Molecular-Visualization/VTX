@@ -75,3 +75,9 @@ vtx_clear_registered_copies()
 include("${DIR_APPS}/vtx/cmake/library.cmake")
 
 vtx_clear_registered_copies()
+
+# Tool example
+include("${DIR_TOOLS}/example/cmake/library.cmake")
+
+
+vtx_clear_registered_copies()

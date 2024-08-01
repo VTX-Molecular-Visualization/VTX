@@ -7,11 +7,16 @@
 
 // TODO: move to conan.
 #define VTX_UI_QT
+#define VTX_TOOL_EXAMPLE
 
 #ifdef VTX_UI_QT
 #include <qt/application.hpp>
 #else
 #include <app/vtx_app.hpp>
+#endif
+
+#ifdef VTX_TOOL_EXAMPLE
+// #include <tool/example/tool.hpp>
 #endif
 
 #ifdef _WIN32
