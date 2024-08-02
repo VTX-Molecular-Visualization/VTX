@@ -59,6 +59,12 @@ namespace VTX::App
 		// Create renderer.
 		RENDERER().init();
 
+		// Init tools.
+		for ( Tool::BaseTool * const tool : _tools )
+		{
+			tool->init();
+		}
+
 		//// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
@@ -85,8 +91,8 @@ namespace VTX::App
 			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
 		proxyCamera.setInRenderer( rendererFacade );
 		////////////
-		//
-		// Regsiter loop events
+
+		// Register loop events
 		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
@@ -95,6 +101,12 @@ namespace VTX::App
 
 		_currentMode = std::make_unique<App::Mode::Visualization>();
 		_currentMode->enter();
+
+		onStart();
+		for ( Tool::BaseTool * const tool : _tools )
+		{
+			tool->onAppStart();
+		}
 
 		_handleArgs( p_args );
 	}
@@ -183,6 +195,10 @@ namespace VTX::App
 
 		// Old::Application::Selection::SelectionManager::get().deleteModel();
 
+		for ( Tool::BaseTool * const tool : _tools )
+		{
+			tool->onAppStop();
+		}
 		onStop();
 	}
 
@@ -219,6 +235,10 @@ namespace VTX::App
 				{
 					VTX_ERROR( "Can't open file '{}' : {}.", p_arg, p_e.what() );
 				}
+			}
+			else
+			{
+				VTX_WARNING( "Argument '{}' is not a valid file path.", p_arg );
 			}
 		}
 	}

@@ -68,10 +68,16 @@ int main( int p_argc, char * p_argv[] )
 
 		assert( app != nullptr );
 
+// Add tools.
+#ifdef VTX_TOOL_EXAMPLE
+		auto exampleTool = std::make_unique<Tool::Example::Tool>();
+		app->addTool( exampleTool.get() );
+#endif
+
 		app->init();
 
 		// const FilePath molPath = "C:/Users/Samar/Desktop/cell_structure/cell_structure/cell_annotated.gro";
-		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1aga.pdb";
+		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 		args.add( molPath.string() );
 
 		app->start( args );

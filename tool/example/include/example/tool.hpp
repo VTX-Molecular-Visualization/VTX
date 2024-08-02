@@ -10,6 +10,11 @@ namespace VTX::Tool::Example
 	  public:
 		Tool();
 		~Tool();
+
+		void init() override;
+		void onAppStart() override;
+		void createUI() override;
+		void onAppStop() override;
 	};
 
 } // namespace VTX::Tool::Example

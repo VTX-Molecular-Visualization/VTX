@@ -1,5 +1,6 @@
 #include "qt/widget/main_window.hpp"
 #include "qt/dialog/progress.hpp"
+#include "qt/dock_widget/colors.hpp"
 #include "qt/dock_widget/console.hpp"
 #include "qt/dock_widget/inspector.hpp"
 #include "qt/dock_widget/options.hpp"
@@ -76,7 +77,9 @@ namespace VTX::UI::QT::Widget
 
 		auto * dwScene			 = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		auto * dwRepresentations = createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
+		auto * dwColors			 = createDockWidget<DockWidget::Colors>( Qt::LeftDockWidgetArea );
 		tabifyDockWidget( dwScene, dwRepresentations );
+		tabifyDockWidget( dwScene, dwColors );
 		dwScene->raise();
 
 		auto * dwInspector		= createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );

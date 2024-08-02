@@ -28,6 +28,17 @@ namespace VTX::App::UI
 		{ p_mw.addToolBarAction( p_id, p_action ) } -> std::same_as<void>;
 	};
 
+	// Convert ConceptMainWindow to a base class.
+	/*
+	class BaseMainWindow
+	{
+	  public:
+		virtual void build()																	 = 0;
+		virtual void addMenuAction( const WidgetId & p_menu, const DescAction & p_action )		 = 0;
+		virtual void addToolBarAction( const WidgetId & p_toolbar, const DescAction & p_action ) = 0;
+	};
+	*/
+
 } // namespace VTX::App::UI
 
 #endif

@@ -1,7 +1,6 @@
 #include "qt/application.hpp"
 #include "qt/menu/file.hpp"
 #include "qt/resources.hpp"
-#include "qt/widget/main_window.hpp"
 #include <QApplication>
 #include <QFile>
 #include <QIcon>

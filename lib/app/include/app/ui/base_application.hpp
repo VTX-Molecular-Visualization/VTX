@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_UI_BASE_APPLICATION__
 #define __VTX_APP_UI_BASE_APPLICATION__
 
-#include "actions.hpp"
 #include "concepts.hpp"
 #include <any>
 #include <app/vtx_app.hpp>
@@ -20,11 +19,18 @@ namespace VTX::App::UI
 
 		void start( const App::Args & p_args ) override
 		{
+			// Create all the UI.
 			_mainWindow = new MW();
 			_mainWindow->build();
-			onUI();
+			for ( Tool::BaseTool * const tool : _tools )
+			{
+				tool->createUI();
+			}
 
+			// Start the main app.
 			VTXApp::start( p_args );
+
+			// Start the UI.
 			_start();
 		}
 
@@ -40,10 +46,10 @@ namespace VTX::App::UI
 
 		inline MW * const getMainWindow() { return _mainWindow.get(); }
 
-		inline static Util::Callback<> onUI;
+		// inline static Util::Callback<> onUI;
 
 	  protected:
-		MW * _mainWindow;
+		inline static MW * _mainWindow;
 
 		virtual void _start() = 0;
 	};

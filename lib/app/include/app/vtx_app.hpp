@@ -4,6 +4,7 @@
 #include "app/application/_fwd.hpp"
 #include "app/core/monitoring/stats.hpp"
 #include "app/mode/base_mode.hpp"
+#include "app/tool/base_tool.hpp"
 #include "args.hpp"
 #include "core/system/system_handler.hpp"
 #include <memory>
@@ -48,8 +49,11 @@ namespace VTX::App
 		inline Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 		inline const Mode::BaseMode &	getCurrentMode() const { return *_currentMode; }
 
+		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
+
 		// Main loop calllbacks.
-		// inline static Util::Callback<> onStart;
+		inline static Util::Callback<> onStart;
+
 		// inline static Util::Callback<float> onPreUpdate;
 		inline static Util::Callback<float, float> onUpdate;
 		// inline static Util::Callback<float> onLateUpdate;
@@ -66,6 +70,9 @@ namespace VTX::App
 		inline static Util::Callback<>			  onEndBlockingOperation;
 
 		// TODO: thread callbacks?
+
+	  protected:
+		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
 		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
