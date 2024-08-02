@@ -13,7 +13,7 @@ file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_example_test ${SOURCES_TEST})
 configure_target(vtx_tool_example_test)
 
-if (NOT DEFINED _vtx_tool_example_CONAN)
+if (NOT DEFINED _VTX_TOOL_EXAMPLE_CONAN)
 	target_link_libraries(vtx_tool_example PRIVATE vtx_util)
 	target_link_libraries(vtx_tool_example PRIVATE vtx_renderer)
 	target_link_libraries(vtx_tool_example PRIVATE vtx_core)
