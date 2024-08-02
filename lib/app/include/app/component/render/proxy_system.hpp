@@ -40,6 +40,11 @@ namespace VTX::App::Component::Render
 		void _applySelectionCallbacks();
 		void _applyAtomPositionCallbacks();
 
+		// devjla
+		public:
+		void _updateAtomsPositions( VTX::Core::Struct::Frame & frame );
+		private:
+
 		void _removeFromRenderer();
 	};
 

@@ -232,4 +232,11 @@ namespace VTX::App::Component::Render
 		}
 	}
 
+	// devjla
+	void ProxyMolecule::_updateAtomsPositions(VTX::Core::Struct::Frame& frame)
+	{
+		_proxyWrapper.accessor().proxy().atomPositions = &frame;
+		_proxyWrapper.accessor().proxy().onAtomPositions();
+	}
+
 } // namespace VTX::App::Component::Render

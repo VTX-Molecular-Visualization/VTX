@@ -36,6 +36,11 @@ namespace VTX::App::Component::Chemistry
 	{
 		return getLocalPosition( _systemPtr->_systemStruct.trajectory.currentFrameIndex );
 	}
+	// devjla
+	const Vec3f & Atom::getLocalPosition( VTX::Core::Struct::Frame & coords ) const 
+	{
+		return coords[ _index ];
+	}
 	const Vec3f & Atom::getLocalPosition( const size_t & p_frameIndex ) const
 	{
 		// devjla

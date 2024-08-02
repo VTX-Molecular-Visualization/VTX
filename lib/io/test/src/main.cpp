@@ -6,6 +6,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/network.hpp>
+#include <core/struct/frame_data.hpp>
 
 TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 {

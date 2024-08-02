@@ -2,6 +2,7 @@
 #define __VTX_CORE_STRUCT_CIRCBUFF__
 
 #include <vector>
+#include <util/logger.hpp>
 
 namespace VTX::Core::Struct
 {
@@ -36,6 +37,7 @@ namespace VTX::Core::Struct
 			if ( !isReadAllowed() )
 				return false;
 			elem = circBuff[ readIdx ];
+			VTX_INFO( "ReadElement readIdx {}", readIdx );
 			updateReadIdx();
 			return true;
 		}

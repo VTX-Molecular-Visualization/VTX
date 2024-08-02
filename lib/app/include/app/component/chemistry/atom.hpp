@@ -7,6 +7,8 @@
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
+//#include <core/struct/frame_data_simple.hpp>
+#include <core/struct/frame_data_simple_prodcons.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -41,7 +43,9 @@ namespace VTX::App::Component::Chemistry
 
 		float getVdwRadius() const;
 
+		// TODO devjla
 		const Vec3f & getLocalPosition() const;
+		const Vec3f & getLocalPosition( VTX::Core::Struct::Frame & coords ) const;
 		const Vec3f & getLocalPosition( const size_t & p_frameIndex ) const;
 		Vec3f		  getWorldPosition() const;
 		Vec3f		  getWorldPosition( const size_t & p_frameIndex ) const;

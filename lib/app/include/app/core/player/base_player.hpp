@@ -39,7 +39,7 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
-		Util::Callback<>	   onPlay;
+		Util::Callback<>	   onPlay; 
 		Util::Callback<>	   onPause;
 		Util::Callback<>	   onStop;
 		Util::Callback<size_t> onFrameChange;
@@ -49,7 +49,7 @@ namespace VTX::App::Core::Player
 		size_t _count	= 0;
 		size_t _current = 0;
 
-		bool  _isPlaying	   = true;
+		bool  _isPlaying	   = false;
 		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
 	};

@@ -69,8 +69,9 @@ namespace VTX::App::Component::Chemistry
 		// bool							hasTrajectory() { return _systemStruct.trajectory.frames.size() >= 2; }
 		bool hasTrajectory()
 		{
-			std::vector<Vec3f> tmpFrame;
-			_systemStruct.trajectory.frames.ReadElement( tmpFrame );
+			//std::vector<Vec3f> tmpFrame;
+			//_systemStruct.trajectory.frames.ReadElement( tmpFrame );
+			std::vector<Vec3f> &tmpFrame = _systemStruct.trajectory.getModelFrame();
 			return tmpFrame.size() >= 2;
 		}
 		VTX::Core::Struct::Trajectory & getTrajectory() { return _systemStruct.trajectory; }
