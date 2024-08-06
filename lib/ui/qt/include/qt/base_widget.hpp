@@ -12,30 +12,11 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	// using WIDGET_TEST = Util::Generic::SharedCollection<QWidget *>;
-
-	inline std::unordered_map<std::string, QWidget *> WIDGETS;
-
-	template<ConceptWidget W>
-	W * const WIDGET()
-	{
-		const std::string name = typeid( W ).name();
-
-		assert( WIDGETS.contains( name ) );
-
-		return static_cast<W * const>( WIDGETS[ name ] );
-	}
-
-	/*
-	template<ConceptWidget W>
-	W * const WIDGET()
-	{
-		return static_cast<W *>( BaseWidget::get<W *>() );
-	}
-	*/
+	// TODO: move to BaseWidget?
+	inline Util::HashedCollection<QWidget *> WIDGETS;
 
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W, public Util::Generic::SharedCollection<QWidget *>
+	class BaseWidget : public W
 	{
 	  public:
 		template<typename... Args>
@@ -43,11 +24,11 @@ namespace VTX::UI::QT
 		{
 			const std::string name = typeid( T ).name();
 			W::setObjectName( name );
-			WIDGETS[ name ] = this;
+			WIDGETS.set<T *>( this );
 			VTX_TRACE( "UI widget created: {}", name );
 		}
 
-		virtual ~BaseWidget() { WIDGETS.erase( typeid( T ).name() ); }
+		virtual ~BaseWidget() { WIDGETS.remove<T *>(); }
 
 		// Hide QWidget::addAction().
 		template<ConceptAction T>

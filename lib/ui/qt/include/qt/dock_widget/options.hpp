@@ -41,7 +41,7 @@ namespace VTX::UI::QT::DockWidget
 				[ aToolbarText ]()
 				{
 					VTX_DEBUG( "Show toolbar text: {}", aToolbarText->isChecked() );
-					WIDGET<Widget::MainWindow>()->setToolButtonStyle(
+					WIDGETS.get<Widget::MainWindow *>()->setToolButtonStyle(
 						aToolbarText->isChecked() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly
 					);
 				}

@@ -9,7 +9,7 @@
 #include <app/application/system/action_manager.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
-#include <util/generic/base_static_singleton.hpp>
+#include <util/hashed_collection.hpp>
 #include <util/hashing.hpp>
 
 namespace VTX::UI::QT
