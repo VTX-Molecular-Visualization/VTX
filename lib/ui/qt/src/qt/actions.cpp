@@ -1,14 +1,14 @@
 #include "qt/actions.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Action
 {
-	QAction * const ACTION( const Util::Hashing::Hash & p_hash, const App::UI::DescAction & p_action )
+	QAction * const Factory::_getOrCreate( const Util::Hashing::Hash & p_hash, const App::UI::DescAction & p_action )
 	{
-		if ( not ACTIONS.contains( p_hash ) )
+		if ( not ACTIONS.has( p_hash ) )
 		{
 			QAction * qAction = new QAction();
-			ACTIONS[ p_hash ] = qAction;
+			ACTIONS.set( p_hash, qAction );
 
 			VTX_TRACE( "UI action created: {}", p_action.name );
 
@@ -17,14 +17,14 @@ namespace VTX::UI::QT
 			// Group.
 			if ( p_action.group.has_value() )
 			{
-				std::string group = p_action.group.value();
-				if ( not ACTION_GROUPS.contains( group ) )
+				const auto group = Util::Hashing::hash( p_action.group.value() );
+				if ( not ACTION_GROUPS.has( group ) )
 				{
-					ACTION_GROUPS[ group ] = new QActionGroup( nullptr );
+					ACTION_GROUPS.set( group, new QActionGroup( nullptr ) );
 				}
 
 				qAction->setCheckable( true );
-				ACTION_GROUPS[ group ]->addAction( qAction );
+				ACTION_GROUPS.get( group )->addAction( qAction );
 			}
 			// Tip.
 			if ( p_action.tip.has_value() )
@@ -57,6 +57,6 @@ namespace VTX::UI::QT
 			}
 		}
 
-		return ACTIONS[ p_hash ];
+		return ACTIONS.get( p_hash );
 	}
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Action

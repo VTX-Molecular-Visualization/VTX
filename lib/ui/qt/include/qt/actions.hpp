@@ -17,24 +17,32 @@ namespace VTX::UI::QT
 	template<typename A>
 	concept ConceptAction = std::is_base_of_v<App::UI::DescAction, A>;
 
-	inline std::unordered_map<Util::Hashing::Hash, QAction *> ACTIONS;
-	inline std::unordered_map<std::string, QActionGroup *>	  ACTION_GROUPS;
-
-	QAction * const ACTION( const Util::Hashing::Hash & p_hash, const App::UI::DescAction & p_action );
-
-	inline QAction * const ACTION( const App::UI::DescAction & p_action )
-	{
-		return ACTION( Util::Hashing::hash( &p_action ), p_action );
-	}
-
-	template<ConceptAction A>
-	inline QAction * const ACTION()
-	{
-		return ACTION( Util::Hashing::hash( typeid( A ).name() ), A() );
-	}
-
 	namespace Action
 	{
+		struct Factory
+		{
+		  public:
+			inline static QAction * const get( const App::UI::DescAction & p_action )
+			{
+				return _getOrCreate( Util::Hashing::hash( &p_action ), p_action );
+			}
+
+			template<ConceptAction A>
+			inline static QAction * get()
+			{
+				return _getOrCreate( Util::Hashing::hash( typeid( A ).name() ), A() );
+			}
+
+		  private:
+			inline static Util::HashedCollection<QAction *>		 ACTIONS;
+			inline static Util::HashedCollection<QActionGroup *> ACTION_GROUPS;
+
+			static QAction * const _getOrCreate(
+				const Util::Hashing::Hash & p_hash,
+				const App::UI::DescAction & p_action
+			);
+		};
+
 		// System.
 		namespace System
 		{

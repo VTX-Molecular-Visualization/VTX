@@ -12,7 +12,6 @@ namespace VTX::UI::QT
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	// TODO: move to BaseWidget?
 	inline Util::HashedCollection<QWidget *> WIDGETS;
 
 	template<typename T, ConceptWidget W>
@@ -34,7 +33,7 @@ namespace VTX::UI::QT
 		template<ConceptAction T>
 		QAction * const addAction()
 		{
-			QAction * const action = ACTION<T>();
+			QAction * const action = Action::Factory::get<T>();
 			QWidget::addAction( action );
 			return action;
 		}

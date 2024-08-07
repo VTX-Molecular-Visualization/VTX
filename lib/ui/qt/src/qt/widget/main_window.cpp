@@ -137,13 +137,13 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( menu->title().toStdString() == p_menu )
 			{
-				menu->addAction( ACTION( p_action ) );
+				menu->addAction( Action::Factory::get( p_action ) );
 				return;
 			}
 		}
 
 		QMenu * const menu = menuBar()->addMenu( p_menu.c_str() );
-		menu->addAction( ACTION( p_action ) );
+		menu->addAction( Action::Factory::get( p_action ) );
 	}
 
 	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action )
@@ -152,14 +152,14 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( toolbar->windowTitle().toStdString() == p_toolbar )
 			{
-				toolbar->addAction( ACTION( p_action ) );
+				toolbar->addAction( Action::Factory::get( p_action ) );
 				return;
 			}
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.c_str(), this );
 		addToolBar( toolbar );
-		toolbar->addAction( ACTION( p_action ) );
+		toolbar->addAction( Action::Factory::get( p_action ) );
 	}
 
 	void MainWindow::resetLayout()
