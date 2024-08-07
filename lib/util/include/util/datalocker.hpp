@@ -1,9 +1,9 @@
 #ifndef __VTX_UTIL_DATALOCKER__
 #define __VTX_UTIL_DATALOCKER__
 
+#include "concepts.hpp"
 #include <mutex>
 #include <optional>
-#include <util/concepts.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::Util

@@ -12,38 +12,39 @@ namespace VTX::App::Core
 	void init( Mode::Visualization & p_visualization )
 	{
 		// TODO replace that with an initialisation with custom data.
-		std::unique_ptr<Controller::BaseController> ptr = Controller::ControllerCollection::get().instantiateItem(
-			App::Controller::Camera::Freefly::HASHED_COLLECTION_ID
-		);
+		std::unique_ptr<Controller::BaseController> ptr
+			= Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
+				App::Controller::Camera::Freefly::HASHED_COLLECTION_ID
+			);
 		ptr->init();
 		p_visualization.addCameraController( ptr );
 
-		ptr = Controller::ControllerCollection::get().instantiateItem(
+		ptr = Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
 			App::Controller::Camera::Trackball::HASHED_COLLECTION_ID
 		);
 		ptr->init();
 		p_visualization.addCameraController( ptr );
 
-		ptr = Controller::ControllerCollection::get().instantiateItem(
+		ptr = Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
 			App::Controller::Picker::Selection::HASHED_COLLECTION_ID
 		);
 		ptr->init();
 		p_visualization.addPickerController( ptr );
 
-		ptr = Controller::ControllerCollection::get().instantiateItem(
+		ptr = Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
 			App::Controller::Shortcut::Global::HASHED_COLLECTION_ID
 		);
 		ptr->init();
 		p_visualization.addController( ptr );
 
-		ptr = Controller::ControllerCollection::get().instantiateItem(
+		ptr = Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
 			App::Controller::Shortcut::Visualization::HASHED_COLLECTION_ID
 		);
 		ptr->init();
 		p_visualization.addController( ptr );
 
 #ifndef VTX_PRODUCTION
-		ptr = Controller::ControllerCollection::get().instantiateItem(
+		ptr = Util::Singleton<Controller::ControllerCollection>::get().instantiateItem(
 			App::Controller::Shortcut::Debug::HASHED_COLLECTION_ID
 		);
 		ptr->init();

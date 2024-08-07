@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CORE_INPUT_KEYS__
 #define __VTX_APP_CORE_INPUT_KEYS__
 
-#include <util/generic/enum_flag.hpp>
+#include <util/enum_flag.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Input

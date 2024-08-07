@@ -3,6 +3,7 @@
 #include <memory>
 #include <util/collection.hpp>
 #include <util/hashing.hpp>
+#include <util/singleton.hpp>
 
 namespace
 {
@@ -66,7 +67,7 @@ TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 
 	std::unique_ptr<BaseClass> ptr = nullptr;
 
-	auto & collection = CollectionTest::get();
+	CollectionTest collection;
 
 	ptr = collection.instantiateItem( "DerivedClass1" );
 	REQUIRE( ptr != nullptr );

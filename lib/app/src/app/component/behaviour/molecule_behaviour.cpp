@@ -76,7 +76,7 @@ namespace VTX::App::Component::Behaviour
 				= MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( _entity, &_moleculeComponent );
 
 			std::unique_ptr<App::Core::Player::BasePlayer> defaultPlayMode
-				= App::Core::Player::Players::get().instantiateItem<App::Core::Player::Loop>(
+				= Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::Loop>(
 					App::Core::Player::Loop::COLLECTION_ID
 				);
 

@@ -1,8 +1,8 @@
-#ifndef __VTX_APP_CORE_COLLECTION__
-#define __VTX_APP_CORE_COLLECTION__
+#ifndef __VTX_APP_COLLECTION__
+#define __VTX_APP_COLLECTION__
 
-#include "util/generic/base_static_singleton.hpp"
-#include "util/hashing.hpp"
+#include "hashing.hpp"
+#include "singleton.hpp"
 #include <concepts>
 #include <functional>
 #include <map>
@@ -17,19 +17,25 @@ namespace VTX::Util
 		= requires( const T & _collectionable, std::unique_ptr<T> p_clone ) { p_clone = _collectionable.clone(); };
 
 	template<CollectionableConcept T>
-	class Collection : public Util::Generic::BaseStaticSingleton<Collection<T>>
+	class Collection
 	{
 	  public:
 		template<typename T2>
 		class Registration
 		{
 		  public:
-			Registration( const CollectionKey & p_key ) { Collection<T>::get().template addItem<T2>( p_key ); }
-			Registration( const Util::Hashing::Hash & p_hash ) { Collection<T>::get().template addItem<T2>( p_hash ); }
+			Registration( const CollectionKey & p_key )
+			{
+				Singleton<Collection<T>>::get().template addItem<T2>( p_key );
+			}
+			Registration( const Util::Hashing::Hash & p_hash )
+			{
+				Singleton<Collection<T>>::get().template addItem<T2>( p_hash );
+			}
 		};
 
 	  public:
-		Collection( typename Util::Generic::BaseStaticSingleton<Collection<T>>::StructPrivacyToken ) {};
+		Collection() {};
 
 		template<typename T2>
 			requires std::derived_from<T2, T> && std::default_initializable<T2>

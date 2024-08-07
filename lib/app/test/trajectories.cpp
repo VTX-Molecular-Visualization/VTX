@@ -36,7 +36,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Stop playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem( App::Core::Player::Stop::COLLECTION_ID );
+		playmode
+			= Util::Singleton<App::Core::Player::Players>::get().instantiateItem( App::Core::Player::Stop::COLLECTION_ID
+			);
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -53,7 +55,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Once playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem<App::Core::Player::Once>(
+		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::Once>(
 			App::Core::Player::Once::COLLECTION_ID
 		);
 
@@ -73,7 +75,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert once playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem<App::Core::Player::RevertOnce>(
+		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::RevertOnce>(
 			App::Core::Player::RevertOnce::COLLECTION_ID
 		);
 
@@ -93,7 +95,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Loop playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem<App::Core::Player::Loop>(
+		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::Loop>(
 			App::Core::Player::Loop::COLLECTION_ID
 		);
 
@@ -113,7 +115,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert loop playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem<App::Core::Player::RevertLoop>(
+		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::RevertLoop>(
 			App::Core::Player::RevertLoop::COLLECTION_ID
 		);
 
@@ -133,7 +135,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Ping Pong playmode" )
 	{
-		playmode = App::Core::Player::Players::get().instantiateItem<App::Core::Player::PingPong>(
+		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::PingPong>(
 			App::Core::Player::PingPong::COLLECTION_ID
 		);
 

@@ -159,7 +159,7 @@ namespace VTX::App::Internal::Serialization
 		}
 
 		std::unique_ptr<App::Core::Player::BasePlayer> playerPtr
-			= App::Core::Player::Players::get().instantiateItem( playerName );
+			= Util::Singleton<App::Core::Player::Players>::get().instantiateItem( playerName );
 		p_component.setPlayer( playerPtr );
 
 		SERIALIZER().deserialize( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );

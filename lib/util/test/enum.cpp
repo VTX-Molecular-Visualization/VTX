@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/enum.hpp>
-#include <util/generic/enum_flag.hpp>
+#include <util/enum_flag.hpp>
 
 // enum.hpp
 enum struct E_EXAMPLE_1
@@ -51,7 +51,6 @@ TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
-	using namespace VTX::Util::Generic;
 
 	E_FLAG_TEST_FLAG testFlag = E_FLAG_TEST_ENUM::NONE;
 	testFlag				  = testFlag | E_FLAG_TEST_ENUM::BIT_0;

@@ -1,22 +1,16 @@
-#ifndef __VTX_UTIL_GENERIC_ENUM_FLAG__
-#define __VTX_UTIL_GENERIC_ENUM_FLAG__
+#ifndef __VTX_UTIL_ENUM_FLAG__
+#define __VTX_UTIL_ENUM_FLAG__
 
 namespace VTX
 {
 	// Use VTX_FLAG define to generate static | and & operation between two Enums.
 	// EnumFlag will manage all the casts needed for bitwise operations
-#define VTX_FLAG( FLAG_TYPE, ENUM )                                      \
-	using FLAG_TYPE = ::VTX::Util::Generic::EnumFlag<ENUM>;              \
-	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) \
-	{                                                                    \
-		return FLAG_TYPE( p_lhs ) | p_rhs;                               \
-	};                                                                   \
-	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) \
-	{                                                                    \
-		return FLAG_TYPE( p_lhs ) & p_rhs;                               \
-	};
+#define VTX_FLAG( FLAG_TYPE, ENUM )                                                                              \
+	using FLAG_TYPE = ::VTX::Util::EnumFlag<ENUM>;                                                               \
+	inline FLAG_TYPE operator|( const ENUM & p_lhs, const ENUM & p_rhs ) { return FLAG_TYPE( p_lhs ) | p_rhs; }; \
+	inline FLAG_TYPE operator&( const ENUM & p_lhs, const ENUM & p_rhs ) { return FLAG_TYPE( p_lhs ) & p_rhs; };
 
-	namespace Util::Generic
+	namespace Util
 	{
 		template<typename T>
 		class EnumFlag
@@ -30,7 +24,7 @@ namespace VTX
 
 			explicit operator bool() const { return bool( _enum ); }
 			explicit operator int() const { return _enum; }
-					 operator ENUM() const { return ENUM( _enum ); }
+			operator ENUM() const { return ENUM( _enum ); }
 
 			EnumFlag & operator=( const ENUM & p_other )
 			{
@@ -82,7 +76,7 @@ namespace VTX
 			int _enum;
 		};
 
-	} // namespace Util::Generic
+	} // namespace Util
 } // namespace VTX
 
 #endif

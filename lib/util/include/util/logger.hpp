@@ -2,12 +2,12 @@
 #define __VTX_UTIL_LOGGER__
 
 #include "filesystem.hpp"
-#include "generic/base_static_singleton.hpp"
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <string_view>
 #include <util/callback.hpp>
+#include <util/singleton.hpp>
 
 namespace VTX
 {
@@ -33,7 +33,7 @@ namespace VTX
 
 		class Logger final
 		{
-			friend class Generic::UniqueInstance<Logger>;
+			friend class Singleton<Logger>;
 
 		  public:
 			Logger( std::initializer_list<int> ) = delete;
@@ -57,7 +57,7 @@ namespace VTX
 
 	} // namespace Util
 
-	inline Util::Logger & LOGGER() { return Util::Generic::UniqueInstance<Util::Logger>::get(); }
+	inline Util::Logger & LOGGER() { return Util::Singleton<Util::Logger>::get(); }
 
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
