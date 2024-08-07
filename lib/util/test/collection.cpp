@@ -67,7 +67,7 @@ TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 
 	std::unique_ptr<BaseClass> ptr = nullptr;
 
-	CollectionTest collection;
+	auto & collection = Singleton<CollectionTest>::get();
 
 	ptr = collection.instantiateItem( "DerivedClass1" );
 	REQUIRE( ptr != nullptr );
