@@ -190,6 +190,10 @@ namespace VTX::UI::QT::Widget
 	{
 		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
 		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
+
+		setToolButtonStyle(
+			SETTINGS.value( "showToolBarText", true ).toBool() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly
+		);
 	}
 
 } // namespace VTX::UI::QT::Widget
