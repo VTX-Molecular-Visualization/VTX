@@ -65,4 +65,24 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		CHECK( hashedStr2 != hashedStr3 );
 		CHECK( hashedStr1 == hashedStr3 );
 	}
+
+	{
+		class Base
+		{
+		};
+		class Derived : public Base
+		{
+		};
+
+		const Hash hashedBase	 = hash<Base>();
+		const Hash hashedDerived = hash<Derived>();
+
+		CHECK( hashedBase != hashedDerived );
+
+		const Hash hashedBasePtr	= hash<const Base * const>();
+		const Hash hashedDerivedPtr = hash<const Derived * const>();
+
+		CHECK( hashedBase == hashedBasePtr );
+		CHECK( hashedDerived == hashedDerivedPtr );
+	}
 }
