@@ -23,5 +23,11 @@ namespace VTX::Util
 	// Speicalization for char*, using content instead of ptr
 	inline Hash hash( const char * p_value ) { return hash( std::string( p_value ) ); }
 
+	template<typename T>
+	inline Hash hash()
+	{
+		return typeid( std::remove_pointer_t<std::decay_t<T>> ).hash_code();
+	}
+
 } // namespace VTX::Util
 #endif

@@ -59,7 +59,7 @@ namespace VTX::Util
 		template<typename T>
 		inline static Hash hash()
 		{
-			return typeid( T ).hash_code();
+			return Util::hash<T>();
 		}
 
 	  private:

@@ -11,7 +11,7 @@ namespace VTX::Util
 	class Singleton final
 	{
 	  public:
-		static T & get()
+		inline static T & get()
 		{
 			static T instance;
 			return instance;
