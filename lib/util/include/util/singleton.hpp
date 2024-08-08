@@ -1,9 +1,5 @@
-#ifndef __VTX_UTIL_BASE_STATIC_SINGLETON__
-#define __VTX_UTIL_BASE_STATIC_SINGLETON__
-
-#include <initializer_list>
-#include <unordered_map>
-#include <util/hashing.hpp>
+#ifndef __VTX_UTIL_SINGLETON__
+#define __VTX_UTIL_SINGLETON__
 
 namespace VTX::Util
 {

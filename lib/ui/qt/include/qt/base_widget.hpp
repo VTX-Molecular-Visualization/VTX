@@ -14,24 +14,30 @@ namespace VTX::UI::QT
 
 	// TODO: use static singleton, global variable, or static member?
 	// inline Util::HashedCollection<QWidget *> WIDGETS;
-	using WIDGETS = Util::Singleton<Util::HashedCollection<QWidget *>>;
+
+	using WIDGET_COLLECTION = Util::HashedCollection<QWidget *>;
+	using WIDGETS			= Util::Singleton<WIDGET_COLLECTION>;
 
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W
+	class BaseWidget : public W, public WIDGET_COLLECTION::Registration<T>
 	{
 	  public:
 		template<typename... Args>
 		// TODO: auto registrate in Collection.
-		BaseWidget( Args &&... p_args ) : W( std::forward<Args>( p_args )... )
+		BaseWidget( Args &&... p_args ) :
+			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::Registration<T>( this )
 		{
 			const std::string name = typeid( T ).name();
 			W::setObjectName( name );
-			WIDGETS::get().set<T>( this );
-			VTX_TRACE( "UI widget created: {}", name );
-		}
+			// WIDGETS::get().set<T>( this );
+			VTX_TRACE( "Widget created: {}", name );
+		} // namespace VTX::UI::QT
 
 		// TODO: fix this, maybe widget is not in the collection anymore.
-		virtual ~BaseWidget() { WIDGETS::get().remove<T>(); }
+		virtual ~BaseWidget()
+		{
+			// WIDGETS::get().remove<T>();
+		}
 
 		// Hide QWidget::addAction().
 		template<ConceptAction T>

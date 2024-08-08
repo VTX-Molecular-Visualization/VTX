@@ -24,9 +24,18 @@ namespace VTX::Util
 	inline Hash hash( const char * p_value ) { return hash( std::string( p_value ) ); }
 
 	template<typename T>
+	using DefaultHashProcess = std::remove_pointer_t<std::decay_t<T>>;
+
+	template<typename T>
 	inline Hash hash()
 	{
-		return typeid( std::remove_pointer_t<std::decay_t<T>> ).hash_code();
+		return typeid( DefaultHashProcess<T> ).hash_code();
+	}
+
+	template<typename T>
+	inline std::string typeName()
+	{
+		return typeid( DefaultHashProcess<T> ).name();
 	}
 
 } // namespace VTX::Util
