@@ -19,7 +19,7 @@ namespace VTX::App::Action::Visualization
 		const App::Core::Controller::BaseCameraController & currentCameraController
 			= visualizationMode.getCurrentCameraController();
 
-		const Util::Hashing::Hash & controllerHashKey = currentCameraController.getHashedCollectionID();
+		const Hash & controllerHashKey = currentCameraController.getHashedCollectionID();
 
 		const std::set<std::unique_ptr<Controller::BaseController>> & controllerSet
 			= visualizationMode.getCameraControllers();

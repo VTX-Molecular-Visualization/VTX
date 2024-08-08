@@ -13,8 +13,8 @@ namespace VTX::App::Controller::Shortcut
 	class Global final : public Core::Controller::BaseShortcutController
 	{
 	  public:
-		inline static const Util::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_SHORTCUT_GLOBAL";
-		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
+		inline static const Util::CollectionKey COLLECTION_ID		 = "CONTROLLER_SHORTCUT_GLOBAL";
+		inline static const VTX::Hash			HASHED_COLLECTION_ID = Util::hash( COLLECTION_ID );
 
 	  private:
 		inline static const Core::Controller::ControllerCollection::Registration<Global> _reg { COLLECTION_ID };
@@ -26,7 +26,7 @@ namespace VTX::App::Controller::Shortcut
 
 		void init() override;
 
-		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		inline VTX::Hash				getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<Global>( *this ); };
 	};
 } // namespace VTX::App::Controller::Shortcut

@@ -33,7 +33,7 @@ namespace VTX::App::Core::Animation
 		inline static const float TRANSLATION_THRESHOLD = 0.1f;
 
 	  public:
-		inline static const Util::Hashing::Hash ANIMATION_ID = Util::Hashing::hash( "INTERNAL_TRANSLATION" );
+		inline static const Hash ANIMATION_ID = Util::hash( "INTERNAL_TRANSLATION" );
 
 	  public:
 		Translation( const TranslationInfo & p_info );

@@ -26,7 +26,7 @@ namespace VTX::App::Core::Monitoring
 		// void clear();
 
 		template<typename T>
-		T getAverage( const Util::Hashing::Hash & p_hashedKey ) const
+		T getAverage( const Hash & p_hashedKey ) const
 		{
 			if ( _activeFrames.size() == 0 )
 			{

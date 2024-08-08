@@ -27,7 +27,7 @@ namespace VTX::App::Core::Animation
 	class ResetCamera : public Translation
 	{
 	  public:
-		inline static const Util::Hashing::Hash ANIMATION_ID = Util::Hashing::hash( "INTERNAL_RESET_CAMERA" );
+		inline static const Hash ANIMATION_ID = Util::hash( "INTERNAL_RESET_CAMERA" );
 
 	  public:
 		ResetCamera( const ResetInfo & p_info );

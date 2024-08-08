@@ -13,8 +13,8 @@ namespace VTX::App::Controller::Camera
 	class Freefly : public Core::Controller::BaseCameraController
 	{
 	  public:
-		inline static const Util::CollectionKey		 COLLECTION_ID		  = "CONTROLLER_FREEFLY";
-		inline static const VTX::Util::Hashing::Hash HASHED_COLLECTION_ID = VTX::Util::Hashing::hash( COLLECTION_ID );
+		inline static const Util::CollectionKey COLLECTION_ID		 = "CONTROLLER_FREEFLY";
+		inline static const VTX::Hash			HASHED_COLLECTION_ID = Util::hash( COLLECTION_ID );
 
 	  private:
 		inline static const Core::Controller::ControllerCollection::Registration<Freefly> _reg { COLLECTION_ID };
@@ -38,7 +38,7 @@ namespace VTX::App::Controller::Camera
 		void init() override;
 		void setActive( const bool p_active ) override;
 
-		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		inline VTX::Hash				getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<Freefly>( *this ); };
 
 		float translationSpeed	 = Setting::Controller::TRANSLATION_SPEED_DEFAULT;

@@ -7,7 +7,7 @@
 TEST_CASE( "Util::Hashing", "[unit]" )
 {
 	using namespace VTX;
-	using namespace VTX::Util;
+	using namespace Util;
 
 	// Hash Class
 	{
@@ -15,9 +15,9 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		const int value2 = 2;
 		const int value3 = value1;
 
-		const Hashing::Hash hashedValue1 = Hashing::hash( value1 );
-		const Hashing::Hash hashedValue2 = Hashing::hash( value2 );
-		const Hashing::Hash hashedValue3 = Hashing::hash( value3 );
+		const Hash hashedValue1 = hash( value1 );
+		const Hash hashedValue2 = hash( value2 );
+		const Hash hashedValue3 = hash( value3 );
 
 		CHECK( hashedValue1 != hashedValue2 );
 		CHECK( hashedValue2 != hashedValue3 );
@@ -29,9 +29,9 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		const std::unique_ptr<float> value2 = std::make_unique<float>( 2.f );
 		const float *				 value3 = value1.get();
 
-		const Hashing::Hash hashedValue1 = Hashing::hash( value1.get() );
-		const Hashing::Hash hashedValue2 = Hashing::hash( value2.get() );
-		const Hashing::Hash hashedValue3 = Hashing::hash( value3 );
+		const Hash hashedValue1 = hash( value1.get() );
+		const Hash hashedValue2 = hash( value2.get() );
+		const Hash hashedValue3 = hash( value3 );
 
 		CHECK( hashedValue1 != hashedValue2 );
 		CHECK( hashedValue2 != hashedValue3 );
@@ -43,9 +43,9 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		const std::string value2 = "Zaza";
 		const std::string value3 = value1;
 
-		const Hashing::Hash hashedStr1 = Hashing::hash( value1 );
-		const Hashing::Hash hashedStr2 = Hashing::hash( value2 );
-		const Hashing::Hash hashedStr3 = Hashing::hash( value3 );
+		const Hash hashedStr1 = hash( value1 );
+		const Hash hashedStr2 = hash( value2 );
+		const Hash hashedStr3 = hash( value3 );
 
 		CHECK( hashedStr1 != hashedStr2 );
 		CHECK( hashedStr2 != hashedStr3 );
@@ -57,9 +57,9 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		const char * value2 = "Zaza";
 		const char * value3 = value1;
 
-		const Hashing::Hash hashedStr1 = Hashing::hash( value1 );
-		const Hashing::Hash hashedStr2 = Hashing::hash( value2 );
-		const Hashing::Hash hashedStr3 = Hashing::hash( value3 );
+		const Hash hashedStr1 = hash( value1 );
+		const Hash hashedStr2 = hash( value2 );
+		const Hash hashedStr3 = hash( value3 );
 
 		CHECK( hashedStr1 != hashedStr2 );
 		CHECK( hashedStr2 != hashedStr3 );

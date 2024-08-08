@@ -41,7 +41,7 @@ namespace VTX::App::Core::Animation
 	class Orient : public Translation
 	{
 	  public:
-		inline static const Util::Hashing::Hash ANIMATION_ID = Util::Hashing::hash( "INTERNAL_ORIENT" );
+		inline static const Hash ANIMATION_ID = Util::hash( "INTERNAL_ORIENT" );
 
 	  public:
 		Orient( const OrientInfo & p_info );

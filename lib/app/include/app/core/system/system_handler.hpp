@@ -21,26 +21,26 @@ namespace VTX::App::Core::System
 		~SystemHandler() = default;
 
 		template<SystemConcept T>
-		void store( const Util::Hashing::Hash & p_hash )
+		void store( const Hash & p_hash )
 		{
 			assert( not _systems.contains( p_hash ) );
 			const std::unique_ptr<BaseSystem> & ptr = _storage.emplace_back( std::make_unique<T>() );
 			_systems.emplace( p_hash, ptr.get() );
 		}
 
-		void reference( const Util::Hashing::Hash & p_hash, BaseSystem * p_systemPtr )
+		void reference( const Hash & p_hash, BaseSystem * p_systemPtr )
 		{
 			assert( not _systems.contains( p_hash ) );
 			_systems.emplace( p_hash, p_systemPtr );
 		}
 
-		inline bool exists( const Util::Hashing::Hash & p_hash ) const
+		inline bool exists( const Hash & p_hash ) const
 		{
 			return _systems.find( p_hash ) != _systems.end();
 		}
 
 		template<SystemConcept T>
-		inline T & get( const Util::Hashing::Hash & p_hash )
+		inline T & get( const Hash & p_hash )
 		{
 			assert( _systems.contains( p_hash ) );
 			return static_cast<T &>( *_systems[ p_hash ] );
@@ -48,7 +48,7 @@ namespace VTX::App::Core::System
 
 	  private:
 		std::vector<std::unique_ptr<BaseSystem>>	_storage;
-		std::map<Util::Hashing::Hash, BaseSystem *> _systems;
+		std::map<Hash, BaseSystem *> _systems;
 	};
 } // namespace VTX::App::Core::System
 

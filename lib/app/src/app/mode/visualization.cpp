@@ -99,12 +99,12 @@ namespace VTX::App::Mode
 			_otherControllers.begin(),
 			_otherControllers.end(),
 			[ p_controllerKey ]( const std::unique_ptr<Core::Controller::BaseController> & p_controllerPtr )
-			{ return p_controllerPtr->getHashedCollectionID() == Util::Hashing::hash( p_controllerKey ); }
+			{ return p_controllerPtr->getHashedCollectionID() == Util::hash( p_controllerKey ); }
 		);
 		return *( *controllerIt );
 	}
 
-	void Visualization::setCameraController( const Util::Hashing::Hash & p_controllerHash )
+	void Visualization::setCameraController( const Hash & p_controllerHash )
 	{
 		if ( !getCurrentCameraController().canBeStopped() )
 			return;
@@ -127,10 +127,10 @@ namespace VTX::App::Mode
 	}
 	void Visualization::setCameraController( const Util::CollectionKey & p_controllerKey )
 	{
-		setCameraController( Util::Hashing::hash( p_controllerKey ) );
+		setCameraController( Util::hash( p_controllerKey ) );
 	}
 
-	void Visualization::setPickerController( const Util::Hashing::Hash & p_controllerHash )
+	void Visualization::setPickerController( const Hash & p_controllerHash )
 	{
 		const auto newControllerIt = std::find_if(
 			_pickerControllers.begin(),
@@ -151,7 +151,7 @@ namespace VTX::App::Mode
 	}
 	void Visualization::setPickerController( const Util::CollectionKey & p_controllerKey )
 	{
-		setPickerController( Util::Hashing::hash( p_controllerKey ) );
+		setPickerController( Util::hash( p_controllerKey ) );
 	}
 
 	void Visualization::_affectCameraController( Core::Controller::BaseCameraController * p_ptr )

@@ -16,7 +16,7 @@ namespace VTX::App::Controller::Camera
 	{
 	  public:
 		inline static const Util::CollectionKey COLLECTION_ID		 = "CONTROLLER_TRACKBALL";
-		inline static const Util::Hashing::Hash HASHED_COLLECTION_ID = Util::Hashing::hash( COLLECTION_ID );
+		inline static const Hash				HASHED_COLLECTION_ID = Util::hash( COLLECTION_ID );
 
 	  private:
 		inline static const Core::Controller::ControllerCollection::Registration<Trackball> _reg { COLLECTION_ID };
@@ -45,7 +45,7 @@ namespace VTX::App::Controller::Camera
 
 		void reset() override;
 
-		inline VTX::Util::Hashing::Hash getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
+		inline VTX::Hash				getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
 		std::unique_ptr<BaseController> clone() const { return std::make_unique<Trackball>( *this ); };
 
 		Vec3f targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const;

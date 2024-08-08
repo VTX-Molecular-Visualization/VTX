@@ -84,19 +84,19 @@ TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 	ptr = collection.instantiateItem( "DerivedClass100" );
 	CHECK( ptr == nullptr );
 
-	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass1" ) );
+	ptr = collection.instantiateItem( Util::hash( "DerivedClass1" ) );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 1 );
 
-	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass2" ) );
+	ptr = collection.instantiateItem( Util::hash( "DerivedClass2" ) );
 	REQUIRE( ptr != nullptr );
 	CHECK( ptr->getValue() == 2 );
 
-	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass3" ) );
+	ptr = collection.instantiateItem( Util::hash( "DerivedClass3" ) );
 	CHECK( ptr != nullptr );
 	CHECK( ptr->getValue() == 3 );
 
-	ptr = collection.instantiateItem( Util::Hashing::hash( "DerivedClass100" ) );
+	ptr = collection.instantiateItem( Util::hash( "DerivedClass100" ) );
 	CHECK( ptr == nullptr );
 
 	std::unique_ptr<DerivedClass1> ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass1" );
@@ -105,9 +105,9 @@ TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass2" );
 	REQUIRE( ptrDerivedClass1 == nullptr );
 
-	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass1" ) );
+	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::hash( "DerivedClass1" ) );
 	REQUIRE( ptrDerivedClass1 != nullptr );
 
-	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::Hashing::hash( "DerivedClass2" ) );
+	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::hash( "DerivedClass2" ) );
 	REQUIRE( ptrDerivedClass1 == nullptr );
 };

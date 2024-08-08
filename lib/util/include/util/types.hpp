@@ -37,6 +37,8 @@ namespace VTX
 	using Quatd = glm::dquat;
 
 	using atom_index_t = uint;
+
+	using Hash = size_t;
 } // namespace VTX
 
 #endif

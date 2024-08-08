@@ -3,7 +3,7 @@
 
 namespace VTX::UI::QT::Action
 {
-	QAction * const Factory::_getOrCreate( const Util::Hashing::Hash & p_hash, const App::UI::DescAction & p_action )
+	QAction * const Factory::_getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action )
 	{
 		if ( not ACTIONS.has( p_hash ) )
 		{
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Action
 			// Group.
 			if ( p_action.group.has_value() )
 			{
-				const auto group = Util::Hashing::hash( p_action.group.value() );
+				const auto group = Util::hash( p_action.group.value() );
 				if ( not ACTION_GROUPS.has( group ) )
 				{
 					ACTION_GROUPS.set( group, new QActionGroup( nullptr ) );

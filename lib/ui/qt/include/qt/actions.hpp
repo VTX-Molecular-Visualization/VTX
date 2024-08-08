@@ -24,13 +24,13 @@ namespace VTX::UI::QT
 		  public:
 			inline static QAction * const get( const App::UI::DescAction & p_action )
 			{
-				return _getOrCreate( Util::Hashing::hash( &p_action ), p_action );
+				return _getOrCreate( Hash( &p_action ), p_action );
 			}
 
 			template<ConceptAction A>
 			inline static QAction * get()
 			{
-				return _getOrCreate( Util::Hashing::hash( typeid( A ).name() ), A() );
+				return _getOrCreate( Hash( typeid( A ).name() ), A() );
 			}
 
 		  private:
@@ -38,7 +38,7 @@ namespace VTX::UI::QT
 			inline static Util::HashedCollection<QActionGroup *> ACTION_GROUPS;
 
 			static QAction * const _getOrCreate(
-				const Util::Hashing::Hash & p_hash,
+				const Hash & p_hash,
 				const App::UI::DescAction & p_action
 			);
 		};

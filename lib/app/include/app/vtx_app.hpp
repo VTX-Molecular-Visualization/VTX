@@ -20,7 +20,7 @@ namespace VTX::App
 	class VTXApp
 	{
 	  private:
-		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
+		inline static const Hash SCENE_KEY = Util::hash( "SCENE" );
 
 	  public:
 		VTXApp();

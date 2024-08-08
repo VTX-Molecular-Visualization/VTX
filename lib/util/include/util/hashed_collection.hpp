@@ -18,7 +18,7 @@ namespace VTX::Util
 			return has( hash<T>() );
 		}
 
-		inline bool has( const Util::Hashing::Hash & p_hash ) { return _map.contains( p_hash ); }
+		inline bool has( const Hash & p_hash ) { return _map.contains( p_hash ); }
 
 		template<typename T>
 		inline T get()
@@ -26,7 +26,7 @@ namespace VTX::Util
 			return static_cast<T>( get( hash<T>() ) );
 		}
 
-		inline C get( const Util::Hashing::Hash & p_hash )
+		inline C get( const Hash & p_hash )
 		{
 			assert( _map.contains( p_hash ) );
 			return _map[ p_hash ];
@@ -38,7 +38,7 @@ namespace VTX::Util
 			set( hash<T>(), p_value );
 		}
 
-		inline void set( const Util::Hashing::Hash & p_hash, const C & p_value )
+		inline void set( const Hash & p_hash, const C & p_value )
 		{
 			assert( not _map.contains( p_hash ) );
 			_map[ p_hash ] = p_value;
@@ -50,23 +50,20 @@ namespace VTX::Util
 			remove( hash<T>() );
 		}
 
-		inline void remove( const Util::Hashing::Hash & p_hash )
+		inline void remove( const Hash & p_hash )
 		{
 			assert( _map.contains( p_hash ) );
 			_map.erase( p_hash );
 		}
 
 		template<typename T>
-		inline static Util::Hashing::Hash hash()
+		inline static Hash hash()
 		{
-			// std::cout << typeid( T ).name() << std::endl;
-			auto hash = Util::Hashing::hash( typeid( T ).name() );
-			// std::cout << hash << std::endl;
-			return hash;
+			return typeid( T ).hash_code();
 		}
 
 	  private:
-		std::unordered_map<Util::Hashing::Hash, C> _map;
+		std::unordered_map<Hash, C> _map;
 	};
 
 } // namespace VTX::Util
