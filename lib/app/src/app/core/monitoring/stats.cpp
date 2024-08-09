@@ -6,18 +6,15 @@ namespace VTX::App::Core::Monitoring
 
 	FrameInfo & Stats::newFrame()
 	{
-		_pushFrame();
-		return _activeFrames.back();
-	}
+		_frames.emplace_back( FrameInfo() );
 
-	void Stats::_pushFrame()
-	{
-		_activeFrames.emplace_back( FrameInfo() );
-
-		while ( _activeFrames.size() > ACTIVE_FRAME_COUNT )
+		// Remove old frames
+		while ( _frames.size() > ACTIVE_FRAME_COUNT )
 		{
-			_activeFrames.pop_front();
+			_frames.pop_front();
 		}
+
+		return _frames.back();
 	}
 
 	// const FrameInfo & Stats::getLastFrame() const { return *( ++_activeFrames.rbegin() ); }

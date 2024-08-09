@@ -33,7 +33,7 @@ namespace VTX::Util
 	}
 
 	template<typename T>
-	constexpr std::string typeName()
+	constexpr std::string_view typeName()
 	{
 		return typeid( DefaultHashProcess<T> ).name();
 	}

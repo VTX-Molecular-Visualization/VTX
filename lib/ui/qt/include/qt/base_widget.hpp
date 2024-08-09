@@ -27,14 +27,14 @@ namespace VTX::UI::QT
 		BaseWidget( Args &&... p_args ) :
 			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::Registration<T>( this )
 		{
-			const std::string name = Util::typeName<T>();
+			const auto name = Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "UI widget created: {}", name );
 		} // namespace VTX::UI::QT
 
 		virtual ~BaseWidget()
 		{
-			const std::string name = Util::typeName<T>();
+			const auto name = Util::typeName<T>();
 			VTX_TRACE( "UI widget destroyed: {}", name );
 		}
 

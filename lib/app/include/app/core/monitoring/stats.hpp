@@ -14,28 +14,20 @@ namespace VTX::App::Core::Monitoring
 	{
 	  public:
 		FrameInfo & newFrame();
-		// bool		isEmpty() const { return _activeFrames.size() == 0; };
 
-		inline FrameInfo & getCurrentFrame() { return _activeFrames.back(); }
-		// const FrameInfo & getLastFrame() const;
-
-		// const std::list<FrameInfo> & getActiveFrames() const { return _activeFrames; }
-		// const std::list<FrameInfo> & getArchivedFrames() const { return _archivedFrames; };
-
-		// void clearArchive();
-		// void clear();
+		inline FrameInfo & getCurrentFrame() { return _frames.back(); }
 
 		template<typename T>
 		T getAverage( const Hash & p_hashedKey ) const
 		{
-			if ( _activeFrames.size() == 0 )
+			if ( _frames.size() == 0 )
 			{
 				return 0;
 			}
 
 			T res = 0;
 
-			for ( const FrameInfo & frameInfo : _activeFrames )
+			for ( const FrameInfo & frameInfo : _frames )
 			{
 				if ( frameInfo.has( p_hashedKey ) )
 				{
@@ -43,22 +35,13 @@ namespace VTX::App::Core::Monitoring
 				}
 			}
 
-			return res / T( _activeFrames.size() );
+			return res / T( _frames.size() );
 		}
 
 	  private:
-		// static const uint ARCHIVED_FRAME_COUNT = 1000;
 		static const uint ACTIVE_FRAME_COUNT = 1000;
 
-		// const uint _activeFrameCount;
-		// const uint _archivedFrameCount;
-
-		std::list<FrameInfo> _activeFrames = std::list<FrameInfo>();
-		// std::list<FrameInfo> _archivedFrames = std::list<FrameInfo>();
-
-		// Util::Chrono _chrono;
-
-		void _pushFrame();
+		std::list<FrameInfo> _frames = std::list<FrameInfo>();
 	};
 } // namespace VTX::App::Core::Monitoring
 #endif

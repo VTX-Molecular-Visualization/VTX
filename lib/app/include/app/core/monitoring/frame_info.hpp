@@ -43,7 +43,7 @@ namespace VTX::App::Core::Monitoring
 		bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
 		bool has( const key_t & p_key ) const { return _metricsMap.contains( Util::hash( p_key ) ); }
 
-		long long getTimestamp() const { return _timestamp; }
+		// long long getTimestamp() const { return _timestamp; }
 
 	  private:
 		long long _timestamp;
