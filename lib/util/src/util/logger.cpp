@@ -59,7 +59,7 @@ namespace VTX::Util
 
 			spdlog::set_default_logger( logger );
 
-			VTX_INFO( "Logger initialized" );
+			VTX_DEBUG( "Logger initialized" );
 		}
 		catch ( const spdlog::spdlog_ex & p_e )
 		{

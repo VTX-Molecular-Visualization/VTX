@@ -48,7 +48,7 @@ namespace VTX::App::Core::Monitoring
 
 	  private:
 		// static const uint ARCHIVED_FRAME_COUNT = 1000;
-		static const uint ACTIVE_FRAME_COUNT = 50;
+		static const uint ACTIVE_FRAME_COUNT = 1000;
 
 		// const uint _activeFrameCount;
 		// const uint _archivedFrameCount;
@@ -56,7 +56,7 @@ namespace VTX::App::Core::Monitoring
 		std::list<FrameInfo> _activeFrames = std::list<FrameInfo>();
 		// std::list<FrameInfo> _archivedFrames = std::list<FrameInfo>();
 
-		Util::Chrono _chrono;
+		// Util::Chrono _chrono;
 
 		void _pushFrame();
 	};

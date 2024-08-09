@@ -24,8 +24,7 @@ namespace VTX::App
 		inline static const Hash SCENE_KEY = Util::hash( "SCENE" );
 
 	  public:
-		VTXApp() { std::cout << "VTXApp created" << std::endl; }
-		virtual ~VTXApp() { std::cout << "VTXApp destroyed" << std::endl; }
+		virtual ~VTXApp() = default;
 
 		static void	 init();
 		virtual void start( const Args & );

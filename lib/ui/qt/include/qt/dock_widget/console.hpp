@@ -25,7 +25,7 @@ namespace VTX::UI::QT::DockWidget
 		void clear();
 
 	  private:
-		const int _LOG_COUNT = 50;
+		const int _LOG_COUNT = 500;
 
 		QListWidget * _listWidget	   = nullptr;
 		std::mutex	  _listWidgetMutex = std::mutex();

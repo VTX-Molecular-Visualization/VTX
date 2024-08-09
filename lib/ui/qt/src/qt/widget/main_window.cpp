@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::build()
 	{
-		VTX_INFO( "Build main window" );
+		VTX_DEBUG( "Build main window" );
 
 		// Main menu.
 		createMenu<Menu::File>();
@@ -170,11 +170,11 @@ namespace VTX::UI::QT::Widget
 		center();
 	}
 
-	void MainWindow::changeEvent( QEvent * const p_event ) { VTX_DEBUG( "Qt main window change event" ); }
+	void MainWindow::changeEvent( QEvent * const p_event ) {}
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
-		VTX_DEBUG( "Qt main window close event" );
+		VTX_TRACE( "Qt main window close event" );
 		// App::VTX_ACTION().execute<App::Action::Application::Quit>();
 		p_event->accept();
 		QApplication::quit();

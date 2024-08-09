@@ -35,7 +35,7 @@ namespace VTX::UI::QT
 		virtual ~BaseWidget()
 		{
 			const std::string name = Util::typeName<T>();
-			VTX_DEBUG( "UI widget destroyed: {}", name );
+			VTX_TRACE( "UI widget destroyed: {}", name );
 		}
 
 		// Hide QWidget::addAction().

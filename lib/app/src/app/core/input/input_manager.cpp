@@ -59,9 +59,6 @@ namespace VTX::App::Core::Input
 			_deltaMouseWheel = 0;
 		};
 		*/
-
-		onKeyPressed += [ this ]( Key p_key ) { _logKeyPressed( p_key ); };
-		onKeyReleased += [ this ]( Key p_key ) { _logKeyReleased( p_key ); };
 	}
 
 	InputManager::~InputManager() {}
@@ -280,15 +277,6 @@ namespace VTX::App::Core::Input
 	//{
 	//	Controller::BaseKeyboardController::clearKey( p_key );
 	// }
-
-	void InputManager::_logKeyPressed( Key p_key ) const
-	{
-		VTX_DEBUG( "Key pressed : {}", Util::Enum::enumName<Key>( p_key ) );
-	}
-	void InputManager::_logKeyReleased( Key p_key ) const
-	{
-		VTX_DEBUG( "Key released : {}", Util::Enum::enumName<Key>( p_key ) );
-	}
 
 } // namespace VTX::App::Core::Input
 

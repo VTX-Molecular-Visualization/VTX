@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context
 			// Scale if needed.
 			if ( _buffers[ p_key ]->getSize() != size )
 			{
-				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
+				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
 				_buffers[ p_key ]->setData( GLsizei( size ), GL_STATIC_DRAW );
 			}
 		}
@@ -76,7 +76,7 @@ namespace VTX::Renderer::Context
 			// Auto scale.
 			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
-				VTX_DEBUG(
+				VTX_TRACE(
 					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
 				);
 				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );

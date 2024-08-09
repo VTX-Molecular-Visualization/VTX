@@ -22,8 +22,6 @@ namespace VTX::UI::QT
 	{
 		using namespace Resources;
 		using namespace VTX::App::Info;
-
-		VTX_INFO( "Show splashscreen" );
 		//_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
 		//_qSplashScreen->show();
 		//_qSplashScreen->showMessage( "Loading..." );
@@ -90,9 +88,8 @@ namespace VTX::UI::QT
 		// On quit.
 		onStop += [ this ]
 		{
-			VTX_DEBUG( "Qt stop callback" );
+			VTX_TRACE( "Qt stop callback" );
 			_mainWindow->close();
-			//_mainWindow.reset();
 		};
 
 		// Connect quit action.
@@ -101,7 +98,7 @@ namespace VTX::UI::QT
 			&QCoreApplication::aboutToQuit,
 			[ this ]
 			{
-				VTX_DEBUG( "QCoreApplication::aboutToQuit" );
+				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 
 				try
 				{
@@ -130,7 +127,7 @@ namespace VTX::UI::QT
 
 		// Then block to run Qt events loop.
 		exec();
-		VTX_DEBUG( "Qt loop exited" );
+		VTX_TRACE( "Qt loop exited" );
 		_timer.stop();
 	}
 

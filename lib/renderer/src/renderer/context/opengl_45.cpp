@@ -459,8 +459,6 @@ namespace VTX::Renderer::Context
 		width  = p_width;
 		height = p_height;
 
-		VTX_DEBUG( "Resizing to {}x{}", width, height );
-
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
@@ -840,7 +838,7 @@ namespace VTX::Renderer::Context
 			auto & texture = _textures[ p_key ];
 			assert( texture != nullptr );
 
-			VTX_DEBUG( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
+			VTX_TRACE( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
 			if ( attachment.data != nullptr )
 			{
 				texture->fill( attachment.data );
@@ -888,7 +886,7 @@ namespace VTX::Renderer::Context
 			assert( size > 0 );
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
-			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
+			VTX_TRACE( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
 			offset += padding;
@@ -1009,7 +1007,7 @@ namespace VTX::Renderer::Context
 		// Extensions.
 		GLint numExtensions = 0;
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
-		VTX_DEBUG( "{} GL extensions", numExtensions );
+		VTX_TRACE( "{} GL extensions", numExtensions );
 		for ( GLint i = 0; i < numExtensions; ++i )
 		{
 			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );

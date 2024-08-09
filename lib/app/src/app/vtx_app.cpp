@@ -38,7 +38,7 @@ namespace VTX::App
 
 	void VTXApp::init()
 	{
-		VTX_INFO( "Init application" );
+		VTX_DEBUG( "Init application" );
 
 		//_systemHandler = std::make_unique<Core::System::SystemHandler>();
 
