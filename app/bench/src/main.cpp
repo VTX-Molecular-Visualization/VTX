@@ -25,7 +25,7 @@ int main( int, char ** )
 	using namespace VTX::Core::Struct;
 
 	bool isRunning = true;
-	LOGGER().init( Filesystem::getExecutableDir() / "logs" );
+	LOGGER::init( Filesystem::getExecutableDir() / "logs" );
 
 	try
 	{

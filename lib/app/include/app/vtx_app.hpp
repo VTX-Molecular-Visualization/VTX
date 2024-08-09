@@ -7,6 +7,7 @@
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
 #include "core/system/system_handler.hpp"
+#include <iostream>
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
@@ -23,16 +24,15 @@ namespace VTX::App
 		inline static const Hash SCENE_KEY = Util::hash( "SCENE" );
 
 	  public:
-		VTXApp();
-		virtual ~VTXApp();
+		VTXApp() { std::cout << "VTXApp created" << std::endl; }
+		virtual ~VTXApp() { std::cout << "VTXApp destroyed" << std::endl; }
 
-		void		 init();
+		static void	 init();
 		virtual void start( const Args & );
-		void		 update( const float p_deltaTime, const float p_elapsedTime );
-		void		 stop();
+		static void	 update( const float p_deltaTime, const float p_elapsedTime );
+		static void	 stop();
 
-		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandler; }
-		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandler; }
+		inline static Core::System::SystemHandler & getSystemHandler() { return *_systemHandler; }
 		// inline Core::System::SystemHandler * const getSystemHandlerPtr() { return _systemHandler.get(); }
 
 		/*
@@ -42,14 +42,11 @@ namespace VTX::App
 		};
 		*/
 
-		const Core::Monitoring::Stats & getStats() const { return _stats; }
-		Core::Monitoring::Stats &		getStats() { return _stats; }
-		Application::Scene &			getScene();
-		const Application::Scene &		getScene() const;
-		inline Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
-		inline const Mode::BaseMode &	getCurrentMode() const { return *_currentMode; }
+		inline static Core::Monitoring::Stats & getStats() { return _stats; }
+		static Application::Scene &				getScene();
+		inline static Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 
-		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
+		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
 		// Main loop calllbacks.
 		inline static Util::Callback<> onStart;
@@ -82,8 +79,8 @@ namespace VTX::App
 		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
 		inline static Core::Monitoring::Stats		  _stats;
 
-		void _handleArgs( const Args & p_args );
-		void _update( const float p_deltaTime, const float p_elapsedTime );
+		static void _handleArgs( const Args & p_args );
+		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
 
 	// Convenient accessors

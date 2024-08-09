@@ -17,7 +17,7 @@ namespace VTX::App::Test::Util
 		static bool isInit;
 		if ( not isInit )
 		{
-			APP().init();
+			APP::init();
 
 			// Fake OpenGL context throws exception:
 			// throw GLException( "Context not loaded" );

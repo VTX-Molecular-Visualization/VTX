@@ -92,6 +92,7 @@ namespace VTX::UI::QT
 		{
 			VTX_DEBUG( "Qt stop callback" );
 			_mainWindow->close();
+			//_mainWindow.reset();
 		};
 
 		// Connect quit action.

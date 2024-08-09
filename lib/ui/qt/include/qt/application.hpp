@@ -32,10 +32,10 @@ namespace VTX::UI::QT
 		void _start() override;
 
 	  private:
-		inline static QTimer				  _timer;
-		inline static Util::Chrono			  _elapsedTimer;
-		inline static Util::Chrono			  _deltaTimer;
-		inline static QPointer<QSplashScreen> _qSplashScreen;
+		QTimer					_timer;
+		Util::Chrono			_elapsedTimer;
+		Util::Chrono			_deltaTimer;
+		QPointer<QSplashScreen> _qSplashScreen;
 
 		void _loadTheme();
 	};

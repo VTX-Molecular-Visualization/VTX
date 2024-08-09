@@ -36,10 +36,6 @@
 namespace VTX::App
 {
 
-	VTXApp::VTXApp() {}
-
-	VTXApp::~VTXApp() {}
-
 	void VTXApp::init()
 	{
 		VTX_INFO( "Init application" );
@@ -119,7 +115,7 @@ namespace VTX::App
 		Core::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
 		frameInfo.set(
 			Internal::Monitoring::TICK_RATE_KEY,
-			Util::CHRONO_CPU( [ this, p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
 		);
 	}
 
@@ -136,7 +132,7 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		/*
@@ -148,7 +144,7 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
 		/*
@@ -160,18 +156,18 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { RENDERER().facade().render( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_elapsedTime ]() { RENDERER().facade().render( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
 			Internal::Monitoring::POST_RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
 			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
 			Util::CHRONO_CPU(
-				[ this, p_elapsedTime ]()
+				[ p_elapsedTime ]()
 				{
 					onEndOfFrameOneShot();
 					onEndOfFrameOneShot.clear();
@@ -255,11 +251,10 @@ namespace VTX::App
 	// #endif
 	//	}
 
-	Application::Scene &	   VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
-	const Application::Scene & VTXApp::getScene() const { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
+	Application::Scene & VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
 
-	Application::Scene &	  SCENE() { return APP().getScene(); }
-	Mode::BaseMode &		  MODE() { return APP().getCurrentMode(); }
-	Core::Monitoring::Stats & STATS() { return APP().getStats(); }
+	Application::Scene &	  SCENE() { return APP::getScene(); }
+	Mode::BaseMode &		  MODE() { return APP::getCurrentMode(); }
+	Core::Monitoring::Stats & STATS() { return APP::getStats(); }
 
 } // namespace VTX::App

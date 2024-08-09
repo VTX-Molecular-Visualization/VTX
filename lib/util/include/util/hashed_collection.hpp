@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <util/hashing.hpp>
 
-#define DEBUG_HASH 1
+#define DEBUG_HASH 0
 
 namespace VTX::Util
 {
@@ -77,7 +77,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline static Hash hash()
+		static constexpr Hash hash()
 		{
 #if DEBUG_HASH == 1
 			VTX_DEBUG( "Hash: {}", Util::typeName<T>() );

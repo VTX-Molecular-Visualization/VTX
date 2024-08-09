@@ -15,12 +15,15 @@ namespace VTX::App::UI
 	{
 	  public:
 		BaseApplication() : VTXApp() {}
-		virtual ~BaseApplication() { delete _mainWindow; }
+		virtual ~BaseApplication()
+		{
+			// delete _mainWindow;
+		}
 
 		void start( const App::Args & p_args ) override
 		{
 			// Create all the UI.
-			_mainWindow = new MW();
+			_mainWindow = std::make_unique<MW>();
 			_mainWindow->build();
 			for ( Tool::BaseTool * const tool : _tools )
 			{
@@ -49,7 +52,7 @@ namespace VTX::App::UI
 		// inline static Util::Callback<> onUI;
 
 	  protected:
-		inline static MW * _mainWindow;
+		std::unique_ptr<MW> _mainWindow;
 
 		virtual void _start() = 0;
 	};

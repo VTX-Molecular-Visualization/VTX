@@ -32,6 +32,8 @@ extern "C"
 // #pragma comment( linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup" )
 // #endif
 
+// inline static const VTX::LOGGER l;
+
 int main( int p_argc, char * p_argv[] )
 {
 	//::ShowWindow( ::GetConsoleWindow(), SW_HIDE );
@@ -48,7 +50,7 @@ int main( int p_argc, char * p_argv[] )
 		debug = true;
 #endif
 
-		LOGGER().init( logDir, debug );
+		LOGGER::init( logDir, debug );
 
 		std::unique_ptr<App::VTXApp> app;
 #ifdef VTX_UI_QT
@@ -82,14 +84,14 @@ int main( int p_argc, char * p_argv[] )
 
 		app->start( args );
 
-		LOGGER().stop();
+		LOGGER::stop();
 		return 0;
 	}
 	catch ( const std::exception & p_e )
 	{
 		const std::string error = p_e.what();
 		VTX_ERROR( "Unhandled exception: {}", error );
-		LOGGER().stop();
+		LOGGER::stop();
 		return EXIT_FAILURE;
 	}
 }

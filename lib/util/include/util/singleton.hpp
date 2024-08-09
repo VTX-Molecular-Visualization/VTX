@@ -3,6 +3,7 @@
 
 namespace VTX::Util
 {
+
 	template<typename T>
 	class Singleton final
 	{

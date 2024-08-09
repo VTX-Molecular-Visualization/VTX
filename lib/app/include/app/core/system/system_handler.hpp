@@ -34,10 +34,7 @@ namespace VTX::App::Core::System
 			_systems.emplace( p_hash, p_systemPtr );
 		}
 
-		inline bool exists( const Hash & p_hash ) const
-		{
-			return _systems.find( p_hash ) != _systems.end();
-		}
+		inline bool exists( const Hash & p_hash ) const { return _systems.find( p_hash ) != _systems.end(); }
 
 		template<SystemConcept T>
 		inline T & get( const Hash & p_hash )
@@ -47,8 +44,8 @@ namespace VTX::App::Core::System
 		}
 
 	  private:
-		std::vector<std::unique_ptr<BaseSystem>>	_storage;
-		std::map<Hash, BaseSystem *> _systems;
+		std::vector<std::unique_ptr<BaseSystem>> _storage;
+		std::map<Hash, BaseSystem *>			 _systems;
 	};
 } // namespace VTX::App::Core::System
 

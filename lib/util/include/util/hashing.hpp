@@ -27,13 +27,13 @@ namespace VTX::Util
 	using DefaultHashProcess = std::remove_pointer_t<std::decay_t<T>>;
 
 	template<typename T>
-	inline Hash hash()
+	constexpr Hash hash()
 	{
 		return typeid( DefaultHashProcess<T> ).hash_code();
 	}
 
 	template<typename T>
-	inline std::string typeName()
+	constexpr std::string typeName()
 	{
 		return typeid( DefaultHashProcess<T> ).name();
 	}

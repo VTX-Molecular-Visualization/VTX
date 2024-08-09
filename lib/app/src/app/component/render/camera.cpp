@@ -145,7 +145,7 @@ namespace VTX::App::Component::Render
 		}
 
 		onMatrixProjectionChange( _projectionMatrix );
-		// App::Old::APP().MASK |= App::Old::Render::VTX_MASK_CAMERA_UPDATED;
+		// App::Old::APP::MASK |= App::Old::Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void Camera::_computePerspectiveProjectionMatrix()

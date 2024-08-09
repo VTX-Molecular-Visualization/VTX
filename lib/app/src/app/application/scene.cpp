@@ -266,7 +266,7 @@ namespace VTX::App::Application
 		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
 		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
 		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
-		//		APP().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//		APP::MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 		//	}
 		// }
 
@@ -277,7 +277,7 @@ namespace VTX::App::Application
 		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
 		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
 		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
-		//		APP().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		//		APP::MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 		//	}
 		// }
 	}

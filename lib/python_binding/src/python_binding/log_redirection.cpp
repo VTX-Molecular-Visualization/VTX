@@ -4,6 +4,6 @@
 namespace VTX::PythonBinding
 {
 	void LogRedirection::write( std::string str ) { VTX_INFO( "{}", str ); }
-	void LogRedirection::flush() { LOGGER().flush(); }
+	void LogRedirection::flush() { LOGGER::flush(); }
 
 } // namespace VTX::PythonBinding

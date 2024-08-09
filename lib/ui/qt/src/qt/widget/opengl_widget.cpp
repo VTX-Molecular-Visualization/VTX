@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget
 		// setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
 		// Connect signals.
-		APP().onPostRender += [ this ]( const float )
+		APP::onPostRender += [ this ]( const float )
 		{
 			render();
 			// update();

@@ -72,5 +72,5 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	CHECK( chrono.elapsedTime() < 0.2f ); // Ensure thread stopped before it's real end.
 
 	// Flush WorkerManager
-	// APP().update( 0.f );
+	// APP::update( 0.f );
 };

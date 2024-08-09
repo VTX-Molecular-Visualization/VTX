@@ -31,7 +31,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		LOGGER().onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
+		LOGGER::onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
 
 		// Command launcher.
 		_commandLauncher = new LineEdit::CommandLauncher( this );
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::DockWidget
 		// Qt events are not thread safe and need to be called from the main thread
 		// We delayed the scrollToBottom on main thread at the end of frame.
 
-		APP().onEndOfFrameOneShot += [ this ]()
+		APP::onEndOfFrameOneShot += [ this ]()
 		{
 			_listWidgetMutex.lock();
 			_listWidget->scrollToBottom();

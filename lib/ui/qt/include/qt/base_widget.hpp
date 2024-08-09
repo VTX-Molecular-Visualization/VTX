@@ -23,20 +23,19 @@ namespace VTX::UI::QT
 	{
 	  public:
 		template<typename... Args>
-		// TODO: auto registrate in Collection.
+
 		BaseWidget( Args &&... p_args ) :
 			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::Registration<T>( this )
 		{
-			const std::string name = typeid( T ).name();
+			const std::string name = Util::typeName<T>();
 			W::setObjectName( name );
-			// WIDGETS::get().set<T>( this );
-			VTX_TRACE( "Widget created: {}", name );
+			VTX_TRACE( "UI widget created: {}", name );
 		} // namespace VTX::UI::QT
 
-		// TODO: fix this, maybe widget is not in the collection anymore.
 		virtual ~BaseWidget()
 		{
-			// WIDGETS::get().remove<T>();
+			const std::string name = Util::typeName<T>();
+			VTX_DEBUG( "UI widget destroyed: {}", name );
 		}
 
 		// Hide QWidget::addAction().

@@ -15,22 +15,22 @@ namespace VTX::App::Action::Application
 	void NewScene::execute()
 	{
 		SCENE().reset();
-		// App::Old::APP().getScenePathData().clearCurrentPath();
+		// App::Old::APP::getScenePathData().clearCurrentPath();
 
-		APP().onStartBlockingOperation( "Opening files" );
+		APP::onStartBlockingOperation( "Opening files" );
 
-		APP().onUpdateBlockingOperation( 0.f );
+		APP::onUpdateBlockingOperation( 0.f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP().onUpdateBlockingOperation( 0.25f );
+		APP::onUpdateBlockingOperation( 0.25f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP().onUpdateBlockingOperation( 0.5f );
+		APP::onUpdateBlockingOperation( 0.5f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP().onUpdateBlockingOperation( 0.75f );
+		APP::onUpdateBlockingOperation( 0.75f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP().onUpdateBlockingOperation( 1.f );
+		APP::onUpdateBlockingOperation( 1.f );
 		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 
-		APP().onEndBlockingOperation();
+		APP::onEndBlockingOperation();
 	}
 
 	void OpenScene::execute()
@@ -40,7 +40,7 @@ namespace VTX::App::Action::Application
 		Internal::IO::Reader::SceneLoader loader = Internal::IO::Reader::SceneLoader();
 		loader.readFile( _path, SCENE() );
 
-		// App::Old::APP().getScenePathData().setCurrentPath( _path, true );
+		// App::Old::APP::getScenePathData().setCurrentPath( _path, true );
 	}
 
 	void SaveScene::execute()
@@ -52,7 +52,7 @@ namespace VTX::App::Action::Application
 
 		// if ( _path.extension() == "vtx" )
 		//{
-		//	App::Old::APP().getScenePathData().setCurrentPath( _path, true );
+		//	App::Old::APP::getScenePathData().setCurrentPath( _path, true );
 		//	VTX_EVENT( VTX::App::Old::Event::Global::SCENE_SAVED );
 		// }
 		// else
@@ -106,7 +106,7 @@ namespace VTX::App::Action::Application
 
 	void Quit::execute()
 	{
-		APP().onEndOfFrameOneShot += []() { APP().stop(); };
+		APP::onEndOfFrameOneShot += []() { APP::stop(); };
 	}
 
 	void Resize::execute()

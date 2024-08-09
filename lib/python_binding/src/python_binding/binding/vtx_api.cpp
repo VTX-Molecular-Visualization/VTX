@@ -35,7 +35,7 @@ namespace VTX::PythonBinding
 
 		// Global
 		p_apiModule.def(
-			"getScene", []() { return APP().getScene(); }, pybind11::return_value_policy::reference
+			"getScene", []() { return APP::getScene(); }, pybind11::return_value_policy::reference
 		);
 
 		// Selection

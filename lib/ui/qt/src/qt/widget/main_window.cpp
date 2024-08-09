@@ -96,15 +96,15 @@ namespace VTX::UI::QT::Widget
 		setStatusBar( _statusBar );
 
 		// Connect progress dialog.
-		APP().onStartBlockingOperation += [ this ]( const std::string & p_text )
+		APP::onStartBlockingOperation += [ this ]( const std::string & p_text )
 		{
 			_progressDialog = new Dialog::Progress( p_text );
 			_progressDialog->show();
 			// Why?
 			QCoreApplication::processEvents();
 		};
-		APP().onUpdateBlockingOperation += [ this ]( const float p_value ) { _progressDialog->setValue( p_value ); };
-		APP().onEndBlockingOperation += [ this ]()
+		APP::onUpdateBlockingOperation += [ this ]( const float p_value ) { _progressDialog->setValue( p_value ); };
+		APP::onEndBlockingOperation += [ this ]()
 		{
 			if ( _progressDialog )
 			{

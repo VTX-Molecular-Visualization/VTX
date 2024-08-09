@@ -51,7 +51,7 @@ namespace VTX::App::Core::Input
 	{
 		// TODO: consume events, no auto clear.
 		/*
-		APP().onPostUpdate += [ this ]( const float p_deltaTime )
+		APP::onPostUpdate += [ this ]( const float p_deltaTime )
 		{
 			_deltaMousePosition.x = 0;
 			_deltaMousePosition.y = 0;
