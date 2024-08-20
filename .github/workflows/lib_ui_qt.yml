@@ -1,12 +1,12 @@
-name: CMake UI
+name: Lib UI
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
-    paths: ['lib/ui/**', '.github/workflows/cmake_ui.yml']
+    paths: ['lib/ui/qt/**', '.github/workflows/lib_ui_qt.yml']
 
 env:
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/ui
+  LIB_DIR: ${{github.workspace}}/lib
 
 jobs:
   build:
@@ -38,19 +38,16 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
            
     - name: Create package
-      working-directory: ${{env.CMAKELISTS_DIR}}
+      working-directory: ${{env.LIB_DIR}}
       run: |
-        conan export ../util
-        conan export ../core
-        conan export ../io
-        conan export ../renderer
-        conan export ../app
-        conan export ../python_binding
-        conan create . --build=missing --settings=compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
-    
-# TODO: tests without gui?
+        conan export util
+        conan export core
+        conan export io
+        conan export renderer
+        conan export app
+        conan create ui/qt -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
     
     - name: Upload dependencies
-      working-directory: ${{env.CMAKELISTS_DIR}}
+      working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload qt -r=cano7782
