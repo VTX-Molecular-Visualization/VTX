@@ -14,4 +14,4 @@ find_package(Qt6 CONFIG COMPONENTS OpenGLWidgets REQUIRED)
 set(_VTX_UI_QT_CONAN " ") # So the right target name can be linked
 include("./cmake/library.cmake")
 
-install(TARGETS vtx_ui FILE_SET public_headers DESTINATION include)
+install(TARGETS vtx_ui_qt FILE_SET public_headers DESTINATION include)
