@@ -23,7 +23,6 @@ namespace VTX::UI::QT
 	{
 	  public:
 		template<typename... Args>
-
 		BaseWidget( Args &&... p_args ) :
 			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::Registration<T>( this )
 		{
@@ -39,10 +38,10 @@ namespace VTX::UI::QT
 		}
 
 		// Hide QWidget::addAction().
-		template<ConceptAction T>
+		template<ConceptAction A>
 		QAction * const addAction()
 		{
-			QAction * const action = Action::Factory::get<T>();
+			QAction * const action = Action::Factory::get<A>();
 			QWidget::addAction( action );
 			return action;
 		}
