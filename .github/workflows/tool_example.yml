@@ -45,6 +45,7 @@ jobs:
         conan export lib/io
         conan export lib/renderer
         conan export lib/app
+        conan export lib/ui/qt
         conan create tool/example -b missing -s compiler.cppstd=20 -o vtx_tool_example/*:test=True
  
 #    - name: Upload dependencies
