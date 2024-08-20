@@ -28,12 +28,34 @@ namespace VTX::Tool::Mdprep::ui
 				"You must implement 'void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback "
 				"p_2 ) const noexcept' class method."
 			);
+			static_assert(
+				requires( T t ) {
+					{ t.isResultAvailable() } -> std::same_as<bool>;
+				}, "You must implement 'bool isResultAvailable() const noexcept' class method."
+			);
+			static_assert(
+				requires( T t ) {
+					{ t.lastResult() } -> std::same_as<Gateway::CheckReport>;
+				}, "You must implement 'Gateway::CheckReport lastResult() const noexcept' class method."
+			);
 		}
 
 		inline void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback p_2 ) const noexcept
 		{
 			if ( _ptr )
 				_ptr->checkInputs( p_1, std::move( p_2 ) );
+		}
+		inline bool isResultAvailable() const noexcept
+		{
+			if ( _ptr )
+				return _ptr->isResultAvailable();
+			return false;
+		}
+		inline Gateway::CheckReport lastResult() const noexcept
+		{
+			if ( _ptr )
+				return _ptr->lastResult();
+			return Gateway::CheckReport();
 		}
 
 	  private:
@@ -44,6 +66,9 @@ namespace VTX::Tool::Mdprep::ui
 			virtual void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback p_2 )
 				const noexcept
 				= 0;
+
+			virtual bool				 isResultAvailable() const noexcept = 0;
+			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
 		};
 		std::unique_ptr<_interface> _ptr = nullptr;
 
@@ -57,6 +82,9 @@ namespace VTX::Tool::Mdprep::ui
 			{
 				_obj.checkInputs( p_1, std::move( p_2 ) );
 			}
+
+			virtual bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
+			virtual Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
 
 		  private:
 			T _obj;

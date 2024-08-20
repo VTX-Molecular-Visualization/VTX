@@ -227,10 +227,17 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 		};
 		_uiObjects._layoutSystemCheckMsg->addWidget( _uiObjects._labelSystemCheck );
-		InputChecker *			inputChecker = nullptr;
-		Gateway::MdParameters * params		 = nullptr;
-		_data->get( params );
+		InputChecker * inputChecker = nullptr;
 		_data->get( inputChecker );
+
+		if ( inputChecker->isResultAvailable() )
+		{
+			_getSystemCallback()( inputChecker->lastResult() );
+			return;
+		}
+
+		Gateway::MdParameters * params = nullptr;
+		_data->get( params );
 		inputChecker->checkInputs( *params, _getSystemCallback() );
 	}
 	namespace
