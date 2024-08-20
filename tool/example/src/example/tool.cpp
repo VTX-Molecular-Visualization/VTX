@@ -8,23 +8,22 @@ namespace VTX::Tool::Example
 
 	Tool::~Tool() {}
 
-	void Tool::init() { VTX_DEBUG( "Tool::init" ); }
+	void Tool::init() {}
 
-	void Tool::onAppStart() { VTX_DEBUG( "Tool::onAppStart" ); }
+	void Tool::onAppStart() {}
 
 	void Tool::createUI()
 	{
-		VTX_DEBUG( "Tool::createUI" );
-
+		// Easy way to add a menu action.
 		App::UI::DescAction action;
 		action.name	   = "Example";
-		action.trigger = [ this ]() { VTX_DEBUG( "TRIGGER" ); };
+		action.trigger = [ this ]() {};
 
-		// Add a menu action.
 		APP_QT::addMenuAction( "Tool", action );
-		// Add a toolbar action.
 		APP_QT::addToolBarAction( "Tool", action );
+
+		// Add a custom widget.
 	}
 
-	void Tool::onAppStop() { VTX_DEBUG( "Tool::onAppStop" ); }
+	void Tool::onAppStop() {}
 } // namespace VTX::Tool::Example
