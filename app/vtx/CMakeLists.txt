@@ -13,7 +13,6 @@ find_package(vtx_tool CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 
 find_package(Qt6 COMPONENTS Core REQUIRED)
-find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
