@@ -28,6 +28,8 @@ namespace VTX::UI::QT::Widget
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
 		void resetLayout();
 
+		inline void setClosing( const bool p_closing ) { _closing = p_closing; }
+
 		inline void keyPressEvent( QKeyEvent * const p_event ) override
 		{
 			_inputManager.handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
@@ -103,6 +105,8 @@ namespace VTX::UI::QT::Widget
 		QByteArray _defaultState;
 
 		App::Core::Input::InputManager & _inputManager;
+
+		bool _closing = false;
 	};
 
 } // namespace VTX::UI::QT::Widget

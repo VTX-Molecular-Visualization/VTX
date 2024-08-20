@@ -14,7 +14,7 @@ namespace VTX::App::Tool
 		virtual ~BaseTool() {}
 
 		// During app init, renderer not available.
-		virtual void init() {}
+		virtual void init() = 0;
 		// After main window creation, renderer available.
 		virtual void createUI() {}
 		// After app start.

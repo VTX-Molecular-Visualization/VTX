@@ -54,7 +54,7 @@ namespace VTX::UI::QT
 
 		return false;
 	}
-*/
+	*/
 
 	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
 	{
@@ -89,7 +89,8 @@ namespace VTX::UI::QT
 		onStop += [ this ]
 		{
 			VTX_TRACE( "Qt stop callback" );
-			_mainWindow->close();
+			_mainWindow->setClosing( true );
+			QApplication::quit();
 		};
 
 		// Connect quit action.
