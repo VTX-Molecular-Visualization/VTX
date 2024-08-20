@@ -2,10 +2,10 @@
 #include <random>
 #include <re2/re2.h>
 //
-#include "tools/mdprep/gromacs/inputs.hpp"
+#include "tools/mdprep/backends/gromacs/inputs.hpp"
 //
-#include "tools/mdprep/gromacs/job.hpp"
-#include "tools/mdprep/gromacs/util.hpp"
+#include "tools/mdprep/backends/gromacs/job.hpp"
+#include "tools/mdprep/backends/gromacs/util.hpp"
 #include <qapplication.h>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -27,7 +27,7 @@ namespace VTX::Tool::Mdprep
 
 } // namespace VTX::Tool::Mdprep
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept
@@ -169,4 +169,4 @@ namespace VTX::Tool::Mdprep::Gromacs
 		fs::create_directories( out );
 		return out.make_preferred();
 	}
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs

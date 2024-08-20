@@ -1,7 +1,7 @@
 
 #include "mdprep/test/fixture.hpp"
 #include <fstream>
-#include <tools/mdprep/gromacs/util.hpp>
+#include <tools/mdprep/backends/gromacs/util.hpp>
 namespace VTX::test
 {
 	PrepareJobSetup::PrepareJobSetup( const char * p_rootDirName, const char * jobName ) :
@@ -13,7 +13,7 @@ namespace VTX::test
 	}
 	void fill(
 		const std::vector<std::string> &				   p_in,
-		VTX::Tool::Mdprep::Gromacs::CumulativeOuputFiles & p_out
+		VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & p_out
 	) noexcept
 	{
 		p_out.fileStringPtrs.reserve( p_out.fileStringPtrs.size() + p_in.size() );

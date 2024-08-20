@@ -9,7 +9,7 @@
 #include <vector>
 namespace fs = std::filesystem;
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	class Inputs;
 
@@ -55,6 +55,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	//   Error issued by the job can be a specific string in output channels or if expected output files doesn't exists
 	//   or are empty.
 	void submitGromacsJob( const fs::path & p_gmx_exe, GromacsJobData & p_args );
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs
 
 #endif

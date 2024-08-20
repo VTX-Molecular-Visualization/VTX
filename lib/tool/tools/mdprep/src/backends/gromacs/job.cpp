@@ -1,13 +1,13 @@
-#include "tools/mdprep/gromacs/inputs.hpp"
+#include "tools/mdprep/backends/gromacs/inputs.hpp"
 // Input should be first as is forward declared below
-#include "tools/mdprep/gromacs/job.hpp"
-#include "tools/mdprep/gromacs/pdb2gmx.impl.hpp"
+#include "tools/mdprep/backends/gromacs/job.hpp"
+#include "tools/mdprep/backends/gromacs/pdb2gmx.impl.hpp"
 #include <qprocess.h>
 #include <thread>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
@@ -127,4 +127,4 @@ namespace VTX::Tool::Mdprep::Gromacs
 			simpleProcessManagement( proc, finished, p_args );
 		p_args.report.finished = true;
 	}
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs

@@ -12,7 +12,7 @@ namespace VTX::Tool::Mdprep
 
 } // namespace VTX::Tool::Mdprep
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	struct GromacsJobData;
 	struct CumulativeOuputFiles;
@@ -56,6 +56,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// replace null-terminated characters by the repl argument into the string
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept;
 
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs
 
 #endif

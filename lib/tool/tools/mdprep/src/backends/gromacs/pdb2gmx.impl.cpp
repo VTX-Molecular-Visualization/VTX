@@ -1,15 +1,15 @@
-#include "tools/mdprep/gromacs/pdb2gmx.hpp"
-#include <tools/mdprep/gromacs/inputs.hpp>
+#include "tools/mdprep/backends/gromacs/pdb2gmx.hpp"
+#include <tools/mdprep/backends/gromacs/inputs.hpp>
 //
-#include "tools/mdprep/gromacs/job.hpp"
-#include "tools/mdprep/gromacs/util.hpp"
+#include "tools/mdprep/backends/gromacs/job.hpp"
+#include "tools/mdprep/backends/gromacs/util.hpp"
 #include <format>
 #include <regex>
 #include <util/string.hpp>
 //
-#include "tools/mdprep/gromacs/pdb2gmx.impl.hpp"
+#include "tools/mdprep/backends/gromacs/pdb2gmx.impl.hpp"
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
@@ -177,4 +177,4 @@ namespace VTX::Tool::Mdprep::Gromacs
 		return 0xffui8;
 	}
 
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs

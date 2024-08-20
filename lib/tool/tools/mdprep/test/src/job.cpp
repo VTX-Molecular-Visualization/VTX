@@ -1,11 +1,11 @@
-#include "tools/mdprep/gromacs/pdb2gmx.hpp"
+#include "tools/mdprep/backends/gromacs/pdb2gmx.hpp"
 //
-#include "tools/mdprep/gromacs/inputs.hpp"
+#include "tools/mdprep/backends/gromacs/inputs.hpp"
 //
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/gromacs/job.hpp"
-#include "tools/mdprep/gromacs/pdb2gmx.hpp"
-#include "tools/mdprep/gromacs/util.hpp"
+#include "tools/mdprep/backends/gromacs/job.hpp"
+#include "tools/mdprep/backends/gromacs/pdb2gmx.hpp"
+#include "tools/mdprep/backends/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>
@@ -36,7 +36,7 @@ namespace
 	struct TestContext
 	{
 		IoPaths									   paths;
-		VTX::Tool::Mdprep::Gromacs::GromacsJobData args;
+		VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData args;
 	};
 
 	bool haveSameContent( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
@@ -74,7 +74,7 @@ namespace
 
 		CHECK_NOFAIL( fs::is_regular_file( out.paths.in ) );
 
-		out.args = VTX::Tool::Mdprep::Gromacs::GromacsJobData { {
+		out.args = VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData { {
 			"pdb2gmx",
 			"-f",
 			out.paths.in.make_preferred().string(),
@@ -93,8 +93,8 @@ namespace
 			"-water",
 			"tip3p",
 		} };
-		VTX::Tool::Mdprep::Gromacs::declareFfDirectory(
-			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultFfDirectoryRelativePath()
+		VTX::Tool::Mdprep::backends::Gromacs::declareFfDirectory(
+			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
 		);
 
 		return out;
@@ -103,8 +103,8 @@ namespace
 	void check_pdb( TestContext p_context )
 	{
 		fs::path full_gmx_exe_path
-			= VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::Gromacs::defaultGmxBinaryRelativePath();
-		VTX::Tool::Mdprep::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
+			= VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
+		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		CHECK( fs::exists( p_context.paths.outGro ) );
@@ -122,10 +122,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsJob][pdb2gmx][1u
 }
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][full][lys]" )
 {
-	using namespace VTX::Tool::Mdprep::Gromacs;
+	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	VTX::test::setup_env					  f;
 	auto									  contextData = setupTestContext( "1ubq" );
-	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );
 	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "0" );
@@ -140,10 +140,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pd
 }
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][default]" )
 {
-	using namespace VTX::Tool::Mdprep::Gromacs;
+	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	VTX::test::setup_env					  f;
 	auto									  contextData = setupTestContext( "1ubq" );
-	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );
 	inputs.kwValue.emplace( Pdb2gmxInputId { 'A', E_INTERACTIVE_KEYWORD::lys, 6 }, "0" );
@@ -153,10 +153,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pd
 }
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsJob][pdb2gmx][8hu4][interactive][slow]" )
 {
-	using namespace VTX::Tool::Mdprep::Gromacs;
+	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	VTX::test::setup_env					  f;
 	auto									  contextData = setupTestContext( "8hu4.nolig" );
-	VTX::Tool::Mdprep::Gromacs::Pdb2gmxInputs inputs;
+	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );
 	contextData.args.interactiveSettings.emplace( std::move( inputs ) );

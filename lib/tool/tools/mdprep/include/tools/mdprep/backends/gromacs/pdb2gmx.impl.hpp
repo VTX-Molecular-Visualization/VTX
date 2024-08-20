@@ -8,7 +8,7 @@ These functions will be used internally to interact with gromacs
 #include <string>
 #include <string_view>
 
-namespace VTX::Tool::Mdprep::Gromacs
+namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	// Parse the input string in order to determine if gromacs is actually waiting for user input
 	bool isWaitingInputs( const std::string_view & p_stdout ) noexcept;
@@ -31,6 +31,6 @@ namespace VTX::Tool::Mdprep::Gromacs
 	// Returns 0xff if the option number couldn't be figured
 	uint8_t parseOptionNumber( const std::string & p_stdout, const std::string_view & p_value );
 
-} // namespace VTX::Tool::Mdprep::Gromacs
+} // namespace VTX::Tool::Mdprep::backends::Gromacs
 
 #endif
