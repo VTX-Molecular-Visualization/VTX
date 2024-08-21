@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Action
 			// Icon.
 			if ( p_action.icon.has_value() )
 			{
-				qAction->setIcon( QIcon( p_action.icon.value().c_str() ) );
+				qAction->setIcon( QIcon( ( ":/" + p_action.icon.value() ).c_str() ) );
 			}
 			// Shortcut.
 			if ( p_action.shortcut.has_value() )

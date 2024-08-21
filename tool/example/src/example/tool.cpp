@@ -18,6 +18,8 @@ namespace VTX::Tool::Example
 		// Easy way to add a menu action.
 		App::UI::DescAction action;
 		action.name	   = "Example";
+		action.tip	   = "Example tool";
+		action.icon	   = "sprite/king.png";
 		action.trigger = [ this ]() {};
 
 		APP_QT::addMenuAction( "Tool", action );

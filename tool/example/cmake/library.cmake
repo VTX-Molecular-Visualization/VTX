@@ -7,13 +7,13 @@ configure_target(vtx_tool_example)
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 
-# Linkk files.
+# Link files.
 target_sources(vtx_tool_example
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Add assets.
-#add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset, vtx_tool_example_qt_resources_ui)
+add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_example)
 
 # Test exec.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")

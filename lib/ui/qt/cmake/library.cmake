@@ -13,7 +13,7 @@ target_sources(vtx_ui_qt
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/../include FILES ${HEADERS})
 	
-add_resources(vtx_ui_qt ${CMAKE_CURRENT_LIST_DIR}/../asset, vtx_qt_resources_ui)
+add_resources(vtx_ui_qt ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_ui)
 
 if (NOT DEFINED _VTX_UI_QT_CONAN)
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_util)

@@ -49,7 +49,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "New";
 					tip		 = "Create a new project";
-					icon	 = ":/sprite/file/new.png";
+					icon	 = "sprite/file/new.png";
 					shortcut = "Ctrl+N";
 					trigger	 = []() { App::VTX_ACTION().execute<App::Action::Application::NewScene>(); };
 				}
@@ -61,7 +61,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Download";
 					tip		 = "Download structure from PDB id";
-					icon	 = ":/sprite/file/download.png";
+					icon	 = "sprite/file/download.png";
 					shortcut = "Ctrl+D";
 				}
 			};
@@ -72,7 +72,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Open";
 					tip		 = "Open a project or a molecular file";
-					icon	 = ":/sprite/file/open.png";
+					icon	 = "sprite/file/open.png";
 					shortcut = "Ctrl+O";
 				}
 			};
@@ -83,7 +83,7 @@ namespace VTX::UI::QT
 				{
 					name = "Open recent";
 					tip	 = "Open a recent document";
-					icon = ":/sprite/file/open_recent.png";
+					icon = "sprite/file/open_recent.png";
 				}
 			};
 
@@ -93,7 +93,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Save";
 					tip		 = "Save project";
-					icon	 = ":/sprite/file/save.png";
+					icon	 = "sprite/file/save.png";
 					shortcut = "Ctrl+S";
 				}
 			};
@@ -104,7 +104,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Save as...";
 					tip		 = "Copy project in a new save";
-					icon	 = ":/sprite/file/save_as.png";
+					icon	 = "sprite/file/save_as.png";
 					shortcut = "Ctrl+Shift+S";
 				}
 			};
@@ -141,7 +141,7 @@ namespace VTX::UI::QT
 					name	 = "Orthographic";
 					group	 = "CameraProjection";
 					tip		 = "Change projection mode (perspective/orthographic)";
-					icon	 = ":/sprite/camera/orthographic.png";
+					icon	 = "sprite/camera/orthographic.png";
 					shortcut = "Alt+O";
 				}
 			};
@@ -153,7 +153,7 @@ namespace VTX::UI::QT
 					name	 = "Perspective";
 					group	 = "CameraProjection";
 					tip		 = "Change projection mode (perspective/orthographic)";
-					icon	 = ":/sprite/camera/perspective.png";
+					icon	 = "sprite/camera/perspective.png";
 					shortcut = "Alt+P";
 				}
 			};
@@ -169,7 +169,7 @@ namespace VTX::UI::QT
 					name	 = "Trackball";
 					group	 = "CameraController";
 					tip		 = "Use Trackball controller";
-					icon	 = ":/sprite/camera/trackball.png";
+					icon	 = "sprite/camera/trackball.png";
 					shortcut = "Alt+T";
 				}
 			};
@@ -181,7 +181,7 @@ namespace VTX::UI::QT
 					name	 = "Freefly";
 					group	 = "CameraController";
 					tip		 = "Use Freefly controller";
-					icon	 = ":/sprite/camera/freefly.png";
+					icon	 = "sprite/camera/freefly.png";
 					shortcut = "Alt+F";
 				}
 			};
@@ -196,7 +196,7 @@ namespace VTX::UI::QT
 				{
 					name = "Orient";
 					tip	 = "Orient camera on selection";
-					icon = ":/sprite/camera/orient.png";
+					icon = "sprite/camera/orient.png";
 					trigger
 						= []() { App::VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() ); };
 				}
@@ -208,7 +208,7 @@ namespace VTX::UI::QT
 				{
 					name	= "Reset";
 					tip		= "Reset camera";
-					icon	= ":/sprite/camera/reset.png";
+					icon	= "sprite/camera/reset.png";
 					trigger = []() { App::VTX_ACTION().execute<App::Action::Animation::ResetCamera>(); };
 				}
 			};
@@ -221,7 +221,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Snapshot";
 					tip		 = "Save current image";
-					icon	 = ":/sprite/snapshot/snapshot.png";
+					icon	 = "sprite/snapshot/snapshot.png";
 					shortcut = "F2";
 				}
 			};
@@ -232,7 +232,7 @@ namespace VTX::UI::QT
 				{
 					name	 = "Export";
 					tip		 = "Open dialog to export image";
-					icon	 = ":/sprite/snapshot/export.png";
+					icon	 = "sprite/snapshot/export.png";
 					shortcut = "F3";
 				}
 			};
