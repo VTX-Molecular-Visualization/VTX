@@ -45,7 +45,6 @@ target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
 target_compile_definitions(vtx_renderer_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
-vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../shaders" "./shaders")
 vtx_copy_registered_data(vtx_renderer)
 
 catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
