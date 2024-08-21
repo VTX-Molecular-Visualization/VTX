@@ -98,6 +98,7 @@ namespace VTX::UI::QT::Widget
 		// Connect progress dialog.
 		APP::onStartBlockingOperation += [ this ]( const std::string & p_text )
 		{
+			// TODO:: don't delete and recreate.
 			_progressDialog = new Dialog::Progress( p_text );
 			_progressDialog->show();
 			// Why?

@@ -33,3 +33,5 @@ else()
 	target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
 	#target_link_libraries(vtx_renderer_bench PRIVATE assimp::assimp)
 endif()
+
+vtx_copy_registered_data(vtx_renderer_bench)

@@ -1,3 +1,5 @@
+include("${CMAKE_CURRENT_LIST_DIR}/copy_shaders.cmake")
+
 # Lib.
 add_library(vtx_renderer)
 configure_target(vtx_renderer)

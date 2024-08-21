@@ -39,23 +39,6 @@ namespace VTX::UI::QT
 
 	Application::~Application() {}
 
-	/*
-	bool Application::event( QEvent * p_event )
-	{
-		// Handle quit event.
-
-		if ( p_event->type() == QEvent::Close )
-		{
-			VTX_DEBUG( "Qt application close event" );
-			// App::VTX_ACTION().execute<App::Action::Application::Quit>();
-			// QApplication::quit();
-			// return true;
-		}
-
-		return false;
-	}
-	*/
-
 	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
 	{
 		try
