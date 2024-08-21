@@ -10,7 +10,7 @@ namespace VTX::Tool::Mdprep::Gateway
 } // namespace VTX::Tool::Mdprep::Gateway
 namespace VTX::Tool::Mdprep::ui
 {
-	class InputChecker;
+	class ReportManager;
 	class MdEngineSpecificFieldPlacer;
 	enum class E_FIELD_SECTION;
 } // namespace VTX::Tool::Mdprep::ui
@@ -26,14 +26,14 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		Data() = delete;
 		Data(
 			Gateway::MdParameters,
-			InputChecker,
+			ReportManager &,
 			SpecificFieldsPlacerCallback,
 			Gateway::EngineSpecificCommonInformation p_info = Gateway::EngineSpecificCommonInformation()
 		) noexcept;
 
 		void get( Gateway::MdParameters *& ) noexcept;
 		void get( Gateway::EngineSpecificCommonInformation *& ) noexcept;
-		void get( InputChecker *& ) noexcept;
+		void get( ReportManager *& ) noexcept;
 		void get( SpecificFieldsPlacerCallback *& ) noexcept;
 
 	  private:
@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			Gateway::EngineSpecificCommonInformation lastFormData;
 			Gateway::MdParameters					 parameters;
-			InputChecker							 inputChecker;
+			ReportManager *							 reportManager;
 			SpecificFieldsPlacerCallback			 specificFieldsCallback;
 		};
 		_Data _data;

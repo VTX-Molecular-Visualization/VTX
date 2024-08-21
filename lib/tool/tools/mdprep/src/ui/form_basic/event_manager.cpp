@@ -6,6 +6,7 @@
 #include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tools/mdprep/ui/report.hpp"
 //
 #include "tools/mdprep/ui/form_basic/data.hpp"
 #include "tools/mdprep/ui/shared.hpp"
@@ -14,6 +15,7 @@
 #include <util/sentry.hpp>
 //
 #include "tools/mdprep/ui/form_basic/settings_dialog.hpp"
+#include "tools/mdprep/ui/report.hpp"
 //
 #include "tools/mdprep/ui/form_basic/event_manager.hpp"
 
@@ -217,99 +219,21 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	}
 	void EventManager::startInputCheck() noexcept
 	{
+		/*
 		if ( _uiObjects._layoutSystemCheckMsg == nullptr )
 			return;
 		if ( _uiObjects._labelSystemCheck.container )
 			delete _uiObjects._labelSystemCheck.container;
-		_uiObjects._labelSystemCheck = VTX::UI::QT::Util::LabelWithHelper {
-			"Checking System-forcefield compatibility ...",
-			"VTX is currently checking if the selected MD Engine support your system with the selected forcefield.",
-			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-		};
+		_uiObjects._labelSystemCheck = getWaitingMessage();
 		_uiObjects._layoutSystemCheckMsg->addWidget( _uiObjects._labelSystemCheck );
-		InputChecker * inputChecker = nullptr;
-		_data->get( inputChecker );
-
-		if ( inputChecker->isResultAvailable() )
-		{
-			_getSystemCallback()( inputChecker->lastResult() );
-			return;
-		}
+		*/
+		ReportManager * reportManager = nullptr;
+		_data->get( reportManager );
+		reportManager->resetReportLocation( _uiObjects._layoutSystemCheckMsg, _sentry );
 
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
-		inputChecker->checkInputs( *params, _getSystemCallback() );
-	}
-	namespace
-	{
-
-		class ReportResultPoster
-		{
-		  public:
-			ReportResultPoster(
-				Gateway::CheckReport				 p_report,
-				QVBoxLayout *						 p_target,
-				VTX::UI::QT::Util::LabelWithHelper & p_label,
-				VTX::Util::Sentry					 p_sentry
-			) :
-				_report( std::move( p_report ) ), _target( p_target ), _label( &p_label ),
-				_sentry( std::move( p_sentry ) )
-			{
-			}
-
-			void operator()() noexcept
-			{
-				if ( not _sentry )
-					return;
-
-				if ( _label->container )
-					delete _label->container;
-				*_label = VTX::UI::QT::Util::LabelWithHelper(
-					getReportLabel( _report.pass ),
-					_report.message.c_str(),
-					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-				);
-				_target->addWidget( *_label );
-			}
-
-		  private:
-			Gateway::CheckReport				 _report;
-			QVBoxLayout *						 _target;
-			VTX::UI::QT::Util::LabelWithHelper * _label;
-			VTX::Util::Sentry					 _sentry;
-		};
-
-		class ReportResultWaiter
-		{
-		  public:
-			ReportResultWaiter(
-				VTX::Util::Sentry					 p_sentry,
-				QVBoxLayout *						 p_target,
-				VTX::UI::QT::Util::LabelWithHelper & p_label
-			) : _target( p_target ), _sentry( std::move( p_sentry ) ), _label( &p_label )
-			{
-			}
-
-			void operator()( Gateway::CheckReport p_report ) noexcept
-			{
-				if ( p_report.itemGeneric != E_REPORT_CHECKED_ITEM::systemWithForceField )
-					return;
-
-				VTX::App::VTXApp::get().onEndOfFrameOneShot
-					+= ReportResultPoster( std::move( p_report ), _target, *_label, _sentry );
-			}
-
-		  private:
-			QVBoxLayout *						 _target = nullptr;
-			VTX::Util::Sentry					 _sentry;
-			VTX::UI::QT::Util::LabelWithHelper * _label = nullptr;
-		};
-	} // namespace
-	std::function<void( Gateway::CheckReport )> EventManager::_getSystemCallback() noexcept
-	{
-		return ReportResultWaiter(
-			_sentry.newSentry(), _uiObjects._layoutSystemCheckMsg, _uiObjects._labelSystemCheck
-		);
+		reportManager->checkInputs( *params );
 	}
 	void EventManager::_systemSettingsApplied() noexcept {}
 } // namespace VTX::Tool::Mdprep::ui::form_basic
