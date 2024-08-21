@@ -90,6 +90,7 @@ namespace VTX::App
 
 namespace VTX
 {
+	//
 	using APP = App::VTXApp;
 } // namespace VTX
 
