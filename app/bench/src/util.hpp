@@ -1,43 +1,15 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <core/chemdb/atom.hpp>
-#include <core/chemdb/secondary_structure.hpp>
-#include <io/reader/molecule.hpp>
-#include <io/util/secondary_structure.hpp>
-#include <numeric>
-#include <util/constants.hpp>
-#include <util/filesystem.hpp>
-#include <util/logger.hpp>
-#include <util/network.hpp>
+#include <core/struct/molecule.hpp>
 #include <util/types.hpp>
-#include <vector>
 
 namespace VTX::Bench
 {
-	Core::Struct::Molecule loadMolecule( const FilePath & p_filename )
-	{
-		IO::Reader::Molecule   reader;
-		Core::Struct::Molecule molecule;
+	Core::Struct::Molecule loadMolecule( const FilePath & p_filename );
+	Core::Struct::Molecule downloadMolecule( const std::string & p_pdb );
 
-		reader.readFile( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, molecule );
-
-		return molecule;
-	}
-
-	Core::Struct::Molecule downloadMolecule( const std::string & p_pdb )
-	{
-		IO::Reader::Molecule   reader;
-		Core::Struct::Molecule molecule;
-		std::string			   data;
-
-		VTX::Util::Network::httpRequestGet( "https://mmtf.rcsb.org/v1.0/full/" + p_pdb, data );
-		reader.readBuffer( data, p_pdb + ".mmtf", molecule );
-
-		return molecule;
-	}
-
-	// Skybox.
+	// Skybox tests.
 	/*
 	const FilePath				  pathSkybox( std::filesystem::current_path() / "assets/skybox" );
 	const std::array<FilePath, 6> pathImages

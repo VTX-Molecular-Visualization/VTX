@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_PROXY_COLOR_LAYOUT__
 
 #include <array>
+#include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Renderer::Proxy

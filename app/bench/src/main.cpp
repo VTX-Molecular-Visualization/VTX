@@ -1,4 +1,6 @@
+#include "camera.hpp"
 #include "input_manager.hpp"
+#include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/facade.hpp>
@@ -19,10 +21,7 @@ int main( int, char ** )
 {
 	using namespace VTX;
 	using namespace Util;
-	using namespace IO;
 	using namespace Bench;
-	using namespace VTX::Core;
-	using namespace VTX::Core::Struct;
 
 	bool isRunning = true;
 	LOGGER::init( Filesystem::getExecutableDir() / "logs" );
@@ -83,29 +82,36 @@ int main( int, char ** )
 
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
-			if ( p_key == SDL_SCANCODE_F1 )
+			try
 			{
-				renderer.addProxyMolecule( scene.addMolecule( "4hhb.pdb" ) );
+				if ( p_key == SDL_SCANCODE_F1 )
+				{
+					renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+				}
+				else if ( p_key == SDL_SCANCODE_F2 )
+				{
+					renderer.addProxyMolecule( scene.addMolecule( "1aga" ) );
+				}
+				else if ( p_key == SDL_SCANCODE_F3 )
+				{
+					renderer.addProxyMolecule( scene.addMolecule( "4v6x" ) );
+				}
+				else if ( p_key == SDL_SCANCODE_F4 )
+				{
+					renderer.addProxyMolecule( scene.addMolecule( "3j3q" ) );
+				}
+				else if ( p_key == SDL_SCANCODE_F5 )
+				{
+					VTX::Core::Struct::ColorLayout colorLayout;
+					std::generate(
+						colorLayout.layout.begin(), colorLayout.layout.end(), [] { return Color::Rgba::random(); }
+					);
+					scene.setColorLayout( colorLayout );
+				}
 			}
-			else if ( p_key == SDL_SCANCODE_F2 )
+			catch ( const std::exception & p_e )
 			{
-				renderer.addProxyMolecule( scene.addMolecule( "1aga.pdb" ) );
-			}
-			else if ( p_key == SDL_SCANCODE_F3 )
-			{
-				renderer.addProxyMolecule( scene.addMolecule( "4v6x.mmtf" ) );
-			}
-			else if ( p_key == SDL_SCANCODE_F4 )
-			{
-				renderer.addProxyMolecule( scene.addMolecule( "3j3q.mmtf" ) );
-			}
-			else if ( p_key == SDL_SCANCODE_F5 )
-			{
-				VTX::Core::Struct::ColorLayout colorLayout;
-				std::generate(
-					colorLayout.layout.begin(), colorLayout.layout.end(), [] { return Color::Rgba::random(); }
-				);
-				scene.setColorLayout( colorLayout );
+				VTX_ERROR( "{}", p_e.what() );
 			}
 		};
 
@@ -147,9 +153,6 @@ int main( int, char ** )
 				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
 		// renderer.setProxyRenderSettings( renderSettings );
-
-		// renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
-		//  renderer.addProxyMolecule( scene.addMolecule( "2ama_1_npt.trr" ) );
 
 		// Main loop.
 		while ( isRunning )
