@@ -52,6 +52,8 @@ namespace VTX::Bench
 		SDL_GL_MakeCurrent( _window, _glContext );
 		SDL_GL_SetSwapInterval( _vsync );
 
+		SDL_EventState( SDL_DROPFILE, SDL_ENABLE );
+
 		// Init ImGui.
 		if ( not IMGUI_CHECKVERSION() )
 		{

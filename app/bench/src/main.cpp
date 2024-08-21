@@ -24,7 +24,7 @@ int main( int, char ** )
 	using namespace Bench;
 
 	bool isRunning = true;
-	LOGGER::init( Filesystem::getExecutableDir() / "logs" );
+	LOGGER::init( Filesystem::getExecutableDir() / "logs", true );
 
 	try
 	{
@@ -108,6 +108,18 @@ int main( int, char ** )
 					);
 					scene.setColorLayout( colorLayout );
 				}
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "{}", p_e.what() );
+			}
+		};
+
+		inputManager.callbackFileDrop += [ & ]( const FilePath & p_filePath )
+		{
+			try
+			{
+				renderer.addProxyMolecule( scene.addMolecule( p_filePath.string() ) );
 			}
 			catch ( const std::exception & p_e )
 			{

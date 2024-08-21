@@ -501,7 +501,7 @@ namespace VTX::IO::Reader
 		}
 		else
 		{
-			assert( false );
+			throw IOException( "Unknown file format: {}", extension );
 			return "Unknown";
 		}
 	}

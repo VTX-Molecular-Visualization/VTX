@@ -31,10 +31,12 @@ namespace VTX::Bench
 		inline bool getEvent( SDL_Event & p_event ) const
 		{
 			bool hasEvent = SDL_PollEvent( &p_event );
+
 			if ( hasEvent )
 			{
 				ImGui_ImplSDL2_ProcessEvent( &p_event );
 			}
+
 			return hasEvent;
 		}
 

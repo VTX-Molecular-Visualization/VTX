@@ -5,6 +5,7 @@
 #include <functional>
 #include <util/callback.hpp>
 #include <util/constants.hpp>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Bench
@@ -50,6 +51,11 @@ namespace VTX::Bench
 				case SDL_WINDOWEVENT_RESTORED: callbackRestore(); break;
 				}
 				break;
+			case SDL_DROPFILE:
+				callbackFileDrop( p_event.drop.file );
+				SDL_free( p_event.drop.file );
+				break;
+
 			default: break;
 			}
 		}
@@ -117,6 +123,7 @@ namespace VTX::Bench
 		Util::Callback<>			   callbackRestore;
 		Util::Callback<size_t, size_t> callbackMousePick;
 		Util::Callback<SDL_Scancode>   callbackKeyPressed;
+		Util::Callback<FilePath>	   callbackFileDrop;
 
 	  private:
 		bool _keys[ SDL_NUM_SCANCODES ] = { false };
