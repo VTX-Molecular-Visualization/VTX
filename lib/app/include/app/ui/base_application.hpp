@@ -46,6 +46,7 @@ namespace VTX::App::UI
 
 		inline static MW * const getMainWindow() { return _mainWindow.get(); }
 
+		// Usefull?
 		// inline static Util::Callback<> onUI;
 
 	  protected:
