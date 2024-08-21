@@ -42,7 +42,7 @@ namespace VTX::Renderer
 
 		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
 		{
-			VTX_DEBUG( "Resizing renderer to {}x{}", width, height );
+			VTX_TRACE( "Resizing renderer to {}x{}", width, height );
 
 			if ( _context == nullptr )
 				return;
