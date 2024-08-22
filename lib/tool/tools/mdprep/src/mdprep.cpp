@@ -105,7 +105,7 @@ namespace VTX::QT::Mdprep
 			_formContainer = new QWidget;
 			qLayoutWindow->addWidget( _formContainer );
 
-			_updateMdEngine( 0 );
+			_updateMdEngine( 0 ); // Before setting up a form, the report manager needs to know the mdEngine
 
 			// By default we display the basic form
 			_setFormBasic();

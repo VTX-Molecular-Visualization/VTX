@@ -1,3 +1,5 @@
+#include <ui/qt/util.hpp>
+//
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/gateway/shared.hpp"
 #include "tools/mdprep/ui/input_checker.hpp"

@@ -1,13 +1,14 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
 
-#include <ui/qt/util.hpp>
-
 class QVBoxLayout;
 
+namespace VTX::UI::QT::Util
+{
+	class LabelWithHelper;
+}
 namespace VTX::Util
 {
-	class Sentry;
 	class SentryTarget;
 } // namespace VTX::Util
 namespace VTX::Tool::Mdprep::Gateway
@@ -20,15 +21,6 @@ namespace VTX::Tool::Mdprep::ui
 {
 	class InputChecker;
 
-	inline VTX::UI::QT::Util::LabelWithHelper getWaitingMessage()
-	{
-		return VTX::UI::QT::Util::LabelWithHelper {
-			"Checking System-forcefield compatibility ...",
-			"VTX is currently checking if the selected MD Engine support your system with the selected forcefield.",
-			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-		};
-	}
-
 	// class responsible for forwarding input checks and writing reports in set location
 	class ReportManager
 	{
@@ -38,17 +30,22 @@ namespace VTX::Tool::Mdprep::ui
 		// Check inputs and let the user know
 		void checkInputs( const Gateway::MdParameters & ) noexcept;
 
-		// Re-generate a report ui item into the new location.
+		// Re-generate a report ui item into the new location. Assumes the old ui elements (if any) have been properly
+		// deleted
 		void resetReportLocation( QVBoxLayout *, VTX::Util::SentryTarget & ) noexcept;
 
-	  private:
-		Gateway::CheckReport			   _lastReport;
-		InputChecker					   _inputChecker;
-		VTX::UI::QT::Util::LabelWithHelper _label;
-		QVBoxLayout *					   _reportLocation = nullptr;
-		VTX::Util::SentryTarget *		   _sentryTarget   = nullptr;
-	};
+		struct Data
+		{
+			Gateway::CheckReport			   report;
+			QVBoxLayout *					   target = nullptr;
+			VTX::UI::QT::Util::LabelWithHelper label;
+		};
 
+	  private:
+		Data					  _reportData;
+		InputChecker			  _inputChecker;
+		VTX::Util::SentryTarget * _sentryTarget = nullptr;
+	};
 
 } // namespace VTX::Tool::Mdprep::ui
 #endif
