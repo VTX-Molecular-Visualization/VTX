@@ -1,8 +1,10 @@
 #ifndef __VTX_BENCH_SCENE__
 #define __VTX_BENCH_SCENE__
 
+#include "camera.hpp"
 #include <core/struct/color_layout.hpp>
 #include <core/struct/molecule.hpp>
+#include <renderer/proxy/camera.hpp>
 #include <renderer/proxy/color_layout.hpp>
 #include <renderer/proxy/molecule.hpp>
 
@@ -16,7 +18,11 @@ namespace VTX::Bench
 	class Scene
 	{
 	  public:
-		Scene();
+		Scene() = delete;
+		Scene( const size_t p_width, const size_t p_height );
+
+		inline Camera &					 getCamera() { return _camera; }
+		inline Renderer::Proxy::Camera & getProxyCamera() { return _proxyCamera; }
 
 		Renderer::Proxy::Molecule & addMolecule( const std::string & p_name );
 		void						removeMolecule( const size_t p_index );
@@ -62,6 +68,9 @@ namespace VTX::Bench
 		bool isUpdate = false;
 
 	  private:
+		Camera					_camera;
+		Renderer::Proxy::Camera _proxyCamera;
+
 		std::vector<std::unique_ptr<Core::Struct::Molecule>>	_molecules;
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxyMolecules;
 		std::vector<Vec3f>										_directions;

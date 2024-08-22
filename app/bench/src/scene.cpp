@@ -9,9 +9,24 @@
 namespace VTX::Bench
 {
 
-	Scene::Scene()
+	Scene::Scene( const size_t p_width, const size_t p_height ) :
+		_camera( p_width, p_height ), _colorLayout( Core::ChemDB::Color::COLOR_LAYOUT_JMOL ),
+		_proxyCamera( { _camera.getMatrixViewPtr(),
+						_camera.getMatrixProjectionPtr(),
+						_camera.getPosition(),
+						VEC2I_ZERO,
+						_camera.getNear(),
+						_camera.getFar(),
+						_camera.isPerspective() } )
 	{
-		_colorLayout			 = Core::ChemDB::Color::COLOR_LAYOUT_JMOL;
+		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
+		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
+		_camera.callbackTranslation += [ & ]( const Vec3f p_position ) { _proxyCamera.onCameraPosition( p_position ); };
+		_camera.callbackClipInfos +=
+			[ & ]( const float p_near, const float p_far ) { _proxyCamera.onCameraNearFar( p_near, p_far ); };
+		_camera.callbackPerspective +=
+			[ & ]( const bool p_isPerspective ) { _proxyCamera.onPerspective( p_isPerspective ); };
+
 		_proxyLayoutColor.colors = &( _colorLayout.layout );
 	}
 

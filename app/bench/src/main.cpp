@@ -1,4 +1,3 @@
-#include "camera.hpp"
 #include "input_manager.hpp"
 #include "scene.hpp"
 #include "user_interface.hpp"
@@ -28,27 +27,17 @@ int main( int, char ** )
 
 	try
 	{
+		// Scene.
+		Scene	 scene( WIDTH, HEIGHT );
+		Camera & camera = scene.getCamera();
+
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
 		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.build();
-
-		// Camera.
-		Camera					camera( WIDTH, HEIGHT );
-		Renderer::Proxy::Camera proxyCamera { camera.getMatrixViewPtr(), camera.getMatrixProjectionPtr(),
-											  camera.getPosition(),		 VEC2I_ZERO,
-											  camera.getNear(),			 camera.getFar(),
-											  camera.isPerspective() };
-		renderer.setProxyCamera( proxyCamera );
-		camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixView(); };
-		camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { proxyCamera.onMatrixProjection(); };
-		camera.callbackTranslation += [ & ]( const Vec3f p_position ) { proxyCamera.onCameraPosition( p_position ); };
-		camera.callbackClipInfos +=
-			[ & ]( const float p_near, const float p_far ) { proxyCamera.onCameraNearFar( p_near, p_far ); };
-		camera.callbackPerspective +=
-			[ & ]( const bool p_isPerspective ) { proxyCamera.onPerspective( p_isPerspective ); };
+		renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
 		InputManager inputManager;
@@ -75,10 +64,7 @@ int main( int, char ** )
 			}
 		};
 		inputManager.callbackMouseMotion +=
-			[ & ]( const Vec2i & p_position ) { proxyCamera.onMousePosition( p_position ); };
-
-		// Scene.
-		Scene scene;
+			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
 
 		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
