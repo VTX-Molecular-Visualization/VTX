@@ -38,16 +38,10 @@ namespace VTX::Tool::Mdprep::ui
 		class ReportResultPoster
 		{
 		  public:
-			ReportResultPoster( ReportManager::Data & p_reportData, VTX::Util::Sentry p_sentry ) :
-				_reportData( &p_reportData ), _sentry( std::move( p_sentry ) )
-			{
-			}
+			ReportResultPoster( ReportManager::Data & p_reportData ) : _reportData( &p_reportData ) {}
 
 			void operator()() noexcept
 			{
-				if ( not _sentry )
-					return;
-
 				if ( _reportData->label.container )
 					delete _reportData->label.container;
 				createReportUi( _reportData->label, _reportData->report );
@@ -56,28 +50,23 @@ namespace VTX::Tool::Mdprep::ui
 
 		  private:
 			ReportManager::Data * _reportData = nullptr;
-			VTX::Util::Sentry	  _sentry;
 		};
 
 		class ReportResultWaiter
 		{
 		  public:
-			ReportResultWaiter( ReportManager::Data & p_reportData, VTX::Util::Sentry p_sentry ) :
-				_sentry( std::move( p_sentry ) ), _reportData( &p_reportData )
-			{
-			}
+			ReportResultWaiter( ReportManager::Data & p_reportData ) : _reportData( &p_reportData ) {}
 
 			void operator()( Gateway::CheckReport p_report ) noexcept
 			{
 				if ( p_report.itemGeneric != Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField )
 					return;
 				_reportData->report = p_report;
-				VTX::App::VTXApp::get().onEndOfFrameOneShot += ReportResultPoster( *_reportData, _sentry );
+				VTX::App::VTXApp::get().onEndOfFrameOneShot += ReportResultPoster( *_reportData );
 			}
 
 		  private:
 			ReportManager::Data * _reportData = nullptr;
-			VTX::Util::Sentry	  _sentry;
 		};
 	} // namespace
 
@@ -87,7 +76,7 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _sentryTarget == nullptr && _reportData.target == nullptr )
 			return;
 
-		_inputChecker.checkInputs( p_inputs, ReportResultWaiter( _reportData, _sentryTarget->newSentry() ) );
+		_inputChecker.checkInputs( p_inputs, ReportResultWaiter( _reportData ) );
 	}
 	void ReportManager::resetReportLocation(
 		QVBoxLayout *			  p_newLocation,
