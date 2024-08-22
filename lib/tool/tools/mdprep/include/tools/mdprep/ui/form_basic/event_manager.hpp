@@ -50,7 +50,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setProductionSettings( QPushButton * ) noexcept;
 		void setSystemSettings( QPushButton * ) noexcept;
 		void setSystemMsg( QVBoxLayout * ) noexcept;
-		void startInputCheck() noexcept;
+		void performFirstInputCheck() noexcept;
 
 	  private:
 		Data *						  _data;
@@ -78,8 +78,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _openSettingsNpt() noexcept;
 		void _openSettingsProd() noexcept;
 		void _openSettingsSystem() noexcept;
-
-		std::function<void( Gateway::CheckReport )> _getSystemCallback() noexcept;
+		void _startInputCheck() noexcept;
+		void _relocateCheckReport() noexcept;
 
 		void _systemSettingsApplied() noexcept;
 	};

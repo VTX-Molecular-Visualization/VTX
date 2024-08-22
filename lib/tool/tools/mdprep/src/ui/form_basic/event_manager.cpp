@@ -89,7 +89,11 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsSystem();
 	}
 
-	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept { _uiObjects._layoutSystemCheckMsg = p_; }
+	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept
+	{
+		_uiObjects._layoutSystemCheckMsg = p_;
+		_relocateCheckReport();
+	}
 
 	void EventManager::_disconnectAll( UiObjects & p_uiObjects ) noexcept
 	{
@@ -214,26 +218,32 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			&params->system,
 			( *callback )( E_FIELD_SECTION::system ),
 			*info,
-			ApplyVisitorBasic( [ & ]() { this->startInputCheck(); } )
+			ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } )
 		);
 	}
-	void EventManager::startInputCheck() noexcept
+	void EventManager::performFirstInputCheck() noexcept
 	{
-		/*
-		if ( _uiObjects._layoutSystemCheckMsg == nullptr )
-			return;
-		if ( _uiObjects._labelSystemCheck.container )
-			delete _uiObjects._labelSystemCheck.container;
-		_uiObjects._labelSystemCheck = getWaitingMessage();
-		_uiObjects._layoutSystemCheckMsg->addWidget( _uiObjects._labelSystemCheck );
-		*/
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
-		reportManager->resetReportLocation( _uiObjects._layoutSystemCheckMsg, _sentry );
+		if ( reportManager->hasFirstCheckBeenDone() )
+			return;
+
+		_startInputCheck();
+	}
+	void EventManager::_startInputCheck() noexcept
+	{
+		ReportManager * reportManager = nullptr;
+		_data->get( reportManager );
 
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 		reportManager->checkInputs( *params );
+	}
+	void EventManager::_relocateCheckReport() noexcept
+	{
+		ReportManager * reportManager = nullptr;
+		_data->get( reportManager );
+		reportManager->resetReportLocation( _uiObjects._layoutSystemCheckMsg, _sentry );
 	}
 	void EventManager::_systemSettingsApplied() noexcept {}
 } // namespace VTX::Tool::Mdprep::ui::form_basic

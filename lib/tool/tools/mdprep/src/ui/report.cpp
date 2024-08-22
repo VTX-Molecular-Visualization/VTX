@@ -76,8 +76,10 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _sentryTarget == nullptr && _reportData.target == nullptr )
 			return;
 
+		firstCheckStarted = true;
 		_inputChecker.checkInputs( p_inputs, ReportResultWaiter( _reportData ) );
 	}
+	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
 	void ReportManager::resetReportLocation(
 		QVBoxLayout *			  p_newLocation,
 		VTX::Util::SentryTarget & p_newLocationSentryTarget

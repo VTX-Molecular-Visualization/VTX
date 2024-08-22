@@ -30,6 +30,8 @@ namespace VTX::Tool::Mdprep::ui
 		// Check inputs and let the user know
 		void checkInputs( const Gateway::MdParameters & ) noexcept;
 
+		bool hasFirstCheckBeenDone() const noexcept;
+
 		// Re-generate a report ui item into the new location. Assumes the old ui elements (if any) have been properly
 		// deleted
 		void resetReportLocation( QVBoxLayout *, VTX::Util::SentryTarget & ) noexcept;
@@ -45,6 +47,7 @@ namespace VTX::Tool::Mdprep::ui
 		Data					  _reportData;
 		InputChecker			  _inputChecker;
 		VTX::Util::SentryTarget * _sentryTarget = nullptr;
+		bool					  firstCheckStarted = false;
 	};
 
 } // namespace VTX::Tool::Mdprep::ui
