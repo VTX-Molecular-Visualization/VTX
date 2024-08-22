@@ -27,7 +27,8 @@
 #include <ui/qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
-#include "tools/mdprep/ui/form_advanced.hpp"
+#include "tools/mdprep/ui/form_advanced/event_manager.hpp"
+#include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tools/mdprep/ui/form_basic/form_basic.hpp"
 //
 #include "tools/mdprep/ui/form.hpp"
@@ -195,7 +196,7 @@ namespace VTX::QT::Mdprep
 			VTX::Tool::Mdprep::Gateway::MdParameters param;
 			_currentForm.get( param );
 			_currentForm.close();
-			_currentForm = VTX::Tool::Mdprep::ui::FormAdvanced(
+			_currentForm = VTX::Tool::Mdprep::ui::form_advanced::FormAdvanced(
 				_formContainer, _SpecificFieldPlacerGetter(), param, *_reportManager
 			);
 
