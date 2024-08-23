@@ -35,6 +35,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsNpt();
 		_connectSettingsProd();
 		_connectSettingsSystem();
+		_connectInputCheck();
 	}
 
 	EventManager & EventManager::operator=( EventManager && p_ ) noexcept
@@ -55,6 +56,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsNpt();
 		_connectSettingsProd();
 		_connectSettingsSystem();
+		_connectInputCheck();
 
 		return *this;
 	}
@@ -64,6 +66,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_uiObjects._buttonMinimizationSettings = p_;
 		_connectSettingsMinimization();
 	}
+
+	void EventManager::setInputCheck( QPushButton * p_ ) noexcept { _uiObjects._buttonInputCheck = p_; }
 
 	void EventManager::setNvtSettings( QPushButton * p_ ) noexcept
 	{
@@ -138,6 +142,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 		QPushButton::connect(
 			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsSystem(); }
+		);
+	}
+	void EventManager::_connectInputCheck() noexcept
+	{
+		QPushButton::connect(
+			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); }
 		);
 	}
 	void EventManager::_openSettingsMinimization() noexcept

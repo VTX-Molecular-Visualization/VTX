@@ -33,8 +33,10 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldBioForceField( p_other._fieldBioForceField ), parameters( std::move( p_other.parameters ) ),
 		reportManager( std::move( p_other.reportManager ) ), _sentry( std::move( p_other._sentry ) )
 	{
-		_fieldSystemBoxShape->disconnect();
-		_fieldBioForceField->disconnect();
+		if ( _fieldSystemBoxShape )
+			_fieldSystemBoxShape->disconnect();
+		if ( _fieldBioForceField )
+			_fieldBioForceField->disconnect();
 		_connectAll();
 	}
 	EventManager & EventManager::operator=( EventManager && p_other ) noexcept

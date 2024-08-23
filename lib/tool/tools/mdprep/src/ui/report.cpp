@@ -83,6 +83,7 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _reportData.label.container != nullptr )
 			delete _reportData.label.container;
 
+		_reportData.report			= Gateway::CheckReport();
 		_reportData.checkInProgress = true;
 
 		_reportData.label = getWaitingMessage();

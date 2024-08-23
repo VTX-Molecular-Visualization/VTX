@@ -35,7 +35,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	class EventManager
 	{
 	  public:
-
 		EventManager( Data & ) noexcept;
 		EventManager() = delete;
 		~EventManager();
@@ -45,6 +44,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		EventManager & operator=( const EventManager & ) = delete;
 
 		void setMinimizationSettings( QPushButton * ) noexcept;
+		void setInputCheck( QPushButton * ) noexcept;
 		void setNvtSettings( QPushButton * ) noexcept;
 		void setNptSettings( QPushButton * ) noexcept;
 		void setProductionSettings( QPushButton * ) noexcept;
@@ -64,6 +64,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QPushButton *					   _buttonProductionSettings	   = nullptr;
 			QPushButton *					   _buttonSystemSettings		   = nullptr;
 			QVBoxLayout *					   _layoutSystemCheckMsg		   = nullptr;
+			QPushButton *					   _buttonInputCheck			   = nullptr;
 			VTX::UI::QT::Util::LabelWithHelper _labelSystemCheck;
 		} _uiObjects;
 		static void _disconnectAll( UiObjects & ) noexcept;
@@ -73,6 +74,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _connectSettingsNpt() noexcept;
 		void _connectSettingsProd() noexcept;
 		void _connectSettingsSystem() noexcept;
+		void _connectInputCheck() noexcept;
 		void _openSettingsMinimization() noexcept;
 		void _openSettingsNvt() noexcept;
 		void _openSettingsNpt() noexcept;
