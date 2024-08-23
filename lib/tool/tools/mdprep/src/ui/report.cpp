@@ -33,6 +33,8 @@ namespace VTX::Tool::Mdprep::ui
 				p_report.message.c_str(),
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
+
+			p_label.label->setWordWrap( true );
 		}
 
 		class ReportResultPoster
@@ -44,6 +46,7 @@ namespace VTX::Tool::Mdprep::ui
 			{
 				if ( _reportData->label.container )
 					delete _reportData->label.container;
+
 				createReportUi( _reportData->label, _reportData->report );
 				( _reportData->target )->addWidget( _reportData->label );
 				_reportData->checkInProgress = false;

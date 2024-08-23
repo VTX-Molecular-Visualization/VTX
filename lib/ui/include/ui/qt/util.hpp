@@ -22,11 +22,6 @@
 #include <util/color/rgba.hpp>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Bond;
-// }
-
 namespace VTX::UI::QT::Util
 {
 	class EventEater : public QObject

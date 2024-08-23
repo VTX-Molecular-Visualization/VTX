@@ -56,6 +56,7 @@ namespace VTX::UI::QT::Util
 			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 			auto label = new QLabel( p_popupText );
 			label->setTextFormat( Qt::RichText );
+			label->setWordWrap( true );
 
 			popup = new QWidget;
 			popup->setAttribute( Qt::WA_TransparentForMouseEvents );
