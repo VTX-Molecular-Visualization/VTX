@@ -16,8 +16,11 @@ namespace VTX::Tool::Mdprep::ui
 		inline VTX::UI::QT::Util::LabelWithHelper getWaitingMessage()
 		{
 			return VTX::UI::QT::Util::LabelWithHelper {
-				"Checking System-forcefield compatibility ...",
-				"VTX is currently checking if the selected MD Engine support your system with the selected forcefield.",
+				"Checking System-forcefield compatibility "
+				"...",
+				"VTX is currently checking if the selected MD Engine suppo<a "
+				"href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>r</a>t your system with the selected "
+				"forcefield.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			};
 		}

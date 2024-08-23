@@ -39,10 +39,56 @@ namespace VTX::UI::QT::Util
 			p_menu.addAction( action );
 		}
 	}
+	class Popup : public QWidget
+	{
+	  public:
+		Popup()
+		{
+			// setAttribute( Qt::WA_TransparentForMouseEvents );
+			setWindowFlag( Qt::ToolTip );
+		}
+		bool isHovered() const { return _hovered; }
+		void leaveEvent( QEvent * event )
+		{
+			_hovered = false;
+			QWidget::leaveEvent( event );
+			hide();
+		}
+		void hoverLeave( QEvent * event )
+		{
+			_hovered = false;
+			QWidget::leaveEvent( event );
+			hide();
+		}
+		void hoverEnter( QHoverEvent * p_event )
+		{
+			_hovered = true;
+			QWidget::event( p_event );
+		}
+		bool event( QEvent * e )
+		{
+			switch ( e->type() )
+			{
+			case QEvent::HoverEnter:
+				hoverEnter( reinterpret_cast<QHoverEvent *>( e ) );
+				return true;
+				break;
+			case QEvent::HoverLeave:
+				hoverLeave( reinterpret_cast<QHoverEvent *>( e ) );
+				return true;
+				break;
+			default: break;
+			}
+			return QWidget::event( e );
+		}
+
+	  private:
+		bool _hovered = false;
+	};
 	class QHoverableQuestionMark : public QPushButton
 	{
-		int		  m_count = 0;
-		QWidget * popup	  = nullptr;
+		int		m_count = 0;
+		Popup * popup	= new Popup;
 
 	  public:
 		QHoverableQuestionMark( const char * p_popupText ) : QPushButton()
@@ -56,34 +102,41 @@ namespace VTX::UI::QT::Util
 			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 			auto label = new QLabel( p_popupText );
 			label->setTextFormat( Qt::RichText );
+			label->setOpenExternalLinks( true );
 			label->setWordWrap( true );
 
-			popup = new QWidget;
-			popup->setAttribute( Qt::WA_TransparentForMouseEvents );
-			popup->setWindowFlag( Qt::ToolTip );
-			// popup->setWindowFlag( Qt::WindowTransparentForInput );
 			auto layout = new QHBoxLayout( popup );
 			layout->addWidget( label );
 		}
+		~QHoverableQuestionMark()
+		{
+			if ( popup )
+				delete popup;
+		}
+		QHoverableQuestionMark( QHoverableQuestionMark && )					 = delete;
+		QHoverableQuestionMark( const QHoverableQuestionMark & )			 = delete;
+		QHoverableQuestionMark & operator=( QHoverableQuestionMark && )		 = delete;
+		QHoverableQuestionMark & operator=( const QHoverableQuestionMark & ) = delete;
+
 		void enterEvent( QEnterEvent * event ) { QWidget::enterEvent( event ); }
 
 		void leaveEvent( QEvent * event ) { QWidget::leaveEvent( event ); }
 		void hoverEnter( QHoverEvent * p_event )
 		{
-			auto p = p_event->globalPosition().toPoint();
-			p += QPoint( 5, 5 );
+			auto p = this->mapToGlobal( this->pos() );
+			// p += QPoint( this->iconSize().width() / 2, this->iconSize().height() / 2 );
+			p -= QPoint( 5, 5 );
 			popup->move( p );
 			popup->show();
 		}
 
-		void hoverLeave( QHoverEvent * event ) { popup->hide(); }
-
-		void hoverMove( QHoverEvent * p_event )
+		void hoverLeave( QHoverEvent * event )
 		{
-			auto p = p_event->globalPosition().toPoint();
-			p += QPoint( 5, 5 );
-			popup->move( p );
+			// if ( not popup->isHovered() )
+			//	popup->hide();
 		}
+
+		void hoverMove( QHoverEvent * p_event ) {}
 		bool event( QEvent * e )
 		{
 			switch ( e->type() )
