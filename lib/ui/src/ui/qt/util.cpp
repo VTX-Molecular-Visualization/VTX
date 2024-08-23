@@ -118,39 +118,26 @@ namespace VTX::UI::QT::Util
 		QHoverableQuestionMark & operator=( QHoverableQuestionMark && )		 = delete;
 		QHoverableQuestionMark & operator=( const QHoverableQuestionMark & ) = delete;
 
-		void enterEvent( QEnterEvent * event ) { QWidget::enterEvent( event ); }
-
-		void leaveEvent( QEvent * event ) { QWidget::leaveEvent( event ); }
-		void hoverEnter( QHoverEvent * p_event )
+		void mouseClicked( QMouseEvent * p_event )
 		{
-			auto p = this->mapToGlobal( this->pos() );
-			// p += QPoint( this->iconSize().width() / 2, this->iconSize().height() / 2 );
-			p -= QPoint( 5, 5 );
-			popup->move( p );
-			popup->show();
+			if ( popup == nullptr )
+				return;
+			if ( popup->isHidden() )
+			{
+				auto p = this->mapToGlobal( this->pos() );
+				p += QPoint( this->iconSize().width(), this->iconSize().height() );
+				popup->move( p );
+				popup->show();
+			}
+			else
+				popup->hide();
 		}
-
-		void hoverLeave( QHoverEvent * event )
-		{
-			// if ( not popup->isHovered() )
-			//	popup->hide();
-		}
-
-		void hoverMove( QHoverEvent * p_event ) {}
 		bool event( QEvent * e )
 		{
 			switch ( e->type() )
 			{
-			case QEvent::HoverEnter:
-				hoverEnter( reinterpret_cast<QHoverEvent *>( e ) );
-				return true;
-				break;
-			case QEvent::HoverLeave:
-				hoverLeave( reinterpret_cast<QHoverEvent *>( e ) );
-				return true;
-				break;
-			case QEvent::HoverMove:
-				hoverMove( reinterpret_cast<QHoverEvent *>( e ) );
+			case QEvent::MouseButtonRelease:
+				mouseClicked( reinterpret_cast<QMouseEvent *>( e ) );
 				return true;
 				break;
 			default: break;
