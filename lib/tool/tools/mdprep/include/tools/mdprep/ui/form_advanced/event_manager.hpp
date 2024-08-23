@@ -67,6 +67,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		void					_connectBoxShape() noexcept;
 		void					_connectInputCheck() noexcept;
 		void					_connectForceField() noexcept;
+		std::function<void()>	_getInputCheckCallback() noexcept;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_advanced
 

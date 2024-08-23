@@ -7,6 +7,7 @@
 //
 #include "tools/mdprep/gateway/form_data.hpp"
 #include "tools/mdprep/gateway/shared.hpp"
+#include "tools/mdprep/ui/form_advanced/shared.hpp"
 //
 #include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/report.hpp"
@@ -76,6 +77,13 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldSystemBoxShape = p_fieldSystemBoxShape;
 		_connectBoxShape();
 	}
+	void EventManager::connectInputCheck( QPushButton * p_buttonStartInputCheck ) noexcept
+	{
+		if ( _buttonStartInputCheck )
+			_buttonStartInputCheck->disconnect();
+		_buttonStartInputCheck = p_buttonStartInputCheck;
+		_connectInputCheck();
+	}
 	void EventManager::connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target ) noexcept
 	{
 		if ( _fieldBioForceField )
@@ -110,15 +118,27 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 				}
 			);
 	}
+	void EventManager::_connectInputCheck() noexcept
+	{
+		if ( _buttonStartInputCheck == nullptr )
+			return;
+
+		QPushButton::connect( _buttonStartInputCheck, &QPushButton::clicked, _getInputCheckCallback() );
+	}
 	void EventManager::_connectForceField() noexcept
 	{
 		if ( _fieldBioForceField == nullptr )
 			return;
 
-		QComboBox::connect(
-			_fieldBioForceField,
-			&QComboBox::currentTextChanged,
-			[ & ]() { this->reportManager->checkInputs( this->parameters ); }
-		);
+		QComboBox::connect( _fieldBioForceField, &QComboBox::currentTextChanged, _getInputCheckCallback() );
+	}
+	std::function<void()> EventManager::_getInputCheckCallback() noexcept
+	{
+		return [ & ]()
+		{
+			Gateway::MdParameters params;
+			params.system.forcefieldBio = this->_fieldBioForceField->currentText().toStdString();
+			this->reportManager->checkInputs( params );
+		};
 	}
 } // namespace VTX::Tool::Mdprep::ui::form_advanced

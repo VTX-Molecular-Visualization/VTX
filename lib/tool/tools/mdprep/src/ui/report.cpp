@@ -46,6 +46,7 @@ namespace VTX::Tool::Mdprep::ui
 					delete _reportData->label.container;
 				createReportUi( _reportData->label, _reportData->report );
 				( _reportData->target )->addWidget( _reportData->label );
+				_reportData->checkInProgress = false;
 			}
 
 		  private:
@@ -73,10 +74,21 @@ namespace VTX::Tool::Mdprep::ui
 	ReportManager::ReportManager( InputChecker p_inputChecker ) : _inputChecker( std::move( p_inputChecker ) ) {}
 	void ReportManager::checkInputs( const Gateway::MdParameters & p_inputs ) noexcept
 	{
+		if ( _reportData.checkInProgress )
+			return;
 		if ( _sentryTarget == nullptr && _reportData.target == nullptr )
 			return;
-
 		firstCheckStarted = true;
+
+		if ( _reportData.label.container != nullptr )
+			delete _reportData.label.container;
+
+		_reportData.checkInProgress = true;
+
+		_reportData.label = getWaitingMessage();
+		if ( _reportData.target )
+			_reportData.target->addWidget( _reportData.label );
+
 		_inputChecker.checkInputs( p_inputs, ReportResultWaiter( _reportData ) );
 	}
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }

@@ -41,6 +41,7 @@ namespace VTX::Tool::Mdprep::ui
 			Gateway::CheckReport			   report;
 			QVBoxLayout *					   target = nullptr;
 			VTX::UI::QT::Util::LabelWithHelper label;
+			bool							   checkInProgress = false;
 		};
 
 	  private:
