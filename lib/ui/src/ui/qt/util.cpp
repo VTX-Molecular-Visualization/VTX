@@ -42,11 +42,7 @@ namespace VTX::UI::QT::Util
 	class Popup : public QWidget
 	{
 	  public:
-		Popup()
-		{
-			// setAttribute( Qt::WA_TransparentForMouseEvents );
-			setWindowFlag( Qt::ToolTip );
-		}
+		Popup() { setWindowFlag( Qt::ToolTip ); }
 		bool isHovered() const { return _hovered; }
 		void leaveEvent( QEvent * event )
 		{
@@ -204,7 +200,6 @@ namespace VTX::UI::QT::Util
 	{
 		if ( _obj )
 			delete _obj;
-		//_obj->deleteLater();
 	}
 
 	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept : _obj( p_._obj ) { p_.release(); }
@@ -213,7 +208,6 @@ namespace VTX::UI::QT::Util
 	{
 		if ( _obj )
 			delete _obj;
-		//_obj->deleteLater();
 
 		_obj = p_;
 
@@ -227,7 +221,6 @@ namespace VTX::UI::QT::Util
 
 		if ( _obj )
 			delete _obj;
-		//_obj->deleteLater();
 		_obj = p_._obj;
 		p_.release();
 		return *this;
