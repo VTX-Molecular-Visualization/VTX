@@ -41,10 +41,11 @@ namespace VTX::QT::Mdprep
 	// specifics.
 	class MainWindow : public UI::QT::QtDockablePanel
 	{
-		using EngineCollection
-			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
+
+		using EngineCollection
+			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 		QComboBox *				  _w_mdEngine	 = nullptr;
 		QWidget *				  _formContainer = nullptr;
 
