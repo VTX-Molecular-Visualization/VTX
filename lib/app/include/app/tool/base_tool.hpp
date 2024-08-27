@@ -6,26 +6,36 @@
 namespace VTX::App::Tool
 {
 	/**
-	 * @brief abstract class that define tool behaviour.
+	 * @brief Abstract class that define tool behaviour.
 	 */
 	class BaseTool
 	{
 	  public:
-		// Created after the app.
+		/**
+		 * @brief Constructed after the app.
+		 */
 		BaseTool() {}
-		// Destroyed with the app.
+		/**
+		 * @brief Destroyed with the app.
+		 */
 		virtual ~BaseTool() {}
-
-		// During app init, renderer not available.
+		/**
+		 * @brief Called during app initialization, renderer not available.
+		 */
 		virtual void init() = 0;
-		// After main window creation, renderer available.
+		/**
+		 * @brief Called after main window creation, renderer available.
+		 */
 		virtual void createUI() {}
-		// After app start.
+		/**
+		 * @brief Called when the app starts.
+		 */
 		virtual void onAppStart() {}
-		// Before app stop.
+		/**
+		 * @brief Called before the app stops.
+		 */
 		virtual void onAppStop() {}
 
-		// TODO: pass settings system?
 		virtual void loadSettings() {}
 		virtual void saveSettings() {}
 

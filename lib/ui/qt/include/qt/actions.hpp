@@ -19,7 +19,7 @@ namespace VTX::UI::QT
 
 	namespace Action
 	{
-		struct Factory
+		class Factory
 		{
 		  public:
 			inline static QAction * const get( const App::UI::DescAction & p_action )

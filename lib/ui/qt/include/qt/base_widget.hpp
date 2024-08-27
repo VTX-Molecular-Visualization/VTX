@@ -9,15 +9,28 @@
 
 namespace VTX::UI::QT
 {
+	/**
+	 * @brief A widget must inherit from a QWidget.
+	 */
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
-	// TODO: use static singleton, global variable, or static member?
-	// inline Util::HashedCollection<QWidget *> WIDGETS;
+	/**
+	 * @brief Abstract collection of QWidget pointers.
+	 */
 
 	using WIDGET_COLLECTION = Util::HashedCollection<QWidget *>;
-	using WIDGETS			= Util::Singleton<WIDGET_COLLECTION>;
 
+	/**
+	 * @brief An accessor to the singleton that store all widgets.
+	 */
+	using WIDGETS = Util::Singleton<WIDGET_COLLECTION>;
+
+	/**
+	 * @brief Abstract class taht describes a widget behaviour.
+	 * @tparam T is the derived class type.
+	 * @tparam W is the QWidget type.
+	 */
 	template<typename T, ConceptWidget W>
 	class BaseWidget : public W, public WIDGET_COLLECTION::Registration<T>
 	{
@@ -37,7 +50,11 @@ namespace VTX::UI::QT
 			VTX_TRACE( "UI widget destroyed: {}", name );
 		}
 
-		// Hide QWidget::addAction().
+		/**
+		 * @brief Hide QWidget::addAction().
+		 * @tparam A is the action type.
+		 * @return the created QAction.
+		 */
 		template<ConceptAction A>
 		QAction * const addAction()
 		{
