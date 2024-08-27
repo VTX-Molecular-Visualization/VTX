@@ -11,7 +11,7 @@ class QWidget;
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
-	struct EngineJobManager;
+	class EngineJobManager;
 } // namespace VTX::Tool::Mdprep::Gateway
 namespace VTX::Tool::Mdprep::ui
 {

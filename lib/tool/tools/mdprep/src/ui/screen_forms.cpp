@@ -8,12 +8,15 @@
 #include "tools/mdprep/gateway/shared.hpp"
 //
 #include "tools/mdprep/ui/form.hpp"
-#include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
-#include "tools/mdprep/ui/form_basic/form_basic.hpp"
 #include "tools/mdprep/ui/form_switch_button.hpp"
+#include "tools/mdprep/ui/input_checker.hpp"
 #include "tools/mdprep/ui/md_engine.hpp"
 #include "tools/mdprep/ui/md_engine_field_placer.hpp"
 #include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tools/mdprep/ui/report.hpp"
+//
+#include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
+#include "tools/mdprep/ui/form_basic/form_basic.hpp"
 //
 #include "tools/mdprep/ui/screen_forms.hpp"
 
@@ -28,7 +31,13 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_setupUi( QWidget * p_parent ) noexcept
 	{
-		QWidget *	  mainWidget	= new QWidget( p_parent );
+		if ( p_parent->layout() )
+			p_parent->layout();
+		p_parent->setLayout( new QVBoxLayout );
+		QWidget * mainWidget = new QWidget( p_parent );
+		p_parent->layout()->addWidget( mainWidget );
+		mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
+
 		QVBoxLayout * qLayoutWindow = new QVBoxLayout( mainWidget );
 		qLayoutWindow->setContentsMargins( 0, 0, 0, 0 );
 		qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );

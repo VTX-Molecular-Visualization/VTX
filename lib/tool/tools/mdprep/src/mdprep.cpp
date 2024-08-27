@@ -27,6 +27,7 @@
 #include <ui/qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
+#include "tools/mdprep/ui/form.hpp"
 #include "tools/mdprep/ui/form_advanced/event_manager.hpp"
 #include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tools/mdprep/ui/form_basic/form_basic.hpp"
@@ -57,6 +58,7 @@ namespace VTX::QT::Mdprep
 			auto		_t = p_name.toLatin1();
 			std::string v( _t.begin(), _t.end() );
 			QWidget *	mainWidget = _instantiateMainWidget( PREFERRED_SIZE, PREFERRED_SIZE );
+			mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
 
 			UI::QT::QtDockablePanel::_setupUi( p_name );
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
@@ -68,6 +70,7 @@ namespace VTX::QT::Mdprep
 
 			_screen.emplace( mainWidget, _paramaeters, VTX::Tool::Mdprep::ui::ValidationSignaler {} );
 		}
+		virtual void _setupSlots() override {}
 
 	  public:
 		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent ) {}
