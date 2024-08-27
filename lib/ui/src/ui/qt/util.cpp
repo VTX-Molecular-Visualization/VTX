@@ -132,10 +132,7 @@ namespace VTX::UI::QT::Util
 		{
 			switch ( e->type() )
 			{
-			case QEvent::MouseButtonRelease:
-				mouseClicked( reinterpret_cast<QMouseEvent *>( e ) );
-				return true;
-				break;
+			case QEvent::MouseButtonRelease: mouseClicked( reinterpret_cast<QMouseEvent *>( e ) ); break;
 			default: break;
 			}
 			return QWidget::event( e );
