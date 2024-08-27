@@ -5,6 +5,9 @@
 
 namespace VTX::App::Tool
 {
+	/**
+	 * @brief abstract class that define tool behaviour.
+	 */
 	class BaseTool
 	{
 	  public:

@@ -5,6 +5,10 @@
 
 namespace VTX::Tool::Example
 {
+
+	/**
+	 * @brief BaseTool implementation, the main class of the tool.
+	 */
 	class Tool : public App::Tool::BaseTool
 	{
 	  public:

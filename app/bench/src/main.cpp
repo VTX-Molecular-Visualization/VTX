@@ -41,21 +41,21 @@ int main( int, char ** )
 
 		// Input manager.
 		InputManager inputManager;
-		inputManager.callbackClose += [ &isRunning ]() { isRunning = false; };
-		inputManager.callbackTranslate +=
+		inputManager.onClose += [ &isRunning ]() { isRunning = false; };
+		inputManager.onTranslate +=
 			[ &camera, &ui ]( const Vec3i & p_delta ) { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); };
-		inputManager.callbackRotate += [ &camera, &ui ]( const Vec2i & p_delta )
+		inputManager.onRotate += [ &camera, &ui ]( const Vec2i & p_delta )
 		{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); };
-		inputManager.callbackZoom +=
+		inputManager.onZoom +=
 			[ &camera, &ui ]( const int p_delta ) { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); };
 
-		inputManager.callbackResize += [ &renderer, &camera ]( const size_t p_width, const size_t p_height )
+		inputManager.onResize += [ &renderer, &camera ]( const size_t p_width, const size_t p_height )
 		{
 			renderer.resize( p_width, p_height );
 			camera.resize( p_width, p_height );
 		};
-		inputManager.callbackRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
-		inputManager.callbackMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
+		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
+		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
 			if ( renderer.hasContext() )
 			{
@@ -63,10 +63,10 @@ int main( int, char ** )
 				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 			}
 		};
-		inputManager.callbackMouseMotion +=
+		inputManager.onMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
 
-		inputManager.callbackKeyPressed += [ & ]( const SDL_Scancode p_key )
+		inputManager.onKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
 			try
 			{
@@ -101,7 +101,7 @@ int main( int, char ** )
 			}
 		};
 
-		inputManager.callbackFileDrop += [ & ]( const FilePath & p_filePath )
+		inputManager.onFileDrop += [ & ]( const FilePath & p_filePath )
 		{
 			try
 			{

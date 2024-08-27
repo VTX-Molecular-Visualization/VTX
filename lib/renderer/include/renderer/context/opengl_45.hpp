@@ -122,6 +122,8 @@ namespace VTX::Renderer::Context
 		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
 
 	  private:
+		/////////////////// TODO: use collection util class
+		//
 		// TODO: find a better solution (magic enum explodes compile time).
 		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
 		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
@@ -146,6 +148,7 @@ namespace VTX::Renderer::Context
 		Collection<GL::Buffer>		_buffers;
 		Collection<GL::Framebuffer> _framebuffers;
 		Collection<GL::Texture2D>	_textures;
+		///////////////////
 
 		struct _StructUniformEntry
 		{

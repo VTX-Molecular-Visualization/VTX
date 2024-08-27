@@ -20,16 +20,16 @@ namespace VTX::Bench
 		{
 			switch ( p_event.type )
 			{
-			case SDL_QUIT: callbackClose(); break;
+			case SDL_QUIT: onClose(); break;
 			case SDL_KEYDOWN:
 				_keys[ p_event.key.keysym.scancode ] = true;
-				callbackKeyPressed( p_event.key.keysym.scancode );
+				onKeyPressed( p_event.key.keysym.scancode );
 				break;
 			case SDL_KEYUP: _keys[ p_event.key.keysym.scancode ] = false; break;
 			case SDL_MOUSEBUTTONDOWN:
 				_mouseButtons[ p_event.button.button - 1 ] = true;
 				if ( p_event.button.button == SDL_BUTTON_LEFT )
-					callbackMousePick( p_event.button.x, p_event.button.y );
+					onMousePick( p_event.button.x, p_event.button.y );
 				break;
 			case SDL_MOUSEBUTTONUP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_MOUSEMOTION:
@@ -40,19 +40,19 @@ namespace VTX::Bench
 				}
 				int x, y;
 				SDL_GetMouseState( &x, &y );
-				callbackMouseMotion( { x, y } );
+				onMouseMotion( { x, y } );
 				break;
 			case SDL_MOUSEWHEEL: _deltaWheel += p_event.wheel.y; break;
 			case SDL_WINDOWEVENT:
 				switch ( p_event.window.event )
 				{
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
-				case SDL_WINDOWEVENT_RESIZED: callbackResize( p_event.window.data1, p_event.window.data2 ); break;
-				case SDL_WINDOWEVENT_RESTORED: callbackRestore(); break;
+				case SDL_WINDOWEVENT_RESIZED: onResize( p_event.window.data1, p_event.window.data2 ); break;
+				case SDL_WINDOWEVENT_RESTORED: onRestore(); break;
 				}
 				break;
 			case SDL_DROPFILE:
-				callbackFileDrop( p_event.drop.file );
+				onFileDrop( p_event.drop.file );
 				SDL_free( p_event.drop.file );
 				break;
 
@@ -88,7 +88,7 @@ namespace VTX::Bench
 			}
 			if ( _keys[ SDL_SCANCODE_ESCAPE ] )
 			{
-				callbackClose();
+				onClose();
 			}
 		}
 
@@ -96,17 +96,17 @@ namespace VTX::Bench
 		{
 			if ( _deltaMoveInputs != VEC3I_ZERO )
 			{
-				callbackTranslate( _deltaMoveInputs );
+				onTranslate( _deltaMoveInputs );
 			}
 
 			if ( _deltaMouse != VEC2I_ZERO )
 			{
-				callbackRotate( _deltaMouse );
+				onRotate( _deltaMouse );
 			}
 
 			if ( _deltaWheel != 0 )
 			{
-				callbackZoom( _deltaWheel );
+				onZoom( _deltaWheel );
 			}
 
 			_deltaMoveInputs = { 0, 0, 0 };
@@ -114,16 +114,16 @@ namespace VTX::Bench
 			_deltaWheel		 = 0;
 		}
 
-		Util::Callback<>			   callbackClose;
-		Util::Callback<size_t, size_t> callbackResize;
-		Util::Callback<Vec3i>		   callbackTranslate;
-		Util::Callback<Vec2i>		   callbackRotate;
-		Util::Callback<int>			   callbackZoom;
-		Util::Callback<Vec2i>		   callbackMouseMotion;
-		Util::Callback<>			   callbackRestore;
-		Util::Callback<size_t, size_t> callbackMousePick;
-		Util::Callback<SDL_Scancode>   callbackKeyPressed;
-		Util::Callback<FilePath>	   callbackFileDrop;
+		Util::Callback<>			   onClose;
+		Util::Callback<size_t, size_t> onResize;
+		Util::Callback<Vec3i>		   onTranslate;
+		Util::Callback<Vec2i>		   onRotate;
+		Util::Callback<int>			   onZoom;
+		Util::Callback<Vec2i>		   onMouseMotion;
+		Util::Callback<>			   onRestore;
+		Util::Callback<size_t, size_t> onMousePick;
+		Util::Callback<SDL_Scancode>   onKeyPressed;
+		Util::Callback<FilePath>	   onFileDrop;
 
 	  private:
 		bool _keys[ SDL_NUM_SCANCODES ] = { false };
