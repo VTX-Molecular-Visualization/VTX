@@ -67,7 +67,9 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
 		qLayoutCentering->addStretch( 1 );
 
-		_switchButton.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::basic );
+		QWidget *	  qWidgetSwitch = new QWidget;
+		QVBoxLayout * qLayoutSwitch = new QVBoxLayout( qWidgetSwitch );
+		qLayoutWindow->addWidget( qWidgetSwitch );
 
 		qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
 		_formContainer = new QWidget;
@@ -76,7 +78,9 @@ namespace VTX::Tool::Mdprep::ui
 		_updateMdEngine( 0 ); // Before setting up a form, the report manager needs to know the mdEngine
 
 		// By default we display the basic form
-		_setFormBasic();
+		_switchButton.subscribeBasicSwitch( [ & ] { this->_setFormBasic(); } );
+		_switchButton.subscribeAdvancedSwitch( [ & ] { this->_setFormAdvanced(); } );
+		_switchButton.setupUi( qLayoutSwitch, VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::basic );
 
 		QLabel *			qExplainatoryText = new QLabel;
 		static const char * buttonLabel		  = "Prepare system";
@@ -177,8 +181,6 @@ namespace VTX::Tool::Mdprep::ui
 		QObject::connect(
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
-		_switchButton.subscribeBasicSwitch( [ & ] { this->_setFormBasic(); } );
-		_switchButton.subscribeAdvancedSwitch( [ & ] { this->_setFormAdvanced(); } );
 	}
 
 } // namespace VTX::Tool::Mdprep::ui
