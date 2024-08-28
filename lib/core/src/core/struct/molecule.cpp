@@ -47,6 +47,7 @@ namespace VTX::Core::Struct
 		residueBondCounts.resize( p_count, 0 );
 		residueOriginalIds.resize( p_count, 0 );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
+		residueUnknownNames.resize( p_count );
 	}
 	size_t Molecule::getResidueCount() const { return residueSymbols.size(); }
 

@@ -30,6 +30,7 @@ namespace VTX::Core::ChemDB::Residue
 
 		return symbol.value_or( SYMBOL::UNKNOWN );
 	}
+
 	const SYMBOL getSymbolFromLongName( const std::string & p_residueName )
 	{
 		std::string formattedName = std::string( p_residueName.begin(), p_residueName.end() );
@@ -51,6 +52,7 @@ namespace VTX::Core::ChemDB::Residue
 
 		return SYMBOL::UNKNOWN;
 	}
+
 	const SYMBOL getSymbolFromAnyName( const std::string & p_residueName )
 	{
 		const size_t residueNameSize = p_residueName.size();

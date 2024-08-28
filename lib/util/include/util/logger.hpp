@@ -2,12 +2,13 @@
 #define __VTX_UTIL_LOGGER__
 
 #include "filesystem.hpp"
-#include "generic/base_static_singleton.hpp"
+#include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <string_view>
 #include <util/callback.hpp>
+#include <util/singleton.hpp>
 
 namespace VTX
 {
@@ -31,62 +32,66 @@ namespace VTX
 			std::string message;
 		};
 
-		class Logger final : public Generic::BaseStaticSingleton<Logger>
+		class Logger final
 		{
 		  public:
-			explicit Logger( StructPrivacyToken p_token );
-			Logger( std::initializer_list<int> ) = delete;
+			Logger() { std::cout << "Logger created" << std::endl; }
+			~Logger() { std::cout << "Logger destroyed" << std::endl; }
 
-			void init( const FilePath & p_logPath = Filesystem::getExecutableDir() );
+			static void init( const FilePath & p_logPath = Filesystem::getExecutableDir(), const bool p_debug = false );
 
 			template<typename... Args>
-			void log( const LOG_LEVEL p_logLevel, const fmt::format_string<Args...> p_fmt, Args &&... p_args )
+			static void log( const LOG_LEVEL p_logLevel, const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 			{
 				spdlog::log( spdlog::level::level_enum( p_logLevel ), p_fmt, std::forward<Args>( p_args )... );
 			}
 
-			void flush();
-			void stop();
+			static void flush();
+			static void stop();
 
-			Util::Callback<LogInfo> onPrintLog;
+			inline static Util::Callback<LogInfo> onPrintLog;
 		};
 
 	} // namespace Util
 
+	// inline Util::Logger LOGGER:: { return Util::Logger(); }
+
+	using LOGGER = Util::Logger;
+
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
 	}
 
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		Util::Logger::get().log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
 	}
 } // namespace VTX
 

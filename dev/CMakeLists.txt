@@ -1,4 +1,7 @@
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
+set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
+
 set(PYBIND11_FINDPYTHON ON)
 
 message("vtx")
@@ -32,9 +35,6 @@ include(Catch)
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
 
-# Util test.
-include("${DIR_LIBS}/util/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Core.
@@ -43,27 +43,18 @@ include("${DIR_LIBS}/core/cmake/library.cmake")
 # IO.
 include("${DIR_LIBS}/io/cmake/library.cmake")
 
-# IO test.
-include("${DIR_LIBS}/io/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
 
-# Renderer test.
-include("${DIR_LIBS}/renderer/test/cmake/library.cmake")
-
-# Renderer bench.
-include("${DIR_LIBS}/renderer/bench/cmake/library.cmake")
+# Bench.
+include("${DIR_APPS}/bench/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
-
-# App test.
-include("${DIR_LIBS}/app/test/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
@@ -75,26 +66,18 @@ include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
-# UI.
-include("${DIR_LIBS}/ui/cmake/library.cmake")
-
-# UI test.
-include("${DIR_LIBS}/ui/test/cmake/library.cmake")
-
-vtx_clear_registered_copies()
-
-# MdPrep.
-include("${DIR_LIBS}/tool/tools/mdprep/cmake/library.cmake")
-
-# MdPrep test.
-include("${DIR_LIBS}/tool/tools/mdprep/test/cmake/library.cmake")
-
-# Tool.
-include("${DIR_LIBS}/tool/cmake/library.cmake")
+# UI Qt.
+include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
 
 vtx_clear_registered_copies()
 
 # VTX.
-include("../cmake/library.cmake")
+include("${DIR_APPS}/vtx/cmake/library.cmake")
+
+vtx_clear_registered_copies()
+
+# Tool example
+include("${DIR_TOOLS}/example/cmake/library.cmake")
+
 
 vtx_clear_registered_copies()

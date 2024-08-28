@@ -48,19 +48,19 @@ namespace VTX::App::Component::Render
 		Component::Render::Camera & cameraComp = MAIN_REGISTRY().getComponent<Component::Render::Camera>( *this );
 
 		cameraComp.onMatrixViewChange +=
-			[ this ]( const Mat4f & p_viewMatrix ) { _proxyWrapper.accessor().proxy().onMatrixView(); };
+			[ this ]( const Mat4f & p_viewMatrix ) { _proxyWrapper.proxy().onMatrixView(); };
 		cameraComp.onMatrixProjectionChange +=
-			[ this ]( const Mat4f & p_projMatrix ) { _proxyWrapper.accessor().proxy().onMatrixProjection(); };
+			[ this ]( const Mat4f & p_projMatrix ) { _proxyWrapper.proxy().onMatrixProjection(); };
 
-		cameraComp.onClipInfosChange += [ this ]( float p_near, float p_far )
-		{ _proxyWrapper.accessor().proxy().onCameraNearFar( p_near, p_far ); };
+		cameraComp.onClipInfosChange +=
+			[ this ]( float p_near, float p_far ) { _proxyWrapper.proxy().onCameraNearFar( p_near, p_far ); };
 		cameraComp.onProjectionChange += [ this ]( CAMERA_PROJECTION p_projection )
-		{ _proxyWrapper.accessor().proxy().onPerspective( p_projection == CAMERA_PROJECTION::PERSPECTIVE ); };
+		{ _proxyWrapper.proxy().onPerspective( p_projection == CAMERA_PROJECTION::PERSPECTIVE ); };
 
 		Component::Scene::Transform & transformComp
 			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 		transformComp.onTransform += [ this ]( const Util::Math::Transform & p_transform )
-		{ _proxyWrapper.accessor().proxy().onCameraPosition( p_transform.getTranslationVector() ); };
+		{ _proxyWrapper.proxy().onCameraPosition( p_transform.getTranslationVector() ); };
 	}
 
 } // namespace VTX::App::Component::Render

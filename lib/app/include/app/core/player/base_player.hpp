@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_CORE_PLAYER_BASE_PLAYER__
 #define __VTX_APP_CORE_PLAYER_BASE_PLAYER__
 
-#include "app/core/collection.hpp"
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
+#include <util/collection.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Player
@@ -39,7 +39,7 @@ namespace VTX::App::Core::Player
 
 		virtual std::unique_ptr<BasePlayer> clone() const			 = 0;
 		virtual const std::string &			getDisplayName() const	 = 0;
-		virtual const CollectionKey &		getCollectionKey() const = 0;
+		virtual const Util::CollectionKey & getCollectionKey() const = 0;
 
 		Util::Callback<>	   onPlay;
 		Util::Callback<>	   onPause;

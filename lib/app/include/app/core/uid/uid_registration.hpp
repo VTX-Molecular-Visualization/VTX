@@ -3,7 +3,6 @@
 
 #include "app/core/uid/uid.hpp"
 #include <mutex>
-#include <util/generic/base_static_singleton.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
 

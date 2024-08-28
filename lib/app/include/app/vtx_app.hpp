@@ -2,77 +2,96 @@
 #define ___VTX_APP_VTX_APP___
 
 #include "app/application/_fwd.hpp"
-#include "app/core/monitoring/stats.hpp"
+#include "app/mode/base_mode.hpp"
+#include "app/tool/base_tool.hpp"
+#include "args.hpp"
 #include "core/system/system_handler.hpp"
+#include <iostream>
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
-#include <util/generic/base_static_singleton.hpp>
+#include <util/monitoring/stats.hpp>
 #include <vector>
 
 namespace VTX::App
 {
-	class VTXApp final : public Util::Generic::BaseStaticSingleton<VTXApp>
+
+	class VTXApp
 	{
 	  private:
-		inline static const Util::Hashing::Hash SCENE_KEY = Util::Hashing::hash( "SCENE" );
+		inline static const Hash SCENE_KEY = Util::hash( "SCENE" );
 
 	  public:
-		VTXApp( StructPrivacyToken );
-		VTXApp( std::initializer_list<int> ) = delete;
-		VTXApp( const VTXApp & )			 = delete;
-		VTXApp & operator=( const VTXApp & ) = delete;
-		~VTXApp();
+		virtual ~VTXApp() = default;
 
-		void start( const std::vector<std::string> & );
-		void update( const float p_elapsedTime = 0 );
-		void stop();
+		static void	 init();
+		virtual void start( const Args & );
+		static void	 update( const float p_deltaTime, const float p_elapsedTime );
+		static void	 stop();
 
-		inline const Core::System::SystemHandler & getSystemHandler() const { return *_systemHandlerPtr; };
-		inline Core::System::SystemHandler &	   getSystemHandler() { return *_systemHandlerPtr; };
+		inline static Core::System::SystemHandler & getSystemHandler() { return *_systemHandler; }
+		// inline Core::System::SystemHandler * const getSystemHandlerPtr() { return _systemHandler.get(); }
 
-		inline std::shared_ptr<Core::System::SystemHandler> & getSystemHandlerPtr() { return _systemHandlerPtr; };
+		/*
 		inline void referenceSystemHandler( std::shared_ptr<Core::System::SystemHandler> p_systemHandlerPtr )
 		{
 			_systemHandlerPtr = p_systemHandlerPtr;
 		};
+		*/
 
-		const Core::Monitoring::Stats & getStats() const { return _stats; }
-		Core::Monitoring::Stats &		getStats() { return _stats; }
+		inline static Util::Monitoring::Stats & getStats() { return _stats; }
+		static Application::Scene &				getScene();
+		inline static Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 
-		Application::Scene &	   getScene();
-		const Application::Scene & getScene() const;
+		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		Util::Callback<float> onPreUpdate;
-		Util::Callback<float> onUpdate;
-		Util::Callback<float> onLateUpdate;
-		Util::Callback<float> onPostUpdate;
+		// Main loop calllbacks.
+		inline static Util::Callback<> onStart;
 
-		Util::Callback<float> onPreRender;
-		Util::Callback<float> onRender;
-		Util::Callback<float> onPostRender;
+		// inline static Util::Callback<float> onPreUpdate;
+		inline static Util::Callback<float, float> onUpdate;
+		// inline static Util::Callback<float> onLateUpdate;
+		inline static Util::Callback<float> onPostUpdate;
+		// inline static Util::Callback<float> onPreRender;
+		// inline static Util::Callback<float> onRender;
+		inline static Util::Callback<float> onPostRender;
+		inline static Util::Callback<>		onEndOfFrameOneShot;
+		inline static Util::Callback<>		onStop;
 
-		Util::Callback<> onEndOfFrameOneShot;
+		// Progress dialog callbacks.
+		inline static Util::Callback<std::string> onStartBlockingOperation;
+		inline static Util::Callback<float>		  onUpdateBlockingOperation;
+		inline static Util::Callback<>			  onEndBlockingOperation;
 
-		Util::Callback<> onStop;
+		// TODO: thread callbacks?
+
+	  protected:
+		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
-		Util::Chrono _tickChrono = Util::Chrono();
+		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
+			= std::make_unique<Core::System::SystemHandler>();
 
-		std::shared_ptr<Core::System::SystemHandler> _systemHandlerPtr
-			= std::make_shared<Core::System::SystemHandler>();
+		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
+		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
+		inline static Util::Monitoring::Stats		  _stats;
 
-		Core::Monitoring::Stats _stats;
-
-		void _handleArgs( const std::vector<std::string> & );
-		void _update( const float p_elapsedTime );
-		void _stop();
+		static void _handleArgs( const Args & p_args );
+		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
 
 	// Convenient accessors
-	Application::Scene & SCENE();
+	Application::Scene &	  SCENE();
+	Mode::BaseMode &		  MODE();
+	Util::Monitoring::Stats & STATS();
 } // namespace VTX::App
+
+namespace VTX
+{
+	//
+	using APP = App::VTXApp;
+} // namespace VTX
 
 #endif

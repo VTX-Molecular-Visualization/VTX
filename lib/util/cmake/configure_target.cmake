@@ -10,6 +10,7 @@ function(configure_target p_target)
 		target_compile_options(${p_target} PRIVATE "/sdl") # Additional Security Checks.	
 		target_compile_options(${p_target} PRIVATE "/utf-8")
 		target_compile_options(${p_target} PRIVATE "/fp:fast") # Floating Point Model.
+		target_compile_options(${p_target} PRIVATE "/Zc:__cplusplus")
 		# Optimization.
 		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/O2>")
 		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ob2>")

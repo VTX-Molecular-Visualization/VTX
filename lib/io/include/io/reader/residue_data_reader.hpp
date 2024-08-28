@@ -14,7 +14,11 @@ namespace VTX::IO::Reader
 	class ResidueDataReader : public IO::Core::Reader::BaseReader<Struct::ResidueData>
 	{
 	  public:
-		bool readResidueData( const std::string & p_residueSymbol, Struct::ResidueData & p_residueData );
+		bool readResidueData(
+			const FilePath &	  p_filepath,
+			const std::string &	  p_residueSymbol,
+			Struct::ResidueData & p_residueData
+		);
 
 	  protected:
 		virtual void readFile( const FilePath &, Struct::ResidueData & ) { throw NotImplementedException(); }

@@ -1,5 +1,5 @@
 #include "app/core/serialization/version.hpp"
-#include "app/info.hpp"
+#include "app/infos.hpp"
 
 namespace VTX::App::Core::Serialization
 {

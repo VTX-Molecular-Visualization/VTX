@@ -21,32 +21,31 @@ namespace VTX::App::Core::System
 		~SystemHandler() = default;
 
 		template<SystemConcept T>
-		void store( const Util::Hashing::Hash & p_hash )
+		void store( const Hash & p_hash )
 		{
-			assert( _systems.find( p_hash ) == _systems.end() );
-
+			assert( not _systems.contains( p_hash ) );
 			const std::unique_ptr<BaseSystem> & ptr = _storage.emplace_back( std::make_unique<T>() );
 			_systems.emplace( p_hash, ptr.get() );
 		}
 
-		void reference( const Util::Hashing::Hash & p_hash, BaseSystem * p_systemPtr )
+		void reference( const Hash & p_hash, BaseSystem * p_systemPtr )
 		{
-			assert( _systems.find( p_hash ) == _systems.end() );
+			assert( not _systems.contains( p_hash ) );
 			_systems.emplace( p_hash, p_systemPtr );
 		}
 
-		bool exists( const Util::Hashing::Hash & p_hash ) const { return _systems.find( p_hash ) != _systems.end(); }
+		inline bool exists( const Hash & p_hash ) const { return _systems.find( p_hash ) != _systems.end(); }
 
 		template<SystemConcept T>
-		T & get( const Util::Hashing::Hash & p_hash ) const
+		inline T & get( const Hash & p_hash )
 		{
-			return static_cast<T &>( *_systems.at( p_hash ) );
+			assert( _systems.contains( p_hash ) );
+			return static_cast<T &>( *_systems[ p_hash ] );
 		}
 
 	  private:
-		std::map<Util::Hashing::Hash, BaseSystem *> _systems = std::map<Util::Hashing::Hash, BaseSystem *>();
-
-		std::vector<std::unique_ptr<BaseSystem>> _storage = std::vector<std::unique_ptr<BaseSystem>>();
+		std::vector<std::unique_ptr<BaseSystem>> _storage;
+		std::map<Hash, BaseSystem *>			 _systems;
 	};
 } // namespace VTX::App::Core::System
 

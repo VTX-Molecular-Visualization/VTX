@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context
 			// Scale if needed.
 			if ( _buffers[ p_key ]->getSize() != size )
 			{
-				VTX_DEBUG( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
+				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
 				_buffers[ p_key ]->setData( GLsizei( size ), GL_STATIC_DRAW );
 			}
 		}
@@ -76,7 +76,7 @@ namespace VTX::Renderer::Context
 			// Auto scale.
 			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
 			{
-				VTX_DEBUG(
+				VTX_TRACE(
 					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
 				);
 				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
@@ -122,6 +122,8 @@ namespace VTX::Renderer::Context
 		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
 
 	  private:
+		/////////////////// TODO: use collection util class
+		//
 		// TODO: find a better solution (magic enum explodes compile time).
 		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
 		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
@@ -146,6 +148,7 @@ namespace VTX::Renderer::Context
 		Collection<GL::Buffer>		_buffers;
 		Collection<GL::Framebuffer> _framebuffers;
 		Collection<GL::Texture2D>	_textures;
+		///////////////////
 
 		struct _StructUniformEntry
 		{
@@ -159,9 +162,7 @@ namespace VTX::Renderer::Context
 				const size_t p_offset,
 				const size_t p_size,
 				const size_t p_padding
-			) :
-				buffer( p_buffer ),
-				offset( p_offset ), size( p_size ), padding( p_padding )
+			) : buffer( p_buffer ), offset( p_offset ), size( p_size ), padding( p_padding )
 			{
 			}
 		};

@@ -4,7 +4,6 @@ conan export core
 conan export io
 conan export python_binding
 conan export renderer
-conan export tool
-conan export ui
+conan export ui/qt
 conan export util
 PAUSE

@@ -35,7 +35,7 @@ namespace VTX::PythonBinding
 
 		// Global
 		p_apiModule.def(
-			"getScene", []() { return VTXApp::get().getScene(); }, pybind11::return_value_policy::reference
+			"getScene", []() { return APP::getScene(); }, pybind11::return_value_policy::reference
 		);
 
 		// Selection
@@ -115,7 +115,7 @@ namespace VTX::PythonBinding
 			"setAtomName",
 			[]( const std::string & p_moleculeName, const atom_index_t p_atomIndex, const std::string & p_name )
 			{
-				return VTXApp::get()
+				return APP()
 					.getScene()
 					.getComponentByName<App::Component::Chemistry::Molecule>( p_moleculeName )
 					.getAtom( p_atomIndex )

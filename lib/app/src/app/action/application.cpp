@@ -1,19 +1,36 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/system/renderer.hpp"
 #include "app/application/system/serializer.hpp"
 #include "app/application/system/settings_system.hpp"
+#include "app/filesystem.hpp"
 #include "app/internal/io/reader/scene_loader.hpp"
 #include "app/internal/io/writer/scene_writer.hpp"
 #include "app/internal/serialization/all_serializers.hpp"
-#include <io/internal/filesystem.hpp>
+#include <app/component/render/camera.hpp>
 
 namespace VTX::App::Action::Application
 {
 	void NewScene::execute()
 	{
 		SCENE().reset();
-		// App::Old::VTXApp::get().getScenePathData().clearCurrentPath();
+		// App::Old::APP::getScenePathData().clearCurrentPath();
+
+		APP::onStartBlockingOperation( "Opening files" );
+
+		APP::onUpdateBlockingOperation( 0.f );
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		APP::onUpdateBlockingOperation( 0.25f );
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		APP::onUpdateBlockingOperation( 0.5f );
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		APP::onUpdateBlockingOperation( 0.75f );
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		APP::onUpdateBlockingOperation( 1.f );
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+
+		APP::onEndBlockingOperation();
 	}
 
 	void OpenScene::execute()
@@ -23,7 +40,7 @@ namespace VTX::App::Action::Application
 		Internal::IO::Reader::SceneLoader loader = Internal::IO::Reader::SceneLoader();
 		loader.readFile( _path, SCENE() );
 
-		// App::Old::VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+		// App::Old::APP::getScenePathData().setCurrentPath( _path, true );
 	}
 
 	void SaveScene::execute()
@@ -35,7 +52,7 @@ namespace VTX::App::Action::Application
 
 		// if ( _path.extension() == "vtx" )
 		//{
-		//	App::Old::VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+		//	App::Old::APP::getScenePathData().setCurrentPath( _path, true );
 		//	VTX_EVENT( VTX::App::Old::Event::Global::SCENE_SAVED );
 		// }
 		// else
@@ -45,9 +62,9 @@ namespace VTX::App::Action::Application
 	}
 	void ClearScene::execute() { SCENE().reset(); }
 
-	LoadSettings::LoadSettings() : _path( VTX::IO::Internal::Filesystem::getSettingJsonFile() ) {}
+	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void LoadSettings::execute() { SERIALIZER().readObject<App::Application::Settings::Settings>( _path, SETTINGS() ); }
-	SaveSettings::SaveSettings() : _path( VTX::IO::Internal::Filesystem::getSettingJsonFile() ) {}
+	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void SaveSettings::execute()
 	{
 		SERIALIZER().writeObject<App::Application::Settings::Settings>( _path, SETTINGS() );
@@ -55,7 +72,7 @@ namespace VTX::App::Action::Application
 	void ReloadSettings::execute()
 	{
 		SERIALIZER().readObject<App::Application::Settings::Settings>(
-			VTX::IO::Internal::Filesystem::getSettingJsonFile(), SETTINGS()
+			VTX::App::Filesystem::getSettingJsonFile(), SETTINGS()
 		);
 	}
 	void ResetSettings::execute() { SETTINGS().reset(); }
@@ -86,4 +103,23 @@ namespace VTX::App::Action::Application
 			}
 		}
 	}
+
+	void Quit::execute()
+	{
+		APP::onEndOfFrameOneShot += []() { APP::stop(); };
+	}
+
+	void Resize::execute()
+	{
+		App::SCENE().getCamera().setScreenSize( _width, _height );
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
+		rendererFacade.resize( _width, _height );
+		rendererFacade.setOutput( _output );
+	}
+
+	void RunScript::execute()
+	{
+		// INTERPRETOR().runScript( _path );
+
+	} // namespace VTX::App::Action::Application
 } // namespace VTX::App::Action::Application

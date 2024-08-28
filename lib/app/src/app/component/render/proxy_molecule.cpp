@@ -27,7 +27,7 @@ namespace VTX::App::Component::Render
 	{
 		if ( _proxyWrapper.isValid() )
 		{
-			_proxyWrapper.accessor().proxy().onRemove();
+			_proxyWrapper.proxy().onRemove();
 			_proxyWrapper.invalidate();
 		}
 	}
@@ -135,16 +135,16 @@ namespace VTX::App::Component::Render
 		switch ( p_applyMode )
 		{
 		case App::Core::VISIBILITY_APPLY_MODE::SHOW:
-			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, true );
+			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, true );
 			break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::HIDE:
-			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, false );
+			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, false );
 			break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::SET:
-			_proxyWrapper.accessor().proxy().onVisible( false );
-			_proxyWrapper.accessor().proxy().onAtomVisibilities( p_rangeList, true );
+			_proxyWrapper.proxy().onVisible( false );
+			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, true );
 			break;
 
 		default:
@@ -186,14 +186,14 @@ namespace VTX::App::Component::Render
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyWrapper.accessor().proxy().onAtomSelections( castedSelectionData.getAtomIds(), true );
+			_proxyWrapper.proxy().onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
 		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyWrapper.accessor().proxy().onAtomSelections( castedSelectionData.getAtomIds(), false );
+			_proxyWrapper.proxy().onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
 	void ProxyMolecule::_applyAtomPositionCallbacks()
@@ -208,8 +208,8 @@ namespace VTX::App::Component::Render
 				Component::Chemistry::Molecule & moleculeComponent
 					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
-				_proxyWrapper.accessor().proxy().atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
-				_proxyWrapper.accessor().proxy().onAtomPositions();
+				_proxyWrapper.proxy().atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
+				_proxyWrapper.proxy().onAtomPositions();
 			};
 		}
 	}

@@ -7,12 +7,12 @@
 
 namespace VTX::App::Action::Application
 {
-	class NewScene final : public App::Core::Action::BaseAction
+	class NewScene final : public Core::Action::BaseAction
 	{
 	  public:
 		void execute() override;
 	};
-	class OpenScene final : public App::Core::Action::BaseAction
+	class OpenScene final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit OpenScene( const FilePath & p_path ) : _path( p_path ) {}
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Application
 	  private:
 		FilePath _path = FilePath();
 	};
-	class SaveScene final : public App::Core::Action::BaseAction
+	class SaveScene final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SaveScene() : _path( "" ) /*, _callback( nullptr )*/ {}
@@ -37,13 +37,13 @@ namespace VTX::App::Action::Application
 		const FilePath _path;
 		// VTX::App::Old::Core::Worker::CallbackThread * const _callback;
 	};
-	class ClearScene final : public App::Core::Action::BaseAction
+	class ClearScene final : public Core::Action::BaseAction
 	{
 	  public:
 		void execute() override;
 	};
 
-	class LoadSettings final : public App::Core::Action::BaseAction
+	class LoadSettings final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit LoadSettings();
@@ -54,7 +54,7 @@ namespace VTX::App::Action::Application
 	  private:
 		const FilePath _path;
 	};
-	class SaveSettings final : public App::Core::Action::BaseAction
+	class SaveSettings final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SaveSettings();
@@ -65,20 +65,20 @@ namespace VTX::App::Action::Application
 	  private:
 		const FilePath _path;
 	};
-	class ReloadSettings final : public App::Core::Action::BaseAction
+	class ReloadSettings final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ReloadSettings() {}
 		void execute() override;
 	};
-	class ResetSettings final : public App::Core::Action::BaseAction
+	class ResetSettings final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ResetSettings() {}
 		void execute() override;
 	};
 
-	class Open final : public App::Core::Action::BaseAction
+	class Open final : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -104,6 +104,38 @@ namespace VTX::App::Action::Application
 
 		// std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
 		//	= std::vector<Component::Chemistry::Molecule *>();
+	};
+
+	class Quit final : public Core::Action::BaseAction
+	{
+	  public:
+		Quit() {};
+		void execute() override;
+	};
+
+	class Resize final : public Core::Action::BaseAction
+	{
+	  public:
+		Resize( const size_t p_width, const size_t p_height, const uint p_output = 0 ) :
+			_width( p_width ), _height( p_height ), _output( p_output )
+		{
+		}
+		void execute() override;
+
+	  private:
+		const size_t _width;
+		const size_t _height;
+		const uint	 _output;
+	};
+
+	class RunScript : public Core::Action::BaseAction
+	{
+	  public:
+		explicit RunScript( const FilePath & p_path ) : _path( p_path ) {}
+		void execute();
+
+	  private:
+		FilePath _path;
 	};
 } // namespace VTX::App::Action::Application
 #endif

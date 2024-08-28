@@ -3,10 +3,10 @@
 #include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
-#include <util/enum.hpp>
 #include <map>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::IO::Reader
@@ -99,36 +99,11 @@ namespace VTX::IO::Reader
 			p_molecule.residueOriginalIds[ residueIdx ]		 = residueId;
 
 			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
-
-			// int symbolValue;
-
-			// if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
-			//{
-			//	const int symbolIndex = 0;
-			//	// int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-			//	//  VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
-
-			//	// if ( symbolIndex >= 0 )
-			//	//{
-			//	//	unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
-			//	// }
-			//	// else
-			//	//{
-			//	//	unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
-			//	//	unknownResidueData->symbolStr  = residueSymbol;
-			//	//	unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
-
-			//	//	symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
-			//	//}
-
-			//	symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
-			//}
-			// else
-			//{
-			//	symbolValue = int( residueSymbol );
-			//}
-
-			p_molecule.residueSymbols[ residueIdx ] = residueSymbol;
+			p_molecule.residueSymbols[ residueIdx ]		= residueSymbol;
+			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
+			{
+				p_molecule.residueUnknownNames[ residueIdx ] = residueName;
+			}
 
 			const std::string secondaryStructure
 				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" );
@@ -169,6 +144,7 @@ namespace VTX::IO::Reader
 				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
 			}
 
+			// TODO: Useless?
 			//// Check residue full of solvent/ion.
 			//// This is working only with pdb/psf files,
 			//// not with arc/prm because arc do not contains topology.
@@ -352,7 +328,7 @@ namespace VTX::IO::Reader
 		if ( p_fileExtension == "pdb" || p_fileExtension == "mmcif" || p_fileExtension == "mmtf" )
 		{
 			// TODO : Move that in Core::ChemDB
-			// res = Util::App::Old::Molecule::getResidueCategory( p_residueSymbol );
+			// auto res = Util::App::Old::Molecule::getResidueCategory( p_residueSymbol );
 			res = VTX::Core::ChemDB::Category::TYPE::POLYMER;
 		}
 		else
@@ -398,9 +374,9 @@ namespace VTX::IO::Reader
 		{
 			return ChemDB::Atom::TYPE::SOLVENT;
 		}
-		else if ( std::find( _configuration->ionResidueSymbols.begin(),
-							 _configuration->ionResidueSymbols.end(),
-							 residueSymbol )
+		else if ( std::find(
+					  _configuration->ionResidueSymbols.begin(), _configuration->ionResidueSymbols.end(), residueSymbol
+				  )
 				  != _configuration->ionResidueSymbols.end() )
 		{
 			return ChemDB::Atom::TYPE::ION;

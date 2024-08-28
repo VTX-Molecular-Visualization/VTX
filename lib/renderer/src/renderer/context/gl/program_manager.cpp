@@ -83,7 +83,7 @@ namespace VTX::Renderer::Context::GL
 
 			program.link();
 
-			VTX_DEBUG( "Program {} created: {}", _programs[ name ]->getId(), p_name );
+			VTX_TRACE( "Program {} created: {}", _programs[ name ]->getId(), p_name );
 		}
 
 		return _programs[ name ].get();
@@ -182,7 +182,7 @@ namespace VTX::Renderer::Context::GL
 			assert( _shaders.find( name ) == _shaders.end() );
 			_shaders.emplace( name, shaderId );
 
-			VTX_DEBUG( "Shader {} created: {}", shaderId, name );
+			VTX_TRACE( "Shader {} created: {}", shaderId, name );
 		}
 
 		return shaderId;

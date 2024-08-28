@@ -1,14 +1,13 @@
 #ifndef __VTX_UTIL_HASHING__
 #define __VTX_UTIL_HASHING__
 
+#include "types.hpp"
 #include <string>
 #include <string_view>
 #include <utility>
 
-namespace VTX::Util::Hashing
+namespace VTX::Util
 {
-	using Hash = size_t;
-
 	// Template function to hash a value
 	template<typename T>
 	inline Hash hash( const T & p_value )
@@ -24,5 +23,20 @@ namespace VTX::Util::Hashing
 	// Speicalization for char*, using content instead of ptr
 	inline Hash hash( const char * p_value ) { return hash( std::string( p_value ) ); }
 
-} // namespace VTX::Util::Hashing
+	template<typename T>
+	using DefaultHashProcess = std::remove_pointer_t<std::decay_t<T>>;
+
+	template<typename T>
+	constexpr Hash hash()
+	{
+		return typeid( DefaultHashProcess<T> ).hash_code();
+	}
+
+	template<typename T>
+	constexpr std::string_view typeName()
+	{
+		return typeid( DefaultHashProcess<T> ).name();
+	}
+
+} // namespace VTX::Util
 #endif

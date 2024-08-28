@@ -1,0 +1,55 @@
+name: Lib Util
+
+on:
+  push:
+    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+    paths: ['lib/util/**', '.github/workflows/lib_util.yml']
+
+env:
+  LIB_DIR: ${{github.workspace}}/lib/
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-22.04, macos-12]
+      fail-fast: false
+
+    steps:
+    - name: Set git to use CRLF
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+      
+    - name: Create default profile
+      run: conan profile detect
+      
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
+           
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True
+               
+    - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload glm -r=cano7782
+        conan upload spdlog -r=cano7782
+        conan upload nlohmann_json -r=cano7782
+        conan upload magic_enum -r=cano7782
+        conan upload cpr -r=cano7782
+        conan upload fmt -r=cano7782
+        conan upload zlib -r=cano7782
+        conan upload libcurl -r=cano7782
+        conan upload catch2 -r=cano7782

@@ -11,7 +11,7 @@ namespace VTX
 {
 	void _init( std::shared_ptr<App::Core::System::SystemHandler> p_system )
 	{
-		App::VTXApp::get().referenceSystemHandler( p_system );
+		// APP::referenceSystemHandler( p_system );
 	}
 } // namespace VTX
 

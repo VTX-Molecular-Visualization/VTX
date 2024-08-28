@@ -27,15 +27,15 @@ using GLintptr	   = long long int;
 
 #define APIENTRY
 using GLADloadproc = void * (*)( const char * );
-static GLboolean			gladLoadGLLoader( GLADloadproc ) { return 0; }
-static GLboolean			gladLoadGL() { return 0; }
+static GLboolean gladLoadGLLoader( GLADloadproc ) { return 1; }
+static GLboolean gladLoadGL() { return 1; }
 struct gladGLversionStruct
 {
 	int major;
 	int minor;
 };
 static struct gladGLversionStruct GLVersion;
-constexpr int					  GLAD_GL_VERSION_4_5 = 0;
+constexpr int					  GLAD_GL_VERSION_4_5 = 1;
 
 constexpr GLuint GL_BOOL							   = 0x8B56;
 constexpr GLuint GL_BYTE							   = 0x1400;
@@ -225,8 +225,8 @@ glDebugMessageCallback( void ( * )( GLenum, GLenum, GLuint, GLenum, GLsizei, con
 static void			   glDepthFunc( GLenum ) {}
 static void			   glLineWidth( GLfloat ) {}
 static const GLubyte   placeholder[ 1 ] = { 0 };
-static const GLubyte * glGetString( GLenum ) { return nullptr; }
-static const GLubyte * glGetStringi( GLenum, GLuint ) { return nullptr; }
+static const GLubyte * glGetString( GLenum ) { return placeholder; }
+static const GLubyte * glGetStringi( GLenum, GLuint ) { return placeholder; }
 static void			   glGetIntegerv( GLenum, GLint * ) {}
 static void			   glGetIntegeri_v( GLenum, GLuint, GLint * ) {}
 static void			   glGetFloatv( GLenum, GLfloat * ) {}
@@ -295,7 +295,7 @@ static void *	 glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield )
 static GLboolean glIsFramebuffer( GLuint ) { return true; }
 static void		 glCreateFramebuffers( GLsizei, GLuint * ) {}
 static void		 glBindFramebuffer( GLenum, GLuint ) {}
-static GLenum	 glCheckFramebufferStatus( GLenum ) { return true; }
+static GLenum	 glCheckFramebufferStatus( GLenum ) { return GL_FRAMEBUFFER_COMPLETE; }
 static void		 glDeleteFramebuffers( GLsizei, const GLuint * ) {}
 static void		 glNamedFramebufferTexture( GLuint, GLenum, GLuint, GLint ) {}
 static void		 glNamedFramebufferDrawBuffers( GLuint, GLsizei, const GLenum * ) {}

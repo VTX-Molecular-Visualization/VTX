@@ -130,7 +130,7 @@ class VTXRecipe(ConanFile):
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
         copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "res/archdatadir/plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))    
+        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))    
         
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        

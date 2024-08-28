@@ -7,6 +7,95 @@
 namespace VTX::Renderer
 {
 
+	Renderer::Renderer( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader ) :
+		width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+	{
+		// Graph.
+		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
+
+		// Passes.
+		Pass * const geo	   = _renderGraph->addPass( descPassGeometric );
+		Pass * const depth	   = _renderGraph->addPass( descPassDepth );
+		Pass * const ssao	   = _renderGraph->addPass( descPassSSAO );
+		Pass * const blurX	   = _renderGraph->addPass( descPassBlur );
+		Pass * const blurY	   = _renderGraph->addPass( descPassBlur );
+		Pass * const shading   = _renderGraph->addPass( descPassShading );
+		Pass * const outline   = _renderGraph->addPass( descPassOutline );
+		Pass * const selection = _renderGraph->addPass( descPassSelection );
+		Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
+
+		// Setup values.
+		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+		geo->programs[ 0 ].draw.value().needRenderFunc
+			= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+		geo->programs[ 1 ].draw.value().needRenderFunc
+			= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+		geo->programs[ 2 ].draw.value().needRenderFunc
+			= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+		geo->programs[ 3 ].draw.value().needRenderFunc
+			= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+		blurX->name								 = "BlurX";
+		blurY->name								 = "BlurY";
+		blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+
+		// Links.
+		_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+		_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+		_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+
+		// Shared uniforms.
+		_renderGraph->addUniforms(
+			{ "Camera",
+			  { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+				{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
+				{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
+				  E_TYPE::VEC4F,
+				  StructUniformValue<Vec4f> { VEC4F_ZERO } },
+				{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
+			  15 }
+		);
+
+		_renderGraph->addUniforms(
+			{ "Color layout", { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 14, true }
+		);
+
+		_renderGraph->addUniforms( { "Models",
+									 { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
+									   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
+									 13,
+									 true } );
+
+		_renderGraph->addUniforms( { "Representations",
+									 { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
+									   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
+									   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
+									   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
+
+									   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
+									   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
+									 12,
+									 true } );
+	}
+
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
 		// Build renderer graph.
@@ -28,10 +117,7 @@ namespace VTX::Renderer
 			)
 		);
 
-		if ( _context == nullptr || not _context->loaded )
-		{
-			throw GLException( "Context not loaded" );
-		}
+		onReady();
 	}
 
 	void Renderer::clean()

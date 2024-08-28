@@ -9,8 +9,8 @@ namespace VTX::App::Core::Player
 	class Once : public BasePlayer
 	{
 	  public:
-		inline static const CollectionKey COLLECTION_ID	 = "ONCE";
-		inline static const std::string	  DISPLAYED_NAME = "Once";
+		inline static const Util::CollectionKey COLLECTION_ID  = "ONCE";
+		inline static const std::string			DISPLAYED_NAME = "Once";
 
 	  private:
 		inline static const Players::Registration<Once> _reg { COLLECTION_ID };
@@ -20,7 +20,7 @@ namespace VTX::App::Core::Player
 		Once( const Once & p_source ) = default;
 
 		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
-		const CollectionKey &		getCollectionKey() const override { return COLLECTION_ID; }
+		const Util::CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
 		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<Once>( *this ); }
 
 		void reset() override;

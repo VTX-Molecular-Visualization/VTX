@@ -9,40 +9,30 @@ namespace VTX::Renderer::Context
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
-		if ( gladLoaded )
-		{
-			VTX_WARNING( "GLAD loaded" );
-		}
-		else
-		{
-			VTX_WARNING( "GLAD not loaded" );
-		}
-
 		// Load opengl 4.5.
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
-			VTX_ERROR( "Failed to load OpenGL" );
-			// throw GLException( "Failed to load OpenGL" );
+			throw GLException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
 		else if ( gladLoadGL() == 0 )
 		{
-			VTX_ERROR( "Failed to load OpenGL" );
-			// throw GLException( "Failed to load OpenGL" );
+			throw GLException( "Failed to load OpenGL" );
 		}
 
 		// Check version.
 		if ( not GLAD_GL_VERSION_4_5 )
 		{
-			VTX_ERROR( "OpenGL 4.5 or higher is required" );
-			// throw GLException( "OpenGL 4.5 or higher is required" );
+			throw GLException( "OpenGL 4.5 or higher is required" );
 		}
 		else
 		{
 			_getOpenglInfos();
-			loaded = true;
 		}
+
+		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
+		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
@@ -72,9 +62,6 @@ namespace VTX::Renderer::Context
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
-
-		VTX_INFO( "Device: {} {}", _openglInfos.glVendor, _openglInfos.glRenderer );
-		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 	}
 
 	void OpenGL45::build(
@@ -472,8 +459,6 @@ namespace VTX::Renderer::Context
 		width  = p_width;
 		height = p_height;
 
-		VTX_DEBUG( "Resizing to {}x{}", width, height );
-
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
@@ -496,9 +481,6 @@ namespace VTX::Renderer::Context
 						assert( _framebuffers.contains( keyFbo ) );
 						auto & fbo = _framebuffers[ keyFbo ];
 
-						VTX_DEBUG(
-							"Texture resized ({}x{} => {}x{})", texture->getWidth(), texture->getHeight(), width, height
-						);
 						texture->resize( width, height );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
 					}
@@ -856,7 +838,7 @@ namespace VTX::Renderer::Context
 			auto & texture = _textures[ p_key ];
 			assert( texture != nullptr );
 
-			VTX_DEBUG( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
+			VTX_TRACE( "Texture created ({}x{})", texture->getWidth(), texture->getHeight() );
 			if ( attachment.data != nullptr )
 			{
 				texture->fill( attachment.data );
@@ -904,7 +886,7 @@ namespace VTX::Renderer::Context
 			assert( size > 0 );
 
 			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
-			VTX_DEBUG( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
+			VTX_TRACE( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
 			offset += padding;
@@ -1025,7 +1007,7 @@ namespace VTX::Renderer::Context
 		// Extensions.
 		GLint numExtensions = 0;
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
-		VTX_DEBUG( "{} GL extensions", numExtensions );
+		VTX_TRACE( "{} GL extensions", numExtensions );
 		for ( GLint i = 0; i < numExtensions; ++i )
 		{
 			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
@@ -1044,6 +1026,8 @@ namespace VTX::Renderer::Context
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const
 	{
+		p_infos.renderer = _openglInfos.glRenderer;
+
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
 		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )

@@ -10,19 +10,20 @@ class VTXUtilRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*"
         
     def requirements(self):
         self.requires("glm/0.9.9.8", transitive_headers=True)
         self.requires("spdlog/1.14.1", transitive_headers=True)
         self.requires("nlohmann_json/3.11.3", transitive_headers=True)
         self.requires("magic_enum/0.9.5", transitive_headers=True)
-        self.requires("cpr/1.10.5", transitive_headers=True)         
+        self.requires("cpr/1.10.5", transitive_headers=True)  
+        self.requires("catch2/3.6.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,9 +40,11 @@ class VTXUtilRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
-        cmake = CMake(self)
+        cmake = CMake(self)        
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 
