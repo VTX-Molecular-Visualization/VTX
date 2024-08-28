@@ -9,11 +9,11 @@ namespace VTX::App::Info
 	constexpr int VERSION_MINOR	   = 0;
 	constexpr int VERSION_REVISION = 0;
 
-	static std::string APPLICATION_DISPLAY_NAME = "VTX";
-	static std::string APPLICATION_NAME			= "VTX";
-	static std::string ORGANIZATION_NAME		= "VTX";
-	static std::string ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
-	static std::string APPLICATION_VERSION		= "1.0.0";
+	constexpr std::string_view APPLICATION_DISPLAY_NAME = "VTX";
+	constexpr std::string_view APPLICATION_NAME			= "VTX";
+	constexpr std::string_view ORGANIZATION_NAME		= "VTX";
+	constexpr std::string_view ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
+	constexpr std::string_view APPLICATION_VERSION		= "1.0.0";
 
 } // namespace VTX::App::Info
 

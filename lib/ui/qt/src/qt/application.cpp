@@ -26,12 +26,12 @@ namespace VTX::UI::QT
 		//_qSplashScreen->show();
 		//_qSplashScreen->showMessage( "Loading..." );
 
-		setWindowIcon( QIcon( SPRITE_LOGO ) );
-		setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME ) );
-		setApplicationName( QString::fromStdString( APPLICATION_NAME ) );
-		setApplicationVersion( QString::fromStdString( APPLICATION_VERSION ) );
-		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME ) );
-		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN ) );
+		setWindowIcon( QIcon( SPRITE_LOGO.data() ) );
+		setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME.data() ) );
+		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
+		setApplicationVersion( QString::fromStdString( APPLICATION_VERSION.data() ) );
+		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
+		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 		// setQuitOnLastWindowClosed( false );
 
 		_loadTheme();
@@ -124,17 +124,17 @@ namespace VTX::UI::QT
 		using namespace Resources;
 
 		// Load main stylesheet.
-		QFile stylesheetFile( FILE_STYLESHEET );
+		QFile stylesheetFile( FILE_STYLESHEET.data() );
 		stylesheetFile.open( QFile::ReadOnly );
 		QString stylesheet = stylesheetFile.readAll();
 
 		// Load os-specific stylesheet.
 #if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINOWS );
+		QFile stylesheetOSFile( FILE_STYLESHEET_WINOWS.data() );
 #elif __linux__
-		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX );
+		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
 #elif __APPLE__
-		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS );
+		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
 #else
 		QFile stylesheetOSFile();
 		assert( true );
