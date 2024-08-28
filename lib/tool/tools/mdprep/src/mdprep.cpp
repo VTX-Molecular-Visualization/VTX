@@ -52,6 +52,8 @@ namespace VTX::QT::Mdprep
 
 		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
 		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
+		std::optional<VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate>
+			__tmp; // Once the job progress view screen is done, it should be removed
 
 		virtual void _setupUi( const QString & p_name )
 		{
@@ -68,9 +70,18 @@ namespace VTX::QT::Mdprep
 			const QSize winsize = PREFERRED_SIZE;
 			resize( winsize );
 
-			_screen.emplace( mainWidget, _paramaeters, VTX::Tool::Mdprep::ui::ValidationSignaler {} );
+			_screen.emplace(
+				mainWidget,
+				_paramaeters,
+				VTX::Tool::Mdprep::ui::ValidationSignaler { [ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_
+															) { this->_preparationStarted( std::move( p_ ) ); } }
+			);
 		}
 		virtual void _setupSlots() override {}
+		void		 _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
+		{
+			__tmp.emplace( std::move( p_ ) ); // TMP
+		}
 
 	  public:
 		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent ) {}

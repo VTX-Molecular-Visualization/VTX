@@ -184,8 +184,10 @@ namespace VTX::Tool::Mdprep::ui
 		Gateway::MdParameters param;
 		_currentForm.get( param );
 
-		// Here we need an object X that will subscribe the JobUpdateCallback and keep all its data until the reciever
-		// screen is ready to handle them. X will then be transfered using the ValidationSignaler visitor class.
+		Gateway::JobUpdateIntermediate intermediate;
+		jobManager.startPreparation( param, intermediate.getUpdateCallback() );
+
+		_validationSignaler.preparationStarted( std::move( intermediate ) );
 	}
 	void ScreenForms::_setupSlots() noexcept
 	{
@@ -193,6 +195,16 @@ namespace VTX::Tool::Mdprep::ui
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
+	}
+
+	ValidationSignaler::ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> p_ ) :
+		_callback( std::move( p_ ) )
+	{
+	}
+
+	void ValidationSignaler::preparationStarted( Gateway::JobUpdateIntermediate p_ ) noexcept
+	{
+		_callback( std::move( p_ ) );
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

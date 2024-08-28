@@ -12,6 +12,7 @@ namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
 	class EngineJobManager;
+	class JobUpdateIntermediate;
 } // namespace VTX::Tool::Mdprep::Gateway
 namespace VTX::Tool::Mdprep::ui
 {
@@ -25,6 +26,13 @@ namespace VTX::Tool::Mdprep::ui
 	// Class responsible for signaling that a form is validated
 	class ValidationSignaler
 	{
+	  public:
+		ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> );
+
+		void preparationStarted( Gateway::JobUpdateIntermediate ) noexcept;
+
+	  private:
+		std::function<void( Gateway::JobUpdateIntermediate )> _callback;
 	};
 
 	// Class responsible for setting up the form screens, allowing user to fill it and start the processing
@@ -43,9 +51,9 @@ namespace VTX::Tool::Mdprep::ui
 		Gateway::MdParameters * _dataPtr = nullptr;
 		ValidationSignaler		_validationSignaler;
 
-		QComboBox * _w_mdEngine	   = nullptr;
-		QWidget *	_formContainer = nullptr;
-		QPushButton * _buttonStart = nullptr;
+		QComboBox *	  _w_mdEngine	 = nullptr;
+		QWidget *	  _formContainer = nullptr;
+		QPushButton * _buttonStart	 = nullptr;
 
 		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
 		VTX::Tool::Mdprep::ui::FormSwitchButton				_switchButton;
