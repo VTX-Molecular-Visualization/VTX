@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_TOOL_BAR__
-#define __VTX_TOOL_EXAMPLE_WIDGET_TOOL_BAR__
+#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
+#define __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
 
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
@@ -9,10 +9,10 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class ToolBar : public UI::QT::BaseWidget<ToolBar, QToolBar>
+	class MyToolBar : public UI::QT::BaseWidget<MyToolBar, QToolBar>
 	{
 	  public:
-		ToolBar( QWidget * p_parent ) : BaseWidget<ToolBar, QToolBar>( "My toolbar", p_parent )
+		MyToolBar( QWidget * p_parent ) : BaseWidget<MyToolBar, QToolBar>( "My toolbar", p_parent )
 		{
 			setLayout( new QGridLayout() );
 
@@ -22,7 +22,7 @@ namespace VTX::Tool::Example::Widget
 			addAction<Action::MyAction4>();
 		}
 
-		virtual ~ToolBar() {}
+		virtual ~MyToolBar() {}
 
 	  private:
 	};

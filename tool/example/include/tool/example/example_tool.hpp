@@ -9,11 +9,11 @@ namespace VTX::Tool::Example
 	/**
 	 * @brief The main class of the tool, inherits from abstract BaseTool.
 	 */
-	class Tool : public App::Tool::BaseTool
+	class ExampleTool : public App::Tool::BaseTool
 	{
 	  public:
-		Tool();
-		~Tool();
+		ExampleTool();
+		~ExampleTool();
 
 		void init() override;
 		void onAppStart() override;
