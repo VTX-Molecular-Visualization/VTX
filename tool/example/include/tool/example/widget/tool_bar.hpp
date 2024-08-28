@@ -1,7 +1,7 @@
 #ifndef __VTX_TOOL_EXAMPLE_WIDGET_TOOL_BAR__
 #define __VTX_TOOL_EXAMPLE_WIDGET_TOOL_BAR__
 
-#include "example/actions.hpp"
+#include "tool/example/actions.hpp"
 #include <QGridLayout>
 #include <QToolBar>
 #include <qt/base_widget.hpp>

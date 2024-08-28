@@ -16,7 +16,7 @@
 #endif
 
 #ifdef VTX_TOOL_EXAMPLE
-#include <example/tool.hpp>
+#include <tool/example/tool.hpp>
 #endif
 
 #ifdef _WIN32

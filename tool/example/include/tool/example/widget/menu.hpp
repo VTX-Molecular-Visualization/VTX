@@ -2,7 +2,7 @@
 #define __VTX_TOOL_EXAMPLE_WIDGET_MENU__
 
 #include "dialog.hpp"
-#include "example/actions.hpp"
+#include "tool/example/actions.hpp"
 #include <QMenu>
 #include <qt/base_widget.hpp>
 

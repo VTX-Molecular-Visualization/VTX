@@ -1,7 +1,7 @@
-#include "example/tool.hpp"
-#include "example/widget/dock_widget.hpp"
-#include "example/widget/menu.hpp"
-#include "example/widget/tool_bar.hpp"
+#include "tool/example/tool.hpp"
+#include "tool/example/widget/dock_widget.hpp"
+#include "tool/example/widget/menu.hpp"
+#include "tool/example/widget/tool_bar.hpp"
 #include <qt/application.hpp>
 #include <qt/dock_widget/inspector.hpp>
 #include <util/logger.hpp>
