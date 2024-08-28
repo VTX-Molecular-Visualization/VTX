@@ -94,12 +94,12 @@ namespace VTX::Tool::Mdprep::ui
 		qExplainatoryText->setWordWrap( true );
 		qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
 		qLayoutWindow->addWidget( qExplainatoryText );
-		QPushButton * qStartButton = new QPushButton;
-		QFont		  f			   = qStartButton->font();
+		_buttonStart = new QPushButton;
+		QFont f		 = _buttonStart->font();
 		f.setPointSize( f.pointSize() + 2 );
-		qStartButton->setFont( f );
-		qStartButton->setText( buttonLabel );
-		qLayoutWindow->addWidget( qStartButton );
+		_buttonStart->setFont( f );
+		_buttonStart->setText( buttonLabel );
+		qLayoutWindow->addWidget( _buttonStart );
 	}
 	void ScreenForms::_updateMdEngine( int idx ) noexcept
 	{
@@ -176,11 +176,23 @@ namespace VTX::Tool::Mdprep::ui
 		_formEngine.activate();
 		_updateForm();
 	}
+	void ScreenForms::_startPreparation() noexcept
+	{
+		Gateway::EngineJobManager jobManager;
+		_mdEngines[ _mdEngineCurrentIdx ]->get( jobManager );
+
+		Gateway::MdParameters param;
+		_currentForm.get( param );
+
+		// Here we need an object X that will subscribe the JobUpdateCallback and keep all its data until the reciever
+		// screen is ready to handle them. X will then be transfered using the ValidationSignaler visitor class.
+	}
 	void ScreenForms::_setupSlots() noexcept
 	{
 		QObject::connect(
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
+		QObject::connect( _buttonStart, QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

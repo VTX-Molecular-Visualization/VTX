@@ -45,6 +45,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		QComboBox * _w_mdEngine	   = nullptr;
 		QWidget *	_formContainer = nullptr;
+		QPushButton * _buttonStart = nullptr;
 
 		// VTX::Tool::Mdprep::ui::FormSwitchButton   _fieldOrganizer;
 		VTX::Tool::Mdprep::ui::FormSwitchButton				_switchButton;
@@ -60,6 +61,7 @@ namespace VTX::Tool::Mdprep::ui
 		void _updateForm() noexcept;
 		void _setFormBasic() noexcept;
 		void _setFormAdvanced() noexcept;
+		void _startPreparation() noexcept;
 		void _setupSlots() noexcept;
 
 		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter() noexcept;
