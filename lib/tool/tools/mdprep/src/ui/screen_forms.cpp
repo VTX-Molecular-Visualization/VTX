@@ -192,7 +192,7 @@ namespace VTX::Tool::Mdprep::ui
 		QObject::connect(
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
-		QObject::connect( _buttonStart, QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
+		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
 	}
 
 } // namespace VTX::Tool::Mdprep::ui
