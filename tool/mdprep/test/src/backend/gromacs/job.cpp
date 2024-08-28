@@ -1,11 +1,11 @@
-#include "tools/mdprep/backends/gromacs/pdb2gmx.hpp"
+#include "tool/mdprep/backends/gromacs/pdb2gmx.hpp"
 //
-#include "tools/mdprep/backends/gromacs/inputs.hpp"
+#include "tool/mdprep/backends/gromacs/inputs.hpp"
 //
 #include "mdprep/test/fixture.hpp"
-#include "tools/mdprep/backends/gromacs/job.hpp"
-#include "tools/mdprep/backends/gromacs/pdb2gmx.hpp"
-#include "tools/mdprep/backends/gromacs/util.hpp"
+#include "tool/mdprep/backends/gromacs/job.hpp"
+#include "tool/mdprep/backends/gromacs/pdb2gmx.hpp"
+#include "tool/mdprep/backends/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <format>

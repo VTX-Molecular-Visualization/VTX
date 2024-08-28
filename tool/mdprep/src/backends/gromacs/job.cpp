@@ -1,7 +1,7 @@
-#include "tools/mdprep/backends/gromacs/inputs.hpp"
+#include "tool/mdprep/backends/gromacs/inputs.hpp"
 // Input should be first as is forward declared below
-#include "tools/mdprep/backends/gromacs/job.hpp"
-#include "tools/mdprep/backends/gromacs/pdb2gmx.impl.hpp"
+#include "tool/mdprep/backends/gromacs/job.hpp"
+#include "tool/mdprep/backends/gromacs/pdb2gmx.impl.hpp"
 #include <qprocess.h>
 #include <thread>
 #include <util/exceptions.hpp>

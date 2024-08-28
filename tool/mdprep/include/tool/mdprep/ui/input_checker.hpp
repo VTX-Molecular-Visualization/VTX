@@ -1,7 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_INPUT_CHECKER__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_INPUT_CHECKER__
 
-#include "tools/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
 #include <memory>
 #include <util/concepts.hpp>
 

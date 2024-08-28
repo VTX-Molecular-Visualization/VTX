@@ -1,5 +1,5 @@
 #include <fstream>
-#include <tools/mdprep/backends/gromacs/inputs.hpp>
+#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "mdprep/test/fixture.hpp"
 #include <algorithm>
@@ -9,9 +9,9 @@
 #include <unordered_set>
 #include <util/logger.hpp>
 //
-#include "tools/mdprep/backends/gromacs/job.hpp"
-#include <tools/mdprep/backends/gromacs/pdb2gmx.hpp>
-#include <tools/mdprep/backends/gromacs/util.hpp>
+#include "tool/mdprep/backends/gromacs/job.hpp"
+#include <tool/mdprep/backends/gromacs/pdb2gmx.hpp>
+#include <tool/mdprep/backends/gromacs/util.hpp>
 
 TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
 {

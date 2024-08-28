@@ -1,5 +1,5 @@
-#include "ui/qt/util.hpp"
-#include "ui/qt/validator.hpp"
+#include "qt/util.hpp"
+#include "qt/validator.hpp"
 #include <QAction>
 #include <qevent.h>
 #include <qfont.h>

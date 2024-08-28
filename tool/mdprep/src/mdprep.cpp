@@ -5,35 +5,35 @@
 #include <qtextdocument.h>
 //
 //
-#include "tools/mdprep/gateway/engine_job_manager.hpp"
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/gateway/shared.hpp"
-#include "tools/mdprep/ui/input_checker.hpp"
-#include "tools/mdprep/ui/shared.hpp"
+#include "tool/mdprep/gateway/engine_job_manager.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/shared.hpp"
 #include "util/sentry.hpp"
 //
-#include "tools/mdprep/ui/report.hpp"
+#include "tool/mdprep/ui/report.hpp"
 //
-#include "tools/mdprep/mdprep.hpp"
-#include "tools/mdprep/ui/md_engine.hpp"
-#include "tools/mdprep/ui/md_engine_factory.hpp"
-#include "tools/mdprep/ui/md_engine_field_placer.hpp"
-#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/mdprep.hpp"
+#include "tool/mdprep/ui/md_engine.hpp"
+#include "tool/mdprep/ui/md_engine_factory.hpp"
+#include "tool/mdprep/ui/md_engine_field_placer.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
-#include "tools/mdprep/ui/form_switch_button.hpp"
-#include <ui/qt/application_qt.hpp>
-#include <ui/qt/main_window.hpp>
-#include <ui/qt/util.hpp>
-#include <ui/qt/widget_factory.hpp>
+#include "tool/mdprep/ui/form_switch_button.hpp"
+#include <qt/application_qt.hpp>
+#include <qt/main_window.hpp>
+#include <qt/util.hpp>
+#include <qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
-#include "tools/mdprep/ui/form.hpp"
-#include "tools/mdprep/ui/form_advanced/event_manager.hpp"
-#include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
-#include "tools/mdprep/ui/form_basic/form_basic.hpp"
-#include "tools/mdprep/ui/screen_forms.hpp"
+#include "tool/mdprep/ui/form.hpp"
+#include "tool/mdprep/ui/form_advanced/event_manager.hpp"
+#include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
+#include "tool/mdprep/ui/form_basic/form_basic.hpp"
+#include "tool/mdprep/ui/screen_forms.hpp"
 //
-#include "tools/mdprep/ui/form.hpp"
+#include "tool/mdprep/ui/form.hpp"
 //
 
 namespace VTX::QT::Mdprep

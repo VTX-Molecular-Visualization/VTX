@@ -7,7 +7,7 @@
 #include <qpushbutton.h>
 #include <qtabwidget.h>
 //
-#include "tools/mdprep/ui/form_switch_button.hpp"
+#include "tool/mdprep/ui/form_switch_button.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {

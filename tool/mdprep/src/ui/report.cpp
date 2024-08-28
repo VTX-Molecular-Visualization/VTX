@@ -1,12 +1,12 @@
 
-#include "tools/mdprep/gateway/shared.hpp"
-#include "tools/mdprep/ui/input_checker.hpp"
-#include "tools/mdprep/ui/shared.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/shared.hpp"
 #include <app/vtx_app.hpp>
-#include <ui/qt/util.hpp>
+#include <qt/util.hpp>
 #include <util/sentry.hpp>
 //
-#include "tools/mdprep/ui/report.hpp"
+#include "tool/mdprep/ui/report.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {

@@ -2,7 +2,7 @@
 #include <mutex>
 #include <optional>
 //
-#include "tools/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
 
 namespace VTX::Tool::Mdprep::Gateway
 {

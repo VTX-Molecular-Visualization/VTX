@@ -1,5 +1,5 @@
 #include "qt/line_edit/command_launcher.hpp"
-// #include "ui/qt/widget/pytx/include_python_binding.hpp"
+// #include "qt/widget/pytx/include_python_binding.hpp"
 
 #include <util/logger.hpp>
 

@@ -2,20 +2,20 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 //
-#include <ui/qt/util.hpp>
+#include <qt/util.hpp>
 #include <util/sentry.hpp>
 //
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/gateway/shared.hpp"
-#include "tools/mdprep/ui/form_advanced/shared.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/form_advanced/shared.hpp"
 //
-#include "tools/mdprep/ui/input_checker.hpp"
-#include "tools/mdprep/ui/report.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/report.hpp"
 //
-#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
-#include "tools/mdprep/ui/shared.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/ui/shared.hpp"
 //
-#include "tools/mdprep/ui/form_advanced/event_manager.hpp"
+#include "tool/mdprep/ui/form_advanced/event_manager.hpp"
 
 namespace VTX::Tool::Mdprep::ui::form_advanced
 {

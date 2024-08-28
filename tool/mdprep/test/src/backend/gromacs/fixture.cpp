@@ -1,7 +1,7 @@
 
 #include "mdprep/test/fixture.hpp"
 #include <fstream>
-#include <tools/mdprep/backends/gromacs/util.hpp>
+#include <tool/mdprep/backends/gromacs/util.hpp>
 namespace VTX::test
 {
 	PrepareJobSetup::PrepareJobSetup( const char * p_rootDirName, const char * jobName ) :

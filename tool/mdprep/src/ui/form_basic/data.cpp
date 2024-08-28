@@ -1,11 +1,11 @@
-#include <ui/qt/util.hpp>
+#include <qt/util.hpp>
 //
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/gateway/shared.hpp"
-#include "tools/mdprep/ui/input_checker.hpp"
-#include "tools/mdprep/ui/report.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/report.hpp"
 //
-#include "tools/mdprep/ui/form_basic/data.hpp"
+#include "tool/mdprep/ui/form_basic/data.hpp"
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {

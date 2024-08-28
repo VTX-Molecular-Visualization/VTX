@@ -1,24 +1,24 @@
 
 #include "util/sentry.hpp"
 #include <qpushbutton.h>
-#include <ui/qt/util.hpp>
+#include <qt/util.hpp>
 //
-#include "tools/mdprep/gateway/engine_job_manager.hpp"
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/gateway/engine_job_manager.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
 //
-#include "tools/mdprep/ui/form.hpp"
-#include "tools/mdprep/ui/form_switch_button.hpp"
-#include "tools/mdprep/ui/input_checker.hpp"
-#include "tools/mdprep/ui/md_engine.hpp"
-#include "tools/mdprep/ui/md_engine_field_placer.hpp"
-#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
-#include "tools/mdprep/ui/report.hpp"
+#include "tool/mdprep/ui/form.hpp"
+#include "tool/mdprep/ui/form_switch_button.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/md_engine.hpp"
+#include "tool/mdprep/ui/md_engine_field_placer.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/ui/report.hpp"
 //
-#include "tools/mdprep/ui/form_advanced/form_advanced.hpp"
-#include "tools/mdprep/ui/form_basic/form_basic.hpp"
+#include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
+#include "tool/mdprep/ui/form_basic/form_basic.hpp"
 //
-#include "tools/mdprep/ui/screen_forms.hpp"
+#include "tool/mdprep/ui/screen_forms.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {

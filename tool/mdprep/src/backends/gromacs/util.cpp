@@ -2,10 +2,10 @@
 #include <random>
 #include <re2/re2.h>
 //
-#include "tools/mdprep/backends/gromacs/inputs.hpp"
+#include "tool/mdprep/backends/gromacs/inputs.hpp"
 //
-#include "tools/mdprep/backends/gromacs/job.hpp"
-#include "tools/mdprep/backends/gromacs/util.hpp"
+#include "tool/mdprep/backends/gromacs/job.hpp"
+#include "tool/mdprep/backends/gromacs/util.hpp"
 #include <qapplication.h>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>

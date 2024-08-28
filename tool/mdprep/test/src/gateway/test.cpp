@@ -12,7 +12,7 @@
 #include <util/types.hpp>
 #include <vector>
 //
-#include <tools/mdprep/gateway/engine_job_manager.hpp>
+#include <tool/mdprep/gateway/engine_job_manager.hpp>
 
 TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 {
