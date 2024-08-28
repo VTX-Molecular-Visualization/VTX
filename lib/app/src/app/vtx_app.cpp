@@ -112,7 +112,7 @@ namespace VTX::App
 		// Log times.
 		// VTX_DEBUG( "Delta time: {} ms, Elapsed time: {} ms", p_deltaTime, p_elapsedTime );
 
-		Core::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
+		Util::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
 		frameInfo.set(
 			Internal::Monitoring::TICK_RATE_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
@@ -121,7 +121,7 @@ namespace VTX::App
 
 	void VTXApp::_update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		Core::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
+		Util::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
 
 		/*
 		frameInfo.set(
@@ -255,6 +255,6 @@ namespace VTX::App
 
 	Application::Scene &	  SCENE() { return APP::getScene(); }
 	Mode::BaseMode &		  MODE() { return APP::getCurrentMode(); }
-	Core::Monitoring::Stats & STATS() { return APP::getStats(); }
+	Util::Monitoring::Stats & STATS() { return APP::getStats(); }
 
 } // namespace VTX::App

@@ -1,14 +1,14 @@
-#ifndef __VTX_APP_CORE_MONITORING_STAT__
-#define __VTX_APP_CORE_MONITORING_STAT__
+#ifndef __VTX_UTIL_MONITORING_STAT__
+#define __VTX_UTIL_MONITORING_STAT__
 
-#include "app/core/monitoring/frame_info.hpp"
+#include "frame_info.hpp"
 #include <list>
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Monitoring
+namespace VTX::Util::Monitoring
 {
 	struct Stats
 	{
@@ -43,5 +43,5 @@ namespace VTX::App::Core::Monitoring
 
 		std::list<FrameInfo> _frames = std::list<FrameInfo>();
 	};
-} // namespace VTX::App::Core::Monitoring
+} // namespace VTX::Util::Monitoring
 #endif

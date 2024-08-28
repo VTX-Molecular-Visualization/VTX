@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_MONITORING_FRAME_INFO__
-#define __VTX_APP_CORE_MONITORING_FRAME_INFO__
+#ifndef __VTX_UTIL_MONITORING_FRAME_INFO__
+#define __VTX_UTIL_MONITORING_FRAME_INFO__
 
 #include <map>
 #include <string>
@@ -7,7 +7,7 @@
 #include <util/variant.hpp>
 #include <utility>
 
-namespace VTX::App::Core::Monitoring
+namespace VTX::Util::Monitoring
 {
 	struct FrameInfo
 	{
@@ -50,5 +50,5 @@ namespace VTX::App::Core::Monitoring
 
 		std::map<Hash, Util::VTXVariant> _metricsMap;
 	};
-} // namespace VTX::App::Core::Monitoring
+} // namespace VTX::Util::Monitoring
 #endif

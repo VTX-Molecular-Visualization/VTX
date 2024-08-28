@@ -13,7 +13,7 @@ void displaySimpleInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Core::Monitoring::Stats & stats = APP::getStats();
+	const Util::Monitoring::Stats & stats = APP::getStats();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
@@ -28,7 +28,7 @@ void displayFullInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Core::Monitoring::Stats & stats = APP::getStats();
+	const Util::Monitoring::Stats & stats = APP::getStats();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );

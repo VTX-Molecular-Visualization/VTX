@@ -2,7 +2,6 @@
 #define ___VTX_APP_VTX_APP___
 
 #include "app/application/_fwd.hpp"
-#include "app/core/monitoring/stats.hpp"
 #include "app/mode/base_mode.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
@@ -13,6 +12,7 @@
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
+#include <util/monitoring/stats.hpp>
 #include <vector>
 
 namespace VTX::App
@@ -41,7 +41,7 @@ namespace VTX::App
 		};
 		*/
 
-		inline static Core::Monitoring::Stats & getStats() { return _stats; }
+		inline static Util::Monitoring::Stats & getStats() { return _stats; }
 		static Application::Scene &				getScene();
 		inline static Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
 
@@ -76,7 +76,7 @@ namespace VTX::App
 
 		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
 		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
-		inline static Core::Monitoring::Stats		  _stats;
+		inline static Util::Monitoring::Stats		  _stats;
 
 		static void _handleArgs( const Args & p_args );
 		static void _update( const float p_deltaTime, const float p_elapsedTime );
@@ -85,7 +85,7 @@ namespace VTX::App
 	// Convenient accessors
 	Application::Scene &	  SCENE();
 	Mode::BaseMode &		  MODE();
-	Core::Monitoring::Stats & STATS();
+	Util::Monitoring::Stats & STATS();
 } // namespace VTX::App
 
 namespace VTX

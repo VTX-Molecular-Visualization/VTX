@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_INTERNAL_MONITORING_ALL_METRICS__
 #define __VTX_APP_INTERNAL_MONITORING_ALL_METRICS__
 
-#include "app/core/monitoring/frame_info.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::App::Internal::Monitoring

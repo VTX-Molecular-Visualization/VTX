@@ -1,7 +1,6 @@
-#include "app/core/monitoring/stats.hpp"
-#include "app/internal/monitoring/all_metrics.hpp"
+#include "util/monitoring/stats.hpp"
 
-namespace VTX::App::Core::Monitoring
+namespace VTX::Util::Monitoring
 {
 
 	FrameInfo & Stats::newFrame()
@@ -25,4 +24,4 @@ namespace VTX::App::Core::Monitoring
 	//	clearArchive();
 	//	_activeFrames.clear();
 	//}
-} // namespace VTX::App::Core::Monitoring
+} // namespace VTX::Util::Monitoring
