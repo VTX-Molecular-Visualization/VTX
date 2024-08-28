@@ -6,15 +6,42 @@
 namespace VTX::Tool::Example::Action
 {
 
-	struct New : public App::UI::DescAction
+	struct MyAction1 : public App::UI::DescAction
 	{
-		New()
+		MyAction1()
 		{
-			name	 = "New";
-			tip		 = "Create a new project";
-			icon	 = ":/sprite/file/new.png";
-			shortcut = "Ctrl+N";
-			// trigger	 = []() { App::VTX_ACTION().execute<App::Action::Application::NewScene>(); };
+			name = "Open dialog";
+			tip	 = "Demo action";
+			// icon	 = "";
+			// shortcut = "";
+			// trigger	 = []() {};
+		}
+	};
+
+	struct MyAction2 : public App::UI::DescAction
+	{
+		MyAction2()
+		{
+			name = "My action 2";
+			tip	 = "Demo action";
+		}
+	};
+
+	struct MyAction3 : public App::UI::DescAction
+	{
+		MyAction3()
+		{
+			name = "My action 3";
+			tip	 = "Demo action";
+		}
+	};
+
+	struct MyAction4 : public App::UI::DescAction
+	{
+		MyAction4()
+		{
+			name = "My action 4";
+			tip	 = "Demo action";
 		}
 	};
 

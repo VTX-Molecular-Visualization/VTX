@@ -87,7 +87,7 @@ namespace VTX::UI::QT::Widget
 		auto * dwOptions		= createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		tabifyDockWidget( dwInspector, dwRenderSettings );
 		tabifyDockWidget( dwInspector, dwOptions );
-		dwRenderSettings->raise();
+		dwInspector->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 

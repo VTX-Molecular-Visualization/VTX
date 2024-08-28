@@ -7,7 +7,7 @@ namespace VTX::Tool::Example
 {
 
 	/**
-	 * @brief BaseTool implementation, the main class of the tool.
+	 * @brief The main class of the tool, inherits from abstract BaseTool.
 	 */
 	class Tool : public App::Tool::BaseTool
 	{
