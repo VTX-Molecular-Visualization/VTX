@@ -1,9 +1,9 @@
 #include <memory>
 #include <qapplication.h>
-#include <tools/mdprep/gromacs/inputs.hpp>
+#include <tools/mdprep/backends/gromacs/inputs.hpp>
 //
-#include "tools/mdprep/gromacs/job.hpp"
-#include <tools/mdprep/gromacs/util.hpp>
+#include "tools/mdprep/backends/gromacs/job.hpp"
+#include <tools/mdprep/backends/gromacs/util.hpp>
 
 namespace VTX::test
 {
@@ -32,9 +32,9 @@ namespace VTX::test
 																  ( g_outputDir / "1ubq.top" ).string() };
 	};
 
-
 	// Put a pointer to each of the input string into the pointer vector
-	void fill( const std::vector<std::string> &, VTX::Tool::Mdprep::Gromacs::CumulativeOuputFiles & ) noexcept;
+	void
+	fill( const std::vector<std::string> &, VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & ) noexcept;
 
 	struct Editconf
 	{
