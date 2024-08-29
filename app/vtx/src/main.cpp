@@ -17,7 +17,7 @@
 #endif
 
 #ifdef VTX_TOOL_EXAMPLE
-#include <example/tool.hpp>
+#include <tool/example/example_tool.hpp>
 #endif
 
 #ifdef VTX_TOOL_MDPREP
@@ -75,7 +75,7 @@ int main( int p_argc, char * p_argv[] )
 
 // Add tools.
 #ifdef VTX_TOOL_EXAMPLE
-		auto exampleTool = std::make_unique<Tool::Example::Tool>();
+		auto exampleTool = std::make_unique<Tool::Example::ExampleTool>();
 		app->addTool( exampleTool.get() );
 #endif
 // Add tools.

@@ -1,22 +1,22 @@
-#include "example/tool.hpp"
-#include "example/widget/dock_widget.hpp"
-#include "example/widget/menu.hpp"
-#include "example/widget/tool_bar.hpp"
+#include "tool/example/example_tool.hpp"
+#include "tool/example/widget/my_dock_widget.hpp"
+#include "tool/example/widget/my_menu.hpp"
+#include "tool/example/widget/my_tool_bar.hpp"
 #include <qt/application.hpp>
 #include <qt/dock_widget/inspector.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Tool::Example
 {
-	Tool::Tool() {}
+	ExampleTool::ExampleTool() {}
 
-	Tool::~Tool() {}
+	ExampleTool::~ExampleTool() {}
 
-	void Tool::init() {}
+	void ExampleTool::init() {}
 
-	void Tool::onAppStart() {}
+	void ExampleTool::onAppStart() {}
 
-	void Tool::createUI()
+	void ExampleTool::createUI()
 	{
 		//////////////////////////
 		// Method 1:
@@ -39,13 +39,13 @@ namespace VTX::Tool::Example
 		//////////////////////////
 		// Method 2:
 		// Add custom widgets.
-		APP_QT::getMainWindow()->createMenu<Widget::Menu>();
-		APP_QT::getMainWindow()->createToolBar<Widget::ToolBar>();
+		APP_QT::getMainWindow()->createMenu<Widget::MyMenu>();
+		APP_QT::getMainWindow()->createToolBar<Widget::MyToolBar>();
 		// TODO: hide this.
-		auto * dockWidget = APP_QT::getMainWindow()->createDockWidget<Widget::DockWidget>( Qt::RightDockWidgetArea );
+		auto * dockWidget = APP_QT::getMainWindow()->createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
 		auto * dockWidgetInspector = UI::QT::WIDGETS::get().get<UI::QT::DockWidget::Inspector *>();
 		APP_QT::getMainWindow()->tabifyDockWidget( dockWidgetInspector, dockWidget );
 	}
 
-	void Tool::onAppStop() {}
+	void ExampleTool::onAppStop() {}
 } // namespace VTX::Tool::Example

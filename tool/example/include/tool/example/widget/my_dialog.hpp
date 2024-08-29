@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_DIALOG__
-#define __VTX_TOOL_EXAMPLE_WIDGET_DIALOG__
+#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG__
+#define __VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG__
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -10,10 +10,10 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class Dialog : public UI::QT::BaseWidget<Dialog, QDialog>
+	class MyDialog : public UI::QT::BaseWidget<MyDialog, QDialog>
 	{
 	  public:
-		Dialog()
+		MyDialog()
 		{
 			setWindowTitle( "Example tool dialog" );
 			setMinimumSize( 300, 100 );
@@ -50,7 +50,7 @@ namespace VTX::Tool::Example::Widget
 				[ this ]() { close(); }
 			);
 		}
-		virtual ~Dialog() {}
+		virtual ~MyDialog() {}
 	};
 
 } // namespace VTX::Tool::Example::Widget
