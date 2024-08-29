@@ -4,6 +4,7 @@
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 //
+#include <qtoolbar.h>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -45,8 +46,10 @@ namespace VTX::Tool::Mdprep
 	// specifics.
 	class MainWindow : public UI::QT::BaseWidget<MainWindow, QDockWidget>
 	{
+	  public:
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
 
+	  private:
 		using EngineCollection
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 		QComboBox * _w_mdEngine	   = nullptr;
@@ -73,11 +76,16 @@ namespace VTX::Tool::Mdprep
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
+			mainWidget->setLayout( new QVBoxLayout );
+			mainWidget->layout()->addWidget( new QToolBar );
+
+			QWidget * screenWidget = new QWidget;
+			mainWidget->layout()->addWidget( screenWidget );
+
 			setWindowState( Qt::WindowState::WindowActive );
-			const QSize winsize = PREFERRED_SIZE;
-			resize( winsize );
+			resize( PREFERRED_SIZE );
 			_screen.emplace(
-				mainWidget,
+				screenWidget,
 				_paramaeters,
 				VTX::Tool::Mdprep::ui::ValidationSignaler { [ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_
 															) { this->_preparationStarted( std::move( p_ ) ); } }
@@ -111,8 +119,15 @@ namespace VTX::Tool::Mdprep
 			{
 				MainWindow * win;
 				get( win );
-				win->show();
-				win->raise();
+
+				if ( win->isHidden() )
+				{
+					win->resize( win->PREFERRED_SIZE );
+					win->show();
+					win->raise();
+				}
+				else
+					win->hide();
 			};
 		}
 	};

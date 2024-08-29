@@ -130,7 +130,7 @@ namespace VTX::UI::QT
 
 		// Load os-specific stylesheet.
 #if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINOWS.data() );
+		QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
 #elif __linux__
 		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
 #elif __APPLE__
