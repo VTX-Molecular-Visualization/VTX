@@ -2,7 +2,7 @@
 //
 #include "tool/mdprep/backends/gromacs/inputs.hpp"
 //
-#include "mdprep/test/fixture.hpp"
+#include "fixture.hpp"
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/pdb2gmx.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"
