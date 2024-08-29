@@ -1,9 +1,9 @@
 #include <memory>
 #include <qapplication.h>
-#include <tools/mdprep/backends/gromacs/inputs.hpp>
+#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
-#include "tools/mdprep/backends/gromacs/job.hpp"
-#include <tools/mdprep/backends/gromacs/util.hpp>
+#include "tool/mdprep/backends/gromacs/job.hpp"
+#include <tool/mdprep/backends/gromacs/util.hpp>
 
 namespace VTX::test
 {
