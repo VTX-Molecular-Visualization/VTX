@@ -63,9 +63,7 @@ namespace VTX
 	template<typename ContainerType, typename ValueType>
 	concept ContainerOfType = requires( ContainerType p_container ) {
 		requires Container<ContainerType>;
-		{
-			*( p_container.begin() )
-		} -> std::convertible_to<ValueType>;
+		{ *( p_container.begin() ) } -> std::convertible_to<ValueType>;
 	};
 
 	template<typename EnumType>
@@ -160,6 +158,8 @@ namespace VTX
 	concept SameUnalteredType
 		= std::same_as<typename RemoveTypeAlterations<LEFT>::type, typename RemoveTypeAlterations<RIGHT>::type>;
 
+	template<typename T>
+	concept HasPointerOperator = requires( T a ) { a->bar(); };
 } // namespace VTX
 
 #endif

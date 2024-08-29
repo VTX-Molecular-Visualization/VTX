@@ -18,7 +18,6 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Abstract collection of QWidget pointers.
 	 */
-
 	using WIDGET_COLLECTION = VTX::Util::HashedCollection<QWidget *>;
 
 	/**
@@ -32,12 +31,12 @@ namespace VTX::UI::QT
 	 * @tparam W is the QWidget type.
 	 */
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W, public WIDGET_COLLECTION::Registration<T>
+	class BaseWidget : public W, public WIDGET_COLLECTION::GlobalStorage<T>
 	{
 	  public:
 		template<typename... Args>
 		BaseWidget( Args &&... p_args ) :
-			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::Registration<T>( this )
+			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::GlobalStorage<T>( this )
 		{
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
