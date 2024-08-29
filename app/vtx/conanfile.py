@@ -23,6 +23,7 @@ class VTXRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_tool_example/1.0")
+        self.requires("vtx_tool_mdprep/1.0")
 
     def layout(self):
         cmake_layout(self)
@@ -37,8 +38,8 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
         tc.generate()
 
-        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*", os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data"), os.path.join(self.build_folder, "data"))
+        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        #copy(self, "*", os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data"), os.path.join(self.build_folder, "data"))
 
     def build(self):
         cmake = CMake(self)

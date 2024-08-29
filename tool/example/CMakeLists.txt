@@ -17,10 +17,6 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(Catch2 REQUIRED)
 
-# Test libs.
-include(CTest)
-include(Catch)
-
 # Workaround.
 set(_VTX_TOOL_EXAMPLE_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")

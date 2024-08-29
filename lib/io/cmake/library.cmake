@@ -31,4 +31,6 @@ target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx_io_test)
 
+include(CTest)
+include(Catch)
 catch_discover_tests(vtx_io_test DISCOVERY_MODE PRE_TEST)

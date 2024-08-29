@@ -47,4 +47,6 @@ target_compile_definitions(vtx_renderer_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
 vtx_copy_registered_data(vtx_renderer)
 
+include(CTest)
+include(Catch)
 catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)

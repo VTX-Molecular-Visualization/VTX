@@ -5,9 +5,6 @@ project(vtx_renderer)
 find_package(vtx_util CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
-include(CTest)
-include(Catch)
-
 set(_VTX_RENDERER_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 

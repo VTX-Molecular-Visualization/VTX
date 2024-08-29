@@ -30,7 +30,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("gromacs/2024.0")
 
     def generate(self):
-        copy(self, "*.dll", self.dependencies["vtx_ui"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
         
     def config_options(self):
         if self.settings.os == "Windows":
