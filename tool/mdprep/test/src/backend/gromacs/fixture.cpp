@@ -1,5 +1,5 @@
 
-#include "mdprep/test/fixture.hpp"
+#include "fixture.hpp"
 #include <fstream>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 namespace VTX::test
@@ -12,7 +12,7 @@ namespace VTX::test
 			fs::remove_all( jobDir );
 	}
 	void fill(
-		const std::vector<std::string> &				   p_in,
+		const std::vector<std::string> &							 p_in,
 		VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & p_out
 	) noexcept
 	{

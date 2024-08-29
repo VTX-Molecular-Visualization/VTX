@@ -33,22 +33,23 @@ target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
 vtx_copy_registered_data(vtx_tool_mdprep)
 
-file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../test/include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
 
-add_executable(vtx_tool_mdprep_test ${SOURCES})
+add_executable(vtx_tool_mdprep_test ${SOURCES} )
 configure_target(vtx_tool_mdprep_test)
 
 
 if (NOT DEFINED _VTX_MDPREP_CONAN)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util)
+	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 else()
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
+	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 endif()

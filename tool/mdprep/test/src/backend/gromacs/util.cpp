@@ -1,7 +1,7 @@
 #include <fstream>
 #include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
-#include "mdprep/test/fixture.hpp"
+#include "fixture.hpp"
 #include <algorithm>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
