@@ -22,14 +22,14 @@ namespace VTX::Util
 		 * @tparam T is the derived class type.
 		 */
 		template<typename T>
-		class Registration
+		class GlobalStorage
 		{
 		  public:
-			Registration( const C & p_instance )
+			GlobalStorage( const C & p_instance )
 			{
-				Singleton<HashedCollection<C>>::get().template set<T>( static_cast<C>( p_instance ) );
+				Singleton<HashedCollection<C>>::get().template set<T>( p_instance );
 			}
-			virtual ~Registration() { Singleton<HashedCollection<C>>::get().template remove<T>(); }
+			virtual ~GlobalStorage() { Singleton<HashedCollection<C>>::get().template remove<T>(); }
 		};
 
 	  public:
@@ -56,6 +56,42 @@ namespace VTX::Util
 		inline C get( const Hash & p_hash )
 		{
 			assert( _map.contains( p_hash ) );
+			return _map[ p_hash ];
+		}
+
+		// TODO: add getOrCreate() with tests.
+		template<typename T>
+		inline T create()
+		{
+			return static_cast<T>( create( hash<T>() ) );
+		}
+
+		template<typename T>
+		inline T create( const Hash & p_hash )
+		{
+			return static_cast<T>( create( p_hash ) );
+		}
+
+		inline C create( const Hash & p_hash )
+		{
+			assert( not _map.contains( p_hash ) );
+
+			// Raw pointer.
+			if constexpr ( std::is_pointer<C>::value )
+			{
+				_map[ p_hash ] = new std::remove_pointer_t<C>();
+			}
+			// Smart pointer.
+			else if constexpr ( HasPointerOperator<C> )
+			{
+				_map[ p_hash ] = std::make_unique<std::pointer_traits<C>::element_type>();
+			}
+			//
+			else
+			{
+				_map[ p_hash ] = C();
+			}
+
 			return _map[ p_hash ];
 		}
 

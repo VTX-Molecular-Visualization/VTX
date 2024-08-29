@@ -7,8 +7,12 @@ namespace VTX::UI::QT::Action
 	{
 		if ( not ACTIONS.has( p_hash ) )
 		{
+			/*
 			QAction * qAction = new QAction();
 			ACTIONS.set( p_hash, qAction );
+			*/
+
+			QAction * qAction = ACTIONS.create( p_hash );
 
 			VTX_TRACE( "UI action created: {}", p_action.name );
 
