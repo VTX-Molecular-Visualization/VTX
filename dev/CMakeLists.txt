@@ -79,5 +79,8 @@ vtx_clear_registered_copies()
 # Tool example
 include("${DIR_TOOLS}/example/cmake/library.cmake")
 
+# Tool Mdprep
+include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
+
 
 vtx_clear_registered_copies()
