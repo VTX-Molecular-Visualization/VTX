@@ -21,10 +21,12 @@
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
 #include "tool/mdprep/ui/form_switch_button.hpp"
-#include <qt/application_qt.hpp>
-#include <qt/main_window.hpp>
+#include <QDockWidget>
+#include <app/tool/base_tool.hpp>
+#include <qt/application.hpp>
+#include <qt/base_widget.hpp>
+#include <qt/dock_widget/inspector.hpp>
 #include <qt/util.hpp>
-#include <qt/widget_factory.hpp>
 #include <util/logger.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"
@@ -36,12 +38,12 @@
 #include "tool/mdprep/ui/form.hpp"
 //
 
-namespace VTX::QT::Mdprep
+namespace VTX::Tool::Mdprep
 {
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
-	class MainWindow : public UI::QT::QtDockablePanel
+	class MainWindow : public UI::QT::BaseWidget<MainWindow, QDockWidget>
 	{
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
 
@@ -55,21 +57,25 @@ namespace VTX::QT::Mdprep
 		std::optional<VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate>
 			__tmp; // Once the job progress view screen is done, it should be removed
 
-		virtual void _setupUi( const QString & p_name )
+		void _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
 		{
-			auto		_t = p_name.toLatin1();
-			std::string v( _t.begin(), _t.end() );
-			QWidget *	mainWidget = _instantiateMainWidget( PREFERRED_SIZE, PREFERRED_SIZE );
+			__tmp.emplace( std::move( p_ ) ); // TMP
+		}
+
+	  public:
+		MainWindow( QWidget * const p_parent ) : UI::QT::BaseWidget<MainWindow, QDockWidget>( p_parent )
+		{
+			QWidget * mainWidget = new QWidget( this );
+			setWidget( mainWidget );
+
 			mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
 
-			UI::QT::QtDockablePanel::_setupUi( p_name );
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
 			setWindowState( Qt::WindowState::WindowActive );
 			const QSize winsize = PREFERRED_SIZE;
 			resize( winsize );
-
 			_screen.emplace(
 				mainWidget,
 				_paramaeters,
@@ -77,35 +83,47 @@ namespace VTX::QT::Mdprep
 															) { this->_preparationStarted( std::move( p_ ) ); } }
 			);
 		}
-		virtual void _setupSlots() override {}
-		void		 _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
-		{
-			__tmp.emplace( std::move( p_ ) ); // TMP
-		}
-
-	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent ) {}
 	};
-} // namespace VTX::QT::Mdprep
 
-namespace VTX::Tool::Mdprep
-{
-
-	class MainWindow::_impl
+	MainWindow * g_win = nullptr;
+	void		 get( MainWindow *& p_out ) noexcept
 	{
-		VTX::QT::Mdprep::MainWindow * _win
-			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::QT::Mdprep::MainWindow>(
-				reinterpret_cast<QWidget *>( &VTX::UI::QT::QT_APP()->getMainWindow() ),
-				"MdPrep Tool"
-			);
+		if ( g_win )
+		{
+			p_out = g_win;
+			return;
+		}
+		g_win					   = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+		auto * dockWidgetInspector = UI::QT::WIDGETS::get().get<UI::QT::DockWidget::Inspector *>();
+		APP_QT::getMainWindow()->tabifyDockWidget( dockWidgetInspector, g_win );
+		p_out = g_win;
+	}
 
-	  public:
-		_impl() {}
-		void show() noexcept { _win->show(); }
+	struct OpenMdPrep : public App::UI::DescAction
+	{
+		OpenMdPrep()
+		{
+			name	 = "MdPrep";
+			tip		 = "Prepare Molecular Dynamic Simulation";
+			icon	 = "sprite/icon_tool_mdprep_mainButton.png";
+			shortcut = "ctrl+alt+M";
+			trigger	 = []()
+			{
+				MainWindow * win;
+				get( win );
+				win->show();
+				win->raise();
+			};
+		}
 	};
-	MainWindow::MainWindow() : _pimpl( new MainWindow::_impl() ) {}
 
-	// Assumes pimpl is always valid ptr
-	void MainWindow::show() noexcept { _pimpl->show(); }
-	void MainWindow::Del::operator()( _impl * p_ ) noexcept { delete p_; }
+	void MdPrep::init() {}
+	void MdPrep::onAppStart() {}
+	void MdPrep::createUI()
+	{
+		OpenMdPrep action;
+		APP_QT::addMenuAction( "Tool", action );
+		APP_QT::addToolBarAction( "Tool", action );
+	}
+	void MdPrep::onAppStop() {}
 } // namespace VTX::Tool::Mdprep

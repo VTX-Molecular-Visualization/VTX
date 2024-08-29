@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_QT_UTIL__
 #define __VTX_UI_QT_UTIL__
 
-#include "ui/core/define.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QComboBox>
@@ -49,7 +48,7 @@ namespace VTX::UI::QT::Util
 	  private:
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
-
+	/*
 	static QVariant widgetKeyToQVariant( const UI::Core::WidgetKey & p_key )
 	{
 		return QVariant( QString::fromStdString( p_key ) );
@@ -58,6 +57,7 @@ namespace VTX::UI::QT::Util
 	{
 		return static_cast<UI::Core::WidgetKey>( p_variant.toString().toStdString() );
 	}
+	*/
 
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
