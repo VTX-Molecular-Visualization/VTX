@@ -1,8 +1,8 @@
-#include <qcombobox.h>
-#include <qformlayout.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qtextdocument.h>
+#include <QCombobox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTextDocument>
 //
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
@@ -23,10 +23,10 @@
 #include "tool/mdprep/ui/form_switch_button.hpp"
 #include <QDockWidget>
 #include <app/tool/base_tool.hpp>
-#include <qt/application.hpp>
-#include <qt/base_widget.hpp>
-#include <qt/dock_widget/inspector.hpp>
-#include <qt/util.hpp>
+#include <ui/qt/application.hpp>
+#include <ui/qt/base_widget.hpp>
+#include <ui/qt/dock_widget/inspector.hpp>
+#include <ui/qt/util.hpp>
 #include <util/logger.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"

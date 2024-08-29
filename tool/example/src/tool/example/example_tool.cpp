@@ -2,8 +2,8 @@
 #include "tool/example/widget/my_dock_widget.hpp"
 #include "tool/example/widget/my_menu.hpp"
 #include "tool/example/widget/my_tool_bar.hpp"
-#include <qt/application.hpp>
-#include <qt/dock_widget/inspector.hpp>
+#include <ui/qt/application.hpp>
+#include <ui/qt/dock_widget/inspector.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Tool::Example

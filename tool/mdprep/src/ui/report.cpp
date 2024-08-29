@@ -3,7 +3,7 @@
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
 #include <app/vtx_app.hpp>
-#include <qt/util.hpp>
+#include <ui/qt/util.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/report.hpp"

@@ -2,7 +2,7 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 //
-#include <qt/util.hpp>
+#include <ui/qt/util.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"

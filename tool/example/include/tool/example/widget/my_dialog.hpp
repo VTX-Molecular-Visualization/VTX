@@ -5,8 +5,8 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <qt/base_widget.hpp>
-#include <qt/widget/main_window.hpp>
+#include <ui/qt/base_widget.hpp>
+#include <ui/qt/widget/main_window.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
