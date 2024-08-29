@@ -1,4 +1,5 @@
 #include "qt/dock_widget/console.hpp"
+#include <QToolBar>
 
 namespace VTX::UI::QT::DockWidget
 {

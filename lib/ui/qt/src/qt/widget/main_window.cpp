@@ -31,6 +31,7 @@ namespace VTX::UI::QT::Widget
 		setAnimated( true );
 		setUnifiedTitleAndToolBarOnMac( true );
 		setTabPosition( Qt::AllDockWidgetAreas, QTabWidget::North );
+		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 
 		//  Features.
 		setTabShape( QTabWidget::Rounded );
@@ -194,10 +195,6 @@ namespace VTX::UI::QT::Widget
 	{
 		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
 		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
-
-		setToolButtonStyle(
-			SETTINGS.value( "showToolBarText", true ).toBool() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly
-		);
 	}
 
 } // namespace VTX::UI::QT::Widget
