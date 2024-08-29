@@ -2,7 +2,7 @@
 #define __VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET__
 
 #include <QDockWidget>
-#include <qt/base_widget.hpp>
+#include <ui/qt/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {

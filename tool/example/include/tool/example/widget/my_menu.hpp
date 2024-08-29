@@ -4,7 +4,7 @@
 #include "my_dialog.hpp"
 #include "tool/example/actions.hpp"
 #include <QMenu>
-#include <qt/base_widget.hpp>
+#include <ui/qt/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {

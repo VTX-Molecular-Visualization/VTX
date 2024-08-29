@@ -4,7 +4,7 @@
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
 #include <QToolBar>
-#include <qt/base_widget.hpp>
+#include <ui/qt/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {

@@ -11,7 +11,7 @@
 #define VTX_TOOL_MDPREP
 
 #ifdef VTX_UI_QT
-#include <qt/application.hpp>
+#include <ui/qt/application.hpp>
 #else
 #include <app/vtx_app.hpp>
 #endif

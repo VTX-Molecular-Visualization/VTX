@@ -1,11 +1,11 @@
 #include <string>
 #include <vector>
 //
-#include <qformlayout.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qtabwidget.h>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLayout>
+#include <QPushbutton>
+#include <QTabWidget>
 //
 #include "tool/mdprep/ui/form_switch_button.hpp"
 
