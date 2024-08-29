@@ -3,6 +3,7 @@
 #include "ui/qt/validator.hpp"
 #include <QAction>
 #include <QEvent>
+#include <QFile>
 #include <QFont>
 #include <QHoverEvent>
 #include <QPushButton>
