@@ -15,15 +15,18 @@ class VTXRendererTestRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     
     generators = "CMakeToolchain", "CMakeDeps"
-    
-    exports_sources = "CMakeLists.txt", "src/*", "cmake/*"
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
+    exports_sources = "CMakeLists.txt", "src/*", "cmake/*", "test/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("vtx_ui_qt/1.0")
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
         self.requires("catch2/3.6.0")        
+        self.requires("re2/20231101")
         self.requires("gromacs/2024.0")        
         
     def generate(self):
@@ -37,7 +40,8 @@ class VTXRendererTestRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        cmake.ctest(["--output-on-failure"]) # TODO uncomment this when build is stable
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"]) # TODO uncomment this when build is stable
 
     def package(self):
         cmake = CMake(self)

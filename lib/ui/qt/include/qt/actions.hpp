@@ -30,12 +30,12 @@ namespace VTX::UI::QT
 			template<ConceptAction A>
 			inline static QAction * get()
 			{
-				return _getOrCreate( Util::HashedCollection<QAction *>::hash<A>(), A() );
+				return _getOrCreate( VTX::Util::HashedCollection<QAction *>::hash<A>(), A() );
 			}
 
 		  private:
-			inline static Util::HashedCollection<QAction *>		 ACTIONS;
-			inline static Util::HashedCollection<QActionGroup *> ACTION_GROUPS;
+			inline static VTX::Util::HashedCollection<QAction *>	  ACTIONS;
+			inline static VTX::Util::HashedCollection<QActionGroup *> ACTION_GROUPS;
 
 			static QAction * const _getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action );
 		};

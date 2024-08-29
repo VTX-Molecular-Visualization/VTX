@@ -4,186 +4,126 @@
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 //
-#include "tools/mdprep/gateway/form_data.hpp"
-#include "tools/mdprep/ui/shared.hpp"
 //
-#include "tools/mdprep/mdprep.hpp"
-#include "tools/mdprep/ui/md_engine_factory.hpp"
-#include "tools/mdprep/ui/md_engine_field_placer.hpp"
-#include "tools/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/gateway/engine_job_manager.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/shared.hpp"
+#include "util/sentry.hpp"
 //
-#include "tools/mdprep/ui/basic_form_settings_dialog.hpp"
-#include "tools/mdprep/ui/main_window.hpp"
-#include <ui/qt/application_qt.hpp>
-#include <ui/qt/main_window.hpp>
-#include <ui/qt/widget_factory.hpp>
+#include "tool/mdprep/ui/report.hpp"
+//
+#include "tool/mdprep/mdprep.hpp"
+#include "tool/mdprep/ui/md_engine.hpp"
+#include "tool/mdprep/ui/md_engine_factory.hpp"
+#include "tool/mdprep/ui/md_engine_field_placer.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+//
+#include "tool/mdprep/ui/form_switch_button.hpp"
+#include <QDockWidget>
+#include <app/tool/base_tool.hpp>
+#include <qt/application.hpp>
+#include <qt/base_widget.hpp>
+#include <qt/dock_widget/inspector.hpp>
+#include <qt/util.hpp>
 #include <util/logger.hpp>
 //
-#include "tools/mdprep/ui/advanced_form.hpp"
-#include "tools/mdprep/ui/basic_form.hpp"
+#include "tool/mdprep/ui/form.hpp"
+#include "tool/mdprep/ui/form_advanced/event_manager.hpp"
+#include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
+#include "tool/mdprep/ui/form_basic/form_basic.hpp"
+#include "tool/mdprep/ui/screen_forms.hpp"
+//
+#include "tool/mdprep/ui/form.hpp"
 //
 
-namespace VTX::QT::Mdprep
+namespace VTX::Tool::Mdprep
 {
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
-	class MainWindow : public UI::QT::QtDockablePanel
+	class MainWindow : public UI::QT::BaseWidget<MainWindow, QDockWidget>
 	{
-		using FormCollection = std::
-			array<std::optional<VTX::Tool::Mdprep::ui::MdEngineFieldPlacer>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
-
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
-		QComboBox *				  _w_mdEngine = nullptr;
 
-		VTX::Tool::Mdprep::ui::MdFieldsOrganizer   _fieldOrganizer;
-		VTX::Tool::Mdprep::ui::MdBasicParamForm	   _formBasic;
-		VTX::Tool::Mdprep::ui::MdAdvancedParamForm _formAdvanced;
-		FormCollection							   _formsMd;
-		int										   _mdEngineCurrentIdx = 0;
+		using EngineCollection
+			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+		QComboBox * _w_mdEngine	   = nullptr;
+		QWidget *	_formContainer = nullptr;
 
-		// Problem : we must support multiple engines with some common fields and some different ones.
-		// I need to find a way to update the form dynamically whilst keeping common field (such as equilibration time)
-		// untouched. We separate fields in two categories : Base settings and Advanced Settings. In both of those
-		// categories, it will be common field, and engine-specific fields. I should instanciate an object that frame
-		// engine-specific fields. Don't forget that we need to connect and disconnect events on change. So the object
-		// framing the engine-specific behavior shall be responsible of this as well.
+		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
+		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
+		std::optional<VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate>
+			__tmp; // Once the job progress view screen is done, it should be removed
 
-		virtual void _setupUi( const QString & p_name )
+		void _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
 		{
-			auto		_t = p_name.toLatin1();
-			std::string v( _t.begin(), _t.end() );
-			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupUi : <{}>", v );
-			QWidget * const mainWidget = _instantiateMainWidget( PREFERRED_SIZE, PREFERRED_SIZE );
+			__tmp.emplace( std::move( p_ ) ); // TMP
+		}
 
-			UI::QT::QtDockablePanel::_setupUi( p_name );
+	  public:
+		MainWindow( QWidget * const p_parent ) : UI::QT::BaseWidget<MainWindow, QDockWidget>( p_parent )
+		{
+			QWidget * mainWidget = new QWidget( this );
+			setWidget( mainWidget );
+
+			mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
+
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
 			setWindowState( Qt::WindowState::WindowActive );
 			const QSize winsize = PREFERRED_SIZE;
 			resize( winsize );
-
-			QVBoxLayout * qLayoutWindow = new QVBoxLayout( mainWidget );
-			qLayoutWindow->setContentsMargins( 0, 0, 0, 0 );
-			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
-
-			QHBoxLayout * qLayoutCentering = new QHBoxLayout;
-			qLayoutWindow->addLayout( qLayoutCentering );
-
-			// following content is meant to be moved eventually
-			_w_mdEngine = new QComboBox;
-			for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
-				_w_mdEngine->addItem( QString( it ) );
-			_w_mdEngine->setCurrentIndex( _mdEngineCurrentIdx );
-
-			qLayoutCentering->addStretch( 1 );
-
-			QFormLayout * qLayoutFormEngine = new QFormLayout;
-			qLayoutCentering->addLayout( qLayoutFormEngine );
-			QLabel * qLabelMdEngine = new QLabel( "Choose your MD engine" );
-			{
-				auto font = qLabelMdEngine->font();
-				font.setPointSize( font.pointSize() + 2 );
-				qLabelMdEngine->setFont( font );
-				font = _w_mdEngine->font();
-				font.setPointSize( font.pointSize() + 2 );
-				_w_mdEngine->setFont( font );
-			}
-			qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
-			qLayoutCentering->addStretch( 1 );
-
-			qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
-
-			_fieldOrganizer.setupUi( qLayoutWindow, VTX::Tool::Mdprep::ui::MdFieldsOrganizer::E_FORM_MODE::basic );
-			_formBasic.setupUi( _fieldOrganizer.containerParamBasic );
-			_formAdvanced.setupUi( _fieldOrganizer.containerParamAdvanced );
-
-			QLabel *			qExplainatoryText = new QLabel;
-			static const char * buttonLabel		  = "Prepare system";
-			qExplainatoryText->setText( QString::asprintf(
-				"Pushing the <i>%s</i> button will use every <b>visible</b> object of the system and will attempts to "
-				"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <b>VTX doesn't support "
-				"yet</b> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
-				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
-				buttonLabel
-			) );
-			qExplainatoryText->setWordWrap( true );
-			qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
-			qLayoutWindow->addWidget( qExplainatoryText );
-			QPushButton * qStartButton = new QPushButton;
-			QFont		  f			   = qStartButton->font();
-			f.setPointSize( f.pointSize() + 2 );
-			qStartButton->setFont( f );
-			qStartButton->setText( buttonLabel );
-			qLayoutWindow->addWidget( qStartButton );
-
-			_updateFormEngine( 0 );
-		}
-		void _updateFormEngine( int idx ) noexcept
-		{
-			if ( _formsMd[ _mdEngineCurrentIdx ].has_value() )
-				_formsMd[ _mdEngineCurrentIdx ]->deactivate();
-
-			_mdEngineCurrentIdx = idx;
-
-			// if ( _formsMd[ _mdEngineCurrentIdx ].has_value() == false )
-			//	_formsMd[ _mdEngineCurrentIdx ] = VTX::Tool::Mdprep::ui::form(
-			//		static_cast<VTX::Tool::Mdprep::ui ::E_MD_ENGINE>( _mdEngineCurrentIdx ),
-			//		{ _formBasic.layoutFieldsMdEngine(), _formBasic.layoutFieldsMdEngine() }
-			//	);
-			_formsMd[ _mdEngineCurrentIdx ]->activate();
-
-			{
-				const VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation * engineSpecificData = nullptr;
-				//_formsMd[ _mdEngineCurrentIdx ]->get( engineSpecificData );
-				if ( engineSpecificData )
-					_formBasic.update( *engineSpecificData );
-			}
-
-			VTX::VTX_DEBUG( "info from Mdprep::MainWindow::_updateFormEngine({})", idx );
-		}
-		virtual void _setupSlots()
-		{
-			VTX::VTX_INFO( "info from Mdprep::MainWindow::_setupSlots" );
-			connect( _w_mdEngine, &QComboBox::currentIndexChanged, this, &MainWindow ::_updateFormEngine );
-			_formAdvanced.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdAdvancedDataSample & p_data )
-									 { _formBasic.update( p_data ); } );
-			_formBasic.subscribe( [ & ]( const VTX::Tool::Mdprep::ui::MdBasicDataSample & p_data )
-								  { _formAdvanced.update( p_data ); } );
-			_formBasic.subscribe(
-				[ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
-				{
-					VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer p;
-					//_formsMd[ _mdEngineCurrentIdx ]->get( p, p_section );
-					return p;
-				}
+			_screen.emplace(
+				mainWidget,
+				_paramaeters,
+				VTX::Tool::Mdprep::ui::ValidationSignaler { [ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_
+															) { this->_preparationStarted( std::move( p_ ) ); } }
 			);
 		}
-
-	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::QtDockablePanel( p_parent ) {}
 	};
-} // namespace VTX::QT::Mdprep
 
-namespace VTX::Tool::Mdprep
-{
-
-	class MainWindow::_impl
+	MainWindow * g_win = nullptr;
+	void		 get( MainWindow *& p_out ) noexcept
 	{
-		VTX::QT::Mdprep::MainWindow * _win
-			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::QT::Mdprep::MainWindow>(
-				reinterpret_cast<QWidget *>( &VTX::UI::QT::QT_APP()->getMainWindow() ),
-				"MdPrep Tool"
-			);
+		if ( g_win )
+		{
+			p_out = g_win;
+			return;
+		}
+		g_win					   = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+		auto * dockWidgetInspector = UI::QT::WIDGETS::get().get<UI::QT::DockWidget::Inspector *>();
+		APP_QT::getMainWindow()->tabifyDockWidget( dockWidgetInspector, g_win );
+		p_out = g_win;
+	}
 
-	  public:
-		_impl() {}
-		void show() noexcept { _win->show(); }
+	struct OpenMdPrep : public App::UI::DescAction
+	{
+		OpenMdPrep()
+		{
+			name	 = "MdPrep";
+			tip		 = "Prepare Molecular Dynamic Simulation";
+			icon	 = "sprite/icon_tool_mdprep_mainButton.png";
+			shortcut = "ctrl+alt+M";
+			trigger	 = []()
+			{
+				MainWindow * win;
+				get( win );
+				win->show();
+				win->raise();
+			};
+		}
 	};
-	MainWindow::MainWindow() : _pimpl( new MainWindow::_impl() ) {}
 
-	// Assumes pimpl is always valid ptr
-	void MainWindow::show() noexcept { _pimpl->show(); }
-	void MainWindow::Del::operator()( _impl * p_ ) noexcept { delete p_; }
+	void MdPrep::init() {}
+	void MdPrep::onAppStart() {}
+	void MdPrep::createUI()
+	{
+		OpenMdPrep action;
+		APP_QT::addMenuAction( "Tool", action );
+		APP_QT::addToolBarAction( "Tool", action );
+	}
+	void MdPrep::onAppStop() {}
 } // namespace VTX::Tool::Mdprep

@@ -33,8 +33,8 @@ namespace VTX::UI::QT
 
 	  private:
 		QTimer					_timer;
-		Util::Chrono			_elapsedTimer;
-		Util::Chrono			_deltaTimer;
+		VTX::Util::Chrono		_elapsedTimer;
+		VTX::Util::Chrono		_deltaTimer;
 		QPointer<QSplashScreen> _qSplashScreen;
 
 		void _loadTheme();

@@ -18,12 +18,12 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Abstract collection of QWidget pointers.
 	 */
-	using WIDGET_COLLECTION = Util::HashedCollection<QWidget *>;
+	using WIDGET_COLLECTION = VTX::Util::HashedCollection<QWidget *>;
 
 	/**
 	 * @brief An accessor to the singleton that store all widgets.
 	 */
-	using WIDGETS = Util::Singleton<WIDGET_COLLECTION>;
+	using WIDGETS = VTX::Util::Singleton<WIDGET_COLLECTION>;
 
 	/**
 	 * @brief Abstract class taht describes a widget behaviour.
@@ -38,14 +38,14 @@ namespace VTX::UI::QT
 		BaseWidget( Args &&... p_args ) :
 			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::GlobalStorage<T>( this )
 		{
-			const auto name = Util::typeName<T>();
+			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "UI widget created: {}", name );
 		} // namespace VTX::UI::QT
 
 		virtual ~BaseWidget()
 		{
-			const auto name = Util::typeName<T>();
+			const auto name = VTX::Util::typeName<T>();
 			VTX_TRACE( "UI widget destroyed: {}", name );
 		}
 
