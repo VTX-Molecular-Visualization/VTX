@@ -45,14 +45,14 @@ if (NOT DEFINED _VTX_MDPREP_CONAN)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 else()
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
+#	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 endif()
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Core)			 # I feel weird about linked lib not being 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried through packages, forcing me
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
