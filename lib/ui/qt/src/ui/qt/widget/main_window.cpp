@@ -27,9 +27,11 @@ namespace VTX::UI::QT::Widget
 		resize( 1920, 1080 );
 
 		// Set all settings.
-		setDockNestingEnabled( true );
+		setDockNestingEnabled( false );
 		setAnimated( true );
 		setUnifiedTitleAndToolBarOnMac( true );
+		setDockOptions( AllowTabbedDocks );
+		setDockOptions( ForceTabbedDocks );
 		setTabPosition( Qt::AllDockWidgetAreas, QTabWidget::North );
 		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 
@@ -76,25 +78,34 @@ namespace VTX::UI::QT::Widget
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
 
-		auto * dwScene			 = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
-		auto * dwRepresentations = createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
-		auto * dwColors			 = createDockWidget<DockWidget::Colors>( Qt::LeftDockWidgetArea );
-		tabifyDockWidget( dwScene, dwRepresentations );
-		tabifyDockWidget( dwScene, dwColors );
-		dwScene->raise();
+		createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
+		createDockWidget<DockWidget::Colors>( Qt::LeftDockWidgetArea );
 
-		auto * dwInspector		= createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		auto * dwRenderSettings = createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
-		auto * dwOptions		= createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
-		tabifyDockWidget( dwInspector, dwRenderSettings );
-		tabifyDockWidget( dwInspector, dwOptions );
-		dwInspector->raise();
+		// dwScene->raise();
+
+		createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+		createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
+		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
+
+		// dwInspector->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
+	}
+
+	void MainWindow::prepare()
+	{
+		// Select default tabs.
+		WIDGETS::get().get<DockWidget::Scene *>()->raise();
+		WIDGETS::get().get<DockWidget::Inspector *>()->raise();
+
+		// Backup default geometry and state.
+		_defaultGeometry = saveGeometry();
+		_defaultState	 = saveState();
 
 		// Connect progress dialog.
 		APP::onStartBlockingOperation += [ this ]( const std::string & p_text )
@@ -115,22 +126,6 @@ namespace VTX::UI::QT::Widget
 				_progressDialog = nullptr;
 			}
 		};
-
-		// Backup default geometry and state.
-		_defaultGeometry = saveGeometry();
-		_defaultState	 = saveState();
-
-		// Tool test.
-		/*
-		UI::Action action3 { "Action 3" };
-		addMenuAction( "Tool 1", { "Action 1" } );
-		addMenuAction( "Tool 1", { "Action 2" } );
-		addMenuAction( "Tool 1", action3 );
-
-		addToolBarAction( "Tool 1", { "Action 1" } );
-		addToolBarAction( "Tool 1", { "Action 2" } );
-		addToolBarAction( "Tool 1", action3 );
-		*/
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )

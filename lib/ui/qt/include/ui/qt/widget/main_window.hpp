@@ -6,6 +6,7 @@
 #include "ui/qt/base_widget.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/settings.hpp"
+#include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
@@ -23,6 +24,7 @@ namespace VTX::UI::QT::Widget
 		MainWindow();
 		virtual ~MainWindow() {}
 
+		void prepare();
 		void build();
 		void addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action );
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
@@ -85,10 +87,26 @@ namespace VTX::UI::QT::Widget
 		}
 
 		template<typename DW>
-		DW * createDockWidget( const Qt::DockWidgetArea & p_area )
+		DW * createDockWidget( const Qt::DockWidgetArea p_area )
 		{
+			QDockWidget * other = nullptr;
+			for ( QDockWidget * w : findChildren<QDockWidget *>() )
+			{
+				if ( dockWidgetArea( w ) == p_area )
+				{
+					other = w;
+				}
+			}
+
 			DW * const dockWidget = new DW( this );
 			addDockWidget( p_area, dockWidget );
+
+			// Tabify.
+			if ( other != nullptr )
+			{
+				tabifyDockWidget( other, dockWidget );
+			}
+
 			return dockWidget;
 		}
 

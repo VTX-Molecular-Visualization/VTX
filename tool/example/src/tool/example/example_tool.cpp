@@ -41,10 +41,7 @@ namespace VTX::Tool::Example
 		// Add custom widgets.
 		APP_QT::getMainWindow()->createMenu<Widget::MyMenu>();
 		APP_QT::getMainWindow()->createToolBar<Widget::MyToolBar>();
-		// TODO: hide this.
-		auto * dockWidget = APP_QT::getMainWindow()->createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
-		auto * dockWidgetInspector = UI::QT::WIDGETS::get().get<UI::QT::DockWidget::Inspector *>();
-		APP_QT::getMainWindow()->tabifyDockWidget( dockWidgetInspector, dockWidget );
+		APP_QT::getMainWindow()->createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
 	}
 
 	void ExampleTool::onAppStop() {}

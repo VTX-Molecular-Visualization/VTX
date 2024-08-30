@@ -23,6 +23,7 @@ namespace VTX::App::UI
 
 	template<typename MW>
 	concept ConceptMainWindow = requires( MW p_mw, WidgetId p_id, DescAction p_action ) {
+		{ p_mw.prepare() } -> std::same_as<void>;
 		{ p_mw.build() } -> std::same_as<void>;
 		{ p_mw.addMenuAction( p_id, p_action ) } -> std::same_as<void>;
 		{ p_mw.addToolBarAction( p_id, p_action ) } -> std::same_as<void>;

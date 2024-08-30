@@ -101,9 +101,7 @@ namespace VTX::Tool::Mdprep
 			p_out = g_win;
 			return;
 		}
-		g_win					   = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-		auto * dockWidgetInspector = UI::QT::WIDGETS::get().get<UI::QT::DockWidget::Inspector *>();
-		APP_QT::getMainWindow()->tabifyDockWidget( dockWidgetInspector, g_win );
+		g_win = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
 		p_out = g_win;
 	}
 
