@@ -7,7 +7,7 @@ namespace VTX::UI::QT::Resources
 {
 	// Stylesheets.
 	constexpr std::string_view FILE_STYLESHEET		  = ":/stylesheet_ui.css";
-	constexpr std::string_view FILE_STYLESHEET_WINOWS = ":/stylesheet_ui_windows.css";
+	constexpr std::string_view FILE_STYLESHEET_WINDOWS = ":/stylesheet_ui_windows.css";
 	constexpr std::string_view FILE_STYLESHEET_LINUX  = ":/stylesheet_ui_linux.css";
 	constexpr std::string_view FILE_STYLESHEET_MACOS  = ":/stylesheet_ui_mac.css";
 

@@ -1,7 +1,9 @@
 #include "ui/qt/util.hpp"
+#include "ui/qt/resources.hpp"
 #include "ui/qt/validator.hpp"
 #include <QAction>
 #include <QEvent>
+#include <QFile>
 #include <QFont>
 #include <QHoverEvent>
 #include <QPushButton>
@@ -43,7 +45,15 @@ namespace VTX::UI::QT::Util
 	class Popup : public QWidget
 	{
 	  public:
-		Popup() { setWindowFlag( Qt::ToolTip ); }
+		Popup( QWidget * p_parent ) : QWidget( p_parent )
+		{
+			setWindowFlag( Qt::ToolTip );
+			setObjectName( "questionMarkPopup" );
+			QFile stylesheetFile( VTX::UI::QT::Resources::FILE_STYLESHEET.data() );
+			stylesheetFile.open( QFile::ReadOnly );
+			QString stylesheet = stylesheetFile.readAll();
+			setStyleSheet( stylesheet );
+		}
 		bool isHovered() const { return _hovered; }
 		void leaveEvent( QEvent * event )
 		{
@@ -85,7 +95,7 @@ namespace VTX::UI::QT::Util
 	class QHoverableQuestionMark : public QPushButton
 	{
 		int		m_count = 0;
-		Popup * popup	= new Popup;
+		Popup * popup	= new Popup( this );
 
 	  public:
 		QHoverableQuestionMark( const char * p_popupText ) : QPushButton()

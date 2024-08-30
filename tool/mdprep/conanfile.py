@@ -18,7 +18,7 @@ class VTXToolMdprepRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
 
      
     def requirements(self):
