@@ -25,7 +25,7 @@ class VTXRendererTestRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("qt/6.6.1", transitive_headers=True)
         self.requires("vtx_tool_mdprep/1.0")
-        self.requires("catch2/3.6.0")        
+        self.requires("catch2/3.7.0")        
         self.requires("re2/20231101")
         self.requires("gromacs/2024.0")        
         

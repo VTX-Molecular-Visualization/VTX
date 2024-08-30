@@ -21,9 +21,9 @@ class VTXUtilRecipe(ConanFile):
         self.requires("glm/0.9.9.8", transitive_headers=True)
         self.requires("spdlog/1.14.1", transitive_headers=True)
         self.requires("nlohmann_json/3.11.3", transitive_headers=True)
-        self.requires("magic_enum/0.9.5", transitive_headers=True)
+        self.requires("magic_enum/0.9.6", transitive_headers=True)
         self.requires("cpr/1.10.5", transitive_headers=True)  
-        self.requires("catch2/3.6.0")
+        self.requires("catch2/3.7.0")
         
     def config_options(self):
         if self.settings.os == "Windows":
