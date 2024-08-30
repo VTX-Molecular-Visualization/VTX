@@ -15,15 +15,16 @@ find_package(stb CONFIG REQUIRED)
 set(_VTX_RENDERER_BENCH_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
-install(TARGETS vtx_renderer_bench)
-install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
+set_target_properties(vtx_renderer_bench PROPERTIES OUTPUT_NAME bench)
 
-set(CPACK_PACKAGE_NAME "VTX Bench")
+install(TARGETS vtx_renderer_bench DESTINATION .)
+install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
+
+set(CPACK_PACKAGE_NAME "VTX Benchmarker")
 set(CPACK_PACKAGE_VENDOR "VTX dev team")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_VERSION "1.0.0")
-set(CPACK_PACKAGE_EXECUTABLES "vtx_renderer_bench" "Benchmarker" )
+set(CPACK_PACKAGE_EXECUTABLES "bench" "Benchmarker" )
 
 include(CPack)
