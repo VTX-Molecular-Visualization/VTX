@@ -15,10 +15,11 @@ namespace VTX::Tool::Example
 		ExampleTool();
 		~ExampleTool();
 
-		virtual void init() override;
-		virtual void onAppStart() override;
-		virtual void createUI() override;
-		virtual void onAppStop() override;
+		void					   init() override;
+		void					   onAppStart() override;
+		void					   createUI() override;
+		std::optional<std::string> getStyle() const override;
+		void					   onAppStop() override;
 	};
 
 } // namespace VTX::Tool::Example

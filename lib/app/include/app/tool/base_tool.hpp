@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_TOOL_BASE_TOOL__
 #define __VTX_APP_TOOL_BASE_TOOL__
 
+#include <optional>
 #include <string>
 
 namespace VTX::App::Tool
@@ -27,6 +28,11 @@ namespace VTX::App::Tool
 		 * @brief Called after main window creation, renderer available.
 		 */
 		virtual void createUI() {}
+		/**
+		 * @brief Get the style (loaded from resource or raw string).
+		 * @return the stylesheet to apply.
+		 */
+		virtual std::optional<std::string> getStyle() const { return std::nullopt; }
 		/**
 		 * @brief Called when the app starts.
 		 */

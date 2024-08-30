@@ -49,10 +49,6 @@ namespace VTX::UI::QT::Util
 		{
 			setWindowFlag( Qt::ToolTip );
 			setObjectName( "questionMarkPopup" );
-			QFile stylesheetFile( VTX::UI::QT::Resources::FILE_STYLESHEET.data() );
-			stylesheetFile.open( QFile::ReadOnly );
-			QString stylesheet = stylesheetFile.readAll();
-			setStyleSheet( stylesheet );
 		}
 		bool isHovered() const { return _hovered; }
 		void leaveEvent( QEvent * event )

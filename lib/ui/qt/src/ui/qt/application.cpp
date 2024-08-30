@@ -33,8 +33,6 @@ namespace VTX::UI::QT
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 		// setQuitOnLastWindowClosed( false );
-
-		_loadTheme();
 	}
 
 	Application::~Application() {}
@@ -56,6 +54,7 @@ namespace VTX::UI::QT
 	{
 		try
 		{
+			_loadTheme();
 			// Restore settings after main window is built.
 			SETTINGS.restore();
 		}
@@ -143,10 +142,17 @@ namespace VTX::UI::QT
 		stylesheetOSFile.open( QFile::ReadOnly );
 		stylesheet += '\n' + stylesheetOSFile.readAll();
 
-		// TODO: Load theme file and apply to stylesheet.
+		// TODO: move to super class?
+		for ( const App::Tool::BaseTool * const tool : _tools )
+		{
+			if ( tool->getStyle().has_value() )
+			{
+				stylesheet += '\n' + tool->getStyle().value();
+			}
+		}
 
 		// Set stylesheet to app.
-		//_qApplication->setStyleSheet( stylesheet );
+		setStyleSheet( stylesheet );
 		setStyle( "fusion" );
 
 		QPalette p = palette();
