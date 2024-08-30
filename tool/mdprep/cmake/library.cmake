@@ -61,6 +61,7 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
+target_include_directories(vtx_tool_mdprep_test PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include)
 
 include(CTest)
 include(Catch)
