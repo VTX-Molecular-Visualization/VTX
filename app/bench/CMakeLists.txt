@@ -18,4 +18,12 @@ include(cmake/library.cmake)
 install(TARGETS vtx_renderer_bench)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION bin)
 
+set(CPACK_PACKAGE_NAME "VTX Bench")
+set(CPACK_PACKAGE_VENDOR "VTX dev team")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_EXECUTABLES "vtx_renderer_bench" "Benchmarker" )
+
 include(CPack)

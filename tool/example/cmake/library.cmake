@@ -13,7 +13,7 @@ target_sources(vtx_tool_example
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Add assets.
-add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_example)
+add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset z_vtx_tool_example)
 
 # Test exec.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
