@@ -5,6 +5,7 @@ project(vtx_tool_mdprep)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
+find_package(vtx_ui_qt CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
