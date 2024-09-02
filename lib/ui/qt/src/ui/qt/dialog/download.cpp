@@ -10,7 +10,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	Download::Download() : BaseWidget<Download, QDialog>( WIDGETS::get().get<Widget::MainWindow *>() )
+	Download::Download() : BaseWidget<Download, QDialog>( APP_QT::getMainWindow() )
 	{
 		setWindowTitle( "Download" );
 		// TODO: try size policy?

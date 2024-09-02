@@ -1,7 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 
-class VTXAppRecipe(ConanFile):
+class VTXToolExampleRecipe(ConanFile):
     name = "vtx_tool_example"
     version = "1.0"
     package_type = "library"

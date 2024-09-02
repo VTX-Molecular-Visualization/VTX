@@ -5,6 +5,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <ui/qt/application.hpp>
 #include <ui/qt/base_widget.hpp>
 #include <ui/qt/widget/main_window.hpp>
 
@@ -14,7 +15,7 @@ namespace VTX::Tool::Example::Widget
 	class MyDialog : public UI::QT::BaseWidget<MyDialog, QDialog>
 	{
 	  public:
-		MyDialog() : UI::QT::BaseWidget<MyDialog, QDialog>( UI::QT::WIDGETS::get().get<UI::QT::Widget::MainWindow *>() )
+		MyDialog() : UI::QT::BaseWidget<MyDialog, QDialog>( APP_QT::getMainWindow() )
 		{
 			setWindowTitle( "Example tool dialog" );
 			setMinimumSize( 300, 100 );

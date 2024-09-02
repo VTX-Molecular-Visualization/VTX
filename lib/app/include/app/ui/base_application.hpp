@@ -26,6 +26,7 @@ namespace VTX::App::UI
 			{
 				tool->createUI();
 			}
+			_mainWindow->prepare();
 
 			// Start the main app.
 			VTXApp::start( p_args );

@@ -2,7 +2,7 @@ message("vtx_tool_example")
 cmake_minimum_required(VERSION 3.23)
 project(vtx_tool_example)
 
-# Internal lib pckages.
+# Internal lib packages.
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)

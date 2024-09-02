@@ -14,6 +14,8 @@ namespace VTX::Tool::Example::Widget
 	  public:
 		MyMenu( QWidget * p_parent ) : BaseWidget<MyMenu, QMenu>( "My menu", p_parent )
 		{
+			setObjectName( "ToolExampleMenu" );
+
 			// Connect to dialog.
 			auto * action1 = addAction<Action::MyAction1>();
 			connect(
