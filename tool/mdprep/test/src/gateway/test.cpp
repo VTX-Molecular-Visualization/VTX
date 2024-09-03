@@ -16,18 +16,16 @@
 
 TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 {
-	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
-	std::filesystem::create_directory( path );
-	VTX::Util::Logger::init( path );
+	// const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
+	// std::filesystem::create_directory( path );
+	// VTX::Util::Logger::init( path );
+
 	VTX::APP::init();
 	VTX::APP().start( { 0, nullptr } );
 
 	VTX::App::SCENE().reset();
 
-	const VTX::FilePath moleculePath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
-
+	const VTX::FilePath					  moleculePath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
 	VTX::App::Action::Scene::LoadMolecule loadMoleculeAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
 	loadMoleculeAction.execute();
-
-	auto moleculeList = VTX::App::SCENE().getAllSceneItemsOfType<VTX::App::Component::Chemistry::Molecule>();
 }
