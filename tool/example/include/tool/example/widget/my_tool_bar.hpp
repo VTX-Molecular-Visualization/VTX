@@ -14,8 +14,6 @@ namespace VTX::Tool::Example::Widget
 	  public:
 		MyToolBar( QWidget * p_parent ) : BaseWidget<MyToolBar, QToolBar>( "My toolbar", p_parent )
 		{
-			setLayout( new QGridLayout() );
-
 			addAction<Action::MyAction1>();
 			addAction<Action::MyAction2>();
 			addAction<Action::MyAction3>();

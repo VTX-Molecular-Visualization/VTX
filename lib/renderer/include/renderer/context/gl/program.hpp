@@ -10,6 +10,7 @@ namespace VTX::Renderer::Context::GL
 	class Program
 	{
 	  public:
+		Program() = default;
 		explicit Program( const std::vector<FilePath> & p_shaderPaths, const std::string & p_toInject = "" ) :
 			_shaderPaths( p_shaderPaths ), _toInject( p_toInject )
 		{
