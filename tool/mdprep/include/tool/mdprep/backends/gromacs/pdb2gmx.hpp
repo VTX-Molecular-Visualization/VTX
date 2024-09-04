@@ -139,7 +139,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
 	void convert( const Pdb2gmxInstructions &, GromacsJobData & ) noexcept;
 
-	inline bool isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept;
+	bool		isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept;
 	inline bool enterInput(
 		const Pdb2gmxInputs &,
 		QProcess &,
