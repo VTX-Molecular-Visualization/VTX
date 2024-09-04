@@ -2,18 +2,18 @@
 #define __VTX_APP_CORE_ANIMATION_ANIMATION_SYSTEM__
 
 #include "base_animation.hpp"
-#include <app/application/system/system_registration.hpp>
 #include <concepts>
 #include <list>
 #include <memory>
 #include <util/callback.hpp>
+#include <util/singleton.hpp>
 
 namespace VTX::App::Core::Animation
 {
 	template<class T>
 	concept AnimationConcept = std::derived_from<T, BaseAnimation>;
 
-	class AnimationSystem : public App::Application::System::AutoRegistrateSystem<AnimationSystem>
+	class AnimationSystem
 	{
 	  public:
 		AnimationSystem();
@@ -56,7 +56,10 @@ namespace VTX::App::Core::Animation
 
 namespace VTX::App
 {
-	Core::Animation::AnimationSystem & ANIMATION_SYSTEM();
-}
+	inline Core::Animation::AnimationSystem & ANIMATION_SYSTEM()
+	{
+		return Util::Singleton<Core::Animation::AnimationSystem>::get();
+	}
+} // namespace VTX::App
 
 #endif

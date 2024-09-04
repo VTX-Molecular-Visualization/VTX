@@ -1,4 +1,6 @@
 #include "app/core/animation/animation_system.hpp"
+#include "app/vtx_app.hpp"
+#include <util/singleton.hpp>
 
 namespace VTX::App::Core::Animation
 {
@@ -61,8 +63,3 @@ namespace VTX::App::Core::Animation
 	}
 
 } // namespace VTX::App::Core::Animation
-
-namespace VTX::App
-{
-	Core::Animation::AnimationSystem & ANIMATION_SYSTEM() { return Core::Animation::AnimationSystem::SYSTEM.get(); }
-} // namespace VTX::App

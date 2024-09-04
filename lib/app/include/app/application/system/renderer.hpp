@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_APPLICATION_SYSTEM_RENDERER__
 #define __VTX_APP_APPLICATION_SYSTEM_RENDERER__
 
-#include "app/application/system/system_registration.hpp"
 #include <app/filesystem.hpp>
 #include <renderer/facade.hpp>
+#include <util/singleton.hpp>
 
 namespace VTX::App::Application::System
 {
-	class Renderer : public System::AutoRegistrateSystem<Renderer>
+	class Renderer
 	{
 	  public:
 		Renderer() = default;
@@ -28,6 +28,6 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
-	Application::System::Renderer & RENDERER();
+	inline Application::System::Renderer & RENDERER() { return Util::Singleton<Application::System::Renderer>::get(); }
 } // namespace VTX::App
 #endif

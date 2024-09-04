@@ -47,12 +47,3 @@ namespace VTX::App::Application::Selection
 	}
 
 } // namespace VTX::App::Application::Selection
-
-namespace VTX::App
-{
-	Application::Selection::SelectionManager & SELECTION_MANAGER()
-	{
-		return Application::Selection::SelectionManager::SYSTEM.get();
-	}
-	Application::Selection::Selection & CURRENT_SELECTION() { return SELECTION_MANAGER().getCurrent(); }
-} // namespace VTX::App

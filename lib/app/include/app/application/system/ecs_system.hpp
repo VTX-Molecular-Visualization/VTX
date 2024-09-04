@@ -4,12 +4,11 @@
 #include "app/application/ecs/component_meta_function.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
-#include "app/application/system/system_registration.hpp"
 
 namespace VTX::App::Application::System
 {
 	// ECS System handle 3 sub-systems in order to manage ECS in VTX
-	class ECSSystem : public System::AutoRegistrateSystem<ECSSystem>
+	class ECSSystem
 	{
 	  public:
 		template<typename C>
@@ -17,8 +16,11 @@ namespace VTX::App::Application::System
 		{
 			ComponentStaticIDRegistration( const ECS::ComponentStaticID & p_id )
 			{
-				SYSTEM.get().registryManager.getComponentInfo().registerComponent<C>( p_id );
-				SYSTEM.get().componentMetaFunction.registerComponent<C>( p_id );
+				Util::Singleton<Application::System::ECSSystem>::get()
+					.registryManager.getComponentInfo()
+					.registerComponent<C>( p_id );
+				Util::Singleton<Application::System::ECSSystem>::get().componentMetaFunction.registerComponent<C>( p_id
+				);
 			}
 		};
 
@@ -31,15 +33,17 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
+	inline Application::System::ECSSystem & ECS() { return Util::Singleton<Application::System::ECSSystem>::get(); }
+
 	// MAIN_REGISTRY give access to the registry to create / get / delete entities and components
-	Application::ECS::RegistryManager & MAIN_REGISTRY();
+	inline Application::ECS::RegistryManager & MAIN_REGISTRY() { return ECS().registryManager; }
 
 	// COMPONENT_META_FUNCTION give access to the meta functions on Components (i.e. Serialization)
-	Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION();
+	inline Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION() { return ECS().componentMetaFunction; }
 
 	// ENTITY_DIRECTOR Allows to instantiate ready to used object(an entity with all its necessary components linked on
 	// it and initialized.) It can also be used to customize object initialization.
-	Application::ECS::EntityDirector & ENTITY_DIRECTOR();
+	inline Application::ECS::EntityDirector & ENTITY_DIRECTOR() { return ECS().entityDirector; }
 } // namespace VTX::App
 
 #endif

@@ -5,7 +5,6 @@
 #include "app/component/render/_fwd.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/core/system/base_system.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
 #include <functional>
@@ -18,7 +17,7 @@ namespace VTX::App::Application
 	template<typename T>
 	concept SceneItem = requires( T sceneItem ) { std::derived_from<T, Component::Scene::SceneItemComponent>; };
 
-	class Scene : public Core::System::BaseSystem
+	class Scene
 	{
 	  public:
 		using FindItemFunction = std::function<bool( const Core::ECS::BaseEntity & )>;

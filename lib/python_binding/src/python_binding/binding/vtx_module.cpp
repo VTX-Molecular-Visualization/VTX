@@ -1,6 +1,5 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/log_redirection.hpp"
-#include <app/core/system/system_handler.hpp>
 #include <app/vtx_app.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
@@ -9,10 +8,10 @@
 
 namespace VTX
 {
-	void _init( std::shared_ptr<App::Core::System::SystemHandler> p_system )
-	{
-		// APP::referenceSystemHandler( p_system );
-	}
+	// void _init( std::shared_ptr<App::Core::System::SystemHandler> p_system )
+	//{
+	//  APP::referenceSystemHandler( p_system );
+	//}
 } // namespace VTX
 
 namespace VTX::PythonBinding
@@ -22,9 +21,9 @@ namespace VTX::PythonBinding
 		m.doc() = "VTX Python module."; // optional module docstring
 
 		// Global pointer to VTX data
-		pybind11::class_<App::Core::System::SystemHandler, std::shared_ptr<App::Core::System::SystemHandler>>(
-			m, "VTXSystem"
-		);
+		// pybind11::class_<App::Core::System::SystemHandler, std::shared_ptr<App::Core::System::SystemHandler>>(
+		//	m, "VTXSystem"
+		//);
 
 		// Class to redirect Python prints
 		pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>( m, "LogRedirection" )
@@ -35,7 +34,7 @@ namespace VTX::PythonBinding
 		pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );
 		vtxCoreModule.doc()				= "Contains some core functions which must be hidden for users.";
 
-		vtxCoreModule.def( "_init", &_init, "Initialize python environment for commands" );
+		// vtxCoreModule.def( "_init", &_init, "Initialize python environment for commands" );
 
 		// Command module : Contains all commands accessible to user via command line.
 		pybind11::module_ vtxCommandModule = m.def_submodule( "Command", "VTX Python command interface" );

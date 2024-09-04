@@ -279,8 +279,3 @@ namespace VTX::App::Core::Input
 	// }
 
 } // namespace VTX::App::Core::Input
-
-namespace VTX::App
-{
-	Core::Input::InputManager & INPUT_MANAGER() { return Core::Input::InputManager::SYSTEM.get(); }
-} // namespace VTX::App

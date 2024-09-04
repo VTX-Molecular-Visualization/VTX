@@ -1,14 +1,13 @@
 #ifndef __VTX_APP_APPLICATION_SYSTEM_SERIALIZER__
 #define __VTX_APP_APPLICATION_SYSTEM_SERIALIZER__
 
-#include "app/application/system/system_registration.hpp"
 #include "app/core/io/reader/serialized_object.hpp"
 #include "app/core/io/writer/serialized_object.hpp"
 #include "app/core/serialization/serialization.hpp"
 
 namespace VTX::App::Application::System
 {
-	class Serializer final : public System::AutoRegistrateSystem<Serializer>, public Core::Serialization::Serialization
+	class Serializer final : public Core::Serialization::Serialization
 	{
 	  public:
 		// Directly read a file at path p_path and deserialize it in p_obj object.
@@ -36,7 +35,10 @@ namespace VTX::App::Application::System
 namespace VTX::App
 {
 	// Access the serializer to serialize / deserialize objects, or directly read / write file in json.
-	Application::System::Serializer & SERIALIZER();
+	inline Application::System::Serializer & SERIALIZER()
+	{
+		return Util::Singleton<Application::System::Serializer>::get();
+	}
 } // namespace VTX::App
 
 #endif

@@ -5,7 +5,6 @@
 #include "app/mode/base_mode.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
-#include "core/system/system_handler.hpp"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -20,9 +19,6 @@ namespace VTX::App
 
 	class VTXApp
 	{
-	  private:
-		inline static const Hash SCENE_KEY = Util::hash( "SCENE" );
-
 	  public:
 		virtual ~VTXApp() = default;
 
@@ -31,19 +27,7 @@ namespace VTX::App
 		static void	 update( const float p_deltaTime, const float p_elapsedTime );
 		static void	 stop();
 
-		inline static Core::System::SystemHandler & getSystemHandler() { return *_systemHandler; }
-		// inline Core::System::SystemHandler * const getSystemHandlerPtr() { return _systemHandler.get(); }
-
-		/*
-		inline void referenceSystemHandler( std::shared_ptr<Core::System::SystemHandler> p_systemHandlerPtr )
-		{
-			_systemHandlerPtr = p_systemHandlerPtr;
-		};
-		*/
-
-		inline static Util::Monitoring::Stats & getStats() { return _stats; }
-		static Application::Scene &				getScene();
-		inline static Mode::BaseMode &			getCurrentMode() { return *_currentMode; }
+		inline static Mode::BaseMode & getCurrentMode() { return *_currentMode; }
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
@@ -71,20 +55,17 @@ namespace VTX::App
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
-		inline static std::unique_ptr<Core::System::SystemHandler> _systemHandler
-			= std::make_unique<Core::System::SystemHandler>();
-
 		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
 		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
-		inline static Util::Monitoring::Stats		  _stats;
 
 		static void _handleArgs( const Args & p_args );
 		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
 
 	// Convenient accessors
+	Mode::BaseMode & MODE();
+
 	Application::Scene &	  SCENE();
-	Mode::BaseMode &		  MODE();
 	Util::Monitoring::Stats & STATS();
 } // namespace VTX::App
 

@@ -298,7 +298,7 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
 	App::Component::Chemistry::Molecule & molecule
-		= APP::getScene().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+		= SCENE().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
 
 	for ( atom_index_t i = molecule.getResidue( 1 )->getIndexFirstAtom();
 		  i <= molecule.getResidue( 1 )->getIndexLastAtom();
@@ -315,7 +315,7 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	App::Action::Application::OpenScene openSceneAction = App::Action::Application::OpenScene( jsonPath );
 	openSceneAction.execute();
 
-	App::Application::Scene & loadedScene = APP::getScene();
+	App::Application::Scene & loadedScene = SCENE();
 
 	CHECK( loadedScene.getItemCount() == 1 );
 	const App::Component::Scene::SceneItemComponent & sceneItemObj

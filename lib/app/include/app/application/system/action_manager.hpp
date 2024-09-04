@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_APPLICATION_ACTION_ACTION_MANAGER__
 #define __VTX_APP_APPLICATION_ACTION_ACTION_MANAGER__
 
-#include "app/application/system/system_registration.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
 #include <concepts>
 #include <list>
 #include <memory>
 #include <util/concepts.hpp>
+#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Application::System
@@ -19,7 +19,7 @@ namespace VTX::App::Application::System
 
 	// Action manager is a system used to execute all the actions in VTX.
 	// Action manager must be used in order to handle undonable actions.
-	class ActionManager : public System::AutoRegistrateSystem<ActionManager>
+	class ActionManager
 	{
 	  public:
 		using BaseAction		  = Core::Action::BaseAction;
@@ -72,6 +72,9 @@ namespace VTX::App::Application::System
 
 namespace VTX::App
 {
-	Application::System::ActionManager & VTX_ACTION();
-}
+	inline Application::System::ActionManager & VTX_ACTION()
+	{
+		return Util::Singleton<Application::System::ActionManager>::get();
+	}
+} // namespace VTX::App
 #endif

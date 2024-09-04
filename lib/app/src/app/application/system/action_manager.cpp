@@ -135,8 +135,3 @@ namespace VTX::App::Application::System
 		}
 	}
 } // namespace VTX::App::Application::System
-
-namespace VTX::App
-{
-	Application::System::ActionManager & VTX_ACTION() { return Application::System::ActionManager::SYSTEM.get(); }
-} // namespace VTX::App
