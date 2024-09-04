@@ -4,6 +4,7 @@
 #include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include <array>
+#include <cstdint>
 #include <tool/mdprep/backends/gromacs/editconf.hpp>
 #include <tool/mdprep/backends/gromacs/genion.hpp>
 #include <tool/mdprep/backends/gromacs/grompp.hpp>
