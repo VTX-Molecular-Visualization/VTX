@@ -58,6 +58,10 @@ namespace VTX::App
 			tool->init();
 		}
 
+		// Register loop events
+		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
+
 		//// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
@@ -84,10 +88,6 @@ namespace VTX::App
 			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
 		proxyCamera.setInRenderer( rendererFacade );
 		////////////
-
-		// Register loop events
-		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
@@ -175,6 +175,8 @@ namespace VTX::App
 
 	void VTXApp::stop()
 	{
+		VTX_INFO( "Stopping application" );
+
 		SCENE().reset();
 
 		//// Prevent events throw for nothing when quitting app
