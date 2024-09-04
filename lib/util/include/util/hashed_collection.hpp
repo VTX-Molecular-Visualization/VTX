@@ -128,9 +128,6 @@ namespace VTX::Util
 			return Util::hash<T>();
 		}
 
-		// TODO: replace by custom iterator.
-		inline std::unordered_map<Hash, C> & map() { return _map; }
-
 	  private:
 		std::unordered_map<Hash, C> _map;
 	};

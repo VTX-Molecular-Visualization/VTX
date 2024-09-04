@@ -14,7 +14,6 @@ namespace VTX::Tool::Example
 	  public:
 		ExampleTool();
 		~ExampleTool();
-
 		void					   init() override;
 		void					   onAppStart() override;
 		void					   createUI() override;

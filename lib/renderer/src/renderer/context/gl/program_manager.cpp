@@ -44,6 +44,9 @@ namespace VTX::Renderer::Context::GL
 		const std::string &									  p_suffix
 	)
 	{
+		const std::string name = p_name + p_suffix;
+
+#ifndef VTX_RENDERER_NO_OPENGL
 		std::vector<FilePath> paths;
 		if ( std::holds_alternative<FilePath>( p_shaders ) )
 		{
@@ -63,7 +66,6 @@ namespace VTX::Renderer::Context::GL
 			paths = std::get<std::vector<FilePath>>( p_shaders );
 		}
 
-		const std::string name = p_name + p_suffix;
 		if ( _programs.find( name ) == _programs.end() )
 		{
 			_programs[ name ] = std::make_unique<Program>( paths, p_toInject );
@@ -85,7 +87,9 @@ namespace VTX::Renderer::Context::GL
 
 			VTX_TRACE( "Program {} created: {}", _programs[ name ]->getId(), p_name );
 		}
-
+#else
+		_programs[ name ] = std::make_unique<Program>();
+#endif
 		return _programs[ name ].get();
 	}
 

@@ -12,15 +12,10 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "Camera", p_parent )
 		{
-			setLayout( new QGridLayout() );
-
 			addAction<Action::System::New>();
 			addAction<Action::System::Download>();
 			addAction<Action::System::Open>();
 			addAction<Action::System::Save>();
-
-			// Set tool button small.
-			// setToolButtonStyle( Qt::ToolButtonIconOnly );
 		}
 
 		virtual ~File() {}
