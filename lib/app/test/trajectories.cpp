@@ -11,7 +11,7 @@
 #include <app/core/player/revert_loop.hpp>
 #include <app/core/player/revert_once.hpp>
 #include <app/core/player/stop.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -20,7 +20,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestTrajectoryMolecule();
 
 	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );

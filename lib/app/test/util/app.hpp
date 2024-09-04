@@ -20,8 +20,6 @@ namespace VTX::App::Test::Util
 		inline static const std::string MOLECULE_TRAJECTORY_TEST_NAME	  = "1NIM";
 		inline static const std::string MOLECULE_TRAJECTORY_TEST_NAME_EXT = MOLECULE_TRAJECTORY_TEST_NAME + ".mmtf";
 
-		static void initApp();
-
 		static void loadMolecule( const std::string & p_moleculePath );
 		static void loadTestMolecule();
 		static void loadTestTrajectoryMolecule();

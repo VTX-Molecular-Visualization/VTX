@@ -8,7 +8,7 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/scene/selectable.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/logger.hpp>
@@ -23,7 +23,7 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 	using AssignmentType = Application::Selection::AssignmentType;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	Test::Util::App::loadMolecule( "8OIT.mmtf" );
 	const Component::Chemistry::Molecule & mol1 = SCENE().getComponentByName<Component::Chemistry::Molecule>( "8OIT" );
@@ -87,7 +87,7 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	using IndexRange	 = Util::Math::Range<size_t>;
 	using AtomIndexRange = Util::Math::Range<atom_index_t>;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	Test::Util::App::loadMolecule( "1AGA.mmtf" );
 	const Component::Chemistry::Molecule & mol1 = SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" );
@@ -178,7 +178,7 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 
 	using AssignmentType = Application::Selection::AssignmentType;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	Test::Util::App::loadMolecule( "7Y7A.mmtf" );
 	const Component::Chemistry::Molecule & mol1 = SCENE().getComponentByName<Component::Chemistry::Molecule>( "7Y7A" );

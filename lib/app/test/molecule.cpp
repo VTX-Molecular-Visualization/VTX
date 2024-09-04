@@ -5,7 +5,7 @@
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -15,7 +15,7 @@ TEST_CASE( "VTX_APP - Molecule - Remove", "[unit]" )
 	using namespace VTX::App;
 	using namespace VTX::App::Component::Chemistry;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestMolecule();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
@@ -180,7 +180,7 @@ TEST_CASE( "VTX_APP - Molecule - Visibility", "[unit]" )
 	using namespace VTX::App;
 	using namespace VTX::App::Component::Chemistry;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestMolecule();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );

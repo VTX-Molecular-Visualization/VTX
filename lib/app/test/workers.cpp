@@ -1,7 +1,7 @@
 #include "util/app.hpp"
 #include <app/application/system/threading.hpp>
 #include <app/core/worker/base_thread.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
@@ -15,7 +15,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	App::Test::Util::App::initApp();
+	App::Fixture app;
 
 	Core::Worker::BaseThread::AsyncOp asyncOp = []( Core::Worker::BaseThread & p_thread )
 	{

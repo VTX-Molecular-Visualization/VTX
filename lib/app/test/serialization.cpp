@@ -11,7 +11,7 @@
 #include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -41,7 +41,7 @@ TEST_CASE( "VTX_APP - Serialization - Default types", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	const FilePath filepath = Util::Filesystem::getExecutableDir();
 	CHECK( Test::Util::Serialization::checkSerialization( filepath ) );
@@ -167,7 +167,7 @@ TEST_CASE( "VTX_APP - Serialization - Custom Obj", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
@@ -202,7 +202,7 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
@@ -292,7 +292,7 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestTrajectoryMolecule();
 
 	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
@@ -338,7 +338,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
@@ -431,7 +431,7 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
