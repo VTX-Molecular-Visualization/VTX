@@ -50,6 +50,7 @@ namespace VTX::App
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// TODO better way to manage this
+
 		_systemHandler->reference( SCENE_KEY, &scene );
 
 		// Create renderer.
