@@ -1,3 +1,5 @@
+#include <thread>
+//
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
@@ -169,7 +171,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			convert( inst, jobData );
 			declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 			submitGromacsJob(
-				VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath(),
+				VTX::Tool::Mdprep::executableDirectory()
+					/ VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath(),
 				jobData
 			);
 			checkJobResults( jobData );

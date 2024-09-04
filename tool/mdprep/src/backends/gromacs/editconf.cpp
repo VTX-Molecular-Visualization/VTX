@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <fmt/format.h>
 //
 #include <tool/mdprep/backends/gromacs/editconf.hpp>
 #include <tool/mdprep/backends/gromacs/inputs.hpp>
@@ -31,7 +32,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	std::string format( const double & p_ ) noexcept { return std::format( "{:.1f}", p_ ); }
+	std::string format( const double & p_ ) noexcept { return fmt::format( "{:.1f}", p_ ); }
 
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
