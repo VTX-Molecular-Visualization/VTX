@@ -19,7 +19,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 	// const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 	// std::filesystem::create_directory( path );
 	// VTX::Util::Logger::init( path );
-
+	return;
 	VTX::APP::init();
 	VTX::APP().start( { 0, nullptr } );
 

@@ -79,19 +79,11 @@ namespace
 		  "ND1 only (HID)\n1. H on NE2 only (HIE)\n2. H on ND1 and NE2 (HIP)\n3. Coupled to Heme (HIS1)\n\nType a "
 		  "number:";
 
-	template<size_t SIZE>
-	void merge( char ( &b )[ SIZE ], const char * s1, const char * s2 )
-	{
-		if ( strnlen( s1, SIZE ) + strnlen( s2, SIZE ) > SIZE )
-			throw;
-		sprintf( b, "%s%s", s1, s2 );
-	}
-
 } // namespace
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple LYS", "[parseExpectedKwArgument][pdb2gmx][simple][LYS]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainA, g_lys1 );
+	std::string b( g_chainA );
+	b += g_lys1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -100,8 +92,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple LYS", "[parseExpe
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ARG", "[parseExpectedKwArgument][pdb2gmx][simple][ARG]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainA, g_arg1 );
+	std::string b( g_chainA );
+	b += g_arg1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -110,8 +102,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ARG", "[parseExpe
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ASP", "[parseExpectedKwArgument][pdb2gmx][simple][ASP]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainA, g_asp1 );
+	std::string b( g_chainA );
+	b += g_asp1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -120,8 +112,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ASP", "[parseExpe
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLU", "[parseExpectedKwArgument][pdb2gmx][simple][GLU]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainA, g_glu1 );
+	std::string b( g_chainA );
+	b += g_glu1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -130,8 +122,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLU", "[parseExpe
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLN", "[parseExpectedKwArgument][pdb2gmx][simple][GLN]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainA, g_gln1 );
+	std::string b( g_chainA );
+	b += g_gln1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -140,8 +132,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLN", "[parseExpe
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple HIS", "[parseExpectedKwArgument][pdb2gmx][simple][HIS]" )
 {
-	char b[ 1000 ];
-	merge( b, g_chainB, g_his1 );
+	std::string b( g_chainB );
+	b += g_his1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -153,8 +145,10 @@ TEST_CASE(
 	"[parseExpectedKwArgument][last_print_taken][LYS][pdb2gmx][HIS]"
 )
 {
-	char b[ 1000 ];
-	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainB, g_lys1, g_his1 );
+	std::string b( g_chainB );
+	b += g_lys1;
+	b += "\n\nSome intense computation\n\nSuch focus, such wow\n\n";
+	b += g_his1;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -166,8 +160,10 @@ TEST_CASE(
 	"[parseExpectedKwArgument][last_print_taken][pdb2gmx][HIS]"
 )
 {
-	char b[ 1000 ];
-	sprintf_s( b, "%s%s1\n%s", g_chainA, g_his1, g_his2 );
+	std::string b( g_chainA );
+	b += g_his1;
+	b += "s1\n";
+	b += g_his2;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -179,8 +175,10 @@ TEST_CASE(
 	"[parseExpectedKwArgument][last_print_taken][pdb2gmx][HIS]"
 )
 {
-	char b[ 1000 ];
-	sprintf_s( b, "%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
+	std::string b( g_chainA );
+	b += g_his1;
+	b += "s1\n\nSome intense computation\n\nSuch focus, such wow\n\n";
+	b += g_his2;
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
@@ -192,16 +190,14 @@ TEST_CASE(
 	"[parseExpectedKwArgument][pdb2gmx][last_chain_taken]"
 )
 {
-	char b[ 1000 ];
-	sprintf_s(
-		b,
-		"%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s\nlolol\n%s%s",
-		g_chainA,
-		g_his1,
-		g_his2,
-		g_chainB,
-		g_lys1
-	);
+	std::string b( g_chainA );
+	b += g_his1;
+	b += "s1\n\nSome intense computation\n\nSuch focus, such wow\n\n";
+	b += g_his2;
+	b += "\nlolol\n";
+	b += g_chainB;
+	b += g_lys1;
+
 	CHECK( check_parseExpectedKwArgument(
 		b,
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
