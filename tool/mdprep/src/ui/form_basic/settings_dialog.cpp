@@ -100,7 +100,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			{
 				p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
 			}
-			if ( p_data->boxShapeIdx < p_uiObjects.fieldBoxShape->count() )
+			if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
 				p_uiObjects.fieldBoxShape->setCurrentIndex( static_cast<int>( p_data->boxShapeIdx ) );
 			qLayout->addRow( w, p_uiObjects.fieldBoxShape );
 

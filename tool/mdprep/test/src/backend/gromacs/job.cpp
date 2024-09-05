@@ -39,8 +39,6 @@ namespace
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData args;
 	};
 
-	bool haveSameContent( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
-
 	bool checkIfExists(
 		const fs::path & p_directory,
 		const char *	 p_startingPattern,

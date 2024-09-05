@@ -82,7 +82,7 @@ namespace VTX::Tool::Mdprep::ui
 			for ( auto & it_str : values )
 				_boxFields.fieldBoxSizeMode->addItem( QString::fromStdString( it_str ) );
 
-			if ( _data->boxSizeMode < _boxFields.fieldBoxSizeMode->count() )
+			if ( _data->boxSizeMode < static_cast<size_t>( _boxFields.fieldBoxSizeMode->count() ) )
 				_boxFields.fieldBoxSizeMode->setCurrentIndex( static_cast<int>( _data->boxSizeMode ) );
 		}
 		QObject::connect(

@@ -36,7 +36,7 @@ namespace VTX::Tool::Mdprep::ui
 		constexpr std::array<const char *, MD_ENGINE_NUMBER> createMdEngineStringList()
 		{
 			std::array<const char *, MD_ENGINE_NUMBER> out;
-			for ( int i = 0; i < MD_ENGINE_NUMBER; i++ )
+			for ( size_t i = 0; i < MD_ENGINE_NUMBER; i++ )
 			{
 				out[ i ] = string( static_cast<E_MD_ENGINE>( i ) );
 			}

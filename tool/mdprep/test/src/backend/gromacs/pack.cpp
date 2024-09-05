@@ -24,17 +24,6 @@ namespace
 
 		return RE2::PartialMatch( fileContent, pattern );
 	}
-	bool checkNsteps( const fs::path & p_file, const std::string & p_value )
-	{
-		using namespace VTX::Tool::Mdprep::backends::Gromacs;
-		REQUIRE( fs::exists( p_file ) );
-
-		auto fileContent = getFileContent( p_file );
-		REQUIRE( fileContent.empty() == false );
-		RE2 pattern { fmt::format( "nsteps *= *{}", p_value ) };
-
-		return RE2::PartialMatch( fileContent, pattern );
-	}
 	bool checkKv( const std::string & p_fileContent, const std::string & p_key, const std::string & p_value )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
