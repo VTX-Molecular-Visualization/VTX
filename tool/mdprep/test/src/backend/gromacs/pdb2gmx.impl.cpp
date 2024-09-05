@@ -35,7 +35,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - isWaitingInputs - anti-pattern", "[isWaitingInputs
 
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - empty", "[parseExpectedKwArgument][pdb2gmx][empty]" )
 {
-	std::string								   stdout_ { "" };
+	std::string											 stdout_ { "" };
 	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId kw;
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseExpectedKwArgument( stdout_, kw ) == false );
@@ -43,7 +43,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - empty", "[parseExpectedK
 namespace
 {
 	bool check_parseExpectedKwArgument(
-		std::string										   p_stdout,
+		std::string													 p_stdout,
 		const VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId & p_expectedOutput
 	)
 	{
@@ -92,7 +92,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple LYS", "[parseExpe
 	merge( b, g_chainA, g_lys1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::lys, 40 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::lys, 40 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ARG", "[parseExpectedKwArgument][pdb2gmx][simple][ARG]" )
@@ -101,7 +102,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ARG", "[parseExpe
 	merge( b, g_chainA, g_arg1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::arg, 31 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::arg, 31 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ASP", "[parseExpectedKwArgument][pdb2gmx][simple][ASP]" )
@@ -110,7 +112,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple ASP", "[parseExpe
 	merge( b, g_chainA, g_asp1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::asp, 13 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::asp, 13 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLU", "[parseExpectedKwArgument][pdb2gmx][simple][GLU]" )
@@ -118,7 +121,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLU", "[parseExpe
 	char b[ 1000 ];
 	merge( b, g_chainA, g_glu1 );
 	CHECK( check_parseExpectedKwArgument(
-		b, VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::glu, 6 }
+		b,
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::glu, 6 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLN", "[parseExpectedKwArgument][pdb2gmx][simple][GLN]" )
@@ -127,7 +132,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple GLN", "[parseExpe
 	merge( b, g_chainA, g_gln1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::gln, 12 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::gln, 12 }
 	) );
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple HIS", "[parseExpectedKwArgument][pdb2gmx][simple][HIS]" )
@@ -136,7 +142,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseExpectedKwArgument - simple HIS", "[parseExpe
 	merge( b, g_chainB, g_his1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 74 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 74 }
 	) );
 }
 TEST_CASE(
@@ -148,7 +155,8 @@ TEST_CASE(
 	sprintf_s( b, "%s%s\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainB, g_lys1, g_his1 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 74 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 74 }
 	) );
 }
 TEST_CASE(
@@ -160,7 +168,8 @@ TEST_CASE(
 	sprintf_s( b, "%s%s1\n%s", g_chainA, g_his1, g_his2 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 81 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 81 }
 	) );
 }
 TEST_CASE(
@@ -172,7 +181,8 @@ TEST_CASE(
 	sprintf_s( b, "%s%s1\n\nSome intense computation\n\nSuch focus, such wow\n\n%s", g_chainA, g_his1, g_his2 );
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 81 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'A', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::his, 81 }
 	) );
 }
 TEST_CASE(
@@ -192,7 +202,8 @@ TEST_CASE(
 	);
 	CHECK( check_parseExpectedKwArgument(
 		b,
-		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId { 'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::lys, 40 }
+		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId {
+			'B', VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::lys, 40 }
 	) );
 }
 
@@ -212,8 +223,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - case", "[parseOptionNumber][ca
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple LYS", "[parseOptionNumber][pdb2gmx][simple][LYS]" )
 {
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "prout" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "prout" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "" ) == 0xff );
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "0" ) == 0 );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_lys1, "LYN" ) == 0 );
@@ -225,8 +236,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple LYS", "[parseOptionNumb
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple ARG", "[parseOptionNumber][pdb2gmx][simple][ARG]" )
 {
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "prout" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "prout" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "" ) == 0xff );
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "0" ) == 0 );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_arg1, "Not protonated" ) == 0 );
@@ -237,8 +248,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple ARG", "[parseOptionNumb
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple GLU", "[parseOptionNumber][pdb2gmx][simple][GLU]" )
 {
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "prout" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "prout" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "" ) == 0xff );
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "0" ) == 0 );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_glu1, "GLU" ) == 0 );
@@ -250,8 +261,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple GLU", "[parseOptionNumb
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple GLN", "[parseOptionNumber][pdb2gmx][simple][GLN]" )
 {
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "prout" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "prout" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "" ) == 0xff );
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "0" ) == 0 );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_gln1, "GLN" ) == 0 );
@@ -262,10 +273,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple GLN", "[parseOptionNumb
 }
 TEST_CASE( "VTX_TOOL_MdPrep - parseOptionNumber - simple HIS", "[parseOptionNumber][pdb2gmx][simple][HIS]" )
 {
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "prout" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "Not protonated" ) == 0xffui8 );
-	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "protonated" ) == 0xffui8 );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "prout" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "Not protonated" ) == 0xff );
+	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "protonated" ) == 0xff );
 
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "0" ) == 0 );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::parseOptionNumber( g_his1, "HID" ) == 0 );
