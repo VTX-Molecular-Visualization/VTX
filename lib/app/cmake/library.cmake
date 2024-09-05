@@ -37,7 +37,7 @@ target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
-target_compile_definitions(vtx_app_test PRIVATE VTX_RENDERER_NO_OPENGL)
+#target_compile_definitions(vtx_app_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx_app_test)

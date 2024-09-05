@@ -25,7 +25,8 @@ namespace VTX::App::Mode
 			controller->setActive( true );
 		}
 
-		APP::onUpdate += [ this ]( float p_deltaTime, float p_elapsedTime ) { update( p_deltaTime ); };
+		// TODO: call from app::update().
+		// APP::onUpdate += [ this ]( float p_deltaTime, float p_elapsedTime ) { update( p_deltaTime ); };
 	}
 
 	void Visualization::update( float p_deltaTime )
