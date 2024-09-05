@@ -46,7 +46,7 @@ jobs:
         conan export lib/renderer
         conan export lib/app
         conan export lib/ui/qt
-        conan create tool/mdprep -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True -o vtx_tool_mdprep/*:test=True
+        conan create tool/mdprep -b missing -s compiler.cppstd=20 -s compiler.libstdc++20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True -o vtx_tool_mdprep/*:test=True
  
     - name: Upload dependencies
       working-directory: ${{env.ROOT_DIR}}
