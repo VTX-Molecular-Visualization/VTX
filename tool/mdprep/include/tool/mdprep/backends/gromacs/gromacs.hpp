@@ -22,7 +22,7 @@ namespace std
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	const uint8_t g_NUM_PREPARATION_JOBS = 9ui8;
+	const uint8_t g_NUM_PREPARATION_JOBS = 9;
 	struct GromacsInstructions
 	{
 		Pdb2gmxInstructions	 pdb2gmx;

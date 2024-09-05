@@ -1,11 +1,12 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
 
-#include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -62,7 +63,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct Pdb2gmxInputId
 	{
-		char				  chain = 0x00i8; // Value of 0x00 means any chain
+		char				  chain = 0x00; // Value of 0x00 means any chain
 		E_INTERACTIVE_KEYWORD kw	= E_INTERACTIVE_KEYWORD::none;
 		uint32_t			  num	= 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
