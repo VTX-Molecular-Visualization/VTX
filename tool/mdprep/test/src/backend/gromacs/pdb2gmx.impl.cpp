@@ -82,7 +82,9 @@ namespace
 	template<size_t SIZE>
 	void merge( char ( &b )[ SIZE ], const char * s1, const char * s2 )
 	{
-		sprintf_s( b, "%s%s", s1, s2 );
+		if ( strnlen( s1, SIZE ) + strnlen( s2, SIZE ) > SIZE )
+			throw;
+		sprintf( b, "%s%s", s1, s2 );
 	}
 
 } // namespace
