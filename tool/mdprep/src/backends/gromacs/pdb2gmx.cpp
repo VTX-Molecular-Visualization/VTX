@@ -239,13 +239,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 #ifndef _WINDOWS
 		char strcpy_s( char * p_dest, size_t p_size, const char * p_src )
 		{
-			int srcNumChar = 0;
+			size_t srcNumChar = 0;
 			while ( p_src[ srcNumChar ] != '\0' && srcNumChar < p_size )
 				srcNumChar++;
 			if ( srcNumChar == p_size )
 				return 1;
 
-			for ( int idx = 0; idx < p_size; idx++ )
+			for ( size_t idx = 0; idx < p_size; idx++ )
 			{
 				p_dest[ idx ] = p_src[ idx ];
 			}
