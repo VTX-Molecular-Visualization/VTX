@@ -38,14 +38,6 @@ namespace VTX::Tool::Mdprep::ui
 			p_label->setParent( nullptr );
 			p_label->hide();
 		}
-		void deleteWidgetRow( QFormLayout * p_dest, QWidget * p_w )
-		{
-			int					  rowToTakeOut = 0;
-			QFormLayout::ItemRole _tmp;
-			p_dest->getWidgetPosition( p_w, &rowToTakeOut, &_tmp );
-			if ( rowToTakeOut > -1 )
-				p_dest->removeRow( rowToTakeOut );
-		}
 
 	} // namespace
 
