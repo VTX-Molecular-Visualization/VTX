@@ -35,7 +35,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	using namespace VTX::UI::QT::Util;
 	namespace
 	{
-		std::array<std::string_view, 4> g_IonicChargeValues { "-2", "-1", "+1", "+2" };
 
 		// Validator class that enforce Chemical symbol user input
 		class QChemicalSymbolValidator : public QValidator
@@ -77,38 +76,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	}
 	namespace
 	{
-
-		void updateDurationLabel( QLabel * p_label, const QString & p_str, const double & p_dt ) noexcept
-		{
-			const double							 durationDoublePs = p_str.toDouble() * p_dt;
-			static const std::array<const char *, 4> timeUnits { "fs", "ps", "ns", "\xc2\xb5s" };
-			const char *							 timeUnit;
-			uint64_t								 duration = 0;
-
-			if ( durationDoublePs < 1e0 )
-			{
-				timeUnit = timeUnits[ 0 ];
-				duration = static_cast<uint64_t>( durationDoublePs * 1e3 );
-			}
-			else if ( durationDoublePs < 1e3 )
-			{
-				timeUnit = timeUnits[ 1 ];
-				duration = static_cast<uint64_t>( durationDoublePs );
-			}
-			else if ( durationDoublePs < 1e6 )
-			{
-				timeUnit = timeUnits[ 2 ];
-				duration = static_cast<uint64_t>( durationDoublePs * 1e-3 );
-			}
-			else
-			{
-				timeUnit = timeUnits[ 3 ];
-				duration = static_cast<uint64_t>( durationDoublePs * 1e-6 );
-			}
-
-			const std::string formatedStr = fmt::format( "{:d}{} (dt = {:0.3f}ps)", duration, timeUnit, p_dt );
-			p_label->setText( QString::fromStdString( formatedStr ) );
-		}
 		void createSettingButton( QPushButton ** p_out_buttonSettings )
 		{
 			*p_out_buttonSettings = new QPushButton;
