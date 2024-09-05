@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 #include <string_view>
