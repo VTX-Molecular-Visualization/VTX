@@ -3,6 +3,7 @@
 #include <re2/re2.h>
 #include <regex>
 #include <set>
+#include <string.h>
 //
 #include <tool/mdprep/backends/gromacs/pdb2gmx.hpp>
 #include <util/exceptions.hpp>

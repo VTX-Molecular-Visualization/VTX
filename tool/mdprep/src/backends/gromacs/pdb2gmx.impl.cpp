@@ -3,7 +3,7 @@
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"
-#include <format>
+#include <fmt/format.h>
 #include <regex>
 #include <util/string.hpp>
 //
