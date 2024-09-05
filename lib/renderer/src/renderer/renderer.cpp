@@ -99,7 +99,7 @@ namespace VTX::Renderer
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
 		// Build renderer graph.
-		VTX_INFO(
+		VTX_DEBUG(
 			"Renderer graph setup total time: {}",
 			Util::CHRONO_CPU(
 				[ & ]()

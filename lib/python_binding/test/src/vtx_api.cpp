@@ -17,7 +17,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;

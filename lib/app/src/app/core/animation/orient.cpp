@@ -68,7 +68,7 @@ namespace VTX::App::Core::Animation
 		if ( !isRunning() )
 			return;
 
-		if ( MODE().getName() == Mode::Visualization::ID )
+		// if ( MODE().getName() == Mode::Visualization::ID )
 		{
 			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
 			// visualizationMode.getCurrentCameraController().setActive( false );
@@ -87,7 +87,7 @@ namespace VTX::App::Core::Animation
 
 		_camera.setTargetWorld( target );
 
-		if ( MODE().getName() == Mode::Visualization::ID )
+		// if ( MODE().getName() == Mode::Visualization::ID )
 		{
 			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
 			// visualizationMode.getCurrentCameraController().setActive( true );

@@ -20,7 +20,7 @@ namespace VTX::App::Test::Util
 		std::stringstream command = std::stringstream();
 		command << "(" << p_command << ").save('" << p_selName << "')";
 
-		PythonBinding::INTERPRETOR().runCommand( command.str() );
+		INTERPRETOR().runCommand( command.str() );
 
 		const SelectionObj & result = App::SELECTION_MANAGER().getSaved( p_selName );
 

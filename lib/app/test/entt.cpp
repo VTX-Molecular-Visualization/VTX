@@ -8,7 +8,7 @@
 #include <app/component/render/proxy_molecule.hpp>
 #include <app/entity/scene/molecule_entity.hpp>
 #include <app/filesystem.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <entt/entt.hpp>
@@ -24,7 +24,7 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestMolecule();
 
 	App::Core::ECS::View view1Element = SCENE().getAllSceneItems();
@@ -60,7 +60,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 
 	const std::string moleculePathname = App::Test::Util::App::MOLECULE_TEST_NAME + ".mmtf";
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	CallbackTest addSceneItemTest = CallbackTest();
 	SCENE().onSceneItemAdded += [ &addSceneItemTest ]( const Component::Scene::SceneItemComponent & p_sceneItem )
@@ -113,7 +113,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	const std::string moleculePathname = App::Test::Util::App::MOLECULE_TEST_NAME + ".mmtf";
 
 	// Create Scene
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	// Create MoleculeEntity
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;

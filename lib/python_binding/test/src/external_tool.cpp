@@ -14,7 +14,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	App::Test::Util::App::initApp();
 
-	PythonBinding::Interpretor & interpretor = PythonBinding::INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
 	interpretor.addBinder<VTX::Test::ExternalTool::Binder>();
 	interpretor.init();

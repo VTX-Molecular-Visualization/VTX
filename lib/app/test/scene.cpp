@@ -2,7 +2,7 @@
 #include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/vtx_app.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -11,7 +11,7 @@ TEST_CASE( "VTX_APP - Scene", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	Test::Util::App::loadMolecule( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_0" );

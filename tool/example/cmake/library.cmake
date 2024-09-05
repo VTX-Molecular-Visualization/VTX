@@ -57,8 +57,6 @@ target_link_libraries(vtx_tool_example PRIVATE Qt6::OpenGLWidgets)
 # Link tests.
 target_link_libraries(vtx_tool_example_test PRIVATE vtx_tool_example)
 target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2WithMain)
-# Enable fake opengl context to test only on cpu.
-#target_compile_definitions(vtx_tool_example_test PRIVATE VTX_RENDERER_NO_OPENGL)
 
 include(CTest)
 include(Catch)

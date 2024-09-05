@@ -12,43 +12,6 @@
 
 namespace VTX::App::Test::Util
 {
-	void App::initApp()
-	{
-		static bool isInit;
-		if ( not isInit )
-		{
-			APP::init();
-
-			// Fake OpenGL context throws exception:
-			// throw GLException( "Context not loaded" );
-			APP().start( { 0, nullptr } );
-
-			// auto & renderer = RENDERER().facade();
-			// REQUIRE_THROWS( renderer.build() );
-
-			/*
-			// Camera.
-			Component::Render::ProxyCamera & proxyCamera
-				= MAIN_REGISTRY().getComponent<Component::Render::ProxyCamera>( SCENE().getCamera() );
-			proxyCamera.setInRenderer( renderer );
-
-			// Default representation.
-			static Renderer::Proxy::Representation		   representation;
-			std::vector<Renderer::Proxy::Representation *> representations { &representation };
-			renderer.addProxyRepresentations( representations );
-
-			// Default color layout.
-			Component::Render::ProxyColorLayout & proxyColorLayout
-				= MAIN_REGISTRY().findComponent<Component::Render::ProxyColorLayout>();
-			proxyColorLayout.setup( renderer );
-			renderer.setProxyColorLayout( proxyColorLayout.getProxy().proxy() );
-			*/
-
-			isInit = true;
-		}
-
-		SCENE().reset();
-	}
 
 	void App::loadMolecule( const std::string & p_moleculePath )
 	{

@@ -6,6 +6,10 @@ namespace VTX::Renderer::Context
 	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
 		BaseContext { p_width, p_height, p_shaderPath }
 	{
+#ifdef VTX_RENDERER_NO_OPENGL
+		VTX_WARNING( "Creating fake OpenGL context" );
+#endif
+
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 

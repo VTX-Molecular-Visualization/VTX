@@ -3,6 +3,7 @@
 #include "app/core/controller/controller_manager.hpp"
 #include "app/mode/base_mode.hpp"
 #include "app/mode/visualization.hpp"
+#include "app/vtx_app.hpp"
 #include <util/collection.hpp>
 
 namespace VTX::App::Action::Visualization

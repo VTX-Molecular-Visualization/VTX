@@ -2,17 +2,17 @@
 #define __VTX_UI_QT_INPUT_INPUT_MANAGER__
 
 #include "events.hpp"
-#include <app/application/system/system_registration.hpp>
 #include <map>
 #include <queue>
 #include <set>
 #include <util/callback.hpp>
 #include <util/concepts.hpp>
+#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Input
 {
-	class InputManager : public App::Application::System::AutoRegistrateSystem<InputManager>
+	class InputManager
 	{
 	  private:
 		inline static const int CLICK_MAX_DISTANCE = 3;
@@ -129,7 +129,7 @@ namespace VTX::App::Core::Input
 
 namespace VTX::App
 {
-	Core::Input::InputManager & INPUT_MANAGER();
-}
+	inline Core::Input::InputManager & INPUT_MANAGER() { return Util::Singleton<Core::Input::InputManager>::get(); }
+} // namespace VTX::App
 
 #endif

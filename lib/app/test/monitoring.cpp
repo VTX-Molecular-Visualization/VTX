@@ -1,6 +1,6 @@
 #include "util/app.hpp"
+#include <app/fixture.hpp>
 #include <app/internal/monitoring/all_metrics.hpp>
-#include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
@@ -13,7 +13,7 @@ void displaySimpleInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Util::Monitoring::Stats & stats = APP::getStats();
+	const Util::Monitoring::Stats & stats = STATS();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
@@ -28,7 +28,7 @@ void displayFullInfo()
 	using namespace VTX;
 	using namespace VTX::App;
 
-	const Util::Monitoring::Stats & stats = APP::getStats();
+	const Util::Monitoring::Stats & stats = STATS();
 
 	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
@@ -60,7 +60,7 @@ TEST_CASE( "VTX_APP - Monitoring", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	// APP::onPreUpdate +=
 	//	[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };

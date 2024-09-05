@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx)
 
-find_package(glm  REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
@@ -29,33 +29,28 @@ find_package(Eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 
-include(CTest)
-include(Catch)
-
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Core.
 include("${DIR_LIBS}/core/cmake/library.cmake")
+vtx_clear_registered_copies()
 
 # IO.
 include("${DIR_LIBS}/io/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
+vtx_clear_registered_copies()
 
 # Bench.
 include("${DIR_APPS}/bench/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Python binding.
@@ -63,24 +58,20 @@ include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # Python binding test.
 include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
-
-vtx_clear_registered_copies()
-
-# VTX.
-include("${DIR_APPS}/vtx/cmake/library.cmake")
-
 vtx_clear_registered_copies()
 
 # Tool example
 include("${DIR_TOOLS}/example/cmake/library.cmake")
+vtx_clear_registered_copies()
 
 # Tool Mdprep
 include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
+vtx_clear_registered_copies()
 
-
+# VTX.
+include("${DIR_APPS}/vtx/cmake/library.cmake")
 vtx_clear_registered_copies()

@@ -2,9 +2,9 @@
 #define __VTX_PYTHON_BINDING_INTERPRETOR__
 
 #include "python_binding/binder.hpp"
-#include <app/application/system/system_registration.hpp>
 #include <memory>
 #include <string>
+#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding
@@ -14,7 +14,7 @@ namespace VTX::PythonBinding
 		class Module;
 	}
 
-	class Interpretor : public App::Application::System::AutoRegistrateSystem<Interpretor>
+	class Interpretor
 	{
 	  public:
 		Interpretor();
@@ -43,7 +43,11 @@ namespace VTX::PythonBinding
 		std::unique_ptr<Impl> _impl;
 	};
 
-	Interpretor & INTERPRETOR();
 } // namespace VTX::PythonBinding
+
+namespace VTX
+{
+	inline PythonBinding::Interpretor & INTERPRETOR() { return Util::Singleton<PythonBinding::Interpretor>::get(); }
+} // namespace VTX
 
 #endif

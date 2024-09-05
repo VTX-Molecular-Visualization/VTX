@@ -49,9 +49,6 @@ namespace VTX::App
 		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
-		// TODO better way to manage this
-		_systemHandler->reference( SCENE_KEY, &scene );
-
 		// Create renderer.
 		RENDERER().init();
 
@@ -60,6 +57,10 @@ namespace VTX::App
 		{
 			tool->init();
 		}
+
+		// Register loop events
+		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
 		//// Create Databases
 		//_representationLibrary
@@ -88,10 +89,6 @@ namespace VTX::App
 		proxyCamera.setInRenderer( rendererFacade );
 		////////////
 
-		// Register loop events
-		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
-
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
@@ -112,7 +109,7 @@ namespace VTX::App
 		// Log times.
 		// VTX_DEBUG( "Delta time: {} ms, Elapsed time: {} ms", p_deltaTime, p_elapsedTime );
 
-		Util::Monitoring::FrameInfo & frameInfo = _stats.newFrame();
+		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
 		frameInfo.set(
 			Internal::Monitoring::TICK_RATE_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
@@ -121,7 +118,7 @@ namespace VTX::App
 
 	void VTXApp::_update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		Util::Monitoring::FrameInfo & frameInfo = _stats.getCurrentFrame();
+		Util::Monitoring::FrameInfo & frameInfo = STATS().getCurrentFrame();
 
 		/*
 		frameInfo.set(
@@ -178,6 +175,8 @@ namespace VTX::App
 
 	void VTXApp::stop()
 	{
+		VTX_INFO( "Stopping application" );
+
 		SCENE().reset();
 
 		//// Prevent events throw for nothing when quitting app
@@ -251,10 +250,10 @@ namespace VTX::App
 	// #endif
 	//	}
 
-	Application::Scene & VTXApp::getScene() { return _systemHandler->get<Application::Scene>( SCENE_KEY ); }
+	// TODO.
+	Mode::BaseMode & MODE() { return APP::getCurrentMode(); }
 
-	Application::Scene &	  SCENE() { return APP::getScene(); }
-	Mode::BaseMode &		  MODE() { return APP::getCurrentMode(); }
-	Util::Monitoring::Stats & STATS() { return APP::getStats(); }
+	Application::Scene &	  SCENE() { return Util::Singleton<Application::Scene>::get(); }
+	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
 
 } // namespace VTX::App

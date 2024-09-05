@@ -21,7 +21,7 @@ namespace VTX::App::Test::Util
 			std::filesystem::create_directory( path );
 			LOGGER::init( path );
 
-			PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+			INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 
 			APP().start( { 0, nullptr } );
 			isInit = true;
@@ -33,8 +33,8 @@ namespace VTX::App::Test::Util
 
 	void App::resetInterpretor()
 	{
-		PythonBinding::INTERPRETOR().clearBinders();
-		PythonBinding::INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		INTERPRETOR().clearBinders();
+		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
 	void App::loadMolecule( const std::string & p_moleculePath )

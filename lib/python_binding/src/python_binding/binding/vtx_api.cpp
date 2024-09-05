@@ -34,9 +34,7 @@ namespace VTX::PythonBinding
 			.def_readwrite( "z", &Vec3f::z );
 
 		// Global
-		p_apiModule.def(
-			"getScene", []() { return APP::getScene(); }, pybind11::return_value_policy::reference
-		);
+		p_apiModule.def( "getScene", []() { return SCENE(); }, pybind11::return_value_policy::reference );
 
 		// Selection
 		Binding::Binders::bind_selection( p_apiModule );
@@ -115,8 +113,7 @@ namespace VTX::PythonBinding
 			"setAtomName",
 			[]( const std::string & p_moleculeName, const atom_index_t p_atomIndex, const std::string & p_name )
 			{
-				return APP()
-					.getScene()
+				return SCENE()
 					.getComponentByName<App::Component::Chemistry::Molecule>( p_moleculeName )
 					.getAtom( p_atomIndex )
 					->setName( p_name );

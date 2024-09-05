@@ -10,8 +10,8 @@
 #include <app/core/action/base_action_undonable.hpp>
 #include <app/core/ecs/base_entity.hpp>
 #include <app/filesystem.hpp>
+#include <app/fixture.hpp>
 #include <app/internal/application/settings.hpp>
-#include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/filesystem.hpp>
@@ -48,7 +48,7 @@ TEST_CASE( "VTX_APP - Action - ActionManager", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	REQUIRE( !VTX_ACTION().canUndo() );
 	REQUIRE( !VTX_ACTION().canRedo() );
@@ -101,7 +101,7 @@ TEST_CASE( "VTX_APP - Action - Application", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 	Test::Util::App::loadTestMolecule();
 
 	std::filesystem::create_directory( Util::Filesystem::getExecutableDir() / "data/actions" );
@@ -123,7 +123,7 @@ TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	SCENE().getCamera().getTransform().moveFront( 5 );
 	SCENE().getCamera().getTransform().localRotate( { 45, 45, 0 } );
@@ -144,7 +144,7 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	Test::Util::App::initApp();
+	App::Fixture app;
 
 	// Settings
 	const App::Application::Settings::Settings settings = SETTINGS();

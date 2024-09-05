@@ -153,6 +153,4 @@ namespace VTX::PythonBinding
 
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
 
-	Interpretor & INTERPRETOR() { return Interpretor::SYSTEM.get(); }
-
 } // namespace VTX::PythonBinding

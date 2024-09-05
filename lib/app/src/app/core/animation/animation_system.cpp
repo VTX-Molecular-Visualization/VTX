@@ -1,4 +1,6 @@
 #include "app/core/animation/animation_system.hpp"
+#include "app/vtx_app.hpp"
+#include <util/singleton.hpp>
 
 namespace VTX::App::Core::Animation
 {
@@ -6,7 +8,8 @@ namespace VTX::App::Core::Animation
 	{
 		_currentAnimationIt = _animationSequence.end();
 
-		APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime ) { update( p_deltaTime ); };
+		// TODO: call from app::update().
+		// APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime ) { update( p_deltaTime ); };
 	}
 
 	void AnimationSystem::play()
@@ -61,8 +64,3 @@ namespace VTX::App::Core::Animation
 	}
 
 } // namespace VTX::App::Core::Animation
-
-namespace VTX::App
-{
-	Core::Animation::AnimationSystem & ANIMATION_SYSTEM() { return Core::Animation::AnimationSystem::SYSTEM.get(); }
-} // namespace VTX::App
