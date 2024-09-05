@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QValidator>
-#include <format>
+#include <fmt/format.h>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
