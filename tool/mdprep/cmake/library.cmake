@@ -62,9 +62,6 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 
-# Enable fake opengl context to test only on cpu.
-#target_compile_definitions(vtx_tool_mdprep_test PRIVATE VTX_RENDERER_NO_OPENGL)
-
 include(CTest)
 include(Catch)
 catch_discover_tests(vtx_tool_mdprep_test DISCOVERY_MODE PRE_TEST)
