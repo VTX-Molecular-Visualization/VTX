@@ -2,6 +2,7 @@
 #include <fstream>
 #include <tool/mdprep/backends/gromacs/pack.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
+#include <vector>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {

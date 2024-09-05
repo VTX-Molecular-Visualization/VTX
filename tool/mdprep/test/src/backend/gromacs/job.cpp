@@ -16,12 +16,12 @@ namespace
 	struct IoPaths
 	{
 		IoPaths( const char * p_out_dir_name, const char * p_pdb_code ) :
-			in( execPath / std::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
-			outGro( outDir / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
-			outTopol( outDir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
-			outPosre( outDir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
-			outClean( outDir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
-			outIndex( outDir / std::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
+			in( execPath / fmt::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
+			outGro( outDir / fmt::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+			outTopol( outDir / fmt::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
+			outPosre( outDir / fmt::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
+			outClean( outDir / fmt::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
+			outIndex( outDir / fmt::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
 		}
 		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();

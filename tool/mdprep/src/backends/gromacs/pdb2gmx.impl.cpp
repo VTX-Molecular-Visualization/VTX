@@ -164,7 +164,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			bool currentOptionIsNotProtonated = itStrUp.find( g_notProtonated ) != std::string::npos;
 
-			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upperInput ) };
+			const std::regex input_regex { fmt::format( "([^\\w]|^){}([^\\w]|$)", upperInput ) };
 			std::smatch		 match; // we don't actually use it
 
 			if ( currentOptionIsNotProtonated && userInputContainsNotProtonated )

@@ -25,7 +25,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 		if ( !fs::is_directory( p_dataDir ) )
 		{
-			auto errStr = std::format( "Directory <{}> not found", p_dataDir.string() );
+			auto errStr = fmt::format( "Directory <{}> not found", p_dataDir.string() );
 			throw VTX::IOException( errStr );
 		}
 		std::vector<forcefield> out;
@@ -160,7 +160,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( std::regex_match( lineBuf, match, lineRegex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			{
 				out.error	= true;
-				out.message = std::format(
+				out.message = fmt::format(
 					"Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
 					std::string( currentPos, nextNewlinePos )
 				);
@@ -175,7 +175,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( new_id.kw == E_INTERACTIVE_KEYWORD::none )
 			{
 				out.error	= true;
-				out.message = std::format(
+				out.message = fmt::format(
 					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf
 				);
 				return out;
@@ -184,7 +184,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( buf.empty() )
 			{
 				out.error	= true;
-				out.message = std::format(
+				out.message = fmt::format(
 					"No residue num has been found in line <{}>.", std::string( currentPos, nextNewlinePos )
 				);
 				return out;
@@ -196,7 +196,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			catch ( std::invalid_argument & )
 			{
 				out.error	= true;
-				out.message = std::format( "Number <{}> isn't a correct value.", buf );
+				out.message = fmt::format( "Number <{}> isn't a correct value.", buf );
 				return out;
 			}
 			buf = match[ 4 ].str();
@@ -204,7 +204,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				out.error = true;
 				out.message
-					= std::format( "No value has been found in line <{}>.", std::string( currentPos, nextNewlinePos ) );
+					= fmt::format( "No value has been found in line <{}>.", std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 
