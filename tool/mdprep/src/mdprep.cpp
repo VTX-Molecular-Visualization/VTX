@@ -1,4 +1,4 @@
-#include <QCombobox>
+#include <QComboBox>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
