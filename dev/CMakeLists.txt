@@ -54,11 +54,11 @@ include("${DIR_LIBS}/app/cmake/library.cmake")
 vtx_clear_registered_copies()
 
 # Python binding.
-include("${DIR_LIBS}/python_binding/cmake/library.cmake")
+#include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # Python binding test.
-include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
-vtx_clear_registered_copies()
+#include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
+#vtx_clear_registered_copies()
 
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
