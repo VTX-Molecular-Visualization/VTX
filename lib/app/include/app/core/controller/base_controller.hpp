@@ -24,7 +24,7 @@ namespace VTX::App::Core::Controller
 
 		// inline bool isTargetWidgetFocused() const { return _widgetTarget == nullptr || _widgetTarget->hasFocus(); }
 
-		virtual VTX::Hash		getHashedCollectionID() const = 0;
+		virtual VTX::Hash						getHashedCollectionID() const = 0;
 		virtual std::unique_ptr<BaseController> clone() const				  = 0;
 
 	  protected:

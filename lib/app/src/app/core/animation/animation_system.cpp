@@ -4,13 +4,7 @@
 
 namespace VTX::App::Core::Animation
 {
-	AnimationSystem::AnimationSystem()
-	{
-		_currentAnimationIt = _animationSequence.end();
-
-		// TODO: call from app::update().
-		// APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime ) { update( p_deltaTime ); };
-	}
+	AnimationSystem::AnimationSystem() { _currentAnimationIt = _animationSequence.end(); }
 
 	void AnimationSystem::play()
 	{

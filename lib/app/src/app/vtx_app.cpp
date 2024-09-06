@@ -16,6 +16,7 @@
 #include "app/component/render/proxy_color_layout.hpp"
 #include "app/component/render/proxy_molecule.hpp"
 #include "app/controller/camera/trackball.hpp"
+#include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/worker/worker_manager.hpp"
@@ -58,8 +59,11 @@ namespace VTX::App
 			tool->init();
 		}
 
-		// Register loop events
+		// Register loop events.
+		// TODO: call in main loop?
 		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
+		onUpdate +=
+			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
 
 		//// Create Databases
