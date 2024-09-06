@@ -25,20 +25,20 @@ namespace VTX::Tool::Mdprep::ui
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			};
 		}
-		inline void createReportUi( VTX::UI::QT::Util::LabelWithHelper & p_label, Gateway::CheckReport & p_report )
+		inline void createReportUi( ReportUi & p_reportUi )
 		{
-			if ( p_report == Gateway::CheckReport() )
+			if ( p_reportUi.report == Gateway::CheckReport() )
 			{
-				p_label = getWaitingMessage();
+				p_reportUi.content = getWaitingMessage();
 				return;
 			}
-			p_label = VTX::UI::QT::Util::LabelWithHelper(
-				getReportLabel( p_report.pass ),
-				p_report.message.c_str(),
+			p_reportUi.content = VTX::UI::QT::Util::LabelWithHelper(
+				getReportLabel( p_reportUi.report.pass ),
+				p_reportUi.report.message.c_str(),
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
 
-			p_label.label->setWordWrap( true );
+			p_reportUi.content.label->setWordWrap( true );
 		}
 
 		class ReportResultPoster
@@ -51,8 +51,8 @@ namespace VTX::Tool::Mdprep::ui
 
 			void operator()() noexcept
 			{
-				ReportUi reportUi;
-				createReportUi( reportUi.content, _reportData->report );
+				ReportUi reportUi { .report = _reportData->report };
+				createReportUi( reportUi );
 				_sendReportUi( reportUi );
 				_reportData->checkInProgress = false;
 			}
@@ -106,8 +106,32 @@ namespace VTX::Tool::Mdprep::ui
 	class FramedReportManager
 	{
 	  public:
-		void relocate( QPointer<QVBoxLayout> p_ ) noexcept { _currentLayout = p_; }
+		void relocate( QPointer<QVBoxLayout> p_ ) noexcept
+		{
+			_currentLayout = p_;
+
+			if ( not _lastUiReport.content.container.isNull() )
+				delete _lastUiReport.content.container;
+
+			createReportUi( _lastUiReport );
+			_recreateUi();
+		}
 		void postReport( ReportUi p_uiReport ) noexcept
+		{
+			if ( not _lastUiReport.content.container.isNull() )
+				delete _lastUiReport.content.container;
+
+			_lastUiReport = std::move( p_uiReport );
+
+			_recreateUi();
+		}
+
+	  private:
+		QPointer<QVBoxLayout> _currentLayout = nullptr;
+		QPointer<QWidget>	  _container	 = nullptr;
+		ReportUi			  _lastUiReport;
+
+		void _recreateUi() noexcept
 		{
 			if ( _currentLayout.isNull() )
 				return;
@@ -115,20 +139,12 @@ namespace VTX::Tool::Mdprep::ui
 			{
 				_container = new QWidget;
 				_currentLayout->addWidget( _container );
+				_container->setLayout( new QVBoxLayout );
 			}
 
 			if ( not _lastUiReport.content.container.isNull() )
-				delete _lastUiReport.content.container.data();
-
-			_container->setLayout( new QVBoxLayout );
-			_container->layout()->addWidget( p_uiReport.content );
-			_lastUiReport = std::move( p_uiReport );
+				_container->layout()->addWidget( _lastUiReport.content );
 		}
-
-	  private:
-		QPointer<QVBoxLayout> _currentLayout = nullptr;
-		QPointer<QWidget>	  _container	 = nullptr;
-		ReportUi			  _lastUiReport;
 	};
 
 	/**
@@ -139,12 +155,7 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		ReportPlacerCaller() = delete;
 		ReportPlacerCaller( std::shared_ptr<FramedReportManager> p_in ) : _manager( std::move( p_in ) ) {}
-		void operator()( ReportUi p_report ) noexcept
-		{
-			//
-			_manager->postReport( std::move( p_report ) );
-			//
-		}
+		void operator()( ReportUi p_report ) noexcept { _manager->postReport( std::move( p_report ) ); }
 
 	  private:
 		std::shared_ptr<FramedReportManager> _manager;

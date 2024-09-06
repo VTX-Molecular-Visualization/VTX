@@ -26,6 +26,7 @@ namespace VTX::Tool::Mdprep::ui
 	struct ReportUi
 	{
 		VTX::UI::QT::Util::LabelWithHelper content;
+		Gateway::CheckReport			   report;
 	};
 
 	using UiReportCallback = std::function<void( ReportUi )>;
@@ -70,7 +71,7 @@ namespace VTX::Tool::Mdprep::ui
 	class UiReportManager
 	{
 	  public:
-		UiReportManager();
+		UiReportManager(); // TODO : needs to be tied to the reportmanager to retrieve the previous report
 		void relocate( QPointer<QVBoxLayout> ) noexcept;
 
 		UiReportCallback produceCallback() noexcept;
