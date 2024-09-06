@@ -4,6 +4,7 @@
 #include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include <array>
+#include <cstdint>
 #include <tool/mdprep/backends/gromacs/editconf.hpp>
 #include <tool/mdprep/backends/gromacs/genion.hpp>
 #include <tool/mdprep/backends/gromacs/grompp.hpp>
@@ -21,7 +22,7 @@ namespace std
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	const uint8_t g_NUM_PREPARATION_JOBS = 9ui8;
+	const uint8_t g_NUM_PREPARATION_JOBS = 9;
 	struct GromacsInstructions
 	{
 		Pdb2gmxInstructions	 pdb2gmx;

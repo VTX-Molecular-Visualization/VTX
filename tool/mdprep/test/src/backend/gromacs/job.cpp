@@ -8,7 +8,7 @@
 #include "tool/mdprep/backends/gromacs/util.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <format>
+#include <fmt/format.h>
 
 namespace
 {
@@ -16,12 +16,12 @@ namespace
 	struct IoPaths
 	{
 		IoPaths( const char * p_out_dir_name, const char * p_pdb_code ) :
-			in( execPath / std::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
-			outGro( outDir / std::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
-			outTopol( outDir / std::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
-			outPosre( outDir / std::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
-			outClean( outDir / std::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
-			outIndex( outDir / std::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
+			in( execPath / fmt::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
+			outGro( outDir / fmt::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
+			outTopol( outDir / fmt::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
+			outPosre( outDir / fmt::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
+			outClean( outDir / fmt::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
+			outIndex( outDir / fmt::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
 		}
 		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();
@@ -35,11 +35,9 @@ namespace
 	};
 	struct TestContext
 	{
-		IoPaths									   paths;
+		IoPaths												 paths;
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData args;
 	};
-
-	bool haveSameContent( const fs::path & p_1, const fs::path & p_2 ) noexcept {}
 
 	bool checkIfExists(
 		const fs::path & p_directory,
@@ -94,7 +92,8 @@ namespace
 			"tip3p",
 		} };
 		VTX::Tool::Mdprep::backends::Gromacs::declareFfDirectory(
-			VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
+			VTX::Tool::Mdprep::executableDirectory()
+			/ VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
 		);
 
 		return out;
@@ -102,8 +101,8 @@ namespace
 
 	void check_pdb( TestContext p_context )
 	{
-		fs::path full_gmx_exe_path
-			= VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
+		fs::path full_gmx_exe_path = VTX::Tool::Mdprep::executableDirectory()
+									 / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
 		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
@@ -123,8 +122,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsJob][pdb2gmx][1u
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][full][lys]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	VTX::test::setup_env					  f;
-	auto									  contextData = setupTestContext( "1ubq" );
+	VTX::test::setup_env								f;
+	auto												contextData = setupTestContext( "1ubq" );
 	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );
@@ -141,8 +140,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pd
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pdb2gmx][1ubq][interactive][default]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	VTX::test::setup_env					  f;
-	auto									  contextData = setupTestContext( "1ubq" );
+	VTX::test::setup_env								f;
+	auto												contextData = setupTestContext( "1ubq" );
 	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );
@@ -154,8 +153,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq - A LYN6", "[submitGromacsJob][pd
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 8hu4 - B GLN62", "[submitGromacsJob][pdb2gmx][8hu4][interactive][slow]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	VTX::test::setup_env					  f;
-	auto									  contextData = setupTestContext( "8hu4.nolig" );
+	VTX::test::setup_env								f;
+	auto												contextData = setupTestContext( "8hu4.nolig" );
 	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs inputs;
 
 	contextData.args.arguments.push_back( "-lys" );

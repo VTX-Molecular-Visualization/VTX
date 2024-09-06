@@ -3,7 +3,8 @@
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"
-#include <format>
+#include <charconv>
+#include <fmt/format.h>
 #include <regex>
 #include <util/string.hpp>
 //
@@ -130,10 +131,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	uint8_t parseOptionNumber( const std::string & p_stdout, const std::string_view & p_value )
 	{
 		if ( p_value.empty() )
-			return 0xffui8;
-		uint8_t out = 0xffui8;
+			return 0xff;
+		uint8_t out = 0xff;
 		std::from_chars( p_value.data(), p_value.data() + p_value.size(), out );
-		if ( out != 0xffui8 )
+		if ( out != 0xff )
 			return out;
 
 		std::string lastGromacsInputRequestString = getLastInputRequest( p_stdout );
@@ -152,7 +153,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			  it != std::sregex_iterator();
 			  ++it )
 		{
-			out						= 0xffui8;
+			out						= 0xff;
 			const std::string itStr = it->str();
 			std::string		  itStrUp { itStr };
 			Util::String::toUpper( itStrUp );
@@ -164,7 +165,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			bool currentOptionIsNotProtonated = itStrUp.find( g_notProtonated ) != std::string::npos;
 
-			const std::regex input_regex { std::format( "([^\\w]|^){}([^\\w]|$)", upperInput ) };
+			const std::regex input_regex { fmt::format( "([^\\w]|^){}([^\\w]|$)", upperInput ) };
 			std::smatch		 match; // we don't actually use it
 
 			if ( currentOptionIsNotProtonated && userInputContainsNotProtonated )
@@ -174,7 +175,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( std::regex_search( itStrUp, match, input_regex ) )
 				return out;
 		}
-		return 0xffui8;
+		return 0xff;
 	}
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

@@ -29,6 +29,15 @@ namespace VTX::Tool::Mdprep
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
+#ifndef _WINDOWS
+	size_t strnlen_s( const char * p_str, size_t p_cnt )
+	{
+		size_t out = 0;
+		while ( p_str[ out ] != '\0' && out < p_cnt )
+			out++;
+		return out;
+	}
+#endif
 
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept
 	{

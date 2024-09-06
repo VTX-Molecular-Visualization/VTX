@@ -2,9 +2,11 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -61,7 +63,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	// Meant to uniquely identify a specific instance of input required by gromacs
 	struct Pdb2gmxInputId
 	{
-		char				  chain = 0x00i8; // Value of 0x00 means any chain
+		char				  chain = 0x00; // Value of 0x00 means any chain
 		E_INTERACTIVE_KEYWORD kw	= E_INTERACTIVE_KEYWORD::none;
 		uint32_t			  num	= 0; // TODO : test TER and SS to see if keyword and number can apply to those
 
@@ -139,13 +141,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
 	void convert( const Pdb2gmxInstructions &, GromacsJobData & ) noexcept;
 
-	inline bool isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept;
-	inline bool enterInput(
-		const Pdb2gmxInputs &,
-		QProcess &,
-		std::string & p_stdout,
-		std::string & p_stderr
-	) noexcept;
+	bool isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept;
+	bool enterInput( const Pdb2gmxInputs &, QProcess &, std::string & p_stdout, std::string & p_stderr ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

@@ -110,4 +110,5 @@ namespace VTX::Tool::Mdprep::ui
 		createReportUi( _reportData.label, _reportData.report );
 		_reportData.target->addWidget( _reportData.label );
 	}
+
 } // namespace VTX::Tool::Mdprep::ui

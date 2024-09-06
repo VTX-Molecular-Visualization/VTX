@@ -4,7 +4,7 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QLayout>
-#include <QPushbutton>
+#include <QPushButton>
 #include <QTabWidget>
 //
 #include "tool/mdprep/ui/form_switch_button.hpp"
