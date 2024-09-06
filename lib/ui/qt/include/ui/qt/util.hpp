@@ -10,6 +10,7 @@
 #include <QLayout>
 #include <QMenu>
 #include <QPixmap>
+#include <QPointer>
 #include <QString>
 #include <QStyle>
 #include <QVariant>
@@ -128,8 +129,8 @@ namespace VTX::UI::QT::Util
 		};
 		LabelWithHelper() = default;
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
-		QWidget * container = nullptr;
-		QLabel *  label		= nullptr;
+		QPointer<QWidget> container = nullptr;
+		QLabel *		  label		= nullptr;
 		operator QWidget *();
 	};
 

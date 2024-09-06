@@ -34,6 +34,7 @@ namespace VTX::Tool::Mdprep::ui
 	class MdEngineSpecificFieldPlacer;
 	class InputChecker;
 	class ReportManager;
+	class UiReportManager;
 } // namespace VTX::Tool::Mdprep::ui
 namespace VTX::Tool::Mdprep::ui::form_advanced
 {
@@ -62,6 +63,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QComboBox *				_fieldBioForceField		   = nullptr;
 		QVBoxLayout *			_bioForcefieldResultLayout = nullptr;
 		QPushButton *			_buttonStartInputCheck	   = nullptr;
+		UiReportManager			_uiReportManager;
 		VTX::Util::SentryTarget _sentry;
 		void					_connectAll() noexcept;
 		void					_connectBoxShape() noexcept;
