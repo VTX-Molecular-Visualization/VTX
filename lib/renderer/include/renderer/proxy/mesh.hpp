@@ -6,6 +6,9 @@
 
 namespace VTX::Renderer::Proxy
 {
+	/**
+	 * @brief Mesh data provider.
+	 */
 	struct Mesh
 	{
 		const Mat4f *			   transform;

@@ -5,6 +5,9 @@
 #include <util/constants.hpp>
 #include <util/math.hpp>
 
+/**
+ * @brief All the currently availables metadata.
+ */
 namespace VTX::Renderer
 {
 	// Attachments.

@@ -20,9 +20,15 @@
 
 namespace VTX::Renderer
 {
+	/**
+	 * @brief The renderer, only accessed from the facade.
+	 */
 	class Renderer
 	{
 	  public:
+		/**
+		 * @brief The render graph with OpenGL45 API and the DFS scheduler.
+		 */
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
 
 		Renderer(
@@ -32,6 +38,11 @@ namespace VTX::Renderer
 			void *			 p_loader = nullptr
 		);
 
+		/**
+		 * @brief Send data to GPU.
+		 * @param p_key the buffer name to send on.
+		 * @param p_index is the index of the data to set if we need to update only one value in an array.
+		 */
 		template<typename T>
 		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
@@ -40,7 +51,11 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 )
+		/**
+		 * @brief Resize the renderer.
+		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
+		 */
+		inline void resize( const size_t p_width, const size_t p_height, const Handle p_output = 0 )
 		{
 			VTX_TRACE( "Resizing renderer to {}x{}", width, height );
 
@@ -55,7 +70,7 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline void setOutput( const uint p_output )
+		inline void setOutput( const Handle p_output )
 		{
 			assert( _context != nullptr );
 
@@ -67,6 +82,10 @@ namespace VTX::Renderer
 		void		clean();
 		inline bool hasContext() const { return _context != nullptr; }
 
+		/**
+		 * @brief The render loop.
+		 * @param p_time is the current running time.
+		 */
 		inline void render( const float p_time )
 		{
 			if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
@@ -109,8 +128,12 @@ namespace VTX::Renderer
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
+		/**
+		 * @brief Exports the renderer to an array of pixels.
+		 * @param p_outImage the output image data.
+		 */
 		void snapshot(
-			std::vector<uchar> & p_image,
+			std::vector<uchar> & p_outImage,
 			const size_t		 p_width,
 			const size_t		 p_height,
 			const float			 p_fov,
@@ -118,6 +141,10 @@ namespace VTX::Renderer
 			const float			 p_far
 		);
 
+		/**
+		 * @brief Get the id of the the data stored in the given pixel.
+		 * @return ( AtomId, 0 ) for an atom, ( AtomId1, AtomId2 ) for a bond.
+		 */
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
 			std::any idsAny = std::make_any<Vec2i>();
@@ -134,8 +161,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		inline void compileShaders() const { _context->compileShaders(); }
-
+		// Benchmarker only.
+		inline void								  compileShaders() const { _context->compileShaders(); }
 		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
 		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
@@ -199,8 +226,10 @@ namespace VTX::Renderer
 		size_t								 _framesRemaining = BUFFER_COUNT;
 		FilePath							 _shaderPath;
 		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
-		Instructions						 _instructions;
-		InstructionsDurationRanges			 _instructionsDurationRanges;
+		// All instructions computed by the graph and his context.
+		Instructions _instructions;
+		// Used to log render times.
+		InstructionsDurationRanges _instructionsDurationRanges;
 
 		// Proxies.
 		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
@@ -286,6 +315,10 @@ namespace VTX::Renderer
 			// uint padding[ 2 ];
 		};
 
+		/**
+		 * @brief The main render loop that call each generated instruction.
+		 * @param p_time the current time.
+		 */
 		inline void _render( const float p_time ) const
 		{
 			for ( const Instruction & instruction : _instructions )
@@ -294,6 +327,10 @@ namespace VTX::Renderer
 			}
 		}
 
+		/**
+		 * @brief The main render loop that call instructions with time logging.
+		 * @param p_time the current time.
+		 */
 		inline void _renderLog( const float p_time )
 		{
 			for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )

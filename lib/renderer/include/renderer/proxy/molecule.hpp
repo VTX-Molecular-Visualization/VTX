@@ -8,6 +8,9 @@
 
 namespace VTX::Renderer::Proxy
 {
+	/**
+	 * @brief Molecule data provider.
+	 */
 	struct Molecule
 	{
 		const Mat4f *					 transform;

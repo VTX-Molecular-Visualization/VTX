@@ -24,6 +24,15 @@ namespace VTX::Renderer::Context
 		OpenGL45() = delete;
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
+		/**
+		 * @brief Generates render instructions from render graph inputs.
+		 * @param p_renderQueue the list of passes to render, ordered by the scheduler.
+		 * @param p_links the connections between passes.
+		 * @param p_output the output framebuffer.
+		 * @param p_uniforms the global GPU variables.
+		 * @param p_outInstructions the generated instruction list.
+		 * @param p_outInstructionsDurationRanges the generated instruction list grouped by category.
+		 */
 		void build(
 			const RenderQueue &			 p_renderQueue,
 			const Links &				 p_links,
@@ -37,6 +46,11 @@ namespace VTX::Renderer::Context
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
+		/**
+		 * @brief Send data to GPU (uniform).
+		 * @param p_key the buffer name to send on.
+		 * @param p_index is the index of the data to set if we need to update only one value in an array.
+		 */
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
@@ -46,12 +60,18 @@ namespace VTX::Renderer::Context
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
+		/**
+		 * @brief Creates a GPU buffer
+		 * @tparam T the data type to store.
+		 * @param p_size the number of items to store.
+		 * @param p_key the buffer name.
+		 */
 		template<typename T>
 		inline void reserveData( const size_t p_size, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			// Set dummy.
+			// Set dummy size (size 0 prohibited).
 			size_t size = sizeof( T ) * p_size;
 			size		= size > 0 ? size : 1;
 
@@ -63,6 +83,9 @@ namespace VTX::Renderer::Context
 			}
 		}
 
+		/**
+		 * @brief Send data to GPU (buffer).
+		 */
 		template<typename T>
 		inline void setData( const std::vector<T> & p_data, const Key & p_key )
 		{
@@ -87,6 +110,9 @@ namespace VTX::Renderer::Context
 			}
 		}
 
+		/**
+		 * @brief Send data to an existing GPU buffer.
+		 */
 		template<typename T>
 		inline void setSubData( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
 		{

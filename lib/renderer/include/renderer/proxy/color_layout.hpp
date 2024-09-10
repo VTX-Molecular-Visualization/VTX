@@ -7,7 +7,9 @@
 
 namespace VTX::Renderer::Proxy
 {
-
+	/**
+	 * @brief Color layout data provider.
+	 */
 	struct ColorLayout
 	{
 		const std::vector<Util::Color::Rgba> * colors;

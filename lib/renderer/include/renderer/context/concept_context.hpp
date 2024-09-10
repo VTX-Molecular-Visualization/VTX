@@ -9,6 +9,9 @@
 
 namespace VTX::Renderer::Context
 {
+	/**
+	 * @brief Shared attributes for all render contexts.
+	 */
 	struct BaseContext
 	{
 		size_t	 width;
@@ -16,6 +19,9 @@ namespace VTX::Renderer::Context
 		FilePath shaderPath;
 	};
 
+	/**
+	 * @brief The context is the graphic API implementation.
+	 */
 	template<typename C>
 	concept Concept
 		= std::is_base_of<BaseContext, C>::value

@@ -1,9 +1,11 @@
 #ifndef __VTX_RENDERER_ENUMS__
 #define __VTX_RENDERER_ENUMS__
 
+/**
+ * @brief Describes all enums used by descriptors.
+ */
 namespace VTX::Renderer
 {
-
 	enum struct E_CHAN_IN
 	{
 		_0,

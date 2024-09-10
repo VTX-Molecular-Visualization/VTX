@@ -6,6 +6,10 @@
 namespace VTX::Renderer::Proxy
 {
 	// TODO: to handle multiples render settings in the same scene.
+
+	/**
+	 * @brief Render settings data provider.
+	 */
 	struct RenderSettings
 	{
 		float			  ssaoIntensity;

@@ -8,7 +8,11 @@
 
 namespace VTX::Renderer
 {
-
+	/**
+	 * @brief A graph with nodes (passes) and links.
+	 * @tparam C The render context.
+	 * @tparam S The scheduler that convert graph to render queue.
+	 */
 	template<Context::Concept C, Scheduler::Concept S>
 	class RenderGraph
 	{

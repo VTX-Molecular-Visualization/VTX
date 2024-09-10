@@ -5,7 +5,9 @@
 
 namespace VTX::Renderer::Proxy
 {
-
+	/**
+	 * @brief Representation data provider.
+	 */
 	struct Representation
 	{
 		bool  hasSphere			= true;

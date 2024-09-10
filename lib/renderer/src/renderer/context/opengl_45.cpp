@@ -507,14 +507,14 @@ namespace VTX::Renderer::Context
 		const size_t		 p_height
 	)
 	{
-		// TODO: transparency.
-
 		const size_t widthOld  = width;
 		const size_t heightOld = height;
 		const Handle outputOld = _output;
 
 		p_image.resize( p_width * p_height * 4 );
 
+		// Creates a framebuffer with a texture to render "offscreen".
+		// It permits to render in a given resolution without resizing the actual renderer.
 		GL::Framebuffer fbo;
 		GL::Texture2D	texture(
 			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
@@ -525,11 +525,13 @@ namespace VTX::Renderer::Context
 		resize( p_renderQueue, p_width, p_height );
 		setOutput( fbo.getId() );
 
+		// Render
 		for ( const Instruction & instruction : p_instructions )
 		{
 			instruction();
 		}
 
+		// Copy framebuffer data to CPU array.
 		fbo.bind( GL_READ_FRAMEBUFFER );
 		glReadnPixels(
 			0,
@@ -543,6 +545,7 @@ namespace VTX::Renderer::Context
 		);
 		fbo.unbind();
 
+		// Reset all texture sizes and output.
 		resize( p_renderQueue, widthOld, heightOld );
 		setOutput( outputOld );
 

@@ -5,7 +5,9 @@
 
 namespace VTX::Renderer::Scheduler
 {
-
+	/**
+	 * @brief https://fr.wikipedia.org/wiki/Algorithme_de_parcours_en_profondeur
+	 */
 	class DepthFirstSearch
 	{
 	  public:

@@ -6,13 +6,18 @@
 
 namespace VTX::Renderer
 {
+	/**
+	 * @brief Store renderer informations.
+	 */
 	struct StructInfos
 	{
 		std::string renderer;
 
+		// Can be undefined.
 		long long gpuMemoryInfoDedicated;
 		long long gpuMemoryInfoTotalAvailable;
 		long long gpuMemoryInfoCurrentAvailable;
+		//
 
 		size_t currentCountBuffers;
 		size_t currentCountTextures;
