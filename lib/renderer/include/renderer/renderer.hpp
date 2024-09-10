@@ -120,10 +120,9 @@ namespace VTX::Renderer
 
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			// std::any idsAny = std::make_any<Vec2i>();
-			//_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHAN_OUT::COLOR_2 );
-			return Vec2i();
-			// std::any_cast<Vec2i>( idsAny );
+			std::any idsAny = std::make_any<Vec2i>();
+			_context->getTextureData( idsAny, p_x, height - p_y, "Geometric", E_CHAN_OUT::COLOR_2 );
+			return std::any_cast<Vec2i>( idsAny );
 		}
 
 		inline void setNeedUpdate( const bool p_value )

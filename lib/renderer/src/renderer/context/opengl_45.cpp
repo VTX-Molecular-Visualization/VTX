@@ -1,4 +1,5 @@
 #include "renderer/context/opengl_45.hpp"
+#include <util/enum.hpp>
 
 namespace VTX::Renderer::Context
 {
@@ -487,6 +488,7 @@ namespace VTX::Renderer::Context
 
 						texture->resize( width, height );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
+						VTX_TRACE( "Texture resized: {} ({})", output.name, Util::Enum::enumName( channel ) );
 					}
 				}
 				else
@@ -666,6 +668,8 @@ namespace VTX::Renderer::Context
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
 		{
+			VTX_TRACE( "Creating input: {}", input.name );
+
 			const IO & descIO = input.desc;
 
 			// Create texture if data provided and not linked.
@@ -740,6 +744,7 @@ namespace VTX::Renderer::Context
 	{
 		for ( const auto & [ channel, output ] : p_pass->outputs )
 		{
+			VTX_TRACE( "Creating output: {} ({})", output.name, Util::Enum::enumName( channel ) );
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
@@ -826,6 +831,13 @@ namespace VTX::Renderer::Context
 
 		if ( not _textures.contains( p_key ) )
 		{
+			VTX_TRACE(
+				"Creating texture: {} ({} - {})",
+				p_key,
+				Util::Enum::enumName( attachment.format ),
+				_mapFormats[ attachment.format ]
+			);
+
 			_textures.emplace(
 				p_key,
 				std::make_unique<GL::Texture2D>(
