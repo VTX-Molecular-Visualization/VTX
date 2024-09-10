@@ -15,6 +15,7 @@ namespace VTX::App::Mode
 		virtual const std::string & getName() const = 0;
 
 		virtual void enter() {}
+		// TODO: use concept to avoid virtual call in main loop.
 		virtual void update( const float p_deltaTime ) {};
 		virtual void exit() {};
 	};

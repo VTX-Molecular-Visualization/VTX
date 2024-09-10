@@ -16,7 +16,7 @@ namespace VTX::Renderer
 		_7,
 	};
 
-	enum struct E_CHAN_OUT : unsigned int
+	enum struct E_CHAN_OUT
 	{
 		COLOR_0,
 		COLOR_1,
