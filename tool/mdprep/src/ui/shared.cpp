@@ -249,7 +249,7 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects.anionName->setText( QString::fromStdString( p_defaults.anionName ) );
 		_uiObjects.cationName->setText( QString::fromStdString( p_defaults.cationName ) );
 
-		for ( int it_idx = 0; it_idx < g_IonicChargeValues.size(); it_idx++ )
+		for ( size_t it_idx = 0; it_idx < g_IonicChargeValues.size(); it_idx++ )
 		{
 			auto & it_chrgStr = g_IonicChargeValues[ it_idx ];
 			if ( std::stol( it_chrgStr.data() ) == p_defaults.anionCharge )

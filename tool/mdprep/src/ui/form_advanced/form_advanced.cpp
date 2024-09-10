@@ -12,13 +12,13 @@
 #include <util/logger.hpp>
 #include <util/sentry.hpp>
 //
-#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
-//
 #include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/ui/report.hpp"
+//
 #include "tool/mdprep/ui/form_advanced/event_manager.hpp"
 #include "tool/mdprep/ui/form_advanced/shared.hpp"
-#include "tool/mdprep/ui/input_checker.hpp"
-#include "tool/mdprep/ui/report.hpp"
 #include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
