@@ -28,8 +28,8 @@ void main()
 	Representation representation = uniformsRepresentation[ inSphereRepresentation ];
 	outData.sphereRadius	 = bool( representation.isRadiusSphereFixed ) ? representation.radiusSphereFixed : inSphereRadius + representation.radiusSphereAdd;
 	outData.sphereId		 = inSphereId;
-	outData.sphereVisible	 = inSphereFlag & ( 1 << FLAG_VISIBILITY );
-	outData.sphereSelected	 = inSphereFlag & ( 1 << FLAG_SELECTION );	
+	outData.sphereVisible	 = int( inSphereFlag ) & ( 1 << FLAG_VISIBILITY );
+	outData.sphereSelected	 = int( inSphereFlag ) & ( 1 << FLAG_SELECTION );	
 
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{

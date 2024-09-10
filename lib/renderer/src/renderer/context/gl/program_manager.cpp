@@ -128,6 +128,8 @@ namespace VTX::Renderer::Context::GL
 		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
+			VTX_TRACE( "Creating shader: {}", name );
+
 			shaderId		 = glCreateShader( (int)type );
 			FilePath	path = p_path.is_relative() ? _shaderPath / p_path : p_path;
 			std::string src	 = Util::Filesystem::readPath( path );

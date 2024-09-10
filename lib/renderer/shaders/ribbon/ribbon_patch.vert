@@ -25,8 +25,8 @@ void main()
 	dataOut.color			= uniformsColor[ inColor ];
 	dataOut.ssType			= inType;
 	dataOut.id				= inResidueId;
-	dataOut.visibility		= inResidueFlag & ( 1 << FLAG_VISIBILITY );
-	dataOut.selection		= inResidueFlag & ( 1 << FLAG_SELECTION );	
+	dataOut.visibility		= int( inResidueFlag ) & ( 1 << FLAG_VISIBILITY );
+	dataOut.selection		= int( inResidueFlag ) & ( 1 << FLAG_SELECTION );	
 	dataOut.model			= inResidueModel;
 	dataOut.representation	= inResidueRepresentation;
 }
