@@ -26,8 +26,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	EventManager::~EventManager() { _disconnectAll( _uiObjects ); }
 
 	EventManager::EventManager( EventManager && p_ ) noexcept :
-		_data( p_._data ), _settingsDialog( std::move( p_._settingsDialog ) ),
-		_uiReportManager( std::move( p_._uiReportManager ) ), _sentry( std::move( p_._sentry ) )
+		_data( p_._data ), _settingsDialog( std::move( p_._settingsDialog ) ), _sentry( std::move( p_._sentry ) )
 	{
 		_disconnectAll( p_._uiObjects );
 		std::swap( p_._uiObjects, _uiObjects );
@@ -44,10 +43,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		if ( &p_ == this )
 			return *this;
 
-		_data			 = p_._data;
-		_settingsDialog	 = std::move( p_._settingsDialog );
-		_sentry			 = std::move( p_._sentry );
-		_uiReportManager = std::move( p_._uiReportManager );
+		_data			= p_._data;
+		_settingsDialog = std::move( p_._settingsDialog );
+		_sentry			= std::move( p_._sentry );
 		_disconnectAll( _uiObjects );
 		_disconnectAll( p_._uiObjects );
 		_uiObjects = std::move( p_._uiObjects );
@@ -98,7 +96,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept
 	{
 		_uiObjects._layoutSystemCheckMsg = p_;
-		_uiReportManager.relocate( p_ );
+		ReportManager * report			 = nullptr;
+		_data->get( report );
+		report->relocate( p_ );
 	}
 
 	void EventManager::_disconnectAll( UiObjects & p_uiObjects ) noexcept
@@ -250,7 +250,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 
-		reportManager->checkInputs( *params, _uiReportManager.produceCallback() );
+		reportManager->checkInputs( *params );
 	}
 	void EventManager::_systemSettingsApplied() noexcept {}
 } // namespace VTX::Tool::Mdprep::ui::form_basic

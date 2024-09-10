@@ -31,8 +31,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	EventManager::EventManager( EventManager && p_other ) noexcept :
 		fieldPlacers( std::move( p_other.fieldPlacers ) ), _fieldSystemBoxShape( p_other._fieldSystemBoxShape ),
 		_fieldBioForceField( p_other._fieldBioForceField ), parameters( std::move( p_other.parameters ) ),
-		reportManager( std::move( p_other.reportManager ) ), _sentry( std::move( p_other._sentry ) ),
-		_uiReportManager( std::move( p_other._uiReportManager ) )
+		reportManager( std::move( p_other.reportManager ) ), _sentry( std::move( p_other._sentry ) )
 	{
 		if ( _fieldSystemBoxShape )
 			_fieldSystemBoxShape->disconnect();
@@ -58,8 +57,6 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_bioForcefieldResultLayout = p_other._bioForcefieldResultLayout;
 		_fieldSystemBoxShape	   = p_other._fieldSystemBoxShape;
 		_fieldBioForceField		   = p_other._fieldBioForceField;
-
-		_uiReportManager.relocate( _bioForcefieldResultLayout );
 
 		parameters	  = std::move( p_other.parameters );
 		reportManager = std::move( p_other.reportManager );
@@ -95,13 +92,14 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			_fieldBioForceField->disconnect();
 		_fieldBioForceField		   = p_fieldBioForceField;
 		_bioForcefieldResultLayout = p_target;
-		_uiReportManager.relocate( p_target );
+
+		reportManager->relocate( p_target );
 		_connectForceField();
 	}
 	void EventManager::performFirstInputCheck( const Gateway::MdParameters & p_params ) noexcept
 	{
 		if ( reportManager->hasFirstCheckBeenDone() == false )
-			reportManager->checkInputs( p_params, _uiReportManager.produceCallback() );
+			reportManager->checkInputs( p_params );
 	}
 
 	void EventManager::_connectAll() noexcept
@@ -143,7 +141,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		{
 			Gateway::MdParameters params;
 			params.system.forcefieldBio = this->_fieldBioForceField->currentText().toStdString();
-			this->reportManager->checkInputs( params, _uiReportManager.produceCallback() );
+			this->reportManager->checkInputs( params );
 		};
 	}
 } // namespace VTX::Tool::Mdprep::ui::form_advanced

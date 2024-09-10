@@ -56,7 +56,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		Data *						  _data;
 		std::optional<SettingsDialog> _settingsDialog = std::nullopt;
 		VTX::Util::SentryTarget		  _sentry;
-		UiReportManager				  _uiReportManager;
 		struct UiObjects
 		{
 			QPushButton *					   _buttonMinimizationSettings	   = nullptr;

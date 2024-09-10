@@ -45,6 +45,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			ReportManager &		 p_reportManager
 		);
 
+		/**
+		 * @brief Change information related to the current engine.
+		 * @param Data
+		 */
 		void update( const EngineSpecificCommonInformation & p_data ) noexcept;
 
 		void get( MdParameters & ) const noexcept;

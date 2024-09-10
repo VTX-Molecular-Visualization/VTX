@@ -116,7 +116,13 @@ namespace VTX::Tool::Mdprep::ui
 			_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
 			_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
 			_mdEngines[ _mdEngineCurrentIdx ]->get( _jobManager );
-			_reportManager.emplace( _jobManager );
+
+			// The form doesn't actually know if the report ui must be relocated. Therefore it is handled here.
+			ReportManager _newReportManager { _jobManager };
+			if ( _reportManager.has_value() )
+				_newReportManager.relocate( _reportManager.value() );
+			_reportManager.emplace( std::move( _newReportManager ) );
+
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
 			_formEngine.assign( std::move( layouts ) );
