@@ -3,10 +3,11 @@
 
 #include <array>
 #include <optional>
-#include <string>
-#include <vector>
-#include <thread>
 #include <stack>
+#include <string>
+#include <thread>
+#include <util/sentry.hpp>
+#include <vector>
 
 namespace std
 {
@@ -75,16 +76,18 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) const noexcept;
+		void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) noexcept;
 		void startPreparation( const MdParameters & p_1, JobUpdateCallback p_3 ) noexcept;
 
-		bool isResultAvailable() const noexcept;
+		bool		isResultAvailable() const noexcept;
 		CheckReport lastResult() const noexcept;
+
 	  private:
-		mutable std::thread _thr;
-		mutable std::stack<std::jthread> _threadStack;
-		mutable CheckReport _report;
-		MdSettings *		_data;
+		std::thread				 _thr;
+		std::stack<std::jthread> _threadStack;
+		CheckReport				 _report;
+		MdSettings *			 _data;
+		VTX::Util::SentryTarget	 _sentryTarget;
 	};
 
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs

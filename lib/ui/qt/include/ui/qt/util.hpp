@@ -144,7 +144,7 @@ namespace VTX::UI::QT::Util
 	// sementics and won't be copyable.
 	class ObjectOwnership
 	{
-		QObject * _obj = nullptr;
+		QPointer<QObject> _obj = nullptr;
 
 	  public:
 		ObjectOwnership() = default;

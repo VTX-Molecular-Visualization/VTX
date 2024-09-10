@@ -22,43 +22,15 @@ namespace VTX::Tool::Mdprep::Gateway
 namespace VTX::Tool::Mdprep::ui
 {
 	class InputChecker;
+	class UiReportManager;
+	class ReportManager;
 
 	struct ReportUi
 	{
 		VTX::UI::QT::Util::LabelWithHelper content;
 		Gateway::CheckReport			   report;
 	};
-
 	using UiReportCallback = std::function<void( ReportUi )>;
-	// class responsible for forwarding input checks and writing reports in set location
-	class ReportManager
-	{
-	  public:
-		ReportManager( InputChecker );
-
-		bool hasFirstCheckBeenDone() const noexcept;
-
-		/**
-		 * @brief Start a checkinput job, and create a visual representation of the results, and provide it back through
-		 * the callback. The callback is guaranteed to be called on the same thread this method is called. The callback
-		 * is likely to be called multiple time for process update purposes. The callback shall clean the last item if
-		 * any, before adding up the new one.
-		 * @param Paramaters to be checked out
-		 * @param Callback that'll be called when the report is ready.
-		 */
-		void checkInputs( const Gateway::MdParameters &, UiReportCallback ) noexcept;
-
-		struct Data
-		{
-			Gateway::CheckReport report;
-			bool				 checkInProgress = false;
-		};
-
-	  private:
-		Data		 _reportData;
-		InputChecker _inputChecker;
-		bool		 firstCheckStarted = false;
-	};
 
 	/**
 	 * @brief Internal class used for UiReport related things
@@ -70,14 +42,72 @@ namespace VTX::Tool::Mdprep::ui
 	 */
 	class UiReportManager
 	{
+		friend ReportManager;
+
 	  public:
-		UiReportManager(); // TODO : needs to be tied to the reportmanager to retrieve the previous report
+		/**
+		 * @brief Put the ui part of the report inside the input layout. Only remove the old one if the input is null
+		 * @param  Target layout.
+		 */
 		void relocate( QPointer<QVBoxLayout> ) noexcept;
+
+		/**
+		 * @brief Use the input location as a ui target.
+		 * @param Manager holding loaction to use.
+		 */
+		void relocate( UiReportManager & ) noexcept;
 
 		UiReportCallback produceCallback() noexcept;
 
 	  private:
+		UiReportManager();
 		std::shared_ptr<FramedReportManager> _manager;
+	};
+
+	// class responsible for forwarding input checks and writing reports in set location
+	class ReportManager
+	{
+	  public:
+		ReportManager( InputChecker );
+
+		/**
+		 * @brief Whether a check has already been started on the lifetime of the object.
+		 */
+		bool hasFirstCheckBeenDone() const noexcept;
+
+		/**
+		 * @brief Start a checkinput job, and create a visual representation of the results, and provide it back through
+		 * the callback. The callback is guaranteed to be called on the same thread this method is called. The callback
+		 * is likely to be called multiple time for process update purposes. The callback shall clean the last item if
+		 * any, before adding up the new one.
+		 * @param Paramaters to be checked out
+		 * @param Callback that'll be called when the report is ready.
+		 */
+		void checkInputs( const Gateway::MdParameters & ) noexcept;
+
+		/**
+		 * @brief Inform the report manager that the resulting report shall be replaced elsewhere
+		 * @param  Destination
+		 */
+		void relocate( QPointer<QVBoxLayout> ) noexcept;
+
+		/**
+		 * @brief Use the input location as a ui target.
+		 * @param Manager holding loaction to use.
+		 */
+		void relocate( ReportManager & ) noexcept;
+
+		struct Data
+		{
+			Gateway::CheckReport report;
+			bool				 checkInProgress = false;
+		};
+
+	  private:
+		UiReportManager _uiManager;
+		Data			_reportData;
+		InputChecker	_inputChecker;
+		bool			firstCheckStarted = false;
 	};
 
 } // namespace VTX::Tool::Mdprep::ui

@@ -2,6 +2,7 @@
 #define __VTX_UTIL_SENTRY__
 
 #include <memory>
+#include <thread>
 
 namespace VTX::Util
 {
@@ -22,7 +23,7 @@ namespace VTX::Util
 		Sentry newSentry() noexcept;
 
 	  private:
-		std::shared_ptr<bool> _alive = std::make_shared<bool>( true );
+		std::shared_ptr<std::atomic_bool> _alive = std::make_shared<std::atomic_bool>( true );
 	};
 
 	// Class responsible for saying if its target still exist or not
@@ -34,12 +35,12 @@ namespace VTX::Util
 		Sentry() = delete;
 
 		// Returns wether the target still exists
-		operator bool() noexcept;
+		operator bool() const noexcept;
 
 	  private:
-		Sentry( std::shared_ptr<bool> p_ ) noexcept;
+		Sentry( std::shared_ptr<std::atomic_bool> p_ ) noexcept;
 
-		std::shared_ptr<bool> _targetAlive;
+		std::shared_ptr<std::atomic_bool> _targetAlive;
 	};
 } // namespace VTX::Util
 

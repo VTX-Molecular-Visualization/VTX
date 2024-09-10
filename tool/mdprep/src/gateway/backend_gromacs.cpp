@@ -70,21 +70,28 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 
 	namespace
 	{
-		void fakeCheck( CheckReport & p_result, CheckReportCallback p_callback )
+		void fakeCheck( CheckReportCallback p_callback )
 		{
 			VTX::VTX_DEBUG( "Starting fake check" );
 			std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
-			p_result = CheckReport { .itemGeneric = E_REPORT_CHECKED_ITEM::systemWithForceField,
-									 .message	  = "Fakely checked up." };
-			p_callback( p_result );
+			p_callback( CheckReport { .itemGeneric = E_REPORT_CHECKED_ITEM::systemWithForceField,
+									  .message	   = "Fakely checked up." } );
 			VTX::VTX_DEBUG( "Fake check finished" );
 		}
 	} // namespace
 
-	void JobManager::checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) const noexcept
+	void JobManager::checkInputs( const MdParameters & p_1, CheckReportCallback p_2 )  noexcept
 	{
-		_threadStack.push( std::jthread( [ callback = std::move( p_2 ), report = &_report ]()
-										 { fakeCheck( *report, std::move( callback ) ); } ) );
+		auto wrappedCallback = [ reportCallback = std::move( p_2 ),
+								 sentry			= _sentryTarget.newSentry(),
+								 report			= &_report ]( const CheckReport & p_ )
+		{
+			if ( sentry )
+				*report = p_;
+			reportCallback( p_ );
+		};
+		_threadStack.push( std::jthread( [ callback = std::move( wrappedCallback ) ]()
+										 { fakeCheck( std::move( callback ) ); } ) );
 	}
 
 	namespace

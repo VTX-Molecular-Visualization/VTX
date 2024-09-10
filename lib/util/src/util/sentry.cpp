@@ -25,6 +25,6 @@ namespace VTX::Util
 
 		return *this;
 	}
-	Sentry::operator bool() noexcept { return *_targetAlive; }
-	Sentry::Sentry( std::shared_ptr<bool> p_ ) noexcept : _targetAlive( p_ ) {}
+	Sentry::operator bool() const noexcept { return *_targetAlive; }
+	Sentry::Sentry( std::shared_ptr<std::atomic_bool> p_ ) noexcept : _targetAlive( p_ ) {}
 } // namespace VTX::Util

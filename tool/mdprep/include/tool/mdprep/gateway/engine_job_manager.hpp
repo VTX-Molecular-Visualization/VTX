@@ -45,7 +45,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 
 		// Check weither the current inputs are reasonnable and send results via callback
-		inline void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) const noexcept
+		inline void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) noexcept
 		{
 			if ( _ptr )
 				_ptr->checkInputs( p_1, std::move( p_2 ) );
@@ -83,9 +83,9 @@ namespace VTX::Tool::Mdprep::Gateway
 	  private:
 		struct _interface
 		{
-			~_interface()																				 = default;
-			virtual void checkInputs( const MdParameters & p_1, CheckReportCallback p_3 ) const noexcept = 0;
-			virtual void startPreparation( const MdParameters & p_1, JobUpdateCallback p_3 ) noexcept	 = 0;
+			~_interface()																			  = default;
+			virtual void checkInputs( const MdParameters & p_1, CheckReportCallback p_3 ) noexcept	  = 0;
+			virtual void startPreparation( const MdParameters & p_1, JobUpdateCallback p_3 ) noexcept = 0;
 
 			virtual bool				 isResultAvailable() const noexcept = 0;
 			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
@@ -96,7 +96,7 @@ namespace VTX::Tool::Mdprep::Gateway
 			T _obj;
 
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
-			virtual void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) const noexcept override
+			virtual void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) noexcept override
 			{
 				_obj.checkInputs( p_1, std::move( p_2 ) );
 			}

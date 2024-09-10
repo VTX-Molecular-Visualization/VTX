@@ -198,11 +198,11 @@ namespace VTX::UI::QT::Util
 
 	ObjectOwnership::ObjectOwnership( QObject * p_ ) noexcept : _obj( p_ ) {}
 
-	void ObjectOwnership::release() noexcept { _obj = nullptr; }
+	void ObjectOwnership::release() noexcept { _obj.clear(); }
 
 	ObjectOwnership::~ObjectOwnership()
 	{
-		if ( _obj )
+		if ( not _obj.isNull() )
 			delete _obj;
 	}
 
@@ -210,7 +210,7 @@ namespace VTX::UI::QT::Util
 
 	ObjectOwnership & ObjectOwnership::operator=( QObject * p_ ) noexcept
 	{
-		if ( _obj )
+		if ( not _obj.isNull() )
 			delete _obj;
 
 		_obj = p_;
@@ -223,7 +223,7 @@ namespace VTX::UI::QT::Util
 		if ( &p_ == this )
 			return *this;
 
-		if ( _obj )
+		if ( not _obj.isNull() )
 			delete _obj;
 		_obj = p_._obj;
 		p_.release();

@@ -86,10 +86,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	ReportManager::ReportManager( InputChecker p_inputChecker ) : _inputChecker( std::move( p_inputChecker ) ) {}
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
-	void ReportManager::checkInputs(
-		const Gateway::MdParameters & p_params,
-		UiReportCallback			  p_reportCallback
-	) noexcept
+	void ReportManager::checkInputs( const Gateway::MdParameters & p_params ) noexcept
 	{
 		if ( _reportData.checkInProgress )
 			return;
@@ -98,20 +95,48 @@ namespace VTX::Tool::Mdprep::ui
 		_reportData.report			= Gateway::CheckReport();
 		_reportData.checkInProgress = true;
 
-		p_reportCallback( { getWaitingMessage() } );
+		auto callback = _uiManager.produceCallback();
+		callback( { getWaitingMessage() } );
 
-		_inputChecker.checkInputs( p_params, ReportResultWaiter( _reportData, std::move( p_reportCallback ) ) );
+		_inputChecker.checkInputs( p_params, ReportResultWaiter( _reportData, std::move( callback ) ) );
 	}
+
+	void ReportManager::relocate( QPointer<QVBoxLayout> p_ ) noexcept { _uiManager.relocate( std::move( p_ ) ); }
+
+	void ReportManager::relocate( ReportManager & p_ ) noexcept { _uiManager.relocate( p_._uiManager ); }
 
 	class FramedReportManager
 	{
 	  public:
+		void relocate( FramedReportManager & p_other ) noexcept
+		{
+			_removeContainerFromLayout();
+			_deleteContainer();
+			_deleteLayout();
+
+			_currentLayout = p_other._currentLayout;
+
+			p_other._removeContainerFromLayout();
+			p_other._deleteContainer();
+			p_other._currentLayout = nullptr;
+
+			if ( not _currentLayout.isNull() )
+				_createContainer();
+
+			createReportUi( _lastUiReport );
+			_recreateUi();
+		}
 		void relocate( QPointer<QVBoxLayout> p_ ) noexcept
 		{
+			_removeContainerFromLayout();
+			_deleteContainer();
 			_currentLayout = p_;
 
 			if ( not _lastUiReport.content.container.isNull() )
 				delete _lastUiReport.content.container;
+
+			if ( _currentLayout.isNull() )
+				return;
 
 			createReportUi( _lastUiReport );
 			_recreateUi();
@@ -135,15 +160,35 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			if ( _currentLayout.isNull() )
 				return;
+			_createContainer();
+
+			if ( not _lastUiReport.content.container.isNull() )
+				_container->layout()->addWidget( _lastUiReport.content );
+		}
+
+		inline void _removeContainerFromLayout() noexcept
+		{
+			if ( not _currentLayout.isNull() && not _container.isNull() )
+				_currentLayout->removeWidget( _container );
+		}
+		inline void _deleteLayout() noexcept
+		{
+			if ( not _currentLayout.isNull() )
+				delete _currentLayout.data();
+		}
+		inline void _deleteContainer() noexcept
+		{
+			if ( not _container.isNull() )
+				delete _container.data();
+		}
+		inline void _createContainer() noexcept
+		{
 			if ( _container.isNull() )
 			{
 				_container = new QWidget;
 				_currentLayout->addWidget( _container );
 				_container->setLayout( new QVBoxLayout );
 			}
-
-			if ( not _lastUiReport.content.container.isNull() )
-				_container->layout()->addWidget( _lastUiReport.content );
 		}
 	};
 
@@ -171,6 +216,8 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		_manager->relocate( std::move( p_layout ) );
 	}
+
+	void UiReportManager::relocate( UiReportManager & p_other ) noexcept { _manager->relocate( *p_other._manager ); }
 
 	UiReportCallback UiReportManager::produceCallback() noexcept { return ReportPlacerCaller( _manager ); }
 
