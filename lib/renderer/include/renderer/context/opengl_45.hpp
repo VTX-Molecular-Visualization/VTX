@@ -10,6 +10,7 @@
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
 #include "include_opengl.hpp"
+#include <set>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -243,9 +244,9 @@ namespace VTX::Renderer::Context
 		);
 
 		void _createOuputs(
-			const Pass * const	  p_descPassPtr,
-			std::vector<GLenum> & p_drawBuffers,
-			std::vector<Key> &	  p_textures
+			const Pass * const p_descPassPtr,
+			std::set<GLenum> & p_drawBuffers,
+			std::vector<Key> & p_textures
 		);
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(

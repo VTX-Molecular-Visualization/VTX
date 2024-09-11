@@ -136,8 +136,8 @@ namespace VTX::Renderer
 		std::string			suffix;
 	};
 
-	using Inputs   = std::map<E_CHAN_IN, Input>;
-	using Outputs  = std::map<E_CHAN_OUT, Output>;
+	using Inputs   = std::unordered_map<E_CHAN_IN, Input>;
+	using Outputs  = std::unordered_map<E_CHAN_OUT, Output>;
 	using Programs = std::vector<Program>;
 
 	struct Pass

@@ -140,7 +140,7 @@ namespace VTX::Renderer::Context
 			const Key  keyPass	  = _getKey( *descPassPtr );
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
-			std::vector<GLenum> drawBuffers;
+			std::set<GLenum> drawBuffers;
 
 			// Create input data.
 			_createInputs( p_links, descPassPtr, vertexArrays, buffers, textures );
@@ -162,7 +162,9 @@ namespace VTX::Renderer::Context
 				// Set draw buffers.
 				if ( not drawBuffers.empty() )
 				{
-					_framebuffers[ keyFramebuffer ]->setDrawBuffers( drawBuffers );
+					_framebuffers[ keyFramebuffer ]->setDrawBuffers(
+						std::vector<GLenum>( drawBuffers.begin(), drawBuffers.end() )
+					);
 				}
 			}
 
@@ -740,9 +742,9 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::_createOuputs(
-		const Pass * const	  p_pass,
-		std::vector<GLenum> & p_drawBuffers,
-		std::vector<Key> &	  p_textures
+		const Pass * const p_pass,
+		std::set<GLenum> & p_drawBuffers,
+		std::vector<Key> & p_textures
 	)
 	{
 		for ( const auto & [ channel, output ] : p_pass->outputs )
@@ -764,7 +766,7 @@ namespace VTX::Renderer::Context
 				if ( channel == E_CHAN_OUT::DEPTH ) {}
 				else
 				{
-					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
+					p_drawBuffers.insert( _mapAttachments[ channel ] );
 				}
 			}
 			else
