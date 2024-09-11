@@ -557,39 +557,6 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	void OpenGL45::getTextureData(
-		std::any &		 p_textureData,
-		const size_t	 p_x,
-		const size_t	 p_y,
-		const Key &		 p_key,
-		const E_CHAN_OUT p_channel
-	)
-	{
-		assert( _framebuffers.contains( p_key ) );
-
-		auto &			   fbo	  = _framebuffers[ p_key ];
-		const Pass * const pass	  = _descPasses[ p_key ];
-		const IO &		   descIO = pass->outputs.at( p_channel ).desc;
-
-		assert( std::holds_alternative<Attachment>( descIO ) );
-
-		const Attachment & attachment = std::get<Attachment>( descIO );
-		const E_FORMAT	   format	  = attachment.format;
-
-		fbo->bind( GL_READ_FRAMEBUFFER );
-		fbo->setReadBuffer( _mapAttachments[ p_channel ] );
-		glReadPixels(
-			GLint( p_x ),
-			GLint( p_y ),
-			1,
-			1,
-			_mapFormatInternalTypes[ format ],
-			_mapTypes[ _mapFormatTypes[ format ] ],
-			&p_textureData
-		);
-		fbo->unbind();
-	}
-
 	void OpenGL45::compute( const ComputePass & p_pass )
 	{
 		// TODO: Create program and uniforms (refacto build).
