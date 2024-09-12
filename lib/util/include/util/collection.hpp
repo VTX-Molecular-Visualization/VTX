@@ -1,87 +1,209 @@
-#ifndef __VTX_UTIL_COLLECTION__
-#define __VTX_UTIL_COLLECTION__
+#ifndef __VTX_UTIL_HASHED_COLLECTION__
+#define __VTX_UTIL_HASHED_COLLECTION__
 
-#include "hashing.hpp"
-#include "singleton.hpp"
-#include <concepts>
 #include <functional>
-#include <map>
-#include <memory>
+#include <iostream>
+#include <unordered_map>
+#include <util/concepts.hpp>
+#include <util/hashing.hpp>
+#include <util/singleton.hpp>
+
+#define DEBUG_HASH 0
 
 namespace VTX::Util
 {
-	using CollectionKey = std::string;
-
-	// template<typename T>
-	//  concept CollectionableConcept
-	//	= requires( const T & _collectionable, std::unique_ptr<T> p_clone ) { p_clone = _collectionable.clone(); };
-
-	template<typename T>
-	// template<CollectionableConcept T>
+	/**
+	 * @brief A utility class to store a collecion of objects, mapped on a given hash, or generated hash from typename.
+	 * @tparam C is the stored objects type.
+	 */
+	template<typename C>
 	class Collection
 	{
 	  public:
-		template<typename T2>
-		class Registration
+		using Key = std::string_view;
+
+		/**
+		 * @brief Auto register the derived class in a static collection.
+		 * @tparam T is the derived class type.
+		 */
+		/*
+		template<typename T>
+		class GlobalStorage
 		{
 		  public:
-			Registration( const CollectionKey & p_key )
+			GlobalStorage( const C & p_instance ) { Singleton<Collection<C>>::get().template set<T>( p_instance ); }
+			virtual ~GlobalStorage() { Singleton<Collection<C>>::get().template remove<T>(); }
+		};
+		*/
+
+		/**
+		 * @brief Register a key to create to create item from.
+		 * @tparam T is the derived class type.
+		 */
+		template<typename T>
+		class Registration final
+		{
+		  public:
+			Registration( const Key & p_key = Util::typeName<T>() )
 			{
-				Singleton<Collection<T>>::get().template addItem<T2>( p_key );
+				Singleton<Collection<C>>::get().template registerKey<T>( p_key );
 			}
-			Registration( const Hash & p_hash ) { Singleton<Collection<T>>::get().template addItem<T2>( p_hash ); }
 		};
 
 	  public:
-		Collection() {};
-
-		template<typename T2>
-			requires std::derived_from<T2, T> && std::default_initializable<T2>
-		void addItem( const Hash & p_hash )
+		template<typename T>
+		inline void registerKey( const Key & p_key )
 		{
-			_collection[ p_hash ] = std::make_unique<T2>();
-		}
-		template<typename T2>
-			requires std::derived_from<T2, T> && std::default_initializable<T2>
-		void addItem( const CollectionKey & p_key )
-		{
-			addItem<T2>( Util::hash( p_key ) );
+			_creators[ p_key ] = [ this ]() { create<T>(); };
 		}
 
-		std::unique_ptr<T> instantiateItem( const Hash & p_hash )
+		template<typename T>
+		inline bool has()
 		{
-			if ( !_collection.contains( p_hash ) )
+			return has( hash<T>() );
+		}
+
+		inline bool has( const Hash & p_hash ) { return _map.contains( p_hash ); }
+
+		template<typename T>
+		inline T * const get()
+		{
+			return _get<T>( hash<T>() );
+		}
+
+		template<typename T>
+		inline T * const get( const Hash & p_hash )
+		{
+			return _get<T>( p_hash );
+		}
+
+		template<typename T>
+		inline T * const _get( const Hash & p_hash )
+		{
+			if ( not _map.contains( p_hash ) )
+			{
+				return _create<T>( p_hash );
+			}
+
+			// Raw pointer.
+			if constexpr ( std::is_pointer<C>::value )
+			{
+				return static_cast<T *>( _map[ p_hash ] );
+			}
+			// Smart pointer.
+			else if constexpr ( IsSmartPtr<C> )
+			{
+				return static_cast<T *>( _map[ p_hash ].get() );
+			}
+			//
+			else
+			{
+				// return static_cast<T *>( &_map[ p_hash ] );
+				static_assert( true );
 				return nullptr;
-
-			std::unique_ptr<T> itemPtr = _collection[ p_hash ]->clone();
-			return std::move( itemPtr );
-		}
-		std::unique_ptr<T> instantiateItem( const CollectionKey & p_key )
-		{
-			return instantiateItem( Util::hash( p_key ) );
+			}
 		}
 
-		template<typename T2>
-			requires std::derived_from<T2, T> && std::copy_constructible<T2>
-		std::unique_ptr<T2> instantiateItem( const Hash & p_hash )
+		template<typename T>
+		inline T * const createFromKey( const Key & p_key )
 		{
-			const std::unique_ptr<T> source = instantiateItem( p_hash );
+			assert( _creators.contains( p_key ) );
 
-			if ( source == nullptr )
-				return nullptr;
-
-			const T2 * const castedSourcePtr = dynamic_cast<const T2 *>( source.get() );
-			return castedSourcePtr == nullptr ? nullptr : std::make_unique<T2>( *castedSourcePtr );
+			_creators[ p_key ]();
+			return get<T>();
 		}
-		template<typename T2>
-			requires std::derived_from<T2, T> && std::copy_constructible<T2>
-		std::unique_ptr<T2> instantiateItem( const CollectionKey & p_name )
+
+		template<typename T, typename... Args>
+		inline T * const create( Args &&... p_args )
 		{
-			return instantiateItem<T2>( Util::hash( p_name ) );
+			return _create<T, Args...>( hash<T>(), std::forward<Args>( p_args )... );
+		}
+
+		template<typename T, typename... Args>
+		inline T * const create( const Hash & p_hash, Args &&... p_args )
+		{
+			return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... );
+		}
+
+		template<typename T, typename... Args>
+		inline T * _create( const Hash & p_hash, Args &&... p_args )
+		{
+			if ( _map.contains( p_hash ) )
+			{
+				return _get<T>( p_hash );
+			}
+
+			// Raw pointer.
+			if constexpr ( std::is_pointer<C>::value )
+			{
+				_map[ p_hash ] = new T( std::forward<Args>( p_args )... );
+			}
+			// Smart pointer.
+			else if constexpr ( IsSmartPtr<C> )
+			{
+				_map[ p_hash ] = std::make_unique<T>( std::forward<Args>( p_args )... );
+			}
+
+			//
+			else
+			{
+				//_map[ p_hash ] = C( std::forward<Args>( p_args )... );
+				static_assert( true );
+			}
+
+			return _get<T>( p_hash );
+		}
+
+		template<typename T>
+		inline void set( T * const p_value )
+		{
+			set<T>( hash<T>(), p_value );
+		}
+
+		template<typename T>
+		inline void set( const Hash & p_hash, T * const p_value )
+		{
+			assert( not _map.contains( p_hash ) );
+
+			// Only raw pointer.
+			if constexpr ( std::is_pointer<C>::value )
+			{
+				_map[ p_hash ] = static_cast<C>( p_value );
+			}
+			else
+			{
+				static_assert( true );
+			}
+		}
+
+		template<typename T>
+		inline void remove()
+		{
+			remove( hash<T>() );
+		}
+
+		inline void remove( const Key & p_key ) { remove( Util::hash( p_key ) ); }
+
+		inline void remove( const Hash & p_hash )
+		{
+			assert( _map.contains( p_hash ) );
+			_map.erase( p_hash );
+		}
+
+		template<typename T>
+		static constexpr Hash hash()
+		{
+#if DEBUG_HASH == 1
+			VTX_DEBUG( "Hash: {}", Util::typeName<T>() );
+#endif
+			return Util::hash<T>();
 		}
 
 	  private:
-		std::map<Hash, std::unique_ptr<T>> _collection;
+		using CreateFunc = std::function<void()>;
+
+		std::unordered_map<Hash, C>			_map;
+		std::unordered_map<Key, CreateFunc> _creators;
 	};
 
 } // namespace VTX::Util
