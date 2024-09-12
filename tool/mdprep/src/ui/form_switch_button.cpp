@@ -20,7 +20,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	void FormSwitchButton::setupUi( QLayout * p_layout, const E_FORM_MODE & p_mode ) noexcept
 	{
-		_buttonToBasic			   = new QPushButton( "Normal" );
+		_buttonToBasic			   = new QPushButton( "Basic" );
 		_buttonToAdvanced		   = new QPushButton( "Advanced" );
 		QWidget * wButtonContainer = new QWidget;
 		QLabel *  qlabel		   = new QLabel( "Mode : " );

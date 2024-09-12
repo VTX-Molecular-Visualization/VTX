@@ -85,8 +85,9 @@ namespace VTX::Tool::Mdprep::ui
 		QLabel *			qExplainatoryText = new QLabel;
 		static const char * buttonLabel		  = "Prepare system";
 		qExplainatoryText->setText( QString::asprintf(
-			"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system and attempts to "
-			"<b>prepare</b> a Molecule Dynamic simulation from it.<br><u>Be wary :</u> <i>VTX doesn't support "
+			"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system to "
+			"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
+			"doesn't support "
 			"yet</i> automatic MD preparation for <b>small organic molecules</b>. Hence, any visible "
 			"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
 			buttonLabel
