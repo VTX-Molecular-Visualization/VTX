@@ -5,20 +5,23 @@
 #include <util/constants.hpp>
 #include <util/math.hpp>
 
+/**
+ * @brief All the currently availables metadata.
+ */
 namespace VTX::Renderer
 {
 	// Attachments.
-	static const Attachment imageRGBA32UI { E_FORMAT::RGBA32UI };
-	static const Attachment imageRGBA16F { E_FORMAT::RGBA16F };
-	static const Attachment imageRG32UI { E_FORMAT::RG32UI };
-	static const Attachment imageD32F { E_FORMAT::DEPTH_COMPONENT32F };
-	static const Attachment imageR32F { E_FORMAT::R32F };
-	static const Attachment imageR16F { E_FORMAT::R16F };
-	static const Attachment imageR8 { E_FORMAT::R8 };
+	inline const Attachment imageRGBA32UI { E_FORMAT::RGBA32UI };
+	inline const Attachment imageRGBA16F { E_FORMAT::RGBA16F };
+	inline const Attachment imageRG32UI { E_FORMAT::RG32UI };
+	inline const Attachment imageD32F { E_FORMAT::DEPTH_COMPONENT32F };
+	inline const Attachment imageR32F { E_FORMAT::R32F };
+	inline const Attachment imageR16F { E_FORMAT::R16F };
+	inline const Attachment imageR8 { E_FORMAT::R8 };
 
 	// Data.
 	// TODO: compress all.
-	static const Data dataSpheresCylinders { {
+	inline const Data dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
 		{ "Radii", E_TYPE::FLOAT, 1 }, // TODO: move to ubo or hardcode?
@@ -28,7 +31,7 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	static const Data dataRibbons { {
+	inline const Data dataRibbons { {
 		{ "Positions", E_TYPE::FLOAT, 4 },
 		{ "Directions", E_TYPE::FLOAT, 3 },
 		{ "Types", E_TYPE::UBYTE, 1 },
@@ -39,7 +42,7 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	static const Data dataTriangles { {
+	inline const Data dataTriangles { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Normales", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
@@ -49,12 +52,12 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	static const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
+	inline const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
 	// Passes.
 
 	// Geometric.
-	static Pass descPassGeometric {
+	inline Pass descPassGeometric {
 		"Geometric",
 		Inputs { { E_CHAN_IN::_0, { "SpheresCylinders", dataSpheresCylinders } },
 				 { E_CHAN_IN::_1, { "Ribbons", dataRibbons } },
@@ -72,15 +75,15 @@ namespace VTX::Renderer
 	};
 
 	// Linearize depth.
-	static Pass descPassDepth { "Linearize depth",
+	inline Pass descPassDepth { "Linearize depth",
 								Inputs { { E_CHAN_IN::_0, { "Depth", imageD32F } } },
 								Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR32F } } },
 								Programs { { "LinearizeDepth",
 											 std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } };
 
 	// SSAO.
-	static constexpr size_t	  noiseTextureSize = 64;
-	static std::vector<Vec3f> createNoiseTexture()
+	inline constexpr size_t	  noiseTextureSize = 64;
+	inline std::vector<Vec3f> createNoiseTexture()
 	{
 		std::vector<Vec3f> noise( noiseTextureSize * noiseTextureSize );
 
@@ -97,9 +100,9 @@ namespace VTX::Renderer
 
 		return noise;
 	}
-	static const std::vector<Vec3f> noiseTexture = createNoiseTexture();
+	inline const std::vector<Vec3f> noiseTexture = createNoiseTexture();
 
-	static Pass descPassSSAO {
+	inline Pass descPassSSAO {
 		"SSAO",
 		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHAN_IN::_1,
@@ -126,7 +129,7 @@ namespace VTX::Renderer
 	};
 
 	// Blur.
-	static Pass descPassBlur {
+	inline Pass descPassBlur {
 		"Blur",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
@@ -142,9 +145,9 @@ namespace VTX::Renderer
 	};
 
 	// Shading.
-	static const std::vector<float> blurDefaultTexture( 1, 1.f );
+	inline const std::vector<float> blurDefaultTexture( 1, 1.f );
 
-	static Pass descPassShading {
+	inline Pass descPassShading {
 		"Shading",
 		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } },
@@ -196,7 +199,7 @@ namespace VTX::Renderer
 	};
 
 	// Outline.
-	static Pass descPassOutline {
+	inline Pass descPassOutline {
 		"Outline",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -212,7 +215,7 @@ namespace VTX::Renderer
 	};
 
 	// Glow.
-	static Pass descPassGlow {
+	inline Pass descPassGlow {
 		"Glow",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -228,7 +231,7 @@ namespace VTX::Renderer
 	};
 
 	// Selection.
-	static Pass descPassSelection {
+	inline Pass descPassSelection {
 		"Selection",
 		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
 				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } },
@@ -242,16 +245,15 @@ namespace VTX::Renderer
 	};
 
 	// FXAA.
-	static Pass desPassFXAA { "FXAA",
+	inline Pass desPassFXAA { "FXAA",
 							  Inputs { { E_CHAN_IN::_0, { "Image", imageRGBA16F } } },
 							  Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 							  Programs { { "FXAA", std::vector<FilePath> { "default.vert", "fxaa.frag" } } } };
 
 	// Pixelize.
-	static Pass descPassPixelize {
+	inline Pass descPassPixelize {
 		"Pixelize",
-		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
-				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } } },
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } }, { E_CHAN_IN::_1, { "Color", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Pixelize",
 					 std::vector<FilePath> { "default.vert", "pixelize.frag" },
@@ -262,7 +264,7 @@ namespace VTX::Renderer
 	};
 
 	// CRT.
-	static Pass descPassCRT {
+	inline Pass descPassCRT {
 		"CRT",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -293,7 +295,7 @@ namespace VTX::Renderer
 	};
 
 	// Chromatic aberration.
-	static Pass descPassChromaticAberration {
+	inline Pass descPassChromaticAberration {
 		"Chromatic aberration",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -315,7 +317,7 @@ namespace VTX::Renderer
 	};
 
 	// Colorize.
-	static Pass descPassColorize {
+	inline Pass descPassColorize {
 		"Colorize",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -326,7 +328,7 @@ namespace VTX::Renderer
 	};
 
 	// Debug.
-	static Pass descPassDebug {
+	inline Pass descPassDebug {
 		"Debug",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
@@ -361,7 +363,7 @@ namespace VTX::Renderer
 		COUNT
 	};
 
-	static std::vector<Pass *> availablePasses = { &descPassGeometric,
+	inline std::vector<Pass *> availablePasses = { &descPassGeometric,
 												   &descPassDepth,
 												   &descPassSSAO,
 												   &descPassBlur,

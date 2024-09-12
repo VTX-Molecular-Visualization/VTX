@@ -1135,7 +1135,7 @@ namespace VTX::Renderer
 	}
 
 	void Renderer::snapshot(
-		std::vector<uchar> & p_image,
+		std::vector<uchar> & p_outImage,
 		const size_t		 p_width,
 		const size_t		 p_height,
 		const float			 p_fov,
@@ -1148,7 +1148,7 @@ namespace VTX::Renderer
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
 		setValue( matrixProjection, "Matrix projection" );
-		_context->snapshot( p_image, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
+		_context->snapshot( p_outImage, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
 		setValue( matrixProjectionOld, "Matrix projection" );
 	}
 

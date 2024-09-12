@@ -6,7 +6,9 @@
 
 namespace VTX::Renderer::Proxy
 {
-
+	/**
+	 * @brief Camera data provider.
+	 */
 	struct Camera
 	{
 		const Mat4f * matrixView;

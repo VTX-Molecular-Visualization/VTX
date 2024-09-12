@@ -8,6 +8,9 @@
 namespace VTX::Renderer::Scheduler
 {
 
+	/**
+	 * @brief The scheduler use graph links and nodes to compute the render queue.
+	 */
 	template<typename S>
 	concept Concept = requires(
 		S					 p_scheduler,
@@ -16,9 +19,7 @@ namespace VTX::Renderer::Scheduler
 		const Output * const p_output,
 		RenderQueue &		 p_outRenderQueue
 	) {
-		{
-			p_scheduler.schedule( p_passes, p_links, p_output, p_outRenderQueue )
-		} -> std::same_as<void>;
+		{ p_scheduler.schedule( p_passes, p_links, p_output, p_outRenderQueue ) } -> std::same_as<void>;
 	};
 } // namespace VTX::Renderer::Scheduler
 

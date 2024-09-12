@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_INCLUDE_OPENGL__
 #define __VTX_RENDERER_CONTEXT_INCLUDE_OPENGL__
 
+// We need to fake the OpenGL context to run CI.
 #ifndef VTX_RENDERER_NO_OPENGL
 #include <glad/glad.h>
 #else

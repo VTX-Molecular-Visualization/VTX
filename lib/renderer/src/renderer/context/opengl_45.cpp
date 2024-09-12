@@ -1,4 +1,5 @@
 #include "renderer/context/opengl_45.hpp"
+#include <util/enum.hpp>
 
 namespace VTX::Renderer::Context
 {
@@ -139,7 +140,7 @@ namespace VTX::Renderer::Context
 			const Key  keyPass	  = _getKey( *descPassPtr );
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
-			std::vector<GLenum> drawBuffers;
+			std::set<GLenum> drawBuffers;
 
 			// Create input data.
 			_createInputs( p_links, descPassPtr, vertexArrays, buffers, textures );
@@ -161,7 +162,9 @@ namespace VTX::Renderer::Context
 				// Set draw buffers.
 				if ( not drawBuffers.empty() )
 				{
-					_framebuffers[ keyFramebuffer ]->setDrawBuffers( drawBuffers );
+					_framebuffers[ keyFramebuffer ]->setDrawBuffers(
+						std::vector<GLenum>( drawBuffers.begin(), drawBuffers.end() )
+					);
 				}
 			}
 
@@ -487,6 +490,7 @@ namespace VTX::Renderer::Context
 
 						texture->resize( width, height );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
+						VTX_TRACE( "Texture resized: {} ({})", output.name, Util::Enum::enumName( channel ) );
 					}
 				}
 				else
@@ -505,14 +509,14 @@ namespace VTX::Renderer::Context
 		const size_t		 p_height
 	)
 	{
-		// TODO: transparency.
-
 		const size_t widthOld  = width;
 		const size_t heightOld = height;
 		const Handle outputOld = _output;
 
 		p_image.resize( p_width * p_height * 4 );
 
+		// Creates a framebuffer with a texture to render "offscreen".
+		// It permits to render in a given resolution without resizing the actual renderer.
 		GL::Framebuffer fbo;
 		GL::Texture2D	texture(
 			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
@@ -523,11 +527,13 @@ namespace VTX::Renderer::Context
 		resize( p_renderQueue, p_width, p_height );
 		setOutput( fbo.getId() );
 
+		// Render
 		for ( const Instruction & instruction : p_instructions )
 		{
 			instruction();
 		}
 
+		// Copy framebuffer data to CPU array.
 		fbo.bind( GL_READ_FRAMEBUFFER );
 		glReadnPixels(
 			0,
@@ -541,6 +547,7 @@ namespace VTX::Renderer::Context
 		);
 		fbo.unbind();
 
+		// Reset all texture sizes and output.
 		resize( p_renderQueue, widthOld, heightOld );
 		setOutput( outputOld );
 
@@ -548,39 +555,6 @@ namespace VTX::Renderer::Context
 		{
 			instruction();
 		}
-	}
-
-	void OpenGL45::getTextureData(
-		std::any &		 p_textureData,
-		const size_t	 p_x,
-		const size_t	 p_y,
-		const Key &		 p_key,
-		const E_CHAN_OUT p_channel
-	)
-	{
-		assert( _framebuffers.contains( p_key ) );
-
-		auto &			   fbo	  = _framebuffers[ p_key ];
-		const Pass * const pass	  = _descPasses[ p_key ];
-		const IO &		   descIO = pass->outputs.at( p_channel ).desc;
-
-		assert( std::holds_alternative<Attachment>( descIO ) );
-
-		const Attachment & attachment = std::get<Attachment>( descIO );
-		const E_FORMAT	   format	  = attachment.format;
-
-		fbo->bind( GL_READ_FRAMEBUFFER );
-		fbo->setReadBuffer( _mapAttachments[ p_channel ] );
-		glReadPixels(
-			GLint( p_x ),
-			GLint( p_y ),
-			1,
-			1,
-			_mapFormatInternalTypes[ format ],
-			_mapTypes[ _mapFormatTypes[ format ] ],
-			&p_textureData
-		);
-		fbo->unbind();
 	}
 
 	void OpenGL45::compute( const ComputePass & p_pass )
@@ -666,6 +640,8 @@ namespace VTX::Renderer::Context
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
 		{
+			VTX_TRACE( "Creating input: {}", input.name );
+
 			const IO & descIO = input.desc;
 
 			// Create texture if data provided and not linked.
@@ -733,13 +709,14 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::_createOuputs(
-		const Pass * const	  p_pass,
-		std::vector<GLenum> & p_drawBuffers,
-		std::vector<Key> &	  p_textures
+		const Pass * const p_pass,
+		std::set<GLenum> & p_drawBuffers,
+		std::vector<Key> & p_textures
 	)
 	{
 		for ( const auto & [ channel, output ] : p_pass->outputs )
 		{
+			VTX_TRACE( "Creating output: {} ({})", output.name, Util::Enum::enumName( channel ) );
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
@@ -756,7 +733,7 @@ namespace VTX::Renderer::Context
 				if ( channel == E_CHAN_OUT::DEPTH ) {}
 				else
 				{
-					p_drawBuffers.emplace_back( _mapAttachments[ channel ] );
+					p_drawBuffers.insert( _mapAttachments[ channel ] );
 				}
 			}
 			else
@@ -826,6 +803,13 @@ namespace VTX::Renderer::Context
 
 		if ( not _textures.contains( p_key ) )
 		{
+			VTX_TRACE(
+				"Creating texture: {} ({} - {})",
+				p_key,
+				Util::Enum::enumName( attachment.format ),
+				_mapFormats[ attachment.format ]
+			);
+
 			_textures.emplace(
 				p_key,
 				std::make_unique<GL::Texture2D>(

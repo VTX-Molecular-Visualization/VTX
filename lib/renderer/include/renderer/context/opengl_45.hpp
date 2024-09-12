@@ -10,6 +10,7 @@
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
 #include "include_opengl.hpp"
+#include <set>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -24,6 +25,15 @@ namespace VTX::Renderer::Context
 		OpenGL45() = delete;
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
+		/**
+		 * @brief Generates render instructions from render graph inputs.
+		 * @param p_renderQueue the list of passes to render, ordered by the scheduler.
+		 * @param p_links the connections between passes.
+		 * @param p_output the output framebuffer.
+		 * @param p_uniforms the global GPU variables.
+		 * @param p_outInstructions the generated instruction list.
+		 * @param p_outInstructionsDurationRanges the generated instruction list grouped by category.
+		 */
 		void build(
 			const RenderQueue &			 p_renderQueue,
 			const Links &				 p_links,
@@ -37,6 +47,11 @@ namespace VTX::Renderer::Context
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
+		/**
+		 * @brief Send data to GPU (uniform).
+		 * @param p_key the buffer name to send on.
+		 * @param p_index is the index of the data to set if we need to update only one value in an array.
+		 */
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
@@ -46,12 +61,18 @@ namespace VTX::Renderer::Context
 			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
+		/**
+		 * @brief Creates a GPU buffer
+		 * @tparam T the data type to store.
+		 * @param p_size the number of items to store.
+		 * @param p_key the buffer name.
+		 */
 		template<typename T>
 		inline void reserveData( const size_t p_size, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			// Set dummy.
+			// Set dummy size (size 0 prohibited).
 			size_t size = sizeof( T ) * p_size;
 			size		= size > 0 ? size : 1;
 
@@ -63,6 +84,9 @@ namespace VTX::Renderer::Context
 			}
 		}
 
+		/**
+		 * @brief Send data to GPU (buffer).
+		 */
 		template<typename T>
 		inline void setData( const std::vector<T> & p_data, const Key & p_key )
 		{
@@ -87,6 +111,9 @@ namespace VTX::Renderer::Context
 			}
 		}
 
+		/**
+		 * @brief Send data to an existing GPU buffer.
+		 */
 		template<typename T>
 		inline void setSubData( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
 		{
@@ -109,14 +136,39 @@ namespace VTX::Renderer::Context
 			const size_t		 p_height
 		);
 
+		template<typename T>
 		void getTextureData(
-			std::any &			p_textureData,
-			const size_t		p_x,
-			const size_t		p_y,
-			const std::string & p_pass,
-			const E_CHAN_OUT	p_channel
+			T &				 p_textureData,
+			const size_t	 p_x,
+			const size_t	 p_y,
+			const Key &		 p_key,
+			const E_CHAN_OUT p_channel
+		)
+		{
+			assert( _framebuffers.contains( p_key ) );
 
-		);
+			auto &			   fbo	  = _framebuffers[ p_key ];
+			const Pass * const pass	  = _descPasses[ p_key ];
+			const IO &		   descIO = pass->outputs.at( p_channel ).desc;
+
+			assert( std::holds_alternative<Attachment>( descIO ) );
+
+			const Attachment & attachment = std::get<Attachment>( descIO );
+			const E_FORMAT	   format	  = attachment.format;
+
+			fbo->bind( GL_READ_FRAMEBUFFER );
+			fbo->setReadBuffer( _mapAttachments[ p_channel ] );
+			glReadPixels(
+				GLint( p_x ),
+				GLint( p_y ),
+				1,
+				1,
+				_mapFormatInternalTypes[ format ],
+				_mapTypes[ _mapFormatTypes[ format ] ],
+				&p_textureData
+			);
+			fbo->unbind();
+		}
 
 		void compute( const ComputePass & p_pass );
 		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
@@ -217,9 +269,9 @@ namespace VTX::Renderer::Context
 		);
 
 		void _createOuputs(
-			const Pass * const	  p_descPassPtr,
-			std::vector<GLenum> & p_drawBuffers,
-			std::vector<Key> &	  p_textures
+			const Pass * const p_descPassPtr,
+			std::set<GLenum> & p_drawBuffers,
+			std::vector<Key> & p_textures
 		);
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(

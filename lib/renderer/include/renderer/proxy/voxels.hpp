@@ -6,7 +6,9 @@
 
 namespace VTX::Renderer::Proxy
 {
-
+	/**
+	 * @brief Voxel data provider.
+	 */
 	struct Voxels
 	{
 		const std::vector<Vec3f> * mins;

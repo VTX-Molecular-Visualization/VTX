@@ -13,6 +13,9 @@ namespace VTX::Renderer
 {
 	class Renderer;
 
+	/**
+	 * @brief The facade is the only way to access the renderer from another package.
+	 */
 	class Facade
 	{
 	  public:

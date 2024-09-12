@@ -7,6 +7,9 @@
 #include <variant>
 #include <vector>
 
+/**
+ * @brief Data cached on CPU to avoid recomputation.
+ */
 namespace VTX::Renderer::Cache
 {
 	// TODO: auto cache in context?

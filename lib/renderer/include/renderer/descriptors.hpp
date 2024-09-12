@@ -12,9 +12,11 @@
 #include <variant>
 #include <vector>
 
+/**
+ * @brief Describes all the meta-data used by the render graph.
+ */
 namespace VTX::Renderer
 {
-
 	struct Attachment
 	{
 		E_FORMAT			  format	   = E_FORMAT::RGBA16F;
