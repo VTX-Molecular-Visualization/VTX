@@ -76,8 +76,8 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters & p_1, CheckReportCallback p_2 ) noexcept;
-		void startPreparation( const MdParameters & p_1, JobUpdateCallback p_3 ) noexcept;
+		void checkInputs( const MdParameters &, CheckReportCallback ) noexcept;
+		void startPreparation( const MdParameters &, JobUpdateCallback ) noexcept;
 
 		bool		isResultAvailable() const noexcept;
 		CheckReport lastResult() const noexcept;
