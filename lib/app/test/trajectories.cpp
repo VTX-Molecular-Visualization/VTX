@@ -32,13 +32,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	const size_t frameCount1NIM = 25;
 
-	std::unique_ptr<App::Core::Player::BasePlayer> playmode = nullptr;
+	App::Core::Player::BasePlayer * playmode = nullptr;
 
 	SECTION( "Stop playmode" )
 	{
-		playmode
-			= Util::Singleton<App::Core::Player::Players>::get().instantiateItem( App::Core::Player::Stop::COLLECTION_ID
-			);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Stop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -55,9 +53,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::Once>(
-			App::Core::Player::Once::COLLECTION_ID
-		);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Once>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -75,9 +71,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::RevertOnce>(
-			App::Core::Player::RevertOnce::COLLECTION_ID
-		);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::RevertOnce>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -95,9 +89,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::Loop>(
-			App::Core::Player::Loop::COLLECTION_ID
-		);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Loop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -115,9 +107,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::RevertLoop>(
-			App::Core::Player::RevertLoop::COLLECTION_ID
-		);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::RevertLoop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -135,9 +125,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Ping Pong playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().instantiateItem<App::Core::Player::PingPong>(
-			App::Core::Player::PingPong::COLLECTION_ID
-		);
+		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::PingPong>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();

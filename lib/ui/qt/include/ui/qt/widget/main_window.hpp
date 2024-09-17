@@ -4,13 +4,11 @@
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
 #include "ui/qt/base_widget.hpp"
-#include "ui/qt/helper.hpp"
 #include "ui/qt/settings.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
-#include <app/core/input/input_manager.hpp>
 #include <app/ui/concepts.hpp>
 #include <ui/qt/dialog/progress.hpp>
 #include <util/logger.hpp>
@@ -31,41 +29,6 @@ namespace VTX::UI::QT::Widget
 		void resetLayout();
 
 		inline void setClosing( const bool p_closing ) { _closing = p_closing; }
-
-		inline void keyPressEvent( QKeyEvent * const p_event ) override
-		{
-			_inputManager.handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-		}
-
-		inline void keyReleaseEvent( QKeyEvent * const p_event ) override
-		{
-			_inputManager.handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-		}
-
-		inline void mousePressEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseReleaseEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseDoubleClickEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseMoveEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void wheelEvent( QWheelEvent * const p_event ) override
-		{
-			_inputManager.handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
-		}
 
 		void changeEvent( QEvent * const p_event ) override;
 		void closeEvent( QCloseEvent * p_event ) override;
@@ -121,8 +84,6 @@ namespace VTX::UI::QT::Widget
 		// TODO: keep like that or re-tabify?
 		QByteArray _defaultGeometry;
 		QByteArray _defaultState;
-
-		App::Core::Input::InputManager & _inputManager;
 
 		bool _closing = false;
 	};

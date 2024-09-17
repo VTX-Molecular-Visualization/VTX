@@ -13,7 +13,10 @@ namespace VTX::Util
 
 	void Chrono::stop() { _end = _interval = Clock::now(); }
 
-	float Chrono::elapsedTime() const { return ( std::chrono::duration_cast<Duration>( _end - _begin ) ).count(); }
+	float Chrono::elapsedTime() const
+	{
+		return ( std::chrono::duration_cast<Duration>( Clock::now() - _begin ) ).count();
+	}
 
 	std::string Chrono::elapsedTimeStr() const { return std::to_string( elapsedTime() ) + 's'; }
 

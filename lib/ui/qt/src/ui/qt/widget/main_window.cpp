@@ -17,11 +17,12 @@
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
+#include <app/action/application.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 
-	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr ), _inputManager( App::INPUT_MANAGER() )
+	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
 	{
 		// Size.
 		resize( 1920, 1080 );
@@ -100,8 +101,11 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::prepare()
 	{
 		// Select default tabs.
-		WIDGETS::get().get<DockWidget::Scene *>()->raise();
-		WIDGETS::get().get<DockWidget::Inspector *>()->raise();
+		WIDGETS::get().get<DockWidget::Scene>()->raise();
+		WIDGETS::get().get<DockWidget::Inspector>()->raise();
+
+		// TODO: Set openGL widget as focus.
+		// centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();

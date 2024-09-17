@@ -2,7 +2,6 @@
 #define __VTX_APP_UI_BASE_APPLICATION__
 
 #include "concepts.hpp"
-#include <any>
 #include <app/vtx_app.hpp>
 #include <string>
 #include <util/logger.hpp>

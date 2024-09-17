@@ -1,8 +1,5 @@
 #include "app/core/animation/reset_camera.hpp"
 #include "app/core/animation/helper.hpp"
-#include "app/core/controller/base_camera_controller.hpp"
-#include "app/core/controller/base_controller.hpp"
-#include "app/core/controller/base_picker_controller.hpp"
 #include "app/mode/visualization.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/system/ecs_system.hpp>
@@ -45,7 +42,7 @@ namespace VTX::App::Core::Animation
 		if ( !isRunning() )
 			return;
 
-		if ( MODE().getName() == Mode::Visualization::ID )
+		//		if ( MODE().getName() == Mode::Visualization::ID )
 		{
 			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
 			// visualizationMode.getCurrentCameraController().setActive( false );
@@ -64,7 +61,7 @@ namespace VTX::App::Core::Animation
 
 		_camera.setTargetWorld( target );
 
-		if ( MODE().getName() == Mode::Visualization::ID )
+		// if ( MODE().getName() == Mode::Visualization::ID )
 		{
 			// Mode::Visualization & visualizationMode = dynamic_cast<Mode::Visualization &>( MODE() );
 			// visualizationMode.getCurrentCameraController().setActive( true );

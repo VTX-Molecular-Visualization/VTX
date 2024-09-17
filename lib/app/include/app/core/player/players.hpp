@@ -6,6 +6,6 @@
 
 namespace VTX::App::Core::Player
 {
-	using Players = Util::Collection<BasePlayer>;
+	using Players = Util::Collection<std::unique_ptr<BasePlayer>>;
 } // namespace VTX::App::Core::Player
 #endif

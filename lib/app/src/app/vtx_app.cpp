@@ -18,6 +18,7 @@
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/core/mode/mode_system.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/entity/all_entities.hpp"
@@ -96,8 +97,7 @@ namespace VTX::App
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		_currentMode = std::make_unique<App::Mode::Visualization>();
-		_currentMode->enter();
+		MODE_SYSTEM().setMode<App::Mode::Visualization>();
 
 		onStart();
 		for ( Tool::BaseTool * const tool : _tools )
@@ -110,9 +110,6 @@ namespace VTX::App
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		// Log times.
-		// VTX_DEBUG( "Delta time: {} ms, Elapsed time: {} ms", p_deltaTime, p_elapsedTime );
-
 		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
 		frameInfo.set(
 			Internal::Monitoring::TICK_RATE_KEY,
@@ -255,8 +252,6 @@ namespace VTX::App
 	//	}
 
 	// TODO.
-	Mode::BaseMode & MODE() { return APP::getCurrentMode(); }
-
 	Application::Scene &	  SCENE() { return Util::Singleton<Application::Scene>::get(); }
 	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
 

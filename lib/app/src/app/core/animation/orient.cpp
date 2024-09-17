@@ -1,8 +1,5 @@
 #include "app/core/animation/orient.hpp"
 #include "app/core/animation/helper.hpp"
-#include "app/core/controller/base_camera_controller.hpp"
-#include "app/core/controller/base_controller.hpp"
-#include "app/core/controller/base_picker_controller.hpp"
 #include "app/mode/visualization.hpp"
 #include <app/application/system/ecs_system.hpp>
 #include <app/component/scene/transform_component.hpp>

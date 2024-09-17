@@ -144,8 +144,9 @@ namespace VTX::App::Internal::Serialization
 	// TrajectoryComponent
 	Util::JSon::Object serialize( const Component::Chemistry::Trajectory & p_component )
 	{
-		return { { "PLAYER_NAME", p_component.getPlayer().getCollectionKey() },
-				 { "PLAYER_DATA", SERIALIZER().serialize( p_component.getPlayer() ) } };
+		return {};
+		// return { { "PLAYER_NAME", p_component.getPlayer().getCollectionKey() },
+		//		 { "PLAYER_DATA", SERIALIZER().serialize( p_component.getPlayer() ) } };
 	}
 
 	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Trajectory & p_component )
@@ -158,9 +159,11 @@ namespace VTX::App::Internal::Serialization
 			return;
 		}
 
-		std::unique_ptr<App::Core::Player::BasePlayer> playerPtr
-			= Util::Singleton<App::Core::Player::Players>::get().instantiateItem( playerName );
-		p_component.setPlayer( playerPtr );
+		// App::Core::Player::BasePlayer * playerPtr
+		//	= Util::Singleton<App::Core::Player::Players>::get().createFromKey<App::Core::Player::BasePlayer>(
+		//		playerName
+		//	);
+		// p_component.setPlayer( playerPtr );
 
 		SERIALIZER().deserialize( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );
 	}

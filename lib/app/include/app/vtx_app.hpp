@@ -2,7 +2,6 @@
 #define ___VTX_APP_VTX_APP___
 
 #include "app/application/_fwd.hpp"
-#include "app/mode/base_mode.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
 #include <iostream>
@@ -26,8 +25,6 @@ namespace VTX::App
 		virtual void start( const Args & );
 		static void	 update( const float p_deltaTime, const float p_elapsedTime );
 		static void	 stop();
-
-		inline static Mode::BaseMode & getCurrentMode() { return *_currentMode; }
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
@@ -55,15 +52,9 @@ namespace VTX::App
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
-		inline static std::unique_ptr<Mode::BaseMode> _currentMode;
-		inline static std::string					  _currentModeKey = "MODE_VISUALIZATION";
-
 		static void _handleArgs( const Args & p_args );
 		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
-
-	// Convenient accessors
-	Mode::BaseMode & MODE();
 
 	Application::Scene &	  SCENE();
 	Util::Monitoring::Stats & STATS();

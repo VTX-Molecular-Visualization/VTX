@@ -1,6 +1,8 @@
 #include "app/action/scene.hpp"
+#include "app/action/animation.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/scene.hpp"
+#include "app/application/system/action_manager.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/render/camera.hpp"
@@ -23,6 +25,8 @@ namespace VTX::App::Action::Scene
 			entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( moleculePath.string() );
 			entityBuilder->build();
 		}
+
+		VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

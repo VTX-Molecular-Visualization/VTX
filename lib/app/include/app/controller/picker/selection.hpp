@@ -1,8 +1,7 @@
 #ifndef __VTX_UI_INTERNAL_CONTROLLER_PICKER_SELECTION_PICKER__
 #define __VTX_UI_INTERNAL_CONTROLLER_PICKER_SELECTION_PICKER__
 
-#include "app/core/controller/base_picker_controller.hpp"
-#include "app/core/controller/controller_manager.hpp"
+#include "app/core/controller/concepts.hpp"
 #include <app/application/selection/picking_info.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
@@ -10,26 +9,14 @@
 namespace VTX::App::Controller::Picker
 {
 
-	class Selection : public Core::Controller::BasePickerController
+	class Selection : public Core::Controller::BaseController
 	{
 	  public:
 		using PickingInfo = App::Application::Selection::PickingInfo;
 
-		inline static const Util::CollectionKey COLLECTION_ID		 = "CONTROLLER_PICKER";
-		inline static const VTX::Hash			HASHED_COLLECTION_ID = Util::hash( COLLECTION_ID );
-
-	  private:
-		inline static const Core::Controller::ControllerCollection::Registration<Selection> _reg { COLLECTION_ID };
-
 	  public:
-		Selection()								= default;
-		Selection( const Selection & p_source ) = default;
-		~Selection()							= default;
-
-		void init() override;
-
-		inline VTX::Hash				getHashedCollectionID() const override { return HASHED_COLLECTION_ID; };
-		std::unique_ptr<BaseController> clone() const { return std::make_unique<Selection>( *this ); };
+		void init();
+		void update( const float p_deltaTime );
 
 	  protected:
 		void _onMouseLeftClick( const Vec2i & p_mousePos );

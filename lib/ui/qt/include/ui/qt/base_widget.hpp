@@ -18,7 +18,7 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Abstract collection of QWidget pointers.
 	 */
-	using WIDGET_COLLECTION = VTX::Util::HashedCollection<QWidget *>;
+	using WIDGET_COLLECTION = VTX::Util::Collection<QWidget *>;
 
 	/**
 	 * @brief An accessor to the singleton that store all widgets.
@@ -26,21 +26,21 @@ namespace VTX::UI::QT
 	using WIDGETS = VTX::Util::Singleton<WIDGET_COLLECTION>;
 
 	/**
-	 * @brief Abstract class taht describes a widget behaviour.
+	 * @brief Abstract class that describes a widget behaviour.
 	 * @tparam T is the derived class type.
 	 * @tparam W is the QWidget type.
 	 */
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W, public WIDGET_COLLECTION::GlobalStorage<T>
+	class BaseWidget : public W //, public WIDGET_COLLECTION::GlobalStorage<T>
 	{
 	  public:
 		template<typename... Args>
-		BaseWidget( Args &&... p_args ) :
-			W( std::forward<Args>( p_args )... ), WIDGET_COLLECTION::GlobalStorage<T>( this )
+		BaseWidget( Args &&... p_args ) : W( std::forward<Args>( p_args )... )
 		{
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "UI widget created: {}", name );
+			WIDGETS::get().set<T>( static_cast<T *>( this ) );
 		} // namespace VTX::UI::QT
 
 		virtual ~BaseWidget()
