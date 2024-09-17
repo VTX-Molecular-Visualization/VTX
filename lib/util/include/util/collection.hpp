@@ -111,7 +111,7 @@ namespace VTX::Util
 			}
 			else
 			{
-				static_assert( false, "Util::Collection::get(): unrecognized type." );
+				static_assert( std::is_same_v<T, void>, "Util::Collection::get(): unrecognized type." );
 				return nullptr;
 			}
 		}
@@ -171,7 +171,7 @@ namespace VTX::Util
 			}
 			else
 			{
-				static_assert( false, "Util::Collection::set(): unrecognized type." );
+				static_assert( std::is_same_v<T, void>, "Util::Collection::set(): unrecognized type." );
 			}
 		}
 
@@ -222,7 +222,7 @@ namespace VTX::Util
 			}
 			else
 			{
-				static_assert( false, "Util::Collection::create(): unrecognized type." );
+				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
 			}
 
 			return get<T>( p_hash );
