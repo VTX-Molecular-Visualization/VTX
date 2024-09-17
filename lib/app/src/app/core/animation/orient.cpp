@@ -44,6 +44,7 @@ namespace VTX::App::Core::Animation
 			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
 
 		_translationInfo.startPosition = cameraTransformComponent.getTransform().getTranslationVector();
+
 		_translationInfo.startRotation = Util::Math::toQuat( cameraTransformComponent.getTransform().getRotation() );
 
 		_translationInfo.finalPosition = p_finalPosition;
