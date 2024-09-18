@@ -3,7 +3,7 @@
 
 #include <QAction>
 #include <QActionGroup>
-#include <app/application/system/action_manager.hpp>
+#include <app/core/action/action_system.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
 #include <util/collection.hpp>

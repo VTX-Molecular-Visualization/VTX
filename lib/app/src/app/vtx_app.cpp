@@ -6,7 +6,6 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/application/system/action_manager.hpp"
 #include "app/application/system/renderer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/application/system/threading.hpp"
@@ -16,6 +15,7 @@
 #include "app/component/render/proxy_color_layout.hpp"
 #include "app/component/render/proxy_molecule.hpp"
 #include "app/controller/camera/trackball.hpp"
+#include "app/core/action/action_system.hpp"
 #include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/mode/mode_system.hpp"
@@ -215,11 +215,11 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::VTX_ACTION().execute<App::Action::Scene::LoadMolecule>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( p_arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
-						App::VTX_ACTION().execute<App::Action::Application::OpenScene>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( p_arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCRIPT:

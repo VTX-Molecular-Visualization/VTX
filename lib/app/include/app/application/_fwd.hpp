@@ -7,7 +7,7 @@ namespace VTX::App::Application
 
 	namespace Action
 	{
-		class ActionManager;
+		class ActionSystem;
 	}
 
 	namespace ECS

@@ -18,6 +18,7 @@ namespace VTX::App::Core::Mode
 			if ( _current )
 			{
 				_current->exit();
+				onModeExit( _current->getName() );
 				APP::onUpdate -= _currentUpdateCallback;
 			}
 
@@ -25,6 +26,7 @@ namespace VTX::App::Core::Mode
 
 			_current = static_cast<BaseMode *>( mode );
 			_current->enter();
+			onModeEnter( _current->getName() );
 
 			// TODO: lambda or std::bind?
 			_currentUpdateCallback = APP::onUpdate +=
@@ -32,6 +34,9 @@ namespace VTX::App::Core::Mode
 			//_currentUpdateCallback = APP::onUpdate
 			//	+= std::bind( &M::update, mode, std::placeholders::_1, std::placeholders::_2 );
 		}
+
+		Util::Callback<Name> onModeEnter;
+		Util::Callback<Name> onModeExit;
 
 	  private:
 		BaseMode *		 _current;

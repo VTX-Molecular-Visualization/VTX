@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_HASHED_COLLECTION__
-#define __VTX_UTIL_HASHED_COLLECTION__
+#ifndef __VTX_UTIL_OLLECTION__
+#define __VTX_UTIL_OLLECTION__
 
 #include <functional>
 #include <iostream>

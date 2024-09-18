@@ -1,15 +1,11 @@
 #ifndef __VTX_APP_CORE_MODE_BASE_MODE__
 #define __VTX_APP_CORE_MODE_BASE_MODE__
 
-#include "app/application/scene.hpp"
-#include "app/core/controller/base_controller_camera.hpp"
-#include "app/core/controller/concepts.hpp"
-#include "app/vtx_app.hpp"
-#include <util/collection.hpp>
+#include <util/generic/base_nameable.hpp>
 
 namespace VTX::App::Core::Mode
 {
-	class BaseMode
+	class BaseMode : public Util::Generic::BaseNameable
 	{
 	  public:
 		virtual ~BaseMode() = default;

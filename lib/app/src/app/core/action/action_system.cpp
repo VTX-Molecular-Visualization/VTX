@@ -1,15 +1,15 @@
-#include "app/application/system/action_manager.hpp"
+#include "app/core/action/action_system.hpp"
 #include <exception>
 #include <typeinfo>
 #include <util/logger.hpp>
 
-namespace VTX::App::Application::System
+namespace VTX::App::Core::Action
 {
-	ActionManager::ActionManager()	= default;
-	ActionManager::~ActionManager() = default;
-	void ActionManager::execute( std::unique_ptr<BaseAction> & p_actionPtr )
+	ActionSystem::ActionSystem()  = default;
+	ActionSystem::~ActionSystem() = default;
+	void ActionSystem::execute( std::unique_ptr<BaseAction> & p_actionPtr )
 	{
-		VTX_DEBUG( "ActionManager::execute( {} )", typeid( *p_actionPtr ).name() );
+		VTX_DEBUG( "ActionSystem::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
 			p_actionPtr->execute();
@@ -33,9 +33,9 @@ namespace VTX::App::Application::System
 			return;
 		}
 	}
-	void ActionManager::execute( std::unique_ptr<BaseActionUndonable> & p_actionPtr )
+	void ActionSystem::execute( std::unique_ptr<BaseActionUndonable> & p_actionPtr )
 	{
-		VTX_DEBUG( "ActionManager::execute( {} )", typeid( *p_actionPtr ).name() );
+		VTX_DEBUG( "ActionSystem::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
 			p_actionPtr->execute();
@@ -66,9 +66,9 @@ namespace VTX::App::Application::System
 		_bufferRedo.clear();
 	}
 
-	bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }
+	bool ActionSystem::canUndo() const { return _bufferUndo.size() > 0; }
 
-	void ActionManager::undo()
+	void ActionSystem::undo()
 	{
 		if ( !canUndo() )
 			return;
@@ -88,9 +88,9 @@ namespace VTX::App::Application::System
 		// }
 	}
 
-	bool ActionManager::canRedo() const { return _bufferRedo.size() > 0; }
+	bool ActionSystem::canRedo() const { return _bufferRedo.size() > 0; }
 
-	void ActionManager::redo()
+	void ActionSystem::redo()
 	{
 		if ( !canRedo() )
 			return;
@@ -110,13 +110,13 @@ namespace VTX::App::Application::System
 		//}
 	}
 
-	void ActionManager::setBufferSize( const uint p_bufferSize )
+	void ActionSystem::setBufferSize( const uint p_bufferSize )
 	{
 		_bufferSize = p_bufferSize;
 		_purgeBuffer();
 	}
 
-	void ActionManager::_purgeBuffer()
+	void ActionSystem::_purgeBuffer()
 	{
 		if ( _bufferSize == 0 )
 			return;
@@ -134,4 +134,4 @@ namespace VTX::App::Application::System
 			_bufferUndo.pop_back();
 		}
 	}
-} // namespace VTX::App::Application::System
+} // namespace VTX::App::Core::Action

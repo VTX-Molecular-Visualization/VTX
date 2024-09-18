@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_APPLICATION_ACTION_ACTION_MANAGER__
-#define __VTX_APP_APPLICATION_ACTION_ACTION_MANAGER__
+#ifndef __VTX_APP_CORE_ACTION_ACTION_SYSTEM__
+#define __VTX_APP_CORE_ACTION_ACTION_SYSTEM__
 
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
@@ -10,7 +10,7 @@
 #include <util/singleton.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Application::System
+namespace VTX::App::Core::Action
 {
 	template<typename T>
 	concept UndonableActionConcept = std::derived_from<T, Core::Action::BaseActionUndonable>;
@@ -19,7 +19,7 @@ namespace VTX::App::Application::System
 
 	// Action manager is a system used to execute all the actions in VTX.
 	// Action manager must be used in order to handle undonable actions.
-	class ActionManager
+	class ActionSystem
 	{
 	  public:
 		using BaseAction		  = Core::Action::BaseAction;
@@ -29,8 +29,8 @@ namespace VTX::App::Application::System
 		// using QueueVTXActionPtr		 = std::queue<BaseAction *>;
 
 	  public:
-		ActionManager();
-		~ActionManager();
+		ActionSystem();
+		~ActionSystem();
 
 		// Execute function A with args Args
 		template<ActionConcept A, typename... Args>
@@ -68,13 +68,10 @@ namespace VTX::App::Application::System
 
 		void _purgeBuffer();
 	};
-} // namespace VTX::App::Application::System
+} // namespace VTX::App::Core::Action
 
 namespace VTX::App
 {
-	inline Application::System::ActionManager & VTX_ACTION()
-	{
-		return Util::Singleton<Application::System::ActionManager>::get();
-	}
+	inline Core::Action::ActionSystem & ACTION_SYSTEM() { return Util::Singleton<Core::Action::ActionSystem>::get(); }
 } // namespace VTX::App
 #endif

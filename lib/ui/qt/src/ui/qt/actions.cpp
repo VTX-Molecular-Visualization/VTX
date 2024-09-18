@@ -73,7 +73,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Create a new project";
 			icon	 = "sprite/file/new.png";
 			shortcut = "Ctrl+N";
-			trigger	 = []() { App::VTX_ACTION().execute<App::Action::Application::NewScene>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Application::NewScene>(); };
 		}
 
 		Download::Download()
@@ -123,7 +123,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Quit";
 			tip		 = "Exit software";
-			trigger	 = []() { App::VTX_ACTION().execute<App::Action::Application::Quit>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Application::Quit>(); };
 			shortcut = "Esc";
 		}
 
@@ -158,7 +158,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Trackball controller";
 			icon	 = "sprite/camera/trackball.png";
 			shortcut = "Alt+T";
-			trigger	 = []() { App::VTX_ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		Freefly::Freefly()
@@ -168,7 +168,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Freefly controller";
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
-			trigger	 = []() { App::VTX_ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		Orient::Orient()
@@ -176,7 +176,7 @@ namespace VTX::UI::QT::Action
 			name	= "Orient";
 			tip		= "Orient camera on selection";
 			icon	= "sprite/camera/orient.png";
-			trigger = []() { App::VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() ); };
+			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() ); };
 		}
 
 		Reset::Reset()
@@ -184,7 +184,7 @@ namespace VTX::UI::QT::Action
 			name	= "Reset";
 			tip		= "Reset camera";
 			icon	= "sprite/camera/reset.png";
-			trigger = []() { App::VTX_ACTION().execute<App::Action::Animation::ResetCamera>(); };
+			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::ResetCamera>(); };
 		}
 
 	} // namespace Camera

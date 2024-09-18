@@ -2,12 +2,12 @@
 #include "app/action/animation.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/action_manager.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
+#include "app/core/action/action_system.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
 
@@ -26,7 +26,7 @@ namespace VTX::App::Action::Scene
 			entityBuilder->build();
 		}
 
-		VTX_ACTION().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
+		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

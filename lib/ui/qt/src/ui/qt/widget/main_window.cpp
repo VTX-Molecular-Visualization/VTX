@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Widget
 
 		if ( not _closing )
 		{
-			App::VTX_ACTION().execute<App::Action::Application::Quit>();
+			App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
 			p_event->ignore();
 		}
 	}
