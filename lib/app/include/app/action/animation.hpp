@@ -23,6 +23,7 @@ namespace VTX::App::Action::Animation
 	  private:
 		const Core::Animation::OrientInfo _orientInfo;
 	};
+
 	class ResetCamera final : public App::Core::Action::BaseAction
 	{
 	  public:

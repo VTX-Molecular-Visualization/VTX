@@ -3,6 +3,7 @@
 
 #include "app/core/controller/concepts.hpp"
 #include <app/application/selection/picking_info.hpp>
+#include <util/callback.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 
@@ -14,19 +15,24 @@ namespace VTX::App::Controller::Picker
 	  public:
 		using PickingInfo = App::Application::Selection::PickingInfo;
 
-	  public:
-		void init();
-		void update( const float p_deltaTime );
+		static inline const Name NAME = "SELECTION";
 
-	  protected:
+		Name getName() const override { return NAME; }
+
+		void setActive( const bool );
+		void update( const float, const float ) {}
+
+	  private:
+		Util::CallbackId _mouseLeftClickCallbackID;
+		Util::CallbackId _mouseLeftDoubleClickCallbackID;
+		Util::CallbackId _mouseRightClickCallbackID;
+
 		void _onMouseLeftClick( const Vec2i & p_mousePos );
 		void _onMouseLeftDoubleClick( const Vec2i & p_mousePos );
 		void _onMouseRightClick( const Vec2i & p_mousePos );
 
-		void _performSelection( const PickingInfo & p_pickingInfo ) const;
-		bool _isTargetSelected( const PickingInfo & p_pickingInfo ) const;
-
-	  private:
+		void		_performSelection( const PickingInfo & p_pickingInfo ) const;
+		bool		_isTargetSelected( const PickingInfo & p_pickingInfo ) const;
 		PickingInfo _lastPickingInfo = PickingInfo();
 	};
 } // namespace VTX::App::Controller::Picker

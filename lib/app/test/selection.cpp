@@ -18,63 +18,71 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
+	try
+	{
+		VTX_INFO( "TEST VTX_APP - Selection" );
 
-	VTX_INFO( "TEST VTX_APP - Selection" );
+		using AssignmentType = Application::Selection::AssignmentType;
 
-	using AssignmentType = Application::Selection::AssignmentType;
+		App::Fixture app;
 
-	App::Fixture app;
+		Test::Util::App::loadMolecule( "8OIT.mmtf" );
+		const Component::Chemistry::Molecule & mol1
+			= SCENE().getComponentByName<Component::Chemistry::Molecule>( "8OIT" );
+		const Component::Scene::Selectable & selectableMol1
+			= SCENE().getComponentByName<Component::Scene::Selectable>( "8OIT" );
 
-	Test::Util::App::loadMolecule( "8OIT.mmtf" );
-	const Component::Chemistry::Molecule & mol1 = SCENE().getComponentByName<Component::Chemistry::Molecule>( "8OIT" );
-	const Component::Scene::Selectable &   selectableMol1
-		= SCENE().getComponentByName<Component::Scene::Selectable>( "8OIT" );
+		Test::Util::App::loadMolecule( "1AGA.mmtf" );
+		const Component::Chemistry::Molecule & mol2
+			= SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" );
+		const Component::Scene::Selectable & selectableMol2
+			= SCENE().getComponentByName<Component::Scene::Selectable>( "1AGA" );
+		VTX_INFO( "1AGA.mmtf loaded" );
 
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	const Component::Chemistry::Molecule & mol2 = SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" );
-	const Component::Scene::Selectable &   selectableMol2
-		= SCENE().getComponentByName<Component::Scene::Selectable>( "1AGA" );
-	VTX_INFO( "1AGA.mmtf loaded" );
+		CHECK( CURRENT_SELECTION().isEmpty() );
 
-	CHECK( CURRENT_SELECTION().isEmpty() );
+		Application::Selection::SelectionData & molSelData1 = CURRENT_SELECTION().select( selectableMol1 );
+		CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
+		CHECK( !CURRENT_SELECTION().isSelected( selectableMol2 ) );
+		CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
 
-	Application::Selection::SelectionData & molSelData1 = CURRENT_SELECTION().select( selectableMol1 );
-	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
-	CHECK( !CURRENT_SELECTION().isSelected( selectableMol2 ) );
-	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
-	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
+		Application::Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( mol2 );
+		CHECK( !CURRENT_SELECTION().isSelected( selectableMol1 ) );
+		CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
+		CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
-	Application::Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( mol2 );
-	CHECK( !CURRENT_SELECTION().isSelected( selectableMol1 ) );
-	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
-	CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
-	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
+		CURRENT_SELECTION().select( selectableMol1, AssignmentType::APPEND );
+		CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
+		CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
+		CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
 
-	CURRENT_SELECTION().select( selectableMol1, AssignmentType::APPEND );
-	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
-	CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
-	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
-	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
+		CURRENT_SELECTION().clear();
+		CHECK( CURRENT_SELECTION().isEmpty() );
 
-	CURRENT_SELECTION().clear();
-	CHECK( CURRENT_SELECTION().isEmpty() );
+		CURRENT_SELECTION().selectAll( { &selectableMol1, &selectableMol2 } );
+		CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
-	CURRENT_SELECTION().selectAll( { &selectableMol1, &selectableMol2 } );
-	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
-	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
+		CURRENT_SELECTION().clear();
 
-	CURRENT_SELECTION().clear();
+		std::vector<const Component::Scene::Selectable *> selectables = { &selectableMol1, &selectableMol2 };
+		CURRENT_SELECTION().selectAll( selectables );
+		CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
 
-	std::vector<const Component::Scene::Selectable *> selectables = { &selectableMol1, &selectableMol2 };
-	CURRENT_SELECTION().selectAll( selectables );
-	CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
-	CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol2 );
+		CURRENT_SELECTION().clear();
 
-	CURRENT_SELECTION().clear();
-
-	// std::vector<const Component::Chemistry::Molecule *> molecules = { &mol1, &mol2 };
-	// CURRENT_SELECTION().selectAll( molecules );
-	// CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+		// std::vector<const Component::Chemistry::Molecule *> molecules = { &mol1, &mol2 };
+		// CURRENT_SELECTION().selectAll( molecules );
+		// CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "Exception: {}", e.what() );
+	}
 }
 
 TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )

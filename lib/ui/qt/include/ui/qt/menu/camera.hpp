@@ -24,10 +24,17 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Camera::Reset>();
 
 			// TODO: where to do this?
+			using namespace App::Controller::Camera;
 			App::CONTROLLER_SYSTEM().onControllerEnabled += [ trackball, freeflly ]( const Name p_name )
 			{
-				trackball->setChecked( p_name == App::Controller::Camera::Trackball::NAME );
-				freeflly->setChecked( p_name == App::Controller::Camera::Freefly::NAME );
+				if ( p_name == Trackball::NAME )
+				{
+					trackball->setChecked( true );
+				}
+				else if ( p_name == Freefly::NAME )
+				{
+					freeflly->setChecked( true );
+				}
 			};
 		}
 

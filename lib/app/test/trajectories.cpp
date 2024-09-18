@@ -36,7 +36,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Stop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Stop>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Stop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -53,7 +53,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Once>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Once>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -71,7 +71,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::RevertOnce>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::RevertOnce>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -89,7 +89,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Loop>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Loop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -107,7 +107,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::RevertLoop>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::RevertLoop>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();
@@ -125,7 +125,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Ping Pong playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::PingPong>();
+		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::PingPong>();
 
 		trajectoryComponent.setPlayer( playmode );
 		trajectoryComponent.getPlayer().reset();

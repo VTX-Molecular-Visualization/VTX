@@ -61,12 +61,11 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		// TODO: call in main loop?
 		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
+		// TODO: remove polymorphism.
 		onUpdate +=
 			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
-
 		//// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
@@ -79,6 +78,7 @@ namespace VTX::App
 		VTX_INFO( "Starting application: {}", p_args.toString() );
 
 		///////////
+		// TODO: move.
 		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
 		rendererFacade.build();
 		App::Component::Render::ProxyColorLayout & colorLayout

@@ -10,7 +10,7 @@ namespace VTX::UI::QT::ToolBar
 	class File : public BaseWidget<File, QToolBar>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "Camera", p_parent )
+		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "File", p_parent )
 		{
 			addAction<Action::System::New>();
 			addAction<Action::System::Download>();

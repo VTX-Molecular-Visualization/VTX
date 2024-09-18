@@ -27,7 +27,7 @@ namespace VTX::App::Core::Mode
 			_current->enter();
 
 			// TODO: lambda or std::bind?
-			APP::onUpdate +=
+			_currentUpdateCallback = APP::onUpdate +=
 				[ mode ]( const float p_delta, const float p_elapsed ) { mode->update( p_delta, p_elapsed ); };
 			//_currentUpdateCallback = APP::onUpdate
 			//	+= std::bind( &M::update, mode, std::placeholders::_1, std::placeholders::_2 );

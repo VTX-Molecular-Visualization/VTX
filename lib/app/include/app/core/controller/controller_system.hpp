@@ -41,8 +41,18 @@ namespace VTX::App::Core::Controller
 		template<Controller::ConceptController C>
 		void disableController()
 		{
+			// Not created.
+			if ( not _controllers.has<C>() )
+			{
+				return;
+			}
+
 			C * const controller = _controllers.get<C>();
-			assert( _activeCallbacks.contains( controller->getName() ) );
+			// Not active.
+			if ( not _activeCallbacks.contains( controller->getName() ) )
+			{
+				return;
+			}
 
 			// Unregister update callback.
 			APP::onUpdate -= _activeCallbacks[ controller->getName() ];

@@ -30,16 +30,26 @@ namespace
 
 namespace VTX::App::Controller::Picker
 {
-	void Selection::init()
+	void Selection::setActive( const bool p_active )
 	{
-		INPUT_MANAGER().onMouseLeftClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
+		// Connect/disconnect mouse events.
+		if ( p_active )
+		{
+			_mouseLeftClickCallbackID = INPUT_MANAGER().onMouseLeftClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseLeftDoubleClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
+			_mouseLeftDoubleClickCallbackID = INPUT_MANAGER().onMouseLeftDoubleClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseRightClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
+			_mouseRightClickCallbackID = INPUT_MANAGER().onMouseRightClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
+		}
+		else
+		{
+			INPUT_MANAGER().onMouseLeftClicked -= _mouseLeftClickCallbackID;
+			INPUT_MANAGER().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
+			INPUT_MANAGER().onMouseRightClicked -= _mouseRightClickCallbackID;
+		}
 	}
 
 	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )

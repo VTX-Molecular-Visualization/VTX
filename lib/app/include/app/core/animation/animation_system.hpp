@@ -25,19 +25,19 @@ namespace VTX::App::Core::Animation
 
 		void update( const float p_deltaTime );
 
-		template<AnimationConcept Animation, typename... Args>
+		template<AnimationConcept A, typename... Args>
 		void pushBackAnimation( const Args &... p_args )
 		{
-			_animationSequence.push_back( std::make_unique<Animation>( p_args... ) );
+			_animationSequence.push_back( std::make_unique<A>( p_args... ) );
 		}
 		void clear();
 
-		template<AnimationConcept Animation, typename... Args>
+		template<AnimationConcept A, typename... Args>
 		void launchAnimation( const Args &... p_args )
 		{
 			stop();
 			clear();
-			pushBackAnimation<Animation>( p_args... );
+			pushBackAnimation<A>( p_args... );
 			play();
 		}
 

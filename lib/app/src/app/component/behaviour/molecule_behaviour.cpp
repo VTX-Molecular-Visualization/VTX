@@ -76,7 +76,7 @@ namespace VTX::App::Component::Behaviour
 				= MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( _entity, &_moleculeComponent );
 
 			App::Core::Player::BasePlayer * defaultPlayMode
-				= Util::Singleton<App::Core::Player::Players>::get().create<App::Core::Player::Loop>();
+				= Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Loop>();
 
 			trajectoryComponent.setPlayer( defaultPlayMode );
 		}

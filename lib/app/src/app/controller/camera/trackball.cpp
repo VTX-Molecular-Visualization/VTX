@@ -29,14 +29,6 @@ namespace VTX::App::Controller::Camera
 	}
 
 	/*
-	void Trackball::setActive( const bool p_active )
-	{
-		BaseCameraController::setActive( p_active );
-
-		if ( p_active )
-			getCamera().detachTarget();
-	}
-
 
 	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 	{
@@ -49,9 +41,18 @@ namespace VTX::App::Controller::Camera
 
 	void Trackball::setActive( const bool p_active )
 	{
-		_needUpdate = true;
-		//_camera->setTargetWorld( App::SCENE().getAABB().centroid() );
-		_velocity = VEC3F_ZERO;
+		if ( p_active )
+		{
+			// TODO: ??
+			//_camera->detachTarget();
+		}
+		else
+		{
+			_needUpdate = true;
+			// TODO: ??
+			//_camera->setTargetWorld( App::SCENE().getAABB().centroid() );
+			_velocity = VEC3F_ZERO;
+		}
 	}
 
 	void Trackball::update( const float p_deltaTime, const float p_elapsedTime )
