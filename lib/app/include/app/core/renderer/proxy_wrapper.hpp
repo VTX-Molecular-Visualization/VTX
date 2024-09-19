@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_APPLICATION_RENDERER_PROXY_WRAPPER__
-#define __VTX_APP_APPLICATION_RENDERER_PROXY_WRAPPER__
+#ifndef __VTX_APP_CORE_RENDERER_PROXY_WRAPPER__
+#define __VTX_APP_CORE_RENDERER_PROXY_WRAPPER__
 
-#include "app/application/system/renderer.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include <memory>
 
-namespace VTX::App::Application::Renderer
+namespace VTX::App::Core::Renderer
 {
 	template<typename T>
 	class ProxyWrapper
@@ -25,5 +25,5 @@ namespace VTX::App::Application::Renderer
 		std::unique_ptr<T> _proxyPtr = nullptr;
 	};
 
-} // namespace VTX::App::Application::Renderer
+} // namespace VTX::App::Core::Renderer
 #endif

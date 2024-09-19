@@ -2,74 +2,36 @@
 #define __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
 
 #include "ui/qt/base_widget.hpp"
-#include "ui/qt/helper.hpp"
+#include "ui/qt/window/event_catch_window.hpp"
 #include <QOpenGLContext>
 #include <QOpenGLPaintDevice>
 #include <QPainter>
 #include <QPointer>
 #include <QResizeEvent>
 #include <QWindow>
-#include <app/core/input/input_manager.hpp>
 
 namespace VTX::UI::QT::Widget
 {
-
-	// Reimplement a custom OpenGL widget to avoid the use of QOpenGLWidget.
+	/**
+	 * @brief Reimplement a custom OpenGL widget to avoid the use of QOpenGLWidget.
+	 * This is necessary to avoid makeCurrent() and doneCurrent() by using custom context.
+	 */
 	class OpenGLWidget : public QT::BaseWidget<OpenGLWidget, QWidget>
 	{
 	  public:
-		OpenGLWidget( QWidget * p_parent );
+		OpenGLWidget( QWidget * );
 		virtual ~OpenGLWidget();
 
 		void render();
-		void resizeEvent( QResizeEvent * p_event ) override;
+		void resizeEvent( QResizeEvent * ) override;
 
 		//  bool eventFilter( QObject *, QEvent * );
 
 	  private:
-		class OpenGLWindow : public QWindow
-		{
-		  public:
-			inline void keyPressEvent( QKeyEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-			}
-
-			inline void keyReleaseEvent( QKeyEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-			}
-
-			inline void mousePressEvent( QMouseEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-			}
-
-			inline void mouseReleaseEvent( QMouseEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-			}
-
-			inline void mouseDoubleClickEvent( QMouseEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-			}
-
-			inline void mouseMoveEvent( QMouseEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-			}
-
-			inline void wheelEvent( QWheelEvent * const p_event ) override
-			{
-				App::INPUT_MANAGER().handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
-			}
-		};
-
-		QPointer<QOpenGLContext> _context;
-		QPointer<OpenGLWindow>	 _surface;
-		QOpenGLPaintDevice *	 _device;
-		QPointer<QWidget>		 _container;
+		QPointer<QOpenGLContext>		   _context;
+		QPointer<Window::EventCatchWindow> _surface;
+		QOpenGLPaintDevice *			   _device;
+		QPointer<QWidget>				   _container;
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -16,7 +16,7 @@ namespace VTX::App::Component::Render
 		_far( Util::Math::max( _near, SETTINGS().get<float>( FAR_CLIP_KEY ) ) ),
 		_fov( SETTINGS().get<float>( FOV_KEY ) )
 	{
-		const CAMERA_PROJECTION & cameraProjection = SETTINGS().get<CAMERA_PROJECTION>( PROJECTION_KEY );
+		const PROJECTION & cameraProjection = SETTINGS().get<PROJECTION>( PROJECTION_KEY );
 
 		_projection = cameraProjection;
 	}
@@ -110,7 +110,7 @@ namespace VTX::App::Component::Render
 
 	void Camera::reset( const Vec3f & p_defaultPosition ) { _transform->set( p_defaultPosition, QUATF_ID ); }
 
-	void Camera::setCameraProjection( const CAMERA_PROJECTION & p_projection )
+	void Camera::setCameraProjection( const PROJECTION & p_projection )
 	{
 		_projection = p_projection;
 
@@ -128,7 +128,7 @@ namespace VTX::App::Component::Render
 
 		onMatrixViewChange( _viewMatrix );
 
-		if ( _projection == CAMERA_PROJECTION::ORTHOGRAPHIC )
+		if ( _projection == PROJECTION::ORTHOGRAPHIC )
 			_updateProjectionMatrix();
 	}
 
@@ -136,8 +136,8 @@ namespace VTX::App::Component::Render
 	{
 		switch ( _projection )
 		{
-		case CAMERA_PROJECTION::PERSPECTIVE: _computePerspectiveProjectionMatrix(); break;
-		case CAMERA_PROJECTION::ORTHOGRAPHIC: _computeOrthographicProjectionMatrix(); break;
+		case PROJECTION::PERSPECTIVE: _computePerspectiveProjectionMatrix(); break;
+		case PROJECTION::ORTHOGRAPHIC: _computeOrthographicProjectionMatrix(); break;
 		default:
 			VTX_WARNING( "Unknown camera projection. Projection computed as Perspective." );
 			_computePerspectiveProjectionMatrix();

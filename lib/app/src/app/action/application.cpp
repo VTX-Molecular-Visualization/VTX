@@ -1,9 +1,9 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/renderer.hpp"
 #include "app/application/system/serializer.hpp"
 #include "app/application/system/settings_system.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "app/filesystem.hpp"
 #include "app/internal/io/reader/scene_loader.hpp"
 #include "app/internal/io/writer/scene_writer.hpp"
@@ -112,7 +112,7 @@ namespace VTX::App::Action::Application
 	void Resize::execute()
 	{
 		App::SCENE().getCamera().setScreenSize( _width, _height );
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
 		rendererFacade.resize( _width, _height );
 		rendererFacade.setOutput( _output );
 	}

@@ -1,6 +1,6 @@
 #include "ui/qt/widget/status_bar.hpp"
 #include "app/internal/monitoring/all_metrics.hpp"
-#include <app/application/system/renderer.hpp>
+#include <app/core/renderer/renderer_system.hpp>
 #include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
-		auto & renderer = App::RENDERER().facade();
+		auto & renderer = App::RENDERER_SYSTEM().facade();
 		renderer.onReady() += [ vendorLabel, &renderer ]()
 		{ vendorLabel->setText( QString::fromStdString( renderer.getInfos().renderer ) ); };
 

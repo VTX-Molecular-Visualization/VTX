@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
-#include "app/application/renderer/proxy_wrapper.hpp"
 #include "app/component/chemistry/molecule.hpp"
+#include "app/core/renderer/proxy_wrapper.hpp"
 #include "app/core/visibility/enum.hpp"
 #include <core/struct/molecule.hpp>
 #include <renderer/facade.hpp>
@@ -41,7 +41,7 @@ namespace VTX::App::Component::Render
 
 		void _removeFromRenderer();
 
-		Application::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Molecule> _proxyWrapper;
+		Core::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Molecule> _proxyWrapper;
 	};
 
 } // namespace VTX::App::Component::Render

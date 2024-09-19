@@ -1,10 +1,9 @@
 #include "app/core/animation/reset_camera.hpp"
-#include "app/core/animation/helper.hpp"
+#include "app/core/animation/orient.hpp"
 #include "app/mode/visualization.hpp"
 #include <app/application/scene.hpp>
 #include <app/application/system/ecs_system.hpp>
 #include <app/component/scene/transform_component.hpp>
-#include <app/internal/constants.hpp>
 
 namespace VTX::App::Core::Animation
 {
@@ -19,7 +18,7 @@ namespace VTX::App::Core::Animation
 		_translationInfo.startRotation = Util::Math::toQuat( cameraTransformComponent.getTransform().getRotation() );
 
 		_translationInfo.finalPosition
-			= Helper::computeCameraOrientPosition( App::Internal::CAMERA_FRONT_DEFAULT, p_camera.getFov(), sceneAABB );
+			= Orient::computeCameraOrientPosition( FRONT_AXIS, p_camera.getFov(), sceneAABB );
 
 		_translationInfo.finalRotation = QUATF_ID;
 

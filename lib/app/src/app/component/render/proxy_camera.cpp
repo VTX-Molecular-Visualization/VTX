@@ -38,7 +38,7 @@ namespace VTX::App::Component::Render
 				VEC2I_ZERO,
 				cameraComp.getNear(),
 				cameraComp.getFar(),
-				cameraComp.getProjection() == CAMERA_PROJECTION::PERSPECTIVE,
+				cameraComp.getProjection() == Camera::PROJECTION::PERSPECTIVE,
 			} );
 
 		_proxyWrapper.setProxy( proxyPtr );
@@ -54,8 +54,8 @@ namespace VTX::App::Component::Render
 
 		cameraComp.onClipInfosChange +=
 			[ this ]( float p_near, float p_far ) { _proxyWrapper.proxy().onCameraNearFar( p_near, p_far ); };
-		cameraComp.onProjectionChange += [ this ]( CAMERA_PROJECTION p_projection )
-		{ _proxyWrapper.proxy().onPerspective( p_projection == CAMERA_PROJECTION::PERSPECTIVE ); };
+		cameraComp.onProjectionChange += [ this ]( Camera::PROJECTION p_projection )
+		{ _proxyWrapper.proxy().onPerspective( p_projection == Camera::PROJECTION::PERSPECTIVE ); };
 
 		Component::Scene::Transform & transformComp
 			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );

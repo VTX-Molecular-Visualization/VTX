@@ -26,7 +26,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		// Create window.
-		_surface = new OpenGLWindow();
+		_surface = new Window::EventCatchWindow();
 		_surface->setFormat( format );
 		_surface->setSurfaceType( QSurface::OpenGLSurface );
 		_surface->setFlags( Qt::FramelessWindowHint );

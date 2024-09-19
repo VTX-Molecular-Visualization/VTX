@@ -11,10 +11,10 @@ namespace VTX::App::Core::Animation
 {
 	class OrientInfo
 	{
-	  private:
-		static const float ORIENT_ZOOM_FACTOR;
-
 	  public:
+		inline static const float ORIENT_ZOOM_FACTOR = 0.666f;
+		inline static float		  ORIENT_DURATION	 = 500.f;
+
 		OrientInfo(
 			App::Component::Render::Camera & p_camera,
 			const float						 p_duration,
@@ -45,6 +45,13 @@ namespace VTX::App::Core::Animation
 
 	  public:
 		Orient( const OrientInfo & p_info );
+
+		static Vec3f computeCameraOrientPosition(
+			const Vec3f				 p_forward,
+			const float				 p_fov,
+			const Util::Math::AABB & p_target,
+			const float				 p_orientZoomFactor = 0.666f
+		);
 
 	  private:
 		void _enter() override;

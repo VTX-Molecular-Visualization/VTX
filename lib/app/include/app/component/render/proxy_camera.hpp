@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_CAMERA__
 
-#include "app/application/renderer/proxy_wrapper.hpp"
+#include "app/core/renderer/proxy_wrapper.hpp"
 #include <memory>
 #include <renderer/facade.hpp>
 #include <renderer/proxy/camera.hpp>
@@ -20,7 +20,7 @@ namespace VTX::App::Component::Render
 		void _generateProxy();
 		void _initCallbacks();
 
-		Application::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Camera> _proxyWrapper;
+		Core::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Camera> _proxyWrapper;
 	};
 
 } // namespace VTX::App::Component::Render

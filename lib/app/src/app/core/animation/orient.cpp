@@ -1,12 +1,10 @@
 #include "app/core/animation/orient.hpp"
-#include "app/core/animation/helper.hpp"
 #include "app/mode/visualization.hpp"
 #include <app/application/system/ecs_system.hpp>
 #include <app/component/scene/transform_component.hpp>
 
 namespace VTX::App::Core::Animation
 {
-	const float OrientInfo::ORIENT_ZOOM_FACTOR = 0.666f;
 
 	OrientInfo::OrientInfo(
 		App::Component::Render::Camera & p_camera,
@@ -20,7 +18,7 @@ namespace VTX::App::Core::Animation
 		_translationInfo.startPosition = cameraTransformComponent.getTransform().getTranslationVector();
 		_translationInfo.startRotation = Util::Math::toQuat( cameraTransformComponent.getTransform().getRotation() );
 
-		_translationInfo.finalPosition = Helper::computeCameraOrientPosition(
+		_translationInfo.finalPosition = Orient::computeCameraOrientPosition(
 			p_camera.getTransform().getFront(), p_camera.getFov(), p_targetAabb, ORIENT_ZOOM_FACTOR
 		);
 		_translationInfo.finalRotation = _translationInfo.startRotation;
@@ -57,6 +55,17 @@ namespace VTX::App::Core::Animation
 	Orient::Orient( const OrientInfo & p_info ) :
 		Translation( p_info.getTranslationInfo() ), _orientInfo( p_info ), _camera( p_info.camera )
 	{
+	}
+
+	Vec3f Orient::computeCameraOrientPosition(
+		const Vec3f				 p_forward,
+		const float				 p_fov,
+		const Util::Math::AABB & p_target,
+		const float				 p_zoomFactor
+	)
+	{
+		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
+		return p_target.centroid() - ( p_forward * orientTargetDistance );
 	}
 
 	void Orient::_enter()

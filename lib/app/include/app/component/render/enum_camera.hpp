@@ -3,12 +3,6 @@
 
 namespace VTX::App::Component::Render
 {
-	enum class CAMERA_PROJECTION : int
-	{
-		PERSPECTIVE,
-		ORTHOGRAPHIC,
 
-		COUNT
-	};
 } // namespace VTX::App::Component::Render
 #endif

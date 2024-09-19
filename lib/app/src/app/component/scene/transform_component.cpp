@@ -1,5 +1,4 @@
 #include "app/component/scene/transform_component.hpp"
-#include "app/internal/constants.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Component::Scene
@@ -41,8 +40,7 @@ namespace VTX::App::Component::Scene
 	}
 	void Transform::localMove( const Vec3f & p_translation )
 	{
-		Vec3f localTranslation = Internal::RIGHT_AXIS * p_translation + Internal::UP_AXIS * p_translation
-								 + Internal::FRONT_AXIS * p_translation;
+		Vec3f localTranslation = RIGHT_AXIS * p_translation + UP_AXIS * p_translation + FRONT_AXIS * p_translation;
 
 		localTranslation = Util::Math::castMat3( _rotation ) * localTranslation;
 
@@ -54,9 +52,9 @@ namespace VTX::App::Component::Scene
 		_transformReference->setTranslation( _transformReference->getTranslationVector() + p_translation );
 		onTransform( *_transformReference );
 	}
-	void Transform::moveFront( const float p_distance ) { localMove( Internal::FRONT_AXIS * p_distance ); }
-	void Transform::moveRight( const float p_distance ) { localMove( Internal::RIGHT_AXIS * p_distance ); }
-	void Transform::moveUp( const float p_distance ) { localMove( Internal::UP_AXIS * p_distance ); }
+	void Transform::moveFront( const float p_distance ) { localMove( FRONT_AXIS * p_distance ); }
+	void Transform::moveRight( const float p_distance ) { localMove( RIGHT_AXIS * p_distance ); }
+	void Transform::moveUp( const float p_distance ) { localMove( UP_AXIS * p_distance ); }
 
 	void Transform::setRotation( const Vec3f & p_euler )
 	{
@@ -92,9 +90,9 @@ namespace VTX::App::Component::Scene
 
 		onTransform( *_transformReference );
 	}
-	void Transform::rotatePitch( const float p_angle ) { localRotate( Internal::RIGHT_AXIS * p_angle ); }
-	void Transform::rotateYaw( const float p_angle ) { localRotate( Internal::UP_AXIS * p_angle ); }
-	void Transform::rotateRoll( const float p_angle ) { localRotate( Internal::FRONT_AXIS * p_angle ); }
+	void Transform::rotatePitch( const float p_angle ) { localRotate( RIGHT_AXIS * p_angle ); }
+	void Transform::rotateYaw( const float p_angle ) { localRotate( UP_AXIS * p_angle ); }
+	void Transform::rotateRoll( const float p_angle ) { localRotate( FRONT_AXIS * p_angle ); }
 
 	void Transform::setScale( const float & p_scale )
 	{
@@ -113,9 +111,9 @@ namespace VTX::App::Component::Scene
 	}
 
 	Vec3f Transform::getPosition() const { return _transformReference->getTranslationVector(); }
-	Vec3f Transform::getFront() const { return Util::Math::castMat3( getRotation() ) * Internal::FRONT_AXIS; }
-	Vec3f Transform::getRight() const { return Util::Math::castMat3( getRotation() ) * Internal::RIGHT_AXIS; }
-	Vec3f Transform::getUp() const { return Util::Math::castMat3( getRotation() ) * Internal::UP_AXIS; }
+	Vec3f Transform::getFront() const { return Util::Math::castMat3( getRotation() ) * FRONT_AXIS; }
+	Vec3f Transform::getRight() const { return Util::Math::castMat3( getRotation() ) * RIGHT_AXIS; }
+	Vec3f Transform::getUp() const { return Util::Math::castMat3( getRotation() ) * UP_AXIS; }
 
 	Quatf Transform::getRotation() const { return _rotation; }
 	Vec3f Transform::getEuler() const

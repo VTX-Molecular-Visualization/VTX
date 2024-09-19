@@ -6,7 +6,6 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/application/system/renderer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/application/system/threading.hpp"
 #include "app/component/io/scene_file_info.hpp"
@@ -19,6 +18,7 @@
 #include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/mode/mode_system.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "app/core/serialization/serialization.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/entity/all_entities.hpp"
@@ -42,8 +42,6 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
-		//_systemHandler = std::make_unique<Core::System::SystemHandler>();
-
 		Internal::Application::Settings::initSettings( SETTINGS() );
 		Internal::ECS::setupEntityDirector();
 
@@ -52,7 +50,7 @@ namespace VTX::App
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Create renderer.
-		RENDERER().init();
+		RENDERER_SYSTEM().init();
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
@@ -79,7 +77,7 @@ namespace VTX::App
 
 		///////////
 		// TODO: move.
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
 		rendererFacade.build();
 		App::Component::Render::ProxyColorLayout & colorLayout
 			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
@@ -154,7 +152,7 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_elapsedTime ]() { RENDERER().facade().render( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_elapsedTime ]() { RENDERER_SYSTEM().facade().render( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(

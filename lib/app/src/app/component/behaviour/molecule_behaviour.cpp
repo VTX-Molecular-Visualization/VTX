@@ -1,7 +1,6 @@
 #include "app/component/behaviour/molecule_behaviour.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
-#include "app/application/system/renderer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
@@ -13,6 +12,7 @@
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/players.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/io/reader/molecule_loader.hpp"
 
@@ -66,7 +66,7 @@ namespace VTX::App::Component::Behaviour
 		Component::Render::ProxyMolecule & gpuProxyComponent
 			= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( _entity );
 
-		gpuProxyComponent.setup( App::RENDERER().facade() );
+		gpuProxyComponent.setup( App::RENDERER_SYSTEM().facade() );
 	}
 	void Molecule::_initTrajectoryComponent() const
 	{

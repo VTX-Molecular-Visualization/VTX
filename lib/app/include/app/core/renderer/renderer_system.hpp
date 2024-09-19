@@ -1,16 +1,16 @@
-#ifndef __VTX_APP_APPLICATION_SYSTEM_RENDERER__
-#define __VTX_APP_APPLICATION_SYSTEM_RENDERER__
+#ifndef __VTX_APP_CORE_RENDERER_RENDERER_SYSTEM__
+#define __VTX_APP_CORE_RENDERER_RENDERER_SYSTEM__
 
 #include <app/filesystem.hpp>
 #include <renderer/facade.hpp>
 #include <util/singleton.hpp>
 
-namespace VTX::App::Application::System
+namespace VTX::App::Core::Renderer
 {
-	class Renderer
+	class RendererSystem
 	{
 	  public:
-		Renderer() = default;
+		RendererSystem() = default;
 
 		void init()
 		{
@@ -24,10 +24,13 @@ namespace VTX::App::Application::System
 		std::unique_ptr<VTX::Renderer::Facade> _facade;
 	};
 
-} // namespace VTX::App::Application::System
+} // namespace VTX::App::Core::Renderer
 
 namespace VTX::App
 {
-	inline Application::System::Renderer & RENDERER() { return Util::Singleton<Application::System::Renderer>::get(); }
+	inline Core::Renderer::RendererSystem & RENDERER_SYSTEM()
+	{
+		return Util::Singleton<Core::Renderer::RendererSystem>::get();
+	}
 } // namespace VTX::App
 #endif
