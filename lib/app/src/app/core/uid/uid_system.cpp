@@ -1,15 +1,15 @@
-#include "app/core/uid/uid_registration.hpp"
+#include "app/core/uid/uid_system.hpp"
 #include <util/exceptions.hpp>
 
 namespace VTX::App::Core::UID
 {
-	void UIDRegistration::clear()
+	void UIDSystem::clear()
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 		_availableUIDs = DEFAULT_RANGE_LIST();
 	}
 
-	uid UIDRegistration::_reserveValue()
+	uid UIDSystem::_reserveValue()
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 
@@ -21,7 +21,7 @@ namespace VTX::App::Core::UID
 
 		return res;
 	}
-	UIDRange UIDRegistration::_reserveRange( const uid p_count )
+	UIDRange UIDSystem::_reserveRange( const uid p_count )
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 
@@ -43,12 +43,12 @@ namespace VTX::App::Core::UID
 		throw VTXException( "Unable to reserve UID range." );
 	}
 
-	void UIDRegistration::_freeValue( const uint p_value )
+	void UIDSystem::_freeValue( const uint p_value )
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 		_availableUIDs.addValue( p_value );
 	}
-	void UIDRegistration::_freeRange( const UIDRange & p_range )
+	void UIDSystem::_freeRange( const UIDRange & p_range )
 	{
 		std::lock_guard<std::mutex> guard( _idMutex );
 		_availableUIDs.addRange( p_range );

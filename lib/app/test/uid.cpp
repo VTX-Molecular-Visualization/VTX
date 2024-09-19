@@ -1,6 +1,6 @@
 #include "util/app.hpp"
 #include <app/core/uid/uid.hpp>
-#include <app/core/uid/uid_registration.hpp>
+#include <app/core/uid/uid_system.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
@@ -18,7 +18,7 @@ TEST_CASE( "VTX_APP - UID", "[unit]" )
 	uid		 value;
 	UIDRange range;
 
-	UIDRegistration registration = UIDRegistration();
+	UIDSystem registration = UIDSystem();
 
 	value = registration.registerValue();
 	CHECK( value == 1 );
