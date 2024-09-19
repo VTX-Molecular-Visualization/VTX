@@ -1,21 +1,22 @@
-#ifndef __VTX_APP_CORE_WORKER_MANAGER__
-#define __VTX_APP_CORE_WORKER_MANAGER__
+#ifndef __VTX_APP_CORE_THREADING_MANAGER__
+#define __VTX_APP_CORE_THREADING_MANAGER__
 
-#include "app/core/worker/base_thread.hpp"
+#include "app/core/threading/base_thread.hpp"
 #include <list>
 #include <memory>
+#include <util/singleton.hpp>
 
-namespace VTX::App::Core::Worker
+namespace VTX::App::Core::Threading
 {
-	class WorkerManager
+	class ThreadingSystem
 	{
 		friend class BaseThread;
 
 	  public:
-		WorkerManager() {}
-		WorkerManager( const WorkerManager & )			   = delete;
-		WorkerManager & operator=( const WorkerManager & ) = delete;
-		~WorkerManager();
+		ThreadingSystem() {}
+		ThreadingSystem( const ThreadingSystem & )			   = delete;
+		ThreadingSystem & operator=( const ThreadingSystem & ) = delete;
+		~ThreadingSystem();
 
 		BaseThread & createThread( const BaseThread::AsyncOp & p_asyncOp );
 		BaseThread & createThread( const BaseThread::AsyncOp & p_asyncOp, const BaseThread::EndCallback & p_callback );
@@ -32,5 +33,15 @@ namespace VTX::App::Core::Worker
 		std::list<std::shared_ptr<BaseThread>>::const_iterator _findPtrFromThread( const BaseThread & p_thread ) const;
 	};
 
-} // namespace VTX::App::Core::Worker
+} // namespace VTX::App::Core::Threading
+
+namespace VTX::App
+{
+	// Access to the worker manager class in order to launch thread.
+	inline Core::Threading::ThreadingSystem & THREADING()
+	{
+		return Util::Singleton<Core::Threading::ThreadingSystem>::get();
+	}
+} // namespace VTX::App
+
 #endif

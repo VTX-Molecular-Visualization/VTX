@@ -1,7 +1,6 @@
-#ifndef __VTX_APP_CORE_WORKER_BASE_THREAD__
-#define __VTX_APP_CORE_WORKER_BASE_THREAD__
+#ifndef __VTX_APP_CORE_THREADING_BASE_THREAD__
+#define __VTX_APP_CORE_THREADING_BASE_THREAD__
 
-#include "_fwd.hpp"
 #include <any>
 #include <functional>
 #include <memory>
@@ -10,8 +9,10 @@
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Worker
+namespace VTX::App::Core::Threading
 {
+	class ThreadingManager;
+
 	class BaseThread
 	{
 	  public:
@@ -19,7 +20,7 @@ namespace VTX::App::Core::Worker
 		using EndCallback = std::function<void( BaseThread &, uint )>;
 
 	  public:
-		BaseThread( WorkerManager & p_manager ) : _manager( p_manager ) {};
+		BaseThread( ThreadingManager & p_manager ) : _manager( p_manager ) {};
 		~BaseThread();
 
 		void start( const AsyncOp & p_function );
@@ -47,7 +48,7 @@ namespace VTX::App::Core::Worker
 		}
 
 	  private:
-		WorkerManager & _manager;
+		ThreadingManager & _manager;
 
 		std::thread _thread;
 		float		_progress = 0.f;

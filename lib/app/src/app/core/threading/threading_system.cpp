@@ -1,8 +1,8 @@
-#include "app/core/worker/worker_manager.hpp"
+#include "app/core/threading/threading_system.hpp"
 
-namespace VTX::App::Core::Worker
+namespace VTX::App::Core::Threading
 {
-	WorkerManager::~WorkerManager()
+	ThreadingSystem::~ThreadingSystem()
 	{
 		for ( std::shared_ptr<BaseThread> & p_threadPtr : _threads )
 		{
@@ -13,7 +13,7 @@ namespace VTX::App::Core::Worker
 		_stoppingThreads.clear();
 	}
 
-	BaseThread & WorkerManager::createThread( const BaseThread::AsyncOp & p_asyncOp )
+	BaseThread & ThreadingSystem::createThread( const BaseThread::AsyncOp & p_asyncOp )
 	{
 		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *this );
 		_threads.emplace_back( threadPtr );
@@ -22,7 +22,7 @@ namespace VTX::App::Core::Worker
 
 		return *threadPtr;
 	}
-	BaseThread & WorkerManager::createThread(
+	BaseThread & ThreadingSystem::createThread(
 		const BaseThread::AsyncOp &		p_asyncOp,
 		const BaseThread::EndCallback & p_callback
 	)
@@ -35,9 +35,9 @@ namespace VTX::App::Core::Worker
 		return *threadPtr;
 	}
 
-	void WorkerManager::lateUpdate() { _clearStoppedThreads(); }
+	void ThreadingSystem::lateUpdate() { _clearStoppedThreads(); }
 
-	void WorkerManager::_killThread( const BaseThread & p_thread )
+	void ThreadingSystem::_killThread( const BaseThread & p_thread )
 	{
 		const std::list<std::shared_ptr<BaseThread>>::const_iterator it = _findPtrFromThread( p_thread );
 
@@ -48,9 +48,9 @@ namespace VTX::App::Core::Worker
 		}
 	}
 
-	void WorkerManager::_clearStoppedThreads() { _stoppingThreads.clear(); }
+	void ThreadingSystem::_clearStoppedThreads() { _stoppingThreads.clear(); }
 
-	std::list<std::shared_ptr<BaseThread>>::const_iterator WorkerManager::_findPtrFromThread(
+	std::list<std::shared_ptr<BaseThread>>::const_iterator ThreadingSystem::_findPtrFromThread(
 		const BaseThread & p_thread
 	) const
 	{
@@ -62,4 +62,4 @@ namespace VTX::App::Core::Worker
 			[ threadPtr ]( const std::shared_ptr<BaseThread> & p_ptr ) { return threadPtr == p_ptr.get(); }
 		);
 	}
-} // namespace VTX::App::Core::Worker
+} // namespace VTX::App::Core::Threading

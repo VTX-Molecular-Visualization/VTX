@@ -1,8 +1,8 @@
-#include "app/core/worker/base_thread.hpp"
-#include "app/core/worker/worker_manager.hpp"
+#include "app/core/threading/base_thread.hpp"
+#include "app/core/threading/threading_system.hpp"
 #include <util/math.hpp>
 
-namespace VTX::App::Core::Worker
+namespace VTX::App::Core::Threading
 {
 	BaseThread::~BaseThread()
 	{
