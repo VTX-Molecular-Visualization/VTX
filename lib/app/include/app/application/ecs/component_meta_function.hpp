@@ -5,7 +5,7 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/ecs/concepts.hpp"
-#include "app/core/serialization/serialization.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include <functional>
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@ namespace VTX::App::Application::ECS
 		{
 			_mapSerializer[ p_id ] = []( const Core::ECS::BaseEntity &				p_entity,
 										 const Application::ECS::RegistryManager &	p_registry,
-										 const Core::Serialization::Serialization & p_serializer )
+										 const Serialization::SerializationSystem & p_serializer )
 			{
 				const T & component = p_registry.getComponent<T>( p_entity );
 
@@ -40,7 +40,7 @@ namespace VTX::App::Application::ECS
 			};
 
 			_mapDeserializer[ p_id ] = []( Application::ECS::RegistryManager &		  p_registry,
-										   const Core::Serialization::Serialization & p_serializer,
+										   const Serialization::SerializationSystem & p_serializer,
 										   const Util::JSon::Object &				  p_json,
 										   const Core::ECS::BaseEntity &			  p_target )
 			{
@@ -66,10 +66,10 @@ namespace VTX::App::Application::ECS
 	  private:
 		using ComponentSerializerFunction = std::function<
 			const Util::JSon::
-				Object( const Core::ECS::BaseEntity &, const Application::ECS::RegistryManager &, const Core::Serialization::Serialization & )>;
+				Object( const Core::ECS::BaseEntity &, const Application::ECS::RegistryManager &, const Serialization::SerializationSystem & )>;
 
 		using ComponentDeserializerFunction = std::function<
-			void( Application::ECS::RegistryManager &, const Core::Serialization::Serialization &, const Util::JSon::Object &, const Core::ECS::BaseEntity & )>;
+			void( Application::ECS::RegistryManager &, const Serialization::SerializationSystem &, const Util::JSon::Object &, const Core::ECS::BaseEntity & )>;
 
 		std::map<ComponentStaticID, ComponentSerializerFunction> _mapSerializer
 			= std::map<ComponentStaticID, ComponentSerializerFunction>();

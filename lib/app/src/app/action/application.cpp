@@ -1,13 +1,12 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/serializer.hpp"
 #include "app/application/system/settings_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/filesystem.hpp"
-#include "app/internal/io/reader/scene_loader.hpp"
-#include "app/internal/io/writer/scene_writer.hpp"
-#include "app/internal/serialization/all_serializers.hpp"
+#include "app/serialization/io/reader/scene_loader.hpp"
+#include "app/serialization/io/writer/scene_writer.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include <app/component/render/camera.hpp>
 
 namespace VTX::App::Action::Application
@@ -37,7 +36,7 @@ namespace VTX::App::Action::Application
 	{
 		SCENE().clear();
 
-		Internal::IO::Reader::SceneLoader loader = Internal::IO::Reader::SceneLoader();
+		Serialization::IO::Reader::SceneLoader loader = Serialization::IO::Reader::SceneLoader();
 		loader.readFile( _path, SCENE() );
 
 		// App::Old::APP::getScenePathData().setCurrentPath( _path, true );
@@ -45,7 +44,7 @@ namespace VTX::App::Action::Application
 
 	void SaveScene::execute()
 	{
-		Internal::IO::Writer::SceneWriter writer = Internal::IO::Writer::SceneWriter();
+		Serialization::IO::Writer::SceneWriter writer = Serialization::IO::Writer::SceneWriter();
 		writer.writeFile( _path, SCENE() );
 
 		// VTX_THREAD( saver, _callback );
@@ -63,15 +62,18 @@ namespace VTX::App::Action::Application
 	void ClearScene::execute() { SCENE().reset(); }
 
 	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
-	void LoadSettings::execute() { SERIALIZER().readObject<App::Application::Settings::Settings>( _path, SETTINGS() ); }
+	void LoadSettings::execute()
+	{
+		SERIALIZATION_SYSTEM().readObject<App::Application::Settings::Settings>( _path, SETTINGS() );
+	}
 	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void SaveSettings::execute()
 	{
-		SERIALIZER().writeObject<App::Application::Settings::Settings>( _path, SETTINGS() );
+		SERIALIZATION_SYSTEM().writeObject<App::Application::Settings::Settings>( _path, SETTINGS() );
 	}
 	void ReloadSettings::execute()
 	{
-		SERIALIZER().readObject<App::Application::Settings::Settings>(
+		SERIALIZATION_SYSTEM().readObject<App::Application::Settings::Settings>(
 			VTX::App::Filesystem::getSettingJsonFile(), SETTINGS()
 		);
 	}

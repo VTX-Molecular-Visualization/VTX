@@ -14,7 +14,7 @@
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/internal/application/settings.hpp"
-#include "app/internal/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/molecule_loader.hpp"
 
 namespace VTX::App::Component::Behaviour
 {
@@ -100,8 +100,8 @@ namespace VTX::App::Component::Behaviour
 			return;
 		}
 
-		Internal::IO::Reader::MoleculeLoader loader = Internal::IO::Reader::MoleculeLoader();
-		const FilePath						 path	= FilePath( filepathProperty->second.get<std::string>() );
+		Serialization::IO::Reader::MoleculeLoader loader = Serialization::IO::Reader::MoleculeLoader();
+		const FilePath							  path	 = FilePath( filepathProperty->second.get<std::string>() );
 
 		const Core::ECS::BaseEntity &	  entity = MAIN_REGISTRY().getEntity( _moleculeComponent );
 		Component::IO::MoleculeMetadata & metaData

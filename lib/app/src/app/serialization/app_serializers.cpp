@@ -1,16 +1,16 @@
-#include "app/internal/serialization/app_serializers.hpp"
+#include "app/serialization/app_serializers.hpp"
 #include "app/application/settings/base_setting.hpp"
 #include "app/application/settings/settings.hpp"
-#include "app/application/system/serializer.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/once.hpp"
 #include "app/core/player/ping_pong.hpp"
 #include "app/core/player/revert_loop.hpp"
 #include "app/core/player/revert_once.hpp"
 #include "app/core/player/stop.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include "app/vtx_app.hpp"
 
-namespace VTX::App::Internal::Serialization
+namespace VTX::App::Serialization
 {
 	// Version
 	Util::JSon::Object serialize( const App::Core::Serialization::Version & p_version )
@@ -19,9 +19,9 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Serialization::Version & p_version )
 	{
-		p_version.major	   = SERIALIZER().deserializeField<int>( p_json, "MAJOR" );
-		p_version.minor	   = SERIALIZER().deserializeField<int>( p_json, "MINOR" );
-		p_version.revision = SERIALIZER().deserializeField<int>( p_json, "REVISION" );
+		p_version.major	   = SERIALIZATION_SYSTEM().deserializeField<int>( p_json, "MAJOR" );
+		p_version.minor	   = SERIALIZATION_SYSTEM().deserializeField<int>( p_json, "MINOR" );
+		p_version.revision = SERIALIZATION_SYSTEM().deserializeField<int>( p_json, "REVISION" );
 	}
 
 	// VTX App
@@ -88,64 +88,64 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::BasePlayer & p_player )
 	{
-		p_player.setCount( SERIALIZER().deserializeField<size_t>( p_json, "COUNT" ) );
-		p_player.setCurrent( SERIALIZER().deserializeField<size_t>( p_json, "CURRENT" ) );
-		p_player.setFPS( SERIALIZER().deserializeField<uint>( p_json, "FPS" ) );
+		p_player.setCount( SERIALIZATION_SYSTEM().deserializeField<size_t>( p_json, "COUNT" ) );
+		p_player.setCurrent( SERIALIZATION_SYSTEM().deserializeField<size_t>( p_json, "CURRENT" ) );
+		p_player.setFPS( SERIALIZATION_SYSTEM().deserializeField<uint>( p_json, "FPS" ) );
 
-		if ( SERIALIZER().deserializeField<bool>( p_json, "IS_PLAYING", false ) )
+		if ( SERIALIZATION_SYSTEM().deserializeField<bool>( p_json, "IS_PLAYING", false ) )
 			p_player.play();
 	}
 	Util::JSon::Object serialize( const App::Core::Player::Stop & p_player )
 	{
-		return SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		return SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::Stop & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	Util::JSon::Object serialize( const App::Core::Player::Loop & p_player )
 	{
-		return SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		return SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::Loop & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	Util::JSon::Object serialize( const App::Core::Player::RevertLoop & p_player )
 	{
-		return SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		return SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::RevertLoop & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	Util::JSon::Object serialize( const App::Core::Player::Once & p_player )
 	{
-		return SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		return SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::Once & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	Util::JSon::Object serialize( const App::Core::Player::RevertOnce & p_player )
 	{
-		return SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		return SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::RevertOnce & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 	}
 	Util::JSon::Object serialize( const App::Core::Player::PingPong & p_player )
 	{
 		Util::JSon::Object res
-			= SERIALIZER().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+			= SERIALIZATION_SYSTEM().serialize( static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
 
 		res.appendField( "IS_PLAYING_FORWARD", p_player.isPlayingForward() );
 		return res;
 	}
 	void deserialize( const Util::JSon::Object & p_json, App::Core::Player::PingPong & p_player )
 	{
-		SERIALIZER().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
-		p_player.setPlayingForward( SERIALIZER().deserializeField<bool>( p_json, "IS_PLAYING_FORWARD" ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json, static_cast<const App::Core::Player::BasePlayer &>( p_player ) );
+		p_player.setPlayingForward( SERIALIZATION_SYSTEM().deserializeField<bool>( p_json, "IS_PLAYING_FORWARD" ) );
 	}
-} // namespace VTX::App::Internal::Serialization
+} // namespace VTX::App::Serialization

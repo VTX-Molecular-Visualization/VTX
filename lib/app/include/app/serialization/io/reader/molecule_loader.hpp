@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_INTERNAL_IO_FLAT_MOLECULE_LOADER__
-#define __VTX_APP_INTERNAL_IO_FLAT_MOLECULE_LOADER__
+#ifndef __VTX_APP_SERIALIZATION_IO_READER_MOLECULE_LOADER__
+#define __VTX_APP_SERIALIZATION_IO_READER_MOLECULE_LOADER__
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/io/molecule_metadata.hpp"
@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-namespace VTX::App::Internal::IO::Reader
+namespace VTX::App::Serialization::IO::Reader
 {
 	class MoleculeLoader : public VTX::IO::Core::Reader::BaseReader<App::Component::Chemistry::Molecule>
 	{
@@ -25,5 +25,5 @@ namespace VTX::App::Internal::IO::Reader
 	  private:
 		VTX::IO::Reader::Molecule _reader = VTX::IO::Reader::Molecule();
 	};
-} // namespace VTX::App::Internal::IO::Reader
+} // namespace VTX::App::Serialization::IO::Reader
 #endif

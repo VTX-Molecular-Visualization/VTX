@@ -1,7 +1,6 @@
-#include "app/internal/serialization/scene_serializers.hpp"
+#include "app/serialization/scene_serializers.hpp"
 #include "app/application/ecs/component_meta_function.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/serializer.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/ecs/entity_info.hpp"
@@ -12,12 +11,13 @@
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/players.hpp"
-#include "app/internal/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include <util/algorithm/range.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 
-namespace VTX::App::Internal::Serialization
+namespace VTX::App::Serialization
 {
 	// Scene
 	Util::JSon::Object serialize( const Application::Scene & p_scene )
@@ -43,17 +43,19 @@ namespace VTX::App::Internal::Serialization
 			entities.emplace_back( jsonComponents );
 		}
 
-		return { { "CAMERA_POSITION", SERIALIZER().serialize( p_scene.getCamera().getTransform().getPosition() ) },
-				 { "CAMERA_ROTATION", SERIALIZER().serialize( p_scene.getCamera().getTransform().getRotation() ) },
-				 { "ENTITIES", entities } };
+		return {
+			{ "CAMERA_POSITION", SERIALIZATION_SYSTEM().serialize( p_scene.getCamera().getTransform().getPosition() ) },
+			{ "CAMERA_ROTATION", SERIALIZATION_SYSTEM().serialize( p_scene.getCamera().getTransform().getRotation() ) },
+			{ "ENTITIES", entities }
+		};
 	}
 	void deserialize( const Util::JSon::Object & p_json, Application::Scene & p_scene )
 	{
 		p_scene.getCamera().getTransform().setPosition(
-			SERIALIZER().deserializeField<Vec3f>( p_json, "CAMERA_POSITION" )
+			SERIALIZATION_SYSTEM().deserializeField<Vec3f>( p_json, "CAMERA_POSITION" )
 		);
 		p_scene.getCamera().getTransform().setRotation(
-			SERIALIZER().deserializeField<Quatf>( p_json, "CAMERA_ROTATION" )
+			SERIALIZATION_SYSTEM().deserializeField<Quatf>( p_json, "CAMERA_ROTATION" )
 		);
 
 		const Util::JSon::Array & items = p_json[ "ENTITIES" ];
@@ -67,7 +69,7 @@ namespace VTX::App::Internal::Serialization
 			for ( const Util::JSon::Object & component : componentsArray )
 			{
 				const Application::ECS::ComponentStaticID componentID
-					= SERIALIZER().deserializeField<Application::ECS::ComponentStaticID>( component, "ID" );
+					= SERIALIZATION_SYSTEM().deserializeField<Application::ECS::ComponentStaticID>( component, "ID" );
 				const Util::JSon::Object & componentData = component[ "DATA" ];
 
 				COMPONENT_META_FUNCTION().deserializeComponent( componentID, entity, componentData );
@@ -84,29 +86,31 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::Scene::SceneItemComponent & p_component )
 	{
-		p_component.setName( SERIALIZER().deserializeField<std::string>( p_json, "NAME" ) );
+		p_component.setName( SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "NAME" ) );
 	}
 
 	// Chemistry::MoleculeComponent
 	Util::JSon::Object serialize( const Component::Chemistry::Molecule & p_component )
 	{
 		return { { "PDB_ID", p_component.getPdbIdCode() },
-				 { "TRANSFORM", SERIALIZER().serialize( p_component.getTransform() ) } };
+				 { "TRANSFORM", SERIALIZATION_SYSTEM().serialize( p_component.getTransform() ) } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Molecule & p_component )
 	{
-		p_component.setPdbIdCode( SERIALIZER().deserializeField<std::string>( p_json, "PDB_ID" ) );
-		SERIALIZER().deserialize( p_json[ "TRANSFORM" ], p_component.getTransform() );
+		p_component.setPdbIdCode( SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "PDB_ID" ) );
+		SERIALIZATION_SYSTEM().deserialize( p_json[ "TRANSFORM" ], p_component.getTransform() );
 	}
 
 	// TransformComponent
 	Util::JSon::Object serialize( const Component::Scene::Transform & p_component )
 	{
-		return { { "TRANSFORM", SERIALIZER().serialize( p_component.getTransform() ) } };
+		return { { "TRANSFORM", SERIALIZATION_SYSTEM().serialize( p_component.getTransform() ) } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::Scene::Transform & p_component )
 	{
-		p_component.applyTransform( SERIALIZER().deserializeField<Util::Math::Transform>( p_json, "TRANSFORM" ) );
+		p_component.applyTransform(
+			SERIALIZATION_SYSTEM().deserializeField<Util::Math::Transform>( p_json, "TRANSFORM" )
+		);
 	}
 
 	// MoleculeMetadata
@@ -115,20 +119,21 @@ namespace VTX::App::Internal::Serialization
 		const Component::Chemistry::Molecule & moleculeComponent
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
 
-		return { { "PATH", SERIALIZER().serialize( p_component.path ) },
+		return { { "PATH", SERIALIZATION_SYSTEM().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
 				 { "SECONDARY_STRUCTURE_FROM_FILE", p_component.isSecondaryStructureLoadedFromFile },
-				 { "VISIBILITY", SERIALIZER().serialize( moleculeComponent.getAtomVisibilities() ) } };
+				 { "VISIBILITY", SERIALIZATION_SYSTEM().serialize( moleculeComponent.getAtomVisibilities() ) } };
 	}
 	void deserialize( const Util::JSon::Object & p_json, Component::IO::MoleculeMetadata & p_component )
 	{
-		p_component.path	  = SERIALIZER().deserializeField<FilePath>( p_json, "PATH" );
-		p_component.pdbIDCode = SERIALIZER().deserializeField<std::string>( p_json, "PDB_ID", p_component.pdbIDCode );
+		p_component.path = SERIALIZATION_SYSTEM().deserializeField<FilePath>( p_json, "PATH" );
+		p_component.pdbIDCode
+			= SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "PDB_ID", p_component.pdbIDCode );
 		p_component.isSecondaryStructureLoadedFromFile
-			= SERIALIZER().deserializeField<bool>( p_json, "SECONDARY_STRUCTURE_FROM_FILE", false );
+			= SERIALIZATION_SYSTEM().deserializeField<bool>( p_json, "SECONDARY_STRUCTURE_FROM_FILE", false );
 
-		Internal::IO::Reader::MoleculeLoader loader = Internal::IO::Reader::MoleculeLoader();
-		const FilePath						 path	= FilePath( p_component.path );
+		Serialization::IO::Reader::MoleculeLoader loader = Serialization::IO::Reader::MoleculeLoader();
+		const FilePath							  path	 = FilePath( p_component.path );
 
 		Component::Chemistry::Molecule & moleculeComponent
 			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
@@ -136,7 +141,7 @@ namespace VTX::App::Internal::Serialization
 		loader.readFile( path, moleculeComponent );
 
 		const Component::Chemistry::AtomIndexRangeList visibilities
-			= SERIALIZER().deserializeField<Component::Chemistry::AtomIndexRangeList>( p_json, "VISIBILITY" );
+			= SERIALIZATION_SYSTEM().deserializeField<Component::Chemistry::AtomIndexRangeList>( p_json, "VISIBILITY" );
 
 		moleculeComponent.setAtomVisibilities( visibilities );
 	}
@@ -151,7 +156,7 @@ namespace VTX::App::Internal::Serialization
 
 	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Trajectory & p_component )
 	{
-		const std::string playerName = SERIALIZER().deserializeField<std::string>( p_json, "PLAYER_NAME" );
+		const std::string playerName = SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "PLAYER_NAME" );
 
 		if ( playerName.empty() )
 		{
@@ -165,6 +170,6 @@ namespace VTX::App::Internal::Serialization
 		//	);
 		// p_component.setPlayer( playerPtr );
 
-		SERIALIZER().deserialize( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );
+		SERIALIZATION_SYSTEM().deserialize( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );
 	}
-} // namespace VTX::App::Internal::Serialization
+} // namespace VTX::App::Serialization

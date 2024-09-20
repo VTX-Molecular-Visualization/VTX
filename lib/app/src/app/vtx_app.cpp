@@ -18,7 +18,6 @@
 #include "app/core/ecs/registry.hpp"
 #include "app/core/mode/mode_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include "app/core/serialization/serialization.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/all_entities.hpp"
@@ -27,7 +26,6 @@
 #include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/internal/monitoring/all_metrics.hpp"
-#include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
@@ -60,7 +58,7 @@ namespace VTX::App
 
 		// Register loop events.
 		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 		// TODO: remove polymorphism.
 		onUpdate +=
 			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };

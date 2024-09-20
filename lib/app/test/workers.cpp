@@ -31,7 +31,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		return 1;
 	};
 
-	Core::Threading::BaseThread & thread = THREADING().createThread(
+	Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
 		asyncOp,
 		[]( Core::Threading::BaseThread & p_thread, uint p_res )
 		{
@@ -51,7 +51,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		lastProgress = p_progress;
 	};
 
-	Core::Threading::BaseThread & threadToWait = THREADING().createThread( asyncOp );
+	Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();
@@ -61,7 +61,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	CHECK( threadToWait.isFinished() );
 	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
 
-	Core::Threading::BaseThread & threadToStop = THREADING().createThread( asyncOp );
+	Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
 	chrono.start();

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_INTERNAL_SERIALIZATION_APP_SERIALIZERS__
-#define __VTX_APP_INTERNAL_SERIALIZATION_APP_SERIALIZERS__
+#ifndef __VTX_APP_SERIALIZATION_APP_SERIALIZERS__
+#define __VTX_APP_SERIALIZATION_APP_SERIALIZERS__
 
 #include "app/application/_fwd.hpp"
 #include "app/application/settings/_fwd.hpp"
@@ -12,7 +12,7 @@ namespace VTX::App
 	class VTXApp;
 }
 
-namespace VTX::App::Internal::Serialization
+namespace VTX::App::Serialization
 {
 	// Version
 	Util::JSon::Object serialize( const App::Core::Serialization::Version & );
@@ -42,5 +42,5 @@ namespace VTX::App::Internal::Serialization
 	Util::JSon::Object serialize( const App::Core::Player::PingPong & );
 	void			   deserialize( const Util::JSon::Object &, App::Core::Player::PingPong & );
 
-} // namespace VTX::App::Internal::Serialization
+} // namespace VTX::App::Serialization
 #endif

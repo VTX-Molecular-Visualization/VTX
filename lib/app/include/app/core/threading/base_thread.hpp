@@ -11,7 +11,7 @@
 
 namespace VTX::App::Core::Threading
 {
-	class ThreadingManager;
+	class ThreadingSystem;
 
 	class BaseThread
 	{
@@ -20,7 +20,7 @@ namespace VTX::App::Core::Threading
 		using EndCallback = std::function<void( BaseThread &, uint )>;
 
 	  public:
-		BaseThread( ThreadingManager & p_manager ) : _manager( p_manager ) {};
+		BaseThread( ThreadingSystem & p_manager ) : _manager( p_manager ) {};
 		~BaseThread();
 
 		void start( const AsyncOp & p_function );
@@ -48,7 +48,7 @@ namespace VTX::App::Core::Threading
 		}
 
 	  private:
-		ThreadingManager & _manager;
+		ThreadingSystem & _manager;
 
 		std::thread _thread;
 		float		_progress = 0.f;
@@ -58,5 +58,5 @@ namespace VTX::App::Core::Threading
 
 		void _finish();
 	};
-} // namespace VTX::App::Core::Worker
+} // namespace VTX::App::Core::Threading
 #endif

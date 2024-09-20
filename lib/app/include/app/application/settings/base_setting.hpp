@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
 #define __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
 
-#include "app/application/system/serializer.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -37,10 +37,10 @@ namespace VTX::App::Application::Settings
 
 		void set( const T & p_value ) { _value = p_value; }
 
-		Util::JSon::BasicJSon serialize() const override { return SERIALIZER().serialize( _value ); }
+		Util::JSon::BasicJSon serialize() const override { return SERIALIZATION_SYSTEM().serialize( _value ); }
 		void				  deserialize( const Util::JSon::BasicJSon & p_json ) override
 		{
-			SERIALIZER().deserialize( p_json, _value );
+			SERIALIZATION_SYSTEM().deserialize( p_json, _value );
 		}
 
 		void reset() override

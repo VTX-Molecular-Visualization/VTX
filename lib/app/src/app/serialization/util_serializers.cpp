@@ -1,7 +1,7 @@
-#include "app/internal/serialization/util_serializers.hpp"
-#include "app/application/system/serializer.hpp"
+#include "app/serialization/util_serializers.hpp"
+#include "app/serialization/serialization_system.hpp"
 
-namespace VTX::App::Internal::Serialization
+namespace VTX::App::Serialization
 {
 	// Filesystem
 	std::string serialize( const FilePath & p_filepath ) { return p_filepath.string(); }
@@ -14,10 +14,10 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, Util::Color::Rgba & p_color )
 	{
-		p_color.setR( SERIALIZER().deserializeField( p_json, "R", 0.f ) );
-		p_color.setG( SERIALIZER().deserializeField( p_json, "G", 0.f ) );
-		p_color.setB( SERIALIZER().deserializeField( p_json, "B", 0.f ) );
-		p_color.setA( SERIALIZER().deserializeField( p_json, "A", 1.f ) );
+		p_color.setR( SERIALIZATION_SYSTEM().deserializeField( p_json, "R", 0.f ) );
+		p_color.setG( SERIALIZATION_SYSTEM().deserializeField( p_json, "G", 0.f ) );
+		p_color.setB( SERIALIZATION_SYSTEM().deserializeField( p_json, "B", 0.f ) );
+		p_color.setA( SERIALIZATION_SYSTEM().deserializeField( p_json, "A", 1.f ) );
 	}
 
 	// Math - Transform
@@ -29,13 +29,13 @@ namespace VTX::App::Internal::Serialization
 	}
 	void deserialize( const Util::JSon::Object & p_json, Util::Math::Transform & p_transform )
 	{
-		const Vec3f position = SERIALIZER().deserializeField( p_json, "POSITION", VEC3F_ZERO );
+		const Vec3f position = SERIALIZATION_SYSTEM().deserializeField( p_json, "POSITION", VEC3F_ZERO );
 		p_transform.setTranslation( position );
 
-		const Vec3f euler = SERIALIZER().deserializeField( p_json, "ROTATION", VEC3F_ZERO );
+		const Vec3f euler = SERIALIZATION_SYSTEM().deserializeField( p_json, "ROTATION", VEC3F_ZERO );
 		p_transform.setRotation( euler );
 
-		const Vec3f scale = SERIALIZER().deserializeField( p_json, "SCALE", VEC3F_XYZ );
+		const Vec3f scale = SERIALIZATION_SYSTEM().deserializeField( p_json, "SCALE", VEC3F_XYZ );
 		p_transform.setScale( scale );
 	}
-} // namespace VTX::App::Internal::Serialization
+} // namespace VTX::App::Serialization

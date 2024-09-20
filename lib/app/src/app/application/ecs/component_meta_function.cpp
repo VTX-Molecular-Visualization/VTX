@@ -1,6 +1,6 @@
 #include "app/application/ecs/component_meta_function.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/application/system/serializer.hpp"
+#include "app/serialization/serialization_system.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Application::ECS
@@ -13,7 +13,7 @@ namespace VTX::App::Application::ECS
 	{
 		// Ensure that this component is referenced in this version
 		if ( _mapDeserializer.contains( p_id ) )
-			_mapDeserializer.at( p_id )( MAIN_REGISTRY(), SERIALIZER(), p_json, p_entity );
+			_mapDeserializer.at( p_id )( MAIN_REGISTRY(), SERIALIZATION_SYSTEM(), p_json, p_entity );
 	};
 
 	const Util::JSon::Object ComponentMetaFunction::serializeComponent(
@@ -21,6 +21,6 @@ namespace VTX::App::Application::ECS
 		const ComponentStaticID &	  p_componentID
 	)
 	{
-		return _mapSerializer.at( p_componentID )( p_entity, MAIN_REGISTRY(), SERIALIZER() );
+		return _mapSerializer.at( p_componentID )( p_entity, MAIN_REGISTRY(), SERIALIZATION_SYSTEM() );
 	}
 } // namespace VTX::App::Application::ECS

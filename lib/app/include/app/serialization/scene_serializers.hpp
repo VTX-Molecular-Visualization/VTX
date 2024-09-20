@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_INTERNAL_SERIALIZATION_SCENE_SERIALIZERS__
-#define __VTX_APP_INTERNAL_SERIALIZATION_SCENE_SERIALIZERS__
+#ifndef __VTX_APP_SERIALIZATION_SCENE_SERIALIZERS__
+#define __VTX_APP_SERIALIZATION_SCENE_SERIALIZERS__
 
 #include "app/application/_fwd.hpp"
 #include "app/component/chemistry/_fwd.hpp"
@@ -7,7 +7,7 @@
 #include "app/component/scene/_fwd.hpp"
 #include <util/json/json.hpp>
 
-namespace VTX::App::Internal::Serialization
+namespace VTX::App::Serialization
 {
 	// Scene
 	Util::JSon::Object serialize( const App::Application::Scene & );
@@ -33,5 +33,5 @@ namespace VTX::App::Internal::Serialization
 	Util::JSon::Object serialize( const Component::Chemistry::Trajectory & p_component );
 	void			   deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Trajectory & p_component );
 
-} // namespace VTX::App::Internal::Serialization
+} // namespace VTX::App::Serialization
 #endif

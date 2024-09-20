@@ -1,4 +1,4 @@
-#include "app/internal/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/molecule_loader.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
@@ -18,7 +18,7 @@
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::App::Internal::IO::Reader
+namespace VTX::App::Serialization::IO::Reader
 {
 	namespace Core	 = VTX::Core;
 	namespace ChemDB = VTX::Core::ChemDB;
@@ -49,4 +49,4 @@ namespace VTX::App::Internal::IO::Reader
 		p_molecule.setMoleculeStruct( moleculeStruct );
 	}
 
-} // namespace VTX::App::Internal::IO::Reader
+} // namespace VTX::App::Serialization::IO::Reader

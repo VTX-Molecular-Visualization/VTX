@@ -38,7 +38,7 @@ namespace VTX::App::Core::Threading
 namespace VTX::App
 {
 	// Access to the worker manager class in order to launch thread.
-	inline Core::Threading::ThreadingSystem & THREADING()
+	inline Core::Threading::ThreadingSystem & THREADING_SYSTEM()
 	{
 		return Util::Singleton<Core::Threading::ThreadingSystem>::get();
 	}
