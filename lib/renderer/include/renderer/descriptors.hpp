@@ -24,9 +24,9 @@ namespace VTX::Renderer
 		E_WRAPPING			  wrappingT	   = E_WRAPPING::CLAMP_TO_EDGE;
 		E_FILTERING			  filteringMin = E_FILTERING::NEAREST;
 		E_FILTERING			  filteringMag = E_FILTERING::NEAREST;
-		std::optional<size_t> width;
-		std::optional<size_t> height;
-		void *				  data = nullptr;
+		std::optional<size_t> width		   = std::nullopt;
+		std::optional<size_t> height	   = std::nullopt;
+		void *				  data		   = nullptr;
 	};
 
 	struct Data

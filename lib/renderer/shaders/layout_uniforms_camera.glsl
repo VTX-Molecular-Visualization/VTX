@@ -4,6 +4,7 @@ struct Camera
     mat4 matrixProjection;
     vec3 cameraPosition;
     vec4 cameraClipInfos; // _near * _far, _far, _far - _near, _near
+    ivec2 rendererSize;
     ivec2 mousePosition;    
     uint isCameraPerspective;
 };

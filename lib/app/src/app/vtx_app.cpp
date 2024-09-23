@@ -157,7 +157,8 @@ namespace VTX::App
 
 		frameInfo.set(
 			Internal::Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_elapsedTime ]() { RENDERER().facade().render( p_elapsedTime ); } )
+			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]()
+							  { RENDERER().facade().render( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		frameInfo.set(

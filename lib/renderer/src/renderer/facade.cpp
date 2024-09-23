@@ -17,7 +17,10 @@ namespace VTX::Renderer
 
 	void Facade::build( const uint p_output, void * p_loader ) { _renderer->build( p_output, p_loader ); }
 
-	void Facade::render( const float p_time ) { _renderer->render( p_time ); }
+	void Facade::render( const float p_deltaTime, const float p_elapsedTime )
+	{
+		_renderer->render( p_deltaTime, p_elapsedTime );
+	}
 
 	void Facade::setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 

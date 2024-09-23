@@ -155,14 +155,14 @@ int main( int, char ** )
 		// Main loop.
 		while ( isRunning )
 		{
-			float time		= float( ui.getTime() ) * 1e-3f;
+			float time		= float( ui.getTime() );
 			float deltaTime = ui.getDeltaTime();
 
 			// Update scene.
 			scene.update( deltaTime );
 
 			// Renderer.
-			renderer.render( time );
+			renderer.render( deltaTime, time );
 
 			// UI.
 			ui.draw( &camera, &scene, &renderer );
