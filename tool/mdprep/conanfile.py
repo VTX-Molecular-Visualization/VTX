@@ -26,6 +26,8 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
+        self.requires("vtx_renderer/1.0")
+        self.requires("vtx_io/1.0")
         self.requires("re2/20231101")
         self.requires("gromacs/2024.0")
         self.requires("catch2/3.7.1")

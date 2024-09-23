@@ -228,15 +228,14 @@ namespace VTX::App::Component::Render
 				if ( systemComponent.getTrajectory().getCurrentFrame( currentFrame ) )
 					_proxy->atomPositions = &currentFrame;
 				_proxy->onAtomPositions();
-			};
 		}
 	}
 
 	// devjla
 	void ProxyMolecule::_updateAtomsPositions(VTX::Core::Struct::Frame& frame)
 	{
-		_proxyWrapper.accessor().proxy().atomPositions = &frame;
-		_proxyWrapper.accessor().proxy().onAtomPositions();
+		_proxy->atomPositions = &frame;
+		_proxy->onAtomPositions();
 	}
 
 } // namespace VTX::App::Component::Render
