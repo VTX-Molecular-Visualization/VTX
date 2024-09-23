@@ -284,6 +284,8 @@ namespace VTX::Renderer::Context
 
 		void _createTexture( const IO & p_descIO, const Key p_key, std::vector<Key> & p_textures );
 
+		Vec2i _getTextureSize( const Attachment & ) const;
+
 		void _createUniforms(
 			GL::Buffer * const	  p_ubo,
 			const Uniforms &	  p_uniforms,
