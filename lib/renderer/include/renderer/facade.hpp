@@ -24,7 +24,7 @@ namespace VTX::Renderer
 		~Facade();
 		void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 );
 		void build( const uint p_output = 0, void * p_loader = nullptr );
-		void render( const float p_time );
+		void render( const float p_deltaTime, const float p_elapsedTime );
 		void setOutput( const uint p_output );
 		void addProxyMolecule( Proxy::Molecule & p_proxy );
 		void removeProxyMolecule( Proxy::Molecule & p_proxy );

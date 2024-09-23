@@ -476,7 +476,7 @@ namespace VTX::Renderer::Context
 				const IO & descIO = output.desc;
 				if ( std::holds_alternative<Attachment>( descIO ) )
 				{
-					// TODO: check if still needed.
+					Attachment attachment = std::get<Attachment>( descIO );
 
 					const Key keyTexture = _getKey( *descPassPtr, false, uint( channel ) );
 					const Key keyFbo	 = _getKey( *descPassPtr );
@@ -488,9 +488,16 @@ namespace VTX::Renderer::Context
 						assert( _framebuffers.contains( keyFbo ) );
 						auto & fbo = _framebuffers[ keyFbo ];
 
-						texture->resize( width, height );
+						const Vec2i size = _getTextureSize( attachment );
+						texture->resize( size.x, size.y );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
-						VTX_TRACE( "Texture resized: {} ({})", output.name, Util::Enum::enumName( channel ) );
+						VTX_TRACE(
+							"Texture resized: {} ({}) = {}x{}",
+							output.name,
+							Util::Enum::enumName( channel ),
+							size.x,
+							size.y
+						);
 					}
 				}
 				else
@@ -810,11 +817,13 @@ namespace VTX::Renderer::Context
 				_mapFormats[ attachment.format ]
 			);
 
+			Vec2i size = _getTextureSize( attachment );
+
 			_textures.emplace(
 				p_key,
 				std::make_unique<GL::Texture2D>(
-					attachment.width.has_value() ? attachment.width.value() : width,
-					attachment.height.has_value() ? attachment.height.value() : height,
+					size.x,
+					size.y,
 					_mapFormats[ attachment.format ],
 					_mapWrappings[ attachment.wrappingS ],
 					_mapWrappings[ attachment.wrappingT ],
@@ -832,6 +841,27 @@ namespace VTX::Renderer::Context
 				texture->fill( attachment.data );
 			}
 		}
+	}
+
+	Vec2i OpenGL45::_getTextureSize( const Attachment & p_Attachment ) const
+	{
+		// Texture size can be:
+		// - fixed size.
+		// - relative size to the renderer size.
+		// - same as the renderer size.
+		const size_t textureWidth = p_Attachment.width.has_value()
+										? std::holds_alternative<float>( p_Attachment.width.value() )
+											  ? size_t( std::get<float>( p_Attachment.width.value() ) * width )
+											  : std::get<size_t>( p_Attachment.width.value() )
+										: width;
+
+		const size_t textureHeight = p_Attachment.height.has_value()
+										 ? std::holds_alternative<float>( p_Attachment.height.value() )
+											   ? size_t( std::get<float>( p_Attachment.height.value() ) * height )
+											   : std::get<size_t>( p_Attachment.height.value() )
+										 : height;
+
+		return Vec2i( textureWidth, textureHeight );
 	}
 
 	void OpenGL45::_createUniforms(

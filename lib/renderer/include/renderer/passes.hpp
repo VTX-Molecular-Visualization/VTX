@@ -158,8 +158,8 @@ namespace VTX::Renderer
 								  E_WRAPPING::REPEAT,
 								  E_FILTERING::NEAREST,
 								  E_FILTERING::NEAREST,
-								  1,
-								  1,
+								  size_t( 1 ),
+								  size_t( 1 ),
 								  (void *)( blurDefaultTexture.data() ) } } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs {

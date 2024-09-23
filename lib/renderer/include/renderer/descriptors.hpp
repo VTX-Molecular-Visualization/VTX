@@ -17,16 +17,17 @@
  */
 namespace VTX::Renderer
 {
+	using Size = std::optional<std::variant<size_t, float>>;
 	struct Attachment
 	{
-		E_FORMAT			  format	   = E_FORMAT::RGBA16F;
-		E_WRAPPING			  wrappingS	   = E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING			  wrappingT	   = E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING			  filteringMin = E_FILTERING::NEAREST;
-		E_FILTERING			  filteringMag = E_FILTERING::NEAREST;
-		std::optional<size_t> width;
-		std::optional<size_t> height;
-		void *				  data = nullptr;
+		E_FORMAT								   format		= E_FORMAT::RGBA16F;
+		E_WRAPPING								   wrappingS	= E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING								   wrappingT	= E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING								   filteringMin = E_FILTERING::NEAREST;
+		E_FILTERING								   filteringMag = E_FILTERING::NEAREST;
+		Size									   width		= std::nullopt;
+		Size									   height		= std::nullopt;
+		void *									   data			= nullptr;
 	};
 
 	struct Data

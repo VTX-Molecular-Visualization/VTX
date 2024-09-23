@@ -69,6 +69,7 @@ namespace VTX::Renderer
 				{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
 				  E_TYPE::VEC4F,
 				  StructUniformValue<Vec4f> { VEC4F_ZERO } },
+				{ "Resolution", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { p_width, p_height } } },
 				{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
 				{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
 			  15 }
@@ -381,6 +382,7 @@ namespace VTX::Renderer
 					p_proxy.cameraFar - p_proxy.cameraNear,
 					p_proxy.cameraNear
 				),
+				Vec2i( width, height ),
 				p_proxy.mousePosition,
 				p_proxy.isPerspective } },
 			"Camera"

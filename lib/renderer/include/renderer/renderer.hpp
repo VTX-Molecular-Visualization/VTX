@@ -65,6 +65,9 @@ namespace VTX::Renderer
 			width  = p_width;
 			height = p_height;
 
+			Vec2i size = { p_width, p_height };
+			setValue( size, "Resolution" );
+
 			_context->resize( _renderGraph->getRenderQueue(), p_width, p_height );
 
 			setNeedUpdate( true );
@@ -86,17 +89,17 @@ namespace VTX::Renderer
 		 * @brief The render loop.
 		 * @param p_time is the current running time.
 		 */
-		inline void render( const float p_time )
+		inline void render( const float p_deltaTime, const float p_elapsedTime )
 		{
 			if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 			{
 				if ( logDurations )
 				{
-					_renderLog( p_time );
+					_renderLog( p_deltaTime, p_elapsedTime );
 				}
 				else
 				{
-					_render( p_time );
+					_render( p_deltaTime, p_elapsedTime );
 				}
 
 				if ( not forceUpdate )
@@ -291,6 +294,7 @@ namespace VTX::Renderer
 			Vec3f cameraPosition;
 			uint  padding;
 			Vec4f cameraClipInfos;
+			Vec2i resolution;
 			Vec2i mousePosition;
 			uint  isPerspective;
 		};
@@ -319,7 +323,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop that call each generated instruction.
 		 * @param p_time the current time.
 		 */
-		inline void _render( const float p_time ) const
+		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const
 		{
 			for ( const Instruction & instruction : _instructions )
 			{
@@ -331,7 +335,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop that call instructions with time logging.
 		 * @param p_time the current time.
 		 */
-		inline void _renderLog( const float p_time )
+		inline void _renderLog( const float p_deltaTime, const float p_elapsedTime )
 		{
 			for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
 			{
