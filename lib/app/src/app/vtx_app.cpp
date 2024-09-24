@@ -25,8 +25,8 @@
 #include "app/filesystem.hpp"
 #include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
-#include "app/internal/monitoring/all_metrics.hpp"
 #include "app/mode/visualization.hpp"
+#include "app/monitoring/constants.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/chrono.hpp>
@@ -108,7 +108,7 @@ namespace VTX::App
 	{
 		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
 		frameInfo.set(
-			Internal::Monitoring::TICK_RATE_KEY,
+			Monitoring::TICK_RATE_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
 		);
 	}
@@ -119,48 +119,48 @@ namespace VTX::App
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
+			Monitoring::PRE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::UPDATE_DURATION_KEY,
+			Monitoring::UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
+			Monitoring::LATE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
+			Monitoring::POST_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::PRE_RENDER_DURATION_KEY,
+			Monitoring::PRE_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::RENDER_DURATION_KEY,
+			Monitoring::RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]()
 							  { RENDERER_SYSTEM().facade().render( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
-			Internal::Monitoring::POST_RENDER_DURATION_KEY,
+			Monitoring::POST_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
-			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
+			Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
 			Util::CHRONO_CPU(
 				[ p_elapsedTime ]()
 				{

@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_INTERNAL_MONITORING_ALL_METRICS__
-#define __VTX_APP_INTERNAL_MONITORING_ALL_METRICS__
+#ifndef __VTX_APP_MONITORING_CONSTANTS__
+#define __VTX_APP_MONITORING_CONSTANTS__
 
 #include <util/hashing.hpp>
 
-namespace VTX::App::Internal::Monitoring
+namespace VTX::App::Monitoring
 {
 	const Hash TICK_RATE_KEY	   = Util::hash( "TICK_RATE_KEY" );
 	const Hash DRAW_CALL_COUNT_KEY = Util::hash( "DRAW_CALL_COUNT" );
@@ -18,5 +18,5 @@ namespace VTX::App::Internal::Monitoring
 	const Hash POST_RENDER_DURATION_KEY = Util::hash( "POST_RENDER_DURATION" );
 
 	const Hash END_OF_FRAME_ONE_SHOT_DURATION_KEY = Util::hash( "END_OF_FRAME_ONE_SHOT_DURATION_KEY" );
-} // namespace VTX::App::Internal::Monitoring
+} // namespace VTX::App::Monitoring
 #endif
