@@ -15,6 +15,8 @@ layout ( std140, binding = 3 ) uniform Uniforms
 	float intensity;
 } uniforms;
 
+const int horizRatio = 2;
+const int vertiRatio = 2;
 // Out.
 layout( location = 0 ) out float outAmbientOcclusion;
 
@@ -44,14 +46,17 @@ void main()
 {
 	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
+	const ivec2 smallerTexPos = ivec2(texPos.x*horizRatio, texPos.y*vertiRatio);
+
 	UnpackedData data;
-	unpackData( inTexturePackedData, data, texPos );
+	unpackData( inTexturePackedData, data, smallerTexPos );
 	const vec3 pos = data.viewPosition;
+
 
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
 	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( noiseTextureSize ) ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, smallerTexPos / float( noiseTextureSize ) ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
@@ -79,4 +84,5 @@ void main()
 
 	ao				 = 1.f - ( ao / kernelSize );
 	outAmbientOcclusion = pow( ao, uniforms.intensity );
+	
 }
