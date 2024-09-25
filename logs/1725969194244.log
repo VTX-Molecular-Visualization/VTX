@@ -1,0 +1,27 @@
+[5929] [13:53:14] [debug] Logger initialized
+[5929] [13:53:14] [debug] Building render graph...
+[5929] [13:53:14] [trace] 355 GL extensions
+[5929] [13:53:14] [info] Device: NVIDIA Corporation Quadro K4200/PCIe/SSE2
+[5929] [13:53:14] [info] OpenGL initialized: 4.5
+[5929] [13:53:14] [debug] Generating instructions...
+[5929] [13:53:14] [trace] Register uniform: Matrix view (s64)(o0)(p0)
+[5929] [13:53:14] [trace] Register uniform: Matrix projection (s64)(o64)(p0)
+[5929] [13:53:14] [trace] Register uniform: Camera position (s12)(o128)(p4)
+[5929] [13:53:14] [trace] Register uniform: Camera clip infos (s16)(o144)(p0)
+[5929] [13:53:14] [trace] Register uniform: Mouse position (s8)(o160)(p0)
+[5929] [13:53:14] [trace] Register uniform: Is perspective (s4)(o168)(p0)
+[5929] [13:53:14] [trace] Register uniform: Colors (s16)(o0)(p0)
+[5929] [13:53:14] [trace] Register uniform: Matrix model view (s64)(o0)(p0)
+[5929] [13:53:14] [trace] Register uniform: Matrix normal (s64)(o64)(p0)
+[5929] [13:53:14] [trace] Register uniform: Sphere radius fixed (s4)(o0)(p0)
+[5929] [13:53:14] [trace] Register uniform: Sphere radius add (s4)(o4)(p0)
+[5929] [13:53:14] [trace] Register uniform: Is sphere radius fixed (s4)(o8)(p0)
+[5929] [13:53:14] [trace] Register uniform: Cylinder radius (s4)(o12)(p0)
+[5929] [13:53:14] [trace] Register uniform: Cylinder color blending (s4)(o16)(p0)
+[5929] [13:53:14] [trace] Register uniform: Ribbon color blending (s4)(o20)(p0)
+[5929] [13:53:14] [trace] Texture created (1920x1080)
+[5929] [13:53:14] [trace] Texture created (1920x1080)
+[5929] [13:53:14] [trace] Texture created (1920x1080)
+[5929] [13:53:14] [trace] Texture created (1920x1080)
+[5929] [13:53:14] [error] Can not generate instructions: filesystem error: directory iterator cannot open directory: No such file or directory [/home/ipieh/VTX/shaders/sphere]
+[5929] [13:53:14] [debug] Renderer graph setup total time: 0.028975883

@@ -18,6 +18,14 @@ namespace VTX::Renderer
 	inline const Attachment imageR32F { E_FORMAT::R32F };
 	inline const Attachment imageR16F { E_FORMAT::R16F };
 	inline const Attachment imageR8 { E_FORMAT::R8 };
+	inline const Attachment imageTest { E_FORMAT::R8,
+										E_WRAPPING::CLAMP_TO_EDGE,
+										E_WRAPPING::CLAMP_TO_EDGE,
+										E_FILTERING::NEAREST,
+										E_FILTERING::NEAREST,
+										0.5f,
+										0.5f,
+										nullptr };
 
 	// Data.
 	// TODO: compress all.
@@ -117,7 +125,7 @@ namespace VTX::Renderer
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageTest } } },
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
@@ -126,6 +134,17 @@ namespace VTX::Renderer
 				  { { "Intensity",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
+	};
+
+		// Scale
+	inline Pass descPassScale {
+		"Scale",
+		Inputs { { E_CHAN_IN::_0, { "Color", imageTest } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
+		Programs {
+			{ "Scale",
+			  std::vector<FilePath> { "default.vert", "scale.frag" },
+			   } }
 	};
 
 	// Blur.
