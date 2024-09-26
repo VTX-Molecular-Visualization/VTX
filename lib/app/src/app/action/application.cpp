@@ -1,8 +1,8 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/settings_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include "app/core/settings/settings_system.hpp"
 #include "app/filesystem.hpp"
 #include "app/serialization/io/reader/scene_loader.hpp"
 #include "app/serialization/io/writer/scene_writer.hpp"
@@ -64,20 +64,20 @@ namespace VTX::App::Action::Application
 	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void LoadSettings::execute()
 	{
-		SERIALIZATION_SYSTEM().readObject<App::Application::Settings::Settings>( _path, SETTINGS() );
+		SERIALIZATION_SYSTEM().readObject<App::Core::Settings::SettingsSystem>( _path, SETTINGS_SYSTEM() );
 	}
 	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void SaveSettings::execute()
 	{
-		SERIALIZATION_SYSTEM().writeObject<App::Application::Settings::Settings>( _path, SETTINGS() );
+		SERIALIZATION_SYSTEM().writeObject<App::Core::Settings::SettingsSystem>( _path, SETTINGS_SYSTEM() );
 	}
 	void ReloadSettings::execute()
 	{
-		SERIALIZATION_SYSTEM().readObject<App::Application::Settings::Settings>(
-			VTX::App::Filesystem::getSettingJsonFile(), SETTINGS()
+		SERIALIZATION_SYSTEM().readObject<App::Core::Settings::SettingsSystem>(
+			VTX::App::Filesystem::getSettingJsonFile(), SETTINGS_SYSTEM()
 		);
 	}
-	void ResetSettings::execute() { SETTINGS().reset(); }
+	void ResetSettings::execute() { SETTINGS_SYSTEM().reset(); }
 
 	void Open::execute()
 	{

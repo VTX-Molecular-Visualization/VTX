@@ -1,24 +1,24 @@
-#ifndef __VTX_APP_APPLICATION_SETTINGS_SETTINGS__
-#define __VTX_APP_APPLICATION_SETTINGS_SETTINGS__
+#ifndef __VTX_APP_CORE_SETTINGS_SYSTEM__
+#define __VTX_APP_CORE_SETTINGS_SYSTEM__
 
-#include "app/application/settings/base_setting.hpp"
-#include "app/application/settings/setting_change_info.hpp"
+#include "base_setting.hpp"
+#include "setting_change_info.hpp"
 #include <cassert>
 #include <map>
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
 
-namespace VTX::App::Application::Settings
+namespace VTX::App::Core::Settings
 {
-	class Settings
+	// TODO: use Util::Collection.
+	using SettingMap = std::map<std::string, std::unique_ptr<BaseSetting>>;
+
+	class SettingsSystem
 	{
 	  public:
-		using SettingMap = std::map<std::string, std::unique_ptr<BaseSetting>>;
-
-	  public:
-		Settings() = default;
-		Settings( const Settings & p_source );
+		SettingsSystem() = default;
+		SettingsSystem( const SettingsSystem & p_source );
 
 		template<typename T>
 		void referenceSetting( const std::string & p_key, const T & p_defaultValue = T() )
@@ -55,8 +55,8 @@ namespace VTX::App::Application::Settings
 
 		void reset();
 
-		friend bool operator==( const Settings & p_lhs, const Settings & p_rhs );
-		friend bool operator!=( const Settings & p_lhs, const Settings & p_rhs );
+		friend bool operator==( const SettingsSystem & p_lhs, const SettingsSystem & p_rhs );
+		friend bool operator!=( const SettingsSystem & p_lhs, const SettingsSystem & p_rhs );
 
 		Util::Callback<BaseSettingChangeInfo> onSetting;
 
@@ -76,6 +76,14 @@ namespace VTX::App::Application::Settings
 		}
 	};
 
-} // namespace VTX::App::Application::Settings
+} // namespace VTX::App::Core::Settings
+
+namespace VTX::App
+{
+	inline Core::Settings::SettingsSystem & SETTINGS_SYSTEM()
+	{
+		return Util::Singleton<Core::Settings::SettingsSystem>::get();
+	}
+} // namespace VTX::App
 
 #endif

@@ -26,13 +26,13 @@ namespace VTX::App::Controller::Camera
 		// void  reset();
 		// Vec3f targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const;
 
-		float translationSpeed	 = Setting::Controller::TRANSLATION_SPEED_DEFAULT;
-		float accelerationFactor = Setting::Controller::ACCELERATION_FACTOR_DEFAULT;
-		float decelerationFactor = Setting::Controller::DECELERATION_FACTOR_DEFAULT;
-		float rotationSpeed		 = Setting::Controller::ROTATION_SPEED_DEFAULT;
-		bool  invertY			 = Setting::Controller::INVERT_Y_DEFAULT;
-		bool  elasticityActive	 = Setting::Controller::ELASTICITY_ACTIVE_DEFAULT;
-		float elasticityFactor	 = Setting::Controller::ELASTICITY_FACTOR_DEFAULT;
+		float translationSpeed	 = Settings::Controller::TRANSLATION_SPEED_DEFAULT;
+		float accelerationFactor = Settings::Controller::ACCELERATION_FACTOR_DEFAULT;
+		float decelerationFactor = Settings::Controller::DECELERATION_FACTOR_DEFAULT;
+		float rotationSpeed		 = Settings::Controller::ROTATION_SPEED_DEFAULT;
+		bool  invertY			 = Settings::Controller::INVERT_Y_DEFAULT;
+		bool  elasticityActive	 = Settings::Controller::ELASTICITY_ACTIVE_DEFAULT;
+		float elasticityFactor	 = Settings::Controller::ELASTICITY_FACTOR_DEFAULT;
 
 	  private:
 		inline static const float _CONTROLLER_ELASTICITY_THRESHOLD = 1e-4f;

@@ -4,7 +4,6 @@
 #include "app/core/serialization/serialization_system.hpp"
 #include "app_serializers.hpp"
 #include "scene_serializers.hpp"
-#include "util_serializers.hpp"
 #include <util/json/io.hpp>
 
 namespace VTX::App::Serialization
@@ -13,6 +12,7 @@ namespace VTX::App::Serialization
 	concept SerializableByDefaultConcept = ( not Util::JSon::BasicJSonConcept<T> ) && requires( T & p_obj ) {
 		{ App::Serialization::serialize( p_obj ) } -> std::convertible_to<Util::JSon::BasicJSon>;
 	};
+
 	template<typename T>
 	concept DeserializableByDefaultConcept
 		= ( not Util::JSon::BasicJSonConcept<T> ) && requires( const Util::JSon::BasicJSon & p_json, T & p_obj ) {

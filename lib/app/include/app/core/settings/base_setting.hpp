@@ -1,13 +1,13 @@
-#ifndef __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
-#define __VTX_APP_APPLICATION_SETTINGS_BASE_SETTING__
+#ifndef __VTX_APP_CORE_SETTINGS_BASE_SETTING__
+#define __VTX_APP_CORE_SETTINGS_BASE_SETTING__
 
-#include "app/serialization/serialization_system.hpp"
+#include "app/core/serialization/serialization_system.hpp"
 #include <concepts>
 #include <memory>
 #include <optional>
 #include <util/json/basic_json.hpp>
 
-namespace VTX::App::Application::Settings
+namespace VTX::App::Core::Settings
 {
 	class BaseSetting
 	{
@@ -37,10 +37,14 @@ namespace VTX::App::Application::Settings
 
 		void set( const T & p_value ) { _value = p_value; }
 
-		Util::JSon::BasicJSon serialize() const override { return SERIALIZATION_SYSTEM().serialize( _value ); }
-		void				  deserialize( const Util::JSon::BasicJSon & p_json ) override
+		Util::JSon::BasicJSon serialize() const override
 		{
-			SERIALIZATION_SYSTEM().deserialize( p_json, _value );
+			// return Core::Serialization::serialize<T>( _value );
+			return {};
+		}
+		void deserialize( const Util::JSon::BasicJSon & p_json ) override
+		{
+			// Core::Serialization::deserialize<T>( p_json, _value );
 		}
 
 		void reset() override
@@ -72,5 +76,5 @@ namespace VTX::App::Application::Settings
 		T				 _value;
 		std::optional<T> _defaultValue;
 	};
-} // namespace VTX::App::Application::Settings
+} // namespace VTX::App::Core::Settings
 #endif

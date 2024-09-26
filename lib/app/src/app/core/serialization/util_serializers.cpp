@@ -1,7 +1,7 @@
-#include "app/serialization/util_serializers.hpp"
+#include "app/core/serialization/util_serializers.hpp"
 #include "app/serialization/serialization_system.hpp"
 
-namespace VTX::App::Serialization
+namespace VTX::App::Core::Serialization
 {
 	// Filesystem
 	std::string serialize( const FilePath & p_filepath ) { return p_filepath.string(); }
@@ -38,4 +38,4 @@ namespace VTX::App::Serialization
 		const Vec3f scale = SERIALIZATION_SYSTEM().deserializeField( p_json, "SCALE", VEC3F_XYZ );
 		p_transform.setScale( scale );
 	}
-} // namespace VTX::App::Serialization
+} // namespace VTX::App::Core::Serialization

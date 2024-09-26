@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SERIALIZATION_UTIL_SERIALIZERS__
-#define __VTX_APP_SERIALIZATION_UTIL_SERIALIZERS__
+#ifndef __VTX_APP_CORE_SERIALIZATION_UTIL_SERIALIZERS__
+#define __VTX_APP_CORE_SERIALIZATION_UTIL_SERIALIZERS__
 
 #include <concepts>
 #include <string>
@@ -12,7 +12,7 @@
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 
-namespace VTX::App::Serialization
+namespace VTX::App::Core::Serialization
 {
 	// Enum
 	template<EnumConcept T>
@@ -158,5 +158,5 @@ namespace VTX::App::Serialization
 		}
 	}
 
-} // namespace VTX::App::Serialization
+} // namespace VTX::App::Core::Serialization
 #endif

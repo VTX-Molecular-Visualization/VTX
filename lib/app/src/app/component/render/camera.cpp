@@ -1,22 +1,20 @@
 #include "app/component/render/camera.hpp"
-#include "app/application/system/settings_system.hpp"
-#include "app/internal/application/settings.hpp"
+#include "app/core/settings/settings_system.hpp"
+#include "app/settings.hpp"
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Component::Render
 {
-	using namespace App::Internal::Application::Settings::Camera;
-
 	Camera::Camera() :
 		_near( Util::Math::max(
 			1e-1f,
-			SETTINGS().get<float>( NEAR_CLIP_KEY )
+			SETTINGS_SYSTEM().get<float>( Settings::Camera::NEAR_CLIP_KEY )
 		) ), // Avoid to little value.
-		_far( Util::Math::max( _near, SETTINGS().get<float>( FAR_CLIP_KEY ) ) ),
-		_fov( SETTINGS().get<float>( FOV_KEY ) )
+		_far( Util::Math::max( _near, SETTINGS_SYSTEM().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
+		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
 	{
-		const PROJECTION & cameraProjection = SETTINGS().get<PROJECTION>( PROJECTION_KEY );
+		const PROJECTION & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
 
 		_projection = cameraProjection;
 	}

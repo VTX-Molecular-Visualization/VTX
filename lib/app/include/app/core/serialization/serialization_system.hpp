@@ -2,6 +2,7 @@
 #define __VTX_APP_CORE_SERIALIZATION_SERIALIZATION__
 
 #include "upgrade_stack.hpp"
+#include "util_serializers.hpp"
 #include "version.hpp"
 #include <any>
 #include <functional>
@@ -13,6 +14,24 @@
 
 namespace VTX::App::Core::Serialization
 {
+
+	template<Util::JSon::BasicJSonConcept T>
+	Util::JSon::BasicJSon serialize( const T & p_obj )
+	{
+		return Util::JSon::BasicJSon( p_obj );
+	}
+
+	template<Util::JSon::BasicJSonConcept T>
+	void deserialize( const Util::JSon::BasicJSon & p_jsonObj, T & p_obj )
+	{
+		p_obj = p_jsonObj.get<T>();
+	}
+
+	template<Util::JSon::BasicJSonConcept T>
+	bool canSerialize()
+	{
+		return true;
+	}
 
 	class SerializationSystem
 	{
@@ -32,24 +51,6 @@ namespace VTX::App::Core::Serialization
 		void registerDeserializationFunction( DeserializeFunc<T> p_deserializationFunction )
 		{
 			_mapDeserializeFunctions.emplace( typeid( T ), p_deserializationFunction );
-		}
-
-		template<Util::JSon::BasicJSonConcept T>
-		Util::JSon::BasicJSon serialize( const T & p_obj ) const
-		{
-			return Util::JSon::BasicJSon( p_obj );
-		}
-
-		template<Util::JSon::BasicJSonConcept T>
-		void deserialize( const Util::JSon::BasicJSon & p_jsonObj, T & p_obj ) const
-		{
-			p_obj = p_jsonObj.get<T>();
-		}
-
-		template<Util::JSon::BasicJSonConcept T>
-		bool canSerialize() const
-		{
-			return true;
 		}
 
 		template<typename T>

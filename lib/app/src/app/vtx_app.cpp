@@ -6,7 +6,6 @@
 #include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/application/system/settings_system.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/proxy_camera.hpp"
@@ -23,10 +22,10 @@
 #include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/filesystem.hpp"
-#include "app/internal/application/settings.hpp"
 #include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
+#include "app/settings.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/chrono.hpp>
@@ -40,7 +39,7 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
-		Internal::Application::Settings::initSettings( SETTINGS() );
+		Settings::initSettings();
 		Internal::ECS::setupEntityDirector();
 
 		// Create scene.

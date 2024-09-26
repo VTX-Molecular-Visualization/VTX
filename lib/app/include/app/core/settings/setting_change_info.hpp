@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_APPLICATION_SETTINGS_SETTINGS_CHANGE_EVENT_INFO__
-#define __VTX_APP_APPLICATION_SETTINGS_SETTINGS_CHANGE_EVENT_INFO__
+#ifndef __VTX_APP_CORE_SETTINGS_SETTINGS_CHANGE_EVENT_INFO__
+#define __VTX_APP_CORE_SETTINGS_SETTINGS_CHANGE_EVENT_INFO__
 
 #include <string>
 
-namespace VTX::App::Application::Settings
+namespace VTX::App::Core::Settings
 {
 	class BaseSettingChangeInfo
 	{
@@ -23,6 +23,6 @@ namespace VTX::App::Application::Settings
 		const T & newValue;
 	};
 
-} // namespace VTX::App::Application::Settings
+} // namespace VTX::App::Core::Settings
 
 #endif

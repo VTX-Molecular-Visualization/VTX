@@ -2,16 +2,16 @@
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/system/settings_system.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/render/viewpoint.hpp>
 #include <app/core/action/action_system.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/core/action/base_action_undonable.hpp>
 #include <app/core/ecs/base_entity.hpp>
+#include <app/core/settings/settings_system.hpp>
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
-#include <app/internal/application/settings.hpp>
+#include <app/settings.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/filesystem.hpp>
@@ -147,11 +147,11 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	App::Fixture app;
 
 	// Settings
-	const App::Application::Settings::Settings settings = SETTINGS();
+	const App::Core::Settings::SettingsSystem settings = SETTINGS_SYSTEM();
 
-	SETTINGS().set<float>( Internal::Application::Settings::Camera::FAR_CLIP_KEY, 33.f );
+	SETTINGS_SYSTEM().set<float>( Settings::Camera::FAR_CLIP_KEY, 33.f );
 
-	const App::Application::Settings::Settings modifiedSettings = SETTINGS();
+	const App::Core::Settings::SettingsSystem modifiedSettings = SETTINGS_SYSTEM();
 
 	if ( std::filesystem::exists( Filesystem::getSettingJsonFile() ) )
 		std::filesystem::remove( Filesystem::getSettingJsonFile() );
@@ -159,11 +159,11 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	CHECK( !std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
 	ACTION_SYSTEM().execute<Action::Application::SaveSettings>();
 	CHECK( std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
-	CHECK( SETTINGS() == modifiedSettings );
+	CHECK( SETTINGS_SYSTEM() == modifiedSettings );
 
 	ACTION_SYSTEM().execute<Action::Application::ResetSettings>();
-	CHECK( SETTINGS() == settings );
+	CHECK( SETTINGS_SYSTEM() == settings );
 
 	ACTION_SYSTEM().execute<Action::Application::LoadSettings>();
-	CHECK( SETTINGS() == modifiedSettings );
+	CHECK( SETTINGS_SYSTEM() == modifiedSettings );
 };

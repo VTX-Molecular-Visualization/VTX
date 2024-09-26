@@ -1,7 +1,6 @@
 #include "app/component/behaviour/molecule_behaviour.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
-#include "app/application/system/settings_system.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/render/proxy_molecule.hpp"
@@ -13,8 +12,8 @@
 #include "app/core/player/loop.hpp"
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include "app/internal/application/settings.hpp"
 #include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/settings.hpp"
 
 namespace VTX::App::Component::Behaviour
 {
@@ -156,9 +155,9 @@ namespace VTX::App::Component::Behaviour
 		const Component::Scene::Selectable & selectableComponent
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( _entity );
 
-		const Application::Selection::Granularity granularity = SETTINGS().get<Application::Selection::Granularity>(
-			Internal::Application::Settings::Selection::MOLECULE_GRANULARITY_KEY
-		);
+		const Application::Selection::Granularity granularity
+			= SETTINGS_SYSTEM().get<Application::Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY
+			);
 
 		std::unique_ptr<Application::Selection::SelectionData> res
 			= std::make_unique<Application::Selection::MoleculeData>( selectableComponent );

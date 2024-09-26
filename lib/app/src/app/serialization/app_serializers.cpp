@@ -1,6 +1,4 @@
 #include "app/serialization/app_serializers.hpp"
-#include "app/application/settings/base_setting.hpp"
-#include "app/application/settings/settings.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/once.hpp"
 #include "app/core/player/ping_pong.hpp"
@@ -35,23 +33,19 @@ namespace VTX::App::Serialization
 		p_setting.deserialize( p_json );
 	}
 
-	Util::JSon::Object serialize( const App::Application::Settings::Settings & p_settings )
+	Util::JSon::Object serialize( const App::Core::Settings::SettingMap & p_settings )
 	{
-		const App::Application::Settings::Settings::SettingMap & settingMap = p_settings.getSettingMap();
-
 		Util::JSon::Object settingMapJSon = Util::JSon::Object();
 
-		for ( const auto & pair : settingMap )
+		for ( const auto & pair : p_settings )
 		{
 			settingMapJSon.appendField( pair.first, pair.second->serialize() );
 		}
 
 		return { { "MAP", settingMapJSon } };
 	}
-	void deserialize( const Util::JSon::Object & p_json, App::Application::Settings::Settings & p_settings )
+	void deserialize( const Util::JSon::Object & p_json, App::Core::Settings::SettingMap & p_settings )
 	{
-		const App::Application::Settings::Settings::SettingMap & settingMap = p_settings.getSettingMap();
-
 		if ( !p_json.contains( "MAP" ) )
 			throw( IOException( "Unreadable Setting file." ) );
 
@@ -59,11 +53,11 @@ namespace VTX::App::Serialization
 
 		for ( const Util::JSon::Object::Field & field : settingMapJSon )
 		{
-			if ( settingMap.contains( field.first ) )
+			if ( p_settings.contains( field.first ) )
 			{
 				try
 				{
-					settingMap.at( field.first )->deserialize( field.second );
+					p_settings.at( field.first )->deserialize( field.second );
 				}
 				catch ( const std::exception & e )
 				{
