@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
 
 #include "ui/qt/core/base_dock_widget.hpp"
+#include <functional>
 #include "app/component/render/proxy_molecule.hpp"
 #include "io/reader/molecule.hpp"
 #include <app/component/chemistry/trajectory.hpp>
@@ -40,6 +41,12 @@ namespace VTX::UI::QT::DockWidget
 	
 			setWidget( widget );
 			
+			// Install a signal handler
+			//std::signal(SIGINT, [](int signal) {
+			//		VTX::App::Component::Render::ProxyMolecule & proxy
+			//			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyMolecule>();
+			//	} );
+
 			// connect callbacks
 			connect( _playButton, &QPushButton::clicked, this, [ & ]()
 				{
@@ -48,41 +55,61 @@ namespace VTX::UI::QT::DockWidget
 						return;
 			
 					auto & trajectory = App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
-					//trajectory.getPlayer().play();
+					trajectory.getPlayer().play();
 			
 					is_playing							  = true;
 					Core::Struct::Molecule moleculeStruct = Core::Struct::Molecule();
+					molecule.setMoleculeStruct( moleculeStruct );
 			
 					std::thread writethread(
-						[ & ]()
+						[]()
 						{
 							VTX_INFO( "writethread start" );
+							auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
+							//if ( !molecule.hasTrajectory() )
+							//	return;
+
 							IO::Reader::Molecule				 moleculeReader	  = IO::Reader::Molecule();
 							const std::string					 moleculeName	  = "2ama_1_npt";
 							const std::string					 moleculePathname = moleculeName + ".trr";
 							const VTX::FilePath moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
 							//while (is_playing)
-								moleculeReader.readFile( moleculePath, moleculeStruct );
+								//moleculeReader.readFile( moleculePath, moleculeStruct );
+							moleculeReader.readFile( moleculePath, molecule.getMoleculeStruct() );
 							VTX_INFO( "writethread end" );
 						}
 					);
 				
-					/* std::thread readthreadfromlocalmolecule(
-						[ & ]()
+					std::thread readthreadfromlocalmolecule(
+						[]()
 						{
 							VTX_INFO( "readthreadfromlocalmolecule start" );
+							auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
+							//if ( !molecule.hasTrajectory() )
+							//	return; no trajectory as we just created an empty traj and moved it in the molecule struct...
+
+							auto & trajectory
+								= App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
+							trajectory.getPlayer().play();
+
 							VTX::Core::Struct::Frame currentFrame;
 							VTX::App::Component::Render::ProxyMolecule & proxy
 								= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyMolecule>();
-							while ( moleculeStruct.trajectory.getCurrentFrame( currentFrame ) )
+							//while ( moleculeStruct.trajectory.getCurrentFrame( currentFrame ) )
+							int idx( 0 );
+							while (idx < 98)
 							{
-								proxy._updateAtomsPositions( currentFrame );
+								molecule.getTrajectory().getCurrentFrame( currentFrame ); // working with real molecule actually loaded in app
+								//moleculeStruct.trajectory.getCurrentFrame( currentFrame ); // working with core empty molecule created in this scope
+								//proxy._updateAtomsPositions( currentFrame ); // CANNOT update renderer in this thread context
+								trajectory.getPlayer().StackFrame( currentFrame );
+								++idx;
 								//std::this_thread::sleep_for( std::chrono::milliseconds(1000));
 							}
 							VTX_INFO( "readthreadfromlocalmolecule end" );
 						}
-					); */
-					VTX_INFO( "readthreadfromlocalmolecule start" );
+					);
+					/* VTX_INFO( "readthreadfromlocalmolecule start" );
 					VTX::Core::Struct::Frame					 currentFrame;
 					VTX::App::Component::Render::ProxyMolecule & proxy
 						= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyMolecule>();
@@ -95,7 +122,7 @@ namespace VTX::UI::QT::DockWidget
 						++idx;
 						// std::this_thread::sleep_for( std::chrono::milliseconds(1000));
 					}
-					VTX_INFO( "readthreadfromlocalmolecule end" );
+					VTX_INFO( "readthreadfromlocalmolecule end" );*/
 					// this thread reads traj from the molecule trajectory data written when VTX is launched
 					// currently problematic because no code is written to update a trajectory directly in the molecule : 
 					// we are supposed to create a full Core::Struct::Molecule, write its content then std::move it into the existing molecule
@@ -119,8 +146,10 @@ namespace VTX::UI::QT::DockWidget
 						}
 					); */
 					VTX_INFO( "threads prejoin");
-					writethread.join();
+					//writethread.join();
 					//readthreadfromlocalmolecule.join();
+					writethread.detach();
+					readthreadfromlocalmolecule.detach();
 					VTX_INFO( "threads joined");
 				});
 

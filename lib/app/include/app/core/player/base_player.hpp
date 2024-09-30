@@ -6,6 +6,7 @@
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/types.hpp>
+#include <core/struct/frames_to_render.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -39,6 +40,12 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
+		//devjla
+		void StackFrame( VTX::Core::Struct::Frame elem ) { _tmpFrames.AddElement( elem ); } // FIXME taking a copy as input?
+		bool GetRefFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.ReadElement(frame); }
+		void RemoveRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.RemoveElement( elem ); }
+		bool GetCopyFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.GetCopyFrame(frame); }
+
 		Util::Callback<>	   onPlay; 
 		Util::Callback<>	   onPause;
 		Util::Callback<>	   onStop;
@@ -52,6 +59,9 @@ namespace VTX::App::Core::Player
 		bool  _isPlaying	   = false;
 		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
+
+		//devjla
+		VTX::Core::Struct::FramesToRender _tmpFrames;
 	};
 } // namespace VTX::App::Core::Player
 #endif

@@ -26,15 +26,16 @@ namespace VTX::Core::Struct
 			return;
 		}
 		// FIXME really?
-		ProdConsCircularBuffer( ProdConsCircularBuffer && movable ) : circBuff( std::move( movable.circBuff ) )
+		ProdConsCircularBuffer( ProdConsCircularBuffer && movable ) // : circBuff( std::move( movable.circBuff ) )
 		// mutex is default initialized?
 		{
+			circBuff	 = std::move( movable.circBuff );
 			readIdx		 = movable.readIdx;
 			writeIdx	 = movable.writeIdx;
 			buffSize	 = movable.buffSize;
 			overflowFlag = movable.overflowFlag;
 		}
-		ProdConsCircularBuffer & operator=( ProdConsCircularBuffer && movable )
+		ProdConsCircularBuffer & operator=( const ProdConsCircularBuffer && movable ) noexcept
 		{
 			circBuff = std::move( movable.circBuff );
 			readIdx	 = movable.readIdx;

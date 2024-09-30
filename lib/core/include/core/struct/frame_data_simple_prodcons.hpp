@@ -15,6 +15,18 @@ namespace VTX::Core::Struct
 		{
 			SetBuffSize( 102 );
 		}
+		// FIXME really?
+		FrameDataProdCons( FrameDataProdCons && movable )
+		{
+			ProdConsCircularBuffer<Frame>::SetBuffSize( movable.GetBuffSize() );
+			totalElements = movable.totalElements;
+		}
+		FrameDataProdCons & operator=( const FrameDataProdCons && movable )
+		{
+			ProdConsCircularBuffer<Frame>::operator=( std::move(movable) );
+			totalElements = movable.totalElements;
+			return *this;
+		}
 		Frame & WriteElement( const Frame & elem )
 		{
 			return ProdConsCircularBuffer<Frame>::WriteElement( elem );
@@ -27,7 +39,7 @@ namespace VTX::Core::Struct
 		{
 			return ProdConsCircularBuffer<Frame>::ReadElement();
 		}
-		void SetTotalElements( const size_t size ) { totalElements = size; }
+		void	SetTotalElements( const size_t size ) { totalElements = size; }
 		
 		size_t GetTotalElements( void ) const { return totalElements; }
 

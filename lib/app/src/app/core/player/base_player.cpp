@@ -1,5 +1,7 @@
 #include "app/core/player/base_player.hpp"
 #include <util/math.hpp>
+//devjla
+#include "app/component/render/proxy_molecule.hpp"
 
 namespace VTX::App::Core::Player
 {
@@ -69,6 +71,14 @@ namespace VTX::App::Core::Player
 				nextFrame( nextIndex - previousCurrent );
 			}
 		}
+
+		// devjla
+		VTX::Core::Struct::Frame currentFrame;
+		if ( !_tmpFrames.GetCopyFrame( currentFrame ) )
+			return;
+		VTX::App::Component::Render::ProxyMolecule & proxy
+			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyMolecule>();
+		proxy._updateAtomsPositions( currentFrame );
 	}
 
 	void BasePlayer::setFPS( const uint p_fps )

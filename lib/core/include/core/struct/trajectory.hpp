@@ -15,6 +15,20 @@ namespace VTX::Core::Struct
 	using Frame = std::vector<Vec3f>;
 	struct Trajectory
 	{
+		// FIXME really?
+		Trajectory() {}
+		Trajectory( Trajectory && movable )
+		{
+			frames = std::move(movable.frames);
+			currentFrameIndex = movable.currentFrameIndex;
+		}
+		Trajectory & operator=( Trajectory && movable )
+		{
+			frames			  = std::move( movable.frames );
+			currentFrameIndex = movable.currentFrameIndex;
+			return *this;
+		}
+		//Trajectory ( Trajectory & copy ) = delete;
 		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
 			/*
@@ -58,7 +72,7 @@ namespace VTX::Core::Struct
 		//std::vector<Frame> frames;
 		//FrameDataSimple frames;
 		FrameDataProdCons frames;
-		size_t			   currentFrameIndex = 0;
+		size_t			  currentFrameIndex = 0;
 	};
 
 	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;

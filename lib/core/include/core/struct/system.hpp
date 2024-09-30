@@ -22,6 +22,8 @@ namespace VTX::Core::Struct
 		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
 
 		System();
+		// devjla
+		//System( System & copy ) = delete;
 
 		std::string name	  = "unknown";
 		Mat4f		transform = MAT4F_ID;

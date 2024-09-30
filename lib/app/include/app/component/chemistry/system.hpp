@@ -35,7 +35,7 @@ namespace VTX::App::Component::Chemistry
 		System( VTX::Core::Struct::System & p_systemStruct );
 		~System();
 
-		const VTX::Core::Struct::System & getSystemStruct() const { return _systemStruct; };
+		/*devjla delete const FIXME const*/ VTX::Core::Struct::System & getSystemStruct() /* const*/ { return _systemStruct; };
 		void							  setSystemStruct( VTX::Core::Struct::System & p_systemStruct );
 
 		void		  initChains( const size_t p_chainCount );
