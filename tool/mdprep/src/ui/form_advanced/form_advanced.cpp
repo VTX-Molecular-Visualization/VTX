@@ -165,6 +165,24 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_uiObjects._layoutSystemPreparation = new QFormLayout;
 		p_target->addLayout( _uiObjects._layoutSystemPreparation );
 	}
+	void FormAdvanced::_uiAddExpertButton( QVBoxLayout * p_target ) noexcept
+	{
+		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "" );
+
+		QHBoxLayout * layout = new QHBoxLayout;
+		p_target->addLayout( layout );
+
+		VTX::UI::QT::Util::LabelWithHelper label(
+			"Not finding what you need ?",
+			"Pushing the button will open the simulation parameter file template so you can edit more advanced "
+			"options. Do it only if you know what you are doing.",
+			VTX::UI::QT::Util::LabelWithHelper ::E_QUESTIONMARK_POSITION::left
+		);
+
+		layout->addWidget( label );
+		_uiObjects._buttonOpenExpertOptions = new QPushButton( "Expert Parameters" );
+		layout->addWidget( _uiObjects._buttonOpenExpertOptions );
+	}
 	void FormAdvanced::_uiAddMinimization( QVBoxLayout * p_target ) noexcept
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "Minimization" );
@@ -226,8 +244,11 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_uiAddStep( qLayoutMain, "Production run", _uiObjects._production );
 		_fieldPlacer( 4 ) = _specificFieldGenerator( E_FIELD_SECTION::production );
 		_fieldPlacer( 4 ).placeFields( _uiObjects._production.layout );
+
+		_uiAddExpertButton( qLayoutMain );
 	}
 	namespace
+
 	{
 		template<typename T>
 		void loadStepValue( T & p_ui, const MdParametersStepData & p_data ) noexcept
