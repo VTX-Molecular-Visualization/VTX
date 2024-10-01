@@ -595,12 +595,15 @@ namespace VTX::IO::Reader
 		}
 
 		Tool::Chrono bondComputationChrono = Tool::Chrono();
-		if ( p_recomputeBonds )
+		if ( frame.size() > 0 && not frame.has_bond() )
 		{
-			bondComputationChrono.start();
-			Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
-			bondComputationChrono.stop();
-			_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
+			if ( p_recomputeBonds )
+			{
+				bondComputationChrono.start();
+				Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
+				bondComputationChrono.stop();
+				_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
+			}
 		}
 
 		if ( Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
