@@ -5,11 +5,12 @@
 #include <string>
 #include <util/callback.hpp>
 #include <util/collection.hpp>
+#include <util/generic/base_serializable.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Player
 {
-	class BasePlayer
+	class BasePlayer : public Util::Generic::BaseSerializable
 	{
 	  public:
 		BasePlayer()							  = default;
@@ -38,6 +39,23 @@ namespace VTX::App::Core::Player
 		void		setFPS( const uint p_fps );
 
 		virtual const std::string & getDisplayName() const = 0;
+
+		virtual Util::JSon::Object serialize() const override
+		{
+			return { { "COUNT", _count }, { "CURRENT", getCurrent() }, { "FPS", _fps }, { "IS_PLAYING", _isPlaying } };
+		}
+
+		virtual void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			setCount( p_json[ "COUNT" ].get<size_t>() );
+			setCurrent( p_json[ "CURRENT" ].get<size_t>() );
+			setFPS( p_json[ "FPS" ].get<uint>() );
+
+			if ( p_json[ "IS_PLAYING" ].get<bool>() )
+			{
+				play();
+			}
+		}
 
 		Util::Callback<>	   onPlay;
 		Util::Callback<>	   onPause;

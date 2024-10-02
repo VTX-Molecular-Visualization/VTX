@@ -117,7 +117,7 @@ namespace VTX::Renderer
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } }, { E_CHAN_OUT::COLOR_1, { "", imageRG32UI } } },
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },

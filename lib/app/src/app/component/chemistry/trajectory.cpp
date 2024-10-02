@@ -54,4 +54,32 @@ namespace VTX::App::Component::Chemistry
 		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
 	}
 
+	Util::JSon::Object Trajectory::serialize() const
+	{
+		return {};
+		// return { { "PLAYER_NAME", p_component.getPlayer().getCollectionKey() },
+		//		 { "PLAYER_DATA", SERIALIZER().serialize( p_component.getPlayer() ) } };}
+	}
+
+	void Trajectory::deserialize( const Util::JSon::Object & p_json )
+	{
+		/*
+		const std::string playerName = deserializeField<std::string>( p_json, "PLAYER_NAME" );
+
+		if ( playerName.empty() )
+		{
+			VTX_ERROR( "Deserialization of Trajectory Component fail." );
+			return;
+		}
+
+		// App::Core::Player::BasePlayer * playerPtr
+		//	= Util::Singleton<App::Core::Player::Players>::get().createFromKey<App::Core::Player::BasePlayer>(
+		//		playerName
+		//	);
+		// p_component.setPlayer( playerPtr );
+
+		deserialize<App::Core::Player::BasePlayer>( p_json[ "PLAYER_DATA" ], p_component.getPlayer() );
+		*/
+	}
+
 } // namespace VTX::App::Component::Chemistry

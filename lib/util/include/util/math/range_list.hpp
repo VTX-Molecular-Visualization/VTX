@@ -12,7 +12,7 @@ namespace VTX::Util::Math
 {
 	// Class to describe a list of Range, managing merge and split when items are added / removed
 	template<std::integral T>
-	class RangeList
+	class RangeList : public Generic::BaseSerializable
 	{
 	  public:
 		using RangeIterator		 = typename std::list<Range<T>>::iterator;
@@ -430,6 +430,29 @@ namespace VTX::Util::Math
 				p_starts[ i ] = T1( range.getFirst() );
 				p_counts[ i ] = T2( range.getCount() );
 				i++;
+			}
+		}
+
+		Util::JSon::Object serialize() const override
+		{
+			Util::JSon::Array list = Util::JSon::Array();
+
+			for ( RangeConstIterator it = rangeBegin(); it != rangeEnd(); it++ )
+			{
+				list.emplace_back( serialize( *it ) );
+			}
+
+			return list;
+		}
+
+		void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			for ( const auto & rangeJSon : p_json )
+			{
+				Util::Math::Range<T> range;
+				range.deserialize( rangeJSon );
+
+				addRange( range );
 			}
 		}
 

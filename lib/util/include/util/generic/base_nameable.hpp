@@ -8,7 +8,6 @@ namespace VTX::Util::Generic
 	class BaseNameable
 	{
 	  public:
-		BaseNameable()			= default;
 		virtual ~BaseNameable() = default;
 
 		virtual Name getName() const = 0;

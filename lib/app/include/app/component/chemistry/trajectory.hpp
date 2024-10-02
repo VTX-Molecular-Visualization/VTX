@@ -9,7 +9,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	class Trajectory
+	class Trajectory : public Util::Generic::BaseSerializable
 	{
 	  private:
 		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Trajectory> registration {
@@ -30,6 +30,9 @@ namespace VTX::App::Component::Chemistry
 
 		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
 		void							setPlayer( App::Core::Player::BasePlayer * const p_player );
+
+		Util::JSon::Object serialize() const override;
+		void			   deserialize( const Util::JSon::Object & p_json ) override;
 
 		Util::Callback<size_t> onFrameChange;
 

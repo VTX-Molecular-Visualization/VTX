@@ -1,12 +1,14 @@
 #ifndef __VTX_UTIL_MATH_TRANSFORM__
 #define __VTX_UTIL_MATH_TRANSFORM__
 
+#include "util/generic/base_serializable.hpp"
 #include "util/math.hpp"
+#include "util/serializer.hpp"
 #include "util/types.hpp"
 
 namespace VTX::Util::Math
 {
-	class Transform
+	class Transform : public Util::Generic::BaseSerializable
 	{
 	  public:
 		Transform() = default;
@@ -113,7 +115,8 @@ namespace VTX::Util::Math
 		inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
 		{
 			_rotation = Util::Math::getRotation(
-				Util::Math::radians( p_pitch ), Util::Math::radians( p_yaw ), Util::Math::radians( p_roll ) );
+				Util::Math::radians( p_pitch ), Util::Math::radians( p_yaw ), Util::Math::radians( p_roll )
+			);
 			_internalEulerCache = Vec3f( p_pitch, p_yaw, p_roll );
 
 			update();
@@ -159,6 +162,20 @@ namespace VTX::Util::Math
 		{
 			_scale = p_mat;
 			update();
+		}
+
+		Util::JSon::Object serialize() const override
+		{
+			return { { "POSITION", Util::Serializer::serialize( getTranslationVector() ) },
+					 { "ROTATION", Util::Serializer::serialize( getEulerAngles() ) },
+					 { "SCALE", Util::Serializer::serialize( getScaleVector() ) } };
+		}
+
+		void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			setTranslation( p_json[ "POSITION" ].get<Vec3f>() );
+			setRotation( p_json[ "ROTATION" ].get<Vec3f>() );
+			setScale( p_json[ "SCALE" ].get<Vec3f>() );
 		}
 
 	  private:

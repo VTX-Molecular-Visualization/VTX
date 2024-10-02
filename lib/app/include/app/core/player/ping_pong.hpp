@@ -3,6 +3,7 @@
 
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/players.hpp"
+#include <util/json/array.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -22,6 +23,20 @@ namespace VTX::App::Core::Player
 
 		bool isPlayingForward() const { return _forward; }
 		void setPlayingForward( const bool p_forward ) { _forward = p_forward; }
+
+		Util::JSon::Object serialize() const override
+		{
+			Util::JSon::Object json = BasePlayer::serialize();
+			json.appendField( { "IS_PLAYING_FORWARD", _forward } );
+
+			return json;
+		}
+
+		void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			BasePlayer::deserialize( p_json );
+			_forward = p_json[ "IS_PLAYING_FORWARD" ].get<bool>();
+		}
 
 	  private:
 		bool _forward = true;

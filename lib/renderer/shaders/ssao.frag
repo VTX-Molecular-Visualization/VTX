@@ -3,12 +3,13 @@
 #include "layout_uniforms_camera.glsl"
 #include "struct_data_packed.glsl"
 
-// Crytek (Crysis) like SSAO
+// line integration like SSAO
 
 // In.
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureNoise;
 layout( binding = 2 ) uniform sampler2D inTextureDepth;
+
 
 layout ( std140, binding = 3 ) uniform Uniforms
 {	
@@ -17,66 +18,92 @@ layout ( std140, binding = 3 ) uniform Uniforms
 
 // Out.
 layout( location = 0 ) out float outAmbientOcclusion;
-
-const float BIAS = 0.025f;
-const vec3[16] aoKernel = vec3[16](
-    vec3(-0.00033631022, 0.0010243914, 0.002448698),
-    vec3(0.0034475655, 0.0014735218, 0.012867554),
-    vec3(0.01098434, -0.0017593445, 0.016593954),
-    vec3(-0.021057466, 0.0018550212, 0.025669338),
-    vec3(0.018788554, 0.004227499, 0.0294004),
-    vec3(-0.0067719393, 0.009231464, 0.013406272),
-    vec3(0.08500118, 0.00941014, 0.04617175),
-    vec3(0.055248156, -0.076622084, 0.0072870906),
-    vec3(0.026444966, 0.005659814, 0.05082282),
-    vec3(-0.025307063, -0.07054181, 0.24715291),
-    vec3(-0.10994154, -0.04454086, 0.27159324),
-    vec3(-0.22478794, -0.06995961, 0.13159482),
-    vec3(-0.24298586, 0.046245884, 0.2124926),
-    vec3(0.1463565, 0.306015, 0.4069092),
-    vec3(0.18017945, -0.15394086, 0.4013861),
-    vec3(-0.444832, 0.36629602, 0.65063953)
-);
-const int kernelSize = aoKernel.length();
+layout (location = 1) out float outTestingValues;
 const int noiseTextureSize = 64;
 
-void main()
-{
-	const ivec2 texPos = ivec2( gl_FragCoord.xy );
+const float BIAS = 0.025f;
+const int NUM_DIR = 4;
+const int NUM_SAMPLE = 4;
+
+//Directions to integrate in
+const vec2[4] dXs = vec2[4](
+	vec2(1.f,0.f),
+	vec2(-1.f,0.f),
+	vec2(0.f,1.f),
+	vec2(0.f,-1.f)
+) ;
+
+//different radii to sample
+const float[4] radii = float[4](
+	5.0f,10.0f,15.0f,20.0f
+);
+
+void main(){
+    //Get current pixel, screen space coordinates
+    ivec2 texPos= ivec2(gl_FragCoord.xy);
 
 	UnpackedData data;
 	unpackData( inTexturePackedData, data, texPos );
 	const vec3 pos = data.viewPosition;
+	
+    //get depth current pixel
+    float depth = texelFetch( inTextureDepth, texPos, 0 ).x;
 
-	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
-	const float radius = -pos.z;
+    vec3 posVec3 = vec3(float(texPos.x), float(texPos.y), depth);
 
-	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( noiseTextureSize ) ).xyz );
-	// Gram-Schmidt process.
-	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
-	const vec3 bitangent = cross( data.normal, tangent );
-	const mat3 TBN		 = mat3( tangent, bitangent, data.normal );
+	//TODO :  Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
+	const float radius = 1.f;
+    
+	//initialise la valeur d'occlusion
+	float sphereOcclusion= 0.f;
+	
 
-	float ao = 0.f;
+    //calculate random rotation matrix based on noise
+    float angle = texture( inTextureNoise, texPos / float( noiseTextureSize )).x;
+    mat2 rot = mat2(cos(angle), -sin(angle),
+					sin(angle), cos(angle));
 
-	for ( int i = 0; i < kernelSize; ++i )
-	{
-		// Compute sample position.
-		const vec3 samplePos = TBN * aoKernel[i] * radius + pos;
+	
+   
 
-		// Project sample position.
-		vec4 offset = uniformsCamera.matrixProjection * vec4( samplePos, 1.f );
-		offset.xy /= offset.w;
-		offset.xy = offset.xy * 0.5f + 0.5f;
+     for (int i = 0 ; i < 4; i++){
+		//Calculate pixel tangent
 
-		// Get sample depth.
-		float sampleDepth = -texture( inTextureDepth, offset.xy ).x;
+		//get sample position in screen space
+        ivec2 dX =  ivec2(rot *dXs[i] + texPos);
+		float depthdX = texelFetch( inTextureDepth, texPos+dX, 0 ).x;
 
-		// Range check: ignore background.
-		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, radius / abs( pos.z - sampleDepth ) );
-		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
-	}
+		vec3 dXPosVec3 = vec3(float(dX.x), float(dX.y), depthdX);
 
-	ao				 = 1.f - ( ao / kernelSize );
-	outAmbientOcclusion = pow( ao, uniforms.intensity );
+		float angle = atan(depthdX/length(dX)); 
+		float sinTan = sin(angle);
+    	//float sinHoriz = abs(depth - depthdX)/distance(dXPosVec3, posVec3);
+		
+		//TODO normalize le pixel pour calculer ta tangente avant de faire quoi que ce soit d'autre
+		for (int j = 0 ; j< 4; j++){
+	
+        //get sample position in screen space
+        ivec2 samplePos_frag =  ivec2(radius*radii[j]*dX + texPos);
+		//float depthSample = texelFetch( inTextureDepth, samplePos_frag, 0 ).x;
+		float depthSample = texture( inTextureDepth, samplePos_frag).x;
+
+		vec3 samplePosVec3 = vec3(float(samplePos_frag.x), float(samplePos_frag.y), depthSample);
+
+
+		float horizAngle = atan(depthSample/length(samplePos_frag)); 
+		float sinHoriz = sin(horizAngle);
+
+    	//float sinSample = abs(depth - depthSample)/distance(samplePosVec3, posVec3);
+	
+		sphereOcclusion += (sinHoriz-sinTan)/float(16);
+
+    } }
+
+	//remove anything under 0.5 and normalize between 1 and 0.
+	
+	sphereOcclusion = clamp(sphereOcclusion,0.f,1.f);
+
+	outAmbientOcclusion = pow(1.f-sphereOcclusion,uniforms.intensity);
+	outAmbientOcclusion = 1.f-sphereOcclusion;
+
 }

@@ -1,6 +1,6 @@
 #include "app/application/ecs/component_meta_function.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/serialization/serialization_system.hpp"
+#include "app/core/serialization/serialization_system.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Application::ECS

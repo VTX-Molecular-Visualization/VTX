@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include <string>
 #include <string_view>
+#include <typeindex>
 #include <utility>
 
 namespace VTX::Util
@@ -27,15 +28,21 @@ namespace VTX::Util
 	using DefaultHashProcess = std::remove_pointer_t<std::decay_t<T>>;
 
 	template<typename T>
+	constexpr std::type_index typeIndex()
+	{
+		return typeid( DefaultHashProcess<T> );
+	}
+
+	template<typename T>
 	constexpr Hash hash()
 	{
-		return typeid( DefaultHashProcess<T> ).hash_code();
+		return typeIndex<T>().hash_code();
 	}
 
 	template<typename T>
 	constexpr std::string_view typeName()
 	{
-		return typeid( DefaultHashProcess<T> ).name();
+		return typeIndex<T>().name();
 	}
 
 } // namespace VTX::Util

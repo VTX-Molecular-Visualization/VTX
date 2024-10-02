@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_COLOR_RGBA__
 #define __VTX_UTIL_COLOR_RGBA__
 
+#include "util/generic/base_serializable.hpp"
 #include "util/types.hpp"
 #include <iomanip>
 #include <sstream>
@@ -9,7 +10,7 @@
 
 namespace VTX::Util::Color
 {
-	class Rgba : public Vec4f
+	class Rgba : public Vec4f, public Generic::BaseSerializable
 	{
 	  public:
 		Rgba() = default;
@@ -187,6 +188,16 @@ namespace VTX::Util::Color
 		void saturate();
 		void applyGamma( const float & pyamma );
 		void oppose();
+
+		Util::JSon::Object serialize() const override { return { { "R", x }, { "G", y }, { "B", z }, { "A", w } }; }
+
+		void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			x = p_json[ "R" ].get<float>();
+			y = p_json[ "G" ].get<float>();
+			z = p_json[ "B" ].get<float>();
+			w = p_json[ "A" ].get<float>();
+		}
 	};
 } // namespace VTX::Util::Color
 

@@ -4,19 +4,17 @@
 #include "app/core/serialization/serialization_system.hpp"
 #include <concepts>
 #include <memory>
-#include <optional>
-#include <util/json/basic_json.hpp>
+#include <optional><
+#include <util/generic/base_serializable.hpp>
 
 namespace VTX::App::Core::Settings
 {
-	class BaseSetting
+	class BaseSetting : public Util::Generic::BaseSerializable
 	{
 	  public:
 		virtual std::unique_ptr<BaseSetting> clone() const = 0;
 
-		virtual Util::JSon::BasicJSon serialize() const									  = 0;
-		virtual void				  deserialize( const Util::JSon::BasicJSon & p_json ) = 0;
-		virtual void				  reset()											  = 0;
+		virtual void reset() = 0;
 
 		virtual bool operator==( const BaseSetting & p_other ) const = 0;
 		virtual bool operator!=( const BaseSetting & p_other ) const = 0;
@@ -37,14 +35,17 @@ namespace VTX::App::Core::Settings
 
 		void set( const T & p_value ) { _value = p_value; }
 
+		// Dirty hack
 		Util::JSon::BasicJSon serialize() const override
 		{
-			// return Core::Serialization::serialize<T>( _value );
+			// TODO
+			// return Core::Serialization::SerializationSystem::serialize<T>( _value );
 			return {};
 		}
 		void deserialize( const Util::JSon::BasicJSon & p_json ) override
 		{
-			// Core::Serialization::deserialize<T>( p_json, _value );
+			// TODO
+			// Core::Serialization::SerializationSystem::deserialize( p_json, _value );
 		}
 
 		void reset() override

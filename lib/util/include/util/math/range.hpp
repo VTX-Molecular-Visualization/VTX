@@ -1,16 +1,17 @@
 #ifndef __VTX_UTIL_MATH_RANGE__
 #define __VTX_UTIL_MATH_RANGE__
 
+#include "util/generic/base_serializable.hpp"
+#include "util/math.hpp"
 #include <cassert>
 #include <concepts>
-#include <util/math.hpp>
 #include <vector>
 
 namespace VTX::Util::Math
 {
 	// Class which will manage a range of integral type (a Range has a start index and a count).
 	template<std::integral T>
-	class Range
+	class Range : public Generic::BaseSerializable
 	{
 	  private:
 		inline static const T ZERO = T( 0 );
@@ -117,6 +118,14 @@ namespace VTX::Util::Math
 		}
 
 		bool isValid() const { return _count > ZERO; };
+
+		Util::JSon::Object serialize() const override { return { { "FIRST", _start }, { "COUNT", _count } }; }
+
+		void deserialize( const Util::JSon::Object & p_json ) override
+		{
+			_start = p_json[ "FIRST" ].get<T>();
+			_count = p_json[ "COUNT" ].get<T>();
+		}
 
 	  private:
 		T _start;
