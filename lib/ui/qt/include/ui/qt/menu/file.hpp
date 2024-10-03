@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_MENU_FILE__
 
 #include "ui/qt/base_widget.hpp"
-#include "ui/qt/dialog/download.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -15,20 +14,7 @@ namespace VTX::UI::QT::Menu
 		{
 			addAction<Action::System::New>();
 			addSeparator();
-
-			// Connect to dialog.
-			auto * aDownload = addAction<Action::System::Download>();
-			connect(
-				aDownload,
-				&QAction::triggered,
-				this,
-				[]()
-				{
-					Dialog::Download dialog;
-					dialog.exec();
-				}
-			);
-
+			addAction<Action::System::Download>();
 			addSeparator();
 			addAction<Action::System::Open>();
 			addAction<Action::System::OpenRecent>();

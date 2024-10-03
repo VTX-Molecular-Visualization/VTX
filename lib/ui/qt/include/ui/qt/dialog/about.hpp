@@ -17,8 +17,6 @@ namespace VTX::UI::QT::Dialog
 			setWindowFlags( Qt::Dialog );
 		}
 
-		virtual ~About() {}
-
 	  private:
 	};
 

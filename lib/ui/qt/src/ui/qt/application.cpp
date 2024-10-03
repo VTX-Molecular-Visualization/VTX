@@ -114,10 +114,6 @@ namespace VTX::UI::QT
 		_timer.stop();
 	}
 
-	void Application::save() {}
-
-	void Application::restore() {}
-
 	void Application::_loadTheme()
 	{
 		using namespace Resources;

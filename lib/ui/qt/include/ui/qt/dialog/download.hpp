@@ -2,18 +2,22 @@
 #define __VTX_UI_QT_DIALOG_DOWNLOAD__
 
 #include "ui/qt/base_widget.hpp"
+#include "ui/qt/settings.hpp"
 #include <QComboBox>
 #include <QDialog>
+#include <QPointer>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
 
-	class Download : public BaseWidget<Download, QDialog>
+	class Download : public BaseWidget<Download, QDialog>, public Savable
 	{
 	  public:
 		Download();
-		virtual ~Download() {}
+
+		void save() override;
+		void restore() override;
 
 	  private:
 		// TODO: move to json.
@@ -23,6 +27,11 @@ namespace VTX::UI::QT::Dialog
 		inline static const std::string _SETTING_KEY_PDB = "dialogDownloadPDBHistory";
 		// TODO: move to settings.
 		inline static const uint _MAX_HISTORY_SIZE = 10;
+
+		QPointer<QComboBox> _comboBoxURL;
+		QPointer<QComboBox> _comboBoxPDB;
+		std::string			_url;
+		std::string			_pdb;
 
 		void _loadHistory( const std::string & p_key, QComboBox * const p_comboBox );
 		void _saveHistory( const std::string & p_key, const std::string & p_value );

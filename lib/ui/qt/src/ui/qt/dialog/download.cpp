@@ -19,38 +19,37 @@ namespace VTX::UI::QT::Dialog
 		QVBoxLayout * layout = new QVBoxLayout( this );
 
 		// URL.
-		QLabel *	labelURL	= new QLabel( "Server URL", this );
-		QComboBox * comboBoxURL = new QComboBox( this );
-		comboBoxURL->setEditable( true );
-		comboBoxURL->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
+		QLabel * labelURL = new QLabel( "Server URL", this );
+		_comboBoxURL	  = new QComboBox( this );
+		_comboBoxURL->setEditable( true );
+		_comboBoxURL->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
 		// PDB id.
-		QLabel *	labelPDB	= new QLabel( "PDB id", this );
-		QComboBox * comboBoxPDB = new QComboBox( this );
-		comboBoxPDB->setEditable( true );
-		comboBoxPDB->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
-		comboBoxPDB->setFocus();
+		QLabel * labelPDB = new QLabel( "PDB id", this );
+		_comboBoxPDB	  = new QComboBox( this );
+		_comboBoxPDB->setEditable( true );
+		_comboBoxPDB->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
+		_comboBoxPDB->setFocus();
 
 		// Buttons.
 		QDialogButtonBox * buttonBox = new QDialogButtonBox(
 			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
 		);
 
-		// Load histories.
-		_loadHistory( _SETTING_KEY_URL, comboBoxURL );
-		_loadHistory( _SETTING_KEY_PDB, comboBoxPDB );
+		// Load histories manually because dialog is destroyed when closed.
+		restore();
 
 		// FIXME: Avoid losing default url if not in history.
-		if ( comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
+		if ( _comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
 		{
-			comboBoxURL->addItem( _DEFAULT_URL.c_str() );
+			_comboBoxURL->addItem( _DEFAULT_URL.c_str() );
 		}
 
 		// Layout.
 		layout->addWidget( labelURL );
-		layout->addWidget( comboBoxURL );
+		layout->addWidget( _comboBoxURL );
 		layout->addWidget( labelPDB );
-		layout->addWidget( comboBoxPDB );
+		layout->addWidget( _comboBoxPDB );
 		layout->addWidget( buttonBox );
 		setLayout( layout );
 
@@ -58,28 +57,28 @@ namespace VTX::UI::QT::Dialog
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Open ),
 			&QPushButton::clicked,
-			[ this, comboBoxURL, comboBoxPDB ]()
+			[ this ]()
 			{
 				// Check inputs.
-				std::string url = comboBoxURL->currentText().toStdString();
-				Util::String::trim( url );
-				std::string pdb = comboBoxPDB->currentText().toStdString();
-				Util::String::trim( pdb );
+				_url = _comboBoxURL->currentText().toStdString();
+				Util::String::trim( _url );
+				_pdb = _comboBoxPDB->currentText().toStdString();
+				Util::String::trim( _pdb );
 
-				if ( url.empty() )
+				if ( _url.empty() )
 				{
 					VTX_WARNING( "URL is empty" );
 					return;
 				}
 
-				if ( url.empty() || pdb.empty() )
+				if ( _url.empty() || _pdb.empty() )
 				{
 					VTX_WARNING( "PDB id is empty" );
 					return;
 				}
 
-				std::string	 urlReplaced = url;
-				const size_t pos		 = url.find( _PDB_ID_TEMPLATE );
+				std::string	 urlReplaced = _url;
+				const size_t pos		 = _url.find( _PDB_ID_TEMPLATE );
 				if ( pos == std::string::npos )
 				{
 					VTX_WARNING( "URL does not contain {}", _PDB_ID_TEMPLATE );
@@ -87,12 +86,11 @@ namespace VTX::UI::QT::Dialog
 				else
 				{
 					urlReplaced
-						= urlReplaced.replace( urlReplaced.find( _PDB_ID_TEMPLATE ), _PDB_ID_TEMPLATE.length(), pdb );
+						= urlReplaced.replace( urlReplaced.find( _PDB_ID_TEMPLATE ), _PDB_ID_TEMPLATE.length(), _pdb );
 				}
 
 				// Save histories.
-				_saveHistory( _SETTING_KEY_URL, url );
-				_saveHistory( _SETTING_KEY_PDB, pdb );
+				save();
 
 				// TODO: App::Action::Download.
 				VTX_DEBUG( "Download: {}", urlReplaced );
@@ -130,6 +128,18 @@ namespace VTX::UI::QT::Dialog
 			history.removeLast();
 		}
 		SETTINGS.setValue( p_key.c_str(), history );
+	}
+
+	void Download::save()
+	{
+		_saveHistory( _SETTING_KEY_URL, _url );
+		_saveHistory( _SETTING_KEY_PDB, _pdb );
+	}
+
+	void Download::restore()
+	{
+		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
+		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
 	}
 
 } // namespace VTX::UI::QT::Dialog

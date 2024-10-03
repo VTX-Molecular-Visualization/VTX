@@ -11,7 +11,6 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		Progress( const std::string & p_text, std::optional<std::function<void( void )>> p_onCancel = std::nullopt );
-		virtual ~Progress() {}
 
 		inline void setValue( const float p_value )
 		{

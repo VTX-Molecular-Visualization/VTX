@@ -1,4 +1,5 @@
 #include "ui/qt/actions.hpp"
+#include "ui/qt/dialog/download.hpp"
 #include <app/action/animation.hpp>
 #include <app/action/application.hpp>
 #include <app/action/controller.hpp>
@@ -89,6 +90,11 @@ namespace VTX::UI::QT::Action
 			tip		 = "Download structure from PDB id";
 			icon	 = "sprite/file/download.png";
 			shortcut = "Ctrl+D";
+			trigger	 = []()
+			{
+				Dialog::Download dialog;
+				dialog.exec();
+			};
 		}
 
 		Open::Open()
