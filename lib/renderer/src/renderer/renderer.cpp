@@ -409,7 +409,7 @@ namespace VTX::Renderer
 		};
 
 		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setValue( p_perspective, "Is perspective" ); };
+			[ this, &p_proxy ]( const bool p_perspective ) { setValue( uint( p_perspective ), "Is perspective" ); };
 	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
