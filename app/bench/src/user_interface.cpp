@@ -7,7 +7,7 @@
 #include <imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imnodes/imnodes.h>
-#include <stb_image_write.h>
+#include <util/image.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Bench
@@ -204,9 +204,7 @@ namespace VTX::Bench
 						image, p_width, p_height, p_camera->getFov(), p_camera->getNear(), p_camera->getFar()
 					);
 
-					stbi_flip_vertically_on_write( true );
-					stbi_write_png_compression_level = 0;
-					stbi_write_png( "snapshot.png", int( p_width ), int( p_height ), 4, image.data(), 0 );
+					Util::Image::write( "snapshot", Util::Image::E_FORMAT::PNG, p_width, p_height, image.data() );
 				};
 
 				if ( ImGui::MenuItem( "800x600" ) )

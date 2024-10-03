@@ -27,6 +27,5 @@ endif()
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
 target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
-target_link_libraries(vtx_renderer_bench PRIVATE stb::stb)
 	
 #vtx_copy_registered_data(vtx_renderer_bench)
