@@ -2,6 +2,7 @@
 #include <app/action/animation.hpp>
 #include <app/action/application.hpp>
 #include <app/action/controller.hpp>
+#include <app/action/export.hpp>
 #include <app/application/scene.hpp>
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
@@ -283,6 +284,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Save current image";
 			icon	 = "sprite/snapshot/snapshot.png";
 			shortcut = "F2";
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Export::Snapshot>(); };
 		}
 
 		Export::Export()

@@ -6,7 +6,7 @@
 namespace VTX::Util::Image
 {
 
-	void write(
+	FilePath write(
 		const FilePath &	p_path,
 		const E_FORMAT		p_format,
 		const size_t		p_width,
@@ -15,7 +15,7 @@ namespace VTX::Util::Image
 	)
 	{
 		// Remove extension from path.
-		FilePath path = p_path.stem();
+		FilePath path = p_path.parent_path() / p_path.stem();
 
 		stbi_flip_vertically_on_write( true );
 
@@ -30,6 +30,10 @@ namespace VTX::Util::Image
 			path += ".jpg";
 			stbi_write_jpg( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 100 );
 			break;
+
+		default: assert( 1 ); ;
 		}
+
+		return path;
 	}
 } // namespace VTX::Util::Image

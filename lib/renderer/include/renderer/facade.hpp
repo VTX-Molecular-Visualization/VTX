@@ -46,9 +46,10 @@ namespace VTX::Renderer
 			const float			 p_near,
 			const float			 p_far
 		);
-		Vec2i			   getPickedIds( const size_t p_x, const size_t p_y ) const;
-		void			   setNeedUpdate( const bool p_value );
-		StructInfos		   getInfos() const;
+		Vec2i		getPickedIds( const size_t p_x, const size_t p_y ) const;
+		void		setNeedUpdate( const bool p_value );
+		StructInfos getInfos() const;
+
 		Util::Callback<> & onReady();
 
 	  private:

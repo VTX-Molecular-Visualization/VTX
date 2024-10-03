@@ -7,7 +7,7 @@
 namespace VTX::App::Filesystem
 {
 
-	static FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
+	inline const FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
 
 	inline const FilePath getExecutableDir()
 	{
@@ -33,9 +33,9 @@ namespace VTX::App::Filesystem
 	inline const FilePath getLicenseFile() { return getExecutableDir() / "license.txt"; }
 
 	// Dev directories.
-	static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
-	static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
-	static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
+	// static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
+	inline const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
+	inline const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
 
 	inline const FilePath getShadersPath( const FilePath & p_filename )
 	{

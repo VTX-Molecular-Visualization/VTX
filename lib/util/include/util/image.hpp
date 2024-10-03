@@ -23,7 +23,7 @@ namespace VTX::Util::Image
 	 * @param p_height Image height.
 	 * @param p_data Image data.
 	 */
-	void write(
+	FilePath write(
 		const FilePath &	p_path,
 		const E_FORMAT		p_format,
 		const size_t		p_width,
