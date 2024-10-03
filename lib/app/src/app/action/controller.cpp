@@ -52,4 +52,30 @@ namespace VTX::App::Action::Controller
 		}
 	}
 
+	void SetCameraProjectionOrthographic::execute()
+	{
+		auto & camera = SCENE().getCamera();
+		camera.setCameraProjection( Component::Render::Camera::PROJECTION::ORTHOGRAPHIC );
+	}
+
+	void SetCameraProjectionPerspective::execute()
+	{
+		auto & camera = SCENE().getCamera();
+		camera.setCameraProjection( Component::Render::Camera::PROJECTION::PERSPECTIVE );
+	}
+
+	void ToggleCameraProjection::execute()
+	{
+		using namespace Component::Render;
+		auto & camera = SCENE().getCamera();
+		if ( camera.getProjection() == Camera::PROJECTION::ORTHOGRAPHIC )
+		{
+			camera.setCameraProjection( Camera::PROJECTION::PERSPECTIVE );
+		}
+		else
+		{
+			camera.setCameraProjection( Camera::PROJECTION::ORTHOGRAPHIC );
+		}
+	}
+
 } // namespace VTX::App::Action::Controller

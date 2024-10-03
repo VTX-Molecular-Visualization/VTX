@@ -111,6 +111,7 @@ namespace VTX::UI::QT::Widget
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
+
 		// Connect progress dialog.
 		APP::onStartBlockingOperation += [ this ]( const std::string & p_text )
 		{

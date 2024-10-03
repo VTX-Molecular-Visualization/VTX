@@ -9,7 +9,8 @@
 
 namespace VTX::App::Core::Controller
 {
-
+	// TODO: use an unique camera controller?
+	// + aniamtion controller.
 	class ControllerSystem
 	{
 	  public:
@@ -29,7 +30,7 @@ namespace VTX::App::Core::Controller
 			{ controller->update( p_delta, p_elapsed ); };
 
 			// Save callback id.
-			_activeCallbacks[ controller->getName() ] = id;
+			_activeCallbacks.emplace( controller->getName(), id );
 
 			// Set controller active.
 			controller->setActive( true );

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_ACTION_VISUALIZATION__
-#define __VTX_UI_ACTION_VISUALIZATION__
+#ifndef __VTX_UI_ACTION_CONTROLLER__
+#define __VTX_UI_ACTION_CONTROLLER__
 
 #include "app/core/controller/concepts.hpp"
 #include <app/core/action/base_action.hpp>
@@ -33,6 +33,27 @@ namespace VTX::App::Action::Controller
 	{
 	  public:
 		ToggleCameraController() {}
+		void execute() override;
+	};
+
+	class SetCameraProjectionOrthographic final : public App::Core::Action::BaseAction
+	{
+	  public:
+		SetCameraProjectionOrthographic() {}
+		void execute() override;
+	};
+
+	class SetCameraProjectionPerspective final : public App::Core::Action::BaseAction
+	{
+	  public:
+		SetCameraProjectionPerspective() {}
+		void execute() override;
+	};
+
+	class ToggleCameraProjection final : public App::Core::Action::BaseAction
+	{
+	  public:
+		ToggleCameraProjection() {}
 		void execute() override;
 	};
 } // namespace VTX::App::Action::Controller

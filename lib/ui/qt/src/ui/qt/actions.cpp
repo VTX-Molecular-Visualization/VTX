@@ -3,6 +3,9 @@
 #include <app/action/application.hpp>
 #include <app/action/controller.hpp>
 #include <app/application/scene.hpp>
+#include <app/controller/camera/freefly.hpp>
+#include <app/controller/camera/trackball.hpp>
+#include <app/core/controller/controller_system.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action
@@ -58,6 +61,9 @@ namespace VTX::UI::QT::Action
 			{
 				QObject::connect( qAction, &QAction::triggered, p_action.trigger.value() );
 			}
+			// Connect.
+			// TODO: maybe this is dirty (calling this function to get previously created qAction).
+			p_action.connect();
 		}
 
 		return _ACTIONS.get<QAction>( p_hash );
@@ -140,6 +146,28 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change projection mode (perspective/orthographic)";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraProjection>(); };
+		}
+
+		void Orthographic::connect() const
+		{
+			using namespace App::Component;
+
+			QAction * const	 qAction = Factory::get<Orthographic>();
+			Render::Camera & camera	 = App::SCENE().getCamera();
+
+			if ( camera.getProjection() == Render::Camera::PROJECTION::ORTHOGRAPHIC )
+			{
+				qAction->setChecked( true );
+			}
+
+			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
+			{
+				if ( p_projection == Render::Camera::PROJECTION::ORTHOGRAPHIC )
+				{
+					qAction->setChecked( true );
+				}
+			};
 		}
 
 		Perspective::Perspective()
@@ -149,6 +177,28 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change projection mode (perspective/orthographic)";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraProjection>(); };
+		}
+
+		void Perspective::connect() const
+		{
+			using namespace App::Component;
+
+			QAction * const	 qAction = Factory::get<Perspective>();
+			Render::Camera & camera	 = App::SCENE().getCamera();
+
+			if ( camera.getProjection() == Render::Camera::PROJECTION::PERSPECTIVE )
+			{
+				qAction->setChecked( true );
+			}
+
+			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
+			{
+				if ( p_projection == Render::Camera::PROJECTION::PERSPECTIVE )
+				{
+					qAction->setChecked( true );
+				}
+			};
 		}
 
 		Trackball::Trackball()
@@ -161,6 +211,24 @@ namespace VTX::UI::QT::Action
 			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
+		void Trackball::connect() const
+		{
+			QAction * const qAction = Factory::get<Trackball>();
+
+			if ( App::CONTROLLER_SYSTEM().isControllerEnabled<App::Controller::Camera::Trackball>() )
+			{
+				qAction->setChecked( true );
+			}
+
+			App::CONTROLLER_SYSTEM().onControllerEnabled += [ qAction ]( const Name p_name )
+			{
+				if ( p_name == App::Controller::Camera::Trackball::NAME )
+				{
+					qAction->setChecked( true );
+				}
+			};
+		}
+
 		Freefly::Freefly()
 		{
 			name	 = "Freefly";
@@ -169,6 +237,24 @@ namespace VTX::UI::QT::Action
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
 			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
+		}
+
+		void Freefly::connect() const
+		{
+			QAction * const qAction = Factory::get<Freefly>();
+
+			if ( App::CONTROLLER_SYSTEM().isControllerEnabled<App::Controller::Camera::Freefly>() )
+			{
+				qAction->setChecked( true );
+			}
+
+			App::CONTROLLER_SYSTEM().onControllerEnabled += [ qAction ]( const Name p_name )
+			{
+				if ( p_name == App::Controller::Camera::Freefly::NAME )
+				{
+					qAction->setChecked( true );
+				}
+			};
 		}
 
 		Orient::Orient()

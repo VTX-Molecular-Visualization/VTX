@@ -92,21 +92,25 @@ namespace VTX::UI::QT
 			struct Orthographic : public App::UI::DescAction
 			{
 				Orthographic();
+				void connect() const override;
 			};
 
 			struct Perspective : public App::UI::DescAction
 			{
 				Perspective();
+				void connect() const override;
 			};
 
 			struct Trackball : public App::UI::DescAction
 			{
 				Trackball();
+				void connect() const override;
 			};
 
 			struct Freefly : public App::UI::DescAction
 			{
 				Freefly();
+				void connect() const override;
 			};
 
 			struct Orient : public App::UI::DescAction

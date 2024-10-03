@@ -17,25 +17,11 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Camera::Perspective>();
 			addAction<Action::Camera::Orthographic>();
 			addSeparator();
-			QAction * const trackball = addAction<Action::Camera::Trackball>();
-			QAction * const freeflly  = addAction<Action::Camera::Freefly>();
+			addAction<Action::Camera::Trackball>();
+			addAction<Action::Camera::Freefly>();
 			addSeparator();
 			addAction<Action::Camera::Orient>();
 			addAction<Action::Camera::Reset>();
-
-			// TODO: where to do this?
-			using namespace App::Controller::Camera;
-			App::CONTROLLER_SYSTEM().onControllerEnabled += [ trackball, freeflly ]( const Name p_name )
-			{
-				if ( p_name == Trackball::NAME )
-				{
-					trackball->setChecked( true );
-				}
-				else if ( p_name == Freefly::NAME )
-				{
-					freeflly->setChecked( true );
-				}
-			};
 		}
 
 		virtual ~Camera() {}

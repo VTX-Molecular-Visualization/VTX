@@ -14,9 +14,6 @@ namespace VTX::App::Component::Render
 		_far( Util::Math::max( _near, SETTINGS_SYSTEM().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
 		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
 	{
-		const PROJECTION & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
-
-		_projection = cameraProjection;
 	}
 
 	void Camera::init()
@@ -27,11 +24,10 @@ namespace VTX::App::Component::Render
 			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
 		_transform = &transformComponent;
-
 		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
 
-		_updateViewMatrix();
-		_updateProjectionMatrix();
+		const PROJECTION & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
+		setCameraProjection( cameraProjection );
 	}
 
 	void Camera::setScreenSize( const size_t p_width, const size_t p_height )
