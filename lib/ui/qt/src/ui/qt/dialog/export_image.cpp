@@ -2,9 +2,12 @@
 #include "app/application/scene.hpp"
 #include "ui/qt/application.hpp"
 #include <QDialogButtonBox>
-#include <QHBoxLayout>
+#include <QFileDialog>
+#include <QGroupBox>
 #include <QPushButton>
+#include <QToolTip>
 #include <QVBoxLayout>
+#include <app/action/export.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/core/renderer/renderer_system.hpp>
@@ -20,10 +23,14 @@ namespace VTX::UI::QT::Dialog
 		auto * layout = new QVBoxLayout( this );
 
 		// Resolution.
-		auto * layoutResolution = new QHBoxLayout( this );
-		layoutResolution->setAlignment( Qt::AlignmentFlag::AlignCenter );
+		auto * groupResolution		 = new QGroupBox( "Resolution" );
+		auto * layoutGroupResolution = new QVBoxLayout( this );
+		groupResolution->setLayout( layoutGroupResolution );
+		auto * layoutPresetSize = new QHBoxLayout( this );
 
-		auto * labelResolution = new QLabel( "Apply resolution preset", this );
+		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
+
+		auto * labelResolution = new QLabel( "Preset", this );
 		_comboBoxResolution	   = new QComboBox( this );
 		_comboBoxResolution->addItem( "-select-" );
 		_comboBoxResolution->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
@@ -51,68 +58,91 @@ namespace VTX::UI::QT::Dialog
 			&ExportImage::_onResolution
 		);
 
-		layoutResolution->addWidget( labelResolution );
-		layoutResolution->addWidget( _comboBoxResolution );
+		layoutPresetSize->addWidget( labelResolution );
+		layoutPresetSize->addWidget( _comboBoxResolution );
 
 		// Size widgets.
-		auto * layoutSize = new QHBoxLayout( this );
-		layoutSize->setAlignment( Qt::AlignmentFlag::AlignCenter );
-
 		auto * labelWidth = new QLabel( "Width", this );
 		_spinBoxWidth	  = new QSpinBox( this );
 		_spinBoxWidth->setMinimum( 100 );
 		_spinBoxWidth->setMaximum( _MAX_TEXTURE_SIZE );
-		_spinBoxWidth->setValue( int( camera.getScreenWidth() ) );
+		_spinBoxWidth->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed );
 
 		auto * labelHeight = new QLabel( "Height", this );
 		_spinBoxHeight	   = new QSpinBox( this );
 		_spinBoxHeight->setMinimum( 100 );
 		_spinBoxHeight->setMaximum( _MAX_TEXTURE_SIZE );
-		_spinBoxHeight->setValue( int( camera.getScreenHeight() ) );
+		_spinBoxHeight->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed );
 
 		connect( _spinBoxWidth, QOverload<int>::of( &QSpinBox::valueChanged ), this, &ExportImage::_onSize );
 		connect( _spinBoxHeight, QOverload<int>::of( &QSpinBox::valueChanged ), this, &ExportImage::_onSize );
 
-		layoutSize->addWidget( labelWidth );
-		layoutSize->addWidget( _spinBoxWidth );
-		layoutSize->addWidget( labelHeight );
-		layoutSize->addWidget( _spinBoxHeight );
+		layoutPresetSize->addWidget( labelWidth );
+		layoutPresetSize->addWidget( _spinBoxWidth );
+		layoutPresetSize->addWidget( labelHeight );
+		layoutPresetSize->addWidget( _spinBoxHeight );
 
 		// Ratio widgets.
 		auto * layoutRatio = new QHBoxLayout( this );
 		layoutRatio->setAlignment( Qt::AlignmentFlag::AlignCenter );
 
-		auto * labelRatio = new QLabel( "Ratio adjustement", this );
-		_labelRatio		  = new QLabel( this );
-		_labelRatio->setText(
-			QString::number( float( camera.getScreenWidth() ) / float( camera.getScreenHeight() ), 'f', 2 )
-		);
+		auto * labelRatio = new QLabel( "Ratio", this );
+		labelRatio->setToolTip( "Adjust height from ratio (ratio = width / height)" );
 
-		/*
-		_spinBoxRatio->setMinimum( _RATIO_MIN );
-		_spinBoxRatio->setMaximum( _RATIO_MAX );
-		_spinBoxRatio->setValue( double( camera.getScreenWidth() ) / double( camera.getScreenHeight() ) );
-
-		connect( _spinBoxRatio, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), this, &ExportImage::_onRatio );
-		*/
+		_labelRatioValue = new QLabel( this );
 
 		_sliderRatio = new QSlider( Qt::Orientation::Horizontal, this );
-		_sliderRatio->setMinimum( int( _RATIO_MIN * 100 ) );
-		_sliderRatio->setMaximum( int( _RATIO_MAX * 100 ) );
-		_sliderRatio->setValue( int( camera.getScreenWidth() / float( camera.getScreenHeight() ) * 100 ) );
+		_sliderRatio->setMinimum( int( _RATIO_MIN * 10000 ) );
+		_sliderRatio->setMaximum( int( _RATIO_MAX * 10000 ) );
 
 		connect( _sliderRatio, &QSlider::valueChanged, this, &ExportImage::_onRatio );
 
 		layoutRatio->addWidget( labelRatio );
-		layoutRatio->addWidget( _labelRatio );
 		layoutRatio->addWidget( _sliderRatio );
+		layoutRatio->addWidget( _labelRatioValue );
+
+		layoutGroupResolution->addLayout( layoutPresetSize );
+		layoutGroupResolution->addLayout( layoutRatio );
+
+		// Format.
+		auto * groupFormat	= new QGroupBox( "Format" );
+		auto * layoutFormat = new QVBoxLayout( this );
+		groupFormat->setLayout( layoutFormat );
+
+		_comboBoxFormat = new QComboBox( this );
+		_comboBoxFormat->addItem( _FORMATS[ 0 ].data() );
+		_comboBoxFormat->addItem( _FORMATS[ 1 ].data() );
+
+		connect(
+			_comboBoxFormat, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ExportImage::_onFormat
+		);
+
+		// Backgroud opacity.
+		_layoutBackgroundOpacity = new QHBoxLayout( this );
+		_labelBackgroundOpacity	 = new QLabel( "Background opacity", this );
+		_sliderBackgroundOpacity = new QSlider( Qt::Orientation::Horizontal, this );
+		_sliderBackgroundOpacity->setMinimum( 0 );
+		_sliderBackgroundOpacity->setMaximum( 100 );
+		_sliderBackgroundOpacity->setValue( 100 );
+
+		connect( _sliderBackgroundOpacity, &QSlider::valueChanged, this, &ExportImage::_onBackgroundOpacity );
+
+		_labelBackgroundOpacityValue = new QLabel( this );
+
+		_layoutBackgroundOpacity->addWidget( _labelBackgroundOpacity );
+		_layoutBackgroundOpacity->addWidget( _sliderBackgroundOpacity );
+		_layoutBackgroundOpacity->addWidget( _labelBackgroundOpacityValue );
+
+		layoutFormat->addWidget( _comboBoxFormat );
+		layoutFormat->addLayout( _layoutBackgroundOpacity );
 
 		// Preview.
 		_preview = new QLabel( this );
-
-		// Set size policy.
 		_preview->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding );
 		_preview->setAlignment( Qt::AlignmentFlag::AlignCenter );
+
+		//_preview->setAttribute( Qt::WA_TranslucentBackground, true );
+		//_preview->setWindowOpacity( 0.5 );
 
 		// Buttons.
 		QDialogButtonBox * buttonBox = new QDialogButtonBox(
@@ -120,52 +150,76 @@ namespace VTX::UI::QT::Dialog
 		);
 
 		// Layout.
-		layout->addLayout( layoutResolution );
-		layout->addLayout( layoutSize );
-		layout->addLayout( layoutRatio );
+		layout->addWidget( groupResolution );
+		layout->addWidget( groupFormat );
 		layout->addWidget( _preview );
 		layout->addWidget( buttonBox );
 
 		setLayout( layout );
 
-		// Updae preview.
-		_updatePreview();
+		// Trigger default values.
+		_onResolution( 1 );
+		_onFormat( 0 );
+		_onBackgroundOpacity();
+
+		// Restore settings.
+		restore();
 
 		// Callbacks.
 		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Open ),
+			buttonBox->button( QDialogButtonBox::StandardButton::Save ),
 			&QPushButton::clicked,
-			[ this ]() {
+			[ this ]()
+			{
+				// Pop file dialog.
+				QString filters = _comboBoxFormat->currentIndex() == 0 ? "*.png" : "*.jpg, *.jpeg";
+				QString path	= QFileDialog::getSaveFileName( this, "Save image", _lastExportFolder, filters );
+				if ( path.isEmpty() )
+				{
+					return;
+				}
 
+				App::ACTION_SYSTEM().execute<App::Action::Export::Snapshot>(
+					path.toStdString(),
+					_comboBoxFormat->currentIndex() == 0 ? Util::Image::E_FORMAT::PNG : Util::Image::E_FORMAT::JPEG,
+					_spinBoxWidth->value(),
+					_spinBoxHeight->value()
+				);
+
+				FilePath lastExportFolder = FilePath( path.toStdString() );
+				lastExportFolder		  = lastExportFolder.parent_path();
+				_lastExportFolder		  = QString::fromStdString( lastExportFolder.string() );
+
+				save();
+				close();
 			}
 		);
 
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
 			&QPushButton::clicked,
-			[ this ]() { close(); }
+			[ this ]()
+			{
+				save();
+				close();
+			}
 		);
 	}
 
-	void ExportImage::_onResolution()
+	void ExportImage::_onResolution( const int p_resolutionIndex )
 	{
-		const int resolutionIndex = _comboBoxResolution->currentIndex();
-
-		if ( resolutionIndex == 0 )
+		if ( p_resolutionIndex == 0 )
 		{
 			return;
 		}
 
-		const auto & resolution = _RESOLUTIONS[ resolutionIndex - 1 ];
+		const auto & resolution = _RESOLUTIONS[ p_resolutionIndex - 1 ];
 
 		// Update size.
 		_spinBoxWidth->setValue( int( resolution.width ) );
 		_spinBoxHeight->setValue( int( resolution.height ) );
 
-		// Update ratio.
-		const float ratio = float( resolution.width ) / float( resolution.height );
-		_labelRatio->setText( QString::number( ratio, 'f', 2 ) );
-		_sliderRatio->setValue( int( ratio * 100 ) );
+		_comboBoxResolution->setCurrentIndex( 0 );
 
 	} // namespace VTX::UI::QT::Dialog
 
@@ -174,30 +228,23 @@ namespace VTX::UI::QT::Dialog
 		const int width	 = _spinBoxWidth->value();
 		const int height = _spinBoxHeight->value();
 
-		// Reset resolution.
-		_comboBoxResolution->setCurrentIndex( 0 );
-
 		// Update ratio.
-		const float ratio = float( width ) / height;
-		//_labelRatio->setValue( double( ratio ) );
+		const double ratio = double( width ) / height;
 
-		_labelRatio->setText( QString::number( ratio, 'f', 2 ) );
-		_sliderRatio->setValue( int( ratio * 100 ) );
+		_labelRatioValue->setText( QString::number( ratio, 'f', 2 ) );
+		_sliderRatio->setValue( int( ratio * 10000 ) );
 
-		_updatePreview();
+		// Delay because widget sizes are not updated yet.
+		APP().onEndOfFrameOneShot += [ this ]() { _updatePreview(); };
 	}
 
 	void ExportImage::_onRatio()
 	{
-		// const float ratio = float( _labelRatio->value() );
-		const float ratio = _sliderRatio->value() / 100.0f;
-
-		// Reset resolution.
-		_comboBoxResolution->setCurrentIndex( 0 );
+		const double ratio = _sliderRatio->value() / 10000.0;
 
 		// Update Height.
 		const int width	 = _spinBoxWidth->value();
-		const int height = int( float( width ) / ratio );
+		const int height = int( double( width ) / ratio );
 		_spinBoxHeight->setValue( height );
 	}
 
@@ -237,4 +284,50 @@ namespace VTX::UI::QT::Dialog
 		_preview->setPixmap( QPixmap::fromImage( qImage ) );
 	}
 
+	void ExportImage::_onFormat( const int p_formatIndex )
+	{
+		const bool hasAlpha = p_formatIndex == int( Util::Image::E_FORMAT::PNG );
+		_labelBackgroundOpacity->setVisible( hasAlpha );
+		_sliderBackgroundOpacity->setVisible( hasAlpha );
+		_labelBackgroundOpacityValue->setVisible( hasAlpha );
+	}
+
+	void ExportImage::_onBackgroundOpacity()
+	{
+		_labelBackgroundOpacityValue->setText( QString::number( _sliderBackgroundOpacity->value() ) );
+		//_updatePreview();
+	}
+
+	void ExportImage::save()
+	{
+		SETTINGS.setValue( _SETTING_KEY_WIDTH, _spinBoxWidth->value() );
+		SETTINGS.setValue( _SETTING_KEY_HEIGHT, _spinBoxHeight->value() );
+		SETTINGS.setValue( _SETTING_KEY_FORMAT, _comboBoxFormat->currentIndex() );
+		SETTINGS.setValue( _SETTING_KEY_OPACITY, _sliderBackgroundOpacity->value() );
+		SETTINGS.setValue( _SETTING_KEY_FOLDER, _lastExportFolder );
+	}
+
+	void ExportImage::restore()
+	{
+		if ( SETTINGS.contains( _SETTING_KEY_WIDTH ) )
+		{
+			_spinBoxWidth->setValue( SETTINGS.value( _SETTING_KEY_WIDTH ).toInt() );
+		}
+		if ( SETTINGS.contains( _SETTING_KEY_HEIGHT ) )
+		{
+			_spinBoxHeight->setValue( SETTINGS.value( _SETTING_KEY_HEIGHT ).toInt() );
+		}
+		if ( SETTINGS.contains( _SETTING_KEY_FORMAT ) )
+		{
+			_comboBoxFormat->setCurrentIndex( SETTINGS.value( _SETTING_KEY_FORMAT ).toInt() );
+		}
+		if ( SETTINGS.contains( _SETTING_KEY_OPACITY ) )
+		{
+			_sliderBackgroundOpacity->setValue( SETTINGS.value( _SETTING_KEY_OPACITY ).toInt() );
+		}
+		if ( SETTINGS.contains( _SETTING_KEY_FOLDER ) )
+		{
+			_lastExportFolder = SETTINGS.value( _SETTING_KEY_FOLDER ).toString();
+		}
+	}
 } // namespace VTX::UI::QT::Dialog

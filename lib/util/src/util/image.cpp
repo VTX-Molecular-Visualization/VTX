@@ -41,7 +41,7 @@ namespace VTX::Util::Image
 			stbi_write_png_compression_level = 0;
 			stbi_write_png( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 0 );
 			break;
-		case E_FORMAT::JPG:
+		case E_FORMAT::JPEG:
 			path += ".jpg";
 			stbi_write_jpg( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 100 );
 			break;

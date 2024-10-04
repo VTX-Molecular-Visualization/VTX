@@ -12,7 +12,7 @@ namespace VTX::Util::Image
 	enum struct E_FORMAT
 	{
 		PNG,
-		JPG
+		JPEG
 	};
 
 	/**
