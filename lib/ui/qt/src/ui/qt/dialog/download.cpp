@@ -14,19 +14,19 @@ namespace VTX::UI::QT::Dialog
 	{
 		setWindowTitle( "Download" );
 		// TODO: try size policy?
-		setMinimumSize( 300, 100 );
+		setFixedSize( 300, 150 );
 
-		QVBoxLayout * layout = new QVBoxLayout( this );
+		auto * layout = new QVBoxLayout( this );
 
 		// URL.
-		QLabel * labelURL = new QLabel( "Server URL", this );
-		_comboBoxURL	  = new QComboBox( this );
+		auto * labelURL = new QLabel( "Server URL", this );
+		_comboBoxURL	= new QComboBox( this );
 		_comboBoxURL->setEditable( true );
 		_comboBoxURL->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
 		// PDB id.
-		QLabel * labelPDB = new QLabel( "PDB id", this );
-		_comboBoxPDB	  = new QComboBox( this );
+		auto * labelPDB = new QLabel( "PDB id", this );
+		_comboBoxPDB	= new QComboBox( this );
 		_comboBoxPDB->setEditable( true );
 		_comboBoxPDB->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 		_comboBoxPDB->setFocus();

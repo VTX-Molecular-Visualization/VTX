@@ -1,5 +1,6 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/dialog/download.hpp"
+#include "ui/qt/dialog/export_image.hpp"
 #include <app/action/animation.hpp>
 #include <app/action/application.hpp>
 #include <app/action/controller.hpp>
@@ -299,6 +300,11 @@ namespace VTX::UI::QT::Action
 			tip		 = "Open dialog to export image";
 			icon	 = "sprite/snapshot/export.png";
 			shortcut = "F3";
+			trigger	 = []()
+			{
+				Dialog::ExportImage dialog;
+				dialog.exec();
+			};
 		}
 
 	} // namespace Snapshot
