@@ -10,23 +10,42 @@
 #include "app/core/action/action_system.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
+#include "app/filesystem.hpp"
+#include <util/network.hpp>
 
 namespace VTX::App::Action::Scene
 {
 	void LoadMolecule::execute()
 	{
-		for ( const FilePath & moleculePath : _paths )
-		{
-			const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
-				= ENTITY_DIRECTOR().generateBuilder( Entity::MOLECULE_ENTITY_ID );
+		const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
+			= ENTITY_DIRECTOR().generateBuilder( Entity::MOLECULE_ENTITY_ID );
 
-			// Possibility to thread build function
-			entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &SCENE() );
-			entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( moleculePath.string() );
-			entityBuilder->build();
+		// Possibility to thread build function
+		entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &SCENE() );
+		entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( _path.string() );
+		if ( _buffer )
+		{
+			// TODO: remove copy, use string_view?
+			entityBuilder->getData()[ "buffer" ] = Util::VTXVariant( *_buffer );
 		}
+		entityBuilder->build();
 
 		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
+	}
+
+	void DownloadMolecule::execute()
+	{
+		// Download.
+		std::string data;
+		Util::Network::httpRequestGet( _url, data );
+
+		// TODO: cache on local disk.
+		const FilePath cachePar = Filesystem::getCacheDir() / "";
+
+		// Create string view.
+		std::string_view view( data );
+
+		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( "XXXX.pdb", &data );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

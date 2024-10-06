@@ -20,6 +20,7 @@ namespace VTX::App::Filesystem
 	inline const FilePath getSnapshotsDir() { return getExecutableDir() / "snapshots"; }
 	inline const FilePath getRendersDir() { return getExecutableDir() / "renders"; }
 	inline const FilePath getLogsDir() { return getExecutableDir() / "logs"; }
+	inline const FilePath getCacheDir() { return getExecutableDir() / "cache"; }
 	inline const FilePath getLibrariesDir() { return getExecutableDir() / "libraries"; }
 	inline const FilePath getRepresentationsLibraryDir() { return getLibrariesDir() / "representations"; }
 	inline const FilePath getRenderEffectPresetsLibraryDir() { return getLibrariesDir() / "render_effects"; }

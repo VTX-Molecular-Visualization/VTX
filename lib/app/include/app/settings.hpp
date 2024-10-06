@@ -66,6 +66,12 @@ namespace VTX::App::Settings
 			= App::Application::Selection::Granularity::ATOM;
 	} // namespace Selection
 
+	namespace Network
+	{
+		const std::string URL_API_KEY	  = "URL_API";
+		const std::string URL_API_DEFAULT = "URL_API";
+	} // namespace Network
+
 	void initSettings();
 } // namespace VTX::App::Settings
 

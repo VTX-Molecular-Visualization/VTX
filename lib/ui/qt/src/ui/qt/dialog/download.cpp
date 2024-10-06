@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -92,8 +93,7 @@ namespace VTX::UI::QT::Dialog
 				// Save histories.
 				save();
 
-				// TODO: App::Action::Download.
-				VTX_DEBUG( "Download: {}", urlReplaced );
+				App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced );
 
 				close();
 			}

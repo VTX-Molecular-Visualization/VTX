@@ -68,9 +68,9 @@ namespace VTX::App
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 	}
 
-	void VTXApp::start( const Args & p_args )
+	void VTXApp::start( const Args & args )
 	{
-		VTX_INFO( "Starting application: {}", p_args.toString() );
+		VTX_INFO( "Starting application: {}", args.toString() );
 
 		///////////
 		// TODO: move.
@@ -100,7 +100,7 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
-		_handleArgs( p_args );
+		_handleArgs( args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
@@ -194,15 +194,15 @@ namespace VTX::App
 		onStop();
 	}
 
-	void VTXApp::_handleArgs( const Args & p_args )
+	void VTXApp::_handleArgs( const Args & args )
 	{
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
-		for ( const std::string & p_arg : p_args.all() )
+		for ( const std::string & arg : args.all() )
 		{
 			// If argument is an existing file
-			if ( std::filesystem::exists( p_arg ) )
+			if ( std::filesystem::exists( arg ) )
 			{
-				const FilePath		 path	  = FilePath( p_arg );
+				const FilePath		 path	  = FilePath( arg );
 				const FILE_TYPE_ENUM fileType = IO::Internal::Filesystem::getFileTypeFromFilePath( path );
 
 				try
@@ -211,26 +211,39 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
-						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCRIPT:
-						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( p_arg );
+						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( arg );
 						break;
 					}
 				}
 				catch ( const IOException & p_e )
 				{
-					VTX_ERROR( "Can't open file '{}' : {}.", p_arg, p_e.what() );
+					VTX_ERROR( "Can't open file '{}' : {}.", arg, p_e.what() );
+				}
+			}
+			// If argument is a molecule name.
+			else if ( arg.size() == 4 )
+			{
+				// Check only letter and number.
+				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
+				{
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( arg );
+				}
+				else
+				{
+					VTX_WARNING( "Argument '{}' is not a valid molecule name.", arg );
 				}
 			}
 			else
 			{
-				VTX_WARNING( "Argument '{}' is not a valid file path.", p_arg );
+				VTX_WARNING( "Argument '{}' is not valid.", arg );
 			}
 		}
 	}

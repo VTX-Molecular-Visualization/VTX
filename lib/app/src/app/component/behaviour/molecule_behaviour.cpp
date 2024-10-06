@@ -116,6 +116,7 @@ namespace VTX::App::Component::Behaviour
 				return;
 			}
 
+			VTX_DEBUG( "Path: {}", path.string() );
 			loader.readBuffer( buffer.get<std::string>(), path, _moleculeComponent );
 		}
 		else // Filepath
