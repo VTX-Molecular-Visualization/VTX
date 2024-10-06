@@ -29,16 +29,20 @@ namespace VTX::App::Action::Scene
 		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets;
 	};
 
-	// TODO: move to other file?+
+	// TODO: move to other file?
 	class DownloadMolecule final : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit DownloadMolecule( const std::string & p_url ) : _url( p_url ) {}
+		explicit DownloadMolecule( const std::string & p_url, const FilePath & p_filename ) :
+			_url( p_url ), _filename( p_filename.filename() )
+		{
+		}
 
 		void execute() override;
 
 	  private:
 		const std::string _url;
+		const FilePath	  _filename;
 	};
 
 	class CreateViewpoint final : public App::Core::Action::BaseAction

@@ -20,6 +20,8 @@ namespace VTX::UI::QT::Dialog
 		void restore() override;
 
 	  private:
+		// TODO: check if file exists in cache.
+
 		// TODO: move to json.
 		inline static const std::string _PDB_ID_TEMPLATE = "[PDB_ID]";
 		inline static const std::string _DEFAULT_URL = "https://files.rcsb.org/download/" + _PDB_ID_TEMPLATE + ".pdb ";

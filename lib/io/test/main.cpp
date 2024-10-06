@@ -32,14 +32,14 @@ TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 {
 	return;
-	
+
 	using namespace VTX;
 	using namespace VTX::IO;
 
 	const std::string url = "https://files.rcsb.org/download/4hhb.pdb";
 
 	std::string data;
-	Util::Network::httpRequestGet( url, data );
+	Util::Network::httpRequestGet( url, &data );
 
 	VTX_INFO( "Test on {}", url );
 

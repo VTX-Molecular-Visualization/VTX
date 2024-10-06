@@ -93,7 +93,7 @@ namespace VTX::UI::QT::Dialog
 				// Save histories.
 				save();
 
-				App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced );
+				App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced, _pdb + ".pdb" );
 
 				close();
 			}

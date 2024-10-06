@@ -62,6 +62,12 @@ namespace VTX::App::Filesystem
 		return FilePath( getLogsDir() / p_filename );
 	}
 
+	inline const FilePath getCachePath( const FilePath & p_filename )
+	{
+		std::filesystem::create_directory( getCacheDir() );
+		return FilePath( getCacheDir() / p_filename );
+	}
+
 	inline const FilePath getRepresentationPath( const FilePath & p_filename )
 	{
 		std::filesystem::create_directory( getRepresentationsLibraryDir() );

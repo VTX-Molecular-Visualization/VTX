@@ -8,10 +8,11 @@
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/action/action_system.hpp"
+#include "app/core/network/network_system.hpp"
 #include "app/entity/all_entities.hpp"
 #include "app/entity/scene/molecule_entity.hpp"
 #include "app/filesystem.hpp"
-#include <util/network.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX::App::Action::Scene
 {
@@ -35,17 +36,11 @@ namespace VTX::App::Action::Scene
 
 	void DownloadMolecule::execute()
 	{
-		// Download.
-		std::string data;
-		Util::Network::httpRequestGet( _url, data );
+		std::string	   data;
+		const FilePath cachePath = Filesystem::getCachePath( _filename );
 
-		// TODO: cache on local disk.
-		const FilePath cachePar = Filesystem::getCacheDir() / "";
-
-		// Create string view.
-		std::string_view view( data );
-
-		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( "XXXX.pdb", &data );
+		NETWORK_SYSTEM().getFile( _filename.string(), &data, _url );
+		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( _filename, &data );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

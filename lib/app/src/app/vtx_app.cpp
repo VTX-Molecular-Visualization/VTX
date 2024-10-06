@@ -234,7 +234,7 @@ namespace VTX::App
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( arg );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( arg, arg + ".pdb" );
 				}
 				else
 				{

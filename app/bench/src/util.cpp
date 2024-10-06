@@ -20,7 +20,7 @@ namespace VTX::Bench
 		Core::Struct::Molecule molecule;
 		std::string			   data;
 
-		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", data );
+		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", &data );
 		reader.readBuffer( data, p_pdb + ".pdb", molecule );
 
 		return molecule;
