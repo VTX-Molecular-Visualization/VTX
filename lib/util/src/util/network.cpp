@@ -1,4 +1,5 @@
 #include "util/network.hpp"
+#include <cpr/cpr.h>
 
 namespace VTX::Util::Network
 {

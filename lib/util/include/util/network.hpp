@@ -3,7 +3,6 @@
 
 #include "exceptions.hpp"
 #include "logger.hpp"
-#include <cpr/cpr.h>
 
 namespace VTX::Util::Network
 {
