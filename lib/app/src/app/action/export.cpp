@@ -30,11 +30,10 @@ namespace VTX::App::Action::Export
 	{
 		try
 		{
-			auto &		 p_renderer = RENDERER_SYSTEM().facade();
-			const auto & camera		= SCENE().getCamera();
+			const auto & camera = SCENE().getCamera();
 
 			std::vector<uchar> image;
-			p_renderer.snapshot( image, _width, _height, camera.getFov(), camera.getNear(), camera.getFar() );
+			RENDERER_SYSTEM().snapshot( image, _width, _height, camera.getFov(), camera.getNear(), camera.getFar() );
 
 			FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
 

@@ -7,21 +7,10 @@
 
 namespace VTX::App::Core::Renderer
 {
-	class RendererSystem
+	class RendererSystem : public VTX::Renderer::Facade
 	{
 	  public:
-		RendererSystem() = default;
-
-		void init()
-		{
-			const FilePath shaderDir = Filesystem::getShadersDir();
-			_facade					 = std::make_unique<VTX::Renderer::Facade>( 1, 1, shaderDir );
-		}
-
-		inline VTX::Renderer::Facade & facade() { return *_facade; }
-
-	  private:
-		std::unique_ptr<VTX::Renderer::Facade> _facade;
+		RendererSystem() : VTX::Renderer::Facade( 1, 1, Filesystem::getShadersDir() ) {}
 	};
 
 } // namespace VTX::App::Core::Renderer

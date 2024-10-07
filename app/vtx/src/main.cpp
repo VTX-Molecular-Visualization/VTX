@@ -7,7 +7,7 @@
 
 // TODO: move to conan.
 #define VTX_UI_QT
-#define VTX_TOOL_EXAMPLE
+// #define VTX_TOOL_EXAMPLE
 #define VTX_TOOL_MDPREP
 
 #ifdef VTX_UI_QT

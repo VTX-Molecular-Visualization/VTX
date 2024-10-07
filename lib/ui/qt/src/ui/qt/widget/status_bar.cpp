@@ -22,9 +22,8 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
-		auto & renderer = App::RENDERER_SYSTEM().facade();
-		renderer.onReady() += [ vendorLabel, &renderer ]()
-		{ vendorLabel->setText( QString::fromStdString( renderer.getInfos().renderer ) ); };
+		App::RENDERER_SYSTEM().onReady() += [ vendorLabel ]()
+		{ vendorLabel->setText( QString::fromStdString( App::RENDERER_SYSTEM().getInfos().renderer ) ); };
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );

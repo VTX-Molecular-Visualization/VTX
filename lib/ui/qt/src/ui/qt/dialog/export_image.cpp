@@ -274,10 +274,9 @@ namespace VTX::UI::QT::Dialog
 		}
 
 		// Get preview image.
-		auto &			   renderer = App::RENDERER_SYSTEM().facade();
-		const auto &	   camera	= App::SCENE().getCamera();
+		const auto &	   camera = App::SCENE().getCamera();
 		std::vector<uchar> image;
-		renderer.snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
+		App::RENDERER_SYSTEM().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
 
 		QImage qImage( image.data(), width, height, QImage::Format::Format_RGBA8888 );
 		qImage = qImage.mirrored( false, true );

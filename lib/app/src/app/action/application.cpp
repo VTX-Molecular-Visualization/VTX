@@ -114,9 +114,8 @@ namespace VTX::App::Action::Application
 	void Resize::execute()
 	{
 		App::SCENE().getCamera().setScreenSize( _width, _height );
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
-		rendererFacade.resize( _width, _height );
-		rendererFacade.setOutput( _output );
+		App::RENDERER_SYSTEM().resize( _width, _height );
+		App::RENDERER_SYSTEM().setOutput( _output );
 	}
 
 	void RunScript::execute()

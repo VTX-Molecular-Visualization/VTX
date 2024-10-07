@@ -14,6 +14,7 @@ namespace VTX::Core::Struct
 
 		ColorLayout();
 		ColorLayout( const std::vector<Util::Color::Rgba> & p_layout );
+
 		std::vector<Util::Color::Rgba> layout;
 	};
 } // namespace VTX::Core::Struct

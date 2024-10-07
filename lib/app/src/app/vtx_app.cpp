@@ -46,9 +46,6 @@ namespace VTX::App
 		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
-		// Create renderer.
-		RENDERER_SYSTEM().init();
-
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
 		{
@@ -74,7 +71,7 @@ namespace VTX::App
 
 		///////////
 		// TODO: move.
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM().facade();
+		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM();
 		rendererFacade.build();
 		App::Component::Render::ProxyColorLayout & colorLayout
 			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
@@ -150,7 +147,7 @@ namespace VTX::App
 		frameInfo.set(
 			Monitoring::RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]()
-							  { RENDERER_SYSTEM().facade().render( p_deltaTime, p_elapsedTime ); } )
+							  { RENDERER_SYSTEM().render( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		frameInfo.set(

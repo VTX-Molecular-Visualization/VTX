@@ -55,7 +55,7 @@ namespace VTX::App::Controller::Picker
 	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		VTX_INFO( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
@@ -66,7 +66,7 @@ namespace VTX::App::Controller::Picker
 	void Selection::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !_isTargetSelected( pickingInfo ) )
 		{
@@ -92,7 +92,7 @@ namespace VTX::App::Controller::Picker
 	void Selection::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
 			return;
