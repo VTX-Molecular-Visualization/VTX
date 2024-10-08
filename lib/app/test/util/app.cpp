@@ -2,8 +2,6 @@
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/component/render/proxy_camera.hpp>
-#include <app/component/render/proxy_color_layout.hpp>
 #include <app/core/renderer/renderer_system.hpp>
 #include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>

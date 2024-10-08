@@ -3,6 +3,7 @@
 
 #include <array>
 #include <string>
+#include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Core::Struct

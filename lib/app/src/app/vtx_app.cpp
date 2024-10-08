@@ -8,8 +8,6 @@
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_camera.hpp"
-#include "app/component/render/proxy_color_layout.hpp"
 #include "app/component/render/proxy_molecule.hpp"
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
@@ -42,6 +40,9 @@ namespace VTX::App
 		Settings::initSettings();
 		Internal::ECS::setupEntityDirector();
 
+		// Init renderer.
+		Core::Renderer::RendererSystem::SHADER_DIR = Filesystem::getShadersDir();
+
 		// Create scene.
 		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
 		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
@@ -69,21 +70,15 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", args.toString() );
 
+		// Builid the renderer (graphic backend context ready).
+		auto & renderer = RENDERER_SYSTEM();
+		renderer.build();
+
 		///////////
 		// TODO: move.
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER_SYSTEM();
-		rendererFacade.build();
-		App::Component::Render::ProxyColorLayout & colorLayout
-			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
-		colorLayout.setup( rendererFacade );
-		rendererFacade.setProxyColorLayout( colorLayout.getProxy().proxy() );
 		static VTX::Renderer::Proxy::Representation			representation;
 		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
-		rendererFacade.addProxyRepresentations( representations );
-
-		App::Component::Render::ProxyCamera & proxyCamera
-			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
-		proxyCamera.setInRenderer( rendererFacade );
+		renderer.addProxyRepresentations( representations );
 		////////////
 
 		// ?

@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_CAMERA__
 
-#include "app/component/render/enum_camera.hpp"
 #include "app/component/scene/transform_component.hpp"
+#include <renderer/proxy/camera.hpp>
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
@@ -13,7 +13,7 @@ namespace VTX::App::Component::Render
 	constexpr Vec3f CAMERA_UP_DEFAULT	 = UP_AXIS;
 	constexpr Vec3f CAMERA_FRONT_DEFAULT = FRONT_AXIS;
 
-	class Camera
+	class Camera : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Camera>
 	{
 	  public:
 		// Projection enum.
@@ -27,7 +27,7 @@ namespace VTX::App::Component::Render
 
 		Camera();
 
-		void init();
+		void setupProxy() override;
 
 		inline const Component::Scene::Transform & getTransform() const { return *_transform; }
 		inline Component::Scene::Transform &	   getTransform() { return *_transform; }

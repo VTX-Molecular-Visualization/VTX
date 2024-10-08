@@ -2,7 +2,6 @@
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
 #include "app/component/chemistry/molecule.hpp"
-#include "app/core/renderer/proxy_wrapper.hpp"
 #include "app/core/visibility/enum.hpp"
 #include <core/struct/molecule.hpp>
 #include <renderer/facade.hpp>
@@ -12,11 +11,13 @@
 
 namespace VTX::App::Component::Render
 {
-	class ProxyMolecule
+	class ProxyMolecule : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Molecule>
 	{
 	  public:
 		ProxyMolecule();
 		~ProxyMolecule();
+
+		void setupProxy() override {}
 
 		void setup( Renderer::Facade & p_renderer );
 
@@ -40,8 +41,6 @@ namespace VTX::App::Component::Render
 		void _applyAtomPositionCallbacks();
 
 		void _removeFromRenderer();
-
-		Core::Renderer::ProxyWrapper<VTX::Renderer::Proxy::Molecule> _proxyWrapper;
 	};
 
 } // namespace VTX::App::Component::Render

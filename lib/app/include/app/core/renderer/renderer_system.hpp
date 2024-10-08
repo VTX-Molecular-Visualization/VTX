@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_CORE_RENDERER_RENDERER_SYSTEM__
 #define __VTX_APP_CORE_RENDERER_RENDERER_SYSTEM__
 
-#include <app/filesystem.hpp>
 #include <renderer/facade.hpp>
+#include <util/filesystem.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Core::Renderer
@@ -10,7 +10,9 @@ namespace VTX::App::Core::Renderer
 	class RendererSystem : public VTX::Renderer::Facade
 	{
 	  public:
-		RendererSystem() : VTX::Renderer::Facade( 1, 1, Filesystem::getShadersDir() ) {}
+		inline static FilePath SHADER_DIR = Util::Filesystem::getExecutableDir();
+
+		RendererSystem() : VTX::Renderer::Facade( 1, 1, SHADER_DIR ) {}
 	};
 
 } // namespace VTX::App::Core::Renderer

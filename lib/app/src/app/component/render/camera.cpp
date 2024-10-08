@@ -1,4 +1,5 @@
 #include "app/component/render/camera.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/settings.hpp"
 #include <util/logger.hpp>
@@ -14,20 +15,48 @@ namespace VTX::App::Component::Render
 		_far( Util::Math::max( _near, SETTINGS_SYSTEM().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
 		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
 	{
-	}
-
-	void Camera::init()
-	{
+		// Link transform component.
 		assert( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) );
-
-		Component::Scene::Transform & transformComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
-
-		_transform = &transformComponent;
+		auto & transformComponent = MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		_transform				  = &transformComponent;
 		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
 
-		const PROJECTION & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
+		// Set settings default values.
+		auto & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
 		setCameraProjection( cameraProjection );
+	}
+
+	void Camera::setupProxy()
+	{
+		auto & transformComponent = MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+
+		// Create.
+		_proxy = std::make_unique<Renderer::Proxy::Camera>( Renderer::Proxy::Camera {
+			&_viewMatrix,
+			&_projectionMatrix,
+
+			transformComponent.getPosition(),
+			VEC2I_ZERO,
+			_near,
+			_far,
+			getProjection() == PROJECTION::PERSPECTIVE,
+		} );
+
+		// Link callbacks.
+		onMatrixViewChange += [ this ]( const Mat4f & p_viewMatrix ) { _proxy->onMatrixView(); };
+		onMatrixProjectionChange += [ this ]( const Mat4f & p_projMatrix ) { _proxy->onMatrixProjection(); };
+
+		onClipInfosChange += [ this ]( float p_near, float p_far ) { _proxy->onCameraNearFar( p_near, p_far ); };
+		onProjectionChange += [ this ]( Camera::PROJECTION p_projection )
+		{ _proxy->onPerspective( p_projection == Camera::PROJECTION::PERSPECTIVE ); };
+
+		Component::Scene::Transform & transformComp
+			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		transformComp.onTransform += [ this ]( const Util::Math::Transform & p_transform )
+		{ _proxy->onCameraPosition( p_transform.getTranslationVector() ); };
+
+		// Set in renderer.
+		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyCamera( *_proxy ); };
 	}
 
 	void Camera::setScreenSize( const size_t p_width, const size_t p_height )

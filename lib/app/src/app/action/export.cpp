@@ -2,6 +2,7 @@
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include "app/filesystem.hpp"
 #include "util/chrono.hpp"
 
 namespace VTX::App::Action::Export

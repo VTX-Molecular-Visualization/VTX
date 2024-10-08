@@ -23,14 +23,7 @@ namespace VTX::App::Component::Render
 			Core::ECS::SIGNAL::DESTROY, this
 		);
 	}
-	void ProxyMolecule::_removeFromRenderer()
-	{
-		if ( _proxyWrapper.isValid() )
-		{
-			_proxyWrapper.proxy().onRemove();
-			_proxyWrapper.invalidate();
-		}
-	}
+	void ProxyMolecule::_removeFromRenderer() { _proxy->onRemove(); }
 
 	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
 	{
@@ -47,27 +40,25 @@ namespace VTX::App::Component::Render
 		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
-		std::unique_ptr<VTX::Renderer::Proxy::Molecule> proxyPtr
-			= std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
-				&transformComp.getTransform().get(),
+		_proxy = std::make_unique<VTX::Renderer::Proxy::Molecule>( VTX::Renderer::Proxy::Molecule {
+			&transformComp.getTransform().get(),
 
-				&molStruct.trajectory.getCurrentFrame(),
-				&molStruct.bondPairAtomIndexes,
-				&molStruct.atomNames,
-				reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
-				&molStruct.residueFirstAtomIndexes,
-				&molStruct.residueAtomCounts,
-				&molStruct.chainFirstResidues,
-				&molStruct.chainResidueCounts,
+			&molStruct.trajectory.getCurrentFrame(),
+			&molStruct.bondPairAtomIndexes,
+			&molStruct.atomNames,
+			reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
+			&molStruct.residueFirstAtomIndexes,
+			&molStruct.residueAtomCounts,
+			&molStruct.chainFirstResidues,
+			&molStruct.chainResidueCounts,
 
-				atomColors,
-				atomRadii,
-				atomIds,
-				residueColors,
-				residueIds } );
+			atomColors,
+			atomRadii,
+			atomIds,
+			residueColors,
+			residueIds } );
 
-		_proxyWrapper.setProxy( proxyPtr );
-		p_renderer.addProxyMolecule( _proxyWrapper.proxy() );
+		p_renderer.addProxyMolecule( *_proxy );
 	}
 	void ProxyMolecule::_setupCallbacks()
 	{
@@ -134,17 +125,13 @@ namespace VTX::App::Component::Render
 	{
 		switch ( p_applyMode )
 		{
-		case App::Core::VISIBILITY_APPLY_MODE::SHOW:
-			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, true );
-			break;
+		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxy->onAtomVisibilities( p_rangeList, true ); break;
 
-		case App::Core::VISIBILITY_APPLY_MODE::HIDE:
-			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, false );
-			break;
+		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxy->onAtomVisibilities( p_rangeList, false ); break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::SET:
-			_proxyWrapper.proxy().onVisible( false );
-			_proxyWrapper.proxy().onAtomVisibilities( p_rangeList, true );
+			_proxy->onVisible( false );
+			_proxy->onAtomVisibilities( p_rangeList, true );
 			break;
 
 		default:
@@ -186,14 +173,14 @@ namespace VTX::App::Component::Render
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyWrapper.proxy().onAtomSelections( castedSelectionData.getAtomIds(), true );
+			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
 		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
 			const Application::Selection::MoleculeData & castedSelectionData
 				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
-			_proxyWrapper.proxy().onAtomSelections( castedSelectionData.getAtomIds(), false );
+			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
 	void ProxyMolecule::_applyAtomPositionCallbacks()
@@ -208,8 +195,8 @@ namespace VTX::App::Component::Render
 				Component::Chemistry::Molecule & moleculeComponent
 					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
-				_proxyWrapper.proxy().atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
-				_proxyWrapper.proxy().onAtomPositions();
+				_proxy->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
+				_proxy->onAtomPositions();
 			};
 		}
 	}

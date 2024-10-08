@@ -1,7 +1,6 @@
 #include "app/application/scene.hpp"
 #include "app/application/ecs/entity_director.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_color_layout.hpp"
 #include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
@@ -306,10 +305,10 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultColorLayout()
 	{
+		// TODO: why an entity?
 		Core::ECS::BaseEntity colorLayoutEntity = MAIN_REGISTRY().createEntity();
-		MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
-		Component::Render::ProxyColorLayout & proxy
-			= MAIN_REGISTRY().addComponent<Component::Render::ProxyColorLayout>( colorLayoutEntity );
+		auto & comp = MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
+		comp.setupProxy();
 	}
 
 } // namespace VTX::App::Application
