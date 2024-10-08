@@ -28,6 +28,8 @@ namespace VTX::App
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
+		inline static Application::Scene & getScene() { return *_scene; }
+
 		// Main loop calllbacks.
 		inline static Util::Callback<> onStart;
 
@@ -52,6 +54,8 @@ namespace VTX::App
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
+		inline static Application::Scene * _scene;
+
 		static void _handleArgs( const Args & p_args );
 		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};

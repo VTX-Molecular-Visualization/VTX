@@ -5,6 +5,9 @@
 
 namespace VTX::App::Internal::ECS
 {
+	/**
+	 * @brief Setup entity creation routines.
+	 */
 	void setupEntityDirector();
 
 } // namespace VTX::App::Internal::ECS

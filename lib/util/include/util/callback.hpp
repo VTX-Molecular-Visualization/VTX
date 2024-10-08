@@ -15,7 +15,7 @@ namespace VTX::Util
 	class Callback
 	{
 	  public:
-		using Func = std::function<void( Args... )>;
+		using Func = std::function<void( const Args... )>;
 
 		Callback() = default;
 

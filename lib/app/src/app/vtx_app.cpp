@@ -38,14 +38,16 @@ namespace VTX::App
 		VTX_DEBUG( "Init application" );
 
 		Settings::initSettings();
-		Internal::ECS::setupEntityDirector();
 
 		// Init renderer.
 		Core::Renderer::RendererSystem::SHADER_DIR = Filesystem::getShadersDir();
 
+		// Setup entity creation routines (add components, setup components, etc.).
+		Internal::ECS::setupEntityDirector();
+
 		// Create scene.
 		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
-		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+		_scene							  = &MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
@@ -70,7 +72,8 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", args.toString() );
 
-		// Builid the renderer (graphic backend context ready).
+		// TODO: use custom context? (for offline rendering i CLI mode?)
+		// Builid the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 		renderer.build();
 
@@ -253,7 +256,7 @@ namespace VTX::App
 	//	}
 
 	// TODO.
-	Application::Scene &	  SCENE() { return Util::Singleton<Application::Scene>::get(); }
+	Application::Scene &	  SCENE() { return APP::getScene(); }
 	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
 
 } // namespace VTX::App

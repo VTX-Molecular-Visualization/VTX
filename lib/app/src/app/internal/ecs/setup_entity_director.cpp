@@ -9,6 +9,7 @@
 
 namespace VTX::App::Internal::ECS
 {
+
 	void setupEntityDirector()
 	{
 		using namespace App::Application::ECS;
