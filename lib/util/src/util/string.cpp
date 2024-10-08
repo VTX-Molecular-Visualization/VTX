@@ -77,4 +77,29 @@ namespace VTX::Util::String
 		return upcasedStr;
 	}
 
+	std::string memSizeToStr( const size_t p_size )
+	{
+		double			   size = static_cast<double>( p_size );
+		std::ostringstream oss;
+
+		if ( p_size < 1000 )
+		{
+			oss << size << " B";
+		}
+		else if ( p_size < 1000 * 1000 )
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / 1000 ) << " KB";
+		}
+		else if ( p_size < 1000 * 1000 * 1000 )
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / ( 1000 * 1000 ) ) << " MB";
+		}
+		else
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / ( 1000 * 1000 * 1000 ) ) << " GB";
+		}
+
+		return oss.str();
+	}
+
 } // namespace VTX::Util::String

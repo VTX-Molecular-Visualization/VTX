@@ -9,6 +9,7 @@
 #include <imnodes/imnodes.h>
 #include <util/image.hpp>
 #include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Bench
 {
@@ -326,26 +327,6 @@ namespace VTX::Bench
 			ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
-			auto displayMemory = []( const size_t p_memory ) -> std::string
-			{
-				if ( p_memory < 1000 )
-				{
-					return fmt::format( "{}B", p_memory );
-				}
-				else if ( p_memory < 1000 * 1000 )
-				{
-					return fmt::format( "{}kB", p_memory / 1000 );
-				}
-				else if ( p_memory < 1000 * 1000 * 1000 )
-				{
-					return fmt::format( "{}MB", p_memory / ( 1000 * 1000 ) );
-				}
-				else
-				{
-					return fmt::format( "{}GB", p_memory / ( 1000 * 1000 * 1000 ) );
-				}
-			};
-
 			const Renderer::StructInfos & infos = p_renderer->getInfos();
 			ImGui::ProgressBar(
 				float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
@@ -353,21 +334,28 @@ namespace VTX::Bench
 				ImVec2( 0.f, 0.f ),
 				fmt::format(
 					"{} / {}",
-					displayMemory( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ),
-					displayMemory( infos.gpuMemoryInfoTotalAvailable )
+					Util::String::memSizeToStr(
+						infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable
+					),
+					Util::String::memSizeToStr( infos.gpuMemoryInfoTotalAvailable )
 				)
 					.c_str()
 			);
 
-			ImGui::Text(
-				fmt::format( "Buffers: {} ({})", displayMemory( infos.currentSizeBuffers ), infos.currentCountBuffers )
-					.c_str()
-			);
 			ImGui::Text( fmt::format(
-							 "Textures: {} ({})", displayMemory( infos.currentSizeTextures ), infos.currentCountTextures
+							 "Buffers: {} ({})",
+							 Util::String::memSizeToStr( infos.currentSizeBuffers ),
+							 infos.currentCountBuffers
 			)
 							 .c_str() );
-			ImGui::Text( fmt::format( "CPU cache: {}", displayMemory( infos.currentSizeCPUCache ) ).c_str() );
+			ImGui::Text( fmt::format(
+							 "Textures: {} ({})",
+							 Util::String::memSizeToStr( infos.currentSizeTextures ),
+							 infos.currentCountTextures
+			)
+							 .c_str() );
+			ImGui::Text( fmt::format( "CPU cache: {}", Util::String::memSizeToStr( infos.currentSizeCPUCache ) ).c_str()
+			);
 		}
 		ImGui::End();
 	}

@@ -4,11 +4,11 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <util/callback.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Core::Network
 {
-
 	class NetworkSystem
 	{
 	  public:
@@ -37,6 +37,8 @@ namespace VTX::App::Core::Network
 			std::string * const	   p_data,
 			const bool			   p_overwrite = false
 		);
+
+		Util::Callback<> onFileCached;
 	};
 
 } // namespace VTX::App::Core::Network

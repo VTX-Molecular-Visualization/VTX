@@ -5,27 +5,27 @@
 #include <QCheckBox>
 #include <QDockWidget>
 #include <QGroupBox>
+#include <QLabel>
+#include <QPointer>
 #include <QToolButton>
 #include <QVBoxLayout>
 
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Options : public BaseWidget<Options, QDockWidget>, public Savable
+	class Options : public BaseWidget<Options, QDockWidget>
 	{
 	  public:
-		Options( QWidget * p_parent ) : BaseWidget<Options, QDockWidget>( "Options", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		}
-
-		virtual ~Options() {}
-
-		void save() override {}
-
-		void restore() override {}
+		Options( QWidget * p_parent );
 
 	  private:
+		inline static const QString _TEXT_CACHE_COUNT = "Files : %1";
+		inline static const QString _TEXT_CACHE_SIZE  = "Size : %1";
+
+		QPointer<QLabel> _labelCacheCount;
+		QPointer<QLabel> _labelCacheSize;
+
+		void _refreshCacheInfos();
 	};
 
 } // namespace VTX::UI::QT::DockWidget

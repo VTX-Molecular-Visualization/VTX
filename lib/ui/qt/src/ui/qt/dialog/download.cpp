@@ -52,7 +52,6 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( labelPDB );
 		layout->addWidget( _comboBoxPDB );
 		layout->addWidget( buttonBox );
-		setLayout( layout );
 
 		// Callbacks.
 		connect(

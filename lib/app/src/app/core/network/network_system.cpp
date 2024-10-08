@@ -50,6 +50,7 @@ namespace VTX::App::Core::Network
 		Util::Network::httpRequestGet( p_url, p_data );
 		// Save to cache.
 		Util::Filesystem::writeFile( Filesystem::getCachePath( p_filename ), *p_data );
+		onFileCached();
 	}
 
 } // namespace VTX::App::Core::Network

@@ -155,8 +155,6 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( _preview );
 		layout->addWidget( buttonBox );
 
-		setLayout( layout );
-
 		// Trigger default values.
 		_onResolution( 1 );
 		_onFormat( 0 );
