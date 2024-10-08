@@ -102,4 +102,38 @@ namespace VTX::Util::String
 		return oss.str();
 	}
 
+	std::string durationToStr( const float p_durationInSeconds )
+	{
+		std::ostringstream oss;
+		int				   totalMilliseconds = static_cast<int>( p_durationInSeconds * 1000 );
+
+		int hours = totalMilliseconds / 3600000;
+		totalMilliseconds %= 3600000;
+
+		int minutes = totalMilliseconds / 60000;
+		totalMilliseconds %= 60000;
+
+		int seconds		 = totalMilliseconds / 1000;
+		int milliseconds = totalMilliseconds % 1000;
+
+		if ( hours > 0 )
+		{
+			oss << hours << " h ";
+		}
+		if ( minutes > 0 || hours > 0 )
+		{
+			oss << minutes << " min ";
+		}
+		if ( seconds > 0 || minutes > 0 || hours > 0 )
+		{
+			oss << seconds << " s ";
+		}
+		if ( milliseconds > 0 || ( hours == 0 && minutes == 0 && seconds == 0 ) )
+		{
+			oss << milliseconds << " ms";
+		}
+
+		return oss.str();
+	}
+
 } // namespace VTX::Util::String

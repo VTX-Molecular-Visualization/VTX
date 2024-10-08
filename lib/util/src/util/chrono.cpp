@@ -18,8 +18,6 @@ namespace VTX::Util
 		return ( std::chrono::duration_cast<Duration>( Clock::now() - _begin ) ).count();
 	}
 
-	std::string Chrono::elapsedTimeStr() const { return std::to_string( elapsedTime() ) + 's'; }
-
 	float Chrono::intervalTime()
 	{
 		Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - _interval );

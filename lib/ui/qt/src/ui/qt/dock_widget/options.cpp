@@ -25,9 +25,10 @@ namespace VTX::UI::QT::DockWidget
 
 		groupCacheBox->setLayout( groupCacheLayout );
 
-		auto * buttonCacheLayout = new QHBoxLayout( this );
-		auto * buttonOpenCache	 = new QPushButton( "Open", this );
-		auto * buttonClearCache	 = new QPushButton( "Clear", this );
+		auto * buttonCacheLayout  = new QHBoxLayout( this );
+		auto * buttonOpenCache	  = new QPushButton( "Open", this );
+		auto * buttonClearCache	  = new QPushButton( "Clear", this );
+		auto * buttonRefreshCache = new QPushButton( "Refresh", this );
 
 		const FilePath cachePath = App::Filesystem::getCacheDir();
 		connect(
@@ -47,6 +48,8 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
+		connect( buttonRefreshCache, &QPushButton::clicked, [ this ]() { _refreshCacheInfos(); } );
+
 		_labelCacheCount = new QLabel( this );
 		_labelCacheSize	 = new QLabel( this );
 
@@ -54,6 +57,7 @@ namespace VTX::UI::QT::DockWidget
 		groupCacheLayout->addWidget( _labelCacheSize );
 		buttonCacheLayout->addWidget( buttonOpenCache );
 		buttonCacheLayout->addWidget( buttonClearCache );
+		buttonCacheLayout->addWidget( buttonRefreshCache );
 		groupCacheLayout->addLayout( buttonCacheLayout );
 
 		layout->addWidget( groupCacheBox );

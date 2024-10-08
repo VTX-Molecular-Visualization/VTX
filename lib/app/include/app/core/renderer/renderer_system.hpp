@@ -13,6 +13,8 @@ namespace VTX::App::Core::Renderer
 		inline static FilePath SHADER_DIR = Util::Filesystem::getExecutableDir();
 
 		RendererSystem() : VTX::Renderer::Facade( 1, 1, SHADER_DIR ) {}
+
+		inline static void init( const FilePath & p_shaderPath ) { SHADER_DIR = p_shaderPath; }
 	};
 
 } // namespace VTX::App::Core::Renderer

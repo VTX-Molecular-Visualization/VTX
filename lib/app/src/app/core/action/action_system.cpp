@@ -1,7 +1,9 @@
 #include "app/core/action/action_system.hpp"
 #include <exception>
 #include <typeinfo>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::App::Core::Action
 {
@@ -12,20 +14,12 @@ namespace VTX::App::Core::Action
 		VTX_DEBUG( "ActionSystem::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
-			p_actionPtr->execute();
-			// VTX_EVENT( ACTION_EXECUTED_EVENT, *actionPtr );
-			// // Signal catched and managed by ScenePathData component
-			// switch ( p_action->getTag() )
-			//{
-			// case ACTION_TAG::MODIFY_SCENE:
-			//	if ( isActionUndonable )
-			//		App::Old::APP::getScenePathData().incrementSceneModifications();
-			//	else // if the action is not undoable, it make a permanent modification on scene
-			//		App::Old::APP::getScenePathData().forceSceneModifications();
-			//	break;
-			// case ACTION_TAG::NONE:
-			// default: break;
-			//}
+			auto duration = Util::CHRONO_CPU( [ &p_actionPtr ]() { p_actionPtr->execute(); } );
+			VTX_DEBUG(
+				"ActionSystem::execute( {} ) - done ({})",
+				typeid( *p_actionPtr ).name(),
+				Util::String::durationToStr( duration )
+			);
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -33,25 +27,18 @@ namespace VTX::App::Core::Action
 			return;
 		}
 	}
+
 	void ActionSystem::execute( std::unique_ptr<BaseActionUndonable> & p_actionPtr )
 	{
 		VTX_DEBUG( "ActionSystem::execute( {} )", typeid( *p_actionPtr ).name() );
 		try
 		{
-			p_actionPtr->execute();
-			// VTX_EVENT( ACTION_EXECUTED_EVENT, *actionPtr );
-			// // Signal catched and managed by ScenePathData component
-			// switch ( p_action->getTag() )
-			//{
-			// case ACTION_TAG::MODIFY_SCENE:
-			//	if ( isActionUndonable )
-			//		App::Old::APP::getScenePathData().incrementSceneModifications();
-			//	else // if the action is not undoable, it make a permanent modification on scene
-			//		App::Old::APP::getScenePathData().forceSceneModifications();
-			//	break;
-			// case ACTION_TAG::NONE:
-			// default: break;
-			//}
+			auto duration = Util::CHRONO_CPU( [ &p_actionPtr ]() { p_actionPtr->execute(); } );
+			VTX_DEBUG(
+				"ActionSystem::execute( {} ) - done ({})",
+				typeid( *p_actionPtr ).name(),
+				Util::String::durationToStr( duration )
+			);
 		}
 		catch ( const std::exception & p_e )
 		{

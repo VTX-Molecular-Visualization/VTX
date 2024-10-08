@@ -40,7 +40,7 @@ namespace VTX::App
 		Settings::initSettings();
 
 		// Init renderer.
-		Core::Renderer::RendererSystem::SHADER_DIR = Filesystem::getShadersDir();
+		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
 
 		// Setup entity creation routines (add components, setup components, etc.).
 		Internal::ECS::setupEntityDirector();

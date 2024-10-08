@@ -16,6 +16,7 @@
 #include <util/color/rgba.hpp>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::App::Serialization::IO::Reader
 {
@@ -32,7 +33,7 @@ namespace VTX::App::Serialization::IO::Reader
 		chrono.start();
 		p_molecule.setMoleculeStruct( moleculeStruct );
 		chrono.stop();
-		VTX_INFO( "Build Molecule convenient structure : {}", chrono.elapsedTimeStr() );
+		VTX_INFO( "Build Molecule convenient structure : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 	}
 
 	void MoleculeLoader::readBuffer(
