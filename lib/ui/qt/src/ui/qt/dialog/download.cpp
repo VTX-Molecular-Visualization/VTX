@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/application.hpp"
+#include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>
@@ -7,6 +8,7 @@
 #include <QSettings>
 #include <QVBoxLayout>
 #include <app/action/scene.hpp>
+#include <app/core/network/network_system.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -15,7 +17,7 @@ namespace VTX::UI::QT::Dialog
 	{
 		setWindowTitle( "Download" );
 		// TODO: try size policy?
-		setFixedSize( 300, 150 );
+		setFixedSize( 300, 180 );
 
 		auto * layout = new QVBoxLayout( this );
 
@@ -37,23 +39,56 @@ namespace VTX::UI::QT::Dialog
 			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
 		);
 
-		// Load histories manually because dialog is destroyed when closed.
-		restore();
+		// Cache found label.
+		// QLabel * labelCache = new QLabel( "File found", this );
 
-		// FIXME: Avoid losing default url if not in history.
-		if ( _comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
-		{
-			_comboBoxURL->addItem( _DEFAULT_URL.c_str() );
-		}
+		// Radio buttons.
+		auto * buttonGroup		= new QButtonGroup( this );
+		auto * layoutCacheRadio = new QHBoxLayout( this );
+		_radioButtonOpen		= new QRadioButton( "Open from cache" );
+		_radioButtonDownload	= new QRadioButton( "Download" );
+		buttonGroup->addButton( _radioButtonOpen );
+		buttonGroup->addButton( _radioButtonDownload );
+		layoutCacheRadio->addWidget( _radioButtonOpen );
+		layoutCacheRadio->addWidget( _radioButtonDownload );
 
 		// Layout.
 		layout->addWidget( labelURL );
 		layout->addWidget( _comboBoxURL );
 		layout->addWidget( labelPDB );
 		layout->addWidget( _comboBoxPDB );
+		layout->addLayout( layoutCacheRadio );
 		layout->addWidget( buttonBox );
 
 		// Callbacks.
+		// Update radio button if file is found in cache.
+		connect(
+			_comboBoxPDB,
+			&QComboBox::editTextChanged,
+			[ this ]( const QString & )
+			{
+				auto pdb = _comboBoxPDB->currentText().toStdString();
+				Util::String::trim( pdb );
+				if ( pdb.length() == 4 )
+				{
+					FilePath path = App::Filesystem::getCachePath( pdb + ".pdb" );
+					if ( std::filesystem::exists( path ) )
+					{
+						// Show radio buttons.
+						_radioButtonOpen->setEnabled( true );
+						_radioButtonDownload->setEnabled( true );
+						_radioButtonOpen->setChecked( true );
+						return;
+					}
+				}
+				// Hide radio buttons.
+				_radioButtonOpen->setEnabled( false );
+				_radioButtonDownload->setEnabled( true );
+				_radioButtonDownload->setChecked( true );
+			}
+		);
+
+		// Open button.
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Open ),
 			&QPushButton::clicked,
@@ -65,44 +100,67 @@ namespace VTX::UI::QT::Dialog
 				_pdb = _comboBoxPDB->currentText().toStdString();
 				Util::String::trim( _pdb );
 
-				if ( _url.empty() )
+				FilePath path = App::Filesystem::getCachePath( _pdb + ".pdb" );
+				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
-					VTX_WARNING( "URL is empty" );
-					return;
-				}
-
-				if ( _url.empty() || _pdb.empty() )
-				{
-					VTX_WARNING( "PDB id is empty" );
-					return;
-				}
-
-				std::string	 urlReplaced = _url;
-				const size_t pos		 = _url.find( _PDB_ID_TEMPLATE );
-				if ( pos == std::string::npos )
-				{
-					VTX_WARNING( "URL does not contain {}", _PDB_ID_TEMPLATE );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( path );
 				}
 				else
 				{
-					urlReplaced
-						= urlReplaced.replace( urlReplaced.find( _PDB_ID_TEMPLATE ), _PDB_ID_TEMPLATE.length(), _pdb );
+					if ( _url.empty() )
+					{
+						VTX_ERROR( "URL is empty" );
+						return;
+					}
+
+					if ( _pdb.empty() )
+					{
+						VTX_ERROR( "PDB id is empty" );
+						return;
+					}
+
+					if ( _pdb.length() != 4 )
+					{
+						VTX_ERROR( "PDB id must be 4 characters" );
+						return;
+					}
+
+					std::string	 urlReplaced = _url;
+					const size_t pos		 = _url.find( _PDB_ID_TEMPLATE );
+					if ( pos == std::string::npos )
+					{
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE );
+					}
+					else
+					{
+						urlReplaced = urlReplaced.replace(
+							urlReplaced.find( _PDB_ID_TEMPLATE ), _PDB_ID_TEMPLATE.length(), _pdb
+						);
+					}
+
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced, _pdb + ".pdb" );
 				}
 
-				// Save histories.
 				save();
-
-				App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced, _pdb + ".pdb" );
-
 				close();
 			}
 		);
 
+		// Cancel button.
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
 			&QPushButton::clicked,
 			[ this ]() { close(); }
 		);
+
+		// Load histories manually because dialog is destroyed when closed.
+		restore();
+
+		// FIXME: Avoid losing default url if not in history.
+		if ( _comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
+		{
+			_comboBoxURL->addItem( _DEFAULT_URL.c_str() );
+		}
 	}
 
 	void Download::_loadHistory( const std::string & p_key, QComboBox * const p_comboBox )

@@ -39,7 +39,7 @@ namespace VTX::App::Action::Scene
 		std::string	   data;
 		const FilePath cachePath = Filesystem::getCachePath( _filename );
 
-		NETWORK_SYSTEM().getFile( _filename.string(), &data, _url );
+		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
 		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( _filename, &data );
 	}
 

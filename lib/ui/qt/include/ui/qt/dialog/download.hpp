@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QPointer>
+#include <QRadioButton>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -30,10 +31,12 @@ namespace VTX::UI::QT::Dialog
 		// TODO: move to settings.
 		inline static const uint _MAX_HISTORY_SIZE = 10;
 
-		QPointer<QComboBox> _comboBoxURL;
-		QPointer<QComboBox> _comboBoxPDB;
-		std::string			_url;
-		std::string			_pdb;
+		QPointer<QComboBox>	   _comboBoxURL;
+		QPointer<QComboBox>	   _comboBoxPDB;
+		QPointer<QRadioButton> _radioButtonOpen;
+		QPointer<QRadioButton> _radioButtonDownload;
+		std::string			   _url;
+		std::string			   _pdb;
 
 		void _loadHistory( const std::string & p_key, QComboBox * const p_comboBox );
 		void _saveHistory( const std::string & p_key, const std::string & p_value );

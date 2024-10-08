@@ -39,7 +39,7 @@ namespace VTX::App::Core::Network
 		const bool			   p_overwrite
 	)
 	{
-		// assert( not std::filesystem::exists( cachePath ) );
+		// TODO: assert or exception?
 		if ( not p_overwrite and std::filesystem::exists( Filesystem::getCachePath( p_filename ) ) )
 		{
 			assert( 1 );
