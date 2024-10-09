@@ -21,6 +21,32 @@ namespace VTX::IO::Util::Chemfiles
 
 	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 
+	enum class E_FILE_FORMATS
+	{
+		none,
+		pdb,
+		mmcif,
+		mmtf,
+		molden,
+		cif,
+		gro,
+		mol2,
+		sdf,
+		smi,
+		xyz,
+		cml,
+		cssr,
+		nc,
+		dcd,
+		lammpstrj,
+		arc,
+		trr,
+		xtc,
+		tng,
+		trj,
+		COUNT
+	};
+
 } // namespace VTX::IO::Util::Chemfiles
 
 #endif
