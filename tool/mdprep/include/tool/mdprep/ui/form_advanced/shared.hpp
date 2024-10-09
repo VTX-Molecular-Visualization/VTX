@@ -39,6 +39,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		QFormLayout * _layoutSystemPreparation = nullptr;
 		QVBoxLayout * _systemReportLayout	   = nullptr;
+		QPushButton * _buttonOpenExpertOptions = nullptr;
 		QPushButton * _buttonStartInputCheck   = nullptr;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_advanced
