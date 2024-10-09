@@ -22,7 +22,10 @@ namespace
 		return {
 			VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
 			pointTimeToStr( p_msg.time ),
-			std::string_view( p_msg.payload.begin(), std::distance( p_msg.payload.begin(), p_msg.payload.end() ) )
+			std::string_view(
+				p_msg.payload.begin(), std::distance( p_msg.payload.begin(), p_msg.payload.end() )
+			) // the string_view(begin, end) ctor doesn't seem to exist on apple clang (both v14 and v15). So for now we
+			  // are forced to used a work around.
 		};
 	}
 } // namespace
