@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		OpenGLWidget( QWidget * );
-		virtual ~OpenGLWidget();
+		~OpenGLWidget();
 
 		void render();
 		void resizeEvent( QResizeEvent * ) override;
@@ -29,8 +29,7 @@ namespace VTX::UI::QT::Widget
 
 	  private:
 		QPointer<QOpenGLContext>		   _context;
-		QPointer<Window::EventCatchWindow> _surface;
-		QOpenGLPaintDevice *			   _device;
+		QPointer<Window::EventCatchWindow> _window;
 		QPointer<QWidget>				   _container;
 	};
 } // namespace VTX::UI::QT::Widget

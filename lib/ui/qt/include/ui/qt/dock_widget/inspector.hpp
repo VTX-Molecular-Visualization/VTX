@@ -14,8 +14,6 @@ namespace VTX::UI::QT::DockWidget
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		}
-
-		virtual ~Inspector() {}
 	};
 
 } // namespace VTX::UI::QT::DockWidget

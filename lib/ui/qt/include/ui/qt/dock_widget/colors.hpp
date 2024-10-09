@@ -10,12 +10,7 @@ namespace VTX::UI::QT::DockWidget
 	class Colors : public BaseWidget<Colors, QDockWidget>
 	{
 	  public:
-		Colors( QWidget * p_parent ) : BaseWidget<Colors, QDockWidget>( "Colors", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		}
-
-		virtual ~Colors() {}
+		Colors( QWidget * p_parent );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

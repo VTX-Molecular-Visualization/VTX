@@ -24,8 +24,6 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Camera::Reset>();
 		}
 
-		virtual ~Camera() {}
-
 	  private:
 	};
 

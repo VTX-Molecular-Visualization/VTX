@@ -34,8 +34,6 @@ namespace VTX::UI::QT::Menu
 			*/
 		}
 
-		virtual ~View() {}
-
 	  private:
 	};
 

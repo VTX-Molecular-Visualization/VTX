@@ -14,8 +14,6 @@ namespace VTX::UI::QT::DockWidget
 		{
 			setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 		}
-
-		virtual ~Sequence() {}
 	};
 
 } // namespace VTX::UI::QT::DockWidget

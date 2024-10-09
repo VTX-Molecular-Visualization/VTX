@@ -1,5 +1,6 @@
 #include "app/entity/scene/scene_item_entity.hpp"
 #include "app/application/scene.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Entity::Scene
@@ -23,6 +24,8 @@ namespace VTX::App::Entity::Scene
 		Application::Scene * const			   scene = p_extraData.at( "scene" ).getPtr<Application::Scene>();
 		Component::Scene::SceneItemComponent & sceneItemComponent
 			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
+
+		assert( MAIN_REGISTRY().hasComponent<Component::Chemistry::Molecule>( sceneItemComponent ) );
 
 		scene->referenceItem( sceneItemComponent );
 	}

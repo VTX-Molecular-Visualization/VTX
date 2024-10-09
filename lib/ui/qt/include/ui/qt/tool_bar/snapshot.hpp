@@ -16,8 +16,6 @@ namespace VTX::UI::QT::ToolBar
 			addAction<Action::Snapshot::Export>();
 		}
 
-		virtual ~Snapshot() {}
-
 	  private:
 	};
 

@@ -14,8 +14,6 @@ namespace VTX::UI::QT::DockWidget
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		}
-
-		virtual ~Representations() {}
 	};
 
 } // namespace VTX::UI::QT::DockWidget

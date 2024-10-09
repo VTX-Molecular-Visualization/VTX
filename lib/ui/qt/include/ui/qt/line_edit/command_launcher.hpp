@@ -12,7 +12,6 @@ namespace VTX::UI::QT::LineEdit
 	{
 	  public:
 		CommandLauncher( QWidget * p_parent );
-		virtual ~CommandLauncher() {}
 
 	  private:
 		void _setupCompleter();

@@ -20,7 +20,6 @@ namespace VTX::UI::QT::Menu
 			auto * aReset = addAction<Action::Theme::ResetLayout>();
 			connect( aReset, &QAction::triggered, this, &Theme::_resetLayout );
 		}
-		virtual ~Theme() {}
 
 	  private:
 		void _resetLayout();

@@ -14,7 +14,6 @@ namespace VTX::UI::QT
 	{
 	  public:
 		Settings();
-		virtual ~Settings() {}
 
 		inline void add( Savable * const p_savable ) { _savables.push_back( p_savable ); }
 		inline void remove( Savable * const p_savable ) { std::erase( _savables, p_savable ); }

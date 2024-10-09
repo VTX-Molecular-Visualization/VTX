@@ -38,7 +38,7 @@ namespace VTX::Util
 		{
 			for ( const auto & callback : _callbacks )
 			{
-				callback.second( p_args... );
+				callback.second( std::forward<Args>( p_args )... );
 			}
 		}
 

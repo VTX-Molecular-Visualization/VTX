@@ -19,8 +19,6 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Help::About>();
 		}
 
-		virtual ~Help() {}
-
 	  private:
 	};
 

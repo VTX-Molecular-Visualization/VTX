@@ -20,8 +20,6 @@ namespace VTX::UI::QT::DockWidget
 			layout->setSizeConstraint( QLayout::SetNoConstraint );
 			setWidget( widget );
 		}
-
-		virtual ~RenderSettings() {}
 	};
 
 } // namespace VTX::UI::QT::DockWidget

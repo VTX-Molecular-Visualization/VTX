@@ -26,17 +26,17 @@ namespace VTX::UI::QT::Widget
 		}
 
 		// Create window.
-		_surface = new Window::EventCatchWindow();
-		_surface->setFormat( format );
-		_surface->setSurfaceType( QSurface::OpenGLSurface );
-		_surface->setFlags( Qt::FramelessWindowHint );
-		_surface->create();
+		_window = new Window::EventCatchWindow();
+		_window->setFormat( format );
+		_window->setSurfaceType( QSurface::OpenGLSurface );
+		_window->setFlags( Qt::FramelessWindowHint );
+		_window->create();
 
 		// Use a widget container to embed the window.
-		_container = createWindowContainer( _surface, this );
+		_container = createWindowContainer( _window, this );
 
 		// Set context.
-		_context->makeCurrent( _surface );
+		_context->makeCurrent( _window );
 
 		// Connect signals.
 		APP::onPostRender += [ this ]( const float ) { render(); };
@@ -46,18 +46,18 @@ namespace VTX::UI::QT::Widget
 
 	void OpenGLWidget::render()
 	{
-		_context->swapBuffers( _surface );
-		_context->makeCurrent( _surface );
+		_context->swapBuffers( _window );
+		_context->makeCurrent( _window );
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
 	{
-		assert( _surface );
+		assert( _window );
 		assert( _container );
 
 		QWidget::resizeEvent( p_event );
 
-		_surface->resize( p_event->size() );
+		_window->resize( p_event->size() );
 		_container->resize( p_event->size() );
 
 		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>(

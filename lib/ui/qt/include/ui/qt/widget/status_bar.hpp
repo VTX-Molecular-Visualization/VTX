@@ -14,7 +14,6 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		StatusBar( QWidget * p_parent );
-		virtual ~StatusBar() {}
 	};
 
 } // namespace VTX::UI::QT::Widget

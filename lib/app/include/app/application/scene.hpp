@@ -123,7 +123,7 @@ namespace VTX::App::Application
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
 
 		// Callbacks
-		Util::Callback<Component::Scene::SceneItemComponent> onSceneItemAdded;
+		Util::Callback<Component::Scene::SceneItemComponent &> onSceneItemAdded;
 
 	  private:
 		int _persistentIDCounter = 0;

@@ -18,8 +18,6 @@ namespace VTX::UI::QT::ToolBar
 			addAction<Action::System::Save>();
 		}
 
-		virtual ~File() {}
-
 	  private:
 	};
 

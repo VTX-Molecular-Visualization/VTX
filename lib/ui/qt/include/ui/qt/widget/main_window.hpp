@@ -20,7 +20,6 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		MainWindow();
-		virtual ~MainWindow() {}
 
 		void prepare();
 		void build();

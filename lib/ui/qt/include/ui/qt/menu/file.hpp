@@ -26,7 +26,6 @@ namespace VTX::UI::QT::Menu
 			addSeparator();
 			addAction<Action::System::Quit>();
 		}
-		virtual ~File() {}
 
 	  private:
 	};
