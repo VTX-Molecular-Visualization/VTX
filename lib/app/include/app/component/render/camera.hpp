@@ -66,8 +66,8 @@ namespace VTX::App::Component::Render
 
 		void print() const;
 
-		Util::Callback<Mat4f>		 onMatrixViewChange;
-		Util::Callback<Mat4f>		 onMatrixProjectionChange;
+		Util::Callback<Mat4f &>		 onMatrixViewChange;
+		Util::Callback<Mat4f &>		 onMatrixProjectionChange;
 		Util::Callback<float, float> onClipInfosChange;
 		Util::Callback<PROJECTION>	 onProjectionChange;
 

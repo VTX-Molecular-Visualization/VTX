@@ -5,14 +5,14 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	Progress::Progress( const std::string & p_text, std::optional<std::function<void( void )>> p_onCancel ) :
+	Progress::Progress( const std::string_view p_text, std::optional<std::function<void( void )>> p_onCancel ) :
 		BaseWidget<Progress, QProgressDialog>( APP_QT::getMainWindow() )
 	{
 		setWindowModality( Qt::WindowModal );
 		setWindowFlags( Qt::Window | Qt::FramelessWindowHint );
 
 		// Set text.
-		setLabelText( p_text.c_str() );
+		setLabelText( p_text.data() );
 		setFixedSize( 300, 100 );
 
 		// Set options.

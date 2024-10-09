@@ -189,7 +189,7 @@ namespace VTX::UI::QT::DockWidget
 			App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_item )
 			{
 				using namespace App;
-				assert( MAIN_REGISTRY().hasComponent<Component::Chemistry::Molecule>( p_item ) );
+
 				if ( App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
 				{
 					auto & molecule = App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_item );

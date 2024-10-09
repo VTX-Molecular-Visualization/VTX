@@ -10,7 +10,7 @@ namespace VTX::UI::QT::Dialog
 	class Progress : public BaseWidget<Progress, QProgressDialog>
 	{
 	  public:
-		Progress( const std::string & p_text, std::optional<std::function<void( void )>> p_onCancel = std::nullopt );
+		Progress( const std::string_view p_text, std::optional<std::function<void( void )>> p_onCancel = std::nullopt );
 
 		inline void setValue( const float p_value )
 		{

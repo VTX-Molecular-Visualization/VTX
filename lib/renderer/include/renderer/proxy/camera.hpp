@@ -20,12 +20,12 @@ namespace VTX::Renderer::Proxy
 		const float cameraFar;
 		const bool	isPerspective;
 
-		Util::Callback<>			 onMatrixView;
-		Util::Callback<>			 onMatrixProjection;
-		Util::Callback<Vec3f>		 onCameraPosition;
-		Util::Callback<Vec2i>		 onMousePosition;
-		Util::Callback<float, float> onCameraNearFar;
-		Util::Callback<bool>		 onPerspective;
+		Util::Callback<>			  onMatrixView;
+		Util::Callback<>			  onMatrixProjection;
+		Util::Callback<const Vec3f &> onCameraPosition;
+		Util::Callback<const Vec2i &> onMousePosition;
+		Util::Callback<float, float>  onCameraNearFar;
+		Util::Callback<bool>		  onPerspective;
 	};
 
 } // namespace VTX::Renderer::Proxy

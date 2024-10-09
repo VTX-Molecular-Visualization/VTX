@@ -359,8 +359,8 @@ namespace VTX::App::Application::Selection
 
 		std::string toString() const;
 
-		Util::Callback<SelectionData>		  onSelect;
-		Util::Callback<SelectionData>		  onDeselect;
+		Util::Callback<const SelectionData &> onSelect;
+		Util::Callback<const SelectionData &> onDeselect;
 		Util::Callback<const SelectionData *> onCurrentObjectChange;
 
 	  private:

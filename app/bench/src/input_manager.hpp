@@ -116,10 +116,10 @@ namespace VTX::Bench
 
 		Util::Callback<>			   onClose;
 		Util::Callback<size_t, size_t> onResize;
-		Util::Callback<Vec3i>		   onTranslate;
-		Util::Callback<Vec2i>		   onRotate;
+		Util::Callback<Vec3i &>		   onTranslate;
+		Util::Callback<Vec2i &>		   onRotate;
 		Util::Callback<int>			   onZoom;
-		Util::Callback<Vec2i>		   onMouseMotion;
+		Util::Callback<const Vec2i &>  onMouseMotion;
 		Util::Callback<>			   onRestore;
 		Util::Callback<size_t, size_t> onMousePick;
 		Util::Callback<SDL_Scancode>   onKeyPressed;

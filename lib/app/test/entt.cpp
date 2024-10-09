@@ -87,7 +87,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 
 	CallbackTest renameTest = CallbackTest();
 
-	sceneItem.onName += [ &renameTest ]( const std::string & p_name ) { renameTest.checked = true; };
+	sceneItem.onName += [ &renameTest ]( const std::string_view p_name ) { renameTest.checked = true; };
 	sceneItem.setName( "Zouzou" );
 
 	REQUIRE( sceneItem.getName() == "Zouzou" );

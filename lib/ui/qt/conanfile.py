@@ -21,7 +21,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("qt/6.6.3", transitive_headers=True)
+        self.requires("qt/6.7.3", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":

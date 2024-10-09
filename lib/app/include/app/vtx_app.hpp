@@ -44,9 +44,9 @@ namespace VTX::App
 		inline static Util::Callback<>		onStop;
 
 		// Progress dialog callbacks.
-		inline static Util::Callback<std::string> onStartBlockingOperation;
-		inline static Util::Callback<float>		  onUpdateBlockingOperation;
-		inline static Util::Callback<>			  onEndBlockingOperation;
+		inline static Util::Callback<std::string_view> onStartBlockingOperation;
+		inline static Util::Callback<float>			   onUpdateBlockingOperation;
+		inline static Util::Callback<>				   onEndBlockingOperation;
 
 		// TODO: thread callbacks?
 

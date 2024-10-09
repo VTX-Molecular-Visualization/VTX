@@ -38,8 +38,8 @@ namespace VTX::App::Component::Scene
 
 		std::unique_ptr<Application::Selection::SelectionData> instantiateSelectionData() const;
 
-		Util::Callback<Application::Selection::SelectionData> onSelect;
-		Util::Callback<Application::Selection::SelectionData> onDeselect;
+		Util::Callback<const Application::Selection::SelectionData &> onSelect;
+		Util::Callback<const Application::Selection::SelectionData &> onDeselect;
 
 	  private:
 		std::unique_ptr<Application::Selection::SelectionData> _defaultSelectionDataGenerator();

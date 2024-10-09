@@ -13,14 +13,15 @@ namespace
 {
 	std::string pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
 	{
-		const std::string timePointStr = fmt::format( "{:%T}", p_timePoint );
+		const std::string timePointStr( fmt::format( "{:%T}", p_timePoint ) );
 		return timePointStr.substr( 0, 8 );
 	}
+
 	VTX::Util::LogInfo spdLogLogMsgToLogInfo( const spdlog::details::log_msg & p_msg )
 	{
 		return { VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
 				 pointTimeToStr( p_msg.time ),
-				 std::string( p_msg.payload.begin(), p_msg.payload.end() ) };
+				 std::string_view( p_msg.payload.begin(), p_msg.payload.end() ) };
 	}
 } // namespace
 

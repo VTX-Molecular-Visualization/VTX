@@ -38,7 +38,7 @@ namespace VTX::App::Component::Scene
 		void removeUpdateFunction( const std::string & p_key );
 
 		// Callbacks
-		Util::Callback<std::string> onName;
+		Util::Callback<std::string_view> onName;
 
 	  private:
 		int			_persistentId = -1;

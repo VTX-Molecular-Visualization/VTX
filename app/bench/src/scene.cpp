@@ -21,7 +21,8 @@ namespace VTX::Bench
 	{
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
-		_camera.callbackTranslation += [ & ]( const Vec3f p_position ) { _proxyCamera.onCameraPosition( p_position ); };
+		_camera.callbackTranslation +=
+			[ & ]( const Vec3f & p_position ) { _proxyCamera.onCameraPosition( p_position ); };
 		_camera.callbackClipInfos +=
 			[ & ]( const float p_near, const float p_far ) { _proxyCamera.onCameraNearFar( p_near, p_far ); };
 		_camera.callbackPerspective +=

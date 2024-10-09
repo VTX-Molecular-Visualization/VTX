@@ -66,7 +66,7 @@ namespace VTX::App::Component::Scene
 
 		void applyTransform( const Util::Math::Transform & p_transform );
 
-		Util::Callback<Util::Math::Transform> onTransform;
+		Util::Callback<Util::Math::Transform &> onTransform;
 
 	  private:
 		void _updateRotation();

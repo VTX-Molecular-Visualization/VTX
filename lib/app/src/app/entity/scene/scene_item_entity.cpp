@@ -25,8 +25,6 @@ namespace VTX::App::Entity::Scene
 		Component::Scene::SceneItemComponent & sceneItemComponent
 			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( p_entity );
 
-		assert( MAIN_REGISTRY().hasComponent<Component::Chemistry::Molecule>( sceneItemComponent ) );
-
 		scene->referenceItem( sceneItemComponent );
 	}
 } // namespace VTX::App::Entity::Scene

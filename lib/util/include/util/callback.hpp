@@ -15,7 +15,7 @@ namespace VTX::Util
 	class Callback
 	{
 	  public:
-		using Func = std::function<void( const Args... )>;
+		using Func = std::function<void( Args... )>;
 
 		Callback() = default;
 
@@ -38,7 +38,7 @@ namespace VTX::Util
 		{
 			for ( const auto & callback : _callbacks )
 			{
-				callback.second( std::forward<Args>( p_args )... );
+				callback.second( p_args... );
 			}
 		}
 
