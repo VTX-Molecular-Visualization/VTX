@@ -39,7 +39,10 @@ jobs:
            
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
-      run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True
+      if: ${{ matrix.os == 'macos-12'}} 
+        run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True -s compiler.version=15
+    else:
+        run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True 
                
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
