@@ -37,14 +37,8 @@ jobs:
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
            
-    - name: Create package MACOS
+    - name: Create package
       working-directory: ${{env.LIB_DIR}}
-      if: ${{ matrix.os == 'macos-12' }} 
-      run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True -s compiler.version=15
-
-    - name: Create package not MACOS
-      working-directory: ${{env.LIB_DIR}}
-      if: ${{ matrix.os  != 'macos-12' }}
       run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True 
                
     - name: Upload dependencies

@@ -19,9 +19,11 @@ namespace
 
 	VTX::Util::LogInfo spdLogLogMsgToLogInfo( const spdlog::details::log_msg & p_msg )
 	{
-		return { VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
-				 pointTimeToStr( p_msg.time ),
-				 std::string_view( p_msg.payload.begin(), p_msg.payload.end() ) };
+		return {
+			VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
+			pointTimeToStr( p_msg.time ),
+			std::string_view( p_msg.payload.begin(), std::distance( p_msg.payload.begin(), p_msg.payload.end() ) )
+		};
 	}
 } // namespace
 
