@@ -3,6 +3,7 @@
 
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/render/_fwd.hpp"
+#include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/vtx_app.hpp"
@@ -123,14 +124,14 @@ namespace VTX::App::Application
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
 
 		// Callbacks
-		Util::Callback<Component::Scene::SceneItemComponent &> onSceneItemAdded;
+		Util::Callback<const Component::Scene::SceneItemComponent &>   onSceneItemAdded;
+		Util::Callback<const Component::Representation::ColorLayout &> onDefaultColorLayout;
 
 	  private:
 		int _persistentIDCounter = 0;
 
 		void _computeAABB();
 		void _createDefaultPath();
-		void _createDefaultColorLayout();
 
 	  private:
 		Component::Render::Camera *		   _camera		= nullptr;

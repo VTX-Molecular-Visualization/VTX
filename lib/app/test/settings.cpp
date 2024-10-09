@@ -17,7 +17,7 @@ TEST_CASE( "VTX_APP - Settings", "[integration]" )
 		THREE
 	};
 
-	Core::Settings::SettingsSystem settings = Core::Settings::SettingsSystem();
+	App::Core::Settings::SettingsSystem settings = App::Core::Settings::SettingsSystem();
 
 	// Bool
 	settings.referenceSetting( "BOOL_SETTING", true );

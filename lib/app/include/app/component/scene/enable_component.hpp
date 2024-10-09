@@ -6,6 +6,7 @@
 
 namespace VTX::App::Component::Scene
 {
+	/*
 	class EnableComponent : public Core::ECS::BaseComponent
 	{
 	  private:
@@ -24,5 +25,6 @@ namespace VTX::App::Component::Scene
 	  private:
 		bool _enabled = true;
 	};
+	*/
 } // namespace VTX::App::Component::Scene
 #endif

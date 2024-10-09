@@ -21,7 +21,7 @@ namespace VTX::App::Application
 		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
-		_createDefaultColorLayout();
+		//_createDefaultColorLayout();
 	}
 
 	Scene::~Scene() {}
@@ -84,7 +84,7 @@ namespace VTX::App::Application
 	{
 		clear();
 		_createDefaultPath();
-		_createDefaultColorLayout();
+		//_createDefaultColorLayout();
 	}
 
 	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const
@@ -303,12 +303,14 @@ namespace VTX::App::Application
 		// addPath( path );
 	}
 
+	/*
 	void Scene::_createDefaultColorLayout()
 	{
 		// TODO: why an entity?
 		Core::ECS::BaseEntity colorLayoutEntity = MAIN_REGISTRY().createEntity();
 		auto & comp = MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
 		comp.setupProxy();
+		onDefaultColorLayout( comp );
 	}
-
+	*/
 } // namespace VTX::App::Application
