@@ -3,7 +3,6 @@
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
-#include "app/entity/scene/scene_item_entity.hpp"
 #include "app/vtx_app.hpp"
 #include <string>
 #include <util/logger.hpp>

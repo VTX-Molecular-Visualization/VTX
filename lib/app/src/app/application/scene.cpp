@@ -247,6 +247,7 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
+		// TODO: remove polymorphism.
 		Core::ECS::View updatables
 			= MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
