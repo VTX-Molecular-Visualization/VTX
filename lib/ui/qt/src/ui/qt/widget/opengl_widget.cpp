@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Widget
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( 1 );
+		format.setSwapInterval( 0 );
 
 		// Create context.
 		_context = new QOpenGLContext();
