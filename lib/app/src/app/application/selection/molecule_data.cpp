@@ -1,5 +1,4 @@
 #include "app/application/selection/molecule_data.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/helper/math.hpp"

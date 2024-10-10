@@ -1,5 +1,4 @@
 #include "app/application/scene_utility.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/scene/uid_component.hpp"
 #include "app/vtx_app.hpp"

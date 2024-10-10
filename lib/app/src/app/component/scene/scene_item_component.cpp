@@ -1,5 +1,4 @@
 #include "app/component/scene/scene_item_component.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/vtx_app.hpp"

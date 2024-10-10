@@ -1,6 +1,5 @@
 #include "app/controller/picker/selection.hpp"
 #include "app/core/input/input_manager.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>

@@ -1,5 +1,4 @@
 #include "app/component/scene/aabb_component.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/helper/math.hpp"

@@ -1,5 +1,4 @@
 #include "app/entity/scene/molecule_entity.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"

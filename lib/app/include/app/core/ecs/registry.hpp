@@ -28,6 +28,7 @@ namespace VTX::App::Core::ECS
 		{
 			E entity = E( std::forward<Args>( p_args )... );
 			entity._setEntityID( _enttRegistry.create() );
+			entity.setup();
 			return entity;
 		}
 

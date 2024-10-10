@@ -1,5 +1,4 @@
 #include "util/app.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>

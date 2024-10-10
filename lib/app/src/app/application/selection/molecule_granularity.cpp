@@ -1,6 +1,5 @@
 #include "app/application/selection/molecule_granularity.hpp"
 #include "app/action/selection.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/chain.hpp"

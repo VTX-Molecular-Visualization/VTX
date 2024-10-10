@@ -1,7 +1,6 @@
 #include "util/app.hpp"
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/action/scene.hpp>
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>

@@ -1,5 +1,4 @@
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/vtx_app.hpp"

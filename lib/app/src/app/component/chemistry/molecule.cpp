@@ -1,5 +1,4 @@
 #include "app/component/chemistry/molecule.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"

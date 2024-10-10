@@ -1,5 +1,4 @@
 #include "app/application/selection/selection.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <sstream>

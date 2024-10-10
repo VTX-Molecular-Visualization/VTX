@@ -2,7 +2,6 @@
 #include "app/action/animation.hpp"
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"

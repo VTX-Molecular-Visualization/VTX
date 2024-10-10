@@ -1,5 +1,4 @@
 #include "app/entity/scene/viewpoint_entity.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/selectable.hpp"
