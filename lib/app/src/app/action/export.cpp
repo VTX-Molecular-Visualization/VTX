@@ -3,7 +3,8 @@
 #include "app/component/render/camera.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/filesystem.hpp"
-#include "util/chrono.hpp"
+#include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::Action::Export
 {

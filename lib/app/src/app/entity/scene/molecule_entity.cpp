@@ -16,6 +16,7 @@
 #include "app/core/player/loop.hpp"
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include "app/core/settings/settings_system.hpp"
 #include "app/serialization/io/reader/molecule_loader.hpp"
 #include "app/settings.hpp"
 #include <renderer/proxy/molecule.hpp>

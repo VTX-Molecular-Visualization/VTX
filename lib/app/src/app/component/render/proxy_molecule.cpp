@@ -8,6 +8,7 @@
 #include <core/chemdb/atom.hpp>
 #include <renderer/facade.hpp>
 #include <util/algorithm/range.hpp>
+#include <util/exceptions.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render

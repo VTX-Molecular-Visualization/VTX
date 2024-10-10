@@ -7,6 +7,7 @@
 #include <renderer/facade.hpp>
 #include <thread>
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 void displaySimpleInfo()
 {

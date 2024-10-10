@@ -9,6 +9,7 @@
 #include <app/core/ecs/registry.hpp>
 #include <app/core/renderer/renderer_system.hpp>
 #include <optional>
+#include <util/logger.hpp>
 
 namespace
 {

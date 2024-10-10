@@ -23,12 +23,6 @@ namespace VTX::App::Component::Scene
 		using PickableFunc = std::function<
 			std::unique_ptr<Application::Selection::SelectionData>( const Application::Selection::PickingInfo & )>;
 
-	  private:
-		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<Pickable> registration {
-			"Scene::PickableComponent"
-		};
-
-	  public:
 		Pickable();
 		~Pickable();
 

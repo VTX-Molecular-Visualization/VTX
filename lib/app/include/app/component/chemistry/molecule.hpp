@@ -24,11 +24,6 @@ namespace VTX::App::Component::Chemistry
 	class Molecule : public Core::ECS::BaseComponent
 	{
 	  private:
-		// Register component class as component
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Molecule> _compReg {
-			"Chemistry::MoleculeComponent"
-		};
-
 		friend App::Component::Render::ProxyMolecule;
 		friend Chain;
 		friend Residue;

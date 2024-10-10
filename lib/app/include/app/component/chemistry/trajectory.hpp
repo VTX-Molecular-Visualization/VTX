@@ -11,11 +11,6 @@ namespace VTX::App::Component::Chemistry
 {
 	class Trajectory : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Trajectory> registration {
-			"Chemistry::TrajectoryComponent"
-		};
-
 	  public:
 		Trajectory();
 		Trajectory( Molecule * const p_molecule );
