@@ -23,9 +23,9 @@ namespace VTX::App::Component::Behaviour
 	{
 	}
 
-	void Molecule::init( const Util::VariantMap & p_extraData )
+	void Molecule::init( const FilePath & p_path, const std::string * const p_buffer )
 	{
-		_loadMolecule( p_extraData );
+		_loadMolecule( p_path, p_buffer );
 
 		_initSelectableComponent();
 		_initUIDComponent();
@@ -90,39 +90,22 @@ namespace VTX::App::Component::Behaviour
 											  { return _moleculePickingFunction( p_pickingInfo ); } );
 	}
 
-	void Molecule::_loadMolecule( const Util::VariantMap & p_extraData ) const
+	void Molecule::_loadMolecule( const FilePath & p_path, const std::string * const p_buffer ) const
 	{
-		const Util::VariantMap::const_iterator filepathProperty = p_extraData.find( "filepath" );
-		if ( filepathProperty == p_extraData.end() || !filepathProperty->second.is<std::string>() )
-		{
-			VTX_ERROR( "Missing property \"filepath\" in loading data." );
-			return;
-		}
-
-		Serialization::IO::Reader::MoleculeLoader loader = Serialization::IO::Reader::MoleculeLoader();
-		const FilePath							  path	 = FilePath( filepathProperty->second.get<std::string>() );
-
-		const Core::ECS::BaseEntity &	  entity = MAIN_REGISTRY().getEntity( _moleculeComponent );
-		Component::IO::MoleculeMetadata & metaData
+		Serialization::IO::Reader::MoleculeLoader loader;
+		const Core::ECS::BaseEntity &			  entity = MAIN_REGISTRY().getEntity( _moleculeComponent );
+		Component::IO::MoleculeMetadata &		  metaData
 			= MAIN_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( entity );
 
-		if ( p_extraData.find( "buffer" ) != p_extraData.end() )
+		if ( p_buffer ) // Buffer.
 		{
-			const Util::VTXVariant buffer = p_extraData.at( "buffer" ).get<std::string>();
-
-			if ( !buffer.is<std::string>() )
-			{
-				VTX_ERROR( "Invalid buffer." );
-				return;
-			}
-
-			VTX_DEBUG( "Path: {}", path.string() );
-			loader.readBuffer( buffer.get<std::string>(), path, _moleculeComponent );
+			VTX_DEBUG( "Path: {}", p_path.string() );
+			loader.readBuffer( *p_buffer, p_path, _moleculeComponent );
 		}
 		else // Filepath
 		{
-			loader.readFile( path, _moleculeComponent );
-			metaData.path = path;
+			loader.readFile( p_path, _moleculeComponent );
+			metaData.path = p_path;
 		}
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
@@ -131,7 +114,7 @@ namespace VTX::App::Component::Behaviour
 
 		_moleculeComponent.setPdbIdCode( pdbId );
 
-		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( path ) : pdbId;
+		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( p_path ) : pdbId;
 		_moleculeComponent.setName( moleculeName );
 	}
 

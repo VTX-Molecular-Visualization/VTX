@@ -24,7 +24,7 @@ namespace VTX::App::Component::Behaviour
 		Molecule();
 		~Molecule() = default;
 
-		void init( const Util::VariantMap & p_extraData );
+		void init( const FilePath & p_path, const std::string * const p_buffer );
 
 	  private:
 		void _initSelectableComponent() const;
@@ -34,7 +34,7 @@ namespace VTX::App::Component::Behaviour
 		void _initTrajectoryComponent() const;
 		void _initPickableComponent() const;
 
-		void _loadMolecule( const Util::VariantMap & p_extraData ) const;
+		void _loadMolecule( const FilePath & p_path, const std::string * const p_buffer ) const;
 		std::unique_ptr<Application::Selection::SelectionData> _moleculePickingFunction( const Application::Selection::
 																							 PickingInfo & ) const;
 

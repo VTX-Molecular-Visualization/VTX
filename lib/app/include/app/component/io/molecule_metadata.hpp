@@ -8,7 +8,7 @@
 
 namespace VTX::App::Component::IO
 {
-	struct MoleculeMetadata
+	class MoleculeMetadata : public Core::ECS::BaseComponent
 	{
 	  private:
 		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<MoleculeMetadata> registration {

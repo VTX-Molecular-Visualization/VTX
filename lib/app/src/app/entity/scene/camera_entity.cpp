@@ -7,18 +7,10 @@
 
 namespace VTX::App::Entity::Scene
 {
-	void CameraEntityBuilder::addComponent(
-		const Core::ECS::BaseEntity & p_entity,
-		const Util::VariantMap &	  p_extraData
-	)
+	void CameraEntity::setup()
 	{
-		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( p_entity );
-		MAIN_REGISTRY().addComponent<Component::Render::Camera>( p_entity );
-	}
-
-	void CameraEntityBuilder::setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData )
-	{
-		Component::Render::Camera & camera = MAIN_REGISTRY().getComponent<Component::Render::Camera>( p_entity );
+		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( *this );
+		auto & camera = MAIN_REGISTRY().addComponent<Component::Render::Camera>( *this );
 		camera.setupProxy();
 	}
 } // namespace VTX::App::Entity::Scene

@@ -6,12 +6,9 @@
 
 namespace VTX::App::Entity::Application
 {
-	void SceneEntityBuilder::addComponent(
-		const Core::ECS::BaseEntity & p_entity,
-		const Util::VariantMap &	  p_extraData
-	)
+	void SceneEntity::setup()
 	{
-		MAIN_REGISTRY().addComponent<App::Application::Scene>( p_entity );
-		MAIN_REGISTRY().addComponent<App::Component::IO::SceneFileInfo>( p_entity );
+		MAIN_REGISTRY().addComponent<App::Application::Scene>( *this );
+		MAIN_REGISTRY().addComponent<App::Component::IO::SceneFileInfo>( *this );
 	}
 } // namespace VTX::App::Entity::Application

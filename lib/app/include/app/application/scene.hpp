@@ -18,7 +18,7 @@ namespace VTX::App::Application
 	template<typename T>
 	concept SceneItem = requires( T sceneItem ) { std::derived_from<T, Component::Scene::SceneItemComponent>; };
 
-	class Scene
+	class Scene : public Core::ECS::BaseComponent
 	{
 	  public:
 		using FindItemFunction = std::function<bool( const Core::ECS::BaseEntity & )>;
@@ -40,14 +40,14 @@ namespace VTX::App::Application
 		const Core::ECS::BaseEntity getItem( const size_t p_index ) const;
 		const Core::ECS::BaseEntity getItem( const std::string & p_name ) const;
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		C & getComponentByIndex( const size_t & p_index ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_index );
 			return MAIN_REGISTRY().getComponent<C>( entity );
 		}
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		C & getComponentByName( const std::string & p_name ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
@@ -70,19 +70,19 @@ namespace VTX::App::Application
 		void   changeItemIndex( const Core::ECS::BaseEntity & p_item, const size_t p_index );
 		void   changeItemsIndex( const std::vector<Core::ECS::BaseEntity> & p_items, const size_t p_position );
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		size_t getItemIndex( const C & p_item ) const
 		{
 			const Core::ECS::BaseEntity & entity = MAIN_REGISTRY().getEntity( p_item );
 			return getItemIndex( entity );
 		}
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		void changeItemIndex( const C & p_item, const size_t p_index )
 		{
 			const Core::ECS::BaseEntity & entity = MAIN_REGISTRY().getEntity( p_item );
 			changeItemIndex( entity, p_index );
 		}
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		void changeItemsIndex( const std::vector<const C *> & p_items, const size_t p_position )
 		{
 			std::vector<Core::ECS::BaseEntity> p_itemEntities = std::vector<Core::ECS::BaseEntity>();
@@ -98,7 +98,7 @@ namespace VTX::App::Application
 
 		void sortItemsBySceneIndex( std::vector<Core::ECS::BaseEntity> & p_items ) const;
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		void sortItemsBySceneIndex( std::vector<C *> & p_items ) const
 		{
 			for ( size_t i = 0; i < p_items.size(); i++ )
@@ -132,6 +132,7 @@ namespace VTX::App::Application
 
 		void _computeAABB();
 		void _createDefaultPath();
+		void _createDefaultColorLayout();
 
 	  private:
 		Component::Render::Camera *		   _camera		= nullptr;

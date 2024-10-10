@@ -15,14 +15,14 @@ namespace VTX::App::Core::ECS
 	template<typename It>
 	struct ViewIterator;
 
-	template<ECS_Component Type, ECS_Component... Other>
+	template<ConceptComponent Type, ConceptComponent... Other>
 	class View
 	{
 	  private:
-		template<ECS_Component T>
+		template<ConceptComponent T>
 		using single_storage = const entt::basic_sigh_mixin<entt::basic_storage<T>, entt::registry>;
 
-		template<ECS_Component... Types>
+		template<ConceptComponent... Types>
 		using internal_view = entt::basic_view<entt::get_t<single_storage<Types>...>, entt::exclude_t<>>;
 
 		using view_type = internal_view<Type, Other...>;
@@ -38,7 +38,7 @@ namespace VTX::App::Core::ECS
 		size_t size() const { return _view.handle()->size(); }
 		size_t size_hint() const { return _view.size_hint(); }
 
-		template<ECS_Component T>
+		template<ConceptComponent T>
 		const T & getComponent( const BaseEntity & p_entity ) const
 		{
 			// Template disambiguator necessary in this case because calling a template function

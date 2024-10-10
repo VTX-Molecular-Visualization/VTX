@@ -5,6 +5,7 @@
 #include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include "app/component/chemistry/iterator/residue.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
@@ -12,7 +13,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	class Chain
+	class Chain : public Core::ECS::BaseComponent
 	{
 	  public:
 		Chain();

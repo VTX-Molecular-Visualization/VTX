@@ -16,9 +16,27 @@ namespace VTX::App::Application::ECS
 	  public:
 		RegistryManager() = default;
 
-		BaseEntity createEntity();
+		template<Core::ECS::ConceptEntity E, typename... Args>
+		E createEntity( Args &&... p_args )
+		{
+			E createdEntity = _registry.createEntity<E>( std::forward<Args>( p_args )... );
+			// TODO: remove?
+			_registry.addComponent<Component::ECS::EntityInfoComponent>( createdEntity );
+			createdEntity.setup();
 
-		template<Core::ECS::ECS_Component C>
+			return createdEntity;
+		}
+
+		BaseEntity createEntity()
+		{
+			BaseEntity createdEntity = _registry.createEntity();
+			// TODO: remove?
+			_registry.addComponent<Component::ECS::EntityInfoComponent>( createdEntity );
+
+			return createdEntity;
+		}
+
+		template<Core::ECS::ConceptComponent C>
 		inline BaseEntity getEntity( const C & p_component ) const
 		{
 			return _registry.getEntity( p_component );
@@ -26,91 +44,91 @@ namespace VTX::App::Application::ECS
 
 		bool isValid( const BaseEntity p_entity ) { return _registry.isValid( p_entity ); }
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		C & addComponent( const BaseEntity & p_entity )
 		{
 			C & res = _registry.addComponent<C>( p_entity );
 
-			Component::ECS::EntityInfoComponent & infoComponent
-				= getComponent<Component::ECS::EntityInfoComponent>( p_entity );
-			const ComponentStaticID componentID = _componentStaticIDMap.getComponentID<C>();
+			auto &					infoComponent = getComponent<Component::ECS::EntityInfoComponent>( p_entity );
+			const ComponentStaticID componentID	  = _componentStaticIDMap.getComponentID<C>();
 
 			if ( componentID != INVALID_COMPONENT_STATIC_ID )
+			{
 				infoComponent.addLinkedComponent( componentID );
+			}
 
 			return res;
 		}
-		template<Core::ECS::ECS_Component C, typename... Args>
+		template<Core::ECS::ConceptComponent C, typename... Args>
 		C & addComponent( const BaseEntity & p_entity, Args &&... p_args )
 		{
 			C & res = _registry.addComponent<C>( p_entity, std::forward<Args...>( p_args... ) );
 
-			Component::ECS::EntityInfoComponent & infoComponent
-				= getComponent<Component::ECS::EntityInfoComponent>( p_entity );
+			auto & infoComponent = getComponent<Component::ECS::EntityInfoComponent>( p_entity );
 			infoComponent.addLinkedComponent( _componentStaticIDMap.getComponentID<C>() );
 
 			return res;
 		}
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		void removeComponent( const BaseEntity & p_entity )
 		{
-			Component::ECS::EntityInfoComponent & infoComponent
-				= getComponent<Component::ECS::EntityInfoComponent>( p_entity );
+			auto & infoComponent = getComponent<Component::ECS::EntityInfoComponent>( p_entity );
 			infoComponent.removeLinkedComponent( _componentStaticIDMap.getComponentID<C>() );
 
 			_registry.removeComponent<C>( p_entity );
 		}
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		C & getComponent( const BaseEntity & p_entity )
 		{
 			return _registry.getComponent<C>( p_entity );
 		}
-		template<Core::ECS::ECS_Component C>
+
+		template<Core::ECS::ConceptComponent C>
 		const C & getComponent( const BaseEntity & p_entity ) const
 		{
 			return _registry.getComponent<const C>( p_entity );
 		}
 
-		template<Core::ECS::ECS_Component C, Core::ECS::ECS_Component CFrom>
+		template<Core::ECS::ConceptComponent C, Core::ECS::ConceptComponent CFrom>
 		C & getComponent( const CFrom & p_component )
 		{
 			BaseEntity entity = getEntity( p_component );
 			return _registry.getComponent<C>( entity );
 		}
-		template<Core::ECS::ECS_Component C, Core::ECS::ECS_Component CFrom>
+		template<Core::ECS::ConceptComponent C, Core::ECS::ConceptComponent CFrom>
 		const C & getComponent( const CFrom & p_component ) const
 		{
 			BaseEntity entity = getEntity( p_component );
 			return _registry.getComponent<C>( entity );
 		}
 
-		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
+		template<Core::ECS::ConceptComponent Type, Core::ECS::ConceptComponent... Other>
 		Type & findComponent()
 		{
 			Core::ECS::View<Type, Other...> view = _registry.findComponents<Type, Other...>();
 			return getComponent<Type>( *( view.begin() ) );
 		}
-		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
+		template<Core::ECS::ConceptComponent Type, Core::ECS::ConceptComponent... Other>
 		const Type & findComponent() const
 		{
 			Core::ECS::View<Type, Other...> view = _registry.findComponents<Type, Other...>();
 			return getComponent<Type>( *( view.begin() ) );
 		}
 
-		template<Core::ECS::ECS_Component Type, Core::ECS::ECS_Component... Other>
+		template<Core::ECS::ConceptComponent Type, Core::ECS::ConceptComponent... Other>
 		Core::ECS::View<Type, Other...> findComponents() const
 		{
 			return _registry.findComponents<Type, Other...>();
 		}
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		bool hasComponent( const BaseEntity & p_entity ) const
 		{
 			return _registry.hasComponent<C>( p_entity );
 		}
-		template<Core::ECS::ECS_Component C1, Core::ECS::ECS_Component C2>
+		template<Core::ECS::ConceptComponent C1, Core::ECS::ConceptComponent C2>
 		bool hasComponent( const C2 & p_component ) const
 		{
 			const BaseEntity entity = getEntity( p_component );
@@ -119,13 +137,13 @@ namespace VTX::App::Application::ECS
 
 		bool isEmpty() const { return _registry.isEmpty(); }
 
-		template<Core::ECS::ECS_Component C, auto Func, typename Receiver>
+		template<Core::ECS::ConceptComponent C, auto Func, typename Receiver>
 		void connectSignal( const App::Core::ECS::SIGNAL p_signal, Receiver * const p_receiver )
 		{
 			_registry.connectSignal<C, Func, Receiver>( p_signal, p_receiver );
 		}
 
-		template<Core::ECS::ECS_Component C>
+		template<Core::ECS::ConceptComponent C>
 		void deleteAll()
 		{
 			_registry.deleteAll<C>();

@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_ATOM__
 
 #include "_fwd.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <string>
 #include <util/constants.hpp>
@@ -11,7 +12,7 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Atom
+	class Atom : public Core::ECS::BaseComponent
 	{
 	  public:
 		Atom() = default;

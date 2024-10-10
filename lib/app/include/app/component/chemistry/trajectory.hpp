@@ -9,7 +9,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	class Trajectory
+	class Trajectory : public Core::ECS::BaseComponent
 	{
 	  private:
 		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Trajectory> registration {

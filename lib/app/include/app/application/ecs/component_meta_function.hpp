@@ -20,7 +20,7 @@ namespace VTX::App::Application::ECS
 		ComponentMetaFunction() = default;
 		~ComponentMetaFunction() {}
 
-		template<Core::ECS::ECS_Component T>
+		template<Core::ECS::ConceptComponent T>
 		void registerComponent( const ComponentStaticID & p_id )
 		{
 			_mapSerializer[ p_id ] = []( const Core::ECS::BaseEntity &				p_entity,
@@ -71,10 +71,8 @@ namespace VTX::App::Application::ECS
 		using ComponentDeserializerFunction = std::function<
 			void( Application::ECS::RegistryManager &, const Serialization::SerializationSystem &, const Util::JSon::Object &, const Core::ECS::BaseEntity & )>;
 
-		std::map<ComponentStaticID, ComponentSerializerFunction> _mapSerializer
-			= std::map<ComponentStaticID, ComponentSerializerFunction>();
-		std::map<ComponentStaticID, ComponentDeserializerFunction> _mapDeserializer
-			= std::map<ComponentStaticID, ComponentDeserializerFunction>();
+		std::map<ComponentStaticID, ComponentSerializerFunction>   _mapSerializer;
+		std::map<ComponentStaticID, ComponentDeserializerFunction> _mapDeserializer;
 	};
 } // namespace VTX::App::Application::ECS
 

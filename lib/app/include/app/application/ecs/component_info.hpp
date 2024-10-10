@@ -18,13 +18,13 @@ namespace VTX::App::Application::ECS
 		ComponentStaticIDMap() = default;
 		~ComponentStaticIDMap() {}
 
-		template<Core::ECS::ECS_Component T>
+		template<Core::ECS::ConceptComponent T>
 		void registerComponent( const ComponentStaticID & p_id )
 		{
 			_mapTypeStaticID[ typeid( T ).hash_code() ] = p_id;
 		}
 
-		template<Core::ECS::ECS_Component T>
+		template<Core::ECS::ConceptComponent T>
 		const ComponentStaticID & getComponentID()
 		{
 			const size_t hashcode = typeid( T ).hash_code();

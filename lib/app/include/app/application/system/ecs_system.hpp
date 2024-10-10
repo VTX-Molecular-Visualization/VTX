@@ -2,7 +2,6 @@
 #define __VTX_APP_APPLICATION_SYSTEM_ECS_SYSTEM__
 
 #include "app/application/ecs/component_meta_function.hpp"
-#include "app/application/ecs/entity_director.hpp"
 #include "app/application/ecs/registry_manager.hpp"
 
 namespace VTX::App::Application::System
@@ -27,7 +26,6 @@ namespace VTX::App::Application::System
 	  public:
 		Application::ECS::RegistryManager		registryManager		  = Application::ECS::RegistryManager();
 		Application::ECS::ComponentMetaFunction componentMetaFunction = Application::ECS::ComponentMetaFunction();
-		Application::ECS::EntityDirector		entityDirector		  = Application::ECS::EntityDirector();
 	};
 } // namespace VTX::App::Application::System
 
@@ -40,10 +38,6 @@ namespace VTX::App
 
 	// COMPONENT_META_FUNCTION give access to the meta functions on Components (i.e. Serialization)
 	inline Application::ECS::ComponentMetaFunction & COMPONENT_META_FUNCTION() { return ECS().componentMetaFunction; }
-
-	// ENTITY_DIRECTOR Allows to instantiate ready to used object(an entity with all its necessary components linked on
-	// it and initialized.) It can also be used to customize object initialization.
-	inline Application::ECS::EntityDirector & ENTITY_DIRECTOR() { return ECS().entityDirector; }
 } // namespace VTX::App
 
 #endif

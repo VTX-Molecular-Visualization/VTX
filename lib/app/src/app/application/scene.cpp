@@ -1,11 +1,10 @@
 #include "app/application/scene.hpp"
-#include "app/application/ecs/entity_director.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/entity/all_entities.hpp"
+#include "app/entity/scene/camera_entity.hpp"
 #include <renderer/facade.hpp>
 
 namespace VTX::App::Application
@@ -17,11 +16,11 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = ENTITY_DIRECTOR().build( Entity::CAMERA_ENTITY_ID );
-		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+		auto cameraEntity = MAIN_REGISTRY().createEntity<Entity::Scene::CameraEntity>();
+		_camera			  = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
-		//_createDefaultColorLayout();
+		_createDefaultColorLayout();
 	}
 
 	Scene::~Scene() {}
@@ -303,14 +302,12 @@ namespace VTX::App::Application
 		// addPath( path );
 	}
 
-	/*
 	void Scene::_createDefaultColorLayout()
 	{
-		// TODO: why an entity?
-		Core::ECS::BaseEntity colorLayoutEntity = MAIN_REGISTRY().createEntity();
+		auto   colorLayoutEntity = MAIN_REGISTRY().createEntity();
 		auto & comp = MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
 		comp.setupProxy();
 		onDefaultColorLayout( comp );
 	}
-	*/
+
 } // namespace VTX::App::Application

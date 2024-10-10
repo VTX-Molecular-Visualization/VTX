@@ -14,9 +14,9 @@ namespace VTX::App::Application::Selection
 {
 	MoleculeData MoleculeGranularity::getSelectionData( const Atom & p_atom, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_atom.getMoleculePtr() );
-		MoleculeData molData = MoleculeData( molSelectable );
+		auto molData = MoleculeData( molSelectable );
 		molData.clear();
 
 		switch ( p_granularity )
@@ -32,7 +32,7 @@ namespace VTX::App::Application::Selection
 	}
 	MoleculeData MoleculeGranularity::getSelectionData( const Residue & p_residue, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_residue.getMoleculePtr() );
 		MoleculeData molData = MoleculeData( molSelectable );
 		molData.clear();
@@ -50,7 +50,7 @@ namespace VTX::App::Application::Selection
 	}
 	MoleculeData MoleculeGranularity::getSelectionData( const Chain & p_chain, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_chain.getMoleculePtr() );
 		MoleculeData molData = MoleculeData( molSelectable );
 		molData.clear();
@@ -73,7 +73,7 @@ namespace VTX::App::Application::Selection
 		const AssignmentType p_assignment
 	)
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_atom.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_atom, p_granularity );
@@ -82,7 +82,7 @@ namespace VTX::App::Application::Selection
 	}
 	void MoleculeGranularity::unselect( const Atom & p_atom, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_atom.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_atom, p_granularity );
@@ -96,7 +96,7 @@ namespace VTX::App::Application::Selection
 		const AssignmentType p_assignment
 	)
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_residue.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_residue, p_granularity );
@@ -105,7 +105,7 @@ namespace VTX::App::Application::Selection
 	}
 	void MoleculeGranularity::unselect( const Residue & p_residue, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_residue.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_residue, p_granularity );
@@ -119,7 +119,7 @@ namespace VTX::App::Application::Selection
 		const AssignmentType p_assignment
 	)
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_chain.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_chain, p_granularity );
@@ -128,7 +128,7 @@ namespace VTX::App::Application::Selection
 	}
 	void MoleculeGranularity::unselect( const Chain & p_chain, const Granularity & p_granularity )
 	{
-		const Component::Scene::Selectable & molSelectable
+		const auto & molSelectable
 			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *p_chain.getMoleculePtr() );
 
 		const MoleculeData molData = getSelectionData( p_chain, p_granularity );

@@ -4,6 +4,7 @@
 #include "_fwd.hpp"
 #include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
@@ -13,7 +14,7 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Residue
+	class Residue : public Core::ECS::BaseComponent
 	{
 	  public:
 		Residue() = default;

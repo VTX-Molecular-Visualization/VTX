@@ -21,7 +21,7 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
-	class Molecule
+	class Molecule : public Core::ECS::BaseComponent
 	{
 	  private:
 		// Register component class as component

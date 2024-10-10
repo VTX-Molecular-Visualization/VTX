@@ -7,13 +7,20 @@
 
 namespace VTX::App::Entity::Scene
 {
-	class MoleculeEntityBuilder
+	class MoleculeEntity : public Core::ECS::BaseEntity
 	{
 	  public:
-		static void addComponent( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
-		static void setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
-		static void postSetup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
-	};
+		MoleculeEntity( const FilePath & p_path, const std::string * const p_buffer = nullptr ) :
+			_path( p_path ), _buffer( p_buffer )
+		{
+		}
 
+		void setup() override;
+
+	  private:
+		const FilePath			  _path;
+		const std::string * const _buffer;
+	};
 } // namespace VTX::App::Entity::Scene
+
 #endif

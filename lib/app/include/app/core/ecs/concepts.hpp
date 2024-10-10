@@ -9,11 +9,10 @@
 namespace VTX::App::Core::ECS
 {
 	template<typename E>
-	concept ECS_Entity = std::derived_from<E, BaseEntity>;
+	concept ConceptEntity = std::derived_from<E, BaseEntity>;
 
 	template<typename C>
-	concept ECS_Component = requires() { !std::is_pointer<C>(); };
-	// concept ECS_Component = std::derived_from<C, BaseComponent>;
+	concept ConceptComponent = std::derived_from<C, BaseComponent>;
 
 } // namespace VTX::App::Core::ECS
 
