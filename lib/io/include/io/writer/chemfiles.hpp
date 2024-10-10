@@ -4,32 +4,110 @@
 #include "io/util/chemfiles.hpp"
 #include <forward_list>
 #include <util/types.hpp>
-#pragma warning( push, 0 )
-#include <chemfiles.hpp>
-#pragma warning( pop )
+#include <variant>
 
 namespace VTX::IO::Writer
 {
-	// I'm hesitant whether I base the second level of hierarchy after the Frame on the atom directly or if it makes
-	// more sense to put the residue first and thereafter the atom ... I'll take it overnight and see tomorrow
-
+	/**
+	 * @brief Property that can be attached to various components of the system
+	 */
 	struct Property
 	{
-		std::string key;
-		std::string value;
+		std::string								key;
+		std::variant<std::string, double, bool> value;
+	};
+
+	/**
+	 * @brief Id of an atom. This structure exists so we have explicit method taking this struct as input.
+	 */
+	struct AtomId
+	{
+		uint64_t id = 0xffffffffffffffff;
+	};
+
+	/**
+	 * @brief Coordinates of an atom
+	 */
+	struct AtomCoordinates
+	{
+		double x = 0.;
+		double y = 0.;
+		double z = 0.;
+	};
+
+	/**
+	 * @brief Basic information for creating a chain
+	 */
+	struct ChainInfo
+	{
+		uint64_t	id = 0xffffffffffffffff;
+		std::string symbol;
+	};
+
+	/**
+	 * @brief Allows to configure an atom to be written. Atoms are provided by the System.
+	 */
+	class Atom
+	{
+	  public:
+		/**
+		 * @brief Set the coordinates of the atom.
+		 */
+		void set( AtomCoordinates ) noexcept;
+	};
+
+	/**
+	 * @brief Allows to configure a chain to be written. The user is supposed to provide atoms to form the chain. Chains
+	 * are provided by the System.
+	 */
+	class Chain
+	{
+	  public:
+		/**
+		 * @brief Inform the chain that the input atom is a part of it.
+		 */
+		void add( Atom & ) noexcept;
+
+		/**
+		 * @brief Set or replace a property for the chain.
+		 */
+		void set( Property ) noexcept;
+	};
+
+	/**
+	 * @brief Allow to configure one frame of the system. A frame is defined by a set of all atoms coordinates. If a
+	 * simple structure file is written, only one frame will suffice.
+	 */
+	class Frame
+	{
+	  public:
+		void add( AtomId, AtomCoordinates ) noexcept;
 	};
 
 	/**
 	 * @brief Allows to configure a frame to be written by Chemfiles. Be carefull : any instance is invalidated if the
 	 * parent Chemmfiles object is moved away.
 	 */
-	class Frame
+	class System
 	{
 	  public:
 		/**
 		 * @brief Set or replace a property for the frame.
 		 */
-		void set( Property );
+		void set( Property ) noexcept;
+
+		/**
+		 * @brief Create a new atom in this frame
+		 * @return the new Atom
+		 */
+		Atom newAtom( AtomId ) noexcept;
+
+		/**
+		 * @brief Create a new chain in this frame
+		 * @param
+		 * @return
+		 */
+		Chain newChain( ChainInfo ) noexcept;
 	};
 
 	/**
@@ -61,24 +139,26 @@ namespace VTX::IO::Writer
 		void setWriteFormat( Util::Chemfiles::E_FILE_FORMATS ) noexcept;
 
 		/**
-		 * @brief Create a new frame that will be written eventually
-		 * @return The new frame to configure
+		 * @brief Create the system that will be written eventually
+		 * @return The system to configure
 		 */
-		Frame newFrame() noexcept;
+		System createSystem() noexcept;
 
 	  private:
 		struct _Chain
 		{
 		};
-		using ChainCollection = std::forward_list<_Chain>; // Used for constant time insertion
+		using ChainCollection = std::forward_list<_Chain>; // Used for constant time insertion and memory efficiency
 		struct _Frame
 		{
 		};
-		using FrameCollection = std::forward_list<_Frame>; // Used for constant time insertion
-
-		FilePath						_dest;
-		Util::Chemfiles::E_FILE_FORMATS _fileFormat = Util::Chemfiles::E_FILE_FORMATS::none;
-		FrameCollection					_frames;
+		using FrameCollection = std::forward_list<_Frame>; // Used for constant time insertion and memory efficiency
+		struct _Data // Here so move ctor/assignement are easier to write and maintain
+		{
+			FilePath						dest;
+			Util::Chemfiles::E_FILE_FORMATS fileFormat = Util::Chemfiles::E_FILE_FORMATS::none;
+			FrameCollection					frames;
+		} _;
 	};
 } // namespace VTX::IO::Writer
 #endif
