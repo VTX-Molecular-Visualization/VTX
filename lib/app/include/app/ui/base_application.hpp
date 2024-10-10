@@ -25,6 +25,9 @@ namespace VTX::App::UI
 			{
 				tool->createUI();
 			}
+
+			onUICreated();
+
 			_mainWindow->prepare();
 
 			// Start the main app.
@@ -46,8 +49,8 @@ namespace VTX::App::UI
 
 		inline static MW * const getMainWindow() { return _mainWindow.get(); }
 
-		// Usefull?
-		// inline static Util::Callback<> onUI;
+		// Callbacks.
+		inline static Util::Callback<> onUICreated;
 
 	  protected:
 		inline static std::unique_ptr<MW> _mainWindow;

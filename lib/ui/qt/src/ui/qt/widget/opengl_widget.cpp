@@ -65,4 +65,18 @@ namespace VTX::UI::QT::Widget
 		);
 	}
 
+	void OpenGLWidget::setVSync( const bool p_vsync )
+	{
+		assert( _context != nullptr );
+
+		// Windows only.
+		auto wglSwapIntervalEXT
+			= reinterpret_cast<void ( * )( int )>( _context->getProcAddress( "wglSwapIntervalEXT" ) );
+
+		if ( wglSwapIntervalEXT )
+		{
+			wglSwapIntervalEXT( p_vsync ? 1 : 0 );
+		}
+	}
+
 } // namespace VTX::UI::QT::Widget

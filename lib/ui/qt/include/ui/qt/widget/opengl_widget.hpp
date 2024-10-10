@@ -27,6 +27,9 @@ namespace VTX::UI::QT::Widget
 
 		//  bool eventFilter( QObject *, QEvent * );
 
+		void setVSync( const bool );
+		bool isVSync() const { return _context->format().swapInterval() == 1; }
+
 	  private:
 		QPointer<QOpenGLContext>		   _context;
 		QPointer<Window::EventCatchWindow> _window;
