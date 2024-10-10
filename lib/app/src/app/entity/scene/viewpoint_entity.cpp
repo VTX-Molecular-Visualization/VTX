@@ -12,11 +12,11 @@ namespace VTX::App::Entity::Scene
 {
 	void ViewpointEntity::setup()
 	{
-		auto & sceneItemComponent = MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
+		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
-		MAIN_REGISTRY().addComponent<Component::Render::Viewpoint>( *this );
-		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		MAIN_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
+		ECS_REGISTRY().addComponent<Component::Render::Viewpoint>( *this );
+		ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
+		ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 
 		sceneItemComponent.setName( "Viewpoint" );
 	}

@@ -8,8 +8,8 @@ namespace VTX::App::Entity::Scene
 {
 	void CameraEntity::setup()
 	{
-		MAIN_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & camera = MAIN_REGISTRY().addComponent<Component::Render::Camera>( *this );
+		ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
+		auto & camera = ECS_REGISTRY().addComponent<Component::Render::Camera>( *this );
 		camera.setupProxy();
 	}
 } // namespace VTX::App::Entity::Scene

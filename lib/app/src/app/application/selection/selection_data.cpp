@@ -50,7 +50,7 @@ namespace VTX::App::Application::Selection
 	std::string SelectionData::toString() const
 	{
 		Component::Scene::SceneItemComponent & sceneItem
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
+			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
 
 		return sceneItem.getName();
 	}

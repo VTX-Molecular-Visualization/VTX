@@ -16,8 +16,8 @@ namespace VTX::App::Component::Render
 		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
 	{
 		// Link transform component.
-		assert( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) );
-		auto & transformComponent = MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		assert( ECS_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) );
+		auto & transformComponent = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 		_transform				  = &transformComponent;
 		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
 
@@ -28,7 +28,7 @@ namespace VTX::App::Component::Render
 
 	void Camera::setupProxy()
 	{
-		auto & transformComponent = MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		auto & transformComponent = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
 		// Create.
 		_proxy = std::make_unique<Renderer::Proxy::Camera>( Renderer::Proxy::Camera {
@@ -51,7 +51,7 @@ namespace VTX::App::Component::Render
 		{ _proxy->onPerspective( p_projection == Camera::PROJECTION::PERSPECTIVE ); };
 
 		Component::Scene::Transform & transformComp
-			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 		transformComp.onTransform += [ this ]( const Util::Math::Transform & p_transform )
 		{ _proxy->onCameraPosition( p_transform.getTranslationVector() ); };
 

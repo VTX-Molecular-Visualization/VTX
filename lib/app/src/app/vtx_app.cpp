@@ -39,8 +39,8 @@ namespace VTX::App
 		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
 
 		// Create scene.
-		auto sceneEntity = MAIN_REGISTRY().createEntity<Entity::Application::SceneEntity>();
-		_scene			 = &MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Application::SceneEntity>();
+		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )

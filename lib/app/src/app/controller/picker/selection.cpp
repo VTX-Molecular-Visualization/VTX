@@ -22,7 +22,7 @@ namespace
 			return std::optional<VTX::App::Component::Scene::Pickable>();
 
 		const VTX::App::Component::Scene::Pickable & pickableComponent
-			= VTX::App::MAIN_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
+			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
 
 		return std::optional<const VTX::App::Component::Scene::Pickable>( pickableComponent );
 	}

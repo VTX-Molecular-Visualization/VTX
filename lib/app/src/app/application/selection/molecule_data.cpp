@@ -9,7 +9,7 @@
 namespace VTX::App::Application::Selection
 {
 	MoleculeData::MoleculeData( const Component::Scene::Selectable & p_selectable ) :
-		SelectionData( p_selectable ), _molecule( &MAIN_REGISTRY().getComponent<Molecule>( p_selectable ) )
+		SelectionData( p_selectable ), _molecule( &ECS_REGISTRY().getComponent<Molecule>( p_selectable ) )
 	{
 		selectAll();
 	}
@@ -843,7 +843,7 @@ namespace VTX::App::Application::Selection
 			_recomputeAABB();
 
 		const Util::Math::Transform & transform
-			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *_molecule ).getTransform();
+			= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *_molecule ).getTransform();
 
 		return Helper::Math::applyTransformOnAABB( _localAABB, transform );
 	}

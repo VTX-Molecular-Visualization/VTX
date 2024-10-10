@@ -190,9 +190,9 @@ namespace VTX::UI::QT::DockWidget
 			{
 				using namespace App;
 
-				if ( App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
+				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
 				{
-					auto & molecule = App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_item );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_item );
 
 					// Add with concept.
 					addTopLevelData(

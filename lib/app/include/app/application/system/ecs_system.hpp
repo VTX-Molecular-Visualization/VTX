@@ -16,7 +16,7 @@ namespace VTX::App::Application::System
 namespace VTX::App
 {
 	inline Application::System::ECSSystem & ECS() { return Util::Singleton<Application::System::ECSSystem>::get(); }
-	inline Core::ECS::Registry &			MAIN_REGISTRY() { return ECS().registry; }
+	inline Core::ECS::Registry &			ECS_REGISTRY() { return ECS().registry; }
 } // namespace VTX::App
 
 #endif

@@ -26,20 +26,20 @@ namespace VTX::App::Entity::Scene
 	void MoleculeEntity::setup()
 	{
 		// TODO: share with wiewpoint entity.
-		auto & sceneItemComponent = MAIN_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
+		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
-		auto & molecule	  = MAIN_REGISTRY().addComponent<Component::Chemistry::Molecule>( *this );
-		auto & aabb		  = MAIN_REGISTRY().addComponent<Component::Scene::AABB>( *this );
-		auto & transform  = MAIN_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & proxy	  = MAIN_REGISTRY().addComponent<Component::Render::ProxyMolecule>( *this );
-		auto & uid		  = MAIN_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
-		auto & selectable = MAIN_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
-		auto & pickable	  = MAIN_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
+		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::Molecule>( *this );
+		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
+		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
+		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxyMolecule>( *this );
+		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
+		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
+		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
 
 		// Load molecule.
 		Serialization::IO::Reader::MoleculeLoader loader;
-		auto & metaData = MAIN_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( *this );
+		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( *this );
 
 		if ( _buffer ) // Buffer.
 		{
@@ -88,7 +88,7 @@ namespace VTX::App::Entity::Scene
 		// Trajectory.
 		if ( molecule.hasTrajectory() )
 		{
-			auto & trajectory = MAIN_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &molecule );
+			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &molecule );
 
 			// TODO: set from settings.
 			auto * const defaultPlayMode

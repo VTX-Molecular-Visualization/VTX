@@ -17,7 +17,7 @@ namespace VTX::App::Action::Scene
 {
 	void LoadMolecule::execute()
 	{
-		const auto entity = MAIN_REGISTRY().createEntity<Entity::Scene::MoleculeEntity>( _path.string(), _buffer );
+		const auto entity = ECS_REGISTRY().createEntity<Entity::Scene::MoleculeEntity>( _path.string(), _buffer );
 		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
@@ -37,9 +37,9 @@ namespace VTX::App::Action::Scene
 	}
 	void CreateViewpoint::execute()
 	{
-		const auto entity = MAIN_REGISTRY().createEntity<Entity::Scene::ViewpointEntity>();
+		const auto entity = ECS_REGISTRY().createEntity<Entity::Scene::ViewpointEntity>();
 
-		auto & viewpoint = MAIN_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
+		auto & viewpoint = ECS_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
 		viewpoint.setPosition( _position );
 		viewpoint.setRotation( _rotation );
 	}

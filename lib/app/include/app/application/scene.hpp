@@ -32,7 +32,7 @@ namespace VTX::App::Application
 		template<SceneItem T>
 		Core::ECS::View<Component::Scene::SceneItemComponent, T> getAllSceneItemsOfType() const
 		{
-			return MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, T>();
+			return ECS_REGISTRY().findComponents<Component::Scene::SceneItemComponent, T>();
 		}
 
 		void referenceItem( Component::Scene::SceneItemComponent & p_item );
@@ -44,14 +44,14 @@ namespace VTX::App::Application
 		C & getComponentByIndex( const size_t & p_index ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_index );
-			return MAIN_REGISTRY().getComponent<C>( entity );
+			return ECS_REGISTRY().getComponent<C>( entity );
 		}
 
 		template<Core::ECS::ConceptComponent C>
 		C & getComponentByName( const std::string & p_name ) const
 		{
 			const Core::ECS::BaseEntity entity = getItem( p_name );
-			return MAIN_REGISTRY().getComponent<C>( entity );
+			return ECS_REGISTRY().getComponent<C>( entity );
 		}
 
 		Core::ECS::BaseEntity findItem( const FindItemFunction & p_findFunction ) const;
@@ -73,13 +73,13 @@ namespace VTX::App::Application
 		template<Core::ECS::ConceptComponent C>
 		size_t getItemIndex( const C & p_item ) const
 		{
-			const Core::ECS::BaseEntity & entity = MAIN_REGISTRY().getEntity( p_item );
+			const Core::ECS::BaseEntity & entity = ECS_REGISTRY().getEntity( p_item );
 			return getItemIndex( entity );
 		}
 		template<Core::ECS::ConceptComponent C>
 		void changeItemIndex( const C & p_item, const size_t p_index )
 		{
-			const Core::ECS::BaseEntity & entity = MAIN_REGISTRY().getEntity( p_item );
+			const Core::ECS::BaseEntity & entity = ECS_REGISTRY().getEntity( p_item );
 			changeItemIndex( entity, p_index );
 		}
 		template<Core::ECS::ConceptComponent C>
@@ -89,7 +89,7 @@ namespace VTX::App::Application
 			p_itemEntities.reserve( p_items.size() );
 			for ( const Component::Scene::SceneItemComponent * const itemPtr : p_items )
 			{
-				const Core::ECS::BaseEntity itemEntity = MAIN_REGISTRY().getEntity( *itemPtr );
+				const Core::ECS::BaseEntity itemEntity = ECS_REGISTRY().getEntity( *itemPtr );
 				p_itemEntities.emplace_back( itemEntity );
 			}
 

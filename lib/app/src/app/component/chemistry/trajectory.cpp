@@ -7,7 +7,7 @@ namespace VTX::App::Component::Chemistry
 {
 	Trajectory::Trajectory()
 	{
-		_moleculePtr = &MAIN_REGISTRY().getComponent<Molecule>( *this );
+		_moleculePtr = &ECS_REGISTRY().getComponent<Molecule>( *this );
 		_referenceUpdateFunction();
 	}
 
@@ -49,7 +49,7 @@ namespace VTX::App::Component::Chemistry
 	void Trajectory::_referenceUpdateFunction()
 	{
 		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
 	}
 

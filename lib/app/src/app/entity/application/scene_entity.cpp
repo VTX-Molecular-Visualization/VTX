@@ -7,7 +7,7 @@ namespace VTX::App::Entity::Application
 {
 	void SceneEntity::setup()
 	{
-		MAIN_REGISTRY().addComponent<App::Application::Scene>( *this );
-		MAIN_REGISTRY().addComponent<App::Component::IO::SceneFileInfo>( *this );
+		ECS_REGISTRY().addComponent<App::Application::Scene>( *this );
+		ECS_REGISTRY().addComponent<App::Component::IO::SceneFileInfo>( *this );
 	}
 } // namespace VTX::App::Entity::Application

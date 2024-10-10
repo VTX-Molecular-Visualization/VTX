@@ -33,9 +33,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 	// VTX::App::SCENE().onSceneItemAdded += [ & ]( VTX::App::Component::Scene::SceneItemComponent item )
 	{
 		VTX::App::Core::ECS::BaseEntity molEntity = VTX::App::SCENE().getItem( itemName );
-		REQUIRE( VTX::App::MAIN_REGISTRY().isValid( molEntity ) );
+		REQUIRE( VTX::App::ECS_REGISTRY().isValid( molEntity ) );
 		VTX::App::Component::Chemistry::Molecule & mol
-			= VTX::App::MAIN_REGISTRY().getComponent<VTX::App::Component::Chemistry::Molecule>( molEntity );
+			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Molecule>( molEntity );
 	};
 	return;
 }

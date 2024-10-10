@@ -18,7 +18,7 @@ TEST_CASE( "VTX_APP - Molecule - Remove", "[unit]" )
 	Test::Util::App::loadTestMolecule();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	Molecule &				   moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( molEntity );
+	Molecule &				   moleculeComponent = ECS_REGISTRY().getComponent<Molecule>( molEntity );
 
 	atom_index_t expectedRemovedAtoms = 0;
 	bool		 callbackValidated	  = 0;
@@ -183,7 +183,7 @@ TEST_CASE( "VTX_APP - Molecule - Visibility", "[unit]" )
 	Test::Util::App::loadTestMolecule();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	Molecule &				   moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( molEntity );
+	Molecule &				   moleculeComponent = ECS_REGISTRY().getComponent<Molecule>( molEntity );
 
 	atom_index_t expectedModifiedAtomCount = 0;
 	bool		 callbackValidated		   = 0;
