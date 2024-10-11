@@ -194,7 +194,9 @@ namespace VTX::IO::Writer
 	};
 
 	/**
-	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library.
+	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library. This
+	 * class is intended to cover needs in trajectory writing. It expect all the frames ( 1 or more) to have the same
+	 * chemical configuration : no change in atoms, bond, residues, chain between frames.
 	 */
 	class Chemfiles
 	{
