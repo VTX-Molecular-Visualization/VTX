@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Core
 	 * @tparam VSA is the horizontal scroll area flag.
 	 * @tparam L is the layout type.
 	 */
-	template<typename T, bool VSA = 1, bool HSA = 1, ConceptLayout L = QVBoxLayout>
+	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
 	class BaseDockWidget : public Core::BaseWidget<T, QDockWidget>
 	{
 	  public:
@@ -29,8 +29,6 @@ namespace VTX::UI::QT::Core
 		{
 			// Force to set allowed areas in child classes.
 			QDockWidget::setAllowedAreas( Qt::NoDockWidgetArea );
-
-			// Root widget.
 
 			// Scroll area.
 			if constexpr ( VSA or HSA )
