@@ -4,13 +4,10 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Console::Console( QWidget * p_parent ) : Core::BaseDockWidget<Console>( "Console", p_parent )
+	Console::Console( QWidget * p_parent ) : Core::BaseDockWidget<Console, 0, 0>( "Console", p_parent )
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
-		setMinimumHeight( 120 );
-
-		_scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-		_scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+		setMinimumHeight( 100 );
 
 		// setBaseSize( 100, 100 );
 		//  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
@@ -18,7 +15,8 @@ namespace VTX::UI::QT::DockWidget
 		_listWidget = new QListWidget( _root );
 
 		//_listWidget->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-		_listWidget->setMinimumHeight( 100 );
+		//_listWidget->setMinimumHeight( 80 );
+		//_listWidget->setSPolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
 		_listWidget->setWordWrap( true );
 		_listWidget->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
 

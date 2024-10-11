@@ -16,7 +16,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Console : public Core::BaseDockWidget<Console>
+	class Console : public Core::BaseDockWidget<Console, 0, 0>
 	{
 	  public:
 		Console( QWidget * p_parent );
