@@ -38,8 +38,10 @@ namespace VTX::IO::Writer
 	 */
 	struct AtomId
 	{
-		uint64_t id = 0xffffffffffffffff;
+		uint64_t value										 = 0xffffffffffffffff;
+		bool	 operator==( const AtomId & ) const noexcept = default;
 	};
+	inline bool operator<( const AtomId & lhs, const AtomId & rhs ) noexcept { return lhs.value < rhs.value; }
 
 	/**
 	 * @brief Coordinates of an atom
@@ -66,15 +68,21 @@ namespace VTX::IO::Writer
 		 * @brief You need to be the chosen one to wield this method to its full power.
 		 * @param
 		 */
-		void get( _AtomInfo & ) noexcept;
+		void get( _AtomInfo & ) const noexcept;
+
+	  private:
+		_Atom * _data;
 	};
 
+	struct _Residue;
 	/**
 	 * @brief Allows to configure a residue to be written. Residues can be added atoms and properties.
 	 */
 	class Residue
 	{
 	  public:
+		Residue() = default;
+		Residue( _Residue & );
 		/**
 		 * @brief Inform the chain that the input atom is a part of it.
 		 */
@@ -84,6 +92,9 @@ namespace VTX::IO::Writer
 		 * @brief Set or replace a property for the chain.
 		 */
 		void set( Property ) noexcept;
+
+	  private:
+		_Residue * _data = nullptr;
 	};
 
 	struct _Chain;
@@ -95,8 +106,13 @@ namespace VTX::IO::Writer
 	  public:
 		Chain() = default;
 		Chain( _Chain & );
+
+		void setName( std::string ) noexcept;
+		void setId( std::string ) noexcept;
+
 		/**
-		 * @brief Inform the chain that the input residue is a part of it.
+		 * @brief Inform the chain that the input residue is a part of it. Does nothing however, if the chain info are
+		 * not provided in the first place
 		 */
 		void add( Residue & ) noexcept;
 
@@ -104,6 +120,7 @@ namespace VTX::IO::Writer
 		_Chain * _data = nullptr;
 	};
 
+	struct _Frame;
 	/**
 	 * @brief Allow to configure one frame of the system. A frame is defined by a set of coordinates for all atoms. If a
 	 * simple structure file is written, only one frame will suffice.
@@ -111,7 +128,16 @@ namespace VTX::IO::Writer
 	class Frame
 	{
 	  public:
-		void set( AtomId, AtomCoordinates ) noexcept;
+		Frame() = default;
+		Frame( _Frame & );
+
+		/**
+		 * @brief Give the coordinate of the atom for this frame.
+		 */
+		void set( const Atom &, AtomCoordinates ) noexcept;
+
+	  private:
+		_Frame * _data;
 	};
 
 	struct _System;
@@ -130,7 +156,7 @@ namespace VTX::IO::Writer
 		void set( Property ) noexcept;
 
 		/**
-		 * @brief  Create a new atom in this frame
+		 * @brief  Create a new atom
 		 * @param  Id of the atom. Used as an external key to indentify the atom afterward.
 		 */
 		Atom newAtom( AtomId ) noexcept;
@@ -141,12 +167,12 @@ namespace VTX::IO::Writer
 		void bind( const AtomId &, const AtomId &, E_BOND_ORDER );
 
 		/**
-		 * @brief Create a new chain in this frame.
+		 * @brief Create a new chain.
 		 */
 		Chain newChain() noexcept;
 
 		/**
-		 * @brief Create a new residue in this frame.
+		 * @brief Create a new residue.
 		 */
 		Residue newResidue() noexcept;
 
@@ -154,6 +180,14 @@ namespace VTX::IO::Writer
 		 * @brief Create a new frame. A healthy system should get at least one frame.
 		 */
 		Frame newFrame() noexcept;
+
+		/**
+		 * @brief Set the input Atom to the one corresponding to the input AtomId
+		 * @param  Output
+		 * @param  ID corresponding to the atom
+		 * @return  Wether the fetch was succesful or not
+		 */
+		bool fetch( Atom &, const AtomId & ) noexcept;
 
 	  public:
 		_System * _data = nullptr;
