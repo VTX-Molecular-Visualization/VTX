@@ -305,10 +305,18 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultColorLayout()
 	{
-		auto   colorLayoutEntity = ECS_REGISTRY().createEntity();
-		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
+		auto & comp
+			= ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( *this ) );
 		comp.setupProxy();
-		onDefaultColorLayout( comp );
+
+		///////////
+		// TODO: make component.
+		/*
+		static VTX::Renderer::Proxy::Representation			representation;
+		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
+		renderer.addProxyRepresentations( representations );
+		*/
+		////////////
 	}
 
 } // namespace VTX::App::Application

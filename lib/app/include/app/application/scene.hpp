@@ -132,8 +132,7 @@ namespace VTX::App::Application
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
 
 		// Callbacks
-		Util::Callback<const Component::Scene::SceneItemComponent &>   onSceneItemAdded;
-		Util::Callback<const Component::Representation::ColorLayout &> onDefaultColorLayout;
+		Util::Callback<const Component::Scene::SceneItemComponent &> onSceneItemAdded;
 
 	  private:
 		int _persistentIDCounter = 0;

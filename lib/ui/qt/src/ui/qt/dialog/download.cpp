@@ -1,5 +1,4 @@
 #include "ui/qt/dialog/download.hpp"
-#include "ui/qt/application.hpp"
 #include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -13,7 +12,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	Download::Download() : BaseWidget<Download, QDialog>( APP_QT::getMainWindow() )
+	Download::Download()
 	{
 		setWindowTitle( "Download" );
 		// TODO: try size policy?

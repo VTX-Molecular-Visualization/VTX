@@ -70,13 +70,6 @@ namespace VTX::App
 		auto & renderer = RENDERER_SYSTEM();
 		renderer.build();
 
-		///////////
-		// TODO: move.
-		static VTX::Renderer::Proxy::Representation			representation;
-		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
-		renderer.addProxyRepresentations( representations );
-		////////////
-
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 

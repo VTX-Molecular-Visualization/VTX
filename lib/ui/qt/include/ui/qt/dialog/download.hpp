@@ -1,10 +1,9 @@
 #ifndef __VTX_UI_QT_DIALOG_DOWNLOAD__
 #define __VTX_UI_QT_DIALOG_DOWNLOAD__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_dialog.hpp"
 #include "ui/qt/settings.hpp"
 #include <QComboBox>
-#include <QDialog>
 #include <QPointer>
 #include <QRadioButton>
 #include <util/string.hpp>
@@ -12,7 +11,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	class Download : public BaseWidget<Download, QDialog>, public Savable
+	class Download : public Core::BaseDialog<Download>, public Savable
 	{
 	  public:
 		Download();

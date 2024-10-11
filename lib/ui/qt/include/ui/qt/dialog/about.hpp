@@ -1,16 +1,15 @@
 #ifndef __VTX_UI_QT_DIALOG_ABOUT__
 #define __VTX_UI_QT_DIALOG_ABOUT__
 
-#include "ui/qt/base_widget.hpp"
-#include <QDialog>
+#include "ui/qt/core/base_dialog.hpp"
 
 namespace VTX::UI::QT::Dialog
 {
 
-	class About : public BaseWidget<About, QDialog>
+	class About : public Core::BaseDialog<About>
 	{
 	  public:
-		About( QWidget * p_parent ) : BaseWidget( p_parent )
+		About()
 		{
 			setWindowTitle( "About" );
 			setFixedSize( 400, 200 );

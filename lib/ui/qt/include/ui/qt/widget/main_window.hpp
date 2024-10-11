@@ -10,8 +10,13 @@
 #include <QMenuBar>
 #include <QPointer>
 #include <app/ui/concepts.hpp>
-#include <ui/qt/dialog/progress.hpp>
+// #include <ui/qt/dialog/progress.hpp>
 #include <util/logger.hpp>
+
+namespace VTX::UI::QT::Dialog
+{
+	class Progress;
+}
 
 namespace VTX::UI::QT::Widget
 {

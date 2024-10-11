@@ -1,17 +1,22 @@
 #ifndef __VTX_RENDERER_FACADE__
 #define __VTX_RENDERER_FACADE__
 
-#include "proxy/camera.hpp"
-#include "proxy/color_layout.hpp"
-#include "proxy/molecule.hpp"
-#include "proxy/render_settings.hpp"
-#include "proxy/representation.hpp"
-#include "proxy/voxels.hpp"
 #include "struct_infos.hpp"
+#include <util/callback.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Renderer
 {
 	class Renderer;
+	namespace Proxy
+	{
+		struct Camera;
+		struct ColorLayout;
+		struct Molecule;
+		struct RenderSettings;
+		struct Representation;
+		struct Voxels;
+	} // namespace Proxy
 
 	/**
 	 * @brief The facade is the only way to access the renderer from another package.

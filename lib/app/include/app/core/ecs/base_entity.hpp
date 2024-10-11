@@ -26,12 +26,7 @@ namespace VTX::App::Core::ECS
 		}
 		*/
 
-		bool operator==( const BaseEntity & p_other ) const { return _entityID == p_other._entityID; }
-		bool operator!=( const BaseEntity & p_other ) const { return _entityID != p_other._entityID; }
-		bool operator<( const BaseEntity & p_other ) const { return _entityID < p_other._entityID; }
-		bool operator<=( const BaseEntity & p_other ) const { return _entityID <= p_other._entityID; }
-		bool operator>( const BaseEntity & p_other ) const { return _entityID > p_other._entityID; }
-		bool operator>=( const BaseEntity & p_other ) const { return _entityID >= p_other._entityID; }
+		auto operator<=>( const BaseEntity & p_other ) const { return _entityID <=> p_other._entityID; }
 
 		operator entt::entity() const { return _entityID; }
 
@@ -42,6 +37,7 @@ namespace VTX::App::Core::ECS
 		void _setEntityID( const entt::entity p_value ) { _entityID = p_value; }
 	};
 
+	// TODO: remove and throw exception instead?
 	inline const BaseEntity INVALID_ENTITY;
 } // namespace VTX::App::Core::ECS
 
