@@ -2,8 +2,6 @@
 #define __VTX_APP_APPLICATION_SCENE__
 
 #include "app/application/system/ecs_system.hpp"
-#include "app/component/render/_fwd.hpp"
-#include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/vtx_app.hpp"
@@ -12,6 +10,16 @@
 #include <string>
 #include <util/callback.hpp>
 #include <util/math/aabb.hpp>
+
+namespace VTX::App::Component::Representation
+{
+	class ColorLayout;
+}
+
+namespace VTX::App::Component::Render
+{
+	class Camera;
+} // namespace VTX::App::Component::Render
 
 namespace VTX::App::Application
 {

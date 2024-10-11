@@ -39,7 +39,7 @@ namespace VTX::Util::Monitoring
 		}
 
 	  private:
-		static const uint ACTIVE_FRAME_COUNT = 1;
+		static const uint ACTIVE_FRAME_COUNT = 1000;
 
 		std::list<FrameInfo> _frames = std::list<FrameInfo>();
 	};
