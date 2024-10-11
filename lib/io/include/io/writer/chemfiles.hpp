@@ -1,7 +1,6 @@
 #ifndef __VTX_IO_WRITER_CHEMFILES__
 #define __VTX_IO_WRITER_CHEMFILES__
 
-#include <forward_list>
 #include <util/types.hpp>
 #include <variant>
 
@@ -24,13 +23,14 @@ namespace VTX::IO::Writer
 		aromatic,
 	};
 
+	using PropertyValue = std::variant<std::string, double, bool>;
 	/**
 	 * @brief Property that can be attached to various components of the system
 	 */
 	struct Property
 	{
-		std::string								key;
-		std::variant<std::string, double, bool> value;
+		std::string	  key;
+		PropertyValue value;
 	};
 
 	/**
@@ -51,15 +51,7 @@ namespace VTX::IO::Writer
 		double z = 0.;
 	};
 
-	/**
-	 * @brief Basic information for creating a chain
-	 */
-	struct ChainInfo
-	{
-		std::string id;
-		std::string symbol;
-	};
-
+	struct _Atom;
 	struct _AtomInfo;
 	/**
 	 * @brief Atoms are provided by the System.
@@ -67,8 +59,11 @@ namespace VTX::IO::Writer
 	class Atom
 	{
 	  public:
+		Atom() = default;
+		Atom( _Atom & );
+
 		/**
-		 * @brief You need to be the chosen one to use the function to its full power.
+		 * @brief You need to be the chosen one to wield this method to its full power.
 		 * @param
 		 */
 		void get( _AtomInfo & ) noexcept;
@@ -91,16 +86,22 @@ namespace VTX::IO::Writer
 		void set( Property ) noexcept;
 	};
 
+	struct _Chain;
 	/**
 	 * @brief Allows to configure a chain to be written.
 	 */
 	class Chain
 	{
 	  public:
+		Chain() = default;
+		Chain( _Chain & );
 		/**
 		 * @brief Inform the chain that the input residue is a part of it.
 		 */
 		void add( Residue & ) noexcept;
+
+	  private:
+		_Chain * _data = nullptr;
 	};
 
 	/**
@@ -113,13 +114,16 @@ namespace VTX::IO::Writer
 		void set( AtomId, AtomCoordinates ) noexcept;
 	};
 
+	struct _System;
 	/**
-	 * @brief Responsible for creating objects to configure the chemfiles system. Be carefull : any instance is
-	 * invalidated if the parent Chemmfiles object is moved away.
+	 * @brief Responsible for creating objects to configure the chemfiles system.
 	 */
 	class System
 	{
 	  public:
+		System() = default;
+		System( _System & );
+
 		/**
 		 * @brief Set or replace a property for the frame.
 		 */
@@ -134,12 +138,12 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief  Bind two atoms together. Atoms are identified by the external key provided during their creation.
 		 */
-		void bind( const AtomId &, const AtomId &, const E_BOND_ORDER & );
+		void bind( const AtomId &, const AtomId &, E_BOND_ORDER );
 
 		/**
 		 * @brief Create a new chain in this frame.
 		 */
-		Chain newChain( ChainInfo ) noexcept;
+		Chain newChain() noexcept;
 
 		/**
 		 * @brief Create a new residue in this frame.
@@ -150,11 +154,13 @@ namespace VTX::IO::Writer
 		 * @brief Create a new frame. A healthy system should get at least one frame.
 		 */
 		Frame newFrame() noexcept;
+
+	  public:
+		_System * _data = nullptr;
 	};
 
 	/**
-	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library. Be
-	 * careful : if an instance of this class is moved, any system instance currently used will be invalidated.
+	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library.
 	 */
 	class Chemfiles
 	{
@@ -185,24 +191,7 @@ namespace VTX::IO::Writer
 			COUNT
 		};
 
-		Chemfiles() = default;
-
-		/**
-		 * @brief Actual writing happens at object destruction.
-		 */
-		~Chemfiles();
-
-		/**
-		 * @brief Move this object around. Invalidate the System.
-		 */
-		Chemfiles( Chemfiles && );
-
-		/**
-		 * @brief Move this object around. Invalidate the System.
-		 */
-		Chemfiles & operator=( Chemfiles && );
-		Chemfiles( const Chemfiles & )			   = delete;
-		Chemfiles & operator=( const Chemfiles & ) = delete;
+		Chemfiles();
 
 		/**
 		 * @brief Mandatory to write something. Can be set empty so no files end up being saved at all.
@@ -216,28 +205,18 @@ namespace VTX::IO::Writer
 		void setWriteFormat( E_FILE_FORMATS ) noexcept;
 
 		/**
-		 * @brief Create/retrieve the system that will be written eventually. The returned system will be invalidated is
-		 * this object is moved.
+		 * @brief Create/retrieve the system that will be written eventually.
 		 * @return The system to configure
 		 */
 		System system() noexcept;
 
 	  private:
-		struct _Chain
+		class _Impl;
+		struct Del
 		{
+			void operator()( _Impl * ) noexcept;
 		};
-		using ChainCollection = std::forward_list<_Chain>; // Used for constant time insertion and memory efficiency
-		struct _Frame
-		{
-		};
-		using FrameCollection = std::forward_list<_Frame>; // Used for constant time insertion and memory efficiency
-		struct _Data // Here so move ctor/assignement are easier to write and maintain
-		{
-			FilePath		dest;
-			E_FILE_FORMATS	fileFormat = E_FILE_FORMATS::none;
-			FrameCollection frames;
-			ChainCollection chains;
-		} _; // best attribute name ever
+		std::unique_ptr<_Impl, Del> _ = nullptr;
 	};
 } // namespace VTX::IO::Writer
 #endif
