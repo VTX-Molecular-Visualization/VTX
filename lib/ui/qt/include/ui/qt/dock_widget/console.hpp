@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 #define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_dock_widget.hpp"
 #include "ui/qt/line_edit/command_launcher.hpp"
 #include <QColor>
 #include <QDockWidget>
@@ -16,7 +16,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Console : public BaseWidget<Console, QDockWidget>
+	class Console : public Core::BaseDockWidget<Console>
 	{
 	  public:
 		Console( QWidget * p_parent );

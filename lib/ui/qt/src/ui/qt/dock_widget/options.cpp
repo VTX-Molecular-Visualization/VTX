@@ -11,15 +11,9 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : BaseWidget<Options, QDockWidget>( "Options", p_parent )
+	Options::Options( QWidget * p_parent ) : Core::BaseDockWidget<Options>( "Options", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setContentsMargins( 0, 0, 0, 0 );
-
-		auto * widget = new QWidget( this );
-		auto * layout = new QVBoxLayout( widget );
-		layout->setContentsMargins( 0, 0, 0, 0 );
-		setWidget( widget );
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
@@ -27,7 +21,7 @@ namespace VTX::UI::QT::DockWidget
 
 		APP_QT::onUICreated += [ this ]()
 		{
-			auto * glWidget = WIDGETS::get().get<Widget::OpenGLWidget>();
+			auto * glWidget = Core::WIDGETS::get().get<Widget::OpenGLWidget>();
 			_checkBoxVSync->setChecked( glWidget->isVSync() );
 		};
 
@@ -37,7 +31,7 @@ namespace VTX::UI::QT::DockWidget
 			[ this ]( const int p_state )
 			{
 				// TODO: use action? available in script?
-				WIDGETS::get().get<Widget::OpenGLWidget>()->setVSync( p_state == Qt::Checked );
+				Core::WIDGETS::get().get<Widget::OpenGLWidget>()->setVSync( p_state == Qt::Checked );
 			}
 		);
 
@@ -86,9 +80,9 @@ namespace VTX::UI::QT::DockWidget
 		layoutCacheButton->addWidget( buttonRefreshCache );
 		layoutCache->addLayout( layoutCacheButton );
 
-		layout->addWidget( groupBoxGraphics );
-		layout->addWidget( groupBoxCache );
-		layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addWidget( groupBoxGraphics );
+		_layout->addWidget( groupBoxCache );
+		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
 		_refreshCacheInfos();
 

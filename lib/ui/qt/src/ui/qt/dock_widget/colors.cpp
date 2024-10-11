@@ -11,7 +11,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Colors::Colors( QWidget * p_parent ) : BaseWidget<Colors, QDockWidget>( "Colors", p_parent )
+	Colors::Colors( QWidget * p_parent ) : Core::BaseDockWidget<Colors>( "Colors", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
@@ -26,12 +26,6 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		auto & colors = colorLayout.getLayout().layout;
-
-		auto * widget = new QWidget( this );
-		auto * layout = new QVBoxLayout( widget );
-		layout->setContentsMargins( 0, 0, 0, 0 );
-
-		setWidget( widget );
 
 		// Colors.
 		auto * groupBoxColors = new QGroupBox( "Colors" );
@@ -66,6 +60,6 @@ namespace VTX::UI::QT::DockWidget
 			layoutColors->addWidget( color );
 		}
 
-		layout->addWidget( groupBoxColors );
+		_layout->addWidget( groupBoxColors );
 	}
 } // namespace VTX::UI::QT::DockWidget

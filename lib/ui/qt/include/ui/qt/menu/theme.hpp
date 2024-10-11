@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_MENU_THEME__
 #define __VTX_UI_QT_MENU_THEME__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
 {
 
-	class Theme : public BaseWidget<Theme, QMenu>
+	class Theme : public Core::BaseWidget<Theme, QMenu>
 	{
 	  public:
 		Theme( QWidget * p_parent ) : BaseWidget<Theme, QMenu>( "Theme", p_parent )

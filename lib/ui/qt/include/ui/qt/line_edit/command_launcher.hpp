@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_QT_LLINE_EDIT_COMMAND_LAUNCHER__
 #define __VTX_UI_QT_LLINE_EDIT_COMMAND_LAUNCHER__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include <QCompleter>
 #include <QLineEdit>
 #include <QPointer>
 
 namespace VTX::UI::QT::LineEdit
 {
-	class CommandLauncher : public BaseWidget<CommandLauncher, QLineEdit>
+	class CommandLauncher : public Core::BaseWidget<CommandLauncher, QLineEdit>
 	{
 	  public:
 		CommandLauncher( QWidget * p_parent );

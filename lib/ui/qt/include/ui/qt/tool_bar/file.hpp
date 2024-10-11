@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_TOOL_BAR_FILE__
 #define __VTX_UI_QT_TOOL_BAR_FILE__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include <QToolBar>
 
 namespace VTX::UI::QT::ToolBar
 {
 
-	class File : public BaseWidget<File, QToolBar>
+	class File : public Core::BaseWidget<File, QToolBar>
 	{
 	  public:
 		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "File", p_parent )

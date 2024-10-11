@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_SCENE__
 #define __VTX_UI_QT_DOCK_WIDGET_SCENE__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_dock_widget.hpp"
 #include <QDockWidget>
 #include <QLineEdit>
 #include <QPointer>
@@ -81,7 +81,7 @@ namespace VTX::UI::QT::DockWidget
 		const TestData2 & _item;
 	};
 
-	class Scene : public BaseWidget<Scene, QDockWidget>
+	class Scene : public Core::BaseDockWidget<Scene>
 	{
 	  public:
 		using WidgetData = size_t;
@@ -93,21 +93,14 @@ namespace VTX::UI::QT::DockWidget
 		};
 		using LoadFunc = std::function<std::vector<TreeItemData>( const uint p_level, const WidgetData p_data )>;
 
-		Scene( QWidget * p_parent ) : BaseWidget<Scene, QDockWidget>( "Scene", p_parent )
+		Scene( QWidget * p_parent ) : Core::BaseDockWidget<Scene>( "Scene", p_parent )
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-			// Create layout.
-			auto * widget = new QWidget( this );
-			auto * layout = new QVBoxLayout( widget );
-			layout->setContentsMargins( 0, 0, 0, 0 );
-			layout->setSizeConstraint( QLayout::SetNoConstraint );
-			setWidget( widget );
-
 			// Search bar.
-			auto * searchBar = new QLineEdit( widget );
+			auto * searchBar = new QLineEdit( _root );
 			searchBar->setPlaceholderText( "Search..." );
-			layout->addWidget( searchBar );
+			_layout->addWidget( searchBar );
 
 			// Toolbar.
 			// auto * toolbar = new QToolBar( widget );
@@ -257,7 +250,7 @@ namespace VTX::UI::QT::DockWidget
 				}
 			};
 
-			layout->addWidget( _tree.get() );
+			_layout->addWidget( _tree.get() );
 		}
 
 		void addTopLevelData( const TreeItemData & p_data, const LoadFunc & p_loadFunc )
