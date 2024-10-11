@@ -36,6 +36,8 @@ namespace VTX::IO::Writer
 
 	struct _Atom
 	{
+		std::string name;
+		std::string symbol;
 	};
 	using AtomCollection			= std::map<AtomId, _Atom>;
 	using AtomCoordinatesCollection = std::unordered_map<const _Atom *, AtomCoordinates>;
@@ -43,8 +45,10 @@ namespace VTX::IO::Writer
 
 	struct _Residue
 	{
+		int				   resid;
+		std::string		   symbol;
 		PropertyCollection properties;
-		AtomPtrCollection  residues;
+		AtomPtrCollection  atoms;
 	};
 	using ResidueCollection = std::list<_Residue>;
 
@@ -179,13 +183,42 @@ namespace VTX::IO::Writer
 			for ( auto & prop : props )
 				std::visit( [ & ]( auto v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
 		}
+		inline void convert( const AtomCoordinates & in, ::chemfiles::Vector3D & out ) noexcept
+		{
+			out = ::chemfiles::Vector3D( in.x, in.y, in.z );
+		}
 		void writeFile( const FilePath & dest, const Chemfiles::E_FILE_FORMATS & format, _System & system )
 		{
 			::chemfiles::Trajectory cf_traj( dest.string(), 'w', string( format ) );
 
-			::chemfiles::Frame cf_frame;
-			cf_frame.reserve( system.atoms.size() );
-			transferProperties( cf_frame, system.properties );
+			size_t atomResidueCounter
+				= 0; // We need to count the atoms in the order they are presented when iterating through
+					 // residues. The counter is used in chemfiles to assign an atom to a residue after
+					 // having it assign to a frame. Yes, the design is questionnable.
+
+			for ( auto & it_frame : system.frames )
+			{
+				::chemfiles::Frame cf_frame;
+				cf_frame.reserve( system.atoms.size() );
+				transferProperties( cf_frame, system.properties );
+
+				for ( auto & it_residue : system.residues )
+				{
+					::chemfiles::Residue cf_residue( it_residue.symbol, it_residue.resid );
+					transferProperties( cf_residue, it_residue.properties );
+
+					for ( auto & it_atom : it_residue.atoms )
+					{
+						AtomCoordinates		  coords = it_frame.coordinates.at( it_atom );
+						::chemfiles::Vector3D cf_coords;
+						convert( coords, cf_coords );
+						cf_frame.add_atom( ::chemfiles::Atom( it_atom->name, it_atom->symbol ), cf_coords );
+						cf_residue.add_atom( atomResidueCounter++ );
+					}
+				}
+
+				cf_traj.write( cf_frame );
+			}
 		}
 
 	} // namespace
@@ -245,7 +278,7 @@ namespace VTX::IO::Writer
 		_AtomInfo atomInfo;
 		p_.get( atomInfo );
 
-		_data->residues.emplace_back( atomInfo.dataPtr );
+		_data->atoms.emplace_back( atomInfo.dataPtr );
 	}
 
 	// Chain

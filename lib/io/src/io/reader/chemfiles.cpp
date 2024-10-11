@@ -221,7 +221,7 @@ namespace VTX::IO::Reader
 			throw IOException( "Data count missmatch" );
 		}
 
-		// Check properties, same for all atoms/residues?
+		// Check properties, same for all atoms/atoms?
 		if ( _readingData->_currentFrame.size() > 0 )
 		{
 			if ( _readingData->_currentFrame[ 0 ].properties() )

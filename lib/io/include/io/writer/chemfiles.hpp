@@ -70,6 +70,9 @@ namespace VTX::IO::Writer
 		 */
 		void get( _AtomInfo & ) const noexcept;
 
+		void setName( std::string ) noexcept;
+		void setSymbol( std::string ) noexcept;
+
 	  private:
 		_Atom * _data;
 	};
@@ -92,6 +95,8 @@ namespace VTX::IO::Writer
 		 * @brief Set or replace a property for the chain.
 		 */
 		void set( Property ) noexcept;
+		void setResId( int ) noexcept;
+		void setSymbol( std::string ) noexcept;
 
 	  private:
 		_Residue * _data = nullptr;
@@ -196,7 +201,7 @@ namespace VTX::IO::Writer
 	/**
 	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library. This
 	 * class is intended to cover needs in trajectory writing. It expect all the frames ( 1 or more) to have the same
-	 * chemical configuration : no change in atoms, bond, residues, chain between frames.
+	 * chemical configuration : no change in atoms, bond, atoms, chain between frames.
 	 */
 	class Chemfiles
 	{
