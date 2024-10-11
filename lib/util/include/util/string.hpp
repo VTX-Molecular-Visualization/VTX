@@ -28,7 +28,7 @@ namespace VTX::Util::String
 	// Memory size to string.
 	std::string memSizeToStr( const size_t p_size );
 	// Duration to string.
-	std::string durationToStr( const float p_durationInSeconds );
+	std::string durationToStr( const float p_durationInMS );
 
 } // namespace VTX::Util::String
 

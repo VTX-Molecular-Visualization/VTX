@@ -102,10 +102,10 @@ namespace VTX::Util::String
 		return oss.str();
 	}
 
-	std::string durationToStr( const float p_durationInSeconds )
+	std::string durationToStr( const float p_durationInMs )
 	{
 		std::ostringstream oss;
-		int				   totalMilliseconds = static_cast<int>( p_durationInSeconds * 1000 );
+		int				   totalMilliseconds = int( p_durationInMs );
 
 		int hours = totalMilliseconds / 3600000;
 		totalMilliseconds %= 3600000;
