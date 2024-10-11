@@ -4,8 +4,9 @@
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "app/entity/scene/camera_entity.hpp"
-#include <renderer/facade.hpp>
+#include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Application
 {
@@ -311,11 +312,9 @@ namespace VTX::App::Application
 
 		///////////
 		// TODO: make component.
-		/*
-		static VTX::Renderer::Proxy::Representation			representation;
-		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
-		renderer.addProxyRepresentations( representations );
-		*/
+		static VTX::Renderer::Proxy::Representation				   representation;
+		static std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
+		RENDERER_SYSTEM().onReady() += [ & ]() { RENDERER_SYSTEM().addProxyRepresentations( representations ); };
 		////////////
 	}
 
