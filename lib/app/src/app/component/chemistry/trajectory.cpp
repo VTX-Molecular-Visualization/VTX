@@ -1,5 +1,4 @@
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/vtx_app.hpp"
@@ -8,7 +7,7 @@ namespace VTX::App::Component::Chemistry
 {
 	Trajectory::Trajectory()
 	{
-		_moleculePtr = &MAIN_REGISTRY().getComponent<Molecule>( *this );
+		_moleculePtr = &ECS_REGISTRY().getComponent<Molecule>( *this );
 		_referenceUpdateFunction();
 	}
 
@@ -50,7 +49,7 @@ namespace VTX::App::Component::Chemistry
 	void Trajectory::_referenceUpdateFunction()
 	{
 		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
 	}
 

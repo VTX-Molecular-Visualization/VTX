@@ -98,13 +98,10 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ]
-			{
-				static const float S_TO_MS = 1e3;
-				VTXApp::update( _deltaTimer.intervalTime() * S_TO_MS, _elapsedTimer.elapsedTime() * S_TO_MS );
-			}
+			[ this ] { VTXApp::update( _deltaTimer.intervalTime(), _elapsedTimer.elapsedTime() ); }
 		);
 		_timer.start( 0 );
+		//_timer.setTimerType( Qt::PreciseTimer );
 		_elapsedTimer.start();
 		_deltaTimer.start();
 

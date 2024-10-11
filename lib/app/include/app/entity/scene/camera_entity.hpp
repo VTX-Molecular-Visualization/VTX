@@ -7,11 +7,10 @@
 
 namespace VTX::App::Entity::Scene
 {
-	class CameraEntityBuilder
+	class CameraEntity : public Core::ECS::BaseEntity
 	{
 	  public:
-		static void addComponent( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
-		static void setup( const Core::ECS::BaseEntity & p_entity, const Util::VariantMap & p_extraData );
+		void setup() override;
 	};
 
 } // namespace VTX::App::Entity::Scene

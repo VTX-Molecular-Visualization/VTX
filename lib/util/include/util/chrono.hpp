@@ -23,8 +23,7 @@ namespace VTX::Util
 	  private:
 		using SystemClock = std::chrono::system_clock;
 		using Clock		  = std::chrono::high_resolution_clock;
-		using Duration	  = std::chrono::duration<float>;
-		using Ms		  = std::chrono::milliseconds;
+		using Duration	  = std::chrono::duration<float, std::milli>;
 
 		Clock::time_point _begin;
 		Clock::time_point _interval;

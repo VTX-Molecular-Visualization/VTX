@@ -21,10 +21,28 @@ namespace VTX::App
 	  public:
 		virtual ~VTXApp() = default;
 
-		static void	 init();
+		/**
+		 * @brief Initialize the application.
+		 */
+		static void init();
+
+		/**
+		 * @brief Start the application.
+		 * @param the command line arguments.
+		 */
 		virtual void start( const Args & );
-		static void	 update( const float p_deltaTime, const float p_elapsedTime );
-		static void	 stop();
+
+		/**
+		 * @brief Main loop update function.
+		 * @param p_deltaTime the time since the last frame.
+		 * @param p_elapsedTime the time since the start of the application.
+		 */
+		static void update( const float p_deltaTime, const float p_elapsedTime );
+
+		/**
+		 * @brief Stop the application.
+		 */
+		static void stop();
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 

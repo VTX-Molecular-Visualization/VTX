@@ -1,5 +1,4 @@
 #include "ui/qt/dialog/download.hpp"
-#include "ui/qt/application.hpp"
 #include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -13,7 +12,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	Download::Download() : BaseWidget<Download, QDialog>( APP_QT::getMainWindow() )
+	Download::Download()
 	{
 		setWindowTitle( "Download" );
 		// TODO: try size policy?
@@ -95,25 +94,23 @@ namespace VTX::UI::QT::Dialog
 			[ this ]()
 			{
 				// Check inputs.
-				_url = _comboBoxURL->currentText().toStdString();
-				Util::String::trim( _url );
-				_pdb = _comboBoxPDB->currentText().toStdString();
-				Util::String::trim( _pdb );
+				_url = _comboBoxURL->currentText().trimmed();
+				_pdb = _comboBoxPDB->currentText().trimmed();
 
-				FilePath path = App::Filesystem::getCachePath( _pdb + ".pdb" );
+				FilePath path = App::Filesystem::getCachePath( _pdb.toStdString() + ".pdb" );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
 					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( path );
 				}
 				else
 				{
-					if ( _url.empty() )
+					if ( _url.isEmpty() )
 					{
 						VTX_ERROR( "URL is empty" );
 						return;
 					}
 
-					if ( _pdb.empty() )
+					if ( _pdb.isEmpty() )
 					{
 						VTX_ERROR( "PDB id is empty" );
 						return;
@@ -125,20 +122,19 @@ namespace VTX::UI::QT::Dialog
 						return;
 					}
 
-					std::string	 urlReplaced = _url;
-					const size_t pos		 = _url.find( _PDB_ID_TEMPLATE );
-					if ( pos == std::string::npos )
+					QString urlReplaced = _url;
+					if ( not urlReplaced.contains( _PDB_ID_TEMPLATE ) )
 					{
-						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE );
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
 					}
 					else
 					{
-						urlReplaced = urlReplaced.replace(
-							urlReplaced.find( _PDB_ID_TEMPLATE ), _PDB_ID_TEMPLATE.length(), _pdb
-						);
+						urlReplaced = urlReplaced.replace( _PDB_ID_TEMPLATE, _pdb );
 					}
 
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( urlReplaced, _pdb + ".pdb" );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>(
+						urlReplaced.toStdString(), _pdb.toStdString() + ".pdb"
+					);
 				}
 
 				save();
@@ -157,34 +153,34 @@ namespace VTX::UI::QT::Dialog
 		restore();
 
 		// FIXME: Avoid losing default url if not in history.
-		if ( _comboBoxURL->findText( QString::fromStdString( _DEFAULT_URL ) ) == -1 )
+		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )
 		{
-			_comboBoxURL->addItem( _DEFAULT_URL.c_str() );
+			_comboBoxURL->addItem( _DEFAULT_URL );
 		}
 	}
 
-	void Download::_loadHistory( const std::string & p_key, QComboBox * const p_comboBox )
+	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
 	{
-		QStringList history = SETTINGS.value( p_key.c_str() ).toStringList();
+		QStringList history = SETTINGS.value( p_key ).toStringList();
 		p_comboBox->addItems( history );
 	}
 
-	void Download::_saveHistory( const std::string & p_key, const std::string & p_value )
+	void Download::_saveHistory( const QString & p_key, const QString & p_value )
 	{
-		QStringList history = SETTINGS.value( p_key.c_str() ).toStringList();
+		QStringList history = SETTINGS.value( p_key ).toStringList();
 		// Remove duplicates.
-		if ( history.contains( p_value.c_str() ) )
+		if ( history.contains( p_value ) )
 		{
-			history.removeAll( p_value.c_str() );
+			history.removeAll( p_value );
 		}
 		// Prepend the last one.
-		history.prepend( p_value.c_str() );
+		history.prepend( p_value );
 		// Limit to 10.
 		while ( history.size() > _MAX_HISTORY_SIZE )
 		{
 			history.removeLast();
 		}
-		SETTINGS.setValue( p_key.c_str(), history );
+		SETTINGS.setValue( p_key, history );
 	}
 
 	void Download::save()

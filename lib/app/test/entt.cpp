@@ -1,7 +1,6 @@
 #include "util/app.hpp"
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/action/scene.hpp>
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -77,13 +76,13 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( SCENE().getItemCount() == 1 );
 
 	App::Core::ECS::BaseEntity moleculeEntity = SCENE().getItem( 0 );
-	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( ECS_REGISTRY().isValid( moleculeEntity ) );
 
 	moleculeEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	REQUIRE( MAIN_REGISTRY().isValid( moleculeEntity ) );
+	REQUIRE( ECS_REGISTRY().isValid( moleculeEntity ) );
 
 	Component::Scene::SceneItemComponent & sceneItem
-		= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
+		= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( moleculeEntity );
 
 	CallbackTest renameTest = CallbackTest();
 
@@ -97,10 +96,10 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( view.size() == 1 );
 
 	// const Component::Chemistry::Molecule & moleculeComponent
-	//	= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
+	//	= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
 
 	// const Component::Render::ProxyMolecule & gpuProxyComponent
-	//	= MAIN_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
+	//	= ECS_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
 
 	// REQUIRE( gpuProxyComponent.getProxy().atomNames == &moleculeComponent.getMoleculeStruct().atomNames );
 }
@@ -131,7 +130,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 
 	App::Core::ECS::BaseEntity			   moleculeEntity = SCENE().getItem( 0 );
 	const Component::Chemistry::Molecule & molecule
-		= MAIN_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
+		= ECS_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
 
 	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
 

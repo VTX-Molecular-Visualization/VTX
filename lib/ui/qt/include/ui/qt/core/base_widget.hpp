@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_BASE_WIDGET__
 #define __VTX_UI_QT_BASE_WIDGET__
 
-#include "actions.hpp"
+#include "ui/qt/actions.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QWidget>

@@ -10,10 +10,6 @@ namespace VTX::App::Component::Scene
 {
 	class Transform : public Core::ECS::BaseComponent
 	{
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Transform> registration {
-			"Scene::TransformComponent"
-		};
-
 	  public:
 		Transform();
 		Transform( Util::Math::Transform * p_transformPtr );

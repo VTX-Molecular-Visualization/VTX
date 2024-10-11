@@ -14,6 +14,10 @@ namespace VTX::App::Core::Renderer
 
 		RendererSystem() : VTX::Renderer::Facade( 1, 1, SHADER_DIR ) {}
 
+		/**
+		 * @brief Initialize the renderer system, must be called before construction.
+		 * @param p_shaderPath the path to the shader directory.
+		 */
 		inline static void init( const FilePath & p_shaderPath ) { SHADER_DIR = p_shaderPath; }
 	};
 

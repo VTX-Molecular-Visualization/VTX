@@ -11,9 +11,6 @@ namespace VTX::App::Component::Scene
 {
 	class SceneItemComponent : public Core::ECS::BaseComponent
 	{
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<SceneItemComponent>
-			registration { "Scene::SceneItemComponent" };
-
 	  public:
 		virtual ~SceneItemComponent() = default;
 

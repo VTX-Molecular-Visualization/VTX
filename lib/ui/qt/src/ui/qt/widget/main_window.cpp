@@ -101,8 +101,8 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::prepare()
 	{
 		// Select default tabs.
-		WIDGETS::get().get<DockWidget::Scene>()->raise();
-		WIDGETS::get().get<DockWidget::Inspector>()->raise();
+		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
+		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();
 
 		// TODO: Set openGL widget as focus.
 		// centralWidget()->setFocus();

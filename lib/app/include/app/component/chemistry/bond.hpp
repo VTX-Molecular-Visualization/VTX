@@ -2,12 +2,13 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_BOND__
 
 #include "_fwd.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	class Bond
+	class Bond : public Core::ECS::BaseComponent
 	{
 	  public:
 		Bond() {}

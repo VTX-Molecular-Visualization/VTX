@@ -1,5 +1,4 @@
 #include "app/component/scene/selectable.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/vtx_app.hpp"

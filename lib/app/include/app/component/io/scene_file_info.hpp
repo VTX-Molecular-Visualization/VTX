@@ -2,11 +2,12 @@
 #define __VTX_APP_COMPONENT_IO_SCENE_FILE_INFO__
 
 // #include <map>
+#include "app/core/ecs/base_component.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::IO
 {
-	class SceneFileInfo // : public App::Old::Core::Event::BaseEventReceiverVTX
+	class SceneFileInfo : public Core::ECS::BaseComponent
 	{
 	  public:
 		// Copy of function in VTXApp that must be here

@@ -3,20 +3,25 @@
 
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include "ui/qt/settings.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
 #include <app/ui/concepts.hpp>
-#include <ui/qt/dialog/progress.hpp>
+// #include <ui/qt/dialog/progress.hpp>
 #include <util/logger.hpp>
+
+namespace VTX::UI::QT::Dialog
+{
+	class Progress;
+}
 
 namespace VTX::UI::QT::Widget
 {
 
-	class MainWindow : public BaseWidget<MainWindow, QMainWindow>, public Savable
+	class MainWindow : public Core::BaseWidget<MainWindow, QMainWindow>, public Savable
 	{
 	  public:
 		MainWindow();

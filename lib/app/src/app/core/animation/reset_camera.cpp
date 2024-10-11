@@ -10,7 +10,7 @@ namespace VTX::App::Core::Animation
 	ResetInfo::ResetInfo( App::Component::Render::Camera & p_camera, const float p_duration ) : camera( p_camera )
 	{
 		App::Component::Scene::Transform & cameraTransformComponent
-			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
+			= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
 
 		const Util::Math::AABB sceneAABB = App::SCENE().getAABB();
 

@@ -1,5 +1,4 @@
 #include "app/component/chemistry/molecule.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
@@ -112,7 +111,7 @@ namespace VTX::App::Component::Chemistry
 	void Molecule::setName( const std::string & p_name )
 	{
 		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.setName( p_name );
 		_moleculeStruct.name = p_name;
 	}

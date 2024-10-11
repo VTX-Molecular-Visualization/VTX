@@ -1,6 +1,5 @@
 #include "app/controller/picker/selection.hpp"
 #include "app/core/input/input_manager.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
@@ -9,6 +8,7 @@
 #include <app/core/ecs/registry.hpp>
 #include <app/core/renderer/renderer_system.hpp>
 #include <optional>
+#include <util/logger.hpp>
 
 namespace
 {
@@ -22,7 +22,7 @@ namespace
 			return std::optional<VTX::App::Component::Scene::Pickable>();
 
 		const VTX::App::Component::Scene::Pickable & pickableComponent
-			= VTX::App::MAIN_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
+			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
 
 		return std::optional<const VTX::App::Component::Scene::Pickable>( pickableComponent );
 	}

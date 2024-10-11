@@ -11,11 +11,6 @@ namespace VTX::App::Component::Scene
 {
 	class AABB : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<AABB> registration {
-			"Scene::AABBComponent"
-		};
-
 	  public:
 		AABB() = default;
 

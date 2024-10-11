@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	ExportImage::ExportImage() : BaseWidget<ExportImage, QDialog>( APP_QT::getMainWindow() )
+	ExportImage::ExportImage()
 	{
 		setWindowTitle( "Export image" );
 		setFixedSize( 500, 600 );

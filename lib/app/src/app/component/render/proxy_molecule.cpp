@@ -8,6 +8,7 @@
 #include <core/chemdb/atom.hpp>
 #include <renderer/facade.hpp>
 #include <util/algorithm/range.hpp>
+#include <util/exceptions.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
@@ -19,7 +20,7 @@ namespace VTX::App::Component::Render
 		_addInRenderer( p_renderer );
 		_setupCallbacks();
 
-		MAIN_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
+		ECS_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
 			Core::ECS::SIGNAL::DESTROY, this
 		);
 	}
@@ -28,11 +29,11 @@ namespace VTX::App::Component::Render
 	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::Molecule & molComp
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 		VTX::Core::Struct::Molecule & molStruct = molComp._moleculeStruct;
 
 		Component::Scene::Transform & transformComp
-			= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
 		const std::vector<uchar> atomColors	   = _generateAtomColors( molStruct );
 		const std::vector<float> atomRadii	   = _generateAtomRadii( molStruct );
@@ -145,7 +146,7 @@ namespace VTX::App::Component::Render
 	void ProxyMolecule::_applyVisibilityCallbacks()
 	{
 		Component::Chemistry::Molecule & molecule
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
 		molecule.onVisibilityChange += [ this ](
 										   const Component::Chemistry::AtomIndexRangeList & p_rangeList,
@@ -153,7 +154,7 @@ namespace VTX::App::Component::Render
 									   )
 		{
 			Component::Chemistry::Molecule & molecule
-				= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+				= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
 			const Component::Chemistry::AtomIndexRangeList activeAtoms
 				= Util::Algorithm::Range::intersect( p_rangeList, molecule.getActiveAtoms() );
@@ -167,7 +168,7 @@ namespace VTX::App::Component::Render
 	void ProxyMolecule::_applySelectionCallbacks()
 	{
 		Component::Scene::Selectable & selectableComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
+			= ECS_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
 
 		selectableComponent.onSelect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
@@ -185,15 +186,15 @@ namespace VTX::App::Component::Render
 	}
 	void ProxyMolecule::_applyAtomPositionCallbacks()
 	{
-		if ( MAIN_REGISTRY().hasComponent<Component::Chemistry::Trajectory>( *this ) )
+		if ( ECS_REGISTRY().hasComponent<Component::Chemistry::Trajectory>( *this ) )
 		{
 			Component::Chemistry::Trajectory & trajectoryComponent
-				= MAIN_REGISTRY().getComponent<Component::Chemistry::Trajectory>( *this );
+				= ECS_REGISTRY().getComponent<Component::Chemistry::Trajectory>( *this );
 
 			trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
 			{
 				Component::Chemistry::Molecule & moleculeComponent
-					= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+					= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 
 				_proxy->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
 				_proxy->onAtomPositions();

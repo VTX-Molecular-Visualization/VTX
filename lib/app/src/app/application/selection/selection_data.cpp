@@ -1,5 +1,4 @@
 #include "app/application/selection/selection_data.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/vtx_app.hpp"
@@ -51,7 +50,7 @@ namespace VTX::App::Application::Selection
 	std::string SelectionData::toString() const
 	{
 		Component::Scene::SceneItemComponent & sceneItem
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
+			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *_selectionComponent );
 
 		return sceneItem.getName();
 	}

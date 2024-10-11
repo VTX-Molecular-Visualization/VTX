@@ -17,7 +17,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 
 	App::Fixture app;
 
-	Core::Threading::BaseThread::AsyncOp asyncOp = []( Core::Threading::BaseThread & p_thread )
+	App::Core::Threading::BaseThread::AsyncOp asyncOp = []( App::Core::Threading::BaseThread & p_thread )
 	{
 		for ( int i = 0; i < 100; i++ )
 		{
@@ -31,9 +31,9 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		return 1;
 	};
 
-	Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
+	App::Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
 		asyncOp,
-		[]( Core::Threading::BaseThread & p_thread, uint p_res )
+		[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
 		{
 			const int threadData = p_thread.getData<int>();
 			CHECK( p_res == 1 );
@@ -51,7 +51,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		lastProgress = p_progress;
 	};
 
-	Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
+	App::Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();
@@ -61,7 +61,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	CHECK( threadToWait.isFinished() );
 	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
 
-	Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
+	App::Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
 	chrono.start();

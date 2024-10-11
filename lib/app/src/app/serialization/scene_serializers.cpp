@@ -1,9 +1,7 @@
 #include "app/serialization/scene_serializers.hpp"
-#include "app/application/ecs/component_meta_function.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/component/ecs/entity_info.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/scene/scene_item_component.hpp"
@@ -26,9 +24,10 @@ namespace VTX::App::Serialization
 
 		for ( const Core::ECS::BaseEntity entity : p_scene.getAllSceneItems() )
 		{
+			/*
 			Util::JSon::Array							jsonComponentsArray = Util::JSon::Array();
 			const Component::ECS::EntityInfoComponent & entityInfo
-				= MAIN_REGISTRY().getComponent<Component::ECS::EntityInfoComponent>( entity );
+				= ECS_REGISTRY().getComponent<Component::ECS::EntityInfoComponent>( entity );
 
 			for ( const Application::ECS::ComponentStaticID & componentID : entityInfo.getLinkedComponents() )
 			{
@@ -41,6 +40,7 @@ namespace VTX::App::Serialization
 
 			const Util::JSon::Object jsonComponents = { { "COMPONENTS", jsonComponentsArray } };
 			entities.emplace_back( jsonComponents );
+			*/
 		}
 
 		return {
@@ -62,10 +62,11 @@ namespace VTX::App::Serialization
 
 		for ( const Util::JSon::Object & jsonItem : items )
 		{
-			const Core::ECS::BaseEntity entity = MAIN_REGISTRY().createEntity();
+			const Core::ECS::BaseEntity entity = ECS_REGISTRY().createEntity();
 
 			const Util::JSon::Array & componentsArray = jsonItem[ "COMPONENTS" ];
 
+			/*
 			for ( const Util::JSon::Object & component : componentsArray )
 			{
 				const Application::ECS::ComponentStaticID componentID
@@ -74,8 +75,8 @@ namespace VTX::App::Serialization
 
 				COMPONENT_META_FUNCTION().deserializeComponent( componentID, entity, componentData );
 			}
-
-			p_scene.referenceItem( MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( entity ) );
+			*/
+			p_scene.referenceItem( ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( entity ) );
 		}
 	}
 
@@ -117,7 +118,7 @@ namespace VTX::App::Serialization
 	Util::JSon::Object serialize( const Component::IO::MoleculeMetadata & p_component )
 	{
 		const Component::Chemistry::Molecule & moleculeComponent
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
+			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
 
 		return { { "PATH", SERIALIZATION_SYSTEM().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
@@ -136,7 +137,7 @@ namespace VTX::App::Serialization
 		const FilePath							  path	 = FilePath( p_component.path );
 
 		Component::Chemistry::Molecule & moleculeComponent
-			= MAIN_REGISTRY().getComponent<Component::Chemistry::Molecule>( MAIN_REGISTRY().getEntity( p_component ) );
+			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
 
 		loader.readFile( path, moleculeComponent );
 

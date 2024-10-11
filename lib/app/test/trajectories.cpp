@@ -1,5 +1,4 @@
 #include "util/app.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/trajectory.hpp>
@@ -25,10 +24,10 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
 	App::Component::Chemistry::Molecule & moleculeComponent
-		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( molEntity );
+		= ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( molEntity );
 
 	App::Component::Chemistry::Trajectory & trajectoryComponent
-		= MAIN_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
+		= ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );
 
 	const size_t frameCount1NIM = 25;
 

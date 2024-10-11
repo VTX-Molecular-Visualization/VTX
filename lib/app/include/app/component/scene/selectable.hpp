@@ -13,11 +13,6 @@ namespace VTX::App::Component::Scene
 {
 	class Selectable : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<Selectable> registration {
-			"Scene::SelectableComponent"
-		};
-
 	  public:
 		using SelectionDataGenerator = std::function<std::unique_ptr<Application::Selection::SelectionData>()>;
 

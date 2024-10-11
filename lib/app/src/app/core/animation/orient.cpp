@@ -13,7 +13,7 @@ namespace VTX::App::Core::Animation
 	) : camera( p_camera )
 	{
 		App::Component::Scene::Transform & cameraTransformComponent
-			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
+			= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
 
 		_translationInfo.startPosition = cameraTransformComponent.getTransform().getTranslationVector();
 		_translationInfo.startRotation = Util::Math::toQuat( cameraTransformComponent.getTransform().getRotation() );
@@ -39,7 +39,7 @@ namespace VTX::App::Core::Animation
 	) : camera( p_camera )
 	{
 		App::Component::Scene::Transform & cameraTransformComponent
-			= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
+			= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera );
 
 		_translationInfo.startPosition = cameraTransformComponent.getTransform().getTranslationVector();
 

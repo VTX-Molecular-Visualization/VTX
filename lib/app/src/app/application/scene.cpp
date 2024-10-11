@@ -1,24 +1,24 @@
 #include "app/application/scene.hpp"
-#include "app/application/ecs/entity_director.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/representation/color_layout.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/entity/all_entities.hpp"
-#include <renderer/facade.hpp>
+#include "app/core/renderer/renderer_system.hpp"
+#include "app/entity/scene/camera_entity.hpp"
+#include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Application
 {
 	Core::ECS::View<Component::Scene::SceneItemComponent> Scene::getAllSceneItems() const
 	{
-		return MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent>();
+		return ECS_REGISTRY().findComponents<Component::Scene::SceneItemComponent>();
 	}
 
 	Scene::Scene()
 	{
-		App::Core::ECS::BaseEntity cameraEntity = ENTITY_DIRECTOR().build( Entity::CAMERA_ENTITY_ID );
-		_camera = &( MAIN_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
+		auto cameraEntity = ECS_REGISTRY().createEntity<Entity::Scene::CameraEntity>();
+		_camera			  = &( ECS_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 		_createDefaultColorLayout();
@@ -43,7 +43,7 @@ namespace VTX::App::Application
 
 	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
-		_itemIndexes.emplace_back( MAIN_REGISTRY().getEntity( p_item ) );
+		_itemIndexes.emplace_back( ECS_REGISTRY().getEntity( p_item ) );
 		onSceneItemAdded( p_item );
 	}
 
@@ -77,14 +77,14 @@ namespace VTX::App::Application
 		_itemIndexes.clear();
 		_itemIndexes.shrink_to_fit();
 
-		MAIN_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
+		ECS_REGISTRY().deleteAll<Component::Scene::SceneItemComponent>();
 	}
 
 	void Scene::reset()
 	{
 		clear();
 		_createDefaultPath();
-		_createDefaultColorLayout();
+		//_createDefaultColorLayout();
 	}
 
 	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const
@@ -232,7 +232,7 @@ namespace VTX::App::Application
 	void Scene::_computeAABB()
 	{
 		const Core::ECS::View view
-			= MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
+			= ECS_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::AABB>();
 
 		_aabb.invalidate();
 
@@ -248,8 +248,9 @@ namespace VTX::App::Application
 		// TOCHECK: do that in state or in scene?
 		// (let that here instead of doing the exact same things in all states for the moment)
 
+		// TODO: remove polymorphism.
 		Core::ECS::View updatables
-			= MAIN_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
+			= ECS_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
 
 		for ( const Core::ECS::BaseEntity entity : updatables )
 		{
@@ -305,10 +306,16 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultColorLayout()
 	{
-		// TODO: why an entity?
-		Core::ECS::BaseEntity colorLayoutEntity = MAIN_REGISTRY().createEntity();
-		auto & comp = MAIN_REGISTRY().addComponent<Component::Representation::ColorLayout>( colorLayoutEntity );
+		auto & comp
+			= ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( *this ) );
 		comp.setupProxy();
+
+		///////////
+		// TODO: make component.
+		static VTX::Renderer::Proxy::Representation				   representation;
+		static std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
+		RENDERER_SYSTEM().onReady() += [ & ]() { RENDERER_SYSTEM().addProxyRepresentations( representations ); };
+		////////////
 	}
 
 } // namespace VTX::App::Application

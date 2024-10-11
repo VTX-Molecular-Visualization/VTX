@@ -10,11 +10,6 @@ namespace VTX::App::Component::Scene
 {
 	class UIDComponent : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<UIDComponent> registration {
-			"Scene::UIDComponent"
-		};
-
 	  public:
 		UIDComponent() = default;
 		UIDComponent( const App::Core::UID::uid & p_uid );

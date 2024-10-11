@@ -8,7 +8,7 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyMenu : public UI::QT::BaseWidget<MyMenu, QMenu>
+	class MyMenu : public UI::QT::Core::BaseWidget<MyMenu, QMenu>
 	{
 	  public:
 		MyMenu( QWidget * p_parent ) : BaseWidget<MyMenu, QMenu>( "My menu", p_parent )

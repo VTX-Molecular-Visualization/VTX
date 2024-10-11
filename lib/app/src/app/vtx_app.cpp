@@ -2,8 +2,6 @@
 #include "app/action/animation.hpp"
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
-#include "app/application/ecs/entity_director.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
@@ -17,10 +15,8 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
-#include "app/entity/all_entities.hpp"
 #include "app/entity/application/scene_entity.hpp"
 #include "app/filesystem.hpp"
-#include "app/internal/ecs/setup_entity_director.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
 #include "app/settings.hpp"
@@ -42,12 +38,9 @@ namespace VTX::App
 		// Init renderer.
 		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
 
-		// Setup entity creation routines (add components, setup components, etc.).
-		Internal::ECS::setupEntityDirector();
-
 		// Create scene.
-		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
-		_scene							  = &MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Application::SceneEntity>();
+		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
@@ -76,13 +69,6 @@ namespace VTX::App
 		// Builid the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 		renderer.build();
-
-		///////////
-		// TODO: move.
-		static VTX::Renderer::Proxy::Representation			representation;
-		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
-		renderer.addProxyRepresentations( representations );
-		////////////
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
