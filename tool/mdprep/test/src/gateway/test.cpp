@@ -31,6 +31,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 	loadMoleculeAction.execute();
 
 	// VTX::App::SCENE().onSceneItemAdded += [ & ]( VTX::App::Component::Scene::SceneItemComponent item )
+
 	{
 		VTX::App::Core::ECS::BaseEntity molEntity = VTX::App::SCENE().getItem( itemName );
 		REQUIRE( VTX::App::ECS_REGISTRY().isValid( molEntity ) );
