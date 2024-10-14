@@ -182,7 +182,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	if ( not std::filesystem::exists( outPath ) )
 		std::filesystem::create_directories( outPath );
 
-	const VTX::FilePath waterPath = outPath / "water.pdb";
+	const VTX::FilePath waterPath = outPath / "water_2frames.pdb";
 
 	{
 		ChemfilesTrajectory trajWriter;
