@@ -9,6 +9,7 @@
 
 namespace VTX::Util
 {
+
 	using CallbackId = size_t;
 
 	template<typename... Args>
@@ -20,8 +21,24 @@ namespace VTX::Util
 		Callback() = default;
 
 		template<typename Callable>
+			requires std::invocable<Callable, Args...>
 		CallbackId add( Callable && p_callback )
 		{
+			// TODO: why is this not working?
+			static_assert(
+				std::is_convertible_v<Callable, Func>, "Callable must be convertible to std::function<void(Args...)>"
+			);
+
+			static_assert(
+				not std::is_member_function_pointer_v<Callable>,
+				"Cannot pass a member function pointer. Use a lambda to capture the object."
+			);
+
+			static_assert(
+				std::is_invocable_r_v<void, Callable, Args...>,
+				"Callable type is not invocable with the expected arguments."
+			);
+
 			_callbacks.emplace( _nextId++, std::forward<Callable>( p_callback ) );
 			return _nextId - 1;
 		}
@@ -43,6 +60,7 @@ namespace VTX::Util
 		}
 
 		template<typename Callable>
+			requires std::invocable<Callable, Args...>
 		inline CallbackId operator+=( Callable && p_func )
 		{
 			return add( std::forward<Callable>( p_func ) );
