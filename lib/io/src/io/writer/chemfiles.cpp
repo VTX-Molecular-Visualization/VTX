@@ -16,7 +16,8 @@ namespace std
 	template<>
 	class hash<VTX::IO::Writer::AtomId>
 	{
-		size_t operator()( const VTX::IO::Writer::AtomId & p_ ) noexcept { return p_.value; }
+	  public:
+		size_t operator()( const VTX::IO::Writer::AtomId & p_ ) const noexcept { return p_.value; }
 	};
 } // namespace std
 
@@ -36,6 +37,7 @@ namespace VTX::IO::Writer
 
 	struct _Atom
 	{
+		AtomId		externalId;
 		std::string name;
 		std::string symbol;
 	};
@@ -67,8 +69,8 @@ namespace VTX::IO::Writer
 
 	struct _Bond
 	{
-		_Atom *		 a1;
-		_Atom *		 a2;
+		AtomId		 a1;
+		AtomId		 a2;
 		E_BOND_ORDER bondOrder;
 	};
 	using BondCollection = std::list<_Bond>; // Used for constant time insertion and memory efficiency
@@ -85,7 +87,7 @@ namespace VTX::IO::Writer
 
 	namespace
 	{
-		void figureFormat( const FilePath & dest, Chemfiles::E_FILE_FORMATS & format )
+		void figureFormat( const FilePath & dest, ChemfilesTrajectory::E_FILE_FORMATS & format )
 		{
 			if ( not dest.has_extension() )
 				return;
@@ -93,70 +95,70 @@ namespace VTX::IO::Writer
 			VTX::Util::String::toUpper( extension );
 
 			if ( extension == ".MMCIF" )
-				format = Chemfiles::E_FILE_FORMATS::mmcif;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::mmcif;
 			else if ( extension == ".PDB" )
-				format = Chemfiles::E_FILE_FORMATS::pdb;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::pdb;
 			else if ( extension == ".MMTF" )
-				format = Chemfiles::E_FILE_FORMATS::mmtf;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::mmtf;
 			else if ( extension == ".MOLDEN" )
-				format = Chemfiles::E_FILE_FORMATS::molden;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::molden;
 			else if ( extension == ".CIF" )
-				format = Chemfiles::E_FILE_FORMATS::cif;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::cif;
 			else if ( extension == ".GRO" )
-				format = Chemfiles::E_FILE_FORMATS::gro;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::gro;
 			else if ( extension == ".MOL2" )
-				format = Chemfiles::E_FILE_FORMATS::mol2;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::mol2;
 			else if ( extension == ".SDf" )
-				format = Chemfiles::E_FILE_FORMATS::sdf;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::sdf;
 			else if ( extension == ".SMI" )
-				format = Chemfiles::E_FILE_FORMATS::smi;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::smi;
 			else if ( extension == ".XYZ" )
-				format = Chemfiles::E_FILE_FORMATS::xyz;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::xyz;
 			else if ( extension == ".CML" )
-				format = Chemfiles::E_FILE_FORMATS::cml;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::cml;
 			else if ( extension == ".CSSR" )
-				format = Chemfiles::E_FILE_FORMATS::cssr;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::cssr;
 			else if ( extension == ".NC" )
-				format = Chemfiles::E_FILE_FORMATS::nc;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::nc;
 			else if ( extension == ".DCD" )
-				format = Chemfiles::E_FILE_FORMATS::nc;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::nc;
 			else if ( extension == ".LAMMPSTRJ" )
-				format = Chemfiles::E_FILE_FORMATS::lammpstrj;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::lammpstrj;
 			else if ( extension == ".ARC" )
-				format = Chemfiles::E_FILE_FORMATS::arc;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::arc;
 			else if ( extension == ".TRR" )
-				format = Chemfiles::E_FILE_FORMATS::trr;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::trr;
 			else if ( extension == ".XTC" )
-				format = Chemfiles::E_FILE_FORMATS::xtc;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::xtc;
 			else if ( extension == ".TNG" )
-				format = Chemfiles::E_FILE_FORMATS::tng;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::tng;
 			else if ( extension == ".TRJ" )
-				format = Chemfiles::E_FILE_FORMATS::trj;
+				format = ChemfilesTrajectory::E_FILE_FORMATS::trj;
 		}
-		const char * string( const Chemfiles::E_FILE_FORMATS & format ) noexcept
+		const char * string( const ChemfilesTrajectory::E_FILE_FORMATS & format ) noexcept
 		{
 			switch ( format )
 			{
-			case Chemfiles::E_FILE_FORMATS::pdb: return "pdb";
-			case Chemfiles::E_FILE_FORMATS::mmcif: return "mmcif";
-			case Chemfiles::E_FILE_FORMATS::mmtf: return "mmtf";
-			case Chemfiles::E_FILE_FORMATS::molden: return "molden";
-			case Chemfiles::E_FILE_FORMATS::cif: return "cif";
-			case Chemfiles::E_FILE_FORMATS::gro: return "gro";
-			case Chemfiles::E_FILE_FORMATS::mol2: return "mol2";
-			case Chemfiles::E_FILE_FORMATS::sdf: return "sdf";
-			case Chemfiles::E_FILE_FORMATS::smi: return "smi";
-			case Chemfiles::E_FILE_FORMATS::xyz: return "xyz";
-			case Chemfiles::E_FILE_FORMATS::cml: return "cml";
-			case Chemfiles::E_FILE_FORMATS::cssr: return "cssr";
-			case Chemfiles::E_FILE_FORMATS::nc: return "nc";
-			case Chemfiles::E_FILE_FORMATS::dcd: return "dcd";
-			case Chemfiles::E_FILE_FORMATS::lammpstrj: return "lammpstrj";
-			case Chemfiles::E_FILE_FORMATS::arc: return "arc";
-			case Chemfiles::E_FILE_FORMATS::trr: return "trr";
-			case Chemfiles::E_FILE_FORMATS::xtc: return "xtc";
-			case Chemfiles::E_FILE_FORMATS::tng: return "tng";
-			case Chemfiles::E_FILE_FORMATS::trj: return "trj";
+			case ChemfilesTrajectory::E_FILE_FORMATS::pdb: return "PDB";
+			case ChemfilesTrajectory::E_FILE_FORMATS::mmcif: return "mmCIF";
+			case ChemfilesTrajectory::E_FILE_FORMATS::mmtf: return "MMTF";
+			case ChemfilesTrajectory::E_FILE_FORMATS::molden: return "Molden";
+			case ChemfilesTrajectory::E_FILE_FORMATS::cif: return "CIF";
+			case ChemfilesTrajectory::E_FILE_FORMATS::gro: return "GRO";
+			case ChemfilesTrajectory::E_FILE_FORMATS::mol2: return "MOL2";
+			case ChemfilesTrajectory::E_FILE_FORMATS::sdf: return "SDF";
+			case ChemfilesTrajectory::E_FILE_FORMATS::smi: return "SMI";
+			case ChemfilesTrajectory::E_FILE_FORMATS::xyz: return "XYZ";
+			case ChemfilesTrajectory::E_FILE_FORMATS::cml: return "CML";
+			case ChemfilesTrajectory::E_FILE_FORMATS::cssr: return "CSSR";
+			case ChemfilesTrajectory::E_FILE_FORMATS::nc: return "Amber NetCDF";
+			case ChemfilesTrajectory::E_FILE_FORMATS::dcd: return "DCD";
+			case ChemfilesTrajectory::E_FILE_FORMATS::lammpstrj: return "LAMMPS";
+			case ChemfilesTrajectory::E_FILE_FORMATS::arc: return "Tinker";
+			case ChemfilesTrajectory::E_FILE_FORMATS::trr: return "TRR";
+			case ChemfilesTrajectory::E_FILE_FORMATS::xtc: return "XTC";
+			case ChemfilesTrajectory::E_FILE_FORMATS::tng: return "TNG";
+			case ChemfilesTrajectory::E_FILE_FORMATS::trj: return "TRJ";
 			default: break;
 			}
 			return "";
@@ -187,17 +189,40 @@ namespace VTX::IO::Writer
 		{
 			out = ::chemfiles::Vector3D( in.x, in.y, in.z );
 		}
-		void writeFile( const FilePath & dest, const Chemfiles::E_FILE_FORMATS & format, _System & system )
+		inline void convert( const E_BOND_ORDER & in, ::chemfiles::Bond::BondOrder & out ) noexcept
+		{
+			switch ( in )
+			{
+			case E_BOND_ORDER::unknown: out = ::chemfiles::Bond::BondOrder::UNKNOWN; break;
+			case E_BOND_ORDER::single: out = ::chemfiles::Bond::BondOrder::SINGLE; break;
+			case E_BOND_ORDER::doubl: out = ::chemfiles::Bond::BondOrder::DOUBLE; break;
+			case E_BOND_ORDER::triple: out = ::chemfiles::Bond::BondOrder::TRIPLE; break;
+			case E_BOND_ORDER::quadruple: out = ::chemfiles::Bond::BondOrder::QUADRUPLE; break;
+			case E_BOND_ORDER::quintuple: out = ::chemfiles::Bond::BondOrder::QUINTUPLET; break;
+			case E_BOND_ORDER::down: out = ::chemfiles::Bond::BondOrder::DOWN; break;
+			case E_BOND_ORDER::up: out = ::chemfiles::Bond::BondOrder::UP; break;
+			case E_BOND_ORDER::dative_L: out = ::chemfiles::Bond::BondOrder::DATIVE_L; break;
+			case E_BOND_ORDER::dative_R: out = ::chemfiles::Bond::BondOrder::DATIVE_R; break;
+			case E_BOND_ORDER::amide: out = ::chemfiles::Bond::BondOrder::AMIDE; break;
+			case E_BOND_ORDER::aromatic: out = ::chemfiles::Bond::BondOrder::AROMATIC; break;
+			default: out = ::chemfiles ::Bond ::BondOrder ::UNKNOWN; break;
+			}
+		}
+		void writeFile( const FilePath & dest, const ChemfilesTrajectory::E_FILE_FORMATS & format, _System & system )
 		{
 			::chemfiles::Trajectory cf_traj( dest.string(), 'w', string( format ) );
 
-			size_t atomResidueCounter
-				= 0; // We need to count the atoms in the order they are presented when iterating through
-					 // residues. The counter is used in chemfiles to assign an atom to a residue after
-					 // having it assign to a frame. Yes, the design is questionnable.
+			std::unordered_map<AtomId, size_t> atomIdCorrespondaceTable; // We need a correspondance table between the
+																		 // ID that chemfiles accepts and the ID we
+			bool firstFrameWritten = true; // We need to keep track if the frame loop we're into is the first one as we
+										   // need to fill the corresponande table only once and for all.
 
 			for ( auto & it_frame : system.frames )
 			{
+				size_t atomResidueCounter
+					= 0; // We need to count the atoms in the order they are presented when iterating through
+						 // residues. The counter is used in chemfiles to assign an atom to a residue after
+						 // having it assign to a frame. Yes, the design is questionnable.
 				::chemfiles::Frame cf_frame;
 				cf_frame.reserve( system.atoms.size() );
 				transferProperties( cf_frame, system.properties );
@@ -213,17 +238,36 @@ namespace VTX::IO::Writer
 						::chemfiles::Vector3D cf_coords;
 						convert( coords, cf_coords );
 						cf_frame.add_atom( ::chemfiles::Atom( it_atom->name, it_atom->symbol ), cf_coords );
+						if ( firstFrameWritten )
+						{
+							if ( not atomIdCorrespondaceTable.contains( it_atom->externalId ) )
+								atomIdCorrespondaceTable.insert( { it_atom->externalId, atomResidueCounter } );
+						}
 						cf_residue.add_atom( atomResidueCounter++ );
 					}
+					cf_frame.add_residue( cf_residue );
+				}
+
+				for ( auto & it_bond : system.bonds )
+				{
+					::chemfiles::Bond::BondOrder cf_bondOrder = ::chemfiles::Bond::BondOrder::UNKNOWN;
+					convert( it_bond.bondOrder, cf_bondOrder );
+					cf_frame.add_bond(
+						atomIdCorrespondaceTable.at( it_bond.a1 ),
+						atomIdCorrespondaceTable.at( it_bond.a2 ),
+						cf_bondOrder
+					);
 				}
 
 				cf_traj.write( cf_frame );
+				firstFrameWritten = false;
 			}
+			cf_traj.close();
 		}
 
 	} // namespace
 
-	class Chemfiles::_Impl
+	class ChemfilesTrajectory::_Impl
 	{
 		FilePath	   _dest;
 		E_FILE_FORMATS _format = E_FILE_FORMATS::none;
@@ -257,6 +301,20 @@ namespace VTX::IO::Writer
 	Atom::Atom( _Atom & p_ ) : _data( &p_ ) {}
 	void Atom::get( _AtomInfo & p_out ) const noexcept { p_out = _AtomInfo { .dataPtr = _data }; }
 
+	void Atom::setName( std::string name ) noexcept
+	{
+		if ( _data == nullptr )
+			return;
+		_data->name = std::move( name );
+	}
+
+	void Atom::setSymbol( std::string symbol ) noexcept
+	{
+		if ( _data == nullptr )
+			return;
+		_data->symbol = std::move( symbol );
+	}
+
 	// Residue
 	Residue::Residue( _Residue & p_ ) : _data( &p_ ) {}
 	void Residue::set( Property p_ ) noexcept
@@ -268,6 +326,22 @@ namespace VTX::IO::Writer
 			_data->properties.at( p_.key ) = p_.value;
 		else
 			_data->properties.emplace( p_.key, p_.value );
+	}
+
+	void Residue::setResId( int p_ ) noexcept
+	{
+		if ( _data == nullptr )
+			return;
+
+		_data->resid = std::move( p_ );
+	}
+
+	void Residue::setSymbol( std::string p_symbol ) noexcept
+	{
+		if ( _data == nullptr )
+			return;
+
+		_data->symbol = std::move( p_symbol );
 	}
 
 	void Residue::add( Atom & p_ ) noexcept
@@ -339,7 +413,7 @@ namespace VTX::IO::Writer
 			return {};
 		if ( not _data->atoms.contains( p_atomId ) )
 		{
-			_data->atoms.emplace( p_atomId.value, _Atom() );
+			_data->atoms.emplace( p_atomId.value, _Atom { .externalId = p_atomId } );
 		}
 
 		return Atom( _data->atoms.at( p_atomId ) );
@@ -355,13 +429,14 @@ namespace VTX::IO::Writer
 	{
 		if ( _data == nullptr )
 			return;
+
+		// First we check if the provided AtomId point toward an actual atom.
 		if ( not _data->atoms.contains( p_l ) )
 			vtxBondThrow( p_l );
 		if ( not _data->atoms.contains( p_r ) )
 			vtxBondThrow( p_r );
 
-		_data->bonds.emplace_back( _Bond {
-			.a1 = &_data->atoms.at( p_l ), .a2 = &_data->atoms.at( p_r ), .bondOrder = std::move( p_bondOrder ) } );
+		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = std::move( p_bondOrder ) } );
 	}
 	Chain System::newChain() noexcept
 	{
@@ -401,13 +476,13 @@ namespace VTX::IO::Writer
 
 	// Pimpl pattern method forwarding vv
 
-	void Chemfiles::Del::operator()( Chemfiles::_Impl * p_ ) noexcept { delete p_; }
-	Chemfiles::Chemfiles() : _( new _Impl ) {}
+	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::_Impl * p_ ) noexcept { delete p_; }
+	ChemfilesTrajectory::ChemfilesTrajectory() : _( new _Impl ) {}
 
-	void Chemfiles::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
+	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
 
-	void Chemfiles::setWriteFormat( E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( std::move( p_ ) ); }
+	void ChemfilesTrajectory::setWriteFormat( E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( std::move( p_ ) ); }
 
-	System Chemfiles::system() noexcept { return _->system(); }
+	System ChemfilesTrajectory::system() noexcept { return _->system(); }
 
 } // namespace VTX::IO::Writer

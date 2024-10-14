@@ -9,7 +9,8 @@ target_sources(vtx_io
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Tests.
-add_executable(vtx_io_test "${CMAKE_CURRENT_LIST_DIR}/../test/main.cpp")
+file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
+add_executable(vtx_io_test ${TEST_SOURCES})
 configure_target(vtx_io_test)
 
 if (NOT DEFINED _VTX_IO_CONAN)

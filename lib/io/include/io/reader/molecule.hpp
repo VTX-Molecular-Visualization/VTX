@@ -38,13 +38,13 @@ namespace VTX::IO::Reader
 	  private:
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule );
 
-		// TODO do this function here or in IO::Reader::Chemfiles ?
+		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
 		VTX::Core::ChemDB::Category::TYPE _findCategoryType(
 			const std::string & p_fileExtension,
 			const std::string & p_residueSymbol
 		);
 
-		// TODO do this function here or in IO::Reader::Chemfiles ?
+		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
 		void _readTrajectoryFrames(
 			IO::Reader::Chemfiles &												  p_chemfileStruct,
 			const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,

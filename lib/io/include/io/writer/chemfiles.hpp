@@ -168,6 +168,7 @@ namespace VTX::IO::Writer
 
 		/**
 		 * @brief  Bind two atoms together. Atoms are identified by the external key provided during their creation.
+		 * Throws if the provided IDs aren't valid.
 		 */
 		void bind( const AtomId &, const AtomId &, E_BOND_ORDER );
 
@@ -199,11 +200,11 @@ namespace VTX::IO::Writer
 	};
 
 	/**
-	 * @brief Allows to write a file containing molecule's structural information using the Chemfiles library. This
+	 * @brief Allows to write a file containing molecule's structural information using the ChemfilesTrajectory library. This
 	 * class is intended to cover needs in trajectory writing. It expect all the frames ( 1 or more) to have the same
-	 * chemical configuration : no change in atoms, bond, atoms, chain between frames.
+	 * chemical configuration : no change in atoms, bond, residues, chains between frames.
 	 */
-	class Chemfiles
+	class ChemfilesTrajectory
 	{
 	  public:
 		enum class E_FILE_FORMATS
@@ -232,7 +233,7 @@ namespace VTX::IO::Writer
 			COUNT
 		};
 
-		Chemfiles();
+		ChemfilesTrajectory();
 
 		/**
 		 * @brief Mandatory to write something. Can be set empty so no files end up being saved at all.
