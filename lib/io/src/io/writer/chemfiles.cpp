@@ -325,7 +325,7 @@ namespace VTX::IO::Writer
 		if ( _data->properties.contains( p_.key ) )
 			_data->properties.at( p_.key ) = p_.value;
 		else
-			_data->properties.emplace( p_.key, p_.value );
+			_data->properties.emplace( std::make_pair( p_.key, p_.value ) );
 	}
 
 	void Residue::setResId( int p_ ) noexcept
@@ -391,7 +391,7 @@ namespace VTX::IO::Writer
 			return;
 
 		if ( not _data->coordinates.contains( atomInfo.dataPtr ) )
-			_data->coordinates.emplace( atomInfo.dataPtr, std::move( p_atomCoordinates ) );
+			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, std::move( p_atomCoordinates ) ) );
 		else
 			_data->coordinates.at( atomInfo.dataPtr ) = std::move( p_atomCoordinates );
 	}
@@ -405,7 +405,7 @@ namespace VTX::IO::Writer
 		if ( _data->properties.contains( p_.key ) )
 			_data->properties.at( p_.key ) = std::move( p_.value );
 		else
-			_data->properties.emplace( std::move( p_.key ), std::move( p_.value ) );
+			_data->properties.emplace( std::make_pair( std::move( p_.key ), std::move( p_.value ) ) );
 	}
 	Atom System::newAtom( AtomId p_atomId ) noexcept
 	{
@@ -413,7 +413,7 @@ namespace VTX::IO::Writer
 			return {};
 		if ( not _data->atoms.contains( p_atomId ) )
 		{
-			_data->atoms.emplace( p_atomId.value, _Atom { .externalId = p_atomId } );
+			_data->atoms.emplace( std::make_pair( p_atomId.value, _Atom { .externalId = p_atomId } ) );
 		}
 
 		return Atom( _data->atoms.at( p_atomId ) );
