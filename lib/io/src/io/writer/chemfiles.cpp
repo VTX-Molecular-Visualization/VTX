@@ -413,7 +413,7 @@ namespace VTX::IO::Writer
 			return {};
 		if ( not _data->atoms.contains( p_atomId ) )
 		{
-			_data->atoms.emplace( std::make_pair( p_atomId.value, _Atom { .externalId = p_atomId } ) );
+			_data->atoms.emplace( std::make_pair( p_atomId, _Atom { .externalId = p_atomId } ) );
 		}
 
 		return Atom( _data->atoms.at( p_atomId ) );

@@ -147,7 +147,7 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer", "[writer][chemfiles][trajectory][1 frame]" )
+TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfiles][trajectory][1 frame]" )
 {
 	using namespace VTX::IO::Writer;
 
@@ -174,7 +174,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer", "[writer][chemfiles][traj
 	CHECK( molecule.getAtomCount() == 6 );
 	CHECK( molecule.trajectory.getFrameCount() == 1 );
 }
-TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer", "[writer][chemfiles][trajectory][2 frames]" )
+TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
 	using namespace VTX::IO::Writer;
 
