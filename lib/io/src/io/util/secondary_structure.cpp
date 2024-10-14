@@ -27,7 +27,7 @@ namespace VTX::IO::Util::SecondaryStructure
 
 			const size_t residueCount = p_molecule.chainResidueCounts[ chainIdx ];
 
-			// Not enought residues.
+			// Not enought atoms.
 			if ( residueCount < 4 )
 			{
 				VTX_DEBUG( "Chain residue count < 4" );

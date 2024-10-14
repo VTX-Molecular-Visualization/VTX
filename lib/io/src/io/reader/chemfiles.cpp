@@ -10,7 +10,9 @@
 #include <util/string.hpp>
 
 #pragma warning( push, 0 )
+#include "chemfiles.hpp"
 #include <chemfiles.hpp>
+#include "chemfiles.hpp"
 #pragma warning( pop )
 
 namespace VTX::IO::Reader
@@ -219,7 +221,7 @@ namespace VTX::IO::Reader
 			throw IOException( "Data count missmatch" );
 		}
 
-		// Check properties, same for all atoms/residues?
+		// Check properties, same for all atoms/atoms?
 		if ( _readingData->_currentFrame.size() > 0 )
 		{
 			if ( _readingData->_currentFrame[ 0 ].properties() )
@@ -510,3 +512,4 @@ namespace VTX::IO::Reader
 	void Chemfiles::_warningCallback( const std::string & p_log ) {}
 
 } // namespace VTX::IO::Reader
+
