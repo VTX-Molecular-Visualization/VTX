@@ -6,6 +6,8 @@
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
+#include <core/chemdb/color.hpp>
+#include <io/util/secondary_structure.hpp>
 #include <renderer/facade.hpp>
 #include <util/algorithm/range.hpp>
 #include <util/exceptions.hpp>
@@ -28,12 +30,14 @@ namespace VTX::App::Component::Render
 
 	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
 	{
-		Component::Chemistry::Molecule & molComp
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
-		VTX::Core::Struct::Molecule & molStruct = molComp._moleculeStruct;
+		Component::Chemistry::Molecule & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+		VTX::Core::Struct::Molecule &	 molStruct = molComp._moleculeStruct;
 
-		Component::Scene::Transform & transformComp
-			= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		/////
+		IO::Util::SecondaryStructure::computeStride( molComp._moleculeStruct );
+		////
+
+		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
 		const std::vector<uchar> atomColors	   = _generateAtomColors( molStruct );
 		const std::vector<float> atomRadii	   = _generateAtomRadii( molStruct );
@@ -71,7 +75,14 @@ namespace VTX::App::Component::Render
 	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
 	{
 		std::vector<uchar> atomColors;
+
 		atomColors.resize( p_molStruct.getAtomCount(), 0 );
+		std::generate(
+			atomColors.begin(),
+			atomColors.end(),
+			[ &p_molStruct, i = 0 ]() mutable
+			{ return VTX::Core::ChemDB::Color::getColorIndex( p_molStruct.atomSymbols[ i++ ] ); }
+		);
 
 		return atomColors;
 	}
@@ -103,6 +114,13 @@ namespace VTX::App::Component::Render
 	{
 		std::vector<uchar> residueColors;
 		residueColors.resize( p_molStruct.getResidueCount(), 0 );
+
+		std::generate(
+			residueColors.begin(),
+			residueColors.end(),
+			[ this, &p_molStruct, i = 0 ]() mutable
+			{ return VTX::Core::ChemDB::Color::getColorIndex( p_molStruct.residueSecondaryStructureTypes[ i++ ] ); }
+		);
 
 		return residueColors;
 	}

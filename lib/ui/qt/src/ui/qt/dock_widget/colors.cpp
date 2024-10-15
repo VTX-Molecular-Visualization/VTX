@@ -9,6 +9,7 @@
 #include <app/action/color.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/representation/color_layout.hpp>
+#include <core/chemdb/chain.hpp>
 #include <core/chemdb/color.hpp>
 #include <core/struct/color_layout.hpp>
 #include <util/color/rgba.hpp>
@@ -63,7 +64,7 @@ namespace VTX::UI::QT::DockWidget
 			Residue::SYMBOL_STR,
 			Residue::SYMBOL_NAME
 		);
-		_createGroupBox( "Chain", component->getLayout(), LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS );
+		_createGroupBox( "Chain", component->getLayout(), LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS, Chain::NAME );
 		_createGroupBox( "Ribbon", component->getLayout(), LAYOUT_OFFSET_RIBBONS, LAYOUT_COUNT_RIBBONS );
 		_createGroupBox( "Custom", component->getLayout(), LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
@@ -95,10 +96,15 @@ namespace VTX::UI::QT::DockWidget
 		size_t offset = 0;
 		for ( size_t i = p_start; i <= p_start + p_count - 1; ++i )
 		{
-			QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
+			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new QPushButton( text, this );
+			_buttons[ i ] = new QPushButton( this );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
+
+			if ( p_text )
+			{
+				_buttons[ i ]->setText( QString::fromStdString( p_text[ offset ].data() ) );
+			}
 
 			if ( p_tip )
 			{

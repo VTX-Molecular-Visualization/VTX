@@ -31,12 +31,12 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QCheckBox>				   _checkBoxHide;
 
 		void _createGroupBox(
-			const std::string_view,
-			const VTX::Core::Struct::ColorLayout &,
-			const size_t,
-			const size_t,
-			const std::string_view * const = nullptr,
-			const std::string_view * const = nullptr
+			const std::string_view				   p_title,
+			const VTX::Core::Struct::ColorLayout & p_layout,
+			const size_t						   p_start,
+			const size_t						   p_count,
+			const std::string_view * const		   p_text = nullptr,
+			const std::string_view * const		   p_tip  = nullptr
 		);
 
 		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
