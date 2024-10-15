@@ -44,9 +44,9 @@ namespace VTX::App::Component::Chemistry
 		size_t					getIndexInOriginalChain() const;
 		void					setIndexInOriginalChain( const size_t p_index );
 
-		const std::string & getShortName() const;
-		const std::string & getName() const;
-		const std::string & getLongName() const;
+		const std::string_view getShortName() const;
+		const std::string_view getName() const;
+		const std::string_view getLongName() const;
 
 		const Util::Color::Rgba & getColor() const { return _color; };
 		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };

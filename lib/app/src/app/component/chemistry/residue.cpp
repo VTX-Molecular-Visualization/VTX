@@ -67,7 +67,7 @@ namespace VTX::App::Component::Chemistry
 		_moleculePtr->_moleculeStruct.residueOriginalIds[ _index ] = p_index;
 	}
 
-	const std::string & Residue::getShortName() const
+	const std::string_view Residue::getShortName() const
 	{
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
@@ -79,7 +79,7 @@ namespace VTX::App::Component::Chemistry
 			return ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
 		}
 	}
-	const std::string & Residue::getName() const
+	const std::string_view Residue::getName() const
 	{
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
@@ -92,7 +92,7 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	const std::string & Residue::getLongName() const
+	const std::string_view Residue::getLongName() const
 	{
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )

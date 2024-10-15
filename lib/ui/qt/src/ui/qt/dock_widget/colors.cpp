@@ -45,14 +45,24 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		using namespace VTX::Core::Struct;
+		using namespace VTX::Core::ChemDB;
 		using namespace VTX::Core::ChemDB::Color;
 
 		// Buttons.
 		_buttons.resize( VTX::Core::Struct::ColorLayout::LAYOUT_SIZE );
 
 		// Group boxes.
-		_createGroupBox( "Atom", component->getLayout(), LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS );
-		_createGroupBox( "Residue", component->getLayout(), LAYOUT_OFFSET_RESIDUES, LAYOUT_COUNT_RESIDUES );
+		_createGroupBox(
+			"Atom", component->getLayout(), LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_STR, Atom::SYMBOL_NAME
+		);
+		_createGroupBox(
+			"Residue",
+			component->getLayout(),
+			LAYOUT_OFFSET_RESIDUES,
+			LAYOUT_COUNT_RESIDUES,
+			Residue::SYMBOL_STR,
+			Residue::SYMBOL_NAME
+		);
 		_createGroupBox( "Chain", component->getLayout(), LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS );
 		_createGroupBox( "Ribbon", component->getLayout(), LAYOUT_OFFSET_RIBBONS, LAYOUT_COUNT_RIBBONS );
 		_createGroupBox( "Custom", component->getLayout(), LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
@@ -73,17 +83,28 @@ namespace VTX::UI::QT::DockWidget
 		const std::string_view				   p_title,
 		const VTX::Core::Struct::ColorLayout & p_layout,
 		const size_t						   p_start,
-		const size_t						   p_count
+		const size_t						   p_count,
+		const std::string_view * const		   p_text,
+		const std::string_view * const		   p_tip
 	)
 	{
 		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
 		auto * layout	= new Layout::FlowLayout( groupBox );
 
 		// Create buttons.
+		size_t offset = 0;
 		for ( size_t i = p_start; i <= p_start + p_count - 1; ++i )
 		{
-			_buttons[ i ] = new QPushButton( QString::number( i ), this );
-			_buttons[ i ]->setFixedSize( 25, 25 );
+			QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
+
+			_buttons[ i ] = new QPushButton( text, this );
+			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
+
+			if ( p_tip )
+			{
+				_buttons[ i ]->setToolTip( QString::fromStdString( p_tip[ offset ].data() ) );
+				_buttons[ i ]->setStatusTip( QString::fromStdString( p_tip[ offset ].data() ) );
+			}
 
 			// Connect picker.
 			connect(
@@ -97,12 +118,16 @@ namespace VTX::UI::QT::DockWidget
 					// dialog->setOption( QColorDialog::DontUseNativeDialog );
 					dialog.exec();
 
-					// Update color.
-					_changeColor( i, dialog.currentColor() );
+					if ( dialog.result() == QDialog::Accepted )
+					{
+						// Update color.
+						_changeColor( i, dialog.currentColor() );
+					}
 				}
 			);
 
 			layout->addWidget( _buttons[ i ] );
+			offset++;
 		}
 
 		_layout->addWidget( groupBox );

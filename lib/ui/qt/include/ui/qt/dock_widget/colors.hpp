@@ -25,6 +25,7 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		inline static const QString _SETTING_KEY_HIDE = "colors/hide_non_common";
+		inline static const int		_BUTTON_SIZE	  = 32;
 
 		std::vector<QPointer<QPushButton>> _buttons;
 		QPointer<QCheckBox>				   _checkBoxHide;
@@ -33,7 +34,9 @@ namespace VTX::UI::QT::DockWidget
 			const std::string_view,
 			const VTX::Core::Struct::ColorLayout &,
 			const size_t,
-			const size_t
+			const size_t,
+			const std::string_view * const = nullptr,
+			const std::string_view * const = nullptr
 		);
 
 		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
