@@ -251,6 +251,7 @@ namespace VTX::Core::ChemDB::Color
 		CUSTOM_7,
 		CUSTOM_8,
 		CUSTOM_9,
+		CUSTOM_10
 	};
 
 	inline uchar getColorIndex( const Atom::SYMBOL p_symbol ) { return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }

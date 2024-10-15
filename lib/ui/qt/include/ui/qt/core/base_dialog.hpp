@@ -17,12 +17,12 @@ namespace VTX::UI::QT::Core
 	concept ConceptDialog = std::is_base_of_v<QDialog, D>;
 
 	template<typename T, ConceptDialog D = QDialog>
-	class BaseDialog : public Core::BaseWidget<T, D>
+	class BaseDialog : public BaseWidget<T, D>
 	{
 	  public:
 		template<typename... Args>
 		BaseDialog( Args &&... p_args ) :
-			BaseWidget<T, D>( Core::WIDGETS::get().get<Widget::MainWindow>(), std::forward<Args>( p_args )... )
+			BaseWidget<T, D>( WIDGETS::get().get<Widget::MainWindow>(), std::forward<Args>( p_args )... )
 		{
 		}
 

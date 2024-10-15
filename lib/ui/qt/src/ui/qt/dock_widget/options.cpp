@@ -17,6 +17,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
+		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
 		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
 
 		APP_QT::onUICreated += [ this ]()
@@ -35,17 +36,13 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		auto * layoutGraphics = new QVBoxLayout( this );
 		layoutGraphics->addWidget( _checkBoxVSync );
-		groupBoxGraphics->setLayout( layoutGraphics );
 
 		// Cache.
 		auto * groupBoxCache = new QGroupBox( "Data cache" );
-		auto * layoutCache	 = new QVBoxLayout( this );
+		auto * layoutCache	 = new QVBoxLayout( groupBoxCache );
 
-		groupBoxCache->setLayout( layoutCache );
-
-		auto * layoutCacheButton  = new QHBoxLayout( this );
+		auto * layoutCacheButton  = new QHBoxLayout();
 		auto * buttonOpenCache	  = new QPushButton( "Open", this );
 		auto * buttonClearCache	  = new QPushButton( "Clear", this );
 		auto * buttonRefreshCache = new QPushButton( "Refresh", this );

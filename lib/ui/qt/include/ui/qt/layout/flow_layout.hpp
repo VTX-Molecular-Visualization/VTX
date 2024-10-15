@@ -8,14 +8,17 @@
 
 namespace VTX::UI::QT::Layout
 {
+	/**
+	 * @brief https://doc.qt.io/qt-6.7/qtwidgets-layouts-flowlayout-example.html
+	 */
 	class FlowLayout : public QLayout
 	{
 	  public:
-		explicit FlowLayout( QWidget * parent, int margin = -1, int hSpacing = -1, int vSpacing = -1 );
-		explicit FlowLayout( int margin = -1, int hSpacing = -1, int vSpacing = -1 );
+		explicit FlowLayout( QWidget *, int = -1, int = -1, int = -1 );
+		explicit FlowLayout( int = -1, int = -1, int = -1 );
 		~FlowLayout();
 
-		void			 addItem( QLayoutItem * item ) override;
+		void			 addItem( QLayoutItem * ) override;
 		int				 horizontalSpacing() const;
 		int				 verticalSpacing() const;
 		Qt::Orientations expandingDirections() const override;
@@ -33,8 +36,8 @@ namespace VTX::UI::QT::Layout
 		int smartSpacing( QStyle::PixelMetric pm ) const;
 
 		QList<QLayoutItem *> itemList;
-		int					 m_hSpace;
-		int					 m_vSpace;
+		int					 _hSpace;
+		int					 _vSpace;
 	};
 } // namespace VTX::UI::QT::Layout
 

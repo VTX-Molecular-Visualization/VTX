@@ -44,10 +44,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Colors.
 		auto * groupBoxColors = new QGroupBox( "Layout" );
-		// auto * layoutColors	  = new Layout::FlowLayout( this );
-		auto * layoutColors = new QVBoxLayout( this );
-
-		groupBoxColors->setLayout( layoutColors );
+		auto * layoutColors	  = new Layout::FlowLayout( groupBoxColors );
+		// auto * layoutColors = new QVBoxLayout( groupBoxColors );
 
 		// Create buttons.
 		for ( size_t i = 0; i < VTX::Core::Struct::ColorLayout::LAYOUT_SIZE; ++i )
