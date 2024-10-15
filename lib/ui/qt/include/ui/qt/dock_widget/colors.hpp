@@ -21,6 +21,8 @@ namespace VTX::UI::QT::DockWidget
 	  private:
 		std::vector<QPointer<QPushButton>> _buttons;
 
+		void _createGroupBox( const std::string_view, const size_t, const size_t );
+
 		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
 		void _refreshColor( const VTX::Core::Struct::ColorLayout &, const size_t );
 

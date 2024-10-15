@@ -38,10 +38,10 @@ namespace VTX::UI::QT::DockWidget
 			[ this ]() { App::ACTION_SYSTEM().execute<App::Action::Color::RandomizeLayoutColors>(); }
 		);
 
-		// Colors.
-		auto * groupBoxColors = new QGroupBox( "Layout" );
-		auto * layoutColors	  = new Layout::FlowLayout( groupBoxColors );
-		// auto * layoutColors = new QVBoxLayout( groupBoxColors );
+		// Atoms.
+		auto * groupBoxAtoms = new QGroupBox( "Layout" );
+		auto * layoutAtoms	 = new Layout::FlowLayout( groupBoxAtoms );
+		// auto * layoutAtoms = new QVBoxLayout( groupBoxAtoms );
 
 		// Create buttons.
 		for ( size_t i = 0; i < VTX::Core::Struct::ColorLayout::LAYOUT_SIZE; ++i )
@@ -64,20 +64,20 @@ namespace VTX::UI::QT::DockWidget
 					assert( component );
 
 					// Open button dialog.
-					auto * dialog = new QColorDialog( Helper::toQColor( component->getLayout().layout[ i ] ), this );
+					auto dialog = QColorDialog( Helper::toQColor( component->getLayout().layout[ i ] ), this );
 					// dialog->setOption( QColorDialog::ShowAlphaChannel );
 					// dialog->setOption( QColorDialog::DontUseNativeDialog );
-					dialog->exec();
+					dialog.exec();
 
 					// Update color.
-					_changeColor( i, dialog->currentColor() );
+					_changeColor( i, dialog.currentColor() );
 				}
 			);
 
-			layoutColors->addWidget( button );
+			layoutAtoms->addWidget( button );
 		}
 
-		_layout->addWidget( groupBoxColors );
+		_layout->addWidget( groupBoxAtoms );
 
 		// Callbacks.
 		component->onChange +=
@@ -87,21 +87,35 @@ namespace VTX::UI::QT::DockWidget
 		_refreshColors( component->getLayout() );
 	}
 
+	void Colors::_createGroupBox( std::string_view p_title, const size_t p_indexStart, const size_t p_indexEnd )
+	{
+		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
+		auto * layout	= new QVBoxLayout( groupBox );
+
+		_layout->addWidget( groupBox );
+	}
+
 	void Colors::_refreshColors( const VTX::Core::Struct::ColorLayout & p_layout )
 	{
 		for ( size_t i = 0; i < p_layout.layout.size(); ++i )
 		{
-			_buttons[ i ]->setStyleSheet(
-				QString( "background-color: " ) + QString::fromStdString( p_layout.layout[ i ].toHexaString() )
-			);
+			_refreshColor( p_layout, i );
 		}
 	}
 
 	void Colors::_refreshColor( const VTX::Core::Struct::ColorLayout & p_layout, const size_t p_index )
 	{
-		_buttons[ p_index ]->setStyleSheet(
-			QString( "background-color: " ) + QString::fromStdString( p_layout.layout[ p_index ].toHexaString() )
+		auto & color = p_layout.layout[ p_index ];
+
+		QPalette palette = _buttons[ p_index ]->palette();
+		palette.setColor( QPalette::Button, QColor( QString::fromStdString( color.toHexaString() ) ) );
+		palette.setColor(
+			QPalette::ButtonText,
+			QColor( QString::fromStdString(
+				color.brightness() > 0.5f ? COLOR_BLACK.toHexaString() : COLOR_WHITE.toHexaString()
+			) )
 		);
+		_buttons[ p_index ]->setPalette( palette );
 	}
 
 	void Colors::_changeColor( const size_t p_index, const QColor & p_color )
