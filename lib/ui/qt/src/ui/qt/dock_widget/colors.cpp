@@ -9,6 +9,7 @@
 #include <app/action/color.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/representation/color_layout.hpp>
+#include <core/chemdb/color.hpp>
 #include <core/struct/color_layout.hpp>
 #include <util/color/rgba.hpp>
 
@@ -29,6 +30,11 @@ namespace VTX::UI::QT::DockWidget
 		searchBar->setPlaceholderText( "Search..." );
 		_layout->addWidget( searchBar );
 
+		// Checkbox to hide non usual items.
+		_checkBoxHide = new QCheckBox( "Hide non usual", this );
+		_layout->addWidget( _checkBoxHide );
+		connect( _checkBoxHide, &QCheckBox::stateChanged, this, &Colors::_refreshButtonVisibility );
+
 		// Randomize button.
 		auto * buttonRandomize = new QPushButton( "Randomize", this );
 		_layout->addWidget( buttonRandomize );
@@ -38,33 +44,55 @@ namespace VTX::UI::QT::DockWidget
 			[ this ]() { App::ACTION_SYSTEM().execute<App::Action::Color::RandomizeLayoutColors>(); }
 		);
 
-		// Atoms.
-		auto * groupBoxAtoms = new QGroupBox( "Layout" );
-		auto * layoutAtoms	 = new Layout::FlowLayout( groupBoxAtoms );
-		// auto * layoutAtoms = new QVBoxLayout( groupBoxAtoms );
+		using namespace VTX::Core::Struct;
+		using namespace VTX::Core::ChemDB::Color;
+
+		// Buttons.
+		_buttons.resize( VTX::Core::Struct::ColorLayout::LAYOUT_SIZE );
+
+		// Group boxes.
+		_createGroupBox( "Atom", component->getLayout(), LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS );
+		_createGroupBox( "Residue", component->getLayout(), LAYOUT_OFFSET_RESIDUES, LAYOUT_COUNT_RESIDUES );
+		_createGroupBox( "Chain", component->getLayout(), LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS );
+		_createGroupBox( "Ribbon", component->getLayout(), LAYOUT_OFFSET_RIBBONS, LAYOUT_COUNT_RIBBONS );
+		_createGroupBox( "Custom", component->getLayout(), LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
+
+		// Spacer.
+		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+
+		// Callbacks.
+		component->onChange +=
+			[ this, component ]( const size_t p_index ) { _refreshColor( component->getLayout(), p_index ); };
+		component->onChangeAll += [ this, component ]() { _refreshColors( component->getLayout() ); };
+
+		_refreshColors( component->getLayout() );
+		_checkBoxHide->setChecked( true );
+	}
+
+	void Colors::_createGroupBox(
+		const std::string_view				   p_title,
+		const VTX::Core::Struct::ColorLayout & p_layout,
+		const size_t						   p_start,
+		const size_t						   p_count
+	)
+	{
+		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
+		auto * layout	= new Layout::FlowLayout( groupBox );
 
 		// Create buttons.
-		for ( size_t i = 0; i < VTX::Core::Struct::ColorLayout::LAYOUT_SIZE; ++i )
+		for ( size_t i = p_start; i <= p_start + p_count - 1; ++i )
 		{
-			auto button = _buttons.emplace_back( new QPushButton( QString::number( i ), this ) );
-			button->setFixedSize( 25, 25 );
-			// button->setStyleSheet( "border: 0px" );
-			// button->setFlat( true );
-			// button->setAutoFillBackground( true );
-			//  Set QPalette brush.
-			// QPalette palette = button->palette();
-			// palette.setBrush( QPalette::Button, QBrush( QColor( 255, 0, 0, 255 ) ) );
+			_buttons[ i ] = new QPushButton( QString::number( i ), this );
+			_buttons[ i ]->setFixedSize( 25, 25 );
 
 			// Connect picker.
 			connect(
-				button,
+				_buttons[ i ],
 				&QPushButton::clicked,
-				[ this, i, component ]()
+				[ this, i, p_layout ]()
 				{
-					assert( component );
-
 					// Open button dialog.
-					auto dialog = QColorDialog( Helper::toQColor( component->getLayout().layout[ i ] ), this );
+					QColorDialog dialog( Helper::toQColor( p_layout.layout[ i ] ), this );
 					// dialog->setOption( QColorDialog::ShowAlphaChannel );
 					// dialog->setOption( QColorDialog::DontUseNativeDialog );
 					dialog.exec();
@@ -74,23 +102,8 @@ namespace VTX::UI::QT::DockWidget
 				}
 			);
 
-			layoutAtoms->addWidget( button );
+			layout->addWidget( _buttons[ i ] );
 		}
-
-		_layout->addWidget( groupBoxAtoms );
-
-		// Callbacks.
-		component->onChange +=
-			[ this, component ]( const size_t p_index ) { _refreshColor( component->getLayout(), p_index ); };
-		component->onChangeAll += [ this, component ]() { _refreshColors( component->getLayout() ); };
-
-		_refreshColors( component->getLayout() );
-	}
-
-	void Colors::_createGroupBox( std::string_view p_title, const size_t p_indexStart, const size_t p_indexEnd )
-	{
-		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
-		auto * layout	= new QVBoxLayout( groupBox );
 
 		_layout->addWidget( groupBox );
 	}
@@ -99,7 +112,10 @@ namespace VTX::UI::QT::DockWidget
 	{
 		for ( size_t i = 0; i < p_layout.layout.size(); ++i )
 		{
-			_refreshColor( p_layout, i );
+			if ( _buttons[ i ] )
+			{
+				_refreshColor( p_layout, i );
+			}
 		}
 	}
 
@@ -118,10 +134,29 @@ namespace VTX::UI::QT::DockWidget
 		_buttons[ p_index ]->setPalette( palette );
 	}
 
+	void Colors::_refreshButtonVisibility( const int p_state )
+	{
+		using namespace VTX::Core::ChemDB::Color;
+		using namespace VTX::Core::ChemDB::Atom;
+
+		const bool hideNonUsual = p_state == Qt::Checked;
+
+		// Atoms.
+		size_t a = 0;
+		for ( size_t i = LAYOUT_OFFSET_ATOMS; i < LAYOUT_COUNT_ATOMS; ++i )
+		{
+			_buttons[ i ]->setVisible( not hideNonUsual || SYMBOL_IS_COMMON[ a++ ] );
+		}
+	}
+
 	void Colors::_changeColor( const size_t p_index, const QColor & p_color )
 	{
 		App::ACTION_SYSTEM().execute<App::Action::Color::ChangeLayoutColor>(
 			p_index, Util::Color::Rgba( p_color.redF(), p_color.greenF(), p_color.blueF() )
 		);
 	}
+
+	void Colors::save() { SETTINGS.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }
+
+	void Colors::restore() { _checkBoxHide->setChecked( SETTINGS.value( _SETTING_KEY_HIDE, true ).toBool() ); }
 } // namespace VTX::UI::QT::DockWidget
