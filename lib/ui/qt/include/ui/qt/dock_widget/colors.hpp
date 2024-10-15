@@ -5,7 +5,7 @@
 #include <QDockWidget>
 #include <QPushButton>
 
-namespace VTX::App::Component::Representation
+namespace VTX::Core::Struct
 {
 	class ColorLayout;
 }
@@ -19,14 +19,10 @@ namespace VTX::UI::QT::DockWidget
 		Colors( QWidget * p_parent );
 
 	  private:
-		// const VTX::Core::Struct::ColorLayout * _currentLayout;
-
 		std::vector<QPointer<QPushButton>> _buttons;
 
-		App::Component::Representation::ColorLayout * _component;
-
-		void _refreshColors();
-		void _refreshColor( const size_t );
+		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
+		void _refreshColor( const VTX::Core::Struct::ColorLayout &, const size_t );
 
 		void _changeColor( const size_t, const QColor & );
 	};
