@@ -116,18 +116,32 @@ namespace VTX::UI::QT::DockWidget
 			connect(
 				_buttons[ i ],
 				&QPushButton::clicked,
-				[ this, i, p_layout ]()
+				// TODO: move to dedicated function.
+				[ this, i, &p_layout ]()
 				{
 					// Open button dialog.
-					QColorDialog dialog( Helper::toQColor( p_layout.layout[ i ] ), this );
+					QColor		 color = Helper::toQColor( p_layout.layout[ i ] );
+					QColorDialog dialog( color, this );
 					// dialog->setOption( QColorDialog::ShowAlphaChannel );
 					// dialog->setOption( QColorDialog::DontUseNativeDialog );
+
+					// Connect color changed.
+					connect(
+						&dialog,
+						&QColorDialog::currentColorChanged,
+						[ this, i, &dialog ]( const QColor & p_color ) { _changeColor( i, p_color ); }
+					);
+
 					dialog.exec();
 
 					if ( dialog.result() == QDialog::Accepted )
 					{
 						// Update color.
 						_changeColor( i, dialog.currentColor() );
+					}
+					else
+					{
+						_changeColor( i, color );
 					}
 				}
 			);

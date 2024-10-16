@@ -21,7 +21,7 @@ namespace VTX::UI::QT::DockWidget
 		  );
 
 		// Shading combo box.
-		auto * groupBoxShading = new QGroupBox( QString::fromStdString( "Shading" ), _root );
+		auto * groupBoxShading = new QGroupBox( QString::fromStdString( "Shading" ) );
 		auto * layout		   = new QVBoxLayout( groupBoxShading );
 		auto * comboBoxShading = new QComboBox( groupBoxShading );
 		layout->addWidget( comboBoxShading );

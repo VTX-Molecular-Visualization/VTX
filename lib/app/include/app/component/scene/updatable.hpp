@@ -31,8 +31,7 @@ namespace VTX::App::Component::Scene
 		}
 
 	  private:
-		std::map<std::string, Application::SceneUtility::UpdateCallback> _callbacks
-			= std::map<std::string, Application::SceneUtility::UpdateCallback>();
+		std::map<std::string, Application::SceneUtility::UpdateCallback> _callbacks;
 	};
 } // namespace VTX::App::Component::Scene
 #endif

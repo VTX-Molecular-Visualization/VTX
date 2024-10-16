@@ -5,7 +5,7 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/render/proxy_molecule.hpp>
-#include <app/entity/scene/molecule_entity.hpp>
+#include <app/entity/molecule.hpp>
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -65,7 +65,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	SCENE().onSceneItemAdded += [ &addSceneItemTest ]( const Component::Scene::SceneItemComponent & p_sceneItem )
 	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
-	// Create MoleculeEntity
+	// Create Molecule
 	const FilePath				moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 	Action::Scene::LoadMolecule openAction	 = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
@@ -114,7 +114,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	// Create Scene
 	App::Fixture app;
 
-	// Create MoleculeEntity
+	// Create Molecule
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 
 	Action::Scene::LoadMolecule openAction = Action::Scene::LoadMolecule( moleculePath );

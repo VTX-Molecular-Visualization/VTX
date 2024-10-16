@@ -15,7 +15,7 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
-#include "app/entity/application/scene_entity.hpp"
+#include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
@@ -39,7 +39,7 @@ namespace VTX::App
 		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
 
 		// Create scene.
-		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Application::SceneEntity>();
+		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
 		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Init tools.

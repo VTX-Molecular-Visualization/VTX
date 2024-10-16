@@ -23,7 +23,7 @@ namespace VTX::Core::Struct
 		float			  fogDensity		 = 0.f;
 		Util::Color::Rgba colorOutline		 = COLOR_WHITE;
 		float			  outlineSensitivity = 1.f;
-		uint			  outlineThickness	 = 1;
+		uint			  outlineThickness	 = 0;
 		Util::Color::Rgba colorSelection	 = Util::Color::Rgba( 45, 243, 26 );
 	};
 } // namespace VTX::Core::Struct

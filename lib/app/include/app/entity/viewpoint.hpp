@@ -5,12 +5,12 @@
 #include "app/core/ecs/base_entity.hpp"
 #include <util/variant.hpp>
 
-namespace VTX::App::Entity::Scene
+namespace VTX::App::Entity
 {
-	class ViewpointEntity : public Core::ECS::BaseEntity
+	class Viewpoint : public Core::ECS::BaseEntity
 	{
 	  public:
 		void setup() override;
 	};
-} // namespace VTX::App::Entity::Scene
+} // namespace VTX::App::Entity
 #endif

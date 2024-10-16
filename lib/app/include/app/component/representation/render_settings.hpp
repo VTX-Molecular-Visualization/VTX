@@ -18,11 +18,7 @@ namespace VTX::App::Component::Representation
 
 		const VTX::Core::Struct::RenderSettings & getSettings() const { return _settings; }
 
-		/*
-		void setColor( const size_t p_index, const Util::Color::Rgba & p_color );
-		void setColors( const std::vector<Util::Color::Rgba> & p_colors );
-		*/
-
+		// TODO: callbacks.
 		template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
 		void set( const T & p_value )
 		{

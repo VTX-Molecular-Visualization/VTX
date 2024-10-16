@@ -6,7 +6,7 @@
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include "app/entity/scene/camera_entity.hpp"
+#include "app/entity/camera.hpp"
 #include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Application
@@ -18,7 +18,7 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		auto cameraEntity = ECS_REGISTRY().createEntity<Entity::Scene::CameraEntity>();
+		auto cameraEntity = ECS_REGISTRY().createEntity<Entity::Camera>();
 		_camera			  = &( ECS_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
