@@ -3,7 +3,7 @@
 
 #include "ui/qt/core/base_dock_widget.hpp"
 #include "ui/qt/settings.hpp"
-#include <QCheckbox>
+#include <QCheckBox>
 #include <QDockWidget>
 #include <QPushButton>
 
