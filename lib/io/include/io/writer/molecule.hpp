@@ -3,6 +3,7 @@
 #include <core/struct/molecule.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
+#include <util/thread.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -29,6 +30,7 @@ namespace VTX::IO::Writer
 		AtomFilter							atomFilter = g_takeAllAtoms;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff
+		Util::StopToken stopToken;
 	};
 
 	void writeFile( WriteArgs );

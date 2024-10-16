@@ -66,7 +66,10 @@ namespace VTX::IO::Writer
 			p_chain.add( w_residue );
 			w_residue.setResId( static_cast<int>( p_mol.residueOriginalIds[ p_residueIdx ] ) );
 			std::string residueSymbol
-				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ] ) ];
+				= p_mol.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
+					  ? p_mol.residueUnknownNames[ p_residueIdx ]
+					  : VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ]
+						) ];
 			w_residue.setSymbol( residueSymbol );
 			w_residue.set( Property { .key	 = "secondary_structure",
 									  .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
@@ -91,7 +94,10 @@ namespace VTX::IO::Writer
 		{
 			Chain w_chain = p_system.newChain();
 			w_chain.setName( p_mol.chainNames[ p_chainIdx ] );
-			w_chain.setId( std::to_string( p_chainIdx ) );
+
+			// When I wrote this, we didn't read the chainID from chemfiles and we don't store it anywhere. So we will
+			// put the name instead for now.
+			w_chain.setId( p_mol.chainNames[ p_chainIdx ] );
 
 			for ( size_t residueIdx = p_mol.chainFirstResidues[ p_chainIdx ];
 				  isResidueOfChain( residueIdx, p_chainIdx, p_mol );
@@ -131,7 +137,7 @@ namespace VTX::IO::Writer
 					if ( p_system.fetch( w_atom, { atomIdx } ) )
 					{
 						const VTX::Vec3f & coords = p_mol.trajectory.frames[ frameIdx ][ atomIdx ];
-						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 3 ] } );
+						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
 					}
 				}
 			}
@@ -140,21 +146,33 @@ namespace VTX::IO::Writer
 		void writeTrajectoryFile( WriteArgs p_args )
 		{
 			ChemfilesTrajectory writer;
-			writer.setWriteDestination( std::move( p_args.destination ) );
-			writer.setWriteFormat( std::move( p_args.format ) );
-			System w_system = writer.system();
+			System				w_system = writer.system();
 
 			for ( size_t chainIdx = 0; chainIdx < p_args.molecule->getChainCount(); chainIdx++ )
 			{
 				addChain( *p_args.molecule, chainIdx, w_system, p_args.atomFilter );
 			}
+
+			if ( p_args.stopToken.stop_requested() )
+				return;
+
 			setBonds( *p_args.molecule, w_system, p_args.atomFilter );
+
+			if ( p_args.stopToken.stop_requested() )
+				return;
+
 			fillFrames( *p_args.molecule, w_system );
+
+			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
+			writer.setWriteDestination( std::move( p_args.destination ) );
+			writer.setWriteFormat( std::move( p_args.format ) );
 		}
 	} // namespace
 
 	void writeFile( WriteArgs p_args )
 	{
+		if ( p_args.stopToken.stop_requested() )
+			return;
 		if ( p_args.writeType != E_WRITE_TYPE::trajectory )
 			throw VTXException( "Other type of writings aren't implemented yet" );
 		if ( p_args.molecule == nullptr )

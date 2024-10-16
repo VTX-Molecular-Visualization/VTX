@@ -46,7 +46,7 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
 	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
 
-	moleculeReader.readBuffer( data, "8OIT.mmtf", molecule );
+	moleculeReader.readBuffer( data, "4hhb.mmtf", molecule );
 
 	CHECK( molecule.getChainCount() == 14 );
 	CHECK( molecule.getResidueCount() == 801 );

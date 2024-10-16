@@ -78,10 +78,10 @@ namespace VTX::Core::Struct
 		void   initAtoms( const size_t p_count );
 		size_t getAtomCount() const;
 
-		// Bond data - all indexes are in sync
+		// Bond data
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
 		/**
-		 * @brief This 
+		 * @brief This vector works by associating atomidx at vector[N] with vector[N+1] where N is even.
 		 */
 		std::vector<atom_index_t>		 bondPairAtomIndexes; 
 

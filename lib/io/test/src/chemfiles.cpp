@@ -3,7 +3,9 @@
 #include <core/struct/molecule.hpp>
 #include <io/reader/molecule.hpp>
 #include <io/writer/chemfiles.hpp>
+#include <io/writer/molecule.hpp>
 #include <util/filesystem.hpp>
+#include <util/logger.hpp>
 
 namespace
 {
@@ -200,4 +202,82 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	CHECK( molecule.getResidueCount() == 2 );
 	CHECK( molecule.getAtomCount() == 6 );
 	CHECK( molecule.trajectory.getFrameCount() == 2 );
+}
+
+namespace
+{
+	struct TestSystemArgs
+	{
+		const char * systemName;
+		const char * extension;
+		const char * writtenExtension;
+
+		const size_t & chainCount = 0;
+		const size_t & resCount	  = 0;
+		const size_t & atomCount  = 0;
+		const size_t & bondCount  = 0;
+	};
+	void testSystem( TestSystemArgs p_args )
+	{
+		using namespace VTX;
+		using namespace VTX::IO;
+		using namespace VTX::IO::Writer;
+
+		const std::string moleculeName	   = p_args.systemName;
+		const std::string moleculePathname = moleculeName + p_args.extension;
+		const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+
+		VTX::Core::Struct::Molecule molecule = VTX::Core::Struct::Molecule();
+		{
+			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
+
+			moleculeReader.readFile( moleculePath, molecule );
+		}
+
+		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
+		if ( not std::filesystem::exists( outPath ) )
+			std::filesystem::create_directories( outPath );
+
+		const VTX::FilePath destination = outPath / ( moleculeName + p_args.writtenExtension );
+
+		writeFile( WriteArgs {
+			.destination = destination,
+			.format		 = E_FILE_FORMATS::none,
+			.molecule	 = &molecule,
+		} );
+
+		VTX::Core::Struct::Molecule molecule_reread		  = VTX::Core::Struct::Molecule();
+		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
+
+		moleculeReader_reread.readFile( destination, molecule_reread );
+
+		CHECK( molecule_reread.getChainCount() == p_args.chainCount );
+		CHECK( molecule_reread.getResidueCount() == p_args.resCount );
+		CHECK( molecule_reread.getAtomCount() == p_args.atomCount );
+		CHECK( molecule_reread.getBondCount() == p_args.bondCount );
+	}
+} // namespace
+
+TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory]" )
+{
+	VTX::VTX_INFO( "Test reading and writing on {}.", "1gcn" );
+	testSystem( TestSystemArgs { .systemName	   = "1gcn",
+								 .extension		   = ".pdb",
+								 .writtenExtension = ".pdb",
+								 .chainCount	   = 1,
+								 .resCount		   = 29,
+								 .atomCount		   = 246,
+								 .bondCount		   = 280
+
+	} );
+	VTX::VTX_INFO( "Test reading and writing on {}.", "8OIT" );
+	testSystem( TestSystemArgs { .systemName	   = "8OIT",
+								 .extension		   = ".mmtf",
+								 .writtenExtension = ".mmcif",
+								 .chainCount	   = 79,
+								 .resCount		   = 11381,
+								 .atomCount		   = 113095,
+								 .bondCount		   = 129957
+
+	} );
 }
