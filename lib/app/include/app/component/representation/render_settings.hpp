@@ -87,9 +87,21 @@ namespace VTX::App::Component::Representation
 			{
 				_settings.colorSelection = p_value;
 			}
+			// TODO: test this.
+			else
+			{
+				static_assert( true, "Unknown render setting." );
+			}
+
+			getCallback<S, T>()( p_value );
 		}
 
-		Util::Callback<Renderer::Proxy::E_RENDER_SETTINGS> onChange;
+		template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
+		Util::Callback<T> & getCallback()
+		{
+			static std::unordered_map<Renderer::Proxy::E_RENDER_SETTINGS, Util::Callback<T>> callbacks;
+			return callbacks[ S ];
+		}
 
 	  private:
 		VTX::Core::Struct::RenderSettings _settings;

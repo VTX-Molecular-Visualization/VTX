@@ -48,6 +48,14 @@ namespace VTX::UI::QT::DockWidget
 
 		// Spacer.
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+
+		// Callbacks.
+		component->getCallback<Renderer::Proxy::E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
+			[ comboBoxShading ]( const uint & p_value )
+		{
+			// TODO: check with this is triggering another QComboBox::currentIndexChanged.
+			comboBoxShading->setCurrentIndex( p_value );
+		};
 	}
 
 } // namespace VTX::UI::QT::DockWidget

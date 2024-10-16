@@ -72,6 +72,7 @@ namespace VTX::Util
 		std::map<CallbackId, Func> _callbacks;
 		CallbackId				   _nextId = 0;
 	};
+
 } // namespace VTX::Util
 
 #endif
