@@ -34,7 +34,21 @@ namespace VTX::UI::QT::DockWidget
 		// Checkbox to hide non usual items.
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );
 		_layout->addWidget( _checkBoxHide );
-		connect( _checkBoxHide, &QCheckBox::stateChanged, this, &Colors::_refreshButtonVisibility );
+		connect(
+			_checkBoxHide,
+			&QCheckBox::stateChanged,
+			[ this ]( const int p_state )
+			{
+				using namespace VTX::Core::ChemDB;
+				const bool hide = p_state == Qt::Checked;
+				_refreshButtonVisibility(
+					hide, Color::LAYOUT_OFFSET_ATOMS, Color::LAYOUT_COUNT_ATOMS, Atom::SYMBOL_IS_COMMON
+				);
+				_refreshButtonVisibility(
+					hide, Color::LAYOUT_OFFSET_RESIDUES, Color::LAYOUT_COUNT_RESIDUES, Residue::SYMBOL_IS_COMMON
+				);
+			}
+		);
 
 		// Randomize button.
 		auto * buttonRandomize = new QPushButton( "Randomize", _root );
@@ -103,7 +117,11 @@ namespace VTX::UI::QT::DockWidget
 
 			if ( p_text )
 			{
-				_buttons[ i ]->setText( QString::fromStdString( p_text[ offset ].data() ) );
+				// First letter in uppercase.
+				QString text = QString::fromStdString( p_text[ offset ].data() );
+				text		 = text.toLower();
+				text[ 0 ]	 = text[ 0 ].toUpper();
+				_buttons[ i ]->setText( text );
 			}
 
 			if ( p_tip )
@@ -116,14 +134,11 @@ namespace VTX::UI::QT::DockWidget
 			connect(
 				_buttons[ i ],
 				&QPushButton::clicked,
-				// TODO: move to dedicated function.
 				[ this, i, &p_layout ]()
 				{
 					// Open button dialog.
 					QColor		 color = Helper::toQColor( p_layout.layout[ i ] );
 					QColorDialog dialog( color, this );
-					// dialog->setOption( QColorDialog::ShowAlphaChannel );
-					// dialog->setOption( QColorDialog::DontUseNativeDialog );
 
 					// Connect color changed.
 					connect(
@@ -134,12 +149,8 @@ namespace VTX::UI::QT::DockWidget
 
 					dialog.exec();
 
-					if ( dialog.result() == QDialog::Accepted )
-					{
-						// Update color.
-						_changeColor( i, dialog.currentColor() );
-					}
-					else
+					// Revert.
+					if ( dialog.result() == QDialog::Rejected )
 					{
 						_changeColor( i, color );
 					}
@@ -179,18 +190,20 @@ namespace VTX::UI::QT::DockWidget
 		_buttons[ p_index ]->setPalette( palette );
 	}
 
-	void Colors::_refreshButtonVisibility( const int p_state )
+	void Colors::_refreshButtonVisibility(
+		const bool		   p_hide,
+		const size_t	   p_start,
+		const size_t	   p_count,
+		const bool * const p_isCommonValues
+	)
 	{
-		using namespace VTX::Core::ChemDB::Color;
-		using namespace VTX::Core::ChemDB::Atom;
+		using namespace VTX::Core::ChemDB;
 
-		const bool hideNonUsual = p_state == Qt::Checked;
-
-		// Atoms.
-		size_t a = 0;
-		for ( size_t i = LAYOUT_OFFSET_ATOMS; i < LAYOUT_COUNT_ATOMS; ++i )
+		size_t count = 0;
+		for ( size_t i = p_start; i < p_start + p_count; ++i )
 		{
-			_buttons[ i ]->setVisible( not hideNonUsual || SYMBOL_IS_COMMON[ a++ ] );
+			// Hide button.
+			_buttons[ i ]->setVisible( not p_hide || p_isCommonValues[ count++ ] );
 		}
 	}
 

@@ -41,7 +41,12 @@ namespace VTX::UI::QT::DockWidget
 
 		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
 		void _refreshColor( const VTX::Core::Struct::ColorLayout &, const size_t );
-		void _refreshButtonVisibility( const int );
+		void _refreshButtonVisibility(
+			const bool		   p_hide,
+			const size_t	   p_start,
+			const size_t	   p_count,
+			const bool * const p_isCommonValues
+		);
 
 		void _changeColor( const size_t, const QColor & );
 	};

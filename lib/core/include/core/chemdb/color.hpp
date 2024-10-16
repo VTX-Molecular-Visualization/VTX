@@ -12,15 +12,15 @@
 namespace VTX::Core::ChemDB::Color
 {
 	constexpr int LAYOUT_OFFSET_ATOMS	 = 0;
-	constexpr int LAYOUT_COUNT_ATOMS	 = 119;
+	constexpr int LAYOUT_COUNT_ATOMS	 = int( Atom::SYMBOL::COUNT );
 	constexpr int LAYOUT_OFFSET_RESIDUES = 121;
-	constexpr int LAYOUT_COUNT_RESIDUES	 = 38;
-	constexpr int LAYOUT_OFFSET_CHAINS	 = 161;
+	constexpr int LAYOUT_COUNT_RESIDUES	 = int( Residue::SYMBOL::COUNT );
+	constexpr int LAYOUT_OFFSET_CHAINS	 = 163;
 	constexpr int LAYOUT_COUNT_CHAINS	 = 53;
-	constexpr int LAYOUT_OFFSET_RIBBONS	 = 216;
+	constexpr int LAYOUT_OFFSET_RIBBONS	 = 218;
 	constexpr int LAYOUT_COUNT_RIBBONS	 = 8;
-	constexpr int LAYOUT_OFFSET_CUSTOM	 = 226;
-	constexpr int LAYOUT_COUNT_CUSTOM	 = 16;
+	constexpr int LAYOUT_OFFSET_CUSTOM	 = 228;
+	constexpr int LAYOUT_COUNT_CUSTOM	 = 14;
 
 	enum class E_LAYOUT_COLOR_INDEX : uchar
 	{
@@ -174,6 +174,7 @@ namespace VTX::Core::ChemDB::Color
 		RESIDUE_A,
 		RESIDUE_U,
 		RESIDUE_I,
+		RESIDUE_T,
 		RESIDUE_DC,
 		RESIDUE_DG,
 		RESIDUE_DA,
@@ -182,6 +183,7 @@ namespace VTX::Core::ChemDB::Color
 		RESIDUE_DI,
 		RESIDUE_WAT,
 		RESIDUE_HOH,
+		RESIDUE_SOL,
 
 		CHAIN_UNKNOWM = LAYOUT_OFFSET_CHAINS,
 		CHAIN_0,
@@ -273,9 +275,7 @@ namespace VTX::Core::ChemDB::Color
 		CUSTOM_24,
 		CUSTOM_25,
 		CUSTOM_26,
-		CUSTOM_27,
-		CUSTOM_28,
-		CUSTOM_29
+		CUSTOM_27
 	};
 
 	inline uchar getColorIndex( const Atom::SYMBOL p_symbol ) { return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
@@ -462,6 +462,7 @@ namespace VTX::Core::ChemDB::Color
 																		 { 160, 160, 255 }, // A
 																		 { 255, 128, 128 }, // U
 																		 { 128, 255, 255 }, // I
+																		 { 160, 255, 160 }, // T
 																		 { 255, 140, 75 },	// DC
 																		 { 255, 112, 112 }, // DG
 																		 { 160, 160, 255 }, // DA
@@ -470,6 +471,7 @@ namespace VTX::Core::ChemDB::Color
 																		 { 128, 255, 255 }, // DI
 																		 { 255, 105, 180 }, // WAT
 																		 { 255, 105, 180 }, // HOH
+																		 { 255, 255, 255 }, // SOL
 																		 {},
 																		 {},
 
@@ -540,8 +542,6 @@ namespace VTX::Core::ChemDB::Color
 																		 {},
 																		 {},
 
-																		 COLOR_WHITE,
-																		 COLOR_WHITE,
 																		 COLOR_WHITE,
 																		 COLOR_WHITE,
 																		 COLOR_WHITE,
