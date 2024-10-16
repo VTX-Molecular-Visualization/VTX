@@ -57,7 +57,7 @@ namespace VTX::App::Controller::Picker
 		const PickingInfo pickingInfo
 			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
-		VTX_INFO( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
+		VTX_DEBUG( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
 		_performSelection( pickingInfo );
 		_lastPickingInfo = pickingInfo;
@@ -111,7 +111,7 @@ namespace VTX::App::Controller::Picker
 				  ? App::Component::Scene::Pickable::PickType::TOGGLE
 				  : App::Component::Scene::Pickable::PickType::SET;
 
-		if ( !p_pickingInfo.hasValue() )
+		if ( not p_pickingInfo.hasValue() )
 		{
 			// Clear selection when the user clicks in void without modfiers.
 			if ( pickType == App::Component::Scene::Pickable::PickType::SET )

@@ -32,12 +32,12 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( searchBar );
 
 		// Checkbox to hide non usual items.
-		_checkBoxHide = new QCheckBox( "Hide non usual", this );
+		_checkBoxHide = new QCheckBox( "Hide non usual", _root );
 		_layout->addWidget( _checkBoxHide );
 		connect( _checkBoxHide, &QCheckBox::stateChanged, this, &Colors::_refreshButtonVisibility );
 
 		// Randomize button.
-		auto * buttonRandomize = new QPushButton( "Randomize", this );
+		auto * buttonRandomize = new QPushButton( "Randomize", _root );
 		_layout->addWidget( buttonRandomize );
 		connect(
 			buttonRandomize,
@@ -98,7 +98,7 @@ namespace VTX::UI::QT::DockWidget
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new QPushButton( this );
+			_buttons[ i ] = new QPushButton( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )

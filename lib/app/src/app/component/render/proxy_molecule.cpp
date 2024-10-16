@@ -33,9 +33,8 @@ namespace VTX::App::Component::Render
 		Component::Chemistry::Molecule & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 		VTX::Core::Struct::Molecule &	 molStruct = molComp._moleculeStruct;
 
-		/////
+		// TODO: how to handle this?
 		IO::Util::SecondaryStructure::computeStride( molComp._moleculeStruct );
-		////
 
 		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 

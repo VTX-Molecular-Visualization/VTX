@@ -10,10 +10,7 @@ namespace VTX::UI::QT::DockWidget
 	class RenderSettings : public Core::BaseDockWidget<RenderSettings>
 	{
 	  public:
-		RenderSettings( QWidget * p_parent ) : BaseDockWidget<RenderSettings>( "Render settings", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		}
+		RenderSettings( QWidget * p_parent );
 	};
 
 } // namespace VTX::UI::QT::DockWidget
