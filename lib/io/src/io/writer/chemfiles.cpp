@@ -87,7 +87,7 @@ namespace VTX::IO::Writer
 
 	namespace
 	{
-		void figureFormat( const FilePath & dest, ChemfilesTrajectory::E_FILE_FORMATS & format )
+		void figureFormat( const FilePath & dest, E_FILE_FORMATS & format )
 		{
 			if ( not dest.has_extension() )
 				return;
@@ -95,70 +95,70 @@ namespace VTX::IO::Writer
 			VTX::Util::String::toUpper( extension );
 
 			if ( extension == ".MMCIF" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::mmcif;
+				format = E_FILE_FORMATS::mmcif;
 			else if ( extension == ".PDB" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::pdb;
+				format = E_FILE_FORMATS::pdb;
 			else if ( extension == ".MMTF" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::mmtf;
+				format = E_FILE_FORMATS::mmtf;
 			else if ( extension == ".MOLDEN" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::molden;
+				format = E_FILE_FORMATS::molden;
 			else if ( extension == ".CIF" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::cif;
+				format = E_FILE_FORMATS::cif;
 			else if ( extension == ".GRO" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::gro;
+				format = E_FILE_FORMATS::gro;
 			else if ( extension == ".MOL2" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::mol2;
+				format = E_FILE_FORMATS::mol2;
 			else if ( extension == ".SDf" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::sdf;
+				format = E_FILE_FORMATS::sdf;
 			else if ( extension == ".SMI" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::smi;
+				format = E_FILE_FORMATS::smi;
 			else if ( extension == ".XYZ" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::xyz;
+				format = E_FILE_FORMATS::xyz;
 			else if ( extension == ".CML" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::cml;
+				format = E_FILE_FORMATS::cml;
 			else if ( extension == ".CSSR" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::cssr;
+				format = E_FILE_FORMATS::cssr;
 			else if ( extension == ".NC" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::nc;
+				format = E_FILE_FORMATS::nc;
 			else if ( extension == ".DCD" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::nc;
+				format = E_FILE_FORMATS::nc;
 			else if ( extension == ".LAMMPSTRJ" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::lammpstrj;
+				format = E_FILE_FORMATS::lammpstrj;
 			else if ( extension == ".ARC" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::arc;
+				format = E_FILE_FORMATS::arc;
 			else if ( extension == ".TRR" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::trr;
+				format = E_FILE_FORMATS::trr;
 			else if ( extension == ".XTC" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::xtc;
+				format = E_FILE_FORMATS::xtc;
 			else if ( extension == ".TNG" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::tng;
+				format = E_FILE_FORMATS::tng;
 			else if ( extension == ".TRJ" )
-				format = ChemfilesTrajectory::E_FILE_FORMATS::trj;
+				format = E_FILE_FORMATS::trj;
 		}
-		const char * string( const ChemfilesTrajectory::E_FILE_FORMATS & format ) noexcept
+		const char * string( const E_FILE_FORMATS & format ) noexcept
 		{
 			switch ( format )
 			{
-			case ChemfilesTrajectory::E_FILE_FORMATS::pdb: return "PDB";
-			case ChemfilesTrajectory::E_FILE_FORMATS::mmcif: return "mmCIF";
-			case ChemfilesTrajectory::E_FILE_FORMATS::mmtf: return "MMTF";
-			case ChemfilesTrajectory::E_FILE_FORMATS::molden: return "Molden";
-			case ChemfilesTrajectory::E_FILE_FORMATS::cif: return "CIF";
-			case ChemfilesTrajectory::E_FILE_FORMATS::gro: return "GRO";
-			case ChemfilesTrajectory::E_FILE_FORMATS::mol2: return "MOL2";
-			case ChemfilesTrajectory::E_FILE_FORMATS::sdf: return "SDF";
-			case ChemfilesTrajectory::E_FILE_FORMATS::smi: return "SMI";
-			case ChemfilesTrajectory::E_FILE_FORMATS::xyz: return "XYZ";
-			case ChemfilesTrajectory::E_FILE_FORMATS::cml: return "CML";
-			case ChemfilesTrajectory::E_FILE_FORMATS::cssr: return "CSSR";
-			case ChemfilesTrajectory::E_FILE_FORMATS::nc: return "Amber NetCDF";
-			case ChemfilesTrajectory::E_FILE_FORMATS::dcd: return "DCD";
-			case ChemfilesTrajectory::E_FILE_FORMATS::lammpstrj: return "LAMMPS";
-			case ChemfilesTrajectory::E_FILE_FORMATS::arc: return "Tinker";
-			case ChemfilesTrajectory::E_FILE_FORMATS::trr: return "TRR";
-			case ChemfilesTrajectory::E_FILE_FORMATS::xtc: return "XTC";
-			case ChemfilesTrajectory::E_FILE_FORMATS::tng: return "TNG";
-			case ChemfilesTrajectory::E_FILE_FORMATS::trj: return "TRJ";
+			case E_FILE_FORMATS::pdb: return "PDB";
+			case E_FILE_FORMATS::mmcif: return "mmCIF";
+			case E_FILE_FORMATS::mmtf: return "MMTF";
+			case E_FILE_FORMATS::molden: return "Molden";
+			case E_FILE_FORMATS::cif: return "CIF";
+			case E_FILE_FORMATS::gro: return "GRO";
+			case E_FILE_FORMATS::mol2: return "MOL2";
+			case E_FILE_FORMATS::sdf: return "SDF";
+			case E_FILE_FORMATS::smi: return "SMI";
+			case E_FILE_FORMATS::xyz: return "XYZ";
+			case E_FILE_FORMATS::cml: return "CML";
+			case E_FILE_FORMATS::cssr: return "CSSR";
+			case E_FILE_FORMATS::nc: return "Amber NetCDF";
+			case E_FILE_FORMATS::dcd: return "DCD";
+			case E_FILE_FORMATS::lammpstrj: return "LAMMPS";
+			case E_FILE_FORMATS::arc: return "Tinker";
+			case E_FILE_FORMATS::trr: return "TRR";
+			case E_FILE_FORMATS::xtc: return "XTC";
+			case E_FILE_FORMATS::tng: return "TNG";
+			case E_FILE_FORMATS::trj: return "TRJ";
 			default: break;
 			}
 			return "";
@@ -208,7 +208,7 @@ namespace VTX::IO::Writer
 			default: out = ::chemfiles ::Bond ::BondOrder ::UNKNOWN; break;
 			}
 		}
-		void writeFile( const FilePath & dest, const ChemfilesTrajectory::E_FILE_FORMATS & format, _System & system )
+		void writeFile( const FilePath & dest, const E_FILE_FORMATS & format, _System & system )
 		{
 			::chemfiles::Trajectory cf_traj( dest.string(), 'w', string( format ) );
 

@@ -160,7 +160,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( ChemfilesTrajectory::E_FILE_FORMATS::pdb );
+		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
 		twoWaterMolecules1frame( trajWriter );
 	}
 
@@ -187,7 +187,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( ChemfilesTrajectory::E_FILE_FORMATS::pdb );
+		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
 		twoWaterMolecules2frame( trajWriter );
 	}
 

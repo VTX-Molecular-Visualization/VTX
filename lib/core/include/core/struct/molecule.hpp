@@ -35,30 +35,42 @@ namespace VTX::Core::Struct
 		Struct::Category &		 getCategory( const ChemDB::Category::TYPE p_categoryType );
 		const Struct::Category & getCategory( const ChemDB::Category::TYPE p_categoryType ) const;
 
-		// Chain data
+		// Chain data - all indexes are in sync
 		std::vector<std::string> chainNames;
-		std::vector<size_t>		 chainFirstResidues;
-		std::vector<size_t>		 chainResidueCounts;
+		/**
+		 * @brief Indexes of the first of the residues that compose each chain. All residues with index between
+		 * vector[N] and vector[N+1] are considered part of the chain N
+		 */
+		std::vector<size_t> chainFirstResidues;
+		std::vector<size_t> chainResidueCounts;
 
 		void   initChains( const size_t p_count );
 		void   appendNewChain();
 		size_t getChainCount() const;
 
-		// Residue data
-		std::vector<ChemDB::Residue::SYMBOL>		  residueSymbols;
-		std::vector<size_t>							  residueChainIndexes;
-		std::vector<atom_index_t>					  residueFirstAtomIndexes;
-		std::vector<atom_index_t>					  residueAtomCounts;
+		// Residue data - all indexes are in sync
+		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
+		std::vector<size_t>					 residueChainIndexes;
+		/**
+		 * @brief Indexes of the first of the atoms that compose each residues. All atoms with index between vector[N]
+		 * and vector[N+1] are considered part of the residue N
+		 */
+		std::vector<atom_index_t> residueFirstAtomIndexes;
+		std::vector<atom_index_t> residueAtomCounts;
+		/**
+		 * @brief Indexes of the first of the bond that compose each residues. All bonds with index between vector[N]
+		 * and vector[N+1] are considered part of the residue N
+		 */
 		std::vector<size_t>							  residueFirstBondIndexes;
 		std::vector<size_t>							  residueBondCounts;
 		std::vector<size_t>							  residueOriginalIds;
 		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes;
-		std::vector<std::string>					  residueUnknownNames;
+		std::vector<std::string>					  residueUnknownNames; // TODO : migrate toward unordered_map
 
 		void   initResidues( const size_t p_count );
 		size_t getResidueCount() const;
 
-		// Atom data
+		// Atom data - all indexes are in sync
 		std::vector<ChemDB::Atom::SYMBOL> atomSymbols;
 		std::vector<size_t>				  atomResidueIndexes;
 		std::vector<std::string>		  atomNames;
@@ -66,9 +78,12 @@ namespace VTX::Core::Struct
 		void   initAtoms( const size_t p_count );
 		size_t getAtomCount() const;
 
-		// Bond data
+		// Bond data - all indexes are in sync
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
-		std::vector<atom_index_t>		 bondPairAtomIndexes;
+		/**
+		 * @brief This 
+		 */
+		std::vector<atom_index_t>		 bondPairAtomIndexes; 
 
 		void   initBonds( const size_t p_count );
 		size_t getBondCount() const;

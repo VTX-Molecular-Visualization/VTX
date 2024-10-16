@@ -6,6 +6,9 @@
 
 namespace VTX::Core::Struct
 {
+	/**
+	 * @brief Each index is correlated with other vector's that contains atom's data
+	 */
 	using Frame = std::vector<Vec3f>;
 	struct Trajectory
 	{
