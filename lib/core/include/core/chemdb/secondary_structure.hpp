@@ -15,21 +15,23 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		STRAND			  = 5,
 		TURN			  = 6,
 		COIL			  = 7,
-		UNKNOWN
+		UNKNOWN,
+		COUNT
 	};
+
+	const std::string_view SYMBOL_NAME[ (int)TYPE::COUNT ] = { "Alpha Helix Right",
+															   "Alpha Helix Left",
+															   "3-10 Helix Right",
+															   "3-10 Helix Left",
+															   "Pi Helix",
+															   "Strand",
+															   "Turn",
+															   "Coil",
+															   "Unknown" };
 
 	TYPE		pdbFormattedToEnum( const std::string & p_str );
 	std::string enumToPdbFormatted( const TYPE p_enum );
 
-	// TODO: move to color layout.
-	inline static const Util::Color::Rgba COLORS_JMOL[] = { Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
-															Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
-															Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-															Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-															Util::Color::Rgba( 0.37f, 0.f, 0.5f ), // HELIX_PI
-															Util::Color::Rgba( 1.f, 0.78f, 0.f ),  // STRAND
-															Util::Color::Rgba( 0.37f, 0.5f, 1.f ), // TURN
-															COLOR_WHITE };						   // COIL
 } // namespace VTX::Core::ChemDB::SecondaryStructure
 
 #endif

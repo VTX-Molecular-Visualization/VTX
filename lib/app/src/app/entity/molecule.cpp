@@ -1,4 +1,4 @@
-#include "app/entity/scene/molecule_entity.hpp"
+#include "app/entity/molecule.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
@@ -21,9 +21,9 @@
 #include <renderer/proxy/molecule.hpp>
 #include <util/singleton.hpp>
 
-namespace VTX::App::Entity::Scene
+namespace VTX::App::Entity
 {
-	void MoleculeEntity::setup()
+	void Molecule::setup()
 	{
 		// TODO: share with wiewpoint entity.
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
@@ -170,4 +170,4 @@ namespace VTX::App::Entity::Scene
 		auto & scene = SCENE();
 		scene.referenceItem( sceneItemComponent );
 	}
-} // namespace VTX::App::Entity::Scene
+} // namespace VTX::App::Entity

@@ -1,4 +1,7 @@
 #include "ui/qt/helper.hpp"
+#include <app/core/input/events.hpp>
+#include <app/core/input/keys.hpp>
+#include <util/color/rgba.hpp>
 
 namespace VTX::UI::QT::Helper
 {
@@ -97,5 +100,10 @@ namespace VTX::UI::QT::Helper
 		}
 
 		return event;
+	}
+
+	QColor toQColor( const Util::Color::Rgba & p_color )
+	{
+		return QColor( p_color.x * 255, p_color.y * 255, p_color.z * 255, p_color.w * 255 );
 	}
 } // namespace VTX::UI::QT::Helper

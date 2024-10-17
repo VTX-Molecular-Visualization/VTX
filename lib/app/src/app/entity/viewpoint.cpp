@@ -1,4 +1,4 @@
-#include "app/entity/scene/viewpoint_entity.hpp"
+#include "app/entity/viewpoint.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/selectable.hpp"
@@ -8,9 +8,9 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Entity::Scene
+namespace VTX::App::Entity
 {
-	void ViewpointEntity::setup()
+	void Viewpoint::setup()
 	{
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
@@ -21,4 +21,4 @@ namespace VTX::App::Entity::Scene
 		sceneItemComponent.setName( "Viewpoint" );
 	}
 
-} // namespace VTX::App::Entity::Scene
+} // namespace VTX::App::Entity

@@ -140,6 +140,7 @@ namespace VTX::App::Application
 		void _computeAABB();
 		void _createDefaultPath();
 		void _createDefaultColorLayout();
+		void _createDefaultRenderSettings();
 
 	  private:
 		Component::Render::Camera *		   _camera		= nullptr;

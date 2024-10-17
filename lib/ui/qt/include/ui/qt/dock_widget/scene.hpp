@@ -25,36 +25,36 @@ namespace VTX::UI::QT::DockWidget
 	// Static polymorphism.
 	template<typename T>
 	concept TreeItemData = requires( T t ) {
-		{ t.getName() } -> std::same_as<const std::string &>;
+		{ t.getName() } -> std::same_as<const std::string_view>;
 		{ t.getPersistentSceneID() } -> std::same_as<int>;
 	};
 
 	// Test structs.
 	struct TestData
 	{
-		std::string name		 = "Default molecule";
-		int			persistentId = 0;
+		std::string_view name		  = "Default molecule";
+		int				 persistentId = 0;
 
-		const std::string & getName() const { return name; }
-		int					getPersistentSceneID() const { return persistentId; }
+		const std::string_view getName() const { return name; }
+		int					   getPersistentSceneID() const { return persistentId; }
 	};
 
 	struct TestData2
 	{
-		std::string myName = "Default molecule adapted";
-		int			myID   = 0;
+		std::string_view myName = "Default molecule adapted";
+		int				 myID	= 0;
 
-		const std::string & getMyName() const { return myName; }
-		int					getMyID() const { return myID; }
+		const std::string_view getMyName() const { return myName; }
+		int					   getMyID() const { return myID; }
 	};
 
 	// Adapter.
 	class BaseAdapterTreeItemData
 	{
 	  public:
-		virtual const std::string & name() const = 0;
-		virtual int					id() const	 = 0;
-		virtual ~BaseAdapterTreeItemData()		 = default;
+		virtual const std::string_view name() const = 0;
+		virtual int					   id() const	= 0;
+		virtual ~BaseAdapterTreeItemData()			= default;
 	};
 
 	class AdapterSceneItemComponent : public BaseAdapterTreeItemData
@@ -62,8 +62,8 @@ namespace VTX::UI::QT::DockWidget
 	  public:
 		AdapterSceneItemComponent( const VTX::App::Component::Scene::SceneItemComponent & p_item ) : _item( p_item ) {}
 
-		const std::string & name() const override { return _item.getName(); }
-		int					id() const override { return _item.getPersistentSceneID(); }
+		const std::string_view name() const override { return _item.getName(); }
+		int					   id() const override { return _item.getPersistentSceneID(); }
 
 	  private:
 		const VTX::App::Component::Scene::SceneItemComponent & _item;
@@ -74,8 +74,8 @@ namespace VTX::UI::QT::DockWidget
 	  public:
 		AdapterTestData2( const TestData2 & p_item ) : _item( p_item ) {}
 
-		const std::string & name() const override { return _item.getMyName(); }
-		int					id() const override { return _item.getMyID(); }
+		const std::string_view name() const override { return _item.getMyName(); }
+		int					   id() const override { return _item.getMyID(); }
 
 	  private:
 		const TestData2 & _item;
@@ -87,9 +87,9 @@ namespace VTX::UI::QT::DockWidget
 		using WidgetData = size_t;
 		struct TreeItemData
 		{
-			std::string name;
-			WidgetData	data;
-			size_t		childrenCount;
+			std::string_view name;
+			WidgetData		 data;
+			size_t			 childrenCount;
 		};
 		using LoadFunc = std::function<std::vector<TreeItemData>( const uint p_level, const WidgetData p_data )>;
 
@@ -153,7 +153,10 @@ namespace VTX::UI::QT::DockWidget
 					{
 						// TODO: factorise with top level.
 						QTreeWidgetItem * child = new QTreeWidgetItem( p_item );
-						child->setText( 0, QString::fromUtf8( d.name + " (%1)" ).arg( d.childrenCount ) );
+						child->setText(
+							0, QString::fromStdString( d.name.data() ).append( " (%1)" ).arg( d.childrenCount )
+						);
+
 						child->setData( 0, Qt::UserRole, QVariant::fromValue( d.data ) );
 
 						if ( d.childrenCount != 0 )

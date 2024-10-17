@@ -21,7 +21,8 @@ namespace VTX::App::Component::Representation
 		void setColor( const size_t p_index, const Util::Color::Rgba & p_color );
 		void setColors( const std::vector<Util::Color::Rgba> & p_colors );
 
-		Util::Callback<> onChange;
+		Util::Callback<const size_t> onChange;
+		Util::Callback<>			 onChangeAll;
 
 	  private:
 		VTX::Core::Struct::ColorLayout _layout;

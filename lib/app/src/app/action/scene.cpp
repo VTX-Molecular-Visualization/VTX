@@ -8,8 +8,8 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/network/network_system.hpp"
-#include "app/entity/scene/molecule_entity.hpp"
-#include "app/entity/scene/viewpoint_entity.hpp"
+#include "app/entity/molecule.hpp"
+#include "app/entity/viewpoint.hpp"
 #include "app/filesystem.hpp"
 #include <util/filesystem.hpp>
 
@@ -17,7 +17,7 @@ namespace VTX::App::Action::Scene
 {
 	void LoadMolecule::execute()
 	{
-		const auto entity = ECS_REGISTRY().createEntity<Entity::Scene::MoleculeEntity>( _path.string(), _buffer );
+		const auto entity = ECS_REGISTRY().createEntity<Entity::Molecule>( _path.string(), _buffer );
 		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
@@ -37,7 +37,7 @@ namespace VTX::App::Action::Scene
 	}
 	void CreateViewpoint::execute()
 	{
-		const auto entity = ECS_REGISTRY().createEntity<Entity::Scene::ViewpointEntity>();
+		const auto entity = ECS_REGISTRY().createEntity<Entity::Viewpoint>();
 
 		auto & viewpoint = ECS_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
 		viewpoint.setPosition( _position );

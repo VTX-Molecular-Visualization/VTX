@@ -62,7 +62,7 @@ namespace VTX::Core::ChemDB::Residue
 		COUNT
 	};
 
-	const std::string SYMBOL_STR[ int( SYMBOL::COUNT ) ] = {
+	const std::string_view SYMBOL_STR[ int( SYMBOL::COUNT ) ] = {
 		"---", // UNKNOWN
 		"ALA", // ALA
 		"ARG", // ARG
@@ -103,7 +103,7 @@ namespace VTX::Core::ChemDB::Residue
 		"HOH", // HOH
 	};
 
-	const std::string SYMBOL_SHORT_STR[ int( SYMBOL::COUNT ) ] = {
+	const std::string_view SYMBOL_SHORT_STR[ int( SYMBOL::COUNT ) ] = {
 		"-",  // UNKNOWN
 		"A",  // ALA
 		"R",  // ARG
@@ -144,7 +144,7 @@ namespace VTX::Core::ChemDB::Residue
 		"O",  // HOH
 	};
 
-	const std::string SYMBOL_NAME[ int( SYMBOL::COUNT ) ] = {
+	const std::string_view SYMBOL_NAME[ int( SYMBOL::COUNT ) ] = {
 		"Unknown",		  // UNKNOWN
 		"Alanine",		  // ALA
 		"Arginine",		  // ARG

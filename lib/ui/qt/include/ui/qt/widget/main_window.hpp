@@ -38,7 +38,7 @@ namespace VTX::UI::QT::Widget
 		void closeEvent( QCloseEvent * p_event ) override;
 
 		template<typename M>
-		M * createMenu()
+		M * const createMenu()
 		{
 			M * const menu = new M( menuBar() );
 			menuBar()->addMenu( menu );
@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		template<typename TB>
-		TB * createToolBar()
+		TB * const createToolBar()
 		{
 			TB * const toolBar = new TB( this );
 			addToolBar( toolBar );
@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		template<typename DW>
-		DW * createDockWidget( const Qt::DockWidgetArea p_area )
+		DW * const createDockWidget( const Qt::DockWidgetArea p_area )
 		{
 			QDockWidget * other = nullptr;
 			for ( QDockWidget * w : findChildren<QDockWidget *>() )

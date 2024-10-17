@@ -451,6 +451,38 @@ namespace VTX::Renderer
 		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
 		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
 
+		p_proxy.onSSAOIntensity +=
+			[ this, &p_proxy ]( float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
+		p_proxy.onBlurSize += [ this, &p_proxy ]( float p_size )
+		{
+			setValue( p_size, "BlurXBlurSize" );
+			setValue( p_size, "BlurYBlurSize" );
+		};
+		p_proxy.onColorBackground += [ this, &p_proxy ]( const Util::Color::Rgba & p_color )
+		{ setValue( p_color, "ShadingShadingBackground color" ); };
+		p_proxy.onColorLight += [ this, &p_proxy ]( const Util::Color::Rgba & p_color )
+		{ setValue( p_color, "ShadingShadingLight color" ); };
+		p_proxy.onColorFog +=
+			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFog color" ); };
+		p_proxy.onShadingMode += [ this, &p_proxy ]( uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
+		p_proxy.onSpecularFactor +=
+			[ this, &p_proxy ]( float p_factor ) { setValue( p_factor, "ShadingShadingSpecular factor" ); };
+		p_proxy.onShininess +=
+			[ this, &p_proxy ]( float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
+		p_proxy.onToonSteps += [ this, &p_proxy ]( uint p_steps ) { setValue( p_steps, "ShadingShadingToon steps" ); };
+		p_proxy.onFogNear += [ this, &p_proxy ]( float p_near ) { setValue( p_near, "ShadingShadingFog near" ); };
+		p_proxy.onFogFar += [ this, &p_proxy ]( float p_far ) { setValue( p_far, "ShadingShadingFog far" ); };
+		p_proxy.onFogDensity +=
+			[ this, &p_proxy ]( float p_density ) { setValue( p_density, "ShadingShadingFog density" ); };
+		p_proxy.onColorOutline +=
+			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "OutlineOutlineColor" ); };
+		p_proxy.onOutlineSensitivity +=
+			[ this, &p_proxy ]( float p_sensitivity ) { setValue( p_sensitivity, "OutlineOutlineSensitivity" ); };
+		p_proxy.onOutlineThickness +=
+			[ this, &p_proxy ]( uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
+		p_proxy.onColorSelection +=
+			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
+
 		// TODO: disable/enable ssao, outline, etc.
 
 		setNeedUpdate( true );

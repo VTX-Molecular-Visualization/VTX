@@ -5,12 +5,12 @@
 #include "app/core/ecs/base_entity.hpp"
 #include <util/variant.hpp>
 
-namespace VTX::App::Entity::Scene
+namespace VTX::App::Entity
 {
-	class MoleculeEntity : public Core::ECS::BaseEntity
+	class Molecule : public Core::ECS::BaseEntity
 	{
 	  public:
-		MoleculeEntity( const FilePath & p_path, const std::string * const p_buffer = nullptr ) :
+		Molecule( const FilePath & p_path, const std::string * const p_buffer = nullptr ) :
 			_path( p_path ), _buffer( p_buffer )
 		{
 		}
@@ -21,6 +21,6 @@ namespace VTX::App::Entity::Scene
 		const FilePath			  _path;
 		const std::string * const _buffer;
 	};
-} // namespace VTX::App::Entity::Scene
+} // namespace VTX::App::Entity
 
 #endif

@@ -1,11 +1,12 @@
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/representation/color_layout.hpp"
+#include "app/component/representation/render_settings.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include "app/entity/scene/camera_entity.hpp"
+#include "app/entity/camera.hpp"
 #include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Application
@@ -17,11 +18,12 @@ namespace VTX::App::Application
 
 	Scene::Scene()
 	{
-		auto cameraEntity = ECS_REGISTRY().createEntity<Entity::Scene::CameraEntity>();
+		auto cameraEntity = ECS_REGISTRY().createEntity<Entity::Camera>();
 		_camera			  = &( ECS_REGISTRY().getComponent<Component::Render::Camera>( cameraEntity ) );
 
 		_createDefaultPath();
 		_createDefaultColorLayout();
+		_createDefaultRenderSettings();
 	}
 
 	Scene::~Scene() {}
@@ -316,6 +318,14 @@ namespace VTX::App::Application
 		static std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
 		RENDERER_SYSTEM().onReady() += [ & ]() { RENDERER_SYSTEM().addProxyRepresentations( representations ); };
 		////////////
+	}
+
+	void Scene::_createDefaultRenderSettings()
+	{
+		auto & comp
+			= ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>( ECS_REGISTRY().getEntity( *this )
+			);
+		comp.setupProxy();
 	}
 
 } // namespace VTX::App::Application

@@ -11,7 +11,7 @@
 namespace VTX::UI::QT::Core
 {
 	template<typename L>
-	concept ConceptLayout = std::is_base_of_v<QBoxLayout, L>;
+	concept ConceptLayout = std::is_base_of_v<QLayout, L>;
 
 	/**
 	 * @brief Abstract class that describes dock widget sizes, margins, and scrollbars.
@@ -21,15 +21,12 @@ namespace VTX::UI::QT::Core
 	 * @tparam L is the layout type.
 	 */
 	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
-	class BaseDockWidget : public Core::BaseWidget<T, QDockWidget>
+	class BaseDockWidget : public BaseWidget<T, QDockWidget>
 	{
 	  public:
 		template<typename... Args>
 		BaseDockWidget( Args &&... p_args ) : BaseWidget<T, QDockWidget>( std::forward<Args>( p_args )... )
 		{
-			// Force to set allowed areas in child classes.
-			QDockWidget::setAllowedAreas( Qt::NoDockWidgetArea );
-
 			// Scroll area.
 			if constexpr ( VSA or HSA )
 			{
@@ -64,7 +61,6 @@ namespace VTX::UI::QT::Core
 
 			// Root widget and layout.
 			_layout = new L( _root );
-			_root->setLayout( _layout );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
 		}
