@@ -52,8 +52,9 @@ namespace VTX::IO::Writer
 			Atom w_atom = p_system.newAtom( { p_atomIdx } );
 			p_residue.add( w_atom );
 			w_atom.setName( p_mol.atomNames[ p_atomIdx ] );
-			w_atom.setSymbol( VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_mol.atomSymbols[ p_atomIdx ] ) ]
-			);
+			auto & constSymbol
+				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_mol.atomSymbols[ p_atomIdx ] ) ];
+			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
 		inline void addResidue(
 			const VTX::Core::Struct::Molecule & p_mol,
@@ -66,11 +67,12 @@ namespace VTX::IO::Writer
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
 			w_residue.setResId( static_cast<int>( p_mol.residueOriginalIds[ p_residueIdx ] ) );
+			auto & constSymbol
+				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ] ) ];
 			std::string residueSymbol
 				= p_mol.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
 					  ? p_mol.residueUnknownNames[ p_residueIdx ]
-					  : VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ]
-						) ];
+					  : std::string( constSymbol.begin(), constSymbol.end() );
 			w_residue.setSymbol( residueSymbol );
 			w_residue.set( Property { .key	 = "secondary_structure",
 									  .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
