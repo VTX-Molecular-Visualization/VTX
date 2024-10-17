@@ -26,10 +26,12 @@ namespace VTX::App::Component::Representation
 			if constexpr ( S == Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY )
 			{
 				_settings.ssaoIntensity = p_value;
+				_proxy->onSSAOIntensity( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::BLUR_SIZE )
 			{
 				_settings.blurSize = p_value;
+				_proxy->onBlurSize( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND )
 			{
@@ -44,6 +46,7 @@ namespace VTX::App::Component::Representation
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_FOG )
 			{
 				_settings.colorFog = p_value;
+				_proxy->onColorFog( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SHADING_MODE )
 			{
@@ -53,42 +56,52 @@ namespace VTX::App::Component::Representation
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SPECULAR_FACTOR )
 			{
 				_settings.specularFactor = p_value;
+				_proxy->onSpecularFactor( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SHININESS )
 			{
 				_settings.shininess = p_value;
+				_proxy->onShininess( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::TOON_STEPS )
 			{
 				_settings.toonSteps = p_value;
+				_proxy->onToonSteps( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_NEAR )
 			{
 				_settings.fogNear = p_value;
+				_proxy->onFogNear( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_FAR )
 			{
 				_settings.fogFar = p_value;
+				_proxy->onFogFar( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_DENSITY )
 			{
 				_settings.fogDensity = p_value;
+				_proxy->onFogDensity( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_OUTLINE )
 			{
 				_settings.colorOutline = p_value;
+				_proxy->onColorOutline( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::OUTLINE_SENSITIVITY )
 			{
 				_settings.outlineSensitivity = p_value;
+				_proxy->onOutlineSensitivity( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::OUTLINE_THICKNESS )
 			{
 				_settings.outlineThickness = p_value;
+				_proxy->onOutlineThickness( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_SELECTION )
 			{
 				_settings.colorSelection = p_value;
+				_proxy->onColorSelection( p_value );
 			}
 			// TODO: test this.
 			else
