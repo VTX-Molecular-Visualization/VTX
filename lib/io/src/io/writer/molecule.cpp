@@ -13,7 +13,7 @@ namespace VTX::IO::Writer
 		) noexcept
 		{
 			if ( p_chainIdx < p_mol.getChainCount() - 1 )
-				return p_residueIdx < p_mol.chainFirstResidues[ p_chainIdx + 1 ];
+				return p_residueIdx < p_mol.chainFirstResidues[ p_chainIdx ] + p_mol.chainResidueCounts[ p_chainIdx ];
 			return p_residueIdx < p_mol.getResidueCount();
 		}
 		inline bool isAtomOfResidue(
@@ -23,7 +23,8 @@ namespace VTX::IO::Writer
 		)
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
-				return p_atomIdx < p_mol.residueFirstAtomIndexes[ p_residueIdx + 1 ];
+				return p_atomIdx
+					   < p_mol.residueFirstAtomIndexes[ p_residueIdx ] + p_mol.residueAtomCounts[ p_residueIdx ];
 			return p_atomIdx < p_mol.getAtomCount();
 		}
 		void convert( const VTX::Core::ChemDB::Bond::ORDER & in, E_BOND_ORDER & out ) noexcept
