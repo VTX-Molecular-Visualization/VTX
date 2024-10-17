@@ -112,7 +112,7 @@ namespace VTX::UI::QT::DockWidget
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new QPushButton( groupBox );
+			_buttons[ i ] = new Widget::ColorPicker( Helper::toQColor( p_layout.layout[ i ] ), groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )
@@ -131,31 +131,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 
 			// Connect picker.
-			connect(
-				_buttons[ i ],
-				&QPushButton::clicked,
-				[ this, i, &p_layout ]()
-				{
-					// Open button dialog.
-					QColor		 color = Helper::toQColor( p_layout.layout[ i ] );
-					QColorDialog dialog( color, this );
-
-					// Connect color changed.
-					connect(
-						&dialog,
-						&QColorDialog::currentColorChanged,
-						[ this, i, &dialog ]( const QColor & p_color ) { _changeColor( i, p_color ); }
-					);
-
-					dialog.exec();
-
-					// Revert.
-					if ( dialog.result() == QDialog::Rejected )
-					{
-						_changeColor( i, color );
-					}
-				}
-			);
+			_buttons[ i ]->onColorChanged += [ this, i ]( const QColor & p_color ) { _changeColor( i, p_color ); };
 
 			layout->addWidget( _buttons[ i ] );
 			offset++;
@@ -177,17 +153,7 @@ namespace VTX::UI::QT::DockWidget
 
 	void Colors::_refreshColor( const VTX::Core::Struct::ColorLayout & p_layout, const size_t p_index )
 	{
-		auto & color = p_layout.layout[ p_index ];
-
-		QPalette palette = _buttons[ p_index ]->palette();
-		palette.setColor( QPalette::Button, QColor( QString::fromStdString( color.toHexaString() ) ) );
-		palette.setColor(
-			QPalette::ButtonText,
-			QColor( QString::fromStdString(
-				color.brightness() > 0.5f ? COLOR_BLACK.toHexaString() : COLOR_WHITE.toHexaString()
-			) )
-		);
-		_buttons[ p_index ]->setPalette( palette );
+		_buttons[ p_index ]->setColor( Helper::toQColor( p_layout.layout[ p_index ] ) );
 	}
 
 	void Colors::_refreshButtonVisibility(
@@ -209,9 +175,7 @@ namespace VTX::UI::QT::DockWidget
 
 	void Colors::_changeColor( const size_t p_index, const QColor & p_color )
 	{
-		App::ACTION_SYSTEM().execute<App::Action::Color::ChangeLayoutColor>(
-			p_index, Util::Color::Rgba( p_color.redF(), p_color.greenF(), p_color.blueF() )
-		);
+		App::ACTION_SYSTEM().execute<App::Action::Color::ChangeLayoutColor>( p_index, Helper::fromQColor( p_color ) );
 	}
 
 	void Colors::save() { SETTINGS.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }

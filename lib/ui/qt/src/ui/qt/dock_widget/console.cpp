@@ -41,7 +41,7 @@ namespace VTX::UI::QT::DockWidget
 		LOGGER::onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
 
 		// Command launcher.
-		_commandLauncher = new LineEdit::CommandLauncher( this );
+		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
 
 		_layout->addWidget( _commandLauncher );
 	}

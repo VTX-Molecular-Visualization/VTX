@@ -1,9 +1,9 @@
-#include "ui/qt/line_edit/command_launcher.hpp"
+#include "ui/qt/widget/command_launcher.hpp"
 // #include "ui/qt/widget/pytx/include_python_binding.hpp"
 
 #include <util/logger.hpp>
 
-namespace VTX::UI::QT::LineEdit
+namespace VTX::UI::QT::Widget
 {
 	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
@@ -57,4 +57,4 @@ namespace VTX::UI::QT::LineEdit
 		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
 	}
 
-} // namespace VTX::UI::QT::LineEdit
+} // namespace VTX::UI::QT::Widget
