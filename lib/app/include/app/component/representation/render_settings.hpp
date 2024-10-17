@@ -4,6 +4,7 @@
 #include "app/core/ecs/base_component.hpp"
 #include <core/struct/render_settings.hpp>
 #include <renderer/proxy/render_settings.hpp>
+#include <unordered_map>
 #include <util/callback.hpp>
 
 namespace VTX::App::Component::Representation
@@ -18,9 +19,8 @@ namespace VTX::App::Component::Representation
 
 		const VTX::Core::Struct::RenderSettings & getSettings() const { return _settings; }
 
-		// TODO: callbacks.
 		template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
-		void set( const T & p_value )
+		void set( const T p_value )
 		{
 			if constexpr ( S == Renderer::Proxy::E_RENDER_SETTINGS::SSAO_INTENSITY )
 			{

@@ -33,6 +33,8 @@ namespace VTX::UI::QT::DockWidget
 		comboBoxShading->addItem( "Toon" );
 		comboBoxShading->addItem( "Flat" );
 
+		// Background color.
+
 		// Connect the combo box to the component.
 		connect(
 			comboBoxShading,
@@ -51,7 +53,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Callbacks.
 		component->getCallback<Renderer::Proxy::E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
-			[ comboBoxShading ]( const uint & p_value )
+			[ comboBoxShading ]( const uint p_value )
 		{
 			// TODO: check with this is triggering another QComboBox::currentIndexChanged.
 			comboBoxShading->setCurrentIndex( p_value );

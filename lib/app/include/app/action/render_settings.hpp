@@ -12,7 +12,7 @@ namespace VTX::App::Action::RenderSettings
 	class ChangeRenderSetting final : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeRenderSetting( const T & p_value ) : _value( p_value ) {}
+		ChangeRenderSetting( const T p_value ) : _value( p_value ) {}
 
 		void execute() override
 		{
