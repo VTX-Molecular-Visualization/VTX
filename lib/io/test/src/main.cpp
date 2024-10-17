@@ -23,7 +23,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	CHECK( molecule.getChainCount() == 79 );
+	CHECK( molecule.getChainCount() == 62 );
 	CHECK( molecule.getResidueCount() == 11381 );
 	CHECK( molecule.getAtomCount() == 113095 );
 	CHECK( molecule.getBondCount() == 129957 );

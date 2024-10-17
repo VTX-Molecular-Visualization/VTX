@@ -4,6 +4,7 @@
 #include <core/struct/molecule.hpp>
 #include <core/struct/trajectory.hpp>
 #include <map>
+#include <unordered_set>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
@@ -30,9 +31,10 @@ namespace VTX::IO::Reader
 	{
 		const std::string fileExtension = p_chemfileStruct.getPath().extension().string();
 
-		size_t		currentChainIndex		 = INVALID_INDEX;
-		std::string lastChainName			 = "";
-		size_t		currentChainResidueCount = 0;
+		size_t currentChainIndex = INVALID_INDEX;
+
+		std::unordered_set<std::string> seenChainNames;
+		size_t							currentChainResidueCount = 0;
 
 		std::map<size_t, std::vector<size_t>> mapResidueBonds	   = std::map<size_t, std::vector<size_t>>();
 		std::map<size_t, std::vector<size_t>> mapResidueExtraBonds = std::map<size_t, std::vector<size_t>>();
@@ -58,9 +60,9 @@ namespace VTX::IO::Reader
 			const VTX::Core::ChemDB::Category::TYPE categoryEnum = _findCategoryType( fileExtension, residueName );
 
 			// Check if chain name changed.
-			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
-										chainName != lastChainName ||	   // New chain ID
-										categoryEnum != lastCategoryEnum;  // New category
+			const bool createNewChain = p_molecule.getChainCount() == 0 ||			// No chain created
+										not seenChainNames.contains( chainName ) || // unseen chain ID
+										categoryEnum != lastCategoryEnum;			// New category
 
 			if ( createNewChain )
 			{
@@ -80,7 +82,8 @@ namespace VTX::IO::Reader
 
 				p_molecule.getCategory( categoryEnum ).referenceChain( currentChainIndex );
 
-				lastChainName	 = chainName;
+				if ( not seenChainNames.contains( chainName ) )
+					seenChainNames.emplace( chainName );
 				lastCategoryEnum = categoryEnum;
 			}
 
