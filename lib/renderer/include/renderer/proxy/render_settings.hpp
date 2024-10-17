@@ -11,27 +11,6 @@ namespace VTX::Renderer::Proxy
 	/**
 	 * @brief Render settings data provider.
 	 */
-
-	enum struct E_RENDER_SETTINGS
-	{
-		SSAO_INTENSITY,
-		BLUR_SIZE,
-		COLOR_BACKGROUND,
-		COLOR_LIGHT,
-		COLOR_FOG,
-		SHADING_MODE,
-		SPECULAR_FACTOR,
-		SHININESS,
-		TOON_STEPS,
-		FOG_NEAR,
-		FOG_FAR,
-		FOG_DENSITY,
-		COLOR_OUTLINE,
-		OUTLINE_SENSITIVITY,
-		OUTLINE_THICKNESS,
-		COLOR_SELECTION
-	};
-
 	struct RenderSettings
 	{
 		float			  ssaoIntensity;

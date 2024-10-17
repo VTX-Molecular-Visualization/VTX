@@ -1,13 +1,29 @@
 #include "app/component/representation/render_settings.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include <renderer/settings.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Component::Representation
 {
 	RenderSettings::RenderSettings()
 	{
-		// TODO: where to set default values?
-		// setColors( VTX::Core::ChemDB::Color::COLOR_LAYOUT_JMOL.layout );
+		using namespace Renderer;
+		_settings.ssaoIntensity		 = SSAO_INTENSITY_DEFAULT;
+		_settings.blurSize			 = BLUR_SIZE_DEFAULT;
+		_settings.colorBackground	 = COLOR_BACKGROUND_DEFAULT;
+		_settings.colorLight		 = COLOR_LIGHT_DEFAULT;
+		_settings.colorFog			 = COLOR_FOG_DEFAULT;
+		_settings.shadingMode		 = static_cast<uint>( E_SHADING::DIFFUSE );
+		_settings.specularFactor	 = SPECULAR_FACTOR_DEFAULT;
+		_settings.shininess			 = SHININESS_DEFAULT;
+		_settings.toonSteps			 = TOON_STEPS_DEFAULT;
+		_settings.fogNear			 = FOG_NEAR_DEFAULT;
+		_settings.fogFar			 = FOG_FAR_DEFAULT;
+		_settings.fogDensity		 = FOG_DENSITY_DEFAULT;
+		_settings.colorOutline		 = COLOR_OUTLINE_DEFAULT;
+		_settings.outlineSensitivity = OUTLINE_SENSITIVITY_DEFAULT;
+		_settings.outlineThickness	 = OUTLINE_THICKNESS_DEFAULT;
+		_settings.colorSelection	 = COLOR_SELECTION_DEFAULT;
 	}
 
 	void RenderSettings::setupProxy()

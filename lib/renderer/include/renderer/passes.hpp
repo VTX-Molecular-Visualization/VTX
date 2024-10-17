@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_PASSES__
 
 #include "descriptors.hpp"
+#include "settings.hpp"
 #include <util/constants.hpp>
 #include <util/math.hpp>
 
@@ -125,7 +126,9 @@ namespace VTX::Renderer
 
 				  { { "Intensity",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
+					  StructUniformValue<float> {
+						  SSAO_INTENSITY_DEFAULT,
+						  StructUniformValue<float>::MinMax { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } } } } } } }
 	};
 
 	// Blur.
@@ -133,15 +136,16 @@ namespace VTX::Renderer
 		"Blur",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
-		Programs {
-			{ "Blur",
-			  std::vector<FilePath> { "default.vert", "blur.frag" },
-			  Uniforms {
+		Programs { { "Blur",
+					 std::vector<FilePath> { "default.vert", "blur.frag" },
+					 Uniforms {
 
-				  { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
-					{ "Size",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 17.f, StructUniformValue<float>::MinMax { 1.f, 99.f } } } } } } }
+						 { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
+						   { "Size",
+							 E_TYPE::FLOAT,
+							 StructUniformValue<float> {
+								 BLUR_SIZE_DEFAULT,
+								 StructUniformValue<float>::MinMax { BLUR_SIZE_MIN, BLUR_SIZE_MAX } } } } } } }
 	};
 
 	// Shading.
@@ -168,33 +172,46 @@ namespace VTX::Renderer
 			  Uniforms {
 
 				  {
-					  { "Background color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLACK } },
-					  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-					  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+					  { "Background color",
+						E_TYPE::COLOR4,
+						StructUniformValue<Util::Color::Rgba> { COLOR_BACKGROUND_DEFAULT } },
+					  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_LIGHT_DEFAULT } },
+					  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_FOG_DEFAULT } },
 					  { "Mode",
 						E_TYPE::UINT,
 						StructUniformValue<uint> {
-							uint( E_SHADING::DIFFUSE ),
+							uint( SHADING_MODE_DEFAULT ),
 							StructUniformValue<uint>::MinMax { uint( E_SHADING::DIFFUSE ),
 															   uint( E_SHADING::COUNT ) - 1 } } },
 					  { "Specular factor",
 						E_TYPE::FLOAT,
-						StructUniformValue<float> { 0.4f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+						StructUniformValue<float> {
+							SPECULAR_FACTOR_DEFAULT,
+							StructUniformValue<float>::MinMax { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } } },
 					  { "Shininess",
 						E_TYPE::FLOAT,
-						StructUniformValue<float> { 32.f, StructUniformValue<float>::MinMax { 0.f, 128.f } } },
+						StructUniformValue<float> {
+							SHININESS_DEFAULT,
+							StructUniformValue<float>::MinMax { SHININESS_MIN, SHININESS_MAX } } },
 					  { "Toon steps",
 						E_TYPE::UINT,
-						StructUniformValue<uint> { 4, StructUniformValue<uint>::MinMax { 1, 15 } } },
+						StructUniformValue<uint> {
+							TOON_STEPS_DEFAULT,
+							StructUniformValue<uint>::MinMax { TOON_STEPS_MIN, TOON_STEPS_MAX } } },
 					  { "Fog near",
 						E_TYPE::FLOAT,
-						StructUniformValue<float> { 30.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+						StructUniformValue<float> {
+							FOG_NEAR_DEFAULT,
+							StructUniformValue<float>::MinMax { FOG_NEAR_MIN, FOG_NEAR_MAX } } },
 					  { "Fog far",
 						E_TYPE::FLOAT,
-						StructUniformValue<float> { 80.f, StructUniformValue<float>::MinMax { 0.f, 1000.f } } },
+						StructUniformValue<float> { FOG_FAR_DEFAULT,
+													StructUniformValue<float>::MinMax { FOG_FAR_MIN, FOG_FAR_MAX } } },
 					  { "Fog density",
 						E_TYPE::FLOAT,
-						StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
+						StructUniformValue<float> {
+							FOG_DENSITY_DEFAULT,
+							StructUniformValue<float>::MinMax { FOG_DENSITY_MIN, FOG_DENSITY_MAX } } },
 				  } } } }
 	};
 
@@ -203,15 +220,21 @@ namespace VTX::Renderer
 		"Outline",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs { { "Outline",
-					 std::vector<FilePath> { "default.vert", "outline.frag" },
-					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-								  { "Sensitivity",
-									E_TYPE::FLOAT,
-									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-								  { "Thickness",
-									E_TYPE::UINT,
-									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
+		Programs {
+			{ "Outline",
+			  std::vector<FilePath> { "default.vert", "outline.frag" },
+			  Uniforms {
+				  { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
+					{ "Sensitivity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> {
+						  OUTLINE_SENSITIVITY_DEFAULT,
+						  StructUniformValue<float>::MinMax { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX } } },
+					{ "Thickness",
+					  E_TYPE::UINT,
+					  StructUniformValue<uint> {
+						  OUTLINE_THICKNESS_DEFAULT,
+						  StructUniformValue<uint>::MinMax { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX } } } } } } }
 	};
 
 	// Glow.
@@ -241,7 +264,7 @@ namespace VTX::Renderer
 					 std::vector<FilePath> { "default.vert", "selection.frag" },
 					 Uniforms { { { "Color",
 									E_TYPE::COLOR4,
-									StructUniformValue<Util::Color::Rgba> { Util::Color::Rgba( 45, 243, 26 ) } } } } } }
+									StructUniformValue<Util::Color::Rgba> { COLOR_SELECTION_DEFAULT } } } } } }
 	};
 
 	// FXAA.

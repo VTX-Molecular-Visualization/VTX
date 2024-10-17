@@ -5,11 +5,8 @@
 
 namespace VTX::UI::QT::Widget
 {
-
-	ColorPicker::ColorPicker( const QColor & p_color, QWidget * p_parent ) : BaseWidget( p_parent )
+	ColorPicker::ColorPicker( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
-		setColor( p_color );
-
 		connect(
 			this,
 			&QPushButton::clicked,
@@ -40,6 +37,11 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 		);
+	}
+
+	ColorPicker::ColorPicker( const QColor & p_color, QWidget * p_parent ) : ColorPicker( p_parent )
+	{
+		setColor( p_color );
 	}
 
 	void ColorPicker::setColor( const QColor & p_color )

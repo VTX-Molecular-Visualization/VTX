@@ -12,6 +12,18 @@ namespace VTX::Core::ChemDB::Atom
 		ION
 	};
 
+	// TODO
+	/*	struct Data
+	{
+		std::string_view symbol;
+		std::string_view name;
+		float			 vdwRadius;
+		bool			 isCommon;
+	};
+
+	std::unordered_map<SYMBOL, Atom>;
+	*/
+
 	// Sorted by atomic number.
 	enum class SYMBOL : int
 	{

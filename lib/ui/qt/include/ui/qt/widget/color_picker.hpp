@@ -11,6 +11,7 @@ namespace VTX::UI::QT::Widget
 	class ColorPicker : public Core::BaseWidget<ColorPicker, QPushButton>
 	{
 	  public:
+		ColorPicker( QWidget * );
 		ColorPicker( const QColor &, QWidget * );
 
 		inline const QColor & getColor() const { return _color; }

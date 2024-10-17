@@ -8,7 +8,7 @@
 
 namespace VTX::App::Action::RenderSettings
 {
-	template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
+	template<Renderer::E_RENDER_SETTINGS S, typename T>
 	class ChangeRenderSetting final : public App::Core::Action::BaseAction
 	{
 	  public:
