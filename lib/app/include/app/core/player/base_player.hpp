@@ -14,7 +14,18 @@ namespace VTX::App::Core::Player
 	{
 	  public:
 		BasePlayer()							  = default;
-		BasePlayer( const BasePlayer & p_source ) = default;
+		//BasePlayer( const BasePlayer & p_source ) = default;
+		BasePlayer(const BasePlayer& p_source)
+		{
+			_count	= 0;
+			_current = 0;
+
+			// devjla
+			// bool  _isPlaying	   = false;
+			_isPlaying	   = false;
+			_fps			   = 1u;
+			_trajectoryTimer = 0;
+		}
 
 		virtual ~BasePlayer() = default;
 
@@ -56,7 +67,9 @@ namespace VTX::App::Core::Player
 		size_t _count	= 0;
 		size_t _current = 0;
 
-		bool  _isPlaying	   = false;
+		// devjla
+		//bool  _isPlaying	   = false;
+		std::atomic<bool> _isPlaying	   = false;
 		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
 

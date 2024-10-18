@@ -115,6 +115,8 @@ namespace VTX::App::Component::Chemistry
 		Util::Callback<>													 onStruct;
 		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
 		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
+		// devjla
+		Util::Callback<> onTrajectoryAdded;
 
 	  private:
 		void _deleteTopologyPointers( const atom_index_t p_atomIndex );

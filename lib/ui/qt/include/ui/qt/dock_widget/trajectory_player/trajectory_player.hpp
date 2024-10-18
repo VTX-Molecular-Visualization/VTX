@@ -1,53 +1,31 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
-#define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
+#ifndef __VTX_UI_QT_DOCK_WIDGET_TRAJECTORY_PLAYER__
+#define __VTX_UI_QT_DOCK_WIDGET_TRAJECTORY_PLAYER__
 
-#include "ui/qt/core/base_dock_widget.hpp"
-#include <ui/qt/dock_widget/trajectory_player/trajectory_player.hpp>
+#include <functional>
+#include <ui/qt/base_widget.hpp>
+#include <app/component/render/proxy_molecule.hpp>
+#include <io/reader/molecule.hpp>
+#include <app/component/chemistry/trajectory.hpp>
+#include <QDockWidget>
+#include <QPushButton>
+#include <QSlider>
 
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Inspector : public Core::BaseDockWidget<Inspector>
+	class TrajectoryPlayer : public QWidget
 	{
 	  public:
-		Inspector( QWidget * p_parent ) : BaseDockWidget<Inspector>( "Selection", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-			
+		TrajectoryPlayer( QWidget * p_parent, App::Component::Chemistry::Molecule &p_molecule) : QWidget( p_parent )
+		{			
 			// devjla
-			//QWidget * const mainWidget = _instantiateMainWidget( QSize( 200, 0 ), QSize( 200, 0 ) );
 			auto * widget = new QWidget( this );
+			widget->setContentsMargins( 0, 0, 0, 0 );
 
-			QBoxLayout * const layout = new QBoxLayout( QBoxLayout::LeftToRight, widget );
+			QVBoxLayout * const layout = new QVBoxLayout( widget );
 			layout->setContentsMargins( 0, 0, 0, 0 );
-
-			setWidget( widget );
-
-			using namespace App::Component::Scene;
-			App::SCENE().onSceneItemAdded += [ widget ]( const SceneItemComponent & p_sceneItem )
-			{
-				QLayout * layout = widget->layout();
-				if ( App::MAIN_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_sceneItem ) )
-				{
-					auto & molecule
-						= App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_sceneItem );
-
-					if ( molecule.hasTrajectory() )
-					{
-						QPointer<QWidget>  test( widget );
-						TrajectoryPlayer * player = new TrajectoryPlayer( widget, molecule );
-						layout->addWidget( player );
-					}
-					molecule.onTrajectoryAdded += [ & ]()
-					{
-						TrajectoryPlayer * player = new TrajectoryPlayer( widget, molecule );
-						layout->addWidget( player );
-					};
-				}
-			};
-			
-
-			/* QHBoxLayout * const _playButtonsLayout = new QHBoxLayout();
+	
+			QHBoxLayout * const _playButtonsLayout = new QHBoxLayout();
 			QHBoxLayout * const _progressLayout	   = new QHBoxLayout();
 	
 			auto* _playButton = new QPushButton( this );
@@ -60,9 +38,13 @@ namespace VTX::UI::QT::DockWidget
 			auto * _progressSlider = new QSlider( Qt::Horizontal, this );
 			_progressSlider->setTickInterval( 101 );
 			_progressSlider->setTickPosition( QSlider::TicksAbove );
+
 			// FIXME should be done when traj is loaded
-			//auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
-			//_progressSlider->setTickInterval( (int)molecule.getTrajectory().getFrameCount() );
+			_progressSlider->setTickInterval( (int)p_molecule.getTrajectory().getFrameCount() );
+			auto & trajectory = App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
+			trajectory.getPlayer().onFrameChange += []( size_t frame ) { 
+				VTX_INFO( "trajectory_player frame changed  = {}", frame );
+			};
 	
 			_playButtonsLayout->addWidget( _playButton );
 			_playButtonsLayout->addWidget( _pauseButton );
@@ -72,14 +54,16 @@ namespace VTX::UI::QT::DockWidget
 
 			layout->addItem( _playButtonsLayout);
 			layout->addItem( _progressLayout );
-	
-			setWidget( widget );
 
 			// connect callbacks
-			connect( _playButton, &QPushButton::clicked, this, [ & ]()
+			connect(
+				_playButton,
+				&QPushButton::clicked,
+				this,
+				[ & ]()
 				{
 					auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
-					if ( !molecule.hasTrajectory() )
+					if ( !p_molecule.hasTrajectory() )
 						return;
 			
 					auto & trajectory = App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
@@ -87,7 +71,7 @@ namespace VTX::UI::QT::DockWidget
 			
 					is_playing							  = true;
 					Core::Struct::Molecule moleculeStruct = Core::Struct::Molecule();
-					molecule.setMoleculeStruct( moleculeStruct );
+					p_molecule.setMoleculeStruct( moleculeStruct );
 			
 					std::thread writethread(
 						[]()
@@ -141,7 +125,6 @@ namespace VTX::UI::QT::DockWidget
 							VTX_INFO( "readthreadfromlocalmolecule end" );
 						}
 					);
-					
 					VTX_INFO( "threads prejoin");
 					//writethread.join();
 					//readthreadfromlocalmolecule.join();
@@ -154,8 +137,8 @@ namespace VTX::UI::QT::DockWidget
 				{
 					is_playing = false;
 
-					auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
-					if ( !molecule.hasTrajectory() )
+					//auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
+					if ( !p_molecule.hasTrajectory() )
 						return;
 			
 					auto & trajectory = App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
@@ -166,16 +149,16 @@ namespace VTX::UI::QT::DockWidget
 				{
 					is_playing = false;
 
-					auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
-					if ( !molecule.hasTrajectory() )
+					//auto & molecule = App::MAIN_REGISTRY().findComponent<App::Component::Chemistry::Molecule>();
+					if ( !p_molecule.hasTrajectory() )
 						return;
 			
 					auto & trajectory = App::MAIN_REGISTRY().findComponent<VTX::App::Component::Chemistry::Trajectory>();
 					trajectory.getPlayer().stop();
-				});*/
+				});
 		}
 
-		virtual ~Inspector() {}
+		virtual ~TrajectoryPlayer() {}
 		
 	  private:
 		std::atomic_bool is_playing; // FIXME dev purpose to stop threads needs improvement
