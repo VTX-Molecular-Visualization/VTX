@@ -29,6 +29,9 @@ find_package(Eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 
+# WIP
+find_package(boost CONFIG REQUIRED)
+
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
 vtx_clear_registered_copies()

@@ -269,10 +269,13 @@ namespace
 
 TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory]" )
 {
-	// VTX::VTX_INFO( "Test reading and writing on {}.", "1gcn" );
-	// testSystem( TestSystemArgs { .systemName = "1gcn", .extension = ".pdb", .writtenExtension = ".pdb" } );
-	// VTX::VTX_INFO( "Test reading and writing on {}.", "8OIT" );
-	// testSystem( TestSystemArgs { .systemName = "8OIT", .extension = ".mmtf", .writtenExtension = ".mmcif" } );
+	VTX::VTX_INFO( "Test reading and writing on {}.", "1wav" );
+	testSystem( TestSystemArgs { .systemName = "1wav", .extension = ".pdb", .writtenExtension = ".pdb" } );
+	return;
+	VTX::VTX_INFO( "Test reading and writing on {}.", "1gcn" );
+	testSystem( TestSystemArgs { .systemName = "1gcn", .extension = ".pdb", .writtenExtension = ".pdb" } );
+	VTX::VTX_INFO( "Test reading and writing on {}.", "8OIT" );
+	testSystem( TestSystemArgs { .systemName = "8OIT", .extension = ".mmtf", .writtenExtension = ".mmcif" } );
 	VTX::VTX_INFO( "Test reading and writing on {}.", "2qwo" );
 	testSystem( TestSystemArgs { .systemName = "2qwo", .extension = ".pdb", .writtenExtension = ".pdb" } );
 }
