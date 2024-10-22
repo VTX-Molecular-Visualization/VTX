@@ -30,7 +30,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 
 # WIP
-find_package(boost CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED COMPONENTS iostream)
 
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
