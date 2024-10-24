@@ -12,7 +12,6 @@
 #pragma warning( push, 0 )
 #include "chemfiles.hpp"
 #include <chemfiles.hpp>
-#include "chemfiles.hpp"
 #pragma warning( pop )
 
 namespace VTX::IO::Reader
@@ -111,7 +110,7 @@ namespace VTX::IO::Reader
 		std::unique_ptr<Chemfiles> chemfilesReader = std::make_unique<Chemfiles>( p_path );
 
 		chrono.stop();
-		VTX_INFO( "readFile : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		//VTX_INFO( "readFile : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		return chemfilesReader;
 	}
@@ -150,25 +149,25 @@ namespace VTX::IO::Reader
 			throw IOException( "Trajectory is empty" );
 		}
 
-		VTX_INFO( "{} frames found.", _readingData->_trajectory.nsteps() );
+		// VTX_INFO( "{} frames found.", _readingData->_trajectory.nsteps() );
 
 		Util::Chrono chrono;
 
 		chrono.start();
 		_preRead();
 		chrono.stop();
-		VTX_INFO( "_preRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		// VTX_INFO( "_preRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		chrono.start();
 		chemfiles::Frame frame;
 		_read();
 		chrono.stop();
-		VTX_INFO( "Trajectory read in: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		// VTX_INFO( "Trajectory read in: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		chrono.start();
 		_postRead();
 		chrono.stop();
-		VTX_INFO( "_postRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		// VTX_INFO( "_postRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 	}
 
 	void Chemfiles::_preRead()
@@ -235,7 +234,7 @@ namespace VTX::IO::Reader
 				{
 					propAtom += " " + it->first;
 				}
-				VTX_DEBUG( "{}", propAtom );
+				// VTX_DEBUG( "{}", propAtom );
 			}
 		}
 
@@ -250,7 +249,7 @@ namespace VTX::IO::Reader
 			{
 				propResidue += " " + it->first;
 			}
-			VTX_DEBUG( "{}", propResidue );
+			// VTX_DEBUG( "{}", propResidue );
 		}
 	}
 
@@ -512,4 +511,3 @@ namespace VTX::IO::Reader
 	void Chemfiles::_warningCallback( const std::string & p_log ) {}
 
 } // namespace VTX::IO::Reader
-

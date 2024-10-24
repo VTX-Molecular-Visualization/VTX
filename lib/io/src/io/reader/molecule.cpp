@@ -295,15 +295,15 @@ namespace VTX::IO::Reader
 #ifdef _DEBUG
 			if ( frameIdx > 1 && frameIdx % 100 == 0 )
 			{
-				VTX_DEBUG(
-					"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime()
-				);
+				// VTX_DEBUG(
+				//	"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime()
+				//);
 				startingFrame = frameIdx;
 			}
 #endif // DEBUG
 		}
 		timeReadingFrames.stop();
-		VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
+		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
 		// Erase supernumeraries frames
 		for ( const std::pair<VTX::Core::Struct::Molecule *, size_t> & pairMoleculeFirstFrame : p_targets )
