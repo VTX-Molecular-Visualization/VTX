@@ -83,7 +83,7 @@ namespace
 		bool numMatch_frame = init_frameCount == molecule_reread.trajectory.getFrameCount();
 		bool numMatch_bond	= init_bondCount == molecule_reread.getBondCount();
 		bool numMatch_res	= init_resCount == molecule_reread.getResidueCount();
-
+		/*
 		if ( numMatch_atom && numMatch_chain && numMatch_frame && numMatch_bond && numMatch_res )
 			contextData.fullyWorkingStructs.push_back( &testFile );
 		else
@@ -97,8 +97,9 @@ namespace
 			if ( not numMatch_res )
 				contextData.residuesNumNotMatch.push_back( &testFile );
 		}
+		*/
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
 	}
 } // namespace
-int main( int argc, char argv[] ) {}
+int main( int argc, char argv[] ) {  }

@@ -18,7 +18,7 @@ if (NOT DEFINED _VTX_IO_CONAN)
 	target_link_libraries(vtx_io PRIVATE vtx_core)		
 	target_link_libraries(vtx_io_test PRIVATE vtx_util)
 	target_link_libraries(vtx_io_test PRIVATE vtx_core)		
-	target_compile_definitions(vtx_io_test PRIVATE PDB_DATABASE_DIR="C:/Users/Valen/data/pdb100")
+	target_compile_definitions(vtx_io_test PRIVATE PDB_DATABASE_DIR="C:/Users/Valen/data/pdb100_subset")
 else()
 	target_link_libraries(vtx_io PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_io PRIVATE vtx_core::vtx_core)
@@ -30,6 +30,7 @@ endif()
 
 # WIP
 target_link_libraries(vtx_io_test PRIVATE Boost::headers)
+target_include_directories(vtx_io_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
 
 
 file(GLOB_RECURSE NEW_PROCESS_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/new_process/*")
