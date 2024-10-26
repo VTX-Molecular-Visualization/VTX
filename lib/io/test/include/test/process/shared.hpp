@@ -20,7 +20,7 @@ namespace VTX::IO::test
 	typedef basic_string<char, std::char_traits<char>, CharAllocator> String;
 	typedef allocator<String, managed_shared_memory::segment_manager> StringAllocator;
 
-	typedef deque<String, std::char_traits<char>, StringAllocator>		   StringDeque;
+	typedef deque<String, StringAllocator>								   StringDeque;
 	typedef allocator<StringDeque, managed_shared_memory::segment_manager> StringDequeAllocator;
 
 	typedef allocator<uint64_t, managed_shared_memory::segment_manager> Uint64Allocator;
@@ -35,7 +35,7 @@ namespace VTX::IO::test
 		crashed			 = 1 << 7
 	};
 	typedef allocator<RereadResult, managed_shared_memory::segment_manager> RereadResultAllocator;
-	typedef allocator<std::pair<uint64_t, RereadResult>, managed_shared_memory::segment_manager>
+	typedef allocator<std::pair<const uint64_t, RereadResult>, managed_shared_memory::segment_manager>
 		Uint64RereadResultPairAllocator;
 
 	typedef map<uint64_t, RereadResult, std::less<uint64_t>, Uint64RereadResultPairAllocator> RereadResultMap;
@@ -49,6 +49,10 @@ namespace VTX::IO::test
 	RereadResult operator&( const RereadResult & l, const RereadResult & r ) noexcept
 	{
 		return static_cast<RereadResult>( static_cast<_RereadResultInt>( l ) & static_cast<_RereadResultInt>( r ) );
+	}
+	RereadResult operator*( const bool & l, const RereadResult & r ) noexcept
+	{
+		return static_cast<RereadResult>( l * static_cast<_RereadResultInt>( r ) );
 	}
 
 } // namespace VTX::IO::test
