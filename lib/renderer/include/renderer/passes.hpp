@@ -428,9 +428,7 @@ namespace VTX::Renderer
 				  { { "Intensity",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
-					  { "Threshold",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 20.f, 1000.f } } },
+					
 					  { "Bias",
 					  E_TYPE::FLOAT,
 					  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 0.2f } } }					  
