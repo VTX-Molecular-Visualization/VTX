@@ -17,7 +17,9 @@
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
+#include <QMimeData>
 #include <app/action/application.hpp>
+#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -35,6 +37,7 @@ namespace VTX::UI::QT::Widget
 		setDockOptions( ForceTabbedDocks );
 		setTabPosition( Qt::AllDockWidgetAreas, QTabWidget::North );
 		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+		setAcceptDrops( true );
 
 		//  Features.
 		setTabShape( QTabWidget::Rounded );
@@ -182,6 +185,18 @@ namespace VTX::UI::QT::Widget
 			App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
 			p_event->ignore();
 		}
+	}
+
+	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event ) { p_event->acceptProposedAction(); }
+
+	void MainWindow::dropEvent( QDropEvent * p_event )
+	{
+		for ( const auto & url : p_event->mimeData()->urls() )
+		{
+			App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( url.toLocalFile().toStdString() );
+		}
+
+		p_event->acceptProposedAction();
 	}
 
 	void MainWindow::save()
