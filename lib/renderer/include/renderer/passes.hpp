@@ -18,7 +18,7 @@ namespace VTX::Renderer
 	inline const Attachment imageR32F { E_FORMAT::R32F };
 	inline const Attachment imageR16F { E_FORMAT::R16F };
 	inline const Attachment imageR8 { E_FORMAT::R8 };
-	inline const Attachment imageTest { E_FORMAT::R8,
+	inline const Attachment imageSmall { E_FORMAT::R8,
 										E_WRAPPING::CLAMP_TO_EDGE,
 										E_WRAPPING::CLAMP_TO_EDGE,
 										E_FILTERING::NEAREST,
@@ -125,7 +125,8 @@ namespace VTX::Renderer
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageTest } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } }
+					},
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
@@ -133,13 +134,17 @@ namespace VTX::Renderer
 
 				  { { "Intensity",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } } } } } }
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+					  { "Bias",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.0f, 1.f } } }
+					   } } } }
 	};
 
 		// Scale
 	inline Pass descPassScale {
 		"Scale",
-		Inputs { { E_CHAN_IN::_0, { "Color", imageTest } } },
+		Inputs { { E_CHAN_IN::_0, { "Color", imageSmall } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
 		Programs {
 			{ "Scale",
@@ -364,11 +369,112 @@ namespace VTX::Renderer
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
 	};
 
+	//SSAO LINE
+		inline Pass descPassSSAO_LINE {
+		"SSAO_LINE",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } } 
+					},
+		Programs {
+			{ "SSAO_LINE",
+			  std::vector<FilePath> { "default.vert", "ssao_line.frag" },
+			  Uniforms {
+
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+					  { "Radius",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.5f, 20.f } } }
+
+					   } } } }
+	};
+
+	//HBAO
+		inline Pass descPassHBAO {
+		"HBAO",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } } 
+					}, 
+		Programs {
+			{ "HBAO",
+			  std::vector<FilePath> { "default.vert", "hbao.frag" },
+			  Uniforms {
+
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+					  { "Threshold",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 20.f, 1000.f } } },
+					  { "Bias",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 0.2f } } }					  
+					   } } } }
+	};
+
+	//SAO
+		inline Pass descPassSAO {
+		"SAO",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } }
+					},
+		Programs {
+			{ "SAO",
+			  std::vector<FilePath> { "default.vert", "sao.frag" },
+			  Uniforms {
+
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 20.f } } },
+					  { "Radius",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.5f, 20.f } } }
+					   } } } }
+	};
+
 	enum class E_PASS : size_t
 	{
 		GEOMETRIC,
 		DEPTH,
 		SSAO,
+		SCALE,
 		BLUR,
 		SHADING,
 		OUTLINE,
@@ -379,12 +485,16 @@ namespace VTX::Renderer
 		CHROMATIC_ABERRATION,
 		COLORIZE,
 		DEBUG,
+		SSAO_LINE,
+		HBAO,
+		SAO,
 		COUNT
 	};
 
 	inline std::vector<Pass *> availablePasses = { &descPassGeometric,
 												   &descPassDepth,
 												   &descPassSSAO,
+												   &descPassScale,
 												   &descPassBlur,
 												   &descPassShading,
 												   &descPassOutline,
@@ -394,7 +504,10 @@ namespace VTX::Renderer
 												   &descPassCRT,
 												   &descPassChromaticAberration,
 												   &descPassColorize,
-												   &descPassDebug };
+												   &descPassDebug,
+												   &descPassSSAO_LINE,
+												   &descPassHBAO,
+												   &descPassSAO};
 } // namespace VTX::Renderer
 
 #endif

@@ -23,7 +23,7 @@ namespace VTX::Renderer
 		Pass * const outline   = _renderGraph->addPass( descPassOutline );
 		Pass * const selection = _renderGraph->addPass( descPassSelection );
 		Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-		Pass * const scale     = _renderGraph->addPass( descPassScale );
+		Pass * const scale     = _renderGraph->addPass( descPassScale ); //scale ssao output up before blurring
 
 		// Setup values.
 		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
@@ -46,8 +46,6 @@ namespace VTX::Renderer
 		_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
 		_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		//_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		_renderGraph->addLink( ssao, scale, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0);
 		_renderGraph->addLink( scale, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0);
 		_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
