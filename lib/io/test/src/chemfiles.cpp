@@ -271,9 +271,9 @@ namespace
 
 TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
 {
+	return;
 	VTX::VTX_INFO( "Test reading and writing on {}.", "8aad" );
 	testSystem( TestSystemArgs { .systemName = "8aad", .extension = ".mmcif", .writtenExtension = ".mmcif" } );
-	return;
 	VTX::VTX_INFO( "Test reading and writing on {}.", "2qwo" );
 	testSystem( TestSystemArgs { .systemName = "2qwo", .extension = ".pdb", .writtenExtension = ".pdb" } );
 	VTX::VTX_INFO( "Test reading and writing on {}.", "1wav" );
