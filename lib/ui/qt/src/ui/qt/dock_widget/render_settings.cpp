@@ -4,6 +4,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGroupBox>
+#include <QLabel>
 #include <QVBoxLayout>
 #include <app/action/render_settings.hpp>
 #include <app/application/scene.hpp>
@@ -39,12 +40,13 @@ namespace VTX::UI::QT::DockWidget
 		auto * comboBoxShading = new QComboBox( groupBoxShading );
 		layout->addWidget( comboBoxShading );
 		_layout->addWidget( groupBoxShading );
-		// TODO: not hardcoded.
-		comboBoxShading->addItem( "Diffuse" );
-		comboBoxShading->addItem( "Glossy " );
-		comboBoxShading->addItem( "Toon" );
-		comboBoxShading->addItem( "Flat" );
-		comboBoxShading->setCurrentIndex( p_component->getSettings().shadingMode );
+
+		for ( int i = 0; i < int( Renderer::E_SHADING::COUNT ); ++i )
+		{
+			comboBoxShading->addItem( Renderer::SHADING_STR[ i ].data() );
+		}
+		comboBoxShading->setCurrentIndex( -1 ); // Force next value to trigger callback.
+
 		connect(
 			comboBoxShading,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
@@ -85,7 +87,9 @@ namespace VTX::UI::QT::DockWidget
 		};
 
 		// Specular factor.
+		auto * labelSpecularFactor	= new QLabel( "Specular factor", groupBoxShading );
 		auto * sliderSpecularFactor = new QSlider( Qt::Horizontal, groupBoxShading );
+		layout->addWidget( labelSpecularFactor );
 		layout->addWidget( sliderSpecularFactor );
 		sliderSpecularFactor->setMinimum( Renderer::SPECULAR_FACTOR_MIN * 100 );
 		sliderSpecularFactor->setMaximum( Renderer::SPECULAR_FACTOR_MAX * 100 );
@@ -104,7 +108,9 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Shininess.
+		auto * labelShininess  = new QLabel( "Shininess", groupBoxShading );
 		auto * sliderShininess = new QSlider( Qt::Horizontal, groupBoxShading );
+		layout->addWidget( labelShininess );
 		layout->addWidget( sliderShininess );
 		sliderShininess->setMinimum( Renderer::SHININESS_MIN * 100 );
 		sliderShininess->setMaximum( Renderer::SHININESS_MAX * 100 );
@@ -123,7 +129,9 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Toon steps.
+		auto * labelToonSteps  = new QLabel( "Toon steps", groupBoxShading );
 		auto * sliderToonSteps = new QSlider( Qt::Horizontal, groupBoxShading );
+		layout->addWidget( labelToonSteps );
 		layout->addWidget( sliderToonSteps );
 		sliderToonSteps->setMinimum( Renderer::TOON_STEPS_MIN );
 		sliderToonSteps->setMaximum( Renderer::TOON_STEPS_MAX );
@@ -141,10 +149,53 @@ namespace VTX::UI::QT::DockWidget
 
 		// Callbacks.
 		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
-			[ comboBoxShading ]( const uint p_value )
+			[ comboBoxShading,
+			  labelSpecularFactor,
+			  sliderSpecularFactor,
+			  labelShininess,
+			  sliderShininess,
+			  labelToonSteps,
+			  sliderToonSteps ]( const uint p_value )
 		{
-			// TODO: check with this is triggering another QComboBox::currentIndexChanged.
 			comboBoxShading->setCurrentIndex( p_value );
+
+			// TODO: better way, root widget?
+			switch ( Renderer::E_SHADING( p_value ) )
+			{
+			case Renderer::E_SHADING::DIFFUSE:
+				labelSpecularFactor->setVisible( false );
+				sliderSpecularFactor->setVisible( false );
+				labelShininess->setVisible( false );
+				sliderShininess->setVisible( false );
+				labelToonSteps->setVisible( false );
+				sliderToonSteps->setVisible( false );
+				break;
+			case Renderer::E_SHADING::GLOSSY:
+				labelSpecularFactor->setVisible( true );
+				sliderSpecularFactor->setVisible( true );
+				labelShininess->setVisible( true );
+				sliderShininess->setVisible( true );
+				labelToonSteps->setVisible( false );
+				sliderToonSteps->setVisible( false );
+				break;
+			case Renderer::E_SHADING::TOON:
+				labelSpecularFactor->setVisible( false );
+				sliderSpecularFactor->setVisible( false );
+				labelShininess->setVisible( false );
+				sliderShininess->setVisible( false );
+				labelToonSteps->setVisible( true );
+				sliderToonSteps->setVisible( true );
+				break;
+			case Renderer::E_SHADING::FLAT:
+				labelSpecularFactor->setVisible( false );
+				sliderSpecularFactor->setVisible( false );
+				labelShininess->setVisible( false );
+				sliderShininess->setVisible( false );
+				labelToonSteps->setVisible( false );
+				sliderToonSteps->setVisible( false );
+				break;
+			default: break;
+			}
 		};
 		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
 			[ colorPickerBackground ]( const Util::Color::Rgba & p_color )
@@ -158,6 +209,9 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderShininess ]( const float p_value ) { sliderShininess->setValue( p_value * 100 ); };
 		p_component->getCallback<Renderer::E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
 			[ sliderToonSteps ]( const uint p_value ) { sliderToonSteps->setValue( p_value ); };
+
+		// Set initial combox value at the end to force callback and update visibility.
+		comboBoxShading->setCurrentIndex( p_component->getSettings().shadingMode );
 	}
 
 	void RenderSettings::_createGroupBoxSSAO( App::Component::Representation::RenderSettings * const p_component )
@@ -169,7 +223,9 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( groupBoxSSAO );
 
 		// Intensity.
+		auto * labelSSAOIntensity  = new QLabel( "Intensity", groupBoxSSAO );
 		auto * sliderSSAOIntensity = new QSlider( Qt::Horizontal, groupBoxSSAO );
+		layout->addWidget( labelSSAOIntensity );
 		layout->addWidget( sliderSSAOIntensity );
 		sliderSSAOIntensity->setMinimum( Renderer::SSAO_INTENSITY_MIN * 100 );
 		sliderSSAOIntensity->setMaximum( Renderer::SSAO_INTENSITY_MAX * 100 );
@@ -188,8 +244,25 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Blur.
+		auto * labelBlurSize  = new QLabel( "Blur size", groupBoxSSAO );
 		auto * sliderBlurSize = new QSlider( Qt::Horizontal, groupBoxSSAO );
+		layout->addWidget( labelBlurSize );
 		layout->addWidget( sliderBlurSize );
+		sliderBlurSize->setMinimum( Renderer::BLUR_SIZE_MIN * 100 );
+		sliderBlurSize->setMaximum( Renderer::BLUR_SIZE_MAX * 100 );
+		sliderBlurSize->setValue( p_component->getSettings().blurSize * 100 );
+		connect(
+			sliderBlurSize,
+			&QSlider::valueChanged,
+			[ p_component ]( const int p_value )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::RenderSettings::
+								 ChangeRenderSetting<Renderer::E_RENDER_SETTINGS::BLUR_SIZE, float>>(
+						static_cast<float>( p_value ) / 100.f
+					);
+			}
+		);
 
 		// Callbacks.
 		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
@@ -218,7 +291,9 @@ namespace VTX::UI::QT::DockWidget
 		};
 
 		// Sensitivity.
+		auto * labelOutlineSensitivity	= new QLabel( "Sensitivity", groupBoxOutline );
 		auto * sliderOutlineSensitivity = new QSlider( Qt::Horizontal, groupBoxOutline );
+		layout->addWidget( labelOutlineSensitivity );
 		layout->addWidget( sliderOutlineSensitivity );
 		sliderOutlineSensitivity->setMinimum( Renderer::OUTLINE_SENSITIVITY_MIN * 100 );
 		sliderOutlineSensitivity->setMaximum( Renderer::OUTLINE_SENSITIVITY_MAX * 100 );
@@ -237,7 +312,9 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Thickness.
+		auto * labelOutlineThickness  = new QLabel( "Thickness", groupBoxOutline );
 		auto * sliderOutlineThickness = new QSlider( Qt::Horizontal, groupBoxOutline );
+		layout->addWidget( labelOutlineThickness );
 		layout->addWidget( sliderOutlineThickness );
 		sliderOutlineThickness->setMinimum( Renderer::OUTLINE_THICKNESS_MIN );
 		sliderOutlineThickness->setMaximum( Renderer::OUTLINE_THICKNESS_MAX );
@@ -286,7 +363,9 @@ namespace VTX::UI::QT::DockWidget
 		};
 
 		// Near.
+		auto * labelFogNear	 = new QLabel( "Near", groupBoxFog );
 		auto * sliderFogNear = new QSlider( Qt::Horizontal, groupBoxFog );
+		layout->addWidget( labelFogNear );
 		layout->addWidget( sliderFogNear );
 		sliderFogNear->setMinimum( Renderer::FOG_NEAR_MIN * 100 );
 		sliderFogNear->setMaximum( Renderer::FOG_NEAR_MAX * 100 );
@@ -305,7 +384,9 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Far.
+		auto * labelFogFar	= new QLabel( "Far", groupBoxFog );
 		auto * sliderFogFar = new QSlider( Qt::Horizontal, groupBoxFog );
+		layout->addWidget( labelFogFar );
 		layout->addWidget( sliderFogFar );
 		sliderFogFar->setMinimum( Renderer::FOG_FAR_MIN * 100 );
 		sliderFogFar->setMaximum( Renderer::FOG_FAR_MAX * 100 );
@@ -324,7 +405,9 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Density.
+		auto * labelFogDensity	= new QLabel( "Density", groupBoxFog );
 		auto * sliderFogDensity = new QSlider( Qt::Horizontal, groupBoxFog );
+		layout->addWidget( labelFogDensity );
 		layout->addWidget( sliderFogDensity );
 		sliderFogDensity->setMinimum( Renderer::FOG_DENSITY_MIN * 100 );
 		sliderFogDensity->setMaximum( Renderer::FOG_DENSITY_MAX * 100 );
@@ -352,6 +435,8 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderFogFar ]( const float p_value ) { sliderFogFar->setValue( p_value * 100 ); };
 		p_component->getCallback<Renderer::E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
 			[ sliderFogDensity ]( const float p_value ) { sliderFogDensity->setValue( p_value * 100 ); };
+
+		// Active.
 	}
 
 	void RenderSettings::_createGroupBoxSelection( App::Component::Representation::RenderSettings * const p_component )

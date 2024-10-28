@@ -35,6 +35,8 @@ namespace VTX::Renderer
 		COUNT
 	};
 
+	const std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ] = { "Diffuse", "Glossy", "Toon", "Flat" };
+
 	constexpr float SSAO_INTENSITY_DEFAULT = 5.f;
 	constexpr float SSAO_INTENSITY_MIN	   = 1.f;
 	constexpr float SSAO_INTENSITY_MAX	   = 20.f;
