@@ -1,4 +1,5 @@
 #include "ui/qt/widget/opengl_widget.hpp"
+#include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -6,6 +7,8 @@ namespace VTX::UI::QT::Widget
 
 	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
+		setAcceptDrops( true );
+
 		// Create surface.
 		QSurfaceFormat format;
 		format.setVersion( 4, 5 );
@@ -34,6 +37,8 @@ namespace VTX::UI::QT::Widget
 
 		// Use a widget container to embed the window.
 		_container = createWindowContainer( _window, this );
+		//_container->setAcceptDrops( true );
+		_container->installEventFilter( this );
 
 		// Set context.
 		_context->makeCurrent( _window );
@@ -77,6 +82,25 @@ namespace VTX::UI::QT::Widget
 		{
 			wglSwapIntervalEXT( p_vsync ? 1 : 0 );
 		}
+	}
+
+	bool OpenGLWidget::eventFilter( QObject * p_watched, QEvent * p_event )
+	{
+		if ( p_watched == _container )
+		{
+			auto * e = p_event->clone();
+			if ( p_event->type() == QEvent::DragEnter )
+			{
+				QCoreApplication::sendEvent( APP_QT::getMainWindow(), e );
+				return true;
+			}
+			else if ( p_event->type() == QEvent::Drop )
+			{
+				QCoreApplication::sendEvent( APP_QT::getMainWindow(), e );
+				return true;
+			}
+		}
+		return QWidget::eventFilter( p_watched, p_event );
 	}
 
 } // namespace VTX::UI::QT::Widget
