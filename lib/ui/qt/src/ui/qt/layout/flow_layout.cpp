@@ -15,9 +15,9 @@ namespace VTX::UI::QT::Layout
 		setContentsMargins( p_margin, p_margin, p_margin, p_margin );
 	}
 
-	FlowLayout::~FlowLayout() { qDeleteAll( itemList ); }
+	FlowLayout::~FlowLayout() { qDeleteAll( _itemList ); }
 
-	void FlowLayout::addItem( QLayoutItem * p_item ) { itemList.append( p_item ); }
+	void FlowLayout::addItem( QLayoutItem * p_item ) { _itemList.append( p_item ); }
 
 	int FlowLayout::horizontalSpacing() const
 	{
@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Layout
 		}
 		else
 		{
-			return smartSpacing( QStyle::PM_LayoutHorizontalSpacing );
+			return _smartSpacing( QStyle::PM_LayoutHorizontalSpacing );
 		}
 	}
 
@@ -39,17 +39,17 @@ namespace VTX::UI::QT::Layout
 		}
 		else
 		{
-			return smartSpacing( QStyle::PM_LayoutVerticalSpacing );
+			return _smartSpacing( QStyle::PM_LayoutVerticalSpacing );
 		}
 	}
 
-	int FlowLayout::count() const { return itemList.size(); }
+	int FlowLayout::count() const { return _itemList.size(); }
 
 	QLayoutItem * FlowLayout::itemAt( int p_index ) const
 	{
-		if ( p_index >= 0 && p_index < itemList.size() )
+		if ( p_index >= 0 && p_index < _itemList.size() )
 		{
-			return itemList.at( p_index );
+			return _itemList.at( p_index );
 		}
 		else
 		{
@@ -59,9 +59,9 @@ namespace VTX::UI::QT::Layout
 
 	QLayoutItem * FlowLayout::takeAt( int p_index )
 	{
-		if ( p_index >= 0 && p_index < itemList.size() )
+		if ( p_index >= 0 && p_index < _itemList.size() )
 		{
-			return itemList.takeAt( p_index );
+			return _itemList.takeAt( p_index );
 		}
 		else
 		{
@@ -69,16 +69,16 @@ namespace VTX::UI::QT::Layout
 		}
 	}
 
-	Qt::Orientations FlowLayout::expandingDirections() const { return {}; }
+	Qt::Orientations FlowLayout::expandingDirections() const { return { Qt::Orientation::Vertical }; }
 
 	bool FlowLayout::hasHeightForWidth() const { return true; }
 
-	int FlowLayout::heightForWidth( int p_width ) const { return doLayout( QRect( 0, 0, p_width, 0 ), true ); }
+	int FlowLayout::heightForWidth( int p_width ) const { return _doLayout( QRect( 0, 0, p_width, 0 ), true ); }
 
 	void FlowLayout::setGeometry( const QRect & p_rect )
 	{
 		QLayout::setGeometry( p_rect );
-		doLayout( p_rect, false );
+		_doLayout( p_rect, false );
 	}
 
 	QSize FlowLayout::sizeHint() const { return minimumSize(); }
@@ -86,17 +86,17 @@ namespace VTX::UI::QT::Layout
 	QSize FlowLayout::minimumSize() const
 	{
 		QSize size;
-		for ( const QLayoutItem * p_item : std::as_const( itemList ) )
+		for ( const QLayoutItem * p_item : std::as_const( _itemList ) )
 		{
 			size = size.expandedTo( p_item->minimumSize() );
 		}
 
 		const QMargins margins = contentsMargins();
-		size += QSize( margins.left() + margins.right(), margins.top() + margins.bottom() );
+		// size += QSize( margins.left() + margins.right(), margins.top() + margins.bottom() );
 		return size;
 	}
 
-	int FlowLayout::doLayout( const QRect & p_rect, bool p_testOnly ) const
+	int FlowLayout::_doLayout( const QRect & p_rect, bool p_testOnly ) const
 	{
 		int left, top, right, bottom;
 		getContentsMargins( &left, &top, &right, &bottom );
@@ -104,7 +104,7 @@ namespace VTX::UI::QT::Layout
 		int	  x				= effectiveRect.x();
 		int	  y				= effectiveRect.y();
 		int	  lineHeight	= 0;
-		for ( QLayoutItem * p_item : std::as_const( itemList ) )
+		for ( QLayoutItem * p_item : std::as_const( _itemList ) )
 		{
 			const QWidget * p_wid  = p_item->widget();
 			int				spaceX = horizontalSpacing();
@@ -139,7 +139,7 @@ namespace VTX::UI::QT::Layout
 		return y + lineHeight - p_rect.y() + bottom;
 	}
 
-	int FlowLayout::smartSpacing( QStyle::PixelMetric p_pm ) const
+	int FlowLayout::_smartSpacing( QStyle::PixelMetric p_pm ) const
 	{
 		QObject * p_parent = this->parent();
 		if ( !p_parent )

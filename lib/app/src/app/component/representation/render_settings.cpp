@@ -13,7 +13,7 @@ namespace VTX::App::Component::Representation
 		_settings.colorBackground	 = COLOR_BACKGROUND_DEFAULT;
 		_settings.colorLight		 = COLOR_LIGHT_DEFAULT;
 		_settings.colorFog			 = COLOR_FOG_DEFAULT;
-		_settings.shadingMode		 = static_cast<uint>( E_SHADING::DIFFUSE );
+		_settings.shadingMode		 = uint( SHADING_MODE_DEFAULT );
 		_settings.specularFactor	 = SPECULAR_FACTOR_DEFAULT;
 		_settings.shininess			 = SHININESS_DEFAULT;
 		_settings.toonSteps			 = TOON_STEPS_DEFAULT;

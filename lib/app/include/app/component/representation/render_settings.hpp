@@ -115,8 +115,8 @@ namespace VTX::App::Component::Representation
 		template<Renderer::E_RENDER_SETTINGS S, typename T>
 		Util::Callback<T> & getCallback()
 		{
-			static std::unordered_map<Renderer::E_RENDER_SETTINGS, Util::Callback<T>> callbacks;
-			return callbacks[ S ];
+			static Util::Callback<T> callback;
+			return callback;
 		}
 
 	  private:
