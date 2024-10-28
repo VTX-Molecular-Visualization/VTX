@@ -53,6 +53,12 @@ namespace
 		uint32_t num_frameNumNotMatch	 = 0;
 		uint32_t num_crashed			 = 0;
 	};
+	/**
+	 * @brief Recursive function. If file, add it to collection. If dir, call itself on it. The directory depth is
+	 * supposed to be fixed at 2 so the stack size souldn't explose.
+	 * @param contextData
+	 * @param dir
+	 */
 	void walkDir( FileCollection & contextData, const std::filesystem::path & dir )
 	{
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
@@ -63,6 +69,10 @@ namespace
 				contextData.push_back( it_fsItem.path().string() );
 		}
 	}
+	/**
+	 * @brief Open each directory from the dbDir and list the files in the tested_structs collection
+	 * @param contextData
+	 */
 	void enumerateFiles( DataBaseTestContext & contextData )
 	{
 		walkDir( contextData.tested_structs, contextData.dbDir );
@@ -122,7 +132,10 @@ namespace
 				file << fs::path( *it_strRslt.first ).stem().string() << "\t" << *it_strRslt.first << std::endl;
 		}
 	}
-
+	/**
+	 * @brief Class responsible for starting an independant worker, and restarting it if it crashes. If the worker
+	 * finish normally, it is not restarted and the finished method return true.
+	 */
 	class RestartableWorker // We expect workers to crash eventually, so we need to restart them sometimes
 	{
 		struct _Data
@@ -153,6 +166,10 @@ namespace
 		RestartableWorker( const char * startStr, int num ) : _data( std::make_unique<_Data>( startStr, num ) ) {}
 		bool finished() const { return _data->finished; }
 	};
+	/**
+	 * @brief Initilize shared deque and fill it with list of structure file path
+	 * @param contextData
+	 */
 	void _constructAndFillDeque( DataBaseTestContext & contextData )
 	{
 		using namespace VTX::IO::test;
@@ -175,6 +192,10 @@ namespace
 			fileStrDeque->back().assign( it_filepathStr.begin(), it_filepathStr.end() );
 		}
 	}
+	/**
+	 * @brief Initilize shared memory map
+	 * @param contextData
+	 */
 	void _constructMap( DataBaseTestContext & contextData )
 	{
 		using namespace VTX::IO::test;
@@ -187,6 +208,10 @@ namespace
 		RereadResultMapAllocator mapAlloc( sharedSegment.get_segment_manager() );
 		RereadResultMap * rsltMap = sharedSegment.construct<RereadResultMap>( SHM_REREADRSLT_MAP_OBJNAME )( mapAlloc );
 	}
+	/**
+	 * @brief Read the shared map to fill the process-local map for future reading
+	 * @param contextData
+	 */
 	void _exploitMap( DataBaseTestContext & contextData )
 	{
 		using namespace VTX::IO::test;
@@ -229,6 +254,10 @@ namespace
 			contextData.num_frameNumNotMatch += static_cast<bool>( rslt & RereadResult::frame_mismatch );
 		}
 	}
+	/**
+	 * @brief Read the shared memory segment to prompt what's left to do using the VTX logger
+	 * @param contextData
+	 */
 	void promptJobStatus( DataBaseTestContext & contextData )
 	{
 		using namespace boost::interprocess;
@@ -252,6 +281,10 @@ namespace
 			contextData.tested_structs.size()
 		);
 	}
+	/**
+	 * @brief Create process workers and wait for them to complete their task.
+	 * @param contextData
+	 */
 	void testFiles( DataBaseTestContext & contextData )
 	{
 		using namespace VTX::IO::test;
@@ -261,9 +294,10 @@ namespace
 		VTX::VTX_INFO( "Constructing Map ..." );
 		_constructMap( contextData );
 
-		const int					   NUM_WORKER = 24;
+		const int					   NUM_WORKER = NUM_PROCESSES;
 		const char *				   startStr	  = "vtx_io_new_process";
 		std::vector<RestartableWorker> workerPool;
+		workerPool.reserve( NUM_WORKER );
 		VTX::VTX_INFO( "Creating {} workers ...", NUM_WORKER );
 		int workerIdx = 0;
 		while ( workerIdx < NUM_WORKER )
@@ -279,11 +313,13 @@ namespace
 			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 			if ( waitCount % 30 == 0 )
 				promptJobStatus( contextData );
-			if ( waitCount % 120 == 0 )
-				workerPool.emplace_back( startStr, workerIdx++ );
 			waitCount++;
 		}
 	}
+	/**
+	 * @brief Will take care of the logging part when the object is destructed. Placing it on destructor allows for the
+	 * logging to occur even if the program is closed (kill 15 won't work)
+	 */
 	class Logger
 	{
 		DataBaseTestContext * _d;

@@ -14,6 +14,11 @@ namespace fs = std::filesystem;
 
 namespace
 {
+	/**
+	 * @brief Use libarchive to decompress the directory , take the first file and write it at destination.
+	 * @param src
+	 * @param dest
+	 */
 	void decompressFile( const VTX::FilePath & src, const VTX::FilePath & dest )
 	{
 		std::vector<char> cpp_buffer;
@@ -45,22 +50,27 @@ namespace
 		if ( r != ARCHIVE_OK )
 			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
 	}
-
-	void testFile( const VTX::FilePath & actualFileLocation, VTX::IO::test::RereadResult & rslt )
+	/**
+	 * @brief Try read, write, and re-read the input file and give back the results. May crash the entire process beyond
+	 * repair.
+	 * @param structureFile
+	 * @param rslt
+	 */
+	void testFile( const VTX::FilePath & structureFile, VTX::IO::test::RereadResult & rslt )
 	{
 		using namespace VTX;
 		using namespace VTX::IO;
 		using namespace VTX::IO::Writer;
 		using namespace VTX::IO::test;
 
-		const std::string moleculeName	   = actualFileLocation.stem().string();
-		const std::string moleculePathname = moleculeName + actualFileLocation.extension().string();
+		const std::string moleculeName	   = structureFile.stem().string();
+		const std::string moleculePathname = moleculeName + structureFile.extension().string();
 
 		VTX::Core::Struct::Molecule molecule = VTX::Core::Struct::Molecule();
 		{
 			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
 
-			moleculeReader.readFile( actualFileLocation, molecule );
+			moleculeReader.readFile( structureFile, molecule );
 		}
 		uint64_t init_atomCount	 = molecule.getAtomCount();
 		uint64_t init_chainCount = molecule.getChainCount();
@@ -68,10 +78,10 @@ namespace
 		uint64_t init_bondCount	 = molecule.getBondCount();
 		uint64_t init_resCount	 = molecule.getResidueCount();
 
-		fs::remove( actualFileLocation );
+		fs::remove( structureFile );
 
 		writeFile( WriteArgs {
-			.destination = actualFileLocation,
+			.destination = structureFile,
 			.format		 = E_FILE_FORMATS::none,
 			.molecule	 = &molecule,
 		} );
@@ -79,7 +89,7 @@ namespace
 		VTX::Core::Struct::Molecule molecule_reread		  = VTX::Core::Struct::Molecule();
 		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
 
-		moleculeReader_reread.readFile( actualFileLocation, molecule_reread );
+		moleculeReader_reread.readFile( structureFile, molecule_reread );
 
 		bool numMismatch_atom  = init_atomCount != molecule_reread.getAtomCount();
 		bool numMismatch_chain = init_chainCount != molecule_reread.getChainCount();
@@ -95,8 +105,12 @@ namespace
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
 	}
 
-	// Mark the input structure as a crashing structure. If the process ends up processing the structure without crash,
-	// this entry will be used to fill results.
+	/**
+	 * @brief Mark the input structure as a crashing structure. If the process ends up processing the structure without
+	 * crash, this entry will be used to fill results.
+	 * @param str
+	 * @param rslt
+	 */
 	void writeResultEntry( const std::string & str, const VTX::IO::test::RereadResult & rslt )
 	{
 		using namespace boost::interprocess;
@@ -117,12 +131,14 @@ namespace
 		else
 			rsltMapPair.first->at( key ) = rslt;
 	}
-	// Fill the input string with the content of the new structure file path acquired.
+	/**
+	 * @brief Fill the input string with the content of the new structure file path acquired.
+	 * @param out
+	 */
 	void acquireNewStructure( std::string & out )
 	{
 		using namespace boost::interprocess;
 		using namespace VTX::IO::test;
-		out.clear();
 
 		named_mutex									  mutex( open_or_create, SHM_FILESTR_MUTEX );
 		scoped_lock<boost::interprocess::named_mutex> lock( mutex );
@@ -172,7 +188,8 @@ int main( int argc, char * argv[] )
 		}
 		writeResultEntry( filePathStr, result );
 
+		filePathStr.clear();
 		acquireNewStructure( filePathStr );
 	}
-	return 0; 
+	return 0;
 }
