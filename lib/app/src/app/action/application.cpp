@@ -11,26 +11,7 @@
 
 namespace VTX::App::Action::Application
 {
-	void NewScene::execute()
-	{
-		SCENE().reset();
-		// App::Old::APP::getScenePathData().clearCurrentPath();
-
-		APP::onStartBlockingOperation( "Opening files" );
-
-		APP::onUpdateBlockingOperation( 0.f );
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP::onUpdateBlockingOperation( 0.25f );
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP::onUpdateBlockingOperation( 0.5f );
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP::onUpdateBlockingOperation( 0.75f );
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		APP::onUpdateBlockingOperation( 1.f );
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-
-		APP::onEndBlockingOperation();
-	}
+	void NewScene::execute() { SCENE().reset(); }
 
 	void OpenScene::execute()
 	{
