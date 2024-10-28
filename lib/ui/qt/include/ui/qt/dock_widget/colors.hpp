@@ -3,9 +3,9 @@
 
 #include "ui/qt/core/base_dock_widget.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/widget/color_picker.hpp"
 #include <QCheckBox>
 #include <QDockWidget>
-#include <QPushButton>
 
 namespace VTX::Core::Struct
 {
@@ -27,8 +27,8 @@ namespace VTX::UI::QT::DockWidget
 		inline static const QString _SETTING_KEY_HIDE = "colors/hide_non_common";
 		inline static const int		_BUTTON_SIZE	  = 32;
 
-		std::vector<QPointer<QPushButton>> _buttons;
-		QPointer<QCheckBox>				   _checkBoxHide;
+		std::vector<QPointer<Widget::ColorPicker>> _buttons;
+		QPointer<QCheckBox>						   _checkBoxHide;
 
 		void _createGroupBox(
 			const std::string_view				   p_title,
@@ -41,7 +41,12 @@ namespace VTX::UI::QT::DockWidget
 
 		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
 		void _refreshColor( const VTX::Core::Struct::ColorLayout &, const size_t );
-		void _refreshButtonVisibility( const int );
+		void _refreshButtonVisibility(
+			const bool		   p_hide,
+			const size_t	   p_start,
+			const size_t	   p_count,
+			const bool * const p_isCommonValues
+		);
 
 		void _changeColor( const size_t, const QColor & );
 	};

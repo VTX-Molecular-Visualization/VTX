@@ -97,16 +97,6 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_LINEAR,
 	};
 
-	enum struct E_SHADING
-	{
-		DIFFUSE,
-		GLOSSY,
-		TOON,
-		FLAT_COLOR,
-		GGX,
-		COUNT
-	};
-
 } // namespace VTX::Renderer
 
 #endif

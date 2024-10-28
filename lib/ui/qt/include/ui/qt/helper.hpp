@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <unordered_map>
+#include <util/color/rgba.hpp>
 
 namespace VTX::App::Core::Input
 {
@@ -14,11 +15,6 @@ namespace VTX::App::Core::Input
 	struct WheelEvent;
 } // namespace VTX::App::Core::Input
 
-namespace VTX::Util::Color
-{
-	class Rgba;
-}
-
 namespace VTX::UI::QT::Helper
 {
 
@@ -27,7 +23,8 @@ namespace VTX::UI::QT::Helper
 	App::Core::Input::MouseEvent qMouseEventToMouseEvent( const QMouseEvent & );
 	App::Core::Input::WheelEvent qWheelEventToWheelEvent( const QWheelEvent & );
 
-	QColor toQColor( const ::VTX::Util::Color::Rgba & );
+	VTX::Util::Color::Rgba fromQColor( const QColor & );
+	QColor				   toQColor( const VTX::Util::Color::Rgba & );
 
 } // namespace VTX::UI::QT::Helper
 

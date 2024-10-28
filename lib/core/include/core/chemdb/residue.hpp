@@ -51,6 +51,7 @@ namespace VTX::Core::ChemDB::Residue
 		A,
 		U,
 		I,
+		T,
 		DC,
 		DG,
 		DA,
@@ -59,6 +60,7 @@ namespace VTX::Core::ChemDB::Residue
 		DI,
 		WAT,
 		HOH,
+		SOL,
 		COUNT
 	};
 
@@ -93,6 +95,7 @@ namespace VTX::Core::ChemDB::Residue
 		"A",   // A
 		"U",   // U
 		"I",   // I
+		"T",   // T
 		"DC",  // DC
 		"DG",  // DG
 		"DA",  // DA
@@ -101,6 +104,7 @@ namespace VTX::Core::ChemDB::Residue
 		"DI",  // DI
 		"WAT", // WAT
 		"HOH", // HOH
+		"SOL", // SOL
 	};
 
 	const std::string_view SYMBOL_SHORT_STR[ int( SYMBOL::COUNT ) ] = {
@@ -134,6 +138,7 @@ namespace VTX::Core::ChemDB::Residue
 		"A",  // A
 		"U",  // U
 		"I",  // I
+		"T",  // T
 		"DC", // DC
 		"DG", // DG
 		"DA", // DA
@@ -142,6 +147,7 @@ namespace VTX::Core::ChemDB::Residue
 		"DI", // DI
 		"O",  // WAT
 		"O",  // HOH
+		"S",  // SOL
 	};
 
 	const std::string_view SYMBOL_NAME[ int( SYMBOL::COUNT ) ] = {
@@ -175,6 +181,7 @@ namespace VTX::Core::ChemDB::Residue
 		"Adenine",		  // A
 		"Uracil",		  // U
 		"Inosine",		  // I
+		"Thymine",		  // T
 		"Cytosine",		  // DC
 		"Guanine",		  // DG
 		"Adenine",		  // DA
@@ -183,6 +190,51 @@ namespace VTX::Core::ChemDB::Residue
 		"Inosine",		  // DI
 		"Water",		  // WAT
 		"Water",		  // HOH
+		"Solvent",		  // SOL
+	};
+
+	const bool SYMBOL_IS_COMMON[ int( SYMBOL::COUNT ) ] = {
+		true,  // UNKNOWN
+		true,  // ALA
+		true,  // ARG
+		true,  // ASN
+		true,  // ASP
+		true,  // CYS
+		true,  // GLN
+		true,  // GLU
+		true,  // GLY
+		true,  // HIS
+		true,  // ILE
+		true,  // LEU
+		true,  // LYS
+		true,  // MET
+		true,  // PHE
+		true,  // PRO
+		true,  // SER
+		true,  // THR
+		true,  // TRP
+		true,  // TYR
+		true,  // VAL
+		false, // SEC
+		false, // PYL
+		false, // ASX
+		false, // GLX
+		true,  // C
+		true,  // G
+		true,  // A
+		true,  // U
+		true,  // I
+		true,  // T
+		false, // DC
+		false, // DG
+		false, // DA
+		false, // DU
+		false, // DT
+		false, // DI
+		true,  // WAT
+		true,  // HOH
+		true,  // SOL
+
 	};
 
 	const SYMBOL getSymbolFromShortName( const std::string & p_residueName );
