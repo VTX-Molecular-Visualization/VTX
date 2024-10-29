@@ -213,12 +213,6 @@ namespace
 		const char * systemName;
 		const char * extension;
 		const char * writtenExtension;
-
-		size_t chainCount = 0;
-		size_t resCount	  = 0;
-		size_t atomCount  = 0;
-		size_t frameCount = 0;
-		size_t bondCount  = 0;
 	};
 	void testSystem( TestSystemArgs p_args )
 	{
@@ -236,11 +230,11 @@ namespace
 
 			moleculeReader.readFile( moleculePath, molecule );
 		}
-		p_args.atomCount  = molecule.getAtomCount();
-		p_args.chainCount = molecule.getChainCount();
-		p_args.frameCount = molecule.trajectory.getFrameCount();
-		p_args.bondCount  = molecule.getBondCount();
-		p_args.resCount	  = molecule.getResidueCount();
+		size_t atomCount  = molecule.getAtomCount();
+		size_t chainCount = molecule.getChainCount();
+		size_t frameCount = molecule.trajectory.getFrameCount();
+		size_t bondCount  = molecule.getBondCount();
+		size_t resCount	  = molecule.getResidueCount();
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
@@ -259,9 +253,9 @@ namespace
 
 		moleculeReader_reread.readFile( destination, molecule_reread );
 
-		CHECK( molecule_reread.getChainCount() == p_args.chainCount );
-		CHECK( molecule_reread.getResidueCount() == p_args.resCount );
-		CHECK( molecule_reread.getAtomCount() == p_args.atomCount );
+		CHECK( molecule_reread.getChainCount() == chainCount );
+		CHECK( molecule_reread.getResidueCount() == resCount );
+		CHECK( molecule_reread.getAtomCount() == atomCount );
 
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
@@ -271,15 +265,11 @@ namespace
 
 TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
 {
+	VTX::VTX_INFO( "Test reading and writing on {}.", "1idx" );
+	VTX::VTX_INFO( "This one has reported atom mismatch" );
+	testSystem( TestSystemArgs { .systemName = "1idx", .extension = ".cif", .writtenExtension = ".mmcif" } );
+	VTX::VTX_INFO( "Test reading and writing on {}.", "202d" );
+	VTX::VTX_INFO( "This one has reported residue mismatch" );
+	testSystem( TestSystemArgs { .systemName = "202d", .extension = ".cif", .writtenExtension = ".mmcif" } );
 	return;
-	VTX::VTX_INFO( "Test reading and writing on {}.", "8aad" );
-	testSystem( TestSystemArgs { .systemName = "8aad", .extension = ".mmcif", .writtenExtension = ".mmcif" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "2qwo" );
-	testSystem( TestSystemArgs { .systemName = "2qwo", .extension = ".pdb", .writtenExtension = ".pdb" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "1wav" );
-	testSystem( TestSystemArgs { .systemName = "1wav", .extension = ".pdb", .writtenExtension = ".pdb" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "1gcn" );
-	testSystem( TestSystemArgs { .systemName = "1gcn", .extension = ".pdb", .writtenExtension = ".pdb" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "8OIT" );
-	testSystem( TestSystemArgs { .systemName = "8OIT", .extension = ".mmtf", .writtenExtension = ".mmcif" } );
 }
