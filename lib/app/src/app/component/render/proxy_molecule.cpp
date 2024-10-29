@@ -31,7 +31,7 @@ namespace VTX::App::Component::Render
 	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::Molecule & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
-		VTX::Core::Struct::Molecule &	 molStruct = molComp._moleculeStruct;
+		VTX::Core::Struct::System &	 molStruct = molComp._moleculeStruct;
 
 		// TODO: how to handle this?
 		IO::Util::SecondaryStructure::computeStride( molComp._moleculeStruct );
@@ -71,7 +71,7 @@ namespace VTX::App::Component::Render
 		_applyAtomPositionCallbacks();
 	}
 
-	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<uchar> atomColors;
 
@@ -85,7 +85,7 @@ namespace VTX::App::Component::Render
 
 		return atomColors;
 	}
-	std::vector<float> ProxyMolecule::_generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<float> ProxyMolecule::_generateAtomRadii( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<float> atomRadii;
 
@@ -109,7 +109,7 @@ namespace VTX::App::Component::Render
 
 		return atomUids;
 	}
-	std::vector<uchar> ProxyMolecule::_generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const
+	std::vector<uchar> ProxyMolecule::_generateResidueColors( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<uchar> residueColors;
 		residueColors.resize( p_molStruct.getResidueCount(), 0 );

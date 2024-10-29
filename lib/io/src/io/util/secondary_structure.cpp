@@ -5,7 +5,7 @@
 namespace VTX::IO::Util::SecondaryStructure
 {
 
-	void computeStride( Core::Struct::Molecule & p_molecule )
+	void computeStride( Core::Struct::System & p_molecule )
 	{
 		using namespace VTX::Util;
 

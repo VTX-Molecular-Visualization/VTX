@@ -26,7 +26,7 @@ namespace VTX::App::Serialization::IO::Reader
 	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_reader								  = VTX::IO::Reader::Molecule();
-		Core::Struct::Molecule moleculeStruct = Core::Struct::Molecule();
+		Core::Struct::System moleculeStruct = Core::Struct::System();
 
 		_reader.readFile( p_path, moleculeStruct );
 		VTX::Util::Chrono chrono = VTX::Util::Chrono();
@@ -43,7 +43,7 @@ namespace VTX::App::Serialization::IO::Reader
 	)
 	{
 		_reader								  = VTX::IO::Reader::Molecule();
-		Core::Struct::Molecule moleculeStruct = Core::Struct::Molecule();
+		Core::Struct::System moleculeStruct = Core::Struct::System();
 
 		_reader.readBuffer( p_buffer, p_path, moleculeStruct );
 		p_molecule.setMoleculeStruct( moleculeStruct );

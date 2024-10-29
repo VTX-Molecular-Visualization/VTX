@@ -7,9 +7,9 @@ namespace VTX::IO::Writer
 	namespace
 	{
 		inline bool isResidueOfChain(
-			const size_t &						p_residueIdx,
-			const size_t &						p_chainIdx,
-			const VTX::Core::Struct::Molecule & p_mol
+			const size_t &					  p_residueIdx,
+			const size_t &					  p_chainIdx,
+			const VTX::Core::Struct::System & p_mol
 		) noexcept
 		{
 			if ( p_chainIdx < p_mol.getChainCount() - 1 )
@@ -17,9 +17,9 @@ namespace VTX::IO::Writer
 			return p_residueIdx < p_mol.getResidueCount();
 		}
 		inline bool isAtomOfResidue(
-			const size_t &						p_atomIdx,
-			const size_t &						p_residueIdx,
-			const VTX::Core::Struct::Molecule & p_mol
+			const size_t &					  p_atomIdx,
+			const size_t &					  p_residueIdx,
+			const VTX::Core::Struct::System & p_mol
 		)
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
@@ -43,10 +43,10 @@ namespace VTX::IO::Writer
 		}
 
 		inline void addAtom(
-			const VTX::Core::Struct::Molecule & p_mol,
-			const size_t &						p_atomIdx,
-			System &							p_system,
-			Residue &							p_residue
+			const VTX::Core::Struct::System & p_mol,
+			const size_t &					  p_atomIdx,
+			System &						  p_system,
+			Residue &						  p_residue
 		)
 		{
 			Atom w_atom = p_system.newAtom( { p_atomIdx } );
@@ -57,11 +57,11 @@ namespace VTX::IO::Writer
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
 		inline void addResidue(
-			const VTX::Core::Struct::Molecule & p_mol,
-			const size_t &						p_residueIdx,
-			System &							p_system,
-			Chain &								p_chain,
-			AtomFilter &						p_atomFilter
+			const VTX::Core::Struct::System & p_mol,
+			const size_t &					  p_residueIdx,
+			System &						  p_system,
+			Chain &							  p_chain,
+			AtomFilter &					  p_atomFilter
 		)
 		{
 			Residue w_residue = p_system.newResidue();
@@ -89,10 +89,10 @@ namespace VTX::IO::Writer
 			}
 		}
 		inline void addChain(
-			const VTX::Core::Struct::Molecule & p_mol,
-			const size_t &						p_chainIdx,
-			System &							p_system,
-			AtomFilter &						p_atomFilter
+			const VTX::Core::Struct::System & p_mol,
+			const size_t &					  p_chainIdx,
+			System &						  p_system,
+			AtomFilter &					  p_atomFilter
 		)
 		{
 			Chain w_chain = p_system.newChain();
@@ -110,9 +110,9 @@ namespace VTX::IO::Writer
 			}
 		}
 		inline void setBonds(
-			const VTX::Core::Struct::Molecule & p_mol,
-			System &							p_system,
-			AtomFilter &						p_atomFilter
+			const VTX::Core::Struct::System & p_mol,
+			System &						  p_system,
+			AtomFilter &					  p_atomFilter
 
 		)
 		{
@@ -128,7 +128,7 @@ namespace VTX::IO::Writer
 				}
 			}
 		}
-		inline void fillFrames( const VTX::Core::Struct::Molecule & p_mol, System & p_system )
+		inline void fillFrames( const VTX::Core::Struct::System & p_mol, System & p_system )
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_mol.trajectory.getFrameCount(); frameIdx++ )
 			{

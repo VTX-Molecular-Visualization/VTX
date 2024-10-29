@@ -38,7 +38,7 @@ namespace VTX::App::Component::Chemistry
 		_atoms	  = std::vector<std::unique_ptr<Chemistry::Atom>>();
 		_bonds	  = std::vector<std::unique_ptr<Chemistry::Bond>>();
 	};
-	Molecule::Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct ) { setMoleculeStruct( p_moleculeStruct ); }
+	Molecule::Molecule( VTX::Core::Struct::System & p_moleculeStruct ) { setMoleculeStruct( p_moleculeStruct ); }
 	Molecule::~Molecule()
 	{
 		if ( _atomUidRange.isValid() )
@@ -48,7 +48,7 @@ namespace VTX::App::Component::Chemistry
 			UID_SYSTEM().unregister( _residueUidRange );
 	};
 
-	void Molecule::setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct )
+	void Molecule::setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct )
 	{
 		_moleculeStruct = std::move( p_moleculeStruct );
 

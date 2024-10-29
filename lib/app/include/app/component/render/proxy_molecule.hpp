@@ -3,7 +3,7 @@
 
 #include "app/component/chemistry/molecule.hpp"
 #include "app/core/visibility/enum.hpp"
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <renderer/facade.hpp>
 #include <renderer/proxy/molecule.hpp>
 #include <util/types.hpp>
@@ -25,10 +25,10 @@ namespace VTX::App::Component::Render
 		void _addInRenderer( Renderer::Facade & p_renderer );
 		void _setupCallbacks();
 
-		std::vector<uchar> _generateAtomColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
-		std::vector<float> _generateAtomRadii( const VTX::Core::Struct::Molecule & p_molStruct ) const;
+		std::vector<uchar> _generateAtomColors( const VTX::Core::Struct::System & p_molStruct ) const;
+		std::vector<float> _generateAtomRadii( const VTX::Core::Struct::System & p_molStruct ) const;
 		std::vector<uint>  _generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const;
-		std::vector<uchar> _generateResidueColors( const VTX::Core::Struct::Molecule & p_molStruct ) const;
+		std::vector<uchar> _generateResidueColors( const VTX::Core::Struct::System & p_molStruct ) const;
 		std::vector<uint>  _generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const;
 
 		void _applyOnVisibility(

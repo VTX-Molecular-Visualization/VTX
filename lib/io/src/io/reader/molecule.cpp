@@ -1,7 +1,7 @@
 #include "io/reader/molecule.hpp"
 #include "io/struct/molecule_configuration.hpp"
 #include <core/chemdb/secondary_structure.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <core/struct/trajectory.hpp>
 #include <map>
 #include <unordered_set>
@@ -12,7 +12,7 @@
 
 namespace VTX::IO::Reader
 {
-	void Molecule::readFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
+	void Molecule::readFile( const FilePath & p_path, VTX::Core::Struct::System & p_molecule )
 	{
 		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
 		_fillStructure( *_chemfilesReader, p_molecule );
@@ -20,14 +20,14 @@ namespace VTX::IO::Reader
 	void Molecule::readBuffer(
 		const std::string &			  p_buffer,
 		const FilePath &			  p_path,
-		VTX::Core::Struct::Molecule & p_molecule
+		VTX::Core::Struct::System & p_molecule
 	)
 	{
 		_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
 		_fillStructure( *_chemfilesReader, p_molecule );
 	}
 
-	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::Molecule & p_molecule )
+	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_molecule )
 	{
 		const std::string fileExtension = p_chemfileStruct.getPath().extension().string();
 
@@ -173,7 +173,7 @@ namespace VTX::IO::Reader
 			// std::thread fillFrames(
 			//	&MoleculeLoader::fillTrajectoryFrames, this, std::ref( trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
-			std::pair<VTX::Core::Struct::Molecule *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
+			std::pair<VTX::Core::Struct::System *, size_t> pairMoleculeFirstFrame = { &p_molecule, 1 };
 			_readTrajectoryFrames( p_chemfileStruct, { pairMoleculeFirstFrame }, 1 );
 		}
 
@@ -261,7 +261,7 @@ namespace VTX::IO::Reader
 
 	void Molecule::_readTrajectoryFrames(
 		IO::Reader::Chemfiles &												  p_chemfileStruct,
-		const std::vector<std::pair<VTX::Core::Struct::Molecule *, size_t>> & p_targets,
+		const std::vector<std::pair<VTX::Core::Struct::System *, size_t>> & p_targets,
 		const size_t														  p_trajectoryFrameStart
 	)
 	{
@@ -283,9 +283,9 @@ namespace VTX::IO::Reader
 			if ( atomPositions.size() <= 0 )
 				continue;
 
-			for ( const std::pair<VTX::Core::Struct::Molecule *, size_t> & pairMoleculeStartFrame : p_targets )
+			for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairMoleculeStartFrame : p_targets )
 			{
-				VTX::Core::Struct::Molecule & molecule	 = *pairMoleculeStartFrame.first;
+				VTX::Core::Struct::System & molecule	 = *pairMoleculeStartFrame.first;
 				const size_t				  frameIndex = pairMoleculeStartFrame.second + validFrameCount;
 				molecule.trajectory.fillFrame( frameIndex, atomPositions );
 
@@ -306,9 +306,9 @@ namespace VTX::IO::Reader
 		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
 		// Erase supernumeraries frames
-		for ( const std::pair<VTX::Core::Struct::Molecule *, size_t> & pairMoleculeFirstFrame : p_targets )
+		for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairMoleculeFirstFrame : p_targets )
 		{
-			VTX::Core::Struct::Molecule &	molecule   = *( pairMoleculeFirstFrame.first );
+			VTX::Core::Struct::System &	molecule   = *( pairMoleculeFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = molecule.trajectory;
 			if ( trajectory.frames.back().size() == 0 )
 			{

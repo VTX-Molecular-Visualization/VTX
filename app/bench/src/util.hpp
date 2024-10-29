@@ -1,13 +1,13 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Bench
 {
-	Core::Struct::Molecule loadMolecule( const FilePath & p_filename );
-	Core::Struct::Molecule downloadMolecule( const std::string & p_pdb );
+	Core::Struct::System loadMolecule( const FilePath & p_filename );
+	Core::Struct::System downloadMolecule( const std::string & p_pdb );
 
 	// Skybox tests.
 	/*

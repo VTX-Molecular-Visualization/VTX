@@ -5,7 +5,7 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <fstream>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>

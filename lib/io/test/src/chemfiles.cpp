@@ -1,6 +1,6 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <fstream>
 #include <io/reader/molecule.hpp>
 #include <io/writer/chemfiles.hpp>
@@ -168,7 +168,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		twoWaterMolecules1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
 	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
 	moleculeReader.readFile( waterPath, molecule );
 
@@ -195,7 +195,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		twoWaterMolecules2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
 	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
 	moleculeReader.readFile( waterPath, molecule );
 
@@ -224,7 +224,7 @@ namespace
 		const std::string moleculePathname = moleculeName + p_args.extension;
 		const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
 
-		VTX::Core::Struct::Molecule molecule = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 		{
 			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
 
@@ -248,7 +248,7 @@ namespace
 			.molecule	 = &molecule,
 		} );
 
-		VTX::Core::Struct::Molecule molecule_reread		  = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System molecule_reread		  = VTX::Core::Struct::System();
 		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
 
 		moleculeReader_reread.readFile( destination, molecule_reread );

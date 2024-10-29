@@ -6,7 +6,7 @@
 #include "app/component/chemistry/index_types.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <memory>
 #include <util/callback.hpp>
 #include <util/math/range_list.hpp>
@@ -32,11 +32,11 @@ namespace VTX::App::Component::Chemistry
 
 	  public:
 		Molecule();
-		Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct );
+		Molecule( VTX::Core::Struct::System & p_moleculeStruct );
 		~Molecule();
 
-		const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return _moleculeStruct; };
-		void								setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
+		const VTX::Core::Struct::System & getMoleculeStruct() const { return _moleculeStruct; };
+		void								setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct );
 
 		void		  initChains( const size_t p_chainCount );
 		Chain *		  getChain( const size_t p_index ) { return _chains[ p_index ].get(); }
@@ -123,7 +123,7 @@ namespace VTX::App::Component::Chemistry
 
 		void _resizeTopologyVectors();
 
-		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System _moleculeStruct = VTX::Core::Struct::System();
 
 		std::vector<std::unique_ptr<Chain>>	  _chains;
 		std::vector<std::unique_ptr<Residue>> _residues;

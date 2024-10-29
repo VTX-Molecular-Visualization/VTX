@@ -17,11 +17,11 @@
 
 namespace VTX::Core::Struct
 {
-	struct Molecule
+	struct System
 	{
 		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
 
-		Molecule();
+		System();
 
 		std::string name	  = "unknown";
 		Mat4f		transform = MAT4F_ID;
@@ -83,7 +83,7 @@ namespace VTX::Core::Struct
 		/**
 		 * @brief This vector works by associating atomidx at vector[N] with vector[N+1] where N is even.
 		 */
-		std::vector<atom_index_t>		 bondPairAtomIndexes; 
+		std::vector<atom_index_t> bondPairAtomIndexes;
 
 		void   initBonds( const size_t p_count );
 		size_t getBondCount() const;

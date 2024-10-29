@@ -37,11 +37,11 @@ namespace VTX::Bench
 
 		if ( p_name.find( '.' ) != std::string::npos )
 		{
-			_molecules.emplace_back( std::make_unique<Core::Struct::Molecule>( loadMolecule( p_name ) ) );
+			_molecules.emplace_back( std::make_unique<Core::Struct::System>( loadMolecule( p_name ) ) );
 		}
 		else
 		{
-			_molecules.emplace_back( std::make_unique<Core::Struct::Molecule>( downloadMolecule( p_name ) ) );
+			_molecules.emplace_back( std::make_unique<Core::Struct::System>( downloadMolecule( p_name ) ) );
 		}
 
 		//_molecules.back()->transform
@@ -77,7 +77,7 @@ namespace VTX::Bench
 		_directions.clear();
 	}
 
-	std::unique_ptr<Renderer::Proxy::Molecule> Scene::_proxify( const Core::Struct::Molecule & p_molecule )
+	std::unique_ptr<Renderer::Proxy::Molecule> Scene::_proxify( const Core::Struct::System & p_molecule )
 	{
 		const size_t									sizeAtoms	= p_molecule.trajectory.frames.front().size();
 		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;

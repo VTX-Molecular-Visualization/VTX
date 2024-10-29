@@ -3,7 +3,7 @@
 
 #include "camera.hpp"
 #include <core/struct/color_layout.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <renderer/proxy/camera.hpp>
 #include <renderer/proxy/color_layout.hpp>
 #include <renderer/proxy/molecule.hpp>
@@ -52,7 +52,7 @@ namespace VTX::Bench
 			}
 		}
 
-		inline const std::vector<std::unique_ptr<Core::Struct::Molecule>> & getMolecules() const { return _molecules; }
+		inline const std::vector<std::unique_ptr<Core::Struct::System>> & getMolecules() const { return _molecules; }
 		inline const std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> & getProxiesMolecules() const
 		{
 			return _proxyMolecules;
@@ -71,14 +71,14 @@ namespace VTX::Bench
 		Camera					_camera;
 		Renderer::Proxy::Camera _proxyCamera;
 
-		std::vector<std::unique_ptr<Core::Struct::Molecule>>	_molecules;
+		std::vector<std::unique_ptr<Core::Struct::System>>	_molecules;
 		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxyMolecules;
 		std::vector<Vec3f>										_directions;
 
 		Core::Struct::ColorLayout	 _colorLayout;
 		Renderer::Proxy::ColorLayout _proxyLayoutColor;
 
-		std::unique_ptr<Renderer::Proxy::Molecule> _proxify( const Core::Struct::Molecule & p_molecule );
+		std::unique_ptr<Renderer::Proxy::Molecule> _proxify( const Core::Struct::System & p_molecule );
 	};
 
 } // namespace VTX::Bench

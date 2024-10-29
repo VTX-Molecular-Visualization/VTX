@@ -66,7 +66,7 @@ namespace
 		const std::string moleculeName	   = structureFile.stem().string();
 		const std::string moleculePathname = moleculeName + structureFile.extension().string();
 
-		VTX::Core::Struct::Molecule molecule = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 		{
 			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
 
@@ -86,7 +86,7 @@ namespace
 			.molecule	 = &molecule,
 		} );
 
-		VTX::Core::Struct::Molecule molecule_reread		  = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System molecule_reread		  = VTX::Core::Struct::System();
 		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
 
 		moleculeReader_reread.readFile( structureFile, molecule_reread );
