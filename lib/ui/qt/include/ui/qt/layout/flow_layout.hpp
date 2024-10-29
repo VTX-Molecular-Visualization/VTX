@@ -32,10 +32,10 @@ namespace VTX::UI::QT::Layout
 		QLayoutItem *	 takeAt( int index ) override;
 
 	  private:
-		int doLayout( const QRect & rect, bool testOnly ) const;
-		int smartSpacing( QStyle::PixelMetric pm ) const;
+		int _doLayout( const QRect & rect, bool testOnly ) const;
+		int _smartSpacing( QStyle::PixelMetric pm ) const;
 
-		QList<QLayoutItem *> itemList;
+		QList<QLayoutItem *> _itemList;
 		int					 _hSpace;
 		int					 _vSpace;
 	};

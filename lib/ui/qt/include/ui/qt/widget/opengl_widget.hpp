@@ -30,6 +30,9 @@ namespace VTX::UI::QT::Widget
 		void setVSync( const bool );
 		bool isVSync() const { return _context->format().swapInterval() == 1; }
 
+	  protected:
+		bool eventFilter( QObject *, QEvent * ) override;
+
 	  private:
 		QPointer<QOpenGLContext>		   _context;
 		QPointer<Window::EventCatchWindow> _window;

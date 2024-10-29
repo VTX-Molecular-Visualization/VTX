@@ -1,6 +1,7 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
+#include "ui/qt/dialog/open.hpp"
 #include <app/action/animation.hpp>
 #include <app/action/application.hpp>
 #include <app/action/controller.hpp>
@@ -104,6 +105,11 @@ namespace VTX::UI::QT::Action
 			tip		 = "Open a project or a molecular file";
 			icon	 = "sprite/file/open.png";
 			shortcut = "Ctrl+O";
+			trigger	 = []()
+			{
+				Dialog::Open dialog;
+				dialog.exec();
+			};
 		}
 
 		OpenRecent::OpenRecent()

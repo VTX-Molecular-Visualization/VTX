@@ -12,7 +12,9 @@
 #include <core/chemdb/chain.hpp>
 #include <core/chemdb/color.hpp>
 #include <core/struct/color_layout.hpp>
+#include <util/chrono.hpp>
 #include <util/color/rgba.hpp>
+#include <util/string.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -27,9 +29,9 @@ namespace VTX::UI::QT::DockWidget
 		  );
 
 		// Search bar.
-		auto * searchBar = new QLineEdit( _root );
-		searchBar->setPlaceholderText( "Search..." );
-		_layout->addWidget( searchBar );
+		// auto * searchBar = new QLineEdit( _root );
+		// searchBar->setPlaceholderText( "Search..." );
+		//_layout->addWidget( searchBar );
 
 		// Checkbox to hide non usual items.
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );
@@ -51,6 +53,7 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Randomize button.
+		/*
 		auto * buttonRandomize = new QPushButton( "Randomize", _root );
 		_layout->addWidget( buttonRandomize );
 		connect(
@@ -58,6 +61,7 @@ namespace VTX::UI::QT::DockWidget
 			&QPushButton::clicked,
 			[ this ]() { App::ACTION_SYSTEM().execute<App::Action::Color::RandomizeLayoutColors>(); }
 		);
+		*/
 
 		using namespace VTX::Core::Struct;
 		using namespace VTX::Core::ChemDB;
@@ -165,11 +169,21 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace VTX::Core::ChemDB;
 
+		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
+		delete groupBox->layout();
+		auto * layout = new Layout::FlowLayout( groupBox );
+
 		size_t count = 0;
 		for ( size_t i = p_start; i < p_start + p_count; ++i )
 		{
+			const bool show = not p_hide or p_isCommonValues[ count++ ];
+
 			// Hide button.
-			_buttons[ i ]->setVisible( not p_hide || p_isCommonValues[ count++ ] );
+			_buttons[ i ]->setVisible( show );
+			if ( show )
+			{
+				layout->addWidget( _buttons[ i ] );
+			}
 		}
 	}
 

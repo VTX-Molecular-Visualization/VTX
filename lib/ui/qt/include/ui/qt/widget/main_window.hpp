@@ -34,8 +34,8 @@ namespace VTX::UI::QT::Widget
 
 		inline void setClosing( const bool p_closing ) { _closing = p_closing; }
 
-		void changeEvent( QEvent * const p_event ) override;
-		void closeEvent( QCloseEvent * p_event ) override;
+		void changeEvent( QEvent * ) override;
+		void closeEvent( QCloseEvent * ) override;
 
 		template<typename M>
 		M * const createMenu()
@@ -79,6 +79,10 @@ namespace VTX::UI::QT::Widget
 
 		void save() override;
 		void restore() override;
+
+	  protected:
+		void dragEnterEvent( QDragEnterEvent * );
+		void dropEvent( QDropEvent * );
 
 	  private:
 		QPointer<OpenGLWidget>	   _openGLWidget;

@@ -8,14 +8,14 @@
 namespace VTX::UI::QT::Core
 {
 
-	/**
-	 * @brief Abstract class that describes a dialog centered on the main window.
-	 * @tparam D is the derived class type.
-	 */
-
 	template<typename D>
 	concept ConceptDialog = std::is_base_of_v<QDialog, D>;
 
+	/**
+	 * @brief Abstract class that describes a dialog centered on the main window.
+	 * @tparam T is the derived class type.
+	 * @tparam D is the dialog type.
+	 */
 	template<typename T, ConceptDialog D = QDialog>
 	class BaseDialog : public BaseWidget<T, D>
 	{

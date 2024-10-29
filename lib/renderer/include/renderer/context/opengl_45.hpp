@@ -309,12 +309,12 @@ namespace VTX::Renderer::Context
 		}
 
 		void _purgeResources(
-			const std::vector<Key> & vertexArrays,
-			const std::vector<Key> & buffers,
-			const std::vector<Key> & framebuffers,
-			const std::vector<Key> & textures,
-			const std::vector<Key> & programs,
-			const std::vector<Key> & uniforms
+			const std::vector<Key> & p_vertexArrays,
+			const std::vector<Key> & p_buffers,
+			const std::vector<Key> & p_framebuffers,
+			const std::vector<Key> & p_textures,
+			const std::vector<Key> & p_programs,
+			const std::vector<Key> & p_uniforms
 		);
 
 		void				 _getOpenglInfos();
