@@ -5,7 +5,7 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <filesystem>
 #include <fstream>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 #include <io/writer/molecule.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -68,7 +68,7 @@ namespace
 
 		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 		{
-			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
+			IO::Reader::System moleculeReader = IO::Reader::System();
 
 			moleculeReader.readFile( structureFile, molecule );
 		}
@@ -87,7 +87,7 @@ namespace
 		} );
 
 		VTX::Core::Struct::System molecule_reread		  = VTX::Core::Struct::System();
-		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
+		IO::Reader::System		moleculeReader_reread = IO::Reader::System();
 
 		moleculeReader_reread.readFile( structureFile, molecule_reread );
 

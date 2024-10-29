@@ -1,4 +1,4 @@
-#include "io/reader/molecule.hpp"
+#include "io/reader/system.hpp"
 #include "io/struct/molecule_configuration.hpp"
 #include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/system.hpp>
@@ -12,14 +12,14 @@
 
 namespace VTX::IO::Reader
 {
-	void Molecule::readFile( const FilePath & p_path, VTX::Core::Struct::System & p_molecule )
+	void System::readFile( const FilePath & p_path, VTX::Core::Struct::System & p_molecule )
 	{
 		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
 		_fillStructure( *_chemfilesReader, p_molecule );
 	}
-	void Molecule::readBuffer(
-		const std::string &			  p_buffer,
-		const FilePath &			  p_path,
+	void System::readBuffer(
+		const std::string &			p_buffer,
+		const FilePath &			p_path,
 		VTX::Core::Struct::System & p_molecule
 	)
 	{
@@ -27,7 +27,7 @@ namespace VTX::IO::Reader
 		_fillStructure( *_chemfilesReader, p_molecule );
 	}
 
-	void Molecule::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_molecule )
+	void System::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_molecule )
 	{
 		const std::string fileExtension = p_chemfileStruct.getPath().extension().string();
 
@@ -259,10 +259,10 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	void Molecule::_readTrajectoryFrames(
-		IO::Reader::Chemfiles &												  p_chemfileStruct,
+	void System::_readTrajectoryFrames(
+		IO::Reader::Chemfiles &												p_chemfileStruct,
 		const std::vector<std::pair<VTX::Core::Struct::System *, size_t>> & p_targets,
-		const size_t														  p_trajectoryFrameStart
+		const size_t														p_trajectoryFrameStart
 	)
 	{
 		// Fill other frames.
@@ -285,8 +285,8 @@ namespace VTX::IO::Reader
 
 			for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairMoleculeStartFrame : p_targets )
 			{
-				VTX::Core::Struct::System & molecule	 = *pairMoleculeStartFrame.first;
-				const size_t				  frameIndex = pairMoleculeStartFrame.second + validFrameCount;
+				VTX::Core::Struct::System & molecule   = *pairMoleculeStartFrame.first;
+				const size_t				frameIndex = pairMoleculeStartFrame.second + validFrameCount;
 				molecule.trajectory.fillFrame( frameIndex, atomPositions );
 
 				validFrameCount++;
@@ -308,7 +308,7 @@ namespace VTX::IO::Reader
 		// Erase supernumeraries frames
 		for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairMoleculeFirstFrame : p_targets )
 		{
-			VTX::Core::Struct::System &	molecule   = *( pairMoleculeFirstFrame.first );
+			VTX::Core::Struct::System &		molecule   = *( pairMoleculeFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = molecule.trajectory;
 			if ( trajectory.frames.back().size() == 0 )
 			{
@@ -322,7 +322,7 @@ namespace VTX::IO::Reader
 		}
 	}
 
-	VTX::Core::ChemDB::Category::TYPE Molecule::_findCategoryType(
+	VTX::Core::ChemDB::Category::TYPE System::_findCategoryType(
 		const std::string & p_fileExtension,
 		const std::string & p_residueSymbol
 	)
@@ -342,7 +342,7 @@ namespace VTX::IO::Reader
 		return res;
 	}
 
-	ChemDB::Atom::TYPE Molecule::_getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const
+	ChemDB::Atom::TYPE System::_getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const
 	{
 		if ( _configuration == nullptr )
 			return ChemDB::Atom::TYPE::NORMAL;

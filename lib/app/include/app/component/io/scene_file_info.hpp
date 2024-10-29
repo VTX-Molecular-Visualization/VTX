@@ -51,16 +51,16 @@ namespace VTX::App::Component::IO
 		// ScenePathData();
 		// virtual void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		// void registerLoading( const App::Component::Chemistry::Molecule * const p_molecule,
+		// void registerLoading( const App::Component::Chemistry::System * const p_molecule,
 		//					  const FilePath &									p_filepath );
 
 		// inline const FilePath & getCurrentPath() const { return _currentFilePath; }
 		// void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
 		// void					clearCurrentPath();
 
-		// Data &						getData( const App::Component::Chemistry::Molecule * const p_molecule );
-		// const ScenePathData::Data & getData( const App::Component::Chemistry::Molecule * const p_molecule ) const;
-		// FilePath					getFilepath( const App::Component::Chemistry::Molecule * const p_molecule ) const;
+		// Data &						getData( const App::Component::Chemistry::System * const p_molecule );
+		// const ScenePathData::Data & getData( const App::Component::Chemistry::System * const p_molecule ) const;
+		// FilePath					getFilepath( const App::Component::Chemistry::System * const p_molecule ) const;
 
 		// void	   incrementSceneModifications();
 		// void	   decrementSceneModifications();
@@ -71,7 +71,7 @@ namespace VTX::App::Component::IO
 
 	  private:
 		FilePath _currentFilePath = FilePath();
-		// std::map<const App::Component::Chemistry::Molecule *, Data> _mapMoleculePath;
+		// std::map<const App::Component::Chemistry::System *, Data> _mapMoleculePath;
 		int	 _sceneModificationsCount = 0;
 		bool _forceSceneModifications = false;
 	};

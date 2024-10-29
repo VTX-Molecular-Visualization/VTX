@@ -74,7 +74,7 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 		CURRENT_SELECTION().clear();
 
-		// std::vector<const Component::Chemistry::Molecule *> molecules = { &mol1, &mol2 };
+		// std::vector<const Component::Chemistry::System *> molecules = { &mol1, &mol2 };
 		// CURRENT_SELECTION().selectAll( molecules );
 		// CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
 	}

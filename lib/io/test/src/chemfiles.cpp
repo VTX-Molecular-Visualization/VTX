@@ -2,7 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/system.hpp>
 #include <fstream>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 #include <io/writer/chemfiles.hpp>
 #include <io/writer/molecule.hpp>
 #include <util/filesystem.hpp>
@@ -168,8 +168,8 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		twoWaterMolecules1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
+	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  moleculeReader = VTX::IO::Reader::System();
 	moleculeReader.readFile( waterPath, molecule );
 
 	CHECK( molecule.getChainCount() == 1 );
@@ -195,8 +195,8 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		twoWaterMolecules2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
+	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  moleculeReader = VTX::IO::Reader::System();
 	moleculeReader.readFile( waterPath, molecule );
 
 	CHECK( molecule.getChainCount() == 1 );
@@ -226,7 +226,7 @@ namespace
 
 		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 		{
-			IO::Reader::Molecule moleculeReader = IO::Reader::Molecule();
+			IO::Reader::System moleculeReader = IO::Reader::System();
 
 			moleculeReader.readFile( moleculePath, molecule );
 		}
@@ -248,8 +248,8 @@ namespace
 			.molecule	 = &molecule,
 		} );
 
-		VTX::Core::Struct::System molecule_reread		  = VTX::Core::Struct::System();
-		IO::Reader::Molecule		moleculeReader_reread = IO::Reader::Molecule();
+		VTX::Core::Struct::System molecule_reread		= VTX::Core::Struct::System();
+		IO::Reader::System		  moleculeReader_reread = IO::Reader::System();
 
 		moleculeReader_reread.readFile( destination, molecule_reread );
 

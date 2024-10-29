@@ -9,7 +9,7 @@
 namespace VTX::Renderer::Proxy
 {
 	/**
-	 * @brief Molecule data provider.
+	 * @brief System data provider.
 	 */
 	struct Molecule
 	{

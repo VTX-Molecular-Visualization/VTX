@@ -8,7 +8,7 @@
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/struct/trajectory.hpp>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 #include <iostream>
 #include <thread>
 #include <unordered_map>
@@ -25,7 +25,7 @@ namespace VTX::App::Serialization::IO::Reader
 
 	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
 	{
-		_reader								  = VTX::IO::Reader::Molecule();
+		_reader								= VTX::IO::Reader::System();
 		Core::Struct::System moleculeStruct = Core::Struct::System();
 
 		_reader.readFile( p_path, moleculeStruct );
@@ -42,7 +42,7 @@ namespace VTX::App::Serialization::IO::Reader
 		App::Component::Chemistry::Molecule & p_molecule
 	)
 	{
-		_reader								  = VTX::IO::Reader::Molecule();
+		_reader								= VTX::IO::Reader::System();
 		Core::Struct::System moleculeStruct = Core::Struct::System();
 
 		_reader.readBuffer( p_buffer, p_path, moleculeStruct );

@@ -4,7 +4,7 @@
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include <io/core/reader/base_reader.hpp>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <utility>
@@ -23,7 +23,7 @@ namespace VTX::App::Serialization::IO::Reader
 		const VTX::IO::Reader::Chemfiles & getChemfilesReader() { return _reader.getChemfilesReader(); }
 
 	  private:
-		VTX::IO::Reader::Molecule _reader = VTX::IO::Reader::Molecule();
+		VTX::IO::Reader::System _reader = VTX::IO::Reader::System();
 	};
 } // namespace VTX::App::Serialization::IO::Reader
 #endif

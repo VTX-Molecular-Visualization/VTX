@@ -1,7 +1,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/system.hpp>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -18,8 +18,8 @@ TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
+	IO::Reader::System		  moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -43,8 +43,8 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 
 	VTX_INFO( "Test on {}", url );
 
-	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
+	IO::Reader::System		  moleculeReader = IO::Reader::System();
 
 	moleculeReader.readBuffer( data, "4hhb.mmtf", molecule );
 
@@ -67,8 +67,8 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 
 	BENCHMARK( "Open molecules" )
 	{
-		VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-		IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+		VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
+		IO::Reader::System		  moleculeReader = IO::Reader::System();
 
 		moleculeReader.readFile( moleculePath, molecule );
 	};

@@ -13,7 +13,7 @@ namespace VTX::App::Test::Util
 
 	void App::loadMolecule( const std::string & p_moleculePath )
 	{
-		// Create Molecule
+		// Create System
 		const FilePath				moleculePath	   = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
 		Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
 		loadMoleculeAction.execute();

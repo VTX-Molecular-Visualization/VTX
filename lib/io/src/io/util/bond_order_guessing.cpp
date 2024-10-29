@@ -633,7 +633,7 @@ namespace VTX::IO::Util
 	const std::vector<Struct::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
 	{
 		throw NotImplementedException();
-		// return Util::App::Old::Molecule::getResidueBonds( p_residueSymbol );
+		// return Util::App::Old::System::getResidueBonds( p_residueSymbol );
 	}
 
 } // namespace VTX::IO::Util

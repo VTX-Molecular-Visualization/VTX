@@ -65,14 +65,14 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	SCENE().onSceneItemAdded += [ &addSceneItemTest ]( const Component::Scene::SceneItemComponent & p_sceneItem )
 	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
-	// Create Molecule
+	// Create System
 	const FilePath				moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 	Action::Scene::LoadMolecule openAction	 = Action::Scene::LoadMolecule( moleculePath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );
 
-	// Pick first Molecule
+	// Pick first System
 	REQUIRE( SCENE().getItemCount() == 1 );
 
 	App::Core::ECS::BaseEntity moleculeEntity = SCENE().getItem( 0 );
@@ -95,8 +95,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
 	REQUIRE( view.size() == 1 );
 
-	// const Component::Chemistry::Molecule & moleculeComponent
-	//	= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( moleculeEntity );
+	// const Component::Chemistry::System & moleculeComponent
+	//	= ECS_REGISTRY().getComponent<Component::Chemistry::System>( moleculeEntity );
 
 	// const Component::Render::ProxyMolecule & gpuProxyComponent
 	//	= ECS_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
@@ -114,7 +114,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	// Create Scene
 	App::Fixture app;
 
-	// Create Molecule
+	// Create System
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / moleculePathname;
 
 	Action::Scene::LoadMolecule openAction = Action::Scene::LoadMolecule( moleculePath );
