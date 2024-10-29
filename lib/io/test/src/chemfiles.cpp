@@ -4,7 +4,7 @@
 #include <fstream>
 #include <io/reader/system.hpp>
 #include <io/writer/chemfiles.hpp>
-#include <io/writer/molecule.hpp>
+#include <io/writer/system.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <vector>

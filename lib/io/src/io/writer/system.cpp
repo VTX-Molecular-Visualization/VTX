@@ -1,4 +1,4 @@
-#include "io/writer/molecule.hpp"
+#include "io/writer/system.hpp"
 #include "io/writer/chemfiles.hpp"
 #include <util/exceptions.hpp>
 

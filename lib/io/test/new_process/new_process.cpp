@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <io/reader/system.hpp>
-#include <io/writer/molecule.hpp>
+#include <io/writer/system.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 
@@ -86,8 +86,8 @@ namespace
 			.molecule	 = &molecule,
 		} );
 
-		VTX::Core::Struct::System molecule_reread		  = VTX::Core::Struct::System();
-		IO::Reader::System		moleculeReader_reread = IO::Reader::System();
+		VTX::Core::Struct::System molecule_reread		= VTX::Core::Struct::System();
+		IO::Reader::System		  moleculeReader_reread = IO::Reader::System();
 
 		moleculeReader_reread.readFile( structureFile, molecule_reread );
 
