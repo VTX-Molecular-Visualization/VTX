@@ -98,8 +98,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	// const Component::Chemistry::System & moleculeComponent
 	//	= ECS_REGISTRY().getComponent<Component::Chemistry::System>( moleculeEntity );
 
-	// const Component::Render::ProxyMolecule & gpuProxyComponent
-	//	= ECS_REGISTRY().getComponent<Component::Render::ProxyMolecule>( moleculeEntity );
+	// const Component::Render::ProxySystem & gpuProxyComponent
+	//	= ECS_REGISTRY().getComponent<Component::Render::ProxySystem>( moleculeEntity );
 
 	// REQUIRE( gpuProxyComponent.getProxy().atomNames == &moleculeComponent.getMoleculeStruct().atomNames );
 }

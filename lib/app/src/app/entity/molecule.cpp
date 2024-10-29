@@ -32,7 +32,7 @@ namespace VTX::App::Entity
 		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::Molecule>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxyMolecule>( *this );
+		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );

@@ -16,7 +16,7 @@
 
 namespace VTX::App::Component::Render
 {
-	class ProxyMolecule;
+	class ProxySystem;
 }
 
 namespace VTX::App::Component::Chemistry
@@ -24,7 +24,7 @@ namespace VTX::App::Component::Chemistry
 	class Molecule : public Core::ECS::BaseComponent
 	{
 	  private:
-		friend App::Component::Render::ProxyMolecule;
+		friend App::Component::Render::ProxySystem;
 		friend Chain;
 		friend Residue;
 		friend Atom;
@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 		~Molecule();
 
 		const VTX::Core::Struct::System & getMoleculeStruct() const { return _moleculeStruct; };
-		void								setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct );
+		void							  setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct );
 
 		void		  initChains( const size_t p_chainCount );
 		Chain *		  getChain( const size_t p_index ) { return _chains[ p_index ].get(); }

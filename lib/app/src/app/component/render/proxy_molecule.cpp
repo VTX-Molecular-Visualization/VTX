@@ -15,20 +15,20 @@
 
 namespace VTX::App::Component::Render
 {
-	ProxyMolecule::ProxyMolecule() {}
-	ProxyMolecule::~ProxyMolecule() { _removeFromRenderer(); }
-	void ProxyMolecule::setup( Renderer::Facade & p_renderer )
+	ProxySystem::ProxySystem() {}
+	ProxySystem::~ProxySystem() { _removeFromRenderer(); }
+	void ProxySystem::setup( Renderer::Facade & p_renderer )
 	{
 		_addInRenderer( p_renderer );
 		_setupCallbacks();
 
-		ECS_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxyMolecule::_removeFromRenderer>(
+		ECS_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxySystem::_removeFromRenderer>(
 			Core::ECS::SIGNAL::DESTROY, this
 		);
 	}
-	void ProxyMolecule::_removeFromRenderer() { _proxy->onRemove(); }
+	void ProxySystem::_removeFromRenderer() { _proxy->onRemove(); }
 
-	void ProxyMolecule::_addInRenderer( Renderer::Facade & p_renderer )
+	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::Molecule & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
 		VTX::Core::Struct::System &	 molStruct = molComp._moleculeStruct;
@@ -64,14 +64,14 @@ namespace VTX::App::Component::Render
 
 		p_renderer.addProxyMolecule( *_proxy );
 	}
-	void ProxyMolecule::_setupCallbacks()
+	void ProxySystem::_setupCallbacks()
 	{
 		_applyVisibilityCallbacks();
 		_applySelectionCallbacks();
 		_applyAtomPositionCallbacks();
 	}
 
-	std::vector<uchar> ProxyMolecule::_generateAtomColors( const VTX::Core::Struct::System & p_molStruct ) const
+	std::vector<uchar> ProxySystem::_generateAtomColors( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<uchar> atomColors;
 
@@ -85,7 +85,7 @@ namespace VTX::App::Component::Render
 
 		return atomColors;
 	}
-	std::vector<float> ProxyMolecule::_generateAtomRadii( const VTX::Core::Struct::System & p_molStruct ) const
+	std::vector<float> ProxySystem::_generateAtomRadii( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<float> atomRadii;
 
@@ -99,7 +99,7 @@ namespace VTX::App::Component::Render
 
 		return atomRadii;
 	}
-	std::vector<uint> ProxyMolecule::_generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxySystem::_generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const
 	{
 		std::vector<uint> atomUids;
 		const uint		  offset = uint( p_molComp._atomUidRange.getFirst() );
@@ -109,7 +109,7 @@ namespace VTX::App::Component::Render
 
 		return atomUids;
 	}
-	std::vector<uchar> ProxyMolecule::_generateResidueColors( const VTX::Core::Struct::System & p_molStruct ) const
+	std::vector<uchar> ProxySystem::_generateResidueColors( const VTX::Core::Struct::System & p_molStruct ) const
 	{
 		std::vector<uchar> residueColors;
 		residueColors.resize( p_molStruct.getResidueCount(), 0 );
@@ -123,7 +123,7 @@ namespace VTX::App::Component::Render
 
 		return residueColors;
 	}
-	std::vector<uint> ProxyMolecule::_generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxySystem::_generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const
 	{
 		std::vector<uint> residueUids;
 		const uint		  offset = uint( p_molComp._residueUidRange.getFirst() );
@@ -136,7 +136,7 @@ namespace VTX::App::Component::Render
 		return residueUids;
 	}
 
-	void ProxyMolecule::_applyOnVisibility(
+	void ProxySystem::_applyOnVisibility(
 		const Component::Chemistry::AtomIndexRangeList & p_rangeList,
 		const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
 	)
@@ -154,13 +154,13 @@ namespace VTX::App::Component::Render
 
 		default:
 			throw VTXException(
-				"Unhandled Component::Chemistry::VISIBILITY_APPLY_MODE in ProxyMolecule::onVisibilityChange "
+				"Unhandled Component::Chemistry::VISIBILITY_APPLY_MODE in ProxySystem::onVisibilityChange "
 				"callback."
 			);
 		}
 	}
 
-	void ProxyMolecule::_applyVisibilityCallbacks()
+	void ProxySystem::_applyVisibilityCallbacks()
 	{
 		Component::Chemistry::Molecule & molecule
 			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
@@ -182,7 +182,7 @@ namespace VTX::App::Component::Render
 		molecule.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
 		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
-	void ProxyMolecule::_applySelectionCallbacks()
+	void ProxySystem::_applySelectionCallbacks()
 	{
 		Component::Scene::Selectable & selectableComponent
 			= ECS_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
@@ -201,7 +201,7 @@ namespace VTX::App::Component::Render
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
-	void ProxyMolecule::_applyAtomPositionCallbacks()
+	void ProxySystem::_applyAtomPositionCallbacks()
 	{
 		if ( ECS_REGISTRY().hasComponent<Component::Chemistry::Trajectory>( *this ) )
 		{

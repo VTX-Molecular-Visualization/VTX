@@ -11,11 +11,11 @@
 
 namespace VTX::App::Component::Render
 {
-	class ProxyMolecule : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Molecule>
+	class ProxySystem : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Molecule>
 	{
 	  public:
-		ProxyMolecule();
-		~ProxyMolecule();
+		ProxySystem();
+		~ProxySystem();
 
 		void setupProxy() override {}
 
