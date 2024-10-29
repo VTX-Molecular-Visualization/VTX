@@ -417,7 +417,7 @@ namespace VTX::Bench
 			for ( auto & proxyMolecule : p_scene->getProxiesMolecules() )
 			{
 				// Display transform.
-				if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule ).c_str() ) )
+				if ( ImGui::TreeNode( fmt::format( "System ({})", idMolecule ).c_str() ) )
 				{
 					// Display transform.
 					Mat4f transform = *proxyMolecule->transform;

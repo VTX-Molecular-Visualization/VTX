@@ -245,12 +245,12 @@ namespace VTX::IO::Reader
 		//  if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		//{
 		//	bondComputationChrono.start();
-		//	const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
+		//	const bool allBondsRecomputed = Util::App::System::recomputeBondOrdersFromFile( p_molecule );
 
 		//	if ( !allBondsRecomputed )
 		//	{
 		//		VTX_INFO( "recomputeBondOrders with algorithm." );
-		//		Util::App::Molecule::recomputeBondOrders( p_molecule );
+		//		Util::App::System::recomputeBondOrders( p_molecule );
 		//	}
 		//	bondComputationChrono.stop();
 		//	VTX_INFO( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
@@ -331,7 +331,7 @@ namespace VTX::IO::Reader
 		if ( p_fileExtension == "pdb" || p_fileExtension == "mmcif" || p_fileExtension == "mmtf" )
 		{
 			// TODO : Move that in Core::ChemDB
-			// auto res = Util::App::Old::Molecule::getResidueCategory( p_residueSymbol );
+			// auto res = Util::App::Old::System::getResidueCategory( p_residueSymbol );
 			res = VTX::Core::ChemDB::Category::TYPE::POLYMER;
 		}
 		else

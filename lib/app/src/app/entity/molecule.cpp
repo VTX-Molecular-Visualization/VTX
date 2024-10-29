@@ -18,7 +18,7 @@
 #include "app/core/settings/settings_system.hpp"
 #include "app/serialization/io/reader/molecule_loader.hpp"
 #include "app/settings.hpp"
-#include <renderer/proxy/molecule.hpp>
+#include <renderer/proxy/system.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity

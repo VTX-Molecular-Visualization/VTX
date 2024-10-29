@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_READER_MOLECULE__
-#define __VTX_IO_READER_MOLECULE__
+#ifndef __VTX_IO_READER_SYSTEM__
+#define __VTX_IO_READER_SYSTEM__
 
 #include "io/core/reader/base_reader.hpp"
 #include "io/metadata/molecule.hpp"

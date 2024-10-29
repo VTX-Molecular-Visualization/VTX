@@ -31,7 +31,7 @@ namespace VTX::Bench
 		_proxyLayoutColor.colors = &( _colorLayout.layout );
 	}
 
-	Renderer::Proxy::Molecule & Scene::addMolecule( const std::string & p_name )
+	Renderer::Proxy::System & Scene::addMolecule( const std::string & p_name )
 	{
 		using namespace Util;
 
@@ -64,7 +64,7 @@ namespace VTX::Bench
 	// TODO: remove renderer from here.
 	void Scene::removeAllMolecules( Renderer::Renderer * const p_renderer )
 	{
-		std::vector<Renderer::Proxy::Molecule *> proxies;
+		std::vector<Renderer::Proxy::System *> proxies;
 		for ( auto & proxy : _proxyMolecules )
 		{
 			proxies.push_back( proxy.get() );
@@ -77,7 +77,7 @@ namespace VTX::Bench
 		_directions.clear();
 	}
 
-	std::unique_ptr<Renderer::Proxy::Molecule> Scene::_proxify( const Core::Struct::System & p_molecule )
+	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_molecule )
 	{
 		const size_t									sizeAtoms	= p_molecule.trajectory.frames.front().size();
 		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;
@@ -119,7 +119,7 @@ namespace VTX::Bench
 		const std::vector<size_t> & polymerChainIds		 = categoryPolymer.getLinkedChains();
 		const std::vector<size_t> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
 
-		return std::make_unique<Renderer::Proxy::Molecule>( Renderer::Proxy::Molecule {
+		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
 			&p_molecule.transform,
 			&p_molecule.trajectory.frames.front(),
 			&p_molecule.bondPairAtomIndexes,

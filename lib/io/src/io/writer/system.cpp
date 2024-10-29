@@ -179,7 +179,7 @@ namespace VTX::IO::Writer
 		if ( p_args.writeType != E_WRITE_TYPE::trajectory )
 			throw VTXException( "Other type of writings aren't implemented yet" );
 		if ( p_args.molecule == nullptr )
-			throw VTXException( "Molecule was nullptr." );
+			throw VTXException( "System was nullptr." );
 		writeTrajectoryFile( std::move( p_args ) );
 	}
 } // namespace VTX::IO::Writer

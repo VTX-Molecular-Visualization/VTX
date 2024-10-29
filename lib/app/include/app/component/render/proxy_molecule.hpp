@@ -5,13 +5,13 @@
 #include "app/core/visibility/enum.hpp"
 #include <core/struct/system.hpp>
 #include <renderer/facade.hpp>
-#include <renderer/proxy/molecule.hpp>
+#include <renderer/proxy/system.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Render
 {
-	class ProxySystem : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Molecule>
+	class ProxySystem : public Core::ECS::BaseComponentProxy<Renderer::Proxy::System>
 	{
 	  public:
 		ProxySystem();

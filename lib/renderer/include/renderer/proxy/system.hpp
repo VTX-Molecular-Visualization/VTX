@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_PROXY_MOLECULE__
-#define __VTX_RENDERER_PROXY_MOLECULE__
+#ifndef __VTX_RENDERER_PROXY_SYSTEM__
+#define __VTX_RENDERER_PROXY_SYSTEM__
 
 #include <util/callback.hpp>
 #include <util/math/range_list.hpp>
@@ -11,7 +11,7 @@ namespace VTX::Renderer::Proxy
 	/**
 	 * @brief System data provider.
 	 */
-	struct Molecule
+	struct System
 	{
 		const Mat4f *					 transform;
 		const std::vector<Vec3f> *		 atomPositions;

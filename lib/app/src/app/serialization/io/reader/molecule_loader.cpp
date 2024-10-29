@@ -33,7 +33,7 @@ namespace VTX::App::Serialization::IO::Reader
 		chrono.start();
 		p_molecule.setMoleculeStruct( moleculeStruct );
 		chrono.stop();
-		VTX_INFO( "Build Molecule convenient structure : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		VTX_INFO( "Build System convenient structure : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 	}
 
 	void MoleculeLoader::readBuffer(

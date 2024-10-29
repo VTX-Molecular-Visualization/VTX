@@ -8,7 +8,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE( "VTX_APP - Molecule - Remove", "[unit]" )
+TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -173,7 +173,7 @@ TEST_CASE( "VTX_APP - Molecule - Remove", "[unit]" )
 	}
 };
 
-TEST_CASE( "VTX_APP - Molecule - Visibility", "[unit]" )
+TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;

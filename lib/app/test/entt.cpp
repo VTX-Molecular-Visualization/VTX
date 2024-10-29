@@ -12,7 +12,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <entt/entt.hpp>
 #include <functional>
-#include <renderer/proxy/molecule.hpp>
+#include <renderer/proxy/system.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>

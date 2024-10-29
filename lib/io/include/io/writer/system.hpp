@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_WRITER_MOLECULE__
-#define __VTX_IO_WRITER_MOLECULE__
+#ifndef __VTX_IO_WRITER_SYSTEM__
+#define __VTX_IO_WRITER_SYSTEM__
 #include <core/struct/system.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
