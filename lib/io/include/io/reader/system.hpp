@@ -2,7 +2,7 @@
 #define __VTX_IO_READER_SYSTEM__
 
 #include "io/core/reader/base_reader.hpp"
-#include "io/metadata/molecule.hpp"
+#include "io/metadata/system.hpp"
 #include "io/reader/chemfiles.hpp"
 #include "io/struct/_fwd.hpp"
 #include <core/chemdb/atom.hpp>
@@ -28,7 +28,7 @@ namespace VTX::IO::Reader
 			VTX::Core::Struct::System & p_molecule
 		);
 
-		void setConfiguration( const Struct::MoleculeConfiguration & p_configuration )
+		void setConfiguration( const Struct::SystemConfiguration & p_configuration )
 		{
 			_configuration = &p_configuration;
 		}
@@ -53,8 +53,8 @@ namespace VTX::IO::Reader
 
 		ChemDB::Atom::TYPE _getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const;
 
-		std::unique_ptr<Reader::Chemfiles>	  _chemfilesReader = nullptr;
-		const Struct::MoleculeConfiguration * _configuration   = nullptr;
+		std::unique_ptr<Reader::Chemfiles>	_chemfilesReader = nullptr;
+		const Struct::SystemConfiguration * _configuration	 = nullptr;
 	};
 } // namespace VTX::IO::Reader
 #endif

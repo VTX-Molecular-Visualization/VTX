@@ -1,5 +1,5 @@
 #include "io/reader/system.hpp"
-#include "io/struct/molecule_configuration.hpp"
+#include "io/struct/system_configuration.hpp"
 #include <core/chemdb/secondary_structure.hpp>
 #include <core/struct/system.hpp>
 #include <core/struct/trajectory.hpp>
