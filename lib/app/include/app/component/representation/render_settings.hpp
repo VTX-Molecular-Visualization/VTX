@@ -23,85 +23,90 @@ namespace VTX::App::Component::Representation
 		template<Renderer::E_RENDER_SETTINGS S, typename T>
 		void set( const T p_value )
 		{
-			if constexpr ( S == Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY )
+			// SSAO.
+			if constexpr ( S == Renderer::E_RENDER_SETTINGS::ACTIVE_SSAO )
+			{
+				_settings.activeSSAO = p_value;
+			}
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY )
 			{
 				_settings.ssaoIntensity = p_value;
-				_proxy->onSSAOIntensity( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::BLUR_SIZE )
 			{
 				_settings.blurSize = p_value;
-				_proxy->onBlurSize( p_value );
 			}
-			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND )
+			// Shading.
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SHADING_MODE )
 			{
-				_settings.colorBackground = p_value;
-				_proxy->onColorBackground( p_value );
+				_settings.shadingMode = p_value;
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_LIGHT )
 			{
 				_settings.colorLight = p_value;
-				_proxy->onColorLight( p_value );
 			}
-			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_FOG )
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND )
 			{
-				_settings.colorFog = p_value;
-				_proxy->onColorFog( p_value );
-			}
-			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SHADING_MODE )
-			{
-				_settings.shadingMode = p_value;
-				_proxy->onShadingMode( p_value );
+				_settings.colorBackground = p_value;
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SPECULAR_FACTOR )
 			{
 				_settings.specularFactor = p_value;
-				_proxy->onSpecularFactor( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::SHININESS )
 			{
 				_settings.shininess = p_value;
-				_proxy->onShininess( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::TOON_STEPS )
 			{
 				_settings.toonSteps = p_value;
-				_proxy->onToonSteps( p_value );
+			}
+			// Fog.
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::ACTIVE_FOG )
+			{
+				_settings.activeFog = p_value;
+			}
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_FOG )
+			{
+				_settings.colorFog = p_value;
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_NEAR )
 			{
 				_settings.fogNear = p_value;
-				_proxy->onFogNear( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_FAR )
 			{
 				_settings.fogFar = p_value;
-				_proxy->onFogFar( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::FOG_DENSITY )
 			{
 				_settings.fogDensity = p_value;
-				_proxy->onFogDensity( p_value );
+			}
+			// Outline.
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::ACTIVE_OUTLINE )
+			{
+				_settings.activeOutline = p_value;
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_OUTLINE )
 			{
 				_settings.colorOutline = p_value;
-				_proxy->onColorOutline( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::OUTLINE_SENSITIVITY )
 			{
 				_settings.outlineSensitivity = p_value;
-				_proxy->onOutlineSensitivity( p_value );
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::OUTLINE_THICKNESS )
 			{
 				_settings.outlineThickness = p_value;
-				_proxy->onOutlineThickness( p_value );
+			}
+			// Selection.
+			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::ACTIVE_SELECTION )
+			{
+				_settings.activeSelection = p_value;
 			}
 			else if constexpr ( S == Renderer::E_RENDER_SETTINGS::COLOR_SELECTION )
 			{
 				_settings.colorSelection = p_value;
-				_proxy->onColorSelection( p_value );
 			}
 			// TODO: test this.
 			else
@@ -109,13 +114,17 @@ namespace VTX::App::Component::Representation
 				static_assert( true, "Unknown render setting." );
 			}
 
-			getCallback<S, T>()( p_value );
+			// Trigger UI.
+			callback<S, T>()( p_value );
+
+			// Trigger renderer.
+			_proxy->onChange<S, T>()( p_value );
 		}
 
 		template<Renderer::E_RENDER_SETTINGS S, typename T>
-		Util::Callback<T> & getCallback()
+		Util::Callback<const T> & callback()
 		{
-			static Util::Callback<T> callback;
+			static Util::Callback<const T> callback;
 			return callback;
 		}
 

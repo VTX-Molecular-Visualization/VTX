@@ -45,7 +45,7 @@ namespace VTX::UI::QT::DockWidget
 		{
 			comboBoxShading->addItem( Renderer::SHADING_STR[ i ].data() );
 		}
-		comboBoxShading->setCurrentIndex( -1 ); // Force next value to trigger callback.
+		comboBoxShading->setCurrentIndex( p_component->getSettings().shadingMode );
 
 		connect(
 			comboBoxShading,
@@ -148,7 +148,7 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Callbacks.
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
 			[ comboBoxShading,
 			  labelSpecularFactor,
 			  sliderSpecularFactor,
@@ -197,30 +197,46 @@ namespace VTX::UI::QT::DockWidget
 			default: break;
 			}
 		};
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
 			[ colorPickerBackground ]( const Util::Color::Rgba & p_color )
 		{ colorPickerBackground->setColor( Helper::toQColor( p_color ) ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
 			[ colorPickerLight ]( const Util::Color::Rgba & p_color )
 		{ colorPickerLight->setColor( Helper::toQColor( p_color ) ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
 			[ sliderSpecularFactor ]( const float p_value ) { sliderSpecularFactor->setValue( p_value * 100 ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SHININESS, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::SHININESS, float>() +=
 			[ sliderShininess ]( const float p_value ) { sliderShininess->setValue( p_value * 100 ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
 			[ sliderToonSteps ]( const uint p_value ) { sliderToonSteps->setValue( p_value ); };
 
-		// Set initial combox value at the end to force callback and update visibility.
-		comboBoxShading->setCurrentIndex( p_component->getSettings().shadingMode );
+		// Emit init.
+		emit comboBoxShading->currentIndexChanged( comboBoxShading->currentIndex() );
 	}
 
 	void RenderSettings::_createGroupBoxSSAO( App::Component::Representation::RenderSettings * const p_component )
 	{
-		auto * groupBoxSSAO		  = new QGroupBox( QString::fromStdString( "Shadows" ) );
-		auto * layout			  = new QVBoxLayout( groupBoxSSAO );
+		auto * groupBoxSSAO = new QGroupBox( QString::fromStdString( "Shadows" ) );
+		auto * layout		= new QVBoxLayout( groupBoxSSAO );
+		_layout->addWidget( groupBoxSSAO );
+
+		// Active.
 		auto * checkboxSSAOActive = new QCheckBox( "Active", groupBoxSSAO );
 		layout->addWidget( checkboxSSAOActive );
-		_layout->addWidget( groupBoxSSAO );
+		checkboxSSAOActive->setChecked( p_component->getSettings().activeSSAO );
+
+		connect(
+			checkboxSSAOActive,
+			&QCheckBox::stateChanged,
+			[ p_component ]( const int p_state )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::RenderSettings::
+								 ChangeRenderSetting<Renderer::E_RENDER_SETTINGS::ACTIVE_SSAO, bool>>(
+						p_state == Qt::Checked
+					);
+			}
+		);
 
 		// Intensity.
 		auto * labelSSAOIntensity  = new QLabel( "Intensity", groupBoxSSAO );
@@ -265,17 +281,48 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Callbacks.
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() +=
+			[ checkboxSSAOActive, labelBlurSize, sliderBlurSize, labelSSAOIntensity, sliderSSAOIntensity ](
+				const bool p_value
+			)
+		{
+			checkboxSSAOActive->setChecked( p_value ? Qt::Checked : Qt::Unchecked );
+			labelBlurSize->setVisible( p_value );
+			sliderBlurSize->setVisible( p_value );
+			labelSSAOIntensity->setVisible( p_value );
+			sliderSSAOIntensity->setVisible( p_value );
+		};
+		p_component->callback<Renderer::E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
 			[ sliderSSAOIntensity ]( const float p_value ) { sliderSSAOIntensity->setValue( p_value * 100 ); };
+		p_component->callback<Renderer::E_RENDER_SETTINGS::BLUR_SIZE, float>() +=
+			[ sliderBlurSize ]( const float p_value ) { sliderBlurSize->setValue( p_value * 100 ); };
+
+		// Emit init.
+		emit checkboxSSAOActive->stateChanged( checkboxSSAOActive->checkState() );
 	}
 
 	void RenderSettings::_createGroupBoxOutline( App::Component::Representation::RenderSettings * const p_component )
 	{
-		auto * groupBoxOutline		 = new QGroupBox( QString::fromStdString( "Outline" ) );
-		auto * layout				 = new QVBoxLayout( groupBoxOutline );
+		auto * groupBoxOutline = new QGroupBox( QString::fromStdString( "Outline" ) );
+		auto * layout		   = new QVBoxLayout( groupBoxOutline );
+		_layout->addWidget( groupBoxOutline );
+
+		// Active.
 		auto * checkboxOutlineActive = new QCheckBox( "Active", groupBoxOutline );
 		layout->addWidget( checkboxOutlineActive );
-		_layout->addWidget( groupBoxOutline );
+		checkboxOutlineActive->setChecked( p_component->getSettings().activeOutline );
+		connect(
+			checkboxOutlineActive,
+			&QCheckBox::stateChanged,
+			[ p_component ]( const int p_state )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::RenderSettings::
+								 ChangeRenderSetting<Renderer::E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>>(
+						p_state == Qt::Checked
+					);
+			}
+		);
 
 		// Color.
 		Widget::ColorPicker * colorPickerOutline = new Widget::ColorPicker( groupBoxOutline );
@@ -331,23 +378,56 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Callbacks.
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() +=
+			[ checkboxOutlineActive,
+			  labelOutlineSensitivity,
+			  sliderOutlineSensitivity,
+			  labelOutlineThickness,
+			  sliderOutlineThickness,
+			  colorPickerOutline ]( const bool p_value )
+		{
+			checkboxOutlineActive->setChecked( p_value ? Qt::Checked : Qt::Unchecked );
+			labelOutlineSensitivity->setVisible( p_value );
+			sliderOutlineSensitivity->setVisible( p_value );
+			labelOutlineThickness->setVisible( p_value );
+			sliderOutlineThickness->setVisible( p_value );
+			colorPickerOutline->setVisible( p_value );
+		};
+		p_component->callback<Renderer::E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
 			[ colorPickerOutline ]( const Util::Color::Rgba & p_color )
 		{ colorPickerOutline->setColor( Helper::toQColor( p_color ) ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() +=
 			[ sliderOutlineSensitivity ]( const float p_value )
 		{ sliderOutlineSensitivity->setValue( p_value * 100 ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
 			[ sliderOutlineThickness ]( const uint p_value ) { sliderOutlineThickness->setValue( p_value ); };
+
+		// Emit init.
+		emit checkboxOutlineActive->stateChanged( checkboxOutlineActive->checkState() );
 	}
 
 	void RenderSettings::_createGroupBoxFog( App::Component::Representation::RenderSettings * const p_component )
 	{
-		auto * groupBoxFog		 = new QGroupBox( QString::fromStdString( "Fog" ) );
-		auto * layout			 = new QVBoxLayout( groupBoxFog );
+		auto * groupBoxFog = new QGroupBox( QString::fromStdString( "Fog" ) );
+		auto * layout	   = new QVBoxLayout( groupBoxFog );
+		_layout->addWidget( groupBoxFog );
+
+		// Active.
 		auto * checkboxFogActive = new QCheckBox( "Active", groupBoxFog );
 		layout->addWidget( checkboxFogActive );
-		_layout->addWidget( groupBoxFog );
+		checkboxFogActive->setChecked( p_component->getSettings().activeFog );
+		connect(
+			checkboxFogActive,
+			&QCheckBox::stateChanged,
+			[ p_component ]( const int p_state )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::RenderSettings::
+								 ChangeRenderSetting<Renderer::E_RENDER_SETTINGS::ACTIVE_FOG, bool>>(
+						p_state == Qt::Checked
+					);
+			}
+		);
 
 		// Color.
 		Widget::ColorPicker * colorPickerFog = new Widget::ColorPicker( groupBoxFog );
@@ -426,26 +506,61 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Callbacks.
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::ACTIVE_FOG, bool>() +=
+			[ checkboxFogActive,
+			  colorPickerFog,
+			  labelFogNear,
+			  sliderFogNear,
+			  labelFogFar,
+			  sliderFogFar,
+			  labelFogDensity,
+			  sliderFogDensity ]( const bool p_value )
+		{
+			checkboxFogActive->setChecked( p_value ? Qt::Checked : Qt::Unchecked );
+			colorPickerFog->setVisible( p_value );
+			labelFogNear->setVisible( p_value );
+			sliderFogNear->setVisible( p_value );
+			labelFogFar->setVisible( p_value );
+			sliderFogFar->setVisible( p_value );
+			labelFogDensity->setVisible( p_value );
+			sliderFogDensity->setVisible( p_value );
+		};
+		p_component->callback<Renderer::E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
 			[ colorPickerFog ]( const Util::Color::Rgba & p_color )
 		{ colorPickerFog->setColor( Helper::toQColor( p_color ) ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::FOG_NEAR, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::FOG_NEAR, float>() +=
 			[ sliderFogNear ]( const float p_value ) { sliderFogNear->setValue( p_value * 100 ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::FOG_FAR, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::FOG_FAR, float>() +=
 			[ sliderFogFar ]( const float p_value ) { sliderFogFar->setValue( p_value * 100 ); };
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
 			[ sliderFogDensity ]( const float p_value ) { sliderFogDensity->setValue( p_value * 100 ); };
 
-		// Active.
+		// Emit init.
+		emit checkboxFogActive->stateChanged( checkboxFogActive->checkState() );
 	}
 
 	void RenderSettings::_createGroupBoxSelection( App::Component::Representation::RenderSettings * const p_component )
 	{
 		auto * groupBoxSelection = new QGroupBox( QString::fromStdString( "Selection" ) );
 		auto * layout			 = new QVBoxLayout( groupBoxSelection );
-		auto * checkboxActive	 = new QCheckBox( "Active", groupBoxSelection );
-		layout->addWidget( checkboxActive );
 		_layout->addWidget( groupBoxSelection );
+
+		// Active.
+		auto * checkboxActive = new QCheckBox( "Active", groupBoxSelection );
+		layout->addWidget( checkboxActive );
+		checkboxActive->setChecked( p_component->getSettings().activeSelection );
+		connect(
+			checkboxActive,
+			&QCheckBox::stateChanged,
+			[ p_component ]( const int p_state )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::RenderSettings::
+								 ChangeRenderSetting<Renderer::E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>>(
+						p_state == Qt::Checked
+					);
+			}
+		);
 
 		// Color.
 		Widget::ColorPicker * colorPickerSelection = new Widget::ColorPicker( groupBoxSelection );
@@ -461,9 +576,18 @@ namespace VTX::UI::QT::DockWidget
 		};
 
 		// Callbacks.
-		p_component->getCallback<Renderer::E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
+		p_component->callback<Renderer::E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() +=
+			[ checkboxActive, colorPickerSelection ]( const bool p_value )
+		{
+			checkboxActive->setChecked( p_value ? Qt::Checked : Qt::Unchecked );
+			colorPickerSelection->setVisible( p_value );
+		};
+		p_component->callback<Renderer::E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
 			[ colorPickerSelection ]( const Util::Color::Rgba & p_color )
 		{ colorPickerSelection->setColor( Helper::toQColor( p_color ) ); };
+
+		// Emit init.
+		emit checkboxActive->stateChanged( checkboxActive->checkState() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

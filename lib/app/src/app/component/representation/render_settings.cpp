@@ -8,47 +8,61 @@ namespace VTX::App::Component::Representation
 	RenderSettings::RenderSettings()
 	{
 		using namespace Renderer;
-		_settings.ssaoIntensity		 = SSAO_INTENSITY_DEFAULT;
-		_settings.blurSize			 = BLUR_SIZE_DEFAULT;
-		_settings.colorBackground	 = COLOR_BACKGROUND_DEFAULT;
-		_settings.colorLight		 = COLOR_LIGHT_DEFAULT;
-		_settings.colorFog			 = COLOR_FOG_DEFAULT;
-		_settings.shadingMode		 = uint( SHADING_MODE_DEFAULT );
-		_settings.specularFactor	 = SPECULAR_FACTOR_DEFAULT;
-		_settings.shininess			 = SHININESS_DEFAULT;
-		_settings.toonSteps			 = TOON_STEPS_DEFAULT;
-		_settings.fogNear			 = FOG_NEAR_DEFAULT;
-		_settings.fogFar			 = FOG_FAR_DEFAULT;
-		_settings.fogDensity		 = FOG_DENSITY_DEFAULT;
+
+		_settings.shadingMode	  = uint( SHADING_MODE_DEFAULT );
+		_settings.colorLight	  = COLOR_LIGHT_DEFAULT;
+		_settings.colorBackground = COLOR_BACKGROUND_DEFAULT;
+		_settings.specularFactor  = SPECULAR_FACTOR_DEFAULT;
+		_settings.shininess		  = SHININESS_DEFAULT;
+		_settings.toonSteps		  = TOON_STEPS_DEFAULT;
+
+		_settings.activeSSAO	= ACTIVE_SSAO_DEFAULT;
+		_settings.ssaoIntensity = SSAO_INTENSITY_DEFAULT;
+		_settings.blurSize		= BLUR_SIZE_DEFAULT;
+
+		_settings.activeOutline		 = ACTIVE_OUTLINE_DEFAULT;
 		_settings.colorOutline		 = COLOR_OUTLINE_DEFAULT;
 		_settings.outlineSensitivity = OUTLINE_SENSITIVITY_DEFAULT;
 		_settings.outlineThickness	 = OUTLINE_THICKNESS_DEFAULT;
-		_settings.colorSelection	 = COLOR_SELECTION_DEFAULT;
+
+		_settings.activeFog	 = ACTIVE_FOG_DEFAULT;
+		_settings.colorFog	 = COLOR_FOG_DEFAULT;
+		_settings.fogNear	 = FOG_NEAR_DEFAULT;
+		_settings.fogFar	 = FOG_FAR_DEFAULT;
+		_settings.fogDensity = FOG_DENSITY_DEFAULT;
+
+		_settings.activeSelection = ACTIVE_SELECTION_DEFAULT;
+		_settings.colorSelection  = COLOR_SELECTION_DEFAULT;
 	}
 
 	void RenderSettings::setupProxy()
 	{
 		_proxy = std::make_unique<Renderer::Proxy::RenderSettings>( Renderer::Proxy::RenderSettings {
-			_settings.ssaoIntensity,
-			_settings.blurSize,
-			_settings.colorBackground,
-			_settings.colorLight,
-			_settings.colorFog,
+			//
 			_settings.shadingMode,
+			_settings.colorLight,
+			_settings.colorBackground,
 			_settings.specularFactor,
 			_settings.shininess,
 			_settings.toonSteps,
-			_settings.fogNear,
-			_settings.fogFar,
-			_settings.fogDensity,
+			//
+			_settings.activeSSAO,
+			_settings.ssaoIntensity,
+			_settings.blurSize,
+			//
+			_settings.activeOutline,
 			_settings.colorOutline,
 			_settings.outlineSensitivity,
 			_settings.outlineThickness,
-			_settings.colorSelection,
-		} );
-
-		// onChange += [ this ]( const size_t ) { _proxy->onChange(); };
-		// onChangeAll += [ this ]() { _proxy->onChange(); };
+			//
+			_settings.activeFog,
+			_settings.colorFog,
+			_settings.fogNear,
+			_settings.fogFar,
+			_settings.fogDensity,
+			//
+			_settings.activeSelection,
+			_settings.colorSelection } );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); };
 	}

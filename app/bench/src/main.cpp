@@ -146,9 +146,9 @@ int main( int, char ** )
 			= { &representation1, &representation2, &representation3 };
 		renderer.addProxyRepresentations( representations );
 
-		Renderer::Proxy::RenderSettings renderSettings
-			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
-				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
+		// Renderer::Proxy::RenderSettings renderSettings
+		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
+		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
 		// renderer.setProxyRenderSettings( renderSettings );
 

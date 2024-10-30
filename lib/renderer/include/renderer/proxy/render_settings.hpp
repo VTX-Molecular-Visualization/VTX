@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 #define __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 
+#include "renderer/settings.hpp"
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
@@ -13,39 +14,42 @@ namespace VTX::Renderer::Proxy
 	 */
 	struct RenderSettings
 	{
-		float			  ssaoIntensity;
-		float			  blurSize;
-		Util::Color::Rgba colorBackground;
-		Util::Color::Rgba colorLight;
-		Util::Color::Rgba colorFog;
+		// Shading.
 		uint			  shadingMode;
+		Util::Color::Rgba colorLight;
+		Util::Color::Rgba colorBackground;
 		float			  specularFactor;
 		float			  shininess;
 		uint			  toonSteps;
-		float			  fogNear;
-		float			  fogFar;
-		float			  fogDensity;
+
+		// SSAO.
+		bool  activeSSAO;
+		float ssaoIntensity;
+		float blurSize;
+
+		// Outline.
+		bool			  activeOutline;
 		Util::Color::Rgba colorOutline;
 		float			  outlineSensitivity;
 		uint			  outlineThickness;
+
+		// Fog.
+		bool			  activeFog;
+		Util::Color::Rgba colorFog;
+		float			  fogNear;
+		float			  fogFar;
+		float			  fogDensity;
+
+		// Selection.
+		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
 
-		Util::Callback<float>					  onSSAOIntensity;
-		Util::Callback<float>					  onBlurSize;
-		Util::Callback<const Util::Color::Rgba &> onColorBackground;
-		Util::Callback<const Util::Color::Rgba &> onColorLight;
-		Util::Callback<const Util::Color::Rgba &> onColorFog;
-		Util::Callback<uint>					  onShadingMode;
-		Util::Callback<float>					  onSpecularFactor;
-		Util::Callback<float>					  onShininess;
-		Util::Callback<uint>					  onToonSteps;
-		Util::Callback<float>					  onFogNear;
-		Util::Callback<float>					  onFogFar;
-		Util::Callback<float>					  onFogDensity;
-		Util::Callback<const Util::Color::Rgba &> onColorOutline;
-		Util::Callback<float>					  onOutlineSensitivity;
-		Util::Callback<uint>					  onOutlineThickness;
-		Util::Callback<const Util::Color::Rgba &> onColorSelection;
+		template<E_RENDER_SETTINGS S, typename T>
+		Util::Callback<const T> & onChange()
+		{
+			static Util::Callback<const T> callback;
+			return callback;
+		}
 
 		// TODO: callback for each modifiable value?
 	};
