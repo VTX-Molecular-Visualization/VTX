@@ -145,7 +145,7 @@ namespace
 			int			 num		 = 0;
 			bool		 finished	 = false;
 			int			 thr_retcode = 1;
-			std::string	 startStr	 = std::format( "{} {}", exeStr, num );
+			std::string	 startStr	 = fmt::format( "{} {}", exeStr, num );
 			std::jthread thr { [ & ]()
 							   {
 								   while ( this->thr_retcode != 0 )
