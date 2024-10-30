@@ -2,16 +2,16 @@
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
 #include <app/filesystem.hpp>
 #include <io/reader/residue_data_reader.hpp>
 
 namespace VTX::App::Helper::Chemistry
 {
 	std::vector<Component::Chemistry::Chain *> findChainsByName(
-		const Component::Chemistry::Molecule & p_molecule,
-		const std::string &					   p_chainName
+		const Component::Chemistry::System & p_molecule,
+		const std::string &					 p_chainName
 	)
 	{
 		std::vector<Component::Chemistry::Chain *> res = std::vector<Component::Chemistry::Chain *>();
@@ -33,7 +33,7 @@ namespace VTX::App::Helper::Chemistry
 		using namespace VTX::Core;
 
 		std::vector<Component::Chemistry::Residue *> res	  = std::vector<Component::Chemistry::Residue *>();
-		Component::Chemistry::Molecule &			 molecule = *( p_chain.getMoleculePtr() );
+		Component::Chemistry::System &				 molecule = *( p_chain.getMoleculePtr() );
 
 		const ChemDB::Residue::SYMBOL residueSymbol = ChemDB::Residue::getSymbolFromAnyName( p_residueName );
 

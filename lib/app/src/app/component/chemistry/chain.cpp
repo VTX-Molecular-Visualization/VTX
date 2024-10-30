@@ -1,12 +1,12 @@
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
 	Chain::Chain() {}
 
-	Chain::Chain( Molecule * const p_moleculePtr, const size_t p_index ) :
+	Chain::Chain( System * const p_moleculePtr, const size_t p_index ) :
 		_moleculePtr( p_moleculePtr ), _index( p_index ) {};
 
 	const std::string & Chain::getName() const { return _moleculePtr->_moleculeStruct.chainNames[ _index ]; }

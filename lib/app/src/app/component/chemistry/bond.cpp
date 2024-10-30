@@ -1,6 +1,6 @@
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/atom.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 
 namespace VTX::App::Component::Chemistry
 {

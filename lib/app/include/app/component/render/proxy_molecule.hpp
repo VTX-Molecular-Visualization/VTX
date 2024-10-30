@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 #define __VTX_APP_COMPONENT_RENDER_PROXY_MOLECULE__
 
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/core/visibility/enum.hpp"
 #include <core/struct/system.hpp>
 #include <renderer/facade.hpp>
@@ -27,9 +27,9 @@ namespace VTX::App::Component::Render
 
 		std::vector<uchar> _generateAtomColors( const VTX::Core::Struct::System & p_molStruct ) const;
 		std::vector<float> _generateAtomRadii( const VTX::Core::Struct::System & p_molStruct ) const;
-		std::vector<uint>  _generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const;
+		std::vector<uint>  _generateAtomUids( const Component::Chemistry::System & p_molComp ) const;
 		std::vector<uchar> _generateResidueColors( const VTX::Core::Struct::System & p_molStruct ) const;
-		std::vector<uint>  _generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const;
+		std::vector<uint>  _generateResidueUids( const Component::Chemistry::System & p_molComp ) const;
 
 		void _applyOnVisibility(
 			const Component::Chemistry::AtomIndexRangeList & p_rangeList,

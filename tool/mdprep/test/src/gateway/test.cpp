@@ -3,7 +3,7 @@
 //
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <string>
@@ -34,8 +34,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 	{
 		VTX::App::Core::ECS::BaseEntity molEntity = VTX::App::SCENE().getItem( itemName );
 		REQUIRE( VTX::App::ECS_REGISTRY().isValid( molEntity ) );
-		VTX::App::Component::Chemistry::Molecule & mol
-			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Molecule>( molEntity );
+		VTX::App::Component::Chemistry::System & mol
+			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::System>( molEntity );
 	};
 	return;
 }

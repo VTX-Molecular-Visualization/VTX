@@ -4,8 +4,8 @@
 #include "app/application/selection/selection_data.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
 #include <util/concepts.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
@@ -15,7 +15,7 @@ namespace VTX::App::Application::Selection
 {
 	using namespace Component::Chemistry;
 
-	class MoleculeData : public SelectionData
+	class SystemData : public SelectionData
 	{
 	  public:
 		using IndexRange	 = Util::Math::Range<size_t>;
@@ -35,7 +35,7 @@ namespace VTX::App::Application::Selection
 		};
 
 	  public:
-		MoleculeData( const Component::Scene::Selectable & p_selectable );
+		SystemData( const Component::Scene::Selectable & p_selectable );
 
 		void set( const SelectionData & p_other ) override;
 
@@ -264,22 +264,22 @@ namespace VTX::App::Application::Selection
 			return true;
 		}
 
-		inline Molecule &				  getMolecule() const { return *_molecule; }
-		inline const IndexRangeList &	  getChainIds() const { return _chainIds; }
-		inline const IndexRangeList &	  getResidueIds() const { return _residueIds; }
-		inline const AtomIndexRangeList & getAtomIds() const { return _atomIds; }
+		inline Component::Chemistry::System & getMolecule() const { return *_molecule; }
+		inline const IndexRangeList &		  getChainIds() const { return _chainIds; }
+		inline const IndexRangeList &		  getResidueIds() const { return _residueIds; }
+		inline const AtomIndexRangeList &	  getAtomIds() const { return _atomIds; }
 
-		void setCurrentObject( const Molecule & p_molecule );
+		void setCurrentObject( const Component::Chemistry::System & p_molecule );
 		void setCurrentObject( const Chain & p_chain );
 		void setCurrentObject( const Residue & p_residue );
 		void setCurrentObject( const Atom & p_atom );
 
 		CurrentObjectTypeEnum getCurrentObjectType() const { return _currentObjectType; }
 
-		Molecule & getCurrentObjectAsMolecule() const;
-		Chain &	   getCurrentObjectAsChain() const;
-		Residue &  getCurrentObjectAsResidue() const;
-		Atom &	   getCurrentObjectAsAtom() const;
+		Component::Chemistry::System & getCurrentObjectAsMolecule() const;
+		Chain &						   getCurrentObjectAsChain() const;
+		Residue &					   getCurrentObjectAsResidue() const;
+		Atom &						   getCurrentObjectAsAtom() const;
 
 		Util::Math::AABB getAABB() const override;
 
@@ -312,9 +312,9 @@ namespace VTX::App::Application::Selection
 
 		void _recomputeAABB() const;
 
-		Molecule * const	  _molecule;
-		CurrentObjectTypeEnum _currentObjectType  = CurrentObjectTypeEnum::Molecule;
-		size_t				  _currentObjectIndex = INVALID_INDEX;
+		Component::Chemistry::System * const _molecule;
+		CurrentObjectTypeEnum				 _currentObjectType	 = CurrentObjectTypeEnum::Molecule;
+		size_t								 _currentObjectIndex = INVALID_INDEX;
 
 		IndexRangeList	   _chainIds   = IndexRangeList();
 		IndexRangeList	   _residueIds = IndexRangeList();

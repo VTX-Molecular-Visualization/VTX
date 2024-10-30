@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ENTITY_APPLICATION_SCENE_MOLECULE_ENTITY__
-#define __VTX_APP_ENTITY_APPLICATION_SCENE_MOLECULE_ENTITY__
+#ifndef __VTX_APP_ENTITY_APPLICATION_SCENE_SYSTEM_ENTITY__
+#define __VTX_APP_ENTITY_APPLICATION_SCENE_SYSTEM_ENTITY__
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/core/ecs/base_entity.hpp"
@@ -7,10 +7,10 @@
 
 namespace VTX::App::Entity
 {
-	class Molecule : public Core::ECS::BaseEntity
+	class System : public Core::ECS::BaseEntity
 	{
 	  public:
-		Molecule( const FilePath & p_path, const std::string * const p_buffer = nullptr ) :
+		System( const FilePath & p_path, const std::string * const p_buffer = nullptr ) :
 			_path( p_path ), _buffer( p_buffer )
 		{
 		}

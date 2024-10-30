@@ -18,14 +18,14 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Residue() = default;
-		Residue( Molecule * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {}
+		Residue( System * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {}
 
 		const Chain * const getConstChainPtr() const;
 		Chain * const		getChainPtr() const;
 		void				setChainPtr( Chain * const p_chainPtr );
 
-		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; }
-		Molecule * const	   getMoleculePtr() const { return _moleculePtr; }
+		const System * const getConstMoleculePtr() const { return _moleculePtr; }
+		System * const	   getMoleculePtr() const { return _moleculePtr; }
 
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
@@ -74,7 +74,7 @@ namespace VTX::App::Component::Chemistry
 		void remove();
 
 	  private:
-		Molecule * _moleculePtr = nullptr;
+		System * _moleculePtr = nullptr;
 		size_t	   _index		= INVALID_INDEX;
 
 		Util::Color::Rgba	  _color				= COLOR_WHITE;

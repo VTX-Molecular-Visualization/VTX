@@ -2,8 +2,8 @@
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
 #include <algorithm>
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/chain.hpp>
@@ -23,7 +23,7 @@ namespace VTX::App::Serialization::IO::Reader
 	namespace Core	 = VTX::Core;
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
+	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::System & p_molecule )
 	{
 		_reader								= VTX::IO::Reader::System();
 		Core::Struct::System moleculeStruct = Core::Struct::System();
@@ -37,9 +37,9 @@ namespace VTX::App::Serialization::IO::Reader
 	}
 
 	void MoleculeLoader::readBuffer(
-		const std::string &					  p_buffer,
-		const FilePath &					  p_path,
-		App::Component::Chemistry::Molecule & p_molecule
+		const std::string &					p_buffer,
+		const FilePath &					p_path,
+		App::Component::Chemistry::System & p_molecule
 	)
 	{
 		_reader								= VTX::IO::Reader::System();

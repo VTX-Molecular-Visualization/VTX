@@ -1,9 +1,9 @@
 #include "app/component/chemistry/iterator/atom.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	AtomContainer::AtomIt::AtomIt( Molecule * const p_molecule, const atom_index_t p_index, const atom_index_t p_end ) :
+	AtomContainer::AtomIt::AtomIt( System * const p_molecule, const atom_index_t p_index, const atom_index_t p_end ) :
 		_molecule( p_molecule ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -50,12 +50,10 @@ namespace VTX::App::Component::Chemistry::Iterator
 	}
 
 	AtomContainer::AtomContainer(
-		Molecule * const   p_molecule,
+		System * const	   p_molecule,
 		const atom_index_t p_firstAtomIndex,
 		const atom_index_t p_atomCount
-	) :
-		_molecule( p_molecule ),
-		_firstAtomIndex( p_firstAtomIndex ), _atomCount( p_atomCount )
+	) : _molecule( p_molecule ), _firstAtomIndex( p_firstAtomIndex ), _atomCount( p_atomCount )
 	{
 	}
 

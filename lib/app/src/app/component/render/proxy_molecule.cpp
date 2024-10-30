@@ -22,7 +22,7 @@ namespace VTX::App::Component::Render
 		_addInRenderer( p_renderer );
 		_setupCallbacks();
 
-		ECS_REGISTRY().connectSignal<Component::Chemistry::Molecule, &ProxySystem::_removeFromRenderer>(
+		ECS_REGISTRY().connectSignal<Component::Chemistry::System, &ProxySystem::_removeFromRenderer>(
 			Core::ECS::SIGNAL::DESTROY, this
 		);
 	}
@@ -30,7 +30,7 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
 	{
-		Component::Chemistry::Molecule & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+		Component::Chemistry::System & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 		VTX::Core::Struct::System &	 molStruct = molComp._moleculeStruct;
 
 		// TODO: how to handle this?
@@ -99,7 +99,7 @@ namespace VTX::App::Component::Render
 
 		return atomRadii;
 	}
-	std::vector<uint> ProxySystem::_generateAtomUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxySystem::_generateAtomUids( const Component::Chemistry::System & p_molComp ) const
 	{
 		std::vector<uint> atomUids;
 		const uint		  offset = uint( p_molComp._atomUidRange.getFirst() );
@@ -123,7 +123,7 @@ namespace VTX::App::Component::Render
 
 		return residueColors;
 	}
-	std::vector<uint> ProxySystem::_generateResidueUids( const Component::Chemistry::Molecule & p_molComp ) const
+	std::vector<uint> ProxySystem::_generateResidueUids( const Component::Chemistry::System & p_molComp ) const
 	{
 		std::vector<uint> residueUids;
 		const uint		  offset = uint( p_molComp._residueUidRange.getFirst() );
@@ -162,16 +162,16 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_applyVisibilityCallbacks()
 	{
-		Component::Chemistry::Molecule & molecule
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+		Component::Chemistry::System & molecule
+			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 		molecule.onVisibilityChange += [ this ](
 										   const Component::Chemistry::AtomIndexRangeList & p_rangeList,
 										   App::Core::VISIBILITY_APPLY_MODE					p_applyMode
 									   )
 		{
-			Component::Chemistry::Molecule & molecule
-				= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+			Component::Chemistry::System & molecule
+				= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 			const Component::Chemistry::AtomIndexRangeList activeAtoms
 				= Util::Algorithm::Range::intersect( p_rangeList, molecule.getActiveAtoms() );
@@ -189,15 +189,15 @@ namespace VTX::App::Component::Render
 
 		selectableComponent.onSelect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
-			const Application::Selection::MoleculeData & castedSelectionData
-				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
+			const Application::Selection::SystemData & castedSelectionData
+				= dynamic_cast<const Application::Selection::SystemData &>( p_selectionData );
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
 		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
 		{
-			const Application::Selection::MoleculeData & castedSelectionData
-				= dynamic_cast<const Application::Selection::MoleculeData &>( p_selectionData );
+			const Application::Selection::SystemData & castedSelectionData
+				= dynamic_cast<const Application::Selection::SystemData &>( p_selectionData );
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
@@ -210,8 +210,8 @@ namespace VTX::App::Component::Render
 
 			trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
 			{
-				Component::Chemistry::Molecule & moleculeComponent
-					= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( *this );
+				Component::Chemistry::System & moleculeComponent
+					= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 				_proxy->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
 				_proxy->onAtomPositions();

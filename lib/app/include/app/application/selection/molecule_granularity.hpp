@@ -26,9 +26,9 @@ namespace VTX::App::Application::Selection
 	class MoleculeGranularity
 	{
 	  public:
-		static MoleculeData getSelectionData( const Atom & p_atom, const Granularity & p_granularity );
-		static MoleculeData getSelectionData( const Residue & p_residue, const Granularity & p_granularity );
-		static MoleculeData getSelectionData( const Chain & p_chain, const Granularity & p_granularity );
+		static SystemData getSelectionData( const Atom & p_atom, const Granularity & p_granularity );
+		static SystemData getSelectionData( const Residue & p_residue, const Granularity & p_granularity );
+		static SystemData getSelectionData( const Chain & p_chain, const Granularity & p_granularity );
 
 		static void select( const Atom & p_atom, const Granularity & p_granularity, const AssignmentType p_assignment );
 		static void unselect( const Atom & p_atom, const Granularity & p_granularity );

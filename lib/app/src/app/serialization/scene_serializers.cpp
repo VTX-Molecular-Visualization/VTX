@@ -1,6 +1,6 @@
 #include "app/serialization/scene_serializers.hpp"
 #include "app/application/scene.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include "app/component/render/camera.hpp"
@@ -91,12 +91,12 @@ namespace VTX::App::Serialization
 	}
 
 	// Chemistry::MoleculeComponent
-	Util::JSon::Object serialize( const Component::Chemistry::Molecule & p_component )
+	Util::JSon::Object serialize( const Component::Chemistry::System & p_component )
 	{
 		return { { "PDB_ID", p_component.getPdbIdCode() },
 				 { "TRANSFORM", SERIALIZATION_SYSTEM().serialize( p_component.getTransform() ) } };
 	}
-	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Molecule & p_component )
+	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::System & p_component )
 	{
 		p_component.setPdbIdCode( SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "PDB_ID" ) );
 		SERIALIZATION_SYSTEM().deserialize( p_json[ "TRANSFORM" ], p_component.getTransform() );
@@ -117,8 +117,8 @@ namespace VTX::App::Serialization
 	// MoleculeMetadata
 	Util::JSon::Object serialize( const Component::IO::MoleculeMetadata & p_component )
 	{
-		const Component::Chemistry::Molecule & moleculeComponent
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
+		const Component::Chemistry::System & moleculeComponent
+			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( ECS_REGISTRY().getEntity( p_component ) );
 
 		return { { "PATH", SERIALIZATION_SYSTEM().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
@@ -136,8 +136,8 @@ namespace VTX::App::Serialization
 		Serialization::IO::Reader::MoleculeLoader loader = Serialization::IO::Reader::MoleculeLoader();
 		const FilePath							  path	 = FilePath( p_component.path );
 
-		Component::Chemistry::Molecule & moleculeComponent
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
+		Component::Chemistry::System & moleculeComponent
+			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( ECS_REGISTRY().getEntity( p_component ) );
 
 		loader.readFile( path, moleculeComponent );
 

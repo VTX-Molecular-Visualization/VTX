@@ -1,9 +1,9 @@
 #include "app/component/chemistry/iterator/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	ChainContainer::ChainIt::ChainIt( Molecule * const p_molecule, const size_t p_index, const size_t p_end ) :
+	ChainContainer::ChainIt::ChainIt( System * const p_molecule, const size_t p_index, const size_t p_end ) :
 		_molecule( p_molecule ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -50,12 +50,10 @@ namespace VTX::App::Component::Chemistry::Iterator
 	}
 
 	ChainContainer::ChainContainer(
-		Molecule * const p_molecule,
-		const size_t	 p_firstChainIndex,
-		const size_t	 p_ChainCount
-	) :
-		_molecule( p_molecule ),
-		_firstChainIndex( p_firstChainIndex ), _chainCount( p_ChainCount )
+		System * const p_molecule,
+		const size_t   p_firstChainIndex,
+		const size_t   p_ChainCount
+	) : _molecule( p_molecule ), _firstChainIndex( p_firstChainIndex ), _chainCount( p_ChainCount )
 	{
 	}
 

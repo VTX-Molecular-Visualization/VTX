@@ -1,9 +1,9 @@
 #include "app/component/chemistry/iterator/residue.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	ResidueContainer::ResidueIt::ResidueIt( Molecule * const p_molecule, const size_t p_index, const size_t p_end ) :
+	ResidueContainer::ResidueIt::ResidueIt( System * const p_molecule, const size_t p_index, const size_t p_end ) :
 		_molecule( p_molecule ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -50,12 +50,10 @@ namespace VTX::App::Component::Chemistry::Iterator
 	}
 
 	ResidueContainer::ResidueContainer(
-		Molecule * const p_molecule,
-		const size_t	 p_firstResidueIndex,
-		const size_t	 p_residueCount
-	) :
-		_molecule( p_molecule ),
-		_firstResidueIndex( p_firstResidueIndex ), _residueCount( p_residueCount )
+		System * const p_molecule,
+		const size_t   p_firstResidueIndex,
+		const size_t   p_residueCount
+	) : _molecule( p_molecule ), _firstResidueIndex( p_firstResidueIndex ), _residueCount( p_residueCount )
 	{
 	}
 

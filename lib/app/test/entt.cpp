@@ -2,10 +2,10 @@
 // #include <app/ecs/component/molecule_component.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/render/proxy_molecule.hpp>
-#include <app/entity/molecule.hpp>
+#include <app/entity/system.hpp>
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -33,7 +33,7 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 		= view1Element.getComponent<App::Component::Scene::SceneItemComponent>( view1Element.front() );
 	REQUIRE( sceneItemComponent.getName() == App::Test::Util::App::MOLECULE_TEST_NAME );
 
-	App::Core::ECS::View allMolecules = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	App::Core::ECS::View allMolecules = SCENE().getAllSceneItemsOfType<Component::Chemistry::System>();
 	REQUIRE( allMolecules.size() == 1 );
 
 	App::Core::ECS::BaseEntity molEntity = allMolecules.front();
@@ -92,7 +92,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	REQUIRE( sceneItem.getName() == "Zouzou" );
 	REQUIRE( renameTest.checked );
 
-	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+	const App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::System>();
 	REQUIRE( view.size() == 1 );
 
 	// const Component::Chemistry::System & moleculeComponent
@@ -128,9 +128,9 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 		i++;
 	};
 
-	App::Core::ECS::BaseEntity			   moleculeEntity = SCENE().getItem( 0 );
-	const Component::Chemistry::Molecule & molecule
-		= ECS_REGISTRY().getComponent<const Component::Chemistry::Molecule>( moleculeEntity );
+	App::Core::ECS::BaseEntity			 moleculeEntity = SCENE().getItem( 0 );
+	const Component::Chemistry::System & molecule
+		= ECS_REGISTRY().getComponent<const Component::Chemistry::System>( moleculeEntity );
 
 	const Component::Chemistry::Residue & residue = *molecule.getResidue( 0 );
 
@@ -143,6 +143,6 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 
 	BENCHMARK( "View all" )
 	{
-		App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+		App::Core::ECS::View view = SCENE().getAllSceneItemsOfType<Component::Chemistry::System>();
 	};
 }

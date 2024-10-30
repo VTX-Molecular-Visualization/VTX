@@ -3,7 +3,7 @@
 #include <app/action/application.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
@@ -295,8 +295,8 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 
 	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
-	App::Component::Chemistry::Molecule & molecule
-		= SCENE().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+	App::Component::Chemistry::System & molecule
+		= SCENE().getComponentByName<App::Component::Chemistry::System>( moleculeName );
 
 	for ( atom_index_t i = molecule.getResidue( 1 )->getIndexFirstAtom();
 		  i <= molecule.getResidue( 1 )->getIndexLastAtom();
@@ -320,8 +320,8 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
 	REQUIRE( sceneItemObj.getName() == moleculeName );
 
-	const App::Component::Chemistry::Molecule & loadedMolecule
-		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+	const App::Component::Chemistry::System & loadedMolecule
+		= loadedScene.getComponentByName<App::Component::Chemistry::System>( moleculeName );
 
 	CHECK( loadedMolecule.getAtoms().size() == 263 );
 	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );

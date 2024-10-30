@@ -1,6 +1,6 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include <util/math/range.hpp>
 
 namespace VTX::App::Component::Chemistry

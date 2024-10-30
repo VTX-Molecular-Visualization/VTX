@@ -21,7 +21,7 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
-	class Molecule : public Core::ECS::BaseComponent
+	class System : public Core::ECS::BaseComponent
 	{
 	  private:
 		friend App::Component::Render::ProxySystem;
@@ -31,9 +31,9 @@ namespace VTX::App::Component::Chemistry
 		friend Bond;
 
 	  public:
-		Molecule();
-		Molecule( VTX::Core::Struct::System & p_moleculeStruct );
-		~Molecule();
+		System();
+		System( VTX::Core::Struct::System & p_moleculeStruct );
+		~System();
 
 		const VTX::Core::Struct::System & getMoleculeStruct() const { return _moleculeStruct; };
 		void							  setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct );

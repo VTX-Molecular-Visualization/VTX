@@ -1,5 +1,5 @@
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/vtx_app.hpp"
 
@@ -7,11 +7,11 @@ namespace VTX::App::Component::Chemistry
 {
 	Trajectory::Trajectory()
 	{
-		_moleculePtr = &ECS_REGISTRY().getComponent<Molecule>( *this );
+		_moleculePtr = &ECS_REGISTRY().getComponent<System>( *this );
 		_referenceUpdateFunction();
 	}
 
-	Trajectory::Trajectory( Molecule * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
+	Trajectory::Trajectory( System * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
 
 	size_t Trajectory::getCurrentFrame() const { return _moleculePtr->getTrajectory().currentFrameIndex; }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )

@@ -26,7 +26,7 @@ namespace VTX::App::Action::Scene
 		const FilePath		_path;
 		std::string * const _buffer = nullptr;
 
-		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets;
+		std::vector<Component::Chemistry::System *> _trajectoryTargets;
 	};
 
 	// TODO: move to other file?

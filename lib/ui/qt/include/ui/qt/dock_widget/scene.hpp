@@ -10,8 +10,8 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/scene_item_component.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -186,9 +186,9 @@ namespace VTX::UI::QT::DockWidget
 			{
 				using namespace App;
 
-				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_item ) )
+				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_item ) )
 				{
-					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_item );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_item );
 
 					// Add with concept.
 					addTopLevelData(

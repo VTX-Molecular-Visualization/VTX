@@ -1,8 +1,7 @@
-#include "app/entity/molecule.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/molecule_granularity.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/molecule_metadata.hpp"
 #include "app/component/render/proxy_molecule.hpp"
@@ -16,6 +15,7 @@
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
+#include "app/entity/system.hpp"
 #include "app/serialization/io/reader/molecule_loader.hpp"
 #include "app/settings.hpp"
 #include <renderer/proxy/system.hpp>
@@ -23,13 +23,13 @@
 
 namespace VTX::App::Entity
 {
-	void Molecule::setup()
+	void System::setup()
 	{
 		// TODO: share with wiewpoint entity.
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
-		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::Molecule>( *this );
+		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
 		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
@@ -64,7 +64,7 @@ namespace VTX::App::Entity
 		// UID.
 		uid.referenceUID( molecule.getAtomUIDs() );
 		// Selectable.
-		selectable.setSelectionDataGenerator<Application::Selection::MoleculeData>();
+		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
 		// AABB.
 		aabb.init();
 		aabb.setAABBComputationFunction(
@@ -106,8 +106,8 @@ namespace VTX::App::Entity
 				);
 
 				std::unique_ptr<Application::Selection::SelectionData> res
-					= std::make_unique<Application::Selection::MoleculeData>( selectable );
-				auto & molData = dynamic_cast<Application::Selection::MoleculeData &>( *res );
+					= std::make_unique<Application::Selection::SystemData>( selectable );
+				auto & molData = dynamic_cast<Application::Selection::SystemData &>( *res );
 				molData.clear();
 
 				if ( p_pickingInfo.hasOneValue() )

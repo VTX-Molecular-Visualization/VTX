@@ -10,7 +10,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct ChainIt
 		{
-			ChainIt( Molecule * const p_molecule, const size_t p_index, const size_t p_end );
+			ChainIt( System * const p_molecule, const size_t p_index, const size_t p_end );
 
 			Chain & operator*() const;
 			Chain * operator->();
@@ -25,20 +25,20 @@ namespace VTX::App::Component::Chemistry::Iterator
 			ChainIt operator++( int );
 
 		  private:
-			Molecule * const _molecule;
+			System * const _molecule;
 			size_t			 _index;
 			const size_t	 _end;
 
 			void _getValid();
 		};
 
-		ChainContainer( Molecule * const p_molecule, const size_t p_firstChainIndex, const size_t p_chainCount );
+		ChainContainer( System * const p_molecule, const size_t p_firstChainIndex, const size_t p_chainCount );
 
 		ChainIt begin();
 		ChainIt end();
 
 	  private:
-		Molecule * const _molecule;
+		System * const _molecule;
 		const size_t	 _firstChainIndex;
 		const size_t	 _chainCount;
 	};
