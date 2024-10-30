@@ -31,10 +31,10 @@ namespace VTX::App::Component::Render
 	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::System & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
-		VTX::Core::Struct::System &	 molStruct = molComp._moleculeStruct;
+		VTX::Core::Struct::System &	 molStruct = molComp._systemStruct;
 
 		// TODO: how to handle this?
-		IO::Util::SecondaryStructure::computeStride( molComp._moleculeStruct );
+		IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
 
 		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
@@ -62,7 +62,7 @@ namespace VTX::App::Component::Render
 			residueColors,
 			residueIds } );
 
-		p_renderer.addProxyMolecule( *_proxy );
+		p_renderer.addProxySystem( *_proxy );
 	}
 	void ProxySystem::_setupCallbacks()
 	{
@@ -162,24 +162,24 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_applyVisibilityCallbacks()
 	{
-		Component::Chemistry::System & molecule
+		Component::Chemistry::System & system
 			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-		molecule.onVisibilityChange += [ this ](
+		system.onVisibilityChange += [ this ](
 										   const Component::Chemistry::AtomIndexRangeList & p_rangeList,
 										   App::Core::VISIBILITY_APPLY_MODE					p_applyMode
 									   )
 		{
-			Component::Chemistry::System & molecule
+			Component::Chemistry::System & system
 				= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 			const Component::Chemistry::AtomIndexRangeList activeAtoms
-				= Util::Algorithm::Range::intersect( p_rangeList, molecule.getActiveAtoms() );
+				= Util::Algorithm::Range::intersect( p_rangeList, system.getActiveAtoms() );
 
 			_applyOnVisibility( activeAtoms, p_applyMode );
 		};
 
-		molecule.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
+		system.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
 		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
 	void ProxySystem::_applySelectionCallbacks()
@@ -210,10 +210,10 @@ namespace VTX::App::Component::Render
 
 			trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
 			{
-				Component::Chemistry::System & moleculeComponent
+				Component::Chemistry::System & systemComponent
 					= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-				_proxy->atomPositions = &moleculeComponent.getTrajectory().getCurrentFrame();
+				_proxy->atomPositions = &systemComponent.getTrajectory().getCurrentFrame();
 				_proxy->onAtomPositions();
 			};
 		}

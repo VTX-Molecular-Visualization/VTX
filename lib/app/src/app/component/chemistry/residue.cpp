@@ -7,64 +7,64 @@ namespace VTX::App::Component::Chemistry
 {
 	const Chain * const Residue::getConstChainPtr() const
 	{
-		return _moleculePtr->getChain( _moleculePtr->_moleculeStruct.residueChainIndexes[ _index ] );
+		return _systemPtr->getChain( _systemPtr->_systemStruct.residueChainIndexes[ _index ] );
 	}
 	Chain * const Residue::getChainPtr() const
 	{
-		return _moleculePtr->getChain( _moleculePtr->_moleculeStruct.residueChainIndexes[ _index ] );
+		return _systemPtr->getChain( _systemPtr->_systemStruct.residueChainIndexes[ _index ] );
 	}
 	void Residue::setChainPtr( Chain * const p_chainPtr )
 	{
-		_moleculePtr->_moleculeStruct.residueChainIndexes[ _index ] = p_chainPtr->getIndex();
+		_systemPtr->_systemStruct.residueChainIndexes[ _index ] = p_chainPtr->getIndex();
 	}
 
 	atom_index_t Residue::getIndexFirstAtom() const
 	{
-		return _moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ];
+		return _systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ];
 	}
 	void Residue::setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
 	{
-		_moleculePtr->_moleculeStruct.residueFirstAtomIndexes[ _index ] = atom_index_t( p_indexFirstAtom );
+		_systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ] = atom_index_t( p_indexFirstAtom );
 	}
 	atom_index_t Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
 
-	atom_index_t Residue::getAtomCount() const { return _moleculePtr->_moleculeStruct.residueAtomCounts[ _index ]; }
+	atom_index_t Residue::getAtomCount() const { return _systemPtr->_systemStruct.residueAtomCounts[ _index ]; }
 	void		 Residue::setAtomCount( const atom_index_t p_atomCount )
 	{
-		_moleculePtr->_moleculeStruct.residueAtomCounts[ _index ] = p_atomCount;
+		_systemPtr->_systemStruct.residueAtomCounts[ _index ] = p_atomCount;
 	}
 
 	size_t Residue::getIndexFirstBond() const
 	{
-		return _moleculePtr->_moleculeStruct.residueFirstBondIndexes[ _index ];
+		return _systemPtr->_systemStruct.residueFirstBondIndexes[ _index ];
 	}
 	void Residue::setIndexFirstBond( const size_t p_indexFirstBond )
 	{
-		_moleculePtr->_moleculeStruct.residueFirstBondIndexes[ _index ] = p_indexFirstBond;
+		_systemPtr->_systemStruct.residueFirstBondIndexes[ _index ] = p_indexFirstBond;
 	}
 
-	size_t Residue::getBondCount() const { return _moleculePtr->_moleculeStruct.residueBondCounts[ _index ]; }
+	size_t Residue::getBondCount() const { return _systemPtr->_systemStruct.residueBondCounts[ _index ]; }
 	void   Residue::setBondCount( const size_t p_bondCount )
 	{
-		_moleculePtr->_moleculeStruct.residueBondCounts[ _index ] = p_bondCount;
+		_systemPtr->_systemStruct.residueBondCounts[ _index ] = p_bondCount;
 	}
 
 	ChemDB::Residue::SYMBOL Residue::getSymbol() const
 	{
-		return _moleculePtr->_moleculeStruct.residueSymbols[ _index ];
+		return _systemPtr->_systemStruct.residueSymbols[ _index ];
 	}
 	void Residue::setSymbol( const ChemDB::Residue::SYMBOL p_symbol )
 	{
-		_moleculePtr->_moleculeStruct.residueSymbols[ _index ] = p_symbol;
+		_systemPtr->_systemStruct.residueSymbols[ _index ] = p_symbol;
 	}
 
 	size_t Residue::getIndexInOriginalChain() const
 	{
-		return _moleculePtr->_moleculeStruct.residueOriginalIds[ _index ];
+		return _systemPtr->_systemStruct.residueOriginalIds[ _index ];
 	}
 	void Residue::setIndexInOriginalChain( const size_t p_index )
 	{
-		_moleculePtr->_moleculeStruct.residueOriginalIds[ _index ] = p_index;
+		_systemPtr->_systemStruct.residueOriginalIds[ _index ] = p_index;
 	}
 
 	const std::string_view Residue::getShortName() const
@@ -72,7 +72,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
-			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+			return _systemPtr->_systemStruct.residueUnknownNames[ _index ];
 		}
 		else
 		{
@@ -84,7 +84,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
-			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+			return _systemPtr->_systemStruct.residueUnknownNames[ _index ];
 		}
 		else
 		{
@@ -97,7 +97,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
 		if ( symbol == ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
-			return _moleculePtr->_moleculeStruct.residueUnknownNames[ _index ];
+			return _systemPtr->_systemStruct.residueUnknownNames[ _index ];
 		}
 		else
 		{
@@ -110,9 +110,9 @@ namespace VTX::App::Component::Chemistry
 		Util::Math::Range<atom_index_t> atomRange
 			= Util::Math::Range<atom_index_t>( getIndexFirstAtom(), getAtomCount() );
 
-		if ( _moleculePtr->_moleculeStruct.atomSolvents.contains( atomRange ) )
+		if ( _systemPtr->_systemStruct.atomSolvents.contains( atomRange ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
-		else if ( _moleculePtr->_moleculeStruct.atomIons.contains( atomRange ) )
+		else if ( _systemPtr->_systemStruct.atomIons.contains( atomRange ) )
 			return ChemDB::Atom::TYPE::ION;
 
 		return ChemDB::Atom::TYPE::NORMAL;
@@ -125,16 +125,16 @@ namespace VTX::App::Component::Chemistry
 		switch ( p_type )
 		{
 		case ChemDB::Atom::TYPE::SOLVENT:
-			_moleculePtr->_moleculeStruct.atomSolvents.addRange( atomRange );
-			_moleculePtr->_moleculeStruct.atomIons.removeRange( atomRange );
+			_systemPtr->_systemStruct.atomSolvents.addRange( atomRange );
+			_systemPtr->_systemStruct.atomIons.removeRange( atomRange );
 			break;
 		case ChemDB::Atom::TYPE::ION:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeRange( atomRange );
-			_moleculePtr->_moleculeStruct.atomIons.addRange( atomRange );
+			_systemPtr->_systemStruct.atomSolvents.removeRange( atomRange );
+			_systemPtr->_systemStruct.atomIons.addRange( atomRange );
 			break;
 		case ChemDB::Atom::TYPE::NORMAL:
-			_moleculePtr->_moleculeStruct.atomSolvents.removeRange( atomRange );
-			_moleculePtr->_moleculeStruct.atomIons.removeRange( atomRange );
+			_systemPtr->_systemStruct.atomSolvents.removeRange( atomRange );
+			_systemPtr->_systemStruct.atomIons.removeRange( atomRange );
 			break;
 		}
 	}
@@ -143,30 +143,30 @@ namespace VTX::App::Component::Chemistry
 
 	Iterator::AtomContainer Residue::atoms() const
 	{
-		return Iterator::AtomContainer( _moleculePtr, getIndexFirstAtom(), getAtomCount() );
+		return Iterator::AtomContainer( _systemPtr, getIndexFirstAtom(), getAtomCount() );
 	}
 
 	bool Residue::isVisible() const
 	{
 		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
-		return _moleculePtr->_visibleAtomIds.intersectWith( atomRange );
+		return _systemPtr->_visibleAtomIds.intersectWith( atomRange );
 	}
 	bool Residue::isFullyVisible() const
 	{
 		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
-		return _moleculePtr->_visibleAtomIds.contains( atomRange );
+		return _systemPtr->_visibleAtomIds.contains( atomRange );
 	}
 
 	void Residue::setVisible( const bool p_visible )
 	{
 		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
-		_moleculePtr->setVisible( atomRange, p_visible );
+		_systemPtr->setVisible( atomRange, p_visible );
 	}
 
 	void Residue::remove()
 	{
 		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
-		_moleculePtr->remove( atomRange );
+		_systemPtr->remove( atomRange );
 	}
 
 } // namespace VTX::App::Component::Chemistry

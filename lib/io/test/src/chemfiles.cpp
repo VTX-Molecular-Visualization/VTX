@@ -12,7 +12,7 @@
 namespace
 {
 	using namespace VTX::IO::Writer;
-	void twoWaterMolecules1frame( ChemfilesTrajectory & trajWriter )
+	void twoWaterSystems1frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
 		Frame  frame  = system.newFrame();
@@ -77,7 +77,7 @@ namespace
 		system.bind( id_wat2_O, id_wat2_H1, E_BOND_ORDER::single );
 		system.bind( id_wat2_O, id_wat2_H2, E_BOND_ORDER::single );
 	}
-	void twoWaterMolecules2frame( ChemfilesTrajectory & trajWriter )
+	void twoWaterSystems2frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
 		Frame  frame1 = system.newFrame();
@@ -165,18 +165,18 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
 		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
-		twoWaterMolecules1frame( trajWriter );
+		twoWaterSystems1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
-	VTX::IO::Reader::System	  moleculeReader = VTX::IO::Reader::System();
-	moleculeReader.readFile( waterPath, molecule );
+	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
+	systemReader.readFile( waterPath, system );
 
-	CHECK( molecule.getChainCount() == 1 );
-	CHECK( molecule.getBondCount() == 4 );
-	CHECK( molecule.getResidueCount() == 2 );
-	CHECK( molecule.getAtomCount() == 6 );
-	CHECK( molecule.trajectory.getFrameCount() == 1 );
+	CHECK( system.getChainCount() == 1 );
+	CHECK( system.getBondCount() == 4 );
+	CHECK( system.getResidueCount() == 2 );
+	CHECK( system.getAtomCount() == 6 );
+	CHECK( system.trajectory.getFrameCount() == 1 );
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
@@ -192,18 +192,18 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
 		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
-		twoWaterMolecules2frame( trajWriter );
+		twoWaterSystems2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System molecule		 = VTX::Core::Struct::System();
-	VTX::IO::Reader::System	  moleculeReader = VTX::IO::Reader::System();
-	moleculeReader.readFile( waterPath, molecule );
+	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
+	systemReader.readFile( waterPath, system );
 
-	CHECK( molecule.getChainCount() == 1 );
-	CHECK( molecule.getBondCount() == 4 );
-	CHECK( molecule.getResidueCount() == 2 );
-	CHECK( molecule.getAtomCount() == 6 );
-	CHECK( molecule.trajectory.getFrameCount() == 2 );
+	CHECK( system.getChainCount() == 1 );
+	CHECK( system.getBondCount() == 4 );
+	CHECK( system.getResidueCount() == 2 );
+	CHECK( system.getAtomCount() == 6 );
+	CHECK( system.trajectory.getFrameCount() == 2 );
 }
 
 namespace
@@ -220,46 +220,46 @@ namespace
 		using namespace VTX::IO;
 		using namespace VTX::IO::Writer;
 
-		const std::string moleculeName	   = p_args.systemName;
-		const std::string moleculePathname = moleculeName + p_args.extension;
-		const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+		const std::string systemName	   = p_args.systemName;
+		const std::string systemPathname = systemName + p_args.extension;
+		const FilePath	  systemPath	   = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+		VTX::Core::Struct::System system = VTX::Core::Struct::System();
 		{
-			IO::Reader::System moleculeReader = IO::Reader::System();
+			IO::Reader::System systemReader = IO::Reader::System();
 
-			moleculeReader.readFile( moleculePath, molecule );
+			systemReader.readFile( systemPath, system );
 		}
-		size_t atomCount  = molecule.getAtomCount();
-		size_t chainCount = molecule.getChainCount();
-		size_t frameCount = molecule.trajectory.getFrameCount();
-		size_t bondCount  = molecule.getBondCount();
-		size_t resCount	  = molecule.getResidueCount();
+		size_t atomCount  = system.getAtomCount();
+		size_t chainCount = system.getChainCount();
+		size_t frameCount = system.trajectory.getFrameCount();
+		size_t bondCount  = system.getBondCount();
+		size_t resCount	  = system.getResidueCount();
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
 			std::filesystem::create_directories( outPath );
 
-		const VTX::FilePath destination = outPath / ( moleculeName + p_args.writtenExtension );
+		const VTX::FilePath destination = outPath / ( systemName + p_args.writtenExtension );
 
 		writeFile( WriteArgs {
 			.destination = destination,
 			.format		 = E_FILE_FORMATS::none,
-			.molecule	 = &molecule,
+			.system	 = &system,
 		} );
 
-		VTX::Core::Struct::System molecule_reread		= VTX::Core::Struct::System();
-		IO::Reader::System		  moleculeReader_reread = IO::Reader::System();
+		VTX::Core::Struct::System system_reread		= VTX::Core::Struct::System();
+		IO::Reader::System		  systemReader_reread = IO::Reader::System();
 
-		moleculeReader_reread.readFile( destination, molecule_reread );
+		systemReader_reread.readFile( destination, system_reread );
 
-		CHECK( molecule_reread.getChainCount() == chainCount );
-		CHECK( molecule_reread.getResidueCount() == resCount );
-		CHECK( molecule_reread.getAtomCount() == atomCount );
+		CHECK( system_reread.getChainCount() == chainCount );
+		CHECK( system_reread.getResidueCount() == resCount );
+		CHECK( system_reread.getAtomCount() == atomCount );
 
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
-		// CHECK( molecule_reread.getBondCount() == p_args.bondCount );
+		// CHECK( system_reread.getBondCount() == p_args.bondCount );
 	}
 } // namespace
 

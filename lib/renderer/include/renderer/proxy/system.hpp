@@ -34,9 +34,9 @@ namespace VTX::Renderer::Proxy
 		const uint idDefaultRepresentation = 0;
 
 		Util::Callback<>					 onTransform;	   // Move/rotate.
-		Util::Callback<bool>				 onVisible;		   // Show/hide the whole molecule.
-		Util::Callback<bool>				 onSelect;		   // Select/deselect the whole molecule.
-		Util::Callback<uchar>				 onRepresentation; // Change the representation of the whole molecule.
+		Util::Callback<bool>				 onVisible;		   // Show/hide the whole system.
+		Util::Callback<bool>				 onSelect;		   // Select/deselect the whole system.
+		Util::Callback<uchar>				 onRepresentation; // Change the representation of the whole system.
 		Util::Callback<>					 onRemove;		   // Remove proxy.
 		Util::Callback<>					 onAtomPositions;  // Update dynamics.
 		Util::Callback<std::vector<uchar> &> onAtomColors;	   // Update colors (ATOM/CHAIN/RESIDUE)...

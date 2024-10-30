@@ -15,19 +15,19 @@
 
 namespace VTX::App::Action::Scene
 {
-	void LoadMolecule::execute()
+	void LoadSystem::execute()
 	{
 		const auto entity = ECS_REGISTRY().createEntity<Entity::System>( _path.string(), _buffer );
 		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
-	void DownloadMolecule::execute()
+	void DownloadSystem::execute()
 	{
 		std::string	   data;
 		const FilePath cachePath = Filesystem::getCachePath( _filename );
 
 		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
-		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( _filename, &data );
+		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

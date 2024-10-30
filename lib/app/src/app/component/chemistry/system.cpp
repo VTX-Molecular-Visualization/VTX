@@ -38,7 +38,7 @@ namespace VTX::App::Component::Chemistry
 		_atoms	  = std::vector<std::unique_ptr<Chemistry::Atom>>();
 		_bonds	  = std::vector<std::unique_ptr<Chemistry::Bond>>();
 	};
-	System::System( VTX::Core::Struct::System & p_moleculeStruct ) { setMoleculeStruct( p_moleculeStruct ); }
+	System::System( VTX::Core::Struct::System & p_systemStruct ) { setSystemStruct( p_systemStruct ); }
 	System::~System()
 	{
 		if ( _atomUidRange.isValid() )
@@ -48,14 +48,14 @@ namespace VTX::App::Component::Chemistry
 			UID_SYSTEM().unregister( _residueUidRange );
 	};
 
-	void System::setMoleculeStruct( VTX::Core::Struct::System & p_moleculeStruct )
+	void System::setSystemStruct( VTX::Core::Struct::System & p_systemStruct )
 	{
-		_moleculeStruct = std::move( p_moleculeStruct );
+		_systemStruct = std::move( p_systemStruct );
 
-		initChains( _moleculeStruct.getChainCount() );
-		initResidues( _moleculeStruct.getResidueCount() );
-		initAtoms( _moleculeStruct.getAtomCount() );
-		initBonds( _moleculeStruct.getBondCount() );
+		initChains( _systemStruct.getChainCount() );
+		initResidues( _systemStruct.getResidueCount() );
+		initAtoms( _systemStruct.getAtomCount() );
+		initBonds( _systemStruct.getBondCount() );
 	}
 
 	void System::initChains( const size_t p_chainCount )
@@ -113,7 +113,7 @@ namespace VTX::App::Component::Chemistry
 		Component::Scene::SceneItemComponent & sceneComponent
 			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
 		sceneComponent.setName( p_name );
-		_moleculeStruct.name = p_name;
+		_systemStruct.name = p_name;
 	}
 
 	const Atom * System::getAtomFromUID( Core::UID::uid p_uid ) const
@@ -246,18 +246,18 @@ namespace VTX::App::Component::Chemistry
 	{
 		_internalDeleteAtom( p_atomIndex );
 
-		const size_t residueIndex = _moleculeStruct.atomResidueIndexes[ p_atomIndex ];
+		const size_t residueIndex = _systemStruct.atomResidueIndexes[ p_atomIndex ];
 		_refreshResidueRemovedState( residueIndex );
 
-		const size_t chainIndex = _moleculeStruct.residueChainIndexes[ residueIndex ];
+		const size_t chainIndex = _systemStruct.residueChainIndexes[ residueIndex ];
 		_refreshChainRemovedState( chainIndex );
 	}
 	void System::_deleteTopologyPointers( const AtomIndexRange & p_atomRange )
 	{
 		_internalDeleteAtoms( p_atomRange );
 
-		const size_t firstResidueIndex = _moleculeStruct.atomResidueIndexes[ p_atomRange.getFirst() ];
-		const size_t lastResidueIndex  = _moleculeStruct.atomResidueIndexes[ p_atomRange.getLast() ];
+		const size_t firstResidueIndex = _systemStruct.atomResidueIndexes[ p_atomRange.getFirst() ];
+		const size_t lastResidueIndex  = _systemStruct.atomResidueIndexes[ p_atomRange.getLast() ];
 
 		if ( firstResidueIndex == lastResidueIndex )
 		{
@@ -275,8 +275,8 @@ namespace VTX::App::Component::Chemistry
 			_refreshResidueRemovedState( lastResidueIndex );
 		}
 
-		const size_t firstChainIndex = _moleculeStruct.residueChainIndexes[ firstResidueIndex ];
-		const size_t lastChainIndex	 = _moleculeStruct.residueChainIndexes[ lastResidueIndex ];
+		const size_t firstChainIndex = _systemStruct.residueChainIndexes[ firstResidueIndex ];
+		const size_t lastChainIndex	 = _systemStruct.residueChainIndexes[ lastResidueIndex ];
 
 		if ( firstChainIndex == lastChainIndex )
 		{
@@ -310,18 +310,18 @@ namespace VTX::App::Component::Chemistry
 			else
 			{
 				// Refresh first atom and count
-				while ( _atoms[ _moleculeStruct.residueFirstAtomIndexes[ p_residueIndex ] ] == nullptr )
+				while ( _atoms[ _systemStruct.residueFirstAtomIndexes[ p_residueIndex ] ] == nullptr )
 				{
-					_moleculeStruct.residueFirstAtomIndexes[ p_residueIndex ]++;
-					_moleculeStruct.residueAtomCounts[ p_residueIndex ]--;
+					_systemStruct.residueFirstAtomIndexes[ p_residueIndex ]++;
+					_systemStruct.residueAtomCounts[ p_residueIndex ]--;
 				}
 
-				atom_index_t lastAtom = _moleculeStruct.residueFirstAtomIndexes[ p_residueIndex ]
-										+ _moleculeStruct.residueAtomCounts[ p_residueIndex ] - 1;
+				atom_index_t lastAtom = _systemStruct.residueFirstAtomIndexes[ p_residueIndex ]
+										+ _systemStruct.residueAtomCounts[ p_residueIndex ] - 1;
 
 				while ( _atoms[ lastAtom ] == nullptr )
 				{
-					_moleculeStruct.residueAtomCounts[ p_residueIndex ]--;
+					_systemStruct.residueAtomCounts[ p_residueIndex ]--;
 					lastAtom--;
 				}
 			}
@@ -334,13 +334,13 @@ namespace VTX::App::Component::Chemistry
 		if ( chain != nullptr )
 		{
 			const atom_index_t firstAtomIndex
-				= _moleculeStruct.residueFirstAtomIndexes[ _moleculeStruct.chainFirstResidues[ p_chainIndex ] ];
+				= _systemStruct.residueFirstAtomIndexes[ _systemStruct.chainFirstResidues[ p_chainIndex ] ];
 
-			const size_t lastResidueIndex = _moleculeStruct.chainFirstResidues[ p_chainIndex ]
-											+ _moleculeStruct.chainResidueCounts[ p_chainIndex ] - 1;
+			const size_t lastResidueIndex = _systemStruct.chainFirstResidues[ p_chainIndex ]
+											+ _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
 
-			const atom_index_t lastAtomIndex = _moleculeStruct.residueFirstAtomIndexes[ lastResidueIndex ]
-											   + _moleculeStruct.residueAtomCounts[ lastResidueIndex ] - 1;
+			const atom_index_t lastAtomIndex = _systemStruct.residueFirstAtomIndexes[ lastResidueIndex ]
+											   + _systemStruct.residueAtomCounts[ lastResidueIndex ] - 1;
 
 			const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( firstAtomIndex, lastAtomIndex );
 
@@ -350,18 +350,18 @@ namespace VTX::App::Component::Chemistry
 			}
 			else
 			{
-				while ( _residues[ _moleculeStruct.chainFirstResidues[ p_chainIndex ] ] == nullptr )
+				while ( _residues[ _systemStruct.chainFirstResidues[ p_chainIndex ] ] == nullptr )
 				{
-					_moleculeStruct.chainFirstResidues[ p_chainIndex ]++;
-					_moleculeStruct.chainResidueCounts[ p_chainIndex ]--;
+					_systemStruct.chainFirstResidues[ p_chainIndex ]++;
+					_systemStruct.chainResidueCounts[ p_chainIndex ]--;
 				}
 
-				size_t lastResidue = _moleculeStruct.chainFirstResidues[ p_chainIndex ]
-									 + _moleculeStruct.chainResidueCounts[ p_chainIndex ] - 1;
+				size_t lastResidue = _systemStruct.chainFirstResidues[ p_chainIndex ]
+									 + _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
 
 				while ( _residues[ lastResidue ] == nullptr )
 				{
-					_moleculeStruct.chainResidueCounts[ p_chainIndex ]--;
+					_systemStruct.chainResidueCounts[ p_chainIndex ]--;
 					lastResidue--;
 				}
 			}

@@ -26,9 +26,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 	VTX::App::SCENE().reset();
 
 	const char *						  itemName	   = "2QWO";
-	const VTX::FilePath					  moleculePath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
-	VTX::App::Action::Scene::LoadMolecule loadMoleculeAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
-	loadMoleculeAction.execute();
+	const VTX::FilePath					  systemPath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
+	VTX::App::Action::Scene::LoadSystem loadSystemAction = VTX::App::Action::Scene::LoadSystem( systemPath );
+	loadSystemAction.execute();
 
 	// VTX::App::SCENE().onSceneItemAdded += [ & ]( VTX::App::Component::Scene::SceneItemComponent item )
 	{

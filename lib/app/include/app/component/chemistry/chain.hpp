@@ -17,14 +17,14 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Chain();
-		Chain( System * const p_molecule, const size_t p_index );
+		Chain( System * const p_system, const size_t p_index );
 
 		const size_t getIndex() const { return _index; }
 		void		 setIndex( const size_t p_index ) { _index = p_index; }
 
-		System * const	   getMoleculePtr() const { return _moleculePtr; };
-		const System * const getConstMoleculePtr() const { return _moleculePtr; };
-		void				   setMoleculePtr( System * const p_moleculePtr ) { _moleculePtr = p_moleculePtr; };
+		System * const	   getSystemPtr() const { return _systemPtr; };
+		const System * const getConstSystemPtr() const { return _systemPtr; };
+		void				   setSystemPtr( System * const p_systemPtr ) { _systemPtr = p_systemPtr; };
 
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
@@ -59,7 +59,7 @@ namespace VTX::App::Component::Chemistry
 		void remove();
 
 	  private:
-		System *		  _moleculePtr	   = nullptr;
+		System *		  _systemPtr	   = nullptr;
 		size_t			  _index		   = INVALID_INDEX;
 		std::string		  _originalChainID = "";
 		Util::Color::Rgba _defaultColor	   = COLOR_WHITE;

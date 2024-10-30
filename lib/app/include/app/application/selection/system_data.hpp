@@ -26,7 +26,7 @@ namespace VTX::App::Application::Selection
 
 		enum class CurrentObjectTypeEnum : int
 		{
-			Molecule,
+			System,
 			Chain,
 			Residue,
 			Atom,
@@ -264,19 +264,19 @@ namespace VTX::App::Application::Selection
 			return true;
 		}
 
-		inline Component::Chemistry::System & getMolecule() const { return *_molecule; }
+		inline Component::Chemistry::System & getSystem() const { return *_system; }
 		inline const IndexRangeList &		  getChainIds() const { return _chainIds; }
 		inline const IndexRangeList &		  getResidueIds() const { return _residueIds; }
 		inline const AtomIndexRangeList &	  getAtomIds() const { return _atomIds; }
 
-		void setCurrentObject( const Component::Chemistry::System & p_molecule );
+		void setCurrentObject( const Component::Chemistry::System & p_system );
 		void setCurrentObject( const Chain & p_chain );
 		void setCurrentObject( const Residue & p_residue );
 		void setCurrentObject( const Atom & p_atom );
 
 		CurrentObjectTypeEnum getCurrentObjectType() const { return _currentObjectType; }
 
-		Component::Chemistry::System & getCurrentObjectAsMolecule() const;
+		Component::Chemistry::System & getCurrentObjectAsSystem() const;
 		Chain &						   getCurrentObjectAsChain() const;
 		Residue &					   getCurrentObjectAsResidue() const;
 		Atom &						   getCurrentObjectAsAtom() const;
@@ -312,8 +312,8 @@ namespace VTX::App::Application::Selection
 
 		void _recomputeAABB() const;
 
-		Component::Chemistry::System * const _molecule;
-		CurrentObjectTypeEnum				 _currentObjectType	 = CurrentObjectTypeEnum::Molecule;
+		Component::Chemistry::System * const _system;
+		CurrentObjectTypeEnum				 _currentObjectType	 = CurrentObjectTypeEnum::System;
 		size_t								 _currentObjectIndex = INVALID_INDEX;
 
 		IndexRangeList	   _chainIds   = IndexRangeList();

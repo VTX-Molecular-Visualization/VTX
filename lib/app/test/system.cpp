@@ -15,48 +15,48 @@ TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
 	using namespace VTX::App::Component::Chemistry;
 
 	App::Fixture app;
-	Test::Util::App::loadTestMolecule();
+	Test::Util::App::loadTestSystem();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	System &				   moleculeComponent = ECS_REGISTRY().getComponent<System>( molEntity );
+	System &				   systemComponent = ECS_REGISTRY().getComponent<System>( molEntity );
 
 	atom_index_t expectedRemovedAtoms = 0;
 	bool		 callbackValidated	  = 0;
 
-	moleculeComponent.onAtomRemoved += [ & ]( const AtomIndexRangeList & p_atoms )
+	systemComponent.onAtomRemoved += [ & ]( const AtomIndexRangeList & p_atoms )
 	{ callbackValidated = ( expectedRemovedAtoms == p_atoms.count() ); };
 
 	// Remove first atom of residue
 	{
-		const atom_index_t	  atomIndex = moleculeComponent.getResidue( 0 )->getIndexFirstAtom();
-		Atom * const		  atom		= moleculeComponent.getAtom( atomIndex );
+		const atom_index_t	  atomIndex = systemComponent.getResidue( 0 )->getIndexFirstAtom();
+		Atom * const		  atom		= systemComponent.getAtom( atomIndex );
 		const Residue * const residue	= atom->getResiduePtr();
 
 		expectedRemovedAtoms = 1;
 		atom->remove();
 
 		CHECK( callbackValidated );
-		CHECK( moleculeComponent.getAtom( atomIndex ) == nullptr );
-		CHECK( !moleculeComponent.getActiveAtoms().contains( atomIndex ) );
+		CHECK( systemComponent.getAtom( atomIndex ) == nullptr );
+		CHECK( !systemComponent.getActiveAtoms().contains( atomIndex ) );
 		CHECK( residue->getIndexFirstAtom() == ( atomIndex + 1 ) );
 	}
 	// Remove last atom of residue
 	{
-		const atom_index_t	  atomIndex = moleculeComponent.getResidue( 0 )->getIndexLastAtom();
-		Atom * const		  atom		= moleculeComponent.getAtom( atomIndex );
+		const atom_index_t	  atomIndex = systemComponent.getResidue( 0 )->getIndexLastAtom();
+		Atom * const		  atom		= systemComponent.getAtom( atomIndex );
 		const Residue * const residue	= atom->getResiduePtr();
 
 		atom->remove();
 
-		CHECK( moleculeComponent.getAtom( atomIndex ) == nullptr );
-		CHECK( !moleculeComponent.getActiveAtoms().contains( atomIndex ) );
+		CHECK( systemComponent.getAtom( atomIndex ) == nullptr );
+		CHECK( !systemComponent.getActiveAtoms().contains( atomIndex ) );
 		CHECK( residue->getIndexLastAtom() == ( atomIndex - 1 ) );
 	}
 
 	// Remove first residue
 	{
 		const size_t		 residueIndex	  = 0;
-		Residue * const		 residue		  = moleculeComponent.getResidue( residueIndex );
+		Residue * const		 residue		  = systemComponent.getResidue( residueIndex );
 		const AtomIndexRange residueAtomRange = residue->getAtomRange();
 		const Chain * const	 chain			  = residue->getChainPtr();
 
@@ -64,31 +64,31 @@ TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
 		residue->remove();
 
 		CHECK( callbackValidated == true );
-		CHECK( moleculeComponent.getResidue( residueIndex ) == nullptr );
-		CHECK( !moleculeComponent.getActiveAtoms().contains( residueAtomRange ) );
+		CHECK( systemComponent.getResidue( residueIndex ) == nullptr );
+		CHECK( !systemComponent.getActiveAtoms().contains( residueAtomRange ) );
 
 		for ( atom_index_t i = residueAtomRange.getFirst(); i <= residueAtomRange.getLast(); i++ )
 		{
-			CHECK( moleculeComponent.getAtom( i ) == nullptr );
+			CHECK( systemComponent.getAtom( i ) == nullptr );
 		}
 		CHECK( chain->getIndexFirstResidue() == ( residueIndex + 1 ) );
 	}
 
 	// Remove last residue of chain
 	{
-		const Chain * const	 chain			  = moleculeComponent.getChain( 0 );
+		const Chain * const	 chain			  = systemComponent.getChain( 0 );
 		const size_t		 residueIndex	  = chain->getIndexLastResidue();
-		Residue * const		 residue		  = moleculeComponent.getResidue( residueIndex );
+		Residue * const		 residue		  = systemComponent.getResidue( residueIndex );
 		const AtomIndexRange residueAtomRange = residue->getAtomRange();
 
 		residue->remove();
 
-		CHECK( moleculeComponent.getResidue( residueIndex ) == nullptr );
-		CHECK( !moleculeComponent.getActiveAtoms().contains( residueAtomRange ) );
+		CHECK( systemComponent.getResidue( residueIndex ) == nullptr );
+		CHECK( !systemComponent.getActiveAtoms().contains( residueAtomRange ) );
 
 		for ( atom_index_t i = residueAtomRange.getFirst(); i <= residueAtomRange.getLast(); i++ )
 		{
-			CHECK( moleculeComponent.getAtom( i ) == nullptr );
+			CHECK( systemComponent.getAtom( i ) == nullptr );
 		}
 		CHECK( chain->getIndexLastResidue() == ( residueIndex - 1 ) );
 	}
@@ -96,7 +96,7 @@ TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
 	// Remove first chain
 	{
 		const size_t			chainIndex		  = 0;
-		Chain * const			chain			  = moleculeComponent.getChain( chainIndex );
+		Chain * const			chain			  = systemComponent.getChain( chainIndex );
 		const ResidueIndexRange chainResidueRange = chain->getResidueRange();
 		const AtomIndexRange	chainAtomRange	  = chain->getAtomRange();
 
@@ -104,72 +104,72 @@ TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
 		chain->remove();
 
 		CHECK( callbackValidated == true );
-		CHECK( moleculeComponent.getChain( chainIndex ) == nullptr );
-		CHECK( !moleculeComponent.getActiveAtoms().contains( chainAtomRange ) );
+		CHECK( systemComponent.getChain( chainIndex ) == nullptr );
+		CHECK( !systemComponent.getActiveAtoms().contains( chainAtomRange ) );
 
 		for ( atom_index_t i = chainAtomRange.getFirst(); i <= chainAtomRange.getLast(); i++ )
 		{
-			CHECK( moleculeComponent.getAtom( i ) == nullptr );
+			CHECK( systemComponent.getAtom( i ) == nullptr );
 		}
 
 		for ( size_t i = chainResidueRange.getFirst(); i <= chainResidueRange.getLast(); i++ )
 		{
-			CHECK( moleculeComponent.getResidue( i ) == nullptr );
+			CHECK( systemComponent.getResidue( i ) == nullptr );
 		}
 	}
 
 	// Remove last atom
 	{
-		const size_t	   defaultAtomSize = moleculeComponent.getAtoms().size();
+		const size_t	   defaultAtomSize = systemComponent.getAtoms().size();
 		const atom_index_t atomIndex	   = atom_index_t( defaultAtomSize - 1 );
-		Atom * const	   atom			   = moleculeComponent.getAtom( atomIndex );
+		Atom * const	   atom			   = systemComponent.getAtom( atomIndex );
 
 		atom->remove();
 
-		CHECK( moleculeComponent.getAtoms().size() == ( defaultAtomSize - 1 ) );
+		CHECK( systemComponent.getAtoms().size() == ( defaultAtomSize - 1 ) );
 	}
 
 	// Remove last residue
 	{
-		const size_t defaultResidueSize = moleculeComponent.getResidues().size();
-		const size_t defaultAtomSize	= moleculeComponent.getAtoms().size();
+		const size_t defaultResidueSize = systemComponent.getResidues().size();
+		const size_t defaultAtomSize	= systemComponent.getAtoms().size();
 
 		const size_t residueIndex = defaultResidueSize - 1;
-		Residue &	 residue	  = *moleculeComponent.getResidue( residueIndex );
+		Residue &	 residue	  = *systemComponent.getResidue( residueIndex );
 
 		const atom_index_t residueAtomCount = residue.getAtomCount();
 
 		residue.remove();
 
-		CHECK( moleculeComponent.getAtoms().size() == ( defaultAtomSize - residueAtomCount ) );
-		CHECK( moleculeComponent.getResidues().size() == ( defaultResidueSize - 1 ) );
+		CHECK( systemComponent.getAtoms().size() == ( defaultAtomSize - residueAtomCount ) );
+		CHECK( systemComponent.getResidues().size() == ( defaultResidueSize - 1 ) );
 	}
 
 	// Remove last chain
 	{
-		const size_t defaultRealChainCount	 = moleculeComponent.getRealChainCount();
-		const size_t defaultRealResidueCount = moleculeComponent.getRealResidueCount();
-		const size_t defaultRealAtomCount	 = moleculeComponent.getRealAtomCount();
+		const size_t defaultRealChainCount	 = systemComponent.getRealChainCount();
+		const size_t defaultRealResidueCount = systemComponent.getRealResidueCount();
+		const size_t defaultRealAtomCount	 = systemComponent.getRealAtomCount();
 
-		const size_t defaultChainSize	= moleculeComponent.getChains().size();
-		const size_t defaultResidueSize = moleculeComponent.getResidues().size();
-		const size_t defaultAtomSize	= moleculeComponent.getAtoms().size();
+		const size_t defaultChainSize	= systemComponent.getChains().size();
+		const size_t defaultResidueSize = systemComponent.getResidues().size();
+		const size_t defaultAtomSize	= systemComponent.getAtoms().size();
 
 		const size_t chainIndex = defaultChainSize - 1;
-		Chain &		 chain		= *moleculeComponent.getChain( chainIndex );
+		Chain &		 chain		= *systemComponent.getChain( chainIndex );
 
 		const size_t	   chainResidueCount = chain.getResidueCount();
 		const atom_index_t chainAtomCount	 = chain.getIndexLastAtom() - chain.getIndexFirstAtom() + 1;
 
 		chain.remove();
 
-		CHECK( moleculeComponent.getChains().size() == ( defaultChainSize - 1 ) );
-		CHECK( moleculeComponent.getResidues().size() == ( defaultResidueSize - chainResidueCount ) );
-		CHECK( moleculeComponent.getAtoms().size() == ( defaultAtomSize - chainAtomCount ) );
+		CHECK( systemComponent.getChains().size() == ( defaultChainSize - 1 ) );
+		CHECK( systemComponent.getResidues().size() == ( defaultResidueSize - chainResidueCount ) );
+		CHECK( systemComponent.getAtoms().size() == ( defaultAtomSize - chainAtomCount ) );
 
-		CHECK( moleculeComponent.getRealChainCount() == ( defaultRealChainCount - 1 ) );
-		CHECK( moleculeComponent.getRealResidueCount() == ( defaultRealResidueCount - chainResidueCount ) );
-		CHECK( moleculeComponent.getRealAtomCount() == ( defaultRealAtomCount - chainAtomCount ) );
+		CHECK( systemComponent.getRealChainCount() == ( defaultRealChainCount - 1 ) );
+		CHECK( systemComponent.getRealResidueCount() == ( defaultRealResidueCount - chainResidueCount ) );
+		CHECK( systemComponent.getRealAtomCount() == ( defaultRealAtomCount - chainAtomCount ) );
 	}
 };
 
@@ -180,22 +180,22 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 	using namespace VTX::App::Component::Chemistry;
 
 	App::Fixture app;
-	Test::Util::App::loadTestMolecule();
+	Test::Util::App::loadTestSystem();
 
 	App::Core::ECS::BaseEntity molEntity		 = SCENE().getItem( App::Test::Util::App::MOLECULE_TEST_NAME );
-	System &				   moleculeComponent = ECS_REGISTRY().getComponent<System>( molEntity );
+	System &				   systemComponent = ECS_REGISTRY().getComponent<System>( molEntity );
 
 	atom_index_t expectedModifiedAtomCount = 0;
 	bool		 callbackValidated		   = 0;
 
-	moleculeComponent.onVisibilityChange +=
+	systemComponent.onVisibilityChange +=
 		[ & ]( const AtomIndexRangeList & p_atoms, const App::Core::VISIBILITY_APPLY_MODE p_applyMode )
 	{ callbackValidated = ( expectedModifiedAtomCount == p_atoms.count() ); };
 
 	// Atom visibility
 	{
 		const atom_index_t atomIndex = 0;
-		Atom &			   atom		 = *( moleculeComponent.getAtom( atomIndex ) );
+		Atom &			   atom		 = *( systemComponent.getAtom( atomIndex ) );
 		const Residue &	   residue	 = *( atom.getConstResiduePtr() );
 
 		expectedModifiedAtomCount = 1;
@@ -213,7 +213,7 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 
 	// Residues visibility
 	{
-		Residue &			 residue   = *( moleculeComponent.getResidue( 0 ) );
+		Residue &			 residue   = *( systemComponent.getResidue( 0 ) );
 		const AtomIndexRange atomRange = residue.getAtomRange();
 
 		expectedModifiedAtomCount = atomRange.getCount();
@@ -222,39 +222,39 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 		{
 			residue.setVisible( false );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
 			CHECK( residue.isVisible() == false );
 
 			residue.setVisible( true );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == true );
 			CHECK( residue.isVisible() == true );
 		}
 
 		// From atoms
 		{
-			moleculeComponent.setVisible( atomRange, false );
+			systemComponent.setVisible( atomRange, false );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
 			CHECK( residue.isVisible() == false );
 
-			moleculeComponent.setVisible( atomRange, true );
+			systemComponent.setVisible( atomRange, true );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == true );
 			CHECK( residue.isVisible() == true );
 		}
 	}
 
 	// Chains visibility
 	{
-		Chain &					chain		 = *( moleculeComponent.getChain( 0 ) );
-		Residue &				residue		 = *( moleculeComponent.getResidue( 0 ) );
+		Chain &					chain		 = *( systemComponent.getChain( 0 ) );
+		Residue &				residue		 = *( systemComponent.getResidue( 0 ) );
 		const AtomIndexRange	atomRange	 = chain.getAtomRange();
 		const ResidueIndexRange residueRange = chain.getResidueRange();
 
@@ -264,20 +264,20 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 		{
 			chain.setVisible( false );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
 			CHECK( chain.isVisible() == false );
 
 			chain.setVisible( true );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == true );
 			CHECK( chain.isVisible() == true );
 		}
 
@@ -286,42 +286,42 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 			for ( Residue & residue : chain.residues() )
 				residue.setVisible( false );
 
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
 			CHECK( chain.isVisible() == false );
 
 			for ( Residue & residue : chain.residues() )
 				residue.setVisible( true );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == true );
 			CHECK( chain.isVisible() == true );
 		}
 
 		// From atoms
 		{
-			moleculeComponent.setVisible( atomRange, false );
+			systemComponent.setVisible( atomRange, false );
 
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == false );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getAtom( atomRange.getLast() + 1 )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == false );
+			CHECK( systemComponent.getResidue( residueRange.getLast() + 1 )->isVisible() == true );
 			CHECK( chain.isVisible() == false );
 
-			moleculeComponent.setVisible( atomRange, true );
+			systemComponent.setVisible( atomRange, true );
 			CHECK( callbackValidated );
-			CHECK( moleculeComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getAtom( atomRange.getLast() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
-			CHECK( moleculeComponent.getResidue( residueRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getAtom( atomRange.getLast() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getFirst() )->isVisible() == true );
+			CHECK( systemComponent.getResidue( residueRange.getLast() )->isVisible() == true );
 			CHECK( chain.isVisible() == true );
 		}
 	}

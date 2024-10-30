@@ -116,10 +116,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		void addProxyMolecule( Proxy::System & p_proxy );
-		void removeProxyMolecule( Proxy::System & p_proxy );
-		void addProxyMolecules( std::vector<Proxy::System *> & p_proxies );
-		void removeProxyMolecules( std::vector<Proxy::System *> & p_proxies );
+		void addProxySystem( Proxy::System & p_proxy );
+		void removeProxySystem( Proxy::System & p_proxy );
+		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
+		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
 
 		void addProxyRepresentation( Proxy::Representation & p_proxy );
 		void removeProxyRepresentation( Proxy::Representation & p_proxy );
@@ -235,24 +235,24 @@ namespace VTX::Renderer
 		InstructionsDurationRanges _instructionsDurationRanges;
 
 		// Proxies.
-		std::vector<Proxy::System *>		 _proxiesMolecules;
+		std::vector<Proxy::System *>		 _proxiesSystems;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
 		Proxy::Camera *						 _proxyCamera;
 		Proxy::ColorLayout *				 _proxyColorLayout;
 		Proxy::RenderSettings *				 _proxyRenderSettings;
 		Proxy::Voxels *						 _proxyVoxels;
 
-		void _addProxyMolecule( Proxy::System & p_proxy );
-		void _removeProxyMolecule( Proxy::System & p_proxy );
+		void _addProxySystem( Proxy::System & p_proxy );
+		void _removeProxySystem( Proxy::System & p_proxy );
 
 		// TODO: check complexity.
 		inline size_t _getProxyId( const Proxy::System * const p_proxy ) const
 		{
 			size_t id = std::distance(
-				_proxiesMolecules.begin(), std::find( _proxiesMolecules.begin(), _proxiesMolecules.end(), p_proxy )
+				_proxiesSystems.begin(), std::find( _proxiesSystems.begin(), _proxiesSystems.end(), p_proxy )
 			);
 
-			assert( id < _proxiesMolecules.size() );
+			assert( id < _proxiesSystems.size() );
 
 			return id;
 		}
@@ -263,7 +263,7 @@ namespace VTX::Renderer
 		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
-		inline void _refreshDataMolecules()
+		inline void _refreshDataSystems()
 		{
 			_refreshDataSpheresCylinders();
 			_refreshDataRibbons();

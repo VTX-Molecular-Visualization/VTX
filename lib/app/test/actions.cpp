@@ -102,7 +102,7 @@ TEST_CASE( "VTX_APP - Action - Application", "[integration]" )
 	using namespace VTX::App;
 
 	App::Fixture app;
-	Test::Util::App::loadTestMolecule();
+	Test::Util::App::loadTestSystem();
 
 	std::filesystem::create_directory( Util::Filesystem::getExecutableDir() / "data/actions" );
 	const FilePath scenePath = Util::Filesystem::getExecutableDir() / "data/actions/scene.vtx";

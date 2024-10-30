@@ -63,39 +63,39 @@ namespace
 		using namespace VTX::IO::Writer;
 		using namespace VTX::IO::test;
 
-		const std::string moleculeName	   = structureFile.stem().string();
-		const std::string moleculePathname = moleculeName + structureFile.extension().string();
+		const std::string systemName	   = structureFile.stem().string();
+		const std::string systemPathname = systemName + structureFile.extension().string();
 
-		VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+		VTX::Core::Struct::System system = VTX::Core::Struct::System();
 		{
-			IO::Reader::System moleculeReader = IO::Reader::System();
+			IO::Reader::System systemReader = IO::Reader::System();
 
-			moleculeReader.readFile( structureFile, molecule );
+			systemReader.readFile( structureFile, system );
 		}
-		uint64_t init_atomCount	 = molecule.getAtomCount();
-		uint64_t init_chainCount = molecule.getChainCount();
-		uint64_t init_frameCount = molecule.trajectory.getFrameCount();
-		uint64_t init_bondCount	 = molecule.getBondCount();
-		uint64_t init_resCount	 = molecule.getResidueCount();
+		uint64_t init_atomCount	 = system.getAtomCount();
+		uint64_t init_chainCount = system.getChainCount();
+		uint64_t init_frameCount = system.trajectory.getFrameCount();
+		uint64_t init_bondCount	 = system.getBondCount();
+		uint64_t init_resCount	 = system.getResidueCount();
 
 		fs::remove( structureFile );
 
 		writeFile( WriteArgs {
 			.destination = structureFile,
 			.format		 = E_FILE_FORMATS::none,
-			.molecule	 = &molecule,
+			.system	 = &system,
 		} );
 
-		VTX::Core::Struct::System molecule_reread		= VTX::Core::Struct::System();
-		IO::Reader::System		  moleculeReader_reread = IO::Reader::System();
+		VTX::Core::Struct::System system_reread		= VTX::Core::Struct::System();
+		IO::Reader::System		  systemReader_reread = IO::Reader::System();
 
-		moleculeReader_reread.readFile( structureFile, molecule_reread );
+		systemReader_reread.readFile( structureFile, system_reread );
 
-		bool numMismatch_atom  = init_atomCount != molecule_reread.getAtomCount();
-		bool numMismatch_chain = init_chainCount != molecule_reread.getChainCount();
-		bool numMismatch_frame = init_frameCount != molecule_reread.trajectory.getFrameCount();
-		bool numMismatch_bond  = init_bondCount != molecule_reread.getBondCount();
-		bool numMismatch_res   = init_resCount != molecule_reread.getResidueCount();
+		bool numMismatch_atom  = init_atomCount != system_reread.getAtomCount();
+		bool numMismatch_chain = init_chainCount != system_reread.getChainCount();
+		bool numMismatch_frame = init_frameCount != system_reread.trajectory.getFrameCount();
+		bool numMismatch_bond  = init_bondCount != system_reread.getBondCount();
+		bool numMismatch_res   = init_resCount != system_reread.getResidueCount();
 
 		rslt = ( numMismatch_atom * RereadResult::atom_mismatch ) | ( numMismatch_chain * RereadResult::chain_mismatch )
 			   | ( numMismatch_res * RereadResult::residue_mismatch )

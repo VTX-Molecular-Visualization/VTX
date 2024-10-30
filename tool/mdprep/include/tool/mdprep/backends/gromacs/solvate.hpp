@@ -9,7 +9,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct GromacsJobData;
 	struct CumulativeOuputFiles;
 
-	// Support solvation with the default spc216.gro water molecule
+	// Support solvation with the default spc216.gro water system
 	struct SolvateInstructions
 	{
 		std::string fileStem;

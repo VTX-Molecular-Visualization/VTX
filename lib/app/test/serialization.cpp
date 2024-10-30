@@ -291,18 +291,18 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
 	App::Fixture app;
-	Test::Util::App::loadTestTrajectoryMolecule();
+	Test::Util::App::loadTestTrajectorySystem();
 
-	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
+	const std::string systemName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
-	App::Component::Chemistry::System & molecule
-		= SCENE().getComponentByName<App::Component::Chemistry::System>( moleculeName );
+	App::Component::Chemistry::System & system
+		= SCENE().getComponentByName<App::Component::Chemistry::System>( systemName );
 
-	for ( atom_index_t i = molecule.getResidue( 1 )->getIndexFirstAtom();
-		  i <= molecule.getResidue( 1 )->getIndexLastAtom();
+	for ( atom_index_t i = system.getResidue( 1 )->getIndexFirstAtom();
+		  i <= system.getResidue( 1 )->getIndexLastAtom();
 		  i++ )
 	{
-		molecule.getAtom( i )->setVisible( false );
+		system.getAtom( i )->setVisible( false );
 	}
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
@@ -318,15 +318,15 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	CHECK( loadedScene.getItemCount() == 1 );
 	const App::Component::Scene::SceneItemComponent & sceneItemObj
 		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
-	REQUIRE( sceneItemObj.getName() == moleculeName );
+	REQUIRE( sceneItemObj.getName() == systemName );
 
-	const App::Component::Chemistry::System & loadedMolecule
-		= loadedScene.getComponentByName<App::Component::Chemistry::System>( moleculeName );
+	const App::Component::Chemistry::System & loadedSystem
+		= loadedScene.getComponentByName<App::Component::Chemistry::System>( systemName );
 
-	CHECK( loadedMolecule.getAtoms().size() == 263 );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
-	// CHECK( molecule.getAtoms().size() == 113095 );
+	CHECK( loadedSystem.getAtoms().size() == 263 );
+	CHECK( !loadedSystem.getAtom( loadedSystem.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
+	CHECK( !loadedSystem.getAtom( loadedSystem.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
+	// CHECK( system.getAtoms().size() == 113095 );
 }
 
 TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )

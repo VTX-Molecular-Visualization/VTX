@@ -12,15 +12,15 @@ TEST_CASE( "VTX_APP - Scene", "[unit]" )
 
 	App::Fixture app;
 
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_0" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_1" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_2" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_3" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_4" );
 
 	CHECK( SCENE().getItem( 0 ) == SCENE().getItem( "1AGA_0" ) );

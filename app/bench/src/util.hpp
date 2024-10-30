@@ -6,8 +6,8 @@
 
 namespace VTX::Bench
 {
-	Core::Struct::System loadMolecule( const FilePath & p_filename );
-	Core::Struct::System downloadMolecule( const std::string & p_pdb );
+	Core::Struct::System loadSystem( const FilePath & p_filename );
+	Core::Struct::System downloadSystem( const std::string & p_pdb );
 
 	// Skybox tests.
 	/*

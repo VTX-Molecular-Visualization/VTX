@@ -23,30 +23,30 @@ namespace VTX::App::Serialization::IO::Reader
 	namespace Core	 = VTX::Core;
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	void MoleculeLoader::readFile( const FilePath & p_path, App::Component::Chemistry::System & p_molecule )
+	void SystemLoader::readFile( const FilePath & p_path, App::Component::Chemistry::System & p_system )
 	{
 		_reader								= VTX::IO::Reader::System();
-		Core::Struct::System moleculeStruct = Core::Struct::System();
+		Core::Struct::System systemStruct = Core::Struct::System();
 
-		_reader.readFile( p_path, moleculeStruct );
+		_reader.readFile( p_path, systemStruct );
 		VTX::Util::Chrono chrono = VTX::Util::Chrono();
 		chrono.start();
-		p_molecule.setMoleculeStruct( moleculeStruct );
+		p_system.setSystemStruct( systemStruct );
 		chrono.stop();
 		VTX_INFO( "Build System convenient structure : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 	}
 
-	void MoleculeLoader::readBuffer(
+	void SystemLoader::readBuffer(
 		const std::string &					p_buffer,
 		const FilePath &					p_path,
-		App::Component::Chemistry::System & p_molecule
+		App::Component::Chemistry::System & p_system
 	)
 	{
 		_reader								= VTX::IO::Reader::System();
-		Core::Struct::System moleculeStruct = Core::Struct::System();
+		Core::Struct::System systemStruct = Core::Struct::System();
 
-		_reader.readBuffer( p_buffer, p_path, moleculeStruct );
-		p_molecule.setMoleculeStruct( moleculeStruct );
+		_reader.readBuffer( p_buffer, p_path, systemStruct );
+		p_system.setSystemStruct( systemStruct );
 	}
 
 } // namespace VTX::App::Serialization::IO::Reader

@@ -5,18 +5,18 @@
 namespace VTX::IO::Util::SecondaryStructure
 {
 
-	void computeStride( Core::Struct::System & p_molecule )
+	void computeStride( Core::Struct::System & p_system )
 	{
 		using namespace VTX::Util;
 
-		const Core::Struct::Frame & positions = p_molecule.trajectory.getCurrentFrame();
+		const Core::Struct::Frame & positions = p_system.trajectory.getCurrentFrame();
 
-		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_molecule.residueSecondaryStructureTypes;
+		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_system.residueSecondaryStructureTypes;
 
-		for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
+		for ( uint chainIdx = 0; chainIdx < p_system.getChainCount(); ++chainIdx )
 		{
 			/*
-			const Model::Chain * const chainPtr = p_molecule.getChain( chainIdx );
+			const Model::Chain * const chainPtr = p_system.getChain( chainIdx );
 
 			if ( chainPtr == nullptr )
 				continue;
@@ -25,7 +25,7 @@ namespace VTX::IO::Util::SecondaryStructure
 			const Model::Chain & chain		  = *chainPtr;
 			*/
 
-			const size_t residueCount = p_molecule.chainResidueCounts[ chainIdx ];
+			const size_t residueCount = p_system.chainResidueCounts[ chainIdx ];
 
 			// Not enought atoms.
 			if ( residueCount < 4 )
@@ -34,7 +34,7 @@ namespace VTX::IO::Util::SecondaryStructure
 				continue;
 			}
 
-			const size_t	   idxFirstResidue = p_molecule.chainFirstResidues[ chainIdx ];
+			const size_t	   idxFirstResidue = p_system.chainFirstResidues[ chainIdx ];
 			std::vector<float> phi			   = std::vector<float>( residueCount );
 			std::vector<float> psi			   = std::vector<float>( residueCount );
 			// std::vector<float> omega		   = std::vector<float>( residueCount );
@@ -50,14 +50,14 @@ namespace VTX::IO::Util::SecondaryStructure
 			types[ idxFirstResidue ]					= Core::ChemDB::SecondaryStructure::TYPE::COIL;
 			types[ idxFirstResidue + residueCount - 1 ] = Core::ChemDB::SecondaryStructure::TYPE::COIL;
 
-			auto findFirstAtomByName = [ &p_molecule ]( const size_t p_residueIdx, const std::string & p_name )
+			auto findFirstAtomByName = [ &p_system ]( const size_t p_residueIdx, const std::string & p_name )
 			{
-				const atom_index_t atomCount	= p_molecule.residueAtomCounts[ p_residueIdx ];
-				const atom_index_t idxFirstAtom = p_molecule.residueFirstAtomIndexes[ p_residueIdx ];
+				const atom_index_t atomCount	= p_system.residueAtomCounts[ p_residueIdx ];
+				const atom_index_t idxFirstAtom = p_system.residueFirstAtomIndexes[ p_residueIdx ];
 
 				for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
 				{
-					if ( p_molecule.atomNames[ i ] == p_name )
+					if ( p_system.atomNames[ i ] == p_name )
 					{
 						return i;
 					}

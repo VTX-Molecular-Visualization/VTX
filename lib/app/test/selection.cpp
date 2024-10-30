@@ -25,12 +25,12 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 		App::Fixture app;
 
-		Test::Util::App::loadMolecule( "8OIT.mmtf" );
+		Test::Util::App::loadSystem( "8OIT.mmtf" );
 		const Component::Chemistry::System & mol1 = SCENE().getComponentByName<Component::Chemistry::System>( "8OIT" );
 		const Component::Scene::Selectable & selectableMol1
 			= SCENE().getComponentByName<Component::Scene::Selectable>( "8OIT" );
 
-		Test::Util::App::loadMolecule( "1AGA.mmtf" );
+		Test::Util::App::loadSystem( "1AGA.mmtf" );
 		const Component::Chemistry::System & mol2 = SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" );
 		const Component::Scene::Selectable & selectableMol2
 			= SCENE().getComponentByName<Component::Scene::Selectable>( "1AGA" );
@@ -72,8 +72,8 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 		CURRENT_SELECTION().clear();
 
-		// std::vector<const Component::Chemistry::System *> molecules = { &mol1, &mol2 };
-		// CURRENT_SELECTION().selectAll( molecules );
+		// std::vector<const Component::Chemistry::System *> systems = { &mol1, &mol2 };
+		// CURRENT_SELECTION().selectAll( systems );
 		// CHECK( CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
 	}
 	catch ( const std::exception & e )
@@ -82,7 +82,7 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 	}
 }
 
-TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
+TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -94,7 +94,7 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 
 	App::Fixture app;
 
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	const Component::Chemistry::System & mol1 = SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" );
 	const Component::Scene::Selectable & selectableMol1
 		= SCENE().getComponentByName<Component::Scene::Selectable>( "1AGA" );
@@ -102,8 +102,8 @@ TEST_CASE( "VTX_APP - Selection - Molecules", "[unit]" )
 	SystemData & molSelData1 = CURRENT_SELECTION().select<SystemData>( selectableMol1 );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( molSelData1.isFullySelected() );
-	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::Molecule );
-	CHECK( &molSelData1.getCurrentObjectAsMolecule() == &mol1 );
+	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::System );
+	CHECK( &molSelData1.getCurrentObjectAsSystem() == &mol1 );
 
 	molSelData1.clear();
 	molSelData1.selectFullChain( *mol1.getChain( 0 ) );
@@ -185,14 +185,14 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 
 	App::Fixture app;
 
-	Test::Util::App::loadMolecule( "7Y7A.mmtf" );
+	Test::Util::App::loadSystem( "7Y7A.mmtf" );
 	const Component::Chemistry::System & mol1 = SCENE().getComponentByName<Component::Chemistry::System>( "7Y7A" );
 	const Component::Scene::Selectable & selectableMol1
 		= SCENE().getComponentByName<Component::Scene::Selectable>( "7Y7A" );
 
-	BENCHMARK( "Select full molecule" ) { CURRENT_SELECTION().select( selectableMol1 ); };
+	BENCHMARK( "Select full system" ) { CURRENT_SELECTION().select( selectableMol1 ); };
 
-	BENCHMARK( "Select molecule worst case" )
+	BENCHMARK( "Select system worst case" )
 	{
 		Application::Selection::SystemData & molData
 			= CURRENT_SELECTION().select<Application::Selection::SystemData>( selectableMol1 );

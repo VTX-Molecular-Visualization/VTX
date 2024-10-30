@@ -7,19 +7,19 @@ namespace VTX::App::Component::Chemistry
 {
 	Trajectory::Trajectory()
 	{
-		_moleculePtr = &ECS_REGISTRY().getComponent<System>( *this );
+		_systemPtr = &ECS_REGISTRY().getComponent<System>( *this );
 		_referenceUpdateFunction();
 	}
 
-	Trajectory::Trajectory( System * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
+	Trajectory::Trajectory( System * const p_system ) : _systemPtr( p_system ) { _referenceUpdateFunction(); }
 
-	size_t Trajectory::getCurrentFrame() const { return _moleculePtr->getTrajectory().currentFrameIndex; }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().currentFrameIndex; }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
+		_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
 	}
 
-	size_t Trajectory::getFrameCount() const { return _moleculePtr->getTrajectory().frames.size(); }
+	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
 
 	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
 	{
@@ -28,11 +28,11 @@ namespace VTX::App::Component::Chemistry
 		onFrameChange.clear();
 
 		_player = p_player;
-		_player->setCount( _moleculePtr->getTrajectory().getFrameCount() );
+		_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
 		_player->onFrameChange += [ this ]( const size_t p_frameIndex )
 		{
-			_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
+			_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
 			onFrameChange( p_frameIndex );
 		};
 

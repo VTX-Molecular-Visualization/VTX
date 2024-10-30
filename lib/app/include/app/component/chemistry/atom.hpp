@@ -17,9 +17,9 @@ namespace VTX::App::Component::Chemistry
 	  public:
 		Atom() = default;
 		Atom( Residue * const p_residue );
-		Atom( System * const p_molecule ) : _moleculePtr( p_molecule ) {};
-		Atom( System * const p_molecule, const atom_index_t p_index ) :
-			_moleculePtr( p_molecule ), _index( p_index ) {};
+		Atom( System * const p_system ) : _systemPtr( p_system ) {};
+		Atom( System * const p_system, const atom_index_t p_index ) :
+			_systemPtr( p_system ), _index( p_index ) {};
 
 		atom_index_t			getIndex() const { return _index; }
 		void					setIndex( const atom_index_t p_index ) { _index = p_index; }
@@ -28,8 +28,8 @@ namespace VTX::App::Component::Chemistry
 		void					setResiduePtr( Residue * const p_residue );
 		Chain *					getChainPtr() const;
 		const Chain *			getConstChainPtr() const;
-		inline System *		getMoleculePtr() const { return _moleculePtr; }
-		inline const System * getConstMoleculePtr() const { return _moleculePtr; }
+		inline System *		getSystemPtr() const { return _systemPtr; }
+		inline const System * getConstSystemPtr() const { return _systemPtr; }
 
 		const std::string &			 getName() const;
 		void						 setName( const std::string & p_name );
@@ -52,8 +52,8 @@ namespace VTX::App::Component::Chemistry
 		void remove();
 
 	  private:
-		// Store moleculePtr or use residuePtr->getChainPtr()->getMoleculePtr() ?
-		System *	 _moleculePtr = nullptr;
+		// Store systemPtr or use residuePtr->getChainPtr()->getSystemPtr() ?
+		System *	 _systemPtr = nullptr;
 		atom_index_t _index		  = INVALID_ATOM_INDEX;
 	};
 

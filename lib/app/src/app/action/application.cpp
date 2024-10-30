@@ -79,10 +79,10 @@ namespace VTX::App::Action::Application
 		}
 		else
 		{
-			for ( const FilePath & moleculePath : _paths )
+			for ( const FilePath & systemPath : _paths )
 			{
-				Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
-				loadMoleculeAction.execute();
+				Action::Scene::LoadSystem loadSystemAction = Action::Scene::LoadSystem( systemPath );
+				loadSystemAction.execute();
 			}
 		}
 	}

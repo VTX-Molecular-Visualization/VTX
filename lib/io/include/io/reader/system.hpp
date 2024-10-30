@@ -21,11 +21,11 @@ namespace VTX::IO::Reader
 	  public:
 		System() {};
 
-		void readFile( const FilePath & p_path, VTX::Core::Struct::System & p_molecule );
+		void readFile( const FilePath & p_path, VTX::Core::Struct::System & p_system );
 		void readBuffer(
 			const std::string &			p_buffer,
 			const FilePath &			p_path,
-			VTX::Core::Struct::System & p_molecule
+			VTX::Core::Struct::System & p_system
 		);
 
 		void setConfiguration( const Struct::SystemConfiguration & p_configuration )
@@ -36,7 +36,7 @@ namespace VTX::IO::Reader
 		const Reader::Chemfiles & getChemfilesReader() { return *_chemfilesReader; }
 
 	  private:
-		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_molecule );
+		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system );
 
 		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
 		VTX::Core::ChemDB::Category::TYPE _findCategoryType(

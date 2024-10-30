@@ -29,7 +29,7 @@ namespace VTX::App::Entity
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
-		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
+		auto & system	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
 		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
@@ -37,18 +37,18 @@ namespace VTX::App::Entity
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
 
-		// Load molecule.
-		Serialization::IO::Reader::MoleculeLoader loader;
-		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( *this );
+		// Load system.
+		Serialization::IO::Reader::SystemLoader loader;
+		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
 
 		if ( _buffer ) // Buffer.
 		{
 			VTX_DEBUG( "Path: {}", _path.string() );
-			loader.readBuffer( *_buffer, _path, molecule );
+			loader.readBuffer( *_buffer, _path, system );
 		}
 		else // Filepath
 		{
-			loader.readFile( _path, molecule );
+			loader.readFile( _path, system );
 			metaData.path = _path;
 		}
 
@@ -56,13 +56,13 @@ namespace VTX::App::Entity
 		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
 		metaData.pdbIDCode								   = pdbId;
 
-		molecule.setPdbIdCode( pdbId );
+		system.setPdbIdCode( pdbId );
 
-		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( _path ) : pdbId;
-		molecule.setName( moleculeName );
+		const std::string systemName = pdbId == "" ? Util::Filesystem::getFileName( _path ) : pdbId;
+		system.setName( systemName );
 
 		// UID.
-		uid.referenceUID( molecule.getAtomUIDs() );
+		uid.referenceUID( system.getAtomUIDs() );
 		// Selectable.
 		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
 		// AABB.
@@ -73,7 +73,7 @@ namespace VTX::App::Entity
 				Util::Math::AABB res;
 				res.invalidate();
 
-				for ( const auto & atomPtr : molecule.getAtoms() )
+				for ( const auto & atomPtr : system.getAtoms() )
 				{
 					if ( atomPtr != nullptr )
 						res.extend( atomPtr->getLocalPosition() );
@@ -86,9 +86,9 @@ namespace VTX::App::Entity
 		proxy.setup( App::RENDERER_SYSTEM() );
 
 		// Trajectory.
-		if ( molecule.hasTrajectory() )
+		if ( system.hasTrajectory() )
 		{
-			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &molecule );
+			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system );
 
 			// TODO: set from settings.
 			auto * const defaultPlayMode
@@ -113,10 +113,10 @@ namespace VTX::App::Entity
 				if ( p_pickingInfo.hasOneValue() )
 				{
 					// First UID is Atom and not the other one => Pick Atom
-					if ( molecule.getAtomUIDs().contains( p_pickingInfo.getFirst() ) )
+					if ( system.getAtomUIDs().contains( p_pickingInfo.getFirst() ) )
 					{
 						const Component::Chemistry::Atom * const atomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getFirst() );
+							= system.getAtomFromUID( p_pickingInfo.getFirst() );
 
 						if ( atomPtr != nullptr )
 						{
@@ -125,11 +125,11 @@ namespace VTX::App::Entity
 							);
 						}
 					}
-					else if ( molecule.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
+					else if ( system.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
 					{
 						// First UID is Residue => Pick Residue
 						const Component::Chemistry::Residue * const residuePtr
-							= molecule.getResidueFromUID( p_pickingInfo.getFirst() );
+							= system.getResidueFromUID( p_pickingInfo.getFirst() );
 
 						if ( residuePtr != nullptr )
 						{
@@ -142,13 +142,13 @@ namespace VTX::App::Entity
 				else if ( p_pickingInfo.hasTwoValues() )
 				{
 					// Two atoms picked => Pick Bond
-					if ( ( molecule.getAtomUIDs().contains( p_pickingInfo.getFirst() )
-						   && molecule.getAtomUIDs().contains( p_pickingInfo.getSecond() ) ) )
+					if ( ( system.getAtomUIDs().contains( p_pickingInfo.getFirst() )
+						   && system.getAtomUIDs().contains( p_pickingInfo.getSecond() ) ) )
 					{
 						const Component::Chemistry::Atom * const firstAtomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getFirst() );
+							= system.getAtomFromUID( p_pickingInfo.getFirst() );
 						const Component::Chemistry::Atom * const secondAtomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getSecond() );
+							= system.getAtomFromUID( p_pickingInfo.getSecond() );
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{

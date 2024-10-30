@@ -20,10 +20,10 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	using namespace VTX::App;
 
 	App::Fixture app;
-	Test::Util::App::loadTestTrajectoryMolecule();
+	Test::Util::App::loadTestTrajectorySystem();
 
 	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
-	App::Component::Chemistry::System & moleculeComponent
+	App::Component::Chemistry::System & systemComponent
 		= ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( molEntity );
 
 	App::Component::Chemistry::Trajectory & trajectoryComponent

@@ -32,7 +32,7 @@ namespace VTX::UI::QT::DockWidget
 	// Test structs.
 	struct TestData
 	{
-		std::string_view name		  = "Default molecule";
+		std::string_view name		  = "Default system";
 		int				 persistentId = 0;
 
 		const std::string_view getName() const { return name; }
@@ -41,7 +41,7 @@ namespace VTX::UI::QT::DockWidget
 
 	struct TestData2
 	{
-		std::string_view myName = "Default molecule adapted";
+		std::string_view myName = "Default system adapted";
 		int				 myID	= 0;
 
 		const std::string_view getMyName() const { return myName; }
@@ -188,16 +188,16 @@ namespace VTX::UI::QT::DockWidget
 
 				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_item ) )
 				{
-					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_item );
+					auto & system = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_item );
 
 					// Add with concept.
 					addTopLevelData(
 						TreeItemData { p_item.getName(),
 									   WidgetData( p_item.getPersistentSceneID() ),
-									   molecule.getChains().size() },
+									   system.getChains().size() },
 						LoadFunc(
 							[ &p_item,
-							  &molecule ]( const uint p_level, const WidgetData p_data ) -> std::vector<TreeItemData>
+							  &system ]( const uint p_level, const WidgetData p_data ) -> std::vector<TreeItemData>
 							{
 								std::vector<TreeItemData> data;
 
@@ -206,7 +206,7 @@ namespace VTX::UI::QT::DockWidget
 								case 0: // Load chains.
 								{
 									WidgetData index = 0;
-									for ( auto & chain : molecule.getChains() )
+									for ( auto & chain : system.getChains() )
 									{
 										data.push_back( TreeItemData {
 											chain->getName(), index++, chain->getResidueCount() } );
@@ -216,13 +216,13 @@ namespace VTX::UI::QT::DockWidget
 
 								case 1: // Load residues.
 								{
-									auto * chain = molecule.getChain( p_data );
+									auto * chain = system.getChain( p_data );
 									assert( chain );
 									for ( size_t index = chain->getIndexFirstResidue();
 										  index <= chain->getIndexLastResidue();
 										  ++index )
 									{
-										auto * residue = molecule.getResidue( index );
+										auto * residue = system.getResidue( index );
 										data.push_back( TreeItemData {
 											residue->getName(), index, residue->getAtomCount() } );
 									}
@@ -231,13 +231,13 @@ namespace VTX::UI::QT::DockWidget
 
 								case 2: // Load atoms.
 								{
-									auto * residue = molecule.getResidue( p_data );
+									auto * residue = system.getResidue( p_data );
 									assert( residue );
 									for ( size_t index = residue->getIndexFirstAtom();
 										  index <= residue->getIndexLastAtom();
 										  ++index )
 									{
-										auto * atom = molecule.getAtom( atom_index_t( index ) );
+										auto * atom = system.getAtom( atom_index_t( index ) );
 										data.push_back( TreeItemData { atom->getName(), index, 0 } );
 									}
 								}

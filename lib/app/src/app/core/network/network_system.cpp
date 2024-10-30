@@ -15,14 +15,14 @@ namespace VTX::App::Core::Network
 		const FilePath cachePath = Filesystem::getCachePath( p_filename );
 		if ( std::filesystem::exists( cachePath ) )
 		{
-			VTX_INFO( "Loading molecule from cache: {}", cachePath.string() );
+			VTX_INFO( "Loading system from cache: {}", cachePath.string() );
 			*p_data = Util::Filesystem::readPath( cachePath );
 		}
 		else
 		{
 			if ( p_url.has_value() )
 			{
-				VTX_INFO( "Downloading molecule from: {}", p_url.value() );
+				VTX_INFO( "Downloading system from: {}", p_url.value() );
 				downloadFile( p_url.value(), p_filename, p_data );
 			}
 			else
@@ -45,7 +45,7 @@ namespace VTX::App::Core::Network
 			assert( 1 );
 		}
 
-		VTX_INFO( "Downloading molecule from: {}", p_url );
+		VTX_INFO( "Downloading system from: {}", p_url );
 		// Download.
 		Util::Network::httpRequestGet( p_url, p_data );
 		// Save to cache.

@@ -12,12 +12,12 @@
 
 namespace VTX::App::Serialization::IO::Reader
 {
-	class MoleculeLoader : public VTX::IO::Core::Reader::BaseReader<App::Component::Chemistry::System>
+	class SystemLoader : public VTX::IO::Core::Reader::BaseReader<App::Component::Chemistry::System>
 	{
 	  public:
-		MoleculeLoader() : VTX::IO::Core::Reader::BaseReader<App::Component::Chemistry::System>() {};
+		SystemLoader() : VTX::IO::Core::Reader::BaseReader<App::Component::Chemistry::System>() {};
 
-		void readFile( const FilePath & p_path, App::Component::Chemistry::System & p_molecule ) override;
+		void readFile( const FilePath & p_path, App::Component::Chemistry::System & p_system ) override;
 		void readBuffer( const std::string &, const FilePath &, App::Component::Chemistry::System & ) override;
 
 		const VTX::IO::Reader::Chemfiles & getChemfilesReader() { return _reader.getChemfilesReader(); }

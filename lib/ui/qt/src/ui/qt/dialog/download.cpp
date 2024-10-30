@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Dialog
 				FilePath path = App::Filesystem::getCachePath( _pdb.toStdString() + ".pdb" );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( path );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( path );
 				}
 				else
 				{
@@ -132,7 +132,7 @@ namespace VTX::UI::QT::Dialog
 						urlReplaced = urlReplaced.replace( _PDB_ID_TEMPLATE, _pdb );
 					}
 
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>(
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
 						urlReplaced.toStdString(), _pdb.toStdString() + ".pdb"
 					);
 				}

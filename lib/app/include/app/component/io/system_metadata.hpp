@@ -8,7 +8,7 @@
 
 namespace VTX::App::Component::IO
 {
-	class MoleculeMetadata : public Core::ECS::BaseComponent
+	class SystemMetadata : public Core::ECS::BaseComponent
 	{
 	  public:
 		FilePath	path				= FilePath();

@@ -12,9 +12,9 @@ namespace VTX::Core::Struct
 	using Frame = std::vector<Vec3f>;
 	struct Trajectory
 	{
-		void fillFrame( const size_t p_moleculeFrameIndex, const std::vector<Vec3f> & p_atomPositions )
+		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
-			Frame & frame = frames[ p_moleculeFrameIndex ];
+			Frame & frame = frames[ p_systemFrameIndex ];
 			frame.resize( p_atomPositions.size() );
 
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );

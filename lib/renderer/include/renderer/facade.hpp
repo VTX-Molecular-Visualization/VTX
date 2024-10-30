@@ -31,10 +31,10 @@ namespace VTX::Renderer
 		void build( const uint p_output = 0, void * p_loader = nullptr );
 		void render( const float p_deltaTime, const float p_elapsedTime );
 		void setOutput( const uint p_output );
-		void addProxyMolecule( Proxy::System & p_proxy );
-		void removeProxyMolecule( Proxy::System & p_proxy );
-		void addProxyMolecules( std::vector<Proxy::System *> & p_proxies );
-		void removeProxyMolecules( std::vector<Proxy::System *> & p_proxies );
+		void addProxySystem( Proxy::System & p_proxy );
+		void removeProxySystem( Proxy::System & p_proxy );
+		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
+		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
 		void addProxyRepresentation( Proxy::Representation & p_proxy );
 		void removeProxyRepresentation( Proxy::Representation & p_proxy );
 		void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );

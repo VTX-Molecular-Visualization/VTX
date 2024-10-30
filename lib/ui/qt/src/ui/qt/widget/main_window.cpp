@@ -193,7 +193,7 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( url.toLocalFile().toStdString() );
+			App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
 		}
 
 		p_event->acceptProposedAction();

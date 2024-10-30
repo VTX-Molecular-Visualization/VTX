@@ -11,16 +11,16 @@
 namespace VTX::App::Test::Util
 {
 
-	void App::loadMolecule( const std::string & p_moleculePath )
+	void App::loadSystem( const std::string & p_systemPath )
 	{
 		// Create System
-		const FilePath				moleculePath	   = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
-		Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
-		loadMoleculeAction.execute();
+		const FilePath				systemPath	   = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
+		Action::Scene::LoadSystem loadSystemAction = Action::Scene::LoadSystem( systemPath );
+		loadSystemAction.execute();
 	}
 
-	void App::loadTestMolecule() { loadMolecule( MOLECULE_TEST_NAME_EXT ); }
-	void App::loadTestTrajectoryMolecule() { loadMolecule( MOLECULE_TRAJECTORY_TEST_NAME_EXT ); }
+	void App::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
+	void App::loadTestTrajectorySystem() { loadSystem( MOLECULE_TRAJECTORY_TEST_NAME_EXT ); }
 
 	bool App::checkItemOrder(
 		const VTX::App::Application::Scene &	   p_scene,

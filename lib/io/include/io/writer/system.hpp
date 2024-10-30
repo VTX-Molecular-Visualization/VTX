@@ -26,7 +26,7 @@ namespace VTX::IO::Writer
 	{
 		FilePath							destination;
 		E_FILE_FORMATS						format	   = E_FILE_FORMATS::none;
-		const VTX::Core::Struct::System * molecule   = nullptr;
+		const VTX::Core::Struct::System * system   = nullptr;
 		AtomFilter							atomFilter = g_takeAllAtoms;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff

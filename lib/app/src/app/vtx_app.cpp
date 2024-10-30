@@ -192,7 +192,7 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( arg );
+						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
@@ -209,17 +209,17 @@ namespace VTX::App
 					VTX_ERROR( "Can't open file '{}' : {}.", arg, p_e.what() );
 				}
 			}
-			// If argument is a molecule name.
+			// If argument is a system name.
 			else if ( arg.size() == 4 )
 			{
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( arg, arg + ".pdb" );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>( arg, arg + ".pdb" );
 				}
 				else
 				{
-					VTX_WARNING( "Argument '{}' is not a valid molecule name.", arg );
+					VTX_WARNING( "Argument '{}' is not a valid system name.", arg );
 				}
 			}
 			else

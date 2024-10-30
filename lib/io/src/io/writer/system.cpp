@@ -151,20 +151,20 @@ namespace VTX::IO::Writer
 			ChemfilesTrajectory writer;
 			System				w_system = writer.system();
 
-			for ( size_t chainIdx = 0; chainIdx < p_args.molecule->getChainCount(); chainIdx++ )
+			for ( size_t chainIdx = 0; chainIdx < p_args.system->getChainCount(); chainIdx++ )
 			{
-				addChain( *p_args.molecule, chainIdx, w_system, p_args.atomFilter );
+				addChain( *p_args.system, chainIdx, w_system, p_args.atomFilter );
 			}
 
 			if ( p_args.stopToken.stop_requested() )
 				return;
 
-			setBonds( *p_args.molecule, w_system, p_args.atomFilter );
+			setBonds( *p_args.system, w_system, p_args.atomFilter );
 
 			if ( p_args.stopToken.stop_requested() )
 				return;
 
-			fillFrames( *p_args.molecule, w_system );
+			fillFrames( *p_args.system, w_system );
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
@@ -178,7 +178,7 @@ namespace VTX::IO::Writer
 			return;
 		if ( p_args.writeType != E_WRITE_TYPE::trajectory )
 			throw VTXException( "Other type of writings aren't implemented yet" );
-		if ( p_args.molecule == nullptr )
+		if ( p_args.system == nullptr )
 			throw VTXException( "System was nullptr." );
 		writeTrajectoryFile( std::move( p_args ) );
 	}
