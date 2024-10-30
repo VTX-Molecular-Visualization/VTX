@@ -4,6 +4,7 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <io/reader/system.hpp>
 #include <io/writer/system.hpp>
@@ -63,7 +64,7 @@ namespace
 		using namespace VTX::IO::Writer;
 		using namespace VTX::IO::test;
 
-		const std::string systemName	   = structureFile.stem().string();
+		const std::string systemName	 = structureFile.stem().string();
 		const std::string systemPathname = systemName + structureFile.extension().string();
 
 		VTX::Core::Struct::System system = VTX::Core::Struct::System();
@@ -83,10 +84,10 @@ namespace
 		writeFile( WriteArgs {
 			.destination = structureFile,
 			.format		 = E_FILE_FORMATS::none,
-			.system	 = &system,
+			.system		 = &system,
 		} );
 
-		VTX::Core::Struct::System system_reread		= VTX::Core::Struct::System();
+		VTX::Core::Struct::System system_reread		  = VTX::Core::Struct::System();
 		IO::Reader::System		  systemReader_reread = IO::Reader::System();
 
 		systemReader_reread.readFile( structureFile, system_reread );

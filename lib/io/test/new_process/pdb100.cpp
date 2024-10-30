@@ -6,6 +6,7 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <core/struct/system.hpp>
+#include <format>
 #include <fstream>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
