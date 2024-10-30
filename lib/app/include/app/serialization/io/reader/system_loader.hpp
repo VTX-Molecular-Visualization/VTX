@@ -2,7 +2,7 @@
 #define __VTX_APP_SERIALIZATION_IO_READER_MOLECULE_LOADER__
 
 #include "app/component/chemistry/_fwd.hpp"
-#include "app/component/io/molecule_metadata.hpp"
+#include "app/component/io/system_metadata.hpp"
 #include <io/core/reader/base_reader.hpp>
 #include <io/reader/system.hpp>
 #include <string>

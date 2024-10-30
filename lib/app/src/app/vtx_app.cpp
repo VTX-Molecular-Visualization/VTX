@@ -6,7 +6,7 @@
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_molecule.hpp"
+#include "app/component/render/proxy_system.hpp"
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/animation/animation_system.hpp"

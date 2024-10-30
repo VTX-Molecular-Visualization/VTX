@@ -1,10 +1,9 @@
 #include "util/app.hpp"
-// #include <app/ecs/component/molecule_component.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/chemistry/system.hpp>
-#include <app/component/render/proxy_molecule.hpp>
+#include <app/component/render/proxy_system.hpp>
 #include <app/entity/system.hpp>
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>

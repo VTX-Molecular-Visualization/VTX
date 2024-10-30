@@ -2,14 +2,14 @@
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/component/io/molecule_metadata.hpp"
+#include "app/component/io/system_metadata.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/players.hpp"
-#include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/system_loader.hpp"
 #include "app/serialization/serialization_system.hpp"
 #include <util/algorithm/range.hpp>
 #include <util/math/range_list.hpp>

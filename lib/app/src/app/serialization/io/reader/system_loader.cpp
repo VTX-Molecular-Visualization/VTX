@@ -1,4 +1,4 @@
-#include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/system_loader.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"

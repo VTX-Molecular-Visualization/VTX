@@ -1,4 +1,4 @@
-#include "app/component/render/proxy_molecule.hpp"
+#include "app/component/render/proxy_system.hpp"
 #include "app/application/selection/system_data.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_manager.hpp"
