@@ -6,6 +6,7 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <core/struct/system.hpp>
+#include <format>
 #include <fstream>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
@@ -144,7 +145,7 @@ namespace
 			int			 num		 = 0;
 			bool		 finished	 = false;
 			int			 thr_retcode = 1;
-			std::string	 startStr	 = std::format( "{} {}", exeStr, num );
+			std::string	 startStr	 = fmt::format( "{} {}", exeStr, num );
 			std::jthread thr { [ & ]()
 							   {
 								   while ( this->thr_retcode != 0 )
