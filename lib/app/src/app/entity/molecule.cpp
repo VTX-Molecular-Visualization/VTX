@@ -1,6 +1,6 @@
 #include "app/application/scene.hpp"
-#include "app/application/selection/molecule_data.hpp"
-#include "app/application/selection/molecule_granularity.hpp"
+#include "app/application/selection/system_data.hpp"
+#include "app/application/selection/system_granularity.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/molecule_metadata.hpp"
@@ -121,7 +121,7 @@ namespace VTX::App::Entity
 						if ( atomPtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::MoleculeGranularity::getSelectionData( *atomPtr, granularity )
+								Application::Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
 							);
 						}
 					}
@@ -133,7 +133,7 @@ namespace VTX::App::Entity
 
 						if ( residuePtr != nullptr )
 						{
-							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
+							molData.set( Application::Selection::SystemGranularity::getSelectionData(
 								*residuePtr, granularity
 							) );
 						}
@@ -152,11 +152,11 @@ namespace VTX::App::Entity
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
+							molData.set( Application::Selection::SystemGranularity::getSelectionData(
 								*firstAtomPtr, granularity
 							) );
 
-							molData.add( Application::Selection::MoleculeGranularity::getSelectionData(
+							molData.add( Application::Selection::SystemGranularity::getSelectionData(
 								*secondAtomPtr, granularity
 							) );
 						}

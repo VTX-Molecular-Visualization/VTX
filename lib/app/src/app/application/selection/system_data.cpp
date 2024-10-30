@@ -1,4 +1,4 @@
-#include "app/application/selection/molecule_data.hpp"
+#include "app/application/selection/system_data.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/helper/math.hpp"
@@ -34,10 +34,7 @@ namespace VTX::App::Application::Selection
 			   && _residueIds == castedOther._residueIds && _atomIds == castedOther._atomIds;
 	}
 
-	bool SystemData::isValid() const
-	{
-		return !( _chainIds.isEmpty() && _residueIds.isEmpty() && _atomIds.isEmpty() );
-	}
+	bool SystemData::isValid() const { return !( _chainIds.isEmpty() && _residueIds.isEmpty() && _atomIds.isEmpty() ); }
 
 	std::unique_ptr<SelectionData> SystemData::_cloneImpl() const
 	{
@@ -242,10 +239,7 @@ namespace VTX::App::Application::Selection
 		_refreshCurrentObject();
 	}
 
-	bool SystemData::isChainSelected( const size_t & p_chainIndex ) const
-	{
-		return _chainIds.contains( p_chainIndex );
-	}
+	bool SystemData::isChainSelected( const size_t & p_chainIndex ) const { return _chainIds.contains( p_chainIndex ); }
 	bool SystemData::isChainSelected( const Chain & p_chain ) const { return isChainSelected( p_chain.getIndex() ); }
 	bool SystemData::isChainFullySelected( const Chain & p_chain ) const
 	{

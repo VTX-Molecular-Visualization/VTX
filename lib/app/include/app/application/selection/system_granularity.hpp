@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_APPLICATION_SELECTION_MOLECULE_GRANULARITY__
 #define __VTX_APP_APPLICATION_SELECTION_MOLECULE_GRANULARITY__
 
-#include "app/application/selection/molecule_data.hpp"
 #include "app/application/selection/selection.hpp"
+#include "app/application/selection/system_data.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include <string>
 #include <vector>
@@ -23,7 +23,7 @@ namespace VTX::App::Application::Selection
 
 	inline static std::vector<std::string> SELECTION_GRANULARITY_STR { "Atom", "Residue", "Chain", "System" };
 
-	class MoleculeGranularity
+	class SystemGranularity
 	{
 	  public:
 		static SystemData getSelectionData( const Atom & p_atom, const Granularity & p_granularity );
