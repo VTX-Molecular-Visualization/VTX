@@ -67,4 +67,4 @@ include(Catch)
 catch_discover_tests(vtx_tool_mdprep_test DISCOVERY_MODE PRE_TEST)
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../test/data" "data")
 
-vtx_copy_registered_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>)
+vtx_copy_registered_data(vtx_tool_mdprep_test $<TARGET_FILE_DIR:vtx_tool_mdprep_test>) # allow declared files to be copied on build

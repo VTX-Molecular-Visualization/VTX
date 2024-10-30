@@ -38,7 +38,7 @@ target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
-vtx_copy_registered_data(vtx_app_test)
+vtx_copy_registered_data(vtx_app_test) # allow declared files to be copied on build
 
 include(CTest)
 include(Catch)
