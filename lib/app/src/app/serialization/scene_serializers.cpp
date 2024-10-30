@@ -1,15 +1,15 @@
 #include "app/serialization/scene_serializers.hpp"
 #include "app/application/scene.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/component/io/molecule_metadata.hpp"
+#include "app/component/io/system_metadata.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/players.hpp"
-#include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/serialization/io/reader/system_loader.hpp"
 #include "app/serialization/serialization_system.hpp"
 #include <util/algorithm/range.hpp>
 #include <util/math/range_list.hpp>
@@ -90,13 +90,13 @@ namespace VTX::App::Serialization
 		p_component.setName( SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "NAME" ) );
 	}
 
-	// Chemistry::MoleculeComponent
-	Util::JSon::Object serialize( const Component::Chemistry::Molecule & p_component )
+	// Chemistry::SystemComponent
+	Util::JSon::Object serialize( const Component::Chemistry::System & p_component )
 	{
 		return { { "PDB_ID", p_component.getPdbIdCode() },
 				 { "TRANSFORM", SERIALIZATION_SYSTEM().serialize( p_component.getTransform() ) } };
 	}
-	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::Molecule & p_component )
+	void deserialize( const Util::JSon::Object & p_json, Component::Chemistry::System & p_component )
 	{
 		p_component.setPdbIdCode( SERIALIZATION_SYSTEM().deserializeField<std::string>( p_json, "PDB_ID" ) );
 		SERIALIZATION_SYSTEM().deserialize( p_json[ "TRANSFORM" ], p_component.getTransform() );
@@ -114,18 +114,18 @@ namespace VTX::App::Serialization
 		);
 	}
 
-	// MoleculeMetadata
-	Util::JSon::Object serialize( const Component::IO::MoleculeMetadata & p_component )
+	// SystemMetadata
+	Util::JSon::Object serialize( const Component::IO::SystemMetadata & p_component )
 	{
-		const Component::Chemistry::Molecule & moleculeComponent
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
+		const Component::Chemistry::System & systemComponent
+			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( ECS_REGISTRY().getEntity( p_component ) );
 
 		return { { "PATH", SERIALIZATION_SYSTEM().serialize( p_component.path ) },
 				 { "PDB_ID", p_component.pdbIDCode },
 				 { "SECONDARY_STRUCTURE_FROM_FILE", p_component.isSecondaryStructureLoadedFromFile },
-				 { "VISIBILITY", SERIALIZATION_SYSTEM().serialize( moleculeComponent.getAtomVisibilities() ) } };
+				 { "VISIBILITY", SERIALIZATION_SYSTEM().serialize( systemComponent.getAtomVisibilities() ) } };
 	}
-	void deserialize( const Util::JSon::Object & p_json, Component::IO::MoleculeMetadata & p_component )
+	void deserialize( const Util::JSon::Object & p_json, Component::IO::SystemMetadata & p_component )
 	{
 		p_component.path = SERIALIZATION_SYSTEM().deserializeField<FilePath>( p_json, "PATH" );
 		p_component.pdbIDCode
@@ -133,18 +133,18 @@ namespace VTX::App::Serialization
 		p_component.isSecondaryStructureLoadedFromFile
 			= SERIALIZATION_SYSTEM().deserializeField<bool>( p_json, "SECONDARY_STRUCTURE_FROM_FILE", false );
 
-		Serialization::IO::Reader::MoleculeLoader loader = Serialization::IO::Reader::MoleculeLoader();
+		Serialization::IO::Reader::SystemLoader loader = Serialization::IO::Reader::SystemLoader();
 		const FilePath							  path	 = FilePath( p_component.path );
 
-		Component::Chemistry::Molecule & moleculeComponent
-			= ECS_REGISTRY().getComponent<Component::Chemistry::Molecule>( ECS_REGISTRY().getEntity( p_component ) );
+		Component::Chemistry::System & systemComponent
+			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( ECS_REGISTRY().getEntity( p_component ) );
 
-		loader.readFile( path, moleculeComponent );
+		loader.readFile( path, systemComponent );
 
 		const Component::Chemistry::AtomIndexRangeList visibilities
 			= SERIALIZATION_SYSTEM().deserializeField<Component::Chemistry::AtomIndexRangeList>( p_json, "VISIBILITY" );
 
-		moleculeComponent.setAtomVisibilities( visibilities );
+		systemComponent.setAtomVisibilities( visibilities );
 	}
 
 	// TrajectoryComponent

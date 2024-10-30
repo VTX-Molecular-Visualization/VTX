@@ -6,7 +6,7 @@
 #include "app/component/chemistry/index_types.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <memory>
 #include <util/callback.hpp>
 #include <util/math/range_list.hpp>
@@ -16,27 +16,27 @@
 
 namespace VTX::App::Component::Render
 {
-	class ProxyMolecule;
+	class ProxySystem;
 }
 
 namespace VTX::App::Component::Chemistry
 {
-	class Molecule : public Core::ECS::BaseComponent
+	class System : public Core::ECS::BaseComponent
 	{
 	  private:
-		friend App::Component::Render::ProxyMolecule;
+		friend App::Component::Render::ProxySystem;
 		friend Chain;
 		friend Residue;
 		friend Atom;
 		friend Bond;
 
 	  public:
-		Molecule();
-		Molecule( VTX::Core::Struct::Molecule & p_moleculeStruct );
-		~Molecule();
+		System();
+		System( VTX::Core::Struct::System & p_systemStruct );
+		~System();
 
-		const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return _moleculeStruct; };
-		void								setMoleculeStruct( VTX::Core::Struct::Molecule & p_moleculeStruct );
+		const VTX::Core::Struct::System & getSystemStruct() const { return _systemStruct; };
+		void							  setSystemStruct( VTX::Core::Struct::System & p_systemStruct );
 
 		void		  initChains( const size_t p_chainCount );
 		Chain *		  getChain( const size_t p_index ) { return _chains[ p_index ].get(); }
@@ -62,11 +62,11 @@ namespace VTX::App::Component::Chemistry
 		std::vector<std::unique_ptr<Bond>> & getBonds() { return _bonds; }
 		const std::vector<std::unique_ptr<Bond>> & getBonds() const { return _bonds; }
 
-		const std::string & getName() const { return _moleculeStruct.name; }
+		const std::string & getName() const { return _systemStruct.name; }
 		void				setName( const std::string & p_name );
 
-		bool							hasTrajectory() { return _moleculeStruct.trajectory.frames.size() >= 2; }
-		VTX::Core::Struct::Trajectory & getTrajectory() { return _moleculeStruct.trajectory; }
+		bool							hasTrajectory() { return _systemStruct.trajectory.frames.size() >= 2; }
+		VTX::Core::Struct::Trajectory & getTrajectory() { return _systemStruct.trajectory; }
 
 		const Util::Math::Transform & getTransform() const { return _transform; }
 		Util::Math::Transform &		  getTransform() { return _transform; }
@@ -123,7 +123,7 @@ namespace VTX::App::Component::Chemistry
 
 		void _resizeTopologyVectors();
 
-		VTX::Core::Struct::Molecule _moleculeStruct = VTX::Core::Struct::Molecule();
+		VTX::Core::Struct::System _systemStruct = VTX::Core::Struct::System();
 
 		std::vector<std::unique_ptr<Chain>>	  _chains;
 		std::vector<std::unique_ptr<Residue>> _residues;

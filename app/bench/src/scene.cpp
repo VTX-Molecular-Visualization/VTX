@@ -31,57 +31,57 @@ namespace VTX::Bench
 		_proxyLayoutColor.colors = &( _colorLayout.layout );
 	}
 
-	Renderer::Proxy::Molecule & Scene::addMolecule( const std::string & p_name )
+	Renderer::Proxy::System & Scene::addSystem( const std::string & p_name )
 	{
 		using namespace Util;
 
 		if ( p_name.find( '.' ) != std::string::npos )
 		{
-			_molecules.emplace_back( std::make_unique<Core::Struct::Molecule>( loadMolecule( p_name ) ) );
+			_systems.emplace_back( std::make_unique<Core::Struct::System>( loadSystem( p_name ) ) );
 		}
 		else
 		{
-			_molecules.emplace_back( std::make_unique<Core::Struct::Molecule>( downloadMolecule( p_name ) ) );
+			_systems.emplace_back( std::make_unique<Core::Struct::System>( downloadSystem( p_name ) ) );
 		}
 
-		//_molecules.back()->transform
-		//	= Math::translate( _molecules.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-		IO::Util::SecondaryStructure::computeStride( *_molecules.back() );
-		_proxyMolecules.emplace_back( _proxify( *_molecules.back() ) );
+		//_systems.back()->transform
+		//	= Math::translate( _systems.back()->transform, Math::randomVec3f() * 200.f - 100.f );
+		IO::Util::SecondaryStructure::computeStride( *_systems.back() );
+		_proxySystems.emplace_back( _proxify( *_systems.back() ) );
 		_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
 
-		return *_proxyMolecules.back();
+		return *_proxySystems.back();
 	};
 
-	void Scene::removeMolecule( const size_t p_index )
+	void Scene::removeSystem( const size_t p_index )
 	{
-		_proxyMolecules[ p_index ]->onRemove();
-		_molecules.erase( _molecules.begin() + p_index );
-		_proxyMolecules.erase( _proxyMolecules.begin() + p_index );
+		_proxySystems[ p_index ]->onRemove();
+		_systems.erase( _systems.begin() + p_index );
+		_proxySystems.erase( _proxySystems.begin() + p_index );
 		_directions.erase( _directions.begin() + p_index );
 	}
 
 	// TODO: remove renderer from here.
-	void Scene::removeAllMolecules( Renderer::Renderer * const p_renderer )
+	void Scene::removeAllSystems( Renderer::Renderer * const p_renderer )
 	{
-		std::vector<Renderer::Proxy::Molecule *> proxies;
-		for ( auto & proxy : _proxyMolecules )
+		std::vector<Renderer::Proxy::System *> proxies;
+		for ( auto & proxy : _proxySystems )
 		{
 			proxies.push_back( proxy.get() );
 		}
 
-		p_renderer->removeProxyMolecules( proxies );
+		p_renderer->removeProxySystems( proxies );
 
-		_molecules.clear();
-		_proxyMolecules.clear();
+		_systems.clear();
+		_proxySystems.clear();
 		_directions.clear();
 	}
 
-	std::unique_ptr<Renderer::Proxy::Molecule> Scene::_proxify( const Core::Struct::Molecule & p_molecule )
+	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )
 	{
-		const size_t									sizeAtoms	= p_molecule.trajectory.frames.front().size();
-		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_molecule.atomSymbols;
-		const size_t									sizeResidue = p_molecule.residueOriginalIds.size();
+		const size_t									sizeAtoms	= p_system.trajectory.frames.front().size();
+		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_system.atomSymbols;
+		const size_t									sizeResidue = p_system.residueOriginalIds.size();
 
 		std::vector<uchar> atomColors( sizeAtoms );
 		size_t			   i = 0;
@@ -108,27 +108,27 @@ namespace VTX::Bench
 		std::generate(
 			residueColors.begin(),
 			residueColors.end(),
-			[ & ] { return Core::ChemDB::Color::getColorIndex( p_molecule.residueSecondaryStructureTypes[ i++ ] ); }
+			[ & ] { return Core::ChemDB::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
 		const Core::Struct::Category & categoryPolymer
-			= p_molecule.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
+			= p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
 		const Core::Struct::Category & categoryCarbohydrate
-			= p_molecule.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
+			= p_system.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
 
 		const std::vector<size_t> & polymerChainIds		 = categoryPolymer.getLinkedChains();
 		const std::vector<size_t> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
 
-		return std::make_unique<Renderer::Proxy::Molecule>( Renderer::Proxy::Molecule {
-			&p_molecule.transform,
-			&p_molecule.trajectory.frames.front(),
-			&p_molecule.bondPairAtomIndexes,
-			&p_molecule.atomNames,
-			reinterpret_cast<const std::vector<uchar> *>( &p_molecule.residueSecondaryStructureTypes ),
-			&p_molecule.residueFirstAtomIndexes,
-			&p_molecule.residueAtomCounts,
-			&p_molecule.chainFirstResidues,
-			&p_molecule.chainResidueCounts,
+		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
+			&p_system.transform,
+			&p_system.trajectory.frames.front(),
+			&p_system.bondPairAtomIndexes,
+			&p_system.atomNames,
+			reinterpret_cast<const std::vector<uchar> *>( &p_system.residueSecondaryStructureTypes ),
+			&p_system.residueFirstAtomIndexes,
+			&p_system.residueAtomCounts,
+			&p_system.chainFirstResidues,
+			&p_system.chainResidueCounts,
 			atomColors,
 			atomRadii,
 			atomIds,

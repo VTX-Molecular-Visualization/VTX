@@ -2,21 +2,21 @@
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
 #include <app/filesystem.hpp>
 #include <io/reader/residue_data_reader.hpp>
 
 namespace VTX::App::Helper::Chemistry
 {
 	std::vector<Component::Chemistry::Chain *> findChainsByName(
-		const Component::Chemistry::Molecule & p_molecule,
-		const std::string &					   p_chainName
+		const Component::Chemistry::System & p_system,
+		const std::string &					 p_chainName
 	)
 	{
 		std::vector<Component::Chemistry::Chain *> res = std::vector<Component::Chemistry::Chain *>();
 
-		for ( const std::unique_ptr<Component::Chemistry::Chain> & chain : p_molecule.getChains() )
+		for ( const std::unique_ptr<Component::Chemistry::Chain> & chain : p_system.getChains() )
 		{
 			if ( chain != nullptr && chain->getName() == p_chainName )
 				res.emplace_back( chain.get() );
@@ -33,7 +33,7 @@ namespace VTX::App::Helper::Chemistry
 		using namespace VTX::Core;
 
 		std::vector<Component::Chemistry::Residue *> res	  = std::vector<Component::Chemistry::Residue *>();
-		Component::Chemistry::Molecule &			 molecule = *( p_chain.getMoleculePtr() );
+		Component::Chemistry::System &				 system = *( p_chain.getSystemPtr() );
 
 		const ChemDB::Residue::SYMBOL residueSymbol = ChemDB::Residue::getSymbolFromAnyName( p_residueName );
 
@@ -41,7 +41,7 @@ namespace VTX::App::Helper::Chemistry
 		{
 			for ( size_t iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
 			{
-				Component::Chemistry::Residue * const residue = molecule.getResidue( iRes );
+				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
 
 				if ( residue != nullptr && residue->getSymbol() == residueSymbol )
 					res.emplace_back( residue );
@@ -51,7 +51,7 @@ namespace VTX::App::Helper::Chemistry
 		{
 			for ( size_t iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
 			{
-				Component::Chemistry::Residue * const residue = molecule.getResidue( iRes );
+				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
 
 				if ( residue == nullptr || residue->getSymbol() != ChemDB::Residue::SYMBOL::UNKNOWN )
 					continue;

@@ -261,7 +261,7 @@ namespace VTX::App::Application
 			updatableComponent.update( p_deltaTime );
 		}
 
-		// for ( const PairMoleculePtrFloat & pair : _molecules )
+		// for ( const PairSystemPtrFloat & pair : _systems )
 		//{
 		//	if ( pair.first->isAutoRotationPlaying() )
 		//	{

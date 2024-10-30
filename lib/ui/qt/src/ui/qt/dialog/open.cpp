@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Dialog
 				// Open files.
 				for ( const auto & path : p_paths )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( path.toStdString() );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( path.toStdString() );
 				}
 			}
 		);

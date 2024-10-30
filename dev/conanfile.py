@@ -30,6 +30,8 @@ class VTXRecipe(ConanFile):
         self.requires("gromacs/2024.0") 
         self.requires("fmt/10.2.1")
         self.requires("re2/20231101")
+        self.requires("libarchive/3.7.6")
+        self.requires("boost/1.86.0")
 
     def config_options(self):        
         # Package options.

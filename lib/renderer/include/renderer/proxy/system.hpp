@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_PROXY_MOLECULE__
-#define __VTX_RENDERER_PROXY_MOLECULE__
+#ifndef __VTX_RENDERER_PROXY_SYSTEM__
+#define __VTX_RENDERER_PROXY_SYSTEM__
 
 #include <util/callback.hpp>
 #include <util/math/range_list.hpp>
@@ -9,9 +9,9 @@
 namespace VTX::Renderer::Proxy
 {
 	/**
-	 * @brief Molecule data provider.
+	 * @brief System data provider.
 	 */
-	struct Molecule
+	struct System
 	{
 		const Mat4f *					 transform;
 		const std::vector<Vec3f> *		 atomPositions;
@@ -34,9 +34,9 @@ namespace VTX::Renderer::Proxy
 		const uint idDefaultRepresentation = 0;
 
 		Util::Callback<>					 onTransform;	   // Move/rotate.
-		Util::Callback<bool>				 onVisible;		   // Show/hide the whole molecule.
-		Util::Callback<bool>				 onSelect;		   // Select/deselect the whole molecule.
-		Util::Callback<uchar>				 onRepresentation; // Change the representation of the whole molecule.
+		Util::Callback<bool>				 onVisible;		   // Show/hide the whole system.
+		Util::Callback<bool>				 onSelect;		   // Select/deselect the whole system.
+		Util::Callback<uchar>				 onRepresentation; // Change the representation of the whole system.
 		Util::Callback<>					 onRemove;		   // Remove proxy.
 		Util::Callback<>					 onAtomPositions;  // Update dynamics.
 		Util::Callback<std::vector<uchar> &> onAtomColors;	   // Update colors (ATOM/CHAIN/RESIDUE)...

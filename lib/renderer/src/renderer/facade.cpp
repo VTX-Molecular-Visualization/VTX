@@ -24,15 +24,15 @@ namespace VTX::Renderer
 
 	void Facade::setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
-	void Facade::addProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->addProxyMolecule( p_proxy ); }
-	void Facade::removeProxyMolecule( Proxy::Molecule & p_proxy ) { _renderer->removeProxyMolecule( p_proxy ); }
-	void Facade::addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	void Facade::addProxySystem( Proxy::System & p_proxy ) { _renderer->addProxySystem( p_proxy ); }
+	void Facade::removeProxySystem( Proxy::System & p_proxy ) { _renderer->removeProxySystem( p_proxy ); }
+	void Facade::addProxySystems( std::vector<Proxy::System *> & p_proxies )
 	{
-		_renderer->addProxyMolecules( p_proxies );
+		_renderer->addProxySystems( p_proxies );
 	}
-	void Facade::removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	void Facade::removeProxySystems( std::vector<Proxy::System *> & p_proxies )
 	{
-		_renderer->removeProxyMolecules( p_proxies );
+		_renderer->removeProxySystems( p_proxies );
 	}
 
 	void Facade::addProxyRepresentation( Proxy::Representation & p_proxy )

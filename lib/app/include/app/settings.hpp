@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_SETTINGS__
 #define __VTX_APP_SETTINGS__
 
-#include "app/application/selection/molecule_granularity.hpp"
+#include "app/application/selection/system_granularity.hpp"
 #include "app/component/render/camera.hpp"
 #include <string>
 

@@ -1,27 +1,12 @@
 #ifndef __VTX_IO_WRITER_CHEMFILES__
 #define __VTX_IO_WRITER_CHEMFILES__
 
+#include <io/writer/shared.hpp>
 #include <util/types.hpp>
 #include <variant>
 
 namespace VTX::IO::Writer
 {
-
-	enum class E_BOND_ORDER
-	{
-		unknown,
-		single,
-		doubl,
-		triple,
-		quadruple,
-		quintuple,
-		down,
-		up,
-		dative_L,
-		dative_R,
-		amide,
-		aromatic,
-	};
 
 	using PropertyValue = std::variant<std::string, double, bool>;
 	/**
@@ -200,39 +185,13 @@ namespace VTX::IO::Writer
 	};
 
 	/**
-	 * @brief Allows to write a file containing molecule's structural information using the ChemfilesTrajectory library. This
-	 * class is intended to cover needs in trajectory writing. It expect all the frames ( 1 or more) to have the same
-	 * chemical configuration : no change in atoms, bond, residues, chains between frames.
+	 * @brief Allows to write a file containing system's structural information using the ChemfilesTrajectory library.
+	 * This class is intended to cover needs in trajectory writing. It expect all the frames ( 1 or more) to have the
+	 * same chemical configuration : no change in atoms, bond, residues, chains between frames.
 	 */
 	class ChemfilesTrajectory
 	{
 	  public:
-		enum class E_FILE_FORMATS
-		{
-			none,
-			pdb,
-			mmcif,
-			mmtf,
-			molden,
-			cif,
-			gro,
-			mol2,
-			sdf,
-			smi,
-			xyz,
-			cml,
-			cssr,
-			nc,
-			dcd,
-			lammpstrj,
-			arc,
-			trr,
-			xtc,
-			tng,
-			trj,
-			COUNT
-		};
-
 		ChemfilesTrajectory();
 
 		/**

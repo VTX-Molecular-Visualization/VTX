@@ -1,11 +1,10 @@
-#include "app/entity/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/molecule_data.hpp"
-#include "app/application/selection/molecule_granularity.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/application/selection/system_data.hpp"
+#include "app/application/selection/system_granularity.hpp"
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/component/io/molecule_metadata.hpp"
-#include "app/component/render/proxy_molecule.hpp"
+#include "app/component/io/system_metadata.hpp"
+#include "app/component/render/proxy_system.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/component/scene/pickable.hpp"
 #include "app/component/scene/scene_item_component.hpp"
@@ -16,39 +15,40 @@
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
-#include "app/serialization/io/reader/molecule_loader.hpp"
+#include "app/entity/system.hpp"
+#include "app/serialization/io/reader/system_loader.hpp"
 #include "app/settings.hpp"
-#include <renderer/proxy/molecule.hpp>
+#include <renderer/proxy/system.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity
 {
-	void Molecule::setup()
+	void System::setup()
 	{
 		// TODO: share with wiewpoint entity.
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
-		auto & molecule	  = ECS_REGISTRY().addComponent<Component::Chemistry::Molecule>( *this );
+		auto & system	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxyMolecule>( *this );
+		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
 
-		// Load molecule.
-		Serialization::IO::Reader::MoleculeLoader loader;
-		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::MoleculeMetadata>( *this );
+		// Load system.
+		Serialization::IO::Reader::SystemLoader loader;
+		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
 
 		if ( _buffer ) // Buffer.
 		{
 			VTX_DEBUG( "Path: {}", _path.string() );
-			loader.readBuffer( *_buffer, _path, molecule );
+			loader.readBuffer( *_buffer, _path, system );
 		}
 		else // Filepath
 		{
-			loader.readFile( _path, molecule );
+			loader.readFile( _path, system );
 			metaData.path = _path;
 		}
 
@@ -56,15 +56,15 @@ namespace VTX::App::Entity
 		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
 		metaData.pdbIDCode								   = pdbId;
 
-		molecule.setPdbIdCode( pdbId );
+		system.setPdbIdCode( pdbId );
 
-		const std::string moleculeName = pdbId == "" ? Util::Filesystem::getFileName( _path ) : pdbId;
-		molecule.setName( moleculeName );
+		const std::string systemName = pdbId == "" ? Util::Filesystem::getFileName( _path ) : pdbId;
+		system.setName( systemName );
 
 		// UID.
-		uid.referenceUID( molecule.getAtomUIDs() );
+		uid.referenceUID( system.getAtomUIDs() );
 		// Selectable.
-		selectable.setSelectionDataGenerator<Application::Selection::MoleculeData>();
+		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
 		// AABB.
 		aabb.init();
 		aabb.setAABBComputationFunction(
@@ -73,7 +73,7 @@ namespace VTX::App::Entity
 				Util::Math::AABB res;
 				res.invalidate();
 
-				for ( const auto & atomPtr : molecule.getAtoms() )
+				for ( const auto & atomPtr : system.getAtoms() )
 				{
 					if ( atomPtr != nullptr )
 						res.extend( atomPtr->getLocalPosition() );
@@ -86,9 +86,9 @@ namespace VTX::App::Entity
 		proxy.setup( App::RENDERER_SYSTEM() );
 
 		// Trajectory.
-		if ( molecule.hasTrajectory() )
+		if ( system.hasTrajectory() )
 		{
-			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &molecule );
+			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system );
 
 			// TODO: set from settings.
 			auto * const defaultPlayMode
@@ -106,57 +106,57 @@ namespace VTX::App::Entity
 				);
 
 				std::unique_ptr<Application::Selection::SelectionData> res
-					= std::make_unique<Application::Selection::MoleculeData>( selectable );
-				auto & molData = dynamic_cast<Application::Selection::MoleculeData &>( *res );
+					= std::make_unique<Application::Selection::SystemData>( selectable );
+				auto & molData = dynamic_cast<Application::Selection::SystemData &>( *res );
 				molData.clear();
 
 				if ( p_pickingInfo.hasOneValue() )
 				{
 					// First UID is Atom and not the other one => Pick Atom
-					if ( molecule.getAtomUIDs().contains( p_pickingInfo.getFirst() ) )
+					if ( system.getAtomUIDs().contains( p_pickingInfo.getFirst() ) )
 					{
 						const Component::Chemistry::Atom * const atomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getFirst() );
+							= system.getAtomFromUID( p_pickingInfo.getFirst() );
 
 						if ( atomPtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::MoleculeGranularity::getSelectionData( *atomPtr, granularity )
+								Application::Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
 							);
 						}
 					}
-					else if ( molecule.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
+					else if ( system.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
 					{
 						// First UID is Residue => Pick Residue
 						const Component::Chemistry::Residue * const residuePtr
-							= molecule.getResidueFromUID( p_pickingInfo.getFirst() );
+							= system.getResidueFromUID( p_pickingInfo.getFirst() );
 
 						if ( residuePtr != nullptr )
 						{
-							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
-								*residuePtr, granularity
-							) );
+							molData.set(
+								Application::Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
+							);
 						}
 					}
 				}
 				else if ( p_pickingInfo.hasTwoValues() )
 				{
 					// Two atoms picked => Pick Bond
-					if ( ( molecule.getAtomUIDs().contains( p_pickingInfo.getFirst() )
-						   && molecule.getAtomUIDs().contains( p_pickingInfo.getSecond() ) ) )
+					if ( ( system.getAtomUIDs().contains( p_pickingInfo.getFirst() )
+						   && system.getAtomUIDs().contains( p_pickingInfo.getSecond() ) ) )
 					{
 						const Component::Chemistry::Atom * const firstAtomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getFirst() );
+							= system.getAtomFromUID( p_pickingInfo.getFirst() );
 						const Component::Chemistry::Atom * const secondAtomPtr
-							= molecule.getAtomFromUID( p_pickingInfo.getSecond() );
+							= system.getAtomFromUID( p_pickingInfo.getSecond() );
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Application::Selection::MoleculeGranularity::getSelectionData(
+							molData.set( Application::Selection::SystemGranularity::getSelectionData(
 								*firstAtomPtr, granularity
 							) );
 
-							molData.add( Application::Selection::MoleculeGranularity::getSelectionData(
+							molData.add( Application::Selection::SystemGranularity::getSelectionData(
 								*secondAtomPtr, granularity
 							) );
 						}

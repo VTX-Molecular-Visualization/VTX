@@ -2,32 +2,32 @@
 #include "app/action/animation.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/system/ecs_system.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/network/network_system.hpp"
-#include "app/entity/molecule.hpp"
+#include "app/entity/system.hpp"
 #include "app/entity/viewpoint.hpp"
 #include "app/filesystem.hpp"
 #include <util/filesystem.hpp>
 
 namespace VTX::App::Action::Scene
 {
-	void LoadMolecule::execute()
+	void LoadSystem::execute()
 	{
-		const auto entity = ECS_REGISTRY().createEntity<Entity::Molecule>( _path.string(), _buffer );
+		const auto entity = ECS_REGISTRY().createEntity<Entity::System>( _path.string(), _buffer );
 		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
 	}
 
-	void DownloadMolecule::execute()
+	void DownloadSystem::execute()
 	{
 		std::string	   data;
 		const FilePath cachePath = Filesystem::getCachePath( _filename );
 
 		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
-		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( _filename, &data );
+		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}

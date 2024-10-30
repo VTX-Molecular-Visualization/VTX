@@ -1,7 +1,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/struct/molecule.hpp>
-#include <io/reader/molecule.hpp>
+#include <core/struct/system.hpp>
+#include <io/reader/system.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -12,21 +12,21 @@ TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string moleculeName	   = "8OIT";
-	const std::string moleculePathname = moleculeName + ".mmtf";
-	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+	const std::string systemName	   = "8OIT";
+	const std::string systemPathname = systemName + ".mmtf";
+	const FilePath	  systemPath	   = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	VTX_INFO( "Test on {}", moleculeName );
+	VTX_INFO( "Test on {}", systemName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	IO::Reader::System		  systemReader = IO::Reader::System();
 
-	moleculeReader.readFile( moleculePath, molecule );
+	systemReader.readFile( systemPath, system );
 
-	CHECK( molecule.getChainCount() == 79 );
-	CHECK( molecule.getResidueCount() == 11381 );
-	CHECK( molecule.getAtomCount() == 113095 );
-	CHECK( molecule.getBondCount() == 129957 );
+	CHECK( system.getChainCount() == 62 );
+	CHECK( system.getResidueCount() == 11381 );
+	CHECK( system.getAtomCount() == 113095 );
+	CHECK( system.getBondCount() == 129957 );
 }
 
 TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
@@ -43,15 +43,15 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 
 	VTX_INFO( "Test on {}", url );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	IO::Reader::System		  systemReader = IO::Reader::System();
 
-	moleculeReader.readBuffer( data, "8OIT.mmtf", molecule );
+	systemReader.readBuffer( data, "4hhb.mmtf", system );
 
-	CHECK( molecule.getChainCount() == 14 );
-	CHECK( molecule.getResidueCount() == 801 );
-	CHECK( molecule.getAtomCount() == 4779 );
-	CHECK( molecule.getBondCount() == 129960 );
+	CHECK( system.getChainCount() == 14 );
+	CHECK( system.getResidueCount() == 801 );
+	CHECK( system.getAtomCount() == 4779 );
+	CHECK( system.getBondCount() == 129960 );
 }
 
 TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
@@ -59,17 +59,17 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string moleculeName	   = "8OIT";
-	const std::string moleculePathname = moleculeName + ".mmtf";
-	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data" / moleculePathname;
+	const std::string systemName	   = "8OIT";
+	const std::string systemPathname = systemName + ".mmtf";
+	const FilePath	  systemPath	   = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	VTX_INFO( "Benchmark on {}.", moleculeName );
+	VTX_INFO( "Benchmark on {}.", systemName );
 
-	BENCHMARK( "Open molecules" )
+	BENCHMARK( "Open systems" )
 	{
-		VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
-		IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+		VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+		IO::Reader::System		  systemReader = IO::Reader::System();
 
-		moleculeReader.readFile( moleculePath, molecule );
+		systemReader.readFile( systemPath, system );
 	};
 }

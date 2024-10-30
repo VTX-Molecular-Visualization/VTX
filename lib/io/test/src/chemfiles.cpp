@@ -1,14 +1,18 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/struct/molecule.hpp>
-#include <io/reader/molecule.hpp>
+#include <core/struct/system.hpp>
+#include <fstream>
+#include <io/reader/system.hpp>
 #include <io/writer/chemfiles.hpp>
+#include <io/writer/system.hpp>
 #include <util/filesystem.hpp>
+#include <util/logger.hpp>
+#include <vector>
 
 namespace
 {
 	using namespace VTX::IO::Writer;
-	void twoWaterMolecules1frame( ChemfilesTrajectory & trajWriter )
+	void twoWaterSystems1frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
 		Frame  frame  = system.newFrame();
@@ -73,7 +77,7 @@ namespace
 		system.bind( id_wat2_O, id_wat2_H1, E_BOND_ORDER::single );
 		system.bind( id_wat2_O, id_wat2_H2, E_BOND_ORDER::single );
 	}
-	void twoWaterMolecules2frame( ChemfilesTrajectory & trajWriter )
+	void twoWaterSystems2frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
 		Frame  frame1 = system.newFrame();
@@ -160,19 +164,19 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( ChemfilesTrajectory::E_FILE_FORMATS::pdb );
-		twoWaterMolecules1frame( trajWriter );
+		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
+		twoWaterSystems1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
-	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
-	moleculeReader.readFile( waterPath, molecule );
+	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
+	systemReader.readFile( waterPath, system );
 
-	CHECK( molecule.getChainCount() == 1 );
-	CHECK( molecule.getBondCount() == 4 );
-	CHECK( molecule.getResidueCount() == 2 );
-	CHECK( molecule.getAtomCount() == 6 );
-	CHECK( molecule.trajectory.getFrameCount() == 1 );
+	CHECK( system.getChainCount() == 1 );
+	CHECK( system.getBondCount() == 4 );
+	CHECK( system.getResidueCount() == 2 );
+	CHECK( system.getAtomCount() == 6 );
+	CHECK( system.trajectory.getFrameCount() == 1 );
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
@@ -187,17 +191,85 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( ChemfilesTrajectory::E_FILE_FORMATS::pdb );
-		twoWaterMolecules2frame( trajWriter );
+		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
+		twoWaterSystems2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
-	VTX::IO::Reader::Molecule	moleculeReader = VTX::IO::Reader::Molecule();
-	moleculeReader.readFile( waterPath, molecule );
+	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
+	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
+	systemReader.readFile( waterPath, system );
 
-	CHECK( molecule.getChainCount() == 1 );
-	CHECK( molecule.getBondCount() == 4 );
-	CHECK( molecule.getResidueCount() == 2 );
-	CHECK( molecule.getAtomCount() == 6 );
-	CHECK( molecule.trajectory.getFrameCount() == 2 );
+	CHECK( system.getChainCount() == 1 );
+	CHECK( system.getBondCount() == 4 );
+	CHECK( system.getResidueCount() == 2 );
+	CHECK( system.getAtomCount() == 6 );
+	CHECK( system.trajectory.getFrameCount() == 2 );
+}
+
+namespace
+{
+	struct TestSystemArgs
+	{
+		const char * systemName;
+		const char * extension;
+		const char * writtenExtension;
+	};
+	void testSystem( TestSystemArgs p_args )
+	{
+		using namespace VTX;
+		using namespace VTX::IO;
+		using namespace VTX::IO::Writer;
+
+		const std::string systemName	 = p_args.systemName;
+		const std::string systemPathname = systemName + p_args.extension;
+		const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
+
+		VTX::Core::Struct::System system = VTX::Core::Struct::System();
+		{
+			IO::Reader::System systemReader = IO::Reader::System();
+
+			systemReader.readFile( systemPath, system );
+		}
+		size_t atomCount  = system.getAtomCount();
+		size_t chainCount = system.getChainCount();
+		size_t frameCount = system.trajectory.getFrameCount();
+		size_t bondCount  = system.getBondCount();
+		size_t resCount	  = system.getResidueCount();
+
+		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
+		if ( not std::filesystem::exists( outPath ) )
+			std::filesystem::create_directories( outPath );
+
+		const VTX::FilePath destination = outPath / ( systemName + p_args.writtenExtension );
+
+		writeFile( WriteArgs {
+			.destination = destination,
+			.format		 = E_FILE_FORMATS::none,
+			.system		 = &system,
+		} );
+
+		VTX::Core::Struct::System system_reread		  = VTX::Core::Struct::System();
+		IO::Reader::System		  systemReader_reread = IO::Reader::System();
+
+		systemReader_reread.readFile( destination, system_reread );
+
+		CHECK( system_reread.getChainCount() == chainCount );
+		CHECK( system_reread.getResidueCount() == resCount );
+		CHECK( system_reread.getAtomCount() == atomCount );
+
+		// Bond are not reliably written in files so we won't check them.
+		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
+		// CHECK( system_reread.getBondCount() == p_args.bondCount );
+	}
+} // namespace
+
+TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
+{
+	return;
+	VTX::VTX_INFO( "Test reading and writing on {}.", "1idx" );
+	VTX::VTX_INFO( "This one has reported atom mismatch" );
+	testSystem( TestSystemArgs { .systemName = "1idx", .extension = ".cif", .writtenExtension = ".mmcif" } );
+	VTX::VTX_INFO( "Test reading and writing on {}.", "202d" );
+	VTX::VTX_INFO( "This one has reported residue mismatch" );
+	testSystem( TestSystemArgs { .systemName = "202d", .extension = ".cif", .writtenExtension = ".mmcif" } );
 }

@@ -1,6 +1,6 @@
 namespace VTX::IO::Struct
 {
-	struct MoleculeConfiguration;
+	struct SystemConfiguration;
 
 	struct ResidueData;
 	struct BondData;

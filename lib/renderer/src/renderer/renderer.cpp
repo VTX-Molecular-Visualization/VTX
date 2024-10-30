@@ -130,7 +130,7 @@ namespace VTX::Renderer
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
-		_proxiesMolecules.clear();
+		_proxiesSystems.clear();
 		_proxyCamera	  = nullptr;
 		_proxyColorLayout = nullptr;
 		_proxyRepresentations.clear();
@@ -148,50 +148,50 @@ namespace VTX::Renderer
 		drawRangeRibbons.offsets.clear();
 	}
 
-#pragma region Proxy molecules
+#pragma region Proxy systems
 
-	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::addProxySystem( Proxy::System & p_proxy )
 	{
-		_addProxyMolecule( p_proxy );
-		_refreshDataMolecules();
+		_addProxySystem( p_proxy );
+		_refreshDataSystems();
 	}
 
-	void Renderer::removeProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::removeProxySystem( Proxy::System & p_proxy )
 	{
-		_removeProxyMolecule( p_proxy );
-		_refreshDataMolecules();
+		_removeProxySystem( p_proxy );
+		_refreshDataSystems();
 	}
 
-	void Renderer::addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	void Renderer::addProxySystems( std::vector<Proxy::System *> & p_proxies )
 	{
-		for ( Proxy::Molecule * proxy : p_proxies )
+		for ( Proxy::System * proxy : p_proxies )
 		{
-			_addProxyMolecule( *proxy );
+			_addProxySystem( *proxy );
 		}
-		_refreshDataMolecules();
+		_refreshDataSystems();
 	}
 
-	void Renderer::removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+	void Renderer::removeProxySystems( std::vector<Proxy::System *> & p_proxies )
 	{
-		for ( Proxy::Molecule * proxy : p_proxies )
+		for ( Proxy::System * proxy : p_proxies )
 		{
-			_removeProxyMolecule( *proxy );
+			_removeProxySystem( *proxy );
 		}
-		_refreshDataMolecules();
+		_refreshDataSystems();
 	}
 
-	void Renderer::_addProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::_addProxySystem( Proxy::System & p_proxy )
 	{
 		assert( hasContext() );
 		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
 
 		// If size max reached, do not add.
-		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
+		if ( _proxiesSystems.size() >= UNSIGNED_SHORT_MAX )
 		{
-			throw GLException( "Max molecule count reached" );
+			throw GLException( "Max system count reached" );
 		}
 
-		_proxiesMolecules.push_back( &p_proxy );
+		_proxiesSystems.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
 
@@ -263,7 +263,7 @@ namespace VTX::Renderer
 			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
 		};
 
-		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxyMolecule( p_proxy ); };
+		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxySystem( p_proxy ); };
 
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
@@ -316,14 +316,14 @@ namespace VTX::Renderer
 		*/
 	}
 
-	void Renderer::_removeProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::_removeProxySystem( Proxy::System & p_proxy )
 	{
-		std::erase( _proxiesMolecules, &p_proxy );
+		std::erase( _proxiesSystems, &p_proxy );
 		_cacheSpheresCylinders.erase( &p_proxy );
 		_cacheRibbons.erase( &p_proxy );
 	}
 
-#pragma endregion Proxy molecules
+#pragma endregion Proxy systems
 
 #pragma region Proxy representations
 
@@ -530,7 +530,7 @@ namespace VTX::Renderer
 		// Check data.
 		size_t totalAtoms = 0;
 		size_t totalBonds = 0;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			// Check sizes.
 			assert( proxy->atomPositions );
@@ -556,7 +556,7 @@ namespace VTX::Renderer
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
 		ushort modelId	   = 0;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
 
@@ -627,7 +627,7 @@ namespace VTX::Renderer
 		size_t totalCaPositions = 0;
 		size_t totalIndices		= 0;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			assert( proxy->atomNames );
 			assert( proxy->residueSecondaryStructureTypes );
@@ -759,7 +759,7 @@ namespace VTX::Renderer
 			for ( uint chainIdx = 0; chainIdx < proxy->chainFirstResidues->size(); ++chainIdx )
 			{
 				/*
-				const Chain * const chain = _molecule->getChain( chainIdx );
+				const Chain * const chain = _system->getChain( chainIdx );
 				if ( chain == nullptr )
 				{
 					continue;
@@ -861,7 +861,7 @@ namespace VTX::Renderer
 						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						colors.emplace_back( residue->getMoleculePtr()->getColor() );
+						colors.emplace_back( residue->getSystemPtr()->getColor() );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 						colors.emplace_back( residue->getRepresentation()->getColor() );
@@ -889,7 +889,7 @@ namespace VTX::Renderer
 
 					/*
 					visibilities.emplace_back( uint(
-						_molecule->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
+						_system->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
 						&& O->isVisible()
 					) );
 					*/
@@ -927,7 +927,7 @@ namespace VTX::Renderer
 		}
 
 		size_t offsetIndices = 0;
-		if ( _proxiesMolecules.empty() || totalCaPositions == 0 )
+		if ( _proxiesSystems.empty() || totalCaPositions == 0 )
 		{
 			assert( totalIndices == 0 );
 		}
@@ -944,7 +944,7 @@ namespace VTX::Renderer
 
 		size_t offsetCaPositions = 0;
 		uchar  modelId			 = -1;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			modelId++;
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
@@ -1047,7 +1047,7 @@ namespace VTX::Renderer
 		const float PROBE_RADIUS = 1.4f;
 		const float VOXEL_SIZE	 = 0.4f;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			// TODO: asserts.
 
@@ -1084,7 +1084,7 @@ namespace VTX::Renderer
 			for ( const uint idx : data.atomList )
 			{
 				/*
-				if ( _category->getMoleculePtr()->getAtom( idx ) == nullptr )
+				if ( _category->getSystemPtr()->getAtom( idx ) == nullptr )
 				{
 					continue;
 				}
@@ -1173,7 +1173,7 @@ namespace VTX::Renderer
 	{
 		std::vector<_StructUBOModel> models;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			assert( proxy->transform );
 			assert( _proxyCamera );

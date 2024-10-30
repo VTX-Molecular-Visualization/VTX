@@ -1,6 +1,6 @@
 #include "util/app.hpp"
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/player/base_player.hpp>
 #include <app/core/player/loop.hpp>
@@ -20,11 +20,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 	using namespace VTX::App;
 
 	App::Fixture app;
-	Test::Util::App::loadTestTrajectoryMolecule();
+	Test::Util::App::loadTestTrajectorySystem();
 
 	App::Core::ECS::BaseEntity molEntity = SCENE().getItem( App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME );
-	App::Component::Chemistry::Molecule & moleculeComponent
-		= ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( molEntity );
+	App::Component::Chemistry::System & systemComponent
+		= ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( molEntity );
 
 	App::Component::Chemistry::Trajectory & trajectoryComponent
 		= ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( molEntity );

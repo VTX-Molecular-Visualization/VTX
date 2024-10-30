@@ -20,15 +20,15 @@ namespace VTX::Tool::Mdprep::ui
 		{
 		case E_COMMON_FIELDS_COMBOBOX::bioForcefield:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
-				"Force Field for biological molecules",
-				"Sets of values used by the engine to compute biological molecules motion.",
+				"Force Field for biological systems",
+				"Sets of values used by the engine to compute biological systems motion.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
 			break;
 		case E_COMMON_FIELDS_COMBOBOX::chemForcefield:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
-				"Force Field for Small Organic molecules",
-				"Sets of values used by the engine to compute small organic molecules motion.",
+				"Force Field for Small Organic systems",
+				"Sets of values used by the engine to compute small organic systems motion.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
 			break;

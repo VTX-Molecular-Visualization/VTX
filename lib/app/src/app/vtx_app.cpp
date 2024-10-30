@@ -6,7 +6,7 @@
 #include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_molecule.hpp"
+#include "app/component/render/proxy_system.hpp"
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/animation/animation_system.hpp"
@@ -192,7 +192,7 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadMolecule>( arg );
+						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
@@ -209,17 +209,17 @@ namespace VTX::App
 					VTX_ERROR( "Can't open file '{}' : {}.", arg, p_e.what() );
 				}
 			}
-			// If argument is a molecule name.
+			// If argument is a system name.
 			else if ( arg.size() == 4 )
 			{
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadMolecule>( arg, arg + ".pdb" );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>( arg, arg + ".pdb" );
 				}
 				else
 				{
-					VTX_WARNING( "Argument '{}' is not a valid molecule name.", arg );
+					VTX_WARNING( "Argument '{}' is not a valid system name.", arg );
 				}
 			}
 			else

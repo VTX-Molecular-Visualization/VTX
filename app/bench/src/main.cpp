@@ -72,19 +72,19 @@ int main( int, char ** )
 			{
 				if ( p_key == SDL_SCANCODE_F1 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+					renderer.addProxySystem( scene.addSystem( "4hhb" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F2 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "1aga" ) );
+					renderer.addProxySystem( scene.addSystem( "1aga" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F3 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4v6x" ) );
+					renderer.addProxySystem( scene.addSystem( "4v6x" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F4 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "3j3q" ) );
+					renderer.addProxySystem( scene.addSystem( "3j3q" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
@@ -105,7 +105,7 @@ int main( int, char ** )
 		{
 			try
 			{
-				renderer.addProxyMolecule( scene.addMolecule( p_filePath.string() ) );
+				renderer.addProxySystem( scene.addSystem( p_filePath.string() ) );
 			}
 			catch ( const std::exception & p_e )
 			{

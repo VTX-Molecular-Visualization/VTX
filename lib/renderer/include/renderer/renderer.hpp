@@ -7,9 +7,9 @@
 #include "proxy/camera.hpp"
 #include "proxy/color_layout.hpp"
 #include "proxy/mesh.hpp"
-#include "proxy/molecule.hpp"
 #include "proxy/render_settings.hpp"
 #include "proxy/representation.hpp"
+#include "proxy/system.hpp"
 #include "proxy/voxels.hpp"
 #include "render_graph.hpp"
 #include "scheduler/depth_first_search.hpp"
@@ -116,10 +116,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		void addProxyMolecule( Proxy::Molecule & p_proxy );
-		void removeProxyMolecule( Proxy::Molecule & p_proxy );
-		void addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
-		void removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies );
+		void addProxySystem( Proxy::System & p_proxy );
+		void removeProxySystem( Proxy::System & p_proxy );
+		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
+		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
 
 		void addProxyRepresentation( Proxy::Representation & p_proxy );
 		void removeProxyRepresentation( Proxy::Representation & p_proxy );
@@ -235,35 +235,35 @@ namespace VTX::Renderer
 		InstructionsDurationRanges _instructionsDurationRanges;
 
 		// Proxies.
-		std::vector<Proxy::Molecule *>		 _proxiesMolecules;
+		std::vector<Proxy::System *>		 _proxiesSystems;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
 		Proxy::Camera *						 _proxyCamera;
 		Proxy::ColorLayout *				 _proxyColorLayout;
 		Proxy::RenderSettings *				 _proxyRenderSettings;
 		Proxy::Voxels *						 _proxyVoxels;
 
-		void _addProxyMolecule( Proxy::Molecule & p_proxy );
-		void _removeProxyMolecule( Proxy::Molecule & p_proxy );
+		void _addProxySystem( Proxy::System & p_proxy );
+		void _removeProxySystem( Proxy::System & p_proxy );
 
 		// TODO: check complexity.
-		inline size_t _getProxyId( const Proxy::Molecule * const p_proxy ) const
+		inline size_t _getProxyId( const Proxy::System * const p_proxy ) const
 		{
 			size_t id = std::distance(
-				_proxiesMolecules.begin(), std::find( _proxiesMolecules.begin(), _proxiesMolecules.end(), p_proxy )
+				_proxiesSystems.begin(), std::find( _proxiesSystems.begin(), _proxiesSystems.end(), p_proxy )
 			);
 
-			assert( id < _proxiesMolecules.size() );
+			assert( id < _proxiesSystems.size() );
 
 			return id;
 		}
 
 		// Cache.
-		std::map<const Proxy::Molecule * const, Cache::SphereCylinder> _cacheSpheresCylinders;
-		std::map<const Proxy::Molecule * const, Cache::Ribbon>		   _cacheRibbons;
-		std::map<const Proxy::Molecule * const, Cache::SES>			   _cacheSES;
+		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
+		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
+		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
-		inline void _refreshDataMolecules()
+		inline void _refreshDataSystems()
 		{
 			_refreshDataSpheresCylinders();
 			_refreshDataRibbons();

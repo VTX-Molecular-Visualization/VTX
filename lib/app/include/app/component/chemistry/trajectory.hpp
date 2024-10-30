@@ -13,10 +13,10 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Trajectory();
-		Trajectory( Molecule * const p_molecule );
+		Trajectory( System * const p_system );
 
-		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; }
-		Molecule * const	   getMoleculePtr() const { return _moleculePtr; }
+		const System * const getConstSystemPtr() const { return _systemPtr; }
+		System * const	   getSystemPtr() const { return _systemPtr; }
 
 		size_t getCurrentFrame() const;
 		void   setCurrentFrame( const size_t p_frameIndex );
@@ -32,7 +32,7 @@ namespace VTX::App::Component::Chemistry
 		void _update( const float p_deltaTime );
 		void _referenceUpdateFunction();
 
-		Molecule *						_moleculePtr = nullptr;
+		System *						_systemPtr = nullptr;
 		App::Core::Player::BasePlayer * _player		 = nullptr;
 	};
 } // namespace VTX::App::Component::Chemistry

@@ -10,7 +10,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct ResidueIt
 		{
-			ResidueIt( Molecule * const p_molecule, const size_t p_index, const size_t p_end );
+			ResidueIt( System * const p_system, const size_t p_index, const size_t p_end );
 
 			Residue & operator*() const;
 			Residue * operator->();
@@ -25,20 +25,20 @@ namespace VTX::App::Component::Chemistry::Iterator
 			ResidueIt operator++( int );
 
 		  private:
-			Molecule * const _molecule;
+			System * const _system;
 			size_t			 _index;
 			const size_t	 _end;
 
 			void _getValid();
 		};
 
-		ResidueContainer( Molecule * const p_molecule, const size_t p_firstResidueIndex, const size_t p_residueCount );
+		ResidueContainer( System * const p_system, const size_t p_firstResidueIndex, const size_t p_residueCount );
 
 		ResidueIt begin();
 		ResidueIt end();
 
 	  private:
-		Molecule * const _molecule;
+		System * const _system;
 		const size_t	 _firstResidueIndex;
 		const size_t	 _residueCount;
 	};

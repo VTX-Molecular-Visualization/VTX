@@ -408,19 +408,19 @@ namespace VTX::Bench
 			ImGui::SameLine();
 			if ( ImGui::Button( "X all" ) )
 			{
-				p_scene->removeAllMolecules( p_renderer );
+				p_scene->removeAllSystems( p_renderer );
 			}
 
-			size_t idMolecule = 0;
+			size_t idSystem = 0;
 			int	   toDelete	  = -1;
 
-			for ( auto & proxyMolecule : p_scene->getProxiesMolecules() )
+			for ( auto & proxySystem : p_scene->getProxiesSystems() )
 			{
 				// Display transform.
-				if ( ImGui::TreeNode( fmt::format( "Molecule ({})", idMolecule ).c_str() ) )
+				if ( ImGui::TreeNode( fmt::format( "System ({})", idSystem ).c_str() ) )
 				{
 					// Display transform.
-					Mat4f transform = *proxyMolecule->transform;
+					Mat4f transform = *proxySystem->transform;
 					ImGui::Text( "Transform" );
 					ImGui::InputFloat4( "", &transform[ 0 ][ 0 ] );
 					ImGui::InputFloat4( "", &transform[ 1 ][ 0 ] );
@@ -429,43 +429,43 @@ namespace VTX::Bench
 
 					if ( ImGui::Button( "S" ) )
 					{
-						proxyMolecule->onSelect( true );
+						proxySystem->onSelect( true );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( "US" ) )
 					{
-						proxyMolecule->onSelect( false );
+						proxySystem->onSelect( false );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( "UV" ) )
 					{
-						proxyMolecule->onVisible( false );
+						proxySystem->onVisible( false );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( "V" ) )
 					{
-						proxyMolecule->onVisible( true );
+						proxySystem->onVisible( true );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( "Rep" ) )
 					{
-						proxyMolecule->onRepresentation( rand() % 3 );
+						proxySystem->onRepresentation( rand() % 3 );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( "X" ) )
 					{
 						// Don't remove from proxy directly, remove from scene before (after loop).
-						toDelete = int( idMolecule );
+						toDelete = int( idSystem );
 					}
 
 					ImGui::TreePop();
 				}
-				idMolecule++;
+				idSystem++;
 			}
 
 			if ( toDelete != -1 )
 			{
-				p_scene->removeMolecule( toDelete );
+				p_scene->removeSystem( toDelete );
 			}
 		}
 		ImGui::End();
