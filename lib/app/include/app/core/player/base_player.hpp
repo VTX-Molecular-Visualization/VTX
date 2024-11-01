@@ -6,7 +6,7 @@
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/types.hpp>
-#include <core/struct/frames_to_render.hpp>
+#include <core/struct/frame_data_simple_prodcons.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -14,14 +14,13 @@ namespace VTX::App::Core::Player
 	{
 	  public:
 		BasePlayer()							  = default;
+		//devjla
 		//BasePlayer( const BasePlayer & p_source ) = default;
-		BasePlayer(const BasePlayer& p_source)
+		BasePlayer (const BasePlayer & p_source )
 		{
+			// FIXME
 			_count	= 0;
 			_current = 0;
-
-			// devjla
-			// bool  _isPlaying	   = false;
 			_isPlaying	   = false;
 			_fps			   = 1u;
 			_trajectoryTimer = 0;
@@ -51,11 +50,7 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
-		//devjla
-		void StackFrame( VTX::Core::Struct::Frame elem ) { _tmpFrames.AddElement( elem ); } // FIXME taking a copy as input?
-		bool GetRefFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.ReadElement(frame); }
-		void RemoveRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.RemoveElement( elem ); }
-		bool GetCopyFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.GetCopyFrame(frame); }
+		virtual void StackFrame( VTX::Core::Struct::Frame elem ) = 0; // FIXME
 
 		Util::Callback<>	   onPlay; 
 		Util::Callback<>	   onPause;
@@ -72,9 +67,6 @@ namespace VTX::App::Core::Player
 		std::atomic<bool> _isPlaying	   = false;
 		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
-
-		//devjla
-		VTX::Core::Struct::FramesToRender _tmpFrames;
 	};
 } // namespace VTX::App::Core::Player
 #endif

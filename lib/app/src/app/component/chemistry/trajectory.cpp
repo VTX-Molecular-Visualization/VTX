@@ -11,7 +11,10 @@ namespace VTX::App::Component::Chemistry
 		_referenceUpdateFunction();
 	}
 
-	Trajectory::Trajectory( System * const p_system ) : _systemPtr( p_system ) { _referenceUpdateFunction(); }
+	Trajectory::Trajectory( System * const p_system, const FilePath & p_path ) : _systemPtr( p_system ), _path(p_path)
+	{
+		_referenceUpdateFunction();
+	}
 
 	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().currentFrameIndex; }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )

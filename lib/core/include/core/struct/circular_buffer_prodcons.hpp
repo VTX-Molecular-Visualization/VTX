@@ -97,6 +97,13 @@ namespace VTX::Core::Struct
 		}
 		size_t GetBuffSize(void) const { return buffSize; }
 
+		void Reset(void)
+		{
+			// FIXME reset also the content of the buffer?
+			readIdx = 0;
+			writeIdx = 0;
+		}
+
 	  protected:
 		// FIXME
 		const T & GetElement( size_t index ) const { return circBuff[ index%buffSize ]; }

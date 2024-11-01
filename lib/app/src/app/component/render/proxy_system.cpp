@@ -228,6 +228,7 @@ namespace VTX::App::Component::Render
 				if ( systemComponent.getTrajectory().getCurrentFrame( currentFrame ) )
 					_proxy->atomPositions = &currentFrame;
 				_proxy->onAtomPositions();
+			};
 		}
 	}
 

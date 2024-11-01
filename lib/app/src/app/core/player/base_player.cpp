@@ -73,12 +73,12 @@ namespace VTX::App::Core::Player
 		}
 
 		// devjla
-		VTX::Core::Struct::Frame currentFrame;
+		/* VTX::Core::Struct::Frame currentFrame;
 		if ( !_tmpFrames.GetCopyFrame( currentFrame ) )
 			return;
 		VTX::App::Component::Render::ProxyMolecule & proxy
-			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyMolecule>();
-		proxy._updateAtomsPositions( currentFrame );
+			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
+		proxy._updateAtomsPositions( currentFrame );*/
 	}
 
 	void BasePlayer::setFPS( const uint p_fps )

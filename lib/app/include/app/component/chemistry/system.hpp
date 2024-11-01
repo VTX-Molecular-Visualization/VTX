@@ -35,7 +35,8 @@ namespace VTX::App::Component::Chemistry
 		System( VTX::Core::Struct::System & p_systemStruct );
 		~System();
 
-		/*devjla delete const FIXME const*/ VTX::Core::Struct::System & getSystemStruct() /* const*/ { return _systemStruct; };
+		const VTX::Core::Struct::System & getSystemStruct() const { return _systemStruct; };
+		VTX::Core::Struct::System & getSystemStruct() { return _systemStruct; };
 		void							  setSystemStruct( VTX::Core::Struct::System & p_systemStruct );
 
 		void		  initChains( const size_t p_chainCount );
@@ -71,7 +72,8 @@ namespace VTX::App::Component::Chemistry
 		{
 			//std::vector<Vec3f> tmpFrame;
 			//_systemStruct.trajectory.frames.ReadElement( tmpFrame );
-			std::vector<Vec3f> &tmpFrame = _systemStruct.trajectory.getModelFrame();
+			VTX::Core::Struct::Frame tmpFrame;
+			_systemStruct.trajectory.getCurrentFrame(tmpFrame);
 			return tmpFrame.size() >= 2;
 		}
 		VTX::Core::Struct::Trajectory & getTrajectory() { return _systemStruct.trajectory; }

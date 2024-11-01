@@ -13,7 +13,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Trajectory();
-		Trajectory( System * const p_system );
+		Trajectory( System * const p_system, const FilePath & p_path );
 
 		const System * const getConstSystemPtr() const { return _systemPtr; }
 		System * const		 getSystemPtr() const { return _systemPtr; }
@@ -28,12 +28,15 @@ namespace VTX::App::Component::Chemistry
 
 		Util::Callback<size_t> onFrameChange;
 
+		const FilePath & getPath() const { return _path; }
+
 	  private:
 		void _update( const float p_deltaTime );
 		void _referenceUpdateFunction();
 
 		System *						_systemPtr = nullptr;
-		App::Core::Player::BasePlayer * _player	   = nullptr;
+		App::Core::Player::BasePlayer * _player	   = nullptr;	
+		const FilePath _path;
 	};
 } // namespace VTX::App::Component::Chemistry
 #endif

@@ -45,10 +45,7 @@ namespace VTX::App::Component::Chemistry
 
 		// TODO devjla
 		const Vec3f & getLocalPosition() const;
-		const Vec3f & getLocalPosition( VTX::Core::Struct::Frame & coords ) const;
-		const Vec3f & getLocalPosition( const size_t & p_frameIndex ) const;
 		Vec3f		  getWorldPosition() const;
-		Vec3f		  getWorldPosition( const size_t & p_frameIndex ) const;
 
 		bool isVisible() const;
 		void setVisible( const bool p_visible );

@@ -9,5 +9,6 @@ namespace VTX::App::Component::Scene
 	void UIDComponent::referenceUID( const Core::UID::uid & p_uid ) { _uids.addValue( p_uid ); }
 
 	bool UIDComponent::contains( const App::Core::UID::uid & p_uid ) const { return _uids.contains( p_uid ); }
+	bool UIDComponent::contains( const App::Core::UID::UIDRange & p_uidRange ) const { return _uids.contains( p_uidRange ); }
 
 } // namespace VTX::App::Component::Scene

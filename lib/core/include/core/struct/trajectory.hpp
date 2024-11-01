@@ -69,6 +69,8 @@ namespace VTX::Core::Struct
 		//size_t getFrameCount() const { return frames.size(); }
 		size_t getFrameCount() const { return frames.GetTotalElements(); }
 
+		void Reset( void ) { frames.Reset(); }
+
 		//std::vector<Frame> frames;
 		//FrameDataSimple frames;
 		FrameDataProdCons frames;

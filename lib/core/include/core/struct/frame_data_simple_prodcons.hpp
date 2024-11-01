@@ -45,6 +45,11 @@ namespace VTX::Core::Struct
 
 		Frame & GetModelFrame( void ) { return GetElement( 0 ); }
 		const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
+		
+		// Reads current frame data but does not change read index
+		Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
+
+		void Reset( void ) { ProdConsCircularBuffer<Frame>::Reset(); }
 
 	  private:
 		size_t				 totalElements; // TODO change to double if possible

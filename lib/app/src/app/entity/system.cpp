@@ -97,7 +97,7 @@ namespace VTX::App::Entity
 		// Trajectory.
 		if ( system.hasTrajectory() )
 		{
-			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system );
+			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
 			// TODO: set from settings.
 			auto * const defaultPlayMode
