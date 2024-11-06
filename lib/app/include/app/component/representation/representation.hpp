@@ -23,10 +23,10 @@ namespace VTX::App::Component::Representation
 		void set( const T p_value )
 		{
 			// Sphere.
-			if constexpr ( S == VTX::Core::ChemDB::Representation::E_REPRESENTATION_SETTINGS::ACTIVE_SSAO )
-			{
-				//_settings.activeSSAO = p_value;
-			}
+			// if constexpr ( S == VTX::Core::ChemDB::Representation::E_REPRESENTATION_SETTINGS::ACTIVE_SSAO )
+			//{
+			//_settings.activeSSAO = p_value;
+			//}
 
 			// Trigger UI.
 			callback<S, T>()( p_value );
