@@ -237,10 +237,10 @@ namespace VTX::Renderer
 		// Proxies.
 		std::vector<Proxy::System *>		 _proxiesSystems;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
-		Proxy::Camera *						 _proxyCamera;
-		Proxy::ColorLayout *				 _proxyColorLayout;
-		Proxy::RenderSettings *				 _proxyRenderSettings;
-		Proxy::Voxels *						 _proxyVoxels;
+		Proxy::Camera *						 _proxyCamera		  = nullptr;
+		Proxy::ColorLayout *				 _proxyColorLayout	  = nullptr;
+		Proxy::RenderSettings *				 _proxyRenderSettings = nullptr;
+		Proxy::Voxels *						 _proxyVoxels		  = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
 		void _removeProxySystem( Proxy::System & p_proxy );
