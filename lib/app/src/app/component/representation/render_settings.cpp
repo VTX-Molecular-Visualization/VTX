@@ -40,30 +40,30 @@ namespace VTX::App::Component::Representation
 	{
 		_proxy = std::make_unique<Renderer::Proxy::RenderSettings>( Renderer::Proxy::RenderSettings {
 			//
-			_settings.shadingMode,
-			_settings.colorLight,
-			_settings.colorBackground,
-			_settings.specularFactor,
-			_settings.shininess,
-			_settings.toonSteps,
+			&_settings.shadingMode,
+			&_settings.colorLight,
+			&_settings.colorBackground,
+			&_settings.specularFactor,
+			&_settings.shininess,
+			&_settings.toonSteps,
 			//
-			_settings.activeSSAO,
-			_settings.ssaoIntensity,
-			_settings.blurSize,
+			&_settings.activeSSAO,
+			&_settings.ssaoIntensity,
+			&_settings.blurSize,
 			//
-			_settings.activeOutline,
-			_settings.colorOutline,
-			_settings.outlineSensitivity,
-			_settings.outlineThickness,
+			&_settings.activeOutline,
+			&_settings.colorOutline,
+			&_settings.outlineSensitivity,
+			&_settings.outlineThickness,
 			//
-			_settings.activeFog,
-			_settings.colorFog,
-			_settings.fogNear,
-			_settings.fogFar,
-			_settings.fogDensity,
+			&_settings.activeFog,
+			&_settings.colorFog,
+			&_settings.fogNear,
+			&_settings.fogFar,
+			&_settings.fogDensity,
 			//
-			_settings.activeSelection,
-			_settings.colorSelection } );
+			&_settings.activeSelection,
+			&_settings.colorSelection } );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); };
 	}

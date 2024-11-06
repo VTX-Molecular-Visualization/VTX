@@ -15,39 +15,40 @@ namespace VTX::Renderer::Proxy
 	struct RenderSettings
 	{
 		// Shading.
-		uint			  shadingMode;
-		Util::Color::Rgba colorLight;
-		Util::Color::Rgba colorBackground;
-		float			  specularFactor;
-		float			  shininess;
-		uint			  toonSteps;
+		uint *				shadingMode;
+		Util::Color::Rgba * colorLight;
+		Util::Color::Rgba * colorBackground;
+		float *				specularFactor;
+		float *				shininess;
+		uint *				toonSteps;
 
 		// SSAO.
-		bool  activeSSAO;
-		float ssaoIntensity;
-		float blurSize;
+		bool *	activeSSAO;
+		float * ssaoIntensity;
+		float * blurSize;
 
 		// Outline.
-		bool			  activeOutline;
-		Util::Color::Rgba colorOutline;
-		float			  outlineSensitivity;
-		uint			  outlineThickness;
+		bool *				activeOutline;
+		Util::Color::Rgba * colorOutline;
+		float *				outlineSensitivity;
+		uint *				outlineThickness;
 
 		// Fog.
-		bool			  activeFog;
-		Util::Color::Rgba colorFog;
-		float			  fogNear;
-		float			  fogFar;
-		float			  fogDensity;
+		bool *				activeFog;
+		Util::Color::Rgba * colorFog;
+		float *				fogNear;
+		float *				fogFar;
+		float *				fogDensity;
 
 		// Selection.
-		bool			  activeSelection;
-		Util::Color::Rgba colorSelection;
+		bool * activeSelection;
 
-		template<E_RENDER_SETTINGS S, typename T>
-		Util::Callback<const T> & onChange()
+		Util::Color::Rgba * colorSelection;
+
+		template<E_RENDER_SETTINGS S>
+		Util::Callback<> & onChange()
 		{
-			static Util::Callback<const T> callback;
+			static Util::Callback<> callback;
 			return callback;
 		}
 

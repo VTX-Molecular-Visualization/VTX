@@ -96,7 +96,7 @@ namespace VTX::Renderer
 		// SSAO.
 		if ( not ssao )
 		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->activeSSAO )
+			if ( not _proxyRenderSettings or *_proxyRenderSettings->activeSSAO )
 			{
 				ssao  = _renderGraph->addPass( descPassSSAO );
 				blurX = _renderGraph->addPass( descPassBlur );
@@ -114,7 +114,7 @@ namespace VTX::Renderer
 				_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeSSAO )
+		else if ( _proxyRenderSettings and not*_proxyRenderSettings->activeSSAO )
 		{
 			_renderGraph->removePass( ssao );
 			_renderGraph->removePass( blurX );
@@ -140,7 +140,7 @@ namespace VTX::Renderer
 		// Outline.
 		if ( not outline )
 		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->activeOutline )
+			if ( not _proxyRenderSettings or *_proxyRenderSettings->activeOutline )
 			{
 				outline = _renderGraph->addPass( descPassOutline );
 
@@ -148,7 +148,7 @@ namespace VTX::Renderer
 				_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeOutline )
+		else if ( _proxyRenderSettings and not*_proxyRenderSettings->activeOutline )
 		{
 			_renderGraph->removePass( outline );
 			outline = nullptr;
@@ -157,7 +157,7 @@ namespace VTX::Renderer
 		// Selection.
 		if ( not selection )
 		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->activeSelection )
+			if ( not _proxyRenderSettings or *_proxyRenderSettings->activeSelection )
 			{
 				selection = _renderGraph->addPass( descPassSelection );
 
@@ -165,7 +165,7 @@ namespace VTX::Renderer
 				_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
 			}
 		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeSelection )
+		else if ( _proxyRenderSettings and not*_proxyRenderSettings->activeSelection )
 		{
 			_renderGraph->removePass( selection );
 			selection = nullptr;
@@ -556,118 +556,116 @@ namespace VTX::Renderer
 
 		// Default values.
 		// Shading.
-		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
-		setValue( p_proxy.colorLight, "ShadingShadingLight color" );
-		setValue( p_proxy.colorBackground, "ShadingShadingBackground color" );
-		setValue( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
-		setValue( p_proxy.shininess, "ShadingShadingShininess" );
-		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
+		setValue( *p_proxy.shadingMode, "ShadingShadingMode" );
+		setValue( *p_proxy.colorLight, "ShadingShadingLight color" );
+		setValue( *p_proxy.colorBackground, "ShadingShadingBackground color" );
+		setValue( *p_proxy.specularFactor, "ShadingShadingSpecular factor" );
+		setValue( *p_proxy.shininess, "ShadingShadingShininess" );
+		setValue( *p_proxy.toonSteps, "ShadingShadingToon steps" );
 		// SSAO.
-		if ( p_proxy.activeSSAO )
+		if ( *p_proxy.activeSSAO )
 		{
-			setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-			setValue( p_proxy.blurSize, "BlurXBlurSize" );
-			setValue( p_proxy.blurSize, "BlurYBlurSize" );
+			setValue( *p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
+			setValue( *p_proxy.blurSize, "BlurXBlurSize" );
+			setValue( *p_proxy.blurSize, "BlurYBlurSize" );
 		}
 		// Outline.
-		if ( p_proxy.activeOutline )
+		if ( *p_proxy.activeOutline )
 		{
-			setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
-			setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-			setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+			setValue( *p_proxy.colorOutline, "OutlineOutlineColor" );
+			setValue( *p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
+			setValue( *p_proxy.outlineThickness, "OutlineOutlineThickness" );
 		}
 		// Fog.
-		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
-		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
-		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
-		setValue( p_proxy.activeFog ? p_proxy.fogDensity : 0.f, "ShadingShadingFog density" );
+		setValue( *p_proxy.colorFog, "ShadingShadingFog color" );
+		setValue( *p_proxy.fogNear, "ShadingShadingFog near" );
+		setValue( *p_proxy.fogFar, "ShadingShadingFog far" );
+		setValue( *p_proxy.activeFog ? *p_proxy.fogDensity : 0.f, "ShadingShadingFog density" );
 		// Selection.
-		if ( p_proxy.activeSelection )
+		if ( *p_proxy.activeSelection )
 		{
-			setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
+			setValue( *p_proxy.colorSelection, "SelectionSelectionColor" );
 		}
 
 		// Callbacks.
 		// Shading.
-		p_proxy.onChange<E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
-			[ this, &p_proxy ]( const uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color )
-		{ setValue( p_color, "ShadingShadingLight color" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color )
-		{ setValue( p_color, "ShadingShadingBackground color" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
-			[ this, &p_proxy ]( const float p_factor ) { setValue( p_factor, "ShadingShadingSpecular factor" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::SHININESS, float>() +=
-			[ this, &p_proxy ]( const float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
-			[ this, &p_proxy ]( const uint p_steps ) { setValue( p_steps, "ShadingShadingToon steps" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SHADING_MODE>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->shadingMode, "ShadingShadingMode" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_LIGHT>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->colorLight, "ShadingShadingLight color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_BACKGROUND>() += [ this, &p_proxy ]()
+		{ setValue( *_proxyRenderSettings->colorBackground, "ShadingShadingBackground color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SPECULAR_FACTOR>() += [ this, &p_proxy ]()
+		{ setValue( *_proxyRenderSettings->specularFactor, "ShadingShadingSpecular factor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SHININESS>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->shininess, "ShadingShadingShininess" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::TOON_STEPS>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->toonSteps, "ShadingShadingToon steps" ); };
 		// SSAO.
-		p_proxy.onChange<E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
-			[ this, &p_proxy ]( const float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::BLUR_SIZE, float>() += [ this, &p_proxy ]( const float p_size )
+		p_proxy.onChange<E_RENDER_SETTINGS::SSAO_INTENSITY>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->ssaoIntensity, "SSAOSSAOIntensity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::BLUR_SIZE>() += [ this, &p_proxy ]()
 		{
-			setValue( p_size, "BlurXBlurSize" );
-			setValue( p_size, "BlurYBlurSize" );
+			setValue( *_proxyRenderSettings->blurSize, "BlurXBlurSize" );
+			setValue( *_proxyRenderSettings->blurSize, "BlurYBlurSize" );
 		};
 		// Outline.
-		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "OutlineOutlineColor" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() +=
-			[ this, &p_proxy ]( const float p_sensitivity ) { setValue( p_sensitivity, "OutlineOutlineSensitivity" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
-			[ this, &p_proxy ]( const uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_OUTLINE>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->colorOutline, "OutlineOutlineColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY>() += [ this, &p_proxy ]()
+		{ setValue( *_proxyRenderSettings->outlineSensitivity, "OutlineOutlineSensitivity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_THICKNESS>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->outlineThickness, "OutlineOutlineThickness" ); };
 		// Fog.
-		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFog color" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::FOG_NEAR, float>() +=
-			[ this, &p_proxy ]( const float p_near ) { setValue( p_near, "ShadingShadingFog near" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::FOG_FAR, float>() +=
-			[ this, &p_proxy ]( const float p_far ) { setValue( p_far, "ShadingShadingFog far" ); };
-		p_proxy.onChange<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
-			[ this, &p_proxy ]( const float p_density ) { setValue( p_density, "ShadingShadingFog density" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_FOG>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->colorFog, "ShadingShadingFog color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_NEAR>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->fogNear, "ShadingShadingFog near" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_FAR>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->fogFar, "ShadingShadingFog far" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_DENSITY>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->fogDensity, "ShadingShadingFog density" ); };
 		// Selection.
-		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION>() +=
+			[ this, &p_proxy ]() { setValue( *_proxyRenderSettings->colorSelection, "SelectionSelectionColor" ); };
 
 		// Active.
-		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_FOG, bool>() += [ this, &p_proxy ]( const bool p_active )
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_FOG>() += [ this, &p_proxy ]()
 		{
 			setValue(
-				_proxyRenderSettings->activeFog ? _proxyRenderSettings->fogDensity : 0.f, "ShadingShadingFog density"
+				*_proxyRenderSettings->activeFog ? *_proxyRenderSettings->fogDensity : 0.f, "ShadingShadingFog density"
 			);
 		};
 
-		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() += [ this, &p_proxy ]( const bool p_active )
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SSAO>() += [ this, &p_proxy ]()
 		{
 			_refreshGraph();
 			build();
-			if ( p_active )
+			if ( *_proxyRenderSettings->activeSSAO )
 			{
-				setValue( _proxyRenderSettings->ssaoIntensity, "SSAOSSAOIntensity" );
-				setValue( _proxyRenderSettings->blurSize, "BlurXBlurSize" );
-				setValue( _proxyRenderSettings->blurSize, "BlurYBlurSize" );
+				setValue( *_proxyRenderSettings->ssaoIntensity, "SSAOSSAOIntensity" );
+				setValue( *_proxyRenderSettings->blurSize, "BlurXBlurSize" );
+				setValue( *_proxyRenderSettings->blurSize, "BlurYBlurSize" );
 			}
 		};
-		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() += [ this, &p_proxy ]( const bool p_active )
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_OUTLINE>() += [ this, &p_proxy ]()
 		{
 			_refreshGraph();
 			build();
-			if ( p_active )
+			if ( *_proxyRenderSettings->activeOutline )
 			{
-				setValue( _proxyRenderSettings->colorOutline, "OutlineOutlineColor" );
-				setValue( _proxyRenderSettings->outlineSensitivity, "OutlineOutlineSensitivity" );
-				setValue( _proxyRenderSettings->outlineThickness, "OutlineOutlineThickness" );
+				setValue( *_proxyRenderSettings->colorOutline, "OutlineOutlineColor" );
+				setValue( *_proxyRenderSettings->outlineSensitivity, "OutlineOutlineSensitivity" );
+				setValue( *_proxyRenderSettings->outlineThickness, "OutlineOutlineThickness" );
 			}
 		};
-		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() += [ this, &p_proxy ]( const bool p_active )
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SELECTION>() += [ this, &p_proxy ]()
 		{
 			_refreshGraph();
 			build();
-			if ( p_active )
+			if ( *_proxyRenderSettings->activeSelection )
 			{
-				setValue( _proxyRenderSettings->colorSelection, "SelectionSelectionColor" );
+				setValue( *_proxyRenderSettings->colorSelection, "SelectionSelectionColor" );
 			}
 		};
 
