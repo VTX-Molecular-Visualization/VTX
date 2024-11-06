@@ -27,7 +27,7 @@ target_link_libraries(vtx_util_test PRIVATE vtx_util)
 target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_util_test PRIVATE nlohmann_json::nlohmann_json)
 
-vtx_copy_registered_data(vtx_util_test)
+vtx_copy_registered_data(vtx_util_test) # allow declared files to be copied on build
 
 include(CTest)
 include(Catch)

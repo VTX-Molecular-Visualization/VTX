@@ -61,7 +61,7 @@ target_link_libraries(vtx_io_test PRIVATE vtx_io)
 target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
-vtx_copy_registered_data(vtx_io_test)
+vtx_copy_registered_data(vtx_io_test) # allow declared files to be copied on build
 
 include(CTest)
 include(Catch)

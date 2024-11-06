@@ -34,47 +34,47 @@ find_package(LibArchive REQUIRED)
 
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Core.
 include("${DIR_LIBS}/core/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # IO.
 include("${DIR_LIBS}/io/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Bench.
 include("${DIR_APPS}/bench/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Python binding.
 #include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # Python binding test.
 #include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
-#vtx_clear_registered_copies()
+#vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool example
 include("${DIR_TOOLS}/example/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool Mdprep
 include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # VTX.
 include("${DIR_APPS}/vtx/cmake/library.cmake")
-vtx_clear_registered_copies()
+vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
