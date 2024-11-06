@@ -74,7 +74,10 @@ namespace VTX::Renderer
 			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
 		)
 		{
-			// Check I/O existence.
+			// Check pass existence.
+			assert( p_passSrc );
+			assert( p_passDest );
+			//  Check I/O existence.
 			assert( p_passSrc->outputs.contains( p_channelSrc ) );
 			assert( p_passDest->inputs.contains( p_channelDest ) );
 

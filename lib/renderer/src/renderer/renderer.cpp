@@ -218,13 +218,16 @@ namespace VTX::Renderer
 			_renderGraph->removePass( selection );
 			selection = nullptr;
 		}
-		if ( outline )
+		if ( selection )
 		{
-			_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		}
-		else
-		{
-			_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			if ( outline )
+			{
+				_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+			else
+			{
+				_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
 		}
 
 		// FXAA.
