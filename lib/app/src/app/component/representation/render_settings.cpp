@@ -9,6 +9,7 @@ namespace VTX::App::Component::Representation
 	{
 		using namespace Renderer;
 
+		// TODO: move default layout.
 		_settings.shadingMode	  = uint( SHADING_MODE_DEFAULT );
 		_settings.colorLight	  = COLOR_LIGHT_DEFAULT;
 		_settings.colorBackground = COLOR_BACKGROUND_DEFAULT;

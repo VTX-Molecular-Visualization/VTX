@@ -1,8 +1,9 @@
 #include "renderer/renderer.hpp"
-#include "util/math.hpp"
-#include "util/math/aabb.hpp"
-#include "util/math/grid.hpp"
-#include "util/math/range.hpp"
+#include <util/math.hpp>
+#include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
+#include <util/math/range.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Renderer
 {
@@ -14,6 +15,7 @@ namespace VTX::Renderer
 		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
 
 		// Passes.
+		/*
 		Pass * const geo	   = _renderGraph->addPass( descPassGeometric );
 		Pass * const depth	   = _renderGraph->addPass( descPassDepth );
 		Pass * const ssao	   = _renderGraph->addPass( descPassSSAO );
@@ -59,6 +61,9 @@ namespace VTX::Renderer
 		_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
 		_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		*/
+
+		_refreshGraph();
 
 		// Shared uniforms.
 		_renderGraph->addUniforms(
@@ -97,12 +102,159 @@ namespace VTX::Renderer
 									 true } );
 	}
 
+	// TODO: not the best way to do it.
+	void Renderer::_refreshGraph()
+	{
+		static Pass * geo;
+		static Pass * depth;
+		static Pass * ssao;
+		static Pass * blurX;
+		static Pass * blurY;
+		static Pass * shading;
+		static Pass * outline;
+		static Pass * selection;
+		static Pass * fxaa;
+
+		// Geometric.
+		if ( not geo )
+		{
+			geo									   = _renderGraph->addPass( descPassGeometric );
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+		}
+
+		// Depth.
+		if ( not depth )
+		{
+			depth = _renderGraph->addPass( descPassDepth );
+
+			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+		}
+
+		// SSAO.
+		if ( not ssao )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->activeSSAO )
+			{
+				ssao  = _renderGraph->addPass( descPassSSAO );
+				blurX = _renderGraph->addPass( descPassBlur );
+				blurY = _renderGraph->addPass( descPassBlur );
+
+				blurX->name								 = "BlurX";
+				blurY->name								 = "BlurY";
+				blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+
+				_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeSSAO )
+		{
+			_renderGraph->removePass( ssao );
+			_renderGraph->removePass( blurX );
+			_renderGraph->removePass( blurY );
+			ssao  = nullptr;
+			blurX = nullptr;
+			blurY = nullptr;
+		}
+
+		// Shading.
+		if ( not shading )
+		{
+			shading = _renderGraph->addPass( descPassShading );
+
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+		}
+		if ( ssao )
+		{
+			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		}
+
+		// Outline.
+		if ( not outline )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->activeOutline )
+			{
+				outline = _renderGraph->addPass( descPassOutline );
+
+				_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeOutline )
+		{
+			_renderGraph->removePass( outline );
+			outline = nullptr;
+		}
+
+		// Selection.
+		if ( not selection )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->activeSelection )
+			{
+				selection = _renderGraph->addPass( descPassSelection );
+
+				_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->activeSelection )
+		{
+			_renderGraph->removePass( selection );
+			selection = nullptr;
+		}
+		if ( outline )
+		{
+			_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		}
+		else
+		{
+			_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+		}
+
+		// FXAA.
+		if ( not fxaa )
+		{
+			fxaa = _renderGraph->addPass( desPassFXAA );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		}
+		if ( selection )
+		{
+			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else if ( outline )
+		{
+			_renderGraph->addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else
+		{
+			_renderGraph->addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+	}
+
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
+		bool isFirstBuild = not hasContext();
+
 		// Build renderer graph.
 		VTX_DEBUG(
 			"Renderer graph setup total time: {}",
-			Util::CHRONO_CPU(
+			Util::String::durationToStr( Util::CHRONO_CPU(
 				[ & ]()
 				{
 					_context = _renderGraph->setup(
@@ -115,10 +267,21 @@ namespace VTX::Renderer
 						p_output
 					);
 				}
-			)
+			) )
 		);
 
-		onReady();
+		std::string str = "Passes: ";
+		for ( const Pass * const pass : _renderGraph->getRenderQueue() )
+		{
+			str += pass->name + " -> ";
+		}
+		str += "Output";
+		VTX_DEBUG( "{}", str );
+
+		if ( isFirstBuild )
+		{
+			onReady();
+		}
 	}
 
 	void Renderer::clean()
@@ -346,8 +509,8 @@ namespace VTX::Renderer
 																	 representation->radiusSphereAdd,
 																	 representation->radiusFixed,
 																	 representation->radiusCylinder,
-																	 representation->cylinderColorBlendingMode,
-																	 representation->ribbonColorBlendingMode } );
+																	 representation->cylinderColorBlending,
+																	 representation->ribbonColorBlending } );
 		}
 
 		_context->setData( representations, "Representations" );
@@ -433,6 +596,9 @@ namespace VTX::Renderer
 
 		_proxyRenderSettings = &p_proxy;
 
+		_refreshGraph();
+		build();
+
 		// Default values.
 		// Shading.
 		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
@@ -442,20 +608,29 @@ namespace VTX::Renderer
 		setValue( p_proxy.shininess, "ShadingShadingShininess" );
 		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
 		// SSAO.
-		setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-		setValue( p_proxy.blurSize, "BlurXBlurSize" );
-		setValue( p_proxy.blurSize, "BlurYBlurSize" );
+		if ( p_proxy.activeSSAO )
+		{
+			setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
+			setValue( p_proxy.blurSize, "BlurXBlurSize" );
+			setValue( p_proxy.blurSize, "BlurYBlurSize" );
+		}
 		// Outline.
-		setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
-		setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+		if ( p_proxy.activeOutline )
+		{
+			setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
+			setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
+			setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
+		}
 		// Fog.
 		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
 		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
 		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
 		setValue( p_proxy.activeFog ? p_proxy.fogDensity : 0.f, "ShadingShadingFog density" );
 		// Selection.
-		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
+		if ( p_proxy.activeSelection )
+		{
+			setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
+		}
 
 		// Callbacks.
 		// Shading.
@@ -501,7 +676,45 @@ namespace VTX::Renderer
 		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
 			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
 
-		// TODO: disable/enable ssao, outline and selection passes.
+		// Active.
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_FOG, bool>() += [ this, &p_proxy ]( const bool p_active )
+		{
+			setValue(
+				_proxyRenderSettings->activeFog ? _proxyRenderSettings->fogDensity : 0.f, "ShadingShadingFog density"
+			);
+		};
+
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() += [ this, &p_proxy ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue( _proxyRenderSettings->ssaoIntensity, "SSAOSSAOIntensity" );
+				setValue( _proxyRenderSettings->blurSize, "BlurXBlurSize" );
+				setValue( _proxyRenderSettings->blurSize, "BlurYBlurSize" );
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() += [ this, &p_proxy ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue( _proxyRenderSettings->colorOutline, "OutlineOutlineColor" );
+				setValue( _proxyRenderSettings->outlineSensitivity, "OutlineOutlineSensitivity" );
+				setValue( _proxyRenderSettings->outlineThickness, "OutlineOutlineThickness" );
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() += [ this, &p_proxy ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue( _proxyRenderSettings->colorSelection, "SelectionSelectionColor" );
+			}
+		};
 
 		setNeedUpdate( true );
 	}

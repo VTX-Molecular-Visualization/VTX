@@ -262,6 +262,8 @@ namespace VTX::Renderer
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
 		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
+		void _refreshGraph();
+
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
 		{

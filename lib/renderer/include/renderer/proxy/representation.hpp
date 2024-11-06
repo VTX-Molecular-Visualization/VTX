@@ -1,6 +1,7 @@
-#ifndef __VTX_RENDERER_PROXY_REPRESENTATIONS__
-#define __VTX_RENDERER_PROXY_REPRESENTATIONS__
+#ifndef __VTX_RENDERER_PROXY_REPRESENTATION__
+#define __VTX_RENDERER_PROXY_REPRESENTATION__
 
+#include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Proxy
@@ -10,23 +11,28 @@ namespace VTX::Renderer::Proxy
 	 */
 	struct Representation
 	{
-		bool  hasSphere			= true;
-		float radiusSphereFixed = 0.4f;
-		float radiusSphereAdd	= 0.f;
-		bool  radiusFixed		= true;
+		bool  hasSphere;
+		float radiusSphereFixed;
+		float radiusSphereAdd;
+		bool  radiusFixed;
 
-		bool  hasCylinder				= true;
-		float radiusCylinder			= 0.1f;
-		uint  cylinderColorBlendingMode = 0;
+		bool  hasCylinder;
+		float radiusCylinder;
+		bool  cylinderColorBlending;
 
-		bool hasRibbon				 = true;
-		uint ribbonColorBlendingMode = 1;
+		bool hasRibbon;
+		bool ribbonColorBlending;
 
 		bool hasSes = false;
 
 		// TODO: id layout color.
 
-		Util::Callback<> onChange;
+		template<uint S, typename T>
+		Util::Callback<const T> & onChange()
+		{
+			static Util::Callback<const T> callback;
+			return callback;
+		}
 	};
 
 } // namespace VTX::Renderer::Proxy

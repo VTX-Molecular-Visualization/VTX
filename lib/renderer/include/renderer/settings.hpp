@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER__SETTINGS__
-#define __VTX_RENDERER__SETTINGS__
+#ifndef __VTX_RENDERER_SETTINGS__
+#define __VTX_RENDERER_SETTINGS__
 
 #include <util/constants.hpp>
 
@@ -59,7 +59,7 @@ namespace VTX::Renderer
 	constexpr uint			TOON_STEPS_MIN			 = 1;
 	constexpr uint			TOON_STEPS_MAX			 = 15;
 
-	constexpr bool	ACTIVE_SSAO_DEFAULT	   = false;
+	constexpr bool	ACTIVE_SSAO_DEFAULT	   = true;
 	constexpr float SSAO_INTENSITY_DEFAULT = 5.f;
 	constexpr float SSAO_INTENSITY_MIN	   = 1.f;
 	constexpr float SSAO_INTENSITY_MAX	   = 20.f;

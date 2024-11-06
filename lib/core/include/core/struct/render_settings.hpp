@@ -6,6 +6,7 @@
 
 namespace VTX::Core::Struct
 {
+	// TODO: move to Renderer module?
 	struct RenderSettings
 	{
 		// Shading.
@@ -38,6 +39,7 @@ namespace VTX::Core::Struct
 		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
 	};
+
 } // namespace VTX::Core::Struct
 
 #endif

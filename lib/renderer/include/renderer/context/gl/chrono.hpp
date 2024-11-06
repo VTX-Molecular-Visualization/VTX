@@ -48,7 +48,7 @@ namespace VTX::Renderer::Context::GL
 		GLuint _queryEnd   = 0;
 	};
 
-	inline const Util::Chrono::Timer CHRONO_GPU = []( const Util::Chrono::Task & p_task )
+	inline const float CHRONO_GPU( const Util::Chrono::Task & p_task )
 	{
 		Chrono c;
 		c.start();

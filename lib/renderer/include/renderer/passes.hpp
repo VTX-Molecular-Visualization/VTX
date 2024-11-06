@@ -368,6 +368,7 @@ namespace VTX::Renderer
 					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
 	};
 
+	/*
 	enum class E_PASS : size_t
 	{
 		GEOMETRIC,
@@ -385,6 +386,7 @@ namespace VTX::Renderer
 		DEBUG,
 		COUNT
 	};
+	*/
 
 	inline std::vector<Pass *> availablePasses = { &descPassGeometric,
 												   &descPassDepth,
