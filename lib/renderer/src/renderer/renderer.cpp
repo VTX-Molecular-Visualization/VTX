@@ -15,54 +15,6 @@ namespace VTX::Renderer
 		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
 
 		// Passes.
-		/*
-		Pass * const geo	   = _renderGraph->addPass( descPassGeometric );
-		Pass * const depth	   = _renderGraph->addPass( descPassDepth );
-		Pass * const ssao	   = _renderGraph->addPass( descPassSSAO );
-		Pass * const blurX	   = _renderGraph->addPass( descPassBlur );
-		Pass * const blurY	   = _renderGraph->addPass( descPassBlur );
-		Pass * const shading   = _renderGraph->addPass( descPassShading );
-		Pass * const outline   = _renderGraph->addPass( descPassOutline );
-		Pass * const selection = _renderGraph->addPass( descPassSelection );
-		Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-
-		// Setup values.
-		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-		geo->programs[ 0 ].draw.value().needRenderFunc
-			= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
-		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-		geo->programs[ 1 ].draw.value().needRenderFunc
-			= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
-		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-		geo->programs[ 2 ].draw.value().needRenderFunc
-			= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
-		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-		geo->programs[ 3 ].draw.value().needRenderFunc
-			= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
-		blurX->name								 = "BlurX";
-		blurY->name								 = "BlurY";
-		blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
-
-		// Links.
-		_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
-		*/
-
 		_refreshGraph();
 
 		// Shared uniforms.
