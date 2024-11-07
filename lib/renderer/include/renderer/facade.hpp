@@ -13,7 +13,7 @@ namespace VTX::Renderer
 		struct Camera;
 		struct ColorLayout;
 		struct System;
-		struct RenderSettings;
+		class RenderSettings;
 		struct Representation;
 		struct Voxels;
 	} // namespace Proxy

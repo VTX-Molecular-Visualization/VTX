@@ -1,58 +1,44 @@
 #ifndef __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 #define __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 
+#include "proxy_pointer_collection.hpp"
 #include "renderer/settings.hpp"
-#include <util/callback.hpp>
-#include <util/types.hpp>
 
 namespace VTX::Renderer::Proxy
 {
-	// TODO: to handle multiples render settings in the same scene.
+	enum E_RENDER_SETTINGS
+	{
+		ACTIVE_SSAO,
+		SSAO_INTENSITY,
+		BLUR_SIZE,
+
+		SHADING_MODE,
+		COLOR_LIGHT,
+		COLOR_BACKGROUND,
+		SPECULAR_FACTOR,
+		SHININESS,
+		TOON_STEPS,
+
+		ACTIVE_FOG,
+		COLOR_FOG,
+		FOG_NEAR,
+		FOG_FAR,
+		FOG_DENSITY,
+
+		ACTIVE_OUTLINE,
+		COLOR_OUTLINE,
+		OUTLINE_SENSITIVITY,
+		OUTLINE_THICKNESS,
+
+		ACTIVE_SELECTION,
+		COLOR_SELECTION
+	};
 
 	/**
 	 * @brief Render settings data provider.
 	 */
-	struct RenderSettings
+	class RenderSettings : public ProxyPointerCollection
 	{
-		// Shading.
-		uint *				shadingMode;
-		Util::Color::Rgba * colorLight;
-		Util::Color::Rgba * colorBackground;
-		float *				specularFactor;
-		float *				shininess;
-		uint *				toonSteps;
-
-		// SSAO.
-		bool *	activeSSAO;
-		float * ssaoIntensity;
-		float * blurSize;
-
-		// Outline.
-		bool *				activeOutline;
-		Util::Color::Rgba * colorOutline;
-		float *				outlineSensitivity;
-		uint *				outlineThickness;
-
-		// Fog.
-		bool *				activeFog;
-		Util::Color::Rgba * colorFog;
-		float *				fogNear;
-		float *				fogFar;
-		float *				fogDensity;
-
-		// Selection.
-		bool * activeSelection;
-
-		Util::Color::Rgba * colorSelection;
-
-		template<E_RENDER_SETTINGS S>
-		Util::Callback<> & onChange()
-		{
-			static Util::Callback<> callback;
-			return callback;
-		}
-
-		// TODO: callback for each modifiable value?
 	};
 
 } // namespace VTX::Renderer::Proxy

@@ -38,32 +38,34 @@ namespace VTX::App::Component::Representation
 
 	void RenderSettings::setupProxy()
 	{
-		_proxy = std::make_unique<Renderer::Proxy::RenderSettings>( Renderer::Proxy::RenderSettings {
-			//
-			&_settings.shadingMode,
-			&_settings.colorLight,
-			&_settings.colorBackground,
-			&_settings.specularFactor,
-			&_settings.shininess,
-			&_settings.toonSteps,
-			//
-			&_settings.activeSSAO,
-			&_settings.ssaoIntensity,
-			&_settings.blurSize,
-			//
-			&_settings.activeOutline,
-			&_settings.colorOutline,
-			&_settings.outlineSensitivity,
-			&_settings.outlineThickness,
-			//
-			&_settings.activeFog,
-			&_settings.colorFog,
-			&_settings.fogNear,
-			&_settings.fogFar,
-			&_settings.fogDensity,
-			//
-			&_settings.activeSelection,
-			&_settings.colorSelection } );
+		using namespace Renderer::Proxy;
+
+		_proxy = std::make_unique<Renderer::Proxy::RenderSettings>();
+
+		_proxy->set( E_RENDER_SETTINGS::SHADING_MODE, _settings.shadingMode );
+		_proxy->set( E_RENDER_SETTINGS::COLOR_LIGHT, _settings.colorLight );
+		_proxy->set( E_RENDER_SETTINGS::COLOR_BACKGROUND, _settings.colorBackground );
+		_proxy->set( E_RENDER_SETTINGS::SPECULAR_FACTOR, _settings.specularFactor );
+		_proxy->set( E_RENDER_SETTINGS::SHININESS, _settings.shininess );
+		_proxy->set( E_RENDER_SETTINGS::TOON_STEPS, _settings.toonSteps );
+
+		_proxy->set( E_RENDER_SETTINGS::ACTIVE_SSAO, _settings.activeSSAO );
+		_proxy->set( E_RENDER_SETTINGS::SSAO_INTENSITY, _settings.ssaoIntensity );
+		_proxy->set( E_RENDER_SETTINGS::BLUR_SIZE, _settings.blurSize );
+
+		_proxy->set( E_RENDER_SETTINGS::ACTIVE_OUTLINE, _settings.activeOutline );
+		_proxy->set( E_RENDER_SETTINGS::COLOR_OUTLINE, _settings.colorOutline );
+		_proxy->set( E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, _settings.outlineSensitivity );
+		_proxy->set( E_RENDER_SETTINGS::OUTLINE_THICKNESS, _settings.outlineThickness );
+
+		_proxy->set( E_RENDER_SETTINGS::ACTIVE_FOG, _settings.activeFog );
+		_proxy->set( E_RENDER_SETTINGS::COLOR_FOG, _settings.colorFog );
+		_proxy->set( E_RENDER_SETTINGS::FOG_NEAR, _settings.fogNear );
+		_proxy->set( E_RENDER_SETTINGS::FOG_FAR, _settings.fogFar );
+		_proxy->set( E_RENDER_SETTINGS::FOG_DENSITY, _settings.fogDensity );
+
+		_proxy->set( E_RENDER_SETTINGS::ACTIVE_SELECTION, _settings.activeSelection );
+		_proxy->set( E_RENDER_SETTINGS::COLOR_SELECTION, _settings.colorSelection );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); };
 	}
