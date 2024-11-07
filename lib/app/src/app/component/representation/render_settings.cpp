@@ -1,5 +1,6 @@
 #include "app/component/representation/render_settings.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include <renderer/proxy/voxels.hpp>
 #include <renderer/settings.hpp>
 #include <util/logger.hpp>
 
@@ -68,6 +69,26 @@ namespace VTX::App::Component::Representation
 		_proxy->set( E_RENDER_SETTINGS::COLOR_SELECTION, _settings.colorSelection );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); };
+
+		/*
+		RENDERER_SYSTEM().onReady() += [ & ]()
+		{
+			std::vector<Vec3f> mins, maxs;
+			for ( float x = -100.f; x <= 100.f; x += 50.f )
+			{
+				for ( float y = -100.f; y <= 100.f; y += 50.f )
+				{
+					for ( float z = -100.f; z <= 100.f; z += 50.f )
+					{
+						mins.emplace_back( x, y, z );
+						maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
+					}
+				}
+			}
+			auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
+			RENDERER_SYSTEM().setProxyVoxels( proxyVoxels );
+		};
+		*/
 	}
 
 	/*

@@ -1,45 +1,52 @@
 #include "app/component/representation/representation.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include <vector>
 
 namespace VTX::App::Component::Representation
 {
 	Representation::Representation()
 	{
 		// TODO: move default layout.
+		_settings.hasSphere			= true;
+		_settings.radiusSphereFixed = 0.4f;
+		_settings.radiusSphereAdd	= 0.f;
+		_settings.radiusFixed		= true;
+
+		_settings.hasCylinder			= true;
+		_settings.radiusCylinder		= 0.1f;
+		_settings.cylinderColorBlending = false;
+
+		_settings.hasRibbon			  = true;
+		_settings.ribbonColorBlending = true;
+
+		_settings.hasSes = false;
 	}
 
 	void Representation::setupProxy()
 	{
-		/*
-		_proxy = std::make_unique<Renderer::Proxy::RenderSettings>( Renderer::Proxy::RenderSettings {
-			//
-			_settings.shadingMode,
-			_settings.colorLight,
-			_settings.colorBackground,
-			_settings.specularFactor,
-			_settings.shininess,
-			_settings.toonSteps,
-			//
-			_settings.activeSSAO,
-			_settings.ssaoIntensity,
-			_settings.blurSize,
-			//
-			_settings.activeOutline,
-			_settings.colorOutline,
-			_settings.outlineSensitivity,
-			_settings.outlineThickness,
-			//
-			_settings.activeFog,
-			_settings.colorFog,
-			_settings.fogNear,
-			_settings.fogFar,
-			_settings.fogDensity,
-			//
-			_settings.activeSelection,
-			_settings.colorSelection } );
+		using namespace Renderer::Proxy;
 
-			*/
-		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().addProxyRepresentation( *_proxy ); };
+		_proxy = std::make_unique<Renderer::Proxy::Representation>();
+
+		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SPHERE, _settings.hasSphere );
+		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, _settings.radiusSphereFixed );
+		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, _settings.radiusSphereAdd );
+		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_FIXED, _settings.radiusFixed );
+
+		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_CYLINDER, _settings.hasCylinder );
+		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, _settings.radiusCylinder );
+		_proxy->set( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, _settings.cylinderColorBlending );
+
+		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_RIBBON, _settings.hasRibbon );
+		_proxy->set( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, _settings.ribbonColorBlending );
+
+		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SES, _settings.hasSes );
+
+		RENDERER_SYSTEM().onReady() += [ this ]()
+		{
+			std::vector<Renderer::Proxy::Representation *> rep = { _proxy.get() };
+			RENDERER_SYSTEM().addProxyRepresentations( rep );
+		};
 	}
 
 	/*

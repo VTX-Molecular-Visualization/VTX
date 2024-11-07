@@ -199,7 +199,7 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
-		bool showVoxels	 = false;
+		bool showVoxels	 = true;
 
 		bool forceUpdate  = true;
 		bool logDurations = false;

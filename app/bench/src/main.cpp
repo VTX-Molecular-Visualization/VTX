@@ -139,8 +139,8 @@ int main( int, char ** )
 
 		Renderer::Proxy::Representation representation1, representation2, representation3;
 
-		representation2.radiusFixed		  = false;
-		representation3.radiusSphereFixed = 1.5f;
+		// representation2.radiusFixed		  = false;
+		// representation3.radiusSphereFixed = 1.5f;
 
 		std::vector<Renderer::Proxy::Representation *> representations
 			= { &representation1, &representation2, &representation3 };

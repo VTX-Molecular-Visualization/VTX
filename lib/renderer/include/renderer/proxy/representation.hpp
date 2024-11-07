@@ -1,38 +1,32 @@
 #ifndef __VTX_RENDERER_PROXY_REPRESENTATION__
 #define __VTX_RENDERER_PROXY_REPRESENTATION__
 
-#include <util/callback.hpp>
-#include <util/types.hpp>
+#include "proxy_pointer_collection.hpp"
 
 namespace VTX::Renderer::Proxy
 {
+	enum E_REPRESENTATION_SETTINGS
+	{
+		HAS_SPHERE,
+		RADIUS_SPHERE_FIXED,
+		RADIUS_SPHERE_ADD,
+		RADIUS_FIXED,
+
+		HAS_CYLINDER,
+		RADIUS_CYLINDER,
+		CYLINDER_COLOR_BLENDING,
+
+		HAS_RIBBON,
+		RIBBON_COLOR_BLENDING,
+
+		HAS_SES
+	};
+
 	/**
 	 * @brief Representation data provider.
 	 */
-	struct Representation
+	class Representation : public ProxyPointerCollection
 	{
-		bool  hasSphere;
-		float radiusSphereFixed;
-		float radiusSphereAdd;
-		bool  radiusFixed;
-
-		bool  hasCylinder;
-		float radiusCylinder;
-		bool  cylinderColorBlending;
-
-		bool hasRibbon;
-		bool ribbonColorBlending;
-
-		bool hasSes = false;
-
-		// TODO: id layout color.
-
-		template<uint S, typename T>
-		Util::Callback<const T> & onChange()
-		{
-			static Util::Callback<const T> callback;
-			return callback;
-		}
 	};
 
 } // namespace VTX::Renderer::Proxy

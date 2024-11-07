@@ -2,7 +2,6 @@
 #define __VTX_APP_COMPONENT_REPRESENTATION_REPRESENTATION__
 
 #include "app/core/ecs/base_component.hpp"
-#include <core/chemdb/representation.hpp>
 #include <core/struct/representation.hpp>
 #include <renderer/proxy/representation.hpp>
 #include <util/callback.hpp>
@@ -19,7 +18,7 @@ namespace VTX::App::Component::Representation
 
 		const VTX::Core::Struct::Representation & getRepresentation() const { return _settings; }
 
-		template<VTX::Core::ChemDB::Representation::E_REPRESENTATION_SETTINGS S, typename T>
+		template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
 		void set( const T p_value )
 		{
 			// Sphere.
@@ -35,7 +34,7 @@ namespace VTX::App::Component::Representation
 			_proxy->onChange<S, T>()( p_value );
 		}
 
-		template<VTX::Core::ChemDB::Representation::E_REPRESENTATION_SETTINGS S, typename T>
+		template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
 		Util::Callback<const T> & callback()
 		{
 			static Util::Callback<const T> callback;

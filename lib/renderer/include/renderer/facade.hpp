@@ -14,7 +14,7 @@ namespace VTX::Renderer
 		struct ColorLayout;
 		struct System;
 		class RenderSettings;
-		struct Representation;
+		class Representation;
 		struct Voxels;
 	} // namespace Proxy
 

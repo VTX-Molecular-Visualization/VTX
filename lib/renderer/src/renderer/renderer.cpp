@@ -453,6 +453,7 @@ namespace VTX::Renderer
 
 	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
 	{
+		using namespace Proxy;
 		assert( hasContext() );
 
 		_proxyRepresentations.insert(
@@ -460,14 +461,15 @@ namespace VTX::Renderer
 		);
 
 		std::vector<_StructUBORepresentation> representations;
-		for ( const Proxy::Representation * representation : p_proxies )
+		for ( Proxy::Representation * const representation : p_proxies )
 		{
-			representations.emplace_back( _StructUBORepresentation { representation->radiusSphereFixed,
-																	 representation->radiusSphereAdd,
-																	 representation->radiusFixed,
-																	 representation->radiusCylinder,
-																	 representation->cylinderColorBlending,
-																	 representation->ribbonColorBlending } );
+			representations.emplace_back( _StructUBORepresentation {
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ),
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::RADIUS_FIXED ),
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) } );
 		}
 
 		_context->setData( representations, "Representations" );

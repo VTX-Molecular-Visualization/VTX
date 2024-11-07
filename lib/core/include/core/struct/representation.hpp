@@ -10,19 +10,19 @@ namespace VTX::Core::Struct
 	struct Representation
 	{
 		// Sphere.
-		bool  hasSphere			= true;
-		float radiusSphereFixed = 0.4f;
-		float radiusSphereAdd	= 0.f;
-		bool  radiusFixed		= false;
+		bool  hasSphere;
+		float radiusSphereFixed;
+		float radiusSphereAdd;
+		bool  radiusFixed;
 
 		// Cylinder.
-		bool  hasCylinder			= true;
-		float radiusCylinder		= 0.1f;
-		bool  cylinderColorBlending = false;
+		bool  hasCylinder;
+		float radiusCylinder;
+		bool  cylinderColorBlending;
 
 		// Ribbon.
-		bool hasRibbon			 = true;
-		uint ribbonColorBlending = true;
+		bool hasRibbon;
+		uint ribbonColorBlending;
 
 		// SES.
 		bool hasSes = false;
