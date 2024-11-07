@@ -26,11 +26,6 @@ namespace VTX::IO::Reader
 		_chemfilesReader = Reader::Chemfiles::readBuffer( p_buffer, p_path );
 		_fillStructure( *_chemfilesReader, p_system );
 	}
-	void Molecule::readTrajectoryFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule )
-	{
-		_chemfilesReader = Reader::Chemfiles::readFile( p_path );
-		_fillTrajectoryStructure( *_chemfilesReader, p_molecule );
-	}
 
 	void System::_fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system )
 	{
@@ -48,13 +43,13 @@ namespace VTX::IO::Reader
 
 		// devjla
 		// p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
-		p_system.trajectory.frames.SetTotalElements( p_chemfileStruct.getFrameCount() );
+		p_molecule.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
 		// devjla
 		// VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames.GetModelFrame();
+		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.trajectory.GetCurrentFrame();
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
@@ -268,28 +263,6 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	void System::_fillTrajectoryStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system )
-	{
-		// devjla
-		// p_molecule.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
-		p_system.trajectory.frames.SetTotalElements( p_chemfileStruct.getFrameCount() );
-
-		// devjla
-		// VTX::Core::Struct::Frame & modelFrame = p_molecule.trajectory.frames[ 0 ];
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames.GetModelFrame();
-		modelFrame.resize( p_chemfileStruct.getAtomCount() );
-
-		if ( p_chemfileStruct.getFrameCount() > 1 )
-		{
-			// TODO: launch the filling of trajectory frames in another thread
-			// std::thread fillFrames(
-			//	&MoleculeLoader::fillTrajectoryFrames, this, std::ref( trajectory ), std::ref( p_molecule ) );
-			// fillFrames.detach();
-			std::pair<VTX::Core::Struct::System *, size_t> pairMoleculeFirstFrame = { &p_system, 1 };
-			_readTrajectoryFrames( p_chemfileStruct, { pairMoleculeFirstFrame }, 1 );
-		}
-	}
-
 	void System::_readTrajectoryFrames(
 		IO::Reader::Chemfiles &												p_chemfileStruct,
 		const std::vector<std::pair<VTX::Core::Struct::System *, size_t>> & p_targets,
@@ -345,16 +318,20 @@ namespace VTX::IO::Reader
 			VTX::Core::Struct::System &	system   = *( pairMoleculeFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
 
-			trajectory.frames.EraseEmptyFrames();
-			/* if ( trajectory.frames.back().size() == 0 )
+			if ( trajectory._isOptimized )
+				trajectory._framesCircBuff.EraseEmptyFrames();
+			else
 			{
-				do
+				if ( trajectory._framesVector.back().size() == 0 )
 				{
-					trajectory.frames.pop_back();
-				} while ( trajectory.frames.back().size() == 0 );
+					do
+					{
+						trajectory._framesVector.pop_back();
+					} while ( trajectory._framesVector.back().size() == 0 );
 
-				trajectory.frames.shrink_to_fit();
-			} */
+					trajectory._framesVector.shrink_to_fit();
+				}
+			}
 		}
 	}
 

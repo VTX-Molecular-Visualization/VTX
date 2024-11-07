@@ -26,8 +26,12 @@ namespace VTX::App::Component::Chemistry
 	// FIXME obviously wrong
 	// size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
 	size_t Trajectory::getFrameCount() const
-	{ 
-		return _systemPtr->getTrajectory().frames.GetTotalElements();
+	{
+		//return _moleculePtr->getTrajectory().frames.GetTotalElements();
+		if ( _systemPtr->getTrajectory()._isOptimized )
+			return _systemPtr->getTrajectory()._framesCircBuff.GetTotalElements();
+		else
+			return _systemPtr->getTrajectory()._framesVector.size();
 	}
 
 	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
@@ -39,10 +43,15 @@ namespace VTX::App::Component::Chemistry
 		_player = p_player;
 		_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
-		_player->onFrameChange += [ this ]( const size_t p_frameIndex )
+		/* _player->onFrameChange += [ this ]( const size_t p_frameIndex )
 		{
-			_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
+			_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex;
 			onFrameChange( p_frameIndex );
+		};*/
+		_player->onFrameChange += [ this ]( const VTX::Core::Struct::Frame & p_frame )
+		{
+			//_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex; currently done in player
+			onFrameChange( p_frame );
 		};
 
 		if ( resetPlayer )

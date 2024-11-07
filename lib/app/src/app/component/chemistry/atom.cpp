@@ -34,7 +34,8 @@ namespace VTX::App::Component::Chemistry
 
 	const Vec3f & Atom::getLocalPosition() const
 	{
-		return _systemPtr->getTrajectory().frames.GetCurrentFrame()[ _index ];
+		//return _systemPtr->getTrajectory().frames.GetCurrentFrame()[ _index ];
+		return _systemPtr->getTrajectory().GetCurrentFrame()[ _index ];
 	}
 	Vec3f Atom::getWorldPosition() const
 	{

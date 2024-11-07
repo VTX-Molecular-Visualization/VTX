@@ -45,7 +45,7 @@ namespace VTX::App::Component::Render
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
 		// devjla
-		std::vector<Vec3f> tmpFrame = molStruct.trajectory.getModelFrame();
+		std::vector<Vec3f> tmpFrame = molStruct.trajectory.GetCurrentFrame();
 
 		_proxy = std::make_unique<VTX::Renderer::Proxy::System>( VTX::Renderer::Proxy::System {
 			&transformComp.getTransform().get(),
@@ -216,7 +216,7 @@ namespace VTX::App::Component::Render
 			Component::Chemistry::Trajectory & trajectoryComponent
 				= ECS_REGISTRY().getComponent<Component::Chemistry::Trajectory>( *this );
 
-			trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
+			/* trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
 			{
 				Component::Chemistry::System & systemComponent
 					= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
@@ -228,15 +228,20 @@ namespace VTX::App::Component::Render
 				if ( systemComponent.getTrajectory().getCurrentFrame( currentFrame ) )
 					_proxy->atomPositions = &currentFrame;
 				_proxy->onAtomPositions();
+			};*/
+			trajectoryComponent.onFrameChange += [ this ]( const VTX::Core::Struct::Frame & p_frame )
+			{
+				_proxy->atomPositions = &p_frame;
+				_proxy->onAtomPositions();
 			};
 		}
 	}
 
 	// devjla
-	void ProxyMolecule::_updateAtomsPositions(VTX::Core::Struct::Frame& frame)
+	/* void ProxyMolecule::_updateAtomsPositions( VTX::Core::Struct::Frame & frame )
 	{
 		_proxy->atomPositions = &frame;
 		_proxy->onAtomPositions();
-	}
+	}*/
 
 } // namespace VTX::App::Component::Render

@@ -1,7 +1,9 @@
 #include "app/core/player/base_player.hpp"
 #include <util/math.hpp>
 //devjla
-#include "app/component/render/proxy_molecule.hpp"
+#include <app/component/render/proxy_molecule.hpp>
+#include <app/core/ecs/registry.hpp>
+#include <app/component/chemistry/trajectory.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -12,7 +14,24 @@ namespace VTX::App::Core::Player
 		if ( _current >= p_count )
 		{
 			_current = p_count - 1;
-			onFrameChange( _current );
+			//onFrameChange( _current );
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
+				  ++iter )
+			{
+				auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
+
+				if ( &( trajectory.getPlayer() ) == this )
+				{
+					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
+					VTX::App::Component::Render::ProxyMolecule & proxy
+						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( entity );
+
+					molecule.getTrajectory()._currentFrameIndex = _current;
+					onFrameChange( molecule.getTrajectory()._framesVector[ _current ] );
+				}
+			}
 		}
 	}
 
@@ -22,7 +41,24 @@ namespace VTX::App::Core::Player
 		if ( _current != p_frameIndex )
 		{
 			_current = p_frameIndex;
-			onFrameChange( p_frameIndex );
+			//onFrameChange( p_frameIndex );
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
+				  ++iter )
+			{
+				auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
+
+				if ( &( trajectory.getPlayer() ) == this )
+				{
+					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
+					VTX::App::Component::Render::ProxyMolecule & proxy
+						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( entity );
+
+					molecule.getTrajectory()._currentFrameIndex = p_frameIndex;
+					onFrameChange( molecule.getTrajectory()._framesVector[ p_frameIndex ] );
+				}
+			}
 		}
 	}
 

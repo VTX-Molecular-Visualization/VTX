@@ -11,7 +11,7 @@ namespace VTX::Core::Struct
 	class FrameDataProdCons : public ProdConsCircularBuffer<Frame>
 	{
 	  public:
-		FrameDataProdCons() : totalElements( 0 )
+		FrameDataProdCons() : _totalElements( 0 )
 		{
 			SetBuffSize( 102 );
 		}
@@ -19,12 +19,12 @@ namespace VTX::Core::Struct
 		FrameDataProdCons( FrameDataProdCons && movable )
 		{
 			ProdConsCircularBuffer<Frame>::SetBuffSize( movable.GetBuffSize() );
-			totalElements = movable.totalElements;
+			_totalElements = movable._totalElements;
 		}
 		FrameDataProdCons & operator=( const FrameDataProdCons && movable )
 		{
 			ProdConsCircularBuffer<Frame>::operator=( std::move(movable) );
-			totalElements = movable.totalElements;
+			_totalElements = movable._totalElements;
 			return *this;
 		}
 		Frame & WriteElement( const Frame & elem )
@@ -39,20 +39,23 @@ namespace VTX::Core::Struct
 		{
 			return ProdConsCircularBuffer<Frame>::ReadElement();
 		}
-		void	SetTotalElements( const size_t size ) { totalElements = size; }
+		void	SetTotalElements( const size_t size ) { _totalElements = size; }
 		
-		size_t GetTotalElements( void ) const { return totalElements; }
+		size_t GetTotalElements( void ) const { return _totalElements; }
 
-		Frame & GetModelFrame( void ) { return GetElement( 0 ); }
-		const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
+		//Frame & GetModelFrame( void ) { return GetElement( 0 ); }
+		//const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
 		
 		// Reads current frame data but does not change read index
+		//Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
+		const Frame & GetCurrentFrame( void ) const { return GetElement( GetReadIdx() ); }
 		Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
+		
 
 		void Reset( void ) { ProdConsCircularBuffer<Frame>::Reset(); }
 
 	  private:
-		size_t				 totalElements; // TODO change to double if possible
+		size_t				 _totalElements; // TODO change to double if possible
 	};
 } // namespace VTX::Core::Struct
 

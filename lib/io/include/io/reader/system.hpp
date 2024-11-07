@@ -27,7 +27,6 @@ namespace VTX::IO::Reader
 			const FilePath &			p_path,
 			VTX::Core::Struct::System & p_system
 		);
-		void readTrajectoryFile( const FilePath & p_path, VTX::Core::Struct::Molecule & p_molecule );
 
 		void setConfiguration( const Struct::SystemConfiguration & p_configuration )
 		{
@@ -38,7 +37,6 @@ namespace VTX::IO::Reader
 
 	  private:
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system );
-		void _fillTrajectoryStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system );
 
 		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
 		VTX::Core::ChemDB::Category::TYPE _findCategoryType(

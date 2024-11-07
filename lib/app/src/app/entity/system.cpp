@@ -11,6 +11,7 @@
 #include "app/component/scene/uid_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/core/player/loop.hpp"
+#include "app/core/player/circular_buffer.hpp"
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
@@ -91,9 +92,6 @@ namespace VTX::App::Entity
 			}
 		);
 
-		// Proxy.
-		proxy.setup( App::RENDERER_SYSTEM() );
-
 		// Trajectory.
 		if ( system.hasTrajectory() )
 		{
@@ -102,9 +100,14 @@ namespace VTX::App::Entity
 			// TODO: set from settings.
 			auto * const defaultPlayMode
 				= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>();
+			//auto * const defaultPlayMode
+			//	= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::CircularBuffer>();
 
 			trajectory.setPlayer( defaultPlayMode );
 		}
+
+		// Proxy.
+		proxy.setup( App::RENDERER_SYSTEM() );
 
 		// Picking.
 		pickable.setPickingFunction(

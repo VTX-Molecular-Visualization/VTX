@@ -78,7 +78,8 @@ namespace VTX::UI::QT::Widget
 				*( App::ECS_REGISTRY().findComponents<VTX::App::Component::Chemistry::Trajectory>().begin() )
 			);
 			trajectory.getPlayer().onFrameChange +=
-				[]( size_t frame ) { VTX_INFO( "trajectory_player frame changed  = {}", frame ); };
+				[ & ]( const VTX::Core::Struct::Frame p_frame )
+			{ VTX_INFO( "trajectory_player frame changed  = {}", trajectory.getMoleculePtr()->getTrajectory()._currentFrameIndex ); };
 		}
 		void setupFrameSelector() {}
 

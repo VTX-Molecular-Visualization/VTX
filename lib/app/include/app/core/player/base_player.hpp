@@ -19,11 +19,11 @@ namespace VTX::App::Core::Player
 		BasePlayer (const BasePlayer & p_source )
 		{
 			// FIXME
-			_count	= 0;
-			_current = 0;
+			_count	= p_source._count;
+			_current = p_source._current;
 			_isPlaying	   = false;
-			_fps			   = 1u;
-			_trajectoryTimer = 0;
+			_fps			   = p_source._fps;
+			_trajectoryTimer = p_source._trajectoryTimer;
 		}
 
 		virtual ~BasePlayer() = default;
@@ -55,7 +55,8 @@ namespace VTX::App::Core::Player
 		Util::Callback<>	   onPlay; 
 		Util::Callback<>	   onPause;
 		Util::Callback<>	   onStop;
-		Util::Callback<size_t> onFrameChange;
+		//Util::Callback<size_t> onFrameChange;
+		Util::Callback<const VTX::Core::Struct::Frame &> onFrameChange;
 		Util::Callback<uint>   onFPSChange;
 
 	  private:

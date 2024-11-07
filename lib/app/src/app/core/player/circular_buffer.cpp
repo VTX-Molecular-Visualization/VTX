@@ -17,8 +17,6 @@ namespace VTX::App::Core::Player
 
 	void CircularBuffer::play()
 	{
-		BasePlayer::play();
-
 		for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
 			  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
 			  ++iter )
@@ -26,8 +24,10 @@ namespace VTX::App::Core::Player
 			auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
 
 			if (&(trajectory.getPlayer()) == this)
+			{
 				trajectory.getMoleculePtr()->getTrajectory().Reset();
-				
+				trajectory.getMoleculePtr()->getTrajectory()._isOptimized = true;
+			}				
 		}
 
 		Core::Threading::ThreadingSystem & threader	 = App::THREADING_SYSTEM();
@@ -51,6 +51,7 @@ namespace VTX::App::Core::Player
 				{
 					auto entity = App::ECS_REGISTRY().getEntity( trajectory );
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
+
 					while ( trajectory.getPlayer().isPlaying() )
 						moleculeReader.readFile( trajectory.getPath(), molecule.getMoleculeStruct() );
 					// moleculeReader.readTrajectoryFile( moleculePath, molecule.getMoleculeStruct() );
@@ -76,12 +77,9 @@ namespace VTX::App::Core::Player
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
 					VTX::App::Component::Render::ProxyMolecule & proxy
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( entity );
-					VTX::Core::Struct::Frame					 currentFrame;
+
 					while ( trajectory.getPlayer().isPlaying() )
-					{
-						molecule.getTrajectory().getCurrentFrame( currentFrame );
-						trajectory.getPlayer().StackFrame( currentFrame );
-					}
+						trajectory.getPlayer().StackFrame( molecule.getTrajectory()._framesCircBuff.ReadElement() );
 				}
 			}
 			VTX_INFO( "readthreadfromlocalmolecule end" );
@@ -152,6 +150,8 @@ namespace VTX::App::Core::Player
 		};*/
 		_writeThread = &(threader.createThread( funcWrite ));
 		_readThread = &(threader.createThread( funcRead ));
+
+		BasePlayer::play();
 	}
 	void CircularBuffer::pause()
 	{
@@ -172,15 +172,16 @@ namespace VTX::App::Core::Player
 	
 	void CircularBuffer::update( const float p_deltaTime )
 	{
-		BasePlayer::update( p_deltaTime );
+		//BasePlayer::update( p_deltaTime );
 
 		// devjla
 		VTX::Core::Struct::Frame currentFrame;
 		if ( !_tmpFrames.GetCopyFrame( currentFrame )  || !isPlaying())
 			return;
-		VTX::App::Component::Render::ProxyMolecule & proxy
+		/* VTX::App::Component::Render::ProxyMolecule & proxy
 			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
-		proxy._updateAtomsPositions( currentFrame );
+		proxy._updateAtomsPositions( currentFrame );*/
+		onFrameChange( currentFrame );
 	}
 
 } // namespace VTX::App::Core::Player

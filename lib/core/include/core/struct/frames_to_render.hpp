@@ -20,6 +20,8 @@ namespace VTX::Core::Struct
 		
 		void AddElement( const Frame & elem )
 		{
+			if ( 0 == elem.size() )
+				return;
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
 			VTX_INFO( "ADD _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.push(elem);

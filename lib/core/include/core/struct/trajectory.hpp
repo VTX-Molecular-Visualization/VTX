@@ -19,62 +19,105 @@ namespace VTX::Core::Struct
 		Trajectory() {}
 		Trajectory( Trajectory && movable )
 		{
-			frames = std::move(movable.frames);
-			currentFrameIndex = movable.currentFrameIndex;
+			_framesCircBuff	  = std::move( movable._framesCircBuff );
+			_currentFrameIndex = movable._currentFrameIndex;
+			_isOptimized	   = movable._isOptimized;
+			_framesVector	   = std::move( movable._framesVector );
 		}
 		Trajectory & operator=( Trajectory && movable )
 		{
-			frames			  = std::move( movable.frames );
-			currentFrameIndex = movable.currentFrameIndex;
+			_framesCircBuff	  = std::move( movable._framesCircBuff );
+			_currentFrameIndex = movable._currentFrameIndex;
+			_isOptimized	   = movable._isOptimized;
+			_framesVector	   = std::move( movable._framesVector );
 			return *this;
 		}
 		//Trajectory ( Trajectory & copy ) = delete;
+
 		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
-			/*
-			Frame	initFrame;
-			Frame & frame = frames.WriteElement( initFrame );
+			/* Frame frame;
 			frame.resize( p_atomPositions.size() );
+			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
+			_framesCircBuff.WriteElement( frame );*/
 
-			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
-			*/
-			Frame frame;
-			frame.resize( p_atomPositions.size() );
-			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
-			frames.WriteElement( frame );
+			if (_isOptimized)
+			{
+				Frame frame;
+				frame.resize( p_atomPositions.size() );
+				std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
+				_framesCircBuff.WriteElement( frame );
+			}
+			else
+			{
+				//Frame frame;
+				//frame.resize( p_atomPositions.size() );
+				//_framesVector.push_back( frame );
+				//std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
+				_framesVector[ p_systemFrameIndex ].resize( p_atomPositions.size() );
+				std::copy(
+					p_atomPositions.begin(), p_atomPositions.end(), _framesVector[ p_systemFrameIndex ].begin()
+				);
+			}
 		}
 
 		// devjla
-		/* const Frame & getCurrentFrame() const { return frames[ currentFrameIndex ]; }
-		Frame &		  getCurrentFrame() { return frames[ currentFrameIndex ]; } */
+		const Frame & GetCurrentFrame() const 
+		{
+			if ( _isOptimized )
+				return _framesCircBuff.GetCurrentFrame();
+			else
+				return _framesVector[ _currentFrameIndex ]; 
+		}
+		Frame & GetCurrentFrame()
+		{
+			if ( _isOptimized )
+				return _framesCircBuff.GetCurrentFrame();
+			else
+				return _framesVector[ _currentFrameIndex ];
+		}
 		/* const Frame & getCurrentFrame() const
 		{
 			Frame frame;
 			if ( frames.ReadElement( frame ) )
 				return frame;
 		} */
-		bool getCurrentFrame( Frame & requestedFrame )
+		/* bool getCurrentFrame( Frame & requestedFrame )
 		{
-			if ( frames.ReadElement( requestedFrame ) )
+			if ( _framesCircBuff.ReadElement( requestedFrame ) )
 				return true;
 			else
 				return false;
-		}
+		}*/
 
-		Frame& getModelFrame(void)
+		/* Frame & getModelFrame( void )
 		{ 
-			return frames.GetModelFrame();
-		}
+			return _framesCircBuff.GetModelFrame();
+		}*/
 
 		//size_t getFrameCount() const { return frames.size(); }
-		size_t getFrameCount() const { return frames.GetTotalElements(); }
+		size_t GetFrameCount() const
+		{
+			if ( _isOptimized )
+				return _framesCircBuff.GetTotalElements();
+			else
+				return _framesVector.size();
+		}
+		void   SetTotalElements( const size_t size )
+		{ 
+			if ( _isOptimized )
+				_framesCircBuff.SetTotalElements( size );
+			else
+				_framesVector.resize( size );
+		}
 
-		void Reset( void ) { frames.Reset(); }
+		void Reset( void ) { _framesCircBuff.Reset(); }
 
-		//std::vector<Frame> frames;
+		bool			   _isOptimized = false;
+		std::vector<Frame> _framesVector;
 		//FrameDataSimple frames;
-		FrameDataProdCons frames;
-		size_t			  currentFrameIndex = 0;
+		FrameDataProdCons _framesCircBuff;
+		size_t			  _currentFrameIndex = 0;
 	};
 
 	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;

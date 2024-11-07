@@ -13,14 +13,14 @@ namespace VTX::Core::Struct
 	class ProdConsCircularBuffer
 	{
 	  public:
-		ProdConsCircularBuffer() : readIdx( 0 ), writeIdx( 0 ), buffSize( 0 ), overflowFlag( 0 )
+		ProdConsCircularBuffer() : _readIdx( 0 ), _writeIdx( 0 ), _buffSize( 0 ), _overflowFlag( 0 )
 		{
 			SetBuffSize( 0 );
 		}
 		// Currently this ctor is not used
 		// Call UpdateBuffSize method to define buffer size
 		ProdConsCircularBuffer( const size_t size ) :
-			readIdx( 0 ), writeIdx( 0 ), buffSize( size ), overflowFlag( 0 )
+			_readIdx( 0 ), _writeIdx( 0 ), _buffSize( size ), _overflowFlag( 0 )
 		{
 			SetBuffSize( size );
 			return;
@@ -29,62 +29,62 @@ namespace VTX::Core::Struct
 		ProdConsCircularBuffer( ProdConsCircularBuffer && movable ) // : circBuff( std::move( movable.circBuff ) )
 		// mutex is default initialized?
 		{
-			circBuff	 = std::move( movable.circBuff );
-			readIdx		 = movable.readIdx;
-			writeIdx	 = movable.writeIdx;
-			buffSize	 = movable.buffSize;
-			overflowFlag = movable.overflowFlag;
+			_circBuff	 = std::move( movable._circBuff );
+			_readIdx		 = movable._readIdx;
+			_writeIdx	 = movable._writeIdx;
+			_buffSize	 = movable._buffSize;
+			_overflowFlag = movable._overflowFlag;
 		}
 		ProdConsCircularBuffer & operator=( const ProdConsCircularBuffer && movable ) noexcept
 		{
-			circBuff = std::move( movable.circBuff );
-			readIdx	 = movable.readIdx;
-			writeIdx = movable.writeIdx;
-			buffSize = movable.buffSize;
-			overflowFlag = movable.overflowFlag;
+			_circBuff = std::move( movable._circBuff );
+			_readIdx	 = movable._readIdx;
+			_writeIdx = movable._writeIdx;
+			_buffSize = movable._buffSize;
+			_overflowFlag = movable._overflowFlag;
 			return *this;
 		}
 		T& WriteElement( const T &elem )
 		{
-			std::unique_lock<std::mutex> unique_lock( access_mtx );
-			write_allowed.wait( unique_lock, [ this ]() { return isWriteAllowed(); });
+			std::unique_lock<std::mutex> unique_lock( _access_mtx );
+			_write_allowed.wait( unique_lock, [ this ]() { return IsWriteAllowed(); });
 
-			size_t currentWriteIdx = writeIdx;
-			circBuff[ currentWriteIdx ] = std::move(elem);
+			size_t currentWriteIdx = _writeIdx;
+			_circBuff[ currentWriteIdx ] = std::move(elem);
 			VTX_INFO( "WriteElement currentWriteIdx {}", currentWriteIdx );
-			updateWriteIdx();
+			UpdateWriteIdx();
 
 			unique_lock.unlock();
-			read_allowed.notify_one();
+			_read_allowed.notify_one();
 
-			return circBuff[ currentWriteIdx ];
+			return _circBuff[ currentWriteIdx ];
 		}
 		bool ReadElement( T& elem )
 		{
-			std::unique_lock<std::mutex> unique_lock( access_mtx );
-			read_allowed.wait( unique_lock, [ this ]() { return isReadAllowed(); } );
+			std::unique_lock<std::mutex> unique_lock( _access_mtx );
+			_read_allowed.wait( unique_lock, [ this ]() { return IsReadAllowed(); } );
 
-			elem = circBuff[ readIdx ];
-			VTX_INFO( "ReadElement readIdx {}", readIdx );
-			updateReadIdx();
+			elem = _circBuff[ _readIdx ];
+			VTX_INFO( "ReadElement readIdx {}", _readIdx );
+			UpdateReadIdx();
 
 			unique_lock.unlock();
-			write_allowed.notify_one();
+			_write_allowed.notify_one();
 
 			return true;
 		}
 		// FIXME where is it used?
 		T & ReadElement( void )
 		{
-			std::unique_lock<std::mutex> unique_lock( access_mtx );
-			read_allowed.wait( unique_lock, [ this ]() { return isReadAllowed(); } );
+			std::unique_lock<std::mutex> unique_lock( _access_mtx );
+			_read_allowed.wait( unique_lock, [ this ]() { return IsReadAllowed(); } );
 
-			updateReadIdx();
+			UpdateReadIdx();
 
 			unique_lock.unlock();
-			write_allowed.notify_one();
+			_write_allowed.notify_one();
 
-			return circBuff[ readIdx ];
+			return _circBuff[ _readIdx ];
 		}
 		void EraseEmptyFrames(void)
 		{
@@ -95,66 +95,66 @@ namespace VTX::Core::Struct
 			// TODO
 			return;
 		}
-		size_t GetBuffSize(void) const { return buffSize; }
+		size_t GetBuffSize(void) const { return _buffSize; }
 
 		void Reset(void)
 		{
 			// FIXME reset also the content of the buffer?
-			readIdx = 0;
-			writeIdx = 0;
+			_readIdx = 0;
+			_writeIdx = 0;
 		}
 
 	  protected:
 		// FIXME
-		const T & GetElement( size_t index ) const { return circBuff[ index%buffSize ]; }
-		T & GetElement( size_t index ) { return circBuff[ index % buffSize ]; }
+		const T & GetElement( size_t index ) const { return _circBuff[ index % _buffSize ]; }
+		T & GetElement( size_t index ) { return _circBuff[ index % _buffSize ]; }
 
-		void updateWriteIdx( void )
+		void UpdateWriteIdx( void )
 		{
-			writeIdx >= buffSize - 1 ? writeIdx = 0 : writeIdx++;
-			if ( !writeIdx )
-				overflowFlag ^= tmp_circbuffmask_write_overflow;
+			_writeIdx >= _buffSize - 1 ? _writeIdx = 0 : _writeIdx++;
+			if ( !_writeIdx )
+				_overflowFlag ^= tmp_circbuffmask_write_overflow;
 		}
-		void updateReadIdx( void )
+		void UpdateReadIdx( void )
 		{
-			readIdx >= buffSize - 1 ? readIdx = 0 : readIdx++;
-			if ( !readIdx )
-				overflowFlag ^= tmp_circbuffmask_read_overflow;
+			_readIdx >= _buffSize - 1 ? _readIdx = 0 : _readIdx++;
+			if ( !_readIdx )
+				_overflowFlag ^= tmp_circbuffmask_read_overflow;
 		}
 		void SetBuffSize(size_t size)
 		{
-			circBuff.resize( size );
-			buffSize = size;
+			_circBuff.resize( size );
+			_buffSize = size;
 		}
-		size_t GetReadIdx( void ) const { return readIdx; }
-		size_t GetWriteIdx( void ) const { return writeIdx; }
+		size_t GetReadIdx( void ) const { return _readIdx; }
+		size_t GetWriteIdx( void ) const { return _writeIdx; }
 	  private:
-		size_t				 buffSize;
-		size_t				 readIdx;
-		size_t				 writeIdx;
-		std::vector<T>		 circBuff;
-		char				 overflowFlag;
+		size_t				 _buffSize;
+		size_t				 _readIdx;
+		size_t				 _writeIdx;
+		std::vector<T>		 _circBuff;
+		char				 _overflowFlag;
 		// concurency
-		std::mutex access_mtx;
-		std::condition_variable write_allowed;
-		std::condition_variable read_allowed;
+		std::mutex _access_mtx;
+		std::condition_variable _write_allowed;
+		std::condition_variable _read_allowed;
 
-		bool isReadAllowed( void ) const
+		bool IsReadAllowed( void ) const
 		{
 			bool allowed( false );
 
-			if ( 0 == buffSize )
+			if ( 0 == _buffSize )
 				return allowed;
 
-			if ((bool)(overflowFlag & tmp_circbuffmask_read_overflow) == (bool)(overflowFlag & tmp_circbuffmask_write_overflow))
-				allowed = readIdx < writeIdx;
+			if ((bool)(_overflowFlag & tmp_circbuffmask_read_overflow) == (bool)(_overflowFlag & tmp_circbuffmask_write_overflow))
+				allowed = _readIdx < _writeIdx;
 			else
-				allowed = readIdx >= writeIdx;
+				allowed = _readIdx >= _writeIdx;
 
 			return allowed;
 		}
 		
-		bool isWriteAllowed( void ) const 
+		bool IsWriteAllowed( void ) const 
 		{ 
 			//return !isReadAllowed();
 			return true;
