@@ -1,7 +1,6 @@
 #include "ui/qt/dock_widget/render_settings.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/color_picker.hpp"
-#include <QCheckBox>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QLabel>
@@ -36,7 +35,7 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Proxy;
 
 		// Shading group.
-		auto * groupBoxShading = new QGroupBox( QString::fromStdString( "Lighting" ) );
+		auto * groupBoxShading = new QGroupBox( "Lighting" );
 		auto * layout		   = new QVBoxLayout( groupBoxShading );
 
 		// Shading mode.
@@ -221,7 +220,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBoxSSAO = new QGroupBox( QString::fromStdString( "Shadows" ) );
+		auto * groupBoxSSAO = new QGroupBox( "Shadows" );
 		auto * layout		= new QVBoxLayout( groupBoxSSAO );
 		_layout->addWidget( groupBoxSSAO );
 
@@ -305,7 +304,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBoxOutline = new QGroupBox( QString::fromStdString( "Outline" ) );
+		auto * groupBoxOutline = new QGroupBox( "Outline" );
 		auto * layout		   = new QVBoxLayout( groupBoxOutline );
 		_layout->addWidget( groupBoxOutline );
 
@@ -400,7 +399,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBoxFog = new QGroupBox( QString::fromStdString( "Fog" ) );
+		auto * groupBoxFog = new QGroupBox( "Fog" );
 		auto * layout	   = new QVBoxLayout( groupBoxFog );
 		_layout->addWidget( groupBoxFog );
 
@@ -514,7 +513,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBoxSelection = new QGroupBox( QString::fromStdString( "Selection" ) );
+		auto * groupBoxSelection = new QGroupBox( "Selection" );
 		auto * layout			 = new QVBoxLayout( groupBoxSelection );
 		_layout->addWidget( groupBoxSelection );
 

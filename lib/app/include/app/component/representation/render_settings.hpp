@@ -17,98 +17,98 @@ namespace VTX::App::Component::Representation
 
 		void setupProxy() override;
 
-		const VTX::Core::Struct::RenderSettings & getSettings() const { return _settings; }
+		const VTX::Core::Struct::RenderSettings & getSettings() const { return _representation; }
 
 		template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
 		void set( const T p_value )
 		{
 			using namespace Renderer::Proxy;
+
 			// SSAO.
 			if constexpr ( S == E_RENDER_SETTINGS::ACTIVE_SSAO )
 			{
-				_settings.activeSSAO = p_value;
+				_representation.activeSSAO = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::SSAO_INTENSITY )
 			{
-				_settings.ssaoIntensity = p_value;
+				_representation.ssaoIntensity = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::BLUR_SIZE )
 			{
-				_settings.blurSize = p_value;
+				_representation.blurSize = p_value;
 			}
 			// Shading.
 			else if constexpr ( S == E_RENDER_SETTINGS::SHADING_MODE )
 			{
-				_settings.shadingMode = p_value;
+				_representation.shadingMode = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::COLOR_LIGHT )
 			{
-				_settings.colorLight = p_value;
+				_representation.colorLight = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::COLOR_BACKGROUND )
 			{
-				_settings.colorBackground = p_value;
+				_representation.colorBackground = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::SPECULAR_FACTOR )
 			{
-				_settings.specularFactor = p_value;
+				_representation.specularFactor = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::SHININESS )
 			{
-				_settings.shininess = p_value;
+				_representation.shininess = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::TOON_STEPS )
 			{
-				_settings.toonSteps = p_value;
+				_representation.toonSteps = p_value;
 			}
 			// Fog.
 			else if constexpr ( S == E_RENDER_SETTINGS::ACTIVE_FOG )
 			{
-				_settings.activeFog = p_value;
+				_representation.activeFog = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::COLOR_FOG )
 			{
-				_settings.colorFog = p_value;
+				_representation.colorFog = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::FOG_NEAR )
 			{
-				_settings.fogNear = p_value;
+				_representation.fogNear = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::FOG_FAR )
 			{
-				_settings.fogFar = p_value;
+				_representation.fogFar = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::FOG_DENSITY )
 			{
-				_settings.fogDensity = p_value;
+				_representation.fogDensity = p_value;
 			}
 			// Outline.
 			else if constexpr ( S == E_RENDER_SETTINGS::ACTIVE_OUTLINE )
 			{
-				_settings.activeOutline = p_value;
+				_representation.activeOutline = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::COLOR_OUTLINE )
 			{
-				_settings.colorOutline = p_value;
+				_representation.colorOutline = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::OUTLINE_SENSITIVITY )
 			{
-				_settings.outlineSensitivity = p_value;
+				_representation.outlineSensitivity = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::OUTLINE_THICKNESS )
 			{
-				_settings.outlineThickness = p_value;
+				_representation.outlineThickness = p_value;
 			}
 			// Selection.
 			else if constexpr ( S == E_RENDER_SETTINGS::ACTIVE_SELECTION )
 			{
-				_settings.activeSelection = p_value;
+				_representation.activeSelection = p_value;
 			}
 			else if constexpr ( S == E_RENDER_SETTINGS::COLOR_SELECTION )
 			{
-				_settings.colorSelection = p_value;
+				_representation.colorSelection = p_value;
 			}
-			// TODO: test this.
 			else
 			{
 				static_assert( true, "Unknown render setting." );
@@ -129,7 +129,7 @@ namespace VTX::App::Component::Representation
 		}
 
 	  private:
-		VTX::Core::Struct::RenderSettings _settings;
+		VTX::Core::Struct::RenderSettings _representation;
 	};
 
 } // namespace VTX::App::Component::Representation

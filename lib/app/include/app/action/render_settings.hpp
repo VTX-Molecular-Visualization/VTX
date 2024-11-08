@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_ACTION_RENDER_SETTINGS__
 #define __VTX_UI_ACTION_RENDER_SETTINGS__
 
-#include "app/action/render_settings.hpp"
 #include "app/core/action/base_action.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/representation/render_settings.hpp>

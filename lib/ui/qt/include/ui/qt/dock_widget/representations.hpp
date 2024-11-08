@@ -4,16 +4,24 @@
 #include "ui/qt/core/base_dock_widget.hpp"
 #include <QDockWidget>
 
+namespace VTX::App::Component::Representation
+{
+	class Representation;
+}
+
 namespace VTX::UI::QT::DockWidget
 {
 
 	class Representations : public Core::BaseDockWidget<Representations>
 	{
 	  public:
-		Representations( QWidget * p_parent ) : Core::BaseDockWidget<Representations>( "Representations", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		}
+		Representations( QWidget * );
+
+	  private:
+		void _createGroupBoxSphere( App::Component::Representation::Representation * const );
+		void _createGroupBoxCylinder( App::Component::Representation::Representation * const );
+		void _createGroupBoxRibbon( App::Component::Representation::Representation * const );
+		void _createGroupBoxSES( App::Component::Representation::Representation * const );
 	};
 
 } // namespace VTX::UI::QT::DockWidget
