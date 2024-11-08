@@ -470,6 +470,14 @@ namespace VTX::Renderer
 				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ),
 				representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ),
 				representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) } );
+
+			// Callbacks.
+			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
+				[ this ]( const float p_value ) { setValue( p_value, "Cylinder radius", 0 ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
+				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Cylinder color blending", 0 ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
+				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Ribbon color blending", 0 ); };
 		}
 
 		_context->setData( representations, "Representations" );
