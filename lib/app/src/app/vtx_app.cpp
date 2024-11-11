@@ -24,6 +24,8 @@
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+//devjla
+#include <renderer/proxy/voxels.hpp>
 
 namespace VTX::App
 {
@@ -52,6 +54,27 @@ namespace VTX::App
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
+
+		//devjla
+		RENDERER_SYSTEM().onReady() += [ & ]()
+		{
+			static std::vector<Vec3f> mins, maxs;
+			for ( float x = -100.f; x <= 100.f; x += 50.f )
+			{
+				for ( float y = -100.f; y <= 100.f; y += 50.f )
+				{
+					/* for ( float z = -100.f; z <= 100.f; z += 50.f )
+					{
+						mins.emplace_back( x, y, z );
+						maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
+					}*/
+					mins.emplace_back( x, y, 0 );
+					maxs.emplace_back( x + 50.f, y + 50.f, 0 );
+				}
+			}
+			auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
+			RENDERER_SYSTEM().setProxyVoxels( proxyVoxels );
+		};
 	}
 
 	void VTXApp::start( const Args & p_args )

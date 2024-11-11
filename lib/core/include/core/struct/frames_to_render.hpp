@@ -50,11 +50,11 @@ namespace VTX::Core::Struct
 			RemoveCopyElement(frame);
 			return true;
 		}
-		bool Flush(void)
+		void Flush(void)
 		{
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			// FIXME improve the way to empty this queue, can fail
-			return _framesToRender.empty();
+			while ( !_framesToRender.empty() )
+				_framesToRender.pop();
 		}
 
 	  private:

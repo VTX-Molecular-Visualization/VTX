@@ -61,6 +61,43 @@ namespace VTX::Core::Struct
 			}
 		}
 
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		void FillFrameDEBUG()
+		{
+			if ( _isOptimized )
+			{	
+				for ( float x = -100.f; x <= 100.f; x += 50.f )
+				{
+					for ( float y = -100.f; y <= 100.f; y += 50.f )
+					{
+						Frame frame;
+						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
+						frame.resize( atomPositionsDebug.size() );
+						std::copy( atomPositionsDebug.begin(), atomPositionsDebug.end(), frame.begin() );
+						_framesCircBuff.WriteElement( frame );
+					}
+				}
+			}
+			else
+			{
+				size_t idx( 0 );
+				for ( float x = -100.f; x <= 100.f; x += 50.f )
+				{
+					for ( float y = -100.f; y <= 100.f; y += 50.f )
+					{
+						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
+						_framesVector[ idx ].resize( atomPositionsDebug.size() );
+						std::copy(
+							atomPositionsDebug.begin(),
+							atomPositionsDebug.end(),
+							_framesVector[ idx ].begin()
+						);
+						++idx;
+					}
+				}
+			}
+		}
+
 		// devjla
 		const Frame & GetCurrentFrame() const 
 		{

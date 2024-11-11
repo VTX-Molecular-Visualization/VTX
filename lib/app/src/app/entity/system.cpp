@@ -98,10 +98,10 @@ namespace VTX::App::Entity
 			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
 			// TODO: set from settings.
-			auto * const defaultPlayMode
-				= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>();
 			//auto * const defaultPlayMode
-			//	= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::CircularBuffer>();
+			//	= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>();
+			auto * const defaultPlayMode
+				= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::CircularBuffer>();
 
 			trajectory.setPlayer( defaultPlayMode );
 		}

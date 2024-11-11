@@ -45,12 +45,15 @@ namespace VTX::IO::Reader
 		// p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
 		p_molecule.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
-		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		//p_system.initAtoms( p_chemfileStruct.getAtomCount() );
+		p_system.initAtoms( 1 );
 
 		// devjla
 		// VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.trajectory.GetCurrentFrame();
-		modelFrame.resize( p_chemfileStruct.getAtomCount() );
+		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.GetCurrentFrame();
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		//modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
 		{
@@ -287,14 +290,16 @@ namespace VTX::IO::Reader
 			if ( atomPositions.size() <= 0 )
 				continue;
 
-			for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemStartFrame : p_targets )
+			// devjla DEBUG TRAJECTORY FRAMES ORDER
+			/* for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemStartFrame : p_targets )
 			{
 				VTX::Core::Struct::System & system   = *pairSystemStartFrame.first;
 				const size_t				frameIndex = pairSystemStartFrame.second + validFrameCount;
 				system.trajectory.fillFrame( frameIndex, atomPositions );
 
 				validFrameCount++;
-			}
+			}*/
+			p_targets[0].first->trajectory.FillFrameDEBUG();
 
 #ifdef _DEBUG
 			if ( frameIdx > 1 && frameIdx % 100 == 0 )

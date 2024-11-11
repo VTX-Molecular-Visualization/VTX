@@ -173,15 +173,31 @@ namespace VTX::App::Core::Player
 	void CircularBuffer::update( const float p_deltaTime )
 	{
 		//BasePlayer::update( p_deltaTime );
+		if( !isPlaying() )
+			return;
 
 		// devjla
-		VTX::Core::Struct::Frame currentFrame;
-		if ( !_tmpFrames.GetCopyFrame( currentFrame )  || !isPlaying())
-			return;
 		/* VTX::App::Component::Render::ProxyMolecule & proxy
 			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
 		proxy._updateAtomsPositions( currentFrame );*/
-		onFrameChange( currentFrame );
+
+		VTX::Core::Struct::Frame currentFrame;
+		if ( getFPS() == 0u )
+		{
+			if ( _tmpFrames.GetCopyFrame( currentFrame ))
+				onFrameChange( currentFrame );
+		}
+		else
+		{
+			const float frameRateMilliSec = ( 1.f / float( getFPS() ) ) * 1000.f;
+			const float ellapsedTime	  = p_deltaTime - getTrajectoryTimer();
+			if ( ellapsedTime >= frameRateMilliSec )
+			{
+				setTrajectoryTimer( p_deltaTime );
+				if (_tmpFrames.GetCopyFrame(currentFrame))
+					onFrameChange( currentFrame );
+			}
+		}
 	}
 
 } // namespace VTX::App::Core::Player

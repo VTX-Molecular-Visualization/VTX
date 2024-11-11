@@ -84,7 +84,7 @@ namespace VTX::App::Core::Player
 		if ( !isPlaying() )
 			return;
 
-		_trajectoryTimer += p_deltaTime;
+		/* _trajectoryTimer += p_deltaTime;
 
 		if ( _fps == 0u )
 		{
@@ -106,7 +106,25 @@ namespace VTX::App::Core::Player
 			{
 				nextFrame( nextIndex - previousCurrent );
 			}
+		}*/
+
+		//////////
+		if ( _fps == 0u )
+		{
+			nextFrame();
 		}
+		else
+		{
+			const float frameRateMilliSec = ( 1.f / float( _fps ) ) * 1000.f;
+			const float ellapsedTime	  = p_deltaTime - _trajectoryTimer;
+			if (ellapsedTime >= frameRateMilliSec)
+			{
+				_trajectoryTimer = p_deltaTime;
+				nextFrame( _current + 1);
+			}
+		}
+		//////////
+
 
 		// devjla
 		/* VTX::Core::Struct::Frame currentFrame;
