@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_ATOM__
 #define __VTX_CORE_CHEMDB_ATOM__
 
+#include <algorithm>
 #include <string>
 
 namespace VTX::Core::ChemDB::Atom
