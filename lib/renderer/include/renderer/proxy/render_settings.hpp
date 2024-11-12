@@ -38,6 +38,13 @@ namespace VTX::Renderer::Proxy
 	 */
 	class RenderSettings : public ProxyPointerCollection
 	{
+	  public:
+		template<E_RENDER_SETTINGS, typename... Args>
+		Util::Callback<Args...> & onChange()
+		{
+			static Util::Callback<Args...> callback;
+			return callback;
+		}
 	};
 
 } // namespace VTX::Renderer::Proxy

@@ -10,7 +10,7 @@ namespace VTX::App::Component::Representation
 		_representation.hasSphere		  = true;
 		_representation.radiusSphereFixed = 0.4f;
 		_representation.radiusSphereAdd	  = 0.f;
-		_representation.radiusFixed		  = true;
+		_representation.radiusFixed		  = false;
 
 		_representation.hasCylinder			  = true;
 		_representation.radiusCylinder		  = 0.1f;

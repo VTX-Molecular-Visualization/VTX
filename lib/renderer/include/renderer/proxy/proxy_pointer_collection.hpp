@@ -16,6 +16,7 @@ namespace VTX::Renderer::Proxy
 			settings.emplace( p_key, &p_value );
 		}
 
+		// TODO: type check?
 		template<typename T>
 		const T & get( const uint p_key )
 		{
@@ -23,13 +24,6 @@ namespace VTX::Renderer::Proxy
 			assert( settings[ p_key ] != nullptr );
 
 			return *static_cast<const T *>( settings[ p_key ] );
-		}
-
-		template<uint, typename... Args>
-		Util::Callback<Args...> & onChange()
-		{
-			static Util::Callback<Args...> callback;
-			return callback;
 		}
 
 	  private:

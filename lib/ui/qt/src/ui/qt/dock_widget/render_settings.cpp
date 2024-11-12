@@ -37,11 +37,11 @@ namespace VTX::UI::QT::DockWidget
 		// Shading group.
 		auto * groupBoxShading = new QGroupBox( "Lighting" );
 		auto * layout		   = new QVBoxLayout( groupBoxShading );
+		_layout->addWidget( groupBoxShading );
 
 		// Shading mode.
 		auto * comboBoxShading = new QComboBox( groupBoxShading );
 		layout->addWidget( comboBoxShading );
-		_layout->addWidget( groupBoxShading );
 
 		for ( int i = 0; i < int( Renderer::E_SHADING::COUNT ); ++i )
 		{
@@ -161,7 +161,7 @@ namespace VTX::UI::QT::DockWidget
 		{
 			comboBoxShading->setCurrentIndex( p_value );
 
-			// TODO: better way, root widget?
+			// TODO: use root widget?
 			switch ( Renderer::E_SHADING( p_value ) )
 			{
 			case Renderer::E_SHADING::DIFFUSE:
