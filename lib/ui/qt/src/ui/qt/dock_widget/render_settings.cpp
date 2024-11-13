@@ -52,7 +52,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			comboBoxShading,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ p_component ]( const int p_index )
+			[]( const int p_index )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::SHADING_MODE, uint>>(
@@ -66,7 +66,7 @@ namespace VTX::UI::QT::DockWidget
 		layout->addWidget( colorPickerBackground );
 		colorPickerBackground->setColor( Helper::toQColor( p_component->getSettings().colorBackground ) );
 		colorPickerBackground->setText( "Background color" );
-		colorPickerBackground->onColorChanged += [ p_component ]( const QColor & p_color )
+		colorPickerBackground->onColorChanged += []( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()
 				.execute<App::Action::RenderSettings::
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::DockWidget
 		layout->addWidget( colorPickerLight );
 		colorPickerLight->setColor( Helper::toQColor( p_component->getSettings().colorLight ) );
 		colorPickerLight->setText( "Light color" );
-		colorPickerLight->onColorChanged += [ p_component ]( const QColor & p_color )
+		colorPickerLight->onColorChanged += []( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()
 				.execute<App::Action::RenderSettings::
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderSpecularFactor,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -121,7 +121,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderShininess,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::SHININESS, float>>(
@@ -141,7 +141,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderToonSteps,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::TOON_STEPS, uint>>(
@@ -231,7 +231,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBoxSSAO,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_state )
+			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>>(
@@ -251,7 +251,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderSSAOIntensity,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -272,7 +272,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderBlurSize,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::BLUR_SIZE, float>>(
@@ -315,7 +315,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBoxOutline,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_state )
+			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>>(
@@ -348,7 +348,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderOutlineSensitivity,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::
@@ -369,7 +369,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderOutlineThickness,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -410,7 +410,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBoxFog,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_state )
+			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::ACTIVE_FOG, bool>>(
@@ -423,7 +423,7 @@ namespace VTX::UI::QT::DockWidget
 		Widget::ColorPicker * colorPickerFog = new Widget::ColorPicker( groupBoxFog );
 		layout->addWidget( colorPickerFog );
 		colorPickerFog->setColor( Helper::toQColor( p_component->getSettings().colorFog ) );
-		colorPickerFog->onColorChanged += [ p_component ]( const QColor & p_color )
+		colorPickerFog->onColorChanged += []( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()
 				.execute<
@@ -443,7 +443,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderFogNear,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::FOG_NEAR, float>>(
@@ -463,7 +463,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderFogFar,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::FOG_FAR, float>>(
@@ -483,7 +483,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			sliderFogDensity,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::RenderSettings::ChangeRenderSetting<E_RENDER_SETTINGS::FOG_DENSITY, float>>(
@@ -524,7 +524,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBoxSelection,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_state )
+			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -539,7 +539,7 @@ namespace VTX::UI::QT::DockWidget
 		layout->addWidget( colorPickerSelection );
 		colorPickerSelection->setText( "Color" );
 		colorPickerSelection->setColor( Helper::toQColor( p_component->getSettings().colorSelection ) );
-		colorPickerSelection->onColorChanged += [ p_component ]( const QColor & p_color )
+		colorPickerSelection->onColorChanged += []( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()
 				.execute<App::Action::RenderSettings::

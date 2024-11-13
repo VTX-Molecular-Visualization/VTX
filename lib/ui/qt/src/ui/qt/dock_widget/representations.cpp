@@ -8,6 +8,7 @@
 #include <app/action/representation.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/representation/representation.hpp>
+#include <core/chemdb/atom.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -44,7 +45,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBox,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -56,6 +57,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Fixed.
 		auto * comboBox = new QComboBox( groupBox );
+
 		layout->addWidget( comboBox );
 		comboBox->addItem( "Van der Waals radius" );
 		comboBox->addItem( "Fixed radius" );
@@ -64,13 +66,13 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			comboBox,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ p_component ]( const int p_index )
+			[]( const int p_index )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( p_index );
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( p_index
+					);
 			}
-
 		);
 
 		// Radius add.
@@ -78,13 +80,14 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderRadiusAdd = new QSlider( Qt::Orientation::Horizontal, groupBox );
 		layout->addWidget( labelRadiusAdd );
 		layout->addWidget( sliderRadiusAdd );
-		sliderRadiusAdd->setMinimum( 0 );
-		sliderRadiusAdd->setMaximum( 100 );
+		// TODO: move min and max to representation.
+		sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
+		sliderRadiusAdd->setMaximum( 500 );
 		sliderRadiusAdd->setValue( p_component->getRepresentation().radiusSphereAdd * 100 );
 		connect(
 			sliderRadiusAdd,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -95,17 +98,17 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Radius fixed.
-		auto * labelRadiusFixed	 = new QLabel( "Radius fixed", groupBox );
+		auto * labelRadiusFixed	 = new QLabel( "Radius", groupBox );
 		auto * sliderRadiusFixed = new QSlider( Qt::Orientation::Horizontal, groupBox );
 		layout->addWidget( labelRadiusFixed );
 		layout->addWidget( sliderRadiusFixed );
 		sliderRadiusFixed->setMinimum( 1 );
-		sliderRadiusFixed->setMaximum( 100 );
+		sliderRadiusFixed->setMaximum( 500 );
 		sliderRadiusFixed->setValue( p_component->getRepresentation().radiusSphereFixed * 100 );
 		connect(
 			sliderRadiusFixed,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -162,7 +165,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBox,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -181,7 +184,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			slider,
 			&QSlider::valueChanged,
-			[ p_component ]( const int p_value )
+			[]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -198,7 +201,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			checkBoxColorBlending,
 			&QCheckBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -235,7 +238,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBox,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
@@ -252,7 +255,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			checkBoxColorBlending,
 			&QCheckBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
@@ -284,7 +287,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			groupBox,
 			&QGroupBox::toggled,
-			[ p_component ]( const bool p_checked )
+			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<

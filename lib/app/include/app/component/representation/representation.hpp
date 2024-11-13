@@ -69,7 +69,7 @@ namespace VTX::App::Component::Representation
 			}
 			else
 			{
-				static_assert( true, "Unknown representation setting." );
+				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
 			}
 
 			// Trigger UI.

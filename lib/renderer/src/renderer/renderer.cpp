@@ -461,7 +461,7 @@ namespace VTX::Renderer
 		);
 
 		// We need to draw spheres at cylinder radius when no spheres asked.
-		static auto refreshSphereUniFun = [ & ]( Proxy::Representation * const p_representation )
+		static auto refreshSphereUniFun = [ this ]( Proxy::Representation * const p_representation )
 		{
 			showAtoms = true;
 			if ( p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE ) )

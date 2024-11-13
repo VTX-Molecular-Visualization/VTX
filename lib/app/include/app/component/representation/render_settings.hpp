@@ -111,7 +111,7 @@ namespace VTX::App::Component::Representation
 			}
 			else
 			{
-				static_assert( true, "Unknown render setting." );
+				static_assert( std::is_same_v<T, void>, "Unknown render setting." );
 			}
 
 			// Trigger UI.

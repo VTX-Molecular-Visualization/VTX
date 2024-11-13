@@ -37,7 +37,6 @@ namespace VTX::UI::QT::Widget
 
 		// Use a widget container to embed the window.
 		_container = createWindowContainer( _window, this );
-		//_container->setAcceptDrops( true );
 		_container->installEventFilter( this );
 
 		// Set context.
@@ -74,13 +73,22 @@ namespace VTX::UI::QT::Widget
 	{
 		assert( _context != nullptr );
 
-		// Windows only.
+		// Windows.
 		auto wglSwapIntervalEXT
 			= reinterpret_cast<void ( * )( int )>( _context->getProcAddress( "wglSwapIntervalEXT" ) );
 
 		if ( wglSwapIntervalEXT )
 		{
 			wglSwapIntervalEXT( p_vsync ? 1 : 0 );
+		}
+
+		// Linux.
+		auto glXSwapIntervalEXT
+			= reinterpret_cast<void ( * )( int )>( _context->getProcAddress( "glXSwapIntervalEXT" ) );
+
+		if ( glXSwapIntervalEXT )
+		{
+			glXSwapIntervalEXT( p_vsync ? 1 : 0 );
 		}
 	}
 
