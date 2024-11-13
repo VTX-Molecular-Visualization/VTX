@@ -68,7 +68,7 @@ namespace VTX::UI::QT::DockWidget
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_FIXED, bool>>( p_index );
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( p_index );
 			}
 
 		);
@@ -118,7 +118,7 @@ namespace VTX::UI::QT::DockWidget
 		// Callbacks.
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-		p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_FIXED, bool>() +=
+		p_component->callback<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
 			[ comboBox, labelRadiusAdd, sliderRadiusAdd, labelRadiusFixed, sliderRadiusFixed ]( const bool p_value )
 		{
 			comboBox->setCurrentIndex( int( p_value ) );
@@ -171,7 +171,7 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Radius.
-		auto * labelRadius = new QLabel( "Intensity", groupBox );
+		auto * labelRadius = new QLabel( "Radius", groupBox );
 		auto * slider	   = new QSlider( Qt::Orientation::Horizontal, groupBox );
 		layout->addWidget( labelRadius );
 		layout->addWidget( slider );

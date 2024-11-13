@@ -13,21 +13,21 @@ namespace VTX::Renderer::Proxy
 		template<typename T>
 		void set( const uint p_key, const T & p_value )
 		{
-			settings.emplace( p_key, &p_value );
+			_collection.emplace( p_key, &p_value );
 		}
 
 		// TODO: type check?
 		template<typename T>
 		const T & get( const uint p_key )
 		{
-			assert( settings.contains( p_key ) );
-			assert( settings[ p_key ] != nullptr );
+			assert( _collection.contains( p_key ) );
+			assert( _collection[ p_key ] != nullptr );
 
-			return *static_cast<const T *>( settings[ p_key ] );
+			return *static_cast<const T *>( _collection[ p_key ] );
 		}
 
 	  private:
-		std::unordered_map<uint, const void *> settings;
+		std::unordered_map<uint, const void *> _collection;
 	};
 
 } // namespace VTX::Renderer::Proxy

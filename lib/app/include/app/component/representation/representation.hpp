@@ -36,7 +36,7 @@ namespace VTX::App::Component::Representation
 			{
 				_representation.radiusSphereAdd = p_value;
 			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_FIXED )
+			else if constexpr ( S == E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED )
 			{
 				_representation.radiusFixed = p_value;
 			}

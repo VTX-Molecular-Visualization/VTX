@@ -8,11 +8,11 @@ namespace VTX::App::Component::Representation
 	{
 		// TODO: move default layout.
 		_representation.hasSphere		  = true;
-		_representation.radiusSphereFixed = 0.4f;
+		_representation.radiusSphereFixed = 0.1f;
 		_representation.radiusSphereAdd	  = 0.f;
-		_representation.radiusFixed		  = false;
+		_representation.radiusFixed		  = true;
 
-		_representation.hasCylinder			  = true;
+		_representation.hasCylinder			  = false;
 		_representation.radiusCylinder		  = 0.1f;
 		_representation.cylinderColorBlending = false;
 
@@ -31,7 +31,7 @@ namespace VTX::App::Component::Representation
 		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SPHERE, _representation.hasSphere );
 		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, _representation.radiusSphereFixed );
 		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, _representation.radiusSphereAdd );
-		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_FIXED, _representation.radiusFixed );
+		_proxy->set( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, _representation.radiusFixed );
 
 		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_CYLINDER, _representation.hasCylinder );
 		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, _representation.radiusCylinder );
