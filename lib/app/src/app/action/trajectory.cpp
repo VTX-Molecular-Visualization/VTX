@@ -2,8 +2,8 @@
 #include "app/action/trajectory.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/render/proxy_molecule.hpp>
+#include <app/component/chemistry/system.hpp>
+#include <app/component/render/proxy_system.hpp>
 #include <app/core/player/players.hpp>
 #include <app/core/player/circular_buffer.hpp>
 

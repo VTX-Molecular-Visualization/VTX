@@ -82,7 +82,6 @@ namespace VTX::Bench
 		// devjla
 		// const size_t									sizeAtoms	= p_system.trajectory.frames.front().size();
 		const size_t									sizeAtoms	= p_system.trajectory._framesCircBuff.GetCurrentFrame().size();
-		const size_t									sizeAtoms	= p_system.trajectory.frames.front().size();
 		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_system.atomSymbols;
 		const size_t									sizeResidue = p_system.residueOriginalIds.size();
 

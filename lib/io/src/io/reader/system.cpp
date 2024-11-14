@@ -43,7 +43,7 @@ namespace VTX::IO::Reader
 
 		// devjla
 		// p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
-		p_molecule.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
+		p_system.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		//p_system.initAtoms( p_chemfileStruct.getAtomCount() );
@@ -320,7 +320,7 @@ namespace VTX::IO::Reader
 		// Erase supernumeraries frames
 		for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemFirstFrame : p_targets )
 		{
-			VTX::Core::Struct::System &	system   = *( pairMoleculeFirstFrame.first );
+			VTX::Core::Struct::System &	system   = *( pairSystemFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
 
 			if ( trajectory._isOptimized )

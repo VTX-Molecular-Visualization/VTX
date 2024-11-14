@@ -2,9 +2,9 @@
 #define __VTX_UI_ACTION_TRAJECTORY__
 
 #include "app/core/action/base_action.hpp"
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/uid_component.hpp>
-#include <app/entity/molecule.hpp>
+#include <app/entity/system.hpp>
 #include <app/core/ecs/registry.hpp>
 
 namespace VTX::App::Action::Trajectory

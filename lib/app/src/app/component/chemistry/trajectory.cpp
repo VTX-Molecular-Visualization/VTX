@@ -16,10 +16,10 @@ namespace VTX::App::Component::Chemistry
 		_referenceUpdateFunction();
 	}
 
-	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().currentFrameIndex; }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory()._currentFrameIndex; }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
+		_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex;
 	}
 
 	// devjla
@@ -41,7 +41,7 @@ namespace VTX::App::Component::Chemistry
 		onFrameChange.clear();
 
 		_player = p_player;
-		_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
+		_player->setCount( _systemPtr->getTrajectory().GetFrameCount() );
 
 		/* _player->onFrameChange += [ this ]( const size_t p_frameIndex )
 		{

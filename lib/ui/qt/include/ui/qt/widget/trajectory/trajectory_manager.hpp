@@ -34,20 +34,20 @@ namespace VTX::UI::QT::Widget
 			using namespace App::Component::Scene;
 			App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_sceneItem )
 			{
-				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::Molecule>( p_sceneItem ) )
+				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_sceneItem ) )
 				{
-					auto & molecule
-						= App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( p_sceneItem );
+					auto & system
+						= App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_sceneItem );
 					auto & uid = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( p_sceneItem );
 
-					if ( molecule.hasTrajectory() )
+					if ( system.hasTrajectory() )
 					{
-						TrajectoryPlayer * player = new TrajectoryPlayer( this, molecule.getAtomUIDs() );
+						TrajectoryPlayer * player = new TrajectoryPlayer( this, system.getAtomUIDs() );
 						_layout->addWidget( player );
 					}
-					molecule.onTrajectoryAdded += [ & ]()
+					system.onTrajectoryAdded += [ & ]()
 					{
-						TrajectoryPlayer * player = new TrajectoryPlayer( this, molecule.getAtomUIDs() );
+						TrajectoryPlayer * player = new TrajectoryPlayer( this, system.getAtomUIDs() );
 						_layout->addWidget( player );
 					};
 				}

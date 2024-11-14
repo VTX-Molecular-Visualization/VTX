@@ -19,8 +19,8 @@ namespace VTX::UI::QT::Widget
 	class TrajectoryPlayer : public QWidget
 	{
 	  public:
-		TrajectoryPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_moleculeUID ) :
-			QWidget( p_parent ), _moleculeUID( p_moleculeUID )
+		TrajectoryPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
+			QWidget( p_parent ), _systemUID( p_systemUID )
 		{
 			setupLayout();
 
@@ -79,7 +79,7 @@ namespace VTX::UI::QT::Widget
 			);
 			trajectory.getPlayer().onFrameChange +=
 				[ & ]( const VTX::Core::Struct::Frame p_frame )
-			{ VTX_INFO( "trajectory_player frame changed  = {}", trajectory.getMoleculePtr()->getTrajectory()._currentFrameIndex ); };
+			{ VTX_INFO( "trajectory_player frame changed  = {}", trajectory.getSystemPtr()->getTrajectory()._currentFrameIndex ); };
 		}
 		void setupFrameSelector() {}
 
@@ -122,7 +122,7 @@ namespace VTX::UI::QT::Widget
 					);
 					trajectory.getPlayer().play();*/
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _moleculeUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _systemUID );
 
 					is_playing								   = true;
 					/*/
@@ -216,7 +216,7 @@ namespace VTX::UI::QT::Widget
 				{
 					is_playing = false;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _moleculeUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _systemUID );
 				}
 			);
 
@@ -228,7 +228,7 @@ namespace VTX::UI::QT::Widget
 				{
 					is_playing = false;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _moleculeUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _systemUID );
 				}
 			);
 
@@ -237,14 +237,14 @@ namespace VTX::UI::QT::Widget
 				&QPushButton::clicked,
 				this,
 				[ & ]()
-				{ App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetCircularPlayer>( _moleculeUID );
+				{ App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetCircularPlayer>( _systemUID );
 				}
 			);
 		}
 
 		std::atomic_bool is_playing; // FIXME dev purpose to stop threads needs improvement
 
-		const App::Core::UID::UIDRange & _moleculeUID;
+		const App::Core::UID::UIDRange & _systemUID;
 		QWidget		  *_widget;
 		QVBoxLayout	  *_layout;
 		QHBoxLayout *_playButtonsLayout;

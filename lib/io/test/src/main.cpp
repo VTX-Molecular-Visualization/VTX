@@ -92,9 +92,9 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader	   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -124,9 +124,9 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -146,9 +146,9 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -168,9 +168,9 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -190,9 +190,9 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -212,9 +212,9 @@ TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
@@ -234,9 +234,9 @@ TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::Molecule molecule	   = VTX::Core::Struct::Molecule();
+	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
 	molecule.trajectory._isOptimized	 = true;
-	IO::Reader::Molecule		moleculeReader = IO::Reader::Molecule();
+	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 

@@ -34,7 +34,7 @@ namespace VTX::Core::Struct
 		}
 		//Trajectory ( Trajectory & copy ) = delete;
 
-		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
+		void FillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
 			/* Frame frame;
 			frame.resize( p_atomPositions.size() );
@@ -131,6 +131,10 @@ namespace VTX::Core::Struct
 		{ 
 			return _framesCircBuff.GetModelFrame();
 		}*/
+
+		// FIXME this function is only available for non optimized trajectories
+		const Frame& GetFrameFromIndex(size_t p_index) const { return _framesVector[ p_index ]; }
+		Frame & GetFrameFromIndex( size_t p_index ) { return _framesVector[ p_index ]; }
 
 		//size_t getFrameCount() const { return frames.size(); }
 		size_t GetFrameCount() const

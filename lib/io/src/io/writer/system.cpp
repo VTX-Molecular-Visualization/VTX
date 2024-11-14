@@ -130,16 +130,20 @@ namespace VTX::IO::Writer
 		}
 		inline void fillFrames( const VTX::Core::Struct::System & p_mol, System & p_system )
 		{
-			for ( size_t frameIdx = 0; frameIdx < p_mol.trajectory.getFrameCount(); frameIdx++ )
+			// devjla
+			// FIXME to be reviviewed in case of optimized trajectory
+			if ( p_mol.trajectory._isOptimized )
+				return;
+			for ( size_t frameIdx = 0; frameIdx < p_mol.trajectory.GetFrameCount(); frameIdx++ )
 			{
 				Frame w_frame = p_system.newFrame();
-				for ( size_t atomIdx = 0; atomIdx < p_mol.trajectory.frames[ frameIdx ].size(); atomIdx++ )
+				for ( size_t atomIdx = 0; atomIdx < p_mol.trajectory.GetFrameFromIndex(frameIdx).size(); atomIdx++ )
 				{
 					Atom w_atom;
 					// if the atom doesn't exist for some reason, we skip to the next
 					if ( p_system.fetch( w_atom, { atomIdx } ) )
 					{
-						const VTX::Vec3f & coords = p_mol.trajectory.frames[ frameIdx ][ atomIdx ];
+						const VTX::Vec3f & coords = p_mol.trajectory.GetFrameFromIndex( frameIdx )[ atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
 					}
 				}

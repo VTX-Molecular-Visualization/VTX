@@ -75,7 +75,7 @@ namespace
 		}
 		uint64_t init_atomCount	 = system.getAtomCount();
 		uint64_t init_chainCount = system.getChainCount();
-		uint64_t init_frameCount = system.trajectory.getFrameCount();
+		uint64_t init_frameCount = system.trajectory.GetFrameCount();
 		uint64_t init_bondCount	 = system.getBondCount();
 		uint64_t init_resCount	 = system.getResidueCount();
 
@@ -94,7 +94,7 @@ namespace
 
 		bool numMismatch_atom  = init_atomCount != system_reread.getAtomCount();
 		bool numMismatch_chain = init_chainCount != system_reread.getChainCount();
-		bool numMismatch_frame = init_frameCount != system_reread.trajectory.getFrameCount();
+		bool numMismatch_frame = init_frameCount != system_reread.trajectory.GetFrameCount();
 		bool numMismatch_bond  = init_bondCount != system_reread.getBondCount();
 		bool numMismatch_res   = init_resCount != system_reread.getResidueCount();
 

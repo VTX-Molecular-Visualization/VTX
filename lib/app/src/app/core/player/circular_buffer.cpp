@@ -1,12 +1,11 @@
 #include <util/logger.hpp>
 #include <app/core/player/circular_buffer.hpp>
-#include <app/component/render/proxy_molecule.hpp>
+#include <app/component/render/proxy_system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/threading/threading_system.hpp>
-#include <io/reader/molecule.hpp>
+#include <io/reader/system.hpp>
 // devjla needs a refacto - code from molecule reader in IO
 #include <util/chrono.hpp>
-#include <io/reader/molecule.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -28,8 +27,8 @@ namespace VTX::App::Core::Player
 
 			if (&(trajectory.getPlayer()) == this)
 			{
-				trajectory.getMoleculePtr()->getTrajectory().Reset();
-				trajectory.getMoleculePtr()->getTrajectory()._isOptimized = true;
+				trajectory.getSystemPtr()->getTrajectory().Reset();
+				trajectory.getSystemPtr()->getTrajectory()._isOptimized = true;
 			}				
 		}
 
@@ -39,7 +38,7 @@ namespace VTX::App::Core::Player
 		{
 			VTX_INFO( "writethread start" );
 			
-			IO::Reader::Molecule moleculeReader   = IO::Reader::Molecule();
+			IO::Reader::System moleculeReader   = IO::Reader::System();
 			/* const std::string moleculeName		= "2ama_1_npt";
 			const std::string	 moleculePathname = moleculeName + ".trr";
 			const VTX::FilePath	 moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;*/
@@ -53,7 +52,7 @@ namespace VTX::App::Core::Player
 				if (&(trajectory.getPlayer()) == this)
 				{
 					auto entity = App::ECS_REGISTRY().getEntity( trajectory );
-					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
 
 					////////////////////////////
 					/* while ( trajectory.getPlayer().isPlaying() )
@@ -110,7 +109,7 @@ namespace VTX::App::Core::Player
 												);
 												if ( timeReadingFrames.elapsedTime() + elapsed >= hardFrameRate )
 												{
-													molecule.getMoleculeStruct().trajectory.FillFrame( 42, frame );
+													molecule.getSystemStruct().trajectory.FillFrame( 42, frame );
 													elapsed = 0.f;
 												}
 												else
@@ -150,9 +149,9 @@ namespace VTX::App::Core::Player
 				if ( &( trajectory.getPlayer() ) == this )
 				{
 					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
-					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
-					VTX::App::Component::Render::ProxyMolecule & proxy
-						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( entity );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
+					VTX::App::Component::Render::ProxySystem & proxy
+						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
 					while ( trajectory.getPlayer().isPlaying() )
 						trajectory.getPlayer().StackFrame( molecule.getTrajectory()._framesCircBuff.ReadElement() );
