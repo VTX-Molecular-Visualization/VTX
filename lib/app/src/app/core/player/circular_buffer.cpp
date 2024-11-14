@@ -4,6 +4,9 @@
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/threading/threading_system.hpp>
 #include <io/reader/molecule.hpp>
+// devjla needs a refacto - code from molecule reader in IO
+#include <util/chrono.hpp>
+#include <io/reader/molecule.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -52,9 +55,82 @@ namespace VTX::App::Core::Player
 					auto entity = App::ECS_REGISTRY().getEntity( trajectory );
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
 
-					while ( trajectory.getPlayer().isPlaying() )
+					////////////////////////////
+					/* while ( trajectory.getPlayer().isPlaying() )
 						moleculeReader.readFile( trajectory.getPath(), molecule.getMoleculeStruct() );
-					// moleculeReader.readTrajectoryFile( moleculePath, molecule.getMoleculeStruct() );
+						*/
+					////////////////////////////
+
+					////////////////////////////
+					// devjla needs a refacto - code from molecule reader in IO
+					std::unique_ptr<IO::Reader::Chemfiles> chemfilesReader
+						= IO::Reader::Chemfiles::readFile( trajectory.getPath() );
+					IO::Reader::Chemfiles &_chemfileStruct = *chemfilesReader;
+					size_t					_trajectoryFrameStart = 1;
+					size_t validFrameCount = 0;
+
+					for ( size_t frameIdx = 0; frameIdx < _chemfileStruct.getFrameCount() - _trajectoryFrameStart;
+						  ++frameIdx )
+					{
+						_chemfileStruct.readNextFrame();
+						const std::vector<Vec3f> atomPositions = _chemfileStruct.getCurrentFrameAtomPosition();
+
+						if ( atomPositions.size() <= 0 )
+							continue;
+
+						Util::Chrono timeReadingFrames;
+						timeReadingFrames.start();
+						float elapsed = 0.f;
+						float hardFrameRate = 1.f;
+						for (;;)
+						{
+							if ( trajectory.getPlayer().isPlaying() )
+							{
+								for ( float x = -100.f; x <= 100.f; x += 50.f )
+								{
+									if ( trajectory.getPlayer().isPlaying() )
+									{
+										for ( float y = -100.f; y <= 100.f; y += 50.f )
+										{
+											std::vector<Vec3f>		 frame;
+											const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
+											frame.resize( atomPositionsDebug.size() );
+											std::copy(
+												atomPositionsDebug.begin(), atomPositionsDebug.end(), frame.begin()
+											);
+											if (trajectory.getPlayer().isPlaying())
+											{
+												timeReadingFrames.stop();
+												VTX_INFO(
+													"writethread tick {}s {}s {}s {}s",
+													timeReadingFrames.elapsedTime(),
+													elapsed,
+													timeReadingFrames.elapsedTime() + elapsed,
+													hardFrameRate
+												);
+												if ( timeReadingFrames.elapsedTime() + elapsed >= hardFrameRate )
+												{
+													molecule.getMoleculeStruct().trajectory.FillFrame( 42, frame );
+													elapsed = 0.f;
+												}
+												else
+													elapsed += timeReadingFrames.elapsedTime();
+												timeReadingFrames.start();
+											}
+											else
+												break;
+										}
+									}
+									else
+										break;
+								}
+							}
+							else
+								break;
+						}
+						timeReadingFrames.stop();
+					}
+					////////////////////////////
 				}
 			}
 			VTX_INFO( "writethread end" );
@@ -177,10 +253,13 @@ namespace VTX::App::Core::Player
 			return;
 
 		// devjla
+		// own legacy to be cleared
 		/* VTX::App::Component::Render::ProxyMolecule & proxy
 			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
 		proxy._updateAtomsPositions( currentFrame );*/
 
+		//////////////////////////
+		/*
 		VTX::Core::Struct::Frame currentFrame;
 		if ( getFPS() == 0u )
 		{
@@ -198,6 +277,13 @@ namespace VTX::App::Core::Player
 					onFrameChange( currentFrame );
 			}
 		}
+		*/
+		//////////////////////////
+
+		VTX::Core::Struct::Frame currentFrame;
+		if ( _tmpFrames.GetCopyFrame( currentFrame ) )
+			onFrameChange( currentFrame );
+		//////////////////////////
 	}
 
 } // namespace VTX::App::Core::Player

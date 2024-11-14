@@ -68,7 +68,7 @@ namespace VTX::App::Core::Player
 		// devjla
 		//bool  _isPlaying	   = false;
 		std::atomic<bool> _isPlaying	   = false;
-		uint  _fps			   = 1u;
+		uint  _fps			   = 2u;
 		float _trajectoryTimer = 0;
 	};
 } // namespace VTX::App::Core::Player
