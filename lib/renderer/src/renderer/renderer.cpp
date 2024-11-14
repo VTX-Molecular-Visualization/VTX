@@ -461,35 +461,36 @@ namespace VTX::Renderer
 		);
 
 		// We need to draw spheres at cylinder radius when no spheres asked.
-		static auto refreshSphereUniFun = [ this ]( Proxy::Representation * const p_representation )
+		static auto adaptSphereUniformsFun = [ this ]( Proxy::Representation * const p_representation )
 		{
-			showAtoms = true;
+			showAtoms			 = true;
+			float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
+
 			if ( p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE ) )
 			{
-				setValue(
-					p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ),
-					"Sphere radius fixed",
-					0
-				);
+				const bool isSphereRadiusFixed
+					= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
+				float sphereRadiusFixed
+					= p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
+
+				// Scale sphere radius to cylinder radius.
+				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+				{
+					sphereRadiusFixed = cylinderRadius;
+				}
+
+				setValue( sphereRadiusFixed, "Sphere radius fixed", 0 );
 				setValue(
 					p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ), "Sphere radius add", 0
 				);
-				setValue(
-					uint( p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ) ),
-					"Is sphere radius fixed",
-					0
-				);
+				setValue( uint( isSphereRadiusFixed ), "Is sphere radius fixed", 0 );
 			}
 			else
 			{
 				if ( p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER ) )
 				{
 					setValue( uint( true ), "Is sphere radius fixed", 0 );
-					setValue(
-						p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ),
-						"Sphere radius fixed",
-						0
-					);
+					setValue( cylinderRadius, "Sphere radius fixed", 0 );
 				}
 				else
 				{
@@ -513,11 +514,11 @@ namespace VTX::Renderer
 			showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
 			showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
 
-			refreshSphereUniFun( representation );
+			adaptSphereUniformsFun( representation );
 
 			// Callbacks.
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
-				[ &, representation ]( const bool p_value ) { refreshSphereUniFun( representation ); };
+				[ &, representation ]( const bool p_value ) { adaptSphereUniformsFun( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
 				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Is sphere radius fixed", 0 ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
@@ -529,13 +530,13 @@ namespace VTX::Renderer
 				[ &, representation ]( const bool p_value )
 			{
 				showBonds = p_value;
-				refreshSphereUniFun( representation );
+				adaptSphereUniformsFun( representation );
 			};
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
 				[ &, representation ]( const float p_value )
 			{
 				setValue( p_value, "Cylinder radius", 0 );
-				refreshSphereUniFun( representation );
+				adaptSphereUniformsFun( representation );
 			};
 			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
 				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Cylinder color blending", 0 ); };

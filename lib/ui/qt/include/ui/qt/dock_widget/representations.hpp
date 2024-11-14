@@ -18,6 +18,8 @@ namespace VTX::UI::QT::DockWidget
 		Representations( QWidget * );
 
 	  private:
+
+
 		void _createGroupBoxSphere( App::Component::Representation::Representation * const );
 		void _createGroupBoxCylinder( App::Component::Representation::Representation * const );
 		void _createGroupBoxRibbon( App::Component::Representation::Representation * const );

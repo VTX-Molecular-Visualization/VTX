@@ -34,7 +34,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Sphere" );
+		auto * groupBox = new QGroupBox( "Atoms" );
 		auto * layout	= new QVBoxLayout( groupBox );
 		_layout->addWidget( groupBox );
 
@@ -75,14 +75,15 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		// Radius add.
+		// Radius add (VdW only).
 		auto * labelRadiusAdd  = new QLabel( "Radius add", groupBox );
 		auto * sliderRadiusAdd = new QSlider( Qt::Orientation::Horizontal, groupBox );
 		layout->addWidget( labelRadiusAdd );
 		layout->addWidget( sliderRadiusAdd );
 		// TODO: move min and max to representation.
-		sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
-		sliderRadiusAdd->setMaximum( 500 );
+		// sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
+		sliderRadiusAdd->setMinimum( 0 );
+		sliderRadiusAdd->setMaximum( 300 );
 		sliderRadiusAdd->setValue( p_component->getRepresentation().radiusSphereAdd * 100 );
 		connect(
 			sliderRadiusAdd,
@@ -154,7 +155,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Cylinder" );
+		auto * groupBox = new QGroupBox( "Bonds" );
 		auto * layout	= new QVBoxLayout( groupBox );
 		_layout->addWidget( groupBox );
 
@@ -227,7 +228,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Ribbon" );
+		auto * groupBox = new QGroupBox( "Ribbons" );
 		auto * layout	= new QVBoxLayout( groupBox );
 		_layout->addWidget( groupBox );
 
