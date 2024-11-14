@@ -1,7 +1,6 @@
 #include "ui/qt/dock_widget/representations.hpp"
 #include <QCheckBox>
 #include <QComboBox>
-#include <QGroupBox>
 #include <QLabel>
 #include <QSlider>
 #include <QVBoxLayout>
@@ -23,20 +22,26 @@ namespace VTX::UI::QT::DockWidget
 			  App::ECS_REGISTRY().getEntity( scene )
 		  );
 
-		_createGroupBoxSphere( component );
-		_createGroupBoxCylinder( component );
-		_createGroupBoxRibbon( component );
-		//_createGroupBoxSES( component );
+		_gbCylinder = _createGroupBoxCylinder( component );
+		_gbRibbon	= _createGroupBoxRibbon( component );
+		_gbSphere	= _createGroupBoxSphere( component ); // Last because need others in the callback.
+
+		_layout->addWidget( _gbSphere );
+		_layout->addWidget( _gbCylinder );
+		_layout->addWidget( _gbRibbon );
+
+		// _gbSES = _createGroupBoxSES( component );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}
 
-	void Representations::_createGroupBoxSphere( App::Component::Representation::Representation * const p_component )
+	QGroupBox * const Representations::_createGroupBoxSphere(
+		App::Component::Representation::Representation * const p_component
+	)
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new QGroupBox( "Atoms" );
 		auto * layout	= new QVBoxLayout( groupBox );
-		_layout->addWidget( groupBox );
 
 		// Active.
 		groupBox->setCheckable( true );
@@ -66,12 +71,16 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			comboBox,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[]( const int p_index )
+			[ this ]( const int p_index )
 			{
+				bool isFixed = bool( p_index );
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( p_index
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( isFixed
 					);
+
+				_gbCylinder->setVisible( isFixed );
+				_gbRibbon->setVisible( isFixed );
 			}
 		);
 
@@ -104,7 +113,7 @@ namespace VTX::UI::QT::DockWidget
 		layout->addWidget( labelRadiusFixed );
 		layout->addWidget( sliderRadiusFixed );
 		sliderRadiusFixed->setMinimum( 1 );
-		sliderRadiusFixed->setMaximum( 500 );
+		sliderRadiusFixed->setMaximum( 300 );
 		sliderRadiusFixed->setValue( p_component->getRepresentation().radiusSphereFixed * 100 );
 		connect(
 			sliderRadiusFixed,
@@ -149,15 +158,18 @@ namespace VTX::UI::QT::DockWidget
 
 		// Emit init.
 		emit comboBox->currentIndexChanged( comboBox->currentIndex() );
+
+		return groupBox;
 	}
 
-	void Representations::_createGroupBoxCylinder( App::Component::Representation::Representation * const p_component )
+	QGroupBox * const Representations::_createGroupBoxCylinder(
+		App::Component::Representation::Representation * const p_component
+	)
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new QGroupBox( "Bonds" );
 		auto * layout	= new QVBoxLayout( groupBox );
-		_layout->addWidget( groupBox );
 
 		// Active.
 		groupBox->setCheckable( true );
@@ -222,15 +234,18 @@ namespace VTX::UI::QT::DockWidget
 
 		// Emit init.
 		emit groupBox->toggled( groupBox->isChecked() );
+
+		return groupBox;
 	}
 
-	void Representations::_createGroupBoxRibbon( App::Component::Representation::Representation * const p_component )
+	QGroupBox * const Representations::_createGroupBoxRibbon(
+		App::Component::Representation::Representation * const p_component
+	)
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new QGroupBox( "Ribbons" );
 		auto * layout	= new QVBoxLayout( groupBox );
-		_layout->addWidget( groupBox );
 
 		// Active.
 		groupBox->setCheckable( true );
@@ -271,15 +286,18 @@ namespace VTX::UI::QT::DockWidget
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
 			[ checkBoxColorBlending ]( const bool p_value ) { checkBoxColorBlending->setChecked( p_value ); };
+
+		return groupBox;
 	}
 
-	void Representations::_createGroupBoxSES( App::Component::Representation::Representation * const p_component )
+	QGroupBox * const Representations::_createGroupBoxSES(
+		App::Component::Representation::Representation * const p_component
+	)
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new QGroupBox( "SES" );
 		auto * layout	= new QVBoxLayout( groupBox );
-		_layout->addWidget( groupBox );
 
 		// Active.
 		groupBox->setCheckable( true );
@@ -301,6 +319,8 @@ namespace VTX::UI::QT::DockWidget
 		// Callbacks.
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SES, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
+
+		return groupBox;
 	}
 
 } // namespace VTX::UI::QT::DockWidget

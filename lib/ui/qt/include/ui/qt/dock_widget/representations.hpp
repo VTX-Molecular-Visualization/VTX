@@ -3,6 +3,7 @@
 
 #include "ui/qt/core/base_dock_widget.hpp"
 #include <QDockWidget>
+#include <QGroupBox>
 
 namespace VTX::App::Component::Representation
 {
@@ -18,12 +19,15 @@ namespace VTX::UI::QT::DockWidget
 		Representations( QWidget * );
 
 	  private:
+		QPointer<QGroupBox> _gbSphere;
+		QPointer<QGroupBox> _gbCylinder;
+		QPointer<QGroupBox> _gbRibbon;
+		QPointer<QGroupBox> _gbSES;
 
-
-		void _createGroupBoxSphere( App::Component::Representation::Representation * const );
-		void _createGroupBoxCylinder( App::Component::Representation::Representation * const );
-		void _createGroupBoxRibbon( App::Component::Representation::Representation * const );
-		void _createGroupBoxSES( App::Component::Representation::Representation * const );
+		QGroupBox * const _createGroupBoxSphere( App::Component::Representation::Representation * const );
+		QGroupBox * const _createGroupBoxCylinder( App::Component::Representation::Representation * const );
+		QGroupBox * const _createGroupBoxRibbon( App::Component::Representation::Representation * const );
+		QGroupBox * const _createGroupBoxSES( App::Component::Representation::Representation * const );
 	};
 
 } // namespace VTX::UI::QT::DockWidget
