@@ -8,11 +8,11 @@ namespace VTX::App::Component::Representation
 	{
 		// TODO: move default layout.
 		_representation.hasSphere		  = true;
-		_representation.radiusSphereFixed = 0.1f;
+		_representation.radiusSphereFixed = 0.5f;
 		_representation.radiusSphereAdd	  = 0.f;
 		_representation.radiusFixed		  = true;
 
-		_representation.hasCylinder			  = false;
+		_representation.hasCylinder			  = true;
 		_representation.radiusCylinder		  = 0.1f;
 		_representation.cylinderColorBlending = false;
 
