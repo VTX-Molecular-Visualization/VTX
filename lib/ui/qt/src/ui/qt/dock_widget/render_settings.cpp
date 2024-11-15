@@ -328,6 +328,7 @@ namespace VTX::UI::QT::DockWidget
 		Widget::ColorPicker * colorPickerOutline = new Widget::ColorPicker( groupBoxOutline );
 		layout->addWidget( colorPickerOutline );
 		colorPickerOutline->setColor( Helper::toQColor( p_component->getSettings().colorOutline ) );
+		colorPickerOutline->setText( "Color" );
 		colorPickerOutline->onColorChanged += [ p_component ]( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()
@@ -423,6 +424,7 @@ namespace VTX::UI::QT::DockWidget
 		Widget::ColorPicker * colorPickerFog = new Widget::ColorPicker( groupBoxFog );
 		layout->addWidget( colorPickerFog );
 		colorPickerFog->setColor( Helper::toQColor( p_component->getSettings().colorFog ) );
+		colorPickerFog->setText( "Color" );
 		colorPickerFog->onColorChanged += []( const QColor & p_color )
 		{
 			App::ACTION_SYSTEM()

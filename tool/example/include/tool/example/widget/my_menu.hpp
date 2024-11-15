@@ -3,7 +3,7 @@
 
 #include "tool/example/actions.hpp"
 #include <QMenu>
-#include <ui/qt/base_widget.hpp>
+#include <ui/qt/core/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
