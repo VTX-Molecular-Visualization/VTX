@@ -1,5 +1,5 @@
-#include "core/chemdb/secondary_structure.hpp"
 #include "core/struct/system.hpp"
+#include "core/chemdb/secondary_structure.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::Core::Struct
@@ -69,5 +69,39 @@ namespace VTX::Core::Struct
 		bondPairAtomIndexes.resize( p_count * 2, INVALID_ATOM_INDEX );
 	}
 	size_t System::getBondCount() const { return bondOrders.size(); }
+
+	ByteNumber dynamicMemoryUsage( const System & p_sys ) noexcept
+	{
+		ByteNumber out = 0;
+		out += p_sys.name.capacity();
+		// Mat4f should have dynamic allocation, right ?
+		out += dynamicMemoryUsage( p_sys.trajectory );
+		for ( auto & it_str : p_sys.chainNames )
+			out += it_str.capacity();
+		out += p_sys.chainNames.size() * sizeof( std::string );
+		out += sizeof( size_t ) * p_sys.chainFirstResidues.size();
+		out += sizeof( size_t ) * p_sys.chainResidueCounts.size();
+		out += sizeof( ChemDB::Residue::SYMBOL ) * p_sys.residueSymbols.size();
+		out += sizeof( size_t ) * p_sys.residueChainIndexes.size();
+		out += sizeof( atom_index_t ) * p_sys.residueFirstAtomIndexes.size();
+		out += sizeof( atom_index_t ) * p_sys.residueAtomCounts.size();
+		out += sizeof( size_t ) * p_sys.residueFirstBondIndexes.size();
+		out += sizeof( size_t ) * p_sys.residueBondCounts.size();
+		out += sizeof( size_t ) * p_sys.residueOriginalIds.size();
+		out += sizeof( ChemDB::SecondaryStructure::TYPE ) * p_sys.residueSecondaryStructureTypes.size();
+		out += sizeof( std::string ) * p_sys.residueUnknownNames.size();
+		out += sizeof( ChemDB::Atom::SYMBOL ) * p_sys.atomSymbols.size();
+		out += sizeof( size_t ) * p_sys.atomResidueIndexes.size();
+		out += sizeof( std::string ) * p_sys.atomNames.size();
+		out += sizeof( ChemDB::Bond::ORDER ) * p_sys.bondOrders.size();
+		out += sizeof( atom_index_t ) * p_sys.bondPairAtomIndexes.size();
+
+		// Util::Math::RangeList<T> objects have built in static + dynamic size measurement method. So to get dynamic
+		// size, we need to remove the static one.
+		out += p_sys.atomSolvents.currentSize() - sizeof( Util::Math::RangeList<atom_index_t> );
+		out += p_sys.atomIons.currentSize() - sizeof( Util::Math::RangeList<atom_index_t> );
+
+		return out;
+	}
 
 } // namespace VTX::Core::Struct

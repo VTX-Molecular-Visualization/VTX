@@ -29,6 +29,8 @@ namespace VTX::Core::Struct
 		size_t			   currentFrameIndex = 0;
 	};
 
+	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;
+
 } // namespace VTX::Core::Struct
 
 #endif
