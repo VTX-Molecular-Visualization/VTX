@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_ATOM__
 #define __VTX_CORE_CHEMDB_ATOM__
 
+#include <algorithm>
 #include <string>
 
 namespace VTX::Core::ChemDB::Atom
@@ -514,6 +515,12 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f, // UUS		= 117,
 		0.00f  // UUO		= 118,
 	};
+
+	const float VDW_RADIUS_MIN = *std::min_element(
+		std::begin( SYMBOL_VDW_RADIUS ),
+		std::end( SYMBOL_VDW_RADIUS ),
+		[]( float a, float b ) { return ( a != 0.f && ( b == 0.f || a < b ) ); }
+	);
 
 	const bool SYMBOL_IS_COMMON[ int( SYMBOL::COUNT ) ] = {
 		true,  // UNKNOWN	= 0,

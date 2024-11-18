@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGETCOLOR_PICKER__
-#define __VTX_UI_QT_WIDGETCOLOR_PICKER__
+#ifndef __VTX_UI_QT_WIDGET_COLOR_PICKER__
+#define __VTX_UI_QT_WIDGET_COLOR_PICKER__
 
 #include "ui/qt/core/base_widget.hpp"
 #include <QColor>

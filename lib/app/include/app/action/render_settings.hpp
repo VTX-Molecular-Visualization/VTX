@@ -1,14 +1,13 @@
 #ifndef __VTX_UI_ACTION_RENDER_SETTINGS__
 #define __VTX_UI_ACTION_RENDER_SETTINGS__
 
-#include "app/action/render_settings.hpp"
 #include "app/core/action/base_action.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/representation/render_settings.hpp>
 
 namespace VTX::App::Action::RenderSettings
 {
-	template<Renderer::E_RENDER_SETTINGS S, typename T>
+	template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
 	class ChangeRenderSetting final : public App::Core::Action::BaseAction
 	{
 	  public:

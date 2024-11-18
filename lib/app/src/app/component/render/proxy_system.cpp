@@ -1,7 +1,7 @@
 #include "app/component/render/proxy_system.hpp"
-#include "app/application/selection/system_data.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_manager.hpp"
+#include "app/application/selection/system_data.hpp"
 #include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/transform_component.hpp"
@@ -30,8 +30,8 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
 	{
-		Component::Chemistry::System & molComp = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
-		VTX::Core::Struct::System &	 molStruct = molComp._systemStruct;
+		Component::Chemistry::System & molComp	 = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
+		VTX::Core::Struct::System &	   molStruct = molComp._systemStruct;
 
 		// TODO: how to handle this?
 		IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
@@ -94,7 +94,7 @@ namespace VTX::App::Component::Render
 			atomRadii.begin(),
 			atomRadii.end(),
 			[ this, &p_molStruct, i = 0 ]() mutable
-			{ return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( p_molStruct.atomSymbols[ i ] ) ]; }
+			{ return VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( p_molStruct.atomSymbols[ i++ ] ) ]; }
 		);
 
 		return atomRadii;
@@ -162,16 +162,14 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_applyVisibilityCallbacks()
 	{
-		Component::Chemistry::System & system
-			= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
+		Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 		system.onVisibilityChange += [ this ](
-										   const Component::Chemistry::AtomIndexRangeList & p_rangeList,
-										   App::Core::VISIBILITY_APPLY_MODE					p_applyMode
-									   )
+										 const Component::Chemistry::AtomIndexRangeList & p_rangeList,
+										 App::Core::VISIBILITY_APPLY_MODE				  p_applyMode
+									 )
 		{
-			Component::Chemistry::System & system
-				= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
+			Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
 			const Component::Chemistry::AtomIndexRangeList activeAtoms
 				= Util::Algorithm::Range::intersect( p_rangeList, system.getActiveAtoms() );

@@ -25,8 +25,6 @@ namespace VTX::UI::QT::Widget
 		void render();
 		void resizeEvent( QResizeEvent * ) override;
 
-		//  bool eventFilter( QObject *, QEvent * );
-
 		void setVSync( const bool );
 		bool isVSync() const { return _context->format().swapInterval() == 1; }
 

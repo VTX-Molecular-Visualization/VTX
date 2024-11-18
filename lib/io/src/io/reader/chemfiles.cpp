@@ -10,7 +10,6 @@
 #include <util/string.hpp>
 
 #pragma warning( push, 0 )
-#include "chemfiles.hpp"
 #include <chemfiles.hpp>
 #pragma warning( pop )
 
@@ -504,7 +503,6 @@ namespace VTX::IO::Reader
 		else
 		{
 			throw IOException( "Unknown file format: {}", extension );
-			return "Unknown";
 		}
 	}
 

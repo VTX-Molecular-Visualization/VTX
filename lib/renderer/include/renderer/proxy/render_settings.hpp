@@ -1,53 +1,50 @@
 #ifndef __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 #define __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 
-#include <util/callback.hpp>
-#include <util/types.hpp>
+#include "proxy_pointer_collection.hpp"
 
 namespace VTX::Renderer::Proxy
 {
-	// TODO: to handle multiples render settings in the same scene.
+	enum E_RENDER_SETTINGS
+	{
+		ACTIVE_SSAO,
+		SSAO_INTENSITY,
+		BLUR_SIZE,
+
+		SHADING_MODE,
+		COLOR_LIGHT,
+		COLOR_BACKGROUND,
+		SPECULAR_FACTOR,
+		SHININESS,
+		TOON_STEPS,
+
+		ACTIVE_FOG,
+		COLOR_FOG,
+		FOG_NEAR,
+		FOG_FAR,
+		FOG_DENSITY,
+
+		ACTIVE_OUTLINE,
+		COLOR_OUTLINE,
+		OUTLINE_SENSITIVITY,
+		OUTLINE_THICKNESS,
+
+		ACTIVE_SELECTION,
+		COLOR_SELECTION
+	};
 
 	/**
 	 * @brief Render settings data provider.
 	 */
-	struct RenderSettings
+	class RenderSettings : public ProxyPointerCollection
 	{
-		float			  ssaoIntensity;
-		float			  blurSize;
-		Util::Color::Rgba colorBackground;
-		Util::Color::Rgba colorLight;
-		Util::Color::Rgba colorFog;
-		uint			  shadingMode;
-		float			  specularFactor;
-		float			  shininess;
-		uint			  toonSteps;
-		float			  fogNear;
-		float			  fogFar;
-		float			  fogDensity;
-		Util::Color::Rgba colorOutline;
-		float			  outlineSensitivity;
-		uint			  outlineThickness;
-		Util::Color::Rgba colorSelection;
-
-		Util::Callback<float>					  onSSAOIntensity;
-		Util::Callback<float>					  onBlurSize;
-		Util::Callback<const Util::Color::Rgba &> onColorBackground;
-		Util::Callback<const Util::Color::Rgba &> onColorLight;
-		Util::Callback<const Util::Color::Rgba &> onColorFog;
-		Util::Callback<uint>					  onShadingMode;
-		Util::Callback<float>					  onSpecularFactor;
-		Util::Callback<float>					  onShininess;
-		Util::Callback<uint>					  onToonSteps;
-		Util::Callback<float>					  onFogNear;
-		Util::Callback<float>					  onFogFar;
-		Util::Callback<float>					  onFogDensity;
-		Util::Callback<const Util::Color::Rgba &> onColorOutline;
-		Util::Callback<float>					  onOutlineSensitivity;
-		Util::Callback<uint>					  onOutlineThickness;
-		Util::Callback<const Util::Color::Rgba &> onColorSelection;
-
-		// TODO: callback for each modifiable value?
+	  public:
+		template<E_RENDER_SETTINGS, typename... Args>
+		Util::Callback<Args...> & onChange()
+		{
+			static Util::Callback<Args...> callback;
+			return callback;
+		}
 	};
 
 } // namespace VTX::Renderer::Proxy

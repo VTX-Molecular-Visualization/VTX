@@ -14,7 +14,7 @@ namespace VTX::UI::QT::DockWidget
 	class RenderSettings : public Core::BaseDockWidget<RenderSettings>
 	{
 	  public:
-		RenderSettings( QWidget * p_parent );
+		RenderSettings( QWidget *  );
 
 	  private:
 		void _createGroupBoxShading( App::Component::Representation::RenderSettings * const );

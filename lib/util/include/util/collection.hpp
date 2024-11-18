@@ -111,7 +111,6 @@ namespace VTX::Util
 			}
 			else
 			{
-				// Workaround to force T evaluation to false for gcc, instad of classic false for msvc.
 				static_assert( std::is_same_v<T, void>, "Util::Collection::get(): unrecognized type." );
 				return nullptr;
 			}

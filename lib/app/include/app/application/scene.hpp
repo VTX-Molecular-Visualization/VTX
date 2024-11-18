@@ -141,6 +141,7 @@ namespace VTX::App::Application
 		void _createDefaultPath();
 		void _createDefaultColorLayout();
 		void _createDefaultRenderSettings();
+		void _createDefaultRepresentation();
 
 	  private:
 		Component::Render::Camera *		   _camera		= nullptr;

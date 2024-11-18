@@ -1,8 +1,9 @@
 #include "renderer/renderer.hpp"
-#include "util/math.hpp"
-#include "util/math/aabb.hpp"
-#include "util/math/grid.hpp"
-#include "util/math/range.hpp"
+#include <util/math.hpp>
+#include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
+#include <util/math/range.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Renderer
 {
@@ -14,51 +15,7 @@ namespace VTX::Renderer
 		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
 
 		// Passes.
-		Pass * const geo	   = _renderGraph->addPass( descPassGeometric );
-		Pass * const depth	   = _renderGraph->addPass( descPassDepth );
-		Pass * const ssao	   = _renderGraph->addPass( descPassSSAO );
-		Pass * const blurX	   = _renderGraph->addPass( descPassBlur );
-		Pass * const blurY	   = _renderGraph->addPass( descPassBlur );
-		Pass * const shading   = _renderGraph->addPass( descPassShading );
-		Pass * const outline   = _renderGraph->addPass( descPassOutline );
-		Pass * const selection = _renderGraph->addPass( descPassSelection );
-		Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-
-		// Setup values.
-		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-		geo->programs[ 0 ].draw.value().needRenderFunc
-			= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
-		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-		geo->programs[ 1 ].draw.value().needRenderFunc
-			= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
-		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-		geo->programs[ 2 ].draw.value().needRenderFunc
-			= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
-		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-		geo->programs[ 3 ].draw.value().needRenderFunc
-			= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
-		blurX->name								 = "BlurX";
-		blurY->name								 = "BlurY";
-		blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
-
-		// Links.
-		_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		_refreshGraph();
 
 		// Shared uniforms.
 		_renderGraph->addUniforms(
@@ -97,12 +54,164 @@ namespace VTX::Renderer
 									 true } );
 	}
 
+	// TODO: not the best way to do it.
+	void Renderer::_refreshGraph()
+	{
+		using namespace Proxy;
+
+		static Pass * geo;
+		static Pass * depth;
+		static Pass * ssao;
+		static Pass * blurX;
+		static Pass * blurY;
+		static Pass * shading;
+		static Pass * outline;
+		static Pass * selection;
+		static Pass * fxaa;
+
+		// Geometric.
+		if ( not geo )
+		{
+			geo									   = _renderGraph->addPass( descPassGeometric );
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+		}
+
+		// Depth.
+		if ( not depth )
+		{
+			depth = _renderGraph->addPass( descPassDepth );
+
+			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+		}
+
+		// SSAO.
+		if ( not ssao )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+			{
+				ssao  = _renderGraph->addPass( descPassSSAO );
+				blurX = _renderGraph->addPass( descPassBlur );
+				blurY = _renderGraph->addPass( descPassBlur );
+
+				blurX->name								 = "BlurX";
+				blurY->name								 = "BlurY";
+				blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+
+				_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+		{
+			_renderGraph->removePass( ssao );
+			_renderGraph->removePass( blurX );
+			_renderGraph->removePass( blurY );
+			ssao  = nullptr;
+			blurX = nullptr;
+			blurY = nullptr;
+		}
+
+		// Shading.
+		if ( not shading )
+		{
+			shading = _renderGraph->addPass( descPassShading );
+
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+		}
+		if ( ssao )
+		{
+			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		}
+
+		// Outline.
+		if ( not outline )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+			{
+				outline = _renderGraph->addPass( descPassOutline );
+
+				_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+		{
+			_renderGraph->removePass( outline );
+			outline = nullptr;
+		}
+
+		// Selection.
+		if ( not selection )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+			{
+				selection = _renderGraph->addPass( descPassSelection );
+
+				_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+		{
+			_renderGraph->removePass( selection );
+			selection = nullptr;
+		}
+		if ( selection )
+		{
+			if ( outline )
+			{
+				_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+			else
+			{
+				_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+
+		// FXAA.
+		if ( not fxaa )
+		{
+			fxaa = _renderGraph->addPass( desPassFXAA );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		}
+		if ( selection )
+		{
+			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else if ( outline )
+		{
+			_renderGraph->addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else
+		{
+			_renderGraph->addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+	}
+
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
+		bool isFirstBuild = not hasContext();
+
 		// Build renderer graph.
 		VTX_DEBUG(
 			"Renderer graph setup total time: {}",
-			Util::CHRONO_CPU(
+			Util::String::durationToStr( Util::CHRONO_CPU(
 				[ & ]()
 				{
 					_context = _renderGraph->setup(
@@ -115,10 +224,21 @@ namespace VTX::Renderer
 						p_output
 					);
 				}
-			)
+			) )
 		);
 
-		onReady();
+		std::string str = "Passes: ";
+		for ( const Pass * const pass : _renderGraph->getRenderQueue() )
+		{
+			str += pass->name + " -> ";
+		}
+		str += "Output";
+		VTX_DEBUG( "{}", str );
+
+		if ( isFirstBuild )
+		{
+			onReady();
+		}
 	}
 
 	void Renderer::clean()
@@ -333,21 +453,111 @@ namespace VTX::Renderer
 
 	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
 	{
+		using namespace Proxy;
 		assert( hasContext() );
 
 		_proxyRepresentations.insert(
 			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
 		);
 
-		std::vector<_StructUBORepresentation> representations;
-		for ( const Proxy::Representation * representation : p_proxies )
+		// Apply some logic.
+		static auto applyUniformLogicFun = [ this ]( Proxy::Representation * const p_representation )
 		{
-			representations.emplace_back( _StructUBORepresentation { representation->radiusSphereFixed,
-																	 representation->radiusSphereAdd,
-																	 representation->radiusFixed,
-																	 representation->radiusCylinder,
-																	 representation->cylinderColorBlendingMode,
-																	 representation->ribbonColorBlendingMode } );
+			bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+			bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+			bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+
+			showAtoms	= hasSphere;
+			showBonds	= hasCylinder;
+			showRibbons = hasRibbon;
+
+			float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
+
+			// Spheres asked.
+			if ( hasSphere )
+			{
+				const bool isSphereRadiusFixed
+					= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
+				float sphereRadiusFixed
+					= p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
+				float sphereRadiusAdd = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
+
+				// Scale sphere radius to cylinder radius.
+				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+				{
+					sphereRadiusFixed = cylinderRadius;
+				}
+
+				setValue( sphereRadiusFixed, "Sphere radius fixed", 0 );
+				setValue( sphereRadiusAdd, "Sphere radius add", 0 );
+				setValue( uint( isSphereRadiusFixed ), "Is sphere radius fixed", 0 );
+
+				if ( not isSphereRadiusFixed )
+				{
+					showBonds	= false;
+					showRibbons = false;
+				}
+			}
+			// No spheres asked.
+			else
+			{
+				// Cylinders asked, force spheres at the same radius.
+				if ( hasCylinder )
+				{
+					setValue( uint( true ), "Is sphere radius fixed", 0 );
+					setValue( cylinderRadius, "Sphere radius fixed", 0 );
+				}
+				// Hide.
+				else
+				{
+					showAtoms = false;
+				}
+			}
+
+			if ( hasCylinder )
+			{
+				setValue( cylinderRadius, "Cylinder radius", 0 );
+			}
+		};
+
+		std::vector<_StructUBORepresentation> representations;
+		for ( Proxy::Representation * const representation : _proxyRepresentations )
+		{
+			representations.emplace_back( _StructUBORepresentation {
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ),
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ),
+				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ),
+				representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) } );
+
+			// showAtoms	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+			showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+			showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+
+			applyUniformLogicFun( representation );
+
+			// Callbacks.
+			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
+				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
+				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
+				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
+				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+
+			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
+				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
+				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
+				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Cylinder color blending", 0 ); };
+
+			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
+				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
+				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Ribbon color blending", 0 ); };
 		}
 
 		_context->setData( representations, "Representations" );
@@ -429,61 +639,148 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
+		using namespace Proxy;
+
 		assert( hasContext() );
 
 		_proxyRenderSettings = &p_proxy;
 
-		setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-		setValue( p_proxy.blurSize, "BlurXBlurSize" );
-		setValue( p_proxy.blurSize, "BlurYBlurSize" );
-		setValue( p_proxy.colorBackground, "ShadingShadingBackground color" );
-		setValue( p_proxy.colorLight, "ShadingShadingLight color" );
-		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
-		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
-		setValue( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
-		setValue( p_proxy.shininess, "ShadingShadingShininess" );
-		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
-		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
-		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
-		setValue( p_proxy.fogDensity, "ShadingShadingFog density" );
-		setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
-		setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
-		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
+		_refreshGraph();
+		build();
 
-		p_proxy.onSSAOIntensity +=
-			[ this, &p_proxy ]( float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
-		p_proxy.onBlurSize += [ this, &p_proxy ]( float p_size )
+		// Default values.
+		// Shading.
+		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::SHADING_MODE ), "ShadingShadingMode" );
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_LIGHT ), "ShadingShadingLight color" );
+		setValue(
+			p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_BACKGROUND ), "ShadingShadingBackground color"
+		);
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SPECULAR_FACTOR ), "ShadingShadingSpecular factor" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SHININESS ), "ShadingShadingShininess" );
+		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::TOON_STEPS ), "ShadingShadingToon steps" );
+		// SSAO.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+		{
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SSAO_INTENSITY ), "SSAOSSAOIntensity" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurXBlurSize" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurYBlurSize" );
+		}
+		// Outline.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+		{
+			setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_OUTLINE ), "OutlineOutlineColor" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::OUTLINE_SENSITIVITY ), "OutlineOutlineSensitivity" );
+			setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::OUTLINE_THICKNESS ), "OutlineOutlineThickness" );
+		}
+		// Fog.
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_FOG ), "ShadingShadingFog color" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_NEAR ), "ShadingShadingFog near" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_FAR ), "ShadingShadingFog far" );
+		setValue(
+			p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_FOG ) ? p_proxy.get<float>( E_RENDER_SETTINGS::FOG_DENSITY )
+															   : 0.f,
+			"ShadingShadingFog density"
+		);
+		// Selection.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+		{
+			setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_SELECTION ), "SelectionSelectionColor" );
+		}
+
+		// Callbacks.
+		// Shading.
+		p_proxy.onChange<E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
+			[ this ]( const uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
+
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingLight color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingBackground color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
+			[ this ]( const float p_factor ) { setValue( p_factor, "ShadingShadingSpecular factor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SHININESS, float>() +=
+			[ this ]( const float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
+			[ this ]( const uint p_steps ) { setValue( p_steps, "ShadingShadingToon steps" ); };
+		// SSAO.
+		p_proxy.onChange<E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
+			[ this ]( const float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::BLUR_SIZE, float>() += [ this ]( const float p_size )
 		{
 			setValue( p_size, "BlurXBlurSize" );
 			setValue( p_size, "BlurYBlurSize" );
 		};
-		p_proxy.onColorBackground += [ this, &p_proxy ]( const Util::Color::Rgba & p_color )
-		{ setValue( p_color, "ShadingShadingBackground color" ); };
-		p_proxy.onColorLight += [ this, &p_proxy ]( const Util::Color::Rgba & p_color )
-		{ setValue( p_color, "ShadingShadingLight color" ); };
-		p_proxy.onColorFog +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFog color" ); };
-		p_proxy.onShadingMode += [ this, &p_proxy ]( uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
-		p_proxy.onSpecularFactor +=
-			[ this, &p_proxy ]( float p_factor ) { setValue( p_factor, "ShadingShadingSpecular factor" ); };
-		p_proxy.onShininess +=
-			[ this, &p_proxy ]( float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
-		p_proxy.onToonSteps += [ this, &p_proxy ]( uint p_steps ) { setValue( p_steps, "ShadingShadingToon steps" ); };
-		p_proxy.onFogNear += [ this, &p_proxy ]( float p_near ) { setValue( p_near, "ShadingShadingFog near" ); };
-		p_proxy.onFogFar += [ this, &p_proxy ]( float p_far ) { setValue( p_far, "ShadingShadingFog far" ); };
-		p_proxy.onFogDensity +=
-			[ this, &p_proxy ]( float p_density ) { setValue( p_density, "ShadingShadingFog density" ); };
-		p_proxy.onColorOutline +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "OutlineOutlineColor" ); };
-		p_proxy.onOutlineSensitivity +=
-			[ this, &p_proxy ]( float p_sensitivity ) { setValue( p_sensitivity, "OutlineOutlineSensitivity" ); };
-		p_proxy.onOutlineThickness +=
-			[ this, &p_proxy ]( uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
-		p_proxy.onColorSelection +=
-			[ this, &p_proxy ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
+		// Outline.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "OutlineOutlineColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() +=
+			[ this ]( const float p_sensivity ) { setValue( p_sensivity, "OutlineOutlineSensitivity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
+			[ this ]( const uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
+		// Fog.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFog color" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_NEAR, float>() +=
+			[ this ]( const float p_near ) { setValue( p_near, "ShadingShadingFog near" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_FAR, float>() +=
+			[ this ]( const float p_far ) { setValue( p_far, "ShadingShadingFog far" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
+			[ this ]( const float p_density ) { setValue( p_density, "ShadingShadingFog density" ); };
+		// Selection.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
 
-		// TODO: disable/enable ssao, outline, etc.
+		// Active.
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_FOG, bool>() += [ this ]( const bool p_active )
+		{
+			setValue(
+				p_active ? _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::FOG_DENSITY ) : 0.f,
+				"ShadingShadingFog density"
+			);
+		};
+
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::SSAO_INTENSITY ), "SSAOSSAOIntensity" );
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurXBlurSize" );
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurYBlurSize" );
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue(
+					_proxyRenderSettings->get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_OUTLINE ),
+					"OutlineOutlineColor"
+				);
+				setValue(
+					_proxyRenderSettings->get<float>( E_RENDER_SETTINGS::OUTLINE_SENSITIVITY ),
+					"OutlineOutlineSensitivity"
+				);
+				setValue(
+					_proxyRenderSettings->get<uint>( E_RENDER_SETTINGS::OUTLINE_THICKNESS ), "OutlineOutlineThickness"
+				);
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue(
+					_proxyRenderSettings->get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_SELECTION ),
+					"SelectionSelectionColor"
+				);
+			}
+		};
 
 		setNeedUpdate( true );
 	}

@@ -6,26 +6,40 @@
 
 namespace VTX::Core::Struct
 {
-	// TODO: move default layout to... ?
+	// TODO: move to Renderer module?
 	struct RenderSettings
 	{
-		float			  ssaoIntensity;
-		float			  blurSize;
-		Util::Color::Rgba colorBackground;
-		Util::Color::Rgba colorLight;
-		Util::Color::Rgba colorFog;
+		// Shading.
 		uint			  shadingMode;
+		Util::Color::Rgba colorLight;
+		Util::Color::Rgba colorBackground;
 		float			  specularFactor;
 		float			  shininess;
 		uint			  toonSteps;
-		float			  fogNear;
-		float			  fogFar;
-		float			  fogDensity;
+
+		// SSAO.
+		bool  activeSSAO;
+		float ssaoIntensity;
+		float blurSize;
+
+		// Outline.
+		bool			  activeOutline;
 		Util::Color::Rgba colorOutline;
 		float			  outlineSensitivity;
 		uint			  outlineThickness;
+
+		// Fog.
+		bool			  activeFog;
+		Util::Color::Rgba colorFog;
+		float			  fogNear;
+		float			  fogFar;
+		float			  fogDensity;
+
+		// Selection.
+		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
 	};
+
 } // namespace VTX::Core::Struct
 
 #endif

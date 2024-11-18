@@ -10,8 +10,8 @@ namespace VTX::Util
 	class Chrono
 	{
 	  public:
-		using Task	= std::function<void()>;
-		using Timer = std::function<float( const Chrono::Task & )>;
+		using Task = std::function<void()>;
+		// using Timer = std::function<float( const Chrono::Task & )>;
 
 		static long long getTimestamp();
 
@@ -30,7 +30,7 @@ namespace VTX::Util
 		Clock::time_point _end;
 	};
 
-	inline const Chrono::Timer CHRONO_CPU = []( const Chrono::Task & p_task )
+	inline const float CHRONO_CPU( const Chrono::Task & p_task )
 	{
 		Chrono c;
 		c.start();

@@ -199,7 +199,7 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
-		bool showVoxels	 = false;
+		bool showVoxels	 = true;
 
 		bool forceUpdate  = true;
 		bool logDurations = false;
@@ -237,10 +237,10 @@ namespace VTX::Renderer
 		// Proxies.
 		std::vector<Proxy::System *>		 _proxiesSystems;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
-		Proxy::Camera *						 _proxyCamera;
-		Proxy::ColorLayout *				 _proxyColorLayout;
-		Proxy::RenderSettings *				 _proxyRenderSettings;
-		Proxy::Voxels *						 _proxyVoxels;
+		Proxy::Camera *						 _proxyCamera		  = nullptr;
+		Proxy::ColorLayout *				 _proxyColorLayout	  = nullptr;
+		Proxy::RenderSettings *				 _proxyRenderSettings = nullptr;
+		Proxy::Voxels *						 _proxyVoxels		  = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
 		void _removeProxySystem( Proxy::System & p_proxy );
@@ -261,6 +261,8 @@ namespace VTX::Renderer
 		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
 		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
+
+		void _refreshGraph();
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
