@@ -9,8 +9,10 @@ target_sources(vtx_app
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Tests.
+# I think OpenGL from {vtx_app->vtx_renderer} prevents us to link the target vtx_renderer_no_opengl normally 
+
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_app_test "${SOURCES_TEST};${SOURCES}")
+add_executable(vtx_app_test "${SOURCES_TEST}")
 target_include_directories(vtx_app_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
 configure_target(vtx_app_test)
@@ -36,8 +38,8 @@ else()
 endif()
 
 target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
-target_link_libraries(vtx_app_test PUBLIC EnTT::EnTT)
-#target_link_libraries(vtx_app_test PRIVATE vtx_app)
+#target_link_libraries(vtx_app_test PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
