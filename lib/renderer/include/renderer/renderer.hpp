@@ -281,6 +281,8 @@ namespace VTX::Renderer
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 
+		void _applyRepresentationLogic( Proxy::Representation * const );
+
 		enum E_ELEMENT_FLAGS
 		{
 			VISIBILITY = 0,
