@@ -23,22 +23,22 @@ namespace VTX::App::Core::Settings
 		template<typename T>
 		void referenceSetting( const std::string & p_key, const T & p_defaultValue = T() )
 		{
-			assert( not _representation.contains( p_key ) );
+			assert( not _settings.contains( p_key ) );
 
-			_representation[ p_key ] = std::make_unique<Setting<T>>( p_defaultValue, p_defaultValue );
+			_settings[ p_key ] = std::make_unique<Setting<T>>( p_defaultValue, p_defaultValue );
 		}
 
 		template<typename T>
 		const T & get( const std::string & p_key ) const
 		{
-			assert( _representation.contains( p_key ) );
+			assert( _settings.contains( p_key ) );
 			return _getConstSetting<T>( p_key ).get();
 		}
 
 		template<typename T>
 		void set( const std::string & p_key, const T & p_value )
 		{
-			assert( _representation.contains( p_key ) );
+			assert( _settings.contains( p_key ) );
 
 			const T & previousValue = _getSetting<T>( p_key ).get();
 
@@ -49,9 +49,9 @@ namespace VTX::App::Core::Settings
 			}
 		}
 
-		inline bool contains( const std::string & p_key ) const { return _representation.contains( p_key ); }
+		inline bool contains( const std::string & p_key ) const { return _settings.contains( p_key ); }
 
-		inline const SettingMap & getSettingMap() const { return _representation; }
+		inline const SettingMap & getSettingMap() const { return _settings; }
 
 		void reset();
 
@@ -62,17 +62,17 @@ namespace VTX::App::Core::Settings
 
 	  private:
 		// Mutable to allow bracket access in const functions (contains checked in asserts)
-		mutable SettingMap _representation = SettingMap();
+		mutable SettingMap _settings = SettingMap();
 
 		template<typename T>
 		Setting<T> & _getSetting( const std::string & p_key ) const
 		{
-			return dynamic_cast<Setting<T> &>( *_representation[ p_key ] );
+			return dynamic_cast<Setting<T> &>( *_settings[ p_key ] );
 		}
 		template<typename T>
 		const Setting<T> & _getConstSetting( const std::string & p_key ) const
 		{
-			return dynamic_cast<const Setting<T> &>( *_representation[ p_key ] );
+			return dynamic_cast<const Setting<T> &>( *_settings[ p_key ] );
 		}
 	};
 
