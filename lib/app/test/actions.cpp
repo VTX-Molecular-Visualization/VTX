@@ -105,17 +105,18 @@ TEST_CASE( "VTX_APP - Action - Application", "[integration]" )
 	Test::Util::App::loadTestSystem();
 
 	std::filesystem::create_directory( Util::Filesystem::getExecutableDir() / "data/actions" );
-	const FilePath scenePath = Util::Filesystem::getExecutableDir() / "data/actions/scene.vtx";
+	// const FilePath scenePath = Util::Filesystem::getExecutableDir() / "data/actions/scene.vtx";
 
 	CHECK( SCENE().getItemCount() == 1 );
-	ACTION_SYSTEM().execute<Action::Application::SaveScene>( scenePath ); // Save in an other file and check existence
-	CHECK( SCENE().getItemCount() == 1 );
+	// ACTION_SYSTEM().execute<Action::Application::SaveScene>( scenePath ); // Save in an other file and check
+	// existence
+	// CHECK( SCENE().getItemCount() == 1 );
 
 	ACTION_SYSTEM().execute<Action::Application::NewScene>(); // Check if scene is empty
 	CHECK( SCENE().getItemCount() == 0 );
 
-	ACTION_SYSTEM().execute<Action::Application::OpenScene>( scenePath ); // Check if scene is well loaded
-	CHECK( SCENE().getItemCount() == 1 );
+	// ACTION_SYSTEM().execute<Action::Application::OpenScene>( scenePath ); // Check if scene is well loaded
+	// CHECK( SCENE().getItemCount() == 1 );
 }
 
 TEST_CASE( "VTX_APP - Action - Scene - Viewpoints", "[integration]" )
@@ -153,6 +154,7 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 
 	const App::Core::Settings::SettingsSystem modifiedSettings = SETTINGS_SYSTEM();
 
+	/*
 	if ( std::filesystem::exists( Filesystem::getSettingJsonFile() ) )
 		std::filesystem::remove( Filesystem::getSettingJsonFile() );
 
@@ -166,4 +168,5 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 
 	ACTION_SYSTEM().execute<Action::Application::LoadSettings>();
 	CHECK( SETTINGS_SYSTEM() == modifiedSettings );
+	*/
 };

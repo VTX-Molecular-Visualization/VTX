@@ -451,6 +451,67 @@ namespace VTX::Renderer
 
 	void Renderer::removeProxyRepresentation( Proxy::Representation & p_proxy ) {}
 
+	void Renderer::_applyRepresentationLogic( Proxy::Representation * const p_representation )
+	{
+		using namespace Proxy;
+
+		bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+		bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+		bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+
+		showAtoms	= hasSphere;
+		showBonds	= hasCylinder;
+		showRibbons = hasRibbon;
+
+		float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
+
+		// Spheres asked.
+		if ( hasSphere )
+		{
+			const bool isSphereRadiusFixed
+				= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
+			float sphereRadiusFixed = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
+			float sphereRadiusAdd	= p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
+
+			// Scale sphere radius to cylinder radius.
+			if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+			{
+				sphereRadiusFixed = cylinderRadius;
+			}
+
+			setValue( sphereRadiusFixed, "Sphere radius fixed", 0 );
+			setValue( sphereRadiusAdd, "Sphere radius add", 0 );
+			setValue( uint( isSphereRadiusFixed ), "Is sphere radius fixed", 0 );
+
+			if ( not isSphereRadiusFixed )
+			{
+				showBonds	= false;
+				showRibbons = false;
+			}
+		}
+		// No spheres asked.
+		else
+		{
+			// Cylinders asked, force spheres at the same radius.
+			if ( hasCylinder )
+			{
+				showAtoms = true;
+				setValue( uint( true ), "Is sphere radius fixed", 0 );
+				setValue( cylinderRadius, "Sphere radius fixed", 0 );
+			}
+			// Hide.
+			else
+			{
+				showAtoms = false;
+			}
+		}
+
+		if ( hasCylinder )
+		{
+			setValue( cylinderRadius, "Cylinder radius", 0 );
+		}
+	}
+
 	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
 	{
 		using namespace Proxy;
@@ -459,66 +520,6 @@ namespace VTX::Renderer
 		_proxyRepresentations.insert(
 			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
 		);
-
-		// Apply some logic.
-		static auto applyUniformLogicFun = [ this ]( Proxy::Representation * const p_representation )
-		{
-			bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
-			bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
-			bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
-
-			showAtoms	= hasSphere;
-			showBonds	= hasCylinder;
-			showRibbons = hasRibbon;
-
-			float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
-
-			// Spheres asked.
-			if ( hasSphere )
-			{
-				const bool isSphereRadiusFixed
-					= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
-				float sphereRadiusFixed
-					= p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
-				float sphereRadiusAdd = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
-
-				// Scale sphere radius to cylinder radius.
-				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-				{
-					sphereRadiusFixed = cylinderRadius;
-				}
-
-				setValue( sphereRadiusFixed, "Sphere radius fixed", 0 );
-				setValue( sphereRadiusAdd, "Sphere radius add", 0 );
-				setValue( uint( isSphereRadiusFixed ), "Is sphere radius fixed", 0 );
-
-				if ( not isSphereRadiusFixed )
-				{
-					showBonds	= false;
-					showRibbons = false;
-				}
-			}
-			// No spheres asked.
-			else
-			{
-				// Cylinders asked, force spheres at the same radius.
-				if ( hasCylinder )
-				{
-					setValue( uint( true ), "Is sphere radius fixed", 0 );
-					setValue( cylinderRadius, "Sphere radius fixed", 0 );
-				}
-				// Hide.
-				else
-				{
-					showAtoms = false;
-				}
-			}
-
-			if ( hasCylinder )
-			{
-				setValue( cylinderRadius, "Cylinder radius", 0 );
-			}
-		};
 
 		std::vector<_StructUBORepresentation> representations;
 		for ( Proxy::Representation * const representation : _proxyRepresentations )
@@ -535,27 +536,27 @@ namespace VTX::Renderer
 			showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
 			showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
 
-			applyUniformLogicFun( representation );
+			_applyRepresentationLogic( representation );
 
 			// Callbacks.
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
-				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
-				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
-				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
-				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
 
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
-				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
-				[ representation ]( const float p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
 				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Cylinder color blending", 0 ); };
 
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
-				[ representation ]( const bool p_value ) { applyUniformLogicFun( representation ); };
+				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
 				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Ribbon color blending", 0 ); };
 		}
