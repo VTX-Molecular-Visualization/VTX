@@ -6,10 +6,10 @@
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/types.hpp>
-#include <core/struct/frame_data_simple_prodcons.hpp>
 
 namespace VTX::App::Core::Player
 {
+	using Frame = std::vector<Vec3f>;
 	class BasePlayer
 	{
 	  public:
@@ -50,7 +50,7 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
-		virtual void StackFrame( VTX::Core::Struct::Frame elem ) = 0; // FIXME
+		virtual void StackFrame( Frame elem ) = 0; // FIXME
 		inline float getTrajectoryTimer() const { return _trajectoryTimer; }
 		void				   setTrajectoryTimer( float p_timer ) { _trajectoryTimer = p_timer; }
 
@@ -58,7 +58,7 @@ namespace VTX::App::Core::Player
 		Util::Callback<>	   onPause;
 		Util::Callback<>	   onStop;
 		//Util::Callback<size_t> onFrameChange;
-		Util::Callback<const VTX::Core::Struct::Frame &> onFrameChange;
+		Util::Callback<const Frame &> onFrameChange;
 		Util::Callback<uint>   onFPSChange;
 
 	  private:
@@ -68,7 +68,7 @@ namespace VTX::App::Core::Player
 		// devjla
 		//bool  _isPlaying	   = false;
 		std::atomic<bool> _isPlaying	   = false;
-		uint  _fps			   = 2u;
+		uint  _fps			   = 1u;
 		float _trajectoryTimer = 0;
 	};
 } // namespace VTX::App::Core::Player

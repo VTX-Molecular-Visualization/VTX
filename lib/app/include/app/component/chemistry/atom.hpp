@@ -7,8 +7,7 @@
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
-//#include <core/struct/frame_data_simple.hpp>
-#include <core/struct/frame_data_simple_prodcons.hpp>
+#include <core/struct/frames_data_circbuff_prodcons.hpp>
 
 namespace VTX::App::Component::Chemistry
 {

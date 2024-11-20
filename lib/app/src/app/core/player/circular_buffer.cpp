@@ -28,7 +28,8 @@ namespace VTX::App::Core::Player
 			if (&(trajectory.getPlayer()) == this)
 			{
 				trajectory.getSystemPtr()->getTrajectory().Reset();
-				trajectory.getSystemPtr()->getTrajectory()._isOptimized = true;
+				trajectory.getSystemPtr()->getTrajectory().SetOptimized();
+				_tmpFrames.setMaxIndex( trajectory.getSystemPtr()->getTrajectory().GetFrameCount() );
 			}				
 		}
 
@@ -55,9 +56,10 @@ namespace VTX::App::Core::Player
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
 
 					////////////////////////////
-					/* while ( trajectory.getPlayer().isPlaying() )
-						moleculeReader.readFile( trajectory.getPath(), molecule.getMoleculeStruct() );
-						*/
+					/*
+					while ( trajectory.getPlayer().isPlaying() )
+						moleculeReader.readFile( trajectory.getPath(), molecule.getSystemStruct() );
+					*/
 					////////////////////////////
 
 					////////////////////////////
@@ -80,7 +82,7 @@ namespace VTX::App::Core::Player
 						Util::Chrono timeReadingFrames;
 						timeReadingFrames.start();
 						float elapsed = 0.f;
-						float hardFrameRate = 1.f;
+						float hardFrameRate = 1000.f;
 						for (;;)
 						{
 							if ( trajectory.getPlayer().isPlaying() )
@@ -100,13 +102,13 @@ namespace VTX::App::Core::Player
 											if (trajectory.getPlayer().isPlaying())
 											{
 												timeReadingFrames.stop();
-												VTX_INFO(
+												/* VTX_INFO(
 													"writethread tick {}s {}s {}s {}s",
 													timeReadingFrames.elapsedTime(),
 													elapsed,
 													timeReadingFrames.elapsedTime() + elapsed,
 													hardFrameRate
-												);
+												);*/
 												if ( timeReadingFrames.elapsedTime() + elapsed >= hardFrameRate )
 												{
 													molecule.getSystemStruct().trajectory.FillFrame( 42, frame );
@@ -154,7 +156,7 @@ namespace VTX::App::Core::Player
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
 					while ( trajectory.getPlayer().isPlaying() )
-						trajectory.getPlayer().StackFrame( molecule.getTrajectory()._framesCircBuff.ReadElement() );
+						trajectory.getPlayer().StackFrame( molecule.getTrajectory().ReadOptimizedElement() );
 				}
 			}
 			VTX_INFO( "readthreadfromlocalmolecule end" );
@@ -279,6 +281,7 @@ namespace VTX::App::Core::Player
 		*/
 		//////////////////////////
 
+		//////////////////////////
 		VTX::Core::Struct::Frame currentFrame;
 		if ( _tmpFrames.GetCopyFrame( currentFrame ) )
 			onFrameChange( currentFrame );

@@ -196,4 +196,40 @@ namespace VTX::App::Action::Trajectory
 
 		traj.setPlayer( playMode );
 	}
+
+	void DecreaseFrameRate::execute()
+	{
+		auto entity = getEntityFromUIDRange( _molecule );
+		if ( !ECS_REGISTRY().isValid( entity ) )
+			return;
+		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
+		if ( !traj.getPlayer().getFPS() )
+			traj.getPlayer().setFPS( 1 ); // FIXME raw fps in code = bad, find a way to define
+		else
+			traj.getPlayer().setFPS( traj.getPlayer().getFPS() / 2 );
+	}
+
+	void IncreaseFrameRate::execute()
+	{
+		auto entity = getEntityFromUIDRange( _molecule );
+		if ( !ECS_REGISTRY().isValid( entity ) )
+			return;
+		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
+		if ( !traj.getPlayer().getFPS() )
+			return; // nothing to do, already the fastest playing framerate
+		else
+			traj.getPlayer().setFPS( traj.getPlayer().getFPS() * 2 ); // FIXME at some point framerate = 0 and its the maximum speed
+	}
+
+	void SetTrajectoryCurrentFrame::execute()
+	{
+		auto entity = getEntityFromUIDRange( _molecule );
+		if ( !ECS_REGISTRY().isValid( entity ) )
+			return;
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
+		traj.getPlayer().setCurrent( _value );
+	}
 } // namespace VTX::App::Action::Trajectory

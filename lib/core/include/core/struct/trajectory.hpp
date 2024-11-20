@@ -2,9 +2,8 @@
 #define __VTX_CORE_STRUCT_TRAJECTORY__
 
 #include <util/types.hpp>
-//#include <core/struct/frame_data.hpp>
-//#include <core/struct/frame_data_simple.hpp>
-#include <core/struct/frame_data_simple_prodcons.hpp>
+#include <core/struct/frames_data_circbuff_prodcons.hpp>
+#include <core/struct/frames_data_vector.hpp>
 #include <vector>
 
 namespace VTX::Core::Struct
@@ -13,23 +12,22 @@ namespace VTX::Core::Struct
 	 * @brief Each index is correlated with other vector's that contains atom's data
 	 */
 	using Frame = std::vector<Vec3f>;
-	struct Trajectory
+	class Trajectory final
 	{
+	  public:
 		// FIXME really?
 		Trajectory() {}
 		Trajectory( Trajectory && movable )
 		{
-			_framesCircBuff	  = std::move( movable._framesCircBuff );
-			_currentFrameIndex = movable._currentFrameIndex;
-			_isOptimized	   = movable._isOptimized;
-			_framesVector	   = std::move( movable._framesVector );
+			_isOptimized	   = movable.IsOptimized();
+			_framesOptimized	  = std::move( movable._framesOptimized );
+			_framesPlain	   = std::move( movable._framesPlain );
 		}
 		Trajectory & operator=( Trajectory && movable )
 		{
-			_framesCircBuff	  = std::move( movable._framesCircBuff );
-			_currentFrameIndex = movable._currentFrameIndex;
-			_isOptimized	   = movable._isOptimized;
-			_framesVector	   = std::move( movable._framesVector );
+			_isOptimized	   = movable.IsOptimized();
+			_framesOptimized	  = std::move( movable._framesOptimized );
+			_framesPlain	   = std::move( movable._framesPlain );
 			return *this;
 		}
 		//Trajectory ( Trajectory & copy ) = delete;
@@ -46,19 +44,10 @@ namespace VTX::Core::Struct
 				Frame frame;
 				frame.resize( p_atomPositions.size() );
 				std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
-				_framesCircBuff.WriteElement( frame );
+				_framesOptimized.WriteElement( frame );
 			}
 			else
-			{
-				//Frame frame;
-				//frame.resize( p_atomPositions.size() );
-				//_framesVector.push_back( frame );
-				//std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
-				_framesVector[ p_systemFrameIndex ].resize( p_atomPositions.size() );
-				std::copy(
-					p_atomPositions.begin(), p_atomPositions.end(), _framesVector[ p_systemFrameIndex ].begin()
-				);
-			}
+				_framesPlain.FillFrame( p_systemFrameIndex, p_atomPositions );
 		}
 
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
@@ -74,7 +63,7 @@ namespace VTX::Core::Struct
 						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
 						frame.resize( atomPositionsDebug.size() );
 						std::copy( atomPositionsDebug.begin(), atomPositionsDebug.end(), frame.begin() );
-						_framesCircBuff.WriteElement( frame );
+						_framesOptimized.WriteElement( frame );
 					}
 				}
 			}
@@ -86,79 +75,82 @@ namespace VTX::Core::Struct
 					for ( float y = -100.f; y <= 100.f; y += 50.f )
 					{
 						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
-						_framesVector[ idx ].resize( atomPositionsDebug.size() );
-						std::copy(
-							atomPositionsDebug.begin(),
-							atomPositionsDebug.end(),
-							_framesVector[ idx ].begin()
-						);
+						_framesPlain.FillFrame( idx, atomPositionsDebug );
 						++idx;
 					}
 				}
 			}
 		}
 
-		// devjla
 		const Frame & GetCurrentFrame() const 
 		{
 			if ( _isOptimized )
-				return _framesCircBuff.GetCurrentFrame();
+				return _framesOptimized.GetCurrentFrame();
 			else
-				return _framesVector[ _currentFrameIndex ]; 
+				return _framesPlain.GetCurrentFrame();
 		}
 		Frame & GetCurrentFrame()
 		{
 			if ( _isOptimized )
-				return _framesCircBuff.GetCurrentFrame();
+				return _framesOptimized.GetCurrentFrame();
 			else
-				return _framesVector[ _currentFrameIndex ];
+				return _framesPlain.GetCurrentFrame();
 		}
-		/* const Frame & getCurrentFrame() const
-		{
-			Frame frame;
-			if ( frames.ReadElement( frame ) )
-				return frame;
-		} */
-		/* bool getCurrentFrame( Frame & requestedFrame )
-		{
-			if ( _framesCircBuff.ReadElement( requestedFrame ) )
-				return true;
-			else
-				return false;
-		}*/
 
-		/* Frame & getModelFrame( void )
-		{ 
-			return _framesCircBuff.GetModelFrame();
-		}*/
-
-		// FIXME this function is only available for non optimized trajectories
-		const Frame& GetFrameFromIndex(size_t p_index) const { return _framesVector[ p_index ]; }
-		Frame & GetFrameFromIndex( size_t p_index ) { return _framesVector[ p_index ]; }
-
-		//size_t getFrameCount() const { return frames.size(); }
-		size_t GetFrameCount() const
+		// not available for optimized trajectories
+		void SetCurrentFrameIndex( size_t p_currentFrameIdx )
 		{
 			if ( _isOptimized )
-				return _framesCircBuff.GetTotalElements();
+				return;
+			_framesPlain.SetCurrentFrameIndex( p_currentFrameIdx );
+		}
+		// not available for optimized trajectories
+		const size_t GetCurrentFrameIndex( void ) const
+		{
+			if ( _isOptimized )
+				return (size_t)(-1);
+			return _framesPlain.GetCurrentFrameIndex();
+		}
+
+		// not available for optimized trajectories
+		const Frame & GetFrameFromIndex( size_t p_index ) const {return _framesPlain.GetFrameFromIndex( p_index ); }
+		Frame &		  GetFrameFromIndex( size_t p_index ) { return _framesPlain.GetFrameFromIndex( p_index ); }
+
+		const size_t GetFrameCount() const
+		{
+			if ( _isOptimized )
+				return _framesOptimized.GetTotalElements();
 			else
-				return _framesVector.size();
+				return _framesPlain.GetTotalElements();
 		}
 		void   SetTotalElements( const size_t size )
 		{ 
 			if ( _isOptimized )
-				_framesCircBuff.SetTotalElements( size );
+				_framesOptimized.SetTotalElements( size );
 			else
-				_framesVector.resize( size );
+				_framesPlain.SetTotalElements( size );
 		}
 
-		void Reset( void ) { _framesCircBuff.Reset(); }
+		const bool IsOptimized( void ) const { return _isOptimized; }
+		void	   SetOptimized( void ) { _isOptimized = true; }
+		
+		// not available for plain trajectories (non-optimized)
+		Frame & ReadOptimizedElement( void ) { return _framesOptimized.ReadElement(); }
+		// not available for plain trajectories (non-optimized)
+		void Reset( void ) { _framesOptimized.Reset(); }
 
+		void EraseEmptyFrames( void )
+		{
+			if ( _isOptimized )
+				_framesOptimized.EraseEmptyFrames();
+			else
+				_framesPlain.EraseEmptyFrames();
+		}
+
+		private:
 		bool			   _isOptimized = false;
-		std::vector<Frame> _framesVector;
-		//FrameDataSimple frames;
-		FrameDataProdCons _framesCircBuff;
-		size_t			  _currentFrameIndex = 0;
+		FramesDataCircBuffProdCons _framesOptimized;
+		FramesDataVector		   _framesPlain;
 	};
 
 	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;

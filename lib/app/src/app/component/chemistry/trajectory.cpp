@@ -16,22 +16,15 @@ namespace VTX::App::Component::Chemistry
 		_referenceUpdateFunction();
 	}
 
-	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory()._currentFrameIndex; }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().GetCurrentFrameIndex(); }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex;
+		_systemPtr->getTrajectory().SetCurrentFrameIndex( p_frameIndex);
 	}
 
-	// devjla
-	// FIXME obviously wrong
-	// size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
 	size_t Trajectory::getFrameCount() const
 	{
-		//return _moleculePtr->getTrajectory().frames.GetTotalElements();
-		if ( _systemPtr->getTrajectory()._isOptimized )
-			return _systemPtr->getTrajectory()._framesCircBuff.GetTotalElements();
-		else
-			return _systemPtr->getTrajectory()._framesVector.size();
+		return _systemPtr->getTrajectory().GetFrameCount();
 	}
 
 	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )

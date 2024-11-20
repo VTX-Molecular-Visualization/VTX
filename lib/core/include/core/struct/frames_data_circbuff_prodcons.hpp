@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_STRUCT_FRAMEBUFFSIMPLE_PRODCONS__
-#define __VTX_CORE_STRUCT_FRAMEBUFFSIMPLE_PRODCONS__
+#ifndef __VTX_CORE_STRUCT_FRAMES_DATA_CIRCBUFFPRODCONS__
+#define __VTX_CORE_STRUCT_FRAMES_DATA_CIRCBUFFPRODCONS__
 
 #include "circular_buffer_prodcons.hpp"
 #include <util/types.hpp>
@@ -8,20 +8,20 @@ namespace VTX::Core::Struct
 {
 	using Frame = std::vector<Vec3f>;
 
-	class FrameDataProdCons : public ProdConsCircularBuffer<Frame>
+	class FramesDataCircBuffProdCons : public ProdConsCircularBuffer<Frame>
 	{
 	  public:
-		FrameDataProdCons() : _totalElements( 0 )
+		FramesDataCircBuffProdCons() : _totalElements( 0 )
 		{
 			SetBuffSize( 102 );
 		}
 		// FIXME really?
-		FrameDataProdCons( FrameDataProdCons && movable )
+		FramesDataCircBuffProdCons( FramesDataCircBuffProdCons && movable )
 		{
 			ProdConsCircularBuffer<Frame>::SetBuffSize( movable.GetBuffSize() );
 			_totalElements = movable._totalElements;
 		}
-		FrameDataProdCons & operator=( const FrameDataProdCons && movable )
+		FramesDataCircBuffProdCons & operator=( const FramesDataCircBuffProdCons && movable )
 		{
 			ProdConsCircularBuffer<Frame>::operator=( std::move(movable) );
 			_totalElements = movable._totalElements;
@@ -53,6 +53,9 @@ namespace VTX::Core::Struct
 		
 
 		void Reset( void ) { ProdConsCircularBuffer<Frame>::Reset(); }
+
+		// FIXME nothing to do here ?
+		void EraseEmptyFrames( void ) {}
 
 	  private:
 		size_t				 _totalElements; // TODO change to double if possible

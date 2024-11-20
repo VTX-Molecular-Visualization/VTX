@@ -27,7 +27,7 @@ namespace VTX::App::Component::Chemistry
 		void							setPlayer( App::Core::Player::BasePlayer * const p_player );
 
 		//Util::Callback<size_t> onFrameChange;
-		Util::Callback<const VTX::Core::Struct::Frame &> onFrameChange;
+		Util::Callback<const std::vector<Vec3f> &> onFrameChange;
 
 		const FilePath & getPath() const { return _path; }
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
-#define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
+#ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
+#define __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
 
 #include "app/application/system/ecs_system.hpp"
 //#include <functional>
@@ -16,10 +16,10 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class TrajectoryPlayer : public QWidget
+	class TrajectoryBasePlayer : public QWidget
 	{
 	  public:
-		TrajectoryPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
+		TrajectoryBasePlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
 			QWidget( p_parent ), _systemUID( p_systemUID )
 		{
 			setupLayout();
@@ -31,15 +31,15 @@ namespace VTX::UI::QT::Widget
 			connectCallbacks();
 		}
 
-		virtual ~TrajectoryPlayer() {}
-		
+		virtual ~TrajectoryBasePlayer() {}
+
+		const App::Core::UID::UIDRange & getSystemUID() const { return _systemUID; }
+
+		QSlider * getProgressElt( void ) { return _progressElt; }
 	  private:
 		void setupLayout()
 		{
-			_widget = new QWidget( this );
-			_widget->setContentsMargins( 0, 0, 0, 0 );
-
-			_layout = new QVBoxLayout( _widget );
+			_layout = new QVBoxLayout( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 
 			_playButtonsLayout = new QHBoxLayout();
@@ -51,8 +51,8 @@ namespace VTX::UI::QT::Widget
 			setupStop();
 			setupPlayPause();
 			setupProgress();
+			setupFrameRate();
 			setupFrameSelector();
-			setupTmpPlayerSelector();
 		}
 		void setupStop()
 		{
@@ -69,24 +69,17 @@ namespace VTX::UI::QT::Widget
 		void setupProgress()
 		{
 			_progressElt = new QSlider( Qt::Horizontal, this );
-			_progressElt->setTickInterval( 101 );
+			
 			_progressElt->setTickPosition( QSlider::TicksAbove );
-
-			// FIXME should be done when traj is loaded
-			//_progressElt->setTickInterval( (int)_molecule.getTrajectory().getFrameCount() );
-			auto & trajectory = App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Trajectory>(
-				*( App::ECS_REGISTRY().findComponents<VTX::App::Component::Chemistry::Trajectory>().begin() )
-			);
-			trajectory.getPlayer().onFrameChange +=
-				[ & ]( const VTX::Core::Struct::Frame p_frame )
-			{ VTX_INFO( "trajectory_player frame changed  = {}", trajectory.getSystemPtr()->getTrajectory()._currentFrameIndex ); };
+		}
+		void setupFrameRate()
+		{
+			_frameRateIncrElt = new QPushButton( this );
+			_frameRateIncrElt->setIcon( QIcon( ":/sprite/trajectory_last_frame_icon.png" ) );
+			_frameRateDecrElt = new QPushButton( this );
+			_frameRateDecrElt->setIcon( QIcon( ":/sprite/trajectory_first_frame_icon.png" ) );
 		}
 		void setupFrameSelector() {}
-
-		void setupTmpPlayerSelector()
-		{ 
-			_tmpPlayerSelector = new QPushButton( this );
-		}
 
 		void addPlayerToLayout()
 		{
@@ -96,10 +89,10 @@ namespace VTX::UI::QT::Widget
 			_playButtonsLayout->addWidget( _playElt );
 			_playButtonsLayout->addWidget( _pauseElt );
 			_playButtonsLayout->addWidget( _stopElt );
+			_playButtonsLayout->addWidget( _frameRateDecrElt );
+			_playButtonsLayout->addWidget( _frameRateIncrElt );
 
 			_progressLayout->addWidget( _progressElt );
-
-			_progressLayout->addWidget( _tmpPlayerSelector );
 		}
 
 		void connectCallbacks()
@@ -233,11 +226,38 @@ namespace VTX::UI::QT::Widget
 			);
 
 			connect(
-				_tmpPlayerSelector,
+				_frameRateDecrElt,
 				&QPushButton::clicked,
 				this,
 				[ & ]()
-				{ App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetCircularPlayer>( _systemUID );
+				{
+					if ( !is_playing )
+						return;
+
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::DecreaseFrameRate>( _systemUID );
+				}
+			);
+
+			connect(
+				_frameRateIncrElt,
+				&QPushButton::clicked,
+				this,
+				[ & ]()
+				{
+					if ( !is_playing )
+						return;
+
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::IncreaseFrameRate>( _systemUID );
+				}
+			);
+
+			connect(
+				_progressElt,
+				&QSlider::valueChanged,
+				this,
+				[ & ]( const int p_value )
+				{
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>( _systemUID, p_value );
 				}
 			);
 		}
@@ -245,7 +265,6 @@ namespace VTX::UI::QT::Widget
 		std::atomic_bool is_playing; // FIXME dev purpose to stop threads needs improvement
 
 		const App::Core::UID::UIDRange & _systemUID;
-		QWidget		  *_widget;
 		QVBoxLayout	  *_layout;
 		QHBoxLayout *_playButtonsLayout;
 		QHBoxLayout *_progressLayout;
@@ -254,9 +273,10 @@ namespace VTX::UI::QT::Widget
 		//FIXME
 		QToolButton *  _playElt;
 		QPushButton *  _pauseElt;
+		QPushButton *  _frameRateIncrElt;
+		QPushButton *  _frameRateDecrElt;
 		QSlider	  *_progressElt;
 		QLineEdit	  *_frameSelectorElt;
-		QPushButton *  _tmpPlayerSelector;
 	};
 
 } // namespace VTX::UI::QT::Widget

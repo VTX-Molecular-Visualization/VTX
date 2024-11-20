@@ -8,7 +8,9 @@ namespace VTX::App::Component::Representation
 	{
 		// TODO: move default layout.
 		_representation.hasSphere		  = true;
-		_representation.radiusSphereFixed = 0.5f;
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		//_representation.radiusSphereFixed = 0.5f;
+		_representation.radiusSphereFixed = 4.f;
 		_representation.radiusSphereAdd	  = 0.f;
 		_representation.radiusFixed		  = true;
 

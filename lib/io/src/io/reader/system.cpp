@@ -323,20 +323,7 @@ namespace VTX::IO::Reader
 			VTX::Core::Struct::System &	system   = *( pairSystemFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
 
-			if ( trajectory._isOptimized )
-				trajectory._framesCircBuff.EraseEmptyFrames();
-			else
-			{
-				if ( trajectory._framesVector.back().size() == 0 )
-				{
-					do
-					{
-						trajectory._framesVector.pop_back();
-					} while ( trajectory._framesVector.back().size() == 0 );
-
-					trajectory._framesVector.shrink_to_fit();
-				}
-			}
+			trajectory.EraseEmptyFrames();
 		}
 	}
 

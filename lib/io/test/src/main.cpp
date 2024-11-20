@@ -93,7 +93,7 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader	   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
@@ -103,14 +103,14 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 	{
 		outFile << element[0] << element[1] << element[2];
 	} */
-	for ( auto & element : molecule.trajectory._framesCircBuff.GetCurrentFrame() )
+	for ( auto & element : molecule.trajectory.GetCurrentFrame() )
 	{
 		outFile << element[ 0 ] << element[ 1 ] << element[ 2 ];
 	}
 	outFile.close();
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 10001 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 10001 );
+	CHECK( molecule.trajectory.GetFrameCount() == 10001 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
@@ -125,14 +125,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 10001 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 10001 );
+	CHECK( molecule.trajectory.GetFrameCount() == 10001 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
@@ -147,14 +147,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 101 );
+	CHECK( molecule.trajectory.GetFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
@@ -169,14 +169,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 101 );
+	CHECK( molecule.trajectory.GetFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
@@ -191,14 +191,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 101 );
+	CHECK( molecule.trajectory.GetFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
@@ -213,14 +213,14 @@ TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 1 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 1 );
+	CHECK( molecule.trajectory.GetFrameCount() == 1 );
 }
 
 TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
@@ -235,14 +235,14 @@ TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory._isOptimized	 = true;
+	molecule.trajectory.SetOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 1 );
-	CHECK( molecule.trajectory._framesCircBuff.GetTotalElements() == 1 );
+	CHECK( molecule.trajectory.GetFrameCount() == 1 );
 }
 
 TEST_CASE( "VTX_IO - circular buffer read write no overflow", "[integration]" )

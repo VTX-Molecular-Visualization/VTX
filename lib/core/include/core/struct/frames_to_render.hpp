@@ -48,6 +48,7 @@ namespace VTX::Core::Struct
 			if ( !ReadCopyElement( frame ) )
 				return false;
 			RemoveCopyElement(frame);
+			_testindex = (_testindex + 1) % _testMaxIndex;
 			return true;
 		}
 		void Flush(void)
@@ -55,11 +56,17 @@ namespace VTX::Core::Struct
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
 			while ( !_framesToRender.empty() )
 				_framesToRender.pop();
+			_testindex = 0;
 		}
+
+		void setMaxIndex( size_t p_maxIndex ) { _testMaxIndex = p_maxIndex; }
+		const size_t getindex( void ) const { return _testindex; }
 
 	  private:
 		std::queue<Frame> _framesToRender;
 		std::mutex access_frames_mtx;
+		size_t			  _testMaxIndex = 0;
+		size_t			  _testindex = 0;
 		
 		void RemoveCopyElement( Frame & elem )
 		{

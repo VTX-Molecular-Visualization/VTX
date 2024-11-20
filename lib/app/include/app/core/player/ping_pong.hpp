@@ -23,7 +23,7 @@ namespace VTX::App::Core::Player
 		bool isPlayingForward() const { return _forward; }
 		void setPlayingForward( const bool p_forward ) { _forward = p_forward; }
 
-		void StackFrame( VTX::Core::Struct::Frame elem ) override {}; // FIXME
+		void StackFrame( Frame elem ) override {}; // FIXME
 
 	  private:
 		bool _forward = true;

@@ -28,8 +28,8 @@ namespace VTX::App::Core::Player
 					VTX::App::Component::Render::ProxySystem & proxy
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
-					molecule.getTrajectory()._currentFrameIndex = _current;
-					onFrameChange( molecule.getTrajectory()._framesVector[ _current ] );
+					molecule.getTrajectory().SetCurrentFrameIndex( _current );
+					onFrameChange( molecule.getTrajectory().GetCurrentFrame() );
 				}
 			}
 		}
@@ -55,8 +55,8 @@ namespace VTX::App::Core::Player
 					VTX::App::Component::Render::ProxySystem & proxy
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
-					molecule.getTrajectory()._currentFrameIndex = p_frameIndex;
-					onFrameChange( molecule.getTrajectory()._framesVector[ p_frameIndex ] );
+					molecule.getTrajectory().SetCurrentFrameIndex(p_frameIndex);
+					onFrameChange( molecule.getTrajectory().GetCurrentFrame());
 				}
 			}
 		}

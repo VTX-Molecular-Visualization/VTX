@@ -33,6 +33,9 @@ namespace VTX::App::Core::Player
 		bool GetRefFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.ReadElement(frame); }
 		void RemoveRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.RemoveElement( elem ); }
 		bool GetCopyFrame( VTX::Core::Struct::Frame &frame ) { return _tmpFrames.GetCopyFrame(frame); }
+
+		// FIXME test to update progress slider in UI
+		const size_t getIndex( void ) const { return _tmpFrames.getindex(); }
 		
 	  private:
 		//devjla

@@ -132,7 +132,7 @@ namespace VTX::IO::Writer
 		{
 			// devjla
 			// FIXME to be reviviewed in case of optimized trajectory
-			if ( p_mol.trajectory._isOptimized )
+			if ( p_mol.trajectory.IsOptimized() )
 				return;
 			for ( size_t frameIdx = 0; frameIdx < p_mol.trajectory.GetFrameCount(); frameIdx++ )
 			{

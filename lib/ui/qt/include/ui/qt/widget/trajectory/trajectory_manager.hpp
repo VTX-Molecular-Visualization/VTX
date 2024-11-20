@@ -5,7 +5,9 @@
 #include <app/application/scene.hpp>
 #include "app/component/scene/uid_component.hpp"
 #include <ui/qt/base_widget.hpp>
-#include <ui/qt/widget/trajectory/trajectory_player.hpp>
+#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
+#include <ui/qt/widget/trajectory/trajectory_legacy_player.hpp>
+#include <ui/qt/widget/trajectory/trajectory_optimized_player.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -42,13 +44,30 @@ namespace VTX::UI::QT::Widget
 
 					if ( system.hasTrajectory() )
 					{
-						TrajectoryPlayer * player = new TrajectoryPlayer( this, system.getAtomUIDs() );
-						_layout->addWidget( player );
+						if (system.getTrajectory().IsOptimized())
+						{
+							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							_layout->addWidget( player );
+						}
+						else
+						{
+							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
+							_layout->addWidget( player );
+						}
 					}
 					system.onTrajectoryAdded += [ & ]()
 					{
-						TrajectoryPlayer * player = new TrajectoryPlayer( this, system.getAtomUIDs() );
-						_layout->addWidget( player );
+						if ( system.getTrajectory().IsOptimized() )
+						{
+							TrajectoryOptimizedPlayer * player
+								= new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							_layout->addWidget( player );
+						}
+						else
+						{
+							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
+							_layout->addWidget( player );
+						}
 					};
 				}
 			};
