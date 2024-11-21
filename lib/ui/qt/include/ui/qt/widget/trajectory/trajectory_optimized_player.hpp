@@ -49,6 +49,8 @@ namespace VTX::UI::QT::Widget
 				getProgressElt()->setValue(
 					(int)dynamic_cast<VTX::App::Core::Player::CircularBuffer*>( &trajectory.getPlayer() )->getIndex());
 			};
+
+			progressElt->setEnabled( false );
 		}
 
 	  private:

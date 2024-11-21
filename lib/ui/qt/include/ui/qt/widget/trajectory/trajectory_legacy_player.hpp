@@ -3,16 +3,22 @@
 
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 #include "app/application/system/ecs_system.hpp"
-//#include <functional>
 #include <ui/qt/base_widget.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/uid/uid.hpp>
 #include <app/action/trajectory.hpp>
-#include <QDockWidget>
-#include <QPushButton>
-#include <QToolButton>
-#include <QSlider>
-#include <QLineEdit>
+////////
+#include <app/core/player/players.hpp>
+#include <app/core/player/circular_buffer.hpp>
+#include <app/core/player/loop.hpp>
+#include <app/core/player/once.hpp>
+#include <app/core/player/ping_pong.hpp>
+#include <app/core/player/revert_loop.hpp>
+#include <app/core/player/revert_once.hpp>
+#include <app/core/player/stop.hpp> // UH?
+////////
+#include <util/singleton.hpp>
+#include <QComboBox>
 
 namespace VTX::UI::QT::Widget
 {
@@ -50,12 +56,21 @@ namespace VTX::UI::QT::Widget
 
 		void setupTmpPlayerSelector()
 		{ 
-			_tmpPlayerSelector = new QPushButton( this );
+			_playerSelector = new QComboBox( this );
+
+			_playerSelector->addItem( App::Core::Player::Loop::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Core::Player::Once::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Core::Player::PingPong::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Core::Player::RevertOnce::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Core::Player::RevertLoop::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Core::Player::Stop::DISPLAYED_NAME.c_str() );
+
+			//_playerSelector->setCurrentIndex( 0 ); // FIXME
 		}
 
 		void addAdditionalToLayout()
 		{
-			_additionalLayout->addWidget( _tmpPlayerSelector );
+			_additionalLayout->addWidget( _playerSelector );
 		}
 
 		void modifyProgressElt(void)
@@ -83,17 +98,17 @@ namespace VTX::UI::QT::Widget
 		void connectAdditionalCallbacks()
 		{
 			connect(
-				_tmpPlayerSelector,
-				&QPushButton::clicked,
+				_playerSelector,
+				&QComboBox::currentIndexChanged,
 				this,
 				[ & ]() { 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetCircularPlayer>( getSystemUID() );
+					//App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetCircularPlayer>( getSystemUID() );
 				}
 			);
 		}
 
 		QVBoxLayout	  *_additionalLayout;
-		QPushButton *  _tmpPlayerSelector;
+		QComboBox *_playerSelector;
 	};
 
 } // namespace VTX::UI::QT::Widget

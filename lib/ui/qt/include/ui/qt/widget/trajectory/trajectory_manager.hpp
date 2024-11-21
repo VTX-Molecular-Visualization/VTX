@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_MANAGER__
 
 #include <QBoxLayout>
+#include <QGroupBox>
 #include <app/application/scene.hpp>
 #include "app/component/scene/uid_component.hpp"
 #include <ui/qt/base_widget.hpp>
@@ -17,6 +18,8 @@ namespace VTX::UI::QT::Widget
 		TrajectoryManager( QWidget * p_parent ) :
 			QWidget( p_parent ), _parent( p_parent )
 		{
+			//setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Minimum );
+
 			setupLayout();
 
 			addPlayersRoutine();
@@ -46,8 +49,12 @@ namespace VTX::UI::QT::Widget
 					{
 						if (system.getTrajectory().IsOptimized())
 						{
+							auto					*playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
-							_layout->addWidget( player );
+							playerZone->setLayout( player->layout() );
+							_layout->addWidget( playerZone );
+							//TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							//_layout->addWidget( player );
 						}
 						else
 						{

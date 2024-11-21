@@ -6,6 +6,7 @@
 #include <io/reader/system.hpp>
 // devjla needs a refacto - code from molecule reader in IO
 #include <util/chrono.hpp>
+#include <thread>
 
 namespace VTX::App::Core::Player
 {
@@ -56,14 +57,16 @@ namespace VTX::App::Core::Player
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
 
 					////////////////////////////
-					/*
-					while ( trajectory.getPlayer().isPlaying() )
+					while (trajectory.getPlayer().isPlaying())
+					{
 						moleculeReader.readFile( trajectory.getPath(), molecule.getSystemStruct() );
-					*/
+						std::this_thread::sleep_for( std::chrono::milliseconds(20000) );
+					}
 					////////////////////////////
 
 					////////////////////////////
 					// devjla needs a refacto - code from molecule reader in IO
+					/*
 					std::unique_ptr<IO::Reader::Chemfiles> chemfilesReader
 						= IO::Reader::Chemfiles::readFile( trajectory.getPath() );
 					IO::Reader::Chemfiles &_chemfileStruct = *chemfilesReader;
@@ -102,13 +105,13 @@ namespace VTX::App::Core::Player
 											if (trajectory.getPlayer().isPlaying())
 											{
 												timeReadingFrames.stop();
-												/* VTX_INFO(
-													"writethread tick {}s {}s {}s {}s",
-													timeReadingFrames.elapsedTime(),
-													elapsed,
-													timeReadingFrames.elapsedTime() + elapsed,
-													hardFrameRate
-												);*/
+												//VTX_INFO(
+												//	"writethread tick {}s {}s {}s {}s",
+												//	timeReadingFrames.elapsedTime(),
+												//	elapsed,
+												//	timeReadingFrames.elapsedTime() + elapsed,
+												//	hardFrameRate
+												//);
 												if ( timeReadingFrames.elapsedTime() + elapsed >= hardFrameRate )
 												{
 													molecule.getSystemStruct().trajectory.FillFrame( 42, frame );
@@ -131,6 +134,7 @@ namespace VTX::App::Core::Player
 						}
 						timeReadingFrames.stop();
 					}
+					*/
 					////////////////////////////
 				}
 			}
@@ -260,7 +264,6 @@ namespace VTX::App::Core::Player
 		proxy._updateAtomsPositions( currentFrame );*/
 
 		//////////////////////////
-		/*
 		VTX::Core::Struct::Frame currentFrame;
 		if ( getFPS() == 0u )
 		{
@@ -278,13 +281,14 @@ namespace VTX::App::Core::Player
 					onFrameChange( currentFrame );
 			}
 		}
-		*/
 		//////////////////////////
 
 		//////////////////////////
+		/*
 		VTX::Core::Struct::Frame currentFrame;
 		if ( _tmpFrames.GetCopyFrame( currentFrame ) )
 			onFrameChange( currentFrame );
+		*/
 		//////////////////////////
 	}
 

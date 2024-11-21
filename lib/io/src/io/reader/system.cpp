@@ -42,7 +42,6 @@ namespace VTX::IO::Reader
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		// devjla
-		// p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
 		p_system.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
@@ -282,6 +281,13 @@ namespace VTX::IO::Reader
 #endif
 
 		size_t validFrameCount = 0;
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		//////////////////////////
+		p_targets[ 0 ].first->trajectory.FillFrameDEBUG();
+		//////////////////////////
+		
+		//////////////////////////
+		/*
 		for ( size_t frameIdx = 0; frameIdx < p_chemfileStruct.getFrameCount() - p_trajectoryFrameStart; ++frameIdx )
 		{
 			p_chemfileStruct.readNextFrame();
@@ -290,16 +296,14 @@ namespace VTX::IO::Reader
 			if ( atomPositions.size() <= 0 )
 				continue;
 
-			// devjla DEBUG TRAJECTORY FRAMES ORDER
-			/* for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemStartFrame : p_targets )
+			for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemStartFrame : p_targets )
 			{
 				VTX::Core::Struct::System & system   = *pairSystemStartFrame.first;
 				const size_t				frameIndex = pairSystemStartFrame.second + validFrameCount;
-				system.trajectory.fillFrame( frameIndex, atomPositions );
+				system.trajectory.FillFrame( frameIndex, atomPositions );
 
 				validFrameCount++;
-			}*/
-			p_targets[0].first->trajectory.FillFrameDEBUG();
+			}
 
 #ifdef _DEBUG
 			if ( frameIdx > 1 && frameIdx % 100 == 0 )
@@ -311,6 +315,8 @@ namespace VTX::IO::Reader
 			}
 #endif // DEBUG
 		}
+		*/
+		//////////////////////////
 		timeReadingFrames.stop();
 		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
