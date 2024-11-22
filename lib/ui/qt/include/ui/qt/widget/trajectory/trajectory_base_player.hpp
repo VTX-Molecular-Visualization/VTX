@@ -1,17 +1,14 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
 
-#include "app/application/system/ecs_system.hpp"
-//#include <functional>
 #include <ui/qt/base_widget.hpp>
-#include <app/component/chemistry/trajectory.hpp>
 #include <app/core/uid/uid.hpp>
 #include <app/action/trajectory.hpp>
 #include <QDockWidget>
 #include <QPushButton>
-#include <QToolButton>
 #include <QSlider>
 #include <QLineEdit>
+#include <QGridLayout>
 
 namespace VTX::UI::QT::Widget
 {
@@ -36,14 +33,23 @@ namespace VTX::UI::QT::Widget
 		const App::Core::UID::UIDRange & getSystemUID() const { return _systemUID; }
 
 		QSlider * getProgressElt( void ) { return _progressElt; }
+
+		QGridLayout * getLayout( void ) { return _layout; }
 	  private:
 		void setupLayout()
 		{
-			_layout = new QVBoxLayout( this );
+			_layout = new QGridLayout( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 
+			_layout->setRowStretch( 0, 1 );
+			_layout->setRowStretch( 1, 1 );
+			_layout->setRowStretch( 2, 1 );
+
 			_playButtonsLayout = new QHBoxLayout();
-			_progressLayout	 = new QHBoxLayout();
+			_progressLayout	 = new QGridLayout();
+
+			_progressLayout->setColumnStretch(0, 3);
+			_progressLayout->setColumnStretch( 1, 1 );
 		}
 
 		void setupPlayerElts()
@@ -61,10 +67,10 @@ namespace VTX::UI::QT::Widget
 		}
 		void setupPlayPause()
 		{
-			_playElt = new QToolButton( this );
-			_playElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
-			_pauseElt = new QPushButton( this );
-			_pauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
+			// FIXME default behavior in app is to NOT play trajectories when loaded
+			// the UI state should maybe get this state instead of having this also hardcoded here
+			_playPauseElt = new QPushButton( this );
+			_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 		}
 		void setupProgress()
 		{
@@ -79,31 +85,51 @@ namespace VTX::UI::QT::Widget
 			_frameRateDecrElt = new QPushButton( this );
 			_frameRateDecrElt->setIcon( QIcon( ":/sprite/trajectory_first_frame_icon.png" ) );
 		}
-		void setupFrameSelector() {}
+		void setupFrameSelector() 
+		{ 
+			_frameSelectorElt = new QLineEdit( this );
+		}
 
 		void addPlayerToLayout()
 		{
-			_layout->addItem( _playButtonsLayout );
-			_layout->addItem( _progressLayout );
+			// keep row idx 0 for player selector defined in children classes
+			_layout->addLayout( _progressLayout, 1, 0 );
+			_layout->addLayout( _playButtonsLayout, 2, 0 );
 
-			_playButtonsLayout->addWidget( _playElt );
-			_playButtonsLayout->addWidget( _pauseElt );
+			_playButtonsLayout->addWidget( _playPauseElt );
 			_playButtonsLayout->addWidget( _stopElt );
 			_playButtonsLayout->addWidget( _frameRateDecrElt );
 			_playButtonsLayout->addWidget( _frameRateIncrElt );
 
 			_progressLayout->addWidget( _progressElt );
+			_progressLayout->addWidget( _frameSelectorElt );
 		}
 
 		void connectCallbacks()
 		{
 			// connect callbacks
 			connect(
-				_playElt,
+				_playPauseElt,
 				&QPushButton::clicked,
 				this,
 				[ & ]()
 				{
+					if (is_playing)
+					{
+						is_playing = false;
+
+						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _systemUID );
+
+						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
+					}
+					else
+					{
+						is_playing = true;
+
+						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _systemUID );
+
+						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
+					}
 					/* auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>(
 						*( App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Molecule>().begin() )
 					);
@@ -113,12 +139,12 @@ namespace VTX::UI::QT::Widget
 					auto & trajectory = App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Trajectory>(
 						*( App::ECS_REGISTRY().findComponents<VTX::App::Component::Chemistry::Trajectory>().begin() )
 					);
-					trajectory.getPlayer().play();*/
+					trajectory.getPlayer().play();
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _systemUID );
 
 					is_playing								   = true;
-					/*/
+
 					VTX::Core::Struct::Molecule moleculeStruct = VTX::Core::Struct::Molecule();
 					molecule.setMoleculeStruct( moleculeStruct );
 
@@ -201,7 +227,7 @@ namespace VTX::UI::QT::Widget
 				}
 			);
 
-			connect(
+			/* connect(
 				_pauseElt,
 				&QPushButton::clicked,
 				this,
@@ -211,7 +237,7 @@ namespace VTX::UI::QT::Widget
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _systemUID );
 				}
-			);
+			);*/
 
 			connect(
 				_stopElt,
@@ -222,6 +248,8 @@ namespace VTX::UI::QT::Widget
 					is_playing = false;
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _systemUID );
+
+					_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 				}
 			);
 
@@ -265,14 +293,11 @@ namespace VTX::UI::QT::Widget
 		std::atomic_bool is_playing; // FIXME dev purpose to stop threads needs improvement
 
 		const App::Core::UID::UIDRange & _systemUID;
-		QVBoxLayout	  *_layout;
+		QGridLayout	  *_layout;
 		QHBoxLayout *_playButtonsLayout;
-		QHBoxLayout *_progressLayout;
+		QGridLayout *_progressLayout;
 		QPushButton *_stopElt;
-		//QPushButton *_playPauseElt;
-		//FIXME
-		QToolButton *  _playElt;
-		QPushButton *  _pauseElt;
+		QPushButton *_playPauseElt;
 		QPushButton *  _frameRateIncrElt;
 		QPushButton *  _frameRateDecrElt;
 		QSlider	  *_progressElt;

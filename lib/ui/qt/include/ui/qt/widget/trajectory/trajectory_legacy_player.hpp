@@ -8,8 +8,6 @@
 #include <app/core/uid/uid.hpp>
 #include <app/action/trajectory.hpp>
 ////////
-#include <app/core/player/players.hpp>
-#include <app/core/player/circular_buffer.hpp>
 #include <app/core/player/loop.hpp>
 #include <app/core/player/once.hpp>
 #include <app/core/player/ping_pong.hpp>
@@ -17,7 +15,6 @@
 #include <app/core/player/revert_once.hpp>
 #include <app/core/player/stop.hpp> // UH?
 ////////
-#include <util/singleton.hpp>
 #include <QComboBox>
 
 namespace VTX::UI::QT::Widget
@@ -29,8 +26,6 @@ namespace VTX::UI::QT::Widget
 		TrajectoryLegacyPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
 			TrajectoryBasePlayer( p_parent , p_systemUID )
 		{
-			setupAdditionalLayout();
-
 			setupAdditionalElts();
 
 			addAdditionalToLayout();
@@ -43,19 +38,9 @@ namespace VTX::UI::QT::Widget
 		virtual ~TrajectoryLegacyPlayer() {}
 		
 	  private:
-		void setupAdditionalLayout()
-		{
-			_additionalLayout = new QVBoxLayout( this );
-			_additionalLayout->setContentsMargins( 0, 0, 0, 0 );
-		}
-
+		// adds player selector combobox
 		void setupAdditionalElts()
 		{
-			setupTmpPlayerSelector();
-		}
-
-		void setupTmpPlayerSelector()
-		{ 
 			_playerSelector = new QComboBox( this );
 
 			_playerSelector->addItem( App::Core::Player::Loop::DISPLAYED_NAME.c_str() );
@@ -68,31 +53,40 @@ namespace VTX::UI::QT::Widget
 			//_playerSelector->setCurrentIndex( 0 ); // FIXME
 		}
 
+		// player selector combobox goes on top
 		void addAdditionalToLayout()
 		{
-			_additionalLayout->addWidget( _playerSelector );
+			getLayout()->addWidget( _playerSelector, 0, 0 );
 		}
 
 		void modifyProgressElt(void)
 		{
 			auto * progressElt = getProgressElt();
 
-			// FIXME refafcto this code to get the trajectory
-			auto & trajectory = App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Trajectory>(
-				*( App::ECS_REGISTRY().findComponents<VTX::App::Component::Chemistry::Trajectory>().begin() )
-			);
-
-			progressElt->setMinimum( 0 );
-			progressElt->setMaximum( (int)trajectory.getFrameCount() );
-
-			trajectory.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
+			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
+				  ++iter )
 			{
-				VTX_INFO(
-					"trajectory_player frame changed  = {}",
-					trajectory.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
-				);
-				getProgressElt()->setValue( (int)trajectory.getSystemPtr()->getTrajectory().GetCurrentFrameIndex() );
-			};
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+
+				if (component.contains(getSystemUID()))
+				{
+					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(App::ECS_REGISTRY().getEntity( component ));
+
+					progressElt->setMinimum( 0 );
+					progressElt->setMaximum( (int)traj.getFrameCount() );
+
+					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
+					{
+						VTX_INFO(
+							"trajectory_player frame changed  = {}",
+							traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
+						);
+						getProgressElt()->setValue( (int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex());
+					};
+				}
+			}
 		}
 
 		void connectAdditionalCallbacks()
@@ -107,7 +101,6 @@ namespace VTX::UI::QT::Widget
 			);
 		}
 
-		QVBoxLayout	  *_additionalLayout;
 		QComboBox *_playerSelector;
 	};
 

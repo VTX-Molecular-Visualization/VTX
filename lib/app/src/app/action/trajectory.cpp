@@ -11,7 +11,7 @@ namespace VTX::App::Action::Trajectory
 {
 	void SetPlayTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 
@@ -167,7 +167,7 @@ namespace VTX::App::Action::Trajectory
 
 	void SetPauseTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
@@ -177,7 +177,7 @@ namespace VTX::App::Action::Trajectory
 
 	void SetStopTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
@@ -187,7 +187,7 @@ namespace VTX::App::Action::Trajectory
 
 	void SetCircularPlayer::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
@@ -199,7 +199,7 @@ namespace VTX::App::Action::Trajectory
 
 	void DecreaseFrameRate::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
@@ -212,7 +212,7 @@ namespace VTX::App::Action::Trajectory
 
 	void IncreaseFrameRate::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
@@ -225,7 +225,7 @@ namespace VTX::App::Action::Trajectory
 
 	void SetTrajectoryCurrentFrame::execute()
 	{
-		auto entity = getEntityFromUIDRange( _molecule );
+		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );

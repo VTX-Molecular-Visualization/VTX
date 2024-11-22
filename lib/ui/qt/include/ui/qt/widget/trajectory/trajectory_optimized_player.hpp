@@ -23,37 +23,60 @@ namespace VTX::UI::QT::Widget
 		TrajectoryOptimizedPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
 			TrajectoryBasePlayer( p_parent , p_systemUID )
 		{
+			setupAdditionalElts();
+
+			addAdditionalToLayout();
+
 			modifyProgressElt();
 		}
 
 		virtual ~TrajectoryOptimizedPlayer() {}
 		
+	  private:
+		// adds circular buffer label
+		void setupAdditionalElts()
+		{
+			_circbuffElt = new QLabel( App::Core::Player::CircularBuffer::DISPLAYED_NAME.c_str() );
+		}
+
+		// circular buffer label goes on top
+		void addAdditionalToLayout() { getLayout()->addWidget( _circbuffElt, 0, 0 ); }
+
 		void modifyProgressElt( void )
 		{
 			auto * progressElt = getProgressElt();
 
-			// FIXME refafcto this code to get the trajectory
-			auto & trajectory = App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::Trajectory>(
-				*( App::ECS_REGISTRY().findComponents<VTX::App::Component::Chemistry::Trajectory>().begin() )
-			);
-
-			progressElt->setMinimum( 0 );
-			progressElt->setMaximum( (int)trajectory.getFrameCount() );
-
-			trajectory.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
+			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
+				  ++iter )
 			{
-				VTX_INFO(
-					"trajectory_player frame changed  = {}",
-					trajectory.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
-				);
-				getProgressElt()->setValue(
-					(int)dynamic_cast<VTX::App::Core::Player::CircularBuffer*>( &trajectory.getPlayer() )->getIndex());
-			};
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+
+				if ( component.contains( getSystemUID() ) )
+				{
+					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
+						App::ECS_REGISTRY().getEntity( component )
+					);
+
+					progressElt->setMinimum( 0 );
+					progressElt->setMaximum( (int)traj.getFrameCount() );
+
+					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
+					{
+						VTX_INFO(
+							"trajectory_player frame changed  = {}",
+							traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
+						);
+						getProgressElt()->setValue( (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex() );
+					};
+				}
+			}
 
 			progressElt->setEnabled( false );
 		}
 
-	  private:
+		QLabel * _circbuffElt;
 	};
 
 } // namespace VTX::UI::QT::Widget

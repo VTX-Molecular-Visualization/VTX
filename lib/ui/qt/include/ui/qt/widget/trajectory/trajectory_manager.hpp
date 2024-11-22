@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_MANAGER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_MANAGER__
 
-#include <QBoxLayout>
+#include <QVBoxLayout>
 #include <QGroupBox>
 #include <app/application/scene.hpp>
 #include "app/component/scene/uid_component.hpp"
@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Widget
 	  private:
 		void setupLayout()
 		{
-			_layout = new QBoxLayout( QBoxLayout::LeftToRight, this );
+			_layout = new QVBoxLayout( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 		}
 
@@ -52,28 +52,31 @@ namespace VTX::UI::QT::Widget
 							auto					*playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
 							playerZone->setLayout( player->layout() );
-							_layout->addWidget( playerZone );
-							//TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
-							//_layout->addWidget( player );
+							_layout->addWidget( playerZone );							
 						}
 						else
 						{
+							auto					*playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
-							_layout->addWidget( player );
+							playerZone->setLayout( player->layout() );
+							_layout->addWidget( playerZone );
 						}
 					}
 					system.onTrajectoryAdded += [ & ]()
 					{
 						if ( system.getTrajectory().IsOptimized() )
 						{
-							TrajectoryOptimizedPlayer * player
-								= new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
-							_layout->addWidget( player );
+							auto					*playerZone = new QGroupBox( system.getName().c_str() );
+							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							playerZone->setLayout( player->layout() );
+							_layout->addWidget( playerZone );
 						}
 						else
 						{
+							auto *					 playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
-							_layout->addWidget( player );
+							playerZone->setLayout( player->layout() );
+							_layout->addWidget( playerZone );
 						}
 					};
 				}
