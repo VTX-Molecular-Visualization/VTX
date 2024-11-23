@@ -9,6 +9,7 @@
 #include <QSlider>
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QIntValidator>
 
 namespace VTX::UI::QT::Widget
 {
@@ -33,6 +34,8 @@ namespace VTX::UI::QT::Widget
 		const App::Core::UID::UIDRange & getSystemUID() const { return _systemUID; }
 
 		QSlider * getProgressElt( void ) { return _progressElt; }
+
+		QLineEdit * getFrameSelectorElt( void ) { return _frameSelectorElt; }
 
 		QGridLayout * getLayout( void ) { return _layout; }
 	  private:
@@ -88,6 +91,8 @@ namespace VTX::UI::QT::Widget
 		void setupFrameSelector() 
 		{ 
 			_frameSelectorElt = new QLineEdit( this );
+			//_frameSelectorElt->setInputMask( "9" );
+			_frameSelectorElt->setValidator( new QIntValidator( 0, 2147483647, this ) );
 		}
 
 		void addPlayerToLayout()
@@ -286,6 +291,17 @@ namespace VTX::UI::QT::Widget
 				[ & ]( const int p_value )
 				{
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>( _systemUID, p_value );
+				}
+			);
+
+			connect(
+				_frameSelectorElt,
+				&QLineEdit::returnPressed,
+				this,
+				[ & ]() {
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
+						_systemUID, _frameSelectorElt->text().toInt()
+					);
 				}
 			);
 		}

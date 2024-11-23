@@ -194,5 +194,35 @@ namespace VTX::App::Action::Trajectory
 		const int						 _value;
 	};
 
+	class SetLegacyPlayerType final : public App::Core::Action::BaseAction
+	{
+	  public:
+		SetLegacyPlayerType( const App::Core::UID::UIDRange & p_system, const std::string p_name ) :
+			_system( p_system ), _name( p_name )
+		{
+		}
+		void execute() override;
+
+	  private:
+		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
+			const App::Component::Scene::UIDComponent & p_UIDComponent
+		) const
+		{
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
+				  ++iter )
+			{
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+
+				if ( component.contains( _system ) )
+					return App::ECS_REGISTRY().getEntity( component );
+			}
+
+			return VTX::App::Core::ECS::INVALID_ENTITY;
+		}
+		const App::Core::UID::UIDRange & _system;
+		const std::string				 _name;
+	};
+
 } // namespace VTX::App::Action::Trajectory
 #endif

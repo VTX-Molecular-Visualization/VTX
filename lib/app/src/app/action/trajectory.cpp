@@ -6,6 +6,14 @@
 #include <app/component/render/proxy_system.hpp>
 #include <app/core/player/players.hpp>
 #include <app/core/player/circular_buffer.hpp>
+////////
+#include <app/core/player/loop.hpp>
+#include <app/core/player/once.hpp>
+#include <app/core/player/ping_pong.hpp>
+#include <app/core/player/revert_loop.hpp>
+#include <app/core/player/revert_once.hpp>
+#include <app/core/player/stop.hpp> // UH?
+////////
 
 namespace VTX::App::Action::Trajectory
 {
@@ -231,5 +239,26 @@ namespace VTX::App::Action::Trajectory
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
 		traj.getPlayer().setCurrent( _value );
+	}
+
+	void SetLegacyPlayerType::execute()
+	{
+		auto entity = getEntityFromUIDRange( _system );
+		if ( !ECS_REGISTRY().isValid( entity ) )
+			return;
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
+		if( _name == App::Core::Player::Loop::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>() );
+		if( _name == App::Core::Player::Once::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Once>() );
+		if( _name == App::Core::Player::PingPong::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::PingPong>() );
+		if( _name == App::Core::Player::RevertOnce::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertOnce>() );
+		if( _name == App::Core::Player::RevertLoop::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertLoop>() );
+		if( _name == App::Core::Player::Stop::DISPLAYED_NAME )
+			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Stop>() );
 	}
 } // namespace VTX::App::Action::Trajectory

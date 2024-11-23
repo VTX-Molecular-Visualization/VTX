@@ -62,13 +62,16 @@ namespace VTX::UI::QT::Widget
 					progressElt->setMinimum( 0 );
 					progressElt->setMaximum( (int)traj.getFrameCount() );
 
+					// update both slider and lineedit zone with current frame
 					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
 					{
 						VTX_INFO(
 							"trajectory_player frame changed  = {}",
 							traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
 						);
-						getProgressElt()->setValue( (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex() );
+						int currentFrameIdx = (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
+						getProgressElt()->setValue( currentFrameIdx );
+						getFrameSelectorElt()->setText( QLocale().toString(currentFrameIdx) );
 					};
 				}
 			}
