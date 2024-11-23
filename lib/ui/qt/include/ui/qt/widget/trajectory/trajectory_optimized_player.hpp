@@ -37,6 +37,7 @@ namespace VTX::UI::QT::Widget
 		void setupAdditionalElts()
 		{
 			_circbuffElt = new QLabel( App::Core::Player::CircularBuffer::DISPLAYED_NAME.c_str() );
+			_circbuffElt->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Maximum );
 		}
 
 		// circular buffer label goes on top

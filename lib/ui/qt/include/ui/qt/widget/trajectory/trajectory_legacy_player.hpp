@@ -42,6 +42,7 @@ namespace VTX::UI::QT::Widget
 		void setupAdditionalElts()
 		{
 			_playerSelector = new QComboBox( this );
+			_playerSelector->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 
 			_playerSelector->addItem( App::Core::Player::Loop::DISPLAYED_NAME.c_str() );
 			_playerSelector->addItem( App::Core::Player::Once::DISPLAYED_NAME.c_str() );

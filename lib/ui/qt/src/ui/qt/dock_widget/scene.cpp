@@ -14,6 +14,16 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
+		// trajectories
+		auto * trajManager = new Widget::TrajectoryManager( this );
+		_layout->addWidget( trajManager );
+		
+		// add an horizontal line as separator
+		auto * lineSeparator = new QFrame( this );
+		lineSeparator->setFrameShape( QFrame::HLine );
+		lineSeparator->setFrameShadow( QFrame::Plain );
+		_layout->addWidget( lineSeparator );
+
 		// Search bar.
 		/*
 		auto * searchBar = new QLineEdit( _root );

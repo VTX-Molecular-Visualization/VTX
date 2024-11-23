@@ -10,6 +10,7 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QIntValidator>
+#include <QBoxLayout>
 
 namespace VTX::UI::QT::Widget
 {
@@ -44,6 +45,8 @@ namespace VTX::UI::QT::Widget
 			_layout = new QGridLayout( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 
+			_layout->setVerticalSpacing( 0 );
+
 			_layout->setRowStretch( 0, 1 );
 			_layout->setRowStretch( 1, 1 );
 			_layout->setRowStretch( 2, 1 );
@@ -53,6 +56,8 @@ namespace VTX::UI::QT::Widget
 
 			_progressLayout->setColumnStretch(0, 3);
 			_progressLayout->setColumnStretch( 1, 1 );
+
+			_layout->setSizeConstraint( QLayout::SetMaximumSize );
 		}
 
 		void setupPlayerElts()

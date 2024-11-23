@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Widget
 		TrajectoryManager( QWidget * p_parent ) :
 			QWidget( p_parent ), _parent( p_parent )
 		{
-			//setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Minimum );
+			setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Maximum );
 
 			setupLayout();
 
