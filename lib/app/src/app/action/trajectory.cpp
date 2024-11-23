@@ -252,12 +252,21 @@ namespace VTX::App::Action::Trajectory
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>() );
 		if( _name == App::Core::Player::Once::DISPLAYED_NAME )
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Once>() );
-		if( _name == App::Core::Player::PingPong::DISPLAYED_NAME )
+		if (_name == App::Core::Player::PingPong::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::PingPong>() );
-		if( _name == App::Core::Player::RevertOnce::DISPLAYED_NAME )
+			traj.getPlayer().reset();
+		}
+		if (_name == App::Core::Player::RevertOnce::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertOnce>() );
-		if( _name == App::Core::Player::RevertLoop::DISPLAYED_NAME )
+			traj.getPlayer().reset();
+		}
+		if (_name == App::Core::Player::RevertLoop::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertLoop>() );
+			traj.getPlayer().reset();
+		}
 		if( _name == App::Core::Player::Stop::DISPLAYED_NAME )
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Stop>() );
 	}

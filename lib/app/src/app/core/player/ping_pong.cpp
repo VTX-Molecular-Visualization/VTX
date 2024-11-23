@@ -10,7 +10,7 @@ namespace VTX::App::Core::Player
 
 	void PingPong::nextFrame( const size_t p_count )
 	{
-		size_t newFrameIndex = getCurrent();
+		/* size_t newFrameIndex = getCurrent();
 
 		if ( _forward )
 		{
@@ -47,6 +47,13 @@ namespace VTX::App::Core::Player
 			}
 		}
 
-		setCurrent( newFrameIndex );
+		setCurrent( newFrameIndex );*/
+		if (p_count >= getCount())
+			_forward = false;
+
+		if ( _forward )
+			setCurrent( p_count );
+		else
+			setCurrent( getCurrent() - 1 );
 	}
 } // namespace VTX::App::Core::Player

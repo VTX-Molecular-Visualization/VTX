@@ -46,6 +46,7 @@ namespace VTX::UI::QT::Widget
 		void modifyProgressElt( void )
 		{
 			auto * progressElt = getProgressElt();
+			auto * frameSelectorElt = getFrameSelectorElt();
 
 			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
@@ -60,8 +61,12 @@ namespace VTX::UI::QT::Widget
 						App::ECS_REGISTRY().getEntity( component )
 					);
 
+					// define min and max of slider from traj info
 					progressElt->setMinimum( 0 );
 					progressElt->setMaximum( (int)traj.getFrameCount() );
+
+					// display current frame index in selector lineedit
+					frameSelectorElt->setText( QLocale().toString((int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex()) );
 
 					// update both slider and lineedit zone with current frame
 					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
