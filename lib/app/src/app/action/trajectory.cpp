@@ -248,10 +248,19 @@ namespace VTX::App::Action::Trajectory
 			return;
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
-		if( _name == App::Core::Player::Loop::DISPLAYED_NAME )
+		bool previousState = traj.getPlayer().isPlaying();
+		traj.getPlayer().stop();
+
+		if (_name == App::Core::Player::Loop::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>() );
-		if( _name == App::Core::Player::Once::DISPLAYED_NAME )
+			traj.getPlayer().reset();
+		}
+		if (_name == App::Core::Player::Once::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Once>() );
+			traj.getPlayer().reset();
+		}
 		if (_name == App::Core::Player::PingPong::DISPLAYED_NAME)
 		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::PingPong>() );
@@ -267,7 +276,13 @@ namespace VTX::App::Action::Trajectory
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertLoop>() );
 			traj.getPlayer().reset();
 		}
-		if( _name == App::Core::Player::Stop::DISPLAYED_NAME )
+		if (_name == App::Core::Player::Stop::DISPLAYED_NAME)
+		{
 			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Stop>() );
+			traj.getPlayer().reset();
+		}
+
+		if ( previousState )
+			traj.getPlayer().play();
 	}
 } // namespace VTX::App::Action::Trajectory

@@ -39,6 +39,12 @@ namespace VTX::UI::QT::Widget
 		QLineEdit * getFrameSelectorElt( void ) { return _frameSelectorElt; }
 
 		QGridLayout * getLayout( void ) { return _layout; }
+
+		void setStopPlayer(void)
+		{
+			_isPlaying = false;
+			_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
+		}
 	  private:
 		void setupLayout()
 		{
@@ -124,21 +130,18 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					if (is_playing)
+					if (_isPlaying)
 					{
-						is_playing = false;
+						setStopPlayer();
 
 						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _systemUID );
-
-						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 					}
 					else
 					{
-						is_playing = true;
+						_isPlaying = true;
+						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
 
 						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _systemUID );
-
-						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
 					}
 					/* auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>(
 						*( App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Molecule>().begin() )
@@ -255,11 +258,9 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					is_playing = false;
+					setStopPlayer();
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _systemUID );
-
-					_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 				}
 			);
 
@@ -269,7 +270,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					if ( !is_playing )
+					if ( !_isPlaying )
 						return;
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::DecreaseFrameRate>( _systemUID );
@@ -282,7 +283,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					if ( !is_playing )
+					if ( !_isPlaying )
 						return;
 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::IncreaseFrameRate>( _systemUID );
@@ -311,7 +312,7 @@ namespace VTX::UI::QT::Widget
 			);
 		}
 
-		std::atomic_bool is_playing; // FIXME dev purpose to stop threads needs improvement
+		std::atomic_bool _isPlaying; // FIXME dev purpose to stop threads needs improvement
 
 		const App::Core::UID::UIDRange & _systemUID;
 		QGridLayout	  *_layout;

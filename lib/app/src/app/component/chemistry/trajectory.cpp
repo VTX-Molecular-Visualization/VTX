@@ -31,7 +31,9 @@ namespace VTX::App::Component::Chemistry
 	{
 		const bool resetPlayer = _player == nullptr;
 
-		onFrameChange.clear();
+		// FIXME devjla to be reviewed, clearing the callbacks was done systematically resulting in entity callback subscription lost
+		if (resetPlayer)
+			onFrameChange.clear();
 
 		_player = p_player;
 		_player->setCount( _systemPtr->getTrajectory().GetFrameCount() );

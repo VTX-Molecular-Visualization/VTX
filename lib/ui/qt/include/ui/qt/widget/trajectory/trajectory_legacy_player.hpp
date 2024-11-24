@@ -98,10 +98,12 @@ namespace VTX::UI::QT::Widget
 					progressElt->setMaximum( (int)traj.getFrameCount() - 1);
 
 					// set cursor at the current frame index
-					progressElt->setValue( (int)traj.getCurrentFrame() );
+					//progressElt->setValue( (int)traj.getCurrentFrame() );
+					progressElt->setValue( (int)traj.getPlayer().getCurrent() );
 
 					// display current frame index in selector lineedit
-					frameSelectorElt->setText( QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
+					//frameSelectorElt->setText( QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
+					frameSelectorElt->setText( QLocale().toString((int)traj.getPlayer().getCurrent()) );
 
 					// update both slider and lineedit zone with current frame
 					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
@@ -118,6 +120,11 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
+		void updateOnFrameChangeCallback( App::Component::Chemistry::Trajectory & p_traj)
+		{
+			
+		}
+
 		void connectAdditionalCallbacks()
 		{
 			connect(
@@ -126,6 +133,9 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ](const int p_index) { 
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetLegacyPlayerType>( getSystemUID(), _playerSelector->itemText(p_index).toStdString() );
+
+					//setStopPlayer();
+					modifyProgressElt();
 				}
 			);
 		}
