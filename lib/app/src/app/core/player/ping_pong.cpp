@@ -54,6 +54,14 @@ namespace VTX::App::Core::Player
 		if ( _forward )
 			setCurrent( p_count );
 		else
-			setCurrent( getCurrent() - 1 );
+		{
+			if (getCurrent() == 0)
+			{
+				setCurrent( p_count );
+				_forward = true;
+			}
+			else
+				setCurrent( getCurrent() - 1 );
+		}
 	}
 } // namespace VTX::App::Core::Player

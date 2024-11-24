@@ -52,6 +52,23 @@ namespace VTX::UI::QT::Widget
 			_playerSelector->addItem( App::Core::Player::Stop::DISPLAYED_NAME.c_str() );
 
 			//_playerSelector->setCurrentIndex( 0 ); // FIXME
+			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
+				  ++iter )
+			{
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+
+				if ( component.contains( getSystemUID() ) )
+				{
+					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
+						App::ECS_REGISTRY().getEntity( component )
+					);
+					auto player = traj.getPlayer().getDisplayName();
+
+					_playerSelector->setCurrentText( QString( player.c_str() ) );
+				}
+			}
 		}
 
 		// player selector combobox goes on top
@@ -78,7 +95,10 @@ namespace VTX::UI::QT::Widget
 
 					// define min and max of slider from traj info
 					progressElt->setMinimum( 0 );
-					progressElt->setMaximum( (int)traj.getFrameCount() );
+					progressElt->setMaximum( (int)traj.getFrameCount() - 1);
+
+					// set cursor at the current frame index
+					progressElt->setValue( (int)traj.getCurrentFrame() );
 
 					// display current frame index in selector lineedit
 					frameSelectorElt->setText( QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
