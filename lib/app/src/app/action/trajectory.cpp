@@ -238,7 +238,8 @@ namespace VTX::App::Action::Trajectory
 			return;
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
-		traj.getPlayer().setCurrent( _value );
+		if ( _value <= (traj.getPlayer().getCount() - 1))
+			traj.getPlayer().setCurrent( _value );
 	}
 
 	void SetLegacyPlayerType::execute()

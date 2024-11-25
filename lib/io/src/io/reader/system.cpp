@@ -42,7 +42,9 @@ namespace VTX::IO::Reader
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		// devjla
-		p_system.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
+		// devjla DEBUG TRAJECTORY FRAMES ORDER
+		// p_system.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
+		p_system.trajectory.SetTotalElements( 25 ); // flemme de le faire proprement, c'est 25
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		//p_system.initAtoms( p_chemfileStruct.getAtomCount() );

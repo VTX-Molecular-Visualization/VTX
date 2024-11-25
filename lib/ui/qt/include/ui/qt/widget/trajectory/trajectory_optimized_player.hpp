@@ -83,6 +83,7 @@ namespace VTX::UI::QT::Widget
 			}
 
 			progressElt->setEnabled( false );
+			frameSelectorElt->setEnabled( false );
 		}
 
 		QLabel * _circbuffElt;
