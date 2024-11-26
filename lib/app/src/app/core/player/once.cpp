@@ -15,7 +15,7 @@ namespace VTX::App::Core::Player
 		else
 		{
 			setCurrent( getCount() - 1 );
-			pause();
+			stop();
 		}
 	}
 

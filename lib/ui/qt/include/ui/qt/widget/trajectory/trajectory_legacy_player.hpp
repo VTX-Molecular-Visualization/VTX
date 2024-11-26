@@ -115,6 +115,9 @@ namespace VTX::UI::QT::Widget
 						int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex();
 						getProgressElt()->setValue( currentFrameIdx );
 						getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
+
+						if ( !traj.getPlayer().isPlaying() )
+							setStopPlayer();
 					};
 				}
 			}
