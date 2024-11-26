@@ -54,7 +54,9 @@ namespace VTX::App::Action::Selection
 		Unselect( C1 & p_selectionData )
 		{
 			for ( Application::Selection::SelectionData * selectionData : p_selectionData )
+			{
 				_selectionData.emplace( selectionData );
+			}
 		}
 
 		void execute() override;

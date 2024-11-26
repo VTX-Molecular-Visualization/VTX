@@ -180,6 +180,7 @@ namespace VTX::App::Component::Render
 		system.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
 		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
+
 	void ProxySystem::_applySelectionCallbacks()
 	{
 		Component::Scene::Selectable & selectableComponent
@@ -189,6 +190,10 @@ namespace VTX::App::Component::Render
 		{
 			const Application::Selection::SystemData & castedSelectionData
 				= dynamic_cast<const Application::Selection::SystemData &>( p_selectionData );
+
+			// TODO.
+			// castedSelectionData.isFullySelected
+
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
