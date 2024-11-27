@@ -2,7 +2,6 @@
 #define __VTX_APP_CORE_PLAYER_REVERT_LOOP__
 
 #include "app/core/player/base_player.hpp"
-#include "app/core/player/players.hpp"
 
 namespace VTX::App::Core::Player
 {

@@ -13,16 +13,16 @@ namespace VTX::App::Core::Player
 	class BasePlayer
 	{
 	  public:
-		BasePlayer()							  = default;
-		//devjla
-		//BasePlayer( const BasePlayer & p_source ) = default;
-		BasePlayer (const BasePlayer & p_source )
+		BasePlayer() = default;
+		// devjla
+		// BasePlayer( const BasePlayer & p_source ) = default;
+		BasePlayer( const BasePlayer & p_source )
 		{
 			// FIXME
-			_count	= p_source._count;
-			_current = p_source._current;
-			_isPlaying	   = false;
-			_fps			   = p_source._fps;
+			_count			 = p_source._count;
+			_current		 = p_source._current;
+			_isPlaying		 = false;
+			_fps			 = p_source._fps;
 			_trajectoryTimer = p_source._trajectoryTimer;
 		}
 
@@ -38,7 +38,7 @@ namespace VTX::App::Core::Player
 		virtual void pause();
 		virtual void stop();
 
-		virtual void update( const float p_deltaTime );
+		void update( const float p_deltaTime, const float p_elaspedTime );
 
 		inline bool isPlaying() const { return _isPlaying; }
 
@@ -52,24 +52,24 @@ namespace VTX::App::Core::Player
 
 		virtual void StackFrame( Frame elem ) = 0; // FIXME
 		inline float getTrajectoryTimer() const { return _trajectoryTimer; }
-		void				   setTrajectoryTimer( float p_timer ) { _trajectoryTimer = p_timer; }
+		void		 setTrajectoryTimer( float p_timer ) { _trajectoryTimer = p_timer; }
 
-		Util::Callback<>	   onPlay; 
-		Util::Callback<>	   onPause;
-		Util::Callback<>	   onStop;
-		//Util::Callback<size_t> onFrameChange;
+		Util::Callback<> onPlay;
+		Util::Callback<> onPause;
+		Util::Callback<> onStop;
+		// Util::Callback<size_t> onFrameChange;
 		Util::Callback<const Frame &> onFrameChange;
-		Util::Callback<uint>   onFPSChange;
+		Util::Callback<uint>		  onFPSChange;
 
 	  private:
 		size_t _count	= 0;
 		size_t _current = 0;
 
 		// devjla
-		//bool  _isPlaying	   = false;
+		// bool  _isPlaying	   = false;
 		std::atomic<bool> _isPlaying	   = false;
-		uint  _fps			   = 1u;
-		float _trajectoryTimer = 0;
+		uint			  _fps			   = 1u;
+		float			  _trajectoryTimer = 0.f;
 	};
 } // namespace VTX::App::Core::Player
 #endif

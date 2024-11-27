@@ -1,19 +1,10 @@
-#include <app/core/ecs/registry.hpp>
 #include "app/action/trajectory.hpp"
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/trajectory.hpp>
 #include <app/component/chemistry/system.hpp>
+#include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
-#include <app/core/player/players.hpp>
+#include <app/core/ecs/registry.hpp>
 #include <app/core/player/circular_buffer.hpp>
-////////
-#include <app/core/player/loop.hpp>
-#include <app/core/player/once.hpp>
-#include <app/core/player/ping_pong.hpp>
-#include <app/core/player/revert_loop.hpp>
-#include <app/core/player/revert_once.hpp>
-#include <app/core/player/stop.hpp> // UH?
-////////
 
 namespace VTX::App::Action::Trajectory
 {
@@ -23,9 +14,9 @@ namespace VTX::App::Action::Trajectory
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
 
-		//VTX::Core::Struct::Molecule moleculeStruct = VTX::Core::Struct::Molecule();
-		//auto & molecule = ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
-		//molecule.setMoleculeStruct( moleculeStruct );
+		// VTX::Core::Struct::Molecule moleculeStruct = VTX::Core::Struct::Molecule();
+		// auto & molecule = ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
+		// molecule.setMoleculeStruct( moleculeStruct );
 
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 		traj.getPlayer().play();
@@ -178,7 +169,7 @@ namespace VTX::App::Action::Trajectory
 		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
-		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
 		traj.getPlayer().pause();
 	}
@@ -188,8 +179,8 @@ namespace VTX::App::Action::Trajectory
 		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
-		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-	
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
 		traj.getPlayer().stop();
 	}
 
@@ -198,11 +189,9 @@ namespace VTX::App::Action::Trajectory
 		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
-		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-		auto * const playMode
-			= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::CircularBuffer>();
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
-		traj.setPlayer( playMode );
+		traj.setPlayer<Core::Player::CircularBuffer>();
 	}
 
 	void DecreaseFrameRate::execute()
@@ -210,7 +199,7 @@ namespace VTX::App::Action::Trajectory
 		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
-		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
 		if ( !traj.getPlayer().getFPS() )
 			traj.getPlayer().setFPS( 1 ); // FIXME raw fps in code = bad, find a way to define
@@ -223,12 +212,14 @@ namespace VTX::App::Action::Trajectory
 		auto entity = getEntityFromUIDRange( _system );
 		if ( !ECS_REGISTRY().isValid( entity ) )
 			return;
-		auto &		 traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
 		if ( !traj.getPlayer().getFPS() )
 			return; // nothing to do, already the fastest playing framerate
 		else
-			traj.getPlayer().setFPS( traj.getPlayer().getFPS() * 2 ); // FIXME at some point framerate = 0 and its the maximum speed
+			traj.getPlayer().setFPS(
+				traj.getPlayer().getFPS() * 2
+			); // FIXME at some point framerate = 0 and its the maximum speed
 	}
 
 	void SetTrajectoryCurrentFrame::execute()
@@ -238,52 +229,8 @@ namespace VTX::App::Action::Trajectory
 			return;
 		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
 
-		if ( _value <= (traj.getPlayer().getCount() - 1))
+		if ( _value <= ( traj.getPlayer().getCount() - 1 ) )
 			traj.getPlayer().setCurrent( _value );
 	}
 
-	void SetLegacyPlayerType::execute()
-	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
-		bool previousState = traj.getPlayer().isPlaying();
-		traj.getPlayer().stop();
-
-		if (_name == App::Core::Player::Loop::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>() );
-			traj.getPlayer().reset();
-		}
-		if (_name == App::Core::Player::Once::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Once>() );
-			traj.getPlayer().reset();
-		}
-		if (_name == App::Core::Player::PingPong::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::PingPong>() );
-			traj.getPlayer().reset();
-		}
-		if (_name == App::Core::Player::RevertOnce::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertOnce>() );
-			traj.getPlayer().reset();
-		}
-		if (_name == App::Core::Player::RevertLoop::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::RevertLoop>() );
-			traj.getPlayer().reset();
-		}
-		if (_name == App::Core::Player::Stop::DISPLAYED_NAME)
-		{
-			traj.setPlayer( Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Stop>() );
-			traj.getPlayer().reset();
-		}
-
-		if ( previousState )
-			traj.getPlayer().play();
-	}
 } // namespace VTX::App::Action::Trajectory

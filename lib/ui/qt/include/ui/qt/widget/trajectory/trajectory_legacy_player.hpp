@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 
-#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 #include "app/application/system/ecs_system.hpp"
-#include <ui/qt/base_widget.hpp>
+#include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/uid/uid.hpp>
-#include <app/action/trajectory.hpp>
+#include <ui/qt/base_widget.hpp>
+#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 ////////
 #include <app/core/player/loop.hpp>
 #include <app/core/player/once.hpp>
@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		TrajectoryLegacyPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
-			TrajectoryBasePlayer( p_parent , p_systemUID )
+			TrajectoryBasePlayer( p_parent, p_systemUID )
 		{
 			setupAdditionalElts();
 
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		virtual ~TrajectoryLegacyPlayer() {}
-		
+
 	  private:
 		// adds player selector combobox
 		void setupAdditionalElts()
@@ -72,14 +72,11 @@ namespace VTX::UI::QT::Widget
 		}
 
 		// player selector combobox goes on top
-		void addAdditionalToLayout()
-		{
-			getLayout()->addWidget( _playerSelector, 0, 0 );
-		}
+		void addAdditionalToLayout() { getLayout()->addWidget( _playerSelector, 0, 0 ); }
 
-		void modifyProgressElt(void)
+		void modifyProgressElt( void )
 		{
-			auto * progressElt = getProgressElt();
+			auto * progressElt		= getProgressElt();
 			auto * frameSelectorElt = getFrameSelectorElt();
 
 			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
@@ -89,21 +86,24 @@ namespace VTX::UI::QT::Widget
 			{
 				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
 
-				if (component.contains(getSystemUID()))
+				if ( component.contains( getSystemUID() ) )
 				{
-					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(App::ECS_REGISTRY().getEntity( component ));
+					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
+						App::ECS_REGISTRY().getEntity( component )
+					);
 
 					// define min and max of slider from traj info
 					progressElt->setMinimum( 0 );
-					progressElt->setMaximum( (int)traj.getFrameCount() - 1);
+					progressElt->setMaximum( (int)traj.getFrameCount() - 1 );
 
 					// set cursor at the current frame index
-					//progressElt->setValue( (int)traj.getCurrentFrame() );
+					// progressElt->setValue( (int)traj.getCurrentFrame() );
 					progressElt->setValue( (int)traj.getPlayer().getCurrent() );
 
 					// display current frame index in selector lineedit
-					//frameSelectorElt->setText( QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
-					frameSelectorElt->setText( QLocale().toString((int)traj.getPlayer().getCurrent()) );
+					// frameSelectorElt->setText(
+					// QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
+					frameSelectorElt->setText( QLocale().toString( (int)traj.getPlayer().getCurrent() ) );
 
 					// update both slider and lineedit zone with current frame
 					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
@@ -123,10 +123,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		void updateOnFrameChangeCallback( App::Component::Chemistry::Trajectory & p_traj)
-		{
-			
-		}
+		void updateOnFrameChangeCallback( App::Component::Chemistry::Trajectory & p_traj ) {}
 
 		void connectAdditionalCallbacks()
 		{
@@ -134,16 +131,29 @@ namespace VTX::UI::QT::Widget
 				_playerSelector,
 				&QComboBox::currentIndexChanged,
 				this,
-				[ & ](const int p_index) { 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetLegacyPlayerType>( getSystemUID(), _playerSelector->itemText(p_index).toStdString() );
+				[ & ]( const int p_index )
+				{
+					using namespace App::Core::Player;
+					using namespace App::Action::Trajectory;
 
-					//setStopPlayer();
+					switch ( p_index )
+					{
+					case 0: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Loop>>( getSystemUID() ); break;
+					case 1: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Once>>( getSystemUID() ); break;
+					case 2: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<PingPong>>( getSystemUID() ); break;
+					case 3: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertOnce>>( getSystemUID() ); break;
+					case 4: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertLoop>>( getSystemUID() ); break;
+					case 5: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Stop>>( getSystemUID() ); break;
+					default: break;
+					}
+
+					// setStopPlayer();
 					modifyProgressElt();
 				}
 			);
 		}
 
-		QComboBox *_playerSelector;
+		QComboBox * _playerSelector;
 	};
 
 } // namespace VTX::UI::QT::Widget

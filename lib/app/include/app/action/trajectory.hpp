@@ -2,10 +2,11 @@
 #define __VTX_UI_ACTION_TRAJECTORY__
 
 #include "app/core/action/base_action.hpp"
+#include "app/core/player/concepts.hpp"
 #include <app/component/chemistry/system.hpp>
 #include <app/component/scene/uid_component.hpp>
-#include <app/entity/system.hpp>
 #include <app/core/ecs/registry.hpp>
+#include <app/entity/system.hpp>
 
 namespace VTX::App::Action::Trajectory
 {
@@ -24,7 +25,7 @@ namespace VTX::App::Action::Trajectory
 				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
 				  ++iter )
 			{
-				auto &component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
 
 				if ( component.contains( _system ) )
 					return App::ECS_REGISTRY().getEntity( component );
@@ -97,14 +98,15 @@ namespace VTX::App::Action::Trajectory
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange( const App::Component::Scene::UIDComponent & p_UIDComponent
+		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
+			const App::Component::Scene::UIDComponent & p_UIDComponent
 		) const
 		{
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
 				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
 				  ++iter )
 			{
-				auto &component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
 
 				if ( component.contains( _system ) )
 					return App::ECS_REGISTRY().getEntity( component );
@@ -170,7 +172,10 @@ namespace VTX::App::Action::Trajectory
 	class SetTrajectoryCurrentFrame final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetTrajectoryCurrentFrame( const App::Core::UID::UIDRange & p_system, const int p_value ) : _system( p_system ), _value( p_value ) {}
+		SetTrajectoryCurrentFrame( const App::Core::UID::UIDRange & p_system, const int p_value ) :
+			_system( p_system ), _value( p_value )
+		{
+		}
 		void execute() override;
 
 	  private:
@@ -194,14 +199,34 @@ namespace VTX::App::Action::Trajectory
 		const int						 _value;
 	};
 
+	template<Core::Player::ConceptPlayer P>
 	class SetLegacyPlayerType final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetLegacyPlayerType( const App::Core::UID::UIDRange & p_system, const std::string p_name ) :
-			_system( p_system ), _name( p_name )
+		SetLegacyPlayerType( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+
+		void execute() override
 		{
+			auto entity = getEntityFromUIDRange( _system );
+
+			if ( not ECS_REGISTRY().isValid( entity ) )
+			{
+				return;
+			}
+
+			auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+
+			bool previousState = traj.getPlayer().isPlaying();
+
+			traj.getPlayer().stop();
+			traj.template setPlayer<P>();
+			traj.getPlayer().reset();
+
+			if ( previousState )
+			{
+				traj.getPlayer().play();
+			}
 		}
-		void execute() override;
 
 	  private:
 		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
@@ -221,7 +246,6 @@ namespace VTX::App::Action::Trajectory
 			return VTX::App::Core::ECS::INVALID_ENTITY;
 		}
 		const App::Core::UID::UIDRange & _system;
-		const std::string				 _name;
 	};
 
 } // namespace VTX::App::Action::Trajectory

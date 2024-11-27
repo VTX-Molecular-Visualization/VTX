@@ -10,9 +10,8 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
 #include "app/component/scene/updatable.hpp"
-#include "app/core/player/loop.hpp"
 #include "app/core/player/circular_buffer.hpp"
-#include "app/core/player/players.hpp"
+#include "app/core/player/loop.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
@@ -98,9 +97,9 @@ namespace VTX::App::Entity
 			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
 			if ( trajectory.getSystemPtr()->getTrajectory().IsOptimized() )
-				trajectory.setPlayer(Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::CircularBuffer>());
+				trajectory.setPlayer<Core::Player::CircularBuffer>();
 			else
-				trajectory.setPlayer(Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>());
+				trajectory.setPlayer<Core::Player::Loop>();
 		}
 
 		// Proxy.

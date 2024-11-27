@@ -1,9 +1,9 @@
 #include "app/core/player/base_player.hpp"
 #include <util/math.hpp>
-//devjla
+// devjla
+#include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
 #include <app/core/ecs/registry.hpp>
-#include <app/component/chemistry/trajectory.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -14,7 +14,7 @@ namespace VTX::App::Core::Player
 		if ( _current >= p_count )
 		{
 			_current = p_count - 1;
-			//onFrameChange( _current );
+			// onFrameChange( _current );
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
 				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
 				  ++iter )
@@ -41,7 +41,7 @@ namespace VTX::App::Core::Player
 		if ( _current != p_frameIndex )
 		{
 			_current = p_frameIndex;
-			//onFrameChange( p_frameIndex );
+			// onFrameChange( p_frameIndex );
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
 				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
 				  ++iter )
@@ -55,8 +55,8 @@ namespace VTX::App::Core::Player
 					VTX::App::Component::Render::ProxySystem & proxy
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
-					molecule.getTrajectory().SetCurrentFrameIndex(p_frameIndex);
-					onFrameChange( molecule.getTrajectory().GetCurrentFrame());
+					molecule.getTrajectory().SetCurrentFrameIndex( p_frameIndex );
+					onFrameChange( molecule.getTrajectory().GetCurrentFrame() );
 				}
 			}
 		}
@@ -79,10 +79,12 @@ namespace VTX::App::Core::Player
 		onStop();
 	}
 
-	void BasePlayer::update( const float p_deltaTime )
+	void BasePlayer::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		if ( !isPlaying() )
+		if ( not isPlaying() )
+		{
 			return;
+		}
 
 		/* _trajectoryTimer += p_deltaTime;
 
@@ -116,23 +118,24 @@ namespace VTX::App::Core::Player
 		else
 		{
 			const float frameRateMilliSec = ( 1.f / float( _fps ) ) * 1000.f;
-			const float ellapsedTime	  = p_deltaTime - _trajectoryTimer;
-			if (ellapsedTime >= frameRateMilliSec)
+			const float ellapsedTime	  = p_elapsedTime - _trajectoryTimer;
+
+			if ( ellapsedTime >= frameRateMilliSec )
 			{
-				_trajectoryTimer = p_deltaTime;
-				nextFrame( _current + 1);
+				_trajectoryTimer = p_elapsedTime;
+				nextFrame( _current + 1 );
 			}
 		}
 		//////////
-
 
 		// devjla
 		/* VTX::Core::Struct::Frame currentFrame;
 		if ( !_tmpFrames.GetCopyFrame( currentFrame ) )
 			return;
 		VTX::App::Component::Render::ProxyMolecule & proxy
-			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
-		proxy._updateAtomsPositions( currentFrame );*/
+			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>(
+		*(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin())); proxy._updateAtomsPositions(
+		currentFrame );*/
 	}
 
 	void BasePlayer::setFPS( const uint p_fps )

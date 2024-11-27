@@ -1,12 +1,12 @@
-#include <util/logger.hpp>
-#include <app/core/player/circular_buffer.hpp>
-#include <app/component/render/proxy_system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
+#include <app/component/render/proxy_system.hpp>
+#include <app/core/player/circular_buffer.hpp>
 #include <app/core/threading/threading_system.hpp>
 #include <io/reader/system.hpp>
+#include <util/logger.hpp>
 // devjla needs a refacto - code from molecule reader in IO
-#include <util/chrono.hpp>
 #include <thread>
+#include <util/chrono.hpp>
 
 namespace VTX::App::Core::Player
 {
@@ -26,24 +26,25 @@ namespace VTX::App::Core::Player
 		{
 			auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
 
-			if (&(trajectory.getPlayer()) == this)
+			if ( &( trajectory.getPlayer() ) == this )
 			{
 				trajectory.getSystemPtr()->getTrajectory().Reset();
 				trajectory.getSystemPtr()->getTrajectory().SetOptimized();
 				_tmpFrames.setMaxIndex( trajectory.getSystemPtr()->getTrajectory().GetFrameCount() );
-			}				
+			}
 		}
 
 		Core::Threading::ThreadingSystem & threader	 = App::THREADING_SYSTEM();
 		auto							   funcWrite = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcWrite									 = [this]( App::Core::Threading::BaseThread & baseThread )
+		funcWrite									 = [ this ]( App::Core::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "writethread start" );
-			
-			IO::Reader::System moleculeReader   = IO::Reader::System();
+
+			IO::Reader::System moleculeReader = IO::Reader::System();
 			/* const std::string moleculeName		= "2ama_1_npt";
 			const std::string	 moleculePathname = moleculeName + ".trr";
-			const VTX::FilePath	 moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;*/
+			const VTX::FilePath	 moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" /
+			moleculePathname;*/
 
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
 				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
@@ -51,16 +52,16 @@ namespace VTX::App::Core::Player
 			{
 				auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
 
-				if (&(trajectory.getPlayer()) == this)
+				if ( &( trajectory.getPlayer() ) == this )
 				{
-					auto entity = App::ECS_REGISTRY().getEntity( trajectory );
+					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
 					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
 
 					////////////////////////////
-					while (trajectory.getPlayer().isPlaying())
+					while ( trajectory.getPlayer().isPlaying() )
 					{
 						moleculeReader.readFile( trajectory.getPath(), molecule.getSystemStruct() );
-						std::this_thread::sleep_for( std::chrono::milliseconds(20000) );
+						std::this_thread::sleep_for( std::chrono::milliseconds( 20000 ) );
 					}
 					////////////////////////////
 
@@ -140,10 +141,9 @@ namespace VTX::App::Core::Player
 			}
 			VTX_INFO( "writethread end" );
 			return 1;
-
 		};
 		auto funcRead = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcRead	  = [this]( App::Core::Threading::BaseThread & baseThread )
+		funcRead	  = [ this ]( App::Core::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "readthreadfromlocalmolecule start" );
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
@@ -184,7 +184,7 @@ namespace VTX::App::Core::Player
 			const std::string	 moleculeName	  = "2ama_1_npt";
 			const std::string	 moleculePathname = moleculeName + ".trr";
 			const VTX::FilePath	 moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
-			
+
 			while ( trajectory.getPlayer().isPlaying() )
 				moleculeReader.readFile( moleculePath, molecule.getMoleculeStruct() );
 				//moleculeReader.readTrajectoryFile( moleculePath, molecule.getMoleculeStruct() );
@@ -229,8 +229,8 @@ namespace VTX::App::Core::Player
 			VTX_INFO( "readthreadfromlocalmolecule end" );
 			return 1;
 		};*/
-		_writeThread = &(threader.createThread( funcWrite ));
-		_readThread = &(threader.createThread( funcRead ));
+		_writeThread = &( threader.createThread( funcWrite ) );
+		_readThread	 = &( threader.createThread( funcRead ) );
 
 		BasePlayer::play();
 	}
@@ -250,24 +250,25 @@ namespace VTX::App::Core::Player
 		_readThread->stop();
 		_tmpFrames.Flush();
 	}
-	
-	void CircularBuffer::update( const float p_deltaTime )
+
+	void CircularBuffer::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		//BasePlayer::update( p_deltaTime );
-		if( !isPlaying() )
+		// BasePlayer::update( p_deltaTime );
+		if ( !isPlaying() )
 			return;
 
 		// devjla
 		// own legacy to be cleared
 		/* VTX::App::Component::Render::ProxyMolecule & proxy
-			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>( *(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin()));
-		proxy._updateAtomsPositions( currentFrame );*/
+			= ECS_REGISTRY().getComponent<App::Component::Render::ProxyMolecule>(
+		*(ECS_REGISTRY().findComponents<App::Component::Render::ProxyMolecule>().begin())); proxy._updateAtomsPositions(
+		currentFrame );*/
 
 		//////////////////////////
 		VTX::Core::Struct::Frame currentFrame;
 		if ( getFPS() == 0u )
 		{
-			if ( _tmpFrames.GetCopyFrame( currentFrame ))
+			if ( _tmpFrames.GetCopyFrame( currentFrame ) )
 				onFrameChange( currentFrame );
 		}
 		else
@@ -277,7 +278,7 @@ namespace VTX::App::Core::Player
 			if ( ellapsedTime >= frameRateMilliSec )
 			{
 				setTrajectoryTimer( p_deltaTime );
-				if (_tmpFrames.GetCopyFrame(currentFrame))
+				if ( _tmpFrames.GetCopyFrame( currentFrame ) )
 					onFrameChange( currentFrame );
 			}
 		}
