@@ -35,9 +35,9 @@ namespace VTX::PythonBinding::Binding
 
 	void VTXAppBinder::importHeaders()
 	{
-		_importObject( "PyTX.API", "select" );
-		_importObject( "PyTX.API", "intersect" );
-		_importObject( "PyTX.API", "exclusive" );
+		_importObject( "vtx_python_bin.API", "select" );
+		_importObject( "vtx_python_bin.API", "intersect" );
+		_importObject( "vtx_python_bin.API", "exclusive" );
 	}
 
 } // namespace VTX::PythonBinding::Binding

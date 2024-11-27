@@ -34,10 +34,10 @@ namespace VTX::PythonBinding::API::Selection
 
 		void selectAll();
 
-		const std::vector<App::Component::Chemistry::Molecule *> getMolecules();
-		const std::vector<App::Component::Chemistry::Chain *>	 getChains();
-		const std::vector<App::Component::Chemistry::Residue *>	 getResidues();
-		const std::vector<App::Component::Chemistry::Atom *>	 getAtoms();
+		const std::vector<App::Component::Chemistry::System *>	getSystems();
+		const std::vector<App::Component::Chemistry::Chain *>	getChains();
+		const std::vector<App::Component::Chemistry::Residue *> getResidues();
+		const std::vector<App::Component::Chemistry::Atom *>	getAtoms();
 
 		std::string toString() const;
 

@@ -4,10 +4,10 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/vtx_app.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
@@ -44,46 +44,46 @@ namespace VTX::PythonBinding
 			.def(
 				"getMolecule",
 				[]( const Application::Scene & p_scene,
-					const std::string &		   p_name ) -> const Component::Chemistry::Molecule &
-				{ return p_scene.getComponentByName<Component::Chemistry::Molecule>( p_name ); },
+					const std::string &		   p_name ) -> const Component::Chemistry::System &
+				{ return p_scene.getComponentByName<Component::Chemistry::System>( p_name ); },
 				pybind11::return_value_policy::reference
 			);
 
-		pybind11::class_<VTX::Core::Struct::Molecule>( p_apiModule, "MoleculeStruct", pybind11::module_local() )
+		pybind11::class_<VTX::Core::Struct::System>( p_apiModule, "MoleculeStruct", pybind11::module_local() )
 			.def_property(
 				"name",
-				[]( const VTX::Core::Struct::Molecule & p_molecule ) { return p_molecule.name; },
-				[]( VTX::Core::Struct::Molecule & p_molecule, const std::string & p_name ) { p_molecule.name = p_name; }
+				[]( const VTX::Core::Struct::System & p_molecule ) { return p_molecule.name; },
+				[]( VTX::Core::Struct::System & p_molecule, const std::string & p_name ) { p_molecule.name = p_name; }
 			);
 
 		// Molecule
-		pybind11::class_<Component::Chemistry::Molecule>( p_apiModule, "Molecule", pybind11::module_local() )
+		pybind11::class_<Component::Chemistry::System>( p_apiModule, "Molecule", pybind11::module_local() )
 			.def(
 				"molStruct",
-				&Component::Chemistry::Molecule::getMoleculeStruct,
+				&Component::Chemistry::System::getSystemStruct,
 				pybind11::return_value_policy::reference_internal
 			)
-			.def( "getName", &Component::Chemistry::Molecule::getName )
-			.def( "setName", &Component::Chemistry::Molecule::setName )
+			.def( "getName", &Component::Chemistry::System::getName )
+			.def( "setName", &Component::Chemistry::System::setName )
 			.def(
 				"getAtoms",
-				[]( Component::Chemistry::Molecule & p_mol ) { return &p_mol.getAtoms(); },
+				[]( Component::Chemistry::System & p_mol ) { return &p_mol.getAtoms(); },
 				pybind11::return_value_policy::reference_internal
 			)
 			.def(
 				"getAtoms",
-				[]( const Component::Chemistry::Molecule & p_mol ) { return &p_mol.getAtoms(); },
+				[]( const Component::Chemistry::System & p_mol ) { return &p_mol.getAtoms(); },
 				pybind11::return_value_policy::reference_internal
 			)
 			.def(
 				"getAtom",
-				[]( const Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
+				[]( const Component::Chemistry::System & p_mol, const atom_index_t p_index )
 				{ return *p_mol.getAtom( p_index ); },
 				pybind11::return_value_policy::reference
 			)
 			.def(
 				"getAtom",
-				[]( Component::Chemistry::Molecule & p_mol, const atom_index_t p_index )
+				[]( Component::Chemistry::System & p_mol, const atom_index_t p_index )
 				{ return *p_mol.getAtom( p_index ); },
 				pybind11::return_value_policy::reference
 			);
@@ -114,7 +114,7 @@ namespace VTX::PythonBinding
 			[]( const std::string & p_moleculeName, const atom_index_t p_atomIndex, const std::string & p_name )
 			{
 				return SCENE()
-					.getComponentByName<App::Component::Chemistry::Molecule>( p_moleculeName )
+					.getComponentByName<App::Component::Chemistry::System>( p_moleculeName )
 					.getAtom( p_atomIndex )
 					->setName( p_name );
 			}

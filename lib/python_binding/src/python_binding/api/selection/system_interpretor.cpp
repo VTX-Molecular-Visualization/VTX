@@ -1,10 +1,10 @@
-#include "python_binding/api/selection/molecule_interpretor.hpp"
+#include "python_binding/api/selection/system_interpretor.hpp"
 #include "python_binding/api/selection/helper.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/selectable.hpp>
 #include <app/helper/chemistry.hpp>
 #include <app/vtx_app.hpp>
@@ -14,11 +14,11 @@ namespace VTX::PythonBinding::API::Selection
 {
 	using namespace App::Component::Chemistry;
 
-	MoleculeInterpretor::InterpretedKwargs::InterpretedKwargs( const pybind11::kwargs & p_kwargs )
+	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const pybind11::kwargs & p_kwargs )
 	{
-		_hasMoleculeParams = p_kwargs.contains( "mol_n" ) || p_kwargs.contains( "mol_i" );
-		moleculeNames	   = _getStringListInKwargs( p_kwargs, "mol_n" );
-		moleculeIndexes	   = _getIndexListInKwargs( p_kwargs, "mol_i" );
+		_hasSystemParams = p_kwargs.contains( "mol_n" ) || p_kwargs.contains( "mol_i" );
+		moleculeNames	 = _getStringListInKwargs( p_kwargs, "mol_n" );
+		moleculeIndexes	 = _getIndexListInKwargs( p_kwargs, "mol_i" );
 
 		_hasChainParams = p_kwargs.contains( "chain_n" ) || p_kwargs.contains( "chain_i" );
 		chainNames		= _getStringListInKwargs( p_kwargs, "chain_n" );
@@ -37,7 +37,7 @@ namespace VTX::PythonBinding::API::Selection
 		);
 	}
 
-	std::vector<VTX::Core::ChemDB::Atom::SYMBOL> MoleculeInterpretor::InterpretedKwargs::_interpretAtomSymbols(
+	std::vector<VTX::Core::ChemDB::Atom::SYMBOL> SystemInterpretor::InterpretedKwargs::_interpretAtomSymbols(
 		const pybind11::kwargs & p_kwargs
 	)
 	{
@@ -61,17 +61,17 @@ namespace VTX::PythonBinding::API::Selection
 		return atomSymbols;
 	}
 
-	bool MoleculeInterpretor::InterpretedKwargs::isValid() const
+	bool SystemInterpretor::InterpretedKwargs::isValid() const
 	{
-		return _hasMoleculeParams || _hasChainParams || _hasResidueParams || _hasAtomParams;
+		return _hasSystemParams || _hasChainParams || _hasResidueParams || _hasAtomParams;
 	}
 
-	bool MoleculeInterpretor::InterpretedKwargs::hasSpecifyMolecule() const { return _hasMoleculeParams; }
-	bool MoleculeInterpretor::InterpretedKwargs::hasSpecifyChain() const { return _hasChainParams; }
-	bool MoleculeInterpretor::InterpretedKwargs::hasSpecifyResidue() const { return _hasResidueParams; }
-	bool MoleculeInterpretor::InterpretedKwargs::hasSpecifyAtom() const { return _hasAtomParams; }
+	bool SystemInterpretor::InterpretedKwargs::hasSpecifySystem() const { return _hasSystemParams; }
+	bool SystemInterpretor::InterpretedKwargs::hasSpecifyChain() const { return _hasChainParams; }
+	bool SystemInterpretor::InterpretedKwargs::hasSpecifyResidue() const { return _hasResidueParams; }
+	bool SystemInterpretor::InterpretedKwargs::hasSpecifyAtom() const { return _hasAtomParams; }
 
-	void MoleculeInterpretor::interpretMolecules(
+	void SystemInterpretor::interpretSystems(
 		App::Application::Selection::Selection & p_selection,
 		const pybind11::kwargs &				 p_kwargs
 	)
@@ -83,21 +83,21 @@ namespace VTX::PythonBinding::API::Selection
 			return;
 		}
 
-		std::set<Molecule *> molecules = _getMolecules( kwargs );
-		const bool			 selectFullMolecule
+		std::set<System *> molecules = _getSystems( kwargs );
+		const bool		   selectFullSystem
 			= !kwargs.hasSpecifyChain() && !kwargs.hasSpecifyResidue() && !kwargs.hasSpecifyAtom();
 
-		for ( Molecule * const molecule : molecules )
+		for ( System * const molecule : molecules )
 		{
 			App::Component::Scene::Selectable & selectableComponent
-				= App::MAIN_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
+				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
 
-			App::Application::Selection::MoleculeData & moleculeSelectionData
-				= p_selection.select<App::Application::Selection::MoleculeData>(
+			App::Application::Selection::SystemData & moleculeSelectionData
+				= p_selection.select<App::Application::Selection::SystemData>(
 					selectableComponent, App::Application::Selection::AssignmentType::APPEND
 				);
 
-			if ( !selectFullMolecule )
+			if ( !selectFullSystem )
 			{
 				moleculeSelectionData.clear();
 				_selectChains( kwargs, moleculeSelectionData );
@@ -105,13 +105,13 @@ namespace VTX::PythonBinding::API::Selection
 		}
 	}
 
-	std::set<Molecule *> MoleculeInterpretor::_getMolecules( const InterpretedKwargs & p_kwargs )
+	std::set<System *> SystemInterpretor::_getSystems( const InterpretedKwargs & p_kwargs )
 	{
 		using namespace App;
 
-		std::set<Component::Chemistry::Molecule *> molecules = std::set<Component::Chemistry::Molecule *>();
+		std::set<Component::Chemistry::System *> molecules = std::set<Component::Chemistry::System *>();
 
-		if ( p_kwargs.hasSpecifyMolecule() )
+		if ( p_kwargs.hasSpecifySystem() )
 		{
 			const std::vector<std::string> & moleculeNames	 = p_kwargs.moleculeNames;
 			const std::vector<size_t>		 moleculeIndexes = p_kwargs.moleculeIndexes;
@@ -120,11 +120,11 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molName );
 
-				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !ECS_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
-				Component::Chemistry::Molecule & moleculeComponent
-					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+				Component::Chemistry::System & moleculeComponent
+					= ECS_REGISTRY().getComponent<System>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
@@ -132,22 +132,22 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molIndex );
 
-				if ( !MAIN_REGISTRY().isValid( moleculeEntity ) )
+				if ( !ECS_REGISTRY().isValid( moleculeEntity ) )
 					continue;
 
-				Component::Chemistry::Molecule & moleculeComponent
-					= MAIN_REGISTRY().getComponent<Molecule>( moleculeEntity );
+				Component::Chemistry::System & moleculeComponent
+					= ECS_REGISTRY().getComponent<System>( moleculeEntity );
 
 				molecules.emplace( &moleculeComponent );
 			}
 		}
 		else
 		{
-			auto view = App::SCENE().getAllSceneItemsOfType<Component::Chemistry::Molecule>();
+			auto view = App::SCENE().getAllSceneItemsOfType<Component::Chemistry::System>();
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{
-				Component::Chemistry::Molecule & moleculeComponent = MAIN_REGISTRY().getComponent<Molecule>( entity );
+				Component::Chemistry::System & moleculeComponent = ECS_REGISTRY().getComponent<System>( entity );
 
 				molecules.emplace( &moleculeComponent );
 			}
@@ -156,12 +156,12 @@ namespace VTX::PythonBinding::API::Selection
 		return molecules;
 	}
 
-	void MoleculeInterpretor::_selectChains(
-		const InterpretedKwargs &					p_kwargs,
-		App::Application::Selection::MoleculeData & p_moleculeSelectionData
+	void SystemInterpretor::_selectChains(
+		const InterpretedKwargs &				  p_kwargs,
+		App::Application::Selection::SystemData & p_moleculeSelectionData
 	)
 	{
-		Molecule & molecule		   = p_moleculeSelectionData.getMolecule();
+		System &   molecule		   = p_moleculeSelectionData.getSystem();
 		const bool selectFullChain = !p_kwargs.hasSpecifyResidue() && !p_kwargs.hasSpecifyAtom();
 
 		if ( p_kwargs.hasSpecifyChain() )
@@ -201,13 +201,13 @@ namespace VTX::PythonBinding::API::Selection
 			_selectResidues( p_kwargs, p_moleculeSelectionData );
 	}
 
-	void MoleculeInterpretor::_selectResidues(
-		const InterpretedKwargs &					p_kwargs,
-		App::Application::Selection::MoleculeData & p_moleculeSelectionData
+	void SystemInterpretor::_selectResidues(
+		const InterpretedKwargs &				  p_kwargs,
+		App::Application::Selection::SystemData & p_moleculeSelectionData
 	)
 	{
-		const Molecule & molecule = p_moleculeSelectionData.getMolecule();
-		const App::Application::Selection::MoleculeData::IndexRangeList & chainIDs
+		const System &													molecule = p_moleculeSelectionData.getSystem();
+		const App::Application::Selection::SystemData::IndexRangeList & chainIDs
 			= p_moleculeSelectionData.getChainIds();
 
 		const bool selectFullResidue = !p_kwargs.hasSpecifyAtom();
@@ -301,19 +301,19 @@ namespace VTX::PythonBinding::API::Selection
 		}
 	}
 
-	void MoleculeInterpretor::_selectAtoms(
-		const InterpretedKwargs &					p_kwargs,
-		App::Application::Selection::MoleculeData & p_moleculeSelectionData
+	void SystemInterpretor::_selectAtoms(
+		const InterpretedKwargs &				  p_kwargs,
+		App::Application::Selection::SystemData & p_moleculeSelectionData
 	)
 	{
-		Molecule & molecule = p_moleculeSelectionData.getMolecule();
+		System & molecule = p_moleculeSelectionData.getSystem();
 
-		const App::Application::Selection::MoleculeData::IndexRangeList & residueIDs
+		const App::Application::Selection::SystemData::IndexRangeList & residueIDs
 			= p_moleculeSelectionData.getResidueIds();
 
 		if ( residueIDs.isEmpty() )
 		{
-			const App::Application::Selection::MoleculeData::IndexRangeList & chainIDs
+			const App::Application::Selection::SystemData::IndexRangeList & chainIDs
 				= p_moleculeSelectionData.getChainIds();
 
 			if ( chainIDs.isEmpty() )
@@ -343,7 +343,7 @@ namespace VTX::PythonBinding::API::Selection
 		}
 		else
 		{
-			const App::Application::Selection::MoleculeData::IndexRangeList & residueIDs
+			const App::Application::Selection::SystemData::IndexRangeList & residueIDs
 				= p_moleculeSelectionData.getResidueIds();
 
 			for ( const size_t residueID : residueIDs )
@@ -364,12 +364,12 @@ namespace VTX::PythonBinding::API::Selection
 		}
 	}
 
-	void MoleculeInterpretor::_addAtomsFollowingKwargs(
-		const atom_index_t							p_firstAtom,
-		const atom_index_t							p_lastAtom,
-		Molecule &									p_molecule,
-		App::Application::Selection::MoleculeData & p_moleculeSelectionData,
-		const InterpretedKwargs &					p_kwargs
+	void SystemInterpretor::_addAtomsFollowingKwargs(
+		const atom_index_t						  p_firstAtom,
+		const atom_index_t						  p_lastAtom,
+		System &								  p_molecule,
+		App::Application::Selection::SystemData & p_moleculeSelectionData,
+		const InterpretedKwargs &				  p_kwargs
 	)
 	{
 		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )

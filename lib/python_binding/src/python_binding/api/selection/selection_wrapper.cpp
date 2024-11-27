@@ -1,11 +1,11 @@
 #include "python_binding/api/selection/selection_wrapper.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/selection/molecule_data.hpp>
 #include <app/application/selection/selection_manager.hpp>
+#include <app/application/selection/system_data.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/selectable.hpp>
 #include <app/helper/chemistry.hpp>
 #include <app/vtx_app.hpp>
@@ -59,16 +59,16 @@ namespace VTX::PythonBinding::API::Selection
 
 	void SelectionWrapper::selectAll() {}
 
-	const std::vector<App::Component::Chemistry::Molecule *> SelectionWrapper::getMolecules()
+	const std::vector<App::Component::Chemistry::System *> SelectionWrapper::getSystems()
 	{
-		std::vector<App::Component::Chemistry::Molecule *> res = std::vector<App::Component::Chemistry::Molecule *>();
+		std::vector<App::Component::Chemistry::System *> res = std::vector<App::Component::Chemistry::System *>();
 
-		for ( auto it = _selection->begin<App::Component::Chemistry::Molecule>();
-			  it != _selection->end<App::Component::Chemistry::Molecule>();
+		for ( auto it = _selection->begin<App::Component::Chemistry::System>();
+			  it != _selection->end<App::Component::Chemistry::System>();
 			  it++ )
 		{
-			App::Component::Chemistry::Molecule & mol
-				= App::MAIN_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( *it );
+			App::Component::Chemistry::System & mol
+				= App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( *it );
 			res.emplace_back( &mol );
 		}
 
@@ -78,14 +78,16 @@ namespace VTX::PythonBinding::API::Selection
 	{
 		std::vector<App::Component::Chemistry::Chain *> res = std::vector<App::Component::Chemistry::Chain *>();
 
-		for ( auto it = _selection->begin<App::Component::Chemistry::Molecule>();
-			  it != _selection->end<App::Component::Chemistry::Molecule>();
+		for ( auto it = _selection->begin<App::Component::Chemistry::System>();
+			  it != _selection->end<App::Component::Chemistry::System>();
 			  it++ )
 		{
-			App::Component::Chemistry::Molecule & mol = *it;
+			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::MoleculeData & molSelection
-				= App::MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
+			const App::Application::Selection::SystemData & molSelection
+				//= App::ECS_REGISTRY().getComponent<App::Application::Selection::SystemData>( *it );
+				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
+				); // TODO : is this working properly ?
 
 			for ( const size_t & chainID : molSelection.getChainIds() )
 			{
@@ -99,14 +101,16 @@ namespace VTX::PythonBinding::API::Selection
 	{
 		std::vector<App::Component::Chemistry::Residue *> res = std::vector<App::Component::Chemistry::Residue *>();
 
-		for ( auto it = _selection->begin<App::Component::Chemistry::Molecule>();
-			  it != _selection->end<App::Component::Chemistry::Molecule>();
+		for ( auto it = _selection->begin<App::Component::Chemistry::System>();
+			  it != _selection->end<App::Component::Chemistry::System>();
 			  it++ )
 		{
-			App::Component::Chemistry::Molecule & mol = *it;
+			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::MoleculeData & molSelection
-				= App::MAIN_REGISTRY().getComponent<App::Application::Selection::MoleculeData>( *it );
+			const App::Application::Selection::SystemData & molSelection
+				//= App::ECS_REGISTRY().getComponent<App::Application::Selection::SystemData>( *it );
+				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
+				); // TODO : is this working properly ?
 
 			for ( const size_t & residueID : molSelection.getResidueIds() )
 			{
@@ -120,14 +124,14 @@ namespace VTX::PythonBinding::API::Selection
 	{
 		std::vector<App::Component::Chemistry::Atom *> res = std::vector<App::Component::Chemistry::Atom *>();
 
-		for ( auto it = _selection->begin<App::Component::Chemistry::Molecule>();
-			  it != _selection->end<App::Component::Chemistry::Molecule>();
+		for ( auto it = _selection->begin<App::Component::Chemistry::System>();
+			  it != _selection->end<App::Component::Chemistry::System>();
 			  it++ )
 		{
-			App::Component::Chemistry::Molecule & mol = *it;
+			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::MoleculeData & molSelection
-				= _selection->getSelectionDataFromComponent<App::Application::Selection::MoleculeData>( mol );
+			const App::Application::Selection::SystemData & molSelection
+				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol );
 
 			for ( const atom_index_t & atomID : molSelection.getAtomIds() )
 			{
