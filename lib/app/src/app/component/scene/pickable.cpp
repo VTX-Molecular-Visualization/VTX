@@ -25,7 +25,7 @@ namespace VTX::App::Component::Scene
 		case PickType::TOGGLE:
 		{
 			bool isSelected = _isSelectionDataSelected( *selectionData );
-			//
+
 			if ( _isSelectionDataSelected( *selectionData ) )
 			{
 				ACTION_SYSTEM().execute<Action::Selection::Unselect>( *selectionData );

@@ -15,7 +15,7 @@ namespace VTX::App::Action::Selection
 
 			currentSelectionData.remove( *selectionData );
 
-			// if ( not currentSelectionData.isValid() )
+			if ( not currentSelectionData.isValid() )
 			{
 				CURRENT_SELECTION().unselect( selectionData->getSelectionComponent() );
 			}

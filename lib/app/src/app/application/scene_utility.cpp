@@ -7,16 +7,16 @@ namespace VTX::App::Application::SceneUtility
 {
 	Core::ECS::BaseEntity findItemByUID( const Core::UID::uid & p_uid )
 	{
+		// TODO: UIDComponent not found.
 		return SCENE().findItem(
 			[ p_uid ]( const Core::ECS::BaseEntity & p_entity )
 			{
-				if ( !ECS_REGISTRY().hasComponent<Component::Scene::UIDComponent>( p_entity ) )
+				if ( not ECS_REGISTRY().hasComponent<Component::Scene::UIDComponent>( p_entity ) )
+				{
 					return false;
+				}
 
-				const Component::Scene::UIDComponent & uidComponent
-					= ECS_REGISTRY().getComponent<Component::Scene::UIDComponent>( p_entity );
-
-				return uidComponent.contains( p_uid );
+				return ECS_REGISTRY().getComponent<Component::Scene::UIDComponent>( p_entity ).contains( p_uid );
 			}
 		);
 	}

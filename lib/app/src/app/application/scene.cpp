@@ -88,7 +88,6 @@ namespace VTX::App::Application
 	{
 		clear();
 		_createDefaultPath();
-		//_createDefaultColorLayout();
 	}
 
 	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const

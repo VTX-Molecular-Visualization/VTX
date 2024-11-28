@@ -113,6 +113,8 @@ namespace VTX::App::Entity
 				auto & molData = dynamic_cast<Application::Selection::SystemData &>( *res );
 				molData.clear();
 
+				bool test = system.getResidueUIDs().contains( p_pickingInfo.getFirst() );
+
 				if ( p_pickingInfo.hasOneValue() )
 				{
 					// First UID is Atom and not the other one => Pick Atom

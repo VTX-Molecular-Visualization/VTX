@@ -278,6 +278,7 @@ namespace VTX::Renderer
 
 	void Renderer::removeProxySystem( Proxy::System & p_proxy )
 	{
+		VTX_INFO( "Remove proxy systems" );
 		_removeProxySystem( p_proxy );
 		_refreshDataSystems();
 	}
@@ -420,12 +421,27 @@ namespace VTX::Renderer
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
-
-			for ( const uint index : p_atomIds )
+			VTX_DEBUG( "=================================== ON ATOM SELECTIONS" );
+			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
-				cacheSC.flags[ index ] &= ~mask;
-				cacheSC.flags[ index ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+				VTX_DEBUG( "=================================== RANGE" );
+				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
+				{
+					cacheSC.flags[ i ] &= ~mask;
+					cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+
+					VTX_DEBUG( "Select atom: {} -> {}", i, p_select );
+				}
 			}
+
+			/*
+			for ( const uint i : p_atomIds )
+			{
+				cacheSC.flags[ i ] &= ~mask;
+				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			*/
+
 			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			// TODO: ribbons and SES.

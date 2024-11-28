@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <util/algorithm/range.hpp>
 #include <util/constants.hpp>
+#include <util/logger.hpp>
 
 namespace
 {
@@ -39,6 +40,7 @@ namespace VTX::App::Component::Chemistry
 		_bonds	  = std::vector<std::unique_ptr<Chemistry::Bond>>();
 	};
 	System::System( VTX::Core::Struct::System & p_systemStruct ) { setSystemStruct( p_systemStruct ); }
+
 	System::~System()
 	{
 		if ( _atomUidRange.isValid() )
@@ -78,6 +80,8 @@ namespace VTX::App::Component::Chemistry
 			_residues.end(),
 			[ this, n = 0 ]() mutable { return std::move( std::make_unique<Residue>( this, n++ ) ); }
 		);
+
+		_residueUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_residueCount ) );
 
 		_realResidueCount = p_residueCount;
 	}

@@ -63,7 +63,7 @@ namespace VTX::App::Settings
 	{
 		const std::string							   MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
 		const App::Application::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT
-			= App::Application::Selection::Granularity::ATOM;
+			= App::Application::Selection::Granularity::RESIDUE;
 	} // namespace Selection
 
 	namespace Network
