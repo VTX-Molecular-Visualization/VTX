@@ -68,7 +68,7 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		// On quit.
-		onQuit += [ this ]
+		onStop += [ this ]
 		{
 			VTX_TRACE( "Qt stop callback" );
 			_mainWindow->setClosing( true );

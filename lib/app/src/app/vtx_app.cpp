@@ -155,19 +155,7 @@ namespace VTX::App
 	{
 		VTX_INFO( "Stopping application" );
 
-		// Trigger callbacks.
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->onAppStop();
-		}
-
-		onStop();
-
-		// Clean scene.
 		SCENE().reset();
-
-		// Clean ECS.
-		ECS_REGISTRY().clear();
 
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );
@@ -180,8 +168,11 @@ namespace VTX::App
 
 		// Old::Application::Selection::SelectionManager::get().deleteModel();
 
-		// Exit.
-		onQuit();
+		for ( Tool::BaseTool * const tool : _tools )
+		{
+			tool->onAppStop();
+		}
+		onStop();
 	}
 
 	void VTXApp::_handleArgs( const Args & args )
