@@ -36,7 +36,7 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake_layout(self)
 
         self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["pytx"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_python_bin"].libdirs = self.cpp.build.libdirs
 
     def build(self):
         cmake = CMake(self)
@@ -52,9 +52,9 @@ class VTXPythonBindingRecipe(ConanFile):
         self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
         self.cpp_info.components["vtx_python_binding"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
         
-        self.cpp_info.components["pytx"].libs = ["PyTX"]
-        self.cpp_info.components["pytx"].set_property("cmake_target_name", "vtx_python_binding::PyTX")
-        self.cpp_info.components["pytx"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
+        self.cpp_info.components["vtx_python_bin"].libs = ["vtx_python_bin"]
+        self.cpp_info.components["vtx_python_bin"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_bin")
+        self.cpp_info.components["vtx_python_bin"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
 
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)

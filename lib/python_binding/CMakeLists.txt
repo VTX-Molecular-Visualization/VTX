@@ -17,5 +17,5 @@ message("VTX - _VTX_PYTHON_BINDING_CMAKE_DIR_CONTENT : <${_VTX_PYTHON_BINDING_CM
 include(cmake/library.cmake)
 
 install(TARGETS vtx_python_binding FILE_SET public_headers DESTINATION include)
-install(TARGETS PyTX)
+install(TARGETS vtx_python_bin)
 install(DIRECTORY python_script DESTINATION .)

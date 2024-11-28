@@ -8,7 +8,7 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
-find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::PyTX)
+find_package(vtx_python_binding CONFIG REQUIRED COMPONENTS vtx_python_binding::vtx_python_binding vtx_python_binding::vtx_python_bin)
 find_package(Catch2 CONFIG REQUIRED)
 
 set(_VTX_PYTHON_BINDING_TEST_CONAN " ") # So the right target name can be linked
