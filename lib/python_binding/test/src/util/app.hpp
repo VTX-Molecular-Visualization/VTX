@@ -19,8 +19,8 @@ namespace VTX::App::Test::Util
 		static void initApp();
 		static void resetInterpretor();
 
-		static void loadMolecule( const std::string & p_moleculePath );
-		static void loadTestMolecule();
+		static void loadSystem( const std::string & p_moleculePath );
+		static void loadTestSystem();
 	};
 } // namespace VTX::App::Test::Util
 #endif

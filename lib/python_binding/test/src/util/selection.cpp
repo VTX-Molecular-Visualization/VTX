@@ -39,7 +39,7 @@ namespace VTX::App::Test::Util
 		return createSelection( *p_itemPtr );
 	}
 
-	std::unique_ptr<Selection::MoleculeData> Selection::generateMoleculeData(
+	std::unique_ptr<Selection::SystemData> Selection::generateSystemData(
 		const std::string &				  p_molName,
 		const std::vector<size_t> &		  p_chains,
 		const std::vector<size_t> &		  p_residues,
@@ -49,9 +49,9 @@ namespace VTX::App::Test::Util
 		const App::Core::ECS::BaseEntity entity = SCENE().getItem( p_molName );
 
 		const Component::Scene::Selectable & selectableComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
+			= ECS_REGISTRY().getComponent<Component::Scene::Selectable>( entity );
 
-		std::unique_ptr<MoleculeData> res = std::make_unique<MoleculeData>( selectableComponent );
+		std::unique_ptr<SystemData> res = std::make_unique<SystemData>( selectableComponent );
 
 		const bool moleculeFullySelected = p_chains.size() == 0 && p_residues.size() == 0 && p_atoms.size() == 0;
 

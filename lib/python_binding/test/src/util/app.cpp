@@ -37,14 +37,14 @@ namespace VTX::App::Test::Util
 		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
-	void App::loadMolecule( const std::string & p_moleculePath )
+	void App::loadSystem( const std::string & p_moleculePath )
 	{
-		// Create MoleculeEntity
-		const FilePath moleculePath						 = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
-		VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
+		// Create SystemEntity
+		const FilePath						moleculePath = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
+		VTX::App::Action::Scene::LoadSystem openAction	 = VTX::App::Action::Scene::LoadSystem( moleculePath );
 		openAction.execute();
 	}
 
-	void App::loadTestMolecule() { loadMolecule( MOLECULE_TEST_NAME_EXT ); }
+	void App::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
 
 } // namespace VTX::App::Test::Util

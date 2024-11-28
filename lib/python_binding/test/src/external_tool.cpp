@@ -1,6 +1,7 @@
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
 #include <app/filesystem.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
@@ -12,7 +13,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 {
 	using namespace VTX;
 
-	App::Test::Util::App::initApp();
+	App::Fixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 

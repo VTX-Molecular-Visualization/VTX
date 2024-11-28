@@ -131,7 +131,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
-	VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
+	VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( moleculePath );
 	openAction.execute();
 
 	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };

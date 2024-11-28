@@ -22,8 +22,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
 
-	App::Action::Scene::LoadMolecule loadMoleculeAction = App::Action::Scene::LoadMolecule( moleculePath );
-	loadMoleculeAction.execute();
+	App::Action::Scene::LoadSystem loadSystemAction = App::Action::Scene::LoadSystem( moleculePath );
+	loadSystemAction.execute();
 
 	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / "test_api.py";
 	std::stringstream ssCommandRun = std::stringstream();
