@@ -60,6 +60,7 @@ namespace VTX::App
 		inline static Util::Callback<float> onPostRender;
 		inline static Util::Callback<>		onEndOfFrameOneShot;
 		inline static Util::Callback<>		onStop;
+		inline static Util::Callback<>		onQuit;
 
 		// Progress dialog callbacks.
 		inline static Util::Callback<std::string_view> onStartBlockingOperation;
