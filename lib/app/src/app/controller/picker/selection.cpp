@@ -94,8 +94,10 @@ namespace VTX::App::Controller::Picker
 		const PickingInfo pickingInfo
 			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
-		if ( !pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
+		if ( not pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
+		{
 			return;
+		}
 
 		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::None ) )
 		{
@@ -106,6 +108,7 @@ namespace VTX::App::Controller::Picker
 	void Selection::_performSelection( const PickingInfo & p_pickingInfo ) const
 	{
 		// Append to selection if CTRL modifier pressed.
+		// TODO: move to action? Is input manager still needed?
 		const App::Component::Scene::Pickable::PickType pickType
 			= INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::Ctrl )
 				  ? App::Component::Scene::Pickable::PickType::TOGGLE

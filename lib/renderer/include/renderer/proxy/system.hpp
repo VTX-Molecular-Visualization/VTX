@@ -42,13 +42,15 @@ namespace VTX::Renderer::Proxy
 		Util::Callback<std::vector<uchar> &> onAtomColors;	   // Update colors (ATOM/CHAIN/RESIDUE)...
 		Util::Callback<std::vector<uchar> &> onResidueColors;  // Update colors (ATOM/CHAIN/RESIDUE)...
 
-		Util::Callback<const Util::Math::RangeList<uint> &, bool>
-			onAtomVisibilities; // Update atom visibility with ranges.
-		Util::Callback<const Util::Math::RangeList<uint> &, bool>
-			onAtomSelections; // Update atom selection with ranges.
-		Util::Callback<const Util::Math::RangeList<uint> &, uchar>
-			onAtomRepresentations; // Update atom representations with ranges.
+		// Update atom visibility with ranges.
+		Util::Callback<const Util::Math::RangeList<uint> &, bool> onAtomVisibilities;
+		// Update atom selection with ranges.
+		Util::Callback<const Util::Math::RangeList<uint> &, bool> onAtomSelections;
+		// Update atom representations with ranges.
+		Util::Callback<const Util::Math::RangeList<uint> &, uchar> onAtomRepresentations;
+		// Update atom colors with ranges.
 		Util::Callback<const Util::Math::RangeList<uint> &, uchar> onAtomColorsRange;
+		// Update residue colors with ranges.
 		Util::Callback<const Util::Math::RangeList<uint> &, uchar> onResidueColorsRange;
 	};
 

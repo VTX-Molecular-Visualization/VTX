@@ -63,8 +63,10 @@ namespace VTX::App::Entity
 
 		// UID.
 		uid.referenceUID( system.getAtomUIDs() );
+
 		// Selectable.
 		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
+
 		// AABB.
 		aabb.init();
 		aabb.setAABBComputationFunction(
@@ -82,6 +84,7 @@ namespace VTX::App::Entity
 				return res;
 			}
 		);
+
 		// Proxy.
 		proxy.setup( App::RENDERER_SYSTEM() );
 

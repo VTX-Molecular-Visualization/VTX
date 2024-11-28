@@ -316,6 +316,7 @@ namespace VTX::Renderer
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
 
 		// Set up callbacks.
+		// Transform.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
@@ -324,6 +325,7 @@ namespace VTX::Renderer
 			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy ) );
 		};
 
+		// Visibility.
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
 		{
 			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
@@ -348,6 +350,49 @@ namespace VTX::Renderer
 			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
 		};
 
+		// Representation.
+		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+
+			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
+			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
+
+			_context->setSubData(
+				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
+			);
+			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+		};
+
+		// Remove.
+		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxySystem( p_proxy ); };
+
+		// Positions.
+		p_proxy.onAtomPositions += [ this, &p_proxy ]()
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context->setSubData(
+				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
+			);
+		};
+
+		// Colors.
+		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+		};
+
+		// Residue colors.
+		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
+			_context->setSubData( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+		};
+
+		// Selection.
+		// TODO: optimize.
 		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
@@ -369,40 +414,21 @@ namespace VTX::Renderer
 			_context->setSubData( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
 		};
 
-		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
+		p_proxy.onAtomSelections +=
+			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_select )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
 
-			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
-			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
+			for ( const uint index : p_atomIds )
+			{
+				cacheSC.flags[ index ] &= ~mask;
+				cacheSC.flags[ index ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
-			_context->setSubData(
-				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
-			);
-			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
-		};
-
-		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxySystem( p_proxy ); };
-
-		p_proxy.onAtomPositions += [ this, &p_proxy ]()
-		{
-			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData(
-				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
-			);
-		};
-
-		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
-		{
-			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
-		};
-
-		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
-		{
-			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
-			_context->setSubData( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+			// TODO: ribbons and SES.
 		};
 
 		// TODO:

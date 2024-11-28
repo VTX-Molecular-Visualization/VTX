@@ -139,8 +139,25 @@ int main( int, char ** )
 
 		Renderer::Proxy::Representation representation1, representation2, representation3;
 
-		// representation2.radiusFixed		  = false;
-		// representation3.radiusSphereFixed = 1.5f;
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SPHERE, true );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, 0.5f );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, 0.f );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, true );
+
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_CYLINDER, true );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, 0.1f );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, false );
+
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_RIBBON, true );
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, true );
+
+		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SES, false );
+
+		representation2 = representation1;
+		representation3 = representation1;
+
+		representation2.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, false );
+		representation3.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, 1.5f );
 
 		std::vector<Renderer::Proxy::Representation *> representations
 			= { &representation1, &representation2, &representation3 };
