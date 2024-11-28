@@ -115,6 +115,7 @@ namespace VTX::App::Core::ECS
 		//	return std::forward( observer );
 		// }
 
+		// TODO: debug.
 		template<ConceptComponent C, auto Func, typename Receiver>
 		void connectSignal( const SIGNAL p_signal, Receiver * const p_receiver )
 		{
@@ -129,9 +130,12 @@ namespace VTX::App::Core::ECS
 		template<ConceptComponent C>
 		void deleteAll()
 		{
-			entt::basic_view view = _enttRegistry.view<C>();
-			_enttRegistry.destroy( view.begin(), view.end() );
+			for ( const auto entity : _enttRegistry.view<C>() )
+			{
+				_enttRegistry.destroy( entity );
+			}
 		}
+
 		void clear() { _enttRegistry.clear(); }
 
 	  private:

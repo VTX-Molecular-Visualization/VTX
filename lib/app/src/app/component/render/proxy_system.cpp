@@ -11,21 +11,21 @@
 #include <renderer/facade.hpp>
 #include <util/algorithm/range.hpp>
 #include <util/exceptions.hpp>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
 {
 	ProxySystem::ProxySystem() {}
+
 	ProxySystem::~ProxySystem() { _removeFromRenderer(); }
+
 	void ProxySystem::setup( Renderer::Facade & p_renderer )
 	{
 		_addInRenderer( p_renderer );
 		_setupCallbacks();
-
-		ECS_REGISTRY().connectSignal<Component::Chemistry::System, &ProxySystem::_removeFromRenderer>(
-			Core::ECS::SIGNAL::DESTROY, this
-		);
 	}
+
 	void ProxySystem::_removeFromRenderer() { _proxy->onRemove(); }
 
 	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
