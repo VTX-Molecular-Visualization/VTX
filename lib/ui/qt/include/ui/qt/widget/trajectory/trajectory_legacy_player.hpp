@@ -4,7 +4,6 @@
 #include "app/application/system/ecs_system.hpp"
 #include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <app/core/uid/uid.hpp>
 #include <ui/qt/base_widget.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 ////////
@@ -23,8 +22,8 @@ namespace VTX::UI::QT::Widget
 	class TrajectoryLegacyPlayer : public TrajectoryBasePlayer
 	{
 	  public:
-		TrajectoryLegacyPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
-			TrajectoryBasePlayer( p_parent, p_systemUID )
+		TrajectoryLegacyPlayer( QWidget * p_parent, const App::Component::Chemistry::System * p_system ) :
+			TrajectoryBasePlayer( p_parent, p_system )
 		{
 			setupAdditionalElts();
 
@@ -51,24 +50,10 @@ namespace VTX::UI::QT::Widget
 			_playerSelector->addItem( App::Core::Player::RevertLoop::DISPLAYED_NAME.c_str() );
 			_playerSelector->addItem( App::Core::Player::Stop::DISPLAYED_NAME.c_str() );
 
-			//_playerSelector->setCurrentIndex( 0 ); // FIXME
-			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+			auto & traj	  = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *getSystem() );
+			auto   player = traj.getPlayer().getDisplayName();
 
-				if ( component.contains( getSystemUID() ) )
-				{
-					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
-						App::ECS_REGISTRY().getEntity( component )
-					);
-					auto player = traj.getPlayer().getDisplayName();
-
-					_playerSelector->setCurrentText( QString( player.c_str() ) );
-				}
-			}
+			_playerSelector->setCurrentText( QString( player.c_str() ) );
 		}
 
 		// player selector combobox goes on top
@@ -79,48 +64,34 @@ namespace VTX::UI::QT::Widget
 			auto * progressElt		= getProgressElt();
 			auto * frameSelectorElt = getFrameSelectorElt();
 
-			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
+			auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *getSystem() );
+
+			// define min and max of slider from traj info
+			progressElt->setMinimum( 0 );
+			progressElt->setMaximum( (int)traj.getFrameCount() - 1 );
+
+			// set cursor at the current frame index
+			// progressElt->setValue( (int)traj.getCurrentFrame() );
+			progressElt->setValue( (int)traj.getPlayer().getCurrent() );
+
+			// display current frame index in selector lineedit
+			// frameSelectorElt->setText(
+			// QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
+			frameSelectorElt->setText( QLocale().toString( (int)traj.getPlayer().getCurrent() ) );
+
+			// update both slider and lineedit zone with current frame
+			traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
 			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
+				VTX_INFO(
+					"trajectory_player frame changed  = {}", traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
+				);
+				int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex();
+				getProgressElt()->setValue( currentFrameIdx );
+				getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
 
-				if ( component.contains( getSystemUID() ) )
-				{
-					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
-						App::ECS_REGISTRY().getEntity( component )
-					);
-
-					// define min and max of slider from traj info
-					progressElt->setMinimum( 0 );
-					progressElt->setMaximum( (int)traj.getFrameCount() - 1 );
-
-					// set cursor at the current frame index
-					// progressElt->setValue( (int)traj.getCurrentFrame() );
-					progressElt->setValue( (int)traj.getPlayer().getCurrent() );
-
-					// display current frame index in selector lineedit
-					// frameSelectorElt->setText(
-					// QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
-					frameSelectorElt->setText( QLocale().toString( (int)traj.getPlayer().getCurrent() ) );
-
-					// update both slider and lineedit zone with current frame
-					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
-					{
-						VTX_INFO(
-							"trajectory_player frame changed  = {}",
-							traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
-						);
-						int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex();
-						getProgressElt()->setValue( currentFrameIdx );
-						getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
-
-						if ( !traj.getPlayer().isPlaying() )
-							setStopPlayer();
-					};
-				}
-			}
+				if ( !traj.getPlayer().isPlaying() )
+					setStopPlayer();
+			};
 		}
 
 		void updateOnFrameChangeCallback( App::Component::Chemistry::Trajectory & p_traj ) {}
@@ -138,12 +109,12 @@ namespace VTX::UI::QT::Widget
 
 					switch ( p_index )
 					{
-					case 0: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Loop>>( getSystemUID() ); break;
-					case 1: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Once>>( getSystemUID() ); break;
-					case 2: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<PingPong>>( getSystemUID() ); break;
-					case 3: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertOnce>>( getSystemUID() ); break;
-					case 4: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertLoop>>( getSystemUID() ); break;
-					case 5: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Stop>>( getSystemUID() ); break;
+					case 0: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Loop>>( getSystem() ); break;
+					case 1: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Once>>( getSystem() ); break;
+					case 2: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<PingPong>>( getSystem() ); break;
+					case 3: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertOnce>>( getSystem() ); break;
+					case 4: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertLoop>>( getSystem() ); break;
+					case 5: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Stop>>( getSystem() ); break;
 					default: break;
 					}
 

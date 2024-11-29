@@ -1,16 +1,15 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_BASE_PLAYER__
 
-#include <ui/qt/base_widget.hpp>
-#include <app/core/uid/uid.hpp>
-#include <app/action/trajectory.hpp>
+#include <QBoxLayout>
 #include <QDockWidget>
-#include <QPushButton>
-#include <QSlider>
-#include <QLineEdit>
 #include <QGridLayout>
 #include <QIntValidator>
-#include <QBoxLayout>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSlider>
+#include <app/action/trajectory.hpp>
+#include <ui/qt/base_widget.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -18,8 +17,8 @@ namespace VTX::UI::QT::Widget
 	class TrajectoryBasePlayer : public QWidget
 	{
 	  public:
-		TrajectoryBasePlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
-			QWidget( p_parent ), _systemUID( p_systemUID )
+		TrajectoryBasePlayer( QWidget * p_parent, const App::Component::Chemistry::System * p_system ) :
+			QWidget( p_parent ), _system( p_system )
 		{
 			setupLayout();
 
@@ -32,7 +31,7 @@ namespace VTX::UI::QT::Widget
 
 		virtual ~TrajectoryBasePlayer() {}
 
-		const App::Core::UID::UIDRange & getSystemUID() const { return _systemUID; }
+		const App::Component::Chemistry::System * getSystem( void ) { return _system; }
 
 		QSlider * getProgressElt( void ) { return _progressElt; }
 
@@ -40,11 +39,12 @@ namespace VTX::UI::QT::Widget
 
 		QGridLayout * getLayout( void ) { return _layout; }
 
-		void setStopPlayer(void)
+		void setStopPlayer( void )
 		{
 			_isPlaying = false;
 			_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 		}
+
 	  private:
 		void setupLayout()
 		{
@@ -58,9 +58,9 @@ namespace VTX::UI::QT::Widget
 			_layout->setRowStretch( 2, 1 );
 
 			_playButtonsLayout = new QHBoxLayout();
-			_progressLayout	 = new QGridLayout();
+			_progressLayout	   = new QGridLayout();
 
-			_progressLayout->setColumnStretch(0, 3);
+			_progressLayout->setColumnStretch( 0, 3 );
 			_progressLayout->setColumnStretch( 1, 1 );
 
 			_layout->setSizeConstraint( QLayout::SetMaximumSize );
@@ -89,7 +89,7 @@ namespace VTX::UI::QT::Widget
 		void setupProgress()
 		{
 			_progressElt = new QSlider( Qt::Horizontal, this );
-			
+
 			_progressElt->setTickPosition( QSlider::TicksAbove );
 		}
 		void setupFrameRate()
@@ -99,8 +99,8 @@ namespace VTX::UI::QT::Widget
 			_frameRateDecrElt = new QPushButton( this );
 			_frameRateDecrElt->setIcon( QIcon( ":/sprite/trajectory_first_frame_icon.png" ) );
 		}
-		void setupFrameSelector() 
-		{ 
+		void setupFrameSelector()
+		{
 			_frameSelectorElt = new QLineEdit( this );
 			//_frameSelectorElt->setInputMask( "9" );
 			_frameSelectorElt->setValidator( new QIntValidator( 0, 2147483647, this ) );
@@ -130,18 +130,18 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					if (_isPlaying)
+					if ( _isPlaying )
 					{
 						setStopPlayer();
 
-						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _systemUID );
+						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _system );
 					}
 					else
 					{
 						_isPlaying = true;
 						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
 
-						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _systemUID );
+						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _system );
 					}
 					/* auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>(
 						*( App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Molecule>().begin() )
@@ -260,7 +260,7 @@ namespace VTX::UI::QT::Widget
 				{
 					setStopPlayer();
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _systemUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _system );
 				}
 			);
 
@@ -273,7 +273,7 @@ namespace VTX::UI::QT::Widget
 					if ( !_isPlaying )
 						return;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::DecreaseFrameRate>( _systemUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::DecreaseFrameRate>( _system );
 				}
 			);
 
@@ -286,7 +286,7 @@ namespace VTX::UI::QT::Widget
 					if ( !_isPlaying )
 						return;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::IncreaseFrameRate>( _systemUID );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::IncreaseFrameRate>( _system );
 				}
 			);
 
@@ -296,7 +296,9 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]( const int p_value )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>( _systemUID, p_value );
+					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
+						_system, p_value
+					);
 				}
 			);
 
@@ -304,9 +306,10 @@ namespace VTX::UI::QT::Widget
 				_frameSelectorElt,
 				&QLineEdit::returnPressed,
 				this,
-				[ & ]() {
+				[ & ]()
+				{
 					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
-						_systemUID, _frameSelectorElt->text().toInt()
+						_system, _frameSelectorElt->text().toInt()
 					);
 				}
 			);
@@ -314,16 +317,16 @@ namespace VTX::UI::QT::Widget
 
 		std::atomic_bool _isPlaying; // FIXME dev purpose to stop threads needs improvement
 
-		const App::Core::UID::UIDRange & _systemUID;
-		QGridLayout	  *_layout;
-		QHBoxLayout *_playButtonsLayout;
-		QGridLayout *_progressLayout;
-		QPushButton *_stopElt;
-		QPushButton *_playPauseElt;
-		QPushButton *  _frameRateIncrElt;
-		QPushButton *  _frameRateDecrElt;
-		QSlider	  *_progressElt;
-		QLineEdit	  *_frameSelectorElt;
+		const App::Component::Chemistry::System * _system;
+		QGridLayout *							  _layout;
+		QHBoxLayout *							  _playButtonsLayout;
+		QGridLayout *							  _progressLayout;
+		QPushButton *							  _stopElt;
+		QPushButton *							  _playPauseElt;
+		QPushButton *							  _frameRateIncrElt;
+		QPushButton *							  _frameRateDecrElt;
+		QSlider *								  _progressElt;
+		QLineEdit *								  _frameSelectorElt;
 	};
 
 } // namespace VTX::UI::QT::Widget

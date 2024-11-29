@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_MANAGER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_MANAGER__
 
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <app/application/scene.hpp>
 #include "app/component/scene/uid_component.hpp"
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <app/application/scene.hpp>
 #include <ui/qt/base_widget.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 #include <ui/qt/widget/trajectory/trajectory_legacy_player.hpp>
@@ -15,8 +15,7 @@ namespace VTX::UI::QT::Widget
 	class TrajectoryManager : public QWidget
 	{
 	  public:
-		TrajectoryManager( QWidget * p_parent ) :
-			QWidget( p_parent ), _parent( p_parent )
+		TrajectoryManager( QWidget * p_parent ) : QWidget( p_parent ), _parent( p_parent )
 		{
 			setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Maximum );
 
@@ -26,7 +25,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		virtual ~TrajectoryManager() {}
-		
+
 	  private:
 		void setupLayout()
 		{
@@ -41,23 +40,22 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_sceneItem ) )
 				{
-					auto & system
-						= App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_sceneItem );
+					auto & system = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_sceneItem );
 					auto & uid = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( p_sceneItem );
 
 					if ( system.hasTrajectory() )
 					{
-						if (system.getTrajectory().isOptimized())
+						if ( system.getTrajectory().isOptimized() )
 						{
-							auto					*playerZone = new QGroupBox( system.getName().c_str() );
-							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							auto *						playerZone = new QGroupBox( system.getName().c_str() );
+							TrajectoryOptimizedPlayer * player	   = new TrajectoryOptimizedPlayer( this, &system );
 							playerZone->setLayout( player->layout() );
-							_layout->addWidget( playerZone );							
+							_layout->addWidget( playerZone );
 						}
 						else
 						{
-							auto					*playerZone = new QGroupBox( system.getName().c_str() );
-							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
+							auto *					 playerZone = new QGroupBox( system.getName().c_str() );
+							TrajectoryLegacyPlayer * player		= new TrajectoryLegacyPlayer( this, &system );
 							playerZone->setLayout( player->layout() );
 							_layout->addWidget( playerZone );
 						}
@@ -66,15 +64,15 @@ namespace VTX::UI::QT::Widget
 					{
 						if ( system.getTrajectory().isOptimized() )
 						{
-							auto					*playerZone = new QGroupBox( system.getName().c_str() );
-							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
+							auto *						playerZone = new QGroupBox( system.getName().c_str() );
+							TrajectoryOptimizedPlayer * player	   = new TrajectoryOptimizedPlayer( this, &system );
 							playerZone->setLayout( player->layout() );
 							_layout->addWidget( playerZone );
 						}
 						else
 						{
 							auto *					 playerZone = new QGroupBox( system.getName().c_str() );
-							TrajectoryLegacyPlayer * player = new TrajectoryLegacyPlayer( this, system.getAtomUIDs() );
+							TrajectoryLegacyPlayer * player		= new TrajectoryLegacyPlayer( this, &system );
 							playerZone->setLayout( player->layout() );
 							_layout->addWidget( playerZone );
 						}
@@ -83,7 +81,7 @@ namespace VTX::UI::QT::Widget
 			};
 		}
 
-		QWidget		  *_parent;
+		QWidget *	 _parent;
 		QBoxLayout * _layout;
 	};
 

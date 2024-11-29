@@ -13,208 +13,76 @@ namespace VTX::App::Action::Trajectory
 	class SetPlayTrajectory final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetPlayTrajectory( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		SetPlayTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 	class SetPauseTrajectory final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetPauseTrajectory( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		SetPauseTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 	class SetStopTrajectory final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetStopTrajectory( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		SetStopTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-
-		const App::Core::UID::UIDRange & _system;
-	};
-
-	class SetCircularPlayer final : public App::Core::Action::BaseAction
-	{
-	  public:
-		SetCircularPlayer( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
-		void execute() override;
-
-	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 	class DecreaseFrameRate final : public App::Core::Action::BaseAction
 	{
 	  public:
-		DecreaseFrameRate( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		DecreaseFrameRate( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 	class IncreaseFrameRate final : public App::Core::Action::BaseAction
 	{
 	  public:
-		IncreaseFrameRate( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		IncreaseFrameRate( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 	class SetTrajectoryCurrentFrame final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetTrajectoryCurrentFrame( const App::Core::UID::UIDRange & p_system, const int p_value ) :
+		SetTrajectoryCurrentFrame( const App::Component::Chemistry::System * p_system, const int p_value ) :
 			_system( p_system ), _value( p_value )
 		{
 		}
 		void execute() override;
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-		const App::Core::UID::UIDRange & _system;
-		const int						 _value;
+		const App::Component::Chemistry::System * _system;
+		const int								  _value;
 	};
 
 	template<Core::Player::ConceptPlayer P>
 	class SetLegacyPlayerType final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetLegacyPlayerType( const App::Core::UID::UIDRange & p_system ) : _system( p_system ) {}
+		SetLegacyPlayerType( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
 
 		void execute() override
 		{
-			auto entity = getEntityFromUIDRange( _system );
-
-			if ( not ECS_REGISTRY().isValid( entity ) )
-			{
-				return;
-			}
-
-			auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+			auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 
 			bool previousState = traj.getPlayer().isPlaying();
 
@@ -229,23 +97,7 @@ namespace VTX::App::Action::Trajectory
 		}
 
 	  private:
-		VTX::App::Core::ECS::BaseEntity getEntityFromUIDRange(
-			const App::Component::Scene::UIDComponent & p_UIDComponent
-		) const
-		{
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
-			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( _system ) )
-					return App::ECS_REGISTRY().getEntity( component );
-			}
-
-			return VTX::App::Core::ECS::INVALID_ENTITY;
-		}
-		const App::Core::UID::UIDRange & _system;
+		const App::Component::Chemistry::System * _system;
 	};
 
 } // namespace VTX::App::Action::Trajectory

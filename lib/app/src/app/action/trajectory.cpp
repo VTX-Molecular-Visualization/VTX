@@ -10,15 +10,11 @@ namespace VTX::App::Action::Trajectory
 {
 	void SetPlayTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-
 		// VTX::Core::Struct::Molecule moleculeStruct = VTX::Core::Struct::Molecule();
 		// auto & molecule = ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>( entity );
 		// molecule.setMoleculeStruct( moleculeStruct );
 
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		traj.getPlayer().play();
 
 		//////////////////////////////////////////////////
@@ -166,41 +162,19 @@ namespace VTX::App::Action::Trajectory
 
 	void SetPauseTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		traj.getPlayer().pause();
 	}
 
 	void SetStopTrajectory::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		traj.getPlayer().stop();
-	}
-
-	void SetCircularPlayer::execute()
-	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
-		traj.setPlayer<Core::Player::CircularBuffer>();
 	}
 
 	void DecreaseFrameRate::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		if ( !traj.getPlayer().getFPS() )
 			traj.getPlayer().setFPS( 1 ); // FIXME raw fps in code = bad, find a way to define
 		else
@@ -209,11 +183,7 @@ namespace VTX::App::Action::Trajectory
 
 	void IncreaseFrameRate::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		if ( !traj.getPlayer().getFPS() )
 			return; // nothing to do, already the fastest playing framerate
 		else
@@ -224,11 +194,7 @@ namespace VTX::App::Action::Trajectory
 
 	void SetTrajectoryCurrentFrame::execute()
 	{
-		auto entity = getEntityFromUIDRange( _system );
-		if ( !ECS_REGISTRY().isValid( entity ) )
-			return;
-		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( entity );
-
+		auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 		if ( _value <= ( traj.getPlayer().getCount() - 1 ) )
 			traj.getPlayer().setCurrent( _value );
 	}

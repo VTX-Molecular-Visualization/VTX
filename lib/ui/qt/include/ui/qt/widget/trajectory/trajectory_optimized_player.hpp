@@ -1,18 +1,17 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_OPTIMIZED_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_OPTIMIZED_PLAYER__
 
-#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
-#include <ui/qt/base_widget.hpp>
-#include <app/action/trajectory.hpp>
 #include "app/application/system/ecs_system.hpp"
+#include <QDockWidget>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSlider>
+#include <QToolButton>
+#include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/core/player/circular_buffer.hpp>
-#include <app/core/uid/uid.hpp>
-#include <QDockWidget>
-#include <QPushButton>
-#include <QToolButton>
-#include <QSlider>
-#include <QLineEdit>
+#include <ui/qt/base_widget.hpp>
+#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -20,8 +19,8 @@ namespace VTX::UI::QT::Widget
 	class TrajectoryOptimizedPlayer : public TrajectoryBasePlayer
 	{
 	  public:
-		TrajectoryOptimizedPlayer( QWidget * p_parent, const App::Core::UID::UIDRange & p_systemUID ) :
-			TrajectoryBasePlayer( p_parent , p_systemUID )
+		TrajectoryOptimizedPlayer( QWidget * p_parent, const App::Component::Chemistry::System * p_system ) :
+			TrajectoryBasePlayer( p_parent, p_system )
 		{
 			setupAdditionalElts();
 
@@ -31,7 +30,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		virtual ~TrajectoryOptimizedPlayer() {}
-		
+
 	  private:
 		// adds circular buffer label
 		void setupAdditionalElts()
@@ -45,42 +44,31 @@ namespace VTX::UI::QT::Widget
 
 		void modifyProgressElt( void )
 		{
-			auto * progressElt = getProgressElt();
+			auto * progressElt		= getProgressElt();
 			auto * frameSelectorElt = getFrameSelectorElt();
 
-			// FIXME refacto this code to get trajectory from UID? also used in trajectory actions
-			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().begin();
-				  iter != App::ECS_REGISTRY().findComponents<App::Component::Scene::UIDComponent>().end();
-				  ++iter )
+			auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *getSystem() );
+
+			// define min and max of slider from traj info
+			progressElt->setMinimum( 0 );
+			progressElt->setMaximum( (int)traj.getFrameCount() );
+
+			// display current frame index in selector lineedit
+			frameSelectorElt->setText( QLocale().toString(
+				(int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex()
+			) );
+
+			// update both slider and lineedit zone with current frame
+			traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
 			{
-				auto & component = App::ECS_REGISTRY().getComponent<App::Component::Scene::UIDComponent>( *iter );
-
-				if ( component.contains( getSystemUID() ) )
-				{
-					auto & traj = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>(
-						App::ECS_REGISTRY().getEntity( component )
-					);
-
-					// define min and max of slider from traj info
-					progressElt->setMinimum( 0 );
-					progressElt->setMaximum( (int)traj.getFrameCount() );
-
-					// display current frame index in selector lineedit
-					frameSelectorElt->setText( QLocale().toString((int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex()) );
-
-					// update both slider and lineedit zone with current frame
-					traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
-					{
-						VTX_INFO(
-							"trajectory_player frame changed  = {}",
-							traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
-						);
-						int currentFrameIdx = (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
-						getProgressElt()->setValue( currentFrameIdx );
-						getFrameSelectorElt()->setText( QLocale().toString(currentFrameIdx) );
-					};
-				}
-			}
+				VTX_INFO(
+					"trajectory_player frame changed  = {}", traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
+				);
+				int currentFrameIdx
+					= (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
+				getProgressElt()->setValue( currentFrameIdx );
+				getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
+			};
 
 			progressElt->setEnabled( false );
 			frameSelectorElt->setEnabled( false );
