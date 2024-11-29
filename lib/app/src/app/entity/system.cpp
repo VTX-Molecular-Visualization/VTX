@@ -96,7 +96,7 @@ namespace VTX::App::Entity
 		{
 			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
-			if ( trajectory.getSystemPtr()->getTrajectory().IsOptimized() )
+			if ( trajectory.getSystemPtr()->getTrajectory().isOptimized() )
 				trajectory.setPlayer<Core::Player::CircularBuffer>();
 			else
 				trajectory.setPlayer<Core::Player::Loop>();

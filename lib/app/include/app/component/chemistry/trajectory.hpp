@@ -48,7 +48,7 @@ namespace VTX::App::Component::Chemistry
 			_currentUpdateCallback = APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime )
 			{ _player->update( p_deltaTime, p_elapsedTime ); };
 
-			_player->setCount( _systemPtr->getTrajectory().GetFrameCount() );
+			_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
 			/* _player->onFrameChange += [ this ]( const size_t p_frameIndex )
 			{

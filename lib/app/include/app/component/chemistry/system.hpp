@@ -73,7 +73,7 @@ namespace VTX::App::Component::Chemistry
 			/* VTX::Core::Struct::Frame tmpFrame;
 			_systemStruct.trajectory.getCurrentFrame(tmpFrame);
 			return tmpFrame.size() >= 2;*/
-			return _systemStruct.trajectory.GetCurrentFrame().size() >= 1;
+			return _systemStruct.trajectory.getCurrentFrame().size() >= 1;
 		}
 		VTX::Core::Struct::Trajectory & getTrajectory() { return _systemStruct.trajectory; }
 

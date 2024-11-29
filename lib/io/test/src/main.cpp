@@ -93,7 +93,7 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader	   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
@@ -103,14 +103,14 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 	{
 		outFile << element[0] << element[1] << element[2];
 	} */
-	for ( auto & element : molecule.trajectory.GetCurrentFrame() )
+	for ( auto & element : molecule.trajectory.getCurrentFrame() )
 	{
 		outFile << element[ 0 ] << element[ 1 ] << element[ 2 ];
 	}
 	outFile.close();
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 10001 );
-	CHECK( molecule.trajectory.GetFrameCount() == 10001 );
+	CHECK( molecule.trajectory.getFrameCount() == 10001 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
@@ -125,14 +125,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 10001 );
-	CHECK( molecule.trajectory.GetFrameCount() == 10001 );
+	CHECK( molecule.trajectory.getFrameCount() == 10001 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
@@ -147,14 +147,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory.GetFrameCount() == 101 );
+	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
@@ -169,14 +169,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory.GetFrameCount() == 101 );
+	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
@@ -191,14 +191,14 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 101 );
-	CHECK( molecule.trajectory.GetFrameCount() == 101 );
+	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
 TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
@@ -213,14 +213,14 @@ TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 1 );
-	CHECK( molecule.trajectory.GetFrameCount() == 1 );
+	CHECK( molecule.trajectory.getFrameCount() == 1 );
 }
 
 TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
@@ -235,14 +235,14 @@ TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
 	VTX_INFO( "Test on {}", moleculeName );
 
 	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
-	molecule.trajectory.SetOptimized();
+	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader		   = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
 	// devjla
 	// CHECK( molecule.trajectory.frames.size() == 1 );
-	CHECK( molecule.trajectory.GetFrameCount() == 1 );
+	CHECK( molecule.trajectory.getFrameCount() == 1 );
 }
 
 TEST_CASE( "VTX_IO - circular buffer read write no overflow", "[integration]" )
@@ -250,18 +250,18 @@ TEST_CASE( "VTX_IO - circular buffer read write no overflow", "[integration]" )
 	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 4; ++idx )
-		testCircBuff.WriteElement( bigVect[ idx ] );
+		testCircBuff.writeElement( bigVect[ idx ] );
 
 	int val( INT_MAX );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 0 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 1 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 2 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 3 );
-	CHECK( testCircBuff.ReadElement( val ) == false );
+	CHECK( testCircBuff.readElement( val ) == false );
 	CHECK( val == 3 );
 }
 
@@ -270,18 +270,18 @@ TEST_CASE( "VTX_IO - circular buffer write full buffer", "[integration]" )
 	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 5; ++idx )
-		testCircBuff.WriteElement( bigVect[ idx ] );
+		testCircBuff.writeElement( bigVect[ idx ] );
 
 	int val( INT_MAX );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 0 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 1 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 2 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 3 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 4 );
 }
 
@@ -290,25 +290,25 @@ TEST_CASE( "VTX_IO - circular buffer write overflow circular read", "[integratio
 	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 5; ++idx )
-		testCircBuff.WriteElement( bigVect[ idx ] );
+		testCircBuff.writeElement( bigVect[ idx ] );
 
 	int val( INT_MAX );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 0 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 1 );
 
-	testCircBuff.WriteElement( bigVect[ 5 ] );
+	testCircBuff.writeElement( bigVect[ 5 ] );
 
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 2 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 3 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 4 );
-	CHECK( testCircBuff.ReadElement( val ) == true );
+	CHECK( testCircBuff.readElement( val ) == true );
 	CHECK( val == 5 );
-	CHECK( testCircBuff.ReadElement( val ) == false );
+	CHECK( testCircBuff.readElement( val ) == false );
 	CHECK( val == 5 );
 }
 
@@ -318,24 +318,24 @@ TEST_CASE( "VTX_IO - frame data write", "[integration]" )
 	for ( uint64_t idx = 0; idx < 5; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };
-		std::vector<VTX::Vec3f> &	  dummyFrame = frames.WriteElement( wvec );
+		std::vector<VTX::Vec3f> &	  dummyFrame = frames.writeElement( wvec );
 		++dummyFrame[ 0 ][ 2 ];
 	}
 
 	std::vector<VTX::Vec3f> rvec { { INT_MAX, INT_MAX, INT_MAX } };
-	CHECK( frames.ReadElement( rvec ) == true );
+	CHECK( frames.readElement( rvec ) == true );
 	CHECK( rvec[ 0 ][ 0 ] == 0 );
 	CHECK( rvec[ 0 ][ 2 ] == 1 );
-	CHECK( frames.ReadElement( rvec ) == true );
+	CHECK( frames.readElement( rvec ) == true );
 	CHECK( rvec[ 0 ][ 0 ] == 1 );
 	CHECK( rvec[ 0 ][ 2 ] == 2 );
-	CHECK( frames.ReadElement( rvec ) == true );
+	CHECK( frames.readElement( rvec ) == true );
 	CHECK( rvec[ 0 ][ 0 ] == 2 );
 	CHECK( rvec[ 0 ][ 2 ] == 3 );
-	CHECK( frames.ReadElement( rvec ) == true );
+	CHECK( frames.readElement( rvec ) == true );
 	CHECK( rvec[ 0 ][ 0 ] == 3 );
 	CHECK( rvec[ 0 ][ 2 ] == 4 );
-	CHECK( frames.ReadElement( rvec ) == true );
+	CHECK( frames.readElement( rvec ) == true );
 	CHECK( rvec[ 0 ][ 0 ] == 4 );
 	CHECK( rvec[ 0 ][ 2 ] == 5 );
 }
@@ -361,14 +361,14 @@ TEST_CASE( "VTX_IO - frame write full buffer", "[integration]" )
 	for ( uint64_t idx = 0; idx < 49; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };
-		std::vector<VTX::Vec3f> &	  dummyFrame = frames.WriteElement( wvec );
+		std::vector<VTX::Vec3f> &	  dummyFrame = frames.writeElement( wvec );
 		++dummyFrame[ 0 ][ 2 ];
 	}
 
 	std::vector<VTX::Vec3f> vals { { INT_MAX, INT_MAX, INT_MAX } };
 	for ( uint64_t idx = 0; idx < 49; ++idx )
 	{
-		CHECK( frames.ReadElement( vals ) == true );
+		CHECK( frames.readElement( vals ) == true );
 		CHECK( vals[ 0 ][ 0 ] == idx );
 	}
 }
@@ -379,27 +379,27 @@ TEST_CASE( "VTX_IO - frame write overflow circular read", "[integration]" )
 	for ( uint64_t idx = 0; idx < 49; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };
-		std::vector<VTX::Vec3f> &	  dummyFrame = frames.WriteElement( wvec );
+		std::vector<VTX::Vec3f> &	  dummyFrame = frames.writeElement( wvec );
 		++dummyFrame[ 0 ][ 2 ];
 	}
 
 	std::vector<VTX::Vec3f> vals { { INT_MAX, INT_MAX, INT_MAX } };
 	for ( uint64_t idx = 0; idx < 9; ++idx )
 	{
-		CHECK( frames.ReadElement( vals ) == true );
+		CHECK( frames.readElement( vals ) == true );
 		CHECK( vals[ 0 ][ 0 ] == idx );
 	}
 
-	frames.WriteElement( { { 42, 42, 42 } } );
+	frames.writeElement( { { 42, 42, 42 } } );
 
 	for ( uint64_t idx = 0; idx < 40; ++idx )
 	{
-		CHECK( frames.ReadElement( vals ) == true );
+		CHECK( frames.readElement( vals ) == true );
 		CHECK( vals[ 0 ][ 0 ] == idx + 9 );
 	}
-	CHECK( frames.ReadElement( vals ) == true );
+	CHECK( frames.readElement( vals ) == true );
 	CHECK( vals[ 0 ][ 0 ] == 42 );
-	CHECK( frames.ReadElement( vals ) == false );
+	CHECK( frames.readElement( vals ) == false );
 	CHECK( vals[ 0 ][ 0 ] == 42 );
 }
 
@@ -416,27 +416,27 @@ TEST_CASE( "VTX_IO - frame write overflow circular read and model frame", "[inte
 	for ( uint64_t idx = 0; idx < 49; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };
-		std::vector<VTX::Vec3f> &	  dummyFrame = frames.WriteElement( wvec );
+		std::vector<VTX::Vec3f> &	  dummyFrame = frames.writeElement( wvec );
 		++dummyFrame[ 0 ][ 2 ];
 	}
 
 	std::vector<VTX::Vec3f> vals { { INT_MAX, INT_MAX, INT_MAX } };
 	for ( uint64_t idx = 0; idx < 9; ++idx )
 	{
-		CHECK( frames.ReadElement( vals ) == true );
+		CHECK( frames.readElement( vals ) == true );
 		CHECK( vals[ 0 ][ 0 ] == idx );
 	}
 
-	frames.WriteElement( { { 42, 42, 42 } } );
+	frames.writeElement( { { 42, 42, 42 } } );
 
 	for ( uint64_t idx = 0; idx < 40; ++idx )
 	{
-		CHECK( frames.ReadElement( vals ) == true );
+		CHECK( frames.readElement( vals ) == true );
 		CHECK( vals[ 0 ][ 0 ] == idx + 9 );
 	}
-	CHECK( frames.ReadElement( vals ) == true );
+	CHECK( frames.readElement( vals ) == true );
 	CHECK( vals[ 0 ][ 0 ] == 42 );
-	CHECK( frames.ReadElement( vals ) == false );
+	CHECK( frames.readElement( vals ) == false );
 	CHECK( vals[ 0 ][ 0 ] == 42 );
 
 	testFrame = frames.GetModelFrame();

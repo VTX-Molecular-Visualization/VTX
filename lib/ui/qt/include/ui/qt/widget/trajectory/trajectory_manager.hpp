@@ -47,7 +47,7 @@ namespace VTX::UI::QT::Widget
 
 					if ( system.hasTrajectory() )
 					{
-						if (system.getTrajectory().IsOptimized())
+						if (system.getTrajectory().isOptimized())
 						{
 							auto					*playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );
@@ -64,7 +64,7 @@ namespace VTX::UI::QT::Widget
 					}
 					system.onTrajectoryAdded += [ & ]()
 					{
-						if ( system.getTrajectory().IsOptimized() )
+						if ( system.getTrajectory().isOptimized() )
 						{
 							auto					*playerZone = new QGroupBox( system.getName().c_str() );
 							TrajectoryOptimizedPlayer * player = new TrajectoryOptimizedPlayer( this, system.getAtomUIDs() );

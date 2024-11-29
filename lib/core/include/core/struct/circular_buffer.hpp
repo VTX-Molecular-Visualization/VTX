@@ -15,24 +15,24 @@ namespace VTX::Core::Struct
 	  public:
 		CircularBuffer() : readIdx( 0 ), writeIdx( 0 ), buffSize( 0 ), overflowFlag( 0 )
 		{
-			SetBuffSize( 0 );
+			setBuffSize( 0 );
 		}
 		// Currently this ctor is not used
 		// Call UpdateBuffSize method to define buffer size
 		CircularBuffer( const size_t size ) :
 			readIdx( 0 ), writeIdx( 0 ), buffSize( size ), overflowFlag( 0 )
 		{
-			SetBuffSize( size );
+			setBuffSize( size );
 			return;
 		}
-		T& WriteElement( const T &elem )
+		T& writeElement( const T &elem )
 		{
 			size_t currentWriteIdx = writeIdx;
 			circBuff[ currentWriteIdx ] = elem;
 			updateWriteIdx();
 			return circBuff[ currentWriteIdx ];
 		}
-		bool ReadElement( T& elem )
+		bool readElement( T& elem )
 		{
 			if ( !isReadAllowed() )
 				return false;
@@ -41,14 +41,14 @@ namespace VTX::Core::Struct
 			updateReadIdx();
 			return true;
 		}
-		T & ReadElement( void )
+		T & readElement( void )
 		{
 			if ( !isReadAllowed() )
 				return circBuff[ 0 ]; // FIXME NOPE
 			updateReadIdx();
 			return circBuff[ readIdx ];
 		}
-		void EraseEmptyFrames(void)
+		void eraseEmptyFrames(void)
 		{
 			/* do
 			{
@@ -57,12 +57,12 @@ namespace VTX::Core::Struct
 			// TODO
 			return;
 		}
-		size_t GetBuffSize(void) const { return buffSize; }
+		size_t getBuffSize(void) const { return buffSize; }
 
 	  protected:
 		// FIXME
-		const T & GetElement( size_t index ) const { return circBuff[ index%buffSize ]; }
-		T & GetElement( size_t index ) { return circBuff[ index % buffSize ]; }
+		const T & getElement( size_t index ) const { return circBuff[ index%buffSize ]; }
+		T & getElement( size_t index ) { return circBuff[ index % buffSize ]; }
 
 		void updateWriteIdx( void )
 		{
@@ -76,13 +76,13 @@ namespace VTX::Core::Struct
 			if ( !readIdx )
 				overflowFlag ^= circbuffmask_read_overflow;
 		}
-		void SetBuffSize(size_t size)
+		void setBuffSize(size_t size)
 		{
 			circBuff.resize( size );
 			buffSize = size;
 		}
-		size_t GetReadIdx( void ) const { return readIdx; }
-		size_t GetWriteIdx( void ) const { return writeIdx; }
+		size_t getReadIdx( void ) const { return readIdx; }
+		size_t getWriteIdx( void ) const { return writeIdx; }
 	  private:
 		size_t				 buffSize;
 		size_t				 readIdx;

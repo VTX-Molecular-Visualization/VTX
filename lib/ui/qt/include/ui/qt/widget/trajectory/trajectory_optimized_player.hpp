@@ -73,7 +73,7 @@ namespace VTX::UI::QT::Widget
 					{
 						VTX_INFO(
 							"trajectory_player frame changed  = {}",
-							traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
+							traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
 						);
 						int currentFrameIdx = (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
 						getProgressElt()->setValue( currentFrameIdx );

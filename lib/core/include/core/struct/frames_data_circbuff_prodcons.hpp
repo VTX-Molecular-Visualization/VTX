@@ -11,54 +11,41 @@ namespace VTX::Core::Struct
 	class FramesDataCircBuffProdCons : public ProdConsCircularBuffer<Frame>
 	{
 	  public:
-		FramesDataCircBuffProdCons() : _totalElements( 0 )
-		{
-			SetBuffSize( 102 );
-		}
+		FramesDataCircBuffProdCons() : _totalElements( 0 ) { setBuffSize( 102 ); }
 		// FIXME really?
 		FramesDataCircBuffProdCons( FramesDataCircBuffProdCons && movable )
 		{
-			ProdConsCircularBuffer<Frame>::SetBuffSize( movable.GetBuffSize() );
+			ProdConsCircularBuffer<Frame>::setBuffSize( movable.getBuffSize() );
 			_totalElements = movable._totalElements;
 		}
 		FramesDataCircBuffProdCons & operator=( const FramesDataCircBuffProdCons && movable )
 		{
-			ProdConsCircularBuffer<Frame>::operator=( std::move(movable) );
+			ProdConsCircularBuffer<Frame>::operator=( std::move( movable ) );
 			_totalElements = movable._totalElements;
 			return *this;
 		}
-		Frame & WriteElement( const Frame & elem )
-		{
-			return ProdConsCircularBuffer<Frame>::WriteElement( elem );
-		}
-		bool ReadElement( Frame & elem )
-		{
-			return ProdConsCircularBuffer<Frame>::ReadElement(elem);
-		}
-		Frame & ReadElement( void )
-		{
-			return ProdConsCircularBuffer<Frame>::ReadElement();
-		}
-		void	SetTotalElements( const size_t size ) { _totalElements = size; }
-		
-		size_t GetTotalElements( void ) const { return _totalElements; }
+		Frame & writeElement( const Frame & elem ) { return ProdConsCircularBuffer<Frame>::writeElement( elem ); }
+		bool	readElement( Frame & elem ) { return ProdConsCircularBuffer<Frame>::readElement( elem ); }
+		Frame & readElement( void ) { return ProdConsCircularBuffer<Frame>::readElement(); }
+		void	setTotalElements( const size_t size ) { _totalElements = size; }
 
-		//Frame & GetModelFrame( void ) { return GetElement( 0 ); }
-		//const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
-		
+		size_t getTotalElements( void ) const { return _totalElements; }
+
+		// Frame & GetModelFrame( void ) { return GetElement( 0 ); }
+		// const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
+
 		// Reads current frame data but does not change read index
-		//Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
-		const Frame & GetCurrentFrame( void ) const { return GetElement( GetReadIdx() ); }
-		Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
-		
+		// Frame & GetCurrentFrame( void ) { return GetElement( GetReadIdx() ); }
+		const Frame & getCurrentFrame( void ) const { return getElement( getReadIdx() ); }
+		Frame &		  getCurrentFrame( void ) { return getElement( getReadIdx() ); }
 
-		void Reset( void ) { ProdConsCircularBuffer<Frame>::Reset(); }
+		void reset( void ) { ProdConsCircularBuffer<Frame>::reset(); }
 
 		// FIXME nothing to do here ?
-		void EraseEmptyFrames( void ) {}
+		void eraseEmptyFrames( void ) {}
 
 	  private:
-		size_t				 _totalElements; // TODO change to double if possible
+		size_t _totalElements; // TODO change to double if possible
 	};
 } // namespace VTX::Core::Struct
 

@@ -44,7 +44,7 @@ namespace VTX::IO::Reader
 		// devjla
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		// p_system.trajectory.SetTotalElements( p_chemfileStruct.getFrameCount() );
-		p_system.trajectory.SetTotalElements( 25 ); // flemme de le faire proprement, c'est 25
+		p_system.trajectory.setTotalElements( 25 ); // flemme de le faire proprement, c'est 25
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		//p_system.initAtoms( p_chemfileStruct.getAtomCount() );
@@ -52,7 +52,7 @@ namespace VTX::IO::Reader
 
 		// devjla
 		// VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.GetCurrentFrame();
+		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		//modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
@@ -285,7 +285,7 @@ namespace VTX::IO::Reader
 		size_t validFrameCount = 0;
 		// devjla DEBUG TRAJECTORY FRAMES ORDER
 		//////////////////////////
-		p_targets[ 0 ].first->trajectory.FillFrameDEBUG();
+		p_targets[ 0 ].first->trajectory.fillFrameDEBUG();
 		//////////////////////////
 		
 		//////////////////////////
@@ -331,7 +331,7 @@ namespace VTX::IO::Reader
 			VTX::Core::Struct::System &	system   = *( pairSystemFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
 
-			trajectory.EraseEmptyFrames();
+			trajectory.eraseEmptyFrames();
 		}
 	}
 

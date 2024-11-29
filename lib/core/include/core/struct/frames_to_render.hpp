@@ -1,10 +1,10 @@
 #ifndef __VTX_CORE_STRUCT_FRAMES_TO_RENDER__
 #define __VTX_CORE_STRUCT_FRAMES_TO_RENDER__
 
-#include <queue>
 #include <mutex>
-#include <util/types.hpp>
+#include <queue>
 #include <util/logger.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Core::Struct
 {
@@ -15,26 +15,26 @@ namespace VTX::Core::Struct
 	  public:
 		FramesToRender() {}
 		// adding copy ctor because of mutex and integration in base player, not sure where to go from now FIXME
-		FramesToRender(const FramesToRender& p_source) { _framesToRender = p_source._framesToRender; }
+		FramesToRender( const FramesToRender & p_source ) { _framesToRender = p_source._framesToRender; }
 		~FramesToRender() {}
-		
-		void AddElement( const Frame & elem )
+
+		void addElement( const Frame & elem )
 		{
 			if ( 0 == elem.size() )
 				return;
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
 			VTX_INFO( "ADD _framesToRender.size() {}", _framesToRender.size() );
-			_framesToRender.push(elem);
+			_framesToRender.push( elem );
 		}
-		void RemoveElement( Frame & elem )
+		void removeElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )
 				return;
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			assert(_framesToRender.front() == elem);
+			assert( _framesToRender.front() == elem );
 			_framesToRender.pop();
 		}
-		bool ReadElement(Frame & elem)
+		bool readElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )
 				return false;
@@ -42,16 +42,16 @@ namespace VTX::Core::Struct
 			elem = _framesToRender.front();
 			return true;
 		}
-		bool GetCopyFrame(Frame &frame) // returning a copy intentionnaly
+		bool getCopyFrame( Frame & frame ) // returning a copy intentionnaly
 		{
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			if ( !ReadCopyElement( frame ) )
+			if ( !readCopyElement( frame ) )
 				return false;
-			RemoveCopyElement(frame);
-			_testindex = (_testindex + 1) % _testMaxIndex;
+			removeCopyElement( frame );
+			_testindex = ( _testindex + 1 ) % _testMaxIndex;
 			return true;
 		}
-		void Flush(void)
+		void flush( void )
 		{
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
 			while ( !_framesToRender.empty() )
@@ -59,25 +59,25 @@ namespace VTX::Core::Struct
 			_testindex = 0;
 		}
 
-		void setMaxIndex( size_t p_maxIndex ) { _testMaxIndex = p_maxIndex; }
+		void		 setMaxIndex( size_t p_maxIndex ) { _testMaxIndex = p_maxIndex; }
 		const size_t getindex( void ) const { return _testindex; }
 
 	  private:
 		std::queue<Frame> _framesToRender;
-		std::mutex access_frames_mtx;
+		std::mutex		  access_frames_mtx;
 		size_t			  _testMaxIndex = 0;
-		size_t			  _testindex = 0;
-		
-		void RemoveCopyElement( Frame & elem )
+		size_t			  _testindex	= 0;
+
+		void removeCopyElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )
 				return;
-			assert(_framesToRender.front() == elem);
+			assert( _framesToRender.front() == elem );
 			VTX_INFO( "REMOVE _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.pop();
 		}
-		//Frame ReadCopyElement( void ) // returning a copy intentionnaly
-		bool ReadCopyElement(Frame & elem)
+		// Frame ReadCopyElement( void ) // returning a copy intentionnaly
+		bool readCopyElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )
 				return false;

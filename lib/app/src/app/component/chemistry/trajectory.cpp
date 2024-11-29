@@ -1,11 +1,7 @@
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/chemistry/system.hpp"
-<<<<<<< HEAD
 #include "app/component/scene/updatable.hpp"
 #include "app/vtx_app.hpp"
-=======
-#include "app/component/scene/scene_item_component.hpp"
->>>>>>> 26994d949 (Refacto player usages)
 
 namespace VTX::App::Component::Chemistry
 {
@@ -20,13 +16,12 @@ namespace VTX::App::Component::Chemistry
 		_referenceUpdateFunction();
 	}
 
-	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().GetCurrentFrameIndex(); }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().getCurrentFrameIndex(); }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_systemPtr->getTrajectory().SetCurrentFrameIndex( p_frameIndex );
+		_systemPtr->getTrajectory().setCurrentFrameIndex( p_frameIndex );
 	}
 
-<<<<<<< HEAD
 	size_t Trajectory::getFrameCount() const
 	{
 		return _systemPtr->getTrajectory().GetFrameCount();
@@ -74,6 +69,6 @@ namespace VTX::App::Component::Chemistry
 		updatable.addUpdateFunction( [ this ]( const float p_deltaTime, const float ) { _update( p_deltaTime ); } );
 	}
 	
-	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().GetFrameCount(); }
+	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().getFrameCount(); }
 
 } // namespace VTX::App::Component::Chemistry

@@ -21,7 +21,7 @@ namespace VTX::App::Core::Player
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
 
-		void StackFrame( Frame elem ) override {}; // FIXME
+		void stackFrame( Frame elem ) override {}; // FIXME
 	};
 } // namespace VTX::App::Core::Player
 #endif

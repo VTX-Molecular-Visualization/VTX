@@ -50,7 +50,7 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
-		virtual void StackFrame( Frame elem ) = 0; // FIXME
+		virtual void stackFrame( Frame elem ) = 0; // FIXME
 		inline float getTrajectoryTimer() const { return _trajectoryTimer; }
 		void		 setTrajectoryTimer( float p_timer ) { _trajectoryTimer = p_timer; }
 

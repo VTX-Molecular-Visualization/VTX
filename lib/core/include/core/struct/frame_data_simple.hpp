@@ -13,26 +13,26 @@ namespace VTX::Core::Struct
 	  public:
 		FrameDataSimple() : totalElements( 0 )
 		{
-			SetBuffSize( 102 );
+			setBuffSize( 102 );
 		}
-		Frame & WriteElement( const Frame & elem )
+		Frame & writeElement( const Frame & elem )
 		{
-			return CircularBuffer<Frame>::WriteElement( elem );
+			return CircularBuffer<Frame>::writeElement( elem );
 		}
-		bool ReadElement( Frame & elem )
+		bool readElement( Frame & elem )
 		{
-			return CircularBuffer<Frame>::ReadElement(elem);
+			return CircularBuffer<Frame>::readElement(elem);
 		}
-		Frame & ReadElement( void )
+		Frame & readElement( void )
 		{
-			return CircularBuffer<Frame>::ReadElement();
+			return CircularBuffer<Frame>::readElement();
 		}
-		void SetTotalElements( const size_t size ) { totalElements = size; }
+		void setTotalElements( const size_t size ) { totalElements = size; }
 		
-		size_t GetTotalElements( void ) const { return totalElements; }
+		size_t getTotalElements( void ) const { return totalElements; }
 
-		Frame & GetModelFrame( void ) { return GetElement( 0 ); }
-		const Frame & GetModelFrame( void ) const { return GetElement( 0 ); }
+		Frame & GetModelFrame( void ) { return getElement( 0 ); }
+		const Frame & GetModelFrame( void ) const { return getElement( 0 ); }
 
 	  private:
 		size_t				 totalElements; // TODO change to double if possible

@@ -176,7 +176,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	CHECK( system.getBondCount() == 4 );
 	CHECK( system.getResidueCount() == 2 );
 	CHECK( system.getAtomCount() == 6 );
-	CHECK( system.trajectory.GetFrameCount() == 1 );
+	CHECK( system.trajectory.getFrameCount() == 1 );
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
@@ -203,7 +203,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	CHECK( system.getBondCount() == 4 );
 	CHECK( system.getResidueCount() == 2 );
 	CHECK( system.getAtomCount() == 6 );
-	CHECK( system.trajectory.GetFrameCount() == 2 );
+	CHECK( system.trajectory.getFrameCount() == 2 );
 }
 
 namespace
@@ -232,7 +232,7 @@ namespace
 		}
 		size_t atomCount  = system.getAtomCount();
 		size_t chainCount = system.getChainCount();
-		size_t frameCount = system.trajectory.GetFrameCount();
+		size_t frameCount = system.trajectory.getFrameCount();
 		size_t bondCount  = system.getBondCount();
 		size_t resCount	  = system.getResidueCount();
 

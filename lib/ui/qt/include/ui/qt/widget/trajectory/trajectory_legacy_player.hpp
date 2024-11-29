@@ -110,9 +110,9 @@ namespace VTX::UI::QT::Widget
 					{
 						VTX_INFO(
 							"trajectory_player frame changed  = {}",
-							traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()
+							traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
 						);
-						int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex();
+						int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex();
 						getProgressElt()->setValue( currentFrameIdx );
 						getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
 

@@ -28,9 +28,9 @@ namespace VTX::App::Core::Player
 
 			if ( &( trajectory.getPlayer() ) == this )
 			{
-				trajectory.getSystemPtr()->getTrajectory().Reset();
-				trajectory.getSystemPtr()->getTrajectory().SetOptimized();
-				_tmpFrames.setMaxIndex( trajectory.getSystemPtr()->getTrajectory().GetFrameCount() );
+				trajectory.getSystemPtr()->getTrajectory().reset();
+				trajectory.getSystemPtr()->getTrajectory().setOptimized();
+				_tmpFrames.setMaxIndex( trajectory.getSystemPtr()->getTrajectory().getFrameCount() );
 			}
 		}
 
@@ -160,7 +160,7 @@ namespace VTX::App::Core::Player
 						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
 
 					while ( trajectory.getPlayer().isPlaying() )
-						trajectory.getPlayer().StackFrame( molecule.getTrajectory().ReadOptimizedElement() );
+						trajectory.getPlayer().stackFrame( molecule.getTrajectory().readOptimizedElement() );
 				}
 			}
 			VTX_INFO( "readthreadfromlocalmolecule end" );
@@ -240,7 +240,7 @@ namespace VTX::App::Core::Player
 
 		_writeThread->stop();
 		_readThread->stop();
-		_tmpFrames.Flush();
+		_tmpFrames.flush();
 	}
 	void CircularBuffer::stop()
 	{
@@ -248,7 +248,7 @@ namespace VTX::App::Core::Player
 
 		_writeThread->stop();
 		_readThread->stop();
-		_tmpFrames.Flush();
+		_tmpFrames.flush();
 	}
 
 	void CircularBuffer::update( const float p_deltaTime, const float p_elapsedTime )
@@ -268,7 +268,7 @@ namespace VTX::App::Core::Player
 		VTX::Core::Struct::Frame currentFrame;
 		if ( getFPS() == 0u )
 		{
-			if ( _tmpFrames.GetCopyFrame( currentFrame ) )
+			if ( _tmpFrames.getCopyFrame( currentFrame ) )
 				onFrameChange( currentFrame );
 		}
 		else
@@ -278,7 +278,7 @@ namespace VTX::App::Core::Player
 			if ( ellapsedTime >= frameRateMilliSec )
 			{
 				setTrajectoryTimer( p_deltaTime );
-				if ( _tmpFrames.GetCopyFrame( currentFrame ) )
+				if ( _tmpFrames.getCopyFrame( currentFrame ) )
 					onFrameChange( currentFrame );
 			}
 		}

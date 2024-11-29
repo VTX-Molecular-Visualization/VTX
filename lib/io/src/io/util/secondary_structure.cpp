@@ -18,7 +18,7 @@ namespace VTX::IO::Util::SecondaryStructure
 			VTX_ERROR( "DEVJLA current frame issue" );
 			return;
 		}*/
-		const Core::Struct::Frame & positions = p_system.trajectory.GetCurrentFrame();
+		const Core::Struct::Frame & positions = p_system.trajectory.getCurrentFrame();
 
 		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_system.residueSecondaryStructureTypes;
 

@@ -28,13 +28,13 @@ namespace VTX::App::Core::Player
 		void pause() override;
 		void stop() override;
 
-		void StackFrame( VTX::Core::Struct::Frame elem )
+		void stackFrame( VTX::Core::Struct::Frame elem )
 		{
-			_tmpFrames.AddElement( elem );
+			_tmpFrames.addElement( elem );
 		} // FIXME taking a copy as input?
-		bool GetRefFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.ReadElement( frame ); }
-		void RemoveRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.RemoveElement( elem ); }
-		bool GetCopyFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.GetCopyFrame( frame ); }
+		bool getRefFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.readElement( frame ); }
+		void removeRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.removeElement( elem ); }
+		bool getCopyFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.getCopyFrame( frame ); }
 
 		// FIXME test to update progress slider in UI
 		const size_t getIndex( void ) const { return _tmpFrames.getindex(); }
