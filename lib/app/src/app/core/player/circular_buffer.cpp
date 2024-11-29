@@ -274,10 +274,10 @@ namespace VTX::App::Core::Player
 		else
 		{
 			const float frameRateMilliSec = ( 1.f / float( getFPS() ) ) * 1000.f;
-			const float ellapsedTime	  = p_deltaTime - getTrajectoryTimer();
+			const float ellapsedTime	  = p_elapsedTime - getTrajectoryTimer();
 			if ( ellapsedTime >= frameRateMilliSec )
 			{
-				setTrajectoryTimer( p_deltaTime );
+				setTrajectoryTimer( p_elapsedTime );
 				if ( _tmpFrames.getCopyFrame( currentFrame ) )
 					onFrameChange( currentFrame );
 			}
