@@ -1,7 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_BINDER__
 #define __VTX_PYTHON_BINDING_BINDER__
 
-#include "pytx_module.hpp"
+#include "python_binding/vtx_python_module.hpp"
 #include <string>
 
 namespace VTX::PythonBinding
