@@ -1,0 +1,41 @@
+#version 450 core
+#include "include/helper.glsl"
+#include "include/layout.glsl"
+
+// Uniforms.
+layout ( std140, binding = 0 ) uniform Uniforms
+{	
+	uint size;
+} uniforms;
+
+// SSBO.
+layout ( std140, binding = 1 ) readonly buffer DataReadOnly
+{
+	vec4[] dataReadOnly;
+};
+
+layout ( std140, binding = 2 ) writeonly buffer DataWriteOnly
+{
+	vec4[] dataWriteOnly;
+};
+
+layout ( std140, binding = 3 ) buffer DataReadWrite
+{
+	vec4[] dataReadWrite;
+};
+
+void main()
+{
+	// Get current hash.
+	const uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
+
+    // Out of bounds.
+    if( hash >= uniforms.size )
+    {
+        return;
+    }
+
+    // Logic.
+    dataWriteOnly[ hash ] = dataReadOnly[ hash ];
+    dataReadWrite[ hash ]++;
+}

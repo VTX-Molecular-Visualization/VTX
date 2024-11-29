@@ -239,6 +239,25 @@ namespace VTX::Renderer
 		{
 			onReady();
 		}
+
+		///////////////////// COMPUTE
+		uint size = 10000;
+
+		ComputePass::Data bufferReadOnly { size * sizeof( Vec4f ), nullptr, 1 };
+		ComputePass::Data bufferWriteOnly { size * sizeof( Vec4f ), nullptr, 2 };
+		ComputePass::Data bufferReadWrite { size * sizeof( Vec4f ), nullptr, 3 };
+
+		auto computePass = ComputePass {
+			Program { "ComputeDebug",
+					  std::vector<FilePath> { "compute/debug.comp" },
+					  Uniforms { { { "Intensity", E_TYPE::UINT, StructUniformValue<uint> { size } } } } },
+			{ &bufferReadOnly, &bufferWriteOnly, &bufferReadWrite },
+			size
+		};
+
+		_context->compute( computePass );
+
+		_context->clearComputeBuffers();
 	}
 
 	void Renderer::clean()
@@ -1334,7 +1353,7 @@ namespace VTX::Renderer
 									  const std::vector<size_t> * p_chainFirstResidues,
 									  const std::vector<size_t> * p_chainResidueCounts,
 									  const std::vector<Vec3f> *  p_atomPositions,
-									  const std::vector<float> &  p_atomRadii )
+									  const std::vector<float> &  p_atomRadii ) -> _InputData
 		{
 			_InputData data;
 
