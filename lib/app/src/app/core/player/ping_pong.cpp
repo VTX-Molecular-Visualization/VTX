@@ -62,7 +62,7 @@ namespace VTX::App::Core::Player
 				_forward = true;
 			}
 			else
-				setCurrent( getCurrent() - 1 );
+				setCurrent( getCurrent() - p_count );
 		}
 	}
 } // namespace VTX::App::Core::Player

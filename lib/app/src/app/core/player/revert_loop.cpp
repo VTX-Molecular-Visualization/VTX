@@ -15,9 +15,9 @@ namespace VTX::App::Core::Player
 			setCurrent( getCurrent() - p_count );
 		}*/
 		if ( getCurrent() == 0 )
-			setCurrent( getCount() - 1 );
+			setCurrent( getCount() - p_count );
 		else
-			setCurrent( getCurrent() - 1 );
+			setCurrent( getCurrent() - p_count );
 	}
 
 } // namespace VTX::App::Core::Player

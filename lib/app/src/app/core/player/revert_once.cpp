@@ -17,7 +17,7 @@ namespace VTX::App::Core::Player
 		if ( getCurrent() == 0 )
 			stop();
 		else
-			setCurrent( getCurrent() - 1 );
+			setCurrent( getCurrent() - p_frameCount );
 	}
 
 } // namespace VTX::App::Core::Player
