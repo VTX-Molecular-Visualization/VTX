@@ -113,7 +113,7 @@ namespace VTX::App::Core::Player
 		//////////
 		if ( _fps == 0u )
 		{
-			nextFrame( _current + 1 );
+			nextFrame( 1 );
 		}
 		else
 		{
@@ -123,7 +123,7 @@ namespace VTX::App::Core::Player
 			if ( ellapsedTime >= frameRateMilliSec )
 			{
 				_trajectoryTimer = p_elapsedTime;
-				nextFrame( _current + 1 );
+				nextFrame( 1 );
 			}
 		}
 		//////////

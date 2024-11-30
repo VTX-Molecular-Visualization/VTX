@@ -48,16 +48,17 @@ namespace VTX::App::Core::Player
 		}
 
 		setCurrent( newFrameIndex );*/
-		if (p_count >= getCount())
+		const size_t newFrameIndex = getCurrent() + p_count;
+		if ( newFrameIndex >= getCount() )
 			_forward = false;
 
 		if ( _forward )
-			setCurrent( p_count );
+			setCurrent( newFrameIndex );
 		else
 		{
-			if (getCurrent() == 0)
+			if ( getCurrent() == 0 )
 			{
-				setCurrent( p_count );
+				setCurrent( newFrameIndex );
 				_forward = true;
 			}
 			else

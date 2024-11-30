@@ -70,9 +70,9 @@ namespace VTX::App::Core::Player
 					/*
 					std::unique_ptr<IO::Reader::Chemfiles> chemfilesReader
 						= IO::Reader::Chemfiles::readFile( trajectory.getPath() );
-					IO::Reader::Chemfiles &_chemfileStruct = *chemfilesReader;
+					IO::Reader::Chemfiles & _chemfileStruct		  = *chemfilesReader;
 					size_t					_trajectoryFrameStart = 1;
-					size_t validFrameCount = 0;
+					size_t					validFrameCount		  = 0;
 
 					for ( size_t frameIdx = 0; frameIdx < _chemfileStruct.getFrameCount() - _trajectoryFrameStart;
 						  ++frameIdx )
@@ -85,9 +85,9 @@ namespace VTX::App::Core::Player
 
 						Util::Chrono timeReadingFrames;
 						timeReadingFrames.start();
-						float elapsed = 0.f;
+						float elapsed		= 0.f;
 						float hardFrameRate = 1000.f;
-						for (;;)
+						for ( ;; )
 						{
 							if ( trajectory.getPlayer().isPlaying() )
 							{
@@ -103,10 +103,10 @@ namespace VTX::App::Core::Player
 											std::copy(
 												atomPositionsDebug.begin(), atomPositionsDebug.end(), frame.begin()
 											);
-											if (trajectory.getPlayer().isPlaying())
+											if ( trajectory.getPlayer().isPlaying() )
 											{
 												timeReadingFrames.stop();
-												//VTX_INFO(
+												// VTX_INFO(
 												//	"writethread tick {}s {}s {}s {}s",
 												//	timeReadingFrames.elapsedTime(),
 												//	elapsed,
@@ -115,7 +115,7 @@ namespace VTX::App::Core::Player
 												//);
 												if ( timeReadingFrames.elapsedTime() + elapsed >= hardFrameRate )
 												{
-													molecule.getSystemStruct().trajectory.FillFrame( 42, frame );
+													molecule.getSystemStruct().trajectory.fillFrame( 42, frame );
 													elapsed = 0.f;
 												}
 												else
@@ -287,7 +287,7 @@ namespace VTX::App::Core::Player
 		//////////////////////////
 		/*
 		VTX::Core::Struct::Frame currentFrame;
-		if ( _tmpFrames.GetCopyFrame( currentFrame ) )
+		if ( _tmpFrames.getCopyFrame( currentFrame ) )
 			onFrameChange( currentFrame );
 		*/
 		//////////////////////////
