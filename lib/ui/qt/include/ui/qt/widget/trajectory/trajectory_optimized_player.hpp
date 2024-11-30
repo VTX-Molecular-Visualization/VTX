@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Widget
 
 			// define min and max of slider from traj info
 			progressElt->setMinimum( 0 );
-			progressElt->setMaximum( (int)traj.getFrameCount() );
+			progressElt->setMaximum( (int)traj.getFrameCount() - 1 );
 
 			// display current frame index in selector lineedit
 			frameSelectorElt->setText( QLocale().toString(
