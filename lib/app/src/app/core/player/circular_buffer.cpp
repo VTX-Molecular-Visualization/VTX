@@ -236,19 +236,19 @@ namespace VTX::App::Core::Player
 	}
 	void CircularBuffer::pause()
 	{
-		BasePlayer::pause();
-
 		_writeThread->stop();
 		_readThread->stop();
 		_tmpFrames.flush();
+
+		BasePlayer::pause();
 	}
 	void CircularBuffer::stop()
 	{
-		BasePlayer::stop();
-
 		_writeThread->stop();
 		_readThread->stop();
 		_tmpFrames.flush();
+
+		BasePlayer::stop();
 	}
 
 	void CircularBuffer::update( const float p_deltaTime, const float p_elapsedTime )
