@@ -22,12 +22,17 @@ class VTXPythonBindingRecipe(ConanFile):
         return "pybind11-"
         
     def requirements(self):
+        # For test purposes
+        self.requires("entt/3.13.2")
+        self.requires("vtx_renderer/1.0", transitive_libs=True)
+
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("vtx_app/1.0", transitive_headers=True)
+        self.requires("vtx_app/1.0", transitive_headers=True, )
         self.requires("vtx_io/1.0")
         self.requires("pybind11/2.12.0", transitive_headers=True)
         self.requires("catch2/3.7.0")
+        
         
     def config_options(self):
         if self.settings.os == "Windows":

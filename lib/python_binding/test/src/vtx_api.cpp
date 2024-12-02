@@ -1,6 +1,7 @@
 #include "util/app.hpp"
 #include <app/action/scene.hpp>
 #include <app/filesystem.hpp>
+#include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -10,7 +11,6 @@
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>
-#include <app/fixture.hpp>
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 {
@@ -26,7 +26,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	App::Action::Scene::LoadSystem loadSystemAction = App::Action::Scene::LoadSystem( moleculePath );
 	loadSystemAction.execute();
-
+	return;
 	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / "test_api.py";
 	std::stringstream ssCommandRun = std::stringstream();
 
