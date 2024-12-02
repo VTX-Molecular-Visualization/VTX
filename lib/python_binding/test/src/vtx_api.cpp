@@ -10,12 +10,14 @@
 #include <string>
 #include <util/logger.hpp>
 #include <util/types.hpp>
+#include <app/fixture.hpp>
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 {
 	using namespace VTX;
 
 	App::Test::Util::App::initApp();
+	App::Fixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();

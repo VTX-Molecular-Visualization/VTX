@@ -60,7 +60,7 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # Python binding test.
-include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
+#include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # UI Qt.

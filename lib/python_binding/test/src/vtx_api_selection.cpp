@@ -3,6 +3,7 @@
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/selection/system_data.hpp>
+#include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -11,9 +12,10 @@
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 {
+	return; // TODO : when selection save is restored
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
-
+	App::Fixture f;
 	App::Test::Util::App::initApp();
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();

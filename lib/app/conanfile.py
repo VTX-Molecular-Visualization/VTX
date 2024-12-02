@@ -28,7 +28,10 @@ class VTXAppRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
-         
+        
+        self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
+        
     def generate(self):
         tc = CMakeToolchain(self)
         dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
@@ -47,5 +50,6 @@ class VTXAppRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_app"]
+        self.cpp_info.components["vtx_app"].libs = ["vtx_app"]
+        self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
 

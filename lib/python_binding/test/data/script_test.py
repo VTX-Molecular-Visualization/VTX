@@ -1,4 +1,4 @@
-import PyTX.Command
+import vtx_python_bin.Command
 import os
 
 def openMultipleFile(p_folder, prefix):
