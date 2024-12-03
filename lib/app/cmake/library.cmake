@@ -1,14 +1,16 @@
 # Lib.
 add_library(vtx_app)
 configure_target(vtx_app)
-add_library(vtx_app_no_opengl)
-configure_target(vtx_app_no_opengl)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 target_sources(vtx_app
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
+	
+add_library(vtx_app_no_opengl)
+configure_target(vtx_app_no_opengl)
+
 target_sources(vtx_app_no_opengl
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
@@ -20,8 +22,9 @@ target_sources(vtx_app_no_opengl
 # Moreover, we need to keep in mind that we are thus testing the code, not the project.
 
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_app_test "${SOURCES_TEST};${SOURCES}")
-target_include_directories(vtx_app_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
+add_executable(vtx_app_test "${SOURCES_TEST}")
+#add_executable(vtx_app_test "${SOURCES_TEST};${SOURCES}")
+#target_include_directories(vtx_app_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
 configure_target(vtx_app_test)
 
@@ -55,7 +58,7 @@ endif()
 
 target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_no_opengl PUBLIC EnTT::EnTT)
-target_link_libraries(vtx_app_test PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_app_test PRIVATE vtx_app_no_opengl)
 #target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
