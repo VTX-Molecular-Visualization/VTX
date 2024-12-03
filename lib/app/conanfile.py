@@ -54,4 +54,5 @@ class VTXAppRecipe(ConanFile):
         self.cpp_info.components["vtx_app"].set_property("cmake_target_name", "vtx_app::vtx_app")
         self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
         self.cpp_info.components["vtx_app_no_opengl"].set_property("cmake_target_name", "vtx_app::vtx_app_no_opengl")
+        self.cpp_info.components["vtx_app_no_opengl"].requires = ["vtx_renderer::vtx_renderer_no_opengl"]
 
