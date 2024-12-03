@@ -12,25 +12,17 @@
 
 namespace VTX::App::Test::Util
 {
-	void App::initApp()
+	App::App()
 	{
-		static bool isInit;
-		if ( !isInit )
-		{
-			const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
-			std::filesystem::create_directory( path );
-			LOGGER::init( path );
+		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
+		std::filesystem::create_directory( path );
+		LOGGER::init( path );
 
-			INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-
-			APP().start( { 0, nullptr } );
-			isInit = true;
-		}
+		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 
 		SCENE().reset();
-		resetInterpretor();
 	}
-
+	App::~App() { resetInterpretor(); }
 	void App::resetInterpretor()
 	{
 		INTERPRETOR().clearBinders();
