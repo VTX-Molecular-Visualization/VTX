@@ -12,7 +12,7 @@
 
 namespace VTX::App::Test::Util
 {
-	App::App()
+	PythonFixture::PythonFixture()
 	{
 		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 		std::filesystem::create_directory( path );
@@ -22,14 +22,14 @@ namespace VTX::App::Test::Util
 
 		SCENE().reset();
 	}
-	App::~App() { resetInterpretor(); }
-	void App::resetInterpretor()
+	PythonFixture::~PythonFixture() { resetInterpretor(); }
+	void PythonFixture::resetInterpretor()
 	{
 		INTERPRETOR().clearBinders();
 		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
-	void App::loadSystem( const std::string & p_moleculePath )
+	void PythonFixture::loadSystem( const std::string & p_moleculePath )
 	{
 		// Create SystemEntity
 		const FilePath						moleculePath = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
@@ -37,6 +37,6 @@ namespace VTX::App::Test::Util
 		openAction.execute();
 	}
 
-	void App::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
+	void PythonFixture::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
 
 } // namespace VTX::App::Test::Util

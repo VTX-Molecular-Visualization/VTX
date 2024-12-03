@@ -68,5 +68,5 @@ namespace VTX::App::Test::Util
 			const std::vector<atom_index_t> & p_atoms	 = {}
 		);
 	};
-} // namespace VTX::App::Test::Util
+} // namespace VTX::PythonFixture::Test::Util
 #endif

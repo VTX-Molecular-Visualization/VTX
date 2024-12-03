@@ -21,7 +21,6 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 
 	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / ( p_scriptName + ".py" );
 	std::stringstream ssCommandRun = std::stringstream();
-	App::Fixture	  f;
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
 	p_interpretor.runCommand( ssCommandRun.str() );
@@ -30,15 +29,15 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]" )
 {
 	using namespace VTX;
-	App::Fixture f;
-	App::Test::Util::App::initApp();
+	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );
 
-	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath moleculePath
+		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
 	App::Action::Application::Open openAction = App::Action::Application::Open( moleculePath );
 	openAction.execute();
@@ -128,13 +127,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 {
 	using namespace VTX;
 
-	App::Fixture f;
-	App::Test::Util::App::initApp();
+	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath moleculePath
+		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
 	VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( moleculePath );
 	openAction.execute();

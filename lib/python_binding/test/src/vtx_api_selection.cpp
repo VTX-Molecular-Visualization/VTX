@@ -15,16 +15,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	return; // TODO : when selection save is restored
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
-	App::Fixture f;
-	App::Test::Util::App::initApp();
+	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
 	interpretor.init();
 
-	App::Test::Util::App::loadSystem( "1AGA.mmtf" );
-	App::Test::Util::App::loadSystem( "4HHB.pdb" );
-	App::Test::Util::App::loadSystem( "8QHQ.pdb" );
+	App::Test::Util::PythonFixture::loadSystem( "1AGA.mmtf" );
+	App::Test::Util::PythonFixture::loadSystem( "4HHB.pdb" );
+	App::Test::Util::PythonFixture::loadSystem( "8QHQ.pdb" );
 
 	App::Component::Chemistry::System & mol4hhb
 		= App::SCENE().getComponentByName<App::Component::Chemistry::System>( "4HHB" );
@@ -181,8 +180,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	) );
 
 	// CHECK( SelectionUtil::checkSelection(
-	//	"test_mol_n_chain_str_i_1", "select( mol_n='4HHB', chain_i='1' )", App::Application::Selection::Selection()
-	//) ); // NO => manage param as str
+	//	"test_mol_n_chain_str_i_1", "select( mol_n='4HHB', chain_i='1' )",
+	//PythonFixture::Application::Selection::Selection() ) ); // NO => manage param as str
 
 	// interpretor.runCommand( "select( mol_n='4HHB', res_i=range(0, 100) )" );
 };

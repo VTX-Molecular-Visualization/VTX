@@ -8,7 +8,7 @@
 
 namespace VTX
 {
-	// void _init( std::shared_ptr<App::Core::System::SystemHandler> p_system )
+	// void _init( std::shared_ptr<PythonFixture::Core::System::SystemHandler> p_system )
 	//{
 	//  APP::referenceSystemHandler( p_system );
 	//}
@@ -21,7 +21,7 @@ namespace VTX::PythonBinding
 		m.doc() = "VTX Python module."; // optional module docstring
 
 		// Global pointer to VTX data
-		// pybind11::class_<App::Core::System::SystemHandler, std::shared_ptr<App::Core::System::SystemHandler>>(
+		// pybind11::class_<PythonFixture::Core::System::SystemHandler, std::shared_ptr<PythonFixture::Core::System::SystemHandler>>(
 		//	m, "VTXSystem"
 		//);
 

@@ -85,7 +85,7 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Chemistry::System & mol = *it;
 
 			const App::Application::Selection::SystemData & molSelection
-				//= App::ECS_REGISTRY().getComponent<App::Application::Selection::SystemData>( *it );
+				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it );
 				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 
@@ -108,7 +108,7 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Chemistry::System & mol = *it;
 
 			const App::Application::Selection::SystemData & molSelection
-				//= App::ECS_REGISTRY().getComponent<App::Application::Selection::SystemData>( *it );
+				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it );
 				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 

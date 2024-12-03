@@ -11,7 +11,7 @@
 
 namespace VTX::App::Test::Util
 {
-	class App
+	class PythonFixture
 	{
 	  public:
 		inline static const std::string MOLECULE_TEST_NAME	   = "1AGA";
@@ -20,8 +20,8 @@ namespace VTX::App::Test::Util
 		static void loadSystem( const std::string & p_moleculePath );
 		static void loadTestSystem();
 
-		App();
-		~App();
+		PythonFixture();
+		~PythonFixture();
 
 		void resetInterpretor();
 
