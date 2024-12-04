@@ -119,7 +119,7 @@ namespace VTX::Renderer::Context
 				{
 					_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 				}
-				_createUniforms( _buffers[ keyBuffer ].get(), bufferData.values, data );
+				_createBufferData( _buffers[ keyBuffer ].get(), bufferData.values, bufferData.isSizeFixed, data );
 
 				assert( _buffers.contains( keyBuffer ) );
 				GL::Buffer * const buffer  = _buffers[ keyBuffer ].get();
@@ -186,7 +186,7 @@ namespace VTX::Renderer::Context
 					_programs.emplace( keyProgram, program );
 				}
 
-				// Uniforms.
+				// Uniform buffer.
 				if ( not descProgram.data.empty() )
 				{
 					const Key keyBuffer = _getKey( descPassPtr, descProgram );
@@ -196,7 +196,9 @@ namespace VTX::Renderer::Context
 					{
 						_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 					}
-					_createUniforms( _buffers[ keyBuffer ].get(), descProgram.data, data, &descProgram, descPassPtr );
+					_createBufferData(
+						_buffers[ keyBuffer ].get(), descProgram.data, true, data, &descProgram, descPassPtr
+					);
 				}
 			}
 
@@ -448,9 +450,9 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind shared buffers.
-		for ( const BufferData & uniform : p_globalData )
+		for ( const BufferData & bufferData : p_globalData )
 		{
-			const Key k = _getKey( uniform );
+			const Key k = _getKey( bufferData );
 			assert( _buffers.contains( k ) );
 			GL::Buffer * const buffer = _buffers[ k ].get();
 			p_outInstructions.emplace_back( [ buffer ]() { buffer->unbind(); } );
@@ -471,7 +473,7 @@ namespace VTX::Renderer::Context
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
-			// Resize only output textures (inputs are fixed for now).
+			// Resize only output p_textures (inputs are fixed for now).
 			for ( const auto & [ channel, output ] : descPassPtr->outputs )
 			{
 				const IO & descIO = output.desc;
@@ -578,7 +580,7 @@ namespace VTX::Renderer::Context
 		const GL::Program * const program
 			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
 
-		// Create and bind buffers.
+		// Create and bind p_buffers.
 		for ( ComputePass::BufferDraw * const data : p_pass.data )
 		{
 			if ( not _computeBuffers.contains( data ) )
@@ -617,7 +619,7 @@ namespace VTX::Renderer::Context
 		glDispatchCompute( x, y, z );
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-		// Unbind buffers.
+		// Unbind p_buffers.
 		for ( ComputePass::BufferDraw * const data : p_pass.data )
 		{
 			_computeBuffers[ data ]->unbind();
@@ -866,24 +868,25 @@ namespace VTX::Renderer::Context
 		return Vec2i( textureWidth, textureHeight );
 	}
 
-	void OpenGL45::_createUniforms(
-		GL::Buffer * const		 p_ubo,
-		const BufferDataValues & p_uniforms,
-		std::vector<Key> &		 p_uniformKeys,
+	void OpenGL45::_createBufferData(
+		GL::Buffer * const		 p_buffer,
+		const BufferDataValues & p_descValues,
+		const bool				 p_isImmutable,
+		std::vector<Key> &		 p_keys,
 		const Program * const	 p_descProgram,
 		const Pass * const		 p_descPass
 
 	)
 	{
-		// Create uniform entries.
+		// Create value entries.
 		size_t offset = 0;
-		for ( const BufferDataValue & descUniform : p_uniforms )
+		for ( const BufferDataValue & descValue : p_descValues )
 		{
-			size_t		size = _mapTypeSizes[ descUniform.type ];
-			std::string key	 = _getKey( p_descPass, p_descProgram, descUniform );
-			p_uniformKeys.emplace_back( key );
+			size_t		size = _mapTypeSizes[ descValue.type ];
+			std::string key	 = _getKey( p_descPass, p_descProgram, descValue );
+			p_keys.emplace_back( key );
 
-			if ( _uniforms.contains( key ) )
+			if ( _bufferValueEntries.contains( key ) )
 			{
 				continue;
 			}
@@ -905,8 +908,10 @@ namespace VTX::Renderer::Context
 
 			assert( size > 0 );
 
-			_uniforms.emplace( key, std::make_unique<_StructUniformEntry>( p_ubo, offset, size, padding ) );
-			VTX_TRACE( "Register uniform: {} (s{})(o{})(p{})", key, size, offset, padding );
+			_bufferValueEntries.emplace(
+				key, std::make_unique<_StructBufferDataValueEntry>( p_buffer, offset, size, padding )
+			);
+			VTX_TRACE( "Register value: {} (s{})(o{})(p{})", key, size, offset, padding );
 
 			offset += size;
 			offset += padding;
@@ -920,84 +925,87 @@ namespace VTX::Renderer::Context
 			return;
 		}
 
-		for ( const BufferDataValue & descUniform : p_uniforms )
+		for ( const BufferDataValue & descValue : p_descValues )
 		{
-			std::string key				= _getKey( p_descPass, p_descProgram, descUniform );
-			_uniforms[ key ]->totalSize = totalSize;
+			std::string key						  = _getKey( p_descPass, p_descProgram, descValue );
+			_bufferValueEntries[ key ]->totalSize = totalSize;
 		}
 
-		// Init ubo.
-		p_ubo->set( GLsizei( totalSize ), nullptr, 0, GL_STATIC_DRAW );
+		// Init buffer.
+		p_buffer->set(
+			GLsizei( totalSize ), nullptr, p_isImmutable, p_isImmutable ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
+		);
 
 		// Fill default values.
-		for ( const BufferDataValue & descUniform : p_uniforms )
+		for ( const BufferDataValue & descValue : p_descValues )
 		{
-			switch ( descUniform.type )
+			switch ( descValue.type )
 			{
-			case E_TYPE::BOOL: _setUniformDefaultValue<bool>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::BYTE: _setUniformDefaultValue<char>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::UBYTE: _setUniformDefaultValue<uchar>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::SHORT: _setUniformDefaultValue<short>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::USHORT: _setUniformDefaultValue<ushort>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::INT: _setUniformDefaultValue<int>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::UINT: _setUniformDefaultValue<uint>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::FLOAT: _setUniformDefaultValue<float>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2I: _setUniformDefaultValue<Vec2i>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2F: _setUniformDefaultValue<Vec2f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC3F: _setUniformDefaultValue<Vec3f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC4F: _setUniformDefaultValue<Vec4f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT3F: _setUniformDefaultValue<Mat3f>( descUniform, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT4F: _setUniformDefaultValue<Mat4f>( descUniform, p_descProgram, p_descPass ); break;
+			case E_TYPE::BOOL: _setBufferDataDefaultValue<bool>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::BYTE: _setBufferDataDefaultValue<char>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::UBYTE: _setBufferDataDefaultValue<uchar>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::SHORT: _setBufferDataDefaultValue<short>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::USHORT: _setBufferDataDefaultValue<ushort>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::INT: _setBufferDataDefaultValue<int>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::UINT: _setBufferDataDefaultValue<uint>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::FLOAT: _setBufferDataDefaultValue<float>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2I: _setBufferDataDefaultValue<Vec2i>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC2F: _setBufferDataDefaultValue<Vec2f>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC3F: _setBufferDataDefaultValue<Vec3f>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::VEC4F: _setBufferDataDefaultValue<Vec4f>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT3F: _setBufferDataDefaultValue<Mat3f>( descValue, p_descProgram, p_descPass ); break;
+			case E_TYPE::MAT4F: _setBufferDataDefaultValue<Mat4f>( descValue, p_descProgram, p_descPass ); break;
 			case E_TYPE::COLOR4:
-				_setUniformDefaultValue<Util::Color::Rgba>( descUniform, p_descProgram, p_descPass );
+				_setBufferDataDefaultValue<Util::Color::Rgba>( descValue, p_descProgram, p_descPass );
 				break;
-			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descUniform.type ) ) );
+			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descValue.type ) ) );
 			}
 		}
 	}
 
 	void OpenGL45::_purgeResources(
-		const std::vector<Key> & vertexArrays,
-		const std::vector<Key> & buffers,
-		const std::vector<Key> & framebuffers,
-		const std::vector<Key> & textures,
-		const std::vector<Key> & programs,
-		const std::vector<Key> & data
+		const std::vector<Key> & p_vertexArrays,
+		const std::vector<Key> & p_buffers,
+		const std::vector<Key> & p_framebuffers,
+		const std::vector<Key> & p_textures,
+		const std::vector<Key> & p_programs,
+		const std::vector<Key> & p_bufferValues
 	)
 	{
 		std::erase_if(
 			_vertexArrays,
-			[ &vertexArrays ]( const auto & p )
-			{ return std::find( vertexArrays.begin(), vertexArrays.end(), p.first ) == vertexArrays.end(); }
+			[ &p_vertexArrays ]( const auto & p )
+			{ return std::find( p_vertexArrays.begin(), p_vertexArrays.end(), p.first ) == p_vertexArrays.end(); }
 		);
 
 		std::erase_if(
 			_buffers,
-			[ &buffers ]( const auto & p )
-			{ return std::find( buffers.begin(), buffers.end(), p.first ) == buffers.end(); }
+			[ &p_buffers ]( const auto & p )
+			{ return std::find( p_buffers.begin(), p_buffers.end(), p.first ) == p_buffers.end(); }
 		);
 
 		std::erase_if(
 			_framebuffers,
-			[ &framebuffers ]( const auto & p )
-			{ return std::find( framebuffers.begin(), framebuffers.end(), p.first ) == framebuffers.end(); }
+			[ &p_framebuffers ]( const auto & p )
+			{ return std::find( p_framebuffers.begin(), p_framebuffers.end(), p.first ) == p_framebuffers.end(); }
 		);
 
 		std::erase_if(
 			_textures,
-			[ &textures ]( const auto & p )
-			{ return std::find( textures.begin(), textures.end(), p.first ) == textures.end(); }
+			[ &p_textures ]( const auto & p )
+			{ return std::find( p_textures.begin(), p_textures.end(), p.first ) == p_textures.end(); }
 		);
 
 		std::erase_if(
 			_programs,
-			[ &programs ]( const auto & p )
-			{ return std::find( programs.begin(), programs.end(), p.first ) == programs.end(); }
+			[ &p_programs ]( const auto & p )
+			{ return std::find( p_programs.begin(), p_programs.end(), p.first ) == p_programs.end(); }
 		);
 
 		std::erase_if(
-			_uniforms,
-			[ &data ]( const auto & p ) { return std::find( data.begin(), data.end(), p.first ) == data.end(); }
+			_bufferValueEntries,
+			[ &p_bufferValues ]( const auto & p )
+			{ return std::find( p_bufferValues.begin(), p_bufferValues.end(), p.first ) == p_bufferValues.end(); }
 		);
 	}
 
@@ -1072,14 +1080,14 @@ namespace VTX::Renderer::Context
 		}
 #endif
 
-		// Count total size used by buffers.
+		// Count total size used by p_buffers.
 		size_t totalSizeBuffers = 0;
 		for ( const auto & [ key, buffer ] : _buffers )
 		{
 			totalSizeBuffers += buffer->size();
 		}
 
-		// Count total size used by textures.
+		// Count total size used by p_textures.
 		size_t totalSizeTextures = 0;
 		for ( const auto & [ key, texture ] : _textures )
 		{

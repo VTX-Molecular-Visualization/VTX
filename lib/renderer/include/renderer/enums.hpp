@@ -86,11 +86,13 @@ namespace VTX::Renderer
 		// STREAM_COPY,
 	};
 
+	/*
 	enum struct E_TARGET
 	{
 		UNIFORM_BUFFER,
 		SHADER_STORAGE_BUFFER
 	};
+	*/
 
 	enum struct E_IMMUTABLE_FLAG
 	{

@@ -29,7 +29,9 @@ namespace VTX::Renderer
 				  BufferValue<Vec4f> { VEC4F_ZERO } },
 				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
 				{ "Mouse position", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "Is perspective", E_TYPE::UINT, BufferValue<uint> { 1 } } } }
+				{ "Is perspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+			  false,
+			  true }
 		);
 
 		_renderGraph->addGlobalData(

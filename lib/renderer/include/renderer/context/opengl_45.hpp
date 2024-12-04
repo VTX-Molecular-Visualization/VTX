@@ -48,16 +48,16 @@ namespace VTX::Renderer::Context
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
 		/**
-		 * @brief Send data to GPU (uniform).
+		 * @brief Send data to GPU.
 		 * @param p_key the buffer name to send on.
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
-			assert( _uniforms.contains( p_key ) );
+			assert( _bufferValueEntries.contains( p_key ) );
 
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
+			std::unique_ptr<_StructBufferDataValueEntry> & entry = _bufferValueEntries[ p_key ];
 			entry->buffer->setSub( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
@@ -204,14 +204,14 @@ namespace VTX::Renderer::Context
 		Collection<GL::Texture2D>	_textures;
 		///////////////////
 
-		struct _StructUniformEntry
+		struct _StructBufferDataValueEntry
 		{
 			GL::Buffer * buffer;
 			size_t		 offset;
 			size_t		 size;
 			size_t		 padding;
 			size_t		 totalSize;
-			_StructUniformEntry(
+			_StructBufferDataValueEntry(
 				GL::Buffer * p_buffer,
 				const size_t p_offset,
 				const size_t p_size,
@@ -220,9 +220,9 @@ namespace VTX::Renderer::Context
 			{
 			}
 		};
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		CollectionPtr<GL::Program>			_programs;
-		Collection<_StructUniformEntry>		_uniforms;
+		std::unique_ptr<GL::ProgramManager>		_programManager;
+		CollectionPtr<GL::Program>				_programs;
+		Collection<_StructBufferDataValueEntry> _bufferValueEntries;
 
 		std::map<ComputePass::BufferDraw * const, std::unique_ptr<GL::Buffer>> _computeBuffers;
 
@@ -234,7 +234,7 @@ namespace VTX::Renderer::Context
 
 		// Keys.
 		const std::string _KEY_EBO_SUFFIX = "Idx";
-		inline Key		  _getKey( const BufferData & p_uniform ) const { return p_uniform.name; }
+		inline Key		  _getKey( const BufferData & p_buffer ) const { return p_buffer.name; }
 		inline Key		  _getKey( const Pass & p_pass ) const { return p_pass.name; }
 		inline Key		  _getKey( const Pass * const p_pass, const Program & p_program ) const
 		{
@@ -259,10 +259,10 @@ namespace VTX::Renderer::Context
 		inline Key _getKey(
 			const Pass * const		p_pass,
 			const Program * const	p_program,
-			const BufferDataValue & p_uniform
+			const BufferDataValue & p_bufferDataValue
 		) const
 		{
-			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_uniform.name;
+			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_bufferDataValue.name;
 		}
 
 		void _createInputs(
@@ -291,26 +291,27 @@ namespace VTX::Renderer::Context
 
 		Vec2i _getTextureSize( const Attachment & ) const;
 
-		void _createUniforms(
-			GL::Buffer * const		 p_ubo,
-			const BufferDataValues & p_uniforms,
-			std::vector<Key> &		 p_uniformKeys,
+		void _createBufferData(
+			GL::Buffer * const		 p_buffer,
+			const BufferDataValues & p_descValues,
+			const bool				 p_isImmutable,
+			std::vector<Key> &		 p_keys,
 			const Program * const	 p_descProgram = nullptr,
 			const Pass * const		 p_descPassPtr = nullptr
 
 		);
 
 		template<typename T>
-		void _setUniformDefaultValue(
-			const BufferDataValue & p_descUniform,
+		void _setBufferDataDefaultValue(
+			const BufferDataValue & p_descValue,
 			const Program * const	p_descProgram = nullptr,
 			const Pass * const		p_descPass	  = nullptr
 		)
 		{
-			assert( std::holds_alternative<BufferValue<T>>( p_descUniform.value ) );
+			assert( std::holds_alternative<BufferValue<T>>( p_descValue.value ) );
 
-			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
-			setValue<T>( std::get<BufferValue<T>>( p_descUniform.value ).value, key );
+			std::string key = _getKey( p_descPass, p_descProgram, p_descValue );
+			setValue<T>( std::get<BufferValue<T>>( p_descValue.value ).value, key );
 		}
 
 		void _purgeResources(
@@ -319,7 +320,7 @@ namespace VTX::Renderer::Context
 			const std::vector<Key> & p_framebuffers,
 			const std::vector<Key> & p_textures,
 			const std::vector<Key> & p_programs,
-			const std::vector<Key> & p_uniforms
+			const std::vector<Key> & p_bufferValues
 		);
 
 		void				 _getOpenglInfos();

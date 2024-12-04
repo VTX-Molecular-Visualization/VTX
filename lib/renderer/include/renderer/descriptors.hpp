@@ -87,7 +87,7 @@ namespace VTX::Renderer
 		char			 binding;
 		BufferDataValues values;
 		bool			 isLarge	 = false; // If max size >64 Ko
-		bool			 isImmutable = false; // TODO: use variant of flags enums.
+		bool			 isSizeFixed = false; // TODO: use variant of flags enums.
 
 		/*
 		struct BufferDraw
