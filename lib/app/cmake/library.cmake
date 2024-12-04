@@ -59,7 +59,6 @@ endif()
 target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_no_opengl PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_test PRIVATE vtx_app_no_opengl)
-#target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
