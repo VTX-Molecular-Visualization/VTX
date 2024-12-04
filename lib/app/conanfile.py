@@ -58,7 +58,7 @@ class VTXAppRecipe(ConanFile):
         self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
         self.cpp_info.components["vtx_app_no_opengl"].set_property("cmake_target_name", "vtx_app::vtx_app_no_opengl")
         self.cpp_info.components["vtx_app_no_opengl"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer_no_opengl", "vtx_io::vtx_io", "vtx_core::vtx_core", "entt::entt" ]
-        self.cpp_info.components["vtx_app_test"].libs = ["vtx_app_test"]
-        self.cpp_info.components["vtx_app_test"].set_property("cmake_target_name", "vtx_app::vtx_app")
-        self.cpp_info.components["vtx_app_test"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer_no_opengl", "vtx_app_no_opengl", "vtx_io::vtx_io", "vtx_core::vtx_core", "entt::entt", "catch2::catch2" ]
+        # self.cpp_info.components["vtx_app_test"].libs = ["vtx_app_test"]
+        # self.cpp_info.components["vtx_app_test"].set_property("cmake_target_name", "vtx_app::vtx_app_test")
+        self.cpp_info.components["vtx_app_test"].requires = [ "catch2::catch2" ]
 
