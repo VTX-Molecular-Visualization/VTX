@@ -192,9 +192,8 @@ namespace VTX::UI::QT::DockWidget
 
 					// Add with concept.
 					addTopLevelData(
-						TreeItemData { p_item.getName(),
-									   WidgetData( p_item.getPersistentSceneID() ),
-									   system.getChains().size() },
+						TreeItemData {
+							p_item.getName(), WidgetData( p_item.getPersistentSceneID() ), system.getChains().size() },
 						LoadFunc(
 							[ &p_item,
 							  &system ]( const uint p_level, const WidgetData p_data ) -> std::vector<TreeItemData>

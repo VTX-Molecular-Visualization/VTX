@@ -58,8 +58,8 @@ namespace VTX::App::Component::IO
 		// void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
 		// void					clearCurrentPath();
 
-		// Data &						getData( const App::Component::Chemistry::System * const p_system );
-		// const ScenePathData::Data & getData( const App::Component::Chemistry::System * const p_system ) const;
+		// Data &						get( const App::Component::Chemistry::System * const p_system );
+		// const ScenePathData::Data & get( const App::Component::Chemistry::System * const p_system ) const;
 		// FilePath					getFilepath( const App::Component::Chemistry::System * const p_system ) const;
 
 		// void	   incrementSceneModifications();

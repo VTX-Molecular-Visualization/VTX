@@ -64,8 +64,8 @@ namespace VTX::Renderer::Context
 				 //{
 				 //	 p_context.reserveData( p_size, p_key )
 				 //} -> std::same_as<void>;
-				 { p_context.setData( p_data, p_key ) } -> std::same_as<void>;
-				 { p_context.setSubData( p_data, p_key, p_offset ) } -> std::same_as<void>;
+				 { p_context.set( p_data, p_key ) } -> std::same_as<void>;
+				 { p_context.setSub( p_data, p_key, p_offset ) } -> std::same_as<void>;
 				 { p_context.fillInfos( p_infos ) } -> std::same_as<void>;
 				 { p_context.measureTaskDuration( p_task ) } -> std::same_as<float>;
 				 { p_context.compileShaders() } -> std::same_as<void>;

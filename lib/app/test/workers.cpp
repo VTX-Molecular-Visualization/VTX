@@ -26,7 +26,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 			p_thread.setProgress( progress );
 		}
 
-		p_thread.setData<int>( 100 );
+		p_thread.set<int>( 100 );
 
 		return 1;
 	};
@@ -35,7 +35,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		asyncOp,
 		[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
 		{
-			const int threadData = p_thread.getData<int>();
+			const int threadData = p_thread.get<int>();
 			CHECK( p_res == 1 );
 			CHECK( threadData == 100 );
 

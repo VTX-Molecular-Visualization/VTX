@@ -55,7 +55,7 @@ namespace VTX::Renderer::Context
 		vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
 		vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
 		vao->setAttributeBinding( 0, 0 );
-		vbo->setData( quad, GL_STATIC_DRAW );
+		vbo->set( quad, 0, GL_STATIC_DRAW );
 		vao->unbind();
 
 		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
@@ -566,6 +566,7 @@ namespace VTX::Renderer::Context
 
 	void OpenGL45::compute( const ComputePass & p_pass )
 	{
+		return;
 		// TODO: Create program and uniforms (refacto build).
 		const Program & descProgram = p_pass.program;
 
@@ -925,7 +926,7 @@ namespace VTX::Renderer::Context
 		}
 
 		// Init ubo.
-		p_ubo->setData( GLsizei( totalSize ), GL_STATIC_DRAW );
+		p_ubo->set( GLsizei( totalSize ), 0, GL_STATIC_DRAW );
 
 		// Fill default values.
 		for ( const Uniform & descUniform : p_uniforms )
@@ -1075,7 +1076,7 @@ namespace VTX::Renderer::Context
 		size_t totalSizeBuffers = 0;
 		for ( const auto & [ key, buffer ] : _buffers )
 		{
-			totalSizeBuffers += buffer->getSize();
+			totalSizeBuffers += buffer->size();
 		}
 
 		// Count total size used by textures.

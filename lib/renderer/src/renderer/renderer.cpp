@@ -379,10 +379,10 @@ namespace VTX::Renderer
 			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
 			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
 
-			_context->setSubData(
+			_context->setSub(
 				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
 			);
-			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+			_context->setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
 		};
 
 		// Remove.
@@ -392,7 +392,7 @@ namespace VTX::Renderer
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData(
+			_context->setSub(
 				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
 			);
 		};
@@ -401,14 +401,14 @@ namespace VTX::Renderer
 		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+			_context->setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Residue colors.
 		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
-			_context->setSubData( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+			_context->setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
 		};
 
 		// Selection.
@@ -424,14 +424,14 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
 			{
 				cacheR.flags[ i ] &= ~mask;
 				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSubData( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
+			_context->setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
 		};
 
 		p_proxy.onAtomSelections +=
@@ -461,7 +461,7 @@ namespace VTX::Renderer
 			}
 			*/
 
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			// TODO: ribbons and SES.
 		};
@@ -485,14 +485,14 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
 
 			for ( size_t i = 0; i < cacheR.size; ++i )
 			{
 				cacheR.bufferFlags[ i ] &= ~mask;
 				cacheR.bufferFlags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+			_context->setSub( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
 		};
 		*/
 	}
@@ -622,7 +622,7 @@ namespace VTX::Renderer
 				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Ribbon color blending", 0 ); };
 		}
 
-		_context->setData( representations, "Representations" );
+		_context->set( representations, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -643,7 +643,7 @@ namespace VTX::Renderer
 
 		_proxyCamera = &p_proxy;
 
-		_context->setData<_StructUBOCamera>(
+		_context->set<_StructUBOCamera>(
 			{ { *p_proxy.matrixView,
 				*p_proxy.matrixProjection,
 				p_proxy.cameraPosition,
@@ -689,12 +689,12 @@ namespace VTX::Renderer
 		assert( hasContext() );
 
 		_proxyColorLayout = &p_proxy;
-		_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+		_context->set<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChange += [ this, &p_proxy ]()
 		{
-			_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			_context->set<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
 			setNeedUpdate( true );
 		};
 	}
@@ -857,8 +857,8 @@ namespace VTX::Renderer
 		assert( p_proxy.maxs );
 		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-		_context->setData( *p_proxy.mins, "VoxelsMins" );
-		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
+		_context->set( *p_proxy.mins, "VoxelsMins" );
+		_context->set( *p_proxy.maxs, "VoxelsMaxs" );
 
 		drawRangeVoxels.offsets = { 0 };
 		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
@@ -905,10 +905,10 @@ namespace VTX::Renderer
 			const size_t bondCount = proxy->bonds->size();
 
 			// Fill buffers.
-			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+			_context->setSub( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+			_context->setSub( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context->setSub( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context->setSub( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags if not cached.
 			if ( cache.flags.empty() )
@@ -930,9 +930,9 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
 			}
 
-			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-			_context->setSubData( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
-			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+			_context->setSub( cache.flags, "SpheresCylindersFlags", offsetAtoms );
+			_context->setSub( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+			_context->setSub( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
 
 			// Move bonds.
 			std::vector<uint> bonds( bondCount );
@@ -940,7 +940,7 @@ namespace VTX::Renderer
 			{
 				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 			}
-			_context->setSubData( bonds, "SpheresCylindersIdx", offsetBonds );
+			_context->setSub( bonds, "SpheresCylindersIdx", offsetBonds );
 
 			// Offsets.
 			cache.rangeSpheres	 = Util::Math::Range<size_t> { offsetAtoms, atomCount };
@@ -1310,17 +1310,17 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
 			}
 
-			_context->setSubData( cache.positions, "RibbonsPositions", offsetCaPositions );
-			_context->setSubData( cache.directions, "RibbonsDirections", offsetCaPositions );
-			_context->setSubData( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
-			_context->setSubData( cache.colors, "RibbonsColors", offsetCaPositions );
-			_context->setSubData( cache.ids, "RibbonsIds", offsetCaPositions );
-			_context->setSubData( cache.flags, "RibbonsFlags", offsetCaPositions );
-			_context->setSubData(
+			_context->setSub( cache.positions, "RibbonsPositions", offsetCaPositions );
+			_context->setSub( cache.directions, "RibbonsDirections", offsetCaPositions );
+			_context->setSub( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
+			_context->setSub( cache.colors, "RibbonsColors", offsetCaPositions );
+			_context->setSub( cache.ids, "RibbonsIds", offsetCaPositions );
+			_context->setSub( cache.flags, "RibbonsFlags", offsetCaPositions );
+			_context->setSub(
 				std::vector<ushort>( cache.positions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
-			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-			_context->setSubData( indices, "RibbonsIdx", offsetIndices );
+			_context->setSub( cache.representations, "RibbonsRepresentations", offsetCaPositions );
+			_context->setSub( indices, "RibbonsIdx", offsetIndices );
 
 			// Offsets.
 			cache.range = Util::Math::Range<size_t> { offsetCaPositions, cache.positions.size() };
@@ -1466,8 +1466,8 @@ namespace VTX::Renderer
 
 			// Debug display.
 			auto voxels = gridAtoms.toVoxels();
-			_context->setData( voxels.first, "VoxelsMins" );
-			_context->setData( voxels.second, "VoxelsMaxs" );
+			_context->set( voxels.first, "VoxelsMins" );
+			_context->set( voxels.second, "VoxelsMaxs" );
 
 			drawRangeVoxels.offsets = { 0 };
 			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
@@ -1524,7 +1524,7 @@ namespace VTX::Renderer
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}
 
-		_context->setData( models, "Models" );
+		_context->set( models, "Models" );
 	}
 
 	void Renderer::snapshot(

@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context
 			assert( _uniforms.contains( p_key ) );
 
 			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
+			entry->buffer->setSub( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
 		}
 
 		/**
@@ -77,10 +77,10 @@ namespace VTX::Renderer::Context
 			size		= size > 0 ? size : 1;
 
 			// Scale if needed.
-			if ( _buffers[ p_key ]->getSize() != size )
+			if ( _buffers[ p_key ]->size() != size )
 			{
-				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
-				_buffers[ p_key ]->setData( GLsizei( size ), GL_STATIC_DRAW );
+				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->size(), size );
+				_buffers[ p_key ]->set( GLsizei( size ), 0, GL_STATIC_DRAW );
 			}
 		}
 
@@ -88,7 +88,7 @@ namespace VTX::Renderer::Context
 		 * @brief Send data to GPU (buffer).
 		 */
 		template<typename T>
-		inline void setData( const std::vector<T> & p_data, const Key & p_key )
+		inline void set( const std::vector<T> & p_data, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
@@ -98,16 +98,16 @@ namespace VTX::Renderer::Context
 				reserveData<char>( 0, p_key );
 			}
 			// Auto scale.
-			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			else if ( _buffers[ p_key ]->size() != sizeof( T ) * p_data.size() )
 			{
 				VTX_TRACE(
-					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
+					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->size(), sizeof( T ) * p_data.size()
 				);
-				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( p_data, 0, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_buffers[ p_key ]->setSubData( p_data );
+				_buffers[ p_key ]->setSub( p_data );
 			}
 		}
 
@@ -115,12 +115,14 @@ namespace VTX::Renderer::Context
 		 * @brief Send data to an existing GPU buffer.
 		 */
 		template<typename T>
-		inline void setSubData( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
+		inline void setSub( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
+			_buffers[ p_key ]->setSub( p_data, GLintptr( p_offset * sizeof( T ) ) );
 		}
+
+		// TODDO: send data to buffer by map()?
 
 		void fillInfos( StructInfos & p_infos ) const;
 

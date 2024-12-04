@@ -37,6 +37,7 @@ namespace VTX::Renderer
 			std::string name;
 			E_TYPE		nativeType;
 			size_t		components;
+			// TODO: handle more buffer types.
 		};
 		std::vector<Entry> entries;
 	};
