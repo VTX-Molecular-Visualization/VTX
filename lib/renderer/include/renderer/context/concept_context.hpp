@@ -26,35 +26,35 @@ namespace VTX::Renderer::Context
 	concept Concept
 		= std::is_base_of<BaseContext, C>::value
 		  && requires(
-			  C								p_context,
-			  const size_t					p_width,
-			  const size_t					p_height,
-			  const size_t					p_x,
-			  const size_t					p_y,
-			  const RenderQueue &			p_renderQueue,
-			  const Links &					p_links,
-			  const Handle					p_output,
-			  const SharedUniforms &		p_uniforms,
-			  const std::string &			p_key,
-			  const std::any &				p_value,
-			  const std::vector<std::any> & p_data,
-			  const size_t					p_size,
-			  const size_t					p_index,
-			  const size_t					p_offset,
-			  const Util::Chrono::Task &	p_task,
-			  Instructions &				p_instructions,
-			  InstructionsDurationRanges &	p_instructionsDurationRanges,
-			  StructInfos &					p_infos,
-			  std::vector<uchar> &			p_image,
-			  const std::string &			p_pass,
-			  const E_CHAN_OUT				p_channel,
-			  std::any &					p_textureData,
-			  const ComputePass &			p_computePass
+			  C								  p_context,
+			  const size_t					  p_width,
+			  const size_t					  p_height,
+			  const size_t					  p_x,
+			  const size_t					  p_y,
+			  const RenderQueue &			  p_renderQueue,
+			  const Links &					  p_links,
+			  const Handle					  p_output,
+			  const std::vector<BufferData> & p_globalData,
+			  const std::string &			  p_key,
+			  const std::any &				  p_value,
+			  const std::vector<std::any> &	  p_data,
+			  const size_t					  p_size,
+			  const size_t					  p_index,
+			  const size_t					  p_offset,
+			  const Util::Chrono::Task &	  p_task,
+			  Instructions &				  p_instructions,
+			  InstructionsDurationRanges &	  p_instructionsDurationRanges,
+			  StructInfos &					  p_infos,
+			  std::vector<uchar> &			  p_image,
+			  const std::string &			  p_pass,
+			  const E_CHAN_OUT				  p_channel,
+			  std::any &					  p_textureData,
+			  const ComputePass &			  p_computePass
 
 		  ) {
 				 {
 					 p_context.build(
-						 p_renderQueue, p_links, p_output, p_uniforms, p_instructions, p_instructionsDurationRanges
+						 p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges
 					 )
 				 } -> std::same_as<void>;
 				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;

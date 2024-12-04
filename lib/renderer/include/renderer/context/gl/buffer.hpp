@@ -127,7 +127,12 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline void set( const GLsizei p_size, const bool p_immutable = false, const GLbitfield p_flags = 0 )
+		inline void set(
+			const GLsizei	   p_size,
+			const void * const data		   = nullptr,
+			const bool		   p_immutable = false,
+			const GLbitfield   p_flags	   = 0
+		)
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
@@ -136,11 +141,11 @@ namespace VTX::Renderer::Context::GL
 			_size = p_size;
 			if ( p_immutable )
 			{
-				glNamedBufferStorage( _id, _size, nullptr, p_flags );
+				glNamedBufferStorage( _id, _size, data, p_flags );
 			}
 			else
 			{
-				glNamedBufferData( _id, _size, nullptr, p_flags );
+				glNamedBufferData( _id, _size, data, p_flags );
 			}
 		}
 

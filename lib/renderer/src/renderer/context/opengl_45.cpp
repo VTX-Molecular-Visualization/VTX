@@ -70,12 +70,12 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::build(
-		const RenderQueue &			 p_renderQueue,
-		const Links &				 p_links,
-		const Handle				 p_output,
-		const SharedUniforms &		 p_uniforms,
-		Instructions &				 p_outInstructions,
-		InstructionsDurationRanges & p_outInstructionsDurationRanges
+		const RenderQueue &				p_renderQueue,
+		const Links &					p_links,
+		const Handle					p_output,
+		const std::vector<BufferData> & p_globalData,
+		Instructions &					p_outInstructions,
+		InstructionsDurationRanges &	p_outInstructionsDurationRanges
 	)
 	{
 		// Store created items to free no more used later.
@@ -84,7 +84,7 @@ namespace VTX::Renderer::Context
 		std::vector<Key> framebuffers;
 		std::vector<Key> textures;
 		std::vector<Key> programs;
-		std::vector<Key> uniforms;
+		std::vector<Key> data;
 		vertexArrays.push_back( _KEY_QUAD );
 		buffers.push_back( _KEY_QUAD );
 
@@ -104,28 +104,31 @@ namespace VTX::Renderer::Context
 		_output = p_output;
 
 		// Create shared buffers.
-		if ( not p_uniforms.empty() )
+		if ( not p_globalData.empty() )
 		{
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
 
-			for ( const SharedUniform & uniform : p_uniforms )
+			// TODO: _createBufferData function.
+			for ( const BufferData & bufferData : p_globalData )
 			{
-				const Key keyBuffer = _getKey( uniform );
+				const Key keyBuffer = _getKey( bufferData );
 				buffers.push_back( keyBuffer );
 
 				if ( not _buffers.contains( keyBuffer ) )
 				{
 					_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 				}
-				_createUniforms( _buffers[ keyBuffer ].get(), uniform.uniforms, uniforms );
+				_createUniforms( _buffers[ keyBuffer ].get(), bufferData.values, data );
 
 				assert( _buffers.contains( keyBuffer ) );
-				GL::Buffer * const buffer	  = _buffers[ keyBuffer ].get();
-				GLenum			   bufferType = uniform.isDynamic ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER;
-				uint			   binding	  = uniform.binding;
-				p_outInstructions.emplace_back( [ buffer, bufferType, binding ]()
-												{ buffer->bind( bufferType, binding ); } );
+				GL::Buffer * const buffer  = _buffers[ keyBuffer ].get();
+				uint			   binding = bufferData.binding;
+				const bool		   isLarge = bufferData.isLarge;
+				p_outInstructions.emplace_back(
+					[ buffer, isLarge, binding ]()
+					{ buffer->bind( isLarge ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER, binding ); }
+				);
 			}
 
 			p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
@@ -184,7 +187,7 @@ namespace VTX::Renderer::Context
 				}
 
 				// Uniforms.
-				if ( not descProgram.uniforms.empty() )
+				if ( not descProgram.data.empty() )
 				{
 					const Key keyBuffer = _getKey( descPassPtr, descProgram );
 					buffers.push_back( keyBuffer );
@@ -193,9 +196,7 @@ namespace VTX::Renderer::Context
 					{
 						_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
 					}
-					_createUniforms(
-						_buffers[ keyBuffer ].get(), descProgram.uniforms, uniforms, &descProgram, descPassPtr
-					);
+					_createUniforms( _buffers[ keyBuffer ].get(), descProgram.data, data, &descProgram, descPassPtr );
 				}
 			}
 
@@ -307,7 +308,7 @@ namespace VTX::Renderer::Context
 			{
 				const Key keyProgram = _getKey( descPassPtr, descProgram );
 
-				if ( not descProgram.uniforms.empty() )
+				if ( not descProgram.data.empty() )
 				{
 					assert( _buffers.contains( keyProgram ) );
 
@@ -405,7 +406,7 @@ namespace VTX::Renderer::Context
 					);
 				}
 
-				if ( not descProgram.uniforms.empty() )
+				if ( not descProgram.data.empty() )
 				{
 					assert( _buffers.contains( keyProgram ) );
 					GL::Buffer * ubo = _buffers[ keyProgram ].get();
@@ -447,7 +448,7 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "End", p_outInstructions.size() } );
 
 		// Unbind shared buffers.
-		for ( const SharedUniform & uniform : p_uniforms )
+		for ( const BufferData & uniform : p_globalData )
 		{
 			const Key k = _getKey( uniform );
 			assert( _buffers.contains( k ) );
@@ -458,7 +459,7 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 
 		// Purge unused resources.
-		_purgeResources( vertexArrays, buffers, framebuffers, textures, programs, uniforms );
+		_purgeResources( vertexArrays, buffers, framebuffers, textures, programs, data );
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
@@ -567,7 +568,7 @@ namespace VTX::Renderer::Context
 	void OpenGL45::compute( const ComputePass & p_pass )
 	{
 		return;
-		// TODO: Create program and uniforms (refacto build).
+		// TODO: Create program and data (refacto build).
 		const Program & descProgram = p_pass.program;
 
 		std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
@@ -578,11 +579,11 @@ namespace VTX::Renderer::Context
 			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
 
 		// Create and bind buffers.
-		for ( ComputePass::Data * const data : p_pass.data )
+		for ( ComputePass::BufferDraw * const data : p_pass.data )
 		{
 			if ( not _computeBuffers.contains( data ) )
 			{
-				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data ) );
+				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data, 1 ) );
 			}
 
 			_computeBuffers[ data ]->bind( GL_SHADER_STORAGE_BUFFER, data->binding );
@@ -617,17 +618,17 @@ namespace VTX::Renderer::Context
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 		// Unbind buffers.
-		for ( ComputePass::Data * const data : p_pass.data )
+		for ( ComputePass::BufferDraw * const data : p_pass.data )
 		{
 			_computeBuffers[ data ]->unbind();
 		}
 	}
 
-	void OpenGL45::clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers )
+	void OpenGL45::clearComputeBuffers( std::optional<std::vector<ComputePass::BufferDraw *>> p_buffers )
 	{
 		if ( p_buffers.has_value() )
 		{
-			for ( ComputePass::Data * const data : p_buffers.value() )
+			for ( ComputePass::BufferDraw * const data : p_buffers.value() )
 			{
 				_computeBuffers.erase( data );
 			}
@@ -664,9 +665,9 @@ namespace VTX::Renderer::Context
 				}
 			}
 			// Create vao if data provided.
-			else if ( std::holds_alternative<Data>( descIO ) )
+			else if ( std::holds_alternative<BufferDraw>( descIO ) )
 			{
-				const Data & data = std::get<Data>( descIO );
+				const BufferDraw & data = std::get<BufferDraw>( descIO );
 
 				// Create vao.
 				const Key keyVao = _getKey( input );
@@ -691,7 +692,7 @@ namespace VTX::Renderer::Context
 				vaoData->bindElementBuffer( *eboData );
 
 				GLuint chan = 0;
-				for ( const Data::Entry & entry : data.entries )
+				for ( const BufferDraw::Entry & entry : data.entries )
 				{
 					const Key keyData = _getKey( input, entry );
 					p_buffers.push_back( keyData );
@@ -866,17 +867,17 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::_createUniforms(
-		GL::Buffer * const	  p_ubo,
-		const Uniforms &	  p_uniforms,
-		std::vector<Key> &	  p_uniformKeys,
-		const Program * const p_descProgram,
-		const Pass * const	  p_descPass
+		GL::Buffer * const		 p_ubo,
+		const BufferDataValues & p_uniforms,
+		std::vector<Key> &		 p_uniformKeys,
+		const Program * const	 p_descProgram,
+		const Pass * const		 p_descPass
 
 	)
 	{
 		// Create uniform entries.
 		size_t offset = 0;
-		for ( const Uniform & descUniform : p_uniforms )
+		for ( const BufferDataValue & descUniform : p_uniforms )
 		{
 			size_t		size = _mapTypeSizes[ descUniform.type ];
 			std::string key	 = _getKey( p_descPass, p_descProgram, descUniform );
@@ -919,17 +920,17 @@ namespace VTX::Renderer::Context
 			return;
 		}
 
-		for ( const Uniform & descUniform : p_uniforms )
+		for ( const BufferDataValue & descUniform : p_uniforms )
 		{
 			std::string key				= _getKey( p_descPass, p_descProgram, descUniform );
 			_uniforms[ key ]->totalSize = totalSize;
 		}
 
 		// Init ubo.
-		p_ubo->set( GLsizei( totalSize ), 0, GL_STATIC_DRAW );
+		p_ubo->set( GLsizei( totalSize ), nullptr, 0, GL_STATIC_DRAW );
 
 		// Fill default values.
-		for ( const Uniform & descUniform : p_uniforms )
+		for ( const BufferDataValue & descUniform : p_uniforms )
 		{
 			switch ( descUniform.type )
 			{
@@ -961,7 +962,7 @@ namespace VTX::Renderer::Context
 		const std::vector<Key> & framebuffers,
 		const std::vector<Key> & textures,
 		const std::vector<Key> & programs,
-		const std::vector<Key> & uniforms
+		const std::vector<Key> & data
 	)
 	{
 		std::erase_if(
@@ -996,8 +997,7 @@ namespace VTX::Renderer::Context
 
 		std::erase_if(
 			_uniforms,
-			[ &uniforms ]( const auto & p )
-			{ return std::find( uniforms.begin(), uniforms.end(), p.first ) == uniforms.end(); }
+			[ &data ]( const auto & p ) { return std::find( data.begin(), data.end(), p.first ) == data.end(); }
 		);
 	}
 

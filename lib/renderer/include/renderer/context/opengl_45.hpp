@@ -30,17 +30,17 @@ namespace VTX::Renderer::Context
 		 * @param p_renderQueue the list of passes to render, ordered by the scheduler.
 		 * @param p_links the connections between passes.
 		 * @param p_output the output framebuffer.
-		 * @param p_uniforms the global GPU variables.
+		 * @param p_globalData the global GPU variables.
 		 * @param p_outInstructions the generated instruction list.
 		 * @param p_outInstructionsDurationRanges the generated instruction list grouped by category.
 		 */
 		void build(
-			const RenderQueue &			 p_renderQueue,
-			const Links &				 p_links,
-			const Handle				 p_output,
-			const SharedUniforms &		 p_uniforms,
-			Instructions &				 p_outInstructions,
-			InstructionsDurationRanges & p_outInstructionsDurationRanges
+			const RenderQueue &				p_renderQueue,
+			const Links &					p_links,
+			const Handle					p_output,
+			const std::vector<BufferData> & p_globalData,
+			Instructions &					p_outInstructions,
+			InstructionsDurationRanges &	p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
@@ -80,7 +80,7 @@ namespace VTX::Renderer::Context
 			if ( _buffers[ p_key ]->size() != size )
 			{
 				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->size(), size );
-				_buffers[ p_key ]->set( GLsizei( size ), 0, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( GLsizei( size ), nullptr, 0, GL_STATIC_DRAW );
 			}
 		}
 
@@ -173,7 +173,7 @@ namespace VTX::Renderer::Context
 		}
 
 		void compute( const ComputePass & p_pass );
-		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
+		void clearComputeBuffers( std::optional<std::vector<ComputePass::BufferDraw *>> p_buffers = std::nullopt );
 
 	  private:
 		/////////////////// TODO: use collection util class
@@ -224,7 +224,7 @@ namespace VTX::Renderer::Context
 		CollectionPtr<GL::Program>			_programs;
 		Collection<_StructUniformEntry>		_uniforms;
 
-		std::map<ComputePass::Data * const, std::unique_ptr<GL::Buffer>> _computeBuffers;
+		std::map<ComputePass::BufferDraw * const, std::unique_ptr<GL::Buffer>> _computeBuffers;
 
 		// Output.
 		Handle _output;
@@ -234,7 +234,7 @@ namespace VTX::Renderer::Context
 
 		// Keys.
 		const std::string _KEY_EBO_SUFFIX = "Idx";
-		inline Key		  _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
+		inline Key		  _getKey( const BufferData & p_uniform ) const { return p_uniform.name; }
 		inline Key		  _getKey( const Pass & p_pass ) const { return p_pass.name; }
 		inline Key		  _getKey( const Pass * const p_pass, const Program & p_program ) const
 		{
@@ -252,12 +252,15 @@ namespace VTX::Renderer::Context
 		{
 			return p_input.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
 		}
-		inline Key _getKey( const Input & p_input, const Data::Entry & p_entry ) const
+		inline Key _getKey( const Input & p_input, const BufferDraw::Entry & p_entry ) const
 		{
 			return p_input.name + p_entry.name;
 		}
-		inline Key _getKey( const Pass * const p_pass, const Program * const p_program, const Uniform & p_uniform )
-			const
+		inline Key _getKey(
+			const Pass * const		p_pass,
+			const Program * const	p_program,
+			const BufferDataValue & p_uniform
+		) const
 		{
 			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_uniform.name;
 		}
@@ -289,25 +292,25 @@ namespace VTX::Renderer::Context
 		Vec2i _getTextureSize( const Attachment & ) const;
 
 		void _createUniforms(
-			GL::Buffer * const	  p_ubo,
-			const Uniforms &	  p_uniforms,
-			std::vector<Key> &	  p_uniformKeys,
-			const Program * const p_descProgram = nullptr,
-			const Pass * const	  p_descPassPtr = nullptr
+			GL::Buffer * const		 p_ubo,
+			const BufferDataValues & p_uniforms,
+			std::vector<Key> &		 p_uniformKeys,
+			const Program * const	 p_descProgram = nullptr,
+			const Pass * const		 p_descPassPtr = nullptr
 
 		);
 
 		template<typename T>
 		void _setUniformDefaultValue(
-			const Uniform &		  p_descUniform,
-			const Program * const p_descProgram = nullptr,
-			const Pass * const	  p_descPass	= nullptr
+			const BufferDataValue & p_descUniform,
+			const Program * const	p_descProgram = nullptr,
+			const Pass * const		p_descPass	  = nullptr
 		)
 		{
-			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
+			assert( std::holds_alternative<BufferValue<T>>( p_descUniform.value ) );
 
 			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
-			setValue<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
+			setValue<T>( std::get<BufferValue<T>>( p_descUniform.value ).value, key );
 		}
 
 		void _purgeResources(

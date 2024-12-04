@@ -168,7 +168,7 @@ namespace VTX::Renderer
 			{
 				VTX_DEBUG( "{}", "Generating instructions..." );
 				_context->build(
-					_renderQueue, _links, p_output, _uniforms, p_outInstructions, p_outInstructionsDurationRanges
+					_renderQueue, _links, p_output, _globalData, p_outInstructions, p_outInstructionsDurationRanges
 				);
 				VTX_DEBUG( "{}", "Generating instructions... done" );
 			}
@@ -190,17 +190,17 @@ namespace VTX::Renderer
 			_context.reset( nullptr );
 		}
 
-		inline void addUniforms( const SharedUniform & p_uniforms ) { _uniforms.emplace_back( p_uniforms ); }
+		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
 
 	  private:
 		S				   _scheduler;
 		RenderQueue		   _renderQueue;
 		std::unique_ptr<C> _context;
 
-		const Output * _output;
-		Passes		   _passes;
-		SharedUniforms _uniforms;
-		Links		   _links;
+		const Output *			_output;
+		Passes					_passes;
+		std::vector<BufferData> _globalData;
+		Links					_links;
 	};
 
 } // namespace VTX::Renderer

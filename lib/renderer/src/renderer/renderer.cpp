@@ -17,41 +17,41 @@ namespace VTX::Renderer
 		// Passes.
 		_refreshGraph();
 
-		// Shared uniforms.
-		_renderGraph->addUniforms(
+		// Shared data.
+		_renderGraph->addGlobalData(
 			{ "Camera",
-			  { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
+			  15,
+			  { { "Matrix view", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Matrix projection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Camera position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
 				{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
 				  E_TYPE::VEC4F,
-				  StructUniformValue<Vec4f> { VEC4F_ZERO } },
-				{ "Resolution", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { p_width, p_height } } },
-				{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
-			  15 }
+				  BufferValue<Vec4f> { VEC4F_ZERO } },
+				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+				{ "Mouse position", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "Is perspective", E_TYPE::UINT, BufferValue<uint> { 1 } } } }
 		);
 
-		_renderGraph->addUniforms(
-			{ "Color layout", { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 14, true }
+		_renderGraph->addGlobalData(
+			{ "Color layout", 14, { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } }, true }
 		);
 
-		_renderGraph->addUniforms( { "Models",
-									 { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-									   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-									 13,
-									 true } );
+		_renderGraph->addGlobalData( { "Models",
+									   13,
+									   { { "Matrix model view", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+										 { "Matrix normal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+									   true } );
 
-		_renderGraph->addUniforms( { "Representations",
-									 { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
-									   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
-									   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
-									   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
+		_renderGraph->addGlobalData( { "Representations",
+									   12,
+									   { { "Sphere radius fixed", E_TYPE::FLOAT, BufferValue<float> {} },
+										 { "Sphere radius add", E_TYPE::FLOAT, BufferValue<float> {} },
+										 { "Is sphere radius fixed", E_TYPE::UINT, BufferValue<uint> {} },
+										 { "Cylinder radius", E_TYPE::FLOAT, BufferValue<float> {} },
 
-									   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
-									   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
-									 12,
-									 true } );
+										 { "Cylinder color blending", E_TYPE::UINT, BufferValue<uint> {} },
+										 { "Ribbon color blending", E_TYPE::UINT, BufferValue<uint> {} } },
+									   true } );
 	}
 
 	// TODO: not the best way to do it.
@@ -104,9 +104,9 @@ namespace VTX::Renderer
 				blurX = _renderGraph->addPass( descPassBlur );
 				blurY = _renderGraph->addPass( descPassBlur );
 
-				blurX->name								 = "BlurX";
-				blurY->name								 = "BlurY";
-				blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+				blurX->name							 = "BlurX";
+				blurY->name							 = "BlurY";
+				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
 
 				_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 				_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
@@ -243,14 +243,14 @@ namespace VTX::Renderer
 		///////////////////// COMPUTE
 		uint size = 10000;
 
-		ComputePass::Data bufferReadOnly { size * sizeof( Vec4f ), nullptr, 1 };
-		ComputePass::Data bufferWriteOnly { size * sizeof( Vec4f ), nullptr, 2 };
-		ComputePass::Data bufferReadWrite { size * sizeof( Vec4f ), nullptr, 3 };
+		ComputePass::BufferDraw bufferReadOnly { size * sizeof( Vec4f ), nullptr, 1 };
+		ComputePass::BufferDraw bufferWriteOnly { size * sizeof( Vec4f ), nullptr, 2 };
+		ComputePass::BufferDraw bufferReadWrite { size * sizeof( Vec4f ), nullptr, 3 };
 
 		auto computePass = ComputePass {
 			Program { "ComputeDebug",
 					  std::vector<FilePath> { "compute/debug.comp" },
-					  Uniforms { { { "Intensity", E_TYPE::UINT, StructUniformValue<uint> { size } } } } },
+					  BufferDataValues { { { "Intensity", E_TYPE::UINT, BufferValue<uint> { size } } } } },
 			{ &bufferReadOnly, &bufferWriteOnly, &bufferReadWrite },
 			size
 		};
@@ -392,9 +392,7 @@ namespace VTX::Renderer
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSub(
-				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
-			);
+			_context->setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Colors.
@@ -1481,22 +1479,23 @@ namespace VTX::Renderer
 				int	  nearestAtom;
 			};
 
-			ComputePass::Data bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
-			ComputePass::Data bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
-														 atomGridDataSorted.data(),
-														 1 };
-			ComputePass::Data bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
-													  atomIndexSorted.data(),
-													  2 };
-			ComputePass::Data bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
-												   atomPositionsVdW.data(),
-												   3 };
+			ComputePass::BufferDraw bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
+			ComputePass::BufferDraw bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
+															   atomGridDataSorted.data(),
+															   1 };
+			ComputePass::BufferDraw bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
+															atomIndexSorted.data(),
+															2 };
+			ComputePass::BufferDraw bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
+														 atomPositionsVdW.data(),
+														 3 };
 
 			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
 										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
 
 			auto computePass = ComputePass {
-				Program { "CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, Uniforms { /* TODO */ } },
+				Program {
+					"CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, BufferDataValues { /* TODO */ } },
 				{ &bufferSesGridData, &bufferAtomGridDataSorted, &bufferAtomIndexSorted, &bufferAtomPosition },
 				sizeCreateSDF
 			};
