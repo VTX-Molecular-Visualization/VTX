@@ -6,7 +6,7 @@ project(vtx_python_binding)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
-find_package(vtx_app CONFIG REQUIRED )
+find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
