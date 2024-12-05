@@ -49,7 +49,7 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app_no_opengl)
+	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::poneyponey)
 endif()
 
 # TODO : are those lines usefull ?

@@ -56,7 +56,7 @@ class VTXRendererRecipe(ConanFile):
 
         self.cpp_info.components["vtx_renderer_no_opengl"].libs = ["vtx_renderer_no_opengl"]
         self.cpp_info.components["vtx_renderer_no_opengl"].set_property("cmake_target_name", "vtx_renderer::vtx_renderer_no_opengl")
-        self.cpp_info.components["vtx_renderer_no_opengl"].requires = ["vtx_util::vtx_util"]
+        # self.cpp_info.components["vtx_renderer_no_opengl"].requires = ["vtx_util::vtx_util"]
         #self.cpp_info.components["vtx_renderer_no_opengl"].includedirs = ["include"]        
        
         self.cpp_info.components["vtx_renderer_test"].requires = ["catch2::catch2"]
