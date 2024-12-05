@@ -54,13 +54,10 @@ class VTXAppRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.components["vtx_app"].libs = ["vtx_app"]
         self.cpp_info.components["vtx_app"].set_property("cmake_target_name", "vtx_app::vtx_app")
-        self.cpp_info.components["vtx_app"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer", "vtx_io::vtx_io", "vtx_core::vtx_core", "entt::entt" ]
         
         self.cpp_info.components["poneyponey"].libs = ["poneyponey"]
         self.cpp_info.components["poneyponey"].set_property("cmake_target_name", "vtx_app::poneyponey")
-        self.cpp_info.components["poneyponey"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer_no_opengl", "vtx_io::vtx_io", "vtx_core::vtx_core", "entt::entt" ]
         # self.cpp_info.components["vtx_app_test"].libs = ["vtx_app_test"]
         # self.cpp_info.components["vtx_app_test"].set_property("cmake_target_name", "vtx_app::vtx_app_test")
         
-        self.cpp_info.components["vtx_app_test"].requires = [ "poneyponey",  "catch2::catch2" ]
 

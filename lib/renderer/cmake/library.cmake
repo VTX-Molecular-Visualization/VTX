@@ -43,8 +43,6 @@ endif()
 target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer_no_opengl)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
-target_compile_definitions(vtx_renderer_test PRIVATE VTX_RENDERER_NO_OPENGL)
-
 vtx_copy_registered_data(vtx_renderer) # allow declared files to be copied on build
 
 include(CTest)

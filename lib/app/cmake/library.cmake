@@ -10,10 +10,10 @@ target_sources(vtx_app
 	
 add_library(poneyponey)
 configure_target(poneyponey)
-
 target_sources(poneyponey
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
+
 
 # Tests.
 # I think OpenGL from {vtx_app->vtx_renderer} prevents us to link the target vtx_renderer_no_opengl normally 
@@ -47,7 +47,7 @@ else()
 	target_link_libraries(vtx_app PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_app PRIVATE vtx_io::vtx_io)
 	target_link_libraries(poneyponey PRIVATE vtx_util::vtx_util)
-	target_link_libraries(poneyponey PUBLIC vtx_renderer::vtx_renderer_no_opengl)
+	target_link_libraries(poneyponey PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 	target_link_libraries(poneyponey PRIVATE vtx_core::vtx_core)
 	target_link_libraries(poneyponey PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_app_test PRIVATE vtx_util::vtx_util)
@@ -66,6 +66,4 @@ vtx_copy_registered_data(vtx_app_test) # allow declared files to be copied on bu
 
 include(CTest)
 include(Catch)
-
-
 catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST)
