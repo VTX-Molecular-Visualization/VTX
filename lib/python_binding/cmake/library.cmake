@@ -43,7 +43,6 @@ else()
 	
 	target_link_libraries(vtx_python_bin PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_bin PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_python_bin PRIVATE vtx_renderer::vtx_renderer) #TEST
 	target_link_libraries(vtx_python_bin PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_python_bin PRIVATE vtx_io::vtx_io)
 
@@ -51,7 +50,6 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app_no_opengl)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer_no_opengl) #TEST
 endif()
 
 # TODO : are those lines usefull ?

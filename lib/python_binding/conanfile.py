@@ -14,8 +14,8 @@ class VTXPythonBindingRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    # generators = "CMakeDeps", "CMakeToolchain"
-    generators =  "CMakeToolchain"
+    generators = "CMakeDeps", "CMakeToolchain"
+    # generators =  "CMakeToolchain"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
     
@@ -35,10 +35,10 @@ class VTXPythonBindingRecipe(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
         
-    def generate(self):
-        deps = CMakeDeps(self)
-        deps.check_components_exist = True
-        deps.generate()
+    # def generate(self):
+        # deps = CMakeDeps(self)
+        # deps.check_components_exist = True
+        # deps.generate()
     
     def layout(self):
         cmake_layout(self)
