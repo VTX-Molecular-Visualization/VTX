@@ -21,45 +21,42 @@ namespace VTX::Renderer
 		_renderGraph->addGlobalData(
 			{ "Camera",
 			  15,
-			  { { "Matrix view", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "Matrix projection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "Camera position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-				{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
+			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
 				  E_TYPE::VEC4F,
 				  BufferValue<Vec4f> { VEC4F_ZERO } },
 				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-				{ "Mouse position", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "Is perspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
 			  0,
 			  nullptr,
 			  false,
 			  true }
 		);
 
-		_renderGraph->addGlobalData( { "Color layout",
-									   14,
-									   { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-									   0,
-									   nullptr,
-									   true } );
+		_renderGraph->addGlobalData(
+			{ "ColorLayout", 14, { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } }, 0, nullptr, true }
+		);
 
 		_renderGraph->addGlobalData( { "Models",
 									   13,
-									   { { "Matrix model view", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-										 { "Matrix normal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+									   { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+										 { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
 									   0,
 									   nullptr,
 									   true } );
 
 		_renderGraph->addGlobalData( { "Representations",
 									   12,
-									   { { "Sphere radius fixed", E_TYPE::FLOAT, BufferValue<float> {} },
-										 { "Sphere radius add", E_TYPE::FLOAT, BufferValue<float> {} },
-										 { "Is sphere radius fixed", E_TYPE::UINT, BufferValue<uint> {} },
-										 { "Cylinder radius", E_TYPE::FLOAT, BufferValue<float> {} },
+									   { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+										 { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+										 { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+										 { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
 
-										 { "Cylinder color blending", E_TYPE::UINT, BufferValue<uint> {} },
-										 { "Ribbon color blending", E_TYPE::UINT, BufferValue<uint> {} } },
+										 { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+										 { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
 									   0,
 									   nullptr,
 									   true } );
@@ -357,7 +354,7 @@ namespace VTX::Renderer
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy ) );
+			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "MatrixModelView", _getProxyId( &p_proxy ) );
 		};
 
 		// Visibility.
@@ -553,9 +550,9 @@ namespace VTX::Renderer
 				sphereRadiusFixed = cylinderRadius;
 			}
 
-			setValue( sphereRadiusFixed, "RepresentationsSphere radius fixed", 0 );
-			setValue( sphereRadiusAdd, "RepresentationsSphere radius add", 0 );
-			setValue( uint( isSphereRadiusFixed ), "RepresentationsIs sphere radius fixed", 0 );
+			setValue( sphereRadiusFixed, "RepresentationsSphereRadiusFixed", 0 );
+			setValue( sphereRadiusAdd, "RepresentationsSphereRadiusAdd", 0 );
+			setValue( uint( isSphereRadiusFixed ), "RepresentationsIsSphereRadiusFixed", 0 );
 
 			if ( not isSphereRadiusFixed )
 			{
@@ -570,8 +567,8 @@ namespace VTX::Renderer
 			if ( hasCylinder )
 			{
 				showAtoms = true;
-				setValue( uint( true ), "RepresentationsIs sphere radius fixed", 0 );
-				setValue( cylinderRadius, "RepresentationsSphere radius fixed", 0 );
+				setValue( uint( true ), "RepresentationsIsSphereRadiusFixed", 0 );
+				setValue( cylinderRadius, "RepresentationsSphereRadiusFixed", 0 );
 			}
 			// Hide.
 			else
@@ -582,7 +579,7 @@ namespace VTX::Renderer
 
 		if ( hasCylinder )
 		{
-			setValue( cylinderRadius, "RepresentationsCylinder radius", 0 );
+			setValue( cylinderRadius, "RepresentationsCylinderRadius", 0 );
 		}
 	}
 
@@ -628,13 +625,13 @@ namespace VTX::Renderer
 				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
 				[ this ]( const bool p_value )
-			{ setValue( uint( p_value ), "RepresentationsCylinder color blending", 0 ); };
+			{ setValue( uint( p_value ), "RepresentationsCylinderColorBlending", 0 ); };
 
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
 				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
 				[ this ]( const bool p_value )
-			{ setValue( uint( p_value ), "RepresentationsRibbon color blending", 0 ); };
+			{ setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
 		}
 
 		_context->set( representations, "Representations" );
@@ -677,20 +674,20 @@ namespace VTX::Renderer
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
-			setValue( *p_proxy.matrixView, "CameraMatrix view" );
+			setValue( *p_proxy.matrixView, "CameraMatrixView" );
 			_refreshDataModels();
 		};
 
 		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "CameraMatrix projection" ); };
+			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "CameraMatrixProjection" ); };
 
 		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraCamera position" ); };
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraPosition" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
 		{
 			//
-			setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraCamera clip infos" );
+			setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraClipInfos" );
 		};
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
@@ -699,7 +696,7 @@ namespace VTX::Renderer
 		};
 
 		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
-		{ setValue( uint( p_perspective ), "CameraIs perspective" ); };
+		{ setValue( uint( p_perspective ), "CameraIsPerspective" ); };
 	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
@@ -707,14 +704,15 @@ namespace VTX::Renderer
 		assert( hasContext() );
 
 		_proxyColorLayout = &p_proxy;
-		_context->set<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+		_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChange += [ this, &p_proxy ]()
 		{
-			_context->set<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 			setNeedUpdate( true );
 		};
+		// TODO: update only one color.
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
@@ -731,13 +729,13 @@ namespace VTX::Renderer
 		// Default values.
 		// Shading.
 		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::SHADING_MODE ), "ShadingShadingMode" );
-		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_LIGHT ), "ShadingShadingLight color" );
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_LIGHT ), "ShadingShadingLightColor" );
 		setValue(
-			p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_BACKGROUND ), "ShadingShadingBackground color"
+			p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_BACKGROUND ), "ShadingShadingBackgroundColor"
 		);
-		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SPECULAR_FACTOR ), "ShadingShadingSpecular factor" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SPECULAR_FACTOR ), "ShadingShadingSpecularFactor" );
 		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SHININESS ), "ShadingShadingShininess" );
-		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::TOON_STEPS ), "ShadingShadingToon steps" );
+		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::TOON_STEPS ), "ShadingShadingToonSteps" );
 		// SSAO.
 		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
 		{
@@ -753,13 +751,13 @@ namespace VTX::Renderer
 			setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::OUTLINE_THICKNESS ), "OutlineOutlineThickness" );
 		}
 		// Fog.
-		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_FOG ), "ShadingShadingFog color" );
-		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_NEAR ), "ShadingShadingFog near" );
-		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_FAR ), "ShadingShadingFog far" );
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_FOG ), "ShadingShadingFogColor" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_NEAR ), "ShadingShadingFogNear" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_FAR ), "ShadingShadingFogFar" );
 		setValue(
 			p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_FOG ) ? p_proxy.get<float>( E_RENDER_SETTINGS::FOG_DENSITY )
 															   : 0.f,
-			"ShadingShadingFog density"
+			"ShadingShadingFogDensity"
 		);
 		// Selection.
 		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
@@ -773,15 +771,15 @@ namespace VTX::Renderer
 			[ this ]( const uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
 
 		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
-			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingLight color" ); };
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingLightColor" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
-			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingBackground color" ); };
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingBackgroundColor" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
-			[ this ]( const float p_factor ) { setValue( p_factor, "ShadingShadingSpecular factor" ); };
+			[ this ]( const float p_factor ) { setValue( p_factor, "ShadingShadingSpecularFactor" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::SHININESS, float>() +=
 			[ this ]( const float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
-			[ this ]( const uint p_steps ) { setValue( p_steps, "ShadingShadingToon steps" ); };
+			[ this ]( const uint p_steps ) { setValue( p_steps, "ShadingShadingToonSteps" ); };
 		// SSAO.
 		p_proxy.onChange<E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
 			[ this ]( const float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
@@ -799,13 +797,13 @@ namespace VTX::Renderer
 			[ this ]( const uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
 		// Fog.
 		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
-			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFog color" ); };
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFogColor" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::FOG_NEAR, float>() +=
-			[ this ]( const float p_near ) { setValue( p_near, "ShadingShadingFog near" ); };
+			[ this ]( const float p_near ) { setValue( p_near, "ShadingShadingFogNear" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::FOG_FAR, float>() +=
-			[ this ]( const float p_far ) { setValue( p_far, "ShadingShadingFog far" ); };
+			[ this ]( const float p_far ) { setValue( p_far, "ShadingShadingFogFar" ); };
 		p_proxy.onChange<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
-			[ this ]( const float p_density ) { setValue( p_density, "ShadingShadingFog density" ); };
+			[ this ]( const float p_density ) { setValue( p_density, "ShadingShadingFogDensity" ); };
 		// Selection.
 		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
 			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
@@ -815,7 +813,7 @@ namespace VTX::Renderer
 		{
 			setValue(
 				p_active ? _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::FOG_DENSITY ) : 0.f,
-				"ShadingShadingFog density"
+				"ShadingShadingFogDensity"
 			);
 		};
 
