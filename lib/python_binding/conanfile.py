@@ -64,14 +64,14 @@ class VTXPythonBindingRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
         self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
-        self.cpp_info.components["vtx_python_binding"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
+        # self.cpp_info.components["vtx_python_binding"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
         
         self.cpp_info.components["vtx_python_bin"].libs = ["vtx_python_bin"]
         self.cpp_info.components["vtx_python_bin"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_bin")
-        self.cpp_info.components["vtx_python_bin"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
+        # self.cpp_info.components["vtx_python_bin"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
 
         self.cpp_info.components["vtx_python_binding_test"].libs = ["vtx_python_binding_test"] 
-        self.cpp_info.components["vtx_python_binding_test"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app_no_opengl", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed", "vtx_python_bin"]
+        # self.cpp_info.components["vtx_python_binding_test"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app_no_opengl", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed", "vtx_python_bin"]
   
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)
