@@ -100,7 +100,7 @@ target_link_libraries(vtx_python_bin PRIVATE pybind11::embed)
 target_link_libraries(vtx_python_bin_no_opengl PUBLIC vtx_python_binding_no_opengl)
 target_link_libraries(vtx_python_bin_no_opengl PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_bin_no_opengl PRIVATE pybind11::embed)
-#target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_bin)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_bin_no_opengl) # TODO : Useful ?
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
 # All other find_package call
