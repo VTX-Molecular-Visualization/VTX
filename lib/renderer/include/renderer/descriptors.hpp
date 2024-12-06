@@ -86,6 +86,8 @@ namespace VTX::Renderer
 		std::string		 name;
 		char			 binding;
 		BufferDataValues values;
+		size_t			 size		 = 0;
+		void * const	 data		 = nullptr;
 		bool			 isLarge	 = false; // If max size >64 Ko
 		bool			 isSizeFixed = false; // TODO: use variant of flags enums.
 
@@ -94,8 +96,6 @@ namespace VTX::Renderer
 		{
 			size_t size;
 			void * data;
-			uint   binding;
-			bool   overwrite = false; // TODO: force data?
 		};
 		*/
 	};
@@ -165,17 +165,8 @@ namespace VTX::Renderer
 	{
 		Program program;
 
-		// TODO: merge with uniform to use same buffer descriptor?
-		struct BufferDraw
-		{
-			size_t size;
-			void * data;
-			uint   binding;
-			bool   overwrite = false; // TODO: force data?
-		};
-
-		std::vector<ComputePass::BufferDraw *> data;
-		std::variant<Vec3i, size_t>			   size;
+		std::vector<BufferData>		data;
+		std::variant<Vec3i, size_t> size;
 	};
 
 	struct Link

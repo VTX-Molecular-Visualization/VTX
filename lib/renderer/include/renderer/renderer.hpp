@@ -66,7 +66,7 @@ namespace VTX::Renderer
 			height = p_height;
 
 			Vec2i size = { p_width, p_height };
-			setValue( size, "Resolution" );
+			setValue( size, "CameraResolution" );
 
 			_context->resize( _renderGraph->getRenderQueue(), p_width, p_height );
 

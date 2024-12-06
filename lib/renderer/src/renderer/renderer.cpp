@@ -30,18 +30,25 @@ namespace VTX::Renderer
 				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
 				{ "Mouse position", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
 				{ "Is perspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+			  0,
+			  nullptr,
 			  false,
 			  true }
 		);
 
-		_renderGraph->addGlobalData(
-			{ "Color layout", 14, { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } }, true }
-		);
+		_renderGraph->addGlobalData( { "Color layout",
+									   14,
+									   { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+									   0,
+									   nullptr,
+									   true } );
 
 		_renderGraph->addGlobalData( { "Models",
 									   13,
 									   { { "Matrix model view", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
 										 { "Matrix normal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+									   0,
+									   nullptr,
 									   true } );
 
 		_renderGraph->addGlobalData( { "Representations",
@@ -53,6 +60,8 @@ namespace VTX::Renderer
 
 										 { "Cylinder color blending", E_TYPE::UINT, BufferValue<uint> {} },
 										 { "Ribbon color blending", E_TYPE::UINT, BufferValue<uint> {} } },
+									   0,
+									   nullptr,
 									   true } );
 	}
 
@@ -242,24 +251,28 @@ namespace VTX::Renderer
 			onReady();
 		}
 
+		return;
 		///////////////////// COMPUTE
 		uint size = 10000;
 
-		ComputePass::BufferDraw bufferReadOnly { size * sizeof( Vec4f ), nullptr, 1 };
-		ComputePass::BufferDraw bufferWriteOnly { size * sizeof( Vec4f ), nullptr, 2 };
-		ComputePass::BufferDraw bufferReadWrite { size * sizeof( Vec4f ), nullptr, 3 };
+		std::vector<Vec4f> readData( size, Vec4f( 1.f, 2.f, 3.f, 4.f ) );
+		BufferData		   bufferReadOnly { "ReadOnly", 1, {}, size * sizeof( Vec4f ), readData.data(), true, true };
+		BufferData		   bufferWriteOnly { "WriteOnly", 2, {}, size * sizeof( Vec4f ), nullptr, true, true };
+		BufferData		   bufferReadWrite { "ReadWrite", 3, {}, size * sizeof( Vec4f ), nullptr, true, true };
 
 		auto computePass = ComputePass {
 			Program { "ComputeDebug",
 					  std::vector<FilePath> { "compute/debug.comp" },
 					  BufferDataValues { { { "Intensity", E_TYPE::UINT, BufferValue<uint> { size } } } } },
-			{ &bufferReadOnly, &bufferWriteOnly, &bufferReadWrite },
+			{ bufferReadOnly, bufferWriteOnly, bufferReadWrite },
 			size
 		};
 
 		_context->compute( computePass );
 
-		_context->clearComputeBuffers();
+		// Get write only buffer data.
+		std::vector<Vec4f> writeData( size );
+		_context->get<Vec4f>( writeData, "WriteOnly" );
 	}
 
 	void Renderer::clean()
@@ -540,9 +553,9 @@ namespace VTX::Renderer
 				sphereRadiusFixed = cylinderRadius;
 			}
 
-			setValue( sphereRadiusFixed, "Sphere radius fixed", 0 );
-			setValue( sphereRadiusAdd, "Sphere radius add", 0 );
-			setValue( uint( isSphereRadiusFixed ), "Is sphere radius fixed", 0 );
+			setValue( sphereRadiusFixed, "RepresentationsSphere radius fixed", 0 );
+			setValue( sphereRadiusAdd, "RepresentationsSphere radius add", 0 );
+			setValue( uint( isSphereRadiusFixed ), "RepresentationsIs sphere radius fixed", 0 );
 
 			if ( not isSphereRadiusFixed )
 			{
@@ -557,8 +570,8 @@ namespace VTX::Renderer
 			if ( hasCylinder )
 			{
 				showAtoms = true;
-				setValue( uint( true ), "Is sphere radius fixed", 0 );
-				setValue( cylinderRadius, "Sphere radius fixed", 0 );
+				setValue( uint( true ), "RepresentationsIs sphere radius fixed", 0 );
+				setValue( cylinderRadius, "RepresentationsSphere radius fixed", 0 );
 			}
 			// Hide.
 			else
@@ -569,7 +582,7 @@ namespace VTX::Renderer
 
 		if ( hasCylinder )
 		{
-			setValue( cylinderRadius, "Cylinder radius", 0 );
+			setValue( cylinderRadius, "RepresentationsCylinder radius", 0 );
 		}
 	}
 
@@ -614,12 +627,14 @@ namespace VTX::Renderer
 			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
 				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
-				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Cylinder color blending", 0 ); };
+				[ this ]( const bool p_value )
+			{ setValue( uint( p_value ), "RepresentationsCylinder color blending", 0 ); };
 
 			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
 				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
 			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
-				[ this ]( const bool p_value ) { setValue( uint( p_value ), "Ribbon color blending", 0 ); };
+				[ this ]( const bool p_value )
+			{ setValue( uint( p_value ), "RepresentationsRibbon color blending", 0 ); };
 		}
 
 		_context->set( representations, "Representations" );
@@ -662,26 +677,29 @@ namespace VTX::Renderer
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
-			setValue( *p_proxy.matrixView, "Matrix view" );
+			setValue( *p_proxy.matrixView, "CameraMatrix view" );
 			_refreshDataModels();
 		};
 
 		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "Matrix projection" ); };
+			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "CameraMatrix projection" ); };
 
 		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "Camera position" ); };
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraCamera position" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+		{
+			//
+			setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraCamera clip infos" );
+		};
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
 			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
 		};
 
-		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setValue( uint( p_perspective ), "Is perspective" ); };
+		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
+		{ setValue( uint( p_perspective ), "CameraIs perspective" ); };
 	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
@@ -1481,23 +1499,19 @@ namespace VTX::Renderer
 				int	  nearestAtom;
 			};
 
-			ComputePass::BufferDraw bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
-			ComputePass::BufferDraw bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
-															   atomGridDataSorted.data(),
-															   1 };
-			ComputePass::BufferDraw bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
-															atomIndexSorted.data(),
-															2 };
-			ComputePass::BufferDraw bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
-														 atomPositionsVdW.data(),
-														 3 };
+			/*			ComputePass::BufferDraw bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ),
+			nullptr, 0 }; ComputePass::BufferDraw bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof(
+			Range<uint> ), atomGridDataSorted.data(), 1 }; ComputePass::BufferDraw bufferAtomIndexSorted {
+			atomIndexSorted.size() * sizeof( uint ), atomIndexSorted.data(), 2 }; ComputePass::BufferDraw
+			bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ), atomPositionsVdW.data(), 3 };
 
 			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
 										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
 
+
 			auto computePass = ComputePass {
 				Program {
-					"CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, BufferDataValues { /* TODO */ } },
+					"CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, BufferDataValues {  TODO  } },
 				{ &bufferSesGridData, &bufferAtomGridDataSorted, &bufferAtomIndexSorted, &bufferAtomPosition },
 				sizeCreateSDF
 			};
@@ -1505,6 +1519,7 @@ namespace VTX::Renderer
 			_context->compute( computePass );
 
 			_context->clearComputeBuffers();
+			*/
 		}
 
 		chrono.stop();

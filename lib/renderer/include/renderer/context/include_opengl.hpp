@@ -290,6 +290,7 @@ inline void		 glNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, const GLvoid *
 inline void *	 glMapNamedBuffer( GLuint, GLenum ) { return nullptr; }
 inline void		 glUnmapNamedBuffer( GLuint ) {}
 inline void *	 glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield ) { return nullptr; }
+inline void		 glGetNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, void * ) {}
 
 inline GLboolean glIsFramebuffer( GLuint ) { return true; }
 inline void		 glCreateFramebuffers( GLsizei, GLuint * ) {}

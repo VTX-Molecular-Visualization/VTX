@@ -45,10 +45,10 @@ namespace VTX::Renderer::Context
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
 
-		_vertexArrays.emplace( _KEY_QUAD, std::make_unique<GL::VertexArray>() );
-		_buffers.emplace( _KEY_QUAD, std::make_unique<GL::Buffer>() );
-		auto & vao = _vertexArrays[ _KEY_QUAD ];
-		auto & vbo = _buffers[ _KEY_QUAD ];
+		_vertexArrays.emplace( _KEY_QUAD_VAO, std::make_unique<GL::VertexArray>() );
+		_buffers.emplace( _KEY_QUAD_BUFFER, std::make_unique<GL::Buffer>() );
+		auto & vao = _vertexArrays[ _KEY_QUAD_VAO ];
+		auto & vbo = _buffers[ _KEY_QUAD_BUFFER ];
 
 		vao->bind();
 		vao->enableAttribute( 0 );
@@ -78,30 +78,25 @@ namespace VTX::Renderer::Context
 		InstructionsDurationRanges &	p_outInstructionsDurationRanges
 	)
 	{
-		// Store created items to free no more used later.
-		std::vector<Key> vertexArrays;
-		std::vector<Key> buffers;
-		std::vector<Key> framebuffers;
-		std::vector<Key> textures;
-		std::vector<Key> programs;
-		std::vector<Key> data;
-		vertexArrays.push_back( _KEY_QUAD );
-		buffers.push_back( _KEY_QUAD );
-
-		// Clear instructions.
+		// Clear passes and instructions.
+		_descPasses.clear();
 		p_outInstructions.clear();
 		p_outInstructionsDurationRanges.clear();
 
-		// Set passes.
-		_descPasses.clear();
-		for ( const Pass * const descPassPtr : p_renderQueue )
-		{
-			const Key keyPass = _getKey( *descPassPtr );
-			_descPasses.emplace( keyPass, descPassPtr );
-		}
+		// Store created items to free no more used later.
+		std::vector<Key> keys;
+		keys.push_back( _KEY_QUAD_VAO );
+		keys.push_back( _KEY_QUAD_BUFFER );
 
 		// Output.
 		_output = p_output;
+
+		//
+		for ( const Pass * const descPassPtr : p_renderQueue )
+		{
+			const Key keyPass = descPassPtr->name;
+			_descPasses.emplace( keyPass, descPassPtr );
+		}
 
 		// Create shared buffers.
 		if ( not p_globalData.empty() )
@@ -109,22 +104,15 @@ namespace VTX::Renderer::Context
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { "Start",
 																					  p_outInstructions.size() } );
 
-			// TODO: _createBufferData function.
 			for ( const BufferData & bufferData : p_globalData )
 			{
-				const Key keyBuffer = _getKey( bufferData );
-				buffers.push_back( keyBuffer );
+				GL::Buffer * const buffer = _createBufferData( bufferData, "", keys );
 
-				if ( not _buffers.contains( keyBuffer ) )
-				{
-					_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
-				}
-				_createBufferData( _buffers[ keyBuffer ].get(), bufferData.values, bufferData.isSizeFixed, data );
+				assert( buffer != nullptr );
 
-				assert( _buffers.contains( keyBuffer ) );
-				GL::Buffer * const buffer  = _buffers[ keyBuffer ].get();
-				uint			   binding = bufferData.binding;
-				const bool		   isLarge = bufferData.isLarge;
+				uint	   binding = bufferData.binding;
+				const bool isLarge = bufferData.isLarge;
+
 				p_outInstructions.emplace_back(
 					[ buffer, isLarge, binding ]()
 					{ buffer->bind( isLarge ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER, binding ); }
@@ -136,23 +124,25 @@ namespace VTX::Renderer::Context
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
+			const Key keyPass = descPassPtr->name;
+
 			/////////////////
 			// Init resources.
 			p_outInstructionsDurationRanges.emplace_back( InstructionsDurationRange { descPassPtr->name,
 																					  p_outInstructions.size() } );
-			const Key  keyPass	  = _getKey( *descPassPtr );
+
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
 			std::set<GLenum> drawBuffers;
 
 			// Create input data.
-			_createInputs( p_links, descPassPtr, vertexArrays, buffers, textures );
+			_createInputs( p_links, descPassPtr, keyPass, keys );
 
 			// Create FBO.
 			if ( not isLastPass )
 			{
-				Key keyFramebuffer = _getKey( *descPassPtr );
-				framebuffers.push_back( keyFramebuffer );
+				Key keyFramebuffer = keyPass;
+				keys.push_back( keyFramebuffer );
 
 				if ( not _framebuffers.contains( keyFramebuffer ) )
 				{
@@ -160,7 +150,7 @@ namespace VTX::Renderer::Context
 				}
 
 				// Create outputs.
-				_createOuputs( descPassPtr, drawBuffers, textures );
+				_createOuputs( descPassPtr, drawBuffers, keyPass, keys );
 
 				// Set draw buffers.
 				if ( not drawBuffers.empty() )
@@ -174,32 +164,7 @@ namespace VTX::Renderer::Context
 			// Create programs.
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
-				const GL::Program * const program = _programManager->createProgram(
-					descProgram.name, descProgram.shaders, descProgram.toInject, descProgram.suffix
-				);
-
-				const Key keyProgram = _getKey( descPassPtr, descProgram );
-				programs.push_back( keyProgram );
-
-				if ( not _programs.contains( keyProgram ) )
-				{
-					_programs.emplace( keyProgram, program );
-				}
-
-				// Uniform buffer.
-				if ( not descProgram.data.empty() )
-				{
-					const Key keyBuffer = _getKey( descPassPtr, descProgram );
-					buffers.push_back( keyBuffer );
-
-					if ( not _buffers.contains( keyBuffer ) )
-					{
-						_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
-					}
-					_createBufferData(
-						_buffers[ keyBuffer ].get(), descProgram.data, true, data, &descProgram, descPassPtr
-					);
-				}
+				_createProgram( descProgram, keyPass, keys );
 			}
 
 			////////////////////////
@@ -288,7 +253,7 @@ namespace VTX::Renderer::Context
 
 						if ( attachment.data != nullptr )
 						{
-							const Key keyTexture = _getKey( *descPassPtr, true, uint( channel ) );
+							const Key keyTexture = descPassPtr->name + _KEY_IN + std::to_string( uint( channel ) );
 							assert( _textures.contains( keyTexture ) );
 
 							GL::Texture2D * const texture = _textures[ keyTexture ].get();
@@ -308,7 +273,7 @@ namespace VTX::Renderer::Context
 			// Programs.
 			for ( const Program & descProgram : descPassPtr->programs )
 			{
-				const Key keyProgram = _getKey( descPassPtr, descProgram );
+				const Key keyProgram = keyPass + descProgram.name;
 
 				if ( not descProgram.data.empty() )
 				{
@@ -333,9 +298,10 @@ namespace VTX::Renderer::Context
 				if ( descProgram.draw.has_value() )
 				{
 					const Draw &			draw = descProgram.draw.value();
-					GL::VertexArray * const vao	 = _vertexArrays[ _getKey( draw ) ].get();
+					GL::VertexArray * const vao	 = _vertexArrays[ draw.name ].get();
 
 					assert( draw.ranges != nullptr );
+					assert( vao != nullptr );
 
 					GLenum				   primitive	 = _mapPrimitives[ draw.primitive ];
 					Draw::Range * const	   ranges		 = draw.ranges;
@@ -344,10 +310,11 @@ namespace VTX::Renderer::Context
 					// Element.
 					if ( draw.useIndices )
 					{
-						const Key keyEbo = _getKey( draw, true );
+						const Key keyEbo = draw.name + _KEY_EBO;
 						assert( _buffers.contains( keyEbo ) );
 
 						GL::Buffer * const ebo = _buffers[ keyEbo ].get();
+						assert( ebo != nullptr );
 
 						p_outInstructions.emplace_back(
 							[ program, vao, ebo, primitive, ranges, needRenderFun ]()
@@ -395,8 +362,8 @@ namespace VTX::Renderer::Context
 				// Or quad.
 				else
 				{
-					assert( _vertexArrays.contains( _KEY_QUAD ) );
-					GL::VertexArray * const vao = _vertexArrays[ _KEY_QUAD ].get();
+					assert( _vertexArrays.contains( _KEY_QUAD_VAO ) );
+					GL::VertexArray * const vao = _vertexArrays[ _KEY_QUAD_VAO ].get();
 					p_outInstructions.emplace_back(
 						[ program, vao ]()
 						{
@@ -412,6 +379,7 @@ namespace VTX::Renderer::Context
 				{
 					assert( _buffers.contains( keyProgram ) );
 					GL::Buffer * ubo = _buffers[ keyProgram ].get();
+					assert( ubo != nullptr );
 					p_outInstructions.emplace_back( [ ubo ]() { ubo->unbind(); } );
 				}
 			}
@@ -428,7 +396,7 @@ namespace VTX::Renderer::Context
 			// Unbind fbo.
 			if ( not isLastPass )
 			{
-				const Key k = _getKey( *descPassPtr );
+				const Key k = descPassPtr->name;
 				assert( _framebuffers.contains( k ) );
 				GL::Framebuffer * const fbo = _framebuffers[ k ].get();
 				p_outInstructions.emplace_back( [ fbo ]() { fbo->unbind(); } );
@@ -452,7 +420,7 @@ namespace VTX::Renderer::Context
 		// Unbind shared buffers.
 		for ( const BufferData & bufferData : p_globalData )
 		{
-			const Key k = _getKey( bufferData );
+			const Key k = bufferData.name;
 			assert( _buffers.contains( k ) );
 			GL::Buffer * const buffer = _buffers[ k ].get();
 			p_outInstructions.emplace_back( [ buffer ]() { buffer->unbind(); } );
@@ -461,7 +429,28 @@ namespace VTX::Renderer::Context
 		p_outInstructionsDurationRanges.back().last = p_outInstructions.size() - 1;
 
 		// Purge unused resources.
-		_purgeResources( vertexArrays, buffers, framebuffers, textures, programs, data );
+		_purgeResources( keys );
+	}
+
+	void OpenGL45::_createProgram( const Program & p_descProgram, const Key p_key, Keys & p_keys )
+	{
+		const Key keyProgram = p_key + p_descProgram.name;
+		p_keys.push_back( keyProgram );
+
+		if ( not _programs.contains( keyProgram ) )
+		{
+			const GL::Program * const program = _programManager->createProgram(
+				p_descProgram.name, p_descProgram.shaders, p_descProgram.toInject, p_descProgram.suffix
+			);
+			_programs.emplace( keyProgram, program );
+		}
+
+		// Uniform buffer.
+		if ( not p_descProgram.data.empty() )
+		{
+			// Create small and immutable buffer.
+			_createBufferData( BufferData { "", 0, p_descProgram.data, 0, nullptr, false, true }, keyProgram, p_keys );
+		}
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
@@ -481,8 +470,8 @@ namespace VTX::Renderer::Context
 				{
 					Attachment attachment = std::get<Attachment>( descIO );
 
-					const Key keyTexture = _getKey( *descPassPtr, false, uint( channel ) );
-					const Key keyFbo	 = _getKey( *descPassPtr );
+					const Key keyFbo	 = descPassPtr->name;
+					const Key keyTexture = keyFbo + _KEY_OUT + std::to_string( uint( channel ) );
 
 					if ( _textures.contains( keyTexture ) )
 					{
@@ -495,7 +484,8 @@ namespace VTX::Renderer::Context
 						texture->resize( size.x, size.y );
 						fbo->attachTexture( *texture, _mapAttachments[ channel ] );
 						VTX_TRACE(
-							"Texture resized: {} ({}) = {}x{}",
+							"Texture resized: {} {} ({}) = {}x{}",
+							descPassPtr->name,
 							output.name,
 							Util::Enum::enumName( channel ),
 							size.x,
@@ -569,8 +559,9 @@ namespace VTX::Renderer::Context
 
 	void OpenGL45::compute( const ComputePass & p_pass )
 	{
-		return;
-		// TODO: Create program and data (refacto build).
+		/*
+		// return;
+		//  TODO: Create program and data (refacto build).
 		const Program & descProgram = p_pass.program;
 
 		std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
@@ -581,14 +572,26 @@ namespace VTX::Renderer::Context
 			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
 
 		// Create and bind p_buffers.
-		for ( ComputePass::BufferDraw * const data : p_pass.data )
+		for ( const BufferData & bufferData : p_pass.data )
 		{
-			if ( not _computeBuffers.contains( data ) )
+			// Create buffer.
+			const Key keyBuffer = _getKey( bufferData );
+			// buffers.push_back( keyBuffer );
+
+			if ( not _buffers.contains( keyBuffer ) )
 			{
-				_computeBuffers.emplace( data, std::make_unique<GL::Buffer>( GLsizei( data->size ), data->data, 1 ) );
+				_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
+				_createBufferData(
+					_buffers[ keyBuffer ].get(),
+					bufferData.values,
+					bufferData.size,
+					bufferData.data,
+					bufferData.isSizeFixed
+
+				);
 			}
 
-			_computeBuffers[ data ]->bind( GL_SHADER_STORAGE_BUFFER, data->binding );
+			_buffers[ keyBuffer ].get()->bind( GL_SHADER_STORAGE_BUFFER, bufferData.binding );
 		}
 
 		program->use();
@@ -616,37 +619,24 @@ namespace VTX::Renderer::Context
 		assert( x && y && z );
 
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+		VTX_DEBUG( "Dispatching compute: {}x{}x{}", x, y, z );
 		glDispatchCompute( x, y, z );
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 		// Unbind p_buffers.
-		for ( ComputePass::BufferDraw * const data : p_pass.data )
+		for ( const BufferData & bufferData : p_pass.data )
 		{
-			_computeBuffers[ data ]->unbind();
+			const Key keyBuffer = bufferData.name;
+			_buffers[ keyBuffer ].get()->unbind();
 		}
-	}
-
-	void OpenGL45::clearComputeBuffers( std::optional<std::vector<ComputePass::BufferDraw *>> p_buffers )
-	{
-		if ( p_buffers.has_value() )
-		{
-			for ( ComputePass::BufferDraw * const data : p_buffers.value() )
-			{
-				_computeBuffers.erase( data );
-			}
-		}
-		else
-		{
-			_computeBuffers.clear();
-		}
+		*/
 	}
 
 	void OpenGL45::_createInputs(
 		const Links &	   p_links,
 		const Pass * const p_descPassPtr,
-		std::vector<Key> & p_vertexArrays,
-		std::vector<Key> & p_buffers,
-		std::vector<Key> & p_textures
+		const Key		   p_key,
+		Keys &			   p_keys
 	)
 	{
 		for ( const auto & [ channel, input ] : p_descPassPtr->inputs )
@@ -663,7 +653,8 @@ namespace VTX::Renderer::Context
 
 				if ( not src.has_value() && attachment.data != nullptr )
 				{
-					_createTexture( descIO, _getKey( *p_descPassPtr, true, uint( channel ) ), p_textures );
+					const Key keyTexture = p_key + _KEY_IN + std::to_string( uint( channel ) );
+					_createTexture( descIO, keyTexture, p_keys );
 				}
 			}
 			// Create vao if data provided.
@@ -672,11 +663,11 @@ namespace VTX::Renderer::Context
 				const BufferDraw & data = std::get<BufferDraw>( descIO );
 
 				// Create vao.
-				const Key keyVao = _getKey( input );
-				const Key keyEbo = _getKey( input, true );
+				const Key keyVao = input.name;
+				const Key keyEbo = keyVao + _KEY_EBO;
 
-				p_vertexArrays.push_back( keyVao );
-				p_buffers.push_back( keyEbo );
+				p_keys.push_back( keyVao );
+				p_keys.push_back( keyEbo );
 
 				if ( not _vertexArrays.contains( keyVao ) )
 				{
@@ -696,8 +687,8 @@ namespace VTX::Renderer::Context
 				GLuint chan = 0;
 				for ( const BufferDraw::Entry & entry : data.entries )
 				{
-					const Key keyData = _getKey( input, entry );
-					p_buffers.push_back( keyData );
+					const Key keyData = keyVao + entry.name;
+					p_keys.push_back( keyData );
 
 					if ( not _buffers.contains( keyData ) )
 					{
@@ -722,7 +713,8 @@ namespace VTX::Renderer::Context
 	void OpenGL45::_createOuputs(
 		const Pass * const p_pass,
 		std::set<GLenum> & p_drawBuffers,
-		std::vector<Key> & p_textures
+		const Key		   p_key,
+		Keys &			   p_keys
 	)
 	{
 		for ( const auto & [ channel, output ] : p_pass->outputs )
@@ -731,16 +723,16 @@ namespace VTX::Renderer::Context
 			const IO & descIO = output.desc;
 			if ( std::holds_alternative<Attachment>( descIO ) )
 			{
-				const Key keyTexture = _getKey( *p_pass, false, uint( channel ) );
-				_createTexture( descIO, keyTexture, p_textures );
+				const Key	 keyTexture = p_key + _KEY_OUT + std::to_string( uint( channel ) );
+				const auto * texture	= _createTexture( descIO, keyTexture, p_keys );
+				assert( texture != nullptr );
 
 				// Attach.
-				const Key keyFbo = _getKey( *p_pass );
+				const Key keyFbo = p_pass->name;
 				assert( _framebuffers.contains( keyFbo ) );
-				assert( _textures.contains( keyTexture ) );
 
 				auto & fbo = _framebuffers[ keyFbo ];
-				fbo->attachTexture( *_textures[ keyTexture ], _mapAttachments[ channel ] );
+				fbo->attachTexture( *texture, _mapAttachments[ channel ] );
 				if ( channel == E_CHAN_OUT::DEPTH ) {}
 				else
 				{
@@ -787,7 +779,7 @@ namespace VTX::Renderer::Context
 		}
 
 		assert( srcPass != nullptr );
-		return std::make_pair( &srcOutput, _getKey( *srcPass, false, uint( it->get()->channelSrc ) ) );
+		return std::make_pair( &srcOutput, srcPass->name + _KEY_OUT + std::to_string( uint( it->get()->channelSrc ) ) );
 	}
 
 	bool OpenGL45::_hasDepthComponent( const Pass * const p_descPassPtr ) const
@@ -806,11 +798,11 @@ namespace VTX::Renderer::Context
 		return false;
 	}
 
-	void OpenGL45::_createTexture( const IO & p_descIO, const Key p_key, std::vector<Key> & p_textures )
+	GL::Texture2D * const OpenGL45::_createTexture( const IO & p_descIO, const Key & p_key, Keys & p_keys )
 	{
 		const Attachment & attachment = std::get<Attachment>( p_descIO );
 
-		p_textures.push_back( p_key );
+		p_keys.push_back( p_key );
 
 		if ( not _textures.contains( p_key ) )
 		{
@@ -845,6 +837,8 @@ namespace VTX::Renderer::Context
 				texture->fill( attachment.data );
 			}
 		}
+
+		return _textures[ p_key ].get();
 	}
 
 	Vec2i OpenGL45::_getTextureSize( const Attachment & p_Attachment ) const
@@ -868,144 +862,145 @@ namespace VTX::Renderer::Context
 		return Vec2i( textureWidth, textureHeight );
 	}
 
-	void OpenGL45::_createBufferData(
-		GL::Buffer * const		 p_buffer,
-		const BufferDataValues & p_descValues,
-		const bool				 p_isImmutable,
-		std::vector<Key> &		 p_keys,
-		const Program * const	 p_descProgram,
-		const Pass * const		 p_descPass
-
-	)
+	GL::Buffer * const OpenGL45::_createBufferData( const BufferData & p_bufferData, const Key & p_key, Keys & p_keys )
 	{
-		// Create value entries.
-		size_t offset = 0;
-		for ( const BufferDataValue & descValue : p_descValues )
-		{
-			size_t		size = _mapTypeSizes[ descValue.type ];
-			std::string key	 = _getKey( p_descPass, p_descProgram, descValue );
-			p_keys.emplace_back( key );
+		// Create if not exists.
+		const Key keyBuffer = p_key + p_bufferData.name;
+		p_keys.push_back( keyBuffer );
 
-			if ( _bufferValueEntries.contains( key ) )
+		Keys createdValueKeys;
+		if ( not _buffers.contains( keyBuffer ) )
+		{
+			// Create.
+			_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
+			GL::Buffer * const buffer = _buffers[ keyBuffer ].get();
+
+			// Create value entries.
+			size_t offset = 0;
+
+			for ( const BufferDataValue & value : p_bufferData.values )
+			{
+				size_t		size	 = _mapTypeSizes[ value.type ];
+				std::string keyValue = keyBuffer + value.name;
+
+				assert( not _bufferValueEntries.contains( keyValue ) );
+
+				// Auto padding to 4, 8 or 16 bytes.
+				size_t padding = 0;
+				if ( size % 4 != 0 )
+				{
+					padding = 4 - ( size % 4 );
+				}
+				else if ( size > 4 && size % 8 != 0 )
+				{
+					padding = 8 - ( size % 8 );
+				}
+				else if ( size > 8 && size % 16 != 0 )
+				{
+					padding = 16 - ( size % 16 );
+				}
+
+				assert( size > 0 );
+
+				_bufferValueEntries.emplace(
+					keyValue, std::make_unique<_StructBufferDataValueEntry>( buffer, offset, size, padding )
+				);
+				VTX_TRACE( "Register value: {} (s{})(o{})(p{})", keyValue, size, offset, padding );
+
+				createdValueKeys.push_back( keyValue );
+
+				offset += size;
+				offset += padding;
+			}
+
+			// Set total size.
+			const size_t totalSize = offset;
+			assert( totalSize > 0 || p_bufferData.size > 0 );
+
+			for ( const Key & key : createdValueKeys )
+			{
+				_bufferValueEntries[ key ]->totalSize = totalSize;
+			}
+
+			// Use max given for buffer creation.
+			const size_t maxSize = std::max( totalSize, p_bufferData.size );
+
+			// Init buffer.
+			// TODO: use real flags for creation.
+			buffer->set(
+				GLsizei( maxSize ),
+				p_bufferData.data,
+				p_bufferData.isSizeFixed,
+				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
+			);
+		}
+
+		// Fill default values.
+		for ( const BufferDataValue & value : p_bufferData.values )
+		{
+			const Key keyValue = keyBuffer + value.name;
+			p_keys.push_back( keyValue );
+
+			// Set value if just created.
+			if ( std::find( createdValueKeys.begin(), createdValueKeys.end(), keyValue ) == createdValueKeys.end() )
 			{
 				continue;
 			}
 
-			// Auto padding to 4, 8 or 16 bytes.
-			size_t padding = 0;
-			if ( size % 4 != 0 )
+			switch ( value.type )
 			{
-				padding = 4 - ( size % 4 );
-			}
-			else if ( size > 4 && size % 8 != 0 )
-			{
-				padding = 8 - ( size % 8 );
-			}
-			else if ( size > 8 && size % 16 != 0 )
-			{
-				padding = 16 - ( size % 16 );
-			}
-
-			assert( size > 0 );
-
-			_bufferValueEntries.emplace(
-				key, std::make_unique<_StructBufferDataValueEntry>( p_buffer, offset, size, padding )
-			);
-			VTX_TRACE( "Register value: {} (s{})(o{})(p{})", key, size, offset, padding );
-
-			offset += size;
-			offset += padding;
-		}
-
-		// Set totalSize.
-		size_t totalSize = offset;
-
-		if ( totalSize == 0 )
-		{
-			return;
-		}
-
-		for ( const BufferDataValue & descValue : p_descValues )
-		{
-			std::string key						  = _getKey( p_descPass, p_descProgram, descValue );
-			_bufferValueEntries[ key ]->totalSize = totalSize;
-		}
-
-		// Init buffer.
-		p_buffer->set(
-			GLsizei( totalSize ), nullptr, p_isImmutable, p_isImmutable ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
-		);
-
-		// Fill default values.
-		for ( const BufferDataValue & descValue : p_descValues )
-		{
-			switch ( descValue.type )
-			{
-			case E_TYPE::BOOL: _setBufferDataDefaultValue<bool>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::BYTE: _setBufferDataDefaultValue<char>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::UBYTE: _setBufferDataDefaultValue<uchar>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::SHORT: _setBufferDataDefaultValue<short>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::USHORT: _setBufferDataDefaultValue<ushort>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::INT: _setBufferDataDefaultValue<int>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::UINT: _setBufferDataDefaultValue<uint>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::FLOAT: _setBufferDataDefaultValue<float>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2I: _setBufferDataDefaultValue<Vec2i>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC2F: _setBufferDataDefaultValue<Vec2f>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC3F: _setBufferDataDefaultValue<Vec3f>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::VEC4F: _setBufferDataDefaultValue<Vec4f>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT3F: _setBufferDataDefaultValue<Mat3f>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::MAT4F: _setBufferDataDefaultValue<Mat4f>( descValue, p_descProgram, p_descPass ); break;
-			case E_TYPE::COLOR4:
-				_setBufferDataDefaultValue<Util::Color::Rgba>( descValue, p_descProgram, p_descPass );
-				break;
-			default: throw std::runtime_error( "unknown type: " + std::to_string( int( descValue.type ) ) );
+			case E_TYPE::BOOL: _setBufferDataDefaultValue<bool>( value, keyValue ); break;
+			case E_TYPE::BYTE: _setBufferDataDefaultValue<char>( value, keyValue ); break;
+			case E_TYPE::UBYTE: _setBufferDataDefaultValue<uchar>( value, keyValue ); break;
+			case E_TYPE::SHORT: _setBufferDataDefaultValue<short>( value, keyValue ); break;
+			case E_TYPE::USHORT: _setBufferDataDefaultValue<ushort>( value, keyValue ); break;
+			case E_TYPE::INT: _setBufferDataDefaultValue<int>( value, keyValue ); break;
+			case E_TYPE::UINT: _setBufferDataDefaultValue<uint>( value, keyValue ); break;
+			case E_TYPE::FLOAT: _setBufferDataDefaultValue<float>( value, keyValue ); break;
+			case E_TYPE::VEC2I: _setBufferDataDefaultValue<Vec2i>( value, keyValue ); break;
+			case E_TYPE::VEC2F: _setBufferDataDefaultValue<Vec2f>( value, keyValue ); break;
+			case E_TYPE::VEC3F: _setBufferDataDefaultValue<Vec3f>( value, keyValue ); break;
+			case E_TYPE::VEC4F: _setBufferDataDefaultValue<Vec4f>( value, keyValue ); break;
+			case E_TYPE::MAT3F: _setBufferDataDefaultValue<Mat3f>( value, keyValue ); break;
+			case E_TYPE::MAT4F: _setBufferDataDefaultValue<Mat4f>( value, keyValue ); break;
+			case E_TYPE::COLOR4: _setBufferDataDefaultValue<Util::Color::Rgba>( value, keyValue ); break;
+			default: throw std::runtime_error( "unknown type: " + std::to_string( int( value.type ) ) );
 			}
 		}
+
+		return _buffers[ keyBuffer ].get();
 	}
 
-	void OpenGL45::_purgeResources(
-		const std::vector<Key> & p_vertexArrays,
-		const std::vector<Key> & p_buffers,
-		const std::vector<Key> & p_framebuffers,
-		const std::vector<Key> & p_textures,
-		const std::vector<Key> & p_programs,
-		const std::vector<Key> & p_bufferValues
-	)
+	void OpenGL45::_purgeResources( const Keys & p_keys )
 	{
 		std::erase_if(
 			_vertexArrays,
-			[ &p_vertexArrays ]( const auto & p )
-			{ return std::find( p_vertexArrays.begin(), p_vertexArrays.end(), p.first ) == p_vertexArrays.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 
 		std::erase_if(
 			_buffers,
-			[ &p_buffers ]( const auto & p )
-			{ return std::find( p_buffers.begin(), p_buffers.end(), p.first ) == p_buffers.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 
 		std::erase_if(
 			_framebuffers,
-			[ &p_framebuffers ]( const auto & p )
-			{ return std::find( p_framebuffers.begin(), p_framebuffers.end(), p.first ) == p_framebuffers.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 
 		std::erase_if(
 			_textures,
-			[ &p_textures ]( const auto & p )
-			{ return std::find( p_textures.begin(), p_textures.end(), p.first ) == p_textures.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 
 		std::erase_if(
 			_programs,
-			[ &p_programs ]( const auto & p )
-			{ return std::find( p_programs.begin(), p_programs.end(), p.first ) == p_programs.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 
 		std::erase_if(
 			_bufferValueEntries,
-			[ &p_bufferValues ]( const auto & p )
-			{ return std::find( p_bufferValues.begin(), p_bufferValues.end(), p.first ) == p_bufferValues.end(); }
+			[ &p_keys ]( const auto & p ) { return std::find( p_keys.begin(), p_keys.end(), p.first ) == p_keys.end(); }
 		);
 	}
 
