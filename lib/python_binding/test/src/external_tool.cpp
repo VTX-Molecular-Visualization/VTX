@@ -29,7 +29,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	interpretor.runCommand( "new_command()" );
 
-	const FilePath						 scriptPath	  = App::Filesystem::getInternalDataDir() / "custom_module.py";
+	const FilePath scriptPath = App::Filesystem::getInternalDataDir() / "custom_module.py";
+	REQUIRE( std::filesystem::exists( scriptPath ) == true );
 	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
 	customModule.displayInfo();
