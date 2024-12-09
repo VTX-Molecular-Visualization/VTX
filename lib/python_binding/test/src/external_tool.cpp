@@ -20,7 +20,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 {
 	using namespace VTX;
 
-	App::Fixture f;
+	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
