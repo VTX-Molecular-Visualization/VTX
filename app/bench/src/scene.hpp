@@ -61,7 +61,7 @@ namespace VTX::Bench
 		inline void								 setColorLayout( const Core::Struct::ColorLayout & p_colorLayout )
 		{
 			_colorLayout = p_colorLayout;
-			_proxyLayoutColor.onChange();
+			_proxyLayoutColor.onChangeAll();
 		}
 		inline Renderer::Proxy::ColorLayout & getProxyColorLayout() { return _proxyLayoutColor; }
 

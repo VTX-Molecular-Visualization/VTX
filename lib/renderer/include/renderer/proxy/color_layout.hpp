@@ -14,7 +14,8 @@ namespace VTX::Renderer::Proxy
 	{
 		const std::vector<Util::Color::Rgba> * colors;
 
-		Util::Callback<> onChange;
+		Util::Callback<>	   onChangeAll;
+		Util::Callback<size_t> onChange;
 	};
 
 } // namespace VTX::Renderer::Proxy

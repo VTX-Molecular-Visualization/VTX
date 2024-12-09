@@ -689,10 +689,7 @@ namespace VTX::Renderer
 			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraPosition" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{
-			//
-			setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraClipInfos" );
-		};
+		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraClipInfos" ); };
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
@@ -711,12 +708,16 @@ namespace VTX::Renderer
 		_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
-		p_proxy.onChange += [ this, &p_proxy ]()
+		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
 			_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 			setNeedUpdate( true );
 		};
-		// TODO: update only one color.
+		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
+		{
+			_context->setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
+			setNeedUpdate( true );
+		};
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
