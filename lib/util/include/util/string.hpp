@@ -26,7 +26,7 @@ namespace VTX::Util::String
 	void		toUpper( std::string & p_str );
 	std::string toUpper( const std::string & p_str );
 	// Memory size to string.
-	std::string memSizeToStr( const size_t p_size );
+	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
 	// Duration to string.
 	std::string durationToStr( const float p_durationInMS );
 
