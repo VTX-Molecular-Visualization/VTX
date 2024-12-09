@@ -29,7 +29,6 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]" )
 {
 	using namespace VTX;
-	return;
 
 	App::Test::Util::PythonFixture f;
 
