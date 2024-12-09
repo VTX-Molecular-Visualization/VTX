@@ -26,8 +26,8 @@ namespace VTX::App::Test::Util
 	void PythonFixture::resetInterpretor()
 	{
 		INTERPRETOR().clearBinders();
-		return;
 		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		return;
 	}
 
 	void PythonFixture::loadSystem( const std::string & p_moleculePath )
