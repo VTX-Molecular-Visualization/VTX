@@ -573,6 +573,7 @@ namespace VTX::Renderer::Context
 		//= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
 
 		// Create and bind p_buffers.
+		_buffers[ p_pass.name + descProgram.name ]->bind( GL_UNIFORM_BUFFER, 0 );
 		for ( const BufferData & bufferData : p_pass.data )
 		{
 			// Create buffer.
@@ -610,10 +611,11 @@ namespace VTX::Renderer::Context
 		glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 		// Unbind p_buffers.
+		_buffers[ p_pass.name + descProgram.name ]->unbind();
 		for ( const BufferData & bufferData : p_pass.data )
 		{
 			const Key keyBuffer = p_pass.name + bufferData.name;
-			_buffers[ keyBuffer ].get()->unbind();
+			_buffers[ keyBuffer ]->unbind();
 		}
 	}
 
@@ -916,7 +918,7 @@ namespace VTX::Renderer::Context
 				GLsizei( maxSize ),
 				p_bufferData.data,
 				p_bufferData.isSizeFixed,
-				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT : GL_STATIC_DRAW
+				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
 			);
 		}
 
