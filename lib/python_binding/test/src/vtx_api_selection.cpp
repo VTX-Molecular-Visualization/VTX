@@ -12,10 +12,10 @@
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 {
-	return; // TODO : when selection save is restored
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Test::Util::PythonFixture f;
+	return; // TODO : when selection save is restored
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
@@ -181,7 +181,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 
 	// CHECK( SelectionUtil::checkSelection(
 	//	"test_mol_n_chain_str_i_1", "select( mol_n='4HHB', chain_i='1' )",
-	//PythonFixture::Application::Selection::Selection() ) ); // NO => manage param as str
+	// PythonFixture::Application::Selection::Selection() ) ); // NO => manage param as str
 
 	// interpretor.runCommand( "select( mol_n='4HHB', res_i=range(0, 100) )" );
 };
