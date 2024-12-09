@@ -24,8 +24,8 @@ namespace VTX::App::Test::Util
 	}
 	PythonFixture::~PythonFixture()
 	{
-		INTERPRETOR().clearBinders();
-		SCENE().reset();
+		// INTERPRETOR().clearBinders();
+		// SCENE().reset();
 	}
 	void PythonFixture::resetInterpretor()
 	{
