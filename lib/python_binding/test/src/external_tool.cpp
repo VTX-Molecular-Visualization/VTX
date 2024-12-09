@@ -42,11 +42,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	{
 		customModule.runFunction<int>( "iDontExist", "from VTX" );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
 		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
 		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
@@ -55,11 +55,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	{
 		customModule.runFunction<int, int>( "testStr", 182, std::pair<std::string, float>( "false signature", 4.f ) );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
 		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
 		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
@@ -68,11 +68,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	{
 		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
 		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
 		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
@@ -99,8 +99,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 		pythonObj.setMember( "value", 33 );
 		CHECK( pythonObj.getMember<int>( "value" ) == 33 );
 	}
-	catch ( PythonWrapperException e )
+	catch ( PythonWrapperException & e )
 	{
 		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
+	VTX_INFO( "Reached the end of the UT at {}", src_info() );
 };
