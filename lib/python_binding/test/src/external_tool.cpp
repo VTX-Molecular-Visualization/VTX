@@ -7,7 +7,14 @@
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
+#include <source_location>
 #include <util/logger.hpp>
+
+std::string src_info( const std::source_location location = std::source_location::current() )
+{
+	return std::string( "[" ) + location.file_name() + '(' + std::to_string( location.line() ) + ':'
+		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
+}
 
 TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 {
@@ -27,8 +34,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	customModule.displayInfo();
 
-	VTX_INFO( "{}", customModule.runFunction<std::string>( "testStr" ) );
-	VTX_INFO( "{}", customModule.runFunction<std::string>( "testStr", "VTX" ) );
+	VTX_INFO( "<{}> at {}", customModule.runFunction<std::string>( "testStr" ), src_info() );
+	VTX_INFO( "<{}> at {}", customModule.runFunction<std::string>( "testStr", "VTX" ), src_info() );
 
 	try
 	{
@@ -36,11 +43,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	}
 	catch ( const PythonWrapperException exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
 	catch ( const std::exception e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
@@ -49,11 +56,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	}
 	catch ( const PythonWrapperException exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
 	catch ( const std::exception e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
@@ -62,11 +69,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	}
 	catch ( const PythonWrapperException exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
 	catch ( const std::exception e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
@@ -93,6 +100,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 	}
 	catch ( PythonWrapperException e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 };
