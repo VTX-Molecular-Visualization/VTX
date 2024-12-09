@@ -294,7 +294,7 @@ namespace VTX::Renderer::Context
 
 		void _createOuputs( const Pass * const, std::set<GLenum> & p_drawBuffers, const Key, Keys & );
 
-		void _createProgram( const Program &, const Key, Keys & );
+		const GL::Program * const _createProgram( const Program &, const Key, Keys & );
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
 			const Links &,

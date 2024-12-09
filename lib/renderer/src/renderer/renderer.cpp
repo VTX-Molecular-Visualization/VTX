@@ -36,9 +36,13 @@ namespace VTX::Renderer
 			  true }
 		);
 
-		_renderGraph->addGlobalData(
-			{ "ColorLayout", 14, { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } }, 0, nullptr, true }
-		);
+		_renderGraph->addGlobalData( { "ColorLayout",
+									   14,
+									   { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+									   4096,
+									   nullptr,
+									   false,
+									   true } );
 
 		_renderGraph->addGlobalData( { "Models",
 									   13,
@@ -248,7 +252,6 @@ namespace VTX::Renderer
 			onReady();
 		}
 
-		return;
 		///////////////////// COMPUTE
 		uint size = 10000;
 
@@ -257,19 +260,20 @@ namespace VTX::Renderer
 		BufferData		   bufferWriteOnly { "WriteOnly", 2, {}, size * sizeof( Vec4f ), nullptr, true, true };
 		BufferData		   bufferReadWrite { "ReadWrite", 3, {}, size * sizeof( Vec4f ), nullptr, true, true };
 
-		auto computePass = ComputePass {
-			Program { "ComputeDebug",
-					  std::vector<FilePath> { "compute/debug.comp" },
-					  BufferDataValues { { { "Intensity", E_TYPE::UINT, BufferValue<uint> { size } } } } },
-			{ bufferReadOnly, bufferWriteOnly, bufferReadWrite },
-			size
-		};
+		auto computePass
+			= ComputePass { "ComputeDebug",
+							Program { "ComputeDebug",
+									  std::vector<FilePath> { "compute/debug.comp" },
+									  BufferDataValues { { { "Size", E_TYPE::UINT, BufferValue<uint> { size } } } } },
+							{ bufferReadOnly, bufferWriteOnly, bufferReadWrite },
+							size };
 
 		_context->compute( computePass );
 
 		// Get write only buffer data.
 		std::vector<Vec4f> writeData( size );
-		_context->get<Vec4f>( writeData, "WriteOnly" );
+		_context->get<Vec4f>( writeData, "ComputeDebugWriteOnly" );
+		VTX_DEBUG( "Compute OK" );
 	}
 
 	void Renderer::clean()

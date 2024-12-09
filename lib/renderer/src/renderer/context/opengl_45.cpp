@@ -432,7 +432,7 @@ namespace VTX::Renderer::Context
 		_purgeResources( keys );
 	}
 
-	void OpenGL45::_createProgram( const Program & p_descProgram, const Key p_key, Keys & p_keys )
+	const GL::Program * const OpenGL45::_createProgram( const Program & p_descProgram, const Key p_key, Keys & p_keys )
 	{
 		const Key keyProgram = p_key + p_descProgram.name;
 		p_keys.push_back( keyProgram );
@@ -451,6 +451,8 @@ namespace VTX::Renderer::Context
 			// Create small and immutable buffer.
 			_createBufferData( BufferData { "", 0, p_descProgram.data, 0, nullptr, false, true }, keyProgram, p_keys );
 		}
+
+		return _programs[ keyProgram ];
 	}
 
 	void OpenGL45::resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
@@ -559,8 +561,6 @@ namespace VTX::Renderer::Context
 
 	void OpenGL45::compute( const ComputePass & p_pass )
 	{
-		/*
-		// return;
 		//  TODO: Create program and data (refacto build).
 		const Program & descProgram = p_pass.program;
 
@@ -568,30 +568,16 @@ namespace VTX::Renderer::Context
 									  + "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
 									  + "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
 
-		const GL::Program * const program
-			= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
+		Keys					  keys	  = {};
+		const GL::Program * const program = _createProgram( descProgram, p_pass.name, keys );
+		//= _programManager->createProgram( descProgram.name, descProgram.shaders, definesToInject );
 
 		// Create and bind p_buffers.
 		for ( const BufferData & bufferData : p_pass.data )
 		{
 			// Create buffer.
-			const Key keyBuffer = _getKey( bufferData );
-			// buffers.push_back( keyBuffer );
-
-			if ( not _buffers.contains( keyBuffer ) )
-			{
-				_buffers.emplace( keyBuffer, std::make_unique<GL::Buffer>() );
-				_createBufferData(
-					_buffers[ keyBuffer ].get(),
-					bufferData.values,
-					bufferData.size,
-					bufferData.data,
-					bufferData.isSizeFixed
-
-				);
-			}
-
-			_buffers[ keyBuffer ].get()->bind( GL_SHADER_STORAGE_BUFFER, bufferData.binding );
+			auto * const buffer = _createBufferData( bufferData, p_pass.name, keys );
+			buffer->bind( GL_SHADER_STORAGE_BUFFER, bufferData.binding );
 		}
 
 		program->use();
@@ -626,10 +612,9 @@ namespace VTX::Renderer::Context
 		// Unbind p_buffers.
 		for ( const BufferData & bufferData : p_pass.data )
 		{
-			const Key keyBuffer = bufferData.name;
+			const Key keyBuffer = p_pass.name + bufferData.name;
 			_buffers[ keyBuffer ].get()->unbind();
 		}
-		*/
 	}
 
 	void OpenGL45::_createInputs(
@@ -931,7 +916,7 @@ namespace VTX::Renderer::Context
 				GLsizei( maxSize ),
 				p_bufferData.data,
 				p_bufferData.isSizeFixed,
-				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
+				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT : GL_STATIC_DRAW
 			);
 		}
 

@@ -163,7 +163,8 @@ namespace VTX::Renderer
 
 	struct ComputePass
 	{
-		Program program;
+		std::string name;
+		Program		program;
 
 		std::vector<BufferData>		data;
 		std::variant<Vec3i, size_t> size;
