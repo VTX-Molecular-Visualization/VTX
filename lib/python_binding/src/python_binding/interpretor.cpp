@@ -84,7 +84,7 @@ namespace VTX::PythonBinding
 			throw e;
 		}
 	}
-	Interpretor::~Interpretor() {}
+	Interpretor::~Interpretor() { VTX_INFO( "Destructing interpretor ..." ); }
 
 	void Interpretor::init()
 	{
