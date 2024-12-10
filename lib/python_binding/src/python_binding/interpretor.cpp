@@ -64,6 +64,15 @@ namespace VTX::PythonBinding
 			_binders.shrink_to_fit();
 		}
 
+		//~Impl()
+		//{
+		//	VTX_INFO( "Destructing interpretor ..." );
+		//	{
+		//		pybind11::scoped_interpreter _ = std::move( _interpretor );
+		//	}
+		//	VTX_INFO( "Interpretor destroyed" );
+		//}
+
 	  private:
 		pybind11::scoped_interpreter _interpretor {};
 		pybind11::module_			 _vtxModule;
@@ -84,7 +93,12 @@ namespace VTX::PythonBinding
 			throw e;
 		}
 	}
-	Interpretor::~Interpretor() { VTX_INFO( "Destructing interpretor ..." ); }
+	Interpretor::~Interpretor()
+	{
+		VTX_INFO( "Destroying interpretor ..." );
+		_impl.reset();
+		VTX_INFO( "Interpretor destroyed." );
+	}
 
 	void Interpretor::init()
 	{
