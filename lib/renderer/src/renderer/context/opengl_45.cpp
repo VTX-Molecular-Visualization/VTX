@@ -34,9 +34,8 @@ namespace VTX::Renderer::Context
 		else
 		{
 			_getOpenglInfos();
+			_openglInfos.print();
 		}
-
-		_openglInfos.print();
 
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );

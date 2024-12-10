@@ -252,6 +252,7 @@ namespace VTX::Renderer
 			onReady();
 		}
 
+		return;
 		///////////////////// COMPUTE
 		uint size = 10000;
 
