@@ -21,12 +21,14 @@ namespace VTX::PythonBinding
 		m.doc() = "VTX Python module."; // optional module docstring
 
 		// Global pointer to VTX data
-		// pybind11::class_<PythonFixture::Core::System::SystemHandler, std::shared_ptr<PythonFixture::Core::System::SystemHandler>>(
+		// pybind11::class_<PythonFixture::Core::System::SystemHandler,
+		// std::shared_ptr<PythonFixture::Core::System::SystemHandler>>(
 		//	m, "VTXSystem"
 		//);
 
 		// Class to redirect Python prints
-		pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>( m, "LogRedirection" )
+		pybind11::class_<LogRedirection>( m, "LogRedirection" )
+			// pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>( m, "LogRedirection" )
 			.def( "write", &LogRedirection::write )
 			.def( "flush", &LogRedirection::flush );
 
