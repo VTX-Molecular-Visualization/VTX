@@ -91,9 +91,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QTreeWidget>				  _tree;
 		std::map<QTreeWidgetItem *, LoadFunc> _loadFuncs;
 
-		void _addTopLevelData( const TreeItemData &, const LoadFunc & );
-		void _addChildLevelData( QTreeWidgetItem * const, const TreeItemData & );
-
+		void _addTreeItem( const TreeItemData &, std::variant<const LoadFunc, QTreeWidgetItem * const> );
 		void _resetTreeItem( QTreeWidgetItem * const );
 	};
 

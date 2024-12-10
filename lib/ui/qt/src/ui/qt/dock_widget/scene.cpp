@@ -92,62 +92,56 @@ namespace VTX::UI::QT::DockWidget
 				auto & system = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_itemComponent );
 
 				// Add with concept.
-				_addTopLevelData(
-					TreeItemData { p_itemComponent.getName(),
-								   WidgetData( p_itemComponent.getPersistentSceneID() ),
-								   system.getChains().size() },
-					LoadFunc(
-						[ this, &system ]( const uint p_level, QTreeWidgetItem * const p_item )
+				_addTreeItem(
+					{ p_itemComponent.getName(),
+					  WidgetData( p_itemComponent.getPersistentSceneID() ),
+					  system.getChains().size() },
+
+					[ this, &system ]( const uint p_level, QTreeWidgetItem * const p_item )
+					{
+						WidgetData parentWidgetData = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+
+						switch ( p_level )
 						{
-							WidgetData parentWidgetData = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
-
-							switch ( p_level )
+						case 0: // Load chains.
+						{
+							WidgetData index = 0;
+							for ( auto & chain : system.getChains() )
 							{
-							case 0: // Load chains.
-							{
-								WidgetData index = 0;
-								for ( auto & chain : system.getChains() )
-								{
-									_addChildLevelData(
-										p_item, { chain->getName(), index++, chain->getResidueCount() }
-									);
-								}
-							}
-							break;
-
-							case 1: // Load residues.
-							{
-								auto * chain = system.getChain( parentWidgetData );
-								assert( chain );
-								for ( size_t index = chain->getIndexFirstResidue();
-									  index <= chain->getIndexLastResidue();
-									  ++index )
-								{
-									auto * residue = system.getResidue( index );
-									_addChildLevelData(
-										p_item, { residue->getName(), index, residue->getAtomCount() }
-									);
-								}
-							}
-							break;
-
-							case 2: // Load atoms.
-							{
-								auto * residue = system.getResidue( parentWidgetData );
-								assert( residue );
-								for ( size_t index = residue->getIndexFirstAtom(); index <= residue->getIndexLastAtom();
-									  ++index )
-								{
-									auto * atom = system.getAtom( atom_index_t( index ) );
-									_addChildLevelData( p_item, { atom->getName(), index, 0 } );
-								}
-							}
-							break;
-
-							default: assert( true ); break;
+								_addTreeItem( { chain->getName(), index++, chain->getResidueCount() }, p_item );
 							}
 						}
-					)
+						break;
+
+						case 1: // Load residues.
+						{
+							auto * chain = system.getChain( parentWidgetData );
+							assert( chain );
+							for ( size_t index = chain->getIndexFirstResidue(); index <= chain->getIndexLastResidue();
+								  ++index )
+							{
+								auto * residue = system.getResidue( index );
+								_addTreeItem( { residue->getName(), index, residue->getAtomCount() }, p_item );
+							}
+						}
+						break;
+
+						case 2: // Load atoms.
+						{
+							auto * residue = system.getResidue( parentWidgetData );
+							assert( residue );
+							for ( size_t index = residue->getIndexFirstAtom(); index <= residue->getIndexLastAtom();
+								  ++index )
+							{
+								auto * atom = system.getAtom( atom_index_t( index ) );
+								_addTreeItem( { atom->getName(), index, 0 }, p_item );
+							}
+						}
+						break;
+
+						default: assert( true ); break;
+						}
+					}
 				);
 			}
 		};
@@ -155,17 +149,24 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _tree.get() );
 	}
 
-	void Scene::_addTopLevelData( const TreeItemData & p_data, const LoadFunc & p_loadFunc )
+	void Scene::_addTreeItem(
+		const TreeItemData &								  p_data,
+		std::variant<const LoadFunc, QTreeWidgetItem * const> p_parent
+	)
 	{
-		QTreeWidgetItem * item = new QTreeWidgetItem();
+		QTreeWidgetItem * parent = nullptr;
+		if ( std::holds_alternative<QTreeWidgetItem * const>( p_parent ) )
+		{
+			parent = std::get<QTreeWidgetItem * const>( p_parent );
+		}
 
-		auto * p = item->parent();
-
-		Qt::ItemFlags flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
+		QTreeWidgetItem * item	= new QTreeWidgetItem( parent );
+		Qt::ItemFlags	  flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
 
 		item->setFlags( flags );
 		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_data.data ) );
-		item->setText( 0, QString::fromUtf8( p_data.name ) );
+		// item->setText( 0, QString::fromUtf8( p_data.name ) );
+		item->setText( 0, QString::fromStdString( p_data.name.data() ).append( " (%1)" ).arg( p_data.childrenCount ) );
 		// item->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
 		item->setCheckState( 0, Qt::Checked );
 
@@ -174,22 +175,11 @@ namespace VTX::UI::QT::DockWidget
 			_resetTreeItem( item );
 		}
 
-		assert( not _loadFuncs.contains( item ) );
-		_loadFuncs.emplace( item, p_loadFunc );
-
-		_tree->addTopLevelItem( item );
-	}
-
-	void Scene::_addChildLevelData( QTreeWidgetItem * const p_item, const TreeItemData & p_data )
-	{
-		QTreeWidgetItem * child = new QTreeWidgetItem( p_item );
-		child->setText( 0, QString::fromStdString( p_data.name.data() ).append( " (%1)" ).arg( p_data.childrenCount ) );
-
-		child->setData( 0, Qt::UserRole, QVariant::fromValue( p_data.data ) );
-
-		if ( p_data.childrenCount != 0 )
+		if ( not parent )
 		{
-			_resetTreeItem( child );
+			assert( not _loadFuncs.contains( item ) );
+			_loadFuncs.emplace( item, std::get<const LoadFunc>( p_parent ) );
+			_tree->addTopLevelItem( item );
 		}
 	}
 
