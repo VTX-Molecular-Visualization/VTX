@@ -4,94 +4,84 @@
 #include "ui/qt/core/base_dock_widget.hpp"
 #include <QPointer>
 #include <QTreeWidget>
+#include <app/component/chemistry/system.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
-	/*
-	struct Data
-	{
-		uint level;
-	};
 
-	// Static polymorphism.
-	template<typename T>
-	concept TreeItemData = requires( T t ) {
-		{ t.getName() } -> std::same_as<const std::string_view>;
-		{ t.getPersistentSceneID() } -> std::same_as<int>;
-	};
-
-	// Test structs.
-	struct TestData
-	{
-		std::string_view name		  = "Default system";
-		int				 persistentId = 0;
-
-		const std::string_view getName() const { return name; }
-		int					   getPersistentSceneID() const { return persistentId; }
-	};
-
-	struct TestData2
-	{
-		std::string_view myName = "Default system adapted";
-		int				 myID	= 0;
-
-		const std::string_view getMyName() const { return myName; }
-		int					   getMyID() const { return myID; }
-	};
-
-	// Adapter.
-	class BaseAdapterTreeItemData
-	{
-	  public:
-		virtual const std::string_view name() const = 0;
-		virtual int					   id() const	= 0;
-		virtual ~BaseAdapterTreeItemData()			= default;
-	};
-
-	class AdapterSceneItemComponent : public BaseAdapterTreeItemData
-	{
-	  public:
-		AdapterSceneItemComponent( const VTX::App::Component::Scene::SceneItemComponent & p_item ) : _item( p_item ) {}
-
-		const std::string_view name() const override { return _item.getName(); }
-		int					   id() const override { return _item.getPersistentSceneID(); }
-
-	  private:
-		const VTX::App::Component::Scene::SceneItemComponent & _item;
-	};
-
-	class AdapterTestData2 : public BaseAdapterTreeItemData
-	{
-	  public:
-		AdapterTestData2( const TestData2 & p_item ) : _item( p_item ) {}
-
-		const std::string_view name() const override { return _item.getMyName(); }
-		int					   id() const override { return _item.getMyID(); }
-
-	  private:
-		const TestData2 & _item;
-	};
-	*/
-
+	/**
+	 * @brief Display a tree widget with loaded systems.
+	 * Load only minimal data on expand/collapse.
+	 */
 	class Scene : public Core::BaseDockWidget<Scene>
 	{
 	  public:
+		Scene( QWidget * );
+
+	  private:
+		enum struct E_DEPTH
+		{
+			TREE = 0,
+			SYSTEM,
+			CHAIN,
+			RESIDUE,
+			ATOM
+		};
+
 		using WidgetData = size_t;
+
+		/**
+		 * @brief Load data function.
+		 */
+		using LoadFunc = std::function<void( const E_DEPTH, QTreeWidgetItem * const )>;
+
+		/**
+		 * @brief Store data to create a tree item.
+		 */
 		struct TreeItemData
 		{
 			std::string_view name;
 			WidgetData		 data;
 			size_t			 childrenCount;
 		};
-		using LoadFunc = std::function<void( const uint, QTreeWidgetItem * const )>;
 
-		Scene( QWidget * );
+		QPointer<QTreeWidget> _tree;
 
-	  private:
-		QPointer<QTreeWidget>				  _tree;
-		std::map<QTreeWidgetItem *, LoadFunc> _loadFuncs;
+		/**
+		 * @brief Map top level items to data loading functions (to request App).
+		 */
+		std::map<const QTreeWidgetItem * const, LoadFunc> _loadFuncs;
 
-		void _addTreeItem( const TreeItemData &, std::variant<const LoadFunc, QTreeWidgetItem * const> );
+		/**
+		 * @brief Map top level items to system components.
+		 */
+		std::map<const QTreeWidgetItem * const, App::Component::Chemistry::System * const> _systemComponents;
+
+		/**
+		 * @brief Add a tree item.
+		 * @param the TreeItemData to add.
+		 * @param the parent item.
+		 * @param the optional loading function.
+		 * @param the optional system component.
+		 */
+		void _addTreeItem(
+			const TreeItemData &,
+			QTreeWidgetItem * const							   = nullptr,
+			std::optional<const LoadFunc>					   = std::nullopt,
+			std::optional<App::Component::Chemistry::System *> = std::nullopt
+		);
+
+		/**
+		 * @brief Get the depth of the item.
+		 * @param p_item the widget item.
+		 * @return [E_DEPTH, QTreeWidgetItem * const] the depth and the top level item.
+		 */
+		std::pair<E_DEPTH, QTreeWidgetItem * const> _getDepth( QTreeWidgetItem * const p_item ) const;
+
+		/**
+		 * @brief Reset the item tree (unload content on collapse).
+		 * @param the item to reset.
+		 */
 		void _resetTreeItem( QTreeWidgetItem * const );
 	};
 

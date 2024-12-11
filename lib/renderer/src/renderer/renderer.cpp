@@ -362,31 +362,6 @@ namespace VTX::Renderer
 			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "MatrixModelView", _getProxyId( &p_proxy ) );
 		};
 
-		// Visibility.
-		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
-		{
-			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
-			auto & rangeCylinders = _cacheSpheresCylinders[ &p_proxy ].rangeCylinders;
-			auto & rangeRibbons	  = _cacheRibbons[ &p_proxy ].range;
-
-			if ( p_visible )
-			{
-				drawRangeSpheresRL.addRange( rangeSpheres );
-				drawRangeCylindersRL.addRange( rangeCylinders );
-				drawRangeRibbonsRL.addRange( rangeRibbons );
-			}
-			else
-			{
-				drawRangeSpheresRL.removeRange( rangeSpheres );
-				drawRangeCylindersRL.removeRange( rangeCylinders );
-				drawRangeRibbonsRL.removeRange( rangeRibbons );
-			}
-
-			drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
-			drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
-			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
-		};
-
 		// Representation.
 		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
 		{
@@ -479,6 +454,49 @@ namespace VTX::Renderer
 			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			// TODO: ribbons and SES.
+		};
+
+		// Visibility.
+		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
+		{
+			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
+			auto & rangeCylinders = _cacheSpheresCylinders[ &p_proxy ].rangeCylinders;
+			auto & rangeRibbons	  = _cacheRibbons[ &p_proxy ].range;
+
+			if ( p_visible )
+			{
+				drawRangeSpheresRL.addRange( rangeSpheres );
+				drawRangeCylindersRL.addRange( rangeCylinders );
+				drawRangeRibbonsRL.addRange( rangeRibbons );
+			}
+			else
+			{
+				drawRangeSpheresRL.removeRange( rangeSpheres );
+				drawRangeCylindersRL.removeRange( rangeCylinders );
+				drawRangeRibbonsRL.removeRange( rangeRibbons );
+			}
+
+			drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+			drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
+			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
+		};
+
+		p_proxy.onAtomVisibilities +=
+			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_visible )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
+			{
+				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
+				{
+					cacheSC.flags[ i ] &= ~mask;
+					cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
+				}
+			}
+			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+
+			// TODO: ribbons.
 		};
 
 		// TODO:

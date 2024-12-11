@@ -3,7 +3,6 @@
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/scene_item_component.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -50,23 +49,16 @@ namespace VTX::UI::QT::DockWidget
 			[ & ]( QTreeWidgetItem * const p_item )
 			{
 				// Get item depth.
-				int				  depth	 = 0;
-				QTreeWidgetItem * parent = p_item;
-				while ( parent->parent() )
-				{
-					++depth;
-					parent = parent->parent();
-				}
+				auto [ depth, topLevelItem ] = _getDepth( p_item );
 
-				assert( _loadFuncs.contains( parent ) );
+				assert( _loadFuncs.contains( topLevelItem ) );
 
 				// Remove placeholder.
 				assert( p_item->childCount() == 1 );
 				delete p_item->takeChild( 0 );
 
 				// Load children.
-				const LoadFunc & loadFunc = _loadFuncs.at( parent );
-				loadFunc( depth, p_item );
+				_loadFuncs.at( topLevelItem )( E_DEPTH( depth ), p_item );
 			}
 		);
 
@@ -75,35 +67,42 @@ namespace VTX::UI::QT::DockWidget
 			_tree.get(),
 			&QTreeWidget::itemCollapsed,
 			this,
-			[ this ]( QTreeWidgetItem * const p_item ) { _resetTreeItem( p_item ); }
+			[ this ]( QTreeWidgetItem * const p_item )
+			{
+				_tree->blockSignals( true );
+				_resetTreeItem( p_item );
+				_tree->blockSignals( false );
+			}
 		);
+
+		// Connect callbacks.
 
 		// customContextMenuRequested.
 		_tree->connect( _tree.get(), &QTreeWidget::customContextMenuRequested, this, []( const QPoint & p_pos ) {} );
 
-		// Connect callbacks.
+		// onSceneItemAdded.
 		using namespace App::Component::Scene;
-		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_itemComponent )
+		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
 			using namespace App;
 
-			if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_itemComponent ) )
+			if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_system ) )
 			{
-				auto & system = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_itemComponent );
+				auto & system = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( p_system );
 
-				// Add with concept.
+				// Add top level item.
 				_addTreeItem(
-					{ p_itemComponent.getName(),
-					  WidgetData( p_itemComponent.getPersistentSceneID() ),
-					  system.getChains().size() },
-
-					[ this, &system ]( const uint p_level, QTreeWidgetItem * const p_item )
+					{ p_system.getName(), WidgetData( p_system.getPersistentSceneID() ), system.getChains().size() },
+					nullptr,
+					[ this, &system ]( const E_DEPTH p_depth, QTreeWidgetItem * const p_item )
 					{
+						_tree->blockSignals( true );
+
 						WidgetData parentWidgetData = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
 
-						switch ( p_level )
+						switch ( p_depth )
 						{
-						case 0: // Load chains.
+						case E_DEPTH::SYSTEM: // Load chains.
 						{
 							WidgetData index = 0;
 							for ( auto & chain : system.getChains() )
@@ -113,7 +112,7 @@ namespace VTX::UI::QT::DockWidget
 						}
 						break;
 
-						case 1: // Load residues.
+						case E_DEPTH::CHAIN: // Load residues.
 						{
 							auto * chain = system.getChain( parentWidgetData );
 							assert( chain );
@@ -126,7 +125,7 @@ namespace VTX::UI::QT::DockWidget
 						}
 						break;
 
-						case 2: // Load atoms.
+						case E_DEPTH::RESIDUE: // Load atoms.
 						{
 							auto * residue = system.getResidue( parentWidgetData );
 							assert( residue );
@@ -141,27 +140,92 @@ namespace VTX::UI::QT::DockWidget
 
 						default: assert( true ); break;
 						}
-					}
+
+						_tree->blockSignals( false );
+					},
+					&system
 				);
 			}
 		};
 
+		// itemChanged.
+		connect(
+			_tree,
+			&QTreeWidget::itemChanged,
+			this,
+			[ this ]( QTreeWidgetItem * const p_item, const int p_column )
+			{
+				if ( p_column == 0 )
+				{
+					const bool checked			   = p_item->checkState( 0 ) == Qt::Checked;
+					WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+					auto [ depth, topLevelWidget ] = _getDepth( p_item );
+
+					assert( _systemComponents.contains( topLevelWidget ) );
+
+					// TODO: do not access component, use actions!
+					switch ( depth )
+					{
+					case E_DEPTH::SYSTEM:
+					{
+						// Set system visibility.
+						_systemComponents.at( topLevelWidget )->setVisible( checked );
+						break;
+					}
+					case E_DEPTH::CHAIN:
+					{
+						// Set chain visibility.
+						auto * chain = _systemComponents.at( topLevelWidget )->getChain( widgetData );
+						assert( chain );
+						chain->setVisible( checked );
+						break;
+					}
+					case E_DEPTH::RESIDUE:
+					{
+						// Set residue visibility.
+						auto * residue = _systemComponents.at( topLevelWidget )->getResidue( widgetData );
+						assert( residue );
+						residue->setVisible( checked );
+						break;
+					}
+					case E_DEPTH::ATOM:
+					{
+						// Set atom visibility.
+						auto * atom = _systemComponents.at( topLevelWidget )->getAtom( atom_index_t( widgetData ) );
+						assert( atom );
+						atom->setVisible( checked );
+						break;
+					}
+					default: assert( true ); break;
+					}
+				}
+			}
+		);
+
 		_layout->addWidget( _tree.get() );
 	}
 
+	std::pair<Scene::E_DEPTH, QTreeWidgetItem * const> Scene::_getDepth( QTreeWidgetItem * const p_item ) const
+	{
+		uint			  depth	 = 1;
+		QTreeWidgetItem * parent = p_item;
+		while ( parent->parent() )
+		{
+			++depth;
+			parent = parent->parent();
+		}
+		return { E_DEPTH( depth ), parent };
+	}
+
 	void Scene::_addTreeItem(
-		const TreeItemData &								  p_data,
-		std::variant<const LoadFunc, QTreeWidgetItem * const> p_parent
+		const TreeItemData &							   p_data,
+		QTreeWidgetItem * const							   p_parent,
+		std::optional<const LoadFunc>					   p_loadFunc,
+		std::optional<App::Component::Chemistry::System *> p_systemComponent
 	)
 	{
-		QTreeWidgetItem * parent = nullptr;
-		if ( std::holds_alternative<QTreeWidgetItem * const>( p_parent ) )
-		{
-			parent = std::get<QTreeWidgetItem * const>( p_parent );
-		}
-
-		QTreeWidgetItem * item	= new QTreeWidgetItem( parent );
-		Qt::ItemFlags	  flags = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable;
+		QTreeWidgetItem * item = new QTreeWidgetItem( p_parent );
+		Qt::ItemFlags flags	   = Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemIsEnabled;
 
 		item->setFlags( flags );
 		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_data.data ) );
@@ -175,10 +239,18 @@ namespace VTX::UI::QT::DockWidget
 			_resetTreeItem( item );
 		}
 
-		if ( not parent )
+		// Add top level item with data load function.
+		if ( not p_parent )
 		{
+			assert( p_loadFunc.has_value() );
+			assert( p_systemComponent.has_value() );
+
 			assert( not _loadFuncs.contains( item ) );
-			_loadFuncs.emplace( item, std::get<const LoadFunc>( p_parent ) );
+			assert( not _systemComponents.contains( item ) );
+
+			_loadFuncs.emplace( item, p_loadFunc.value() );
+			_systemComponents.emplace( item, p_systemComponent.value() );
+
 			_tree->addTopLevelItem( item );
 		}
 	}
