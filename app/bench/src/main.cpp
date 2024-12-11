@@ -2,9 +2,10 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
+#include <string>
 #include <renderer/facade.hpp>
 #include <util/math/aabb.hpp>
-
+#include <util/take_measures.hpp>
 #ifdef _WIN32
 extern "C"
 {
@@ -33,6 +34,8 @@ int main( int, char ** )
 
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
+
+		TakeMeasures takeMeasures( 3, std::string(Filesystem::getExecutableDir().c_str() ) + "/logs/measures.csv", 5.f );
 
 		// Renderer.
 		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
@@ -72,19 +75,19 @@ int main( int, char ** )
 			{
 				if ( p_key == SDL_SCANCODE_F1 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4hhb" ) );
+					renderer.addProxyMolecule( scene.addMolecule( "4hhb.pdb" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F2 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "1aga" ) );
+					renderer.addProxyMolecule( scene.addMolecule( "1aga.pdb" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F3 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4v6x" ) );
+					renderer.addProxyMolecule( scene.addMolecule( "4v6x.mmtf" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F4 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "3j3q" ) );
+					renderer.addProxyMolecule( scene.addMolecule( "3j3q.mmtf" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
@@ -93,6 +96,10 @@ int main( int, char ** )
 						colorLayout.layout.begin(), colorLayout.layout.end(), [] { return Color::Rgba::random(); }
 					);
 					scene.setColorLayout( colorLayout );
+				}
+
+				else if (p_key == SDL_SCANCODE_P ){
+					takeMeasures.start();
 				}
 			}
 			catch ( const std::exception & p_e )
@@ -164,9 +171,13 @@ int main( int, char ** )
 			// Renderer.
 			renderer.render( deltaTime, time );
 
+			if (takeMeasures.isStarted()){
+				takeMeasures.measure(deltaTime, renderer.getInstructionsDurationRanges());
+			}
 			// UI.
 			ui.draw( &camera, &scene, &renderer );
 
+			
 			// Events.
 			SDL_Event event;
 			while ( ui.getEvent( event ) )

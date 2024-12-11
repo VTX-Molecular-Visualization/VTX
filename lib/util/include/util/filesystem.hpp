@@ -25,6 +25,8 @@ namespace VTX::Util::Filesystem
 	// Clean destination and copy directory p_filePathSrc at path p_filePathDestination recursively
 	void copyDirectory( const FilePath & p_filePathSrc, const FilePath & p_filePathDestination );
 
+	// Write a line to a file
+	void writeLineToFile( const FilePath & p_filePath, const std::string & p_line );
 } // namespace VTX::Util::Filesystem
 
 #endif
