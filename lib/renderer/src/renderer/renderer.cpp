@@ -253,7 +253,7 @@ namespace VTX::Renderer
 		}
 
 		return;
-		///////////////////// COMPUTE
+		///////////////////// COMPUTE TEST ///////////////////////
 		uint size = 10000;
 
 		std::vector<Vec4f> readData( size, Vec4f( 1.f, 2.f, 3.f, 4.f ) );
@@ -486,6 +486,7 @@ namespace VTX::Renderer
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+
 			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
 				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
@@ -494,12 +495,21 @@ namespace VTX::Renderer
 					cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 				}
 			}
-			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+
+			const size_t offset = cacheSC.rangeSpheres.getFirst();
+
+			_context->setSub(
+				cacheSC.flags,
+				"SpheresCylindersFlags",
+				offset + p_atomIds.getFirst(),
+				false,
+				p_atomIds.getLast() - p_atomIds.getFirst() + 1
+			);
 
 			// TODO: ribbons.
 		};
 
-		// TODO:
+		// TODO:<
 		// onAtomVisibilities
 		// onAtomSelections
 		// onAtomRepresentations

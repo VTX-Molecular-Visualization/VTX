@@ -5,6 +5,7 @@
 
 namespace VTX::Util::Generic
 {
+	// TODO: remove or use concept.
 	class BaseNameable
 	{
 	  public:

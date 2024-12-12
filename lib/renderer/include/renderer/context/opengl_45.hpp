@@ -60,7 +60,9 @@ namespace VTX::Renderer::Context
 			assert( _bufferValueEntries.contains( p_key ) );
 
 			std::unique_ptr<_StructBufferDataValueEntry> & entry = _bufferValueEntries[ p_key ];
-			entry->buffer->setSub( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
+			entry->buffer->setSub(
+				p_value, GLint( entry->offset + p_index * entry->totalSize ), GLsizei( entry->size )
+			);
 		}
 
 		/**
@@ -125,11 +127,20 @@ namespace VTX::Renderer::Context
 		 * @brief Send data to an existing GPU buffer.
 		 */
 		template<typename T>
-		inline void setSub( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
+		inline void setSub(
+			const std::vector<T> & p_data,
+			const Key &			   p_key,
+			const size_t		   p_offset		  = 0,
+			const bool			   p_offsetSource = false,
+			const size_t		   p_size		  = 0
+		)
 		{
+			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->setSub( p_data, GLintptr( p_offset * sizeof( T ) ) );
+			_buffers[ p_key ]->setSub(
+				p_data, GLint( p_offset * sizeof( T ) ), p_offsetSource, GLsizei( p_size * sizeof( T ) )
+			);
 		}
 
 		/**

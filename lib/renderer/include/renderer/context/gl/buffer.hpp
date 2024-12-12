@@ -151,9 +151,9 @@ namespace VTX::Renderer::Context::GL
 
 		template<typename T>
 		inline void setSub(
-			const T &	   p_data,
-			const GLintptr p_offset = GLintptr( 0 ),
-			const GLsizei  p_size	= GLsizei( sizeof( T ) )
+			const T &	  p_data,
+			const GLint	  p_offset = GLint( 0 ),
+			const GLsizei p_size   = GLsizei( sizeof( T ) )
 		) const
 		{
 			assert( glIsBuffer( _id ) );
@@ -164,16 +164,21 @@ namespace VTX::Renderer::Context::GL
 		}
 
 		template<typename T>
-		inline void setSub( const std::vector<T> & p_vector, const GLintptr p_offset = GLintptr( 0 ) ) const
+		inline void setSub(
+			const std::vector<T> & p_vector,
+			const GLint			   p_offset		  = GLint( 0 ),
+			const bool			   p_offsetSource = false,
+			const GLsizei		   p_size		  = 0
+		) const
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _size > 0 );
 
-			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
+			GLsizei size = not p_size ? GLsizei( sizeof( T ) * p_vector.size() ) : p_size;
 
 			assert( p_offset + size <= _size );
 
-			glNamedBufferSubData( _id, p_offset, size, p_vector.data() );
+			glNamedBufferSubData( _id, p_offset, size, p_vector.data() + ( p_offsetSource ? p_offset : 0 ) );
 		}
 
 		template<typename T>
