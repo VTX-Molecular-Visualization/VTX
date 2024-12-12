@@ -48,9 +48,9 @@ namespace VTX::PythonBinding
 		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
 		// return; // A2E6
 
-		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
-		// return; // A2E7
-		// apiModule( vtxAPIModule );
-		// return; // A2E8
+		// pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
+		//  return; // A2E7
+		//  apiModule( vtxAPIModule );
+		//  return; // A2E8
 	}
 } // namespace VTX::PythonBinding
