@@ -41,7 +41,7 @@ namespace VTX::PythonBinding
 
 		void applyBinders()
 		{
-			return;
+			// return;
 			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "vtx_python_bin" );
 			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
 			// return; // A6
@@ -55,8 +55,8 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
-			return;
-			// Import all commands
+			// return;
+			//  Import all commands
 			pybind11::exec( "from vtx_python_bin.Command import *" );
 			// return; // A8
 
