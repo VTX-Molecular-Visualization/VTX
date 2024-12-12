@@ -20,7 +20,7 @@ namespace VTX::PythonBinding
 	{
 		// return;							// A2E1
 		m.doc() = "VTX Python module."; // optional module docstring
-		return;							// A2E2
+		// return;							// A2E2
 
 		// Global pointer to VTX data
 		// pybind11::class_<PythonFixture::Core::System::SystemHandler,
