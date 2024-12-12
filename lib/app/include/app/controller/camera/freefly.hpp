@@ -14,7 +14,6 @@ namespace VTX::App::Controller::Camera
 	  public:
 		Freefly();
 
-		void setActive( const bool ) {};
 		void update( const float, const float );
 
 		float translationSpeed	 = Settings::Controller::TRANSLATION_SPEED_DEFAULT;

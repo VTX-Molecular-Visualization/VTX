@@ -16,7 +16,6 @@ namespace VTX::App::Controller::Camera
 	  public:
 		Trackball();
 
-		void setActive( const bool );
 		void update( const float, const float );
 
 		// void  reset();

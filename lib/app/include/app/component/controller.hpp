@@ -24,10 +24,12 @@ namespace VTX::App::Component
 		template<Core::Controller::ConceptController C>
 		void enableController()
 		{
-			C * const controller = _controllers.getOrCreate<C>();
-			Hash	  hash		 = Util::hash<C>();
+			Hash hash = Util::hash<C>();
 
+			assert( not _controllers.has<C>() );
 			assert( not _activeCallbacks.contains( hash ) );
+
+			C * const controller = _controllers.create<C>();
 
 			if constexpr ( std::derived_from<C, Core::Controller::BaseControllerCamera> )
 			{
@@ -40,9 +42,6 @@ namespace VTX::App::Component
 
 			// Save callback id.
 			_activeCallbacks.emplace( hash, id );
-
-			// Set controller active.
-			controller->setActive( true );
 
 			// Trigger callbacks.
 			onControllerEnabled( Util::hash<C>() );
@@ -57,12 +56,11 @@ namespace VTX::App::Component
 			assert( _controllers.has<C>() );
 			assert( _activeCallbacks.contains( hash ) );
 
-			C * const controller = _controllers.get<C>();
+			_controllers.remove<C>();
 
 			// Unregister update callback.
 			APP::onUpdate -= _activeCallbacks.at( hash );
 			_activeCallbacks.erase( hash );
-			controller->setActive( false );
 		}
 
 		template<Core::Controller::ConceptController C>

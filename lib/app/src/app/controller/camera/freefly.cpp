@@ -22,26 +22,10 @@ namespace VTX::App::Controller::Camera
 		} );
 	}
 
-	/*
-	void Freefly::setActive( const bool p_active )
-	{
-		BaseCameraController::setActive( p_active );
-
-		if ( p_active )
-			getCamera().attachTarget();
-		else
-			getCamera().detachTarget();
-	}
-	*/
-
 	void Freefly::update( const float p_deltaTime, const float p_elapsedTime )
 	{
 		using namespace App::Core;
 
-		// if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )
-		//	return;
-
-		// TODO: use action instead of update camera there.
 		//  Rotation.
 		if ( INPUT_MANAGER().isMouseLeftPressed() )
 		{
