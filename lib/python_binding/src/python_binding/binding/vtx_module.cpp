@@ -49,7 +49,7 @@ namespace VTX::PythonBinding
 		// return; // A2E6
 
 		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
-		return; // A2E7
+		// return; // A2E7
 		apiModule( vtxAPIModule );
 		// return; // A2E8
 	}
