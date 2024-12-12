@@ -33,24 +33,24 @@ namespace VTX::PythonBinding
 																								 // shared_ptr useful ?
 			.def( "write", &LogRedirection::write )
 			.def( "flush", &LogRedirection::flush );
-		return; // A2E3
+		// return; // A2E3
 
 		// Core module : Contains some core functions which must be hidden for users
 		pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );
-		return; // A2E4
+		// return; // A2E4
 		vtxCoreModule.doc() = "Contains some core functions which must be hidden for users.";
-		return; // A2E5
+		// return; // A2E5
 
 		// vtxCoreModule.def( "_init", &_init, "Initialize python environment for commands" );
 
 		// Command module : Contains all commands accessible to user via command line.
 		pybind11::module_ vtxCommandModule = m.def_submodule( "Command", "VTX Python command interface" );
 		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
-		return; // A2E6
+		// return; // A2E6
 
 		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
 		return; // A2E7
 		apiModule( vtxAPIModule );
-		return; // A2E8
+		// return; // A2E8
 	}
 } // namespace VTX::PythonBinding
