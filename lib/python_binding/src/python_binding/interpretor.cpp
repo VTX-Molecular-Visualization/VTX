@@ -17,8 +17,8 @@ namespace VTX::PythonBinding
 	  public:
 		void initializePythonModule()
 		{
-			return;
 			_vtxModule = pybind11::module_::import( "vtx_python_bin" );
+			return;
 
 			LogRedirection logger								= LogRedirection();
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
