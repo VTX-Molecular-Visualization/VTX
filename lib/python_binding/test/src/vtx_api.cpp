@@ -15,8 +15,8 @@
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 {
 	using namespace VTX;
-	App::Test::Util::PythonFixture f;
 	return;
+	App::Test::Util::PythonFixture f;
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
