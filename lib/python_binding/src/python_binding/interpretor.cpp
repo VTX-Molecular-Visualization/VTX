@@ -17,20 +17,24 @@ namespace VTX::PythonBinding
 	  public:
 		void initializePythonModule()
 		{
-			_vtxModule = pybind11::module_::import( "vtx_python_bin" );
+			// return; // A1
+			_vtxModule = pybind11::module_::import( "vtx_python_bin" ); // Cause double free or corruption on linux
 
+			return; // A2
 			LogRedirection logger								= LogRedirection();
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
-			return;
+			// return; // A3
 
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "vtx_python_bin.Core" );
 			// vtxCoreModule.attr( "_init" )( APP::getSystemHandlerPtr() );
+			// return; // A4
 
 			// TODO : Manage case where file not found (e.g. user moved it elsewhere)
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
 
 			pybind11::eval_file( initCommandsFile.string() );
+			// return; // A5
 		}
 
 		void addBinder( std::unique_ptr<Binder> p_binder ) { _binders.emplace_back( std::move( p_binder ) ); }
@@ -40,11 +44,13 @@ namespace VTX::PythonBinding
 			return;
 			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "vtx_python_bin" );
 			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
+			// return; // A6
 
 			for ( const std::unique_ptr<Binder> & binder : _binders )
 			{
 				binder->bind( *_pyTXModule );
 			}
+			// return; // A7
 		}
 
 		void importCommands()
@@ -52,12 +58,14 @@ namespace VTX::PythonBinding
 			return;
 			// Import all commands
 			pybind11::exec( "from vtx_python_bin.Command import *" );
+			// return; // A8
 
 			// Specific imports by binders
 			for ( const std::unique_ptr<Binder> & binder : _binders )
 			{
 				binder->importHeaders();
 			}
+			// return; // A9
 		}
 
 		PyTXModule & getPyTXModule() { return *_pyTXModule; }
