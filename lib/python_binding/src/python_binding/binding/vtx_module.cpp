@@ -38,7 +38,7 @@ namespace VTX::PythonBinding
 		// Core module : Contains some core functions which must be hidden for users
 		pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );
 		// return; // A2E4
-		vtxCoreModule.doc() = "Contains some core functions which must be hidden for users.";
+		// vtxCoreModule.doc() = "Contains some core functions which must be hidden for users.";
 		// return; // A2E5
 
 		// vtxCoreModule.def( "_init", &_init, "Initialize python environment for commands" );
