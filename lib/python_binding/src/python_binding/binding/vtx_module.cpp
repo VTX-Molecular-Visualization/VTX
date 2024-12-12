@@ -18,7 +18,7 @@ namespace VTX::PythonBinding
 {
 	PYBIND11_MODULE( vtx_python_bin, m )
 	{
-		return;							// A2E1
+		// return;							// A2E1
 		m.doc() = "VTX Python module."; // optional module docstring
 		return;							// A2E2
 
