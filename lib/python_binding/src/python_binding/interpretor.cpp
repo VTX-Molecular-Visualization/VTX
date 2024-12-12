@@ -17,6 +17,7 @@ namespace VTX::PythonBinding
 	  public:
 		void initializePythonModule()
 		{
+			return;
 			_vtxModule = pybind11::module_::import( "vtx_python_bin" );
 
 			LogRedirection logger								= LogRedirection();
@@ -36,6 +37,7 @@ namespace VTX::PythonBinding
 
 		void applyBinders()
 		{
+			return;
 			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "vtx_python_bin" );
 			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
 
@@ -47,6 +49,7 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
+			return;
 			// Import all commands
 			pybind11::exec( "from vtx_python_bin.Command import *" );
 
