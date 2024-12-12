@@ -8,10 +8,6 @@ namespace VTX::App::Mode
 	class Visualization : public Core::Mode::BaseMode
 	{
 	  public:
-		static inline const Name NAME = "VISUALIZATION";
-
-		Name getName() const override { return NAME; }
-
 		void enter() override;
 		void exit() override;
 

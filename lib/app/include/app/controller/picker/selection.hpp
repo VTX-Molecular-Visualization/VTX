@@ -15,10 +15,6 @@ namespace VTX::App::Controller::Picker
 	  public:
 		using PickingInfo = App::Application::Selection::PickingInfo;
 
-		static inline const Name NAME = "SELECTION";
-
-		Name getName() const override { return NAME; }
-
 		void setActive( const bool );
 		void update( const float, const float ) {}
 

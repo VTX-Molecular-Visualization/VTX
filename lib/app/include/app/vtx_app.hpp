@@ -46,6 +46,7 @@ namespace VTX::App
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
+		// TODO: get entity from ecs directly?
 		inline static Application::Scene & getScene() { return *_scene; }
 
 		// Main loop calllbacks.

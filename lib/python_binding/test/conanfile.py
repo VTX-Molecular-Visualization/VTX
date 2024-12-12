@@ -18,7 +18,7 @@ class VTXPythonBindingTestRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("catch2/3.7.0")
+        self.requires("catch2/3.7.1")
 
     def generate(self):
         deps = CMakeDeps(self)

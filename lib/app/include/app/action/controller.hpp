@@ -2,6 +2,8 @@
 #define __VTX_UI_ACTION_CONTROLLER__
 
 #include "app/core/controller/concepts.hpp"
+#include <app/application/scene.hpp>
+#include <app/component/controller.hpp>
 #include <app/core/action/base_action.hpp>
 #include <util/collection.hpp>
 #include <util/types.hpp>
@@ -9,24 +11,30 @@
 
 namespace VTX::App::Action::Controller
 {
+	template<Core::Controller::ConceptController C>
 	class EnableController final : public App::Core::Action::BaseAction
 	{
 	  public:
-		EnableController( const Name p_controller ) : _controller( p_controller ) {}
-		void execute() override;
-
-	  private:
-		Name _controller;
+		EnableController() {}
+		void execute()
+		{
+			Component::Controller & component
+				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
+			component.enableController<C>();
+		}
 	};
 
+	template<Core::Controller::ConceptController C>
 	class DisableController final : public App::Core::Action::BaseAction
 	{
 	  public:
-		DisableController( const Name p_controller ) : _controller( p_controller ) {}
-		void execute() override;
-
-	  private:
-		Name _controller;
+		DisableController() {}
+		void execute()
+		{
+			Component::Controller & component
+				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
+			component.disableController<C>();
+		}
 	};
 
 	class ToggleCameraController final : public App::Core::Action::BaseAction

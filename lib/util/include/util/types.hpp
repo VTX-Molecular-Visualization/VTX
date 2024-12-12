@@ -39,7 +39,6 @@ namespace VTX
 	using atom_index_t = uint;
 
 	using Hash = size_t;
-	using Name = std::string_view;
 } // namespace VTX
 
 #endif

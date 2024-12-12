@@ -12,11 +12,7 @@ namespace VTX::App::Controller::Camera
 	class Freefly : public Core::Controller::BaseControllerCamera
 	{
 	  public:
-		static inline const Name NAME = "FREEFLY";
-
 		Freefly();
-
-		Name getName() const override { return NAME; }
 
 		void setActive( const bool ) {};
 		void update( const float, const float );

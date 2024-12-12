@@ -5,7 +5,6 @@
 #include <QMenu>
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
-#include <app/core/controller/controller_system.hpp>
 
 namespace VTX::UI::QT::Menu
 {

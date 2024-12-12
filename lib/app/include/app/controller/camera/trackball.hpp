@@ -14,11 +14,7 @@ namespace VTX::App::Controller::Camera
 	class Trackball : public Core::Controller::BaseControllerCamera
 	{
 	  public:
-		static inline const Name NAME = "TRACKBALL";
-
 		Trackball();
-
-		Name getName() const override { return NAME; }
 
 		void setActive( const bool );
 		void update( const float, const float );

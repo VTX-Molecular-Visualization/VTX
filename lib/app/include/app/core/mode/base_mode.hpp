@@ -1,11 +1,9 @@
 #ifndef __VTX_APP_CORE_MODE_BASE_MODE__
 #define __VTX_APP_CORE_MODE_BASE_MODE__
 
-#include <util/generic/base_nameable.hpp>
-
 namespace VTX::App::Core::Mode
 {
-	class BaseMode : public Util::Generic::BaseNameable
+	class BaseMode
 	{
 	  public:
 		virtual ~BaseMode() = default;

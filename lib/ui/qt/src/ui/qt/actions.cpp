@@ -7,9 +7,9 @@
 #include <app/action/controller.hpp>
 #include <app/action/export.hpp>
 #include <app/application/scene.hpp>
+#include <app/component/controller.hpp>
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
-#include <app/core/controller/controller_system.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action
@@ -227,16 +227,18 @@ namespace VTX::UI::QT::Action
 
 		void Trackball::connect() const
 		{
-			QAction * const qAction = Factory::get<Trackball>();
+			QAction * const				 qAction = Factory::get<Trackball>();
+			App::Component::Controller & component
+				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
 
-			if ( App::CONTROLLER_SYSTEM().isControllerEnabled<App::Controller::Camera::Trackball>() )
+			if ( component.isControllerEnabled<App::Controller::Camera::Trackball>() )
 			{
 				qAction->setChecked( true );
 			}
 
-			App::CONTROLLER_SYSTEM().onControllerEnabled += [ qAction ]( const Name p_name )
+			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
 			{
-				if ( p_name == App::Controller::Camera::Trackball::NAME )
+				if ( p_hash == Util::hash<App::Controller::Camera::Trackball>() )
 				{
 					qAction->setChecked( true );
 				}
@@ -255,16 +257,18 @@ namespace VTX::UI::QT::Action
 
 		void Freefly::connect() const
 		{
-			QAction * const qAction = Factory::get<Freefly>();
+			QAction * const				 qAction = Factory::get<Freefly>();
+			App::Component::Controller & component
+				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
 
-			if ( App::CONTROLLER_SYSTEM().isControllerEnabled<App::Controller::Camera::Freefly>() )
+			if ( component.isControllerEnabled<App::Controller::Camera::Freefly>() )
 			{
 				qAction->setChecked( true );
 			}
 
-			App::CONTROLLER_SYSTEM().onControllerEnabled += [ qAction ]( const Name p_name )
+			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
 			{
-				if ( p_name == App::Controller::Camera::Freefly::NAME )
+				if ( p_hash == Util::hash<App::Controller::Camera::Freefly>() )
 				{
 					qAction->setChecked( true );
 				}

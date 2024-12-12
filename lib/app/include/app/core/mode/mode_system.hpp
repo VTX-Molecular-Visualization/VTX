@@ -17,28 +17,30 @@ namespace VTX::App::Core::Mode
 		{
 			if ( _current )
 			{
+				// Exit previous mode.
 				_current->exit();
-				onModeExit( _current->getName() );
+				onModeExit( _currentHash );
 				APP::onUpdate -= _currentUpdateCallback;
 			}
 
-			M * mode = _modes.getOrCreate<M>();
+			// Enter new mode.
+			M * mode	 = _modes.getOrCreate<M>();
+			_currentHash = Util::hash<M>();
 
 			_current = static_cast<BaseMode *>( mode );
 			_current->enter();
-			onModeEnter( _current->getName() );
+			onModeEnter( _currentHash );
 
-			// TODO: lambda or std::bind?
+			// Connect update callback.
 			_currentUpdateCallback = APP::onUpdate +=
 				[ mode ]( const float p_delta, const float p_elapsed ) { mode->update( p_delta, p_elapsed ); };
-			//_currentUpdateCallback = APP::onUpdate
-			//	+= std::bind( &M::update, mode, std::placeholders::_1, std::placeholders::_2 );
 		}
 
-		Util::Callback<Name> onModeEnter;
-		Util::Callback<Name> onModeExit;
+		Util::Callback<Hash> onModeEnter;
+		Util::Callback<Hash> onModeExit;
 
 	  private:
+		Hash			 _currentHash;
 		BaseMode *		 _current;
 		Util::CallbackId _currentUpdateCallback;
 
