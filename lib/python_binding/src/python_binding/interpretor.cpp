@@ -18,10 +18,10 @@ namespace VTX::PythonBinding
 		void initializePythonModule()
 		{
 			_vtxModule = pybind11::module_::import( "vtx_python_bin" );
-			return;
 
 			LogRedirection logger								= LogRedirection();
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
+			return;
 
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "vtx_python_bin.Core" );
 			// vtxCoreModule.attr( "_init" )( APP::getSystemHandlerPtr() );
