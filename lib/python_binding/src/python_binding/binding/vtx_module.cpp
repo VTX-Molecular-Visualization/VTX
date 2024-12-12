@@ -27,8 +27,8 @@ namespace VTX::PythonBinding
 		//);
 
 		// Class to redirect Python prints
-		pybind11::class_<LogRedirection>( m, "LogRedirection" )
-			// pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>( m, "LogRedirection" ) // TODO :
+		// pybind11::class_<LogRedirection>( m, "LogRedirection" )
+		pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>( m, "LogRedirection" ) // TODO :
 			// shared_ptr useful ?
 			.def( "write", &LogRedirection::write )
 			.def( "flush", &LogRedirection::flush );

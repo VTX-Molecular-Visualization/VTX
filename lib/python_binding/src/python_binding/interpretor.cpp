@@ -25,6 +25,7 @@ namespace VTX::PythonBinding
 			pybind11::module_ vtxCoreModule = pybind11::module_::import( "vtx_python_bin.Core" );
 			// vtxCoreModule.attr( "_init" )( APP::getSystemHandlerPtr() );
 
+			// TODO : Manage case where file not found (e.g. user moved it elsewhere)
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
 
