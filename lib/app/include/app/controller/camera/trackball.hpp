@@ -45,7 +45,7 @@ namespace VTX::App::Controller::Camera
 		};
 
 		Vec3f _velocity	  = VEC3F_ZERO;
-		bool  _needUpdate = false;
+		bool  _needUpdate = true;
 
 		void _updateElasticity( const float & );
 	};

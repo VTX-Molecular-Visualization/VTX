@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_ACTION_CONTROLLER__
-#define __VTX_UI_ACTION_CONTROLLER__
+#ifndef __VTX_APP_ACTION_CONTROLLER__
+#define __VTX_APP_ACTION_CONTROLLER__
 
 #include "app/core/controller/concepts.hpp"
 #include <app/application/scene.hpp>
@@ -12,53 +12,53 @@
 namespace VTX::App::Action::Controller
 {
 	template<Core::Controller::ConceptController C>
-	class EnableController final : public App::Core::Action::BaseAction
+	class EnableController final : public Core::Action::BaseAction
 	{
 	  public:
 		EnableController() {}
 		void execute()
 		{
 			Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
+				= ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
 			component.enableController<C>();
 		}
 	};
 
 	template<Core::Controller::ConceptController C>
-	class DisableController final : public App::Core::Action::BaseAction
+	class DisableController final : public Core::Action::BaseAction
 	{
 	  public:
 		DisableController() {}
 		void execute()
 		{
 			Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
+				= ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
 			component.disableController<C>();
 		}
 	};
 
-	class ToggleCameraController final : public App::Core::Action::BaseAction
+	class ToggleCameraController final : public Core::Action::BaseAction
 	{
 	  public:
 		ToggleCameraController() {}
 		void execute() override;
 	};
 
-	class SetCameraProjectionOrthographic final : public App::Core::Action::BaseAction
+	class SetCameraProjectionOrthographic final : public Core::Action::BaseAction
 	{
 	  public:
 		SetCameraProjectionOrthographic() {}
 		void execute() override;
 	};
 
-	class SetCameraProjectionPerspective final : public App::Core::Action::BaseAction
+	class SetCameraProjectionPerspective final : public Core::Action::BaseAction
 	{
 	  public:
 		SetCameraProjectionPerspective() {}
 		void execute() override;
 	};
 
-	class ToggleCameraProjection final : public App::Core::Action::BaseAction
+	class ToggleCameraProjection final : public Core::Action::BaseAction
 	{
 	  public:
 		ToggleCameraProjection() {}

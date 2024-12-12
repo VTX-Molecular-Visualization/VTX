@@ -1,6 +1,7 @@
 #include "app/vtx_app.hpp"
 #include "app/action/animation.hpp"
 #include "app/action/application.hpp"
+#include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
@@ -11,7 +12,6 @@
 #include "app/core/action/action_system.hpp"
 #include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/mode/mode_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
@@ -73,7 +73,7 @@ namespace VTX::App
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		MODE_SYSTEM().setMode<App::Mode::Visualization>();
+		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
 
 		onStart();
 		for ( Tool::BaseTool * const tool : _tools )

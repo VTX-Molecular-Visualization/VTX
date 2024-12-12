@@ -1,18 +1,23 @@
-#ifndef __VTX_APP_CORE_MODE_SYSTEM__
-#define __VTX_APP_CORE_MODE_SYSTEM__
+#ifndef __VTX_APP_COMPONENT_MODE__
+#define __VTX_APP_COMPONENT_MODE__
 
+#include "app/core/ecs/base_component.hpp"
+#include "app/core/mode/concepts.hpp"
 #include "app/vtx_app.hpp"
-#include "concepts.hpp"
+#include <util/callback.hpp>
 #include <util/collection.hpp>
+#include <util/hashing.hpp>
 #include <util/singleton.hpp>
 
-namespace VTX::App::Core::Mode
+namespace VTX::App::Component
 {
-
-	class ModeSystem
+	class Mode : public Core::ECS::BaseComponent
 	{
 	  public:
-		template<ConceptMode M>
+		Mode()				 = default;
+		Mode( const Mode & ) = delete;
+
+		template<Core::Mode::ConceptMode M>
 		inline void setMode()
 		{
 			if ( _current )
@@ -27,7 +32,7 @@ namespace VTX::App::Core::Mode
 			M * mode	 = _modes.getOrCreate<M>();
 			_currentHash = Util::hash<M>();
 
-			_current = static_cast<BaseMode *>( mode );
+			_current = static_cast<Core::Mode::BaseMode *>( mode );
 			_current->enter();
 			onModeEnter( _currentHash );
 
@@ -40,18 +45,12 @@ namespace VTX::App::Core::Mode
 		Util::Callback<Hash> onModeExit;
 
 	  private:
-		Hash			 _currentHash;
-		BaseMode *		 _current;
-		Util::CallbackId _currentUpdateCallback;
+		Hash				   _currentHash;
+		Core::Mode::BaseMode * _current;
+		Util::CallbackId	   _currentUpdateCallback;
 
-		Util::Collection<std::unique_ptr<BaseMode>> _modes;
+		Util::Collection<std::unique_ptr<Core::Mode::BaseMode>> _modes;
 	};
-
-} // namespace VTX::App::Core::Mode
-
-namespace VTX::App
-{
-	inline Core::Mode::ModeSystem & MODE_SYSTEM() { return Util::Singleton<Core::Mode::ModeSystem>::get(); }
-} // namespace VTX::App
+} // namespace VTX::App::Component
 
 #endif

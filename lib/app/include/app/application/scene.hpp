@@ -2,6 +2,7 @@
 #define __VTX_APP_APPLICATION_SCENE__
 
 #include "app/application/system/ecs_system.hpp"
+#include "app/component/mode.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/vtx_app.hpp"
@@ -128,6 +129,7 @@ namespace VTX::App::Application
 			}
 		}
 
+		// Camera.
 		inline const Component::Render::Camera & getCamera() const { return *_camera; }
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
 
