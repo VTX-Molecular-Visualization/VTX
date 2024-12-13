@@ -10,8 +10,16 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
+namespace VTX
+{
+	PythonBinding::Interpretor * g_TMP = nullptr;
+	PythonBinding::Interpretor & INTERPRETOR() { return *g_TMP; }
+	void						 INTERPRETOR( PythonBinding::Interpretor * _ ) { g_TMP = _; }
+} // namespace VTX
+
 namespace VTX::PythonBinding
 {
+
 	struct Interpretor::Impl
 	{
 	  public:

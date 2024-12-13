@@ -25,7 +25,8 @@ namespace VTX::App::Test::Util
 
 		void resetInterpretor();
 
-		Fixture f;
+		Fixture					   f;
+		PythonBinding::Interpretor iiii;
 	};
 } // namespace VTX::App::Test::Util
 #endif
