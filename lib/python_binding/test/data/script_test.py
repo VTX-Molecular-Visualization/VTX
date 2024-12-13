@@ -9,5 +9,5 @@ def openMultipleFile(p_folder, prefix):
             vtx_python_bin.Command.openFile(fullpath)
 
 
-print("Open all files in data starting with 7R7P")
-openMultipleFile(os.path.dirname(__file__), "7R7P")
+#print("Open all files in data starting with 7R7P")
+#openMultipleFile(os.path.dirname(__file__), "7R7P")
