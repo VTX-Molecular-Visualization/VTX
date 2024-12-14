@@ -288,7 +288,10 @@ namespace VTX::UI::QT::Action
 			name	= "Reset";
 			tip		= "Reset camera";
 			icon	= "sprite/camera/reset.png";
-			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::ResetCamera>(); };
+			trigger = []()
+			{
+				// App::ACTION_SYSTEM().execute<App::Action::Animation::ResetCamera>();
+			};
 		}
 
 	} // namespace Camera

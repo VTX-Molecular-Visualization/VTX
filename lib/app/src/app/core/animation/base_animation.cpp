@@ -3,37 +3,52 @@
 
 namespace VTX::App::Core::Animation
 {
-	BaseAnimation::BaseAnimation( const BaseAnimation & p_source )
+
+	BaseAnimation::BaseAnimation(
+		Util::Math::Transform & p_target,
+		const Vec3f				p_finalPosition,
+		const Quatf				p_finalRotation,
+		const float				p_duration
+	) :
+		_target( &p_target ), _finalPosition( p_finalPosition ), _finalRotation( p_finalRotation ),
+		_duration( p_duration )
 	{
-		_info	  = p_source._info;
-		onStopped = Util::Callback<>();
+		_startPosition = _target->getTranslationVector();
+		_startRotation = _target->getRotation();
 	}
-	BaseAnimation::BaseAnimation( const BaseAnimationInfo & p_info ) { _info = p_info; }
 
-	void BaseAnimation::update( float p_deltaTime )
+	void BaseAnimation::update( const float p_delta, const float p_elapsed )
 	{
-		_currentTime += p_deltaTime;
+		_currentTime += p_delta;
 
-		_internalUpdate( p_deltaTime );
-
-		if ( _currentTime >= _info.duration )
+		if ( _currentTime >= _duration )
+		{
 			stop();
+		}
 	}
 
 	void BaseAnimation::play()
 	{
-		_isRunning	 = true;
 		_currentTime = 0.f;
-		_enter();
+		_isRunning	 = true;
+
+		// Check threshold.
+		const float translationDistance = Util::Math::distance( _startPosition, _finalPosition );
+		const bool	skipAnimation = translationDistance < TRANSLATION_THRESHOLD && _startRotation == _finalRotation;
+		if ( skipAnimation )
+		{
+			stop();
+		}
 	}
 
 	void BaseAnimation::stop()
 	{
-		_isRunning = false;
-		_exit();
+		_target->setTranslation( _finalPosition );
+		_target->setRotation( _finalRotation );
 
-		onStopped();
+		_isRunning = false;
+
+		onEnd();
 	};
 
-	float BaseAnimation::getRatio() const { return Util::Math::clamp( 0.f, 1.f, _currentTime / _info.duration ); }
 } // namespace VTX::App::Core::Animation

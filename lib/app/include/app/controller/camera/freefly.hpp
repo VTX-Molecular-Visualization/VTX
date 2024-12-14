@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_INTERNAL_CONTROLLER_CAMERA_FREEFLY__
-#define __VTX_UI_INTERNAL_CONTROLLER_CAMERA_FREEFLY__
+#ifndef __VTX_APP_CONTROLLER_CAMERA_FREEFLY__
+#define __VTX_APP_CONTROLLER_CAMERA_FREEFLY__
 
 #include "app/core/controller/base_controller_camera.hpp"
 #include "app/core/input/key_mapping.hpp"

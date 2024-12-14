@@ -2,6 +2,8 @@
 #define __VTX_APP_COMPONENT_CONTROLLER__
 
 #include "app/application/scene.hpp"
+#include "app/controller/camera/animation.hpp"
+#include "app/core/animation/concepts.hpp"
 #include "app/core/controller/base_controller_camera.hpp"
 #include "app/core/controller/concepts.hpp"
 #include "app/core/ecs/base_component.hpp"
@@ -21,15 +23,15 @@ namespace VTX::App::Component
 		Controller()					 = default;
 		Controller( const Controller & ) = delete;
 
-		template<Core::Controller::ConceptController C>
-		void enableController()
+		template<Core::Controller::ConceptController C, typename... Args>
+		C * const enableController( Args &&... p_args )
 		{
 			Hash hash = Util::hash<C>();
 
 			assert( not _controllers.has<C>() );
 			assert( not _activeCallbacks.contains( hash ) );
 
-			C * const controller = _controllers.create<C>();
+			C * const controller = _controllers.create<C>( std::forward<Args>( p_args )... );
 
 			if constexpr ( std::derived_from<C, Core::Controller::BaseControllerCamera> )
 			{
@@ -45,6 +47,8 @@ namespace VTX::App::Component
 
 			// Trigger callbacks.
 			onControllerEnabled( Util::hash<C>() );
+
+			return controller;
 		}
 
 		template<Core::Controller::ConceptController C>
@@ -61,6 +65,19 @@ namespace VTX::App::Component
 			// Unregister update callback.
 			APP::onUpdate -= _activeCallbacks.at( hash );
 			_activeCallbacks.erase( hash );
+		}
+
+		template<Core::Animation::ConceptAnimation A, typename... Args>
+		void launchAnimation( Args &&... p_args )
+		{
+			auto * controller
+				= enableController<App::Controller::Camera::Animation<A>>( std::forward<Args>( p_args )... );
+
+			controller->onAnimationFinished() += [ this ]()
+			{
+				//
+				// disableController<App::Controller::Camera::Animation<A>>();
+			};
 		}
 
 		template<Core::Controller::ConceptController C>

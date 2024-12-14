@@ -10,7 +10,6 @@
 #include "app/component/render/proxy_system.hpp"
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
-#include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
@@ -51,10 +50,8 @@ namespace VTX::App
 		// Register loop events.
 		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
-		// TODO: remove polymorphism.
-		onUpdate +=
-			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };
-		//// Create Databases
+
+		// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();

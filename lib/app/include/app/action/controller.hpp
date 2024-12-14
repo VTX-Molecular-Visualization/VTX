@@ -44,6 +44,17 @@ namespace VTX::App::Action::Controller
 		void execute() override;
 	};
 
+	// TODO
+	/*
+	class LaunchCameraAnimationController final : public Core::Action::BaseAction
+	{
+	  public:
+		LaunchCameraAnimationController() {}
+		void execute() override;
+	};
+	*/
+
+	// TODO: move?
 	class SetCameraProjectionOrthographic final : public Core::Action::BaseAction
 	{
 	  public:
