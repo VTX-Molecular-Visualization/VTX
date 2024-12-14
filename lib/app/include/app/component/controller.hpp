@@ -4,10 +4,12 @@
 #include "app/application/scene.hpp"
 #include "app/controller/camera/animation.hpp"
 #include "app/core/animation/concepts.hpp"
-#include "app/core/controller/base_controller_camera.hpp"
+#include "app/core/controller/base_controller.hpp"
 #include "app/core/controller/concepts.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include "app/vtx_app.hpp"
+#include <app/application/system/ecs_system.hpp>
+#include <app/component/scene/transform_component.hpp>
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/hashing.hpp>
@@ -32,11 +34,7 @@ namespace VTX::App::Component
 			assert( not _activeCallbacks.contains( hash ) );
 
 			C * const controller = _controllers.create<C>( std::forward<Args>( p_args )... );
-
-			if constexpr ( std::derived_from<C, Core::Controller::BaseControllerCamera> )
-			{
-				static_cast<Core::Controller::BaseControllerCamera *>( controller )->setCamera( &SCENE().getCamera() );
-			}
+			controller->setCamera( &SCENE().getCamera() );
 
 			// Register update callback.
 			Util::CallbackId id = APP::onUpdate += [ controller ]( const float p_delta, const float p_elapsed )
@@ -73,10 +71,22 @@ namespace VTX::App::Component
 			auto * controller
 				= enableController<App::Controller::Camera::Animation<A>>( std::forward<Args>( p_args )... );
 
-			controller->onAnimationFinished() += [ this ]()
+			auto & transformComponent
+				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( SCENE().getCamera() );
+
+			// Connect animation callbacks.
+			controller->onAnimationProgress() +=
+				[ &transformComponent ]( const Vec3f & p_position, const Quatf & p_rotation )
 			{
-				//
-				// disableController<App::Controller::Camera::Animation<A>>();
+				transformComponent.setPosition( p_position );
+				transformComponent.setRotation( p_rotation );
+			};
+
+			controller->onAnimationEnd() += [ this ]( const Vec3f & p_target )
+			{
+				SCENE().getCamera().setTargetWorld( p_target );
+				//  TODO: this is deleting the controller where callback is called.
+				//  disableController<App::Controller::Camera::Animation<A>>();
 			};
 		}
 

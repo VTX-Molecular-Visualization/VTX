@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CONTROLLER_CAMERA_TRACKBALL__
 #define __VTX_APP_CONTROLLER_CAMERA_TRACKBALL__
 
-#include "app/core/controller/base_controller_camera.hpp"
+#include "app/core/controller/base_controller.hpp"
 #include "app/core/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <app/component/render/camera.hpp>
@@ -11,7 +11,7 @@
 namespace VTX::App::Controller::Camera
 {
 
-	class Trackball : public Core::Controller::BaseControllerCamera
+	class Trackball : public Core::Controller::BaseController
 	{
 	  public:
 		Trackball();

@@ -1,7 +1,6 @@
 #include "app/animation/orient.hpp"
 #include "app/mode/visualization.hpp"
 #include <app/application/system/ecs_system.hpp>
-#include <app/component/scene/transform_component.hpp>
 
 namespace VTX::App::Animation
 {
@@ -17,9 +16,16 @@ namespace VTX::App::Animation
 			Util::Math::toQuat( App::ECS_REGISTRY()
 									.getComponent<App::Component::Scene::Transform>( p_camera )
 									.getTransform()
-									.getRotation() )
+									.getRotation() ),
+			p_aabb.centroid()
 		)
 	{
+		// Set interpolation functions.
+		_positionFunc = []( const Vec3f & lhs, const Vec3f & rhs, float value )
+		{ return Util::Math::easeInOutInterpolation<Vec3f, float>( lhs, rhs, value ); };
+
+		_rotationFunc = []( const Quatf & lhs, const Quatf & rhs, float value )
+		{ return Util::Math::easeInOutInterpolation<Quatf, float>( lhs, rhs, value ); };
 	}
 
 	Vec3f Orient::computeCameraOrientPosition(
@@ -33,21 +39,4 @@ namespace VTX::App::Animation
 		return p_target.centroid() - ( p_forward * orientTargetDistance );
 	}
 
-	void Orient::update( const float p_delta, const float p_elapsed )
-	{
-		if ( not _isRunning )
-		{
-			return;
-		}
-
-		BaseAnimation::update( p_delta, p_elapsed );
-
-		const float ratio = getRatio();
-
-		const Vec3f newPos = Util::Math::easeInOutInterpolation( _startPosition, _finalPosition, ratio );
-		_target->setTranslation( newPos );
-
-		const Quatf newRotation = Util::Math::easeInOutInterpolation( _startRotation, _finalRotation, ratio );
-		_target->setRotation( newRotation );
-	}
 } // namespace VTX::App::Animation

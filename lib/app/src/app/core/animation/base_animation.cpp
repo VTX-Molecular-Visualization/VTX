@@ -5,26 +5,38 @@ namespace VTX::App::Core::Animation
 {
 
 	BaseAnimation::BaseAnimation(
-		Util::Math::Transform & p_target,
-		const Vec3f				p_finalPosition,
-		const Quatf				p_finalRotation,
-		const float				p_duration
+		const Util::Math::Transform & p_source,
+		const Vec3f &				  p_finalPosition,
+		const Quatf &				  p_finalRotation,
+		const Vec3f &				  p_target,
+		const float					  p_duration
 	) :
-		_target( &p_target ), _finalPosition( p_finalPosition ), _finalRotation( p_finalRotation ),
+		_finalPosition( p_finalPosition ), _finalRotation( p_finalRotation ), _target( p_target ),
 		_duration( p_duration )
 	{
-		_startPosition = _target->getTranslationVector();
-		_startRotation = _target->getRotation();
+		_startPosition = p_source.getTranslationVector();
+		_startRotation = p_source.getRotation();
 	}
 
 	void BaseAnimation::update( const float p_delta, const float p_elapsed )
 	{
+		if ( not _isRunning )
+		{
+			return;
+		}
+
 		_currentTime += p_delta;
 
 		if ( _currentTime >= _duration )
 		{
 			stop();
+			return;
 		}
+
+		const Vec3f position = _positionFunc( _startPosition, _finalPosition, getRatio() );
+		const Quatf rotation = _rotationFunc( _startRotation, _finalRotation, getRatio() );
+
+		onProgress( position, rotation );
 	}
 
 	void BaseAnimation::play()
@@ -43,12 +55,10 @@ namespace VTX::App::Core::Animation
 
 	void BaseAnimation::stop()
 	{
-		_target->setTranslation( _finalPosition );
-		_target->setRotation( _finalRotation );
-
 		_isRunning = false;
 
-		onEnd();
+		onProgress( _finalPosition, _finalRotation );
+		onEnd( _target );
 	};
 
 } // namespace VTX::App::Core::Animation

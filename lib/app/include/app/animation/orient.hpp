@@ -23,8 +23,6 @@ namespace VTX::App::Animation
 			const Util::Math::AABB & p_target,
 			const float				 p_orientZoomFactor = ORIENT_ZOOM_FACTOR
 		);
-
-		void update( const float, const float );
 	};
 } // namespace VTX::App::Animation
 #endif

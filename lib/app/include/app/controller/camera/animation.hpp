@@ -2,7 +2,7 @@
 #define __VTX_APP_CONTROLLER_CAMERA_ANIMATION__
 
 #include "app/core/animation/concepts.hpp"
-#include "app/core/controller/base_controller_camera.hpp"
+#include "app/core/controller/base_controller.hpp"
 #include "app/core/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <util/hashing.hpp>
@@ -10,7 +10,7 @@
 namespace VTX::App::Controller::Camera
 {
 	template<Core::Animation::ConceptAnimation A>
-	class Animation : public Core::Controller::BaseControllerCamera
+	class Animation : public Core::Controller::BaseController
 	{
 	  public:
 		template<typename... Args>
@@ -24,7 +24,8 @@ namespace VTX::App::Controller::Camera
 			_animation->update( p_deltaTime, p_elapsedTime );
 		}
 
-		inline Util::Callback<> & onAnimationFinished() { return _animation->onEnd; }
+		inline Util::Callback<const Vec3f &, const Quatf &> & onAnimationProgress() { return _animation->onProgress; }
+		inline Util::Callback<const Vec3f &> &				  onAnimationEnd() { return _animation->onEnd; }
 
 	  private:
 		std::unique_ptr<A> _animation;
