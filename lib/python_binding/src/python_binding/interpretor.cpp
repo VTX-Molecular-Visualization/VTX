@@ -26,8 +26,8 @@ namespace VTX::PythonBinding
 		void initializePythonModule()
 		{
 			// return;														// A1
-			_vtxModule = pybind11::module_::import( "vtx_python_bin" ); // Cause double free or corruption on linux
 			return;														// A2
+			_vtxModule = pybind11::module_::import( "vtx_python_bin" ); // Cause double free or corruption on linux
 			LogRedirection logger								= LogRedirection();
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
 			// return; // A3
