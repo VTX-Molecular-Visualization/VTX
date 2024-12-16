@@ -18,6 +18,7 @@ namespace VTX::PythonBinding
 {
 	PYBIND11_MODULE( vtx_python_bin, m )
 	{
+		/*
 		// return;							// A2E1
 		m.doc() = "VTX Python module."; // optional module docstring
 		// return;							// A2E2
@@ -34,7 +35,6 @@ namespace VTX::PythonBinding
 			.def( "write", &LogRedirection::write )
 			.def( "flush", &LogRedirection::flush );
 		// return; // A2E3
-
 		// Core module : Contains some core functions which must be hidden for users
 		pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );
 		// return; // A2E4
@@ -48,6 +48,7 @@ namespace VTX::PythonBinding
 		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
 		// return; // A2E6
 
+		 */
 		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
 		//  return; // A2E7
 		apiModule( vtxAPIModule );

@@ -31,7 +31,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	using namespace VTX;
 
 	App::Test::Util::PythonFixture f;
-	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
+	return;
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );

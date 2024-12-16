@@ -38,6 +38,12 @@ if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)
 	target_link_libraries(vtx_python_bin PUBLIC vtx_util)
 	target_link_libraries(vtx_python_bin PUBLIC vtx_core)
 	target_link_libraries(vtx_python_bin PUBLIC vtx_app)
+	
+	target_link_libraries(vtx_python_bin_no_opengl PRIVATE vtx_util)
+	target_link_libraries(vtx_python_bin_no_opengl PRIVATE vtx_core)
+	target_link_libraries(vtx_python_bin_no_opengl PRIVATE vtx_renderer_no_opengl)
+	target_link_libraries(vtx_python_bin_no_opengl PRIVATE poneyponey)
+	target_link_libraries(vtx_python_bin_no_opengl PRIVATE vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE poneyponey)

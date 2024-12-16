@@ -25,10 +25,9 @@ namespace VTX::PythonBinding
 	  public:
 		void initializePythonModule()
 		{
-			// return; // A1
+			// return;														// A1
 			_vtxModule = pybind11::module_::import( "vtx_python_bin" ); // Cause double free or corruption on linux
-
-			return; // A2
+			return;														// A2
 			LogRedirection logger								= LogRedirection();
 			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
 			// return; // A3
@@ -44,12 +43,20 @@ namespace VTX::PythonBinding
 			pybind11::eval_file( initCommandsFile.string() );
 			// return; // A5
 		}
+		~Impl()
+		{
+			// while ( _vtxModule.ref_count() > 0 )
+			//{
+			//	_vtxModule.dec_ref();
+			// }
+			// VTX_INFO( "module ref count : <{}>", _vtxModule.ref_count() );
+		}
 
 		void addBinder( std::unique_ptr<Binder> p_binder ) { _binders.emplace_back( std::move( p_binder ) ); }
 
 		void applyBinders()
 		{
-			// return;
+			return;
 			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "vtx_python_bin" );
 			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
 			// return; // A6
@@ -63,7 +70,7 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
-			// return;
+			return;
 			//  Import all commands
 			pybind11::exec( "from vtx_python_bin.Command import *" );
 			// return; // A8
@@ -104,7 +111,12 @@ namespace VTX::PythonBinding
 			throw e;
 		}
 	}
-	Interpretor::~Interpretor() {}
+	Interpretor::~Interpretor()
+	{
+		VTX_INFO( "Destroying interpreter ..." );
+		_impl.reset();
+		VTX_INFO( "interpreter destroyed ..." );
+	}
 
 	void Interpretor::init()
 	{

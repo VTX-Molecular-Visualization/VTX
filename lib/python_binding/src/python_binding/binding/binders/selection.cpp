@@ -10,14 +10,30 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
 #include <string>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::PythonBinding::Binding::Binders
 {
+	// TMP
+	void justForLinkingFunction()
+	{
+		API::Selection::SelectionInterpretor::clear();
+		API::Selection::SelectionInterpretor::addInterpretor( &API::Selection::SystemInterpretor::interpretSystems );
+		VTX::VTX_WARNING( "SHOULD NEVER BE CALLED AAAAAAH" );
+	}
+	//! TMP
+
 	void bind_selection( pybind11::module_ & p_apiModule )
 	{
 		using namespace VTX::App;
 
+		// TMP - We try to bamblooze compiler into never calling justForLinkingFunction at runtime, but still having it
+		// compiled.
+		if ( reinterpret_cast<uint64_t>( &p_apiModule ) == 0 )
+			justForLinkingFunction();
+		//! TMP
+		/* TMP
 		API::Selection::SelectionInterpretor::clear();
 		API::Selection::SelectionInterpretor::addInterpretor( &API::Selection::SystemInterpretor::interpretSystems );
 
@@ -46,5 +62,6 @@ namespace VTX::PythonBinding::Binding::Binders
 			.def( "getChains", &API::Selection::SelectionWrapper::getChains )
 			.def( "getResidues", &API::Selection::SelectionWrapper::getResidues )
 			.def( "getAtoms", &API::Selection::SelectionWrapper::getAtoms );
+		TMP */
 	}
 } // namespace VTX::PythonBinding::Binding::Binders
