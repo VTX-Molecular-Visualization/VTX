@@ -16,8 +16,9 @@ namespace VTX::App::Controller::Camera
 		template<typename... Args>
 		Animation( Args &&... p_args ) : _animation( std::make_unique<A>( std::forward<Args>( p_args )... ) )
 		{
-			_animation->play();
 		}
+
+		inline void play() { _animation->play(); }
 
 		inline void update( const float p_deltaTime, const float p_elapsedTime )
 		{

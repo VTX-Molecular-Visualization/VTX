@@ -19,8 +19,6 @@ namespace VTX::App::Component
 {
 	class Controller : public Core::ECS::BaseComponent
 	{
-		// TODO: use an unique camera controller?
-		// + aniamtion controller.
 	  public:
 		Controller()					 = default;
 		Controller( const Controller & ) = delete;
@@ -68,6 +66,12 @@ namespace VTX::App::Component
 		template<Core::Animation::ConceptAnimation A, typename... Args>
 		void launchAnimation( Args &&... p_args )
 		{
+			// Already running.
+			if ( _controllers.has<App::Controller::Camera::Animation<A>>() )
+			{
+				return;
+			}
+
 			auto * controller
 				= enableController<App::Controller::Camera::Animation<A>>( std::forward<Args>( p_args )... );
 
@@ -85,9 +89,10 @@ namespace VTX::App::Component
 			controller->onAnimationEnd() += [ this ]( const Vec3f & p_target )
 			{
 				SCENE().getCamera().setTargetWorld( p_target );
-				//  TODO: this is deleting the controller where callback is called.
-				//  disableController<App::Controller::Camera::Animation<A>>();
+				APP::onEndOfFrameOneShot += [ this ]() { disableController<App::Controller::Camera::Animation<A>>(); };
 			};
+
+			controller->play();
 		}
 
 		template<Core::Controller::ConceptController C>
