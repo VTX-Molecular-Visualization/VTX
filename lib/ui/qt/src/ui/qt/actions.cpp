@@ -4,6 +4,7 @@
 #include "ui/qt/dialog/open.hpp"
 #include <app/action/animation.hpp>
 #include <app/action/application.hpp>
+#include <app/action/camera.hpp>
 #include <app/action/controller.hpp>
 #include <app/action/export.hpp>
 #include <app/application/scene.hpp>
@@ -160,7 +161,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraProjection>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Orthographic::connect() const
@@ -191,7 +192,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraProjection>(); };
+			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Perspective::connect() const
@@ -288,10 +289,7 @@ namespace VTX::UI::QT::Action
 			name	= "Reset";
 			tip		= "Reset camera";
 			icon	= "sprite/camera/reset.png";
-			trigger = []()
-			{
-				// App::ACTION_SYSTEM().execute<App::Action::Animation::ResetCamera>();
-			};
+			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::Reset>(); };
 		}
 
 	} // namespace Camera

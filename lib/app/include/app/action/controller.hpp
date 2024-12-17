@@ -5,9 +5,6 @@
 #include <app/application/scene.hpp>
 #include <app/component/controller.hpp>
 #include <app/core/action/base_action.hpp>
-#include <util/collection.hpp>
-#include <util/types.hpp>
-#include <vector>
 
 namespace VTX::App::Action::Controller
 {
@@ -44,25 +41,5 @@ namespace VTX::App::Action::Controller
 		void execute() override;
 	};
 
-	class SetCameraProjectionOrthographic final : public Core::Action::BaseAction
-	{
-	  public:
-		SetCameraProjectionOrthographic() {}
-		void execute() override;
-	};
-
-	class SetCameraProjectionPerspective final : public Core::Action::BaseAction
-	{
-	  public:
-		SetCameraProjectionPerspective() {}
-		void execute() override;
-	};
-
-	class ToggleCameraProjection final : public Core::Action::BaseAction
-	{
-	  public:
-		ToggleCameraProjection() {}
-		void execute() override;
-	};
 } // namespace VTX::App::Action::Controller
 #endif
