@@ -17,8 +17,8 @@ namespace VTX::PythonBinding::API::Selection
 	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const pybind11::kwargs & p_kwargs )
 	{
 		_hasSystemParams = p_kwargs.contains( "mol_n" ) || p_kwargs.contains( "mol_i" );
-		moleculeNames	 = _getStringListInKwargs( p_kwargs, "mol_n" );
-		moleculeIndexes	 = _getIndexListInKwargs( p_kwargs, "mol_i" );
+		systemNames	 = _getStringListInKwargs( p_kwargs, "mol_n" );
+		systemIndexes	 = _getIndexListInKwargs( p_kwargs, "mol_i" );
 
 		_hasChainParams = p_kwargs.contains( "chain_n" ) || p_kwargs.contains( "chain_i" );
 		chainNames		= _getStringListInKwargs( p_kwargs, "chain_n" );
@@ -83,24 +83,24 @@ namespace VTX::PythonBinding::API::Selection
 			return;
 		}
 
-		std::set<System *> molecules = _getSystems( kwargs );
+		std::set<System *> systems = _getSystems( kwargs );
 		const bool		   selectFullSystem
 			= !kwargs.hasSpecifyChain() && !kwargs.hasSpecifyResidue() && !kwargs.hasSpecifyAtom();
 
-		for ( System * const molecule : molecules )
+		for ( System * const system : systems )
 		{
 			App::Component::Scene::Selectable & selectableComponent
-				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Selectable>( *molecule );
+				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Selectable>( *system );
 
-			App::Application::Selection::SystemData & moleculeSelectionData
+			App::Application::Selection::SystemData & systemSelectionData
 				= p_selection.select<App::Application::Selection::SystemData>(
 					selectableComponent, App::Application::Selection::AssignmentType::APPEND
 				);
 
 			if ( !selectFullSystem )
 			{
-				moleculeSelectionData.clear();
-				_selectChains( kwargs, moleculeSelectionData );
+				systemSelectionData.clear();
+				_selectChains( kwargs, systemSelectionData );
 			}
 		}
 	}
@@ -109,36 +109,36 @@ namespace VTX::PythonBinding::API::Selection
 	{
 		using namespace App;
 
-		std::set<Component::Chemistry::System *> molecules = std::set<Component::Chemistry::System *>();
+		std::set<Component::Chemistry::System *> systems = std::set<Component::Chemistry::System *>();
 
 		if ( p_kwargs.hasSpecifySystem() )
 		{
-			const std::vector<std::string> & moleculeNames	 = p_kwargs.moleculeNames;
-			const std::vector<size_t>		 moleculeIndexes = p_kwargs.moleculeIndexes;
+			const std::vector<std::string> & systemNames	 = p_kwargs.systemNames;
+			const std::vector<size_t>		 systemIndexes = p_kwargs.systemIndexes;
 
-			for ( const std::string & molName : moleculeNames )
+			for ( const std::string & molName : systemNames )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molName );
+				App::Core::ECS::BaseEntity systemEntity = App::SCENE().getItem( molName );
 
-				if ( !ECS_REGISTRY().isValid( moleculeEntity ) )
+				if ( !ECS_REGISTRY().isValid( systemEntity ) )
 					continue;
 
-				Component::Chemistry::System & moleculeComponent
-					= ECS_REGISTRY().getComponent<System>( moleculeEntity );
+				Component::Chemistry::System & systemComponent
+					= ECS_REGISTRY().getComponent<System>( systemEntity );
 
-				molecules.emplace( &moleculeComponent );
+				systems.emplace( &systemComponent );
 			}
-			for ( const size_t molIndex : moleculeIndexes )
+			for ( const size_t molIndex : systemIndexes )
 			{
-				App::Core::ECS::BaseEntity moleculeEntity = App::SCENE().getItem( molIndex );
+				App::Core::ECS::BaseEntity systemEntity = App::SCENE().getItem( molIndex );
 
-				if ( !ECS_REGISTRY().isValid( moleculeEntity ) )
+				if ( !ECS_REGISTRY().isValid( systemEntity ) )
 					continue;
 
-				Component::Chemistry::System & moleculeComponent
-					= ECS_REGISTRY().getComponent<System>( moleculeEntity );
+				Component::Chemistry::System & systemComponent
+					= ECS_REGISTRY().getComponent<System>( systemEntity );
 
-				molecules.emplace( &moleculeComponent );
+				systems.emplace( &systemComponent );
 			}
 		}
 		else
@@ -147,68 +147,68 @@ namespace VTX::PythonBinding::API::Selection
 
 			for ( const App::Core::ECS::BaseEntity entity : view )
 			{
-				Component::Chemistry::System & moleculeComponent = ECS_REGISTRY().getComponent<System>( entity );
+				Component::Chemistry::System & systemComponent = ECS_REGISTRY().getComponent<System>( entity );
 
-				molecules.emplace( &moleculeComponent );
+				systems.emplace( &systemComponent );
 			}
 		}
 
-		return molecules;
+		return systems;
 	}
 
 	void SystemInterpretor::_selectChains(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_moleculeSelectionData
+		App::Application::Selection::SystemData & p_systemSelectionData
 	)
 	{
-		System &   molecule		   = p_moleculeSelectionData.getSystem();
+		System &   system		   = p_systemSelectionData.getSystem();
 		const bool selectFullChain = !p_kwargs.hasSpecifyResidue() && !p_kwargs.hasSpecifyAtom();
 
 		if ( p_kwargs.hasSpecifyChain() )
 		{
 			for ( const std::string & chainName : p_kwargs.chainNames )
 			{
-				std::vector<Chain *> validChains = App::Helper::Chemistry::findChainsByName( molecule, chainName );
+				std::vector<Chain *> validChains = App::Helper::Chemistry::findChainsByName( system, chainName );
 
 				for ( Chain * const chain : validChains )
 				{
 					if ( selectFullChain )
-						p_moleculeSelectionData.selectFullChain( *chain );
+						p_systemSelectionData.selectFullChain( *chain );
 					else
-						p_moleculeSelectionData.referenceChain( *chain );
+						p_systemSelectionData.referenceChain( *chain );
 				}
 			}
 
 			for ( const size_t chainIndex : p_kwargs.chainIndexes )
 			{
-				Chain * const chain = molecule.getChain( chainIndex );
+				Chain * const chain = system.getChain( chainIndex );
 
 				if ( selectFullChain )
-					p_moleculeSelectionData.selectFullChain( *chain );
+					p_systemSelectionData.selectFullChain( *chain );
 				else
-					p_moleculeSelectionData.referenceChain( *chain );
+					p_systemSelectionData.referenceChain( *chain );
 			}
 		}
 		else if ( selectFullChain )
 		{
-			for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
+			for ( const std::unique_ptr<Chain> & chain : system.getChains() )
 			{
-				p_moleculeSelectionData.selectFullChain( *chain );
+				p_systemSelectionData.selectFullChain( *chain );
 			}
 		}
 
 		if ( !selectFullChain )
-			_selectResidues( p_kwargs, p_moleculeSelectionData );
+			_selectResidues( p_kwargs, p_systemSelectionData );
 	}
 
 	void SystemInterpretor::_selectResidues(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_moleculeSelectionData
+		App::Application::Selection::SystemData & p_systemSelectionData
 	)
 	{
-		const System &													molecule = p_moleculeSelectionData.getSystem();
+		const System &													system = p_systemSelectionData.getSystem();
 		const App::Application::Selection::SystemData::IndexRangeList & chainIDs
-			= p_moleculeSelectionData.getChainIds();
+			= p_systemSelectionData.getChainIds();
 
 		const bool selectFullResidue = !p_kwargs.hasSpecifyAtom();
 
@@ -216,7 +216,7 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			if ( chainIDs.isEmpty() )
 			{
-				for ( const std::unique_ptr<Chain> & chain : molecule.getChains() )
+				for ( const std::unique_ptr<Chain> & chain : system.getChains() )
 				{
 					if ( chain == nullptr )
 						continue;
@@ -228,29 +228,29 @@ namespace VTX::PythonBinding::API::Selection
 
 						if ( residues.size() > 0 )
 						{
-							p_moleculeSelectionData.referenceChain( *chain );
+							p_systemSelectionData.referenceChain( *chain );
 
 							for ( Residue * const residue : residues )
 							{
 								if ( selectFullResidue )
-									p_moleculeSelectionData.selectFullResidue( *residue );
+									p_systemSelectionData.selectFullResidue( *residue );
 								else
-									p_moleculeSelectionData.referenceResidue( *residue );
+									p_systemSelectionData.referenceResidue( *residue );
 							}
 						}
 					}
 				}
 
-				for ( const std::unique_ptr<Residue> & residue : molecule.getResidues() )
+				for ( const std::unique_ptr<Residue> & residue : system.getResidues() )
 				{
 					for ( const size_t residueIndex : p_kwargs.residueIndexes )
 					{
 						if ( residue->getIndexInOriginalChain() == residueIndex )
 						{
 							if ( selectFullResidue )
-								p_moleculeSelectionData.selectFullResidue( *residue );
+								p_systemSelectionData.selectFullResidue( *residue );
 							else
-								p_moleculeSelectionData.referenceResidue( *residue );
+								p_systemSelectionData.referenceResidue( *residue );
 						}
 					}
 				}
@@ -259,7 +259,7 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				for ( const size_t chainID : chainIDs )
 				{
-					const Chain * chainPtr = molecule.getChain( chainID );
+					const Chain * chainPtr = system.getChain( chainID );
 					const Chain & chain	   = *chainPtr;
 
 					for ( const std::string & residueName : p_kwargs.residueNames )
@@ -270,9 +270,9 @@ namespace VTX::PythonBinding::API::Selection
 						for ( Residue * const residue : residues )
 						{
 							if ( selectFullResidue )
-								p_moleculeSelectionData.selectFullResidue( *residue );
+								p_systemSelectionData.selectFullResidue( *residue );
 							else
-								p_moleculeSelectionData.referenceResidue( *residue );
+								p_systemSelectionData.referenceResidue( *residue );
 						}
 					}
 
@@ -283,9 +283,9 @@ namespace VTX::PythonBinding::API::Selection
 							if ( residue.getIndexInOriginalChain() == residueIndex )
 							{
 								if ( selectFullResidue )
-									p_moleculeSelectionData.selectFullResidue( residue );
+									p_systemSelectionData.selectFullResidue( residue );
 								else
-									p_moleculeSelectionData.referenceResidue( residue );
+									p_systemSelectionData.referenceResidue( residue );
 
 								break;
 							}
@@ -297,36 +297,36 @@ namespace VTX::PythonBinding::API::Selection
 
 		if ( !selectFullResidue )
 		{
-			_selectAtoms( p_kwargs, p_moleculeSelectionData );
+			_selectAtoms( p_kwargs, p_systemSelectionData );
 		}
 	}
 
 	void SystemInterpretor::_selectAtoms(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_moleculeSelectionData
+		App::Application::Selection::SystemData & p_systemSelectionData
 	)
 	{
-		System & molecule = p_moleculeSelectionData.getSystem();
+		System & system = p_systemSelectionData.getSystem();
 
 		const App::Application::Selection::SystemData::IndexRangeList & residueIDs
-			= p_moleculeSelectionData.getResidueIds();
+			= p_systemSelectionData.getResidueIds();
 
 		if ( residueIDs.isEmpty() )
 		{
 			const App::Application::Selection::SystemData::IndexRangeList & chainIDs
-				= p_moleculeSelectionData.getChainIds();
+				= p_systemSelectionData.getChainIds();
 
 			if ( chainIDs.isEmpty() )
 			{
 				_addAtomsFollowingKwargs(
-					0, atom_index_t( molecule.getAtoms().size() - 1 ), molecule, p_moleculeSelectionData, p_kwargs
+					0, atom_index_t( system.getAtoms().size() - 1 ), system, p_systemSelectionData, p_kwargs
 				);
 			}
 			else
 			{
 				for ( const size_t chainID : chainIDs )
 				{
-					const Chain * const chain = molecule.getChain( chainID );
+					const Chain * const chain = system.getChain( chainID );
 
 					if ( chain == nullptr )
 						continue;
@@ -334,8 +334,8 @@ namespace VTX::PythonBinding::API::Selection
 					_addAtomsFollowingKwargs(
 						chain->getIndexFirstAtom(),
 						chain->getIndexLastAtom(),
-						molecule,
-						p_moleculeSelectionData,
+						system,
+						p_systemSelectionData,
 						p_kwargs
 					);
 				}
@@ -344,11 +344,11 @@ namespace VTX::PythonBinding::API::Selection
 		else
 		{
 			const App::Application::Selection::SystemData::IndexRangeList & residueIDs
-				= p_moleculeSelectionData.getResidueIds();
+				= p_systemSelectionData.getResidueIds();
 
 			for ( const size_t residueID : residueIDs )
 			{
-				const Residue * const residue = molecule.getResidue( residueID );
+				const Residue * const residue = system.getResidue( residueID );
 
 				if ( residue == nullptr )
 					continue;
@@ -356,8 +356,8 @@ namespace VTX::PythonBinding::API::Selection
 				_addAtomsFollowingKwargs(
 					residue->getIndexFirstAtom(),
 					residue->getIndexLastAtom(),
-					molecule,
-					p_moleculeSelectionData,
+					system,
+					p_systemSelectionData,
 					p_kwargs
 				);
 			}
@@ -367,14 +367,14 @@ namespace VTX::PythonBinding::API::Selection
 	void SystemInterpretor::_addAtomsFollowingKwargs(
 		const atom_index_t						  p_firstAtom,
 		const atom_index_t						  p_lastAtom,
-		System &								  p_molecule,
-		App::Application::Selection::SystemData & p_moleculeSelectionData,
+		System &								  p_system,
+		App::Application::Selection::SystemData & p_systemSelectionData,
 		const InterpretedKwargs &				  p_kwargs
 	)
 	{
 		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
 		{
-			Atom * const atom = p_molecule.getAtom( atomID );
+			Atom * const atom = p_system.getAtom( atomID );
 
 			if ( atom == nullptr )
 				continue;
@@ -383,7 +383,7 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				if ( atom->getName() == atomName )
 				{
-					p_moleculeSelectionData.selectAtom( *atom );
+					p_systemSelectionData.selectAtom( *atom );
 					break;
 				}
 			}
@@ -392,7 +392,7 @@ namespace VTX::PythonBinding::API::Selection
 			{
 				if ( atom->getSymbol() == atomSymbol )
 				{
-					p_moleculeSelectionData.selectAtom( *atom );
+					p_systemSelectionData.selectAtom( *atom );
 					break;
 				}
 			}

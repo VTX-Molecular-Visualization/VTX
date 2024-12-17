@@ -26,8 +26,8 @@ namespace VTX::PythonBinding::API::Selection
 			bool hasSpecifyResidue() const;
 			bool hasSpecifyAtom() const;
 
-			std::vector<std::string> moleculeNames;
-			std::vector<size_t>		 moleculeIndexes;
+			std::vector<std::string> systemNames;
+			std::vector<size_t>		 systemIndexes;
 
 			std::vector<std::string> chainNames;
 			std::vector<size_t>		 chainIndexes;
@@ -56,24 +56,24 @@ namespace VTX::PythonBinding::API::Selection
 
 		static void _selectChains(
 			const InterpretedKwargs &				  p_kwargs,
-			App::Application::Selection::SystemData & p_moleculeSelectionData
+			App::Application::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _selectResidues(
 			const InterpretedKwargs &				  p_kwargs,
-			App::Application::Selection::SystemData & p_moleculeSelectionData
+			App::Application::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _selectAtoms(
 			const InterpretedKwargs &				  p_kwargs,
-			App::Application::Selection::SystemData & p_moleculeSelectionData
+			App::Application::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _addAtomsFollowingKwargs(
 			const atom_index_t						  p_firstAtom,
 			const atom_index_t						  p_lastAtom,
-			App::Component::Chemistry::System &		  p_molecule,
-			App::Application::Selection::SystemData & p_moleculeSelectionData,
+			App::Component::Chemistry::System &		  p_system,
+			App::Application::Selection::SystemData & p_systemSelectionData,
 			const InterpretedKwargs &				  p_kwargs
 		);
 	};

@@ -37,14 +37,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );
 
-	const FilePath moleculePath
+	const FilePath systemPath
 		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
-	App::Action::Application::Open openAction = App::Action::Application::Open( moleculePath );
+	App::Action::Application::Open openAction = App::Action::Application::Open( systemPath );
 	openAction.execute();
 
 	std::stringstream ssCommandOpen = std::stringstream();
-	ssCommandOpen << "openFile( path=" << moleculePath << " )";
+	ssCommandOpen << "openFile( path=" << systemPath << " )";
 
 	interpretor.runCommand( ssCommandOpen.str() );
 	REQUIRE( App::SCENE().getItemCount() == 2 );
@@ -52,7 +52,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	try
 	{
 		std::stringstream ssBadCommandOpen = std::stringstream();
-		ssBadCommandOpen << "openFile( tirelipimpon=" << moleculePath << " )";
+		ssBadCommandOpen << "openFile( tirelipimpon=" << systemPath << " )";
 		interpretor.runCommand( ssBadCommandOpen.str() );
 	}
 	catch ( const CommandException & e )
@@ -133,10 +133,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath
+	const FilePath systemPath
 		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
-	VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( moleculePath );
+	VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
 	openAction.execute();
 
 	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };

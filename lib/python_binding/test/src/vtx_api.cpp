@@ -17,13 +17,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 	using namespace VTX;
 	return;
 	App::Test::Util::PythonFixture f;
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath
+	const FilePath systemPath
 		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
-	App::Action::Scene::LoadSystem loadSystemAction = App::Action::Scene::LoadSystem( moleculePath );
+	App::Action::Scene::LoadSystem loadSystemAction = App::Action::Scene::LoadSystem( systemPath );
 	loadSystemAction.execute();
 	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / "test_api.py";
 	std::stringstream ssCommandRun = std::stringstream();

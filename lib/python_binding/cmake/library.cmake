@@ -21,8 +21,10 @@ target_include_directories(vtx_python_binding_test PRIVATE "${CMAKE_CURRENT_LIST
 
 configure_target(vtx_python_binding_test)
 
-pybind11_add_module(vtx_python_bin SHARED "${CMAKE_CURRENT_LIST_DIR}/../src/python_binding/binding/vtx_module.cpp")
-pybind11_add_module(vtx_python_bin_no_opengl SHARED "${CMAKE_CURRENT_LIST_DIR}/../src/python_binding/binding/vtx_module.cpp")
+pybind11_add_module(vtx_python_bin SHARED "${CMAKE_CURRENT_LIST_DIR}/../module/vtx_module.cpp")
+pybind11_add_module(vtx_python_bin_no_opengl SHARED "${CMAKE_CURRENT_LIST_DIR}/../module/vtx_module.cpp")
+target_compile_definitions(vtx_python_bin_no_opengl PUBLIC NO_OPENGL=1)
+target_compile_definitions(vtx_python_binding_no_opengl PUBLIC NO_OPENGL=1)
 
 if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)
 	target_link_libraries(vtx_python_binding PUBLIC vtx_util)
@@ -100,10 +102,12 @@ target_link_libraries(vtx_python_bin PUBLIC vtx_python_binding)
 target_link_libraries(vtx_python_bin PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_bin PRIVATE pybind11::embed)
 
-target_link_libraries(vtx_python_bin_no_opengl PUBLIC vtx_python_binding_no_opengl)
 target_link_libraries(vtx_python_bin_no_opengl PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_bin_no_opengl PRIVATE pybind11::embed)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_bin_no_opengl) # TODO : Useful ?
+
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding_no_opengl)
+target_link_libraries(vtx_python_bin_no_opengl PUBLIC vtx_python_binding_no_opengl)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_bin_no_opengl) 
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
 # All other find_package call

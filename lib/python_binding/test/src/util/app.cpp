@@ -36,11 +36,11 @@ namespace VTX::App::Test::Util
 		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
-	void PythonFixture::loadSystem( const std::string & p_moleculePath )
+	void PythonFixture::loadSystem( const std::string & p_systemPath )
 	{
 		// Create SystemEntity
-		const FilePath						moleculePath = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
-		VTX::App::Action::Scene::LoadSystem openAction	 = VTX::App::Action::Scene::LoadSystem( moleculePath );
+		const FilePath						systemPath = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
+		VTX::App::Action::Scene::LoadSystem openAction	 = VTX::App::Action::Scene::LoadSystem( systemPath );
 		openAction.execute();
 	}
 

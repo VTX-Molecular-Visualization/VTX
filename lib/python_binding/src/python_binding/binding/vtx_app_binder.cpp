@@ -1,6 +1,7 @@
 #include "python_binding/binding/vtx_app_binder.hpp"
 #include "python_binding/action.hpp"
 #include "python_binding/binder.hpp"
+#include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/wrapper/arg.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
@@ -35,9 +36,9 @@ namespace VTX::PythonBinding::Binding
 
 	void VTXAppBinder::importHeaders()
 	{
-		_importObject( "vtx_python_bin.API", "select" );
-		_importObject( "vtx_python_bin.API", "intersect" );
-		_importObject( "vtx_python_bin.API", "exclusive" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "select" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "intersect" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "exclusive" );
 	}
 
 } // namespace VTX::PythonBinding::Binding

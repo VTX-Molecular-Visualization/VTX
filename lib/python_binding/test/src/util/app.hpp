@@ -17,7 +17,7 @@ namespace VTX::App::Test::Util
 		inline static const std::string MOLECULE_TEST_NAME	   = "1AGA";
 		inline static const std::string MOLECULE_TEST_NAME_EXT = MOLECULE_TEST_NAME + ".mmtf";
 
-		static void loadSystem( const std::string & p_moleculePath );
+		static void loadSystem( const std::string & p_systemPath );
 		static void loadTestSystem();
 
 		PythonFixture();

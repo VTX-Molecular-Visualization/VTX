@@ -17,7 +17,7 @@ class VTXPythonBindingRecipe(ConanFile):
     generators = "CMakeDeps", "CMakeToolchain"
     # generators =  "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
+    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
     
     def _generated_cmake_prefix(self):
         return "pybind11-"

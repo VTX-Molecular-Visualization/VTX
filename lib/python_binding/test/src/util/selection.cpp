@@ -53,9 +53,9 @@ namespace VTX::App::Test::Util
 
 		std::unique_ptr<SystemData> res = std::make_unique<SystemData>( selectableComponent );
 
-		const bool moleculeFullySelected = p_chains.size() == 0 && p_residues.size() == 0 && p_atoms.size() == 0;
+		const bool systemFullySelected = p_chains.size() == 0 && p_residues.size() == 0 && p_atoms.size() == 0;
 
-		if ( !moleculeFullySelected )
+		if ( !systemFullySelected )
 		{
 			res->clear();
 
