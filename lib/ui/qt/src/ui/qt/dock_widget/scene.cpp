@@ -1,4 +1,5 @@
 #include "ui/qt/dock_widget/scene.hpp"
+#include <app/action/visibility.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
@@ -163,42 +164,54 @@ namespace VTX::UI::QT::DockWidget
 
 					assert( _systemComponents.contains( topLevelWidget ) );
 
-					// TODO: do not access component, use actions!
+					using namespace App::Action::Visibility;
 					switch ( depth )
 					{
 					case E_DEPTH::SYSTEM:
 					{
-						// Set system visibility.
-						_systemComponents.at( topLevelWidget )->setVisible( checked );
+						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::SYSTEM>>(
+							_systemComponents.at( topLevelWidget ), checked, std::nullopt
+						);
 						break;
 					}
 					case E_DEPTH::CHAIN:
 					{
-						// Set chain visibility.
-						auto * chain = _systemComponents.at( topLevelWidget )->getChain( widgetData );
-						assert( chain );
-						chain->setVisible( checked );
+						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::CHAIN>>(
+							_systemComponents.at( topLevelWidget ), checked, widgetData
+						);
 						break;
 					}
 					case E_DEPTH::RESIDUE:
 					{
-						// Set residue visibility.
-						auto * residue = _systemComponents.at( topLevelWidget )->getResidue( widgetData );
-						assert( residue );
-						residue->setVisible( checked );
+						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::RESIDUE>>(
+							_systemComponents.at( topLevelWidget ), checked, widgetData
+						);
 						break;
 					}
 					case E_DEPTH::ATOM:
 					{
-						// Set atom visibility.
-						auto * atom = _systemComponents.at( topLevelWidget )->getAtom( atom_index_t( widgetData ) );
-						assert( atom );
-						atom->setVisible( checked );
+						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::ATOM>>(
+							_systemComponents.at( topLevelWidget ), checked, widgetData
+						);
 						break;
 					}
 					default: assert( true ); break;
 					}
 				}
+			}
+		);
+
+		// doubleClicked.
+		connect(
+			_tree,
+			&QTreeWidget::itemDoubleClicked,
+			this,
+			[ this ]( QTreeWidgetItem * const p_item, const int p_column )
+			{
+				WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+				auto [ depth, topLevelWidget ] = _getDepth( p_item );
+
+				assert( _systemComponents.contains( topLevelWidget ) );
 			}
 		);
 

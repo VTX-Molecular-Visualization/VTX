@@ -281,7 +281,7 @@ namespace VTX::UI::QT::Action
 			name	= "Orient";
 			tip		= "Orient camera on selection";
 			icon	= "sprite/camera/orient.png";
-			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() ); };
+			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::Orient>(); };
 		}
 
 		Reset::Reset()

@@ -2,6 +2,7 @@
 #define __VTX_UI_ACTION_ANIMATION__
 
 #include "app/animation/orient.hpp"
+#include "app/application/scene.hpp"
 #include <app/core/action/base_action.hpp>
 #include <util/math/aabb.hpp>
 #include <util/types.hpp>
@@ -12,6 +13,7 @@ namespace VTX::App::Action::Animation
 	{
 	  public:
 		Orient( const Util::Math::AABB & p_target ) : _target( p_target ) {}
+		Orient() : _target( App::SCENE().getAABB() ) {}
 
 		void execute() override;
 
