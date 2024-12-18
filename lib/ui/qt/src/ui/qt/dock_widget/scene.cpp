@@ -1,4 +1,5 @@
 #include "ui/qt/dock_widget/scene.hpp"
+#include <app/action/animation.hpp>
 #include <app/action/visibility.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
@@ -201,7 +202,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		// doubleClicked.
+		// itemDoubleClicked.
 		connect(
 			_tree,
 			&QTreeWidget::itemDoubleClicked,
@@ -212,6 +213,29 @@ namespace VTX::UI::QT::DockWidget
 				auto [ depth, topLevelWidget ] = _getDepth( p_item );
 
 				assert( _systemComponents.contains( topLevelWidget ) );
+
+				using namespace App::Action::Animation;
+				switch ( depth )
+				{
+				case E_DEPTH::SYSTEM:
+				{
+					// App::ACTION_SYSTEM().execute<Orient>( _systemComponents.at( topLevelWidget )->getAABB() );
+					break;
+				}
+				case E_DEPTH::CHAIN:
+				{
+					break;
+				}
+				case E_DEPTH::RESIDUE:
+				{
+					break;
+				}
+				case E_DEPTH::ATOM:
+				{
+					break;
+				}
+				default: assert( true ); break;
+				}
 			}
 		);
 

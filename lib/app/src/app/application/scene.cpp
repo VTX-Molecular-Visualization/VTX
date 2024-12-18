@@ -227,8 +227,10 @@ namespace VTX::App::Application
 
 	const Util::Math::AABB & Scene::getAABB()
 	{
-		if ( !_aabb.isValid() )
+		if ( not _aabb.isValid() )
+		{
 			_computeAABB();
+		}
 
 		return _aabb;
 	}
@@ -241,7 +243,7 @@ namespace VTX::App::Application
 
 		for ( const Core::ECS::BaseEntity entity : view )
 		{
-			const Component::Scene::AABB & aabbComponent = view.getComponent<Component::Scene::AABB>( entity );
+			Component::Scene::AABB & aabbComponent = ECS_REGISTRY().getComponent<Component::Scene::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
 	}
