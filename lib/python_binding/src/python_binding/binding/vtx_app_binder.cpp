@@ -5,13 +5,14 @@
 #include "python_binding/wrapper/arg.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::PythonBinding::Binding
 {
 	void VTXAppBinder::bind( PyTXModule & p_vtxmodule )
 	{
 		Wrapper::Module commands = p_vtxmodule.commands();
-
+		VTX::VTX_INFO( "Applying binding on module." );
 		commands.bindAction<App::Action::Application::Open, const std::string &>(
 			"openFile", "Open files at given path.", Wrapper::Arg( "path" )
 		);

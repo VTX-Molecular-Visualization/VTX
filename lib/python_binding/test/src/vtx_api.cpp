@@ -15,7 +15,6 @@
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 {
 	using namespace VTX;
-	return;
 	App::Test::Util::PythonFixture f;
 	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
 	interpretor.init();
@@ -33,4 +32,5 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
 	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
+	// TODO : idk maybe test somethin'
 };

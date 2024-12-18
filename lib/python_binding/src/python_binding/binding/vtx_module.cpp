@@ -26,4 +26,13 @@ namespace VTX::PythonBinding
 #endif // NO_OPENGL
 	}
 
+	const char * vtx_initialization_script_name()
+	{
+#ifdef NO_OPENGL
+		return "vtx_module_init_no_opengl.py";
+#else
+		return "vtx_module_init.py";
+#endif // NO_OPENGL
+	}
+
 } // namespace VTX::PythonBinding

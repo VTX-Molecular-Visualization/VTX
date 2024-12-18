@@ -31,9 +31,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	using namespace VTX;
 
 	App::Test::Util::PythonFixture f;
-	return;
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
-	interpretor.init();
+	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
 
 	REQUIRE( App::SCENE().getItemCount() == 0 );
 
@@ -57,6 +55,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	}
 	catch ( const CommandException & e )
 	{
+		CHECK( true );
 		VTX_INFO( "CommandException : {}", e.what() );
 	}
 	catch ( const std::exception & e )
@@ -73,6 +72,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	}
 	catch ( const CommandException & e )
 	{
+		CHECK( false );
 		VTX_INFO( "{}", e.what() );
 	}
 
@@ -84,6 +84,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	}
 	catch ( const ScriptException & e )
 	{
+		CHECK( true );
 		VTX_INFO( "{}", e.what() );
 	}
 	catch ( const std::exception & e )

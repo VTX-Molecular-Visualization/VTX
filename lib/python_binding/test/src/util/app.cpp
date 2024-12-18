@@ -15,12 +15,12 @@ namespace VTX::App::Test::Util
 	PythonFixture::PythonFixture()
 	{
 		INTERPRETOR( &iiii );
+		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		INTERPRETOR().init();
 
 		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 		std::filesystem::create_directory( path );
 		LOGGER::init( path );
-
-		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 
 		SCENE().reset();
 	}
@@ -40,7 +40,7 @@ namespace VTX::App::Test::Util
 	{
 		// Create SystemEntity
 		const FilePath						systemPath = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
-		VTX::App::Action::Scene::LoadSystem openAction	 = VTX::App::Action::Scene::LoadSystem( systemPath );
+		VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
 		openAction.execute();
 	}
 

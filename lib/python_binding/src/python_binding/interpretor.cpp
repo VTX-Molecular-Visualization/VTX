@@ -30,8 +30,10 @@ namespace VTX::PythonBinding
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
 			_vtxModule = pybind11::module_::import( vtx_module_name() );
 
-			LogRedirection logger								= LogRedirection();
-			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
+			// Allow the python "print" function to be funneled into our log system
+			// LogRedirection logger								= LogRedirection();
+			// TODO : Following line currently causing "lost sys.stdout" error
+			// pybind11::module_::import( "sys" ).attr( "stdout" ) = _logger;
 
 			pybind11::module_ vtxCoreModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
@@ -39,7 +41,7 @@ namespace VTX::PythonBinding
 
 			// TODO : Manage case where file not found (e.g. user moved it elsewhere)
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
-			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
+			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
 			pybind11::eval_file( initCommandsFile.string() );
 		}
@@ -59,7 +61,6 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
-			return;
 			//  Import all commands
 			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
 
@@ -79,6 +80,7 @@ namespace VTX::PythonBinding
 		}
 
 	  private:
+		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
 		pybind11::module_			 _vtxModule;
 		std::unique_ptr<PyTXModule>	 _pyTXModule = nullptr;
@@ -138,6 +140,11 @@ namespace VTX::PythonBinding
 	{
 		try
 		{
+			// The following line's purpose is to force pybind11 to set the __file__ variable to the path of the new
+			// script being used.
+			if ( pybind11::globals().contains( "__file__" ) )
+				pybind11::globals().attr( "pop" )( "__file__" );
+
 			pybind11::eval_file( p_path.string() );
 		}
 		catch ( const pybind11::error_already_set & e )
