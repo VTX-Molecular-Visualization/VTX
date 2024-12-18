@@ -42,7 +42,7 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 	App::Core::ECS::ViewIterator findFailIt = SCENE().getAllSceneItems().find( App::Core::ECS::BaseEntity( 666 ) );
 	REQUIRE( findFailIt == SCENE().getAllSceneItems().end() );
 
-	SCENE().update( 0.015f );
+	APP::update( 0.015f, 0.f );
 };
 
 TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
@@ -65,8 +65,8 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
 	// Create System
-	const FilePath				systemPath = App::Filesystem::getInternalDataDir() / systemPathname;
-	Action::Scene::LoadSystem openAction	 = Action::Scene::LoadSystem( systemPath );
+	const FilePath			  systemPath = App::Filesystem::getInternalDataDir() / systemPathname;
+	Action::Scene::LoadSystem openAction = Action::Scene::LoadSystem( systemPath );
 	openAction.execute();
 
 	REQUIRE( addSceneItemTest.checked );

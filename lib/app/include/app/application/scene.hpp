@@ -68,8 +68,6 @@ namespace VTX::App::Application
 		bool   isEmpty() const;
 		size_t getItemCount() const;
 
-		void update( const float & );
-
 		void clear();
 		void reset();
 

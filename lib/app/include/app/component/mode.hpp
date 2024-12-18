@@ -1,9 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_MODE__
 #define __VTX_APP_COMPONENT_MODE__
 
-#include "app/core/ecs/base_component.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/core/mode/concepts.hpp"
-#include "app/vtx_app.hpp"
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/hashing.hpp>
@@ -11,7 +10,7 @@
 
 namespace VTX::App::Component
 {
-	class Mode : public Core::ECS::BaseComponent
+	class Mode : public Scene::Updatable
 	{
 	  public:
 		Mode()				 = default;
@@ -25,7 +24,7 @@ namespace VTX::App::Component
 				// Exit previous mode.
 				_current->exit();
 				onModeExit( _currentHash );
-				APP::onUpdate -= _currentUpdateCallback;
+				removeUpdateFunction( _currentUpdateCallback );
 			}
 
 			// Enter new mode.
@@ -37,8 +36,8 @@ namespace VTX::App::Component
 			onModeEnter( _currentHash );
 
 			// Connect update callback.
-			_currentUpdateCallback = APP::onUpdate +=
-				[ mode ]( const float p_delta, const float p_elapsed ) { mode->update( p_delta, p_elapsed ); };
+			_currentUpdateCallback = addUpdateFunction( [ mode ]( const float p_delta, const float p_elapsed )
+												  { mode->update( p_delta, p_elapsed ); } );
 		}
 
 		Util::Callback<Hash> onModeEnter;

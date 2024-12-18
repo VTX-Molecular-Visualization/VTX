@@ -2,12 +2,11 @@
 #define __VTX_APP_COMPONENT_CONTROLLER__
 
 #include "app/application/scene.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/controller/camera/animation.hpp"
 #include "app/core/animation/concepts.hpp"
 #include "app/core/controller/base_controller.hpp"
 #include "app/core/controller/concepts.hpp"
-#include "app/core/ecs/base_component.hpp"
-#include "app/vtx_app.hpp"
 #include <app/application/system/ecs_system.hpp>
 #include <app/component/scene/transform_component.hpp>
 #include <util/callback.hpp>
@@ -17,7 +16,7 @@
 
 namespace VTX::App::Component
 {
-	class Controller : public Core::ECS::BaseComponent
+	class Controller : public Scene::Updatable
 	{
 	  public:
 		Controller()					 = default;
@@ -35,8 +34,8 @@ namespace VTX::App::Component
 			controller->setCamera( &SCENE().getCamera() );
 
 			// Register update callback.
-			Util::CallbackId id = APP::onUpdate += [ controller ]( const float p_delta, const float p_elapsed )
-			{ controller->update( p_delta, p_elapsed ); };
+			Util::CallbackId id = addUpdateFunction( [ controller ]( const float p_delta, const float p_elapsed )
+													 { controller->update( p_delta, p_elapsed ); } );
 
 			// Save callback id.
 			_activeCallbacks.emplace( hash, id );
@@ -59,7 +58,7 @@ namespace VTX::App::Component
 			_controllers.remove<C>();
 
 			// Unregister update callback.
-			APP::onUpdate -= _activeCallbacks.at( hash );
+			removeUpdateFunction( _activeCallbacks.at( hash ) );
 			_activeCallbacks.erase( hash );
 		}
 

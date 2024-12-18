@@ -11,6 +11,7 @@
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
@@ -36,6 +37,7 @@ namespace VTX::App::Entity
 		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
+		auto & updatable  = ECS_REGISTRY().addComponent<Component::Scene::Updatable>( *this );
 
 		// Load system.
 		Serialization::IO::Reader::SystemLoader loader;

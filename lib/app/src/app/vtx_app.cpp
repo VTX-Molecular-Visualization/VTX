@@ -48,7 +48,6 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
 		// Create Databases

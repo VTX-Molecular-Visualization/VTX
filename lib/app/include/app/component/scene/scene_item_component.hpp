@@ -28,12 +28,6 @@ namespace VTX::App::Component::Scene
 		inline void setPersistentSceneID( const int p_id ) { _persistentId = p_id; }
 		inline bool hasPersistentSceneID() const { return _persistentId != -1; }
 
-		void addUpdateFunction(
-			const std::string &								  p_key,
-			const Application::SceneUtility::UpdateCallback & p_callback
-		);
-		void removeUpdateFunction( const std::string & p_key );
-
 		// Callbacks
 		Util::Callback<std::string_view> onName;
 
