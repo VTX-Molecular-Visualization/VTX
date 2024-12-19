@@ -1,6 +1,6 @@
-#include "app/application/selection/selection_manager.hpp"
+#include "app/selection/selection_manager.hpp"
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	SelectionManager::SelectionManager() { _linkCallbackToSelectables(); };
 	SelectionManager::~SelectionManager() = default;
@@ -46,4 +46,4 @@ namespace VTX::App::Application::Selection
 		{ p_selectionData.getSelectionComponent().onDeselect( p_selectionData ); };
 	}
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

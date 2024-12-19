@@ -1,13 +1,13 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_MOLECULE_GRANULARITY__
-#define __VTX_APP_APPLICATION_SELECTION_MOLECULE_GRANULARITY__
+#ifndef __VTX_APP_SELECTION_MOLECULE_GRANULARITY__
+#define __VTX_APP_SELECTION_MOLECULE_GRANULARITY__
 
-#include "app/application/selection/selection.hpp"
-#include "app/application/selection/system_data.hpp"
 #include "app/component/chemistry/_fwd.hpp"
+#include "selection.hpp"
+#include "system_data.hpp"
 #include <string>
 #include <vector>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	using namespace Component::Chemistry;
 
@@ -48,5 +48,5 @@ namespace VTX::App::Application::Selection
 		static void unselect( const Chain & p_chain, const Granularity & p_granularity );
 	};
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 #endif

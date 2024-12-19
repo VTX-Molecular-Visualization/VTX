@@ -1,7 +1,5 @@
 #include "app/component/chemistry/system.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/system_data.hpp"
-#include "app/application/selection/system_granularity.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/system_metadata.hpp"
 #include "app/component/render/proxy_system.hpp"
@@ -17,6 +15,8 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
+#include "app/selection/system_data.hpp"
+#include "app/selection/system_granularity.hpp"
 #include "app/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
@@ -71,7 +71,7 @@ namespace VTX::App::Entity
 		uid.referenceUID( system.getAtomUIDs() );
 
 		// Selectable.
-		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
+		selectable.setSelectionDataGenerator<Selection::SystemData>();
 
 		// AABB.
 		aabb.init();
@@ -108,15 +108,13 @@ namespace VTX::App::Entity
 
 		// Picking.
 		pickable.setPickingFunction(
-			[ & ]( const Application::Selection::PickingInfo & p_pickingInfo )
+			[ & ]( const Selection::PickingInfo & p_pickingInfo )
 			{
-				const auto granularity = SETTINGS_SYSTEM().get<Application::Selection::Granularity>(
-					Settings::Selection::MOLECULE_GRANULARITY_KEY
-				);
+				const auto granularity
+					= SETTINGS_SYSTEM().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
 
-				std::unique_ptr<Application::Selection::SelectionData> res
-					= std::make_unique<Application::Selection::SystemData>( selectable );
-				auto & molData = dynamic_cast<Application::Selection::SystemData &>( *res );
+				std::unique_ptr<Selection::SelectionData> res = std::make_unique<Selection::SystemData>( selectable );
+				auto &									  molData = dynamic_cast<Selection::SystemData &>( *res );
 				molData.clear();
 
 				bool test = system.getResidueUIDs().contains( p_pickingInfo.getFirst() );
@@ -132,7 +130,7 @@ namespace VTX::App::Entity
 						if ( atomPtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
+								Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
 							);
 						}
 					}
@@ -145,7 +143,7 @@ namespace VTX::App::Entity
 						if ( residuePtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
+								Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
 							);
 						}
 					}
@@ -163,11 +161,11 @@ namespace VTX::App::Entity
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Application::Selection::SystemGranularity::getSelectionData(
+							molData.set( Selection::SystemGranularity::getSelectionData(
 								*firstAtomPtr, granularity
 							) );
 
-							molData.add( Application::Selection::SystemGranularity::getSelectionData(
+							molData.add( Selection::SystemGranularity::getSelectionData(
 								*secondAtomPtr, granularity
 							) );
 						}

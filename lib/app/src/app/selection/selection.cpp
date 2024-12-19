@@ -1,4 +1,4 @@
-#include "app/application/selection/selection.hpp"
+#include "app/selection/selection.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <sstream>
@@ -6,7 +6,7 @@
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	Selection::Selection() = default;
 	Selection::Selection( const Selection & p_source )
@@ -153,7 +153,7 @@ namespace VTX::App::Application::Selection
 		}
 		else
 		{
-			std::unique_ptr<Application::Selection::SelectionData> selectionItem
+			std::unique_ptr<App::Selection::SelectionData> selectionItem
 				= p_selectableComponent.instantiateSelectionData();
 
 			auto								   it				= _items.emplace( std::move( selectionItem ) );
@@ -188,7 +188,7 @@ namespace VTX::App::Application::Selection
 		}
 		else
 		{
-			std::unique_ptr<Application::Selection::SelectionData> selectionItem
+			std::unique_ptr<App::Selection::SelectionData> selectionItem
 				= p_selectableComponent.instantiateSelectionData();
 			selectionItem->set( p_selectionData );
 
@@ -337,4 +337,4 @@ namespace VTX::App::Application::Selection
 		return sstr.str();
 	}
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

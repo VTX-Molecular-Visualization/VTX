@@ -1,12 +1,12 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION_MANAGER__
-#define __VTX_APP_APPLICATION_SELECTION_SELECTION_MANAGER__
+#ifndef __VTX_APP_SELECTION_SELECTION_MANAGER__
+#define __VTX_APP_SELECTION_SELECTION_MANAGER__
 
-#include "app/application/selection/selection.hpp"
+#include "app/selection/selection.hpp"
 #include <map>
 #include <memory>
 #include <string>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	class SelectionManager
 	{
@@ -35,15 +35,15 @@ namespace VTX::App::Application::Selection
 		mutable std::map<std::string, std::unique_ptr<Selection>> _savedSelectionMap;
 	};
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 
 namespace VTX::App
 {
-	inline Application::Selection::SelectionManager & SELECTION_MANAGER()
+	inline Selection::SelectionManager & SELECTION_MANAGER()
 	{
-		return Util::Singleton<Application::Selection::SelectionManager>::get();
+		return Util::Singleton<Selection::SelectionManager>::get();
 	}
 
-	inline Application::Selection::Selection & CURRENT_SELECTION() { return SELECTION_MANAGER().getCurrent(); }
+	inline Selection::Selection & CURRENT_SELECTION() { return SELECTION_MANAGER().getCurrent(); }
 } // namespace VTX::App
 #endif

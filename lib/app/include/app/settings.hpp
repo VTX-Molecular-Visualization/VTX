@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_SETTINGS__
 #define __VTX_APP_SETTINGS__
 
-#include "app/application/selection/system_granularity.hpp"
 #include "app/component/render/camera.hpp"
+#include "app/selection/system_granularity.hpp"
 #include <string>
 
 namespace VTX::App::Settings
@@ -62,8 +62,8 @@ namespace VTX::App::Settings
 	namespace Selection
 	{
 		const std::string							   MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
-		const App::Application::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT
-			= App::Application::Selection::Granularity::RESIDUE;
+		const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT
+			= App::Selection::Granularity::RESIDUE;
 	} // namespace Selection
 
 	namespace Network

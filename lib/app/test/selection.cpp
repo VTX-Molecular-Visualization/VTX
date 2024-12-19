@@ -1,13 +1,13 @@
 #include "util/app.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/selection/system_data.hpp>
-#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/residue.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/scene/selectable.hpp>
 #include <app/fixture.hpp>
+#include <app/selection/selection_manager.hpp>
+#include <app/selection/system_data.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/logger.hpp>
@@ -21,7 +21,7 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 	{
 		VTX_INFO( "TEST VTX_APP - Selection" );
 
-		using AssignmentType = Application::Selection::AssignmentType;
+		using AssignmentType = Selection::AssignmentType;
 
 		App::Fixture app;
 
@@ -38,13 +38,13 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 
 		CHECK( CURRENT_SELECTION().isEmpty() );
 
-		Application::Selection::SelectionData & molSelData1 = CURRENT_SELECTION().select( selectableMol1 );
+		Selection::SelectionData & molSelData1 = CURRENT_SELECTION().select( selectableMol1 );
 		CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 		CHECK( !CURRENT_SELECTION().isSelected( selectableMol2 ) );
 		CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
 		CHECK( &CURRENT_SELECTION().getCurrentObject() == &selectableMol1 );
 
-		Application::Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( mol2 );
+		Selection::SelectionData & molSelData2 = CURRENT_SELECTION().select( mol2 );
 		CHECK( !CURRENT_SELECTION().isSelected( selectableMol1 ) );
 		CHECK( CURRENT_SELECTION().isSelected( selectableMol2 ) );
 		CHECK( !CURRENT_SELECTION().areSelected( { &selectableMol1, &selectableMol2 } ) );
@@ -87,8 +87,8 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	using SystemData	 = Application::Selection::SystemData;
-	using AssignmentType = Application::Selection::AssignmentType;
+	using SystemData	 = Selection::SystemData;
+	using AssignmentType = Selection::AssignmentType;
 	using IndexRange	 = Util::Math::Range<size_t>;
 	using AtomIndexRange = Util::Math::Range<atom_index_t>;
 
@@ -181,7 +181,7 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	using AssignmentType = Application::Selection::AssignmentType;
+	using AssignmentType = Selection::AssignmentType;
 
 	App::Fixture app;
 
@@ -194,8 +194,7 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 
 	BENCHMARK( "Select system worst case" )
 	{
-		Application::Selection::SystemData & molData
-			= CURRENT_SELECTION().select<Application::Selection::SystemData>( selectableMol1 );
+		Selection::SystemData & molData = CURRENT_SELECTION().select<Selection::SystemData>( selectableMol1 );
 
 		const atom_index_t atomCount = atom_index_t( mol1.getAtoms().size() );
 		for ( atom_index_t i = 0; i < atomCount; i += 2 )

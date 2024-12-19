@@ -1,15 +1,15 @@
-#include "app/application/selection/system_granularity.hpp"
+#include "app/selection/system_granularity.hpp"
 #include "app/action/selection.hpp"
-#include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/core/action/action_system.hpp"
+#include "app/selection/selection_manager.hpp"
 #include "app/vtx_app.hpp"
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	SystemData SystemGranularity::getSelectionData( const Atom & p_atom, const Granularity & p_granularity )
 	{
@@ -134,4 +134,4 @@ namespace VTX::App::Application::Selection
 
 		ACTION_SYSTEM().execute<App::Action::Selection::Unselect>( molData );
 	}
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

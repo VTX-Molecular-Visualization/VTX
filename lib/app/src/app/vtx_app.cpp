@@ -4,7 +4,6 @@
 #include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/proxy_system.hpp"
@@ -18,6 +17,7 @@
 #include "app/filesystem.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
+#include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
@@ -162,7 +162,7 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		// Old::Application::Selection::SelectionManager::get().deleteModel();
+		// Old::Selection::SelectionManager::get().deleteModel();
 
 		for ( Tool::BaseTool * const tool : _tools )
 		{

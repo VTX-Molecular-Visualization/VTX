@@ -1,4 +1,4 @@
-#include "app/application/selection/system_data.hpp"
+#include "app/selection/system_data.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/helper/math.hpp"
@@ -6,7 +6,7 @@
 #include <sstream>
 #include <util/algorithm/range.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	SystemData::SystemData( const Component::Scene::Selectable & p_selectable ) :
 		SelectionData( p_selectable ),
@@ -977,4 +977,4 @@ namespace VTX::App::Application::Selection
 
 		return sStr.str();
 	}
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

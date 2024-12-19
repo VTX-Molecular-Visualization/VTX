@@ -1,17 +1,17 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_MOLECULE_DATA__
-#define __VTX_APP_APPLICATION_SELECTION_MOLECULE_DATA__
+#ifndef __VTX_APP_SELECTION_MOLECULE_DATA__
+#define __VTX_APP_SELECTION_MOLECULE_DATA__
 
-#include "app/application/selection/selection_data.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/system.hpp"
+#include "selection_data.hpp"
 #include <util/concepts.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	using namespace Component::Chemistry;
 
@@ -323,5 +323,5 @@ namespace VTX::App::Application::Selection
 		mutable Util::Math::AABB _localAABB = Util::Math::AABB();
 	};
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 #endif

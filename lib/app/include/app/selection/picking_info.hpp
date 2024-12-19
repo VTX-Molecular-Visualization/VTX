@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_PICKING_INFO__
-#define __VTX_APP_APPLICATION_SELECTION_PICKING_INFO__
+#ifndef __VTX_APP_SELECTION_PICKING_INFO__
+#define __VTX_APP_SELECTION_PICKING_INFO__
 
 #include "app/core/uid/uid.hpp"
 #include <util/types.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	struct PickingInfo
 	{
@@ -30,5 +30,5 @@ namespace VTX::App::Application::Selection
 		uid _secondUid = Core::UID::INVALID_UID;
 	};
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 #endif

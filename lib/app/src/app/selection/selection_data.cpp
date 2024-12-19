@@ -1,9 +1,9 @@
-#include "app/application/selection/selection_data.hpp"
+#include "app/selection/selection_data.hpp"
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/component/scene/selectable.hpp"
 #include "app/vtx_app.hpp"
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	SelectionData::SelectionData( const Component::Scene::Selectable & p_selectionComponent ) :
 		_selectionComponent( &p_selectionComponent ), _valid( true )
@@ -55,4 +55,4 @@ namespace VTX::App::Application::Selection
 		return sceneItem.getName();
 	}
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

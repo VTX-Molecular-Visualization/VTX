@@ -1,12 +1,12 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION_DATA__
-#define __VTX_APP_APPLICATION_SELECTION_SELECTION_DATA__
+#ifndef __VTX_APP_SELECTION_SELECTION_DATA__
+#define __VTX_APP_SELECTION_SELECTION_DATA__
 
 #include "app/component/scene/_fwd.hpp"
 #include <memory>
 #include <string>
 #include <util/math/aabb.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	class SelectionData
 	{
@@ -42,5 +42,5 @@ namespace VTX::App::Application::Selection
 		const Component::Scene::Selectable * const _selectionComponent = nullptr;
 		bool									   _valid			   = true;
 	};
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 #endif

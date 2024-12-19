@@ -1,6 +1,6 @@
-#include "app/application/selection/picking_info.hpp"
+#include "app/selection/picking_info.hpp"
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	PickingInfo::PickingInfo( const Vec2i p_uids ) : _firstUid( p_uids.x ), _secondUid( p_uids.y ) {}
 	PickingInfo::PickingInfo( const uid p_firstUid, const uid p_secondUid ) :
@@ -26,4 +26,4 @@ namespace VTX::App::Application::Selection
 	{
 		return _firstUid != Core::UID::INVALID_UID && _secondUid != App::Core::UID::INVALID_UID;
 	}
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection

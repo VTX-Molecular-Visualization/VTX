@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_APPLICATION_SELECTION_SELECTION__
-#define __VTX_APP_APPLICATION_SELECTION_SELECTION__
+#ifndef __VTX_APP_SELECTION_SELECTION__
+#define __VTX_APP_SELECTION_SELECTION__
 
-#include "app/application/selection/concepts.hpp"
-#include "app/application/selection/selection_data.hpp"
-#include "app/core/ecs/ecs_system.hpp"
 #include "app/component/scene/selectable.hpp"
+#include "app/core/ecs/ecs_system.hpp"
+#include "concepts.hpp"
+#include "selection_data.hpp"
 #include <concepts>
 #include <map>
 #include <set>
@@ -12,7 +12,7 @@
 #include <util/concepts.hpp>
 #include <util/math/aabb.hpp>
 
-namespace VTX::App::Application::Selection
+namespace VTX::App::Selection
 {
 	enum class AssignmentType : int
 	{
@@ -374,5 +374,5 @@ namespace VTX::App::Application::Selection
 		void _clearCurrentObject();
 	};
 
-} // namespace VTX::App::Application::Selection
+} // namespace VTX::App::Selection
 #endif

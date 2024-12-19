@@ -1,7 +1,7 @@
 #include "app/component/render/proxy_system.hpp"
-#include "app/application/selection/selection.hpp"
-#include "app/application/selection/selection_manager.hpp"
-#include "app/application/selection/system_data.hpp"
+#include "app/selection/selection.hpp"
+#include "app/selection/selection_manager.hpp"
+#include "app/selection/system_data.hpp"
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/transform_component.hpp"
@@ -186,10 +186,10 @@ namespace VTX::App::Component::Render
 		Component::Scene::Selectable & selectableComponent
 			= ECS_REGISTRY().getComponent<Component::Scene::Selectable>( *this );
 
-		selectableComponent.onSelect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
+		selectableComponent.onSelect += [ this ]( const Selection::SelectionData & p_selectionData )
 		{
-			const Application::Selection::SystemData & castedSelectionData
-				= dynamic_cast<const Application::Selection::SystemData &>( p_selectionData );
+			const Selection::SystemData & castedSelectionData
+				= dynamic_cast<const Selection::SystemData &>( p_selectionData );
 
 			// TODO.
 			// castedSelectionData.isFullySelected
@@ -197,10 +197,10 @@ namespace VTX::App::Component::Render
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), true );
 		};
 
-		selectableComponent.onDeselect += [ this ]( const Application::Selection::SelectionData & p_selectionData )
+		selectableComponent.onDeselect += [ this ]( const Selection::SelectionData & p_selectionData )
 		{
-			const Application::Selection::SystemData & castedSelectionData
-				= dynamic_cast<const Application::Selection::SystemData &>( p_selectionData );
+			const Selection::SystemData & castedSelectionData
+				= dynamic_cast<const Selection::SystemData &>( p_selectionData );
 			_proxy->onAtomSelections( castedSelectionData.getAtomIds(), false );
 		};
 	}
