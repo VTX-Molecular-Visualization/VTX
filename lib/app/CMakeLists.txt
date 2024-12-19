@@ -12,4 +12,4 @@ find_package(Catch2 CONFIG REQUIRED)
 set(_VTX_APP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
-install(TARGETS vtx_app poneyponey FILE_SET public_headers DESTINATION include)
+install(TARGETS vtx_app vtx_app_no_opengl FILE_SET public_headers DESTINATION include)

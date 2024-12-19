@@ -30,7 +30,7 @@ class VTXAppRecipe(ConanFile):
         cmake_layout(self)
         
         self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["poneyponey"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
         
     def generate(self):
         tc = CMakeToolchain(self)
@@ -55,8 +55,8 @@ class VTXAppRecipe(ConanFile):
         self.cpp_info.components["vtx_app"].libs = ["vtx_app"]
         self.cpp_info.components["vtx_app"].set_property("cmake_target_name", "vtx_app::vtx_app")
         
-        self.cpp_info.components["poneyponey"].libs = ["poneyponey"]
-        self.cpp_info.components["poneyponey"].set_property("cmake_target_name", "vtx_app::poneyponey")
+        self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
+        self.cpp_info.components["vtx_app_no_opengl"].set_property("cmake_target_name", "vtx_app::vtx_app_no_opengl")
         # self.cpp_info.components["vtx_app_test"].libs = ["vtx_app_test"]
         # self.cpp_info.components["vtx_app_test"].set_property("cmake_target_name", "vtx_app::vtx_app_test")
         
