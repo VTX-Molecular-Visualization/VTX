@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <util/callback.hpp>
+#include <util/singleton.hpp>
 
 namespace VTX::App::Core::Settings
 {

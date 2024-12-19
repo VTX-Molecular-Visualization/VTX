@@ -17,9 +17,10 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
-#include "app/serialization/io/reader/system_loader.hpp"
 #include "app/settings.hpp"
+#include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
+#include <util/logger.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity
@@ -30,29 +31,32 @@ namespace VTX::App::Entity
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
+		auto & metaData	  = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
 		auto & system	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
 		auto & updatable  = ECS_REGISTRY().addComponent<Component::Scene::Updatable>( *this );
+		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 
 		// Load system.
-		Serialization::IO::Reader::SystemLoader loader;
-		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
+		IO::Reader::System		  loader;
+		VTX::Core::Struct::System systemStruct;
 
-		if ( _buffer ) // Buffer.
+		if ( _buffer ) // From buffer.
 		{
 			VTX_DEBUG( "Path: {}", _path.string() );
-			loader.readBuffer( *_buffer, _path, system );
+			loader.readBuffer( *_buffer, _path, systemStruct );
 		}
-		else // Filepath
+		else // From disk.
 		{
-			loader.readFile( _path, system );
+			loader.readFile( _path, systemStruct );
 			metaData.path = _path;
 		}
+
+		system.setSystemStruct( systemStruct );
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
 		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();

@@ -128,14 +128,5 @@ namespace VTX::App::Action::Application
 		const uint	 _output;
 	};
 
-	class RunScript : public Core::Action::BaseAction
-	{
-	  public:
-		explicit RunScript( const FilePath & p_path ) : _path( p_path ) {}
-		void execute();
-
-	  private:
-		FilePath _path;
-	};
 } // namespace VTX::App::Action::Application
 #endif

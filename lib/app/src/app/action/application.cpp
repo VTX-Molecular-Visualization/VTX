@@ -4,60 +4,22 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/filesystem.hpp"
-#include "app/serialization/io/reader/scene_loader.hpp"
-#include "app/serialization/io/writer/scene_writer.hpp"
-#include "app/serialization/serialization_system.hpp"
 #include <app/component/render/camera.hpp>
 
 namespace VTX::App::Action::Application
 {
 	void NewScene::execute() { SCENE().reset(); }
 
-	void OpenScene::execute()
-	{
-		SCENE().clear();
+	void OpenScene::execute() {}
 
-		Serialization::IO::Reader::SceneLoader loader = Serialization::IO::Reader::SceneLoader();
-		loader.readFile( _path, SCENE() );
-
-		// App::Old::APP::getScenePathData().setCurrentPath( _path, true );
-	}
-
-	void SaveScene::execute()
-	{
-		Serialization::IO::Writer::SceneWriter writer = Serialization::IO::Writer::SceneWriter();
-		writer.writeFile( _path, SCENE() );
-
-		// VTX_THREAD( saver, _callback );
-
-		// if ( _path.extension() == "vtx" )
-		//{
-		//	App::Old::APP::getScenePathData().setCurrentPath( _path, true );
-		//	VTX_EVENT( VTX::App::Old::Event::Global::SCENE_SAVED );
-		// }
-		// else
-		//{
-		//	VTX::App::Old::Application::Setting::enqueueNewLoadingPath( _path );
-		// }
-	}
+	void SaveScene::execute() {}
 	void ClearScene::execute() { SCENE().reset(); }
 
 	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
-	void LoadSettings::execute()
-	{
-		SERIALIZATION_SYSTEM().readObject<App::Core::Settings::SettingsSystem>( _path, SETTINGS_SYSTEM() );
-	}
+	void LoadSettings::execute() {}
 	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
-	void SaveSettings::execute()
-	{
-		SERIALIZATION_SYSTEM().writeObject<App::Core::Settings::SettingsSystem>( _path, SETTINGS_SYSTEM() );
-	}
-	void ReloadSettings::execute()
-	{
-		SERIALIZATION_SYSTEM().readObject<App::Core::Settings::SettingsSystem>(
-			VTX::App::Filesystem::getSettingJsonFile(), SETTINGS_SYSTEM()
-		);
-	}
+	void SaveSettings::execute() {}
+	void ReloadSettings::execute() {}
 	void ResetSettings::execute() { SETTINGS_SYSTEM().reset(); }
 
 	void Open::execute()
@@ -98,9 +60,4 @@ namespace VTX::App::Action::Application
 		App::RENDERER_SYSTEM().resize( _width, _height, _output );
 	}
 
-	void RunScript::execute()
-	{
-		// INTERPRETOR().runScript( _path );
-
-	} // namespace VTX::App::Action::Application
 } // namespace VTX::App::Action::Application
