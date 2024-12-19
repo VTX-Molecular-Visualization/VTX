@@ -2,13 +2,13 @@
 #define __VTX_APP_COMPONENT_CONTROLLER__
 
 #include "app/application/scene.hpp"
+#include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/controller/camera/animation.hpp"
 #include "app/core/animation/concepts.hpp"
 #include "app/core/controller/base_controller.hpp"
 #include "app/core/controller/concepts.hpp"
-#include <app/application/system/ecs_system.hpp>
-#include <app/component/scene/transform_component.hpp>
+#include "app/core/ecs/ecs_system.hpp"
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/hashing.hpp>

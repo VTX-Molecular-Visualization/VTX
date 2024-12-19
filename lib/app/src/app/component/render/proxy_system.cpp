@@ -2,7 +2,7 @@
 #include "app/application/selection/selection.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/application/selection/system_data.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_IO_MOLECULE_METADATA__
 #define __VTX_APP_COMPONENT_IO_MOLECULE_METADATA__
 
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include <set>
 #include <string>
 #include <util/types.hpp>

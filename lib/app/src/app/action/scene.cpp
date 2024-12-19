@@ -1,7 +1,7 @@
 #include "app/action/scene.hpp"
 #include "app/action/animation.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"

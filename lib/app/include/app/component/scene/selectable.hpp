@@ -3,7 +3,7 @@
 
 #include "app/application/selection/concepts.hpp"
 #include "app/application/selection/selection_data.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
 #include <memory>

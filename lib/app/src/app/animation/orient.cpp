@@ -1,6 +1,6 @@
 #include "app/animation/orient.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/mode/visualization.hpp"
-#include <app/application/system/ecs_system.hpp>
 
 namespace VTX::App::Animation
 {

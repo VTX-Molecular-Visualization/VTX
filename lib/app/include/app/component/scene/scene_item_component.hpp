@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 
 #include "app/application/scene_utility.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <string>
 #include <util/callback.hpp>

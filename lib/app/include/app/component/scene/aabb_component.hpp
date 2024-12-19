@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_AABB__
 #define __VTX_APP_COMPONENT_SCENE_AABB__
 
-#include "app/application/system/ecs_system.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include <functional>
 #include <util/math/aabb.hpp>
 

@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 #define __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 
-#include "app/application/system/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include <util/callback.hpp>
 #include <util/math/transform.hpp>
 

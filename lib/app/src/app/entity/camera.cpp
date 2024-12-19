@@ -1,5 +1,5 @@
 #include "app/entity/camera.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/component/controller.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/scene/transform_component.hpp"

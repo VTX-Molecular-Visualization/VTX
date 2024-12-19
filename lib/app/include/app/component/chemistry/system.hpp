@@ -2,8 +2,8 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
-#include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/index_types.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
 #include <core/struct/system.hpp>
