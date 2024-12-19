@@ -1,7 +1,7 @@
 import os
 import glob
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout, CMakeDeps
+from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
 from conan.tools.files import copy
 from pathlib import Path
 
@@ -14,7 +14,7 @@ class VTXPythonBindingRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     # generators =  "CMakeToolchain"
     
     exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
@@ -25,10 +25,10 @@ class VTXPythonBindingRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("vtx_renderer/1.0")
-        self.requires("vtx_app/1.0" )
+        self.requires("vtx_renderer/1.0")   
         self.requires("vtx_io/1.0")
-        self.requires("pybind11/2.13.6", transitive_headers=True)
+        self.requires("vtx_app/1.0")
+        self.requires("pybind11/2.13.6")
         self.requires("catch2/3.7.0")
         
         
@@ -37,19 +37,22 @@ class VTXPythonBindingRecipe(ConanFile):
             del self.options.fPIC
         
     def generate(self):
+        tc = CMakeToolchain(self)
+        tc.generate()
         copy(self, "*.cmake", self.source_folder, self.build_folder)
         
     # def generate(self):
         # deps = CMakeDeps(self)
         # deps.check_components_exist = True
         # deps.generate()
+        # copy(self, "*.cmake", self.source_folder, self.build_folder)
     
     def layout(self):
         cmake_layout(self)
 
-        self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["vtx_python_bin"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["vtx_python_binding_test"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_bin"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_binding_test"].libdirs = self.cpp.build.libdirs
 
     def build(self):
         cmake = CMake(self)

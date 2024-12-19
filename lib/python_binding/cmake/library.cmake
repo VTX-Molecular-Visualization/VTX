@@ -23,6 +23,7 @@ configure_target(vtx_python_binding_test)
 
 pybind11_add_module(vtx_python_bin SHARED "${CMAKE_CURRENT_LIST_DIR}/../module/vtx_module.cpp")
 pybind11_add_module(vtx_python_bin_no_opengl SHARED "${CMAKE_CURRENT_LIST_DIR}/../module/vtx_module.cpp")
+
 target_compile_definitions(vtx_python_bin_no_opengl PUBLIC NO_OPENGL=1)
 target_compile_definitions(vtx_python_binding_no_opengl PUBLIC NO_OPENGL=1)
 
@@ -79,13 +80,20 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app_no_opengl)
+
+	# TMP Maybe useful later in the cleanup
+	#target_link_libraries(vtx_python_binding PRIVATE vtx_renderer::vtx_renderer)
+	#target_link_libraries(vtx_python_binding_no_opengl PRIVATE vtx_renderer::vtx_renderer_no_opengl)
+	#target_link_libraries(vtx_python_bin PRIVATE vtx_renderer::vtx_renderer)
+	#target_link_libraries(vtx_python_bin_no_opengl PRIVATE vtx_renderer::vtx_renderer_no_opengl)
+	#target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 endif()
 
 # TODO : are those lines usefull ?
-target_link_libraries(vtx_python_binding PUBLIC EnTT::EnTT)
-target_link_libraries(vtx_python_binding_no_opengl PUBLIC EnTT::EnTT)
-target_link_libraries(vtx_python_binding_test PUBLIC EnTT::EnTT)
-target_link_libraries(vtx_python_bin PUBLIC EnTT::EnTT)
+#target_link_libraries(vtx_python_binding PUBLIC EnTT::EnTT)
+#target_link_libraries(vtx_python_binding_no_opengl PUBLIC EnTT::EnTT)
+#target_link_libraries(vtx_python_binding_test PUBLIC EnTT::EnTT)
+#target_link_libraries(vtx_python_bin PUBLIC EnTT::EnTT)
 # !TODO
 
 

@@ -10,13 +10,10 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
-find_package(pybind11 REQUIRED)
-find_package(EnTT CONFIG REQUIRED)
+find_package(pybind11 CONFIG REQUIRED)
+#find_package(EnTT CONFIG REQUIRED)
 
 set(_VTX_PYTHON_BINDING_CONAN " ") # So the right target name can be linked
-
-file(GLOB_RECURSE _VTX_PYTHON_BINDING_CMAKE_DIR_CONTENT "${CMAKE_CURRENT_LIST_DIR}/cmake/*")
-message("VTX - _VTX_PYTHON_BINDING_CMAKE_DIR_CONTENT : <${_VTX_PYTHON_BINDING_CMAKE_DIR_CONTENT}>")
 include(cmake/library.cmake)
 
 # TMP
