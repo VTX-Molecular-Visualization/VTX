@@ -21,9 +21,6 @@ namespace VTX::Renderer::Context
 	class OpenGL45 : public BaseContext
 	{
 	  public:
-		using Key  = std::string;
-		using Keys = std::vector<Key>;
-
 		OpenGL45() = delete;
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
@@ -72,7 +69,7 @@ namespace VTX::Renderer::Context
 		 * @param p_key the buffer name.
 		 */
 		template<typename T>
-		inline void reserveData( const size_t p_size, const Key & p_key )
+		inline void reserveData( const size_t p_size, const Key & p_key, const T = T() )
 		{
 			assert( _buffers.contains( p_key ) );
 

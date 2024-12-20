@@ -731,7 +731,7 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	std::optional<std::pair<const Output * const, const OpenGL45::Key>> OpenGL45::_getInputTextureKey(
+	std::optional<std::pair<const Output * const, const Key>> OpenGL45::_getInputTextureKey(
 		const Links &	   p_links,
 		const Pass * const p_pass,
 		const E_CHAN_IN	   p_channel

@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "caches.hpp"
+#include "context/default.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
 #include "render_graph.hpp"
@@ -30,6 +31,7 @@ namespace VTX::Renderer
 		 * @brief The render graph with OpenGL45 API and the DFS scheduler.
 		 */
 		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
+		using RenderGraphDefault  = RenderGraph<Context::Default, Scheduler::DepthFirstSearch>;
 
 		Renderer(
 			const size_t	 p_width,

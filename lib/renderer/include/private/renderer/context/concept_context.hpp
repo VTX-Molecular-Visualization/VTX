@@ -19,6 +19,9 @@ namespace VTX::Renderer::Context
 		FilePath shaderPath;
 	};
 
+	using Key  = std::string;
+	using Keys = std::vector<Key>;
+
 	/**
 	 * @brief The context is the graphic API implementation.
 	 */
@@ -35,9 +38,10 @@ namespace VTX::Renderer::Context
 			  const Links &					  p_links,
 			  const Handle					  p_output,
 			  const std::vector<BufferData> & p_globalData,
-			  const std::string &			  p_key,
+			  const Key &					  p_key,
 			  const std::any &				  p_value,
 			  const std::vector<std::any> &	  p_data,
+			  std::vector<std::any> &		  p_dataOut,
 			  const size_t					  p_size,
 			  const size_t					  p_index,
 			  const size_t					  p_offset,
@@ -49,7 +53,8 @@ namespace VTX::Renderer::Context
 			  const std::string &			  p_pass,
 			  const E_CHAN_OUT				  p_channel,
 			  std::any &					  p_textureData,
-			  const ComputePass &			  p_computePass
+			  const ComputePass &			  p_computePass,
+			  const bool					  p_bool
 
 		  ) {
 				 {
@@ -60,13 +65,10 @@ namespace VTX::Renderer::Context
 				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;
 				 { p_context.setOutput( p_output ) } -> std::same_as<void>;
 				 { p_context.setValue( p_value, p_key, p_index ) } -> std::same_as<void>;
-				 // TODO: templated type not deductible.
-				 //{
-				 //	 p_context.reserveData( p_size, p_key )
-				 //} -> std::same_as<void>;
+				 { p_context.reserveData( p_size, p_key, p_value ) } -> std::same_as<void>;
 				 { p_context.set( p_data, p_key ) } -> std::same_as<void>;
-				 //{ p_context.get( p_data, p_key ) } -> std::same_as<void>;
-				 { p_context.setSub( p_data, p_key, p_offset ) } -> std::same_as<void>;
+				 { p_context.setSub( p_data, p_key, p_offset, p_bool, p_size ) } -> std::same_as<void>;
+				 { p_context.get( p_dataOut, p_key ) } -> std::same_as<void>;
 				 { p_context.fillInfos( p_infos ) } -> std::same_as<void>;
 				 { p_context.measureTaskDuration( p_task ) } -> std::same_as<float>;
 				 { p_context.compileShaders() } -> std::same_as<void>;
