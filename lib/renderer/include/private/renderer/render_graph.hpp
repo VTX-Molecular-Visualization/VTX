@@ -20,11 +20,11 @@ namespace VTX::Renderer
 		RenderGraph() = default;
 		~RenderGraph() { clean(); }
 
-		inline Passes &		  getPasses() { return _passes; }
-		inline Links &		  getLinks() { return _links; }
-		inline RenderQueue &  getRenderQueue() { return _renderQueue; }
-		inline const Output * getOutput() { return _output; }
-		inline void			  setOutput( const Output * const p_output ) { _output = p_output; }
+		inline const Passes &		getPasses() const { return _passes; }
+		inline const Links &		getLinks() const { return _links; }
+		inline const RenderQueue &	getRenderQueue() const { return _renderQueue; }
+		inline const Output * const getOutput() { return _output; }
+		inline void					setOutput( const Output * const p_output ) { _output = p_output; }
 
 		inline bool isInRenderQueue( const Pass * const p_pass )
 		{

@@ -510,7 +510,7 @@ namespace VTX::Bench
 				p_renderer->clean();
 			}
 
-			RenderQueue & renderQueue = p_renderer->getRenderQueue();
+			const RenderQueue & renderQueue = p_renderer->getRenderQueue();
 			for ( const Pass * const pass : renderQueue )
 			{
 				if ( pass != nullptr )
@@ -547,7 +547,7 @@ namespace VTX::Bench
 			std::map<const uint, Link *>		   mapIdDescLink;
 			const Pass *						   passToDelete = nullptr;
 
-			for ( std::unique_ptr<Pass> & pass : p_renderer->getPasses() )
+			for ( const std::unique_ptr<Pass> & pass : p_renderer->getPasses() )
 			{
 				ImNodes::BeginNode( id++ );
 				ImNodes::BeginNodeTitleBar();
@@ -696,7 +696,7 @@ namespace VTX::Bench
 			ImNodes::PopColorStyle();
 
 			// Links.
-			for ( std::unique_ptr<Link> & link : p_renderer->getLinks() )
+			for ( const std::unique_ptr<Link> & link : p_renderer->getLinks() )
 			{
 				mapIdDescLink.emplace( id, link.get() );
 				ImNodes::Link(

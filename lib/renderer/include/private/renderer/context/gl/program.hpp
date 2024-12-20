@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
-#include "renderer/context/include_opengl.hpp"
+#include <glad/glad.h>
 #include <util/math.hpp>
 #include <util/types.hpp>
 

@@ -75,16 +75,17 @@ namespace VTX::Renderer
 			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
 		);
 		void							   removeLink( const Link * const p_link );
-		Passes &						   getPasses();
-		Links &							   getLinks();
-		RenderQueue &					   getRenderQueue();
-		const Output *					   getOutput();
+		const Passes &					   getPasses() const;
+		const Links &					   getLinks() const;
+		const RenderQueue &				   getRenderQueue() const;
+		const Output * const			   getOutput() const;
 		void							   setOutput( const Output * const p_output );
 		bool							   isInRenderQueue( const Pass * const p_pass );
 		void							   compileShaders() const;
 		const InstructionsDurationRanges & getInstructionsDurationRanges() const;
 		const std::vector<Pass *> &		   getAvailablePasses() const;
 
+		// TODO: accessors.
 		bool * showAtoms;
 		bool * showBonds;
 		bool * showRibbons;

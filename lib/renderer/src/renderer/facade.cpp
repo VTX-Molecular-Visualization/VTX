@@ -131,13 +131,13 @@ namespace VTX::Renderer
 
 	void Facade::removeLink( const Link * const p_link ) { _renderer->removeLink( p_link ); }
 
-	Passes & Facade::getPasses() { return _renderer->getPasses(); }
+	const Passes & Facade::getPasses() const { return _renderer->getPasses(); }
 
-	Links & Facade::getLinks() { return _renderer->getLinks(); }
+	const Links & Facade::getLinks() const { return _renderer->getLinks(); }
 
-	RenderQueue & Facade::getRenderQueue() { return _renderer->getRenderQueue(); }
+	const RenderQueue & Facade::getRenderQueue() const { return _renderer->getRenderQueue(); }
 
-	const Output * Facade::getOutput() { return _renderer->getOutput(); }
+	const Output * const Facade::getOutput() const { return _renderer->getOutput(); }
 
 	void Facade::setOutput( const Output * const p_output ) { _renderer->setOutput( p_output ); }
 

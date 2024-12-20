@@ -104,11 +104,11 @@ namespace VTX::Renderer
 			_renderGraph->removeLink( p_link );
 		}
 
-		inline Passes &		  getPasses() { return _renderGraph->getPasses(); }
-		inline Links &		  getLinks() { return _renderGraph->getLinks(); }
-		inline RenderQueue &  getRenderQueue() { return _renderGraph->getRenderQueue(); }
-		inline const Output * getOutput() { return _renderGraph->getOutput(); }
-		inline void			  setOutput( const Output * const p_output ) { _renderGraph->setOutput( p_output ); }
+		inline const Passes &		getPasses() const { return _renderGraph->getPasses(); }
+		inline const Links &		getLinks() const { return _renderGraph->getLinks(); }
+		inline const RenderQueue &	getRenderQueue() const { return _renderGraph->getRenderQueue(); }
+		inline const Output * const getOutput() const { return _renderGraph->getOutput(); }
+		inline void					setOutput( const Output * const p_output ) { _renderGraph->setOutput( p_output ); }
 
 		inline bool isInRenderQueue( const Pass * const p_pass ) { return _renderGraph->isInRenderQueue( p_pass ); }
 
@@ -205,7 +205,6 @@ namespace VTX::Renderer
 
 		// Benchmarker only.
 		inline void								  compileShaders() const { _context->compileShaders(); }
-		inline RenderGraphOpenGL45 &			  getRenderGraph() { return *_renderGraph; }
 		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
 		{

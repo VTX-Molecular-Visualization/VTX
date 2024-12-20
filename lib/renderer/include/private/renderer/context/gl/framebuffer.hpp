@@ -1,9 +1,9 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
 #define __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
 
-#include "renderer/context/include_opengl.hpp"
 #include "texture_2d.hpp"
 #include <cassert>
+#include <glad/glad.h>
 #include <vector>
 
 namespace VTX::Renderer::Context::GL
