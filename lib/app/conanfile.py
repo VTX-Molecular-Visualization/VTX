@@ -29,16 +29,17 @@ class VTXAppRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
         
-        self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
         
     def generate(self):
         tc = CMakeToolchain(self)
         dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
         tc.cache_variables["DIR_SHADERS"] = dir_shaders      
-        tc.generate()
-        for require, dependency in self.dependencies.items():
-            self.output.info("VTX -- Dependency is direct={}: {}".format(require.direct, dependency.ref))        
+        for r, d in self.dependencies.items(): 
+            self.output.info(f"Requirement {r}")
+            self.output.info(f"Is test {r.is_test} is override {r.override}")
+        tc.generate()    
 
     def build(self):
         cmake = CMake(self)
@@ -54,8 +55,10 @@ class VTXAppRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.components["vtx_app"].libs = ["vtx_app"]
         self.cpp_info.components["vtx_app"].set_property("cmake_target_name", "vtx_app::vtx_app")
+        # self.cpp_info.components["vtx_app"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer", "vtx_core::vtx_core", "vtx_io::vtx_io", "EnTT::EnTT"]
         
         self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
         self.cpp_info.components["vtx_app_no_opengl"].set_property("cmake_target_name", "vtx_app::vtx_app_no_opengl")
+        # self.cpp_info.components["vtx_app_no_opengl"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer_no_opengl", "vtx_core::vtx_core", "vtx_io::vtx_io", "EnTT::EnTT"]
         
 

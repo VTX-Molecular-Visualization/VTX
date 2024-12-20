@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
@@ -6,6 +7,9 @@
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 //
+=======
+#include <app/component/controller.hpp>
+>>>>>>> Stashed changes
 #include <app/fixture.hpp>
 #include <catch2/catch_test_macros.hpp>
 

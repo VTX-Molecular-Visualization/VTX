@@ -14,7 +14,7 @@ class VTXPythonBindingRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps"
+    generators = "CMakeDeps"#, "CMakeToolchain"
     # generators =  "CMakeToolchain"
     
     exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
@@ -31,21 +31,16 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("pybind11/2.13.6")
         self.requires("catch2/3.7.0")
         
-        
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-        
+            
     def generate(self):
         tc = CMakeToolchain(self)
-        tc.generate()
-        copy(self, "*.cmake", self.source_folder, self.build_folder)
-        
-    # def generate(self):
-        # deps = CMakeDeps(self)
-        # deps.check_components_exist = True
-        # deps.generate()
-        # copy(self, "*.cmake", self.source_folder, self.build_folder)
+        for r, d in self.dependencies.items(): 
+            self.output.info(f"Requirement {r}")
+            self.output.info(f"Is test {r.is_test} is override {r.override}")
+        tc.generate()    
     
     def layout(self):
         cmake_layout(self)
@@ -66,10 +61,10 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
-        self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
+        # self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
          
         self.cpp_info.components["vtx_python_bin"].libs = ["vtx_python_bin"]
-        self.cpp_info.components["vtx_python_bin"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_bin")
+        # self.cpp_info.components["vtx_python_bin"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_bin")
 
         self.cpp_info.components["vtx_python_binding_test"].libs = ["vtx_python_binding_test"] 
   
