@@ -29,8 +29,8 @@ class VTXAppRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
         
-        # self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
-        # self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
+        self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
         
     def generate(self):
         tc = CMakeToolchain(self)

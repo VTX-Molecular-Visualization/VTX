@@ -90,10 +90,10 @@ else()
 endif()
 
 # TODO : are those lines usefull ?
-#target_link_libraries(vtx_python_binding PUBLIC EnTT::EnTT)
-#target_link_libraries(vtx_python_binding_no_opengl PUBLIC EnTT::EnTT)
-#target_link_libraries(vtx_python_binding_test PUBLIC EnTT::EnTT)
-#target_link_libraries(vtx_python_bin PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_python_binding PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_python_binding_no_opengl PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_python_binding_test PUBLIC EnTT::EnTT)
+target_link_libraries(vtx_python_bin PUBLIC EnTT::EnTT)
 # !TODO
 
 
