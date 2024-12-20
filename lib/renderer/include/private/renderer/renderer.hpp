@@ -4,14 +4,14 @@
 #include "caches.hpp"
 #include "context/opengl_45.hpp"
 #include "passes.hpp"
-#include "proxy/camera.hpp"
-#include "proxy/color_layout.hpp"
-#include "proxy/mesh.hpp"
-#include "proxy/render_settings.hpp"
-#include "proxy/representation.hpp"
-#include "proxy/system.hpp"
-#include "proxy/voxels.hpp"
 #include "render_graph.hpp"
+#include "renderer/proxy/camera.hpp"
+#include "renderer/proxy/color_layout.hpp"
+#include "renderer/proxy/mesh.hpp"
+#include "renderer/proxy/render_settings.hpp"
+#include "renderer/proxy/representation.hpp"
+#include "renderer/proxy/system.hpp"
+#include "renderer/proxy/voxels.hpp"
 #include "scheduler/depth_first_search.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
@@ -60,7 +60,9 @@ namespace VTX::Renderer
 			VTX_TRACE( "Resizing renderer to {}x{}", width, height );
 
 			if ( _context == nullptr )
+			{
 				return;
+			}
 
 			width  = p_width;
 			height = p_height;
@@ -72,6 +74,43 @@ namespace VTX::Renderer
 
 			setNeedUpdate( true );
 		}
+
+		inline Pass * const addPass( const Pass & p_pass )
+		{
+			assert( _renderGraph != nullptr );
+			return _renderGraph->addPass( p_pass );
+		}
+
+		inline void removePass( const Pass * const p_pass )
+		{
+			assert( _renderGraph != nullptr );
+			_renderGraph->removePass( p_pass );
+		}
+
+		inline bool addLink(
+			Pass * const	   p_passSrc,
+			Pass * const	   p_passDest,
+			const E_CHAN_OUT & p_channelSrc	 = E_CHAN_OUT::COLOR_0,
+			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
+		)
+		{
+			assert( _renderGraph != nullptr );
+			return _renderGraph->addLink( p_passSrc, p_passDest, p_channelSrc, p_channelDest );
+		}
+
+		inline void removeLink( const Link * const p_link )
+		{
+			assert( _renderGraph != nullptr );
+			_renderGraph->removeLink( p_link );
+		}
+
+		inline Passes &		  getPasses() { return _renderGraph->getPasses(); }
+		inline Links &		  getLinks() { return _renderGraph->getLinks(); }
+		inline RenderQueue &  getRenderQueue() { return _renderGraph->getRenderQueue(); }
+		inline const Output * getOutput() { return _renderGraph->getOutput(); }
+		inline void			  setOutput( const Output * const p_output ) { _renderGraph->setOutput( p_output ); }
+
+		inline bool isInRenderQueue( const Pass * const p_pass ) { return _renderGraph->isInRenderQueue( p_pass ); }
 
 		inline void setOutput( const Handle p_output )
 		{

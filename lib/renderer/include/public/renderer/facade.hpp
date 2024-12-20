@@ -1,7 +1,9 @@
 #ifndef __VTX_RENDERER_FACADE__
 #define __VTX_RENDERER_FACADE__
 
-#include "struct_infos.hpp"
+#include "renderer/descriptors.hpp"
+#include "renderer/struct_infos.hpp"
+#include <any>
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
@@ -29,7 +31,10 @@ namespace VTX::Renderer
 		~Facade();
 		void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 );
 		void build( const uint p_output = 0, void * p_loader = nullptr );
+		void clean();
+		bool hasContext() const;
 		void render( const float p_deltaTime, const float p_elapsedTime );
+		void setValue( const std::any & p_value, const std::string & p_key, const size_t p_index = 0 );
 		void setOutput( const uint p_output );
 		void addProxySystem( Proxy::System & p_proxy );
 		void removeProxySystem( Proxy::System & p_proxy );
@@ -51,9 +56,47 @@ namespace VTX::Renderer
 			const float			 p_near,
 			const float			 p_far
 		);
+
+		size_t		getWidth() const;
+		size_t		getHeight() const;
 		Vec2i		getPickedIds( const size_t p_x, const size_t p_y ) const;
 		void		setNeedUpdate( const bool p_value );
 		StructInfos getInfos() const;
+
+		static uint getBufferCount();
+
+		// Dev.
+		void addPass( const Pass & p_pass );
+		void removePass( const Pass * const p_pass );
+		bool addLink(
+			Pass * const	   p_passSrc,
+			Pass * const	   p_passDest,
+			const E_CHAN_OUT & p_channelSrc	 = E_CHAN_OUT::COLOR_0,
+			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
+		);
+		void							   removeLink( const Link * const p_link );
+		Passes &						   getPasses();
+		Links &							   getLinks();
+		RenderQueue &					   getRenderQueue();
+		const Output *					   getOutput();
+		void							   setOutput( const Output * const p_output );
+		bool							   isInRenderQueue( const Pass * const p_pass );
+		void							   compileShaders() const;
+		const InstructionsDurationRanges & getInstructionsDurationRanges() const;
+		const std::vector<Pass *> &		   getAvailablePasses() const;
+
+		bool * showAtoms;
+		bool * showBonds;
+		bool * showRibbons;
+		bool * showVoxels;
+
+		bool * forceUpdate;
+		bool * logDurations;
+
+		Draw::Range * drawRangeSpheres;
+		Draw::Range * drawRangeCylinders;
+		Draw::Range * drawRangeRibbons;
+		Draw::Range * drawRangeVoxels;
 
 		Util::Callback<> & onReady();
 

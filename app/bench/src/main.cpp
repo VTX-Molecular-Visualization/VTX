@@ -3,6 +3,8 @@
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/facade.hpp>
+#include <renderer/proxy/representation.hpp>
+#include <renderer/proxy/voxels.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -35,7 +37,7 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
+		Renderer::Facade renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.build();
 		renderer.setProxyCamera( scene.getProxyCamera() );
 

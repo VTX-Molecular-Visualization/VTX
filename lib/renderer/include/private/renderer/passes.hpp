@@ -1,8 +1,8 @@
 #ifndef __VTX_RENDERER_PASSES__
 #define __VTX_RENDERER_PASSES__
 
-#include "descriptors.hpp"
-#include "settings.hpp"
+#include "renderer/descriptors.hpp"
+#include "renderer/settings.hpp"
 #include <util/constants.hpp>
 #include <util/math.hpp>
 
