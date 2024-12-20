@@ -34,7 +34,7 @@ namespace VTX::Renderer
 		void clean();
 		bool hasContext() const;
 		void render( const float p_deltaTime, const float p_elapsedTime );
-		void setValue( const std::any & p_value, const std::string & p_key, const size_t p_index = 0 );
+
 		void setOutput( const uint p_output );
 		void addProxySystem( Proxy::System & p_proxy );
 		void removeProxySystem( Proxy::System & p_proxy );
@@ -84,6 +84,15 @@ namespace VTX::Renderer
 		void							   compileShaders() const;
 		const InstructionsDurationRanges & getInstructionsDurationRanges() const;
 		const std::vector<Pass *> &		   getAvailablePasses() const;
+
+		void setValue( const float p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const int p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const uint p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const bool p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const Vec2f & p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const Vec2i & p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const Vec3f & p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const Vec4f & p_value, const std::string & p_key, const size_t p_index = 0 );
 
 		// TODO: accessors.
 		bool * showAtoms;

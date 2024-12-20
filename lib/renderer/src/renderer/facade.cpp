@@ -36,11 +36,6 @@ namespace VTX::Renderer
 		_renderer->render( p_deltaTime, p_elapsedTime );
 	}
 
-	void Facade::setValue( const std::any & p_value, const std::string & p_key, const size_t p_index )
-	{
-		_renderer->setValue( p_value, p_key, p_index );
-	}
-
 	void Facade::setOutput( const uint p_output ) { _renderer->setOutput( p_output ); }
 
 	void Facade::addProxySystem( Proxy::System & p_proxy ) { _renderer->addProxySystem( p_proxy ); }
@@ -153,5 +148,45 @@ namespace VTX::Renderer
 	const std::vector<Pass *> & Facade::getAvailablePasses() const { return _renderer->getAvailablePasses(); }
 
 	Util::Callback<> & Facade::onReady() { return _renderer->onReady; }
+
+	void Facade::setValue( const float p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const uint p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const int p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const bool p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const Vec2f & p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const Vec2i & p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const Vec3f & p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
+
+	void Facade::setValue( const Vec4f & p_value, const std::string & p_key, const size_t p_index )
+	{
+		_renderer->setValue( p_value, p_key, p_index );
+	}
 
 } // namespace VTX::Renderer

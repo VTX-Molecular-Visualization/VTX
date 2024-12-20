@@ -67,9 +67,10 @@ namespace VTX::Renderer::Context
 		 * @tparam T the data type to store.
 		 * @param p_size the number of items to store.
 		 * @param p_key the buffer name.
+		 * @param p_dummy a dummy value to infer the data type for concept deduction.
 		 */
 		template<typename T>
-		inline void reserveData( const size_t p_size, const Key & p_key, const T = T() )
+		inline void reserveData( const size_t p_size, const Key & p_key, const T p_dummy = T() )
 		{
 			assert( _buffers.contains( p_key ) );
 
