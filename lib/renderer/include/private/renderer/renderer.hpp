@@ -27,12 +27,6 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		/**
-		 * @brief The render graph with OpenGL45 API and the DFS scheduler.
-		 */
-		using RenderGraphOpenGL45 = RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch>;
-		using RenderGraphDefault  = RenderGraph<Context::Default, Scheduler::DepthFirstSearch>;
-
 		Renderer(
 			const size_t	 p_width,
 			const size_t	 p_height,
@@ -263,12 +257,12 @@ namespace VTX::Renderer
 		Util::Callback<> onReady;
 
 	  private:
-		Context::OpenGL45 *					 _context		  = nullptr;
-		void *								 _loader		  = nullptr;
-		bool								 _needUpdate	  = false;
-		size_t								 _framesRemaining = BUFFER_COUNT;
-		FilePath							 _shaderPath;
-		std::unique_ptr<RenderGraphOpenGL45> _renderGraph;
+		Context::Context *			 _context		  = nullptr;
+		void *						 _loader		  = nullptr;
+		bool						 _needUpdate	  = false;
+		size_t						 _framesRemaining = BUFFER_COUNT;
+		FilePath					 _shaderPath;
+		std::unique_ptr<RenderGraph> _renderGraph;
 		// All instructions computed by the graph and his context.
 		Instructions _instructions;
 		// Used to log render times.

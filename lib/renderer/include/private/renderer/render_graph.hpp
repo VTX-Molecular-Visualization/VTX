@@ -10,10 +10,7 @@ namespace VTX::Renderer
 {
 	/**
 	 * @brief A graph with nodes (passes) and links.
-	 * @tparam C The render context.
-	 * @tparam S The scheduler that convert graph to render queue.
 	 */
-	template<Context::Concept C, Scheduler::Concept S>
 	class RenderGraph
 	{
 	  public:
@@ -113,7 +110,8 @@ namespace VTX::Renderer
 			std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
 		}
 
-		C * setup(
+		template<Context::ConceptContextImpl C, Scheduler::Concept S>
+		Context::Context * setup(
 			void * const				 p_loader,
 			const size_t				 p_width,
 			const size_t				 p_height,
@@ -135,7 +133,8 @@ namespace VTX::Renderer
 			// Compute queue with scheduler.
 			try
 			{
-				_scheduler.schedule( _passes, _links, _output, _renderQueue );
+				S scheduler;
+				scheduler.schedule( _passes, _links, _output, _renderQueue );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -193,9 +192,8 @@ namespace VTX::Renderer
 		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
 
 	  private:
-		S				   _scheduler;
-		RenderQueue		   _renderQueue;
-		std::unique_ptr<C> _context;
+		RenderQueue						  _renderQueue;
+		std::unique_ptr<Context::Context> _context;
 
 		const Output *			_output;
 		Passes					_passes;

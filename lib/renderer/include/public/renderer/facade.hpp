@@ -3,7 +3,6 @@
 
 #include "renderer/descriptors.hpp"
 #include "renderer/struct_infos.hpp"
-#include <any>
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
@@ -21,7 +20,7 @@ namespace VTX::Renderer
 	} // namespace Proxy
 
 	/**
-	 * @brief The facade is the only way to access the renderer from another package.
+	 * @brief The facade is the only way to access the renderer from another package (pimpl).
 	 */
 	class Facade
 	{

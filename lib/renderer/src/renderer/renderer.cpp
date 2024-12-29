@@ -12,7 +12,7 @@ namespace VTX::Renderer
 		width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
 	{
 		// Graph.
-		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
+		_renderGraph = std::make_unique<RenderGraph>();
 
 		// Passes.
 		_refreshGraph();
@@ -226,7 +226,7 @@ namespace VTX::Renderer
 			Util::String::durationToStr( Util::CHRONO_CPU(
 				[ & ]()
 				{
-					_context = _renderGraph->setup(
+					_context = _renderGraph->setup<Context::OpenGL45, Scheduler::DepthFirstSearch>(
 						p_loader ? p_loader : _loader,
 						width,
 						height,
@@ -375,6 +375,8 @@ namespace VTX::Renderer
 				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
 			);
 			_context->setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+				cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst()
+			);
 		};
 
 		// Remove.
@@ -385,6 +387,8 @@ namespace VTX::Renderer
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			_context->setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
+				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
+			);
 		};
 
 		// Colors.
@@ -392,6 +396,8 @@ namespace VTX::Renderer
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			_context->setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+				p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst()
+			);
 		};
 
 		// Residue colors.
@@ -452,6 +458,8 @@ namespace VTX::Renderer
 			*/
 
 			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+				cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst()
+			);
 
 			// TODO: ribbons and SES.
 		};
@@ -745,6 +753,8 @@ namespace VTX::Renderer
 		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
 		{
 			_context->setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
+				{ ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index
+			);
 			setNeedUpdate( true );
 		};
 	}
