@@ -11,7 +11,7 @@ find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
-#find_package(EnTT CONFIG REQUIRED)
+find_package(EnTT CONFIG REQUIRED)
 
 set(_VTX_PYTHON_BINDING_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)

@@ -89,7 +89,13 @@ else()
 	#target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 endif()
 
-# TODO : are those lines usefull ?
+# TODO : Try and remove entt from here.
+# 	Context :
+#		EnTT is a public dependency of vtx_app, and EnTT's headers are used in public headers of vtx_app.
+#		Hence, EnTT's headers are going to be present in direct consumers of vtx_app.
+#		While transitive_headers would flow through conan package smoothly when the library is a simple one without components (as defined by conan), when vtx_app had to get more complex, it worked no more.
+# 		It had to be done to allow test projects to link a library with a mocked opengl context (so tests don't crash because no graphic windows is opened)
+#		However, it feels weird that the conan components doesn't allow to pass transitive_headers through. (bug ? never reported afaik)
 target_link_libraries(vtx_python_binding PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_python_binding_no_opengl PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_python_binding_test PUBLIC EnTT::EnTT)
