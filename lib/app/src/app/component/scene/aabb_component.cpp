@@ -22,16 +22,18 @@ namespace VTX::App::Component::Scene
 
 	void AABB::invalidateAABB() { _aabb.invalidate(); }
 
-	const Util::Math::AABB & AABB::getLocalAABB() const
+	const Util::Math::AABB & AABB::getLocalAABB()
 	{
-		if ( !_aabb.isValid() )
+		if ( not _aabb.isValid() )
+		{
 			_aabb = _recomputeAABB();
+		}
 		return _aabb;
 	};
 
-	const Util::Math::AABB & AABB::getWorldAABB() const
+	const Util::Math::AABB & AABB::getWorldAABB()
 	{
-		if ( !_worldAabb.isValid() )
+		if ( not _worldAabb.isValid() )
 		{
 			Core::ECS::BaseEntity entity = ECS_REGISTRY().getEntity( *this );
 

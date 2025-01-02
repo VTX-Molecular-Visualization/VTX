@@ -13,35 +13,26 @@ namespace VTX::Util::Math
 		AABB()	= default;
 		~AABB() = default;
 
-		explicit AABB( const Vec3f & p_point ) : data { { p_point, p_point } } {}
+		AABB( const Vec3f & p_point );
 		AABB( const Vec3f & p_min, const Vec3f & p_max );
 		AABB( const Vec3f & p_center, const float p_radius );
 
 		void invalidate()
 		{
-			data.minMax.min = VEC3F_MAX;
-			data.minMax.max = VEC3F_LOWEST;
+			_min = VEC3F_MAX;
+			_max = VEC3F_LOWEST;
 		}
 
-		bool isValid() const
-		{
-			return ( ( data.minMax.min.x <= data.minMax.max.x ) && ( data.minMax.min.y <= data.minMax.max.y )
-					 && ( data.minMax.min.z <= data.minMax.max.z ) );
-		}
+		bool isValid() const { return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
 
-		inline const Vec3f & getMin() const { return data.minMax.min; }
-		inline const Vec3f & getMax() const { return data.minMax.max; }
+		inline const Vec3f & getMin() const { return _min; }
+		inline const Vec3f & getMax() const { return _max; }
 
 		inline std::vector<Vec3f> getSummits() const
 		{
-			return { { data.minMax.min.x, data.minMax.min.y, data.minMax.min.z },
-					 { data.minMax.min.x, data.minMax.min.y, data.minMax.max.z },
-					 { data.minMax.min.x, data.minMax.max.y, data.minMax.min.z },
-					 { data.minMax.min.x, data.minMax.max.y, data.minMax.max.z },
-					 { data.minMax.max.x, data.minMax.min.y, data.minMax.min.z },
-					 { data.minMax.max.x, data.minMax.min.y, data.minMax.max.z },
-					 { data.minMax.max.x, data.minMax.max.y, data.minMax.min.z },
-					 { data.minMax.max.x, data.minMax.max.y, data.minMax.max.z } };
+			return { { _min.x, _min.y, _min.z }, { _min.x, _min.y, _max.z }, { _min.x, _max.y, _min.z },
+					 { _min.x, _max.y, _max.z }, { _max.x, _min.y, _min.z }, { _max.x, _min.y, _max.z },
+					 { _max.x, _max.y, _min.z }, { _max.x, _max.y, _max.z } };
 		}
 
 		void extend( const Vec3f & p_point );
@@ -50,19 +41,25 @@ namespace VTX::Util::Math
 
 		void translate( const Vec3f & );
 
-		Vec3f diagonal() const { return data.minMax.max - data.minMax.min; }
+		Vec3f diagonal() const { return _max - _min; }
 		float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
 		float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
-		Vec3f centroid() const { return ( data.minMax.min + data.minMax.max ) * 0.5f; }
+		Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
 		uint  largestAxis() const
 		{
 			const Vec3f d = diagonal();
 			if ( d.x > d.y && d.x > d.z )
+			{
 				return 0;
+			}
 			else if ( d.y > d.z )
+			{
 				return 1;
+			}
 			else
+			{
 				return 2;
+			}
 		}
 		float area() const
 		{
@@ -72,45 +69,47 @@ namespace VTX::Util::Math
 
 		Vec3f offset( const Vec3f & p_pt ) const
 		{
-			Vec3f o = p_pt - data.minMax.min;
-			if ( data.minMax.max.x > data.minMax.min.x )
-				o.x /= data.minMax.max.x - data.minMax.min.x;
-			if ( data.minMax.max.y > data.minMax.min.y )
-				o.y /= data.minMax.max.y - data.minMax.min.y;
-			if ( data.minMax.max.z > data.minMax.min.z )
-				o.z /= data.minMax.max.z - data.minMax.min.z;
+			Vec3f o = p_pt - _min;
+			if ( _max.x > _min.x )
+			{
+				o.x /= _max.x - _min.x;
+			}
+			if ( _max.y > _min.y )
+			{
+				o.y /= _max.y - _min.y;
+			}
+			if ( _max.z > _min.z )
+			{
+				o.z /= _max.z - _min.z;
+			}
 			return o;
 		}
+
 		float offset( const Vec3f & p_pt, const uint p_dim ) const
 		{
-			float o = p_pt[ p_dim ] - data.minMax.min[ p_dim ];
-			if ( data.minMax.max[ p_dim ] > data.minMax.min[ p_dim ] )
-				o /= data.minMax.max[ p_dim ] - data.minMax.min[ p_dim ];
+			float o = p_pt[ p_dim ] - _min[ p_dim ];
+			if ( _max[ p_dim ] > _min[ p_dim ] )
+			{
+				o /= _max[ p_dim ] - _min[ p_dim ];
+			}
 			return o;
 		}
 
-		bool intersect( const Vec3f & p_rayPosition,
-						const Vec3f & p_rayInvDir,
-						const Vec3i & p_isDirNeg,
-						const float	  p_tMin,
-						const float	  p_tMax ) const;
+		/*
+		bool intersect(
+			const Vec3f & p_rayPosition,
+			const Vec3f & p_rayInvDir,
+			const Vec3i & p_isDirNeg,
+			const float	  p_tMin,
+			const float	  p_tMax
+		) const;
+		*/
 
 		static AABB join( const AABB & p_aabb1, const AABB & p_aabb2 );
-		union
-		{
-			struct
-			{
-				Vec3f min;
-				Vec3f max;
-			} minMax;
-			Vec3f limits[ 2 ] = { VEC3F_MAX, VEC3F_LOWEST };
-		} data;
 
 	  private:
-		enum ATTRIBUTE_LOCATION
-		{
-			AABB_CORNER = 0
-		};
+		Vec3f _min = VEC3F_MAX;
+		Vec3f _max = VEC3F_LOWEST;
 	};
 } // namespace VTX::Util::Math
 

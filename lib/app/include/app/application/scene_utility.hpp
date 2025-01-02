@@ -7,7 +7,7 @@
 
 namespace VTX::App::Application::SceneUtility
 {
-	using UpdateCallback = std::function<void( float )>;
+	// using UpdateCallback = std::function<void( float )>;
 
 	Core::ECS::BaseEntity findItemByUID( const Core::UID::uid & p_uid );
 } // namespace VTX::App::Application::SceneUtility

@@ -20,17 +20,17 @@ namespace VTX::Renderer
 	using Size = std::optional<std::variant<size_t, float>>;
 	struct Attachment
 	{
-		E_FORMAT								   format		= E_FORMAT::RGBA16F;
-		E_WRAPPING								   wrappingS	= E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING								   wrappingT	= E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING								   filteringMin = E_FILTERING::NEAREST;
-		E_FILTERING								   filteringMag = E_FILTERING::NEAREST;
-		Size									   width		= std::nullopt;
-		Size									   height		= std::nullopt;
-		void *									   data			= nullptr;
+		E_FORMAT	format		 = E_FORMAT::RGBA16F;
+		E_WRAPPING	wrappingS	 = E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING	wrappingT	 = E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING filteringMin = E_FILTERING::NEAREST;
+		E_FILTERING filteringMag = E_FILTERING::NEAREST;
+		Size		width		 = std::nullopt;
+		Size		height		 = std::nullopt;
+		void *		data		 = nullptr;
 	};
 
-	struct Data
+	struct BufferDraw
 	{
 		struct Entry
 		{
@@ -41,25 +41,8 @@ namespace VTX::Renderer
 		std::vector<Entry> entries;
 	};
 
-	struct Storage
-	{
-	};
-
-	using Handle = uint;
-	using IO	 = std::variant<Attachment, Storage, Data>;
-
-	struct Input
-	{
-		std::string name;
-		IO			desc;
-	};
-
-	struct Output : public Input
-	{
-	};
-
 	template<typename T>
-	struct StructUniformValue
+	struct BufferValue
 	{
 		T value;
 
@@ -72,28 +55,62 @@ namespace VTX::Renderer
 		std::optional<MinMax> minMax;
 	};
 
-	using UniformValue = std::variant<
-		StructUniformValue<bool>,
-		StructUniformValue<char>,
-		StructUniformValue<uchar>,
-		StructUniformValue<short>,
-		StructUniformValue<ushort>,
-		StructUniformValue<int>,
-		StructUniformValue<uint>,
-		StructUniformValue<float>,
-		StructUniformValue<Vec2i>,
-		StructUniformValue<Vec2f>,
-		StructUniformValue<Vec3f>,
-		StructUniformValue<Vec4f>,
-		StructUniformValue<Mat3f>,
-		StructUniformValue<Mat4f>,
-		StructUniformValue<Util::Color::Rgba>>;
+	using BufferDataValueVariant = std::variant<
+		BufferValue<bool>,
+		BufferValue<char>,
+		BufferValue<uchar>,
+		BufferValue<short>,
+		BufferValue<ushort>,
+		BufferValue<int>,
+		BufferValue<uint>,
+		BufferValue<float>,
+		BufferValue<Vec2i>,
+		BufferValue<Vec2f>,
+		BufferValue<Vec3f>,
+		BufferValue<Vec4f>,
+		BufferValue<Mat3f>,
+		BufferValue<Mat4f>,
+		BufferValue<Util::Color::Rgba>>;
 
-	struct Uniform
+	struct BufferDataValue
 	{
-		std::string	 name;
-		E_TYPE		 type;
-		UniformValue value;
+		std::string			   name;
+		E_TYPE				   type;
+		BufferDataValueVariant value;
+	};
+
+	using BufferDataValues = std::vector<BufferDataValue>;
+
+	struct BufferData
+	{
+		std::string		 name;
+		char			 binding;
+		BufferDataValues values;
+		size_t			 size		 = 0;
+		void * const	 data		 = nullptr;
+		bool			 isLarge	 = false; // If max size >64 Ko
+		bool			 isSizeFixed = false; // TODO: use variant of flags enums.
+
+		/*
+		struct BufferDraw
+		{
+			size_t size;
+			void * data;
+		};
+		*/
+	};
+
+	using Handle = uint;
+	using IO	 = std::variant<Attachment, BufferData, BufferDraw>;
+
+	struct Input
+	{
+		std::string name;
+		IO			desc;
+	};
+
+	struct Output : public Input
+	{
 	};
 
 	using NeedRenderFunc = std::function<bool()>;
@@ -115,23 +132,13 @@ namespace VTX::Renderer
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
 
-	using Uniforms = std::vector<Uniform>;
-
-	struct SharedUniform
-	{
-		std::string name;
-		Uniforms	uniforms;
-		char		binding;
-		bool		isDynamic = false;
-	};
-
-	using SharedUniforms = std::vector<SharedUniform>;
+	using BufferDataList = std::vector<BufferData>;
 
 	struct Program
 	{
 		std::string			name;
 		Files				shaders;
-		Uniforms			uniforms;
+		BufferDataValues	data;
 		std::optional<Draw> draw;
 		std::string			toInject;
 		std::string			suffix;
@@ -156,18 +163,11 @@ namespace VTX::Renderer
 
 	struct ComputePass
 	{
-		Program program;
+		std::string name;
+		Program		program;
 
-		struct Data
-		{
-			size_t size;
-			void * data;
-			uint   binding;
-			bool   overwrite = false; // TODO: force data?
-		};
-
-		std::vector<ComputePass::Data *> data;
-		std::variant<Vec3i, size_t>		 size;
+		std::vector<BufferData>		data;
+		std::variant<Vec3i, size_t> size;
 	};
 
 	struct Link
@@ -204,9 +204,10 @@ namespace VTX::Renderer
 			// TODO: check compatibility.
 			return true;
 		}
-		bool operator()( const Storage & p_left, const Storage & p_right ) const { return false; }
 
-		bool operator()( const Data & p_left, const Data & p_right ) const { return false; }
+		bool operator()( const BufferDraw & p_left, const BufferDraw & p_right ) const { return false; }
+
+		bool operator()( const BufferData & p_left, const BufferData & p_right ) const { return false; }
 
 		template<typename T, typename U>
 		bool operator()( const T & p_left, const U & p_right ) const

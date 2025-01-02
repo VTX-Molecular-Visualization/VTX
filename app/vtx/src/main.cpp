@@ -5,6 +5,7 @@
 #include <util/types.hpp>
 #include <vector>
 
+// TODO: replace by dll loading?
 // TODO: move to conan.
 #define VTX_UI_QT
 // #define VTX_TOOL_EXAMPLE

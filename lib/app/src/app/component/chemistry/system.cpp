@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <util/algorithm/range.hpp>
 #include <util/constants.hpp>
+#include <util/logger.hpp>
 
 namespace
 {
@@ -31,22 +32,22 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	System::System()
-	{
-		_chains	  = std::vector<std::unique_ptr<Chemistry::Chain>>();
-		_residues = std::vector<std::unique_ptr<Chemistry::Residue>>();
-		_atoms	  = std::vector<std::unique_ptr<Chemistry::Atom>>();
-		_bonds	  = std::vector<std::unique_ptr<Chemistry::Bond>>();
-	};
+	System::System() {}
+
 	System::System( VTX::Core::Struct::System & p_systemStruct ) { setSystemStruct( p_systemStruct ); }
+
 	System::~System()
 	{
 		if ( _atomUidRange.isValid() )
+		{
 			UID_SYSTEM().unregister( _atomUidRange );
+		}
 
 		if ( _residueUidRange.isValid() )
+		{
 			UID_SYSTEM().unregister( _residueUidRange );
-	};
+		}
+	}
 
 	void System::setSystemStruct( VTX::Core::Struct::System & p_systemStruct )
 	{
@@ -78,6 +79,8 @@ namespace VTX::App::Component::Chemistry
 			_residues.end(),
 			[ this, n = 0 ]() mutable { return std::move( std::make_unique<Residue>( this, n++ ) ); }
 		);
+
+		_residueUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_residueCount ) );
 
 		_realResidueCount = p_residueCount;
 	}

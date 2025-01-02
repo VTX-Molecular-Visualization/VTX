@@ -1,6 +1,6 @@
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/chemistry/system.hpp"
-#include "app/component/scene/scene_item_component.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Component::Chemistry
@@ -37,20 +37,23 @@ namespace VTX::App::Component::Chemistry
 		};
 
 		if ( resetPlayer )
+		{
 			_player->reset();
+		}
 	}
 
 	void Trajectory::_update( const float p_deltaTime )
 	{
 		if ( _player != nullptr )
+		{
 			_player->update( p_deltaTime );
+		}
 	}
 
 	void Trajectory::_referenceUpdateFunction()
 	{
-		Component::Scene::SceneItemComponent & sceneComponent
-			= ECS_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
-		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
+		auto & updatable = ECS_REGISTRY().getComponent<Component::Scene::Updatable>( *this );
+		updatable.addUpdateFunction( [ this ]( const float p_deltaTime, const float ) { _update( p_deltaTime ); } );
 	}
 
 } // namespace VTX::App::Component::Chemistry

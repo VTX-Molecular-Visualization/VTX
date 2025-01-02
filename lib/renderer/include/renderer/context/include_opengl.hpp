@@ -67,6 +67,9 @@ constexpr GLuint GL_TEXTURE_2D						   = 0x0DE1;
 constexpr GLuint GL_TEXTURE_2D_ARRAY				   = 0x8C1A;
 constexpr GLuint GL_STATIC_DRAW						   = 0x88E4;
 constexpr GLuint GL_DYNAMIC_DRAW					   = 0x88E8;
+constexpr GLuint GL_DYNAMIC_STORAGE_BIT				   = 0x0100;
+constexpr GLuint GL_MAP_READ_BIT					   = 0x0001;
+constexpr GLuint GL_MAP_WRITE_BIT					   = 0x0002;
 constexpr GLuint GL_STREAM_DRAW						   = 0x88E0;
 constexpr GLuint GL_PATCH_VERTICES					   = 0x8E72;
 constexpr GLuint GL_TRIANGLES						   = 0x0004;
@@ -289,6 +292,7 @@ inline void		 glNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, const GLvoid *
 inline void *	 glMapNamedBuffer( GLuint, GLenum ) { return nullptr; }
 inline void		 glUnmapNamedBuffer( GLuint ) {}
 inline void *	 glMapNamedBufferRange( GLuint, GLintptr, GLsizeiptr, GLbitfield ) { return nullptr; }
+inline void		 glGetNamedBufferSubData( GLuint, GLintptr, GLsizeiptr, void * ) {}
 
 inline GLboolean glIsFramebuffer( GLuint ) { return true; }
 inline void		 glCreateFramebuffers( GLsizei, GLuint * ) {}

@@ -65,6 +65,7 @@ namespace VTX::App::Core::ECS
 		{
 			return _enttRegistry.get<C>( p_entity );
 		}
+
 		template<ConceptComponent C>
 		const C & getComponent( const BaseEntity & p_entity ) const
 		{
@@ -79,6 +80,7 @@ namespace VTX::App::Core::ECS
 			BaseEntity entity = getEntity( p_component );
 			return _enttRegistry.get<C>( entity );
 		}
+
 		template<ConceptComponent C, ConceptComponent CFrom>
 		const C & getComponent( const CFrom & p_component ) const
 		{
@@ -89,7 +91,7 @@ namespace VTX::App::Core::ECS
 		}
 
 		template<ConceptComponent Type, ConceptComponent... Other>
-		View<Type, Other...> findComponents() const
+		const View<Type, Other...> findComponents() const
 		{
 			return View<Type, Other...>( _enttRegistry );
 		}
@@ -99,6 +101,7 @@ namespace VTX::App::Core::ECS
 		{
 			return _enttRegistry.all_of<C>( p_entity );
 		}
+
 		template<ConceptComponent C1, ConceptComponent C2>
 		bool hasComponent( const C2 & p_component ) const
 		{

@@ -1,7 +1,5 @@
 #include "app/component/chemistry/system.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/system_data.hpp"
-#include "app/application/selection/system_granularity.hpp"
 #include "app/component/chemistry/trajectory.hpp"
 #include "app/component/io/system_metadata.hpp"
 #include "app/component/render/proxy_system.hpp"
@@ -11,14 +9,18 @@
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
-#include "app/serialization/io/reader/system_loader.hpp"
+#include "app/selection/system_data.hpp"
+#include "app/selection/system_granularity.hpp"
 #include "app/settings.hpp"
+#include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
+#include <util/logger.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity
@@ -29,28 +31,32 @@ namespace VTX::App::Entity
 		auto & sceneItemComponent = ECS_REGISTRY().addComponent<Component::Scene::SceneItemComponent>( *this );
 
 		// Add components.
+		auto & metaData	  = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
 		auto & system	  = ECS_REGISTRY().addComponent<Component::Chemistry::System>( *this );
 		auto & aabb		  = ECS_REGISTRY().addComponent<Component::Scene::AABB>( *this );
 		auto & transform  = ECS_REGISTRY().addComponent<Component::Scene::Transform>( *this );
-		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 		auto & uid		  = ECS_REGISTRY().addComponent<Component::Scene::UIDComponent>( *this );
 		auto & selectable = ECS_REGISTRY().addComponent<Component::Scene::Selectable>( *this );
 		auto & pickable	  = ECS_REGISTRY().addComponent<Component::Scene::Pickable>( *this );
+		auto & updatable  = ECS_REGISTRY().addComponent<Component::Scene::Updatable>( *this );
+		auto & proxy	  = ECS_REGISTRY().addComponent<Component::Render::ProxySystem>( *this );
 
 		// Load system.
-		Serialization::IO::Reader::SystemLoader loader;
-		auto & metaData = ECS_REGISTRY().addComponent<Component::IO::SystemMetadata>( *this );
+		IO::Reader::System		  loader;
+		VTX::Core::Struct::System systemStruct;
 
-		if ( _buffer ) // Buffer.
+		if ( _buffer ) // From buffer.
 		{
 			VTX_DEBUG( "Path: {}", _path.string() );
-			loader.readBuffer( *_buffer, _path, system );
+			loader.readBuffer( *_buffer, _path, systemStruct );
 		}
-		else // Filepath
+		else // From disk.
 		{
-			loader.readFile( _path, system );
+			loader.readFile( _path, systemStruct );
 			metaData.path = _path;
 		}
+
+		system.setSystemStruct( systemStruct );
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
 		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
@@ -65,7 +71,7 @@ namespace VTX::App::Entity
 		uid.referenceUID( system.getAtomUIDs() );
 
 		// Selectable.
-		selectable.setSelectionDataGenerator<Application::Selection::SystemData>();
+		selectable.setSelectionDataGenerator<Selection::SystemData>();
 
 		// AABB.
 		aabb.init();
@@ -102,16 +108,16 @@ namespace VTX::App::Entity
 
 		// Picking.
 		pickable.setPickingFunction(
-			[ & ]( const Application::Selection::PickingInfo & p_pickingInfo )
+			[ & ]( const Selection::PickingInfo & p_pickingInfo )
 			{
-				const auto granularity = SETTINGS_SYSTEM().get<Application::Selection::Granularity>(
-					Settings::Selection::MOLECULE_GRANULARITY_KEY
-				);
+				const auto granularity
+					= SETTINGS_SYSTEM().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
 
-				std::unique_ptr<Application::Selection::SelectionData> res
-					= std::make_unique<Application::Selection::SystemData>( selectable );
-				auto & molData = dynamic_cast<Application::Selection::SystemData &>( *res );
+				std::unique_ptr<Selection::SelectionData> res = std::make_unique<Selection::SystemData>( selectable );
+				auto &									  molData = dynamic_cast<Selection::SystemData &>( *res );
 				molData.clear();
+
+				bool test = system.getResidueUIDs().contains( p_pickingInfo.getFirst() );
 
 				if ( p_pickingInfo.hasOneValue() )
 				{
@@ -124,7 +130,7 @@ namespace VTX::App::Entity
 						if ( atomPtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
+								Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
 							);
 						}
 					}
@@ -137,7 +143,7 @@ namespace VTX::App::Entity
 						if ( residuePtr != nullptr )
 						{
 							molData.set(
-								Application::Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
+								Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
 							);
 						}
 					}
@@ -155,11 +161,11 @@ namespace VTX::App::Entity
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Application::Selection::SystemGranularity::getSelectionData(
+							molData.set( Selection::SystemGranularity::getSelectionData(
 								*firstAtomPtr, granularity
 							) );
 
-							molData.add( Application::Selection::SystemGranularity::getSelectionData(
+							molData.add( Selection::SystemGranularity::getSelectionData(
 								*secondAtomPtr, granularity
 							) );
 						}

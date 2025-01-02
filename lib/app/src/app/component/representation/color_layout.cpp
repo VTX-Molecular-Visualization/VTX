@@ -14,9 +14,8 @@ namespace VTX::App::Component::Representation
 	void ColorLayout::setupProxy()
 	{
 		_proxy = std::make_unique<Renderer::Proxy::ColorLayout>( Renderer::Proxy::ColorLayout { &_layout.layout } );
-		onChange += [ this ]( const size_t ) { _proxy->onChange(); };
-		// onChangeAll += _proxy->onChange;
-		onChangeAll += [ this ]() { _proxy->onChange(); };
+		onChange += [ this ]( const size_t p_index ) { _proxy->onChange( p_index ); };
+		onChangeAll += [ this ]() { _proxy->onChangeAll(); };
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyColorLayout( *_proxy ); };
 	}

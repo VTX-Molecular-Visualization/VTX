@@ -40,7 +40,6 @@ namespace VTX
 	using ByteNumber   = size_t;
 
 	using Hash = size_t;
-	using Name = std::string_view;
 } // namespace VTX
 
 #endif

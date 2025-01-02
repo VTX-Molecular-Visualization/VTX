@@ -2,7 +2,7 @@
 #define __VTX_UI_INTERNAL_CONTROLLER_PICKER_SELECTION_PICKER__
 
 #include "app/core/controller/concepts.hpp"
-#include <app/application/selection/picking_info.hpp>
+#include <app/selection/picking_info.hpp>
 #include <util/callback.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
@@ -13,11 +13,7 @@ namespace VTX::App::Controller::Picker
 	class Selection : public Core::Controller::BaseController
 	{
 	  public:
-		using PickingInfo = App::Application::Selection::PickingInfo;
-
-		static inline const Name NAME = "SELECTION";
-
-		Name getName() const override { return NAME; }
+		using PickingInfo = App::Selection::PickingInfo;
 
 		void setActive( const bool );
 		void update( const float, const float ) {}

@@ -68,12 +68,12 @@ namespace VTX::Util
 		*/
 
 		template<typename T>
-		inline bool has()
+		inline bool has() const
 		{
 			return has( hash<T>() );
 		}
 
-		inline bool has( const Hash & p_hash ) { return _map.contains( p_hash ); }
+		inline bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
 
 		template<typename T>
 		inline T * const get()
@@ -145,8 +145,8 @@ namespace VTX::Util
 			return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... );
 		}
 
-		template<typename T>
-		inline void set( T * const p_value )
+		template<typename T, typename V>
+		inline void set( V * const p_value )
 		{
 			set<T>( hash<T>(), p_value );
 		}

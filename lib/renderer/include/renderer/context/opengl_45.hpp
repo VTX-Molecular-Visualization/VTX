@@ -13,6 +13,7 @@
 #include <set>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Renderer::Context
 {
@@ -20,7 +21,8 @@ namespace VTX::Renderer::Context
 	class OpenGL45 : public BaseContext
 	{
 	  public:
-		using Key = std::string;
+		using Key  = std::string;
+		using Keys = std::vector<Key>;
 
 		OpenGL45() = delete;
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
@@ -30,17 +32,17 @@ namespace VTX::Renderer::Context
 		 * @param p_renderQueue the list of passes to render, ordered by the scheduler.
 		 * @param p_links the connections between passes.
 		 * @param p_output the output framebuffer.
-		 * @param p_uniforms the global GPU variables.
+		 * @param p_globalData the global GPU variables.
 		 * @param p_outInstructions the generated instruction list.
 		 * @param p_outInstructionsDurationRanges the generated instruction list grouped by category.
 		 */
 		void build(
-			const RenderQueue &			 p_renderQueue,
-			const Links &				 p_links,
-			const Handle				 p_output,
-			const SharedUniforms &		 p_uniforms,
-			Instructions &				 p_outInstructions,
-			InstructionsDurationRanges & p_outInstructionsDurationRanges
+			const RenderQueue &				p_renderQueue,
+			const Links &					p_links,
+			const Handle					p_output,
+			const std::vector<BufferData> & p_globalData,
+			Instructions &					p_outInstructions,
+			InstructionsDurationRanges &	p_outInstructionsDurationRanges
 		);
 
 		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
@@ -48,17 +50,19 @@ namespace VTX::Renderer::Context
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
 		/**
-		 * @brief Send data to GPU (uniform).
+		 * @brief Send data to GPU.
 		 * @param p_key the buffer name to send on.
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
-			assert( _uniforms.contains( p_key ) );
+			assert( _bufferValueEntries.contains( p_key ) );
 
-			std::unique_ptr<_StructUniformEntry> & entry = _uniforms[ p_key ];
-			entry->buffer->setSubData( p_value, entry->offset + p_index * entry->totalSize, GLsizei( entry->size ) );
+			std::unique_ptr<_StructBufferDataValueEntry> & entry = _bufferValueEntries[ p_key ];
+			entry->buffer->setSub(
+				p_value, GLint( entry->offset + p_index * entry->totalSize ), GLsizei( entry->size )
+			);
 		}
 
 		/**
@@ -77,10 +81,15 @@ namespace VTX::Renderer::Context
 			size		= size > 0 ? size : 1;
 
 			// Scale if needed.
-			if ( _buffers[ p_key ]->getSize() != size )
+			if ( _buffers[ p_key ]->size() != size )
 			{
-				VTX_TRACE( "Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), size );
-				_buffers[ p_key ]->setData( GLsizei( size ), GL_STATIC_DRAW );
+				VTX_TRACE(
+					"Resizing buffer {} : {} -> {}",
+					p_key,
+					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
+					Util::String::memSizeToStr( size )
+				);
+				_buffers[ p_key ]->set( GLsizei( size ), nullptr, 0, GL_STATIC_DRAW );
 			}
 		}
 
@@ -88,7 +97,7 @@ namespace VTX::Renderer::Context
 		 * @brief Send data to GPU (buffer).
 		 */
 		template<typename T>
-		inline void setData( const std::vector<T> & p_data, const Key & p_key )
+		inline void set( const std::vector<T> & p_data, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
@@ -98,16 +107,19 @@ namespace VTX::Renderer::Context
 				reserveData<char>( 0, p_key );
 			}
 			// Auto scale.
-			else if ( _buffers[ p_key ]->getSize() != sizeof( T ) * p_data.size() )
+			else if ( _buffers[ p_key ]->size() != sizeof( T ) * p_data.size() )
 			{
 				VTX_TRACE(
-					"Resizing buffer {} : {} -> {}", p_key, _buffers[ p_key ]->getSize(), sizeof( T ) * p_data.size()
+					"Resizing buffer {} : {} -> {}",
+					p_key,
+					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
+					Util::String::memSizeToStr( sizeof( T ) * p_data.size() )
 				);
-				_buffers[ p_key ]->setData( p_data, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( p_data, 0, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_buffers[ p_key ]->setSubData( p_data );
+				_buffers[ p_key ]->setSub( p_data );
 			}
 		}
 
@@ -115,12 +127,34 @@ namespace VTX::Renderer::Context
 		 * @brief Send data to an existing GPU buffer.
 		 */
 		template<typename T>
-		inline void setSubData( const std::vector<T> & p_data, const Key & p_key, const size_t p_offset = 0 )
+		inline void setSub(
+			const std::vector<T> & p_data,
+			const Key &			   p_key,
+			const size_t		   p_offset		  = 0,
+			const bool			   p_offsetSource = false,
+			const size_t		   p_size		  = 0
+		)
+		{
+			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
+			assert( _buffers.contains( p_key ) );
+
+			_buffers[ p_key ]->setSub(
+				p_data, GLint( p_offset * sizeof( T ) ), p_offsetSource, GLsizei( p_size * sizeof( T ) )
+			);
+		}
+
+		/**
+		 * @brief Get data from GPU buffer.
+		 */
+		template<typename T>
+		inline void get( std::vector<T> & p_data, const Key & p_key )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->setSubData( p_data, GLintptr( p_offset * sizeof( T ) ) );
+			_buffers[ p_key ]->get( p_data );
 		}
+
+		// TODDO: send data to buffer by map()?
 
 		void fillInfos( StructInfos & p_infos ) const;
 
@@ -171,7 +205,6 @@ namespace VTX::Renderer::Context
 		}
 
 		void compute( const ComputePass & p_pass );
-		void clearComputeBuffers( std::optional<std::vector<ComputePass::Data *>> p_buffers = std::nullopt );
 
 	  private:
 		/////////////////// TODO: use collection util class
@@ -188,7 +221,11 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
 		static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
 
-		const Key _KEY_QUAD = "main_quad";
+		const Key _KEY_QUAD_VAO	   = "VAO_QUAD";
+		const Key _KEY_QUAD_BUFFER = "BUFFER_QUAD";
+		const Key _KEY_IN		   = "In";
+		const Key _KEY_OUT		   = "Out";
+		const Key _KEY_EBO		   = "Idx";
 
 		template<typename T>
 		using Collection = std::unordered_map<Key, std::unique_ptr<T>>;
@@ -202,14 +239,14 @@ namespace VTX::Renderer::Context
 		Collection<GL::Texture2D>	_textures;
 		///////////////////
 
-		struct _StructUniformEntry
+		struct _StructBufferDataValueEntry
 		{
 			GL::Buffer * buffer;
 			size_t		 offset;
 			size_t		 size;
 			size_t		 padding;
 			size_t		 totalSize;
-			_StructUniformEntry(
+			_StructBufferDataValueEntry(
 				GL::Buffer * p_buffer,
 				const size_t p_offset,
 				const size_t p_size,
@@ -218,11 +255,9 @@ namespace VTX::Renderer::Context
 			{
 			}
 		};
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		CollectionPtr<GL::Program>			_programs;
-		Collection<_StructUniformEntry>		_uniforms;
-
-		std::map<ComputePass::Data * const, std::unique_ptr<GL::Buffer>> _computeBuffers;
+		std::unique_ptr<GL::ProgramManager>		_programManager;
+		CollectionPtr<GL::Program>				_programs;
+		Collection<_StructBufferDataValueEntry> _bufferValueEntries;
 
 		// Output.
 		Handle _output;
@@ -230,11 +265,12 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		// Keys.
-		const std::string _KEY_EBO_SUFFIX = "Idx";
-		inline Key		  _getKey( const SharedUniform & p_uniform ) const { return p_uniform.name; }
-		inline Key		  _getKey( const Pass & p_pass ) const { return p_pass.name; }
-		inline Key		  _getKey( const Pass * const p_pass, const Program & p_program ) const
+		/////////////////////////////////////
+		// TODO: rework.
+		/*
+		inline Key _getKey( const BufferData & p_buffer ) const { return p_buffer.name; }
+		inline Key _getKey( const Pass & p_pass ) const { return p_pass.name; }
+		inline Key _getKey( const Pass * const p_pass, const Program & p_program ) const
 		{
 			return ( p_pass ? p_pass->name : "" ) + p_program.name;
 		}
@@ -250,72 +286,55 @@ namespace VTX::Renderer::Context
 		{
 			return p_input.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
 		}
-		inline Key _getKey( const Input & p_input, const Data::Entry & p_entry ) const
+		inline Key _getKey( const Input & p_input, const BufferDraw::Entry & p_entry ) const
 		{
 			return p_input.name + p_entry.name;
 		}
-		inline Key _getKey( const Pass * const p_pass, const Program * const p_program, const Uniform & p_uniform )
-			const
+		inline Key _getKey(
+			const Pass * const		p_pass,
+			const Program * const	p_program,
+			const BufferDataValue & p_bufferDataValue
+		) const
 		{
-			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_uniform.name;
+			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_bufferDataValue.name;
 		}
+		*/
+		//////////////////////////////////////////
 
-		void _createInputs(
-			const Links &	   p_links,
-			const Pass * const p_descPassPtr,
-			std::vector<Key> & p_vertexArrays,
-			std::vector<Key> & p_buffers,
-			std::vector<Key> & p_textures
-		);
+		void _createInputs( const Links &, const Pass * const, const Key, Keys & );
 
-		void _createOuputs(
-			const Pass * const p_descPassPtr,
-			std::set<GLenum> & p_drawBuffers,
-			std::vector<Key> & p_textures
-		);
+		void _createOuputs( const Pass * const, std::set<GLenum> & p_drawBuffers, const Key, Keys & );
+
+		const GL::Program * const _createProgram( const Program &, const Key, Keys & );
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
-			const Links &	   p_links,
-			const Pass * const p_pass,
-			const E_CHAN_IN	   p_channel
+			const Links &,
+			const Pass * const,
+			const E_CHAN_IN
 		);
 
-		bool _hasDepthComponent( const Pass * const p_descPassPtr ) const;
+		bool _hasDepthComponent( const Pass * const ) const;
 
-		void _createTexture( const IO & p_descIO, const Key p_key, std::vector<Key> & p_textures );
+		GL::Texture2D * const _createTexture( const IO &, const Key &, Keys & );
 
 		Vec2i _getTextureSize( const Attachment & ) const;
 
-		void _createUniforms(
-			GL::Buffer * const	  p_ubo,
-			const Uniforms &	  p_uniforms,
-			std::vector<Key> &	  p_uniformKeys,
-			const Program * const p_descProgram = nullptr,
-			const Pass * const	  p_descPassPtr = nullptr
-
-		);
+		GL::Buffer * const _createBufferData( const BufferData &, const Key &, Keys & );
 
 		template<typename T>
-		void _setUniformDefaultValue(
-			const Uniform &		  p_descUniform,
-			const Program * const p_descProgram = nullptr,
-			const Pass * const	  p_descPass	= nullptr
-		)
+		void _setBufferDataDefaultValue( const BufferDataValue & p_value, const Key & p_key )
 		{
-			assert( std::holds_alternative<StructUniformValue<T>>( p_descUniform.value ) );
+			assert( std::holds_alternative<BufferValue<T>>( p_value.value ) );
+			assert( _bufferValueEntries.contains( p_key ) );
 
-			std::string key = _getKey( p_descPass, p_descProgram, p_descUniform );
-			setValue<T>( std::get<StructUniformValue<T>>( p_descUniform.value ).value, key );
+			setValue<T>( std::get<BufferValue<T>>( p_value.value ).value, p_key );
 		}
 
-		void _purgeResources(
-			const std::vector<Key> & p_vertexArrays,
-			const std::vector<Key> & p_buffers,
-			const std::vector<Key> & p_framebuffers,
-			const std::vector<Key> & p_textures,
-			const std::vector<Key> & p_programs,
-			const std::vector<Key> & p_uniforms
-		);
+		/**
+		 * @brief After a build, purge resources that are not needed anymore.
+		 * @param the list of keys to keep, others will be deleted.
+		 */
+		void _purgeResources( const Keys & );
 
 		void				 _getOpenglInfos();
 		static void APIENTRY _debugMessageCallback(

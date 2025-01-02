@@ -1,17 +1,15 @@
 #include "app/vtx_app.hpp"
 #include "app/action/animation.hpp"
 #include "app/action/application.hpp"
+#include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/selection_manager.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/proxy_system.hpp"
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
-#include "app/core/animation/animation_system.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/mode/mode_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
@@ -19,6 +17,7 @@
 #include "app/filesystem.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
+#include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
@@ -49,12 +48,9 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
-		// TODO: remove polymorphism.
-		onUpdate +=
-			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };
-		//// Create Databases
+
+		// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
@@ -73,7 +69,7 @@ namespace VTX::App
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		MODE_SYSTEM().setMode<App::Mode::Visualization>();
+		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
 
 		onStart();
 		for ( Tool::BaseTool * const tool : _tools )
@@ -166,7 +162,7 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		// Old::Application::Selection::SelectionManager::get().deleteModel();
+		// Old::Selection::SelectionManager::get().deleteModel();
 
 		for ( Tool::BaseTool * const tool : _tools )
 		{

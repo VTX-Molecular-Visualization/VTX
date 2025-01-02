@@ -37,12 +37,12 @@ namespace VTX::App::Core::Threading
 		Util::Callback<float> onProgress;
 
 		template<typename T>
-		T getData() const
+		T get() const
 		{
 			return std::any_cast<T>( _data );
 		}
 		template<typename T>
-		void setData( const T & p_data )
+		void set( const T & p_data )
 		{
 			_data = p_data;
 		}

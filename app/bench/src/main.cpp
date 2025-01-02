@@ -84,7 +84,7 @@ int main( int, char ** )
 				}
 				else if ( p_key == SDL_SCANCODE_F4 )
 				{
-					renderer.addProxySystem( scene.addSystem( "3j3q" ) );
+					renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{

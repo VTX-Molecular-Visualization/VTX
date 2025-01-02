@@ -20,9 +20,9 @@ namespace VTX::Renderer
 	inline const Attachment imageR16F { E_FORMAT::R16F };
 	inline const Attachment imageR8 { E_FORMAT::R8 };
 
-	// Data.
+	// BufferDraw.
 	// TODO: compress all.
-	inline const Data dataSpheresCylinders { {
+	inline const BufferDraw dataSpheresCylinders { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
 		{ "Radii", E_TYPE::FLOAT, 1 }, // TODO: move to ubo or hardcode?
@@ -32,7 +32,7 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	inline const Data dataRibbons { {
+	inline const BufferDraw dataRibbons { {
 		{ "Positions", E_TYPE::FLOAT, 4 },
 		{ "Directions", E_TYPE::FLOAT, 3 },
 		{ "Types", E_TYPE::UBYTE, 1 },
@@ -43,7 +43,7 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	inline const Data dataTriangles { {
+	inline const BufferDraw dataTriangles { {
 		{ "Positions", E_TYPE::FLOAT, 3 },
 		{ "Normales", E_TYPE::FLOAT, 3 },
 		{ "Colors", E_TYPE::UBYTE, 1 },
@@ -53,7 +53,7 @@ namespace VTX::Renderer
 		{ "Representations", E_TYPE::UBYTE, 1 },
 	} };
 
-	inline const Data dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
+	inline const BufferDraw dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
 	// Passes.
 
@@ -68,15 +68,16 @@ namespace VTX::Renderer
 				  { E_CHAN_OUT::COLOR_1, { "Color", imageRGBA16F } },
 				  { E_CHAN_OUT::COLOR_2, { "Picking", imageRG32UI } },
 				  { E_CHAN_OUT::DEPTH, { "Depth", imageD32F } } },
-		Programs { { "Sphere", "sphere", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS } },
-				   { "Cylinder", "cylinder", Uniforms {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
-				   { "Ribbon", "ribbon", Uniforms {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
-				   { "Voxel", "voxel", Uniforms {}, Draw { "Voxels", E_PRIMITIVE::POINTS } } },
+		Programs {
+			{ "Sphere", "sphere", BufferDataValues {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS } },
+			{ "Cylinder", "cylinder", BufferDataValues {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
+			{ "Ribbon", "ribbon", BufferDataValues {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
+			{ "Voxel", "voxel", BufferDataValues {}, Draw { "Voxels", E_PRIMITIVE::POINTS } } },
 		{ E_SETTING::CLEAR }
 	};
 
 	// Linearize depth.
-	inline Pass descPassDepth { "Linearize depth",
+	inline Pass descPassDepth { "LinearizeDepth",
 								Inputs { { E_CHAN_IN::_0, { "Depth", imageD32F } } },
 								Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR32F } } },
 								Programs { { "LinearizeDepth",
@@ -122,13 +123,11 @@ namespace VTX::Renderer
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
-			  Uniforms {
-
-				  { { "Intensity",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> {
-						  SSAO_INTENSITY_DEFAULT,
-						  StructUniformValue<float>::MinMax { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } } } } } } }
+			  BufferDataValues { { { "Intensity",
+									 E_TYPE::FLOAT,
+									 BufferValue<float> { SSAO_INTENSITY_DEFAULT,
+														  BufferValue<float>::MinMax { SSAO_INTENSITY_MIN,
+																					   SSAO_INTENSITY_MAX } } } } } } }
 	};
 
 	// Blur.
@@ -138,14 +137,12 @@ namespace VTX::Renderer
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
 		Programs { { "Blur",
 					 std::vector<FilePath> { "default.vert", "blur.frag" },
-					 Uniforms {
-
-						 { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
-						   { "Size",
-							 E_TYPE::FLOAT,
-							 StructUniformValue<float> {
-								 BLUR_SIZE_DEFAULT,
-								 StructUniformValue<float>::MinMax { BLUR_SIZE_MIN, BLUR_SIZE_MAX } } } } } } }
+					 BufferDataValues { { { "Direction", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i( 1, 0 ) } },
+										  { "Size",
+											E_TYPE::FLOAT,
+											BufferValue<float> {
+												BLUR_SIZE_DEFAULT,
+												BufferValue<float>::MinMax { BLUR_SIZE_MIN, BLUR_SIZE_MAX } } } } } } }
 	};
 
 	// Shading.
@@ -169,50 +166,39 @@ namespace VTX::Renderer
 		Programs {
 			{ "Shading",
 			  std::vector<FilePath> { "default.vert", "shading.frag" },
-			  Uniforms {
-
-				  {
-					  { "Background color",
-						E_TYPE::COLOR4,
-						StructUniformValue<Util::Color::Rgba> { COLOR_BACKGROUND_DEFAULT } },
-					  { "Light color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_LIGHT_DEFAULT } },
-					  { "Fog color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_FOG_DEFAULT } },
-					  { "Mode",
-						E_TYPE::UINT,
-						StructUniformValue<uint> {
-							uint( SHADING_MODE_DEFAULT ),
-							StructUniformValue<uint>::MinMax { uint( E_SHADING::DIFFUSE ),
-															   uint( E_SHADING::COUNT ) - 1 } } },
-					  { "Specular factor",
-						E_TYPE::FLOAT,
-						StructUniformValue<float> {
-							SPECULAR_FACTOR_DEFAULT,
-							StructUniformValue<float>::MinMax { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } } },
-					  { "Shininess",
-						E_TYPE::FLOAT,
-						StructUniformValue<float> {
-							SHININESS_DEFAULT,
-							StructUniformValue<float>::MinMax { SHININESS_MIN, SHININESS_MAX } } },
-					  { "Toon steps",
-						E_TYPE::UINT,
-						StructUniformValue<uint> {
-							TOON_STEPS_DEFAULT,
-							StructUniformValue<uint>::MinMax { TOON_STEPS_MIN, TOON_STEPS_MAX } } },
-					  { "Fog near",
-						E_TYPE::FLOAT,
-						StructUniformValue<float> {
-							FOG_NEAR_DEFAULT,
-							StructUniformValue<float>::MinMax { FOG_NEAR_MIN, FOG_NEAR_MAX } } },
-					  { "Fog far",
-						E_TYPE::FLOAT,
-						StructUniformValue<float> { FOG_FAR_DEFAULT,
-													StructUniformValue<float>::MinMax { FOG_FAR_MIN, FOG_FAR_MAX } } },
-					  { "Fog density",
-						E_TYPE::FLOAT,
-						StructUniformValue<float> {
-							FOG_DENSITY_DEFAULT,
-							StructUniformValue<float>::MinMax { FOG_DENSITY_MIN, FOG_DENSITY_MAX } } },
-				  } } } }
+			  BufferDataValues { {
+				  { "BackgroundColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_BACKGROUND_DEFAULT } },
+				  { "LightColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_LIGHT_DEFAULT } },
+				  { "FogColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_FOG_DEFAULT } },
+				  { "Mode",
+					E_TYPE::UINT,
+					BufferValue<uint> {
+						uint( SHADING_MODE_DEFAULT ),
+						BufferValue<uint>::MinMax { uint( E_SHADING::DIFFUSE ), uint( E_SHADING::COUNT ) - 1 } } },
+				  { "SpecularFactor",
+					E_TYPE::FLOAT,
+					BufferValue<float> { SPECULAR_FACTOR_DEFAULT,
+										 BufferValue<float>::MinMax { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } } },
+				  { "Shininess",
+					E_TYPE::FLOAT,
+					BufferValue<float> { SHININESS_DEFAULT,
+										 BufferValue<float>::MinMax { SHININESS_MIN, SHININESS_MAX } } },
+				  { "ToonSteps",
+					E_TYPE::UINT,
+					BufferValue<uint> { TOON_STEPS_DEFAULT,
+										BufferValue<uint>::MinMax { TOON_STEPS_MIN, TOON_STEPS_MAX } } },
+				  { "FogNear",
+					E_TYPE::FLOAT,
+					BufferValue<float> { FOG_NEAR_DEFAULT,
+										 BufferValue<float>::MinMax { FOG_NEAR_MIN, FOG_NEAR_MAX } } },
+				  { "FogFar",
+					E_TYPE::FLOAT,
+					BufferValue<float> { FOG_FAR_DEFAULT, BufferValue<float>::MinMax { FOG_FAR_MIN, FOG_FAR_MAX } } },
+				  { "FogDensity",
+					E_TYPE::FLOAT,
+					BufferValue<float> { FOG_DENSITY_DEFAULT,
+										 BufferValue<float>::MinMax { FOG_DENSITY_MIN, FOG_DENSITY_MAX } } },
+			  } } } }
 	};
 
 	// Outline.
@@ -223,18 +209,17 @@ namespace VTX::Renderer
 		Programs {
 			{ "Outline",
 			  std::vector<FilePath> { "default.vert", "outline.frag" },
-			  Uniforms {
-				  { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-					{ "Sensitivity",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> {
-						  OUTLINE_SENSITIVITY_DEFAULT,
-						  StructUniformValue<float>::MinMax { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX } } },
-					{ "Thickness",
-					  E_TYPE::UINT,
-					  StructUniformValue<uint> {
-						  OUTLINE_THICKNESS_DEFAULT,
-						  StructUniformValue<uint>::MinMax { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX } } } } } } }
+			  BufferDataValues { { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_WHITE } },
+								   { "Sensitivity",
+									 E_TYPE::FLOAT,
+									 BufferValue<float> { OUTLINE_SENSITIVITY_DEFAULT,
+														  BufferValue<float>::MinMax { OUTLINE_SENSITIVITY_MIN,
+																					   OUTLINE_SENSITIVITY_MAX } } },
+								   { "Thickness",
+									 E_TYPE::UINT,
+									 BufferValue<uint> { OUTLINE_THICKNESS_DEFAULT,
+														 BufferValue<uint>::MinMax { OUTLINE_THICKNESS_MIN,
+																					 OUTLINE_THICKNESS_MAX } } } } } } }
 	};
 
 	// Glow.
@@ -244,13 +229,12 @@ namespace VTX::Renderer
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Gow",
 					 std::vector<FilePath> { "default.vert", "glow.frag" },
-					 Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_WHITE } },
-								  { "Sensitivity",
-									E_TYPE::FLOAT,
-									StructUniformValue<float> { 0.f, StructUniformValue<float>::MinMax { 0.f, 1.f } } },
-								  { "Size",
-									E_TYPE::UINT,
-									StructUniformValue<uint> { 1, StructUniformValue<uint>::MinMax { 1, 5 } } } } } } }
+					 BufferDataValues {
+						 { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_WHITE } },
+						   { "Sensitivity",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { 0.f, BufferValue<float>::MinMax { 0.f, 1.f } } },
+						   { "Size", E_TYPE::UINT, BufferValue<uint> { 1, BufferValue<uint>::MinMax { 1, 5 } } } } } } }
 	};
 
 	// Selection.
@@ -260,11 +244,11 @@ namespace VTX::Renderer
 				 { E_CHAN_IN::_1, { "Color", imageRGBA16F } },
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs { { "Selection",
-					 std::vector<FilePath> { "default.vert", "selection.frag" },
-					 Uniforms { { { "Color",
-									E_TYPE::COLOR4,
-									StructUniformValue<Util::Color::Rgba> { COLOR_SELECTION_DEFAULT } } } } } }
+		Programs {
+			{ "Selection",
+			  std::vector<FilePath> { "default.vert", "selection.frag" },
+			  BufferDataValues {
+				  { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_SELECTION_DEFAULT } } } } } }
 	};
 
 	// FXAA.
@@ -280,10 +264,9 @@ namespace VTX::Renderer
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
 		Programs { { "Pixelize",
 					 std::vector<FilePath> { "default.vert", "pixelize.frag" },
-					 Uniforms { { { "Size",
-									E_TYPE::UINT,
-									StructUniformValue<uint> { 5, StructUniformValue<uint>::MinMax { 1, 15 } } },
-								  { "Background", E_TYPE::BOOL, StructUniformValue<bool> { true } } } } } }
+					 BufferDataValues {
+						 { { "Size", E_TYPE::UINT, BufferValue<uint> { 5, BufferValue<uint>::MinMax { 1, 15 } } },
+						   { "Background", E_TYPE::BOOL, BufferValue<bool> { true } } } } } }
 	};
 
 	// CRT.
@@ -294,27 +277,25 @@ namespace VTX::Renderer
 		Programs {
 			{ "CRT",
 			  std::vector<FilePath> { "default.vert", "crt.frag" },
-			  Uniforms {
+			  BufferDataValues {
 
-				  { { "Curvature", E_TYPE::VEC2F, StructUniformValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
-					{ "Ratio",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.25f, StructUniformValue<float>::MinMax { 0.1f, 1.f } } },
+				  { { "Curvature", E_TYPE::VEC2F, BufferValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
+					{ "Ratio", E_TYPE::FLOAT, BufferValue<float> { 0.25f, BufferValue<float>::MinMax { 0.1f, 1.f } } },
 					{ "Graniness X",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
 					{ "Graniness Y",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
 					{ "Vignette roundness",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 100.f, StructUniformValue<float>::MinMax { 1.f, 1000.f } } },
+					  BufferValue<float> { 100.f, BufferValue<float>::MinMax { 1.f, 1000.f } } },
 					{ "Vignette intensity",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.f, 5.f } } },
+					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
 					{ "Brightness",
 					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 1.2f, StructUniformValue<float>::MinMax { 1.f, 10.f } } } } } } }
+					  BufferValue<float> { 1.2f, BufferValue<float>::MinMax { 1.f, 10.f } } } } } } }
 	};
 
 	// Chromatic aberration.
@@ -322,21 +303,19 @@ namespace VTX::Renderer
 		"Chromatic aberration",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs {
-			{ "Chromatic aberration",
-			  std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
-			  Uniforms {
+		Programs { { "Chromatic aberration",
+					 std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
+					 BufferDataValues {
 
-				  { { "Red",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.009f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
-					{ "Green",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 0.006f, StructUniformValue<float>::MinMax { -0.05f, 0.05f } } },
-					{ "Blue",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { -0.006f,
-												  StructUniformValue<float>::MinMax { -0.05f, 0.05f } } } } } } }
+						 { { "Red",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { 0.009f, BufferValue<float>::MinMax { -0.05f, 0.05f } } },
+						   { "Green",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { 0.006f, BufferValue<float>::MinMax { -0.05f, 0.05f } } },
+						   { "Blue",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { -0.006f, BufferValue<float>::MinMax { -0.05f, 0.05f } } } } } } }
 	};
 
 	// Colorize.
@@ -347,7 +326,7 @@ namespace VTX::Renderer
 		Programs {
 			{ "Colorize",
 			  std::vector<FilePath> { "default.vert", "colorize.frag" },
-			  Uniforms { { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } } } } } }
+			  BufferDataValues { { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_YELLOW } } } } } }
 	};
 
 	// Debug.
@@ -355,17 +334,16 @@ namespace VTX::Renderer
 		"Debug",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs {
-			{ "Debug",
-			  std::vector<FilePath> { "default.vert", "debug.frag" },
-			  Uniforms {
+		Programs { { "Debug",
+					 std::vector<FilePath> { "default.vert", "debug.frag" },
+					 BufferDataValues {
 
-				  { { "Color", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_YELLOW } },
-					{ "Color2", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> { COLOR_BLUE } },
-					{ "Test", E_TYPE::FLOAT, StructUniformValue<float> { 5646.f } },
-					{ "Factor",
-					  E_TYPE::FLOAT,
-					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 0.f, 10.f } } } } } } }
+						 { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_YELLOW } },
+						   { "Color2", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_BLUE } },
+						   { "Test", E_TYPE::FLOAT, BufferValue<float> { 5646.f } },
+						   { "Factor",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { 5.f, BufferValue<float>::MinMax { 0.f, 10.f } } } } } } }
 	};
 
 	/*

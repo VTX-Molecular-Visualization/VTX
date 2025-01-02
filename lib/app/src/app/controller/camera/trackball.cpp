@@ -39,22 +39,6 @@ namespace VTX::App::Controller::Camera
 	}
 	*/
 
-	void Trackball::setActive( const bool p_active )
-	{
-		if ( p_active )
-		{
-			// TODO: ??
-			//_camera->detachTarget();
-		}
-		else
-		{
-			_needUpdate = true;
-			// TODO: ??
-			//_camera->setTargetWorld( App::SCENE().getAABB().centroid() );
-			_velocity = VEC3F_ZERO;
-		}
-	}
-
 	void Trackball::update( const float p_deltaTime, const float p_elapsedTime )
 	{
 		float deltaTime = p_deltaTime * 1e-3f;

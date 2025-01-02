@@ -44,9 +44,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		REQUIRE( !trajectoryComponent.getPlayer().isPlaying() );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		SCENE().update( 40.f );
+		APP::update( 40.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
 	}
 
@@ -59,11 +59,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == false );
 	}
@@ -77,11 +77,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 23 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == false );
 	}
@@ -95,11 +95,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 16 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
@@ -113,11 +113,11 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 24 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 23 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 8 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
@@ -131,21 +131,21 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 0 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 21 );
-		SCENE().update( 20.f );
+		APP::update( 20.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 7 );
-		SCENE().update( 8.f );
+		APP::update( 8.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 1 );
-		SCENE().update( 50.f );
+		APP::update( 50.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 3 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 4 );
-		SCENE().update( 72.f );
+		APP::update( 72.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 20 );
-		SCENE().update( 1.f );
+		APP::update( 1.f, 0.f );
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 19 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}

@@ -56,14 +56,14 @@ namespace VTX::Bench
 
 		template<typename T>
 		void _drawWidget(
-			Renderer::Renderer * const p_renderer,
-			const Renderer::Uniform &  p_uniform,
-			const std::string &		   p_key,
-			const bool				   p_isEditable
+			Renderer::Renderer * const		  p_renderer,
+			const Renderer::BufferDataValue & p_uniform,
+			const std::string &				  p_key,
+			const bool						  p_isEditable
 		) const
 		{
 			using namespace Renderer;
-			const StructUniformValue<T> descValue = std::get<StructUniformValue<T>>( p_uniform.value );
+			const BufferValue<T> descValue = std::get<BufferValue<T>>( p_uniform.value );
 
 			static std::map<std::string, T> values;
 			if ( values.find( p_key ) == values.end() )
@@ -96,7 +96,7 @@ namespace VTX::Bench
 			}
 			else if ( descValue.minMax.has_value() )
 			{
-				const typename StructUniformValue<T>::MinMax & minMax = descValue.minMax.value();
+				const typename BufferValue<T>::MinMax & minMax = descValue.minMax.value();
 
 				if constexpr ( std::is_integral<T>::value )
 				{

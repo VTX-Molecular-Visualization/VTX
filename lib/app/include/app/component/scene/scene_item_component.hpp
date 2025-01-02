@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_SCENE_SCENE_ITEM__
 
 #include "app/application/scene_utility.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <string>
 #include <util/callback.hpp>
@@ -27,12 +27,6 @@ namespace VTX::App::Component::Scene
 		inline int	getPersistentSceneID() const { return _persistentId; }
 		inline void setPersistentSceneID( const int p_id ) { _persistentId = p_id; }
 		inline bool hasPersistentSceneID() const { return _persistentId != -1; }
-
-		void addUpdateFunction(
-			const std::string &								  p_key,
-			const Application::SceneUtility::UpdateCallback & p_callback
-		);
-		void removeUpdateFunction( const std::string & p_key );
 
 		// Callbacks
 		Util::Callback<std::string_view> onName;

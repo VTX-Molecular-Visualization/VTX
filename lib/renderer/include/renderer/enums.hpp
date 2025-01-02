@@ -73,6 +73,39 @@ namespace VTX::Renderer
 		READ_WRITE,
 	};
 
+	enum struct E_MUTABLE_USAGE
+	{
+		STATIC_DRAW,
+		STATIC_READ,
+		STATIC_COPY,
+		DYNAMIC_DRAW,
+		DYNAMIC_READ,
+		DYNAMIC_COPY,
+		// STREAM_DRAW,
+		// STREAM_READ,
+		// STREAM_COPY,
+	};
+
+	/*
+	enum struct E_TARGET
+	{
+		UNIFORM_BUFFER,
+		SHADER_STORAGE_BUFFER
+	};
+	*/
+
+	enum struct E_IMMUTABLE_FLAG
+	{
+		DYNAMIC_STORAGE_BIT, // Allors update subdata?
+		MAP_READ,			 // Allows mapping for reading.
+		MAP_WRITE,			 // Allows mapping for writing.
+
+		// TODO: check.
+		// MAP_PERSISTENT,
+		// MAP_COHERENT,
+		// CLIENT_STORAGE_BIT
+	};
+
 	enum struct E_SETTING
 	{
 		CLEAR

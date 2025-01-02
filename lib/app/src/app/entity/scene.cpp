@@ -9,5 +9,6 @@ namespace VTX::App::Entity
 	{
 		ECS_REGISTRY().addComponent<App::Application::Scene>( *this );
 		ECS_REGISTRY().addComponent<App::Component::IO::SceneFileInfo>( *this );
+		ECS_REGISTRY().addComponent<App::Component::Mode>( *this );
 	}
 } // namespace VTX::App::Entity

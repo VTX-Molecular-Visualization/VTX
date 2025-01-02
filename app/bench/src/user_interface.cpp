@@ -412,7 +412,7 @@ namespace VTX::Bench
 			}
 
 			size_t idSystem = 0;
-			int	   toDelete	  = -1;
+			int	   toDelete = -1;
 
 			for ( auto & proxySystem : p_scene->getProxiesSystems() )
 			{
@@ -580,9 +580,9 @@ namespace VTX::Bench
 						ImNodes::EndInputAttribute();
 						ImNodes::PopAttributeFlag();
 					}
-					else if ( std::holds_alternative<Data>( input.desc ) )
+					else if ( std::holds_alternative<BufferDraw>( input.desc ) )
 					{
-						// const Data & data = std::get<Data>( input.desc );
+						// const BufferDraw & data = std::get<BufferDraw>( input.desc );
 						ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1, 1, 0, 1 ) );
 						ImGui::Text( input.name.c_str() );
 						ImGui::PopStyleColor();
@@ -607,7 +607,7 @@ namespace VTX::Bench
 				for ( const Program & program : pass->programs )
 				{
 					// Uniforms.
-					for ( const Uniform & uniform : program.uniforms )
+					for ( const BufferDataValue & uniform : program.data )
 					{
 						std::string key		   = pass->name + program.name + uniform.name;
 						bool		isEditable = isBuilt && isInRenderQueue;

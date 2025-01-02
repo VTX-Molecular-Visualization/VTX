@@ -1,8 +1,8 @@
 #include "app/controller/picker/selection.hpp"
 #include "app/core/input/input_manager.hpp"
 #include <app/application/scene_utility.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
+#include <app/selection/selection.hpp>
+#include <app/selection/selection_manager.hpp>
 #include <app/component/scene/pickable.hpp>
 #include <app/core/action/action_system.hpp>
 #include <app/core/ecs/registry.hpp>
@@ -19,12 +19,11 @@ namespace
 		const VTX::App::Core::ECS::BaseEntity entity = VTX::App::Application::SceneUtility::findItemByUID( p_uid );
 
 		if ( entity == VTX::App::Core::ECS::INVALID_ENTITY )
-			return std::optional<VTX::App::Component::Scene::Pickable>();
+		{
+			return std::nullopt;
+		}
 
-		const VTX::App::Component::Scene::Pickable & pickableComponent
-			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
-
-		return std::optional<const VTX::App::Component::Scene::Pickable>( pickableComponent );
+		return VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
 	}
 } // namespace
 

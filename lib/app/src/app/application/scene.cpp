@@ -88,7 +88,6 @@ namespace VTX::App::Application
 	{
 		clear();
 		_createDefaultPath();
-		//_createDefaultColorLayout();
 	}
 
 	size_t Scene::getItemIndex( const Core::ECS::BaseEntity & p_entity ) const
@@ -228,8 +227,10 @@ namespace VTX::App::Application
 
 	const Util::Math::AABB & Scene::getAABB()
 	{
-		if ( !_aabb.isValid() )
+		if ( not _aabb.isValid() )
+		{
 			_computeAABB();
+		}
 
 		return _aabb;
 	}
@@ -242,48 +243,9 @@ namespace VTX::App::Application
 
 		for ( const Core::ECS::BaseEntity entity : view )
 		{
-			const Component::Scene::AABB & aabbComponent = view.getComponent<Component::Scene::AABB>( entity );
+			Component::Scene::AABB & aabbComponent = ECS_REGISTRY().getComponent<Component::Scene::AABB>( entity );
 			_aabb.extend( aabbComponent.getWorldAABB() );
 		}
-	}
-
-	void Scene::update( const float & p_deltaTime )
-	{
-		// TOCHECK: do that in state or in scene?
-		// (let that here instead of doing the exact same things in all states for the moment)
-
-		// TODO: remove polymorphism.
-		Core::ECS::View updatables
-			= ECS_REGISTRY().findComponents<Component::Scene::SceneItemComponent, Component::Scene::Updatable>();
-
-		for ( const Core::ECS::BaseEntity entity : updatables )
-		{
-			const Component::Scene::Updatable & updatableComponent
-				= updatables.getComponent<const Component::Scene::Updatable>( entity );
-			updatableComponent.update( p_deltaTime );
-		}
-
-		// for ( const PairSystemPtrFloat & pair : _systems )
-		//{
-		//	if ( pair.first->isAutoRotationPlaying() )
-		//	{
-		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
-		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
-		//		pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
-		//		APP::MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
-		//	}
-		// }
-
-		// for ( const MeshTrianglePtr & mesh : _meshes )
-		//{
-		//	if ( mesh->isAutoRotationPlaying() )
-		//	{
-		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
-		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
-		//		mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
-		//		APP::MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
-		//	}
-		// }
 	}
 
 	void Scene::_applySceneID( Component::Scene::SceneItemComponent & p_item )

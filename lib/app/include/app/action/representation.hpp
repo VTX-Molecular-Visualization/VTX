@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_ACTION_REPRESENTATION__
-#define __VTX_UI_ACTION_REPRESENTATION__
+#ifndef __VTX_APP_ACTION_REPRESENTATION__
+#define __VTX_APP_ACTION_REPRESENTATION__
 
 #include "app/core/action/base_action.hpp"
 #include <app/application/scene.hpp>

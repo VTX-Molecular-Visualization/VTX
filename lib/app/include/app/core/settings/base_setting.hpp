@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_CORE_SETTINGS_BASE_SETTING__
 #define __VTX_APP_CORE_SETTINGS_BASE_SETTING__
 
-#include "app/core/serialization/serialization_system.hpp"
 #include <concepts>
 #include <memory>
 #include <optional>

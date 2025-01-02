@@ -2,8 +2,8 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
-#include "app/application/system/ecs_system.hpp"
 #include "app/component/chemistry/index_types.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/uid/uid.hpp"
 #include <app/core/visibility/enum.hpp>
 #include <core/struct/system.hpp>
@@ -134,14 +134,14 @@ namespace VTX::App::Component::Chemistry
 		size_t _realResidueCount;
 		size_t _realAtomCount;
 
-		Util::Math::Transform _transform = Util::Math::Transform();
+		Util::Math::Transform _transform;
 		std::string			  _pdbIdCode = "";
 
-		AtomIndexRangeList _visibleAtomIds = AtomIndexRangeList();
-		AtomIndexRangeList _activeAtomIds  = AtomIndexRangeList();
+		AtomIndexRangeList _visibleAtomIds;
+		AtomIndexRangeList _activeAtomIds;
 
-		Core::UID::UIDRange _atomUidRange	 = Core::UID::UIDRange();
-		Core::UID::UIDRange _residueUidRange = Core::UID::UIDRange();
+		Core::UID::UIDRange _atomUidRange;
+		Core::UID::UIDRange _residueUidRange;
 	};
 
 } // namespace VTX::App::Component::Chemistry

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CONTROLLER_CAMERA_TRACKBALL__
 #define __VTX_APP_CONTROLLER_CAMERA_TRACKBALL__
 
-#include "app/core/controller/base_controller_camera.hpp"
+#include "app/core/controller/base_controller.hpp"
 #include "app/core/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <app/component/render/camera.hpp>
@@ -11,16 +11,11 @@
 namespace VTX::App::Controller::Camera
 {
 
-	class Trackball : public Core::Controller::BaseControllerCamera
+	class Trackball : public Core::Controller::BaseController
 	{
 	  public:
-		static inline const Name NAME = "TRACKBALL";
-
 		Trackball();
 
-		Name getName() const override { return NAME; }
-
-		void setActive( const bool );
 		void update( const float, const float );
 
 		// void  reset();
@@ -50,7 +45,7 @@ namespace VTX::App::Controller::Camera
 		};
 
 		Vec3f _velocity	  = VEC3F_ZERO;
-		bool  _needUpdate = false;
+		bool  _needUpdate = true;
 
 		void _updateElasticity( const float & );
 	};
