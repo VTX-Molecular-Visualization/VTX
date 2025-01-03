@@ -1,13 +1,13 @@
 #include "python_binding/api/selection/selection_wrapper.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/application/selection/system_data.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/chemistry/system.hpp>
 #include <app/component/scene/selectable.hpp>
 #include <app/helper/chemistry.hpp>
+#include <app/selection/selection_manager.hpp>
+#include <app/selection/system_data.hpp>
 #include <app/vtx_app.hpp>
 #include <sstream>
 
@@ -84,9 +84,10 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::SystemData & molSelection
-				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it );
-				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
+			const App::Selection::SystemData & molSelection
+				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it
+				//);
+				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 
 			for ( const size_t & chainID : molSelection.getChainIds() )
@@ -107,9 +108,10 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::SystemData & molSelection
-				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it );
-				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol
+			const App::Selection::SystemData & molSelection
+				//= PythonFixture::ECS_REGISTRY().getComponent<PythonFixture::Application::Selection::SystemData>( *it
+				//);
+				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 
 			for ( const size_t & residueID : molSelection.getResidueIds() )
@@ -130,8 +132,8 @@ namespace VTX::PythonBinding::API::Selection
 		{
 			App::Component::Chemistry::System & mol = *it;
 
-			const App::Application::Selection::SystemData & molSelection
-				= _selection->getSelectionDataFromComponent<App::Application::Selection::SystemData>( mol );
+			const App::Selection::SystemData & molSelection
+				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol );
 
 			for ( const atom_index_t & atomID : molSelection.getAtomIds() )
 			{

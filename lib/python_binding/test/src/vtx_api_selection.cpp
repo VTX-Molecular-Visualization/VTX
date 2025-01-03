@@ -1,8 +1,8 @@
 #include "util/app.hpp"
 #include "util/selection.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/application/selection/system_data.hpp>
+#include <app/selection/selection_manager.hpp>
+#include <app/selection/system_data.hpp>
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -60,7 +60,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 										  *SelectionUtil::generateSystemData( "8QHQ", { 0, 6 } ) } )
 	) );
 
-	std::unique_ptr<App::Application::Selection::SelectionData> allHistidineOn4HHB = SelectionUtil::generateSystemData(
+	std::unique_ptr<App::Selection::SelectionData> allHistidineOn4HHB = SelectionUtil::generateSystemData(
 		"4HHB",
 		{},
 		{
@@ -172,7 +172,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
 	) );
 
 	CHECK( SelectionUtil::checkSelection(
-		"test_empty_1", "select( mol_n='Nimportequoi', chain_i=1 )", App::Application::Selection::Selection()
+		"test_empty_1", "select( mol_n='Nimportequoi', chain_i=1 )", App::Selection::Selection()
 	) );
 
 	CHECK( SelectionUtil::checkSelection(

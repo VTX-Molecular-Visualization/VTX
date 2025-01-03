@@ -1,6 +1,6 @@
 #include "selection.hpp"
 #include <app/application/scene.hpp>
-#include <app/application/selection/selection_manager.hpp>
+#include <app/selection/selection_manager.hpp>
 #include <app/core/ecs/base_entity.hpp>
 #include <app/core/ecs/registry.hpp>
 #include <app/vtx_app.hpp>

@@ -72,7 +72,7 @@ namespace VTX::PythonBinding::API::Selection
 	bool SystemInterpretor::InterpretedKwargs::hasSpecifyAtom() const { return _hasAtomParams; }
 
 	void SystemInterpretor::interpretSystems(
-		App::Application::Selection::Selection & p_selection,
+		App::Selection::Selection & p_selection,
 		const pybind11::kwargs &				 p_kwargs
 	)
 	{
@@ -92,9 +92,9 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Scene::Selectable & selectableComponent
 				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Selectable>( *system );
 
-			App::Application::Selection::SystemData & systemSelectionData
-				= p_selection.select<App::Application::Selection::SystemData>(
-					selectableComponent, App::Application::Selection::AssignmentType::APPEND
+			App::Selection::SystemData & systemSelectionData
+				= p_selection.select<App::Selection::SystemData>(
+					selectableComponent, App::Selection::AssignmentType::APPEND
 				);
 
 			if ( !selectFullSystem )
@@ -158,7 +158,7 @@ namespace VTX::PythonBinding::API::Selection
 
 	void SystemInterpretor::_selectChains(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_systemSelectionData
+		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
 		System &   system		   = p_systemSelectionData.getSystem();
@@ -203,11 +203,11 @@ namespace VTX::PythonBinding::API::Selection
 
 	void SystemInterpretor::_selectResidues(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_systemSelectionData
+		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
 		const System &													system = p_systemSelectionData.getSystem();
-		const App::Application::Selection::SystemData::IndexRangeList & chainIDs
+		const App::Selection::SystemData::IndexRangeList & chainIDs
 			= p_systemSelectionData.getChainIds();
 
 		const bool selectFullResidue = !p_kwargs.hasSpecifyAtom();
@@ -303,17 +303,17 @@ namespace VTX::PythonBinding::API::Selection
 
 	void SystemInterpretor::_selectAtoms(
 		const InterpretedKwargs &				  p_kwargs,
-		App::Application::Selection::SystemData & p_systemSelectionData
+		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
 		System & system = p_systemSelectionData.getSystem();
 
-		const App::Application::Selection::SystemData::IndexRangeList & residueIDs
+		const App::Selection::SystemData::IndexRangeList & residueIDs
 			= p_systemSelectionData.getResidueIds();
 
 		if ( residueIDs.isEmpty() )
 		{
-			const App::Application::Selection::SystemData::IndexRangeList & chainIDs
+			const App::Selection::SystemData::IndexRangeList & chainIDs
 				= p_systemSelectionData.getChainIds();
 
 			if ( chainIDs.isEmpty() )
@@ -343,7 +343,7 @@ namespace VTX::PythonBinding::API::Selection
 		}
 		else
 		{
-			const App::Application::Selection::SystemData::IndexRangeList & residueIDs
+			const App::Selection::SystemData::IndexRangeList & residueIDs
 				= p_systemSelectionData.getResidueIds();
 
 			for ( const size_t residueID : residueIDs )
@@ -368,7 +368,7 @@ namespace VTX::PythonBinding::API::Selection
 		const atom_index_t						  p_firstAtom,
 		const atom_index_t						  p_lastAtom,
 		System &								  p_system,
-		App::Application::Selection::SystemData & p_systemSelectionData,
+		App::Selection::SystemData & p_systemSelectionData,
 		const InterpretedKwargs &				  p_kwargs
 	)
 	{

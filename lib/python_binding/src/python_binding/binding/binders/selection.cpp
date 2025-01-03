@@ -2,7 +2,7 @@
 #include "python_binding/api/selection/selection_interpretor.hpp"
 #include "python_binding/api/selection/selection_wrapper.hpp"
 #include "python_binding/api/selection/system_interpretor.hpp"
-#include <app/application/selection/selection.hpp>
+#include <app/selection/selection.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -35,7 +35,7 @@ namespace VTX::PythonBinding::Binding::Binders
 		p_apiModule.def( "intersect", &API::Selection::SelectionWrapper::intersect );
 		p_apiModule.def( "exclusive", &API::Selection::SelectionWrapper::exclusive );
 
-		pybind11::class_<App::Application::Selection::Selection>(
+		pybind11::class_<App::Selection::Selection>(
 			p_apiModule, "_VTXSelection", pybind11::module_local()
 		);
 
