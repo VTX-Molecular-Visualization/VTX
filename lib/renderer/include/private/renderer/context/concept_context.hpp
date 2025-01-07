@@ -6,6 +6,7 @@
 #include <any>
 #include <concepts>
 #include <util/chrono.hpp>
+#include <util/collection.hpp>
 
 namespace VTX::Renderer::Context
 {
@@ -39,9 +40,9 @@ namespace VTX::Renderer::Context
 			  const Handle					  p_output,
 			  const std::vector<BufferData> & p_globalData,
 			  const Key &					  p_key,
-			  const std::any &				  p_value,
-			  const std::vector<std::any> &	  p_data,
-			  std::vector<std::any> &		  p_dataOut,
+			  const void * const			  p_value,
+			  const void * const			  p_data,
+			  void * const					  p_dataOut,
 			  const size_t					  p_size,
 			  const size_t					  p_index,
 			  const size_t					  p_offset,
@@ -53,8 +54,7 @@ namespace VTX::Renderer::Context
 			  const std::string &			  p_pass,
 			  const E_CHAN_OUT				  p_channel,
 			  std::any &					  p_textureData,
-			  const ComputePass &			  p_computePass,
-			  const bool					  p_bool
+			  const ComputePass &			  p_computePass
 		  ) {
 				 {
 					 p_context.build(
@@ -63,18 +63,18 @@ namespace VTX::Renderer::Context
 				 } -> std::same_as<void>;
 				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;
 				 { p_context.setOutput( p_output ) } -> std::same_as<void>;
-				 { p_context.setValue( p_value, p_key, p_index ) } -> std::same_as<void>;
-				 { p_context.reserveData( p_size, p_key, p_value ) } -> std::same_as<void>;
-				 { p_context.set( p_data, p_key ) } -> std::same_as<void>;
-				 { p_context.setSub( p_data, p_key, p_offset, p_bool, p_size ) } -> std::same_as<void>;
-				 { p_context.get( p_dataOut, p_key ) } -> std::same_as<void>;
+				 { p_context.setValue( p_key, p_value, p_index ) } -> std::same_as<void>;
+				 { p_context.reserveData( p_key, p_size ) } -> std::same_as<void>;
+				 { p_context.set( p_key, p_data, p_size ) } -> std::same_as<void>;
+				 { p_context.setSub( p_key, p_data, p_size, p_offset ) } -> std::same_as<void>;
+				 { p_context.get( p_key, p_dataOut, p_size ) } -> std::same_as<void>;
 				 { p_context.fillInfos( p_infos ) } -> std::same_as<void>;
 				 { p_context.measureTaskDuration( p_task ) } -> std::same_as<float>;
 				 { p_context.compileShaders() } -> std::same_as<void>;
 				 {
 					 p_context.snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height )
 				 } -> std::same_as<void>;
-				 { p_context.getTextureData( p_textureData, p_x, p_y, p_pass, p_channel ) } -> std::same_as<void>;
+				 { p_context.getTextureData( p_key, p_textureData, p_x, p_y, p_channel ) } -> std::same_as<void>;
 				 { p_context.compute( p_computePass ) } -> std::same_as<void>;
 			 };
 
@@ -98,14 +98,15 @@ namespace VTX::Renderer::Context
 	};
 	*/
 
-	/*
 	using FunctionBuild
-		= void ( * )( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &,
-	InstructionsDurationRanges & ); using FunctionResize	  = void ( * )( const RenderQueue &, const size_t, const
-	size_t ); using FunctionSetOutput	  = void ( * )( const Handle ); using FunctionSetValue	  = void ( * )( const
-	std::any &, const Key &, const size_t ); using FunctionReserveData = void ( * )( const size_t, const Key &, const
-	std::any & ); using FunctionSet		  = void ( * )( const std::vector<std::any> &, const Key & ); using
-	FunctionSetSub = void ( * )( const std::vector<std::any> &, const Key &, const size_t, const bool, const size_t );
+		= void ( * )( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & );
+	using FunctionResize	  = void ( * )( const RenderQueue &, const size_t, const size_t );
+	using FunctionSetOutput	  = void ( * )( const Handle );
+	using FunctionSetValue	  = void ( * )( const std::any &, const Key &, const size_t );
+	using FunctionReserveData = void ( * )( const size_t, const Key &, const std::any & );
+	using FunctionSet		  = void ( * )( const std::vector<std::any> &, const Key & );
+	using FunctionSetSub
+		= void ( * )( const std::vector<std::any> &, const Key &, const size_t, const bool, const size_t );
 	using FunctionGet				  = void ( * )( std::vector<std::any> &, const Key & );
 	using FunctionFillInfos			  = void ( * )( StructInfos & );
 	using FunctionMeasureTaskDuration = float ( * )( const Util::Chrono::Task & );
@@ -114,26 +115,23 @@ namespace VTX::Renderer::Context
 		= void ( * )( std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t );
 	using FunctionGetTextureData = void ( * )( std::any &, const size_t, const size_t, const Key &, const E_CHAN_OUT );
 	using FunctionCompute		 = void ( * )( const ComputePass & );
-	*/
 
+	/*
 	using FunctionBuild = std::function<
-		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
-	using FunctionResize	  = std::function<void( const RenderQueue &, const size_t, const size_t )>;
-	using FunctionSetOutput	  = std::function<void( const Handle )>;
-	using FunctionSetValue	  = std::function<void( const std::any &, const Key &, const size_t )>;
-	using FunctionReserveData = std::function<void( const size_t, const Key &, const std::any & )>;
-	using FunctionSet		  = std::function<void( const std::vector<std::any> &, const Key & )>;
-	using FunctionSetSub
-		= std::function<void( const std::vector<std::any> &, const Key &, const size_t, const bool, const size_t )>;
-	using FunctionGet				  = std::function<void( std::vector<std::any> &, const Key & )>;
-	using FunctionFillInfos			  = std::function<void( StructInfos & )>;
-	using FunctionMeasureTaskDuration = std::function<float( const Util::Chrono::Task & )>;
-	using FunctionCompileShaders	  = std::function<void()>;
-	using FunctionSnapshot			  = std::function<
-				   void( std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t )>;
-	using FunctionGetTextureData
-		= std::function<void( std::any &, const size_t, const size_t, const Key &, const E_CHAN_OUT )>;
-	using FunctionCompute = std::function<void( const ComputePass & )>;
+		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &,
+	InstructionsDurationRanges & )>; using FunctionResize	  = std::function<void( const RenderQueue &, const size_t,
+	const size_t )>; using FunctionSetOutput	  = std::function<void( const Handle )>; using FunctionSetValue	  =
+	std::function<void( const std::any &, const Key &, const size_t )>; using FunctionReserveData = std::function<void(
+	const size_t, const Key &, const std::any & )>; using FunctionSet		  = std::function<void( const
+	std::vector<std::any> &, const Key & )>; using FunctionSetSub = std::function<void( const std::vector<std::any> &,
+	const Key &, const size_t, const bool, const size_t )>; using FunctionGet				  = std::function<void(
+	std::vector<std::any> &, const Key & )>; using FunctionFillInfos			  = std::function<void( StructInfos &
+	)>; using FunctionMeasureTaskDuration = std::function<float( const Util::Chrono::Task & )>; using
+	FunctionCompileShaders	  = std::function<void()>; using FunctionSnapshot			  = std::function< void(
+	std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t )>; using
+	FunctionGetTextureData = std::function<void( std::any &, const size_t, const size_t, const Key &, const E_CHAN_OUT
+	)>; using FunctionCompute = std::function<void( const ComputePass & )>;
+	*/
 
 	class Context
 	{
@@ -142,8 +140,13 @@ namespace VTX::Renderer::Context
 		template<ConceptContextImpl C>
 		void set()
 		{
-			std::unique_ptr<C> context = std::make_unique<C>();
+			// std::unique_ptr<C> context = std::make_unique<C>();
 			//_impl					   = std::move( context );
+
+			//_impl = std::make_unique<C>();
+
+			// Connect function pointer.
+			//_build = &context->build;
 
 			//_build =
 		}
@@ -215,7 +218,7 @@ namespace VTX::Renderer::Context
 		}
 		*/
 
-		void build(
+		inline void build(
 			const RenderQueue &				p_renderQueue,
 			const Links &					p_links,
 			const Handle					p_output,
@@ -224,29 +227,104 @@ namespace VTX::Renderer::Context
 			InstructionsDurationRanges &	p_instructionsDurationRanges
 		)
 		{
-			_build( p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges );
+			//_build( p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges );
 		}
 
-		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
+		inline void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
 		{
-			_resize( p_renderQueue, p_width, p_height );
+			//_resize( p_renderQueue, p_width, p_height );
 		}
 
-		void setOutput( const Handle p_output ) { _setOutput( p_output ); }
+		inline void setOutput( const Handle p_output )
+		{
+			//_setOutput( p_output );
+		}
 
-		void setValue( const std::any & p_value, const Key & p_key, const size_t p_index )
+		template<typename T>
+		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index )
 		{
 			_setValue( p_value, p_key, p_index );
 		}
 
-		void reserveData( const size_t p_size, const Key & p_key, const std::any & p_value )
+		template<typename T>
+		inline void reserveData( const size_t p_size, const Key & p_key, const T p_dummy = T() )
 		{
-			_reserveData( p_size, p_key, p_value );
+			//_reserveData( p_size, p_key, p_dummy );
 		}
 
-		void set( const std::vector<std::any> & p_data, const Key & p_key ) { _set( p_data, p_key ); }
+		template<typename T>
+		inline void set( const std::vector<T> & p_data, const Key & p_key )
+		{
+			//_set( p_data, p_key );
+		}
+
+		template<typename T>
+		inline void setSub(
+			const std::vector<T> & p_data,
+			const Key &			   p_key,
+			const size_t		   p_offset		  = 0,
+			const bool			   p_offsetSource = false,
+			const size_t		   p_size		  = 0
+		)
+		{
+			//_setSub( p_data, p_key, p_offset, p_offsetSource, p_size );
+		}
+
+		template<typename T>
+		inline void get( std::vector<T> & p_data, const Key & p_key )
+		{
+			//_get( p_data, p_key );
+		}
+
+		inline void fillInfos( StructInfos & p_infos )
+		{
+			//_fillInfos( p_infos );
+		}
+
+		inline float measureTaskDuration( const Util::Chrono::Task & p_task )
+		{
+			// return _measureTaskDuration( p_task );
+			return 0.f;
+		}
+
+		inline void compileShaders()
+		{
+			//_compileShaders();
+		}
+
+		inline void snapshot(
+			std::vector<uchar> & p_image,
+			const RenderQueue &	 p_renderQueue,
+			const Instructions & p_instructions,
+			const size_t		 p_width,
+			const size_t		 p_height
+		)
+
+		{
+			//_snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height );
+		}
+
+		template<typename T>
+		inline void getTextureData(
+			T &				 p_textureData,
+			const size_t	 p_x,
+			const size_t	 p_y,
+			const Key &		 p_pass,
+			const E_CHAN_OUT p_channel
+		)
+
+		{
+			//_getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
+		}
+
+		inline void compute( const ComputePass & p_computePass )
+		{
+			//_compute( p_computePass );
+		}
 
 	  private:
+		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
+
 		std::unique_ptr<BaseContext> _impl;
 
 		FunctionBuild				_build;

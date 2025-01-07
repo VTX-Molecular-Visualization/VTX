@@ -21,30 +21,32 @@ namespace VTX
 
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
 
-			Program * const createProgram( const std::string & p_name,
-										   const std::variant<FilePath, std::vector<FilePath>> &,
-										   const std::string & p_toInject = "",
-										   const std::string & p_suffix	  = "" );
+			Program * const createProgram(
+				const std::string & p_name,
+				const std::variant<FilePath, std::vector<FilePath>> &,
+				const std::string & p_toInject = "",
+				const std::string & p_suffix   = ""
+			);
 
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & p_name );
 			void			compileShaders();
-			GLuint			getShader( const std::string & p_name ) const;
+			uint32_t		getShader( const std::string & p_name ) const;
 
 			void dispose();
 
 		  private:
 			using MapStringToProgram = std::map<std::string, std::unique_ptr<Program>>;
-			using MapStringToGLuint	 = std::map<std::string, GLuint>;
+			using MapStringTouint32_t	 = std::map<std::string, uint32_t>;
 
 			static const std::map<std::string, ENUM_SHADER_TYPE> _EXTENSIONS;
 
 			const FilePath	   _shaderPath;
 			MapStringToProgram _programs = MapStringToProgram();
-			MapStringToGLuint  _shaders	 = MapStringToGLuint();
+			MapStringTouint32_t  _shaders	 = MapStringTouint32_t();
 
-			GLuint		_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
-			std::string _getShaderErrors( const GLuint );
+			uint32_t	_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
+			std::string _getShaderErrors( const uint32_t );
 		};
 	} // namespace Renderer::Context::GL
 } // namespace VTX

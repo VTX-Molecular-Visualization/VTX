@@ -51,32 +51,27 @@ namespace VTX::Renderer::Context
 		 * @param p_key the buffer name to send on.
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
-		template<typename T>
-		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
+		inline void setValue( const Key & p_key, const void * const p_value, const size_t p_index = 0 )
 		{
 			assert( _bufferValueEntries.contains( p_key ) );
 
-			std::unique_ptr<_StructBufferDataValueEntry> & entry = _bufferValueEntries[ p_key ];
+			auto & entry = _bufferValueEntries[ p_key ];
 			entry->buffer->setSub(
-				p_value, GLint( entry->offset + p_index * entry->totalSize ), GLsizei( entry->size )
+				p_value, int32_t( entry->size ), int32_t( entry->offset + p_index * entry->totalSize )
 			);
 		}
 
 		/**
 		 * @brief Creates a GPU buffer
-		 * @tparam T the data type to store.
-		 * @param p_size the number of items to store.
 		 * @param p_key the buffer name.
-		 * @param p_dummy a dummy value to infer the data type for concept deduction.
+		 * @param p_size the number of items to store.
 		 */
-		template<typename T>
-		inline void reserveData( const size_t p_size, const Key & p_key, const T p_dummy = T() )
+		inline void reserveData( const Key & p_key, const size_t p_size )
 		{
 			assert( _buffers.contains( p_key ) );
 
 			// Set dummy size (size 0 prohibited).
-			size_t size = sizeof( T ) * p_size;
-			size		= size > 0 ? size : 1;
+			const size_t size = p_size > 0 ? p_size : 1;
 
 			// Scale if needed.
 			if ( _buffers[ p_key ]->size() != size )
@@ -87,69 +82,63 @@ namespace VTX::Renderer::Context
 					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
 					Util::String::memSizeToStr( size )
 				);
-				_buffers[ p_key ]->set( GLsizei( size ), nullptr, 0, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( nullptr, int32_t( size ), false, GL_STATIC_DRAW );
 			}
 		}
 
 		/**
 		 * @brief Send data to GPU (buffer).
 		 */
-		template<typename T>
-		inline void set( const std::vector<T> & p_data, const Key & p_key )
+		inline void set( const Key & p_key, const void * const p_data, const size_t p_size )
 		{
 			assert( _buffers.contains( p_key ) );
 
 			// Set dummy.
-			if ( p_data.size() == 0 )
+			if ( p_size == 0 )
 			{
-				reserveData<char>( 0, p_key );
+				reserveData( p_key, 0 );
 			}
 			// Auto scale.
-			else if ( _buffers[ p_key ]->size() != sizeof( T ) * p_data.size() )
+			else if ( _buffers[ p_key ]->size() != p_size )
 			{
 				VTX_TRACE(
 					"Resizing buffer {} : {} -> {}",
 					p_key,
 					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
-					Util::String::memSizeToStr( sizeof( T ) * p_data.size() )
+					Util::String::memSizeToStr( p_size )
 				);
-				_buffers[ p_key ]->set( p_data, 0, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( p_data, int32_t( p_size ), false, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_buffers[ p_key ]->setSub( p_data );
+				_buffers[ p_key ]->setSub( p_data, int32_t( p_size ) );
 			}
 		}
 
 		/**
 		 * @brief Send data to an existing GPU buffer.
 		 */
-		template<typename T>
 		inline void setSub(
-			const std::vector<T> & p_data,
-			const Key &			   p_key,
-			const size_t		   p_offset		  = 0,
-			const bool			   p_offsetSource = false,
-			const size_t		   p_size		  = 0
+			const Key &		   p_key,
+			const void * const p_data,
+			const size_t	   p_size,
+			const size_t	   p_offset = 0
 		)
 		{
 			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->setSub(
-				p_data, GLint( p_offset * sizeof( T ) ), p_offsetSource, GLsizei( p_size * sizeof( T ) )
-			);
+			_buffers[ p_key ]->setSub( p_data, int32_t( p_size ), int32_t( p_offset ) );
 		}
 
 		/**
 		 * @brief Get data from GPU buffer.
 		 */
-		template<typename T>
-		inline void get( std::vector<T> & p_data, const Key & p_key )
+		inline void get( const Key & p_key, void * const p_data, const size_t p_size )
 		{
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->get( p_data );
+			_buffers[ p_key ]->get( p_data, int32_t( p_size ) );
 		}
 
 		// TODDO: send data to buffer by map()?
@@ -168,12 +157,11 @@ namespace VTX::Renderer::Context
 			const size_t		 p_height
 		);
 
-		template<typename T>
 		void getTextureData(
-			T &				 p_textureData,
+			const Key &		 p_key,
+			std::any &		 p_textureData,
 			const size_t	 p_x,
 			const size_t	 p_y,
-			const Key &		 p_key,
 			const E_CHAN_OUT p_channel
 		)
 		{
@@ -191,8 +179,8 @@ namespace VTX::Renderer::Context
 			fbo->bind( GL_READ_FRAMEBUFFER );
 			fbo->setReadBuffer( _mapAttachments[ p_channel ] );
 			glReadPixels(
-				GLint( p_x ),
-				GLint( p_y ),
+				int32_t( p_x ),
+				int32_t( p_y ),
 				1,
 				1,
 				_mapFormatInternalTypes[ format ],
@@ -208,16 +196,16 @@ namespace VTX::Renderer::Context
 		/////////////////// TODO: use collection util class
 		//
 		// TODO: find a better solution (magic enum explodes compile time).
-		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
-		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
-		static std::map<const E_FORMAT, const GLenum>	 _mapFormats;
-		static std::map<const GLenum, const size_t>		 _mapFormatSizes;
-		static std::map<const E_WRAPPING, const GLint>	 _mapWrappings;
-		static std::map<const E_FILTERING, const GLint>	 _mapFilterings;
-		static std::map<const E_TYPE, const GLenum>		 _mapTypes;
-		static std::map<const E_TYPE, const size_t>		 _mapTypeSizes;
-		static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
-		static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
+		static std::map<const E_CHAN_OUT, const uint32_t>  _mapAttachments;
+		static std::map<const E_PRIMITIVE, const uint32_t> _mapPrimitives;
+		static std::map<const E_FORMAT, const uint32_t>	   _mapFormats;
+		static std::map<const uint32_t, const size_t>	   _mapFormatSizes;
+		static std::map<const E_WRAPPING, const int32_t>   _mapWrappings;
+		static std::map<const E_FILTERING, const int32_t>  _mapFilterings;
+		static std::map<const E_TYPE, const uint32_t>	   _mapTypes;
+		static std::map<const E_TYPE, const size_t>		   _mapTypeSizes;
+		static std::map<const E_FORMAT, const E_TYPE>	   _mapFormatTypes;
+		static std::map<const E_FORMAT, const uint32_t>	   _mapFormatInternalTypes;
 
 		const Key _KEY_QUAD_VAO	   = "VAO_QUAD";
 		const Key _KEY_QUAD_BUFFER = "BUFFER_QUAD";
@@ -301,7 +289,7 @@ namespace VTX::Renderer::Context
 
 		void _createInputs( const Links &, const Pass * const, const Key, Keys & );
 
-		void _createOuputs( const Pass * const, std::set<GLenum> & p_drawBuffers, const Key, Keys & );
+		void _createOuputs( const Pass * const, std::set<uint32_t> & p_drawBuffers, const Key, Keys & );
 
 		const GL::Program * const _createProgram( const Program &, const Key, Keys & );
 
@@ -325,7 +313,7 @@ namespace VTX::Renderer::Context
 			assert( std::holds_alternative<BufferValue<T>>( p_value.value ) );
 			assert( _bufferValueEntries.contains( p_key ) );
 
-			setValue<T>( std::get<BufferValue<T>>( p_value.value ).value, p_key );
+			setValue( p_key, &( std::get<BufferValue<T>>( p_value.value ).value ) );
 		}
 
 		/**
@@ -336,12 +324,12 @@ namespace VTX::Renderer::Context
 
 		void				 _getOpenglInfos();
 		static void APIENTRY _debugMessageCallback(
-			const GLenum   p_source,
-			const GLenum   p_type,
-			const GLuint   p_id,
-			const GLenum   p_severity,
-			const GLsizei  p_length,
-			const GLchar * p_msg,
+			const uint32_t p_source,
+			const uint32_t p_type,
+			const uint32_t p_id,
+			const uint32_t p_severity,
+			const int32_t  p_length,
+			const char *   p_msg,
 			const void *   p_data
 		);
 	};

@@ -20,36 +20,15 @@ namespace VTX::Renderer::Context
 
 		inline void setOutput( const Handle ) {}
 
-		template<typename T>
-		inline void setValue( const T &, const Key &, const size_t = 0 )
-		{
-		}
+		inline void setValue( const Key &, const void * const, const size_t = 0 ) {}
 
-		template<typename T>
-		inline void reserveData( const size_t p_size, const Key & p_key, const T = T() )
-		{
-		}
+		inline void reserveData( const Key &, const size_t ) {}
 
-		template<typename T>
-		inline void set( const std::vector<T> &, const Key & )
-		{
-		}
+		inline void set( const Key &, const void * const, const size_t ) {}
 
-		template<typename T>
-		inline void setSub(
-			const std::vector<T> &,
-			const Key &,
-			const size_t = 0,
-			const bool	 = false,
-			const size_t = 0
-		)
-		{
-		}
+		inline void setSub( const Key &, const void * const, const size_t ) {}
 
-		template<typename T>
-		inline void get( std::vector<T> & p_data, const Key & p_key )
-		{
-		}
+		inline void get( const Key &, void * const, const size_t ) {}
 
 		inline void fillInfos( StructInfos & ) const {}
 
@@ -67,7 +46,7 @@ namespace VTX::Renderer::Context
 		{
 		}
 
-		inline void getTextureData( std::any &, const size_t, const size_t, const std::string &, const E_CHAN_OUT ) {}
+		inline void getTextureData( const Key &, std::any &, const size_t, const size_t, const E_CHAN_OUT ) {}
 
 		inline void compute( const ComputePass & ) {}
 	};

@@ -15,29 +15,20 @@ namespace VTX::Renderer::Context::GL
 	  public:
 		Buffer() { _create(); }
 
-		template<typename T>
-		explicit Buffer( const std::vector<T> & p_vector, const bool p_immutable = false, const GLbitfield p_flags = 0 )
+		explicit Buffer(
+			const void * const p_data,
+			const int32_t	   p_size,
+			const bool		   p_immutable = false,
+			const uint32_t	   p_flags	   = 0
+		)
 		{
 			_create();
-			set<T>( p_vector, p_immutable, p_flags );
-		}
-
-		template<typename T>
-		explicit Buffer( const T & p_data, const bool p_immutable = false, const GLbitfield p_flags = 0 )
-		{
-			_create();
-			set<T>( p_data, p_immutable, p_flags );
-		}
-
-		explicit Buffer( const GLsizei p_size, const bool p_immutable = false, const GLbitfield p_flags = 0 )
-		{
-			_create();
-			set( p_size, p_immutable, p_flags );
+			set( p_data, p_size, p_immutable, p_flags );
 		}
 
 		~Buffer() { destroy(); }
 
-		inline GLuint getId() const { return _id; }
+		inline uint32_t getId() const { return _id; }
 
 		inline void destroy()
 		{
@@ -50,7 +41,7 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline void bind( const GLenum p_target )
+		inline void bind( const uint32_t p_target )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -60,7 +51,7 @@ namespace VTX::Renderer::Context::GL
 			glBindBuffer( p_target, _id );
 		}
 
-		inline void bind( const GLenum p_target, const GLuint p_index )
+		inline void bind( const uint32_t p_target, const uint32_t p_index )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -78,7 +69,7 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline void unbind( const GLuint p_index )
+		inline void unbind( const uint32_t p_index )
 		{
 			assert( _target != 0 );
 
@@ -86,52 +77,11 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		template<typename T>
-		inline void set( const std::vector<T> & p_vector, const bool p_immutable = false, const GLbitfield p_flags = 0 )
-		{
-			assert( glIsBuffer( _id ) );
-			assert( not p_vector.empty() );
-
-			GLsizei size = GLsizei( sizeof( T ) * p_vector.size() );
-
-			assert( size != _size );
-
-			_size = size;
-			if ( p_immutable )
-			{
-				glNamedBufferStorage( _id, _size, p_vector.data(), p_flags );
-			}
-			else
-			{
-				glNamedBufferData( _id, _size, p_vector.data(), p_flags );
-			}
-		}
-
-		template<typename T>
-		inline void set( const T & p_data, const bool p_immutable = false, const GLbitfield p_flags = 0 )
-		{
-			assert( glIsBuffer( _id ) );
-
-			GLsizei size = GLsizei( sizeof( T ) );
-
-			assert( size != _size );
-
-			_size = size;
-			if ( p_immutable )
-			{
-				glNamedBufferStorage( _id, _size, &p_data, p_flags );
-			}
-			else
-			{
-				glNamedBufferData( _id, _size, &p_data, p_flags );
-			}
-		}
-
 		inline void set(
-			const GLsizei	   p_size,
-			const void * const data		   = nullptr,
+			const void * const p_data,
+			const int32_t	   p_size,
 			const bool		   p_immutable = false,
-			const GLbitfield   p_flags	   = 0
+			const uint32_t	   p_flags	   = 0
 		)
 		{
 			assert( glIsBuffer( _id ) );
@@ -141,61 +91,24 @@ namespace VTX::Renderer::Context::GL
 			_size = p_size;
 			if ( p_immutable )
 			{
-				glNamedBufferStorage( _id, _size, data, p_flags );
+				glNamedBufferStorage( _id, _size, p_data, p_flags );
 			}
 			else
 			{
-				glNamedBufferData( _id, _size, data, p_flags );
+				glNamedBufferData( _id, _size, p_data, p_flags );
 			}
 		}
 
-		template<typename T>
-		inline void setSub(
-			const T &	  p_data,
-			const GLint	  p_offset = GLint( 0 ),
-			const GLsizei p_size   = GLsizei( sizeof( T ) )
-		) const
+		inline void setSub( const void * const p_data, const int32_t p_size, const int32_t p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _size > 0 );
 			assert( p_offset + p_size <= _size );
 
-			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
+			glNamedBufferSubData( _id, p_offset, p_size, p_data );
 		}
 
-		template<typename T>
-		inline void setSub(
-			const std::vector<T> & p_vector,
-			const GLint			   p_offset		  = GLint( 0 ),
-			const bool			   p_offsetSource = false,
-			const GLsizei		   p_size		  = 0
-		) const
-		{
-			assert( glIsBuffer( _id ) );
-			assert( _size > 0 );
-
-			GLsizei size = not p_size ? GLsizei( sizeof( T ) * p_vector.size() ) : p_size;
-
-			assert( p_offset + size <= _size );
-
-			glNamedBufferSubData( _id, p_offset, size, p_vector.data() + ( p_offsetSource ? p_offset : 0 ) );
-		}
-
-		template<typename T>
-		inline void const get( std::vector<T> & p_vector ) const
-		{
-			assert( glIsBuffer( _id ) );
-			assert( _size > 0 );
-
-			GLsizei size = GLsizei( p_vector.size() * sizeof( T ) );
-
-			assert( size <= _size );
-
-			glGetNamedBufferSubData( _id, 0, size, &p_vector[ 0 ] );
-		}
-
-		template<typename T>
-		inline void const get( const GLintptr p_offset, const GLsizei p_size, T * const p_data ) const
+		inline void const get( void * const p_data, const int32_t p_size, const int64_t p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _size > 0 );
@@ -204,20 +117,18 @@ namespace VTX::Renderer::Context::GL
 			glGetNamedBufferSubData( _id, p_offset, p_size, p_data );
 		}
 
-		template<typename T>
-		inline T * const map( const GLbitfield p_access ) const
+		inline void * const map( const uint32_t p_access ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-			return reinterpret_cast<T *>( glMapNamedBuffer( _id, p_access ) );
+			return glMapNamedBuffer( _id, p_access );
 		}
 
-		template<typename T>
-		inline T * const map( const GLintptr p_offset, const GLsizei p_length, const GLbitfield p_access ) const
+		inline void * const map( const uint32_t p_access, const int32_t p_length, const int64_t p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-			return reinterpret_cast<T *>( glMapNamedBufferRange( _id, p_offset, p_length, p_access ) );
+			return glMapNamedBufferRange( _id, p_offset, p_length, p_access );
 		}
 
 		inline void unmap() const
@@ -227,12 +138,12 @@ namespace VTX::Renderer::Context::GL
 			glUnmapNamedBuffer( _id );
 		}
 
-		inline const GLsizei size() const { return _size; }
+		inline const int32_t size() const { return _size; }
 
 	  private:
-		GLuint	_id		= GL_INVALID_INDEX;
-		GLenum	_target = 0;
-		GLsizei _size	= 0;
+		uint32_t _id	 = GL_INVALID_INDEX;
+		uint32_t _target = 0;
+		int32_t	 _size	 = 0;
 
 		inline void _create()
 		{

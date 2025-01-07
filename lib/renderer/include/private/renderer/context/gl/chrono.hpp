@@ -30,13 +30,13 @@ namespace VTX::Renderer::Context::GL
 		{
 			glQueryCounter( _queryEnd, GL_TIMESTAMP );
 
-			GLint available = 0;
+			int32_t available = 0;
 			while ( available != GL_TRUE )
 			{
 				glGetQueryObjectiv( _queryEnd, GL_QUERY_RESULT_AVAILABLE, &available );
 			}
 
-			GLuint64 startTime, endTime;
+			uint64_t startTime, endTime;
 			glGetQueryObjectui64v( _queryStart, GL_QUERY_RESULT, &startTime );
 			glGetQueryObjectui64v( _queryEnd, GL_QUERY_RESULT, &endTime );
 
@@ -44,8 +44,8 @@ namespace VTX::Renderer::Context::GL
 		}
 
 	  private:
-		GLuint _queryStart = 0;
-		GLuint _queryEnd   = 0;
+		uint32_t _queryStart = 0;
+		uint32_t _queryEnd	 = 0;
 	};
 
 	inline const float CHRONO_GPU( const Util::Chrono::Task & p_task )

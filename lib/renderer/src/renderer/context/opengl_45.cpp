@@ -50,13 +50,13 @@ namespace VTX::Renderer::Context
 
 		vao->bind();
 		vao->enableAttribute( 0 );
-		vao->setVertexBuffer( 0, *vbo, GLsizei( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
+		vao->setVertexBuffer( 0, *vbo, int32_t( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
 		vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
 		vao->setAttributeBinding( 0, 0 );
-		vbo->set( quad, 0, GL_STATIC_DRAW );
+		vbo->set( quad.data(), int32_t( quad.size() * sizeof( Vec2f ) ), 0, GL_STATIC_DRAW );
 		vao->unbind();
 
-		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+		glViewport( 0, 0, int32_t( width ), int32_t( height ) );
 
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 		glEnable( GL_LINE_SMOOTH );
@@ -131,7 +131,7 @@ namespace VTX::Renderer::Context
 
 			const bool isLastPass = descPassPtr == p_renderQueue.back();
 
-			std::set<GLenum> drawBuffers;
+			std::set<uint32_t> drawBuffers;
 
 			// Create input data.
 			_createInputs( p_links, descPassPtr, keyPass, keys );
@@ -154,7 +154,7 @@ namespace VTX::Renderer::Context
 				if ( not drawBuffers.empty() )
 				{
 					_framebuffers[ keyFramebuffer ]->setDrawBuffers(
-						std::vector<GLenum>( drawBuffers.begin(), drawBuffers.end() )
+						std::vector<uint32_t>( drawBuffers.begin(), drawBuffers.end() )
 					);
 				}
 			}
@@ -236,7 +236,7 @@ namespace VTX::Renderer::Context
 							GL::Texture2D * const texture = _textures[ keyTexture ].get();
 
 							p_outInstructions.emplace_back( [ texture, channel = channel ]()
-															{ texture->bindToUnit( GLuint( channel ) ); } );
+															{ texture->bindToUnit( uint32_t( channel ) ); } );
 							mapBoundAttachments.emplace( channel, keyTexture );
 						}
 						else
@@ -257,7 +257,7 @@ namespace VTX::Renderer::Context
 							GL::Texture2D * const texture = _textures[ keyTexture ].get();
 
 							p_outInstructions.emplace_back( [ texture, channel = channel ]()
-															{ texture->bindToUnit( GLuint( channel ) ); } );
+															{ texture->bindToUnit( uint32_t( channel ) ); } );
 							mapBoundAttachments.emplace( channel, keyTexture );
 						}
 						else
@@ -301,7 +301,7 @@ namespace VTX::Renderer::Context
 					assert( draw.ranges != nullptr );
 					assert( vao != nullptr );
 
-					GLenum				   primitive	 = _mapPrimitives[ draw.primitive ];
+					uint32_t			   primitive	 = _mapPrimitives[ draw.primitive ];
 					Draw::Range * const	   ranges		 = draw.ranges;
 					const NeedRenderFunc & needRenderFun = draw.needRenderFunc;
 
@@ -324,10 +324,10 @@ namespace VTX::Renderer::Context
 									program->use();
 									vao->multiDrawElement(
 										primitive,
-										(GLsizei *)( ranges->counts.data() ),
+										(int32_t *)( ranges->counts.data() ),
 										GL_UNSIGNED_INT,
 										(GLvoid **)( ranges->offsets.data() ),
-										GLsizei( ranges->counts.size() )
+										int32_t( ranges->counts.size() )
 									);
 									vao->unbindElementBuffer();
 									vao->unbind();
@@ -347,9 +347,9 @@ namespace VTX::Renderer::Context
 									program->use();
 									vao->multiDrawArray(
 										primitive,
-										(GLint *)( ( ranges->offsets.data() ) ),
-										(GLsizei *)( ranges->counts.data() ),
-										GLsizei( ranges->counts.size() )
+										(int32_t *)( ( ranges->offsets.data() ) ),
+										(int32_t *)( ranges->counts.data() ),
+										int32_t( ranges->counts.size() )
 									);
 									vao->unbind();
 								}
@@ -388,7 +388,7 @@ namespace VTX::Renderer::Context
 				assert( _textures.contains( keyTexture ) );
 				GL::Texture2D * const texture = _textures[ keyTexture ].get();
 				p_outInstructions.emplace_back( [ texture, channel = channel ]()
-												{ texture->unbindFromUnit( GLuint( channel ) ); } );
+												{ texture->unbindFromUnit( uint32_t( channel ) ); } );
 			}
 
 			// Unbind fbo.
@@ -458,7 +458,7 @@ namespace VTX::Renderer::Context
 		width  = p_width;
 		height = p_height;
 
-		glViewport( 0, 0, GLsizei( width ), GLsizei( height ) );
+		glViewport( 0, 0, int32_t( width ), int32_t( height ) );
 
 		for ( const Pass * const descPassPtr : p_renderQueue )
 		{
@@ -519,7 +519,13 @@ namespace VTX::Renderer::Context
 		// It permits to render in a given resolution without resizing the actual renderer.
 		GL::Framebuffer fbo;
 		GL::Texture2D	texture(
-			  p_width, p_height, GL_RGBA32F, GL_REPEAT, GL_REPEAT, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR
+			  int32_t( p_width ),
+			  int32_t( p_height ),
+			  GL_RGBA32F,
+			  GL_REPEAT,
+			  GL_REPEAT,
+			  GL_NEAREST_MIPMAP_LINEAR,
+			  GL_LINEAR
 		  );
 
 		fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 );
@@ -538,11 +544,11 @@ namespace VTX::Renderer::Context
 		glReadnPixels(
 			0,
 			0,
-			GLsizei( p_width ),
-			GLsizei( p_height ),
+			int32_t( p_width ),
+			int32_t( p_height ),
 			GL_RGBA,
 			GL_UNSIGNED_BYTE,
-			GLsizei( p_image.size() ),
+			int32_t( p_image.size() ),
 			p_image.data()
 		);
 		fbo.unbind();
@@ -669,7 +675,7 @@ namespace VTX::Renderer::Context
 
 				vaoData->bindElementBuffer( *eboData );
 
-				GLuint chan = 0;
+				uint32_t chan = 0;
 				for ( const BufferDraw::Entry & entry : data.entries )
 				{
 					const Key keyData = keyVao + entry.name;
@@ -683,10 +689,10 @@ namespace VTX::Renderer::Context
 					auto & vbo = _buffers[ keyData ];
 					vaoData->enableAttribute( chan );
 					vaoData->setVertexBuffer(
-						chan, *vbo, GLint( entry.components ) * GLsizei( _mapTypeSizes[ entry.nativeType ] )
+						chan, *vbo, int32_t( entry.components ) * int32_t( _mapTypeSizes[ entry.nativeType ] )
 					);
 					vaoData->setAttributeFormat(
-						chan, GLint( entry.components ), GLint( _mapTypes[ entry.nativeType ] )
+						chan, int32_t( entry.components ), int32_t( _mapTypes[ entry.nativeType ] )
 					);
 					vaoData->setAttributeBinding( chan, chan );
 					chan++;
@@ -696,10 +702,10 @@ namespace VTX::Renderer::Context
 	}
 
 	void OpenGL45::_createOuputs(
-		const Pass * const p_pass,
-		std::set<GLenum> & p_drawBuffers,
-		const Key		   p_key,
-		Keys &			   p_keys
+		const Pass * const	 p_pass,
+		std::set<uint32_t> & p_drawBuffers,
+		const Key			 p_key,
+		Keys &				 p_keys
 	)
 	{
 		for ( const auto & [ channel, output ] : p_pass->outputs )
@@ -913,8 +919,8 @@ namespace VTX::Renderer::Context
 			// Init buffer.
 			// TODO: use real flags for creation.
 			buffer->set(
-				GLsizei( maxSize ),
 				p_bufferData.data,
+				int32_t( maxSize ),
 				p_bufferData.isSizeFixed,
 				p_bufferData.isSizeFixed ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_DRAW
 			);
@@ -1012,9 +1018,9 @@ namespace VTX::Renderer::Context
 		glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &_openglInfos.glMaxComputeWorkGroupInvocations );
 
 		// Extensions.
-		GLint numExtensions = 0;
+		int32_t numExtensions = 0;
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
-		for ( GLint i = 0; i < numExtensions; ++i )
+		for ( int32_t i = 0; i < numExtensions; ++i )
 		{
 			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
 			if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
@@ -1079,12 +1085,12 @@ namespace VTX::Renderer::Context
 		p_infos.currentCountTextures = _textures.size();
 	}
 	void APIENTRY OpenGL45::_debugMessageCallback(
-		const GLenum   p_source,
-		const GLenum   p_type,
-		const GLuint   p_id,
-		const GLenum   p_severity,
-		const GLsizei  p_length,
-		const GLchar * p_msg,
+		const uint32_t p_source,
+		const uint32_t p_type,
+		const uint32_t p_id,
+		const uint32_t p_severity,
+		const int32_t  p_length,
+		const char *   p_msg,
 		const void *   p_data
 	)
 	{
@@ -1138,19 +1144,19 @@ namespace VTX::Renderer::Context
 		}
 	}
 
-	std::map<const E_CHAN_OUT, const GLenum> OpenGL45::_mapAttachments = {
+	std::map<const E_CHAN_OUT, const uint32_t> OpenGL45::_mapAttachments = {
 		{ E_CHAN_OUT::COLOR_0, GL_COLOR_ATTACHMENT0 },
 		{ E_CHAN_OUT::COLOR_1, GL_COLOR_ATTACHMENT1 },
 		{ E_CHAN_OUT::COLOR_2, GL_COLOR_ATTACHMENT2 },
 		{ E_CHAN_OUT::DEPTH, GL_DEPTH_ATTACHMENT },
 	};
 
-	std::map<const E_PRIMITIVE, const GLenum> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },
-																		   { E_PRIMITIVE::LINES, GL_LINES },
-																		   { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES },
-																		   { E_PRIMITIVE::PATCHES, GL_PATCHES } };
+	std::map<const E_PRIMITIVE, const uint32_t> OpenGL45::_mapPrimitives = { { E_PRIMITIVE::POINTS, GL_POINTS },
+																			 { E_PRIMITIVE::LINES, GL_LINES },
+																			 { E_PRIMITIVE::TRIANGLES, GL_TRIANGLES },
+																			 { E_PRIMITIVE::PATCHES, GL_PATCHES } };
 
-	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormats = {
+	std::map<const E_FORMAT, const uint32_t> OpenGL45::_mapFormats = {
 		{ E_FORMAT::RGB16F, GL_RGB16F },
 		{ E_FORMAT::RGBA16F, GL_RGBA16F },
 		{ E_FORMAT::RGBA32UI, GL_RGBA32UI },
@@ -1162,12 +1168,12 @@ namespace VTX::Renderer::Context
 		{ E_FORMAT::DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F },
 	};
 
-	std::map<const GLenum, const size_t> OpenGL45::_mapFormatSizes = {
+	std::map<const uint32_t, const size_t> OpenGL45::_mapFormatSizes = {
 		{ GL_RGB16F, 6 }, { GL_RGBA16F, 8 }, { GL_RGBA32UI, 16 }, { GL_RGBA32F, 16 },			{ GL_RG32UI, 8 },
 		{ GL_R8, 1 },	  { GL_R16F, 2 },	 { GL_R32F, 4 },	  { GL_DEPTH_COMPONENT32F, 4 },
 	};
 
-	std::map<const E_WRAPPING, const GLint> OpenGL45::_mapWrappings = {
+	std::map<const E_WRAPPING, const int32_t> OpenGL45::_mapWrappings = {
 		{ E_WRAPPING::REPEAT, GL_REPEAT },
 		{ E_WRAPPING::MIRRORED_REPEAT, GL_MIRRORED_REPEAT },
 		{ E_WRAPPING::CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE },
@@ -1175,7 +1181,7 @@ namespace VTX::Renderer::Context
 		{ E_WRAPPING::MIRROR_CLAMP_TO_EDGE, GL_MIRROR_CLAMP_TO_EDGE },
 	};
 
-	std::map<const E_FILTERING, const GLint> OpenGL45::_mapFilterings = {
+	std::map<const E_FILTERING, const int32_t> OpenGL45::_mapFilterings = {
 		{ E_FILTERING::NEAREST, GL_NEAREST },
 		{ E_FILTERING::LINEAR, GL_LINEAR },
 		{ E_FILTERING::NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_NEAREST },
@@ -1184,21 +1190,21 @@ namespace VTX::Renderer::Context
 		{ E_FILTERING::LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR },
 	};
 
-	std::map<const E_TYPE, const GLenum> OpenGL45::_mapTypes = { { E_TYPE::BOOL, GL_BOOL },
-																 { E_TYPE::BYTE, GL_BYTE },
-																 { E_TYPE::UBYTE, GL_UNSIGNED_BYTE },
-																 { E_TYPE::SHORT, GL_SHORT },
-																 { E_TYPE::USHORT, GL_UNSIGNED_SHORT },
-																 { E_TYPE::INT, GL_INT },
-																 { E_TYPE::UINT, GL_UNSIGNED_INT },
-																 { E_TYPE::FLOAT, GL_FLOAT },
-																 { E_TYPE::VEC2I, GL_INT },
-																 { E_TYPE::VEC2F, GL_FLOAT },
-																 { E_TYPE::VEC3F, GL_FLOAT },
-																 { E_TYPE::VEC4F, GL_FLOAT },
-																 { E_TYPE::MAT3F, GL_FLOAT },
-																 { E_TYPE::MAT4F, GL_FLOAT },
-																 { E_TYPE::COLOR4, GL_FLOAT } };
+	std::map<const E_TYPE, const uint32_t> OpenGL45::_mapTypes = { { E_TYPE::BOOL, GL_BOOL },
+																   { E_TYPE::BYTE, GL_BYTE },
+																   { E_TYPE::UBYTE, GL_UNSIGNED_BYTE },
+																   { E_TYPE::SHORT, GL_SHORT },
+																   { E_TYPE::USHORT, GL_UNSIGNED_SHORT },
+																   { E_TYPE::INT, GL_INT },
+																   { E_TYPE::UINT, GL_UNSIGNED_INT },
+																   { E_TYPE::FLOAT, GL_FLOAT },
+																   { E_TYPE::VEC2I, GL_INT },
+																   { E_TYPE::VEC2F, GL_FLOAT },
+																   { E_TYPE::VEC3F, GL_FLOAT },
+																   { E_TYPE::VEC4F, GL_FLOAT },
+																   { E_TYPE::MAT3F, GL_FLOAT },
+																   { E_TYPE::MAT4F, GL_FLOAT },
+																   { E_TYPE::COLOR4, GL_FLOAT } };
 
 	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeSizes = {
 		{ E_TYPE::BOOL, sizeof( bool ) },	{ E_TYPE::BYTE, sizeof( char ) },	  { E_TYPE::UBYTE, sizeof( uchar ) },
@@ -1210,5 +1216,6 @@ namespace VTX::Renderer::Context
 
 	std::map<const E_FORMAT, const E_TYPE> OpenGL45::_mapFormatTypes = { { E_FORMAT::RG32UI, E_TYPE::UINT } };
 
-	std::map<const E_FORMAT, const GLenum> OpenGL45::_mapFormatInternalTypes = { { E_FORMAT::RG32UI, GL_RG_INTEGER } };
+	std::map<const E_FORMAT, const uint32_t> OpenGL45::_mapFormatInternalTypes
+		= { { E_FORMAT::RG32UI, GL_RG_INTEGER } };
 } // namespace VTX::Renderer::Context
