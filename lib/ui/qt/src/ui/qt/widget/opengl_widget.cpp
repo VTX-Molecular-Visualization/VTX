@@ -65,7 +65,7 @@ namespace VTX::UI::QT::Widget
 		_container->resize( p_event->size() );
 
 		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>(
-			p_event->size().width(), p_event->size().height(), _context->defaultFramebufferObject()
+			p_event->size().width(), p_event->size().height()
 		);
 	}
 

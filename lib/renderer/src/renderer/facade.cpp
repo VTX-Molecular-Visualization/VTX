@@ -20,10 +20,7 @@ namespace VTX::Renderer
 		drawRangeVoxels	   = &_renderer->drawRangeVoxels;
 	}
 
-	void Facade::resize( const size_t p_width, const size_t p_height, const uint p_output )
-	{
-		_renderer->resize( p_width, p_height, p_output );
-	}
+	void Facade::resize( const size_t p_width, const size_t p_height ) { _renderer->resize( p_width, p_height ); }
 
 	void Facade::build( const uint p_output, void * p_loader ) { _renderer->build( p_output, p_loader ); }
 

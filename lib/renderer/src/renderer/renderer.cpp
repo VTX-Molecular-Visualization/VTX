@@ -69,7 +69,7 @@ namespace VTX::Renderer
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
-		bool isFirstBuild = true; // not hasContext();
+		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
 
 		// Build renderer graph.
 		VTX_DEBUG(
@@ -97,7 +97,7 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::resize( const size_t p_width, const size_t p_height, const Handle p_output )
+	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
 		VTX_TRACE( "Resizing renderer to {}x{}", width, height );
 

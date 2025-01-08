@@ -29,7 +29,7 @@ namespace VTX::Renderer
 		Facade( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader = nullptr );
 		~Facade();
 
-		void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 );
+		void resize( const size_t p_width, const size_t p_height );
 		void build( const uint p_output = 0, void * p_loader = nullptr );
 		void clean();
 		void render( const float p_deltaTime, const float p_elapsedTime );

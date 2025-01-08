@@ -80,7 +80,7 @@ namespace VTX::Renderer
 		 * @brief Resize the renderer.
 		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
 		 */
-		void resize( const size_t p_width, const size_t p_height, const Handle p_output = 0 );
+		void resize( const size_t p_width, const size_t p_height );
 
 		void clean();
 

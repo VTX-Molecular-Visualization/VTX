@@ -8,7 +8,7 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief All graphic API implementations.
 	 */
-	enum struct E_API
+	enum struct E_GRAPHIC_API
 	{
 		DEFAULT,
 		OPENGL45
@@ -101,6 +101,12 @@ namespace VTX::Renderer::Context
 			_compute			 = nullptr;
 
 			_contexts.clear();
+		}
+
+		template<ConceptContextImpl C>
+		bool hasContext() const
+		{
+			return _contexts.has<C>();
 		}
 
 		template<typename... Args>
