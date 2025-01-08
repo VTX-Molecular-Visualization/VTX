@@ -117,40 +117,61 @@ namespace VTX::Renderer::Context
 		template<ConceptContextImpl C, typename... Args>
 		void set( Args &&... p_args )
 		{
-			std::unique_ptr<C> context = std::make_unique<C>( std::forward<Args>( p_args )... );
-			_impl					   = std::move( context );
-
-			_build = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->build( std::forward<decltype( args )>( args )... ); };
-			_resize = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->resize( std::forward<decltype( args )>( args )... ); };
-			_setOutput = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->setOutput( std::forward<decltype( args )>( args )... ); };
-			_setValue = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->setValue( std::forward<decltype( args )>( args )... ); };
-			_reserveData = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->reserveData( std::forward<decltype( args )>( args )... ); };
-			_set = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->set( std::forward<decltype( args )>( args )... ); };
-			_setSub = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->setSub( std::forward<decltype( args )>( args )... ); };
-			_get = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->get( std::forward<decltype( args )>( args )... ); };
-			_fillInfos = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->fillInfos( std::forward<decltype( args )>( args )... ); };
-			_measureTaskDuration = [ this ]( auto &&... args )
+			// Create or get context.
+			C * context;
+			if ( _contexts.has<C>() )
 			{
-				return static_cast<C *>( _impl.get() )
-					->measureTaskDuration( std::forward<decltype( args )>( args )... );
-			};
-			_compileShaders = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->compileShaders( std::forward<decltype( args )>( args )... ); };
-			_snapshot = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->snapshot( std::forward<decltype( args )>( args )... ); };
-			_getTextureData = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->getTextureData( std::forward<decltype( args )>( args )... ); };
-			_compute = [ this ]( auto &&... args )
-			{ static_cast<C *>( _impl.get() )->compute( std::forward<decltype( args )>( args )... ); };
+				context = _contexts.get<C>();
+			}
+			else
+			{
+				context = _contexts.create<C>( std::forward<Args>( p_args )... );
+			}
+
+			// Connect functions.
+			_build	= [ context ]( auto &&... args ) { context->build( std::forward<decltype( args )>( args )... ); };
+			_resize = [ context ]( auto &&... args ) { context->resize( std::forward<decltype( args )>( args )... ); };
+			_setOutput
+				= [ context ]( auto &&... args ) { context->setOutput( std::forward<decltype( args )>( args )... ); };
+			_setValue
+				= [ context ]( auto &&... args ) { context->setValue( std::forward<decltype( args )>( args )... ); };
+			_reserveData
+				= [ context ]( auto &&... args ) { context->reserveData( std::forward<decltype( args )>( args )... ); };
+			_set	= [ context ]( auto &&... args ) { context->set( std::forward<decltype( args )>( args )... ); };
+			_setSub = [ context ]( auto &&... args ) { context->setSub( std::forward<decltype( args )>( args )... ); };
+			_get	= [ context ]( auto &&... args ) { context->get( std::forward<decltype( args )>( args )... ); };
+			_fillInfos
+				= [ context ]( auto &&... args ) { context->fillInfos( std::forward<decltype( args )>( args )... ); };
+			_measureTaskDuration = [ context ]( auto &&... args )
+			{ return context->measureTaskDuration( std::forward<decltype( args )>( args )... ); };
+			_compileShaders = [ context ]( auto &&... args )
+			{ context->compileShaders( std::forward<decltype( args )>( args )... ); };
+			_snapshot
+				= [ context ]( auto &&... args ) { context->snapshot( std::forward<decltype( args )>( args )... ); };
+			_getTextureData = [ context ]( auto &&... args )
+			{ context->getTextureData( std::forward<decltype( args )>( args )... ); };
+			_compute
+				= [ context ]( auto &&... args ) { context->compute( std::forward<decltype( args )>( args )... ); };
+		}
+
+		void reset()
+		{
+			_build				 = nullptr;
+			_resize				 = nullptr;
+			_setOutput			 = nullptr;
+			_setValue			 = nullptr;
+			_reserveData		 = nullptr;
+			_set				 = nullptr;
+			_setSub				 = nullptr;
+			_get				 = nullptr;
+			_fillInfos			 = nullptr;
+			_measureTaskDuration = nullptr;
+			_compileShaders		 = nullptr;
+			_snapshot			 = nullptr;
+			_getTextureData		 = nullptr;
+			_compute			 = nullptr;
+
+			_contexts.clear();
 		}
 
 		template<typename... Args>
@@ -195,12 +216,12 @@ namespace VTX::Renderer::Context
 		inline void setSub(
 			const std::vector<T> & p_data,
 			const Key &			   p_key,
-			const size_t		   p_offset		  = 0,
-			const bool			   p_offsetSource = false,
-			const size_t		   p_size		  = 0
+			const size_t		   p_offset = 0,
+			const size_t		   p_size	= 0
+
 		)
 		{
-			size_t size	  = sizeof( T ) * p_data.size();
+			size_t size	  = sizeof( T ) * ( p_size ? p_size : p_data.size() );
 			size_t offset = sizeof( T ) * p_offset;
 			_setSub( p_key, static_cast<const void * const>( p_data.data() ), size, offset );
 		}
@@ -251,8 +272,8 @@ namespace VTX::Renderer::Context
 		}
 
 	  private:
-		// Util::Collection<std::unique_ptr<BaseContext>> _contexts;
-		std::unique_ptr<BaseContext> _impl;
+		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
+		// std::unique_ptr<BaseContext> _impl;
 
 		FunctionBuild				_build;
 		FunctionResize				_resize;

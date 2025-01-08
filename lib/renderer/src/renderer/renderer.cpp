@@ -502,7 +502,6 @@ namespace VTX::Renderer
 				cacheSC.flags,
 				"SpheresCylindersFlags",
 				offset + p_atomIds.getFirst(),
-				false,
 				p_atomIds.getLast() - p_atomIds.getFirst() + 1
 			);
 

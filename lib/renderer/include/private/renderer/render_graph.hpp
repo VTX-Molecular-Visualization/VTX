@@ -188,7 +188,7 @@ namespace VTX::Renderer
 		void clean()
 		{
 			_renderQueue.clear();
-			//_context.reset( nullptr );
+			_context.reset();
 		}
 
 		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
