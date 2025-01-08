@@ -50,6 +50,7 @@ namespace VTX::Renderer
 		// Check pass existence.
 		assert( p_passSrc );
 		assert( p_passDest );
+
 		//  Check I/O existence.
 		assert( p_passSrc->outputs.contains( p_channelSrc ) );
 		assert( p_passDest->inputs.contains( p_channelDest ) );

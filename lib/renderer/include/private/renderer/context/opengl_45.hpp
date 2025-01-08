@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_OPENGL_45__
 #define __VTX_RENDERER_CONTEXT_OPENGL_45__
 
-#include "concept_context.hpp"
+#include "concept.hpp"
 #include "gl/buffer.hpp"
 #include "gl/chrono.hpp"
 #include "gl/framebuffer.hpp"
@@ -193,6 +193,8 @@ namespace VTX::Renderer::Context
 		void compute( const ComputePass & p_pass );
 
 	  private:
+		FilePath _shaderPath;
+
 		/////////////////// TODO: use collection util class
 		//
 		// TODO: find a better solution (magic enum explodes compile time).

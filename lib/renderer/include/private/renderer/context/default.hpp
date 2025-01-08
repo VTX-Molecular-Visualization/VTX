@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_DEFAULT__
 #define __VTX_RENDERER_CONTEXT_DEFAULT__
 
-#include "concept_context.hpp"
+#include "concept.hpp"
 
 namespace VTX::Renderer::Context
 {
@@ -11,9 +11,7 @@ namespace VTX::Renderer::Context
 	class Default : public BaseContext
 	{
 	  public:
-		Default( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr )
-		{
-		}
+		Default( const size_t p_width, const size_t p_height ) : BaseContext { p_width, p_height } {}
 
 		inline void
 		build( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )

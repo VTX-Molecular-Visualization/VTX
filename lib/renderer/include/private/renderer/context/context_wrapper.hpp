@@ -1,105 +1,22 @@
-#ifndef __VTX_RENDERER_CONTEXT_CONCEPT__
-#define __VTX_RENDERER_CONTEXT_CONCEPT__
+#ifndef __VTX_RENDERER_CONTEXT_WRAPPER__
+#define __VTX_RENDERER_CONTEXT_WRAPPER__
 
-#include "renderer/descriptors.hpp"
-#include "renderer/struct_infos.hpp"
-#include <any>
-#include <concepts>
-#include <util/chrono.hpp>
-#include <util/collection.hpp>
+#include "concept.hpp"
 
 namespace VTX::Renderer::Context
 {
+	/**
+	 * @brief All graphic API implementations.
+	 */
 	enum struct E_API
 	{
-		OPENGL45,
-		DEFAULT
-	};
-
-	using Key  = std::string;
-	using Keys = std::vector<Key>;
-
-	/**
-	 * @brief Shared attributes for all render contexts.
-	 */
-	struct BaseContext
-	{
-		size_t	 width;
-		size_t	 height;
-		FilePath shaderPath;
+		DEFAULT,
+		OPENGL45
 	};
 
 	/**
-	 * @brief The context is the graphic API implementation.
+	 * @brief Function pointers to the context implementation.
 	 */
-	template<typename C>
-	concept ConceptContextImpl
-		= std::is_base_of<BaseContext, C>::value
-		  && requires(
-			  C								  p_context,
-			  const size_t					  p_width,
-			  const size_t					  p_height,
-			  const size_t					  p_x,
-			  const size_t					  p_y,
-			  const RenderQueue &			  p_renderQueue,
-			  const Links &					  p_links,
-			  const Handle					  p_output,
-			  const std::vector<BufferData> & p_globalData,
-			  const Key &					  p_key,
-			  const void * const			  p_value,
-			  const void * const			  p_data,
-			  void * const					  p_dataOut,
-			  const size_t					  p_size,
-			  const size_t					  p_index,
-			  const size_t					  p_offset,
-			  const Util::Chrono::Task &	  p_task,
-			  Instructions &				  p_instructions,
-			  InstructionsDurationRanges &	  p_instructionsDurationRanges,
-			  StructInfos &					  p_infos,
-			  std::vector<uchar> &			  p_image,
-			  const std::string &			  p_pass,
-			  const E_CHAN_OUT				  p_channel,
-			  std::any &					  p_textureData,
-			  const ComputePass &			  p_computePass
-		  ) {
-				 {
-					 p_context.build(
-						 p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges
-					 )
-				 } -> std::same_as<void>;
-				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;
-				 { p_context.setOutput( p_output ) } -> std::same_as<void>;
-				 { p_context.setValue( p_key, p_value, p_index ) } -> std::same_as<void>;
-				 { p_context.reserveData( p_key, p_size ) } -> std::same_as<void>;
-				 { p_context.set( p_key, p_data, p_size ) } -> std::same_as<void>;
-				 { p_context.setSub( p_key, p_data, p_size, p_offset ) } -> std::same_as<void>;
-				 { p_context.get( p_key, p_dataOut, p_size ) } -> std::same_as<void>;
-				 { p_context.fillInfos( p_infos ) } -> std::same_as<void>;
-				 { p_context.measureTaskDuration( p_task ) } -> std::same_as<float>;
-				 { p_context.compileShaders() } -> std::same_as<void>;
-				 {
-					 p_context.snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height )
-				 } -> std::same_as<void>;
-				 { p_context.getTextureData( p_key, p_textureData, p_x, p_y, p_channel ) } -> std::same_as<void>;
-				 { p_context.compute( p_computePass ) } -> std::same_as<void>;
-			 };
-
-	/*
-	using FunctionBuild
-		= void ( * )( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &,
-	InstructionsDurationRanges & ); using FunctionResize			  = void ( * )( const RenderQueue &, const size_t,
-	const size_t ); using FunctionSetOutput			  = void ( * )( const Handle ); using FunctionSetValue			  =
-	void ( * )( const Key &, const void * const, const size_t ); using FunctionReserveData		  = void ( * )( const
-	Key &, const size_t ); using FunctionSet				  = void ( * )( const Key &, const void * const, const
-	size_t ); using FunctionSetSub			  = void ( * )( const Key &, const void * const, const size_t, const size_t
-	); using FunctionGet				  = void ( * )( const Key &, void * const, const size_t ); using
-	FunctionFillInfos			  = void ( * )( StructInfos & ); using FunctionMeasureTaskDuration = float ( * )( const
-	Util::Chrono::Task & ); using FunctionCompileShaders	  = void ( * )(); using FunctionSnapshot = void ( * )(
-	std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t ); using
-	FunctionGetTextureData = void ( * )( const Key &, std::any &, const size_t, const size_t, const E_CHAN_OUT ); using
-	FunctionCompute		 = void ( * )( const ComputePass & );
-	*/
-
 	using FunctionBuild = std::function<
 		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
 	using FunctionResize			  = std::function<void( const RenderQueue &, size_t, size_t )>;
@@ -117,9 +34,15 @@ namespace VTX::Renderer::Context
 	using FunctionGetTextureData = std::function<void( const Key &, std::any &, size_t, size_t, E_CHAN_OUT )>;
 	using FunctionCompute		 = std::function<void( const ComputePass & )>;
 
-	class Context
+	/**
+	 * @brief Type-erased context wrapper.
+	 */
+	class ContextWrapper
 	{
 	  public:
+		/**
+		 * @brief Set the current context implementation.
+		 */
 		template<ConceptContextImpl C, typename... Args>
 		void set( Args &&... p_args )
 		{
@@ -282,8 +205,10 @@ namespace VTX::Renderer::Context
 		inline void clear() { _contexts.clear(); }
 
 	  private:
+		/**
+		 * @brief Created context implementations.
+		 */
 		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
-		// std::unique_ptr<BaseContext> _impl;
 
 		FunctionBuild				_build;
 		FunctionResize				_resize;

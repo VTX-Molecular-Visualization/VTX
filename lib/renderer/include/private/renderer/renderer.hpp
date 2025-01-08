@@ -2,8 +2,7 @@
 #define __VTX_RENDERER_RENDERER__
 
 #include "caches.hpp"
-#include "context/default.hpp"
-#include "context/opengl_45.hpp"
+#include "context/context_wrapper.hpp"
 #include "passes.hpp"
 #include "render_graph.hpp"
 #include "renderer/proxy/camera.hpp"
@@ -195,7 +194,7 @@ namespace VTX::Renderer
 		Util::Callback<> onReady;
 
 	  private:
-		Context::Context			 _context;
+		Context::ContextWrapper		 _context;
 		std::vector<BufferData>		 _globalData;
 		void *						 _loader		  = nullptr;
 		bool						 _needUpdate	  = false;

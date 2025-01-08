@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_RENDER_GRAPH__
 #define __VTX_RENDERER_RENDER_GRAPH__
 
-#include "context/concept_context.hpp"
+#include "context/concept.hpp"
 #include "scheduler/concept_scheduler.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -34,11 +34,14 @@ namespace VTX::Renderer
 
 		void removeLink( const Link * const p_link );
 
+		/**
+		 * @brief Creates a render queue from graph.
+		 * @tparam S the scheduler to use.
+		 * @return the ordonanced render queue.
+		 */
 		template<Scheduler::Concept S>
 		const RenderQueue & build()
 		{
-			VTX_DEBUG( "{}", "Building render graph..." );
-
 			// Check ouptut.
 			if ( _output == nullptr )
 			{
@@ -47,6 +50,7 @@ namespace VTX::Renderer
 
 			// Compute queue with scheduler.
 			S scheduler;
+			_renderQueue.clear();
 			scheduler.schedule( _passes, _links, _output, _renderQueue );
 
 			// Some checks.
@@ -60,34 +64,6 @@ namespace VTX::Renderer
 				// Useless?
 				// throw GraphicException( "The output of the last pass must be unique" );
 			}
-
-			// Create context.
-			//_context.set<C>( p_width, p_height, p_shaderPath, p_loader );
-			// if ( _context == nullptr )
-			//{
-			//_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );
-			//}
-
-			// Generate instructions.
-			/*
-			try
-			{
-				VTX_DEBUG( "{}", "Generating instructions..." );
-				_context.build(
-					_renderQueue, _links, p_output, _globalData, p_outInstructions, p_outInstructionsDurationRanges
-				);
-				VTX_DEBUG( "{}", "Generating instructions... done" );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Can not generate instructions: {}", p_e.what() );
-				p_outInstructions.clear();
-				return nullptr;
-			}
-
-			VTX_DEBUG( "{} instructions generated", p_outInstructions.size() );
-			VTX_DEBUG( "{}", "Building render graph... done" );
-			*/
 
 			std::string str = "Passes: ";
 			for ( const Pass * const pass : _renderQueue )
@@ -105,6 +81,9 @@ namespace VTX::Renderer
 		Links		   _links;
 		const Output * _output;
 
+		/**
+		 * @brief The computed render queue.
+		 */
 		RenderQueue _renderQueue;
 	};
 
