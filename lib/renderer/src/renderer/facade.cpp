@@ -29,8 +29,6 @@ namespace VTX::Renderer
 
 	void Facade::clean() { _renderer->clean(); }
 
-	bool Facade::hasContext() const { return _renderer->hasContext(); }
-
 	void Facade::render( const float p_deltaTime, const float p_elapsedTime )
 	{
 		_renderer->render( p_deltaTime, p_elapsedTime );
@@ -135,8 +133,6 @@ namespace VTX::Renderer
 	const Output * const Facade::getOutput() const { return _renderer->getOutput(); }
 
 	void Facade::setOutput( const Output * const p_output ) { _renderer->setOutput( p_output ); }
-
-	bool Facade::isInRenderQueue( const Pass * const p_pass ) { return _renderer->isInRenderQueue( p_pass ); }
 
 	void Facade::compileShaders() const { _renderer->compileShaders(); }
 

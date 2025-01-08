@@ -31,7 +31,6 @@ namespace VTX::Renderer
 		void resize( const size_t p_width, const size_t p_height, const uint p_output = 0 );
 		void build( const uint p_output = 0, void * p_loader = nullptr );
 		void clean();
-		bool hasContext() const;
 		void render( const float p_deltaTime, const float p_elapsedTime );
 
 		void setOutput( const uint p_output );
@@ -79,7 +78,6 @@ namespace VTX::Renderer
 		const RenderQueue &				   getRenderQueue() const;
 		const Output * const			   getOutput() const;
 		void							   setOutput( const Output * const p_output );
-		bool							   isInRenderQueue( const Pass * const p_pass );
 		void							   compileShaders() const;
 		const InstructionsDurationRanges & getInstructionsDurationRanges() const;
 		const std::vector<Pass *> &		   getAvailablePasses() const;

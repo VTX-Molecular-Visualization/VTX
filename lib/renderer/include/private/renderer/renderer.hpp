@@ -13,7 +13,6 @@
 #include "renderer/proxy/representation.hpp"
 #include "renderer/proxy/system.hpp"
 #include "renderer/proxy/voxels.hpp"
-#include "scheduler/depth_first_search.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -42,46 +41,13 @@ namespace VTX::Renderer
 		template<typename T>
 		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
 		{
-			assert( _context != nullptr );
-			_context->setValue<T>( p_value, p_key, p_index );
+			_context.setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
 		}
 
-		/**
-		 * @brief Resize the renderer.
-		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
-		 */
-		inline void resize( const size_t p_width, const size_t p_height, const Handle p_output = 0 )
-		{
-			VTX_TRACE( "Resizing renderer to {}x{}", width, height );
+		inline Pass * const addPass( const Pass & p_pass ) { return _renderGraph->addPass( p_pass ); }
 
-			if ( _context == nullptr )
-			{
-				return;
-			}
-
-			width  = p_width;
-			height = p_height;
-
-			Vec2i size = { p_width, p_height };
-			setValue( size, "CameraResolution" );
-
-			_context->resize( _renderGraph->getRenderQueue(), p_width, p_height );
-
-			setNeedUpdate( true );
-		}
-
-		inline Pass * const addPass( const Pass & p_pass )
-		{
-			assert( _renderGraph != nullptr );
-			return _renderGraph->addPass( p_pass );
-		}
-
-		inline void removePass( const Pass * const p_pass )
-		{
-			assert( _renderGraph != nullptr );
-			_renderGraph->removePass( p_pass );
-		}
+		inline void removePass( const Pass * const p_pass ) { _renderGraph->removePass( p_pass ); }
 
 		inline bool addLink(
 			Pass * const	   p_passSrc,
@@ -90,15 +56,12 @@ namespace VTX::Renderer
 			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
 		)
 		{
-			assert( _renderGraph != nullptr );
 			return _renderGraph->addLink( p_passSrc, p_passDest, p_channelSrc, p_channelDest );
 		}
 
-		inline void removeLink( const Link * const p_link )
-		{
-			assert( _renderGraph != nullptr );
-			_renderGraph->removeLink( p_link );
-		}
+		inline void removeLink( const Link * const p_link ) { _renderGraph->removeLink( p_link ); }
+
+		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
 
 		inline const Passes &		getPasses() const { return _renderGraph->getPasses(); }
 		inline const Links &		getLinks() const { return _renderGraph->getLinks(); }
@@ -106,50 +69,27 @@ namespace VTX::Renderer
 		inline const Output * const getOutput() const { return _renderGraph->getOutput(); }
 		inline void					setOutput( const Output * const p_output ) { _renderGraph->setOutput( p_output ); }
 
-		inline bool isInRenderQueue( const Pass * const p_pass ) { return _renderGraph->isInRenderQueue( p_pass ); }
-
 		inline void setOutput( const Handle p_output )
 		{
-			assert( _context != nullptr );
-
-			_context->setOutput( p_output );
+			_context.setOutput( p_output );
 			setNeedUpdate( true );
 		}
 
-		void		build( const uint p_output = 0, void * p_loader = nullptr );
-		void		clean();
-		inline bool hasContext() const { return _context != nullptr; }
+		void build( const uint p_output = 0, void * p_loader = nullptr );
+
+		/**
+		 * @brief Resize the renderer.
+		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
+		 */
+		void resize( const size_t p_width, const size_t p_height, const Handle p_output = 0 );
+
+		void clean();
 
 		/**
 		 * @brief The render loop.
 		 * @param p_time is the current running time.
 		 */
-		inline void render( const float p_deltaTime, const float p_elapsedTime )
-		{
-			if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
-			{
-				if ( logDurations )
-				{
-					_renderLog( p_deltaTime, p_elapsedTime );
-				}
-				else
-				{
-					_render( p_deltaTime, p_elapsedTime );
-				}
-
-				if ( not forceUpdate )
-				{
-					if ( _needUpdate )
-					{
-						setNeedUpdate( false );
-					}
-					else
-					{
-						_framesRemaining--;
-					}
-				}
-			}
-		}
+		void render( const float p_deltaTime, const float p_elapsedTime );
 
 		void addProxySystem( Proxy::System & p_proxy );
 		void removeProxySystem( Proxy::System & p_proxy );
@@ -185,7 +125,7 @@ namespace VTX::Renderer
 		 */
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			return _context->getTextureData<Vec2i>( "Geometric", p_x, height - p_y, E_CHAN_OUT::COLOR_2 );
+			return _context.getTextureData<Vec2i>( "Geometric", p_x, height - p_y, E_CHAN_OUT::COLOR_2 );
 		}
 
 		inline void setNeedUpdate( const bool p_value )
@@ -198,7 +138,7 @@ namespace VTX::Renderer
 		}
 
 		// Benchmarker only.
-		inline void								  compileShaders() const { _context->compileShaders(); }
+		inline void								  compileShaders() const { _context.compileShaders(); }
 		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
 		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
 		{
@@ -208,7 +148,7 @@ namespace VTX::Renderer
 		inline StructInfos getInfos() const
 		{
 			StructInfos infos;
-			_context->fillInfos( infos );
+			_context.fillInfos( infos );
 
 			// Compute size of cached data.
 			size_t sizeCache = 0;
@@ -255,7 +195,8 @@ namespace VTX::Renderer
 		Util::Callback<> onReady;
 
 	  private:
-		Context::Context *			 _context		  = nullptr;
+		Context::Context			 _context;
+		std::vector<BufferData>		 _globalData;
 		void *						 _loader		  = nullptr;
 		bool						 _needUpdate	  = false;
 		size_t						 _framesRemaining = BUFFER_COUNT;
@@ -371,22 +312,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop that call instructions with time logging.
 		 * @param p_time the current time.
 		 */
-		inline void _renderLog( const float p_deltaTime, const float p_elapsedTime )
-		{
-			for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
-			{
-				instructionDurationRange.duration = _context->measureTaskDuration(
-
-					[ this, &instructionDurationRange ]()
-					{
-						for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
-						{
-							_instructions[ i ]();
-						}
-					}
-				);
-			}
-		}
+		void _renderLog( const float p_deltaTime, const float p_elapsedTime );
 	};
 } // namespace VTX::Renderer
 #endif

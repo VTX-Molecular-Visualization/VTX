@@ -148,7 +148,6 @@ namespace VTX::Bench
 
 				ImGui::EndMenu();
 			}
-
 			if ( ImGui::BeginMenu( "Resolution" ) )
 			{
 				if ( ImGui::MenuItem( "800x600" ) )
@@ -228,6 +227,17 @@ namespace VTX::Bench
 
 				ImGui::EndMenu();
 			}
+			if ( ImGui::Button( "Disable" ) )
+			{
+				try
+				{
+					// p_renderer->disableGraphicAPI();
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "{}", e.what() );
+				}
+			}
 
 			ImGui::Checkbox( "UI", &_drawUi );
 			if ( ImGui::Checkbox( "Vsync", &_vsync ) )
@@ -300,7 +310,7 @@ namespace VTX::Bench
 
 	void UserInterface::_drawRenderer( Renderer::Facade * const p_renderer )
 	{
-		if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
+		if ( ImGui::Begin( "Renderer" ) )
 		{
 			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
 			for ( auto count : p_renderer->drawRangeSpheres->counts )
@@ -535,8 +545,6 @@ namespace VTX::Bench
 
 			ImNodes::BeginNodeEditor();
 
-			bool isBuilt = p_renderer->hasContext();
-
 			// DescPass nodes.
 			uint								   id = 0;
 			std::map<const Input * const, uint>	   mapIdInput;
@@ -560,8 +568,6 @@ namespace VTX::Bench
 				ImGui::SameLine();
 				ImGui::TextUnformatted( pass->name.c_str() );
 				ImNodes::EndNodeTitleBar();
-
-				bool isInRenderQueue = p_renderer->isInRenderQueue( pass.get() );
 
 				// Inputs.
 				for ( const auto & [ channel, input ] : pass->inputs )
@@ -609,8 +615,7 @@ namespace VTX::Bench
 					// Uniforms.
 					for ( const BufferDataValue & uniform : program.data )
 					{
-						std::string key		   = pass->name + program.name + uniform.name;
-						bool		isEditable = isBuilt && isInRenderQueue;
+						std::string key = pass->name + program.name + uniform.name;
 
 						// ImGui::Text( uniform.name.c_str() );
 						ImGui::SetNextItemWidth( 150 );
@@ -618,57 +623,57 @@ namespace VTX::Bench
 						{
 						case E_TYPE::BOOL:
 						{
-							_drawWidget<bool>( p_renderer, uniform, key, isEditable );
+							_drawWidget<bool>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::BYTE:
 						{
-							_drawWidget<char>( p_renderer, uniform, key, isEditable );
+							_drawWidget<char>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::UBYTE:
 						{
-							_drawWidget<uchar>( p_renderer, uniform, key, isEditable );
+							_drawWidget<uchar>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::SHORT:
 						{
-							_drawWidget<short>( p_renderer, uniform, key, isEditable );
+							_drawWidget<short>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::USHORT:
 						{
-							_drawWidget<ushort>( p_renderer, uniform, key, isEditable );
+							_drawWidget<ushort>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::INT:
 						{
-							_drawWidget<int>( p_renderer, uniform, key, isEditable );
+							_drawWidget<int>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::UINT:
 						{
-							_drawWidget<uint>( p_renderer, uniform, key, isEditable );
+							_drawWidget<uint>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::FLOAT:
 						{
-							_drawWidget<float>( p_renderer, uniform, key, isEditable );
+							_drawWidget<float>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::VEC2I:
 						{
-							_drawWidget<Vec2i>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Vec2i>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::VEC2F:
 						{
-							_drawWidget<Vec2f>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Vec2f>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::COLOR4:
 						{
-							_drawWidget<Util::Color::Rgba>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Util::Color::Rgba>( p_renderer, uniform, key );
 							break;
 						}
 						default: throw std::runtime_error( "widget not implemented" ); break;

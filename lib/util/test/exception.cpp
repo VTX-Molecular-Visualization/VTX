@@ -10,9 +10,9 @@ TEST_CASE( "Util::Exception", "[unit]" )
 	e = VTXException( "Error n.{}", 55 );
 	CHECK( std::string( e.what() ) == "[VTX] Error n.55" );
 
-	e = GLException( "Exception" );
+	e = GraphicException( "Exception" );
 	CHECK( std::string( e.what() ) == "[GL] Exception" );
-	e = GLException( "Error n.{}", 55 );
+	e = GraphicException( "Error n.{}", 55 );
 	CHECK( std::string( e.what() ) == "[GL] Error n.55" );
 
 	e = HTTPException( "Exception" );

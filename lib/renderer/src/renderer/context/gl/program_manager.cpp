@@ -23,7 +23,7 @@ namespace VTX::Renderer::Context::GL
 			return ProgramManager::_EXTENSIONS.at( extension );
 		}
 
-		throw GLException( "Invalid extension: " + extension );
+		throw GraphicException( "Invalid extension: " + extension );
 	}
 
 	void ProgramManager::dispose()
@@ -180,7 +180,7 @@ namespace VTX::Renderer::Context::GL
 				error += "\n";
 				error += _getShaderErrors( shaderId );
 				glDeleteShader( shaderId );
-				throw GLException( error );
+				throw GraphicException( error );
 			}
 
 			assert( glIsShader( shaderId ) );

@@ -1,4 +1,5 @@
 #include "renderer/renderer.hpp"
+#include "renderer/scheduler/depth_first_search.hpp"
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
@@ -18,207 +19,55 @@ namespace VTX::Renderer
 		_refreshGraph();
 
 		// Shared data.
-		_renderGraph->addGlobalData(
-			{ "Camera",
-			  15,
-			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
-				  E_TYPE::VEC4F,
-				  BufferValue<Vec4f> { VEC4F_ZERO } },
-				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
-			  0,
-			  nullptr,
-			  false,
-			  true }
-		);
+		addGlobalData( { "Camera",
+						 15,
+						 { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+						   { "ClipInfos", // { _near * _far, _far, _far - _near, _near }
+							 E_TYPE::VEC4F,
+							 BufferValue<Vec4f> { VEC4F_ZERO } },
+						   { "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+						   { "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+						   { "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+						 0,
+						 nullptr,
+						 false,
+						 true } );
 
-		_renderGraph->addGlobalData( { "ColorLayout",
-									   14,
-									   { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-									   4096,
-									   nullptr,
-									   false,
-									   true } );
+		addGlobalData( { "ColorLayout",
+						 14,
+						 { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+						 4096,
+						 nullptr,
+						 false,
+						 true } );
 
-		_renderGraph->addGlobalData( { "Models",
-									   13,
-									   { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-										 { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
-									   0,
-									   nullptr,
-									   true } );
+		addGlobalData( { "Models",
+						 13,
+						 { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+						 0,
+						 nullptr,
+						 true } );
 
-		_renderGraph->addGlobalData( { "Representations",
-									   12,
-									   { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
-										 { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
-										 { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
-										 { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+		addGlobalData( { "Representations",
+						 12,
+						 { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+						   { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+						   { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+						   { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
 
-										 { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-										 { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
-									   0,
-									   nullptr,
-									   true } );
-	}
-
-	// TODO: not the best way to do it.
-	void Renderer::_refreshGraph()
-	{
-		using namespace Proxy;
-
-		static Pass * geo;
-		static Pass * depth;
-		static Pass * ssao;
-		static Pass * blurX;
-		static Pass * blurY;
-		static Pass * shading;
-		static Pass * outline;
-		static Pass * selection;
-		static Pass * fxaa;
-
-		// Geometric.
-		if ( not geo )
-		{
-			geo									   = _renderGraph->addPass( descPassGeometric );
-			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-			geo->programs[ 0 ].draw.value().needRenderFunc
-				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
-			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-			geo->programs[ 1 ].draw.value().needRenderFunc
-				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
-			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-			geo->programs[ 2 ].draw.value().needRenderFunc
-				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
-			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-			geo->programs[ 3 ].draw.value().needRenderFunc
-				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
-		}
-
-		// Depth.
-		if ( not depth )
-		{
-			depth = _renderGraph->addPass( descPassDepth );
-
-			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
-		}
-
-		// SSAO.
-		if ( not ssao )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
-			{
-				ssao  = _renderGraph->addPass( descPassSSAO );
-				blurX = _renderGraph->addPass( descPassBlur );
-				blurY = _renderGraph->addPass( descPassBlur );
-
-				blurX->name							 = "BlurX";
-				blurY->name							 = "BlurY";
-				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
-
-				_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-				_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-				_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
-		{
-			_renderGraph->removePass( ssao );
-			_renderGraph->removePass( blurX );
-			_renderGraph->removePass( blurY );
-			ssao  = nullptr;
-			blurX = nullptr;
-			blurY = nullptr;
-		}
-
-		// Shading.
-		if ( not shading )
-		{
-			shading = _renderGraph->addPass( descPassShading );
-
-			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
-		}
-		if ( ssao )
-		{
-			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		}
-
-		// Outline.
-		if ( not outline )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
-			{
-				outline = _renderGraph->addPass( descPassOutline );
-
-				_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
-		{
-			_renderGraph->removePass( outline );
-			outline = nullptr;
-		}
-
-		// Selection.
-		if ( not selection )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
-			{
-				selection = _renderGraph->addPass( descPassSelection );
-
-				_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
-		{
-			_renderGraph->removePass( selection );
-			selection = nullptr;
-		}
-		if ( selection )
-		{
-			if ( outline )
-			{
-				_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-			else
-			{
-				_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-
-		// FXAA.
-		if ( not fxaa )
-		{
-			fxaa = _renderGraph->addPass( desPassFXAA );
-			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
-		}
-		if ( selection )
-		{
-			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
-		else if ( outline )
-		{
-			_renderGraph->addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
-		else
-		{
-			_renderGraph->addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
+						   { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+						   { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
+						 0,
+						 nullptr,
+						 true } );
 	}
 
 	void Renderer::build( const uint p_output, void * p_loader )
 	{
-		bool isFirstBuild = not hasContext();
+		bool isFirstBuild = true; // not hasContext();
 
 		// Build renderer graph.
 		VTX_DEBUG(
@@ -226,60 +75,44 @@ namespace VTX::Renderer
 			Util::String::durationToStr( Util::CHRONO_CPU(
 				[ & ]()
 				{
-					_context = _renderGraph->setup<Context::OpenGL45, Scheduler::DepthFirstSearch>(
-						p_loader ? p_loader : _loader,
-						width,
-						height,
-						_shaderPath,
+					const RenderQueue & queue = _renderGraph->build<Scheduler::DepthFirstSearch>();
+					_context.set<Context::OpenGL45>( width, height, _shaderPath, p_loader );
+					_context.build(
+						queue,
+						_renderGraph->getLinks(),
+						p_output,
+						_globalData,
 						_instructions,
-						_instructionsDurationRanges,
-						p_output
+						_instructionsDurationRanges
 					);
 				}
 			) )
 		);
 
-		std::string str = "Passes: ";
-		for ( const Pass * const pass : _renderGraph->getRenderQueue() )
-		{
-			str += pass->name + " -> ";
-		}
-		str += "Output";
-		VTX_DEBUG( "{}", str );
-
 		if ( isFirstBuild )
 		{
 			onReady();
 		}
+	}
 
-		return;
-		///////////////////// COMPUTE TEST ///////////////////////
-		uint size = 10000;
+	void Renderer::resize( const size_t p_width, const size_t p_height, const Handle p_output )
+	{
+		VTX_TRACE( "Resizing renderer to {}x{}", width, height );
 
-		std::vector<Vec4f> readData( size, Vec4f( 1.f, 2.f, 3.f, 4.f ) );
-		BufferData		   bufferReadOnly { "ReadOnly", 1, {}, size * sizeof( Vec4f ), readData.data(), true, true };
-		BufferData		   bufferWriteOnly { "WriteOnly", 2, {}, size * sizeof( Vec4f ), nullptr, true, true };
-		BufferData		   bufferReadWrite { "ReadWrite", 3, {}, size * sizeof( Vec4f ), nullptr, true, true };
+		width  = p_width;
+		height = p_height;
 
-		auto computePass
-			= ComputePass { "ComputeDebug",
-							Program { "ComputeDebug",
-									  std::vector<FilePath> { "compute/debug.comp" },
-									  BufferDataValues { { { "Size", E_TYPE::UINT, BufferValue<uint> { size } } } } },
-							{ bufferReadOnly, bufferWriteOnly, bufferReadWrite },
-							size };
+		Vec2i size = { p_width, p_height };
+		setValue( size, "CameraResolution" );
 
-		_context->compute( computePass );
+		_context.resize( _renderGraph->getRenderQueue(), p_width, p_height );
 
-		// Get write only buffer data.
-		std::vector<Vec4f> writeData( size );
-		_context->get<Vec4f>( writeData, "ComputeDebugWriteOnly" );
-		VTX_DEBUG( "Compute OK" );
+		setNeedUpdate( true );
 	}
 
 	void Renderer::clean()
 	{
-		_context = nullptr;
+		_context.clear();
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
 		_renderGraph->clean();
@@ -302,6 +135,33 @@ namespace VTX::Renderer
 		drawRangeCylinders.offsets.clear();
 		drawRangeRibbons.counts.clear();
 		drawRangeRibbons.offsets.clear();
+	}
+
+	void Renderer::render( const float p_deltaTime, const float p_elapsedTime )
+	{
+		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
+		{
+			if ( logDurations )
+			{
+				_renderLog( p_deltaTime, p_elapsedTime );
+			}
+			else
+			{
+				_render( p_deltaTime, p_elapsedTime );
+			}
+
+			if ( not forceUpdate )
+			{
+				if ( _needUpdate )
+				{
+					setNeedUpdate( false );
+				}
+				else
+				{
+					_framesRemaining--;
+				}
+			}
+		}
 	}
 
 #pragma region Proxy systems
@@ -339,13 +199,12 @@ namespace VTX::Renderer
 
 	void Renderer::_addProxySystem( Proxy::System & p_proxy )
 	{
-		assert( hasContext() );
 		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
 
 		// If size max reached, do not add.
 		if ( _proxiesSystems.size() >= UNSIGNED_SHORT_MAX )
 		{
-			throw GLException( "Max system count reached" );
+			throw GraphicException( "Max system count reached" );
 		}
 
 		_proxiesSystems.push_back( &p_proxy );
@@ -371,10 +230,10 @@ namespace VTX::Renderer
 			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
 			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
 
-			_context->setSub(
+			_context.setSub(
 				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
 			);
-			_context->setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+			_context.setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
 		};
 
 		// Remove.
@@ -384,21 +243,21 @@ namespace VTX::Renderer
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
+			_context.setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Colors.
 		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+			_context.setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Residue colors.
 		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
-			_context->setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+			_context.setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
 		};
 
 		// Selection.
@@ -414,14 +273,14 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
 			{
 				cacheR.flags[ i ] &= ~mask;
 				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context->setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
+			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
 		};
 
 		p_proxy.onAtomSelections +=
@@ -451,7 +310,7 @@ namespace VTX::Renderer
 			}
 			*/
 
-			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			// TODO: ribbons and SES.
 		};
@@ -498,7 +357,7 @@ namespace VTX::Renderer
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
-			_context->setSub(
+			_context.setSub(
 				cacheSC.flags,
 				"SpheresCylindersFlags",
 				offset + p_atomIds.getFirst(),
@@ -527,14 +386,14 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
 
 			for ( size_t i = 0; i < cacheR.size; ++i )
 			{
 				cacheR.bufferFlags[ i ] &= ~mask;
 				cacheR.bufferFlags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSub( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+			_context.setSub( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
 		};
 		*/
 	}
@@ -618,7 +477,6 @@ namespace VTX::Renderer
 	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
 	{
 		using namespace Proxy;
-		assert( hasContext() );
 
 		_proxyRepresentations.insert(
 			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
@@ -666,7 +524,7 @@ namespace VTX::Renderer
 			{ setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
 		}
 
-		_context->set( representations, "Representations" );
+		_context.set( representations, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -681,13 +539,12 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
-		assert( hasContext() );
 		assert( p_proxy.matrixView );
 		assert( p_proxy.matrixProjection );
 
 		_proxyCamera = &p_proxy;
 
-		_context->set<_StructUBOCamera>(
+		_context.set<_StructUBOCamera>(
 			{ { *p_proxy.matrixView,
 				*p_proxy.matrixProjection,
 				p_proxy.cameraPosition,
@@ -730,20 +587,18 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
-		assert( hasContext() );
-
 		_proxyColorLayout = &p_proxy;
-		_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+		_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
-			_context->set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+			_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 			setNeedUpdate( true );
 		};
 		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
 		{
-			_context->setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
+			_context.setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
 			setNeedUpdate( true );
 		};
 	}
@@ -751,8 +606,6 @@ namespace VTX::Renderer
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
 		using namespace Proxy;
-
-		assert( hasContext() );
 
 		_proxyRenderSettings = &p_proxy;
 
@@ -898,16 +751,14 @@ namespace VTX::Renderer
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
 	{
-		assert( hasContext() );
-
 		_proxyVoxels = &p_proxy;
 
 		assert( p_proxy.mins );
 		assert( p_proxy.maxs );
 		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-		_context->set( *p_proxy.mins, "VoxelsMins" );
-		_context->set( *p_proxy.maxs, "VoxelsMaxs" );
+		_context.set( *p_proxy.mins, "VoxelsMins" );
+		_context.set( *p_proxy.maxs, "VoxelsMaxs" );
 
 		drawRangeVoxels.offsets = { 0 };
 		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
@@ -934,14 +785,14 @@ namespace VTX::Renderer
 		}
 
 		// Create buffers.
-		_context->reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
-		_context->reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
-		_context->reserveData<uint>( totalAtoms, "SpheresCylindersIds" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersFlags" );
-		_context->reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
-		_context->reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
+		_context.reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
+		_context.reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
+		_context.reserveData<uint>( totalAtoms, "SpheresCylindersIds" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersFlags" );
+		_context.reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
+		_context.reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
 
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
@@ -954,10 +805,10 @@ namespace VTX::Renderer
 			const size_t bondCount = proxy->bonds->size();
 
 			// Fill buffers.
-			_context->setSub( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSub( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSub( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSub( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+			_context.setSub( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+			_context.setSub( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context.setSub( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context.setSub( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags if not cached.
 			if ( cache.flags.empty() )
@@ -979,9 +830,9 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
 			}
 
-			_context->setSub( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-			_context->setSub( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
-			_context->setSub( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+			_context.setSub( cache.flags, "SpheresCylindersFlags", offsetAtoms );
+			_context.setSub( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+			_context.setSub( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
 
 			// Move bonds.
 			std::vector<uint> bonds( bondCount );
@@ -989,7 +840,7 @@ namespace VTX::Renderer
 			{
 				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 			}
-			_context->setSub( bonds, "SpheresCylindersIdx", offsetBonds );
+			_context.setSub( bonds, "SpheresCylindersIdx", offsetBonds );
 
 			// Offsets.
 			cache.rangeSpheres	 = Util::Math::Range<size_t> { offsetAtoms, atomCount };
@@ -1322,15 +1173,15 @@ namespace VTX::Renderer
 			assert( totalIndices == 0 );
 		}
 
-		_context->reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
-		_context->reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsColors" );
-		_context->reserveData<uint>( totalCaPositions, "RibbonsIds" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsFlags" );
-		_context->reserveData<ushort>( totalCaPositions, "RibbonsModels" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
-		_context->reserveData<uint>( totalIndices, "RibbonsIdx" );
+		_context.reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
+		_context.reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsColors" );
+		_context.reserveData<uint>( totalCaPositions, "RibbonsIds" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsFlags" );
+		_context.reserveData<ushort>( totalCaPositions, "RibbonsModels" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
+		_context.reserveData<uint>( totalIndices, "RibbonsIdx" );
 
 		size_t offsetCaPositions = 0;
 		uchar  modelId			 = -1;
@@ -1359,17 +1210,17 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
 			}
 
-			_context->setSub( cache.positions, "RibbonsPositions", offsetCaPositions );
-			_context->setSub( cache.directions, "RibbonsDirections", offsetCaPositions );
-			_context->setSub( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
-			_context->setSub( cache.colors, "RibbonsColors", offsetCaPositions );
-			_context->setSub( cache.ids, "RibbonsIds", offsetCaPositions );
-			_context->setSub( cache.flags, "RibbonsFlags", offsetCaPositions );
-			_context->setSub(
+			_context.setSub( cache.positions, "RibbonsPositions", offsetCaPositions );
+			_context.setSub( cache.directions, "RibbonsDirections", offsetCaPositions );
+			_context.setSub( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
+			_context.setSub( cache.colors, "RibbonsColors", offsetCaPositions );
+			_context.setSub( cache.ids, "RibbonsIds", offsetCaPositions );
+			_context.setSub( cache.flags, "RibbonsFlags", offsetCaPositions );
+			_context.setSub(
 				std::vector<ushort>( cache.positions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
-			_context->setSub( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-			_context->setSub( indices, "RibbonsIdx", offsetIndices );
+			_context.setSub( cache.representations, "RibbonsRepresentations", offsetCaPositions );
+			_context.setSub( indices, "RibbonsIdx", offsetIndices );
 
 			// Offsets.
 			cache.range = Util::Math::Range<size_t> { offsetCaPositions, cache.positions.size() };
@@ -1515,8 +1366,8 @@ namespace VTX::Renderer
 
 			// Debug display.
 			auto voxels = gridAtoms.toVoxels();
-			_context->set( voxels.first, "VoxelsMins" );
-			_context->set( voxels.second, "VoxelsMaxs" );
+			_context.set( voxels.first, "VoxelsMins" );
+			_context.set( voxels.second, "VoxelsMaxs" );
 
 			drawRangeVoxels.offsets = { 0 };
 			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
@@ -1547,9 +1398,9 @@ namespace VTX::Renderer
 				sizeCreateSDF
 			};
 
-			_context->compute( computePass );
+			_context.compute( computePass );
 
-			_context->clearComputeBuffers();
+			_context.clearComputeBuffers();
 			*/
 		}
 
@@ -1571,7 +1422,7 @@ namespace VTX::Renderer
 			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
 		}
 
-		_context->set( models, "Models" );
+		_context.set( models, "Models" );
 	}
 
 	void Renderer::snapshot(
@@ -1588,8 +1439,174 @@ namespace VTX::Renderer
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
 		setValue( matrixProjection, "CameraMatrixProjection" );
-		_context->snapshot( p_outImage, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
+		_context.snapshot( p_outImage, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
 		setValue( matrixProjectionOld, "CameraMatrixProjection" );
 	}
 
+	void Renderer::_renderLog( const float p_deltaTime, const float p_elapsedTime )
+	{
+		for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+		{
+			instructionDurationRange.duration = _context.measureTaskDuration(
+
+				[ this, &instructionDurationRange ]()
+				{
+					for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+					{
+						_instructions[ i ]();
+					}
+				}
+			);
+		}
+	}
+
+	// TODO: not the best way to do it.
+	void Renderer::_refreshGraph()
+	{
+		using namespace Proxy;
+
+		static Pass * geo;
+		static Pass * depth;
+		static Pass * ssao;
+		static Pass * blurX;
+		static Pass * blurY;
+		static Pass * shading;
+		static Pass * outline;
+		static Pass * selection;
+		static Pass * fxaa;
+
+		// Geometric.
+		if ( not geo )
+		{
+			geo									   = _renderGraph->addPass( descPassGeometric );
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+		}
+
+		// Depth.
+		if ( not depth )
+		{
+			depth = _renderGraph->addPass( descPassDepth );
+
+			_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+		}
+
+		// SSAO.
+		if ( not ssao )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+			{
+				ssao  = _renderGraph->addPass( descPassSSAO );
+				blurX = _renderGraph->addPass( descPassBlur );
+				blurY = _renderGraph->addPass( descPassBlur );
+
+				blurX->name							 = "BlurX";
+				blurY->name							 = "BlurY";
+				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
+
+				_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_renderGraph->addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+		{
+			_renderGraph->removePass( ssao );
+			_renderGraph->removePass( blurX );
+			_renderGraph->removePass( blurY );
+			ssao  = nullptr;
+			blurX = nullptr;
+			blurY = nullptr;
+		}
+
+		// Shading.
+		if ( not shading )
+		{
+			shading = _renderGraph->addPass( descPassShading );
+
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+		}
+		if ( ssao )
+		{
+			_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		}
+
+		// Outline.
+		if ( not outline )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+			{
+				outline = _renderGraph->addPass( descPassOutline );
+
+				_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+		{
+			_renderGraph->removePass( outline );
+			outline = nullptr;
+		}
+
+		// Selection.
+		if ( not selection )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+			{
+				selection = _renderGraph->addPass( descPassSelection );
+
+				_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+		{
+			_renderGraph->removePass( selection );
+			selection = nullptr;
+		}
+		if ( selection )
+		{
+			if ( outline )
+			{
+				_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+			else
+			{
+				_renderGraph->addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+
+		// FXAA.
+		if ( not fxaa )
+		{
+			fxaa = _renderGraph->addPass( desPassFXAA );
+			_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		}
+		if ( selection )
+		{
+			_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else if ( outline )
+		{
+			_renderGraph->addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else
+		{
+			_renderGraph->addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+	}
 } // namespace VTX::Renderer

@@ -11,6 +11,10 @@ namespace VTX::Renderer::Context
 	class Default : public BaseContext
 	{
 	  public:
+		Default( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr )
+		{
+		}
+
 		inline void
 		build( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )
 		{
@@ -26,9 +30,9 @@ namespace VTX::Renderer::Context
 
 		inline void set( const Key &, const void * const, const size_t ) {}
 
-		inline void setSub( const Key &, const void * const, const size_t ) {}
+		inline void setSub( const Key &, const void * const, const size_t, const size_t = 0 ) {}
 
-		inline void get( const Key &, void * const, const size_t ) {}
+		inline void get( const Key &, void * const, const size_t ) const {}
 
 		inline void fillInfos( StructInfos & ) const {}
 
@@ -46,7 +50,7 @@ namespace VTX::Renderer::Context
 		{
 		}
 
-		inline void getTextureData( const Key &, std::any &, const size_t, const size_t, const E_CHAN_OUT ) {}
+		inline void getTextureData( const Key &, std::any &, const size_t, const size_t, const E_CHAN_OUT ) const {}
 
 		inline void compute( const ComputePass & ) {}
 	};

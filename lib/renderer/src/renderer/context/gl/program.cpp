@@ -45,7 +45,7 @@ namespace VTX::Renderer::Context::GL
 			error += "\n";
 			error += _getProgramErrors();
 			glDeleteProgram( _id );
-			throw GLException( error );
+			throw GraphicException( error );
 		}
 	}
 

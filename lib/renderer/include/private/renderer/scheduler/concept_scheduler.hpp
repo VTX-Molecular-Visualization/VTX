@@ -3,7 +3,6 @@
 
 #include "renderer/descriptors.hpp"
 #include <concepts>
-#include <vector>
 
 namespace VTX::Renderer::Scheduler
 {

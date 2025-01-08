@@ -59,8 +59,7 @@ namespace VTX::Bench
 		void _drawWidget(
 			Renderer::Facade * const		  p_renderer,
 			const Renderer::BufferDataValue & p_uniform,
-			const std::string &				  p_key,
-			const bool						  p_isEditable
+			const std::string &				  p_key
 		) const
 		{
 			using namespace Renderer;
@@ -78,22 +77,30 @@ namespace VTX::Bench
 			if constexpr ( std::is_same<T, bool>::value )
 			{
 				if ( ImGui::Checkbox( p_uniform.name.c_str(), &value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_vec2i<T>::value )
 			{
 				if ( ImGui::InputInt2( p_uniform.name.c_str(), (int *)&value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_vec2f<T>::value )
 			{
 				if ( ImGui::InputFloat2( p_uniform.name.c_str(), (float *)&value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_color4<T>::value )
 			{
 				if ( ImGui::ColorEdit4( p_uniform.name.c_str(), (float *)( &value ) ) )
+				{
 					updated = true;
+				}
 			}
 			else if ( descValue.minMax.has_value() )
 			{
@@ -102,12 +109,16 @@ namespace VTX::Bench
 				if constexpr ( std::is_integral<T>::value )
 				{
 					if ( ImGui::SliderInt( p_uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max ) )
+					{
 						updated = true;
+					}
 				}
 				else if constexpr ( std::is_floating_point<T>::value )
 				{
 					if ( ImGui::SliderFloat( p_uniform.name.c_str(), (float *)( &value ), minMax.min, minMax.max ) )
+					{
 						updated = true;
+					}
 				}
 			}
 			else
@@ -115,16 +126,20 @@ namespace VTX::Bench
 				if constexpr ( std::is_integral<T>::value )
 				{
 					if ( ImGui::DragInt( p_uniform.name.c_str(), (int *)( &value ) ) )
+					{
 						updated = true;
+					}
 				}
 				else if constexpr ( std::is_floating_point<T>::value )
 				{
 					if ( ImGui::DragFloat( p_uniform.name.c_str(), (float *)( &value ) ) )
+					{
 						updated = true;
+					}
 				}
 			}
 
-			if ( p_isEditable && updated )
+			if ( updated )
 			{
 				p_renderer->setValue( value, p_key );
 			}

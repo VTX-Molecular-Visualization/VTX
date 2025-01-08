@@ -59,11 +59,8 @@ int main( int, char ** )
 		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			if ( renderer.hasContext() )
-			{
-				Vec2i ids = renderer.getPickedIds( p_x, p_y );
-				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-			}
+			Vec2i ids = renderer.getPickedIds( p_x, p_y );
+			VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
 		inputManager.onMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };

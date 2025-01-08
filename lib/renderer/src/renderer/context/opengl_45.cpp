@@ -18,18 +18,18 @@ namespace VTX::Renderer::Context
 		// With external loader.
 		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
 		{
-			throw GLException( "Failed to load OpenGL" );
+			throw GraphicException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
 		else if ( gladLoadGL() == 0 )
 		{
-			throw GLException( "Failed to load OpenGL" );
+			throw GraphicException( "Failed to load OpenGL" );
 		}
 
 		// Check version.
 		if ( not GLAD_GL_VERSION_4_5 )
 		{
-			throw GLException( "OpenGL 4.5 or higher is required" );
+			throw GraphicException( "OpenGL 4.5 or higher is required" );
 		}
 		else
 		{
@@ -1136,7 +1136,7 @@ namespace VTX::Renderer::Context
 		{
 		case GL_DEBUG_SEVERITY_HIGH:
 			// VTX_ERROR( "{}", message );
-			throw GLException( message );
+			throw GraphicException( message );
 			break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
 		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;

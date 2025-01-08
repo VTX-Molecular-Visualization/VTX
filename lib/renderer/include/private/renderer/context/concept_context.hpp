@@ -10,6 +10,12 @@
 
 namespace VTX::Renderer::Context
 {
+	enum struct E_API
+	{
+		OPENGL45,
+		DEFAULT
+	};
+
 	using Key  = std::string;
 	using Keys = std::vector<Key>;
 
@@ -192,6 +198,7 @@ namespace VTX::Renderer::Context
 			_setOutput( std::forward<Args>( args )... );
 		}
 
+		// TODO: change parameter order.
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index )
 		{
@@ -234,7 +241,7 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void fillInfos( Args &&... args )
+		inline void fillInfos( Args &&... args ) const
 		{
 			_fillInfos( std::forward<Args>( args )... );
 		}
@@ -246,7 +253,7 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void compileShaders( Args &&... args )
+		inline void compileShaders( Args &&... args ) const
 		{
 			_compileShaders( std::forward<Args>( args )... );
 		}
@@ -259,6 +266,7 @@ namespace VTX::Renderer::Context
 
 		template<typename T>
 		inline T getTextureData( const Key & p_key, const size_t p_x, const size_t p_y, const E_CHAN_OUT p_channel )
+			const
 		{
 			std::any textureData = std::make_any<Vec2i>();
 			_getTextureData( p_key, textureData, p_x, p_y, p_channel );
@@ -270,6 +278,8 @@ namespace VTX::Renderer::Context
 		{
 			_compute( std::forward<Args>( args )... );
 		}
+
+		inline void clear() { _contexts.clear(); }
 
 	  private:
 		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
