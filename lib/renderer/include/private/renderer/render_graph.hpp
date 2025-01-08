@@ -157,7 +157,7 @@ namespace VTX::Renderer
 			}
 
 			// Create context.
-			_context.set<C>();
+			_context.set<C>( p_width, p_height, p_shaderPath, p_loader );
 			// if ( _context == nullptr )
 			//{
 			//_context = std::make_unique<C>( p_width, p_height, p_shaderPath, p_loader );

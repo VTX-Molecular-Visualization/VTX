@@ -185,9 +185,7 @@ namespace VTX::Renderer
 		 */
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			Vec2i ids;
-			_context->getTextureData( ids, p_x, height - p_y, "Geometric", E_CHAN_OUT::COLOR_2 );
-			return ids;
+			return _context->getTextureData<Vec2i>( "Geometric", p_x, height - p_y, E_CHAN_OUT::COLOR_2 );
 		}
 
 		inline void setNeedUpdate( const bool p_value )

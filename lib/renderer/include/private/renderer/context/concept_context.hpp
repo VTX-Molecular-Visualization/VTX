@@ -79,183 +79,116 @@ namespace VTX::Renderer::Context
 			 };
 
 	/*
-	enum struct E_FUNCTION
-	{
-		BUILD,
-		RESIZE,
-		SET_OUTPUT,
-		SET_VALUE,
-		RESERVE_DATA,
-		SET,
-		SET_SUB,
-		GET,
-		FILL_INFOS,
-		MEASURE_TASK_DURATION,
-		COMPILE_SHADERS,
-		SNAPSHOT,
-		GET_TEXTURE_DATA,
-		COMPUTE
-	};
-	*/
-
 	using FunctionBuild
-		= void ( * )( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & );
-	using FunctionResize	  = void ( * )( const RenderQueue &, const size_t, const size_t );
-	using FunctionSetOutput	  = void ( * )( const Handle );
-	using FunctionSetValue	  = void ( * )( const std::any &, const Key &, const size_t );
-	using FunctionReserveData = void ( * )( const size_t, const Key &, const std::any & );
-	using FunctionSet		  = void ( * )( const std::vector<std::any> &, const Key & );
-	using FunctionSetSub
-		= void ( * )( const std::vector<std::any> &, const Key &, const size_t, const bool, const size_t );
-	using FunctionGet				  = void ( * )( std::vector<std::any> &, const Key & );
-	using FunctionFillInfos			  = void ( * )( StructInfos & );
-	using FunctionMeasureTaskDuration = float ( * )( const Util::Chrono::Task & );
-	using FunctionCompileShaders	  = void ( * )();
-	using FunctionSnapshot
-		= void ( * )( std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t );
-	using FunctionGetTextureData = void ( * )( std::any &, const size_t, const size_t, const Key &, const E_CHAN_OUT );
-	using FunctionCompute		 = void ( * )( const ComputePass & );
-
-	/*
-	using FunctionBuild = std::function<
-		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &,
-	InstructionsDurationRanges & )>; using FunctionResize	  = std::function<void( const RenderQueue &, const size_t,
-	const size_t )>; using FunctionSetOutput	  = std::function<void( const Handle )>; using FunctionSetValue	  =
-	std::function<void( const std::any &, const Key &, const size_t )>; using FunctionReserveData = std::function<void(
-	const size_t, const Key &, const std::any & )>; using FunctionSet		  = std::function<void( const
-	std::vector<std::any> &, const Key & )>; using FunctionSetSub = std::function<void( const std::vector<std::any> &,
-	const Key &, const size_t, const bool, const size_t )>; using FunctionGet				  = std::function<void(
-	std::vector<std::any> &, const Key & )>; using FunctionFillInfos			  = std::function<void( StructInfos &
-	)>; using FunctionMeasureTaskDuration = std::function<float( const Util::Chrono::Task & )>; using
-	FunctionCompileShaders	  = std::function<void()>; using FunctionSnapshot			  = std::function< void(
-	std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t )>; using
-	FunctionGetTextureData = std::function<void( std::any &, const size_t, const size_t, const Key &, const E_CHAN_OUT
-	)>; using FunctionCompute = std::function<void( const ComputePass & )>;
+		= void ( * )( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &,
+	InstructionsDurationRanges & ); using FunctionResize			  = void ( * )( const RenderQueue &, const size_t,
+	const size_t ); using FunctionSetOutput			  = void ( * )( const Handle ); using FunctionSetValue			  =
+	void ( * )( const Key &, const void * const, const size_t ); using FunctionReserveData		  = void ( * )( const
+	Key &, const size_t ); using FunctionSet				  = void ( * )( const Key &, const void * const, const
+	size_t ); using FunctionSetSub			  = void ( * )( const Key &, const void * const, const size_t, const size_t
+	); using FunctionGet				  = void ( * )( const Key &, void * const, const size_t ); using
+	FunctionFillInfos			  = void ( * )( StructInfos & ); using FunctionMeasureTaskDuration = float ( * )( const
+	Util::Chrono::Task & ); using FunctionCompileShaders	  = void ( * )(); using FunctionSnapshot = void ( * )(
+	std::vector<uchar> &, const RenderQueue &, const Instructions &, const size_t, const size_t ); using
+	FunctionGetTextureData = void ( * )( const Key &, std::any &, const size_t, const size_t, const E_CHAN_OUT ); using
+	FunctionCompute		 = void ( * )( const ComputePass & );
 	*/
+
+	using FunctionBuild = std::function<
+		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
+	using FunctionResize			  = std::function<void( const RenderQueue &, size_t, size_t )>;
+	using FunctionSetOutput			  = std::function<void( Handle )>;
+	using FunctionSetValue			  = std::function<void( const Key &, const void * const, size_t )>;
+	using FunctionReserveData		  = std::function<void( const Key &, size_t )>;
+	using FunctionSet				  = std::function<void( const Key &, const void * const, size_t )>;
+	using FunctionSetSub			  = std::function<void( const Key &, const void * const, size_t, size_t )>;
+	using FunctionGet				  = std::function<void( const Key &, void * const, size_t )>;
+	using FunctionFillInfos			  = std::function<void( StructInfos & )>;
+	using FunctionMeasureTaskDuration = std::function<float( const Util::Chrono::Task & )>;
+	using FunctionCompileShaders	  = std::function<void()>;
+	using FunctionSnapshot
+		= std::function<void( std::vector<uchar> &, const RenderQueue &, const Instructions &, size_t, size_t )>;
+	using FunctionGetTextureData = std::function<void( const Key &, std::any &, size_t, size_t, E_CHAN_OUT )>;
+	using FunctionCompute		 = std::function<void( const ComputePass & )>;
 
 	class Context
 	{
 	  public:
-		// Function pointer to the build function.
-		template<ConceptContextImpl C>
-		void set()
+		template<ConceptContextImpl C, typename... Args>
+		void set( Args &&... p_args )
 		{
-			// std::unique_ptr<C> context = std::make_unique<C>();
-			//_impl					   = std::move( context );
+			std::unique_ptr<C> context = std::make_unique<C>( std::forward<Args>( p_args )... );
+			_impl					   = std::move( context );
 
-			//_impl = std::make_unique<C>();
-
-			// Connect function pointer.
-			//_build = &context->build;
-
-			//_build =
+			_build = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->build( std::forward<decltype( args )>( args )... ); };
+			_resize = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->resize( std::forward<decltype( args )>( args )... ); };
+			_setOutput = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->setOutput( std::forward<decltype( args )>( args )... ); };
+			_setValue = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->setValue( std::forward<decltype( args )>( args )... ); };
+			_reserveData = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->reserveData( std::forward<decltype( args )>( args )... ); };
+			_set = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->set( std::forward<decltype( args )>( args )... ); };
+			_setSub = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->setSub( std::forward<decltype( args )>( args )... ); };
+			_get = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->get( std::forward<decltype( args )>( args )... ); };
+			_fillInfos = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->fillInfos( std::forward<decltype( args )>( args )... ); };
+			_measureTaskDuration = [ this ]( auto &&... args )
+			{
+				return static_cast<C *>( _impl.get() )
+					->measureTaskDuration( std::forward<decltype( args )>( args )... );
+			};
+			_compileShaders = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->compileShaders( std::forward<decltype( args )>( args )... ); };
+			_snapshot = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->snapshot( std::forward<decltype( args )>( args )... ); };
+			_getTextureData = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->getTextureData( std::forward<decltype( args )>( args )... ); };
+			_compute = [ this ]( auto &&... args )
+			{ static_cast<C *>( _impl.get() )->compute( std::forward<decltype( args )>( args )... ); };
 		}
 
-		/*
-		template<E_FUNCTION F, typename... Args>
-		void run( Args... p_args )
+		template<typename... Args>
+		inline void build( Args &&... args )
 		{
-			if constexpr ( F == E_FUNCTION::BUILD )
-			{
-				_build( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::RESIZE )
-			{
-				_resize( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::SET_OUTPUT )
-			{
-				_setOutput( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::SET_VALUE )
-			{
-				_setValue( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::RESERVE_DATA )
-			{
-				_reserveData( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::SET )
-			{
-				_set( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::SET_SUB )
-			{
-				_setSub( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::GET )
-			{
-				_get( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::FILL_INFOS )
-			{
-				_fillInfos( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::MEASURE_TASK_DURATION )
-			{
-				_measureTaskDuration( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::COMPILE_SHADERS )
-			{
-				_compileShaders( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::SNAPSHOT )
-			{
-				_snapshot( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::GET_TEXTURE_DATA )
-			{
-				_getTextureData( p_args... );
-			}
-			else if constexpr ( F == E_FUNCTION::COMPUTE )
-			{
-				_compute( p_args... );
-			}
-			else
-			{
-				static_assert( std::is_same_v<F, void>, "Unknown function" );
-			}
-		}
-		*/
-
-		inline void build(
-			const RenderQueue &				p_renderQueue,
-			const Links &					p_links,
-			const Handle					p_output,
-			const std::vector<BufferData> & p_globalData,
-			Instructions &					p_instructions,
-			InstructionsDurationRanges &	p_instructionsDurationRanges
-		)
-		{
-			//_build( p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges );
+			_build( std::forward<Args>( args )... );
 		}
 
-		inline void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height )
+		template<typename... Args>
+		inline void resize( Args &&... args )
 		{
-			//_resize( p_renderQueue, p_width, p_height );
+			_resize( std::forward<Args>( args )... );
 		}
 
-		inline void setOutput( const Handle p_output )
+		template<typename... Args>
+		inline void setOutput( Args &&... args )
 		{
-			//_setOutput( p_output );
+			_setOutput( std::forward<Args>( args )... );
 		}
 
 		template<typename T>
 		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index )
 		{
-			_setValue( p_value, p_key, p_index );
+			_setValue( p_key, static_cast<const void * const>( &p_value ), p_index );
 		}
 
 		template<typename T>
 		inline void reserveData( const size_t p_size, const Key & p_key, const T p_dummy = T() )
 		{
-			//_reserveData( p_size, p_key, p_dummy );
+			size_t size = sizeof( T ) * p_size;
+			_reserveData( p_key, size );
 		}
 
 		template<typename T>
 		inline void set( const std::vector<T> & p_data, const Key & p_key )
 		{
-			//_set( p_data, p_key );
+			size_t size = sizeof( T ) * p_data.size();
+			_set( p_key, static_cast<const void * const>( p_data.data() ), size );
 		}
 
 		template<typename T>
@@ -267,64 +200,58 @@ namespace VTX::Renderer::Context
 			const size_t		   p_size		  = 0
 		)
 		{
-			//_setSub( p_data, p_key, p_offset, p_offsetSource, p_size );
+			size_t size	  = sizeof( T ) * p_data.size();
+			size_t offset = sizeof( T ) * p_offset;
+			_setSub( p_key, static_cast<const void * const>( p_data.data() ), size, offset );
 		}
 
 		template<typename T>
 		inline void get( std::vector<T> & p_data, const Key & p_key )
 		{
-			//_get( p_data, p_key );
+			size_t size = sizeof( T ) * p_data.size();
+			_get( p_key, static_cast<void * const>( p_data.data() ), size );
 		}
 
-		inline void fillInfos( StructInfos & p_infos )
+		template<typename... Args>
+		inline void fillInfos( Args &&... args )
 		{
-			//_fillInfos( p_infos );
+			_fillInfos( std::forward<Args>( args )... );
 		}
 
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task )
+		template<typename... Args>
+		inline float measureTaskDuration( Args &&... args )
 		{
-			// return _measureTaskDuration( p_task );
-			return 0.f;
+			return _measureTaskDuration( std::forward<Args>( args )... );
 		}
 
-		inline void compileShaders()
+		template<typename... Args>
+		inline void compileShaders( Args &&... args )
 		{
-			//_compileShaders();
+			_compileShaders( std::forward<Args>( args )... );
 		}
 
-		inline void snapshot(
-			std::vector<uchar> & p_image,
-			const RenderQueue &	 p_renderQueue,
-			const Instructions & p_instructions,
-			const size_t		 p_width,
-			const size_t		 p_height
-		)
-
+		template<typename... Args>
+		inline void snapshot( Args &&... args )
 		{
-			//_snapshot( p_image, p_renderQueue, p_instructions, p_width, p_height );
+			_snapshot( std::forward<Args>( args )... );
 		}
 
 		template<typename T>
-		inline void getTextureData(
-			T &				 p_textureData,
-			const size_t	 p_x,
-			const size_t	 p_y,
-			const Key &		 p_pass,
-			const E_CHAN_OUT p_channel
-		)
-
+		inline T getTextureData( const Key & p_key, const size_t p_x, const size_t p_y, const E_CHAN_OUT p_channel )
 		{
-			//_getTextureData( p_textureData, p_x, p_y, p_pass, p_channel );
+			std::any textureData = std::make_any<Vec2i>();
+			_getTextureData( p_key, textureData, p_x, p_y, p_channel );
+			return std::any_cast<T>( textureData );
 		}
 
-		inline void compute( const ComputePass & p_computePass )
+		template<typename... Args>
+		inline void compute( Args &&... args )
 		{
-			//_compute( p_computePass );
+			_compute( std::forward<Args>( args )... );
 		}
 
 	  private:
-		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
-
+		// Util::Collection<std::unique_ptr<BaseContext>> _contexts;
 		std::unique_ptr<BaseContext> _impl;
 
 		FunctionBuild				_build;

@@ -1588,9 +1588,9 @@ namespace VTX::Renderer
 		Mat4f		  matrixProjection	  = Util::Math::perspective(
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
-		setValue( matrixProjection, "Matrix projection" );
+		setValue( matrixProjection, "CameraMatrixProjection" );
 		_context->snapshot( p_outImage, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
-		setValue( matrixProjectionOld, "Matrix projection" );
+		setValue( matrixProjectionOld, "CameraMatrixProjection" );
 	}
 
 } // namespace VTX::Renderer
