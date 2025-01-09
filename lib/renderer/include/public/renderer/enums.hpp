@@ -6,6 +6,30 @@
  */
 namespace VTX::Renderer
 {
+	/**
+	 * @brief All graphic API implementations.
+	 */
+	enum struct E_GRAPHIC_API
+	{
+		DEFAULT,
+		OPENGL45
+	};
+
+	/**
+	 * @brief All shading modes.
+	 */
+	enum struct E_SHADING
+	{
+		DIFFUSE,
+		GLOSSY,
+		TOON,
+		FLAT,
+		COUNT
+	};
+
+	/**
+	 * @brief All input channels.
+	 */
 	enum struct E_CHAN_IN
 	{
 		_0,
@@ -18,6 +42,9 @@ namespace VTX::Renderer
 		_7,
 	};
 
+	/**
+	 * @brief All output channels.
+	 */
 	enum struct E_CHAN_OUT
 	{
 		COLOR_0,
@@ -26,6 +53,9 @@ namespace VTX::Renderer
 		DEPTH,
 	};
 
+	/**
+	 * @brief All data formats.
+	 */
 	enum struct E_FORMAT
 	{
 		RGB16F,
@@ -39,6 +69,9 @@ namespace VTX::Renderer
 		DEPTH_COMPONENT32F
 	};
 
+	/**
+	 * @brief All draw primitives.
+	 */
 	enum struct E_PRIMITIVE
 	{
 		POINTS,
@@ -47,6 +80,9 @@ namespace VTX::Renderer
 		PATCHES,
 	};
 
+	/**
+	 * @brief All data types.
+	 */
 	enum struct E_TYPE
 	{
 		BOOL,
@@ -66,6 +102,9 @@ namespace VTX::Renderer
 		COLOR4
 	};
 
+	/**
+	 * @brief All access types.
+	 */
 	enum struct E_ACCESS
 	{
 		READ,
@@ -73,6 +112,9 @@ namespace VTX::Renderer
 		READ_WRITE,
 	};
 
+	/**
+	 * @brief All usages.
+	 */
 	enum struct E_MUTABLE_USAGE
 	{
 		STATIC_DRAW,
@@ -94,6 +136,9 @@ namespace VTX::Renderer
 	};
 	*/
 
+	/**
+	 * @brief All immutable flags.
+	 */
 	enum struct E_IMMUTABLE_FLAG
 	{
 		DYNAMIC_STORAGE_BIT, // Allors update subdata?
@@ -106,11 +151,17 @@ namespace VTX::Renderer
 		// CLIENT_STORAGE_BIT
 	};
 
+	/**
+	 * @brief All pass settings.
+	 */
 	enum struct E_SETTING
 	{
 		CLEAR
 	};
 
+	/**
+	 * @brief All texture wrapping modes.
+	 */
 	enum struct E_WRAPPING
 	{
 		REPEAT,
@@ -120,6 +171,9 @@ namespace VTX::Renderer
 		MIRROR_CLAMP_TO_EDGE,
 	};
 
+	/**
+	 * @brief All texture filtering modes.
+	 */
 	enum struct E_FILTERING
 	{
 		NEAREST,

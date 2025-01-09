@@ -70,7 +70,6 @@ namespace VTX::Renderer::Context
 	void OpenGL45::build(
 		const RenderQueue &				p_renderQueue,
 		const Links &					p_links,
-		const Handle					p_output,
 		const std::vector<BufferData> & p_globalData,
 		Instructions &					p_outInstructions,
 		InstructionsDurationRanges &	p_outInstructionsDurationRanges
@@ -85,9 +84,6 @@ namespace VTX::Renderer::Context
 		std::vector<Key> keys;
 		keys.push_back( _KEY_QUAD_VAO );
 		keys.push_back( _KEY_QUAD_BUFFER );
-
-		// Output.
-		_output = p_output;
 
 		//
 		for ( const Pass * const descPassPtr : p_renderQueue )

@@ -1,19 +1,11 @@
 #ifndef __VTX_RENDERER_SETTINGS__
 #define __VTX_RENDERER_SETTINGS__
 
+#include "enums.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::Renderer
 {
-
-	enum struct E_SHADING
-	{
-		DIFFUSE,
-		GLOSSY,
-		TOON,
-		FLAT,
-		COUNT
-	};
 
 	const std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ] = { "Diffuse", "Glossy", "Toon", "Flat" };
 

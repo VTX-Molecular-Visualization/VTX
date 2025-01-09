@@ -1,6 +1,4 @@
 #include "renderer/renderer.hpp"
-#include "renderer/context/default.hpp"
-#include "renderer/context/opengl_45.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
@@ -11,8 +9,7 @@
 namespace VTX::Renderer
 {
 
-	Renderer::Renderer( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader ) :
-		width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+	Renderer::Renderer( const size_t p_width, const size_t p_height ) : width( p_width ), height( p_height )
 	{
 		// Graph.
 		_renderGraph = std::make_unique<RenderGraph>();
@@ -67,34 +64,23 @@ namespace VTX::Renderer
 						 true } );
 	}
 
-	void Renderer::build( const uint p_output, void * p_loader )
+	void Renderer::build()
 	{
 		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
 
 		// Build renderer graph.
-		VTX_DEBUG(
-			"Renderer graph setup total time: {}",
-			Util::String::durationToStr( Util::CHRONO_CPU(
-				[ & ]()
-				{
-					const RenderQueue & queue = _renderGraph->build<Scheduler::DepthFirstSearch>();
-					_context.set<Context::OpenGL45>( width, height, _shaderPath, p_loader );
-					_context.build(
-						queue,
-						_renderGraph->getLinks(),
-						p_output,
-						_globalData,
-						_instructions,
-						_instructionsDurationRanges
-					);
-				}
-			) )
+		float buildTime = Util::CHRONO_CPU(
+			[ & ]()
+			{
+				const RenderQueue & queue = _renderGraph->build<Scheduler::DepthFirstSearch>();
+
+				_context.build(
+					queue, _renderGraph->getLinks(), _globalData, _instructions, _instructionsDurationRanges
+				);
+			}
 		);
 
-		if ( isFirstBuild )
-		{
-			onReady();
-		}
+		VTX_DEBUG( "Renderer graph setup total time: {}", Util::String::durationToStr( buildTime ) );
 	}
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )

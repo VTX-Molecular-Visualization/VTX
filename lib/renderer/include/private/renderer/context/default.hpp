@@ -14,7 +14,7 @@ namespace VTX::Renderer::Context
 		Default( const size_t p_width, const size_t p_height ) : BaseContext { p_width, p_height } {}
 
 		inline void
-		build( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )
+		build( const RenderQueue &, const Links &, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )
 		{
 		}
 

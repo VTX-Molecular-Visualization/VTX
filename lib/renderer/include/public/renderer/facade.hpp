@@ -26,11 +26,14 @@ namespace VTX::Renderer
 	{
 	  public:
 		Facade() = delete;
-		Facade( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader = nullptr );
+		Facade( const size_t p_width, const size_t p_height );
 		~Facade();
 
+		void setDefault();
+		void setOpenGL45( const FilePath & p_shaderPath, void * p_loader = nullptr );
+
 		void resize( const size_t p_width, const size_t p_height );
-		void build( const uint p_output = 0, void * p_loader = nullptr );
+		void build();
 		void clean();
 		void render( const float p_deltaTime, const float p_elapsedTime );
 

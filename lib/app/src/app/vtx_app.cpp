@@ -34,9 +34,6 @@ namespace VTX::App
 
 		Settings::initSettings();
 
-		// Init renderer.
-		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
-
 		// Create scene.
 		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
 		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
@@ -61,10 +58,18 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", args.toString() );
 
-		// TODO: use custom context? (for offline rendering i CLI mode?)
-		// Builid the renderer (graphic api backend context ready).
+		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
-		renderer.build();
+
+		try
+		{
+			renderer.setOpenGL45( Filesystem::getShadersDir() );
+		}
+		catch ( const std::exception & e )
+		{
+			VTX_ERROR( "Failed to build renderer: {}", e.what() );
+			// TODO: exit?
+		}
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );

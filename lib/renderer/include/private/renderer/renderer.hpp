@@ -5,6 +5,8 @@
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
 #include "render_graph.hpp"
+#include "renderer/context/default.hpp"
+#include "renderer/context/opengl_45.hpp"
 #include "renderer/proxy/camera.hpp"
 #include "renderer/proxy/color_layout.hpp"
 #include "renderer/proxy/mesh.hpp"
@@ -25,12 +27,7 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		Renderer(
-			const size_t	 p_width,
-			const size_t	 p_height,
-			const FilePath & p_shaderPath,
-			void *			 p_loader = nullptr
-		);
+		Renderer( const size_t p_width, const size_t p_height );
 
 		/**
 		 * @brief Send data to GPU.
@@ -74,7 +71,36 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		void build( const uint p_output = 0, void * p_loader = nullptr );
+		template<E_GRAPHIC_API API, typename... Args>
+		void set( Args &&... p_args )
+		{
+			// TODO.
+			bool isFirstBuild;
+
+			if constexpr ( API == E_GRAPHIC_API::DEFAULT )
+			{
+				isFirstBuild = not _context.hasContext<Context::Default>();
+				_context.set<Context::Default>( width, height, std::forward<Args>( p_args )... );
+			}
+			else if constexpr ( API == E_GRAPHIC_API::OPENGL45 )
+			{
+				isFirstBuild = not _context.hasContext<Context::OpenGL45>();
+				_context.set<Context::OpenGL45>( width, height, std::forward<Args>( p_args )... );
+			}
+			else
+			{
+				static_assert( std::is_same_v<API, void>, "Unknown graphic API." );
+			}
+
+			build();
+
+			if ( isFirstBuild )
+			{
+				onReady();
+			}
+		}
+
+		void build();
 
 		/**
 		 * @brief Resize the renderer.
@@ -196,10 +222,8 @@ namespace VTX::Renderer
 	  private:
 		Context::ContextWrapper		 _context;
 		std::vector<BufferData>		 _globalData;
-		void *						 _loader		  = nullptr;
 		bool						 _needUpdate	  = false;
 		size_t						 _framesRemaining = BUFFER_COUNT;
-		FilePath					 _shaderPath;
 		std::unique_ptr<RenderGraph> _renderGraph;
 		// All instructions computed by the graph and his context.
 		Instructions _instructions;

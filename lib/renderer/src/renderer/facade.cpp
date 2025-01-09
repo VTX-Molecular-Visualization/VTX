@@ -5,9 +5,9 @@ namespace VTX::Renderer
 {
 	Facade::~Facade() = default;
 
-	Facade::Facade( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader )
+	Facade::Facade( const size_t p_width, const size_t p_height )
 	{
-		_renderer		   = std::make_unique<Renderer>( p_width, p_height, p_shaderPath, p_loader );
+		_renderer		   = std::make_unique<Renderer>( p_width, p_height );
 		showAtoms		   = &_renderer->showAtoms;
 		showBonds		   = &_renderer->showBonds;
 		showRibbons		   = &_renderer->showRibbons;
@@ -20,9 +20,16 @@ namespace VTX::Renderer
 		drawRangeVoxels	   = &_renderer->drawRangeVoxels;
 	}
 
+	void Facade::setDefault() { _renderer->set<E_GRAPHIC_API::DEFAULT>(); }
+
+	void Facade::setOpenGL45( const FilePath & p_shaderPath, void * p_loader )
+	{
+		_renderer->set<E_GRAPHIC_API::OPENGL45>( p_shaderPath, p_loader );
+	}
+
 	void Facade::resize( const size_t p_width, const size_t p_height ) { _renderer->resize( p_width, p_height ); }
 
-	void Facade::build( const uint p_output, void * p_loader ) { _renderer->build( p_output, p_loader ); }
+	void Facade::build() { _renderer->build(); }
 
 	void Facade::clean() { _renderer->clean(); }
 

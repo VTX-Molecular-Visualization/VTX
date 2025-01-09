@@ -37,8 +37,8 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Facade renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		renderer.build();
+		Renderer::Facade renderer( WIDTH, HEIGHT );
+		renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.

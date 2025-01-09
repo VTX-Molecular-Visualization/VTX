@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context
 		  ) {
 				 {
 					 p_context.build(
-						 p_renderQueue, p_links, p_output, p_globalData, p_instructions, p_instructionsDurationRanges
+						 p_renderQueue, p_links, p_globalData, p_instructions, p_instructionsDurationRanges
 					 )
 				 } -> std::same_as<void>;
 				 { p_context.resize( p_renderQueue, p_width, p_height ) } -> std::same_as<void>;

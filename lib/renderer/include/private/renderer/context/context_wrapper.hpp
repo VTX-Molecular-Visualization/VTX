@@ -5,20 +5,12 @@
 
 namespace VTX::Renderer::Context
 {
-	/**
-	 * @brief All graphic API implementations.
-	 */
-	enum struct E_GRAPHIC_API
-	{
-		DEFAULT,
-		OPENGL45
-	};
 
 	/**
 	 * @brief Function pointers to the context implementation.
 	 */
 	using FunctionBuild = std::function<
-		void( const RenderQueue &, const Links &, const Handle, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
+		void( const RenderQueue &, const Links &, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
 	using FunctionResize			  = std::function<void( const RenderQueue &, size_t, size_t )>;
 	using FunctionSetOutput			  = std::function<void( Handle )>;
 	using FunctionSetValue			  = std::function<void( const Key &, const void * const, size_t )>;
@@ -44,7 +36,7 @@ namespace VTX::Renderer::Context
 		 * @brief Set the current context implementation.
 		 */
 		template<ConceptContextImpl C, typename... Args>
-		void set( Args &&... p_args )
+		void set( Args &&... p_p_args )
 		{
 			// Create or get context.
 			C * context;
@@ -54,33 +46,36 @@ namespace VTX::Renderer::Context
 			}
 			else
 			{
-				context = _contexts.create<C>( std::forward<Args>( p_args )... );
+				context = _contexts.create<C>( std::forward<Args>( p_p_args )... );
 			}
 
 			// Connect functions.
-			_build	= [ context ]( auto &&... args ) { context->build( std::forward<decltype( args )>( args )... ); };
-			_resize = [ context ]( auto &&... args ) { context->resize( std::forward<decltype( args )>( args )... ); };
-			_setOutput
-				= [ context ]( auto &&... args ) { context->setOutput( std::forward<decltype( args )>( args )... ); };
-			_setValue
-				= [ context ]( auto &&... args ) { context->setValue( std::forward<decltype( args )>( args )... ); };
-			_reserveData
-				= [ context ]( auto &&... args ) { context->reserveData( std::forward<decltype( args )>( args )... ); };
-			_set	= [ context ]( auto &&... args ) { context->set( std::forward<decltype( args )>( args )... ); };
-			_setSub = [ context ]( auto &&... args ) { context->setSub( std::forward<decltype( args )>( args )... ); };
-			_get	= [ context ]( auto &&... args ) { context->get( std::forward<decltype( args )>( args )... ); };
-			_fillInfos
-				= [ context ]( auto &&... args ) { context->fillInfos( std::forward<decltype( args )>( args )... ); };
-			_measureTaskDuration = [ context ]( auto &&... args )
-			{ return context->measureTaskDuration( std::forward<decltype( args )>( args )... ); };
-			_compileShaders = [ context ]( auto &&... args )
-			{ context->compileShaders( std::forward<decltype( args )>( args )... ); };
-			_snapshot
-				= [ context ]( auto &&... args ) { context->snapshot( std::forward<decltype( args )>( args )... ); };
-			_getTextureData = [ context ]( auto &&... args )
-			{ context->getTextureData( std::forward<decltype( args )>( args )... ); };
-			_compute
-				= [ context ]( auto &&... args ) { context->compute( std::forward<decltype( args )>( args )... ); };
+			_build
+				= [ context ]( auto &&... p_args ) { context->build( std::forward<decltype( p_args )>( p_args )... ); };
+			_resize = [ context ]( auto &&... p_args )
+			{ context->resize( std::forward<decltype( p_args )>( p_args )... ); };
+			_setOutput = [ context ]( auto &&... p_args )
+			{ context->setOutput( std::forward<decltype( p_args )>( p_args )... ); };
+			_setValue = [ context ]( auto &&... p_args )
+			{ context->setValue( std::forward<decltype( p_args )>( p_args )... ); };
+			_reserveData = [ context ]( auto &&... p_args )
+			{ context->reserveData( std::forward<decltype( p_args )>( p_args )... ); };
+			_set = [ context ]( auto &&... p_args ) { context->set( std::forward<decltype( p_args )>( p_args )... ); };
+			_setSub = [ context ]( auto &&... p_args )
+			{ context->setSub( std::forward<decltype( p_args )>( p_args )... ); };
+			_get = [ context ]( auto &&... p_args ) { context->get( std::forward<decltype( p_args )>( p_args )... ); };
+			_fillInfos = [ context ]( auto &&... p_args )
+			{ context->fillInfos( std::forward<decltype( p_args )>( p_args )... ); };
+			_measureTaskDuration = [ context ]( auto &&... p_args )
+			{ return context->measureTaskDuration( std::forward<decltype( p_args )>( p_args )... ); };
+			_compileShaders = [ context ]( auto &&... p_args )
+			{ context->compileShaders( std::forward<decltype( p_args )>( p_args )... ); };
+			_snapshot = [ context ]( auto &&... p_args )
+			{ context->snapshot( std::forward<decltype( p_args )>( p_args )... ); };
+			_getTextureData = [ context ]( auto &&... p_args )
+			{ context->getTextureData( std::forward<decltype( p_args )>( p_args )... ); };
+			_compute = [ context ]( auto &&... p_args )
+			{ context->compute( std::forward<decltype( p_args )>( p_args )... ); };
 		}
 
 		void reset()
@@ -110,21 +105,21 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void build( Args &&... args )
+		inline void build( Args &&... p_args )
 		{
-			_build( std::forward<Args>( args )... );
+			_build( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void resize( Args &&... args )
+		inline void resize( Args &&... p_args )
 		{
-			_resize( std::forward<Args>( args )... );
+			_resize( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void setOutput( Args &&... args )
+		inline void setOutput( Args &&... p_args )
 		{
-			_setOutput( std::forward<Args>( args )... );
+			_setOutput( std::forward<Args>( p_args )... );
 		}
 
 		// TODO: change parameter order.
@@ -170,27 +165,27 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void fillInfos( Args &&... args ) const
+		inline void fillInfos( Args &&... p_args ) const
 		{
-			_fillInfos( std::forward<Args>( args )... );
+			_fillInfos( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline float measureTaskDuration( Args &&... args )
+		inline float measureTaskDuration( Args &&... p_args )
 		{
-			return _measureTaskDuration( std::forward<Args>( args )... );
+			return _measureTaskDuration( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void compileShaders( Args &&... args ) const
+		inline void compileShaders( Args &&... p_args ) const
 		{
-			_compileShaders( std::forward<Args>( args )... );
+			_compileShaders( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void snapshot( Args &&... args )
+		inline void snapshot( Args &&... p_args )
 		{
-			_snapshot( std::forward<Args>( args )... );
+			_snapshot( std::forward<Args>( p_args )... );
 		}
 
 		template<typename T>
@@ -203,9 +198,9 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void compute( Args &&... args )
+		inline void compute( Args &&... p_args )
 		{
-			_compute( std::forward<Args>( args )... );
+			_compute( std::forward<Args>( p_args )... );
 		}
 
 		inline void clear() { _contexts.clear(); }

@@ -36,7 +36,6 @@ namespace VTX::Renderer::Context
 		void build(
 			const RenderQueue &				p_renderQueue,
 			const Links &					p_links,
-			const Handle					p_output,
 			const std::vector<BufferData> & p_globalData,
 			Instructions &					p_outInstructions,
 			InstructionsDurationRanges &	p_outInstructionsDurationRanges
