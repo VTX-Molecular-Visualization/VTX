@@ -30,9 +30,6 @@ class VTXRendererRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
         
-        self.cpp.build.components["vtx_renderer"].libdirs = self.cpp.build.libdirs
-        #self.cpp.package.components["vtx_renderer"].includedirs = ["include", "vendor/glad/include"]
-        
     def build(self):
         cmake = CMake(self)
         cmake.configure()
