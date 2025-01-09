@@ -11,9 +11,9 @@ TEST_CASE( "Util::Exception", "[unit]" )
 	CHECK( std::string( e.what() ) == "[VTX] Error n.55" );
 
 	e = GraphicException( "Exception" );
-	CHECK( std::string( e.what() ) == "[GL] Exception" );
+	CHECK( std::string( e.what() ) == "[3D] Exception" );
 	e = GraphicException( "Error n.{}", 55 );
-	CHECK( std::string( e.what() ) == "[GL] Error n.55" );
+	CHECK( std::string( e.what() ) == "[3D] Error n.55" );
 
 	e = HTTPException( "Exception" );
 	CHECK( std::string( e.what() ) == "[HTTP] Exception" );

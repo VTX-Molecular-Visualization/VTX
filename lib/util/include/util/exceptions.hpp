@@ -49,7 +49,7 @@ namespace VTX
 
 		{
 		}
-		explicit GraphicException( const std::string & p_err ) : Exception( "GL", p_err ) {}
+		explicit GraphicException( const std::string & p_err ) : Exception( "3D", p_err ) {}
 	};
 
 	class HTTPException : public Exception
