@@ -15,6 +15,13 @@ namespace VTX::App::Controller::Picker
 	  public:
 		using PickingInfo = App::Selection::PickingInfo;
 
+		Selection() { setActive( true ); }
+		~Selection()
+		{
+			// TODO: fixme
+			// setActive( false );
+		}
+
 		void setActive( const bool );
 		void update( const float, const float ) {}
 
