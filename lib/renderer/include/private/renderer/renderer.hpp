@@ -74,9 +74,9 @@ namespace VTX::Renderer
 		template<E_GRAPHIC_API API, typename... Args>
 		void set( Args &&... p_args )
 		{
-			// TODO.
 			bool isFirstBuild;
 
+			// Static map enum to context type.
 			if constexpr ( API == E_GRAPHIC_API::DEFAULT )
 			{
 				isFirstBuild = not _context.hasContext<Context::Default>();

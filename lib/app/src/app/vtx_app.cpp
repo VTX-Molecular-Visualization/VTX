@@ -54,21 +54,30 @@ namespace VTX::App
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 	}
 
-	void VTXApp::start( const Args & args )
+	void VTXApp::start( const Args & p_args )
 	{
-		VTX_INFO( "Starting application: {}", args.toString() );
+		VTX_INFO( "Starting application: {}", p_args.toString() );
 
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		try
+		if ( p_args.has( Args::NO_GRAPHICS ) )
 		{
-			renderer.setOpenGL45( Filesystem::getShadersDir() );
+			VTX_WARNING( "No graphics" );
+			renderer.setDefault();
 		}
-		catch ( const std::exception & e )
+		else
 		{
-			VTX_ERROR( "Failed to build renderer: {}", e.what() );
-			// TODO: exit?
+			try
+			{
+				renderer.setOpenGL45( Filesystem::getShadersDir() );
+			}
+			catch ( const std::exception & e )
+			{
+				VTX_ERROR( "Failed to build renderer: {}", e.what() );
+				renderer.setDefault();
+				// TODO: exit?
+			}
 		}
 
 		// ?
@@ -82,7 +91,7 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
-		_handleArgs( args );
+		_handleArgs( p_args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
@@ -178,8 +187,9 @@ namespace VTX::App
 
 	void VTXApp::_handleArgs( const Args & args )
 	{
+		/*
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
-		for ( const std::string & arg : args.all() )
+		for ( const auto arg : args.all() )
 		{
 			// If argument is an existing file
 			if ( std::filesystem::exists( arg ) )
@@ -216,7 +226,9 @@ namespace VTX::App
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>( arg, arg + ".pdb" );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+						arg, std::string( arg ) + ".pdb"
+					);
 				}
 				else
 				{
@@ -228,6 +240,7 @@ namespace VTX::App
 				VTX_WARNING( "Argument '{}' is not valid.", arg );
 			}
 		}
+		*/
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

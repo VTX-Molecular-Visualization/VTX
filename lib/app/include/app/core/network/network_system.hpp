@@ -32,7 +32,7 @@ namespace VTX::App::Core::Network
 		 * @param p_overwrite whether to overwrite the file if it exists.
 		 */
 		void downloadFile(
-			const std::string &	   p_url,
+			const std::string_view p_url,
 			const std::string_view p_filename,
 			std::string * const	   p_data,
 			const bool			   p_overwrite = false

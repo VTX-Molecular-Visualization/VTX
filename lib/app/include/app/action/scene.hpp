@@ -33,7 +33,7 @@ namespace VTX::App::Action::Scene
 	class DownloadSystem final : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit DownloadSystem( const std::string & p_url, const FilePath & p_filename ) :
+		explicit DownloadSystem( const std::string_view p_url, const FilePath & p_filename ) :
 			_url( p_url ), _filename( p_filename.filename() )
 		{
 		}
@@ -41,8 +41,8 @@ namespace VTX::App::Action::Scene
 		void execute() override;
 
 	  private:
-		const std::string _url;
-		const FilePath	  _filename;
+		const std::string_view _url;
+		const FilePath		   _filename;
 	};
 
 	class CreateViewpoint final : public App::Core::Action::BaseAction
