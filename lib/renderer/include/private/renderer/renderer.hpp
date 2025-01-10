@@ -29,8 +29,12 @@ namespace VTX::Renderer
 	  public:
 		Renderer( const size_t p_width, const size_t p_height );
 
+		inline size_t width() const { return _width; }
+		inline size_t height() const { return _height; }
+
 		/**
 		 * @brief Send data to GPU.
+		 * @param p_value the data to send.
 		 * @param p_key the buffer name to send on.
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
@@ -41,51 +45,38 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		inline Pass * const addPass( const Pass & p_pass ) { return _renderGraph->addPass( p_pass ); }
-
-		inline void removePass( const Pass * const p_pass ) { _renderGraph->removePass( p_pass ); }
-
-		inline bool addLink(
-			Pass * const	   p_passSrc,
-			Pass * const	   p_passDest,
-			const E_CHAN_OUT & p_channelSrc	 = E_CHAN_OUT::COLOR_0,
-			const E_CHAN_IN &  p_channelDest = E_CHAN_IN::_0
-		)
-		{
-			return _renderGraph->addLink( p_passSrc, p_passDest, p_channelSrc, p_channelDest );
-		}
-
-		inline void removeLink( const Link * const p_link ) { _renderGraph->removeLink( p_link ); }
-
-		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
-
-		inline const Passes &		getPasses() const { return _renderGraph->getPasses(); }
-		inline const Links &		getLinks() const { return _renderGraph->getLinks(); }
-		inline const RenderQueue &	getRenderQueue() const { return _renderGraph->getRenderQueue(); }
-		inline const Output * const getOutput() const { return _renderGraph->getOutput(); }
-		inline void					setOutput( const Output * const p_output ) { _renderGraph->setOutput( p_output ); }
-
+		/**
+		 * @brief Set the output to render on.
+		 */
 		inline void setOutput( const Handle p_output )
 		{
 			_context.setOutput( p_output );
 			setNeedUpdate( true );
 		}
 
+		/**
+		 * @brief Add data shared between all render passes.
+		 */
+		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
+
+		/**
+		 * @brief Set the current graphic API context.
+		 */
 		template<E_GRAPHIC_API API, typename... Args>
 		void set( Args &&... p_args )
 		{
 			bool isFirstBuild;
 
-			// Static map enum to context type.
+			// Static map enum to _context type.
 			if constexpr ( API == E_GRAPHIC_API::DEFAULT )
 			{
 				isFirstBuild = not _context.hasContext<Context::Default>();
-				_context.set<Context::Default>( width, height, std::forward<Args>( p_args )... );
+				_context.set<Context::Default>( _width, _height, std::forward<Args>( p_args )... );
 			}
 			else if constexpr ( API == E_GRAPHIC_API::OPENGL45 )
 			{
 				isFirstBuild = not _context.hasContext<Context::OpenGL45>();
-				_context.set<Context::OpenGL45>( width, height, std::forward<Args>( p_args )... );
+				_context.set<Context::OpenGL45>( _width, _height, std::forward<Args>( p_args )... );
 			}
 			else
 			{
@@ -100,6 +91,9 @@ namespace VTX::Renderer
 			}
 		}
 
+		/**
+		 * @brief Build the renderer with the current graph.
+		 */
 		void build();
 
 		/**
@@ -108,14 +102,19 @@ namespace VTX::Renderer
 		 */
 		void resize( const size_t p_width, const size_t p_height );
 
+		/**
+		 * @brief Clean all.
+		 */
 		void clean();
 
 		/**
-		 * @brief The render loop.
-		 * @param p_time is the current running time.
+		 * @brief The main render loop.
 		 */
 		void render( const float p_deltaTime, const float p_elapsedTime );
 
+		/**
+		 * @brief Add data to the renderer.
+		 */
 		void addProxySystem( Proxy::System & p_proxy );
 		void removeProxySystem( Proxy::System & p_proxy );
 		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
@@ -150,9 +149,12 @@ namespace VTX::Renderer
 		 */
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			return _context.getTextureData<Vec2i>( "Geometric", p_x, height - p_y, E_CHAN_OUT::COLOR_2 );
+			return _context.getTextureData<Vec2i>( "Geometric", p_x, _height - p_y, E_CHAN_OUT::COLOR_2 );
 		}
 
+		/**
+		 * @brief Ask for a render update.
+		 */
 		inline void setNeedUpdate( const bool p_value )
 		{
 			_needUpdate = p_value;
@@ -162,48 +164,37 @@ namespace VTX::Renderer
 			}
 		}
 
-		// Benchmarker only.
-		inline void								  compileShaders() const { _context.compileShaders(); }
-		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
-		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
-		{
-			return _instructionsDurationRanges;
-		}
+		/**
+		 * @brief Get the current renderer infos.
+		 */
+		StructInfos getInfos() const;
 
-		inline StructInfos getInfos() const
-		{
-			StructInfos infos;
-			_context.fillInfos( infos );
+		/**
+		 * @brief Buffer swapping count.
+		 */
+		static const size_t BUFFER_COUNT = 2;
 
-			// Compute size of cached data.
-			size_t sizeCache = 0;
-			for ( const auto & [ proxy, cache ] : _cacheSpheresCylinders )
-			{
-				sizeCache += cache.currentSize();
-			}
-			for ( const auto & [ proxy, cache ] : _cacheRibbons )
-			{
-				sizeCache += cache.currentSize();
-			}
-			infos.currentSizeCPUCache = sizeCache;
+		/**
+		 * @brief Render graph to handle the rendering pipeline.
+		 */
+		RenderGraph graph;
 
-			return infos;
-		}
-
-		size_t width;
-		size_t height;
-
+		/**
+		 * @brief Primitives to show.
+		 */
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
 		bool showVoxels	 = true;
 
-		bool forceUpdate  = true;
-		bool logDurations = false;
+		/**
+		 * @brief Force update each frame.
+		 */
+		bool forceUpdate = true;
 
-		static const size_t BUFFER_COUNT = 2;
-
-		// Draw ranges.
+		/**
+		 * @brief Current ranges to draw.
+		 */
 		// TODO: test render time with/without ranges/multidraw.
 		using RangeList = Util::Math::RangeList<size_t>;
 		RangeList	drawRangeSpheresRL;
@@ -214,23 +205,58 @@ namespace VTX::Renderer
 		Draw::Range drawRangeRibbons;
 		Draw::Range drawRangeVoxels;
 
-		// TODO: currentSize proxies and ranges?
-
-		// Callbacks.
+		/**
+		 * @brief Callback triggered when the renderering context is ready and graph built (first time only).
+		 */
 		Util::Callback<> onReady;
 
+		/**
+		 * @brief Useful for benchmarker only.
+		 */
+		inline void								  compileShaders() const { _context.compileShaders(); }
+		inline const std::vector<Pass *> &		  getAvailablePasses() const { return availablePasses; }
+		inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
+		{
+			return _instructionsDurationRanges;
+		}
+		bool logDurations = false;
+
 	  private:
-		Context::ContextWrapper		 _context;
-		std::vector<BufferData>		 _globalData;
-		bool						 _needUpdate	  = false;
-		size_t						 _framesRemaining = BUFFER_COUNT;
-		std::unique_ptr<RenderGraph> _renderGraph;
-		// All instructions computed by the graph and his context.
+		/**
+		 * @brief Wrapper to handle the graphic APIs.
+		 */
+		Context::ContextWrapper _context;
+
+		/**
+		 * @brief Size.
+		 */
+		size_t _width;
+		size_t _height;
+
+		/**
+		 * @brief Data shared between all render passes.
+		 */
+		std::vector<BufferData> _globalData;
+
+		/**
+		 * @brief Update next frame.
+		 */
+		bool   _needUpdate		= false;
+		size_t _framesRemaining = BUFFER_COUNT;
+
+		/**
+		 * @brief Instructions to render, generated by context from the graph.
+		 */
 		Instructions _instructions;
-		// Used to log render times.
+
+		/**
+		 * @brief Instruction to render but with execution time logging.
+		 */
 		InstructionsDurationRanges _instructionsDurationRanges;
 
-		// Proxies.
+		/**
+		 * @brief All data proxies.
+		 */
 		std::vector<Proxy::System *>		 _proxiesSystems;
 		std::vector<Proxy::Representation *> _proxyRepresentations;
 		Proxy::Camera *						 _proxyCamera		  = nullptr;
@@ -253,7 +279,9 @@ namespace VTX::Renderer
 			return id;
 		}
 
-		// Cache.
+		/**
+		 * @brief Cache some data to avoid recomputing.
+		 */
 		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
 		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
