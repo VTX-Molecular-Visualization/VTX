@@ -65,13 +65,13 @@ namespace VTX::Renderer
 	{
 		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
 
-		// Build renderer graph.
+		// Build renderer _graph.
 		float buildTime = Util::CHRONO_CPU(
 			[ & ]()
 			{
-				const RenderQueue & queue = graph.build<Scheduler::DepthFirstSearch>();
+				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
 
-				_context.build( queue, graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
+				_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
 			}
 		);
 
@@ -88,7 +88,7 @@ namespace VTX::Renderer
 		Vec2i size = { p_width, p_height };
 		setValue( size, "CameraResolution" );
 
-		_context.resize( graph.getRenderQueue(), p_width, p_height );
+		_context.resize( _graph.getRenderQueue(), p_width, p_height );
 
 		setNeedUpdate( true );
 	}
@@ -98,7 +98,7 @@ namespace VTX::Renderer
 		_context.clear();
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
-		graph.clean();
+		_graph.clean();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
@@ -526,6 +526,8 @@ namespace VTX::Renderer
 		assert( p_proxy.matrixProjection );
 
 		_proxyCamera = &p_proxy;
+
+		// std::vector<uint8_t> data
 
 		_context.set<_StructUBOCamera>(
 			{ { *p_proxy.matrixView,
@@ -1422,7 +1424,7 @@ namespace VTX::Renderer
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
 		setValue( matrixProjection, "CameraMatrixProjection" );
-		_context.snapshot( p_outImage, graph.getRenderQueue(), _instructions, p_width, p_height );
+		_context.snapshot( p_outImage, _graph.getRenderQueue(), _instructions, p_width, p_height );
 		setValue( matrixProjectionOld, "CameraMatrixProjection" );
 	}
 
@@ -1443,7 +1445,7 @@ namespace VTX::Renderer
 		}
 	}
 
-	 StructInfos Renderer::getInfos() const
+	StructInfos Renderer::getInfos() const
 	{
 		StructInfos infos;
 		_context.fillInfos( infos );
@@ -1481,7 +1483,7 @@ namespace VTX::Renderer
 		// Geometric.
 		if ( not geo )
 		{
-			geo									   = graph.addPass( descPassGeometric );
+			geo									   = _graph.addPass( descPassGeometric );
 			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
 			geo->programs[ 0 ].draw.value().needRenderFunc
 				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
@@ -1499,9 +1501,9 @@ namespace VTX::Renderer
 		// Depth.
 		if ( not depth )
 		{
-			depth = graph.addPass( descPassDepth );
+			depth = _graph.addPass( descPassDepth );
 
-			graph.addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+			_graph.addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
 		}
 
 		// SSAO.
@@ -1509,27 +1511,27 @@ namespace VTX::Renderer
 		{
 			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
 			{
-				ssao  = graph.addPass( descPassSSAO );
-				blurX = graph.addPass( descPassBlur );
-				blurY = graph.addPass( descPassBlur );
+				ssao  = _graph.addPass( descPassSSAO );
+				blurX = _graph.addPass( descPassBlur );
+				blurY = _graph.addPass( descPassBlur );
 
 				blurX->name							 = "BlurX";
 				blurY->name							 = "BlurY";
 				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
 
-				graph.addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				graph.addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-				graph.addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				graph.addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-				graph.addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				graph.addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_graph.addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 		}
 		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
 		{
-			graph.removePass( ssao );
-			graph.removePass( blurX );
-			graph.removePass( blurY );
+			_graph.removePass( ssao );
+			_graph.removePass( blurX );
+			_graph.removePass( blurY );
 			ssao  = nullptr;
 			blurX = nullptr;
 			blurY = nullptr;
@@ -1538,14 +1540,14 @@ namespace VTX::Renderer
 		// Shading.
 		if ( not shading )
 		{
-			shading = graph.addPass( descPassShading );
+			shading = _graph.addPass( descPassShading );
 
-			graph.addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-			graph.addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
 		}
 		if ( ssao )
 		{
-			graph.addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			_graph.addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
 		}
 
 		// Outline.
@@ -1553,15 +1555,15 @@ namespace VTX::Renderer
 		{
 			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
 			{
-				outline = graph.addPass( descPassOutline );
+				outline = _graph.addPass( descPassOutline );
 
-				graph.addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				graph.addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 		}
 		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
 		{
-			graph.removePass( outline );
+			_graph.removePass( outline );
 			outline = nullptr;
 		}
 
@@ -1570,46 +1572,46 @@ namespace VTX::Renderer
 		{
 			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
 			{
-				selection = graph.addPass( descPassSelection );
+				selection = _graph.addPass( descPassSelection );
 
-				graph.addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				graph.addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_graph.addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
 			}
 		}
 		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
 		{
-			graph.removePass( selection );
+			_graph.removePass( selection );
 			selection = nullptr;
 		}
 		if ( selection )
 		{
 			if ( outline )
 			{
-				graph.addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 			else
 			{
-				graph.addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 			}
 		}
 
 		// FXAA.
 		if ( not fxaa )
 		{
-			fxaa = graph.addPass( desPassFXAA );
-			graph.setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+			fxaa = _graph.addPass( desPassFXAA );
+			_graph.setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
 		}
 		if ( selection )
 		{
-			graph.addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_graph.addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		}
 		else if ( outline )
 		{
-			graph.addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_graph.addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		}
 		else
 		{
-			graph.addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_graph.addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 		}
 	}
 } // namespace VTX::Renderer

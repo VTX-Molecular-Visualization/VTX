@@ -25,7 +25,7 @@ namespace VTX::Renderer::Context
 		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
 
 		/**
-		 * @brief Generates render instructions from render graph inputs.
+		 * @brief Generates render instructions from render _graph inputs.
 		 * @param p_renderQueue the list of passes to render, ordered by the scheduler.
 		 * @param p_links the connections between passes.
 		 * @param p_output the output framebuffer.
@@ -205,6 +205,7 @@ namespace VTX::Renderer::Context
 		static std::map<const E_FILTERING, const int32_t>  _mapFilterings;
 		static std::map<const E_TYPE, const uint32_t>	   _mapTypes;
 		static std::map<const E_TYPE, const size_t>		   _mapTypeSizes;
+		static std::map<const E_TYPE, const size_t>		   _mapTypeAlignments;
 		static std::map<const E_FORMAT, const E_TYPE>	   _mapFormatTypes;
 		static std::map<const E_FORMAT, const uint32_t>	   _mapFormatInternalTypes;
 

@@ -112,9 +112,9 @@ namespace VTX::Renderer
 
 	uint Facade::getBufferCount() { return Renderer::BUFFER_COUNT; }
 
-	void Facade::addPass( const Pass & p_pass ) { _renderer->graph.addPass( p_pass ); }
+	void Facade::addPass( const Pass & p_pass ) { _renderer->graph().addPass( p_pass ); }
 
-	void Facade::removePass( const Pass * const p_pass ) { _renderer->graph.removePass( p_pass ); }
+	void Facade::removePass( const Pass * const p_pass ) { _renderer->graph().removePass( p_pass ); }
 
 	bool Facade::addLink(
 		Pass * const	   p_passSrc,
@@ -123,20 +123,20 @@ namespace VTX::Renderer
 		const E_CHAN_IN &  p_channelDest
 	)
 	{
-		return _renderer->graph.addLink( p_passSrc, p_passDest, p_channelSrc, p_channelDest );
+		return _renderer->graph().addLink( p_passSrc, p_passDest, p_channelSrc, p_channelDest );
 	}
 
-	void Facade::removeLink( const Link * const p_link ) { _renderer->graph.removeLink( p_link ); }
+	void Facade::removeLink( const Link * const p_link ) { _renderer->graph().removeLink( p_link ); }
 
-	const Passes & Facade::getPasses() const { return _renderer->graph.getPasses(); }
+	const Passes & Facade::getPasses() const { return _renderer->graph().getPasses(); }
 
-	const Links & Facade::getLinks() const { return _renderer->graph.getLinks(); }
+	const Links & Facade::getLinks() const { return _renderer->graph().getLinks(); }
 
-	const RenderQueue & Facade::getRenderQueue() const { return _renderer->graph.getRenderQueue(); }
+	const RenderQueue & Facade::getRenderQueue() const { return _renderer->graph().getRenderQueue(); }
 
-	const Output * const Facade::getOutput() const { return _renderer->graph.getOutput(); }
+	const Output * const Facade::getOutput() const { return _renderer->graph().getOutput(); }
 
-	void Facade::setOutput( const Output * const p_output ) { _renderer->graph.setOutput( p_output ); }
+	void Facade::setOutput( const Output * const p_output ) { _renderer->graph().setOutput( p_output ); }
 
 	void Facade::compileShaders() const { _renderer->compileShaders(); }
 
