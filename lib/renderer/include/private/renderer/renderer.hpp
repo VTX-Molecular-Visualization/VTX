@@ -68,7 +68,7 @@ namespace VTX::Renderer
 		{
 			bool isFirstBuild;
 
-			// Static map enum to _context type.
+			// Static map enum to context type.
 			if constexpr ( API == E_GRAPHIC_API::DEFAULT )
 			{
 				isFirstBuild = not _context.hasContext<Context::Default>();
@@ -312,27 +312,6 @@ namespace VTX::Renderer
 		{
 			VISIBILITY = 0,
 			SELECTION  = 1
-		};
-
-		// TODO: find a way to delete that?
-		struct alignas( 16 ) _StructUBOCamera
-		{
-			// layout 140.
-			Mat4f	 matrixView;
-			Mat4f	 matrixProjection;
-			Vec3f	 cameraPosition;
-			uint32_t padding;
-			Vec4f	 cameraClipInfos;
-			Vec2i	 resolution;
-			Vec2i	 mousePosition;
-			uint32_t isPerspective;
-		};
-
-		struct _StructUBOModel
-		{
-			// layout 140.
-			Mat4f mv;
-			Mat4f n;
 		};
 
 		struct _StructUBORepresentation

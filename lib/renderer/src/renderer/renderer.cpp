@@ -1,4 +1,5 @@
 #include "renderer/renderer.hpp"
+#include "renderer/binary_buffer.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
@@ -201,7 +202,12 @@ namespace VTX::Renderer
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "MatrixModelView", _getProxyId( &p_proxy ) );
+			BinaryBuffer buffer;
+			buffer.write( matrixModelView );
+			buffer.write( matrixNormal );
+			buffer.close();
+
+			_context.setSub( buffer, "Models", _getProxyId( &p_proxy ) );
 		};
 
 		// Representation.
@@ -527,24 +533,22 @@ namespace VTX::Renderer
 
 		_proxyCamera = &p_proxy;
 
-		// std::vector<uint8_t> data
+		BinaryBuffer buffer;
+		buffer.write( *p_proxy.matrixView );
+		buffer.write( *p_proxy.matrixProjection );
+		buffer.write( p_proxy.cameraPosition );
+		buffer.write( Vec4f(
+			p_proxy.cameraNear * p_proxy.cameraFar,
+			p_proxy.cameraFar,
+			p_proxy.cameraFar - p_proxy.cameraNear,
+			p_proxy.cameraNear
+		) );
+		buffer.write( Vec2i( width(), height() ) );
+		buffer.write( p_proxy.mousePosition );
+		buffer.write( uint( p_proxy.isPerspective ) );
+		buffer.close();
 
-		_context.set<_StructUBOCamera>(
-			{ { *p_proxy.matrixView,
-				*p_proxy.matrixProjection,
-				p_proxy.cameraPosition,
-				0,
-				Vec4f(
-					p_proxy.cameraNear * p_proxy.cameraFar,
-					p_proxy.cameraFar,
-					p_proxy.cameraFar - p_proxy.cameraNear,
-					p_proxy.cameraNear
-				),
-				Vec2i( width(), height() ),
-				p_proxy.mousePosition,
-				p_proxy.isPerspective } },
-			"Camera"
-		);
+		_context.set( buffer, "Camera" );
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
@@ -563,7 +567,7 @@ namespace VTX::Renderer
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
-			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
+			// setValue( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
 		};
 
 		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
@@ -1395,7 +1399,7 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
-		std::vector<_StructUBOModel> models;
+		BinaryBuffer buffer;
 
 		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
@@ -1404,10 +1408,14 @@ namespace VTX::Renderer
 
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+
+			buffer.write( matrixModelView );
+			buffer.write( matrixNormal );
 		}
 
-		_context.set( models, "Models" );
+		buffer.close();
+
+		_context.set( buffer, "Models" );
 	}
 
 	void Renderer::snapshot(
