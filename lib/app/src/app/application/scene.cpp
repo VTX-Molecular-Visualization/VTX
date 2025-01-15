@@ -48,6 +48,7 @@ namespace VTX::App::Application
 	void Scene::referenceItem( Component::Scene::SceneItemComponent & p_item )
 	{
 		_itemIndexes.emplace_back( ECS_REGISTRY().getEntity( p_item ) );
+		_aabb.invalidate();
 		onSceneItemAdded( p_item );
 	}
 
