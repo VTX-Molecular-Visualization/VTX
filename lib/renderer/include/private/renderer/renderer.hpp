@@ -314,19 +314,6 @@ namespace VTX::Renderer
 			SELECTION  = 1
 		};
 
-		struct _StructUBORepresentation
-		{
-			// layout 430 (forced or renderdoc bug?).
-			float radiusSphereFixed;
-			float radiusSphereAdd;
-			uint  radiusFixed;
-			float radiusCylinder;
-
-			uint cylinderColorBlendingMode;
-			uint ribbonColorBlendingMode;
-			// uint padding[ 2 ];
-		};
-
 		/**
 		 * @brief The main render loop that call each generated instruction.
 		 * @param p_time the current time.

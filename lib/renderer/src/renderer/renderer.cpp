@@ -471,16 +471,15 @@ namespace VTX::Renderer
 			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
 		);
 
-		std::vector<_StructUBORepresentation> representations;
+		BinaryBuffer buffer;
 		for ( Proxy::Representation * const representation : _proxyRepresentations )
 		{
-			representations.emplace_back( _StructUBORepresentation {
-				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ),
-				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ),
-				representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ),
-				representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ),
-				representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ),
-				representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) } );
+			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ) );
+			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ) );
+			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ) );
+			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ) );
+			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ) );
+			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) );
 
 			// showAtoms	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
 			showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
@@ -513,7 +512,9 @@ namespace VTX::Renderer
 			{ setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
 		}
 
-		_context.set( representations, "Representations" );
+		buffer.close();
+
+		_context.set( buffer, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
