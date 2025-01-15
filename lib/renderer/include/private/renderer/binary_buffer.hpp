@@ -7,72 +7,72 @@
 namespace VTX::Renderer
 {
 	/**
+	 * @brief Type traits to get the alignment of a type.
+	 */
+	template<typename T>
+	struct TypeAlignment;
+
+	template<>
+	struct TypeAlignment<bool>
+	{
+		static constexpr size_t value = 4;
+	};
+
+	template<>
+	struct TypeAlignment<int>
+	{
+		static constexpr size_t value = 4;
+	};
+
+	template<>
+	struct TypeAlignment<uint>
+	{
+		static constexpr size_t value = 4;
+	};
+
+	template<>
+	struct TypeAlignment<float>
+	{
+		static constexpr size_t value = 4;
+	};
+
+	template<>
+	struct TypeAlignment<Vec2i>
+	{
+		static constexpr size_t value = 8;
+	};
+
+	template<>
+	struct TypeAlignment<Vec2f>
+	{
+		static constexpr size_t value = 8;
+	};
+
+	template<>
+	struct TypeAlignment<Vec3f>
+	{
+		static constexpr size_t value = 16;
+	};
+
+	template<>
+	struct TypeAlignment<Vec4f>
+	{
+		static constexpr size_t value = 16;
+	};
+
+	template<>
+	struct TypeAlignment<Mat4f>
+	{
+		static constexpr size_t value = 16;
+	};
+
+	/**
 	 * @brief A buffer to store and align heterogeneous data.
 	 * // TODO: abstract this class to be used in other contexts.
 	 */
 	class BinaryBuffer
 	{
 	  public:
-		/**
-		 * @brief Type traits to get the alignment of a type.
-		 */
-		template<typename T>
-		struct TypeAlignment;
-
-		template<>
-		struct TypeAlignment<bool>
-		{
-			static constexpr size_t value = 4;
-		};
-
-		template<>
-		struct TypeAlignment<int>
-		{
-			static constexpr size_t value = 4;
-		};
-
-		template<>
-		struct TypeAlignment<uint>
-		{
-			static constexpr size_t value = 4;
-		};
-
-		template<>
-		struct TypeAlignment<float>
-		{
-			static constexpr size_t value = 4;
-		};
-
-		template<>
-		struct TypeAlignment<Vec2i>
-		{
-			static constexpr size_t value = 8;
-		};
-
-		template<>
-		struct TypeAlignment<Vec2f>
-		{
-			static constexpr size_t value = 8;
-		};
-
-		template<>
-		struct TypeAlignment<Vec3f>
-		{
-			static constexpr size_t value = 16;
-		};
-
-		template<>
-		struct TypeAlignment<Vec4f>
-		{
-			static constexpr size_t value = 16;
-		};
-
-		template<>
-		struct TypeAlignment<Mat4f>
-		{
-			static constexpr size_t value = 16;
-		};
-
 		/**
 		 * @brief Write data adn padding at the current offset.
 		 */
