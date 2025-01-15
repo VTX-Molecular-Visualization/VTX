@@ -25,7 +25,7 @@ namespace VTX::App::Component::Chemistry
 		void				setChainPtr( Chain * const p_chainPtr );
 
 		const System * const getConstSystemPtr() const { return _systemPtr; }
-		System * const	   getSystemPtr() const { return _systemPtr; }
+		System * const		 getSystemPtr() const { return _systemPtr; }
 
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
@@ -48,8 +48,8 @@ namespace VTX::App::Component::Chemistry
 		const std::string_view getName() const;
 		const std::string_view getLongName() const;
 
-		const Util::Color::Rgba & getColor() const { return _color; };
-		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
+		// const Util::Color::Rgba & getColor() const { return _color; };
+		// void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
 
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
@@ -75,7 +75,7 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		System * _systemPtr = nullptr;
-		size_t	   _index		= INVALID_INDEX;
+		size_t	 _index		= INVALID_INDEX;
 
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
 		size_t				  _indexInOriginalChain = INVALID_INDEX;
