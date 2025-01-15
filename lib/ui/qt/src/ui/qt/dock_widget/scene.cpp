@@ -53,7 +53,7 @@ namespace VTX::UI::QT::DockWidget
 			[ & ]( QTreeWidgetItem * const p_item )
 			{
 				// Get item depth.
-				auto [ depth, topLevelItem ] = _getDepth( p_item );
+				const auto & [ depth, topLevelItem ] = _getDepth( p_item );
 
 				assert( _loadFuncs.contains( topLevelItem ) );
 
@@ -161,9 +161,9 @@ namespace VTX::UI::QT::DockWidget
 			{
 				if ( p_column == 0 )
 				{
-					const bool checked			   = p_item->checkState( 0 ) == Qt::Checked;
-					WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
-					auto [ depth, topLevelWidget ] = _getDepth( p_item );
+					const bool checked					   = p_item->checkState( 0 ) == Qt::Checked;
+					WidgetData widgetData				   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+					const auto & [ depth, topLevelWidget ] = _getDepth( p_item );
 
 					assert( _systemComponents.contains( topLevelWidget ) );
 
@@ -211,8 +211,8 @@ namespace VTX::UI::QT::DockWidget
 			this,
 			[ this ]( QTreeWidgetItem * const p_item, const int p_column )
 			{
-				WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
-				auto [ depth, topLevelWidget ] = _getDepth( p_item );
+				WidgetData widgetData				   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+				const auto & [ depth, topLevelWidget ] = _getDepth( p_item );
 
 				assert( _systemComponents.contains( topLevelWidget ) );
 
@@ -221,11 +221,12 @@ namespace VTX::UI::QT::DockWidget
 				using namespace App::Selection;
 
 				// Get selectable component.
-				auto & system	  = *_systemComponents[ topLevelWidget ];
-				auto & selectable = ECS_REGISTRY().getComponent<Component::Scene::Selectable>( system );
+				const auto & system		= *_systemComponents[ topLevelWidget ];
+				const auto & selectable = ECS_REGISTRY().getComponent<Component::Scene::Selectable>( system );
 
 				// Selectable data.
 				SystemData selectionData( selectable );
+				selectionData.clear();
 
 				switch ( depth )
 				{
@@ -263,8 +264,8 @@ namespace VTX::UI::QT::DockWidget
 			this,
 			[ this ]( QTreeWidgetItem * const p_item, const int p_column )
 			{
-				WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
-				auto [ depth, topLevelWidget ] = _getDepth( p_item );
+				WidgetData widgetData				   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+				const auto & [ depth, topLevelWidget ] = _getDepth( p_item );
 
 				assert( _systemComponents.contains( topLevelWidget ) );
 
