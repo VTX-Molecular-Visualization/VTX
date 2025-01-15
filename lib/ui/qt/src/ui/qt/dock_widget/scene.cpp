@@ -1,11 +1,13 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include <app/action/animation.hpp>
+#include <app/action/selection.hpp>
 #include <app/action/visibility.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/scene/scene_item_component.hpp>
+#include <app/selection/system_data.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -199,6 +201,58 @@ namespace VTX::UI::QT::DockWidget
 					default: assert( true ); break;
 					}
 				}
+			}
+		);
+
+		// itemClicked.
+		connect(
+			_tree,
+			&QTreeWidget::itemClicked,
+			this,
+			[ this ]( QTreeWidgetItem * const p_item, const int p_column )
+			{
+				WidgetData widgetData		   = p_item->data( 0, Qt::UserRole ).value<WidgetData>();
+				auto [ depth, topLevelWidget ] = _getDepth( p_item );
+
+				assert( _systemComponents.contains( topLevelWidget ) );
+
+				using namespace App;
+				using namespace App::Action::Selection;
+				using namespace App::Selection;
+
+				// Get selectable component.
+				auto & system	  = *_systemComponents[ topLevelWidget ];
+				auto & selectable = ECS_REGISTRY().getComponent<Component::Scene::Selectable>( system );
+
+				// Selectable data.
+				SystemData selectionData( selectable );
+
+				switch ( depth )
+				{
+				case E_DEPTH::SYSTEM:
+				{
+					selectionData.selectAll();
+					break;
+				}
+				case E_DEPTH::CHAIN:
+				{
+					selectionData.selectFullChain( *system.getChain( widgetData ) );
+					break;
+				}
+				case E_DEPTH::RESIDUE:
+				{
+					selectionData.selectFullResidue( *system.getResidue( widgetData ) );
+					break;
+				}
+				case E_DEPTH::ATOM:
+				{
+					selectionData.selectAtom( *system.getAtom( atom_index_t( widgetData ) ) );
+					break;
+				}
+				default: assert( true ); break;
+				}
+
+				App::ACTION_SYSTEM().execute<Select>( selectionData, AssignmentType::SET );
 			}
 		);
 

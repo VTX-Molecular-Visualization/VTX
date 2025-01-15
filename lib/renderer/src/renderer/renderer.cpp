@@ -287,7 +287,7 @@ namespace VTX::Renderer
 					cacheSC.flags[ i ] &= ~mask;
 					cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 
-					VTX_DEBUG( "Select atom: {} -> {}", i, p_select );
+					// VTX_DEBUG( "Select atom: {} -> {}", i, p_select );
 				}
 			}
 

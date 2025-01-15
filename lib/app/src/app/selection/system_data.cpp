@@ -12,7 +12,7 @@ namespace VTX::App::Selection
 		SelectionData( p_selectable ),
 		_system( &ECS_REGISTRY().getComponent<Component::Chemistry::System>( p_selectable ) )
 	{
-		selectAll();
+		// selectAll();
 	}
 
 	void SystemData::clear()
