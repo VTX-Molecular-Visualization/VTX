@@ -12,6 +12,10 @@ namespace VTX::Renderer
 	 */
 	class BinaryBuffer
 	{
+	  public:
+		/**
+		 * @brief Type traits to get the alignment of a type.
+		 */
 		template<typename T>
 		struct TypeAlignment;
 
@@ -69,7 +73,6 @@ namespace VTX::Renderer
 			static constexpr size_t value = 16;
 		};
 
-	  public:
 		/**
 		 * @brief Write data adn padding at the current offset.
 		 */
