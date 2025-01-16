@@ -28,6 +28,13 @@ namespace VTX::UI::QT::DockWidget
 			ATOM
 		};
 
+		enum struct E_VISIBILITY
+		{
+			VISIBLE = 0,
+			HIDDEN,
+			PARTIAL
+		};
+
 		using WidgetData = size_t;
 
 		/**
@@ -43,6 +50,7 @@ namespace VTX::UI::QT::DockWidget
 			std::string_view name;
 			WidgetData		 data;
 			size_t			 childrenCount;
+			E_VISIBILITY	 visibility;
 		};
 
 		QPointer<QTreeWidget> _tree;
@@ -83,6 +91,8 @@ namespace VTX::UI::QT::DockWidget
 		 * @param the item to reset.
 		 */
 		void _resetTreeItem( QTreeWidgetItem * const );
+
+		void _applyVisibility( const E_VISIBILITY, QTreeWidgetItem * const );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

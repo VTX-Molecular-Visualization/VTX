@@ -23,6 +23,10 @@ namespace VTX::UI::QT::DockWidget
 
 		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
+			return;
+
+			setUpdatesEnabled( false );
+
 			Util::Chrono timer;
 			timer.start();
 
@@ -113,6 +117,8 @@ namespace VTX::UI::QT::DockWidget
 
 				_layout->addWidget( table );
 			}
+
+			setUpdatesEnabled( true );
 
 			float time = timer.elapsedTime();
 			VTX_ERROR( "Sequence loading duration: {}", Util::String::durationToStr( time ) );

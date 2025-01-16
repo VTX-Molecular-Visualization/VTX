@@ -292,7 +292,7 @@ namespace VTX::UI::QT::Dialog
 	void ExportImage::_onBackgroundOpacity()
 	{
 		_labelBackgroundOpacityValue->setText( QString::number( _sliderBackgroundOpacity->value() ) );
-		//_updatePreview();
+		_updatePreview();
 	}
 
 	void ExportImage::save()
