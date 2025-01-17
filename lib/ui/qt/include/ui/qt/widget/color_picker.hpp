@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_QT_WIDGET_COLOR_PICKER__
 #define __VTX_UI_QT_WIDGET_COLOR_PICKER__
 
-#include "ui/qt/core/base_widget.hpp"
 #include <QColor>
 #include <QPushButton>
+#include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::UI::QT::Widget
 {
-	class ColorPicker : public Core::BaseWidget<ColorPicker, QPushButton>
+	class ColorPicker : public QPushButton
 	{
 	  public:
 		ColorPicker( QWidget * );

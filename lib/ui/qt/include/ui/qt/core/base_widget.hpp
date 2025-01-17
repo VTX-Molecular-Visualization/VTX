@@ -40,6 +40,10 @@ namespace VTX::UI::QT::Core
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "UI widget created: {}", name );
+
+			// Ensure that only one instance of the widget is created.
+			assert( not WIDGETS::get().has<T>() );
+
 			WIDGETS::get().set<T>( static_cast<T *>( this ) );
 		} // namespace VTX::UI::QT
 
