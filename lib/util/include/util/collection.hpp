@@ -140,7 +140,7 @@ namespace VTX::Util
 		}
 
 		template<typename T, typename... Args>
-		inline T * const create( const Hash & p_hash, Args &&... p_args )
+		inline T * const createWithHash( const Hash & p_hash, Args &&... p_args )
 		{
 			return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... );
 		}
@@ -189,6 +189,8 @@ namespace VTX::Util
 			// Removed if raw ptr (not proprietary), deleted if unique_ptr (proprietary).
 			_map.erase( p_hash );
 		}
+
+		inline void clear() { _map.clear(); }
 
 		template<typename T>
 		static constexpr Hash hash()

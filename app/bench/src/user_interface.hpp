@@ -3,7 +3,8 @@
 
 #include <SDL.h>
 #include <imgui/imgui_impl_sdl2.h>
-#include <renderer/renderer.hpp>
+#include <renderer/descriptors.hpp>
+#include <renderer/facade.hpp>
 #include <util/type_traits.hpp>
 
 namespace VTX::Bench
@@ -26,7 +27,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
+		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Facade * const p_renderer );
 
 		inline bool getEvent( SDL_Event & p_event ) const
 		{
@@ -46,20 +47,19 @@ namespace VTX::Bench
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
 
-		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer, Scene * const p_scene );
+		void _drawMenuBar( Camera * const p_camera, Renderer::Facade * const p_renderer, Scene * const p_scene );
 		void _drawCamera( Camera * const p_camera ) const;
-		void _drawRenderer( Renderer::Renderer * const p_renderer );
-		void _drawDurations( Renderer::Renderer * const p_renderer ) const;
-		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer );
+		void _drawRenderer( Renderer::Facade * const p_renderer );
+		void _drawDurations( Renderer::Facade * const p_renderer ) const;
+		void _drawScene( Scene * const p_scene, Renderer::Facade * const p_renderer );
 		void _drawUniforms() const;
-		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const;
+		void _drawNodeEditor( Renderer::Facade * const p_renderer ) const;
 
 		template<typename T>
 		void _drawWidget(
-			Renderer::Renderer * const		  p_renderer,
+			Renderer::Facade * const		  p_renderer,
 			const Renderer::BufferDataValue & p_uniform,
-			const std::string &				  p_key,
-			const bool						  p_isEditable
+			const std::string &				  p_key
 		) const
 		{
 			using namespace Renderer;
@@ -77,22 +77,30 @@ namespace VTX::Bench
 			if constexpr ( std::is_same<T, bool>::value )
 			{
 				if ( ImGui::Checkbox( p_uniform.name.c_str(), &value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_vec2i<T>::value )
 			{
 				if ( ImGui::InputInt2( p_uniform.name.c_str(), (int *)&value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_vec2f<T>::value )
 			{
 				if ( ImGui::InputFloat2( p_uniform.name.c_str(), (float *)&value ) )
+				{
 					updated = true;
+				}
 			}
 			else if constexpr ( is_color4<T>::value )
 			{
 				if ( ImGui::ColorEdit4( p_uniform.name.c_str(), (float *)( &value ) ) )
+				{
 					updated = true;
+				}
 			}
 			else if ( descValue.minMax.has_value() )
 			{
@@ -101,12 +109,16 @@ namespace VTX::Bench
 				if constexpr ( std::is_integral<T>::value )
 				{
 					if ( ImGui::SliderInt( p_uniform.name.c_str(), (int *)( &value ), minMax.min, minMax.max ) )
+					{
 						updated = true;
+					}
 				}
 				else if constexpr ( std::is_floating_point<T>::value )
 				{
 					if ( ImGui::SliderFloat( p_uniform.name.c_str(), (float *)( &value ), minMax.min, minMax.max ) )
+					{
 						updated = true;
+					}
 				}
 			}
 			else
@@ -114,16 +126,20 @@ namespace VTX::Bench
 				if constexpr ( std::is_integral<T>::value )
 				{
 					if ( ImGui::DragInt( p_uniform.name.c_str(), (int *)( &value ) ) )
+					{
 						updated = true;
+					}
 				}
 				else if constexpr ( std::is_floating_point<T>::value )
 				{
 					if ( ImGui::DragFloat( p_uniform.name.c_str(), (float *)( &value ) ) )
+					{
 						updated = true;
+					}
 				}
 			}
 
-			if ( p_isEditable && updated )
+			if ( updated )
 			{
 				p_renderer->setValue( value, p_key );
 			}

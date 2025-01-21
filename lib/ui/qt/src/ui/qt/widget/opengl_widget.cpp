@@ -1,4 +1,5 @@
 #include "ui/qt/widget/opengl_widget.hpp"
+#include "app/core/renderer/renderer_system.hpp"
 #include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
 
@@ -42,6 +43,10 @@ namespace VTX::UI::QT::Widget
 		// Set context.
 		_context->makeCurrent( _window );
 
+		// Set output.
+		App::RENDERER_SYSTEM().onReady() +=
+			[ this ]() { App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); };
+
 		// Connect signals.
 		APP::onPostRender += [ this ]( const float ) { render(); };
 	}
@@ -65,7 +70,7 @@ namespace VTX::UI::QT::Widget
 		_container->resize( p_event->size() );
 
 		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>(
-			p_event->size().width(), p_event->size().height(), _context->defaultFramebufferObject()
+			p_event->size().width(), p_event->size().height()
 		);
 	}
 

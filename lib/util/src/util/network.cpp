@@ -4,7 +4,7 @@
 namespace VTX::Util::Network
 {
 
-	void httpRequestGet( const std::string & p_url, std::string * const p_data )
+	void httpRequestGet( const std::string_view & p_url, std::string * const p_data )
 	{
 		cpr::Response response = cpr::Get(
 			cpr::Url { p_url },

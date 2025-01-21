@@ -116,16 +116,12 @@ namespace VTX::App::Action::Application
 	class Resize final : public Core::Action::BaseAction
 	{
 	  public:
-		Resize( const size_t p_width, const size_t p_height, const uint p_output = 0 ) :
-			_width( p_width ), _height( p_height ), _output( p_output )
-		{
-		}
+		Resize( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 		void execute() override;
 
 	  private:
 		const size_t _width;
 		const size_t _height;
-		const uint	 _output;
 	};
 
 } // namespace VTX::App::Action::Application

@@ -3,6 +3,8 @@
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/facade.hpp>
+#include <renderer/proxy/representation.hpp>
+#include <renderer/proxy/voxels.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -35,8 +37,8 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		renderer.build();
+		Renderer::Facade renderer( WIDTH, HEIGHT );
+		renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
@@ -57,11 +59,8 @@ int main( int, char ** )
 		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			if ( renderer.hasContext() )
-			{
-				Vec2i ids = renderer.getPickedIds( p_x, p_y );
-				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-			}
+			Vec2i ids = renderer.getPickedIds( p_x, p_y );
+			VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
 		inputManager.onMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };

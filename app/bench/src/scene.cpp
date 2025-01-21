@@ -3,7 +3,7 @@
 #include <core/chemdb/color.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Bench
@@ -62,7 +62,7 @@ namespace VTX::Bench
 	}
 
 	// TODO: remove renderer from here.
-	void Scene::removeAllSystems( Renderer::Renderer * const p_renderer )
+	void Scene::removeAllSystems( Renderer::Facade * const p_renderer )
 	{
 		std::vector<Renderer::Proxy::System *> proxies;
 		for ( auto & proxy : _proxySystems )
@@ -111,8 +111,7 @@ namespace VTX::Bench
 			[ & ] { return Core::ChemDB::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
-		const Core::Struct::Category & categoryPolymer
-			= p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
+		const Core::Struct::Category & categoryPolymer = p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
 		const Core::Struct::Category & categoryCarbohydrate
 			= p_system.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
 

@@ -33,7 +33,7 @@ namespace VTX::App::Core::Network
 	}
 
 	void NetworkSystem::downloadFile(
-		const std::string &	   p_url,
+		const std::string_view p_url,
 		const std::string_view p_filename,
 		std::string * const	   p_data,
 		const bool			   p_overwrite

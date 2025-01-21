@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <renderer/renderer.hpp>
+#include <renderer/facade.hpp>
 #include <util/filesystem.hpp>
 
 TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
@@ -42,9 +42,9 @@ TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
 	using namespace VTX::Renderer;
 	using namespace VTX::Util;
 
-	Renderer renderer( 800, 600, Filesystem::getExecutableDir() / "shaders" );
+	Facade renderer( 800, 600 );
 
-	renderer.build();
+	renderer.setDefault();
 
 	renderer.resize( 1024, 768 );
 	// TODO: test buffer sizes and others things.

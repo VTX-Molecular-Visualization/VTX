@@ -34,7 +34,7 @@ namespace VTX::App::Action::Application
 			}
 		}
 
-		if ( !scenePath.empty() )
+		if ( not scenePath.empty() )
 		{
 			Action::Application::OpenScene openSceneAction = Action::Application::OpenScene( scenePath );
 			openSceneAction.execute();
@@ -57,7 +57,7 @@ namespace VTX::App::Action::Application
 	void Resize::execute()
 	{
 		App::SCENE().getCamera().setScreenSize( _width, _height );
-		App::RENDERER_SYSTEM().resize( _width, _height, _output );
+		App::RENDERER_SYSTEM().resize( _width, _height );
 	}
 
 } // namespace VTX::App::Action::Application

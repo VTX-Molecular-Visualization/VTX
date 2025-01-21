@@ -7,6 +7,7 @@
 #include <imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imnodes/imnodes.h>
+#include <util/enum.hpp>
 #include <util/image.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -26,7 +27,7 @@ namespace VTX::Bench
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Renderer::BUFFER_COUNT == 2 ) );
+		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Facade::getBufferCount() == 2 ) );
 		// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 		// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
@@ -97,7 +98,7 @@ namespace VTX::Bench
 		SDL_Quit();
 	}
 
-	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
+	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Facade * const p_renderer )
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
@@ -131,9 +132,9 @@ namespace VTX::Bench
 	}
 
 	void UserInterface::_drawMenuBar(
-		Camera * const			   p_camera,
-		Renderer::Renderer * const p_renderer,
-		Scene * const			   p_scene
+		Camera * const			 p_camera,
+		Renderer::Facade * const p_renderer,
+		Scene * const			 p_scene
 	)
 	{
 		if ( ImGui::BeginMainMenuBar() )
@@ -147,7 +148,6 @@ namespace VTX::Bench
 
 				ImGui::EndMenu();
 			}
-
 			if ( ImGui::BeginMenu( "Resolution" ) )
 			{
 				if ( ImGui::MenuItem( "800x600" ) )
@@ -227,6 +227,17 @@ namespace VTX::Bench
 
 				ImGui::EndMenu();
 			}
+			if ( ImGui::Button( "Disable" ) )
+			{
+				try
+				{
+					// p_renderer->disableGraphicAPI();
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "{}", e.what() );
+				}
+			}
 
 			ImGui::Checkbox( "UI", &_drawUi );
 			if ( ImGui::Checkbox( "Vsync", &_vsync ) )
@@ -234,9 +245,9 @@ namespace VTX::Bench
 				setVSync( _vsync );
 			}
 
-			ImGui::Checkbox( "Timers", &p_renderer->logDurations );
+			ImGui::Checkbox( "Timers", p_renderer->logDurations );
 
-			ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
+			ImGui::Checkbox( "Force update", p_renderer->forceUpdate );
 
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -297,34 +308,34 @@ namespace VTX::Bench
 		ImGui::End();
 	}
 
-	void UserInterface::_drawRenderer( Renderer::Renderer * const p_renderer )
+	void UserInterface::_drawRenderer( Renderer::Facade * const p_renderer )
 	{
-		if ( ImGui::Begin( "Renderer" ) && p_renderer->hasContext() )
+		if ( ImGui::Begin( "Renderer" ) )
 		{
 			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
-			for ( auto count : p_renderer->drawRangeSpheres.counts )
+			for ( auto count : p_renderer->drawRangeSpheres->counts )
 			{
 				sizeAtoms += count;
 			}
-			for ( auto count : p_renderer->drawRangeCylinders.counts )
+			for ( auto count : p_renderer->drawRangeCylinders->counts )
 			{
 				sizeBonds += count;
 			}
-			for ( auto count : p_renderer->drawRangeRibbons.counts )
+			for ( auto count : p_renderer->drawRangeRibbons->counts )
 			{
 				sizeRibbons += count;
 			}
-			for ( auto count : p_renderer->drawRangeVoxels.counts )
+			for ( auto count : p_renderer->drawRangeVoxels->counts )
 			{
 				sizeVoxels += count;
 			}
 
-			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
-			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
-			ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), &p_renderer->showRibbons );
-			ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), &p_renderer->showVoxels );
+			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), p_renderer->showAtoms );
+			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), p_renderer->showBonds );
+			ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), p_renderer->showRibbons );
+			ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), p_renderer->showVoxels );
 
-			ImGui::Text( fmt::format( "{}x{}", p_renderer->width, p_renderer->height ).c_str() );
+			ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 			const Renderer::StructInfos & infos = p_renderer->getInfos();
@@ -360,7 +371,7 @@ namespace VTX::Bench
 		ImGui::End();
 	}
 
-	void UserInterface::_drawDurations( Renderer::Renderer * const p_renderer ) const
+	void UserInterface::_drawDurations( Renderer::Facade * const p_renderer ) const
 	{
 		using namespace Renderer;
 
@@ -392,7 +403,7 @@ namespace VTX::Bench
 		}
 	}
 
-	void UserInterface::_drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer )
+	void UserInterface::_drawScene( Scene * const p_scene, Renderer::Facade * const p_renderer )
 	{
 		/*
 		static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
@@ -473,10 +484,9 @@ namespace VTX::Bench
 
 	void UserInterface::_drawUniforms() const {}
 
-	void UserInterface::_drawNodeEditor( Renderer::Renderer * const p_renderer ) const
+	void UserInterface::_drawNodeEditor( Renderer::Facade * const p_renderer ) const
 	{
 		using namespace Renderer;
-		auto & graph = p_renderer->getRenderGraph();
 
 		static bool isOpen = true;
 		if ( ImGui::Begin( "Render graph", &isOpen, ImGuiWindowFlags_MenuBar ) )
@@ -488,7 +498,7 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( pass->name.c_str() ) )
 					{
-						graph.addPass( *pass );
+						p_renderer->addPass( *pass );
 					}
 				}
 
@@ -510,7 +520,7 @@ namespace VTX::Bench
 				p_renderer->clean();
 			}
 
-			RenderQueue & renderQueue = graph.getRenderQueue();
+			const RenderQueue & renderQueue = p_renderer->getRenderQueue();
 			for ( const Pass * const pass : renderQueue )
 			{
 				if ( pass != nullptr )
@@ -535,8 +545,6 @@ namespace VTX::Bench
 
 			ImNodes::BeginNodeEditor();
 
-			bool isBuilt = p_renderer->hasContext();
-
 			// DescPass nodes.
 			uint								   id = 0;
 			std::map<const Input * const, uint>	   mapIdInput;
@@ -547,7 +555,7 @@ namespace VTX::Bench
 			std::map<const uint, Link *>		   mapIdDescLink;
 			const Pass *						   passToDelete = nullptr;
 
-			for ( std::unique_ptr<Pass> & pass : graph.getPasses() )
+			for ( const std::unique_ptr<Pass> & pass : p_renderer->getPasses() )
 			{
 				ImNodes::BeginNode( id++ );
 				ImNodes::BeginNodeTitleBar();
@@ -560,8 +568,6 @@ namespace VTX::Bench
 				ImGui::SameLine();
 				ImGui::TextUnformatted( pass->name.c_str() );
 				ImNodes::EndNodeTitleBar();
-
-				bool isInRenderQueue = graph.isInRenderQueue( pass.get() );
 
 				// Inputs.
 				for ( const auto & [ channel, input ] : pass->inputs )
@@ -609,8 +615,7 @@ namespace VTX::Bench
 					// Uniforms.
 					for ( const BufferDataValue & uniform : program.data )
 					{
-						std::string key		   = pass->name + program.name + uniform.name;
-						bool		isEditable = isBuilt && isInRenderQueue;
+						std::string key = pass->name + program.name + uniform.name;
 
 						// ImGui::Text( uniform.name.c_str() );
 						ImGui::SetNextItemWidth( 150 );
@@ -618,57 +623,57 @@ namespace VTX::Bench
 						{
 						case E_TYPE::BOOL:
 						{
-							_drawWidget<bool>( p_renderer, uniform, key, isEditable );
+							_drawWidget<bool>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::BYTE:
 						{
-							_drawWidget<char>( p_renderer, uniform, key, isEditable );
+							_drawWidget<char>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::UBYTE:
 						{
-							_drawWidget<uchar>( p_renderer, uniform, key, isEditable );
+							_drawWidget<uchar>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::SHORT:
 						{
-							_drawWidget<short>( p_renderer, uniform, key, isEditable );
+							_drawWidget<short>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::USHORT:
 						{
-							_drawWidget<ushort>( p_renderer, uniform, key, isEditable );
+							_drawWidget<ushort>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::INT:
 						{
-							_drawWidget<int>( p_renderer, uniform, key, isEditable );
+							_drawWidget<int>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::UINT:
 						{
-							_drawWidget<uint>( p_renderer, uniform, key, isEditable );
+							_drawWidget<uint>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::FLOAT:
 						{
-							_drawWidget<float>( p_renderer, uniform, key, isEditable );
+							_drawWidget<float>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::VEC2I:
 						{
-							_drawWidget<Vec2i>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Vec2i>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::VEC2F:
 						{
-							_drawWidget<Vec2f>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Vec2f>( p_renderer, uniform, key );
 							break;
 						}
 						case E_TYPE::COLOR4:
 						{
-							_drawWidget<Util::Color::Rgba>( p_renderer, uniform, key, isEditable );
+							_drawWidget<Util::Color::Rgba>( p_renderer, uniform, key );
 							break;
 						}
 						default: throw std::runtime_error( "widget not implemented" ); break;
@@ -696,7 +701,7 @@ namespace VTX::Bench
 			ImNodes::PopColorStyle();
 
 			// Links.
-			for ( std::unique_ptr<Link> & link : graph.getLinks() )
+			for ( const std::unique_ptr<Link> & link : p_renderer->getLinks() )
 			{
 				mapIdDescLink.emplace( id, link.get() );
 				ImNodes::Link(
@@ -708,10 +713,10 @@ namespace VTX::Bench
 
 			// Output.
 			uint idFinalDescLink = -1;
-			if ( graph.getOutput() )
+			if ( p_renderer->getOutput() )
 			{
 				idFinalDescLink = id;
-				ImNodes::Link( id++, mapIdOutput[ graph.getOutput() ], idFinalOuput );
+				ImNodes::Link( id++, mapIdOutput[ p_renderer->getOutput() ], idFinalOuput );
 			}
 
 			ImNodes::MiniMap();
@@ -728,7 +733,7 @@ namespace VTX::Bench
 					{
 						if ( it.second == newLinkStartId )
 						{
-							graph.setOutput( it.first );
+							p_renderer->setOutput( it.first );
 						}
 					}
 				}
@@ -736,7 +741,7 @@ namespace VTX::Bench
 				// Add link.
 				else
 				{
-					graph.addLink(
+					p_renderer->addLink(
 						mapIdDescPass[ newLinkStartId ],
 						mapIdDescPass[ newLinkEndtId ],
 						mapIdChannelOutput[ newLinkStartId ],
@@ -752,20 +757,20 @@ namespace VTX::Bench
 				// Output.
 				if ( deletedDescLinkId == idFinalDescLink )
 				{
-					graph.setOutput( nullptr );
+					p_renderer->setOutput( nullptr );
 				}
 
 				// DescLink.
 				else
 				{
-					graph.removeLink( mapIdDescLink[ deletedDescLinkId ] );
+					p_renderer->removeLink( mapIdDescLink[ deletedDescLinkId ] );
 				}
 			}
 
 			// Check deleted node.
 			if ( passToDelete != nullptr )
 			{
-				graph.removePass( passToDelete );
+				p_renderer->removePass( passToDelete );
 				passToDelete = nullptr;
 			}
 		}

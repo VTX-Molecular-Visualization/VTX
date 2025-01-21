@@ -16,7 +16,8 @@ namespace VTX::App
 				APP::init();
 			}
 
-			_app->start( { 0, nullptr } );
+			Args args( { Args::NO_GRAPHICS } );
+			_app->start( args );
 		}
 
 		~Fixture() { _app->stop(); }

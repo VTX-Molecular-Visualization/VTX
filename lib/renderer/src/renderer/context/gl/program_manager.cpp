@@ -23,7 +23,7 @@ namespace VTX::Renderer::Context::GL
 			return ProgramManager::_EXTENSIONS.at( extension );
 		}
 
-		throw GLException( "Invalid extension: " + extension );
+		throw GraphicException( "Invalid extension: " + extension );
 	}
 
 	void ProgramManager::dispose()
@@ -74,7 +74,7 @@ namespace VTX::Renderer::Context::GL
 
 			for ( const FilePath & shader : paths )
 			{
-				GLuint id = _createShader( shader, p_toInject, p_suffix );
+				uint32_t id = _createShader( shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )
 				{
 					program.attachShader( id );
@@ -115,7 +115,7 @@ namespace VTX::Renderer::Context::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader(
+	uint32_t ProgramManager::_createShader(
 		const FilePath &	p_path,
 		const std::string & p_toInject,
 		const std::string & p_suffix
@@ -125,7 +125,7 @@ namespace VTX::Renderer::Context::GL
 
 		const ENUM_SHADER_TYPE type = getShaderType( p_path );
 
-		GLuint shaderId = getShader( name );
+		uint32_t shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			VTX_TRACE( "Creating shader: {}", name );
@@ -168,10 +168,10 @@ namespace VTX::Renderer::Context::GL
 				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
 			}
 
-			const GLchar * shaderCode = src.c_str();
+			const char * shaderCode = src.c_str();
 			glShaderSource( shaderId, 1, &shaderCode, 0 );
 			glCompileShader( shaderId );
-			GLint compiled;
+			int32_t compiled;
 			glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{
@@ -180,7 +180,7 @@ namespace VTX::Renderer::Context::GL
 				error += "\n";
 				error += _getShaderErrors( shaderId );
 				glDeleteShader( shaderId );
-				throw GLException( error );
+				throw GraphicException( error );
 			}
 
 			assert( glIsShader( shaderId ) );
@@ -194,7 +194,7 @@ namespace VTX::Renderer::Context::GL
 		return shaderId;
 	}
 
-	GLuint ProgramManager::getShader( const std::string & p_name ) const
+	uint32_t ProgramManager::getShader( const std::string & p_name ) const
 	{
 		if ( _shaders.find( p_name ) != _shaders.end() )
 		{
@@ -204,15 +204,15 @@ namespace VTX::Renderer::Context::GL
 		return GL_INVALID_INDEX;
 	}
 
-	std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
+	std::string ProgramManager::_getShaderErrors( const uint32_t p_shader )
 	{
-		GLint length;
+		int32_t length;
 		glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
-		std::vector<GLchar> log( length );
+		std::vector<char> log( length );
 		glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
 	}
@@ -237,7 +237,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			for ( const FilePath & shader : pair.second->getShaderPaths() )
 			{
-				GLuint id = _createShader( shader, pair.second->getToInject() );
+				uint32_t id = _createShader( shader, pair.second->getToInject() );
 				if ( id != GL_INVALID_INDEX )
 				{
 					pair.second->attachShader( id );

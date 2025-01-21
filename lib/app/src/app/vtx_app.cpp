@@ -34,9 +34,6 @@ namespace VTX::App
 
 		Settings::initSettings();
 
-		// Init renderer.
-		Core::Renderer::RendererSystem::init( Filesystem::getShadersDir() );
-
 		// Create scene.
 		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
 		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
@@ -57,14 +54,31 @@ namespace VTX::App
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 	}
 
-	void VTXApp::start( const Args & args )
+	void VTXApp::start( const Args & p_args )
 	{
-		VTX_INFO( "Starting application: {}", args.toString() );
+		VTX_INFO( "Starting application: {}", p_args.toString() );
 
-		// TODO: use custom context? (for offline rendering i CLI mode?)
-		// Builid the renderer (graphic api backend context ready).
+		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
-		renderer.build();
+
+		if ( p_args.has( Args::NO_GRAPHICS ) )
+		{
+			VTX_WARNING( "No graphics" );
+			renderer.setDefault();
+		}
+		else
+		{
+			try
+			{
+				renderer.setOpenGL45( Filesystem::getShadersDir() );
+			}
+			catch ( const std::exception & e )
+			{
+				VTX_ERROR( "Failed to build renderer: {}", e.what() );
+				renderer.setDefault();
+				// TODO: exit?
+			}
+		}
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
@@ -77,7 +91,7 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
-		_handleArgs( args );
+		_handleArgs( p_args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
@@ -173,8 +187,9 @@ namespace VTX::App
 
 	void VTXApp::_handleArgs( const Args & args )
 	{
+		/*
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
-		for ( const std::string & arg : args.all() )
+		for ( const auto arg : args.all() )
 		{
 			// If argument is an existing file
 			if ( std::filesystem::exists( arg ) )
@@ -211,7 +226,9 @@ namespace VTX::App
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>( arg, arg + ".pdb" );
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+						arg, std::string( arg ) + ".pdb"
+					);
 				}
 				else
 				{
@@ -223,6 +240,7 @@ namespace VTX::App
 				VTX_WARNING( "Argument '{}' is not valid.", arg );
 			}
 		}
+		*/
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

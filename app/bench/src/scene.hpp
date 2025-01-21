@@ -10,7 +10,7 @@
 
 namespace VTX::Renderer
 {
-	class Renderer;
+	class Facade;
 }
 
 namespace VTX::Bench
@@ -28,7 +28,7 @@ namespace VTX::Bench
 		void					  removeSystem( const size_t p_index );
 
 		// TODO: remove renderer from here.
-		void removeAllSystems( Renderer::Renderer * const p_renderer );
+		void removeAllSystems( Renderer::Facade * const p_renderer );
 
 		inline void update( const float p_deltaTime )
 		{
