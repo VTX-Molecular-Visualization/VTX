@@ -31,6 +31,8 @@ target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Widgets)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
+target_link_libraries(vtx_tool_mdprep PUBLIC EnTT::EnTT)  # TODO : see <lib/python_binding/cmake/library.cmake> for details
+
 #vtx_copy_registered_data(vtx_tool_mdprep)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
@@ -45,12 +47,13 @@ if (NOT DEFINED _VTX_MDPREP_CONAN)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
+	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app_no_opengl)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_renderer_no_opengl)
 else()
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io::vtx_io)
+	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app_no_opengl)
+	# It seems that, for now, adding the link toward these following packages confuses linux linker. Weird.
+	# target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_io::vtx_io)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_renderer::vtx_renderer_no_opengl)
 endif()
@@ -61,6 +64,8 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
+
+target_link_libraries(vtx_tool_mdprep_test PUBLIC EnTT::EnTT)  # TODO : see <lib/python_binding/cmake/library.cmake> for details
 
 include(CTest)
 include(Catch)

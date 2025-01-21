@@ -10,15 +10,15 @@ class VTXAppRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
     default_options = {"shared": False, "fPIC": True, "test": False}
     
-    generators = "CMakeDeps"
+    generators = "CMakeDeps", "CMakeToolchain"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
 
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_renderer/1.0")
-        self.requires("vtx_io/1.0")
-        self.requires("vtx_core/1.0")
+        self.requires("vtx_io/1.0", transitive_libs=True)
+        self.requires("vtx_core/1.0", transitive_libs=True)
         self.requires("entt/3.13.2", transitive_headers=True)
         self.requires("catch2/3.7.1")
         
@@ -32,14 +32,11 @@ class VTXAppRecipe(ConanFile):
         self.cpp.build.components["vtx_app"].libdirs = self.cpp.build.libdirs
         self.cpp.build.components["vtx_app_no_opengl"].libdirs = self.cpp.build.libdirs
         
-    def generate(self):
-        tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders      
-        for r, d in self.dependencies.items(): 
-            self.output.info(f"Requirement {r}")
-            self.output.info(f"Is test {r.is_test} is override {r.override}")
-        tc.generate()    
+    # def generate(self):
+        # tc = CMakeToolchain(self)
+        # dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
+        # tc.cache_variables["DIR_SHADERS"] = dir_shaders
+        # tc.generate()
 
     def build(self):
         cmake = CMake(self)
@@ -55,10 +52,8 @@ class VTXAppRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.components["vtx_app"].libs = ["vtx_app"]
         self.cpp_info.components["vtx_app"].set_property("cmake_target_name", "vtx_app::vtx_app")
-        # self.cpp_info.components["vtx_app"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer", "vtx_core::vtx_core", "vtx_io::vtx_io", "EnTT::EnTT"]
-        
+
         self.cpp_info.components["vtx_app_no_opengl"].libs = ["vtx_app_no_opengl"]
         self.cpp_info.components["vtx_app_no_opengl"].set_property("cmake_target_name", "vtx_app::vtx_app_no_opengl")
-        # self.cpp_info.components["vtx_app_no_opengl"].requires = ["vtx_util::vtx_util", "vtx_renderer::vtx_renderer_no_opengl", "vtx_core::vtx_core", "vtx_io::vtx_io", "EnTT::EnTT"]
-        
+
 
