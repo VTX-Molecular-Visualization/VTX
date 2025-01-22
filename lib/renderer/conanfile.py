@@ -42,8 +42,8 @@ class VTXRendererRecipe(ConanFile):
         cmake.install()
         copy(self, "*.cmake", self.build_folder, self.package_folder)
 
-    def package_info(self):
-        self.cpp_info.libs = ["vtx_renderer"]
+    def package_info(self):    
+        self.cpp_info.libs = ["vtx_renderer"]      
         self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
         self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
         
