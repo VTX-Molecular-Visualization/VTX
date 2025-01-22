@@ -17,22 +17,8 @@ namespace VTX
 
 namespace VTX::PythonBinding
 {
-	const char * vtx_module_name()
-	{
-#ifdef NO_OPENGL
-		return "vtx_python_bin_no_opengl";
-#else
-		return "vtx_python_bin";
-#endif // NO_OPENGL
-	}
+	const char * vtx_module_name() { return "vtx_python_bin"; }
 
-	const char * vtx_initialization_script_name()
-	{
-#ifdef NO_OPENGL
-		return "vtx_module_init_no_opengl.py";
-#else
-		return "vtx_module_init.py";
-#endif // NO_OPENGL
-	}
+	const char * vtx_initialization_script_name() { return "vtx_module_init.py"; }
 
 } // namespace VTX::PythonBinding
