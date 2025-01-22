@@ -11,20 +11,19 @@ find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
-find_package(EnTT CONFIG REQUIRED)
 
 set(_VTX_PYTHON_BINDING_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
-# TMP
-SET(USE_VALGRIND "1")
+# Valgrind
+#SET(USE_VALGRIND "1")
 if (DEFINED USE_VALGRIND)
 	message("VTX - Setting up valgrind ...")
 	find_program( MEMORYCHECK_COMMAND valgrind )
 	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
 	set( MEMORYCHECK_SUPPRESSIONS_FILE ${CMAKE_CURRENT_BINARY_DIR}/valgrind_suppress.txt )
 endif()
-# !TMP
+# !Valgrind
 
 install(TARGETS vtx_python_binding FILE_SET public_headers DESTINATION include)
 install(TARGETS vtx_python_bin)

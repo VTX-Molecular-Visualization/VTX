@@ -3,7 +3,6 @@
 #include "tool/example/widget/my_menu.hpp"
 #include "tool/example/widget/my_tool_bar.hpp"
 #include <QFile>
-#include <app/core/ecs/base_entity.hpp> // TMP : for test purpose
 #include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/inspector.hpp>
 #include <util/logger.hpp>
