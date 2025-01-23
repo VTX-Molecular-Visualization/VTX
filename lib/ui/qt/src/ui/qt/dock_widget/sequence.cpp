@@ -1,6 +1,7 @@
 #include "ui/qt/dock_widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
 #include <QHeaderView>
+#include <QScrollBar>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -23,10 +24,6 @@ namespace VTX::UI::QT::DockWidget
 
 		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
-			return;
-
-			setUpdatesEnabled( false );
-
 			Util::Chrono timer;
 			timer.start();
 
@@ -53,7 +50,7 @@ namespace VTX::UI::QT::DockWidget
 				table->setShowGrid( false );
 				table->verticalHeader()->hide();
 				table->horizontalHeader()->hide();
-				table->setUpdatesEnabled( false );
+				// table->setUpdatesEnabled( false );
 				table->setSortingEnabled( false );
 
 				// Default item.
@@ -115,10 +112,13 @@ namespace VTX::UI::QT::DockWidget
 
 				_systemComponents.emplace( table, &system );
 
-				_layout->addWidget( table );
-			}
+				auto * scrollBar = new QScrollBar( Qt::Horizontal );
+				scrollBar->setRange( 0, int( columnCount ) );
+				scrollBar->setValue( 0 );
 
-			setUpdatesEnabled( true );
+				_layout->addWidget( table );
+				_layout->addWidget( scrollBar );
+			}
 
 			float time = timer.elapsedTime();
 			VTX_ERROR( "Sequence loading duration: {}", Util::String::durationToStr( time ) );

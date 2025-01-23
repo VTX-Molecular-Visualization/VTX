@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_VISIBILLITY__
 
 #include "app/core/action/base_action.hpp"
+#include <app/component/chemistry/system.hpp>
 
 namespace VTX::App::Action::Visibility
 {
