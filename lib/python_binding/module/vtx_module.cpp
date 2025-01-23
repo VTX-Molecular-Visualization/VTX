@@ -18,13 +18,7 @@ namespace VTX
 namespace VTX::PythonBinding
 {
 
-#ifdef NO_OPENGL
-#define VTX_MODULE_NAME vtx_python_bin_no_opengl
-#else
-#define VTX_MODULE_NAME vtx_python_bin
-#endif // NO_OPENGL
-
-	PYBIND11_MODULE( VTX_MODULE_NAME, m )
+	PYBIND11_MODULE( vtx_python_bin, m )
 	{
 		m.doc() = "VTX Python module."; // optional module docstring
 
