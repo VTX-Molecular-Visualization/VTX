@@ -28,9 +28,11 @@ namespace VTX::PythonBinding
 		//	m, "VTXSystem"
 		//);
 		// Class to redirect Python prints
-		pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>(
+		pybind11::class_<LogRedirection /*, std::shared_ptr<LogRedirection>*/>(
 			m, "LogRedirection", pybind11::module_local()
 		)
+			//.def_static( "write", []( const std::string & s ) { VTX_INFO( "{}", s ); } )
+			//.def_static( "flush", []() { LOGGER::flush(); } );
 			.def_static( "write", &LogRedirection::write )
 			.def_static( "flush", &LogRedirection::flush );
 

@@ -64,6 +64,9 @@ target_link_libraries(vtx_python_bin PRIVATE pybind11::embed)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
+# Some Quality Of Life so any modification to the module triggers python test rebuild
+add_dependencies(vtx_python_binding_test vtx_python_bin)
+
 # All other find_package call
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../test/data" "./data")
 vtx_copy_registered_data(vtx_python_binding_test)
