@@ -52,7 +52,9 @@ namespace VTX::App::Component
 			const Hash hash = Util::hash<C>();
 
 			// Not created.
-			assert( _controllers.has<C>() );
+			if ( not _controllers.has<C>() )
+				return;
+
 			assert( _activeCallbacks.contains( hash ) );
 
 			_controllers.remove<C>();

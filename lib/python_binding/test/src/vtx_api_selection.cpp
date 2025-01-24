@@ -1,16 +1,16 @@
 #include "util/app.hpp"
 #include "util/selection.hpp"
 #include <app/application/scene.hpp>
+#include <app/fixture.hpp>
 #include <app/selection/selection_manager.hpp>
 #include <app/selection/system_data.hpp>
-#include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/interpretor.hpp>
 #include <util/math/range_list.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[python][integration][selection]" )
 {
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;

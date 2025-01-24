@@ -14,9 +14,10 @@
 
 namespace VTX
 {
-	PythonBinding::Interpretor * g_TMP = nullptr;
-	PythonBinding::Interpretor & INTERPRETOR() { return *g_TMP; }
-	void						 INTERPRETOR( PythonBinding::Interpretor * _ ) { g_TMP = _; }
+	// PythonBinding::Interpretor * g_TMP = nullptr;
+	Util::Singleton<PythonBinding::Interpretor> g_interpretor;
+	PythonBinding::Interpretor &				INTERPRETOR() { return g_interpretor.get(); }
+	void										INTERPRETOR( PythonBinding::Interpretor * _ ) { /*g_TMP = _;*/ }
 } // namespace VTX
 
 namespace VTX::PythonBinding
@@ -31,9 +32,7 @@ namespace VTX::PythonBinding
 			_vtxModule = pybind11::module_::import( vtx_module_name() );
 
 			// Allow the python "print" function to be funneled into our log system
-			// LogRedirection logger								= LogRedirection();
-			// TODO : Following line currently causing "lost sys.stdout" error
-			// pybind11::module_::import( "sys" ).attr( "stdout" ) = _logger;
+			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
 			pybind11::module_ vtxCoreModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );

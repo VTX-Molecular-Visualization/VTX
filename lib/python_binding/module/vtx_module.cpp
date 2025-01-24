@@ -31,8 +31,8 @@ namespace VTX::PythonBinding
 		pybind11::class_<LogRedirection, std::shared_ptr<LogRedirection>>(
 			m, "LogRedirection", pybind11::module_local()
 		)
-			.def( "write", &LogRedirection::write )
-			.def( "flush", &LogRedirection::flush );
+			.def_static( "write", &LogRedirection::write )
+			.def_static( "flush", &LogRedirection::flush );
 
 		// Core module : Contains some core functions which must be hidden for users
 		pybind11::module_ vtxCoreModule = m.def_submodule( "Core", "VTX Python core functions" );

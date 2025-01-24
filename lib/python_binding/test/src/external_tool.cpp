@@ -16,7 +16,7 @@ std::string src_info( const std::source_location location = std::source_location
 		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
 }
 
-TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[python][integration][external_tool]" )
 {
 	using namespace VTX;
 

@@ -26,7 +26,7 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 	p_interpretor.runCommand( ssCommandRun.str() );
 };
 
-TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[python][integration][interpretor][print]" )
 {
 	using namespace VTX;
 
@@ -69,11 +69,17 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[integration][interpretor]"
 	try
 	{
 		interpretor.runScript( scriptPath );
+		CHECK( true );
 	}
 	catch ( const CommandException & e )
 	{
 		CHECK( false );
-		VTX_INFO( "{}", e.what() );
+		VTX_ERROR( "{}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		CHECK( false );
+		VTX_ERROR( "{}", e.what() );
 	}
 
 	const FilePath badScriptPath = App::Filesystem::getInternalDataDir() / "bad_script_test.py";

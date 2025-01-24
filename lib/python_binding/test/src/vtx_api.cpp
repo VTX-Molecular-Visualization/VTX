@@ -12,7 +12,7 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 {
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
