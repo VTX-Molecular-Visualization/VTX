@@ -61,10 +61,8 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
-        # self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
          
-        self.cpp_info.components["vtx_python_bin"].libs = ["vtx_python_bin"]
-        # self.cpp_info.components["vtx_python_bin"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_bin")
+        self.cpp_info.components["vtx_python_api"].libs = ["vtx_python_api"]
 
         self.cpp_info.components["vtx_python_binding_test"].libs = ["vtx_python_binding_test"] 
   

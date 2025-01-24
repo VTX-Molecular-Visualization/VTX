@@ -7,18 +7,10 @@
 #include <string>
 #include <util/logger.hpp>
 
-namespace VTX
-{
-	// void _init( std::shared_ptr<PythonFixture::Core::System::SystemHandler> p_system )
-	//{
-	//  APP::referenceSystemHandler( p_system );
-	//}
-} // namespace VTX
-
 namespace VTX::PythonBinding
 {
 
-	PYBIND11_MODULE( vtx_python_bin, m )
+	PYBIND11_MODULE( vtx_python_api, m )
 	{
 		m.doc() = "VTX Python module."; // optional module docstring
 
@@ -31,8 +23,6 @@ namespace VTX::PythonBinding
 		pybind11::class_<LogRedirection /*, std::shared_ptr<LogRedirection>*/>(
 			m, "LogRedirection", pybind11::module_local()
 		)
-			//.def_static( "write", []( const std::string & s ) { VTX_INFO( "{}", s ); } )
-			//.def_static( "flush", []() { LOGGER::flush(); } );
 			.def_static( "write", &LogRedirection::write )
 			.def_static( "flush", &LogRedirection::flush );
 
