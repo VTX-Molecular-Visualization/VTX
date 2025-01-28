@@ -23,7 +23,7 @@ namespace VTX::UI::QT::DockWidget
 
 		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
-			return;
+			// return;
 
 			setUpdatesEnabled( false );
 
@@ -53,7 +53,7 @@ namespace VTX::UI::QT::DockWidget
 				table->setShowGrid( false );
 				table->verticalHeader()->hide();
 				table->horizontalHeader()->hide();
-				table->setUpdatesEnabled( false );
+				// table->setUpdatesEnabled( false );
 				table->setSortingEnabled( false );
 
 				// Default item.
@@ -106,7 +106,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					currentChain++;
-					// table->setItem( 0, index, new QTableWidgetItem( chain->getName().c_str() ) );
+					table->setItem( 0, index, new QTableWidgetItem( chain->getName().c_str() ) );
 				}
 
 				table->resizeColumnsToContents();
