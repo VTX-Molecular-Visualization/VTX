@@ -151,6 +151,20 @@ namespace VTX::Renderer::Context
 
 		template<typename T>
 		inline void setSub(
+			const void * p_data,
+			const Key &	 p_key,
+			const size_t p_offset = 0,
+			const size_t p_size	  = 0
+
+		)
+		{
+			size_t size	  = sizeof( T ) * p_size;
+			size_t offset = sizeof( T ) * p_offset;
+			_setSub( p_key, p_data, size, offset );
+		}
+
+		template<typename T>
+		inline void setSub(
 			const std::vector<T> & p_data,
 			const Key &			   p_key,
 			const size_t		   p_offset = 0,

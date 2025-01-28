@@ -272,16 +272,16 @@ namespace VTX::Renderer
 			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
 		};
 
+		// TODO: debug.
 		p_proxy.onAtomSelections +=
 			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_select )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
-			VTX_DEBUG( "=================================== ON ATOM SELECTIONS" );
+
 			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
-				VTX_DEBUG( "=================================== RANGE" );
 				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
 				{
 					cacheSC.flags[ i ] &= ~mask;
@@ -346,8 +346,8 @@ namespace VTX::Renderer
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
-			_context.setSub(
-				cacheSC.flags,
+			_context.setSub<uchar>(
+				cacheSC.flags.data() + offset + p_atomIds.getFirst(),
 				"SpheresCylindersFlags",
 				offset + p_atomIds.getFirst(),
 				p_atomIds.getLast() - p_atomIds.getFirst() + 1
