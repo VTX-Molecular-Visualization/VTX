@@ -10,6 +10,7 @@ find_package(Qt6 CONFIG COMPONENTS Core REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Gui REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Widgets REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS OpenGLWidgets REQUIRED)
+find_package(EnTT CONFIG REQUIRED) # TODO : see <lib/python_binding/cmake/library.cmake> for details
 
 set(_VTX_UI_QT_CONAN " ") # So the right target name can be linked
 include("./cmake/library.cmake")

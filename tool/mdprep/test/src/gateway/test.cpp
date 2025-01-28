@@ -25,17 +25,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 
 	VTX::App::SCENE().reset();
 
-	const char *						  itemName	   = "2QWO";
-	const VTX::FilePath					  systemPath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
+	const char *						itemName   = "2QWO";
+	const VTX::FilePath					systemPath = VTX::App::Filesystem::getInternalDataDir() / "2qwo.nolig.pdb";
 	VTX::App::Action::Scene::LoadSystem loadSystemAction = VTX::App::Action::Scene::LoadSystem( systemPath );
 	loadSystemAction.execute();
 
-	// VTX::App::SCENE().onSceneItemAdded += [ & ]( VTX::App::Component::Scene::SceneItemComponent item )
+	VTX::App::Core::ECS::BaseEntity molEntity = VTX::App::SCENE().getItem( itemName );
+	REQUIRE( VTX::App::ECS_REGISTRY().isValid( molEntity ) );
 	{
-		VTX::App::Core::ECS::BaseEntity molEntity = VTX::App::SCENE().getItem( itemName );
-		REQUIRE( VTX::App::ECS_REGISTRY().isValid( molEntity ) );
-		VTX::App::Component::Chemistry::System & mol
+		VTX::App::Component::Chemistry::System & chemSystem
 			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::System>( molEntity );
-	};
+	}
 	return;
 }

@@ -35,6 +35,9 @@ namespace VTX::Core::Struct
 		Struct::Category &		 getCategory( const ChemDB::Category::TYPE p_categoryType );
 		const Struct::Category & getCategory( const ChemDB::Category::TYPE p_categoryType ) const;
 
+		// Use range list for chain ? residue ?
+		// External wrapper ?
+
 		// Chain data - all indexes are in sync
 		std::vector<std::string> chainNames;
 		/**
@@ -51,6 +54,7 @@ namespace VTX::Core::Struct
 		// Residue data - all indexes are in sync
 		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
 		std::vector<size_t>					 residueChainIndexes;
+
 		/**
 		 * @brief Indexes of the first of the atoms that compose each residues. All atoms with index between vector[N]
 		 * and vector[N+1] are considered part of the residue N
@@ -81,7 +85,7 @@ namespace VTX::Core::Struct
 		// Bond data
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
 		/**
-		 * @brief This vector works by associating atomidx at vector[N] with vector[N+1] where N is even.
+		 * @brief This vector works by associating atomidx at vector[N] with vector[N+1] where N%2==0.
 		 */
 		std::vector<atom_index_t> bondPairAtomIndexes;
 
@@ -92,5 +96,8 @@ namespace VTX::Core::Struct
 		Util::Math::RangeList<atom_index_t> atomSolvents;
 		Util::Math::RangeList<atom_index_t> atomIons;
 	};
+
+	ByteNumber dynamicMemoryUsage( const System & ) noexcept;
+
 } // namespace VTX::Core::Struct
 #endif

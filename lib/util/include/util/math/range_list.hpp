@@ -10,7 +10,10 @@
 
 namespace VTX::Util::Math
 {
-	// Class to describe a list of Range, managing merge and split when items are added / removed
+	/**
+	 * @brief Class to describe a list of Range, managing merge and split when items are added / removed
+	 * @tparam T Listed integer type
+	 */
 	template<std::integral T>
 	class RangeList
 	{
@@ -18,7 +21,9 @@ namespace VTX::Util::Math
 		using RangeIterator		 = typename std::list<Range<T>>::iterator;
 		using RangeConstIterator = typename std::list<Range<T>>::const_iterator;
 
-		// Iterator throw each value of all the ranges
+		/**
+		 * @brief Iterator returns each value of all the ranges
+		 */
 		struct Iterator
 		{
 			using ListIt = typename std::list<Range<T>>::const_iterator;
@@ -28,7 +33,9 @@ namespace VTX::Util::Math
 
 			T operator*() const { return _getRangeIterator(); }
 
-			// Prefix increment
+			/**
+			 * @brief Prefix increment
+			 */
 			Iterator & operator++()
 			{
 				T & rangeIterator = _getRangeIterator();
@@ -46,7 +53,10 @@ namespace VTX::Util::Math
 				return *this;
 			}
 
-			// Postfix increment
+			/**
+			 * @brief Postfix increment
+			 * @param  unused. Here for postfix convention.
+			 */
 			Iterator operator++( int )
 			{
 				Iterator tmp		   = *this;
@@ -95,7 +105,12 @@ namespace VTX::Util::Math
 		};
 
 	  public:
-		// Generate RangeList from any container
+		/**
+		 * @brief Generate RangeList from any container
+		 * @tparam ContainerType Collection of T. Should be deduced from the method variable input
+		 * @param p_container
+		 * @return
+		 */
 		template<ContainerOfType<T> ContainerType>
 		static RangeList<T> fromList( const ContainerType & p_container )
 		{
@@ -396,7 +411,9 @@ namespace VTX::Util::Math
 		void clear() { _ranges.clear(); }
 		bool isEmpty() const { return _ranges.size() == 0; }
 
-		// Return value count (use size to get Range count)
+		/**
+		 * @brief Return number of values held by this instance (use size to get Range count)
+		 */
 		T count() const
 		{
 			T res = 0;
@@ -407,9 +424,14 @@ namespace VTX::Util::Math
 			return res;
 		}
 
-		// Return value count (use size to get Range count)
+		/**
+		 * @brief  Return number of range object currently used. (use size to get Range count)
+		 */
 		size_t rangeCount() const { return _ranges.size(); }
 
+		/**
+		 * @brief Returns the size in bytes taken by this instance. Heap size and stack size are summed up.
+		 */
 		size_t currentSize() const
 		{
 			size_t totalSize = sizeof( RangeList<T> );

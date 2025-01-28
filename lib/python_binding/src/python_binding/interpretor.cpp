@@ -1,32 +1,46 @@
 #include "python_binding/interpretor.hpp"
 #include "python_binding/binder.hpp"
+#include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/log_redirection.hpp"
-#include "python_binding/pytx_module.hpp"
+#include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
+#include <source_location>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
+namespace VTX
+{
+	// PythonBinding::Interpretor * g_TMP = nullptr;
+	Util::Singleton<PythonBinding::Interpretor> g_interpretor;
+	PythonBinding::Interpretor &				INTERPRETOR() { return g_interpretor.get(); }
+	void										INTERPRETOR( PythonBinding::Interpretor * _ ) { /*g_TMP = _;*/ }
+} // namespace VTX
+
 namespace VTX::PythonBinding
 {
+
 	struct Interpretor::Impl
 	{
 	  public:
 		void initializePythonModule()
 		{
-			_vtxModule = pybind11::module_::import( "PyTX" );
+			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
+			_vtxModule = pybind11::module_::import( vtx_module_name() );
 
-			LogRedirection logger								= LogRedirection();
-			pybind11::module_::import( "sys" ).attr( "stdout" ) = logger;
+			// Allow the python "print" function to be funneled into our log system
+			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
-			pybind11::module_ vtxCoreModule = pybind11::module_::import( "PyTX.Core" );
+			pybind11::module_ vtxCoreModule
+				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
 			// vtxCoreModule.attr( "_init" )( APP::getSystemHandlerPtr() );
 
+			// TODO : Manage case where file not found (e.g. user moved it elsewhere)
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
-			FilePath initCommandsFile = initScriptDir / "pytx_init.py";
+			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
 			pybind11::eval_file( initCommandsFile.string() );
 		}
@@ -35,7 +49,7 @@ namespace VTX::PythonBinding
 
 		void applyBinders()
 		{
-			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, "PyTX" );
+			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, vtx_module_name() );
 			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
 
 			for ( const std::unique_ptr<Binder> & binder : _binders )
@@ -46,8 +60,8 @@ namespace VTX::PythonBinding
 
 		void importCommands()
 		{
-			// Import all commands
-			pybind11::exec( "from PyTX.Command import *" );
+			//  Import all commands
+			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
 
 			// Specific imports by binders
 			for ( const std::unique_ptr<Binder> & binder : _binders )
@@ -65,6 +79,7 @@ namespace VTX::PythonBinding
 		}
 
 	  private:
+		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
 		pybind11::module_			 _vtxModule;
 		std::unique_ptr<PyTXModule>	 _pyTXModule = nullptr;
@@ -80,11 +95,16 @@ namespace VTX::PythonBinding
 		}
 		catch ( const std::exception & e )
 		{
-			VTX_ERROR( "{}", e.what() );
+			VTX_ERROR( "{} at {}:", e.what(), std::source_location().file_name(), std::source_location().line() );
 			throw e;
 		}
 	}
-	Interpretor::~Interpretor() {}
+	Interpretor::~Interpretor()
+	{
+		VTX_INFO( "Destroying interpreter ..." );
+		_impl.reset();
+		VTX_INFO( "interpreter destroyed ..." );
+	}
 
 	void Interpretor::init()
 	{
@@ -93,7 +113,7 @@ namespace VTX::PythonBinding
 			_impl->applyBinders();
 			_impl->importCommands();
 		}
-		catch ( const std::exception & e )
+		catch ( std::exception & e )
 		{
 			VTX_ERROR( "{}", e.what() );
 			throw e;
@@ -119,6 +139,11 @@ namespace VTX::PythonBinding
 	{
 		try
 		{
+			// The following line's purpose is to force pybind11 to set the __file__ variable to the path of the new
+			// script being used.
+			if ( pybind11::globals().contains( "__file__" ) )
+				pybind11::globals().attr( "pop" )( "__file__" );
+
 			pybind11::eval_file( p_path.string() );
 		}
 		catch ( const pybind11::error_already_set & e )

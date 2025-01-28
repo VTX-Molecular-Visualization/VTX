@@ -1,4 +1,4 @@
-#include "python_binding/pytx_module.hpp"
+#include "python_binding/vtx_python_module.hpp"
 #include <app/vtx_app.hpp>
 #include <pybind11/pybind11.h>
 

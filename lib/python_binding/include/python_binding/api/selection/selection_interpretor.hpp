@@ -2,13 +2,13 @@
 #define __VTX_PYTHON_API_SELECTION_SELECTION_INTERPRETOR__
 
 #include "_fwd.hpp"
-#include <app/application/selection/selection.hpp>
 #include <app/component/chemistry/_fwd.hpp>
+#include <app/selection/selection.hpp>
 #include <pybind11/pybind11.h>
 
 namespace VTX::PythonBinding::API::Selection
 {
-	using Selection = App::Application::Selection::Selection;
+	using Selection = App::Selection::Selection;
 
 	class SelectionInterpretor
 	{

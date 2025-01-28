@@ -8,8 +8,8 @@ namespace VTX::PythonBinding
 	class LogRedirection
 	{
 	  public:
-		void write( std::string str );
-		void flush();
+		static void write( std::string str );
+		static void flush();
 	};
 
 } // namespace VTX::PythonBinding

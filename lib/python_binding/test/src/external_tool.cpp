@@ -1,18 +1,26 @@
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
 #include <app/filesystem.hpp>
+#include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
+#include <source_location>
 #include <util/logger.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
+std::string src_info( const std::source_location location = std::source_location::current() )
+{
+	return std::string( "[" ) + location.file_name() + '(' + std::to_string( location.line() ) + ':'
+		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
+}
+
+TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[python][integration][external_tool]" )
 {
 	using namespace VTX;
 
-	App::Test::Util::App::initApp();
+	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
@@ -21,51 +29,52 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 
 	interpretor.runCommand( "new_command()" );
 
-	const FilePath						 scriptPath	  = App::Filesystem::getInternalDataDir() / "custom_module.py";
+	const FilePath scriptPath = App::Filesystem::getInternalDataDir() / "custom_module.py";
+	REQUIRE( std::filesystem::exists( scriptPath ) == true );
 	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
 	customModule.displayInfo();
 
-	VTX_INFO( "{}", customModule.runFunction<std::string>( "testStr" ) );
-	VTX_INFO( "{}", customModule.runFunction<std::string>( "testStr", "VTX" ) );
+	VTX_INFO( "<{}> at {}", customModule.runFunction<std::string>( "testStr" ), src_info() );
+	VTX_INFO( "<{}> at {}", customModule.runFunction<std::string>( "testStr", "VTX" ), src_info() );
 
 	try
 	{
 		customModule.runFunction<int>( "iDontExist", "from VTX" );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
 	{
 		customModule.runFunction<int, int>( "testStr", 182, std::pair<std::string, float>( "false signature", 4.f ) );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
 	{
 		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
 	}
-	catch ( const PythonWrapperException exception )
+	catch ( const PythonWrapperException & exception )
 	{
-		VTX_INFO( "Exception managed : {}", exception.what() );
+		VTX_INFO( "Exception managed : <{}> at {}", exception.what(), src_info() );
 	}
-	catch ( const std::exception e )
+	catch ( const std::exception & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
 
 	try
@@ -90,8 +99,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool test", "[integration]" )
 		pythonObj.setMember( "value", 33 );
 		CHECK( pythonObj.getMember<int>( "value" ) == 33 );
 	}
-	catch ( PythonWrapperException e )
+	catch ( PythonWrapperException & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 	}
+	VTX_INFO( "Reached the end of the UT at {}", src_info() );
 };

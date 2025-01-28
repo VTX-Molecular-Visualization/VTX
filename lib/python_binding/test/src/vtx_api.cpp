@@ -1,6 +1,7 @@
 #include "util/app.hpp"
 #include <app/action/scene.hpp>
 #include <app/filesystem.hpp>
+#include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -11,20 +12,18 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 {
 	using namespace VTX;
-
-	App::Test::Util::App::initApp();
-
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	App::Test::Util::PythonFixture f;
+	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
 	interpretor.init();
 
-	const FilePath moleculePath = App::Filesystem::getInternalDataDir() / App::Test::Util::App::MOLECULE_TEST_NAME_EXT;
+	const FilePath systemPath
+		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
 
-	App::Action::Scene::LoadMolecule loadMoleculeAction = App::Action::Scene::LoadMolecule( moleculePath );
-	loadMoleculeAction.execute();
-
+	App::Action::Scene::LoadSystem loadSystemAction = App::Action::Scene::LoadSystem( systemPath );
+	loadSystemAction.execute();
 	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / "test_api.py";
 	std::stringstream ssCommandRun = std::stringstream();
 
@@ -33,4 +32,5 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[integration]" )
 
 	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
 	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
+	// TODO : idk maybe test somethin'
 };
