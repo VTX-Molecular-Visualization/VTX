@@ -269,7 +269,8 @@ namespace VTX::Renderer
 				cacheR.flags[ i ] &= ~mask;
 				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
+
+			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst(), cacheR.range.getCount() );
 		};
 
 		// TODO: debug.
@@ -299,7 +300,15 @@ namespace VTX::Renderer
 			}
 			*/
 
-			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			const size_t offset = cacheSC.rangeSpheres.getFirst();
+
+			_context.setSub(
+				cacheSC.flags,
+				"SpheresCylindersFlags",
+				offset + p_atomIds.getFirst(),
+				p_atomIds.getFirst(),
+				p_atomIds.getLast() - p_atomIds.getFirst() + 1
+			);
 
 			// TODO: ribbons and SES.
 		};
@@ -346,10 +355,11 @@ namespace VTX::Renderer
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
-			_context.setSub<uchar>(
-				cacheSC.flags.data() + offset + p_atomIds.getFirst(),
+			_context.setSub(
+				cacheSC.flags,
 				"SpheresCylindersFlags",
 				offset + p_atomIds.getFirst(),
+				p_atomIds.getFirst(),
 				p_atomIds.getLast() - p_atomIds.getFirst() + 1
 			);
 

@@ -23,7 +23,7 @@ namespace VTX::UI::QT::DockWidget
 
 		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
-			// return;
+			return;
 
 			setUpdatesEnabled( false );
 
