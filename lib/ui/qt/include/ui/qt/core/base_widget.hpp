@@ -51,6 +51,10 @@ namespace VTX::UI::QT::Core
 		{
 			const auto name = VTX::Util::typeName<T>();
 			VTX_TRACE( "UI widget destroyed: {}", name );
+
+			assert( WIDGETS::get().has<T>() );
+
+			WIDGETS::get().remove<T>();
 		}
 
 		/**
