@@ -1,6 +1,7 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
+#include <execution>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
@@ -281,15 +282,19 @@ namespace VTX::Renderer
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
 
+			const auto begin = cacheSC.flags.begin();
 			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
-				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
-				{
-					cacheSC.flags[ i ] &= ~mask;
-					cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+				const uint first = it->getFirst();
+				const uint last	 = it->getLast();
 
-					// VTX_DEBUG( "Select atom: {} -> {}", i, p_select );
-				}
+				std::for_each(
+					std::execution::par_unseq,
+					begin + first,
+					begin + last + 1,
+					[ & ]( uchar & p_flag )
+					{ p_flag = ( p_flag & ~mask ) | ( p_select << E_ELEMENT_FLAGS::SELECTION ); }
+				);
 			}
 
 			/*
@@ -342,15 +347,22 @@ namespace VTX::Renderer
 			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_visible )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
 			uchar					mask	= 1 << E_ELEMENT_FLAGS::VISIBILITY;
 
+			const auto begin = cacheSC.flags.begin();
 			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
-				for ( uint i = it->getFirst(); i <= it->getLast(); ++i )
-				{
-					cacheSC.flags[ i ] &= ~mask;
-					cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
-				}
+				const uint first = it->getFirst();
+				const uint last	 = it->getLast();
+
+				std::for_each(
+					std::execution::par_unseq,
+					begin + first,
+					begin + last + 1,
+					[ & ]( uchar & p_flag )
+					{ p_flag = ( p_flag & ~mask ) | ( p_visible << E_ELEMENT_FLAGS::VISIBILITY ); }
+				);
 			}
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
@@ -366,7 +378,7 @@ namespace VTX::Renderer
 			// TODO: ribbons.
 		};
 
-		// TODO:<
+		// TODO:
 		// onAtomVisibilities
 		// onAtomSelections
 		// onAtomRepresentations
