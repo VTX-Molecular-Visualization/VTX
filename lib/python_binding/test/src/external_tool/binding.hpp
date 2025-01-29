@@ -6,6 +6,7 @@
 
 namespace VTX::Test::ExternalTool
 {
+
 	class Binder : public PythonBinding::Binder
 	{
 	  public:

@@ -12,14 +12,6 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
-namespace VTX
-{
-	// PythonBinding::Interpretor * g_TMP = nullptr;
-	Util::Singleton<PythonBinding::Interpretor> g_interpretor;
-	PythonBinding::Interpretor &				INTERPRETOR() { return g_interpretor.get(); }
-	void										INTERPRETOR( PythonBinding::Interpretor * _ ) { /*g_TMP = _;*/ }
-} // namespace VTX
-
 namespace VTX::PythonBinding
 {
 
@@ -36,12 +28,13 @@ namespace VTX::PythonBinding
 
 			pybind11::module_ vtxCoreModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
-			// vtxCoreModule.attr( "_init" )( APP::getSystemHandlerPtr() );
 
-			// TODO : Manage case where file not found (e.g. user moved it elsewhere)
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
+			// The file should be at the right place but users always find a way ...
+			if ( not std::filesystem::exists( initCommandsFile ) )
+				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
 		}
 

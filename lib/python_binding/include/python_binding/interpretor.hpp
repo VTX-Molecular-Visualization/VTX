@@ -28,6 +28,11 @@ namespace VTX::PythonBinding
 		{
 			addBinder( std::make_unique<BinderType>() );
 		}
+		template<BinderConcept BinderType, typename... BinderArgs>
+		void addBinder( BinderArgs... args )
+		{
+			addBinder( std::make_unique<BinderType>( args... ) );
+		}
 		void clearBinders();
 
 		void			runCommand( const std::string & p_line ) const;
@@ -47,9 +52,7 @@ namespace VTX::PythonBinding
 
 namespace VTX
 {
-	// inline PythonBinding::Interpretor & INTERPRETOR() { return Util::Singleton<PythonBinding::Interpretor>::get(); }
-	PythonBinding::Interpretor & INTERPRETOR();
-	void						 INTERPRETOR( PythonBinding::Interpretor * );
+	inline PythonBinding::Interpretor & INTERPRETOR() { return Util::Singleton<PythonBinding::Interpretor>::get(); }
 
 } // namespace VTX
 
