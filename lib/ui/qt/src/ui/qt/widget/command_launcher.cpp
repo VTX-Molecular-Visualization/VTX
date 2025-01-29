@@ -1,6 +1,6 @@
 #include "ui/qt/widget/command_launcher.hpp"
 // #include "ui/qt/widget/pytx/include_python_binding.hpp"
-
+#include <python_binding/interpretor.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Widget
 		try
 		{
 			VTX_INFO( "CommandLauncher: {}", command );
-			// PythonBinding::INTERPRETOR().runCommand( command );
+			INTERPRETOR().runCommand( command );
 		}
 		catch ( CommandException & p_e )
 		{
@@ -40,17 +40,17 @@ namespace VTX::UI::QT::Widget
 
 	void CommandLauncher::_setupCompleter()
 	{
-		// std::vector<std::string> allCommands = PythonBinding::INTERPRETOR().getModule().commands().getFunctionList();
+		std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
 
 		QStringList strList = QStringList();
 
 		strList.emplaceBack( "resetCamera()" );
 		strList.emplaceBack( "quit()" );
 
-		// for ( const std::string & str : allCommands )
-		//{
-		//	strList.emplaceBack( QString::fromStdString( str ) );
-		// }
+		for ( const std::string & str : allCommands )
+		{
+			strList.emplaceBack( QString::fromStdString( str ) );
+		}
 
 		_completer = new QCompleter( strList, this );
 		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );

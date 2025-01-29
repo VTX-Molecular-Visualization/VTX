@@ -51,8 +51,8 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 endif()
 
-target_link_libraries(vtx_python_binding PRIVATE pybind11::pybind11)
-target_link_libraries(vtx_python_binding PRIVATE pybind11::embed)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::pybind11)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
 
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::embed)
