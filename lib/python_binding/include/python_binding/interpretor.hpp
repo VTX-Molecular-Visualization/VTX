@@ -14,6 +14,9 @@ namespace VTX::PythonBinding
 		class Module;
 	}
 
+	/**
+	 * @brief Wrapper around the python interpretor. Meant to be a singleton.
+	 */
 	class Interpretor
 	{
 	  public:

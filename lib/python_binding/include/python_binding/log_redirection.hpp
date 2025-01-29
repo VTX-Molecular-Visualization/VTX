@@ -5,6 +5,9 @@
 
 namespace VTX::PythonBinding
 {
+	/**
+	 * @brief Class responsible for funneling python print through VTX console.
+	 */
 	class LogRedirection
 	{
 	  public:

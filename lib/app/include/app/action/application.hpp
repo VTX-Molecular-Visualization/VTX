@@ -124,5 +124,43 @@ namespace VTX::App::Action::Application
 		const size_t _height;
 	};
 
+	/**
+	 * @brief Move the camera in a straight line from the current position to the one in arguments
+	 */
+	class MoveCameraPosition final : public Core::Action::BaseAction
+	{
+	  public:
+		inline MoveCameraPosition( float p_x, float p_y, float p_z, float p_travelTime = 1.f ) :
+			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) ),
+			_travelTime( std::move( p_travelTime ) )
+		{
+		}
+		void execute() override;
+
+	  private:
+		float _x		  = 0.f;
+		float _y		  = 0.f;
+		float _z		  = 0.f;
+		float _travelTime = 1.f;
+	};
+
+	/**
+	 * @brief Set the camera position to the target location, effectively "teleporting" the point of view
+	 */
+	class SetCameraPosition final : public Core::Action::BaseAction
+	{
+	  public:
+		inline SetCameraPosition( float p_x, float p_y, float p_z ) :
+			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) )
+		{
+		}
+		void execute() override;
+
+	  private:
+		float _x = 0.f;
+		float _y = 0.f;
+		float _z = 0.f;
+	};
+
 } // namespace VTX::App::Action::Application
 #endif

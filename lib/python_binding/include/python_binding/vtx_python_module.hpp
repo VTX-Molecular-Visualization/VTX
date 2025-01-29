@@ -5,6 +5,9 @@
 
 namespace VTX::PythonBinding
 {
+	/**
+	 * @brief Class responsible for holding VTX python modules declared within the binary
+	 */
 	class PyTXModule final
 	{
 	  public:

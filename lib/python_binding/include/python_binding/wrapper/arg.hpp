@@ -6,6 +6,9 @@
 
 namespace VTX::PythonBinding::Wrapper
 {
+	/**
+	 * @brief Class allowing to declare positional arguments for a python callable
+	 */
 	class Arg
 	{
 	  public:
@@ -18,6 +21,10 @@ namespace VTX::PythonBinding::Wrapper
 		std::string _parameterName;
 	};
 
+	/**
+	 * @brief Class allowing to declare named arguments for a python callable
+	 * @tparam T
+	 */
 	template<typename T>
 	class VArg : public Arg
 	{
