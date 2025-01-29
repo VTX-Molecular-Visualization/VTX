@@ -130,18 +130,17 @@ namespace VTX::App::Action::Application
 	class MoveCameraPosition final : public Core::Action::BaseAction
 	{
 	  public:
-		inline MoveCameraPosition( float p_x, float p_y, float p_z, float p_travelTime = 1.f ) :
-			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) ),
-			_travelTime( std::move( p_travelTime ) )
+		inline MoveCameraPosition( float p_x, float p_y, float p_z, float p_tmp = 1.f ) :
+			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) ), _tmp( std::move( p_tmp ) )
 		{
 		}
 		void execute() override;
 
 	  private:
-		float _x		  = 0.f;
-		float _y		  = 0.f;
-		float _z		  = 0.f;
-		float _travelTime = 1.f;
+		float _x   = 0.f;
+		float _y   = 0.f;
+		float _z   = 0.f;
+		float _tmp = 1.f; // Idk yet if this should be a speed, a movement per frame, an animation time ...
 	};
 
 	/**
