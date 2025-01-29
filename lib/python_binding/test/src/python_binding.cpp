@@ -54,7 +54,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
 		interpretor.runCommand( ssBadCommandOpen.str() );
 		CHECK( false );
 	}
-	catch ( const CommandException & e )
+	catch ( const CommandException & )
 	{
 		CHECK( true );
 	}
@@ -89,7 +89,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
 		interpretor.runScript( badScriptPath );
 		CHECK( false );
 	}
-	catch ( const ScriptException & e )
+	catch ( const ScriptException & )
 	{
 		CHECK( true );
 	}
