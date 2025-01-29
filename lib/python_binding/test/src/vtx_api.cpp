@@ -12,6 +12,8 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
+// TODO : So far we test whether the commands crash or not. Once the actual command effect is plugged back, we should
+// check their result as well.
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 {
 	using namespace VTX;
@@ -28,9 +30,36 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 	std::stringstream ssCommandRun = std::stringstream();
 
 	ssCommandRun << "runScript(" << scriptPath << " )";
-	interpretor.runCommand( ssCommandRun.str() );
+	try
+	{
+		interpretor.runCommand( ssCommandRun.str() );
+		CHECK( true );
+	}
+	catch ( std::exception & e )
+	{
+		VTX_ERROR( "Exception catched : <{}>", e.what() );
+		CHECK( false );
+	}
 
-	interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
-	interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
-	// TODO : idk maybe test somethin'
+	try
+	{
+		interpretor.runCommand( "countAtoms( select( mol_n='1AGA' ) )" );
+		CHECK( true );
+	}
+	catch ( std::exception & e )
+	{
+		VTX_ERROR( "Exception catched : <{}>", e.what() );
+		CHECK( false );
+	}
+
+	try
+	{
+		interpretor.runCommand( "countAtoms( select( mol_n={'1AGA', '1AGA', '8ODO'} ) )" );
+		CHECK( true );
+	}
+	catch ( std::exception & e )
+	{
+		VTX_ERROR( "Exception catched : <{}>", e.what() );
+		CHECK( false );
+	}
 };
