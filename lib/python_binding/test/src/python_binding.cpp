@@ -26,7 +26,7 @@ void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Inte
 	p_interpretor.runCommand( ssCommandRun.str() );
 };
 
-TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[python][integration][interpretor][print]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
 {
 	using namespace VTX;
 
@@ -52,11 +52,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[python][integration][inter
 		std::stringstream ssBadCommandOpen = std::stringstream();
 		ssBadCommandOpen << "openFile( tirelipimpon=" << systemPath << " )";
 		interpretor.runCommand( ssBadCommandOpen.str() );
+		CHECK( false );
 	}
-	catch ( const CommandException & e )
+	catch ( const CommandException & )
 	{
 		CHECK( true );
-		VTX_INFO( "CommandException : {}", e.what() );
 	}
 	catch ( const std::exception & e )
 	{
@@ -87,11 +87,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[python][integration][inter
 	try
 	{
 		interpretor.runScript( badScriptPath );
+		CHECK( false );
 	}
-	catch ( const ScriptException & e )
+	catch ( const ScriptException & )
 	{
 		CHECK( true );
-		VTX_INFO( "{}", e.what() );
 	}
 	catch ( const std::exception & e )
 	{
@@ -102,7 +102,21 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor test", "[python][integration][inter
 	std::stringstream ssCommandRun = std::stringstream();
 	ssCommandRun << "runScript(" << scriptPath << " )";
 
-	interpretor.runCommand( ssCommandRun.str() );
+	try
+	{
+		interpretor.runCommand( ssCommandRun.str() );
+		CHECK( true );
+	}
+	catch ( const ScriptException & e )
+	{
+		CHECK( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		REQUIRE( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
 
 	return; // TODO : put these bellow back once the serialization is up and running
 
