@@ -14,9 +14,11 @@ namespace VTX::UI::QT::Widget
 		CommandLauncher( QWidget * p_parent );
 
 	  private:
+		void _updateCompleter();
 		void _setupCompleter();
 		void _launchCommand();
 
+		bool				 _completerUpdated = false;
 		QPointer<QCompleter> _completer;
 	};
 } // namespace VTX::UI::QT::Widget

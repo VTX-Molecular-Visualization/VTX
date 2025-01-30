@@ -1,6 +1,6 @@
-#include "ui/qt/widget/command_launcher.hpp"
-// #include "ui/qt/widget/pytx/include_python_binding.hpp"
 #include <python_binding/interpretor.hpp>
+// pybind MUST be included before any QT because of macro shenanigans
+#include "ui/qt/widget/command_launcher.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -12,6 +12,7 @@ namespace VTX::UI::QT::Widget
 		setCompleter( _completer );
 		setClearButtonEnabled( true );
 
+		connect( this, &QLineEdit::textChanged, this, &CommandLauncher::_updateCompleter );
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
 	}
 
@@ -38,19 +39,35 @@ namespace VTX::UI::QT::Widget
 		clear();
 	}
 
-	void CommandLauncher::_setupCompleter()
+	void CommandLauncher::_updateCompleter()
 	{
+		if ( _completerUpdated )
+			return;
+
+		_completerUpdated					 = true;
 		std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
 
-		QStringList strList = QStringList();
+		QStringList strList;
 
 		strList.emplaceBack( "resetCamera()" );
 		strList.emplaceBack( "quit()" );
 
-		for ( const std::string & str : allCommands )
-		{
-			strList.emplaceBack( QString::fromStdString( str ) );
-		}
+		for ( auto & it_cmd : allCommands )
+			strList.emplaceBack();
+
+		_completer = new QCompleter( strList, this );
+		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
+		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
+		setCompleter( _completer );
+	}
+	void CommandLauncher::_setupCompleter()
+	{
+		// This method wont be looking for the list of available functions as they are unavailable when the
+		// command_launcher is created
+		QStringList strList = QStringList();
+
+		strList.emplaceBack( "resetCamera()" );
+		strList.emplaceBack( "quit()" );
 
 		_completer = new QCompleter( strList, this );
 		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
