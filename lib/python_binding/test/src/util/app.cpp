@@ -14,7 +14,6 @@ namespace VTX::App::Test::Util
 {
 	PythonFixture::PythonFixture()
 	{
-		// INTERPRETOR( &iiii );
 		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 		INTERPRETOR().init();
 
@@ -27,13 +26,12 @@ namespace VTX::App::Test::Util
 	PythonFixture::~PythonFixture()
 	{
 		resetInterpretor();
-		// INTERPRETOR( nullptr );
 		//  SCENE().reset();
 	}
 	void PythonFixture::resetInterpretor()
 	{
 		INTERPRETOR().clearBinders();
-		// INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
 	void PythonFixture::loadSystem( const std::string & p_systemPath )
