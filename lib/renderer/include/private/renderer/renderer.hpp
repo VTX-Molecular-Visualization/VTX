@@ -63,26 +63,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Set the current graphic API context.
 		 */
-		template<E_GRAPHIC_API API, typename... Args>
+		template<Context::ConceptContextImpl C, typename... Args>
 		void set( Args &&... p_args )
 		{
-			bool isFirstBuild;
-
-			// Static map enum to context type.
-			if constexpr ( API == E_GRAPHIC_API::DEFAULT )
-			{
-				isFirstBuild = not _context.hasContext<Context::Default>();
-				_context.set<Context::Default>( _width, _height, std::forward<Args>( p_args )... );
-			}
-			else if constexpr ( API == E_GRAPHIC_API::OPENGL45 )
-			{
-				isFirstBuild = not _context.hasContext<Context::OpenGL45>();
-				_context.set<Context::OpenGL45>( _width, _height, std::forward<Args>( p_args )... );
-			}
-			else
-			{
-				static_assert( std::is_same_v<API, void>, "Unknown graphic API." );
-			}
+			const bool isFirstBuild = not _context.hasContext<C>();
+			_context.set<C>( _width, _height, std::forward<Args>( p_args )... );
 
 			build();
 

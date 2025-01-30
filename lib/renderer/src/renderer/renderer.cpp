@@ -274,7 +274,9 @@ namespace VTX::Renderer
 			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst(), cacheR.range.getCount() );
 		};
 
-		// TODO: debug.
+		// TODO:
+		// - compare with map/unmap
+		// - compare with ssbo/compute shader
 		p_proxy.onAtomSelections +=
 			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_select )
 		{
@@ -343,6 +345,7 @@ namespace VTX::Renderer
 			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
 		};
 
+		// TODO: threshold to switch between multiple draw calls and single draw call.
 		p_proxy.onAtomVisibilities +=
 			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_visible )
 		{

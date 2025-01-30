@@ -20,11 +20,11 @@ namespace VTX::Renderer
 		drawRangeVoxels	   = &_renderer->drawRangeVoxels;
 	}
 
-	void Facade::setDefault() { _renderer->set<E_GRAPHIC_API::DEFAULT>(); }
+	void Facade::setDefault() { _renderer->set<Context::Default>(); }
 
 	void Facade::setOpenGL45( const FilePath & p_shaderPath, void * p_loader )
 	{
-		_renderer->set<E_GRAPHIC_API::OPENGL45>( p_shaderPath, p_loader );
+		_renderer->set<Context::OpenGL45>( p_shaderPath, p_loader );
 	}
 
 	void Facade::resize( const size_t p_width, const size_t p_height ) { _renderer->resize( p_width, p_height ); }
