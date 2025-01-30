@@ -2,17 +2,12 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_TRAJECTORY__
 
 #include "_fwd.hpp"
-<<<<<<< HEAD
+#include "app/component/chemistry/system.hpp"
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/core/player/base_player.hpp"
-=======
-#include "app/application/system/ecs_system.hpp"
-#include "app/component/chemistry/system.hpp"
 #include "app/core/player/concepts.hpp"
 #include "app/vtx_app.hpp"
->>>>>>> 26994d949 (Refacto player usages)
 #include "enum_trajectory.hpp"
-#include <core/struct/frame_data_simple.hpp>
 #include <util/callback.hpp>
 
 namespace VTX::App::Component::Chemistry
@@ -31,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 
 		size_t getFrameCount() const;
 
-		Core::Player::BasePlayer & getPlayer() const { return *_player.get(); }
+		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
 
 		template<Core::Player::ConceptPlayer P>
 		void setPlayer()
@@ -72,8 +67,9 @@ namespace VTX::App::Component::Chemistry
 	  private:
 		void _referenceUpdateFunction();
 
-		System *						_systemPtr = nullptr;
-		App::Core::Player::BasePlayer * _player	   = nullptr;	
+		System *								  _systemPtr = nullptr;
+		std::unique_ptr<Core::Player::BasePlayer> _player;
+		Util::CallbackId						  _currentUpdateCallback;
 
 		const FilePath _path;
 	};

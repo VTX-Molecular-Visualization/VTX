@@ -5,11 +5,8 @@
 #include <QPointer>
 #include <QTreeWidget>
 #include <app/component/chemistry/system.hpp>
-<<<<<<< HEAD
-=======
-#include <app/component/scene/scene_item_component.hpp>
-#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
->>>>>>> 7aa3af127 (move players from inspector dockpanel to scene dockpanel + use as little space as possible by player + add horizontal line separator after players zone in scene)
+/*#include <app/component/scene/scene_item_component.hpp>
+*/
 
 namespace VTX::UI::QT::DockWidget
 {

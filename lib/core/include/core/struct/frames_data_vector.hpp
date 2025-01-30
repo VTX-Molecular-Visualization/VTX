@@ -20,6 +20,9 @@ namespace VTX::Core::Struct
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), _framesVector[ p_systemFrameIndex ].begin() );
 		}
 
+		// dynamicMemoryUsage requirement
+		const std::vector<Frame> & getFramesVector() const { return _framesVector; }
+
 		const Frame & getCurrentFrame() const { return _framesVector[ _currentFrameIndex ]; }
 		Frame &		  getCurrentFrame() { return _framesVector[ _currentFrameIndex ]; }
 

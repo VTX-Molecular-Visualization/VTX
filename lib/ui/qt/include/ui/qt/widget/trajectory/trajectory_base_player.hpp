@@ -9,7 +9,6 @@
 #include <QPushButton>
 #include <QSlider>
 #include <app/action/trajectory.hpp>
-#include <ui/qt/base_widget.hpp>
 
 namespace VTX::UI::QT::Widget
 {

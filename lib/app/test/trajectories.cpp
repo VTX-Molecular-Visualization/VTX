@@ -30,8 +30,6 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	const size_t frameCount1NIM = 25;
 
-	App::Core::Player::BasePlayer * playmode = nullptr;
-
 	SECTION( "Stop playmode" )
 	{
 		trajectoryComponent.setPlayer<App::Core::Player::Stop>();

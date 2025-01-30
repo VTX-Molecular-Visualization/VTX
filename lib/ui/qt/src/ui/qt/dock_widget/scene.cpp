@@ -6,6 +6,7 @@
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/scene/scene_item_component.hpp>
+#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -20,10 +21,10 @@ namespace VTX::UI::QT::DockWidget
 		topLineSeparator->setFrameShape( QFrame::HLine );
 		topLineSeparator->setFrameShadow( QFrame::Plain );
 		_layout->addWidget( topLineSeparator );
-		
+
 		auto * trajManager = new Widget::TrajectoryManager( this );
 		_layout->addWidget( trajManager );
-		
+
 		// add an horizontal line as separator
 		auto * bottomLineSeparator = new QFrame( this );
 		bottomLineSeparator->setFrameShape( QFrame::HLine );

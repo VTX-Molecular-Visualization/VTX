@@ -22,53 +22,11 @@ namespace VTX::App::Component::Chemistry
 		_systemPtr->getTrajectory().setCurrentFrameIndex( p_frameIndex );
 	}
 
-	size_t Trajectory::getFrameCount() const
-	{
-		return _systemPtr->getTrajectory().GetFrameCount();
-	}
-
-	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
-	{
-		const bool resetPlayer = _player == nullptr;
-
-		// FIXME devjla to be reviewed, clearing the callbacks was done systematically resulting in entity callback subscription lost
-		if (resetPlayer)
-			onFrameChange.clear();
-
-		_player = p_player;
-		_player->setCount( _systemPtr->getTrajectory().GetFrameCount() );
-
-		/* _player->onFrameChange += [ this ]( const size_t p_frameIndex )
-		{
-			_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex;
-			onFrameChange( p_frameIndex );
-		};*/
-		_player->onFrameChange += [ this ]( const VTX::Core::Struct::Frame & p_frame )
-		{
-			//_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex; currently done in player
-			onFrameChange( p_frame );
-		};
-
-		if ( resetPlayer )
-		{
-			_player->reset();
-		}
-	}
-
-	void Trajectory::_update( const float p_deltaTime )
-	{
-		if ( _player != nullptr )
-		{
-			_player->update( p_deltaTime );
-		}
-	}
+	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().getFrameCount(); }
 
 	void Trajectory::_referenceUpdateFunction()
 	{
 		auto & updatable = ECS_REGISTRY().getComponent<Component::Scene::Updatable>( *this );
-		updatable.addUpdateFunction( [ this ]( const float p_deltaTime, const float ) { _update( p_deltaTime ); } );
 	}
-	
-	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().getFrameCount(); }
 
 } // namespace VTX::App::Component::Chemistry

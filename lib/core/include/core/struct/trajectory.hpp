@@ -82,6 +82,10 @@ namespace VTX::Core::Struct
 			}
 		}
 
+		// dynamicMemoryUsage requirement
+		// needs refacto to handle circular buffers
+		const FramesDataVector & getFramesPlain() const { return _framesPlain; }
+
 		const Frame & getCurrentFrame() const
 		{
 			if ( _isOptimized )

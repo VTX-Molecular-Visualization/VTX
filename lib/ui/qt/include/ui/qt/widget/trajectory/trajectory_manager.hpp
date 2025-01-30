@@ -5,7 +5,6 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <app/application/scene.hpp>
-#include <ui/qt/base_widget.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 #include <ui/qt/widget/trajectory/trajectory_legacy_player.hpp>
 #include <ui/qt/widget/trajectory/trajectory_optimized_player.hpp>

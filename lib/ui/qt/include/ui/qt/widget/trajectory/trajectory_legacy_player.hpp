@@ -1,10 +1,8 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 
-#include "app/application/system/ecs_system.hpp"
 #include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <ui/qt/base_widget.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 ////////
 #include <app/core/player/loop.hpp>

@@ -9,7 +9,7 @@
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
-#include "app/component/scene/updatable.hpp"
+// #include "app/component/scene/updatable.hpp"
 #include "app/core/player/circular_buffer.hpp"
 #include "app/core/player/loop.hpp"
 #include "app/core/renderer/renderer_system.hpp"
@@ -20,7 +20,6 @@
 #include "app/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
-#include <util/logger.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity
@@ -44,6 +43,7 @@ namespace VTX::App::Entity
 		// Load system.
 		IO::Reader::System		  loader;
 		VTX::Core::Struct::System systemStruct;
+		// systemStruct.trajectory.setOptimized();
 
 		if ( _buffer ) // From buffer.
 		{
@@ -128,9 +128,7 @@ namespace VTX::App::Entity
 
 						if ( atomPtr != nullptr )
 						{
-							molData.set(
-								Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
-							);
+							molData.set( Selection::SystemGranularity::getSelectionData( *atomPtr, granularity ) );
 						}
 					}
 					else if ( system.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
@@ -141,9 +139,7 @@ namespace VTX::App::Entity
 
 						if ( residuePtr != nullptr )
 						{
-							molData.set(
-								Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
-							);
+							molData.set( Selection::SystemGranularity::getSelectionData( *residuePtr, granularity ) );
 						}
 					}
 				}
@@ -160,13 +156,10 @@ namespace VTX::App::Entity
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Selection::SystemGranularity::getSelectionData(
-								*firstAtomPtr, granularity
-							) );
+							molData.set( Selection::SystemGranularity::getSelectionData( *firstAtomPtr, granularity ) );
 
-							molData.add( Selection::SystemGranularity::getSelectionData(
-								*secondAtomPtr, granularity
-							) );
+							molData.add( Selection::SystemGranularity::getSelectionData( *secondAtomPtr, granularity )
+							);
 						}
 					}
 				}
