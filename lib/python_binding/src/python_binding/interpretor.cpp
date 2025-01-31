@@ -21,7 +21,6 @@ namespace VTX::PythonBinding
 		void initializePythonModule()
 		{
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
-			_vtxModule = pybind11::module_::import( vtx_module_name() );
 
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
@@ -42,9 +41,6 @@ namespace VTX::PythonBinding
 
 		void applyBinders()
 		{
-			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, vtx_module_name() );
-			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
-
 			for ( const std::unique_ptr<Binder> & binder : _binders )
 			{
 				binder->bind( *_pyTXModule );
@@ -74,8 +70,10 @@ namespace VTX::PythonBinding
 	  private:
 		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
-		pybind11::module_			 _vtxModule;
-		std::unique_ptr<PyTXModule>	 _pyTXModule = nullptr;
+		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
+
+		std::unique_ptr<PyTXModule> _pyTXModule
+			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
 		std::vector<std::unique_ptr<Binder>> _binders = std::vector<std::unique_ptr<Binder>>();
 	};
