@@ -18,7 +18,7 @@ namespace VTX::PythonBinding
 	struct Interpretor::Impl
 	{
 	  public:
-		void initializePythonModule()
+		Impl()
 		{
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
 
@@ -78,24 +78,8 @@ namespace VTX::PythonBinding
 		std::vector<std::unique_ptr<Binder>> _binders = std::vector<std::unique_ptr<Binder>>();
 	};
 
-	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() )
-	{
-		try
-		{
-			_impl->initializePythonModule();
-		}
-		catch ( const std::exception & e )
-		{
-			VTX_ERROR( "{} at {}:", e.what(), std::source_location().file_name(), std::source_location().line() );
-			throw e;
-		}
-	}
-	Interpretor::~Interpretor()
-	{
-		VTX_INFO( "Destroying interpreter ..." );
-		_impl.reset();
-		VTX_INFO( "interpreter destroyed ..." );
-	}
+	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
+	Interpretor::~Interpretor() { _impl.reset(); }
 
 	void Interpretor::init()
 	{
