@@ -27,7 +27,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 
 	Test::ExternalTool::Action::ToolAction::reset();
 	interpretor.addBinder<VTX::Test::ExternalTool::Binder>();
-	interpretor.init();
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == false );
 
 	Test::ExternalTool::Action::ToolAction::reset();

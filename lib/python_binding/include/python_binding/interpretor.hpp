@@ -23,7 +23,6 @@ namespace VTX::PythonBinding
 		Interpretor();
 		~Interpretor();
 
-		void init();
 		void addBinder( std::unique_ptr<Binder> p_binder );
 
 		template<BinderConcept BinderType>

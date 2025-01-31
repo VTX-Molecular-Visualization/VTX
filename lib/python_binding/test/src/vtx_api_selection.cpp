@@ -19,7 +19,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[python][integration
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
-	interpretor.init();
 
 	App::Test::Util::PythonFixture::loadSystem( "1AGA.mmtf" );
 	App::Test::Util::PythonFixture::loadSystem( "4HHB.pdb" );

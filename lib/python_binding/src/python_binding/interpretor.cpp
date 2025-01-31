@@ -47,10 +47,6 @@ namespace VTX::PythonBinding
 			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
 		}
 
-		void applyBinders() {}
-
-		void importCommands() {}
-
 		PyTXModule & getPyTXModule() { return *_pyTXModule; }
 
 		void clearBinders()
@@ -72,20 +68,6 @@ namespace VTX::PythonBinding
 
 	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
 	Interpretor::~Interpretor() { _impl.reset(); }
-
-	void Interpretor::init()
-	{
-		try
-		{
-			_impl->applyBinders();
-			_impl->importCommands();
-		}
-		catch ( std::exception & e )
-		{
-			VTX_ERROR( "{}", e.what() );
-			throw e;
-		}
-	}
 
 	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
 	void Interpretor::clearBinders() { _impl->clearBinders(); }

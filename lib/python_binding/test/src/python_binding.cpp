@@ -152,7 +152,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
-	interpretor.init();
 
 	const FilePath systemPath
 		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
