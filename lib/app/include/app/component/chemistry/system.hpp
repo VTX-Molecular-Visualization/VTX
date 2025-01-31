@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 		~System();
 
 		const VTX::Core::Struct::System & getSystemStruct() const { return _systemStruct; };
-		VTX::Core::Struct::System & getSystemStruct() { return _systemStruct; };
+		VTX::Core::Struct::System &		  getSystemStruct() { return _systemStruct; };
 		void							  setSystemStruct( VTX::Core::Struct::System & p_systemStruct );
 
 		void		  initChains( const size_t p_chainCount );
@@ -66,15 +66,7 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getName() const { return _systemStruct.name; }
 		void				setName( const std::string & p_name );
 
-		// devjla
-		// bool							hasTrajectory() { return _systemStruct.trajectory.frames.size() >= 2; }
-		bool hasTrajectory()
-		{
-			/* VTX::Core::Struct::Frame tmpFrame;
-			_systemStruct.trajectory.getCurrentFrame(tmpFrame);
-			return tmpFrame.size() >= 2;*/
-			return _systemStruct.trajectory.getCurrentFrame().size() >= 1;
-		}
+		bool hasTrajectory() { return _systemStruct.trajectory.getCurrentFrame().size() >= 1; }
 		VTX::Core::Struct::Trajectory & getTrajectory() { return _systemStruct.trajectory; }
 
 		const Util::Math::Transform & getTransform() const { return _transform; }
@@ -116,8 +108,7 @@ namespace VTX::App::Component::Chemistry
 		Util::Callback<>													 onStruct;
 		Util::Callback<AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
 		Util::Callback<AtomIndexRangeList>									 onAtomRemoved;
-		// devjla
-		Util::Callback<> onTrajectoryAdded;
+		Util::Callback<>													 onTrajectoryAdded;
 
 	  private:
 		void _deleteTopologyPointers( const atom_index_t p_atomIndex );

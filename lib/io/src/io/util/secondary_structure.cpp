@@ -9,15 +9,6 @@ namespace VTX::IO::Util::SecondaryStructure
 	{
 		using namespace VTX::Util;
 
-		// devjla
-		// const Core::Struct::Frame & positions = p_system.trajectory.getCurrentFrame();
-		/*Core::Struct::Frame positions { { FLOAT_MAX, FLOAT_MAX, FLOAT_MAX } };
-		if ( !p_system.trajectory.getCurrentFrame( positions ) )
-		{
-			// FIXME ouch
-			VTX_ERROR( "DEVJLA current frame issue" );
-			return;
-		}*/
 		const Core::Struct::Frame & positions = p_system.trajectory.getCurrentFrame();
 
 		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_system.residueSecondaryStructureTypes;

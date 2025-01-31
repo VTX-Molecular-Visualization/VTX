@@ -10,14 +10,23 @@ namespace VTX::Core::Struct
 {
 	using Frame = std::vector<Vec3f>;
 
+	/**
+	 * @brief Queue holder to provide a simple lifo structure.
+	 * Frames stored to be displayed to the user.
+	 */
 	class FramesToRender final
 	{
 	  public:
 		FramesToRender() {}
-		// adding copy ctor because of mutex and integration in base player, not sure where to go from now FIXME
+		/**
+		 * @brief Copy ctor explicit because of a mutex in the member section.
+		 */
 		FramesToRender( const FramesToRender & p_source ) { _framesToRender = p_source._framesToRender; }
 		~FramesToRender() {}
 
+		/**
+		 * @brief Adds the Frame element to the queue
+		 */
 		void addElement( const Frame & elem )
 		{
 			if ( 0 == elem.size() )
@@ -26,22 +35,9 @@ namespace VTX::Core::Struct
 			VTX_INFO( "ADD _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.push( elem );
 		}
-		void removeElement( Frame & elem )
-		{
-			if ( _framesToRender.empty() )
-				return;
-			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			assert( _framesToRender.front() == elem );
-			_framesToRender.pop();
-		}
-		bool readElement( Frame & elem )
-		{
-			if ( _framesToRender.empty() )
-				return false;
-			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			elem = _framesToRender.front();
-			return true;
-		}
+		/**
+		 * @brief Get the next Frame element in the queue
+		 */
 		bool getCopyFrame( Frame & frame ) // returning a copy intentionnaly
 		{
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
@@ -51,6 +47,9 @@ namespace VTX::Core::Struct
 			_testindex = ( _testindex + 1 ) % _testMaxIndex;
 			return true;
 		}
+		/**
+		 * @brief Empty the queue
+		 */
 		void flush( void )
 		{
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
@@ -68,6 +67,9 @@ namespace VTX::Core::Struct
 		size_t			  _testMaxIndex = 0;
 		size_t			  _testindex	= 0;
 
+		/**
+		 * @brief Removes the input Frame ensuring it is the current front element.
+		 */
 		void removeCopyElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )
@@ -76,7 +78,9 @@ namespace VTX::Core::Struct
 			VTX_INFO( "REMOVE _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.pop();
 		}
-		// Frame ReadCopyElement( void ) // returning a copy intentionnaly
+		/**
+		 * @brief Get the current front element ensuring the queue is not empty.
+		 */
 		bool readCopyElement( Frame & elem )
 		{
 			if ( _framesToRender.empty() )

@@ -1,26 +1,26 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <core/struct/circular_buffer_prodcons.hpp>
 #include <core/struct/system.hpp>
+#include <fstream>
 #include <io/reader/system.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/network.hpp>
-#include <core/struct/frame_data.hpp>
-#include <fstream>
 
 TEST_CASE( "VTX_IO - Test filepath", "[integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string systemName	   = "8OIT";
+	const std::string systemName	 = "8OIT";
 	const std::string systemPathname = systemName + ".mmtf";
-	const FilePath	  systemPath	   = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
+	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
 	VTX_INFO( "Test on {}", systemName );
 
-	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
 	IO::Reader::System		  systemReader = IO::Reader::System();
 
 	systemReader.readFile( systemPath, system );
@@ -45,7 +45,7 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 
 	VTX_INFO( "Test on {}", url );
 
-	VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
 	IO::Reader::System		  systemReader = IO::Reader::System();
 
 	systemReader.readBuffer( data, "4hhb.mmtf", system );
@@ -61,24 +61,22 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 	using namespace VTX;
 	using namespace VTX::IO;
 
-	const std::string systemName	   = "8OIT";
+	const std::string systemName	 = "8OIT";
 	const std::string systemPathname = systemName + ".mmtf";
-	const FilePath	  systemPath	   = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
+	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
 	VTX_INFO( "Benchmark on {}.", systemName );
 
 	BENCHMARK( "Open systems" )
 	{
-		VTX::Core::Struct::System system		 = VTX::Core::Struct::System();
+		VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
 		IO::Reader::System		  systemReader = IO::Reader::System();
 
 		systemReader.readFile( systemPath, system );
 	};
 }
 
-/// devjla
-
-TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
+TEST_CASE( "VTX_IO - Test filepath trajectory 2ama_1_npt", "[.] [integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::IO;
@@ -86,30 +84,26 @@ TEST_CASE( "VTX_IO - dummy write", "[.] [integration]" )
 	const std::string moleculeName	   = "2ama_1_npt";
 	const std::string moleculePathname = moleculeName + ".trr";
 	const FilePath	  moleculePath	   = Util::Filesystem::getExecutableDir() / "data/trajs" / moleculePathname;
+	/*
 	const std::string dummyName		   = "dummy";
 	const std::string dummyPathname	   = dummyName + ".txt";
-	std::ofstream	  outFile( dummyPathname );
+	std::ofstream	  outFile( dummyPathname );*/
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule	   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader	   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	/* for ( auto & element : molecule.trajectory.frames[ 0 ] )
-	{
-		outFile << element[0] << element[1] << element[2];
-	} */
+	/*
 	for ( auto & element : molecule.trajectory.getCurrentFrame() )
 	{
 		outFile << element[ 0 ] << element[ 1 ] << element[ 2 ];
 	}
-	outFile.close();
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 10001 );
+	outFile.close();*/
+
 	CHECK( molecule.trajectory.getFrameCount() == 10001 );
 }
 
@@ -124,14 +118,12 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 10001 );
 	CHECK( molecule.trajectory.getFrameCount() == 10001 );
 }
 
@@ -146,14 +138,12 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 101 );
 	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
@@ -168,14 +158,12 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 101 );
 	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
@@ -190,14 +178,12 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 101 );
 	CHECK( molecule.trajectory.getFrameCount() == 101 );
 }
 
@@ -212,14 +198,12 @@ TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 1 );
 	CHECK( molecule.trajectory.getFrameCount() == 1 );
 }
 
@@ -234,21 +218,19 @@ TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule		   = VTX::Core::Struct::System();
+	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
 	molecule.trajectory.setOptimized();
-	IO::Reader::System moleculeReader		   = IO::Reader::System();
+	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );
 
-	// devjla
-	// CHECK( molecule.trajectory.frames.size() == 1 );
 	CHECK( molecule.trajectory.getFrameCount() == 1 );
 }
 
 TEST_CASE( "VTX_IO - circular buffer read write no overflow", "[integration]" )
 {
-	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
+	std::vector<int>							   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	VTX::Core::Struct::ProdConsCircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 4; ++idx )
 		testCircBuff.writeElement( bigVect[ idx ] );
 
@@ -264,11 +246,10 @@ TEST_CASE( "VTX_IO - circular buffer read write no overflow", "[integration]" )
 	CHECK( testCircBuff.readElement( val ) == false );
 	CHECK( val == 3 );
 }
-
 TEST_CASE( "VTX_IO - circular buffer write full buffer", "[integration]" )
 {
-	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
+	std::vector<int>							   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	VTX::Core::Struct::ProdConsCircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 5; ++idx )
 		testCircBuff.writeElement( bigVect[ idx ] );
 
@@ -287,8 +268,8 @@ TEST_CASE( "VTX_IO - circular buffer write full buffer", "[integration]" )
 
 TEST_CASE( "VTX_IO - circular buffer write overflow circular read", "[integration]" )
 {
-	std::vector<int>					   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	VTX::Core::Struct::CircularBuffer<int> testCircBuff( 5 );
+	std::vector<int>							   bigVect { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	VTX::Core::Struct::ProdConsCircularBuffer<int> testCircBuff( 5 );
 	for ( int idx = 0; idx < 5; ++idx )
 		testCircBuff.writeElement( bigVect[ idx ] );
 
@@ -314,7 +295,7 @@ TEST_CASE( "VTX_IO - circular buffer write overflow circular read", "[integratio
 
 TEST_CASE( "VTX_IO - frame data write", "[integration]" )
 {
-	VTX::Core::Struct::FrameData frames;
+	VTX::Core::Struct::FramesDataCircBuffProdCons frames;
 	for ( uint64_t idx = 0; idx < 5; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };
@@ -342,14 +323,14 @@ TEST_CASE( "VTX_IO - frame data write", "[integration]" )
 
 TEST_CASE( "VTX_IO - model frame write read", "[integration]" )
 {
-	VTX::Core::Struct::FrameData  frames;
-	const uint64_t				  modelVal( 42 );
-	const std::vector<VTX::Vec3f> wModel { { modelVal, modelVal, modelVal } };
-	std::vector<VTX::Vec3f> &	  blankModel = frames.GetModelFrame();
-	blankModel								 = wModel;
+	VTX::Core::Struct::FramesDataCircBuffProdCons frames;
+	const uint64_t								  modelVal( 42 );
+	const std::vector<VTX::Vec3f>				  wModel { { modelVal, modelVal, modelVal } };
+	std::vector<VTX::Vec3f> &					  blankModel = frames.getCurrentFrame();
+	blankModel												 = wModel;
 	std::vector<VTX::Vec3f> testFrame { { INT_MAX, INT_MAX, INT_MAX } };
 
-	testFrame = frames.GetModelFrame();
+	testFrame = frames.getCurrentFrame();
 	CHECK( testFrame[ 0 ][ 0 ] == modelVal );
 	CHECK( testFrame[ 0 ][ 1 ] == modelVal );
 	CHECK( testFrame[ 0 ][ 2 ] == modelVal );
@@ -357,7 +338,7 @@ TEST_CASE( "VTX_IO - model frame write read", "[integration]" )
 
 TEST_CASE( "VTX_IO - frame write full buffer", "[integration]" )
 {
-	VTX::Core::Struct::FrameData frames;
+	VTX::Core::Struct::FramesDataCircBuffProdCons frames;
 	for ( uint64_t idx = 0; idx < 49; ++idx )
 	{
 		const std::vector<VTX::Vec3f> wvec { { idx, idx, idx } };

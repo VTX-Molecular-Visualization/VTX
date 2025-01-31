@@ -10,19 +10,30 @@ namespace VTX::Core::Struct
 {
 	/**
 	 * @brief Each index is correlated with other vector's that contains atom's data
+	 * Trajectory is responsible of two types of data containers
+	 * _framesOptimized is a holder for a circular buffer
+	 * _framesPlain is a holder for a vector
+	 * Either one or the other is used and the other one remains empty
+	 * All methods check for the optimization boolean _isOptimized to decide which holder they must access to do their
+	 * tasks
 	 */
 	using Frame = std::vector<Vec3f>;
 	class Trajectory final
 	{
 	  public:
-		// FIXME really?
 		Trajectory() {}
+		/**
+		 * @brief Move ctor explicit because FramesDataCircBuffProdCons members section has mutexes.
+		 */
 		Trajectory( Trajectory && movable )
 		{
 			_isOptimized	 = movable.isOptimized();
 			_framesOptimized = std::move( movable._framesOptimized );
 			_framesPlain	 = std::move( movable._framesPlain );
 		}
+		/**
+		 * @brief Move assignement operator explicit because FramesDataCircBuffProdCons members section has mutexes.
+		 */
 		Trajectory & operator=( Trajectory && movable )
 		{
 			_isOptimized	 = movable.isOptimized();
@@ -30,15 +41,12 @@ namespace VTX::Core::Struct
 			_framesPlain	 = std::move( movable._framesPlain );
 			return *this;
 		}
-		// Trajectory ( Trajectory & copy ) = delete;
 
+		/**
+		 * @brief Copy input frame p_atomPositions in the dedicated trajectory data holder.
+		 */
 		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
-			/* Frame frame;
-			frame.resize( p_atomPositions.size() );
-			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
-			_framesCircBuff.WriteElement( frame );*/
-
 			if ( _isOptimized )
 			{
 				Frame frame;
@@ -82,8 +90,10 @@ namespace VTX::Core::Struct
 			}
 		}
 
-		// dynamicMemoryUsage requirement
-		// needs refacto to handle circular buffers
+		/**
+		 * @brief dynamicMemoryUsage requirement
+		 * FIXME needs refacto to handle circular buffers
+		 */
 		const FramesDataVector & getFramesPlain() const { return _framesPlain; }
 
 		const Frame & getCurrentFrame() const
@@ -101,14 +111,20 @@ namespace VTX::Core::Struct
 				return _framesPlain.getCurrentFrame();
 		}
 
-		// not available for optimized trajectories
+		/**
+		 * @brief Sets the current frame index for the vector trajectory holder.
+		 * Not available for optimized trajectories (circular buffer holder).
+		 */
 		void setCurrentFrameIndex( size_t p_currentFrameIdx )
 		{
 			if ( _isOptimized )
 				return;
 			_framesPlain.setCurrentFrameIndex( p_currentFrameIdx );
 		}
-		// not available for optimized trajectories
+		/**
+		 * @brief Gets the current frame index for the vector trajectory holder.
+		 * Not available for optimized trajectories (circular buffer holder).
+		 */
 		const size_t getCurrentFrameIndex( void ) const
 		{
 			if ( _isOptimized )
@@ -116,7 +132,11 @@ namespace VTX::Core::Struct
 			return _framesPlain.getCurrentFrameIndex();
 		}
 
-		// not available for optimized trajectories
+		/**
+		 * @brief Gets the current frame for the vector trajectory holder.
+		 * Not available for optimized trajectories (circular buffer holder).
+		 * FIXME no checks of optimization state done !
+		 */
 		const Frame & getFrameFromIndex( size_t p_index ) const { return _framesPlain.getFrameFromIndex( p_index ); }
 		Frame &		  getFrameFromIndex( size_t p_index ) { return _framesPlain.getFrameFromIndex( p_index ); }
 
@@ -138,18 +158,20 @@ namespace VTX::Core::Struct
 		const bool isOptimized( void ) const { return _isOptimized; }
 		void	   setOptimized( void ) { _isOptimized = true; }
 
-		// not available for plain trajectories (non-optimized)
+		/**
+		 * @brief Reads the current frame for the circular buffer trajectory holder.
+		 * Not available for non-optimized trajectories (vector holder).
+		 * FIXME no checks of optimization state done !
+		 */
 		Frame & readOptimizedElement( void ) { return _framesOptimized.readElement(); }
-		// not available for plain trajectories (non-optimized)
+		/**
+		 * @brief Resets read and write indexes of the circular buffer trajectory holder.
+		 * Not available for non-optimized trajectories (vector holder).
+		 * FIXME no checks of optimization state done !
+		 */
 		void reset( void ) { _framesOptimized.reset(); }
 
-		void eraseEmptyFrames( void )
-		{
-			if ( _isOptimized )
-				_framesOptimized.eraseEmptyFrames();
-			else
-				_framesPlain.eraseEmptyFrames();
-		}
+		void eraseEmptyFrames( void ) { _framesPlain.eraseEmptyFrames(); }
 
 	  private:
 		bool					   _isOptimized = false;

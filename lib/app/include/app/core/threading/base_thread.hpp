@@ -11,6 +11,9 @@
 
 namespace VTX::App::Core::Threading
 {
+	/**
+	 * @brief Thread managed by ThreadingSystem
+	 */
 	class ThreadingSystem;
 
 	class BaseThread
@@ -20,10 +23,23 @@ namespace VTX::App::Core::Threading
 		using EndCallback = std::function<void( BaseThread &, uint )>;
 
 	  public:
+		/**
+		 * @brief Default ctor. Never used directly. ThreadingSystem manager is responsible of the creation of
+		 * BaseThread object.
+		 */
 		BaseThread( ThreadingSystem & p_manager ) : _manager( p_manager ) {};
 		~BaseThread();
 
+		/**
+		 * @brief Starts the content of the function in a new thread.
+		 * The thread is ended by the manager in the _finish method.
+		 */
 		void start( const AsyncOp & p_function );
+		/**
+		 * @brief Starts the content of the function in a new thread.
+		 * Once the function returns p_callback is called.
+		 * The thread is ended by the manager in the _finish method.
+		 */
 		void start( const AsyncOp & p_function, const EndCallback & p_callback );
 
 		void wait();

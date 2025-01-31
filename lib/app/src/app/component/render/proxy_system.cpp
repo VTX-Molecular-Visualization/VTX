@@ -1,10 +1,10 @@
 #include "app/component/render/proxy_system.hpp"
+#include "app/component/chemistry/trajectory.hpp"
+#include "app/component/scene/transform_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/selection/selection.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/selection/system_data.hpp"
-#include "app/core/ecs/ecs_system.hpp"
-#include "app/component/chemistry/trajectory.hpp"
-#include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/color.hpp>
 #include <io/util/secondary_structure.hpp>
@@ -44,15 +44,12 @@ namespace VTX::App::Component::Render
 		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
-		// devjla
-		std::vector<Vec3f> tmpFrame = molStruct.trajectory.getCurrentFrame();
+		std::vector<Vec3f> trajFrame = molStruct.trajectory.getCurrentFrame();
 
 		_proxy = std::make_unique<VTX::Renderer::Proxy::System>( VTX::Renderer::Proxy::System {
 			&transformComp.getTransform().get(),
 
-			// devjla
-			// &molStruct.trajectory.getCurrentFrame(),
-			const_cast<const std::vector<Vec3f> *>( &tmpFrame ),
+			const_cast<const std::vector<Vec3f> *>( &trajFrame ),
 			&molStruct.bondPairAtomIndexes,
 			&molStruct.atomNames,
 			reinterpret_cast<const std::vector<uchar> *>( &molStruct.residueSecondaryStructureTypes ),
@@ -216,19 +213,6 @@ namespace VTX::App::Component::Render
 			Component::Chemistry::Trajectory & trajectoryComponent
 				= ECS_REGISTRY().getComponent<Component::Chemistry::Trajectory>( *this );
 
-			/* trajectoryComponent.onFrameChange += [ this ]( const size_t p_frameIndex )
-			{
-				Component::Chemistry::System & systemComponent
-					= ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
-
-				// devjla
-				// FIXME
-				//_proxy->atomPositions = &systemComponent.getTrajectory().getCurrentFrame();
-				VTX::Core::Struct::Frame currentFrame;
-				if ( systemComponent.getTrajectory().getCurrentFrame( currentFrame ) )
-					_proxy->atomPositions = &currentFrame;
-				_proxy->onAtomPositions();
-			};*/
 			trajectoryComponent.onFrameChange += [ this ]( const VTX::Core::Struct::Frame & p_frame )
 			{
 				_proxy->atomPositions = &p_frame;
@@ -236,12 +220,4 @@ namespace VTX::App::Component::Render
 			};
 		}
 	}
-
-	// devjla
-	/* void ProxyMolecule::_updateAtomsPositions( VTX::Core::Struct::Frame & frame )
-	{
-		_proxy->atomPositions = &frame;
-		_proxy->onAtomPositions();
-	}*/
-
 } // namespace VTX::App::Component::Render

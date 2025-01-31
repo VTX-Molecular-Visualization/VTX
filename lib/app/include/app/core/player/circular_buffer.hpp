@@ -24,24 +24,35 @@ namespace VTX::App::Core::Player
 
 		void update( const float, const float );
 
+		/**
+		 * @brief Creates two threads managed by the ThreadingSystem.
+		 * First thread reads trajectory file and writes circular buffer data.
+		 * Second thread reads circular buffer data and writes Frames to be displayed in a FramesToRender object (queue
+		 * container).
+		 */
 		void play() override;
 		void pause() override;
 		void stop() override;
 
-		void stackFrame( VTX::Core::Struct::Frame elem )
-		{
-			_tmpFrames.addElement( elem );
-		} // FIXME taking a copy as input?
-		bool getRefFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.readElement( frame ); }
-		void removeRefFrame( VTX::Core::Struct::Frame & elem ) { _tmpFrames.removeElement( elem ); }
-		bool getCopyFrame( VTX::Core::Struct::Frame & frame ) { return _tmpFrames.getCopyFrame( frame ); }
+		/**
+		 * @brief Copy a frame to be displayed into a FramesToRender object (queue container).
+		 * FIXME can be optimized by not taking a copy?
+		 */
+		void stackFrame( VTX::Core::Struct::Frame elem ) { _displayFrames.addElement( elem ); }
+		/**
+		 * @brief Get a copy of the next frame to be displayed to the user.
+		 * Using a copy to ensure we do not erase the frame in the lifo queue before it is processed by the engine.
+		 * FIXME can be optimized by not taking a copy?
+		 */
+		bool getCopyFrame( VTX::Core::Struct::Frame & frame ) { return _displayFrames.getCopyFrame( frame ); }
 
-		// FIXME test to update progress slider in UI
-		const size_t getIndex( void ) const { return _tmpFrames.getindex(); }
+		/**
+		 * @brief Index to update progress slider in UI.
+		 */
+		const size_t getIndex( void ) const { return _displayFrames.getindex(); }
 
 	  private:
-		// devjla
-		VTX::Core::Struct::FramesToRender  _tmpFrames;
+		VTX::Core::Struct::FramesToRender  _displayFrames;
 		App::Core::Threading::BaseThread * _readThread	= nullptr;
 		App::Core::Threading::BaseThread * _writeThread = nullptr;
 	};

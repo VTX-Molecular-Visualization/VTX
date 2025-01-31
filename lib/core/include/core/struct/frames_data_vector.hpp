@@ -8,12 +8,19 @@ namespace VTX::Core::Struct
 {
 	using Frame = std::vector<Vec3f>;
 
+	/**
+	 * @brief Holder of a non optimized trajectory by using a vector.
+	 * Each index is correlated with other vector's that contains atom's data.
+	 */
 	class FramesDataVector final
 	{
 	  public:
 		FramesDataVector() {}
 		~FramesDataVector() {}
 
+		/**
+		 * @brief Copy input frame into vector member at the given input index
+		 */
 		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
 			_framesVector[ p_systemFrameIndex ].resize( p_atomPositions.size() );
@@ -35,6 +42,9 @@ namespace VTX::Core::Struct
 		size_t getTotalElements() const { return _framesVector.size(); }
 		void   setTotalElements( const size_t size ) { _framesVector.resize( size ); }
 
+		/**
+		 * @brief Erase potential empty frame(s) at the end of the vector member.
+		 */
 		void eraseEmptyFrames( void )
 		{
 			if ( _framesVector.back().size() == 0 )

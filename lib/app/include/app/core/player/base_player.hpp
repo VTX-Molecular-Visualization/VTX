@@ -14,11 +14,12 @@ namespace VTX::App::Core::Player
 	{
 	  public:
 		BasePlayer() = default;
-		// devjla
-		// BasePlayer( const BasePlayer & p_source ) = default;
+		/**
+		 * @brief Copy ctor explicit definition because implicit definition does not exists due to the _isPlaying
+		 * atomic. member
+		 */
 		BasePlayer( const BasePlayer & p_source )
 		{
-			// FIXME
 			_count			 = p_source._count;
 			_current		 = p_source._current;
 			_isPlaying		 = false;
@@ -29,15 +30,27 @@ namespace VTX::App::Core::Player
 		virtual ~BasePlayer() = default;
 
 		size_t getCount() const { return _count; }
-		void   setCount( const size_t p_count );
+		/**
+		 * @brief Sets the current frame count and updates the current frame to be played.
+		 */
+		void setCount( const size_t p_count );
 
+		/**
+		 * @brief Updates the internal counter of the frame to be played.
+		 */
 		size_t getCurrent() const;
-		void   setCurrent( const size_t p_frameIndex );
+		/**
+		 * @brief Updates the current frame to be played.
+		 */
+		void setCurrent( const size_t p_frameIndex );
 
 		virtual void play();
 		virtual void pause();
 		virtual void stop();
 
+		/**
+		 * @brief Callback to decide whether a new frame needs to be played
+		 */
 		void update( const float p_deltaTime, const float p_elaspedTime );
 
 		inline bool isPlaying() const { return _isPlaying; }
@@ -50,23 +63,22 @@ namespace VTX::App::Core::Player
 
 		virtual const std::string & getDisplayName() const = 0;
 
-		virtual void stackFrame( Frame elem ) = 0; // FIXME
+		/**
+		 * @brief Virtual method only implemented in the circular buffer player
+		 */
+		virtual void stackFrame( Frame elem ) = 0;
 		inline float getTrajectoryTimer() const { return _trajectoryTimer; }
 		void		 setTrajectoryTimer( float p_timer ) { _trajectoryTimer = p_timer; }
 
-		Util::Callback<> onPlay;
-		Util::Callback<> onPause;
-		Util::Callback<> onStop;
-		// Util::Callback<size_t> onFrameChange;
+		Util::Callback<>			  onPlay;
+		Util::Callback<>			  onPause;
+		Util::Callback<>			  onStop;
 		Util::Callback<const Frame &> onFrameChange;
 		Util::Callback<uint>		  onFPSChange;
 
 	  private:
-		size_t _count	= 0;
-		size_t _current = 0;
-
-		// devjla
-		// bool  _isPlaying	   = false;
+		size_t			  _count		   = 0;
+		size_t			  _current		   = 0;
 		std::atomic<bool> _isPlaying	   = false;
 		uint			  _fps			   = 1u;
 		float			  _trajectoryTimer = 0.f;

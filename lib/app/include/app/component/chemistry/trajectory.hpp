@@ -45,19 +45,10 @@ namespace VTX::App::Component::Chemistry
 
 			_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
-			/* _player->onFrameChange += [ this ]( const size_t p_frameIndex )
-			{
-				_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex;
-				onFrameChange( p_frameIndex );
-			};*/
-			_player->onFrameChange += [ this ]( const VTX::Core::Struct::Frame & p_frame )
-			{
-				//_systemPtr->getTrajectory()._currentFrameIndex = p_frameIndex; currently done in player
-				onFrameChange( p_frame );
-			};
+			_player->onFrameChange +=
+				[ this ]( const VTX::Core::Struct::Frame & p_frame ) { onFrameChange( p_frame ); };
 		}
 
-		// Util::Callback<size_t> onFrameChange;
 		Util::Callback<const std::vector<Vec3f> &> onFrameChange;
 		// TODO:
 		// Util::Callback<> onPlayerChange;
