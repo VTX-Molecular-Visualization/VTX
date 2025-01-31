@@ -54,6 +54,7 @@ endif()
 target_link_libraries(vtx_python_binding PUBLIC pybind11::pybind11)
 target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
 
+# TODO remove both following lines maybe ?
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::embed)
 
