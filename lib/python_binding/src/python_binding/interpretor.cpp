@@ -37,27 +37,19 @@ namespace VTX::PythonBinding
 			pybind11::eval_file( initCommandsFile.string() );
 		}
 
-		void addBinder( std::unique_ptr<Binder> p_binder ) { _binders.emplace_back( std::move( p_binder ) ); }
-
-		void applyBinders()
+		void addBinder( std::unique_ptr<Binder> p_binder )
 		{
-			for ( const std::unique_ptr<Binder> & binder : _binders )
-			{
-				binder->bind( *_pyTXModule );
-			}
-		}
+			_binders.emplace_back( std::move( p_binder ) );
+			_binders.back()->bind( *_pyTXModule );
+			_binders.back()->importHeaders();
 
-		void importCommands()
-		{
-			//  Import all commands
+			// Put newly added command to the module global namespace
 			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
-
-			// Specific imports by binders
-			for ( const std::unique_ptr<Binder> & binder : _binders )
-			{
-				binder->importHeaders();
-			}
 		}
+
+		void applyBinders() {}
+
+		void importCommands() {}
 
 		PyTXModule & getPyTXModule() { return *_pyTXModule; }
 
