@@ -40,14 +40,14 @@ else()
 	
 	target_link_libraries(vtx_python_api PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_api PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_python_api PRIVATE vtx_renderer::vtx_renderer)
+	#target_link_libraries(vtx_python_api PRIVATE vtx_renderer::vtx_renderer)
 	target_link_libraries(vtx_python_api PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_python_api PRIVATE vtx_io::vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer)
+	#target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 endif()
 
