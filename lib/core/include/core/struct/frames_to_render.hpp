@@ -3,7 +3,6 @@
 
 #include <mutex>
 #include <queue>
-#include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Core::Struct
@@ -32,7 +31,7 @@ namespace VTX::Core::Struct
 			if ( 0 == elem.size() )
 				return;
 			std::unique_lock<std::mutex> unique_lock( access_frames_mtx );
-			VTX_INFO( "ADD _framesToRender.size() {}", _framesToRender.size() );
+			// VTX_INFO( "ADD _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.push( elem );
 		}
 		/**
@@ -75,7 +74,7 @@ namespace VTX::Core::Struct
 			if ( _framesToRender.empty() )
 				return;
 			assert( _framesToRender.front() == elem );
-			VTX_INFO( "REMOVE _framesToRender.size() {}", _framesToRender.size() );
+			// VTX_INFO( "REMOVE _framesToRender.size() {}", _framesToRender.size() );
 			_framesToRender.pop();
 		}
 		/**
@@ -86,7 +85,7 @@ namespace VTX::Core::Struct
 			if ( _framesToRender.empty() )
 				return false;
 			elem = _framesToRender.front();
-			VTX_INFO( "READ _framesToRender.size() {}", _framesToRender.size() );
+			// VTX_INFO( "READ _framesToRender.size() {}", _framesToRender.size() );
 			return true;
 		}
 	};
