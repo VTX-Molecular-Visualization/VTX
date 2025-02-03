@@ -58,38 +58,6 @@ namespace VTX::Core::Struct
 				_framesPlain.fillFrame( p_systemFrameIndex, p_atomPositions );
 		}
 
-		// devjla DEBUG TRAJECTORY FRAMES ORDER
-		void fillFrameDEBUG()
-		{
-			if ( _isOptimized )
-			{
-				for ( float x = -100.f; x <= 100.f; x += 50.f )
-				{
-					for ( float y = -100.f; y <= 100.f; y += 50.f )
-					{
-						Frame					 frame;
-						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
-						frame.resize( atomPositionsDebug.size() );
-						std::copy( atomPositionsDebug.begin(), atomPositionsDebug.end(), frame.begin() );
-						_framesOptimized.writeElement( frame );
-					}
-				}
-			}
-			else
-			{
-				size_t idx( 0 );
-				for ( float x = -100.f; x <= 100.f; x += 50.f )
-				{
-					for ( float y = -100.f; y <= 100.f; y += 50.f )
-					{
-						const std::vector<Vec3f> atomPositionsDebug { { x, y, 0 } };
-						_framesPlain.fillFrame( idx, atomPositionsDebug );
-						++idx;
-					}
-				}
-			}
-		}
-
 		/**
 		 * @brief dynamicMemoryUsage requirement
 		 * FIXME needs refacto to handle circular buffers
