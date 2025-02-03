@@ -83,7 +83,7 @@ namespace VTX::App::Core::Player
 			return;
 		}
 
-		/* _trajectoryTimer += p_deltaTime;
+		_trajectoryTimer += p_deltaTime;
 
 		if ( _fps == 0u )
 		{
@@ -94,7 +94,7 @@ namespace VTX::App::Core::Player
 			const size_t previousCurrent = _current;
 			size_t		 nextIndex		 = _current;
 
-			const float offset = 1.f / float( _fps );
+			const float offset = ( 1.f / float( _fps ) ) * 1000.f;
 			while ( _trajectoryTimer >= offset )
 			{
 				nextIndex++;
@@ -105,25 +105,7 @@ namespace VTX::App::Core::Player
 			{
 				nextFrame( nextIndex - previousCurrent );
 			}
-		}*/
-
-		//////////
-		if ( _fps == 0u )
-		{
-			nextFrame( 1 );
 		}
-		else
-		{
-			const float frameRateMilliSec = ( 1.f / float( _fps ) ) * 1000.f;
-			const float ellapsedTime	  = p_elapsedTime - _trajectoryTimer;
-
-			if ( ellapsedTime >= frameRateMilliSec )
-			{
-				_trajectoryTimer = p_elapsedTime;
-				nextFrame( 1 );
-			}
-		}
-		//////////
 	}
 
 	void BasePlayer::setFPS( const uint p_fps )
