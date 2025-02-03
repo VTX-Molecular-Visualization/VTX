@@ -169,9 +169,21 @@ namespace VTX::Core::Struct
 		 * Not available for non-optimized trajectories (vector holder).
 		 * FIXME no checks of optimization state done !
 		 */
-		void reset( void ) { _framesOptimized.reset(); }
+		void reset( void )
+		{
+			if ( _isOptimized )
+			{
+				_framesOptimized.reset();
+			}
+		}
 
-		void eraseEmptyFrames( void ) { _framesPlain.eraseEmptyFrames(); }
+		void eraseEmptyFrames( void )
+		{
+			if ( !_isOptimized )
+			{
+				_framesPlain.eraseEmptyFrames();
+			}
+		}
 
 	  private:
 		bool					   _isOptimized = false;

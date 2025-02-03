@@ -1,18 +1,16 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 
+#include <QComboBox>
 #include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
-////////
 #include <app/core/player/loop.hpp>
 #include <app/core/player/once.hpp>
 #include <app/core/player/ping_pong.hpp>
 #include <app/core/player/revert_loop.hpp>
 #include <app/core/player/revert_once.hpp>
-#include <app/core/player/stop.hpp> // UH?
-////////
-#include <QComboBox>
+#include <app/core/player/stop.hpp>
+#include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -69,20 +67,17 @@ namespace VTX::UI::QT::Widget
 			progressElt->setMaximum( (int)traj.getFrameCount() - 1 );
 
 			// set cursor at the current frame index
-			// progressElt->setValue( (int)traj.getCurrentFrame() );
 			progressElt->setValue( (int)traj.getPlayer().getCurrent() );
 
 			// display current frame index in selector lineedit
-			// frameSelectorElt->setText(
-			// QLocale().toString((int)traj.getSystemPtr()->getTrajectory().GetCurrentFrameIndex()) );
 			frameSelectorElt->setText( QLocale().toString( (int)traj.getPlayer().getCurrent() ) );
 
 			// update both slider and lineedit zone with current frame
 			traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
 			{
-				VTX_INFO(
+				/* VTX_INFO(
 					"trajectory_player frame changed  = {}", traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
-				);
+				);*/
 				int currentFrameIdx = (int)traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex();
 				getProgressElt()->setValue( currentFrameIdx );
 				getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
@@ -116,7 +111,6 @@ namespace VTX::UI::QT::Widget
 					default: break;
 					}
 
-					// setStopPlayer();
 					modifyProgressElt();
 				}
 			);

@@ -55,9 +55,9 @@ namespace VTX::UI::QT::Widget
 			// update both slider and lineedit zone with current frame
 			traj.getPlayer().onFrameChange += [ & ]( const VTX::Core::Struct::Frame p_frame )
 			{
-				VTX_INFO(
+				/* VTX_INFO(
 					"trajectory_player frame changed  = {}", traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
-				);
+				);*/
 				int currentFrameIdx
 					= (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
 				getProgressElt()->setValue( currentFrameIdx );
