@@ -53,6 +53,7 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        os.system("dir")
         cmake.ctest(["--output-on-failure"])
 
     def package(self):
