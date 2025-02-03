@@ -1,7 +1,8 @@
 #ifndef __VTX_CORE_STRUCT_CIRCBUFF_PRODCONS__
 #define __VTX_CORE_STRUCT_CIRCBUFF_PRODCONS__
 
-#include <util/logger.hpp>
+#include <condition_variable>
+#include <mutex>
 #include <vector>
 
 namespace VTX::Core::Struct
@@ -74,7 +75,7 @@ namespace VTX::Core::Struct
 
 			size_t currentWriteIdx		 = _writeIdx;
 			_circBuff[ currentWriteIdx ] = std::move( elem );
-			VTX_INFO( "WriteElement currentWriteIdx {}", currentWriteIdx );
+			// VTX_INFO( "WriteElement currentWriteIdx {}", currentWriteIdx );
 			updateWriteIdx();
 
 			unique_lock.unlock();
@@ -91,7 +92,7 @@ namespace VTX::Core::Struct
 			_read_allowed.wait( unique_lock, [ this ]() { return isReadAllowed(); } );
 
 			elem = _circBuff[ _readIdx ];
-			VTX_INFO( "ReadElement readIdx {}", _readIdx );
+			// VTX_INFO( "ReadElement readIdx {}", _readIdx );
 			updateReadIdx();
 
 			unique_lock.unlock();

@@ -20,6 +20,7 @@
 #include "app/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
+#include <util/logger.hpp>
 #include <util/singleton.hpp>
 
 namespace VTX::App::Entity
