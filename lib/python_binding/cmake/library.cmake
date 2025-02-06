@@ -41,14 +41,14 @@ else()
 	
 	target_link_libraries(vtx_python_api PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_api PRIVATE vtx_core::vtx_core)
-	#target_link_libraries(vtx_python_api PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_python_api PRIVATE vtx_renderer::vtx_renderer)
 	target_link_libraries(vtx_python_api PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_python_api PRIVATE vtx_io::vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-	#target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_python_binding_test PRIVATE vtx_renderer::vtx_renderer)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 endif()
 
@@ -67,7 +67,7 @@ target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
 # Some Quality Of Life so any modification to the module triggers python test rebuild 
-#add_dependencies(vtx_python_binding_test vtx_python_api)
+add_dependencies(vtx_python_binding_test vtx_python_api)
 
 # All other find_package call
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../test/data" "./data")
