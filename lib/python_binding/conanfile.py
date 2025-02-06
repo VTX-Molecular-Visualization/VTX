@@ -54,6 +54,10 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         os.system("set PATH=%PATH%;{}".format(os.getcwd()))
+        os.system("echo PATH :")
+        os.system("echo %PATH%")
+        os.system("echo dir :")
+        os.system("dir")
         cmake.ctest(["--output-on-failure"])
 
     def package(self):
