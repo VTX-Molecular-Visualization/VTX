@@ -64,7 +64,7 @@ target_link_libraries(vtx_python_api PRIVATE pybind11::embed)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
-# Some Quality Of Life so any modification to the module triggers python test rebuild
+# Some Quality Of Life so any modification to the module triggers python test rebuild 
 add_dependencies(vtx_python_binding_test vtx_python_api)
 
 # All other find_package call
