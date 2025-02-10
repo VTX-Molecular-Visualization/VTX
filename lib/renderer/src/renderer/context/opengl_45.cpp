@@ -37,6 +37,10 @@ namespace VTX::Renderer::Context
 			_openglInfos.print();
 		}
 
+		// Default output.
+		glGetIntegerv( GL_FRAMEBUFFER_BINDING, reinterpret_cast<int *>( &_output ) );
+		VTX_TRACE( "Default framebuffer: {}", _output );
+
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
