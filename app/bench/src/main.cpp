@@ -35,7 +35,7 @@ int main( int, char ** )
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
-		TakeMeasures takeMeasures( 3, std::string(Filesystem::getExecutableDir().c_str() ) + "/logs/measures.csv", 5.f );
+		TakeMeasures takeMeasures( 3, std::string(Filesystem::getExecutableDir().c_str() ) + "/measures.csv", 10.f );
 
 		// Renderer.
 		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
@@ -99,6 +99,7 @@ int main( int, char ** )
 				}
 
 				else if (p_key == SDL_SCANCODE_P ){
+					renderer.logDurations=true;
 					takeMeasures.start();
 				}
 			}

@@ -26,6 +26,14 @@ namespace VTX::Renderer
 										0.5f,
 										0.5f,
 										nullptr };
+	inline const Attachment imageRGBA16F_small { E_FORMAT::RGBA16F,
+												  E_WRAPPING::CLAMP_TO_EDGE,
+												  E_WRAPPING::CLAMP_TO_EDGE,
+												  E_FILTERING::NEAREST,
+												  E_FILTERING::NEAREST,
+												  0.5f,
+												  0.5f,
+												  nullptr };
 
 	// Data.
 	// TODO: compress all.
@@ -88,7 +96,13 @@ namespace VTX::Renderer
 								Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR32F } } },
 								Programs { { "LinearizeDepth",
 											 std::vector<FilePath> { "default.vert", "linearize_depth.frag" } } } };
-
+	
+	/* //inline Pass descPassLogDepth{ "Log scale depth",
+								Inputs { { E_CHAN_IN::_0, { "Depth", imageD32F } } },
+								Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR32F } } },
+								Programs { { "LogDepth",
+											 std::vector<FilePath> { "default.vert", "log_depth.frag" } } } };
+*/
 	// SSAO.
 	inline constexpr size_t	  noiseTextureSize = 64;
 	inline std::vector<Vec3f> createNoiseTexture()
@@ -108,6 +122,7 @@ namespace VTX::Renderer
 
 		return noise;
 	}
+	
 	inline const std::vector<Vec3f> noiseTexture = createNoiseTexture();
 
 	inline Pass descPassSSAO {
@@ -146,9 +161,22 @@ namespace VTX::Renderer
 		"Scale",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageSmall } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
+		//change it back to 16f
 		Programs {
 			{ "Scale",
 			  std::vector<FilePath> { "default.vert", "scale.frag" },
+			   } }
+	};
+
+			// Scale
+	inline Pass descPassScaleRGBA {
+		"Scale RGBA",
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F_small } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
+		//change it back to 16f
+		Programs {
+			{ "Scale",
+			  std::vector<FilePath> { "default.vert", "scale_rgba.frag" },
 			   } }
 	};
 
@@ -157,6 +185,22 @@ namespace VTX::Renderer
 		"Blur",
 		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
+		Programs {
+			{ "Blur",
+			  std::vector<FilePath> { "default.vert", "blur.frag" },
+			  Uniforms {
+
+				  { { "Direction", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i( 1, 0 ) } },
+					{ "Size",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 17.f, StructUniformValue<float>::MinMax { 1.f, 99.f } } } } } } }
+	};
+
+		// Blur.
+	inline Pass descPassBlurSmall {
+		"Blur",
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F_small } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F_small } } },
 		Programs {
 			{ "Blur",
 			  std::vector<FilePath> { "default.vert", "blur.frag" },
@@ -385,7 +429,7 @@ namespace VTX::Renderer
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } } 
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageSmall } } 	
 					},
 		Programs {
 			{ "SSAO_LINE",
@@ -467,13 +511,121 @@ namespace VTX::Renderer
 					   } } } }
 	};
 
+inline Pass descPassBMGTAO {
+		"BitMask AO",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } },
+				 { E_CHAN_IN::_3, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "AO", imageSmall } },
+					{ E_CHAN_OUT::COLOR_1, { "", imageR32F } },
+					{ E_CHAN_OUT::COLOR_2, { "ColorBleed", imageRGBA16F_small } }
+					},
+		Programs {
+			{ "BitMask AO",
+			  std::vector<FilePath> { "default.vert", "bmgtao.frag" },
+			  Uniforms {
+
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 5.f, StructUniformValue<float>::MinMax { 1.f, 10.f } } },
+					  { "Radius",
+					  E_TYPE::FLOAT,
+					  StructUniformValue<float> { 300.f, StructUniformValue<float>::MinMax { 0.0f, 1000.f } } }
+					   } } } }
+	};
+
+	inline Pass descPassSumImages {
+		"Sum images",
+		Inputs { { E_CHAN_IN::_0, { "Image 1", imageRGBA16F } }, { E_CHAN_IN::_1, { "Image 2", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "Sum", imageRGBA16F } } },
+		Programs {
+			{ "Sum images",
+			  std::vector<FilePath> { "default.vert", "sum_images.frag" },
+			  Uniforms{
+				{
+					{ "Image1 intensity",
+					 E_TYPE::FLOAT, 
+					 StructUniformValue<float> { 0.5f, StructUniformValue<float>::MinMax { 0.0f, 1.f }  }}
+			
+				}
+			  } } }
+	};
+
+	// Blur.
+/*	inline Pass descPassIntegralImage {// -> has to be done on cpu figure it out somehow
+		"Summed tables",
+		Inputs { { E_CHAN_IN::_0, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "summed", imageRGBA16F } } },
+		Programs {
+			{ "Summed tables",
+			  std::vector<FilePath> { "default.vert", "integral_image.frag" } } }
+	}; */
+
+	/* // Blur.
+	inline Pass descPassPrecomputeTables {
+		"Precompute",
+		Inputs {{E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				{ E_CHAN_IN::_1, { "Color", imageR8 } }, 
+				{ E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "j_k", imageRGBA16F } },
+				  { E_CHAN_OUT::COLOR_1, { "w_k", imageRGBA16F } } },
+		Programs {
+			{ "Precompute values",
+			  std::vector<FilePath> { "default.vert", "j_k.frag" },
+			  Uniforms{
+				{{"Minimum depth", E_TYPE::FLOAT, StructUniformValue<float> { 20.f }},
+				{"Variance", 
+				E_TYPE::FLOAT, 
+				StructUniformValue<float> {0.01f,StructUniformValue<float>::MinMax {0.005f, 0.1f}}}
+				}}
+			   } }
+	};
+
+	// Blur.
+	inline Pass descPassInterpolateBlur { 
+		"Interpolate",
+		Inputs { { E_CHAN_IN::_0, { "jbk", imageRGBA16F } }, { E_CHAN_IN::_1, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
+		Programs {
+			{ "Interpolate",
+			  std::vector<FilePath> { "default.vert", "interpolate.frag" } } }
+	};
+
+	// Blur.
+	inline Pass descPassBoxFilter {
+		"range filter",
+		Inputs { { E_CHAN_IN::_0, { "jk_summed", imageRGBA16F } }, { E_CHAN_IN::_1, { "wk_summed", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "jkb", imageRGBA16F } } },
+		Programs {
+			{ "range filter",
+			  std::vector<FilePath> { "default.vert", "range_filter.frag" },
+			  Uniforms {
+
+				  { { "image size", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i(1920,1080) } }
+					 } } } }
+	}; */
+
+
 	enum class E_PASS : size_t
 	{
 		GEOMETRIC,
 		DEPTH,
+		//LOG_DEPTH,
 		SSAO,
 		SCALE,
 		BLUR,
+		BLUR_SMALL,
 		SHADING,
 		OUTLINE,
 		SELECTION,
@@ -486,14 +638,22 @@ namespace VTX::Renderer
 		SSAO_LINE,
 		HBAO,
 		SAO,
+		BMGTAO,
+		SUM_IMAGES,
+		//INTEGRAL_IMAGE,
+		//PRECOMPUTE_TABLES,
+		//INTERPOLATE_BLUR,
+		//BOX_FILTER,
 		COUNT
 	};
 
 	inline std::vector<Pass *> availablePasses = { &descPassGeometric,
 												   &descPassDepth,
+												  // &descPassLogDepth,
 												   &descPassSSAO,
 												   &descPassScale,
 												   &descPassBlur,
+												   &descPassBlurSmall,
 												   &descPassShading,
 												   &descPassOutline,
 												   &descPassSelection,
@@ -505,7 +665,14 @@ namespace VTX::Renderer
 												   &descPassDebug,
 												   &descPassSSAO_LINE,
 												   &descPassHBAO,
-												   &descPassSAO};
+												   &descPassSAO ,
+												   &descPassBMGTAO,
+												   &descPassSumImages//,
+													//&descPassIntegralImage,
+												  // &descPassPrecomputeTables,
+												  // &descPassInterpolateBlur,
+												  // &descPassBoxFilter
+												   };
 } // namespace VTX::Renderer
 
 #endif

@@ -2,7 +2,6 @@
 #define TAKE_MEASURES_HPP
 
 #include <iostream>
-
 #include <string>
 #include <memory>
 #include "filesystem.hpp"
