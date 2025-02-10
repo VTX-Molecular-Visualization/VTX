@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <util/types.hpp>
 
 class QFormLayout;
 
