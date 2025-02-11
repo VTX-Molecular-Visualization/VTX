@@ -105,9 +105,9 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesSystems.clear();
-		_proxyCamera	  = nullptr;
-		_proxyColorLayout = nullptr;
-		_proxyRepresentations.clear();
+		_proxyCamera		 = nullptr;
+		_proxyColorLayout	 = nullptr;
+		_proxyRepresentation = nullptr;
 		_proxyRenderSettings = nullptr;
 		_proxyVoxels		 = nullptr;
 
@@ -184,7 +184,7 @@ namespace VTX::Renderer
 
 	void Renderer::_addProxySystem( Proxy::System & p_proxy )
 	{
-		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
+		assert( p_proxy.idDefaultRepresentation == 0 );
 
 		// If size max reached, do not add.
 		if ( _proxiesSystems.size() >= UNSIGNED_SHORT_MAX )
@@ -423,10 +423,6 @@ namespace VTX::Renderer
 
 #pragma region Proxy representations
 
-	void Renderer::addProxyRepresentation( Proxy::Representation & p_proxy ) {}
-
-	void Renderer::removeProxyRepresentation( Proxy::Representation & p_proxy ) {}
-
 	void Renderer::_applyRepresentationLogic( Proxy::Representation * const p_representation )
 	{
 		using namespace Proxy;
@@ -447,7 +443,7 @@ namespace VTX::Renderer
 			const bool isSphereRadiusFixed
 				= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
 			float sphereRadiusFixed = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
-			float sphereRadiusAdd	= p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
+			const float sphereRadiusAdd = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
 
 			// Scale sphere radius to cylinder radius.
 			if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
@@ -488,54 +484,49 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
+	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
 	{
 		using namespace Proxy;
 
-		_proxyRepresentations.insert(
-			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
-		);
+		_proxyRepresentation = &p_proxy;
 
 		BinaryBuffer buffer;
-		for ( Proxy::Representation * const representation : _proxyRepresentations )
-		{
-			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ) );
-			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ) );
-			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ) );
-			buffer.write( representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ) );
-			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ) );
-			buffer.write( representation->get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) );
 
-			// showAtoms	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
-			showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
-			showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ) );
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ) );
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) );
 
-			_applyRepresentationLogic( representation );
+		// showAtoms	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+		// showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+		// showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
 
-			// Callbacks.
-			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
-				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
-				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
-				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
-				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
+		_applyRepresentationLogic( &p_proxy );
 
-			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
-				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
-				[ this, representation ]( const float p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
-				[ this ]( const bool p_value )
-			{ setValue( uint( p_value ), "RepresentationsCylinderColorBlending", 0 ); };
+		// Callbacks.
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
 
-			representation->onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
-				[ this, representation ]( const bool p_value ) { _applyRepresentationLogic( representation ); };
-			representation->onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
-				[ this ]( const bool p_value )
-			{ setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
-		}
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
+			[ this ]( const bool p_value ) { setValue( uint( p_value ), "RepresentationsCylinderColorBlending", 0 ); };
+
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
+			[ this ]( const bool p_value ) { setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
 
 		buffer.close();
 
@@ -547,8 +538,6 @@ namespace VTX::Renderer
 
 		setNeedUpdate( true );
 	}
-
-	void Renderer::removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies ) {}
 
 #pragma endregion Proxy representations
 

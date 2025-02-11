@@ -106,13 +106,9 @@ namespace VTX::Renderer
 		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
 		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
 
-		void addProxyRepresentation( Proxy::Representation & p_proxy );
-		void removeProxyRepresentation( Proxy::Representation & p_proxy );
-		void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
-		void removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
-
 		void setProxyCamera( Proxy::Camera & p_proxy );
 		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
+		void setProxyRepresentation( Proxy::Representation & p_proxies );
 		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
@@ -243,12 +239,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief All data proxies.
 		 */
-		std::vector<Proxy::System *>		 _proxiesSystems;
-		std::vector<Proxy::Representation *> _proxyRepresentations;
-		Proxy::Camera *						 _proxyCamera		  = nullptr;
-		Proxy::ColorLayout *				 _proxyColorLayout	  = nullptr;
-		Proxy::RenderSettings *				 _proxyRenderSettings = nullptr;
-		Proxy::Voxels *						 _proxyVoxels		  = nullptr;
+		std::vector<Proxy::System *> _proxiesSystems;
+		Proxy::Representation *		 _proxyRepresentation = nullptr;
+		Proxy::Camera *				 _proxyCamera		  = nullptr;
+		Proxy::ColorLayout *		 _proxyColorLayout	  = nullptr;
+		Proxy::RenderSettings *		 _proxyRenderSettings = nullptr;
+		Proxy::Voxels *				 _proxyVoxels		  = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
 		void _removeProxySystem( Proxy::System & p_proxy );

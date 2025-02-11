@@ -42,11 +42,7 @@ namespace VTX::App::Component::Representation
 
 		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SES, _representation.hasSes );
 
-		RENDERER_SYSTEM().onReady() += [ this ]()
-		{
-			std::vector<Renderer::Proxy::Representation *> rep = { _proxy.get() };
-			RENDERER_SYSTEM().addProxyRepresentations( rep );
-		};
+		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRepresentation( *_proxy ); };
 	}
 
 } // namespace VTX::App::Component::Representation

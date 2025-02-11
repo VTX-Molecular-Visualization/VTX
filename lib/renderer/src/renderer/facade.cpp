@@ -54,24 +54,9 @@ namespace VTX::Renderer
 		_renderer->removeProxySystems( p_proxies );
 	}
 
-	void Facade::addProxyRepresentation( Proxy::Representation & p_proxy )
+	void Facade::setProxyRepresentation( Proxy::Representation & p_proxy )
 	{
-		_renderer->addProxyRepresentation( p_proxy );
-	}
-
-	void Facade::removeProxyRepresentation( Proxy::Representation & p_proxy )
-	{
-		_renderer->removeProxyRepresentation( p_proxy );
-	}
-
-	void Facade::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
-	{
-		_renderer->addProxyRepresentations( p_proxies );
-	}
-
-	void Facade::removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
-	{
-		_renderer->removeProxyRepresentations( p_proxies );
+		_renderer->setProxyRepresentation( p_proxy );
 	}
 
 	void Facade::setProxyCamera( Proxy::Camera & p_proxy ) { _renderer->setProxyCamera( p_proxy ); }

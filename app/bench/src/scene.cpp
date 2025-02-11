@@ -135,7 +135,7 @@ namespace VTX::Bench
 			residueIds,
 			polymerChainIds,
 			carbohydrateChainIds,
-			uint( rand() % 3 ) } );
+			0 } );
 	}
 
 } // namespace VTX::Bench
