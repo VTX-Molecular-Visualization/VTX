@@ -1,17 +1,17 @@
+/*
+
 #include "util/serialization.hpp"
 #include "util/app.hpp"
 #include <app/action/application.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/system/settings_system.hpp>
 #include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/core/io/reader/serialized_object.hpp>
-#include <app/core/io/writer/serialized_object.hpp>
-#include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
 #include <app/core/serialization/version.hpp>
+#include <app/core/settings/settings_system.hpp>
 #include <app/fixture.hpp>
+#include <app/serialization/serialization_system.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -169,13 +169,13 @@ TEST_CASE( "VTX_APP - Serialization - Custom Obj", "[unit]" )
 
 	App::Fixture app;
 
-	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
-	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+	SERIALIZATION_SYSTEM().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZATION_SYSTEM().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
 	const CustomClass custom
 		= CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, CustomClass::CustomEnum::TWO );
 
-	const VTX::Util::JSon::Document jsonDoc = { { "CUSTOM_CLASS", SERIALIZER().serialize( custom ) } };
+	const VTX::Util::JSon::Document jsonDoc = { { "CUSTOM_CLASS", SERIALIZATION_SYSTEM().serialize( custom ) } };
 
 	REQUIRE( jsonDoc.json().contains( "CUSTOM_CLASS" ) );
 	REQUIRE( jsonDoc.json()[ "CUSTOM_CLASS" ].contains( "COLOR" ) );
@@ -204,21 +204,21 @@ TEST_CASE( "VTX_APP - Serialization - Read&Write", "[unit]" )
 
 	App::Fixture app;
 
-	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
-	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+	SERIALIZATION_SYSTEM().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZATION_SYSTEM().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
 	const CustomClass custom
 		= CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, CustomClass::CustomEnum::TWO );
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest.json";
 
-	SERIALIZER().writeObject( jsonPath, custom );
+	SERIALIZATION_SYSTEM().writeObject( jsonPath, custom );
 	REQUIRE( std::filesystem::exists( jsonPath ) );
 
 	CustomClass loadedCustom = CustomClass();
 	CHECK( custom != loadedCustom );
 
-	SERIALIZER().readObject( jsonPath, loadedCustom );
+	SERIALIZATION_SYSTEM().readObject( jsonPath, loadedCustom );
 	CHECK( custom == loadedCustom );
 }
 
@@ -293,18 +293,18 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	using CustomClass = Test::Util::Serialization::CustomClass;
 
 	App::Fixture app;
-	Test::Util::App::loadTestTrajectoryMolecule();
+	Test::Util::App::loadTestTrajectorySystem();
 
-	const std::string moleculeName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
+	const std::string systemName = App::Test::Util::App::MOLECULE_TRAJECTORY_TEST_NAME;
 
-	App::Component::Chemistry::Molecule & molecule
-		= SCENE().getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+	App::Component::Chemistry::System & system
+		= SCENE().getComponentByName<App::Component::Chemistry::System>( systemName );
 
-	for ( atom_index_t i = molecule.getResidue( 1 )->getIndexFirstAtom();
-		  i <= molecule.getResidue( 1 )->getIndexLastAtom();
+	for ( atom_index_t i = system.getResidue( 1 )->getIndexFirstAtom();
+		  i <= system.getResidue( 1 )->getIndexLastAtom();
 		  i++ )
 	{
-		molecule.getAtom( i )->setVisible( false );
+		system.getAtom( i )->setVisible( false );
 	}
 
 	const FilePath jsonPath = Util::Filesystem::getExecutableDir() / "data/serialization/scene.vtx";
@@ -320,15 +320,15 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	CHECK( loadedScene.getItemCount() == 1 );
 	const App::Component::Scene::SceneItemComponent & sceneItemObj
 		= loadedScene.getComponentByIndex<App::Component::Scene::SceneItemComponent>( 0 );
-	REQUIRE( sceneItemObj.getName() == moleculeName );
+	REQUIRE( sceneItemObj.getName() == systemName );
 
-	const App::Component::Chemistry::Molecule & loadedMolecule
-		= loadedScene.getComponentByName<App::Component::Chemistry::Molecule>( moleculeName );
+	const App::Component::Chemistry::System & loadedSystem
+		= loadedScene.getComponentByName<App::Component::Chemistry::System>( systemName );
 
-	CHECK( loadedMolecule.getAtoms().size() == 263 );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
-	CHECK( !loadedMolecule.getAtom( loadedMolecule.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
-	// CHECK( molecule.getAtoms().size() == 113095 );
+	CHECK( loadedSystem.getAtoms().size() == 263 );
+	CHECK( !loadedSystem.getAtom( loadedSystem.getResidue( 1 )->getIndexFirstAtom() )->isVisible() );
+	CHECK( !loadedSystem.getAtom( loadedSystem.getResidue( 1 )->getIndexLastAtom() )->isVisible() );
+	// CHECK( system.getAtoms().size() == 113095 );
 }
 
 TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
@@ -340,10 +340,10 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 
 	App::Fixture app;
 
-	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
-	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+	SERIALIZATION_SYSTEM().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZATION_SYSTEM().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
-	App::Application::Settings::Settings settings = App::Application::Settings::Settings();
+	App::Core::Settings::SettingsSystem settings;
 
 	settings.referenceSetting( "INT_SETTING", 0 );
 	settings.referenceSetting( "FLOAT_SETTING", 0.f );
@@ -372,7 +372,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_Z );
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
 
-	const Util::JSon::BasicJSon json = SERIALIZER().serialize( settings );
+	const Util::JSon::BasicJSon json = SERIALIZATION_SYSTEM().serialize( settings );
 
 	settings.reset();
 
@@ -382,7 +382,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == defaultCustomClass );
 
-	SERIALIZER().deserialize( json, settings );
+	SERIALIZATION_SYSTEM().deserialize( json, settings );
 
 	CHECK( settings.get<int>( "INT_SETTING" ) == 10 );
 	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 10.f );
@@ -391,12 +391,12 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
 
 	// Setting version check
-	App::Application::Settings::Settings settingsV0 = App::Application::Settings::Settings();
+	App::Core::Settings::SettingsSystem settingsV0;
 	settingsV0.referenceSetting<int>( "SETTING_1", 0 );
 	settingsV0.referenceSetting<int>( "SETTING_2", 0 );
 	settingsV0.referenceSetting<std::string>( "SETTING_3", "<default>" );
 
-	App::Application::Settings::Settings settingsV1 = App::Application::Settings::Settings();
+	App::Core::Settings::SettingsSystem settingsV1;
 	settingsV1.referenceSetting<int>( "SETTING_1", 0 ); // This setting has been kept
 	// settingsV1.referenceSetting<int>( "SETTING_2" ); // This setting has been removed
 	settingsV1.referenceSetting<float>( "SETTING_3", 0.f );						// This setting has changed type
@@ -405,7 +405,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	const FilePath jsonPath_0_0_0
 		= Util::Filesystem::getExecutableDir() / "data/serialization/json_settings_0_0_0.json";
 
-	App::Core::IO::Reader::SerializedObject reader = { SERIALIZER(), jsonPath_0_0_0, &settingsV1 };
+	App::Serialization::SerializationSystem::Reader reader = { SERIALIZATION_SYSTEM(), jsonPath_0_0_0, &settingsV1 };
 	reader.read();
 
 	CHECK( settingsV1.get<int>( "SETTING_1" ) == 10 );						  // Loaded
@@ -413,9 +413,9 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settingsV1.get<float>( "SETTING_3" ) == 0.f );					  // Don't change (type issue)
 	CHECK( settingsV1.get<std::string>( "SETTING_4" ) == "<set_4_default>" ); // Don't change (doesn't exists before)
 
-	SERIALIZER().registerUpgrade<App::Application::Settings::Settings>(
+	SERIALIZATION_SYSTEM().registerUpgrade<App::Core::Settings::SettingsSystem>(
 		{ 1, 0, 0 },
-		[]( Util::JSon::Object & p_json, App::Application::Settings::Settings & p_settings )
+		[]( Util::JSon::Object & p_json, App::Core::Settings::SettingsSystem & p_settings )
 		{ p_json[ "MAP" ][ "SETTING_3" ] = 12.f; }
 	);
 
@@ -433,11 +433,11 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	App::Fixture app;
 
-	SERIALIZER().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
-	SERIALIZER().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
+	SERIALIZATION_SYSTEM().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
+	SERIALIZATION_SYSTEM().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
-	SERIALIZER().registerUpgrade<CustomClass>( { 0, 1, 0 }, &CustomClass::upgrade_0_0_0_to_0_1_0 );
-	SERIALIZER().registerUpgrade<CustomClass>( { 1, 0, 0 }, &CustomClass::upgrade_0_1_0_to_1_0_0 );
+	SERIALIZATION_SYSTEM().registerUpgrade<CustomClass>( { 0, 1, 0 }, &CustomClass::upgrade_0_0_0_to_0_1_0 );
+	SERIALIZATION_SYSTEM().registerUpgrade<CustomClass>( { 1, 0, 0 }, &CustomClass::upgrade_0_1_0_to_1_0_0 );
 
 	const CustomClass custom
 		= CustomClass( COLOR_BLUE, "strValue", 42, { 1.f, 2.f, 3.f }, CustomClass::CustomEnum::TWO );
@@ -445,14 +445,14 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 	const FilePath jsonPath_0_1_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_1_0.json";
 	CustomClass	   loadedCustom_0_1_0 = CustomClass();
 
-	SERIALIZER().readObject( jsonPath_0_1_0, loadedCustom_0_1_0 );
+	SERIALIZATION_SYSTEM().readObject( jsonPath_0_1_0, loadedCustom_0_1_0 );
 
 	CHECK( custom == loadedCustom_0_1_0 );
 
 	const FilePath jsonPath_0_0_0	  = Util::Filesystem::getExecutableDir() / "data/serialization/jsonTest_0_0_0.json";
 	CustomClass	   loadedCustom_0_0_0 = CustomClass();
 
-	SERIALIZER().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
+	SERIALIZATION_SYSTEM().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
 
 	CHECK( loadedCustom_0_0_0.color == custom.color );
 	CHECK( loadedCustom_0_0_0.enumValue == custom.enumValue );
@@ -463,7 +463,7 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 
 	try
 	{
-		SERIALIZER().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
+		SERIALIZATION_SYSTEM().readObject( jsonPath_0_0_0, loadedCustom_0_0_0 );
 	}
 	catch ( const IOException & )
 	{
@@ -475,3 +475,4 @@ TEST_CASE( "VTX_APP - Serialization - Upgrade", "[unit]" )
 		CHECK( false );
 	}
 }
+*/

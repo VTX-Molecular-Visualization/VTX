@@ -10,29 +10,27 @@ namespace VTX::Util
 	class Chrono
 	{
 	  public:
-		using Task	= std::function<void()>;
-		using Timer = std::function<float( const Chrono::Task & )>;
+		using Task = std::function<void()>;
+		// using Timer = std::function<float( const Chrono::Task & )>;
 
 		static long long getTimestamp();
 
-		void		start();
-		void		stop();
-		float		elapsedTime() const;
-		std::string elapsedTimeStr() const;
-		float		intervalTime();
+		void  start();
+		void  stop();
+		float elapsedTime() const;
+		float intervalTime();
 
 	  private:
 		using SystemClock = std::chrono::system_clock;
 		using Clock		  = std::chrono::high_resolution_clock;
-		using Duration	  = std::chrono::duration<float>;
-		using Ms		  = std::chrono::milliseconds;
+		using Duration	  = std::chrono::duration<float, std::milli>;
 
 		Clock::time_point _begin;
 		Clock::time_point _interval;
 		Clock::time_point _end;
 	};
 
-	inline const Chrono::Timer CHRONO_CPU = []( const Chrono::Task & p_task )
+	inline const float CHRONO_CPU( const Chrono::Task & p_task )
 	{
 		Chrono c;
 		c.start();

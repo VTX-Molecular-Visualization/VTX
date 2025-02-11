@@ -7,7 +7,7 @@
 namespace VTX::App::Filesystem
 {
 
-	static FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
+	inline const FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
 
 	inline const FilePath getExecutableDir()
 	{
@@ -20,6 +20,7 @@ namespace VTX::App::Filesystem
 	inline const FilePath getSnapshotsDir() { return getExecutableDir() / "snapshots"; }
 	inline const FilePath getRendersDir() { return getExecutableDir() / "renders"; }
 	inline const FilePath getLogsDir() { return getExecutableDir() / "logs"; }
+	inline const FilePath getCacheDir() { return getExecutableDir() / "cache"; }
 	inline const FilePath getLibrariesDir() { return getExecutableDir() / "libraries"; }
 	inline const FilePath getRepresentationsLibraryDir() { return getLibrariesDir() / "representations"; }
 	inline const FilePath getRenderEffectPresetsLibraryDir() { return getLibrariesDir() / "render_effects"; }
@@ -33,9 +34,9 @@ namespace VTX::App::Filesystem
 	inline const FilePath getLicenseFile() { return getExecutableDir() / "license.txt"; }
 
 	// Dev directories.
-	static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
-	static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
-	static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
+	// static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
+	inline const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
+	inline const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
 
 	inline const FilePath getShadersPath( const FilePath & p_filename )
 	{
@@ -59,6 +60,12 @@ namespace VTX::App::Filesystem
 	{
 		std::filesystem::create_directory( getLogsDir() );
 		return FilePath( getLogsDir() / p_filename );
+	}
+
+	inline const FilePath getCachePath( const FilePath & p_filename )
+	{
+		std::filesystem::create_directory( getCacheDir() );
+		return FilePath( getCacheDir() / p_filename );
 	}
 
 	inline const FilePath getRepresentationPath( const FilePath & p_filename )

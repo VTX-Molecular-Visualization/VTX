@@ -11,7 +11,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct AtomIt
 		{
-			AtomIt( Molecule * const p_molecule, const atom_index_t p_index, const atom_index_t p_end );
+			AtomIt( System * const p_system, const atom_index_t p_index, const atom_index_t p_end );
 
 			Atom & operator*() const;
 			Atom * operator->();
@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 			AtomIt operator++( int );
 
 		  private:
-			Molecule * const   _molecule;
+			System * const   _system;
 			atom_index_t	   _index;
 			const atom_index_t _end;
 
@@ -34,7 +34,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 		};
 
 		AtomContainer(
-			Molecule * const   p_molecule,
+			System * const   p_system,
 			const atom_index_t p_firstAtomIndex,
 			const atom_index_t p_atomCount
 		);
@@ -43,7 +43,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 		AtomIt end();
 
 	  private:
-		Molecule * const   _molecule;
+		System * const   _system;
 		const atom_index_t _firstAtomIndex;
 		const atom_index_t _atomCount;
 	};

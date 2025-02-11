@@ -6,6 +6,7 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <cstdint>
 
 namespace VTX
 {
@@ -37,6 +38,7 @@ namespace VTX
 	using Quatd = glm::dquat;
 
 	using atom_index_t = uint;
+	using ByteNumber   = size_t;
 
 	using Hash = size_t;
 } // namespace VTX

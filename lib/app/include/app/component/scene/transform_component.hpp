@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 #define __VTX_APP_COMPONENT_SCENE_TRANSFORM__
 
-#include "app/application/system/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include <util/callback.hpp>
 #include <util/math/transform.hpp>
 
@@ -10,10 +10,6 @@ namespace VTX::App::Component::Scene
 {
 	class Transform : public Core::ECS::BaseComponent
 	{
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Transform> registration {
-			"Scene::TransformComponent"
-		};
-
 	  public:
 		Transform();
 		Transform( Util::Math::Transform * p_transformPtr );
@@ -66,7 +62,7 @@ namespace VTX::App::Component::Scene
 
 		void applyTransform( const Util::Math::Transform & p_transform );
 
-		Util::Callback<Util::Math::Transform> onTransform;
+		Util::Callback<Util::Math::Transform &> onTransform;
 
 	  private:
 		void _updateRotation();

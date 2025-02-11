@@ -2,26 +2,21 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_TRAJECTORY__
 
 #include "_fwd.hpp"
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/player/base_player.hpp"
 #include "enum_trajectory.hpp"
 #include <util/callback.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	class Trajectory
+	class Trajectory : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static const Application::System::ECSSystem::ComponentStaticIDRegistration<Trajectory> registration {
-			"Chemistry::TrajectoryComponent"
-		};
-
 	  public:
 		Trajectory();
-		Trajectory( Molecule * const p_molecule );
+		Trajectory( System * const p_system );
 
-		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; }
-		Molecule * const	   getMoleculePtr() const { return _moleculePtr; }
+		const System * const getConstSystemPtr() const { return _systemPtr; }
+		System * const		 getSystemPtr() const { return _systemPtr; }
 
 		size_t getCurrentFrame() const;
 		void   setCurrentFrame( const size_t p_frameIndex );
@@ -29,7 +24,7 @@ namespace VTX::App::Component::Chemistry
 		size_t getFrameCount() const;
 
 		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
-		void							setPlayer( std::unique_ptr<App::Core::Player::BasePlayer> & p_player );
+		void							setPlayer( App::Core::Player::BasePlayer * const p_player );
 
 		Util::Callback<size_t> onFrameChange;
 
@@ -37,8 +32,8 @@ namespace VTX::App::Component::Chemistry
 		void _update( const float p_deltaTime );
 		void _referenceUpdateFunction();
 
-		Molecule *									   _moleculePtr = nullptr;
-		std::unique_ptr<App::Core::Player::BasePlayer> _player		= nullptr;
+		System *						_systemPtr = nullptr;
+		App::Core::Player::BasePlayer * _player	   = nullptr;
 	};
 } // namespace VTX::App::Component::Chemistry
 #endif

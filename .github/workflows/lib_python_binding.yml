@@ -1,0 +1,49 @@
+name: Lib Python Binding
+
+on:
+  push:
+    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+    paths: ['lib/python_binding/**', '.github/workflows/lib_python_binding.yml']
+
+env:
+  LIB_DIR: ${{github.workspace}}/lib
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-22.04]
+      fail-fast: false
+
+    steps:
+    - name: Set git to use CRLF
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+      
+    - name: Create default profile
+      run: conan profile detect --force
+
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run:  |
+        conan export util
+        conan export core
+        conan export io
+        conan export renderer
+        conan export app
+        conan create python_binding -b missing -s compiler.cppstd=20 -o vtx_python_binding/*:test=True
+      

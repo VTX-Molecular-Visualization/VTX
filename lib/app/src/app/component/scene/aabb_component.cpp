@@ -1,5 +1,4 @@
 #include "app/component/scene/aabb_component.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/helper/math.hpp"
@@ -10,10 +9,10 @@ namespace VTX::App::Component::Scene
 {
 	void AABB::init()
 	{
-		if ( MAIN_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) )
+		if ( ECS_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) )
 		{
 			Component::Scene::Transform & transformComponent
-				= MAIN_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+				= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 
 			_linkedTransform = &transformComponent;
 
@@ -23,18 +22,20 @@ namespace VTX::App::Component::Scene
 
 	void AABB::invalidateAABB() { _aabb.invalidate(); }
 
-	const Util::Math::AABB & AABB::getLocalAABB() const
+	const Util::Math::AABB & AABB::getLocalAABB()
 	{
-		if ( !_aabb.isValid() )
+		if ( not _aabb.isValid() )
+		{
 			_aabb = _recomputeAABB();
+		}
 		return _aabb;
 	};
 
-	const Util::Math::AABB & AABB::getWorldAABB() const
+	const Util::Math::AABB & AABB::getWorldAABB()
 	{
-		if ( !_worldAabb.isValid() )
+		if ( not _worldAabb.isValid() )
 		{
-			Core::ECS::BaseEntity entity = MAIN_REGISTRY().getEntity( *this );
+			Core::ECS::BaseEntity entity = ECS_REGISTRY().getEntity( *this );
 
 			if ( _linkedTransform != nullptr )
 			{

@@ -27,9 +27,9 @@ namespace VTX
 		// Log info sent by callback
 		struct LogInfo
 		{
-			LOG_LEVEL	level;
-			std::string date;
-			std::string message;
+			LOG_LEVEL		 level;
+			std::string		 date;
+			std::string_view message;
 		};
 
 		class Logger final
@@ -49,7 +49,7 @@ namespace VTX
 			static void flush();
 			static void stop();
 
-			inline static Util::Callback<LogInfo> onPrintLog;
+			inline static Util::Callback<const LogInfo &> onPrintLog;
 		};
 
 	} // namespace Util

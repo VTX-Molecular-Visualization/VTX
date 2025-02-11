@@ -1,37 +1,39 @@
 #include "app/component/scene/pickable.hpp"
 #include "app/action/selection.hpp"
-#include "app/application/selection/selection_manager.hpp"
-#include "app/application/system/action_manager.hpp"
+#include "app/selection/selection_manager.hpp"
+#include "app/core/action/action_system.hpp"
 
 namespace VTX::App::Component::Scene
 {
 	Pickable::Pickable() {}
 	Pickable::~Pickable() {}
 
-	void Pickable::pick( const Application::Selection::PickingInfo & p_ids, const PickType p_pickType ) const
+	void Pickable::pick( const Selection::PickingInfo & p_ids, const PickType p_pickType ) const
 	{
-		const std::unique_ptr<Application::Selection::SelectionData> selectionData = _pickableFunc( p_ids );
+		const std::unique_ptr<Selection::SelectionData> selectionData = _pickableFunc( p_ids );
 
 		switch ( p_pickType )
 		{
 		case PickType::SET:
 		{
-			VTX_ACTION().execute<Action::Selection::Select>(
-				*selectionData, Application::Selection::AssignmentType::SET
+			ACTION_SYSTEM().execute<Action::Selection::Select>(
+				*selectionData, Selection::AssignmentType::SET
 			);
 		}
 		break;
 
 		case PickType::TOGGLE:
 		{
+			bool isSelected = _isSelectionDataSelected( *selectionData );
+
 			if ( _isSelectionDataSelected( *selectionData ) )
 			{
-				VTX_ACTION().execute<Action::Selection::Unselect>( *selectionData );
+				ACTION_SYSTEM().execute<Action::Selection::Unselect>( *selectionData );
 			}
 			else
 			{
-				VTX_ACTION().execute<Action::Selection::Select>(
-					*selectionData, Application::Selection::AssignmentType::APPEND
+				ACTION_SYSTEM().execute<Action::Selection::Select>(
+					*selectionData, Selection::AssignmentType::APPEND
 				);
 			}
 		}
@@ -42,13 +44,13 @@ namespace VTX::App::Component::Scene
 	}
 	bool Pickable::isSelected( const Core::UID::uid & p_uid ) const
 	{
-		const std::unique_ptr<Application::Selection::SelectionData> selectionData
+		const std::unique_ptr<Selection::SelectionData> selectionData
 			= _pickableFunc( { p_uid, Core::UID::INVALID_UID } );
 
 		return _isSelectionDataSelected( *selectionData );
 	}
 
-	bool Pickable::_isSelectionDataSelected( const Application::Selection::SelectionData & p_selectionData ) const
+	bool Pickable::_isSelectionDataSelected( const Selection::SelectionData & p_selectionData ) const
 	{
 		return CURRENT_SELECTION().isSelected( p_selectionData.getSelectionComponent() )
 			   && CURRENT_SELECTION()

@@ -25,7 +25,7 @@
 #include <QDockWidget>
 #include <app/tool/base_tool.hpp>
 #include <ui/qt/application.hpp>
-#include <ui/qt/base_widget.hpp>
+#include <ui/qt/core/base_dock_widget.hpp>
 #include <ui/qt/dock_widget/inspector.hpp>
 #include <ui/qt/util.hpp>
 #include <util/logger.hpp>
@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
-	class MainWindow : public UI::QT::BaseWidget<MainWindow, QDockWidget>
+	class MainWindow : public UI::QT::Core::BaseDockWidget<MainWindow>
 	{
 	  public:
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
@@ -66,21 +66,15 @@ namespace VTX::Tool::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::BaseWidget<MainWindow, QDockWidget>( p_parent )
+		MainWindow( QWidget * const p_parent ) : UI::QT::Core::BaseDockWidget<MainWindow>( p_parent )
 		{
-			QWidget * mainWidget = new QWidget( this );
-			setWidget( mainWidget );
-
-			mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
-
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
-			mainWidget->setLayout( new QVBoxLayout );
-			mainWidget->layout()->addWidget( new QToolBar );
+			_layout->addWidget( new QToolBar );
 
 			QWidget * screenWidget = new QWidget;
-			mainWidget->layout()->addWidget( screenWidget );
+			_layout->addWidget( screenWidget );
 
 			setWindowState( Qt::WindowState::WindowActive );
 			resize( PREFERRED_SIZE );

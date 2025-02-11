@@ -8,7 +8,7 @@
 
 namespace VTX::App::Controller::Camera
 {
-	void Trackball::init()
+	Trackball::Trackball()
 	{
 		using namespace App::Core;
 
@@ -27,13 +27,8 @@ namespace VTX::App::Controller::Camera
 			{ int( Keys::ROLL_RIGHT ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_E ) } },
 		} );
 	}
-	void Trackball::setActive( const bool p_active )
-	{
-		BaseCameraController::setActive( p_active );
 
-		if ( p_active )
-			getCamera().detachTarget();
-	}
+	/*
 
 	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 	{
@@ -42,21 +37,19 @@ namespace VTX::App::Controller::Camera
 
 		return p_camera.getTransform().getPosition() + p_camera.getTransform().getFront() * distanceToTarget;
 	}
+	*/
 
-	void Trackball::_updateInputs( const float & p_deltaTime )
+	void Trackball::update( const float p_deltaTime, const float p_elapsedTime )
 	{
+		float deltaTime = p_deltaTime * 1e-3f;
 		using namespace App::Core;
-
-		// if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )
-		//	return;
 
 		// Wheel.
 		float deltaDistance = 0.f;
 		if ( INPUT_MANAGER().getDeltaMouseWheel() != 0 )
 		{
-			deltaDistance
-				= INPUT_MANAGER().getDeltaMouseWheel() * 0.00001f
-				  * VTX::Util::Math::distance( getCamera().getTransform().getPosition(), getCamera().getTarget() );
+			deltaDistance = INPUT_MANAGER().getDeltaMouseWheel() * 0.00001f
+							* VTX::Util::Math::distance( _camera->getTransform().getPosition(), _camera->getTarget() );
 		}
 
 		// Mouse left.
@@ -77,11 +70,10 @@ namespace VTX::App::Controller::Camera
 			float deltaX = -INPUT_MANAGER().getDeltaMousePosition().x * 0.1f;
 			float deltaY = INPUT_MANAGER().getDeltaMousePosition().y * 0.1f;
 
-			const Vec3f newTarget
-				= getCamera().getTarget()
-				  + getCamera().getTransform().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+			const Vec3f newTarget = _camera->getTarget()
+									+ _camera->getTransform().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 
-			getCamera().setTargetWorld( newTarget );
+			_camera->setTargetWorld( newTarget );
 
 			_needUpdate = true;
 		}
@@ -89,35 +81,35 @@ namespace VTX::App::Controller::Camera
 		// Keyboard.
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::MOVE_FRONT ) ] ) )
 		{
-			deltaDistance = 1.5f * p_deltaTime;
+			deltaDistance = 1.5f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::MOVE_BACK ) ] ) )
 		{
-			deltaDistance = -1.5f * p_deltaTime;
+			deltaDistance = -1.5f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_RIGHT ) ] ) )
 		{
-			deltaVelocity.x = 1e4f * p_deltaTime;
+			deltaVelocity.x = 1e4f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_LEFT ) ] ) )
 		{
-			deltaVelocity.x = -1e4f * p_deltaTime;
+			deltaVelocity.x = -1e4f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_UP ) ] ) )
 		{
-			deltaVelocity.y = 1e4f * p_deltaTime;
+			deltaVelocity.y = 1e4f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_DOWN ) ] ) )
 		{
-			deltaVelocity.y = -1e4f * p_deltaTime;
+			deltaVelocity.y = -1e4f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROLL_RIGHT ) ] ) )
 		{
-			deltaVelocity.z = 1e4f * p_deltaTime;
+			deltaVelocity.z = 1e4f * deltaTime;
 		}
 		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROLL_LEFT ) ] ) )
 		{
-			deltaVelocity.z = -1e4f * p_deltaTime;
+			deltaVelocity.z = -1e4f * deltaTime;
 		}
 
 		// Set values from settings.
@@ -158,16 +150,15 @@ namespace VTX::App::Controller::Camera
 		// Update if needed.
 		if ( _needUpdate )
 		{
-			float distance
-				= VTX::Util::Math::distance( getCamera().getTransform().getPosition(), getCamera().getTarget() );
-			distance = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+			float distance = VTX::Util::Math::distance( _camera->getTransform().getPosition(), _camera->getTarget() );
+			distance	   = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
 			const Quatf rotation
-				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? p_deltaTime : 0.2f ) );
+				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? deltaTime : 0.2f ) );
 
-			getCamera().getTransform().rotateAround( rotation, getCamera().getTarget(), distance );
+			_camera->getTransform().rotateAround( rotation, _camera->getTarget(), distance );
 			// float d = Util::distance( _camera.getPosition(), _target );
-			// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
+			// VTX_LOG_FILE( std::to_string( deltaTime ) + " / " + std::to_string( distance ) + " / "
 			//			  + std::to_string( d ) );
 			_needUpdate = false;
 		}
@@ -175,7 +166,7 @@ namespace VTX::App::Controller::Camera
 		// Handle elasticity.
 		if ( elasticityActive )
 		{
-			_updateElasticity( p_deltaTime );
+			_updateElasticity( deltaTime );
 		}
 		else
 		{
@@ -193,20 +184,11 @@ namespace VTX::App::Controller::Camera
 				VTX::Util::Math::abs( _velocity ), Vec3f( _CONTROLLER_ELASTICITY_THRESHOLD )
 			);
 
-			if ( !INPUT_MANAGER().isMouseLeftPressed() && res.x && res.y && res.z )
+			if ( not INPUT_MANAGER().isMouseLeftPressed() && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;
 			}
 		}
-	}
-
-	void Trackball::reset()
-	{
-		BaseCameraController::reset();
-
-		_needUpdate = true;
-		getCamera().setTargetWorld( App::SCENE().getAABB().centroid() );
-		_velocity = VEC3F_ZERO;
 	}
 
 } // namespace VTX::App::Controller::Camera

@@ -1,11 +1,12 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_ENABLE__
 #define __VTX_APP_COMPONENT_SCENE_ENABLE__
 
-#include "app/application/system/ecs_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
 
 namespace VTX::App::Component::Scene
 {
+	/*
 	class EnableComponent : public Core::ECS::BaseComponent
 	{
 	  private:
@@ -24,5 +25,6 @@ namespace VTX::App::Component::Scene
 	  private:
 		bool _enabled = true;
 	};
+	*/
 } // namespace VTX::App::Component::Scene
 #endif

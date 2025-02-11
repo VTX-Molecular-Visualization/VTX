@@ -12,39 +12,38 @@
 
 namespace VTX::App::Test::Util
 {
-	void App::initApp()
+	PythonFixture::PythonFixture()
 	{
-		static bool isInit;
-		if ( !isInit )
-		{
-			const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
-			std::filesystem::create_directory( path );
-			LOGGER::init( path );
+		// INTERPRETOR( &iiii );
+		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		INTERPRETOR().init();
 
-			INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
-
-			APP().start( { 0, nullptr } );
-			isInit = true;
-		}
+		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
+		std::filesystem::create_directory( path );
+		LOGGER::init( path );
 
 		SCENE().reset();
-		resetInterpretor();
 	}
-
-	void App::resetInterpretor()
+	PythonFixture::~PythonFixture()
+	{
+		resetInterpretor();
+		// INTERPRETOR( nullptr );
+		//  SCENE().reset();
+	}
+	void PythonFixture::resetInterpretor()
 	{
 		INTERPRETOR().clearBinders();
-		INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
+		// INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 
-	void App::loadMolecule( const std::string & p_moleculePath )
+	void PythonFixture::loadSystem( const std::string & p_systemPath )
 	{
-		// Create MoleculeEntity
-		const FilePath moleculePath						 = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
-		VTX::App::Action::Scene::LoadMolecule openAction = VTX::App::Action::Scene::LoadMolecule( moleculePath );
+		// Create SystemEntity
+		const FilePath						systemPath = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
+		VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
 		openAction.execute();
 	}
 
-	void App::loadTestMolecule() { loadMolecule( MOLECULE_TEST_NAME_EXT ); }
+	void PythonFixture::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
 
 } // namespace VTX::App::Test::Util

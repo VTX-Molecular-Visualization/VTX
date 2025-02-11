@@ -22,6 +22,7 @@ class VTXUiRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_core/1.0")
         self.requires("qt/6.6.3", transitive_headers=True)
+        self.requires("entt/3.13.2", transitive_headers=True) # TODO : see <lib/python_binding/cmake/library.cmake> for details
         
     def config_options(self):
         if self.settings.os == "Windows":

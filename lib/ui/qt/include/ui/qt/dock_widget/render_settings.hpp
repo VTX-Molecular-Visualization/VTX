@@ -1,27 +1,27 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
 #define __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_dock_widget.hpp"
 #include <QDockWidget>
+
+namespace VTX::App::Component::Representation
+{
+	class RenderSettings;
+}
 
 namespace VTX::UI::QT::DockWidget
 {
-
-	class RenderSettings : public BaseWidget<RenderSettings, QDockWidget>
+	class RenderSettings : public Core::BaseDockWidget<RenderSettings>
 	{
 	  public:
-		RenderSettings( QWidget * p_parent ) : BaseWidget<RenderSettings, QDockWidget>( "Render settings", p_parent )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+		RenderSettings( QWidget *  );
 
-			auto * widget = new QWidget( this );
-			auto * layout = new QVBoxLayout( widget );
-			layout->setContentsMargins( 0, 0, 0, 0 );
-			layout->setSizeConstraint( QLayout::SetNoConstraint );
-			setWidget( widget );
-		}
-
-		virtual ~RenderSettings() {}
+	  private:
+		void _createGroupBoxShading( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxSSAO( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxOutline( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxFog( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxSelection( App::Component::Representation::RenderSettings * const );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

@@ -11,32 +11,38 @@
 
 namespace VTX::App::Action::Scene
 {
-	class LoadMolecule final : public App::Core::Action::BaseAction
+	class LoadSystem final : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit LoadMolecule( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		// explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
-		// explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		// explicit Open( const FilePath & p_trajectoryPath, Model::Chemistry::Molecule & p_target )
-		//{
-		//	_trajectoryTargets.emplace_back( &p_target );
-		//	_paths.emplace_back( p_trajectoryPath );
-		// }
-		// explicit Open( const FilePath &									 p_trajectoryPath,
-		//			   const std::vector<Model::Chemistry::Molecule *> & p_targets ) :
-		//	_trajectoryTargets( p_targets )
-		//{
-		//	_paths.emplace_back( p_trajectoryPath );
-		// }
+		explicit LoadSystem( const FilePath & p_path ) : _path( p_path ) {}
+		explicit LoadSystem( const FilePath & p_path, std::string * const p_buffer ) :
+			_path( p_path ), _buffer( p_buffer )
+		{
+		}
 
 		void execute() override;
 
 	  private:
-		std::vector<FilePath>			  _paths   = std::vector<FilePath>();
-		std::map<FilePath, std::string *> _buffers = std::map<FilePath, std::string *>();
+		const FilePath		_path;
+		std::string * const _buffer = nullptr;
 
-		std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
-			= std::vector<Component::Chemistry::Molecule *>();
+		std::vector<Component::Chemistry::System *> _trajectoryTargets;
+	};
+
+	// TODO: move to other file?
+	class DownloadSystem final : public App::Core::Action::BaseAction
+	{
+	  public:
+		explicit DownloadSystem( const std::string_view p_url, const FilePath & p_filename ) :
+			_url( p_url ), _filename( p_filename.filename() )
+		{
+		}
+
+		void execute() override;
+
+	  private:
+		const std::string_view _url;
+		const FilePath		   _filename;
 	};
 
 	class CreateViewpoint final : public App::Core::Action::BaseAction

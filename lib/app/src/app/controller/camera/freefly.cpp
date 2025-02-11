@@ -3,10 +3,11 @@
 
 namespace VTX::App::Controller::Camera
 {
-	void Freefly::init()
+	Freefly::Freefly()
 	{
 		using namespace App::Core;
 
+		// TODO: ??
 		_mapping = Input::KeyMapping( {
 			{ int( Keys::MOVE_LEFT ),
 			  { Input::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Input::Key::Key_A ) } },
@@ -21,27 +22,14 @@ namespace VTX::App::Controller::Camera
 		} );
 	}
 
-	void Freefly::setActive( const bool p_active )
-	{
-		BaseCameraController::setActive( p_active );
-
-		if ( p_active )
-			getCamera().attachTarget();
-		else
-			getCamera().detachTarget();
-	}
-
-	void Freefly::_updateInputs( const float & p_deltaTime )
+	void Freefly::update( const float p_deltaTime, const float p_elapsedTime )
 	{
 		using namespace App::Core;
 
-		// if ( !QT_APP()->getMainWindow().getRender()->hasFocus() )
-		//	return;
-
-		// Rotation.
+		//  Rotation.
 		if ( INPUT_MANAGER().isMouseLeftPressed() )
 		{
-			getCamera().getTransform().localRotate( Vec3f(
+			_camera->getTransform().localRotate( Vec3f(
 				-rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().y * ( invertY ? -1.f : 1.f ),
 				-rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x,
 				0.f
@@ -49,7 +37,7 @@ namespace VTX::App::Controller::Camera
 		}
 		if ( INPUT_MANAGER().isMouseRightPressed() )
 		{
-			getCamera().getTransform().rotateRoll( rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x );
+			_camera->getTransform().rotateRoll( rotationSpeed * INPUT_MANAGER().getDeltaMousePosition().x );
 		}
 
 		// Translation.
@@ -86,7 +74,7 @@ namespace VTX::App::Controller::Camera
 		}
 
 		translation *= translationSpeed;
-		translation *= p_deltaTime;
+		translation *= p_deltaTime * 1e-3f;
 
 		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
 		{
@@ -97,7 +85,7 @@ namespace VTX::App::Controller::Camera
 			translation /= decelerationFactor;
 		}
 
-		getCamera().getTransform().localMove( translation );
+		_camera->getTransform().localMove( translation );
 	}
 
 } // namespace VTX::App::Controller::Camera

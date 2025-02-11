@@ -15,6 +15,9 @@ namespace VTX::Util::Filesystem
 	// Read file at path and return content as a string
 	const std::string readPath( const FilePath & p_filePath );
 
+	// Write content to file at path. If file already exists, it will be overwritten.
+	void writeFile( const FilePath & p_filePath, const std::string & p_content );
+
 	// Remove all files at path (if directory, remove all file in it, if file, remove all sibling files)
 	void removeAll( const FilePath & p_filePath );
 

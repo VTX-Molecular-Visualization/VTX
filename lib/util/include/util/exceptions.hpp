@@ -40,16 +40,16 @@ namespace VTX
 		explicit VTXException( const std::string & p_err ) : Exception( "VTX", p_err ) {}
 	};
 
-	class GLException : public Exception
+	class GraphicException : public Exception
 	{
 	  public:
 		template<typename... Args>
-		explicit GLException( const std::string_view & p_fmt, Args &&... p_args ) :
-			Exception( "GL", p_fmt, std::forward<Args>( p_args )... )
+		explicit GraphicException( const std::string_view & p_fmt, Args &&... p_args ) :
+			Exception( "3D", p_fmt, std::forward<Args>( p_args )... )
 
 		{
 		}
-		explicit GLException( const std::string & p_err ) : Exception( "GL", p_err ) {}
+		explicit GraphicException( const std::string & p_err ) : Exception( "3D", p_err ) {}
 	};
 
 	class HTTPException : public Exception

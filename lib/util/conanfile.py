@@ -19,11 +19,11 @@ class VTXUtilRecipe(ConanFile):
         
     def requirements(self):
         self.requires("glm/0.9.9.8", transitive_headers=True)
-        self.requires("spdlog/1.14.1", transitive_headers=True)
-        self.requires("nlohmann_json/3.11.3", transitive_headers=True)
-        self.requires("magic_enum/0.9.6", transitive_headers=True)
-        self.requires("cpr/1.10.5", transitive_headers=True)  
-        self.requires("catch2/3.7.0")
+        self.requires("spdlog/1.15.0", transitive_headers=True)
+        self.requires("magic_enum/0.9.7", transitive_headers=True)
+        self.requires("cpr/1.10.5")
+        self.requires("stb/cci.20240531")
+        self.requires("catch2/3.7.1")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -51,6 +51,6 @@ class VTXUtilRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["vtx_util"]
         cmake_files = [os.path.join("cmake", "configure_target.cmake"), os.path.join("cmake", "copy_registration.cmake")]
-        self.cpp_info.set_property("cmake_build_modules",cmake_files)
+        self.cpp_info.set_property("cmake_build_modules", cmake_files)
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = []

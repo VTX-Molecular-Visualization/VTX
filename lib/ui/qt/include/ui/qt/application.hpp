@@ -12,7 +12,7 @@
 
 namespace VTX::UI::QT
 {
-	class Application final : public App::UI::BaseApplication<Widget::MainWindow>, public QApplication, public Savable
+	class Application final : public App::UI::BaseApplication<Widget::MainWindow>, public QApplication
 	{
 	  public:
 		Application();
@@ -23,9 +23,6 @@ namespace VTX::UI::QT
 		// bool event( QEvent * ) override;
 		//  Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;
-
-		void save() override;
-		void restore() override;
 
 	  protected:
 		// Override BaseApplication.

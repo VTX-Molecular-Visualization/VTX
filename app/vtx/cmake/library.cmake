@@ -34,4 +34,4 @@ target_link_libraries(vtx PRIVATE Qt6::Widgets)
 target_link_libraries(vtx PRIVATE Qt6::OpenGLWidgets)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
-vtx_copy_registered_data(vtx)
+vtx_copy_registered_data(vtx) # allow declared files to be copied on build

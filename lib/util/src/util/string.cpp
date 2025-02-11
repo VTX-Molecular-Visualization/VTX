@@ -77,4 +77,65 @@ namespace VTX::Util::String
 		return upcasedStr;
 	}
 
+	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 )
+	{
+		double			   size = static_cast<double>( p_size );
+		std::ostringstream oss;
+
+		const uint base = p_isBase10 ? 1000 : 1024;
+
+		if ( p_size < base )
+		{
+			oss << size << " B";
+		}
+		else if ( p_size < base * base )
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / base ) << " KB";
+		}
+		else if ( p_size < base * base * base )
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / ( base * base ) ) << " MB";
+		}
+		else
+		{
+			oss << std::fixed << std::setprecision( 2 ) << ( size / ( base * base * base ) ) << " GB";
+		}
+
+		return oss.str();
+	}
+
+	std::string durationToStr( const float p_durationInMs )
+	{
+		std::ostringstream oss;
+		int				   totalMilliseconds = int( p_durationInMs );
+
+		int hours = totalMilliseconds / 3600000;
+		totalMilliseconds %= 3600000;
+
+		int minutes = totalMilliseconds / 60000;
+		totalMilliseconds %= 60000;
+
+		int seconds		 = totalMilliseconds / 1000;
+		int milliseconds = totalMilliseconds % 1000;
+
+		if ( hours > 0 )
+		{
+			oss << hours << " h ";
+		}
+		if ( minutes > 0 || hours > 0 )
+		{
+			oss << minutes << " min ";
+		}
+		if ( seconds > 0 || minutes > 0 || hours > 0 )
+		{
+			oss << seconds << " s ";
+		}
+		if ( milliseconds > 0 || ( hours == 0 && minutes == 0 && seconds == 0 ) )
+		{
+			oss << milliseconds << " ms";
+		}
+
+		return oss.str();
+	}
+
 } // namespace VTX::Util::String

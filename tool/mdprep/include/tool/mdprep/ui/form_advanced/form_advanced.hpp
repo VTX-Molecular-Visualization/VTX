@@ -82,6 +82,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		void						  _createAndPlaceUiItems( QWidget * p_container ) noexcept;
 		QWidget *					  _uiSetupContainer( QWidget * p_container ) noexcept;
 		void						  _uiAddSystem( QVBoxLayout * p_target ) noexcept;
+		void						  _uiAddExpertButton( QVBoxLayout * p_target ) noexcept;
 		void						  _uiAddMinimization( QVBoxLayout * p_target ) noexcept;
 		void _uiAddStep( QVBoxLayout * p_target, const char * p_header, UiData::FieldSet & p_field ) noexcept;
 		void _loadValues( const MdParameters & p_defaults ) noexcept;

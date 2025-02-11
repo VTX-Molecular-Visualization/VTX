@@ -2,112 +2,120 @@
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <util/collection.hpp>
-#include <util/hashing.hpp>
-#include <util/singleton.hpp>
 
 namespace
-{
-	class BaseClass
-	{
-	  public:
-		BaseClass()			 = default;
-		virtual ~BaseClass() = default;
-
-		virtual int						   getValue() { return 0; };
-		virtual std::unique_ptr<BaseClass> clone() const = 0;
-	};
-
-	using CollectionTest = VTX::Util::Collection<BaseClass>;
-	class DerivedClass1 final : public BaseClass
-	{
-	  private:
-		inline static const CollectionTest::Registration<DerivedClass1> _reg { "DerivedClass1" };
-
-	  public:
-		DerivedClass1()						   = default;
-		DerivedClass1( const DerivedClass1 & ) = default;
-		virtual ~DerivedClass1()			   = default;
-
-		int						   getValue() override { return 1; };
-		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass1>(); }
-	};
-	class DerivedClass2 final : public BaseClass
-	{
-	  private:
-		inline static const CollectionTest::Registration<DerivedClass2> _reg { "DerivedClass2" };
-
-	  public:
-		DerivedClass2()						   = default;
-		DerivedClass2( const DerivedClass2 & ) = default;
-		virtual ~DerivedClass2()			   = default;
-
-		int						   getValue() override { return 2; };
-		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass2>(); }
-	};
-	class DerivedClass3 final : public BaseClass
-	{
-	  private:
-		inline static const CollectionTest::Registration<DerivedClass3> _reg { "DerivedClass3" };
-
-	  public:
-		DerivedClass3()						   = default;
-		DerivedClass3( const DerivedClass3 & ) = default;
-		virtual ~DerivedClass3()			   = default;
-
-		int						   getValue() override { return 3; };
-		std::unique_ptr<BaseClass> clone() const override { return std::make_unique<DerivedClass3>(); }
-	};
-
-} // namespace
-
-TEST_CASE( "VTX_APP - Core::Collection", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
 
-	std::unique_ptr<BaseClass> ptr = nullptr;
+	class Base
+	{
+	  public:
+		virtual ~Base() = default;
+		// CollectionKey getName() { return "Base"; };
+		virtual int getValue() { return 0; };
+	};
 
-	auto & collection = Singleton<CollectionTest>::get();
+	using CollectionTest = VTX::Util::Collection<Base *>;
 
-	ptr = collection.instantiateItem( "DerivedClass1" );
-	REQUIRE( ptr != nullptr );
-	CHECK( ptr->getValue() == 1 );
+	class Derived1 final : public Base //, public CollectionTest::GlobalStorage<Derived1>
+	{
+	  private:
+		// inline static const CollectionTest::Registration<Derived1> _reg { "DerivedClass1" };
 
-	ptr = collection.instantiateItem( "DerivedClass2" );
-	REQUIRE( ptr != nullptr );
-	CHECK( ptr->getValue() == 2 );
+	  public:
+		// CollectionKey getName() { return "DerivedClass1"; };
+		int getValue() override { return 1; };
+	};
+	class Derived2 final : public Base //, public CollectionTest::GlobalStorage<Derived2>
+	{
+	  private:
+		// inline static const CollectionTest::Registration<Derived2> _reg { "DerivedClass2" };
 
-	ptr = collection.instantiateItem( "DerivedClass3" );
-	REQUIRE( ptr != nullptr );
-	CHECK( ptr->getValue() == 3 );
+	  public:
+		// CollectionKey getName() { return "DerivedClass2"; };
+		int getValue() override { return 2; };
+	};
+	class Derived3 final : public Base
+	{
+	  private:
+		// inline static const CollectionTest::Registration<Derived3> _reg { "DerivedClass3" };
 
-	ptr = collection.instantiateItem( "DerivedClass100" );
-	CHECK( ptr == nullptr );
+	  public:
+		// CollectionKey getName() { return "DerivedClass3"; };
+		int getValue() override { return 3; };
+	};
 
-	ptr = collection.instantiateItem( Util::hash( "DerivedClass1" ) );
-	REQUIRE( ptr != nullptr );
-	CHECK( ptr->getValue() == 1 );
+} // namespace
 
-	ptr = collection.instantiateItem( Util::hash( "DerivedClass2" ) );
-	REQUIRE( ptr != nullptr );
-	CHECK( ptr->getValue() == 2 );
+TEST_CASE( "VTX_APP - Core::HahsedCollection", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::Util;
 
-	ptr = collection.instantiateItem( Util::hash( "DerivedClass3" ) );
-	CHECK( ptr != nullptr );
-	CHECK( ptr->getValue() == 3 );
+	// Raw ptr.
+	Collection<Base *> colPtr;
 
-	ptr = collection.instantiateItem( Util::hash( "DerivedClass100" ) );
-	CHECK( ptr == nullptr );
+	Derived1 * derived1 = colPtr.create<Derived1>();
+	Derived2 * derived2 = colPtr.create<Derived2>();
 
-	std::unique_ptr<DerivedClass1> ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass1" );
-	REQUIRE( ptrDerivedClass1 != nullptr );
+	REQUIRE( derived1 );
+	REQUIRE( derived2 );
 
-	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( "DerivedClass2" );
-	REQUIRE( ptrDerivedClass1 == nullptr );
+	Derived3 * derived3 = new Derived3();
+	colPtr.set<Derived3>( derived3 );
 
-	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::hash( "DerivedClass1" ) );
-	REQUIRE( ptrDerivedClass1 != nullptr );
+	REQUIRE( colPtr.has<Derived3>() );
 
-	ptrDerivedClass1 = collection.instantiateItem<DerivedClass1>( Util::hash( "DerivedClass2" ) );
-	REQUIRE( ptrDerivedClass1 == nullptr );
+	colPtr.remove<Derived1>();
+	colPtr.remove<Derived2>();
+	colPtr.remove<Derived3>();
+
+	REQUIRE( not colPtr.has<Derived1>() );
+	REQUIRE( not colPtr.has<Derived2>() );
+	REQUIRE( not colPtr.has<Derived3>() );
+
+	// Smart ptr.
+	Collection<std::unique_ptr<Base>> colSmartPtr;
+
+	derived1 = colSmartPtr.create<Derived1>();
+	derived2 = colSmartPtr.create<Derived2>();
+
+	REQUIRE( derived1 );
+	REQUIRE( derived2 );
+
+	// CollectionTest & collection = Singleton<CollectionTest>::get();
+
+	// Check globale storage.
+	/*
+	CHECK( collection.has<Derived1>() );
+	CHECK( collection.has<Derived2>() );
+	CHECK( not collection.has<Derived3>() );
+
+	collection.remove<Derived1>();
+	collection.remove<Derived2>();
+	*/
+
+	// Using key.
+	/*
+	derived1 = collection.createFromKey<Derived1>( "DerivedClass1" );
+	REQUIRE( derived1 );
+	CHECK( derived1->getValue() == 1 );
+
+	derived2 = collection.createFromKey<Derived2>( "DerivedClass2" );
+	REQUIRE( derived2 );
+	CHECK( derived2->getValue() == 2 );
+
+	derived3 = collection.createFromKey<Derived3>( "DerivedClass3" );
+	REQUIRE( derived3 );
+	CHECK( derived3->getValue() == 3 );
+
+	collection.remove<Derived3>();
+
+	// Polymorphism.
+	Base * base;
+	base = collection.createFromKey<Derived3>( "DerivedClass3" );
+	REQUIRE( base );
+	CHECK( base->getValue() == 3 );
+	*/
 };

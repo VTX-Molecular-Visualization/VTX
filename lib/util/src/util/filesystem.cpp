@@ -35,14 +35,29 @@ namespace VTX::Util::Filesystem
 
 		if ( inputFile.is_open() )
 		{
-			std::string fileContent( ( std::istreambuf_iterator<char>( inputFile ) ),
-									 std::istreambuf_iterator<char>() );
+			std::string fileContent(
+				( std::istreambuf_iterator<char>( inputFile ) ), std::istreambuf_iterator<char>()
+			);
 
 			return fileContent;
 		}
 		else
 		{
 			throw IOException( "Can not read " + p_filePath.string() );
+		}
+	}
+
+	void writeFile( const FilePath & p_filePath, const std::string & p_content )
+	{
+		std::ofstream outputFile( p_filePath );
+
+		if ( outputFile.is_open() )
+		{
+			outputFile << p_content;
+		}
+		else
+		{
+			throw IOException( "Can not write to " + p_filePath.string() );
 		}
 	}
 
@@ -53,8 +68,9 @@ namespace VTX::Util::Filesystem
 		while ( std::filesystem::exists( p_filePath ) )
 		{
 			p_filePath = parentPath
-						 / p_filePath.stem().string().append( "_" + std::to_string( counter )
-															  + p_filePath.extension().string() );
+						 / p_filePath.stem().string().append(
+							 "_" + std::to_string( counter ) + p_filePath.extension().string()
+						 );
 			counter++;
 		}
 	}

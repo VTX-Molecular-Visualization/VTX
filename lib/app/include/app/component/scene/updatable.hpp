@@ -1,38 +1,27 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_UPDATABLE__
 #define __VTX_APP_COMPONENT_SCENE_UPDATABLE__
 
-#include "app/application/scene_utility.hpp"
 #include "app/core/ecs/base_component.hpp"
 #include <functional>
-#include <map>
-#include <string>
+#include <util/callback.hpp>
 
 namespace VTX::App::Component::Scene
 {
+	using UpdateFunction = std::function<void( const float, const float )>;
+
 	class Updatable : public Core::ECS::BaseComponent
 	{
 	  public:
 		Updatable() = default;
+		virtual ~Updatable();
 
-		void addCallback( const std::string & p_key, const Application::SceneUtility::UpdateCallback & p_callback )
-		{
-			_callbacks.emplace( p_key, p_callback );
-		}
-		void removeCallback( const std::string & p_key ) { _callbacks.erase( p_key ); }
+		Util::CallbackId addUpdateFunction( const UpdateFunction & );
+		void			 removeUpdateFunction( const Util::CallbackId );
 
-		bool isEmpty() const { return _callbacks.empty(); }
-
-		void update( const float p_deltaTime ) const
-		{
-			for ( const auto & pairKeyCallback : _callbacks )
-			{
-				pairKeyCallback.second( p_deltaTime );
-			}
-		}
+		inline bool isEmpty() const { return _callbackIds.empty(); }
 
 	  private:
-		std::map<std::string, Application::SceneUtility::UpdateCallback> _callbacks
-			= std::map<std::string, Application::SceneUtility::UpdateCallback>();
+		std::vector<Util::CallbackId> _callbackIds;
 	};
 } // namespace VTX::App::Component::Scene
 #endif

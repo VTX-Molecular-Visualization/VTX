@@ -35,6 +35,10 @@ namespace VTX
 	constexpr Vec3f VEC3F_LOWEST = Vec3f( FLOAT_LOWEST );
 	constexpr Vec3f VEC3F_MAX	 = Vec3f( FLOAT_MAX );
 
+	constexpr Vec3f RIGHT_AXIS = VEC3F_X;
+	constexpr Vec3f UP_AXIS	   = VEC3F_Y;
+	constexpr Vec3f FRONT_AXIS = -VEC3F_Z;
+
 	constexpr Vec4f VEC4F_ZERO = Vec4f( 0.f, 0.f, 0.f, 0.f );
 	constexpr Vec4f VEC4F_XYZW = Vec4f( 1.f, 1.f, 1.f, 1.f );
 

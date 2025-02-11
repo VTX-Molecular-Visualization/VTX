@@ -3,26 +3,28 @@
 
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
-#include "ui/qt/base_widget.hpp"
-#include "ui/qt/helper.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include "ui/qt/settings.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
-#include <app/core/input/input_manager.hpp>
 #include <app/ui/concepts.hpp>
-#include <ui/qt/dialog/progress.hpp>
+// #include <ui/qt/dialog/progress.hpp>
 #include <util/logger.hpp>
+
+namespace VTX::UI::QT::Dialog
+{
+	class Progress;
+}
 
 namespace VTX::UI::QT::Widget
 {
 
-	class MainWindow : public BaseWidget<MainWindow, QMainWindow>, public Savable
+	class MainWindow : public Core::BaseWidget<MainWindow, QMainWindow>, public Savable
 	{
 	  public:
 		MainWindow();
-		virtual ~MainWindow() {}
 
 		void prepare();
 		void build();
@@ -32,46 +34,11 @@ namespace VTX::UI::QT::Widget
 
 		inline void setClosing( const bool p_closing ) { _closing = p_closing; }
 
-		inline void keyPressEvent( QKeyEvent * const p_event ) override
-		{
-			_inputManager.handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-		}
-
-		inline void keyReleaseEvent( QKeyEvent * const p_event ) override
-		{
-			_inputManager.handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
-		}
-
-		inline void mousePressEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseReleaseEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseDoubleClickEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void mouseMoveEvent( QMouseEvent * const p_event ) override
-		{
-			_inputManager.handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
-		}
-
-		inline void wheelEvent( QWheelEvent * const p_event ) override
-		{
-			_inputManager.handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
-		}
-
-		void changeEvent( QEvent * const p_event ) override;
-		void closeEvent( QCloseEvent * p_event ) override;
+		void changeEvent( QEvent * ) override;
+		void closeEvent( QCloseEvent * ) override;
 
 		template<typename M>
-		M * createMenu()
+		M * const createMenu()
 		{
 			M * const menu = new M( menuBar() );
 			menuBar()->addMenu( menu );
@@ -79,7 +46,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		template<typename TB>
-		TB * createToolBar()
+		TB * const createToolBar()
 		{
 			TB * const toolBar = new TB( this );
 			addToolBar( toolBar );
@@ -87,7 +54,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		template<typename DW>
-		DW * createDockWidget( const Qt::DockWidgetArea p_area )
+		DW * const createDockWidget( const Qt::DockWidgetArea p_area )
 		{
 			QDockWidget * other = nullptr;
 			for ( QDockWidget * w : findChildren<QDockWidget *>() )
@@ -113,6 +80,10 @@ namespace VTX::UI::QT::Widget
 		void save() override;
 		void restore() override;
 
+	  protected:
+		void dragEnterEvent( QDragEnterEvent * );
+		void dropEvent( QDropEvent * );
+
 	  private:
 		QPointer<OpenGLWidget>	   _openGLWidget;
 		QPointer<StatusBar>		   _statusBar;
@@ -121,8 +92,6 @@ namespace VTX::UI::QT::Widget
 		// TODO: keep like that or re-tabify?
 		QByteArray _defaultGeometry;
 		QByteArray _defaultState;
-
-		App::Core::Input::InputManager & _inputManager;
 
 		bool _closing = false;
 	};

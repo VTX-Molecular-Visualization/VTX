@@ -9,14 +9,42 @@ target_sources(vtx_io
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Tests.
-add_executable(vtx_io_test "${CMAKE_CURRENT_LIST_DIR}/../test/main.cpp")
+file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
+add_executable(vtx_io_test ${TEST_SOURCES})
 configure_target(vtx_io_test)
 
 if (NOT DEFINED _VTX_IO_CONAN)
 	target_link_libraries(vtx_io PRIVATE vtx_util)
 	target_link_libraries(vtx_io PRIVATE vtx_core)		
 	target_link_libraries(vtx_io_test PRIVATE vtx_util)
-	target_link_libraries(vtx_io_test PRIVATE vtx_core)	
+	target_link_libraries(vtx_io_test PRIVATE vtx_core)		
+
+	# WIP
+	add_executable(vtx_io_new_process "${CMAKE_CURRENT_LIST_DIR}/../test/new_process/new_process.cpp")
+	target_include_directories(vtx_io_new_process PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
+	configure_target(vtx_io_new_process)
+
+	target_link_libraries(vtx_io_new_process PRIVATE vtx_util)
+	target_link_libraries(vtx_io_new_process PRIVATE vtx_core)	
+	target_link_libraries(vtx_io_new_process PRIVATE vtx_io)
+	target_link_libraries(vtx_io_new_process PRIVATE LibArchive::LibArchive)	
+	target_link_libraries(vtx_io_new_process PRIVATE fmt::fmt)	
+	target_link_libraries(vtx_io_new_process PRIVATE Boost::headers)
+
+	add_executable(vtx_io_pdb100 "${CMAKE_CURRENT_LIST_DIR}/../test/new_process/pdb100.cpp")
+	target_compile_definitions(vtx_io_pdb100 PRIVATE PDB_DATABASE_DIR="C:/Users/Valen/data/pdb100")
+	target_compile_definitions(vtx_io_pdb100 PRIVATE NUM_PROCESSES=24)
+	target_include_directories(vtx_io_pdb100 PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
+	configure_target(vtx_io_pdb100)
+	target_link_libraries(vtx_io_pdb100 PRIVATE vtx_util)
+	target_link_libraries(vtx_io_pdb100 PRIVATE vtx_core)	
+	target_link_libraries(vtx_io_pdb100 PRIVATE fmt::fmt)	
+	target_link_libraries(vtx_io_pdb100 PRIVATE vtx_io)
+	target_link_libraries(vtx_io_pdb100 PRIVATE LibArchive::LibArchive)	
+	target_link_libraries(vtx_io_pdb100 PRIVATE Boost::headers)
+	add_dependencies(vtx_io_pdb100 vtx_io_new_process )
+	# !WIP
+
 else()
 	target_link_libraries(vtx_io PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_io PRIVATE vtx_core::vtx_core)
@@ -24,12 +52,16 @@ else()
 	target_link_libraries(vtx_io_test PRIVATE vtx_core::vtx_core)
 endif()
 
+
+
+
+
 target_link_libraries(vtx_io PRIVATE chemfiles::chemfiles)
 target_link_libraries(vtx_io_test PRIVATE vtx_io)
 target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
-vtx_copy_registered_data(vtx_io_test)
+vtx_copy_registered_data(vtx_io_test) # allow declared files to be copied on build
 
 include(CTest)
 include(Catch)

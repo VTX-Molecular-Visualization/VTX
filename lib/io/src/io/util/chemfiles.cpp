@@ -35,4 +35,4 @@ namespace VTX::IO::Util::Chemfiles
 		return IO::Util::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
 	}
 
-} // namespace VTX::IO::Util::Chemfiles
+} // namespace VTX::IO::Util::ChemfilesTrajectory

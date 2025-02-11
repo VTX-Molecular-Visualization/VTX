@@ -1,16 +1,18 @@
 #include "python_binding/binding/vtx_app_binder.hpp"
 #include "python_binding/action.hpp"
 #include "python_binding/binder.hpp"
+#include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/wrapper/arg.hpp"
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::PythonBinding::Binding
 {
 	void VTXAppBinder::bind( PyTXModule & p_vtxmodule )
 	{
 		Wrapper::Module commands = p_vtxmodule.commands();
-
+		VTX::VTX_INFO( "Applying binding on module." );
 		commands.bindAction<App::Action::Application::Open, const std::string &>(
 			"openFile", "Open files at given path.", Wrapper::Arg( "path" )
 		);
@@ -35,9 +37,9 @@ namespace VTX::PythonBinding::Binding
 
 	void VTXAppBinder::importHeaders()
 	{
-		_importObject( "PyTX.API", "select" );
-		_importObject( "PyTX.API", "intersect" );
-		_importObject( "PyTX.API", "exclusive" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "select" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "intersect" );
+		_importObject( fmt::format( "{}.API", vtx_module_name() ), "exclusive" );
 	}
 
 } // namespace VTX::PythonBinding::Binding

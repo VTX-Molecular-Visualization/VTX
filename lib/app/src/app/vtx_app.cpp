@@ -1,33 +1,24 @@
 #include "app/vtx_app.hpp"
 #include "app/action/animation.hpp"
 #include "app/action/application.hpp"
+#include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
-#include "app/application/ecs/entity_director.hpp"
-#include "app/application/ecs/registry_manager.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/selection/selection_manager.hpp"
-#include "app/application/system/action_manager.hpp"
-#include "app/application/system/renderer.hpp"
-#include "app/application/system/settings_system.hpp"
-#include "app/application/system/threading.hpp"
 #include "app/component/io/scene_file_info.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_camera.hpp"
-#include "app/component/render/proxy_color_layout.hpp"
-#include "app/component/render/proxy_molecule.hpp"
+#include "app/component/render/proxy_system.hpp"
 #include "app/controller/camera/trackball.hpp"
-#include "app/core/animation/animation_system.hpp"
+#include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/serialization/serialization.hpp"
-#include "app/core/worker/worker_manager.hpp"
-#include "app/entity/all_entities.hpp"
-#include "app/entity/application/scene_entity.hpp"
+#include "app/core/renderer/renderer_system.hpp"
+#include "app/core/threading/base_thread.hpp"
+#include "app/core/threading/threading_system.hpp"
+#include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
-#include "app/internal/application/settings.hpp"
-#include "app/internal/ecs/setup_entity_director.hpp"
-#include "app/internal/monitoring/all_metrics.hpp"
-#include "app/internal/serialization/all_serializers.hpp"
 #include "app/mode/visualization.hpp"
+#include "app/monitoring/constants.hpp"
+#include "app/selection/selection_manager.hpp"
+#include "app/settings.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <util/chrono.hpp>
@@ -41,17 +32,11 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
-		//_systemHandler = std::make_unique<Core::System::SystemHandler>();
-
-		Internal::Application::Settings::initSettings( SETTINGS() );
-		Internal::ECS::setupEntityDirector();
+		Settings::initSettings();
 
 		// Create scene.
-		Core::ECS::BaseEntity sceneEntity = ENTITY_DIRECTOR().build( Entity::SCENE_ENTITY_ID );
-		Application::Scene &  scene		  = MAIN_REGISTRY().getComponent<Application::Scene>( sceneEntity );
-
-		// Create renderer.
-		RENDERER().init();
+		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
+		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
@@ -60,13 +45,9 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		// TODO: call in main loop?
-		onUpdate += []( const float p_deltaTime, const float p_elapsedTime ) { SCENE().update( p_elapsedTime ); };
-		onUpdate +=
-			[]( const float p_deltaTime, const float p_elapsedTime ) { ANIMATION_SYSTEM().update( p_deltaTime ); };
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING().lateUpdate(); };
+		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
-		//// Create Databases
+		// Create Databases
 		//_representationLibrary
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
@@ -77,27 +58,32 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", p_args.toString() );
 
-		///////////
-		VTX::Renderer::Facade & rendererFacade = App::RENDERER().facade();
-		rendererFacade.build();
-		App::Component::Render::ProxyColorLayout & colorLayout
-			= App::MAIN_REGISTRY().findComponent<App::Component::Render::ProxyColorLayout>();
-		colorLayout.setup( rendererFacade );
-		rendererFacade.setProxyColorLayout( colorLayout.getProxy().proxy() );
-		static VTX::Renderer::Proxy::Representation			representation;
-		std::vector<VTX::Renderer::Proxy::Representation *> representations { &representation };
-		rendererFacade.addProxyRepresentations( representations );
+		// Build the renderer (graphic api backend context ready).
+		auto & renderer = RENDERER_SYSTEM();
 
-		App::Component::Render::ProxyCamera & proxyCamera
-			= App::MAIN_REGISTRY().getComponent<App::Component::Render::ProxyCamera>( App::SCENE().getCamera() );
-		proxyCamera.setInRenderer( rendererFacade );
-		////////////
+		if ( p_args.has( Args::NO_GRAPHICS ) )
+		{
+			VTX_WARNING( "No graphics" );
+			renderer.setDefault();
+		}
+		else
+		{
+			try
+			{
+				renderer.setOpenGL45( Filesystem::getShadersDir() );
+			}
+			catch ( const std::exception & e )
+			{
+				VTX_ERROR( "Failed to build renderer: {}", e.what() );
+				renderer.setDefault();
+				// TODO: exit?
+			}
+		}
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		_currentMode = std::make_unique<App::Mode::Visualization>();
-		_currentMode->enter();
+		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
 
 		onStart();
 		for ( Tool::BaseTool * const tool : _tools )
@@ -110,12 +96,9 @@ namespace VTX::App
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		// Log times.
-		// VTX_DEBUG( "Delta time: {} ms, Elapsed time: {} ms", p_deltaTime, p_elapsedTime );
-
 		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
 		frameInfo.set(
-			Internal::Monitoring::TICK_RATE_KEY,
+			Monitoring::TICK_RATE_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
 		);
 	}
@@ -126,48 +109,48 @@ namespace VTX::App
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::PRE_UPDATE_DURATION_KEY,
+			Monitoring::PRE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::UPDATE_DURATION_KEY,
+			Monitoring::UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::LATE_UPDATE_DURATION_KEY,
+			Monitoring::LATE_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::POST_UPDATE_DURATION_KEY,
+			Monitoring::POST_UPDATE_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
 		);
 
 		/*
 		frameInfo.set(
-			Internal::Monitoring::PRE_RENDER_DURATION_KEY,
+			Monitoring::PRE_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
 		);
 		*/
 
 		frameInfo.set(
-			Internal::Monitoring::RENDER_DURATION_KEY,
+			Monitoring::RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]()
-							  { RENDERER().facade().render( p_deltaTime, p_elapsedTime ); } )
+							  { RENDERER_SYSTEM().render( p_deltaTime, p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
-			Internal::Monitoring::POST_RENDER_DURATION_KEY,
+			Monitoring::POST_RENDER_DURATION_KEY,
 			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 		);
 
 		frameInfo.set(
-			Internal::Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
+			Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
 			Util::CHRONO_CPU(
 				[ p_elapsedTime ]()
 				{
@@ -193,7 +176,7 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		// Old::Application::Selection::SelectionManager::get().deleteModel();
+		// Old::Selection::SelectionManager::get().deleteModel();
 
 		for ( Tool::BaseTool * const tool : _tools )
 		{
@@ -202,15 +185,16 @@ namespace VTX::App
 		onStop();
 	}
 
-	void VTXApp::_handleArgs( const Args & p_args )
+	void VTXApp::_handleArgs( const Args & args )
 	{
+		/*
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
-		for ( const std::string & p_arg : p_args.all() )
+		for ( const auto arg : args.all() )
 		{
 			// If argument is an existing file
-			if ( std::filesystem::exists( p_arg ) )
+			if ( std::filesystem::exists( arg ) )
 			{
-				const FilePath		 path	  = FilePath( p_arg );
+				const FilePath		 path	  = FilePath( arg );
 				const FILE_TYPE_ENUM fileType = IO::Internal::Filesystem::getFileTypeFromFilePath( path );
 
 				try
@@ -219,28 +203,44 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::VTX_ACTION().execute<App::Action::Scene::LoadMolecule>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
-						App::VTX_ACTION().execute<App::Action::Application::OpenScene>( p_arg );
+						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCRIPT:
-						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( p_arg );
+						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( arg );
 						break;
 					}
 				}
 				catch ( const IOException & p_e )
 				{
-					VTX_ERROR( "Can't open file '{}' : {}.", p_arg, p_e.what() );
+					VTX_ERROR( "Can't open file '{}' : {}.", arg, p_e.what() );
+				}
+			}
+			// If argument is a system name.
+			else if ( arg.size() == 4 )
+			{
+				// Check only letter and number.
+				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
+				{
+					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+						arg, std::string( arg ) + ".pdb"
+					);
+				}
+				else
+				{
+					VTX_WARNING( "Argument '{}' is not a valid system name.", arg );
 				}
 			}
 			else
 			{
-				VTX_WARNING( "Argument '{}' is not a valid file path.", p_arg );
+				VTX_WARNING( "Argument '{}' is not valid.", arg );
 			}
 		}
+		*/
 	}
 
 	//	bool VTXApp::hasAnyModifications() const
@@ -256,9 +256,7 @@ namespace VTX::App
 	//	}
 
 	// TODO.
-	Mode::BaseMode & MODE() { return APP::getCurrentMode(); }
-
-	Application::Scene &	  SCENE() { return Util::Singleton<Application::Scene>::get(); }
+	Application::Scene &	  SCENE() { return APP::getScene(); }
 	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
 
 } // namespace VTX::App

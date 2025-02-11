@@ -1,5 +1,5 @@
 namespace VTX::App::Component::IO
 {
-	struct MoleculeMetadata;
+	class SystemMetadata;
 	class SceneFileInfo;
 } // namespace VTX::App::Component::IO

@@ -5,9 +5,10 @@
 #include <util/types.hpp>
 #include <vector>
 
+// TODO: replace by dll loading?
 // TODO: move to conan.
 #define VTX_UI_QT
-#define VTX_TOOL_EXAMPLE
+// #define VTX_TOOL_EXAMPLE
 #define VTX_TOOL_MDPREP
 
 #ifdef VTX_UI_QT
@@ -86,8 +87,9 @@ int main( int p_argc, char * p_argv[] )
 
 		app->init();
 
-		const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
-		args.add( molPath.string() );
+		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
+		const FilePath molPath = "1AGA";
+		// args.add( molPath.string() );
 
 		app->start( args );
 

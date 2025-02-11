@@ -9,11 +9,7 @@ namespace VTX::App::Core::Player
 	class Stop : public BasePlayer
 	{
 	  public:
-		inline static const Util::CollectionKey COLLECTION_ID  = "STOP";
-		inline static const std::string			DISPLAYED_NAME = "Stop";
-
-	  private:
-		inline static const Players::Registration<Stop> _reg { COLLECTION_ID };
+		inline static const std::string DISPLAYED_NAME = "Stop";
 
 	  public:
 		Stop();
@@ -21,9 +17,7 @@ namespace VTX::App::Core::Player
 
 		void play() override;
 
-		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
-		const Util::CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
-		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<Stop>( *this ); }
+		const std::string & getDisplayName() const override { return DISPLAYED_NAME; }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;

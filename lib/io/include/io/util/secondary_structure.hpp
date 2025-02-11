@@ -1,12 +1,12 @@
 #ifndef __VTX_IO_UTIL_SECONDARY_STRUCTURE__
 #define __VTX_IO_UTIL_SECONDARY_STRUCTURE__
 
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 
 namespace VTX::IO::Util::SecondaryStructure
 {
 
-	void computeStride( VTX::Core::Struct::Molecule & p_molecule );
+	void computeStride( VTX::Core::Struct::System & p_system );
 
 } // namespace VTX::IO::Util::SecondaryStructure
 

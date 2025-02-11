@@ -4,6 +4,7 @@
 #include "_fwd.hpp"
 #include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
@@ -13,18 +14,18 @@ namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	class Residue
+	class Residue : public Core::ECS::BaseComponent
 	{
 	  public:
 		Residue() = default;
-		Residue( Molecule * const p_molecule, const size_t p_index ) : _moleculePtr( p_molecule ), _index( p_index ) {}
+		Residue( System * const p_system, const size_t p_index ) : _systemPtr( p_system ), _index( p_index ) {}
 
 		const Chain * const getConstChainPtr() const;
 		Chain * const		getChainPtr() const;
 		void				setChainPtr( Chain * const p_chainPtr );
 
-		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; }
-		Molecule * const	   getMoleculePtr() const { return _moleculePtr; }
+		const System * const getConstSystemPtr() const { return _systemPtr; }
+		System * const		 getSystemPtr() const { return _systemPtr; }
 
 		size_t getIndex() const { return _index; }
 		void   setIndex( const size_t p_index ) { _index = p_index; }
@@ -43,12 +44,12 @@ namespace VTX::App::Component::Chemistry
 		size_t					getIndexInOriginalChain() const;
 		void					setIndexInOriginalChain( const size_t p_index );
 
-		const std::string & getShortName() const;
-		const std::string & getName() const;
-		const std::string & getLongName() const;
+		const std::string_view getShortName() const;
+		const std::string_view getName() const;
+		const std::string_view getLongName() const;
 
-		const Util::Color::Rgba & getColor() const { return _color; };
-		void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
+		// const Util::Color::Rgba & getColor() const { return _color; };
+		// void					  setColor( const Util::Color::Rgba p_color ) { _color = p_color; };
 
 		ChemDB::Residue::TYPE getType() { return _type; };
 		void				  setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; };
@@ -73,8 +74,8 @@ namespace VTX::App::Component::Chemistry
 		void remove();
 
 	  private:
-		Molecule * _moleculePtr = nullptr;
-		size_t	   _index		= INVALID_INDEX;
+		System * _systemPtr = nullptr;
+		size_t	 _index		= INVALID_INDEX;
 
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
 		size_t				  _indexInOriginalChain = INVALID_INDEX;

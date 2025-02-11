@@ -1,7 +1,6 @@
 #include "util/app.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene.hpp>
-#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/system.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -13,16 +12,16 @@ TEST_CASE( "VTX_APP - Scene", "[unit]" )
 
 	App::Fixture app;
 
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_0" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_1" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_2" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_3" );
-	Test::Util::App::loadMolecule( "1AGA.mmtf" );
-	SCENE().getComponentByName<Component::Chemistry::Molecule>( "1AGA" ).setName( "1AGA_4" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
+	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_0" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
+	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_1" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
+	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_2" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
+	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_3" );
+	Test::Util::App::loadSystem( "1AGA.mmtf" );
+	SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" ).setName( "1AGA_4" );
 
 	CHECK( SCENE().getItem( 0 ) == SCENE().getItem( "1AGA_0" ) );
 	CHECK( SCENE().getItem( 1 ) == SCENE().getItem( "1AGA_1" ) );

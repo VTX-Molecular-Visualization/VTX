@@ -1,6 +1,6 @@
 #include "ui/qt/widget/status_bar.hpp"
-#include "app/internal/monitoring/all_metrics.hpp"
-#include <app/application/system/renderer.hpp>
+#include "app/monitoring/constants.hpp"
+#include <app/core/renderer/renderer_system.hpp>
 #include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -22,9 +22,11 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
-		auto & renderer = App::RENDERER().facade();
-		renderer.onReady() += [ vendorLabel, &renderer ]()
-		{ vendorLabel->setText( QString::fromStdString( renderer.getInfos().renderer ) ); };
+		App::RENDERER_SYSTEM().onReady() += [ vendorLabel ]()
+		{
+			//
+			vendorLabel->setText( QString::fromStdString( App::RENDERER_SYSTEM().getInfos().renderer ) );
+		};
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );
@@ -34,9 +36,9 @@ namespace VTX::UI::QT::Widget
 			this,
 			[ this, fpsLabel ]()
 			{
-				const double tickrate = App::STATS().getAverage<double>( App::Internal::Monitoring::TICK_RATE_KEY );
+				const double tickrate = App::STATS().getAverage<double>( App::Monitoring::TICK_RATE_KEY );
 
-				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1.0 / tickrate ) ) );
+				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
 			}
 		);
 		timer->start( 1000 );

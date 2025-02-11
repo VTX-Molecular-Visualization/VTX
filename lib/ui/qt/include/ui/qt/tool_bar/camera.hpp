@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_QT_TOOL_BAR_CAMERA__
 #define __VTX_UI_QT_TOOL_BAR_CAMERA__
 
-#include "ui/qt/base_widget.hpp"
+#include "ui/qt/core/base_widget.hpp"
 #include <QToolBar>
 
 namespace VTX::UI::QT::ToolBar
 {
 
-	class Camera : public BaseWidget<Camera, QToolBar>
+	class Camera : public Core::BaseWidget<Camera, QToolBar>
 	{
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget<Camera, QToolBar>( "Camera", p_parent )
@@ -21,8 +21,6 @@ namespace VTX::UI::QT::ToolBar
 			addAction<Action::Camera::Orient>();
 			addAction<Action::Camera::Reset>();
 		}
-
-		virtual ~Camera() {}
 
 	  private:
 	};

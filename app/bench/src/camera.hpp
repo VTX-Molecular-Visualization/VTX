@@ -110,9 +110,9 @@ namespace VTX::Bench
 		inline static const float VELOCITY_ZOOM_MIN			   = 10.f;
 		inline static const float VELOCITY_ZOOM_MAX			   = 1000.f;
 
-		Util::Callback<Mat4f>		 callbackMatrixView;
-		Util::Callback<Mat4f>		 callbackMatrixProjection;
-		Util::Callback<Vec3f>		 callbackTranslation;
+		Util::Callback<Mat4f &>		 callbackMatrixView;
+		Util::Callback<Mat4f &>		 callbackMatrixProjection;
+		Util::Callback<Vec3f &>		 callbackTranslation;
 		Util::Callback<float, float> callbackClipInfos;
 		Util::Callback<bool>		 callbackPerspective;
 

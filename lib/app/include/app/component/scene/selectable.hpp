@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 #define __VTX_APP_COMPONENT_SCENE_SELECTABLE__
 
-#include "app/application/selection/concepts.hpp"
-#include "app/application/selection/selection_data.hpp"
-#include "app/application/system/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
+#include "app/selection/concepts.hpp"
+#include "app/selection/selection_data.hpp"
 #include <functional>
 #include <memory>
 #include <util/callback.hpp>
@@ -13,13 +13,8 @@ namespace VTX::App::Component::Scene
 {
 	class Selectable : public Core::ECS::BaseComponent
 	{
-	  private:
-		inline static Application::System::ECSSystem::ComponentStaticIDRegistration<Selectable> registration {
-			"Scene::SelectableComponent"
-		};
-
 	  public:
-		using SelectionDataGenerator = std::function<std::unique_ptr<Application::Selection::SelectionData>()>;
+		using SelectionDataGenerator = std::function<std::unique_ptr<Selection::SelectionData>()>;
 
 	  public:
 		Selectable();
@@ -27,7 +22,7 @@ namespace VTX::App::Component::Scene
 
 		bool isSelected() const;
 
-		template<Application::Selection::SelectionDataConcept T>
+		template<Selection::SelectionDataConcept T>
 		void setSelectionDataGenerator()
 		{
 			const SelectionDataGenerator generator = [ this ]() { return std::move( std::make_unique<T>( *this ) ); };
@@ -36,13 +31,13 @@ namespace VTX::App::Component::Scene
 
 		void setSelectionDataGenerator( const SelectionDataGenerator & p_generator );
 
-		std::unique_ptr<Application::Selection::SelectionData> instantiateSelectionData() const;
+		std::unique_ptr<Selection::SelectionData> instantiateSelectionData() const;
 
-		Util::Callback<Application::Selection::SelectionData> onSelect;
-		Util::Callback<Application::Selection::SelectionData> onDeselect;
+		Util::Callback<const Selection::SelectionData &> onSelect;
+		Util::Callback<const Selection::SelectionData &> onDeselect;
 
 	  private:
-		std::unique_ptr<Application::Selection::SelectionData> _defaultSelectionDataGenerator();
+		std::unique_ptr<Selection::SelectionData> _defaultSelectionDataGenerator();
 
 		SelectionDataGenerator _selectionDataGenerator;
 	};

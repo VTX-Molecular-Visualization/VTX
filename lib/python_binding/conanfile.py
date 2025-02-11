@@ -1,7 +1,7 @@
 import os
 import glob
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
 from conan.tools.files import copy
 from pathlib import Path
 
@@ -14,9 +14,10 @@ class VTXPythonBindingRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"#, "CMakeToolchain"
+    # generators =  "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*"
+    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
     
     def _generated_cmake_prefix(self):
         return "pybind11-"
@@ -24,24 +25,35 @@ class VTXPythonBindingRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("vtx_app/1.0")
+        self.requires("vtx_renderer/1.0")   
         self.requires("vtx_io/1.0")
-        self.requires("pybind11/2.12.0", transitive_headers=True)
+        self.requires("vtx_app/1.0")
+        self.requires("pybind11/2.13.6")
+        self.requires("catch2/3.7.1")
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-
+            
+    def generate(self):
+        tc = CMakeToolchain(self)
+        for r, d in self.dependencies.items(): 
+            self.output.info(f"Requirement {r}")
+            self.output.info(f"Is test {r.is_test} is override {r.override}")
+        tc.generate()    
+    
     def layout(self):
         cmake_layout(self)
 
-        self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
-        self.cpp.build.components["pytx"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_bin"].libdirs = self.cpp.build.libdirs
+        # self.cpp.build.components["vtx_python_binding_test"].libdirs = self.cpp.build.libdirs
 
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
@@ -49,13 +61,11 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
-        self.cpp_info.components["vtx_python_binding"].set_property("cmake_target_name", "vtx_python_binding::vtx_python_binding")
-        self.cpp_info.components["vtx_python_binding"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
-        
-        self.cpp_info.components["pytx"].libs = ["PyTX"]
-        self.cpp_info.components["pytx"].set_property("cmake_target_name", "vtx_python_binding::PyTX")
-        self.cpp_info.components["pytx"].requires =["vtx_util::vtx_util", "vtx_core::vtx_core", "vtx_app::vtx_app", "vtx_io::vtx_io", "pybind11::pybind11", "pybind11::embed"]
+         
+        self.cpp_info.components["vtx_python_api"].libs = ["vtx_python_api"]
 
+        self.cpp_info.components["vtx_python_binding_test"].libs = ["vtx_python_binding_test"] 
+  
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)
         files = glob.glob(path_python_module, recursive=True)

@@ -1,9 +1,8 @@
 #ifndef __VTX_APP_TEST_UTIL_SERIALIZATION__
 #define __VTX_APP_TEST_UTIL_SERIALIZATION__
 
-#include <app/application/system/serializer.hpp>
-#include <app/core/serialization/serialization.hpp>
 #include <app/core/serialization/upgrade_utility.hpp>
+#include <app/serialization/serialization_system.hpp>
 #include <app/vtx_app.hpp>
 #include <functional>
 #include <string>
@@ -33,9 +32,7 @@ namespace VTX::App::Test::Util::Serialization
 			const int					   p_intValue,
 			const Vec3f &				   p_vector,
 			CustomEnum					   p_enum
-		) :
-			color( p_color ),
-			strValue( p_strValue ), intValue( p_intValue ), vector( p_vector ), enumValue( p_enum )
+		) : color( p_color ), strValue( p_strValue ), intValue( p_intValue ), vector( p_vector ), enumValue( p_enum )
 		{
 		}
 
@@ -58,19 +55,19 @@ namespace VTX::App::Test::Util::Serialization
 
 		static VTX::Util::JSon::Object serialize( const CustomClass & p_obj )
 		{
-			return { { "COLOR", SERIALIZER().serialize( p_obj.color ) },
-					 { "STR", SERIALIZER().serialize( p_obj.strValue ) },
-					 { "INT", SERIALIZER().serialize( p_obj.intValue ) },
-					 { "VEC", SERIALIZER().serialize( p_obj.vector ) },
-					 { "ENUM", SERIALIZER().serialize( p_obj.enumValue ) } };
+			return { { "COLOR", SERIALIZATION_SYSTEM().serialize( p_obj.color ) },
+					 { "STR", SERIALIZATION_SYSTEM().serialize( p_obj.strValue ) },
+					 { "INT", SERIALIZATION_SYSTEM().serialize( p_obj.intValue ) },
+					 { "VEC", SERIALIZATION_SYSTEM().serialize( p_obj.vector ) },
+					 { "ENUM", SERIALIZATION_SYSTEM().serialize( p_obj.enumValue ) } };
 		}
 		static void deserialize( const VTX::Util::JSon::Object & p_jsonObj, CustomClass & p_obj )
 		{
-			p_obj.color		= SERIALIZER().deserializeField( p_jsonObj, "COLOR", COLOR_BLACK );
-			p_obj.strValue	= SERIALIZER().deserializeField( p_jsonObj, "STR", std::string( "Default" ) );
-			p_obj.intValue	= SERIALIZER().deserializeField( p_jsonObj, "INT", 10 );
-			p_obj.vector	= SERIALIZER().deserializeField( p_jsonObj, "VEC", VEC3F_ZERO );
-			p_obj.enumValue = SERIALIZER().deserializeField( p_jsonObj, "ENUM", CustomEnum::ONE );
+			p_obj.color		= SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "COLOR", COLOR_BLACK );
+			p_obj.strValue	= SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "STR", std::string( "Default" ) );
+			p_obj.intValue	= SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "INT", 10 );
+			p_obj.vector	= SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "VEC", VEC3F_ZERO );
+			p_obj.enumValue = SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "ENUM", CustomEnum::ONE );
 		}
 
 		static void upgrade_0_1_0_to_1_0_0( VTX::Util::JSon::Object & p_jsonObj, CustomClass & p_obj )
@@ -97,11 +94,11 @@ namespace VTX::App::Test::Util::Serialization
 
 			// Manage type change
 			const std::string oldVecStr
-				= SERIALIZER().deserializeField( p_jsonObj, "OLD_NAME_VEC", std::string( "<Empty>" ) );
+				= SERIALIZATION_SYSTEM().deserializeField( p_jsonObj, "OLD_NAME_VEC", std::string( "<Empty>" ) );
 			if ( oldVecStr == "Was a string before" )
 			{
 				const Vec3f convertedVector = { 1.f, 2.f, 3.f };
-				p_jsonObj[ "OLD_NAME_VEC" ] = SERIALIZER().serialize( convertedVector );
+				p_jsonObj[ "OLD_NAME_VEC" ] = SERIALIZATION_SYSTEM().serialize( convertedVector );
 			}
 
 			// Rename VERY_OLD_UNKNOWN_FIELD
@@ -114,10 +111,10 @@ namespace VTX::App::Test::Util::Serialization
 	template<typename T>
 	bool checkSerialization( const T & p_obj )
 	{
-		const VTX::Util::JSon::BasicJSon & json = SERIALIZER().serialize( p_obj );
+		const VTX::Util::JSon::BasicJSon & json = SERIALIZATION_SYSTEM().serialize( p_obj );
 
 		T deserializedObj;
-		SERIALIZER().deserialize( json, deserializedObj );
+		SERIALIZATION_SYSTEM().deserialize( json, deserializedObj );
 
 		return p_obj == deserializedObj;
 	}
@@ -128,10 +125,10 @@ namespace VTX::App::Test::Util::Serialization
 	template<typename T>
 	bool checkSerialization( const T & p_obj, const ComparisonFunction<T> & p_comparisonFunction )
 	{
-		const VTX::Util::JSon::BasicJSon & json = SERIALIZER().serialize( p_obj );
+		const VTX::Util::JSon::BasicJSon & json = SERIALIZATION_SYSTEM().serialize( p_obj );
 
 		T deserializedObj;
-		SERIALIZER().deserialize( json, deserializedObj );
+		SERIALIZATION_SYSTEM().deserialize( json, deserializedObj );
 
 		return p_comparisonFunction( p_obj, deserializedObj );
 	}

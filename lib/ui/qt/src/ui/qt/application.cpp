@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
+#include <QStyle>
 #include <app/infos.hpp>
 
 namespace VTX::UI::QT
@@ -98,13 +99,10 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ]
-			{
-				static const float S_TO_MS = 1e3;
-				VTXApp::update( _deltaTimer.intervalTime() * S_TO_MS, _elapsedTimer.elapsedTime() * S_TO_MS );
-			}
+			[ this ] { VTXApp::update( _deltaTimer.intervalTime(), _elapsedTimer.elapsedTime() ); }
 		);
 		_timer.start( 0 );
+		//_timer.setTimerType( Qt::PreciseTimer );
 		_elapsedTimer.start();
 		_deltaTimer.start();
 
@@ -113,10 +111,6 @@ namespace VTX::UI::QT
 		VTX_TRACE( "Qt loop exited" );
 		_timer.stop();
 	}
-
-	void Application::save() {}
-
-	void Application::restore() {}
 
 	void Application::_loadTheme()
 	{
@@ -157,21 +151,7 @@ namespace VTX::UI::QT
 
 		QPalette p = palette();
 
-		/*
-		palette.setBrush( QPalette::Window, Qt::Dense3Pattern );
-		palette.setBrush( QPalette::WindowText, Qt::white );
-		palette.setBrush( QPalette::Base, QColor( 25, 25, 25 ) );
-		palette.setBrush( QPalette::AlternateBase, QColor( 53, 53, 53 ) );
-		palette.setBrush( QPalette::ToolTipBase, Qt::white );
-		palette.setBrush( QPalette::ToolTipText, Qt::white );
-		palette.setBrush( QPalette::Text, Qt::white );
-		palette.setBrush( QPalette::Button, QColor( 53, 53, 53 ) );
-		palette.setBrush( QPalette::ButtonText, Qt::white );
-		palette.setBrush( QPalette::BrightText, Qt::red );
-		 palette.setColor(QPalette::Link, QColor(0, 0, 255));
-		palette.setBrush( QPalette::Highlight, QColor( 142, 45, 197 ).lighter() );
-		palette.setBrush( QPalette::HighlightedText, Qt::black );
-		*/
+		QPalette lightPalette = QApplication::style()->standardPalette();
 
 		setPalette( p );
 	}

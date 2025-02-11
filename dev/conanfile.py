@@ -14,11 +14,10 @@ class VTXRecipe(ConanFile):
         
     def requirements(self):
         self.requires("glm/0.9.9.8")
-        self.requires("spdlog/1.14.1")
-        self.requires("nlohmann_json/3.11.3")
-        self.requires("magic_enum/0.9.6")
+        self.requires("spdlog/1.15.0")
+        self.requires("magic_enum/0.9.7")
         self.requires("cpr/1.10.5")
-        self.requires("catch2/3.7.0")
+        self.requires("catch2/3.7.1")
         self.requires("chemfiles/0.10.4.2")
         self.requires("sdl/2.30.2")
         self.requires("imgui/1.90.5")
@@ -27,9 +26,10 @@ class VTXRecipe(ConanFile):
         self.requires("pybind11/2.12.0")
         self.requires("qt/6.6.3")
         self.requires("eigen/3.4.0") 
-        self.requires("gromacs/2024.0") 
-        self.requires("fmt/10.2.1")
+        self.requires("gromacs/2024.0")
         self.requires("re2/20231101")
+        self.requires("libarchive/3.7.6")
+        self.requires("boost/1.86.0")
 
     def config_options(self):        
         # Package options.
@@ -140,7 +140,8 @@ class VTXRecipe(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure(None, None, ["--graphviz=graph.dot"])
+        #cmake.configure(None, None, ["--graphviz=graph.dot"])
+        cmake.configure()
         cmake.build()
 
     def package(self):

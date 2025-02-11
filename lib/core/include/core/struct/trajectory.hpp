@@ -6,12 +6,15 @@
 
 namespace VTX::Core::Struct
 {
+	/**
+	 * @brief Each index is correlated with other vector's that contains atom's data
+	 */
 	using Frame = std::vector<Vec3f>;
 	struct Trajectory
 	{
-		void fillFrame( const size_t p_moleculeFrameIndex, const std::vector<Vec3f> & p_atomPositions )
+		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
 		{
-			Frame & frame = frames[ p_moleculeFrameIndex ];
+			Frame & frame = frames[ p_systemFrameIndex ];
 			frame.resize( p_atomPositions.size() );
 
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), frame.begin() );
@@ -25,6 +28,8 @@ namespace VTX::Core::Struct
 		std::vector<Frame> frames;
 		size_t			   currentFrameIndex = 0;
 	};
+
+	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;
 
 } // namespace VTX::Core::Struct
 

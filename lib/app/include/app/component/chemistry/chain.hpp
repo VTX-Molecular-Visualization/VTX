@@ -5,6 +5,7 @@
 #include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include "app/component/chemistry/iterator/residue.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
@@ -12,18 +13,18 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	class Chain
+	class Chain : public Core::ECS::BaseComponent
 	{
 	  public:
 		Chain();
-		Chain( Molecule * const p_molecule, const size_t p_index );
+		Chain( System * const p_system, const size_t p_index );
 
 		const size_t getIndex() const { return _index; }
 		void		 setIndex( const size_t p_index ) { _index = p_index; }
 
-		Molecule * const	   getMoleculePtr() const { return _moleculePtr; };
-		const Molecule * const getConstMoleculePtr() const { return _moleculePtr; };
-		void				   setMoleculePtr( Molecule * const p_moleculePtr ) { _moleculePtr = p_moleculePtr; };
+		System * const		 getSystemPtr() const { return _systemPtr; };
+		const System * const getConstSystemPtr() const { return _systemPtr; };
+		void				 setSystemPtr( System * const p_systemPtr ) { _systemPtr = p_systemPtr; };
 
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
@@ -41,8 +42,8 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }
 
-		const Util::Color::Rgba & getColor() const { return _defaultColor; };
-		void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
+		// const Util::Color::Rgba & getColor() const { return _defaultColor; };
+		// void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
 
 		ResidueIndexRange getResidueRange() const;
 		AtomIndexRange	  getAtomRange() const;
@@ -58,7 +59,7 @@ namespace VTX::App::Component::Chemistry
 		void remove();
 
 	  private:
-		Molecule *		  _moleculePtr	   = nullptr;
+		System *		  _systemPtr	   = nullptr;
 		size_t			  _index		   = INVALID_INDEX;
 		std::string		  _originalChainID = "";
 		Util::Color::Rgba _defaultColor	   = COLOR_WHITE;

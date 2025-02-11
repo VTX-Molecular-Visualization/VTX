@@ -1,54 +1,76 @@
 #ifndef __VTX_UTIL_CALLBACK__
 #define __VTX_UTIL_CALLBACK__
 
+#include <algorithm>
 #include <cassert>
 #include <functional>
-#include <memory>
-#include <vector>
+#include <map>
+#include <utility>
 
 namespace VTX::Util
 {
+
+	using CallbackId = size_t;
+
 	template<typename... Args>
 	class Callback
 	{
 	  public:
-		using Func = std::function<void( const Args &... )>;
+		using Func = std::function<void( Args... )>;
 
 		Callback() = default;
 
-		inline void add( const Func & p_callback ) { _callbacks.push_back( p_callback ); }
-
-		/*
-		inline void remove( const Func * const p_func )
+		template<typename Callable>
+			requires std::invocable<Callable, Args...>
+		CallbackId add( Callable && p_callback )
 		{
-			std::erase_if(
-				_callbacks, [ &p_func ]( const std::unique_ptr<Func> & p_e ) { return p_e.get() == p_func; }
+			// TODO: why is this not working?
+			static_assert(
+				std::is_convertible_v<Callable, Func>, "Callable must be convertible to std::function<void(Args...)>"
 			);
+
+			static_assert(
+				not std::is_member_function_pointer_v<Callable>,
+				"Cannot pass a member function pointer. Use a lambda to capture the object."
+			);
+
+			static_assert(
+				std::is_invocable_r_v<void, Callable, Args...>,
+				"Callable type is not invocable with the expected arguments."
+			);
+
+			_callbacks.emplace( _nextId++, std::forward<Callable>( p_callback ) );
+			return _nextId - 1;
 		}
-		*/
+
+		void remove( const CallbackId p_id )
+		{
+			assert( _callbacks.contains( p_id ) );
+			_callbacks.erase( p_id );
+		}
 
 		inline void clear() { _callbacks.clear(); }
 
-		inline void operator()( const Args &... p_args ) const
+		inline void operator()( Args... p_args ) const
 		{
 			for ( const auto & callback : _callbacks )
 			{
-				callback( p_args... );
+				callback.second( p_args... );
 			}
 		}
 
-		inline void operator+=( const Func & p_func ) { add( p_func ); }
-
-		/*
-		inline Callback & operator-=( const Func * const p_func )
+		template<typename Callable>
+			requires std::invocable<Callable, Args...>
+		inline CallbackId operator+=( Callable && p_func )
 		{
-			remove( p_func );
-			return *this;
+			return add( std::forward<Callable>( p_func ) );
 		}
-		*/
+
+		inline void operator-=( const CallbackId p_id ) { remove( p_id ); }
 
 	  private:
-		std::vector<Func> _callbacks;
+		std::map<CallbackId, Func> _callbacks;
+		CallbackId				   _nextId = 0;
 	};
 
 } // namespace VTX::Util

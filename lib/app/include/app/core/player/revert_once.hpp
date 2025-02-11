@@ -9,19 +9,13 @@ namespace VTX::App::Core::Player
 	class RevertOnce : public BasePlayer
 	{
 	  public:
-		inline static const Util::CollectionKey COLLECTION_ID  = "REVERT_ONCE";
-		inline static const std::string			DISPLAYED_NAME = "Revert Once";
-
-	  private:
-		inline static const Players::Registration<RevertOnce> _reg { COLLECTION_ID };
+		inline static const std::string DISPLAYED_NAME = "Revert Once";
 
 	  public:
 		RevertOnce()							  = default;
 		RevertOnce( const RevertOnce & p_source ) = default;
 
-		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
-		const Util::CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
-		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<RevertOnce>( *this ); }
+		const std::string & getDisplayName() const override { return DISPLAYED_NAME; }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;

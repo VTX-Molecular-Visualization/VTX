@@ -2,8 +2,10 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
-#include <string>
 #include <renderer/facade.hpp>
+#include <renderer/proxy/representation.hpp>
+#include <renderer/proxy/voxels.hpp>
+#include <string>
 #include <util/math/aabb.hpp>
 #include <util/take_measures.hpp>
 #ifdef _WIN32
@@ -35,11 +37,11 @@ int main( int, char ** )
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
-		TakeMeasures takeMeasures( 3, std::string(Filesystem::getExecutableDir().c_str() ) + "/measures.csv", 10.f );
+		TakeMeasures takeMeasures( 3, std::string( Filesystem::getExecutableDir().c_str() ) + "/measures.csv", 10.f );
 
 		// Renderer.
-		Renderer::Renderer renderer( WIDTH, HEIGHT, Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		renderer.build();
+		Renderer::Facade renderer( WIDTH, HEIGHT );
+		renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
@@ -60,11 +62,8 @@ int main( int, char ** )
 		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			if ( renderer.hasContext() )
-			{
-				Vec2i ids = renderer.getPickedIds( p_x, p_y );
-				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-			}
+			// Vec2i ids = renderer.getPickedIds( p_x, p_y );
+			// VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
 		inputManager.onMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
@@ -75,19 +74,19 @@ int main( int, char ** )
 			{
 				if ( p_key == SDL_SCANCODE_F1 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4hhb.pdb" ) );
+					renderer.addProxySystem( scene.addSystem( "4hhb" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F2 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "1aga.pdb" ) );
+					renderer.addProxySystem( scene.addSystem( "1aga" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F3 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "4v6x.mmtf" ) );
+					renderer.addProxySystem( scene.addSystem( "4v6x" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F4 )
 				{
-					renderer.addProxyMolecule( scene.addMolecule( "3j3q.mmtf" ) );
+					renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
@@ -98,8 +97,9 @@ int main( int, char ** )
 					scene.setColorLayout( colorLayout );
 				}
 
-				else if (p_key == SDL_SCANCODE_P ){
-					renderer.logDurations=true;
+				else if ( p_key == SDL_SCANCODE_P )
+				{
+					renderer.logDurations = true;
 					takeMeasures.start();
 				}
 			}
@@ -113,7 +113,7 @@ int main( int, char ** )
 		{
 			try
 			{
-				renderer.addProxyMolecule( scene.addMolecule( p_filePath.string() ) );
+				renderer.addProxySystem( scene.addSystem( p_filePath.string() ) );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -145,18 +145,34 @@ int main( int, char ** )
 
 		renderer.setProxyColorLayout( scene.getProxyColorLayout() );
 
-		Renderer::Proxy::Representation representation1, representation2, representation3;
+		// Quickfix.
+		bool  bTrue		= true;
+		bool  bFalse	= false;
+		float fZero		= 0.f;
+		float fZeroOne	= 0.1f;
+		float fZeroFive = 0.5f;
 
-		representation2.radiusFixed		  = false;
-		representation3.radiusSphereFixed = 1.5f;
+		Renderer::Proxy::Representation representation;
 
-		std::vector<Renderer::Proxy::Representation *> representations
-			= { &representation1, &representation2, &representation3 };
-		renderer.addProxyRepresentations( representations );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SPHERE, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, fZeroFive );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, fZero );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bTrue );
 
-		Renderer::Proxy::RenderSettings renderSettings
-			= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
-				3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, fZeroOne );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bFalse );
+
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_RIBBON, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bTrue );
+
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SES, bFalse );
+
+		renderer.setProxyRepresentation( representation );
+
+		// Renderer::Proxy::RenderSettings renderSettings
+		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
+		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
 		// renderer.setProxyRenderSettings( renderSettings );
 
@@ -172,13 +188,13 @@ int main( int, char ** )
 			// Renderer.
 			renderer.render( deltaTime, time );
 
-			if (takeMeasures.isStarted()){
-				takeMeasures.measure(deltaTime, renderer.getInstructionsDurationRanges());
+			if ( takeMeasures.isStarted() )
+			{
+				takeMeasures.measure( deltaTime, renderer.getInstructionsDurationRanges() );
 			}
 			// UI.
 			ui.draw( &camera, &scene, &renderer );
 
-			
 			// Events.
 			SDL_Event event;
 			while ( ui.getEvent( event ) )

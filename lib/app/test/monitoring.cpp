@@ -1,12 +1,13 @@
 #include "util/app.hpp"
 #include <app/fixture.hpp>
-#include <app/internal/monitoring/all_metrics.hpp>
+#include <app/monitoring/constants.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <renderer/facade.hpp>
 #include <thread>
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 void displaySimpleInfo()
 {
@@ -15,10 +16,10 @@ void displaySimpleInfo()
 
 	const Util::Monitoring::Stats & stats = STATS();
 
-	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
+	const float tickrate   = stats.getAverage<float>( Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
 	const uint	fps		   = tickrate <= 0 ? 0 : ( 1000 / tickrateMs );
-	const float renderTime = stats.getAverage<float>( Internal::Monitoring::RENDER_DURATION_KEY );
+	const float renderTime = stats.getAverage<float>( Monitoring::RENDER_DURATION_KEY );
 
 	VTX_INFO( "FPS: {} - Tickrate: {}ms - Render time: {}ms", fps, tickrateMs, renderTime );
 }
@@ -30,7 +31,7 @@ void displayFullInfo()
 
 	const Util::Monitoring::Stats & stats = STATS();
 
-	const float tickrate   = stats.getAverage<float>( Internal::Monitoring::TICK_RATE_KEY );
+	const float tickrate   = stats.getAverage<float>( Monitoring::TICK_RATE_KEY );
 	const uint	tickrateMs = uint( tickrate * 1000.f );
 	const uint	fps		   = tickrate <= 0 ? 0 : ( 1000 / tickrateMs );
 
@@ -43,13 +44,13 @@ void displayFullInfo()
 			Render: {}s\n \
 			Post Render: {}s\n \
 			FPS: {} - Tickrate: {}ms",
-		stats.getAverage<float>( Internal::Monitoring::PRE_UPDATE_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::UPDATE_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::LATE_UPDATE_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::POST_UPDATE_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::PRE_RENDER_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::RENDER_DURATION_KEY ),
-		stats.getAverage<float>( Internal::Monitoring::POST_RENDER_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::PRE_UPDATE_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::UPDATE_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::LATE_UPDATE_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::POST_UPDATE_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::PRE_RENDER_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::RENDER_DURATION_KEY ),
+		stats.getAverage<float>( Monitoring::POST_RENDER_DURATION_KEY ),
 		fps,
 		tickrateMs
 	);

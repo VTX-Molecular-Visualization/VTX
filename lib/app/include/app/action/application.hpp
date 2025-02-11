@@ -84,13 +84,13 @@ namespace VTX::App::Action::Application
 		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
 		// explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		// explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		// explicit Open( const FilePath & p_trajectoryPath, Model::Chemistry::Molecule & p_target )
+		// explicit Open( const FilePath & p_trajectoryPath, Model::Chemistry::System & p_target )
 		//{
 		//	_trajectoryTargets.emplace_back( &p_target );
 		//	_paths.emplace_back( p_trajectoryPath );
 		// }
 		// explicit Open( const FilePath &									 p_trajectoryPath,
-		//			   const std::vector<Model::Chemistry::Molecule *> & p_targets ) :
+		//			   const std::vector<Model::Chemistry::System *> & p_targets ) :
 		//	_trajectoryTargets( p_targets )
 		//{
 		//	_paths.emplace_back( p_trajectoryPath );
@@ -102,8 +102,8 @@ namespace VTX::App::Action::Application
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 		// std::map<FilePath, std::string *> _buffers = std::map<FilePath, std::string *>();
 
-		// std::vector<Component::Chemistry::Molecule *> _trajectoryTargets
-		//	= std::vector<Component::Chemistry::Molecule *>();
+		// std::vector<Component::Chemistry::System *> _trajectoryTargets
+		//	= std::vector<Component::Chemistry::System *>();
 	};
 
 	class Quit final : public Core::Action::BaseAction
@@ -116,26 +116,13 @@ namespace VTX::App::Action::Application
 	class Resize final : public Core::Action::BaseAction
 	{
 	  public:
-		Resize( const size_t p_width, const size_t p_height, const uint p_output = 0 ) :
-			_width( p_width ), _height( p_height ), _output( p_output )
-		{
-		}
+		Resize( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 		void execute() override;
 
 	  private:
 		const size_t _width;
 		const size_t _height;
-		const uint	 _output;
 	};
 
-	class RunScript : public Core::Action::BaseAction
-	{
-	  public:
-		explicit RunScript( const FilePath & p_path ) : _path( p_path ) {}
-		void execute();
-
-	  private:
-		FilePath _path;
-	};
 } // namespace VTX::App::Action::Application
 #endif

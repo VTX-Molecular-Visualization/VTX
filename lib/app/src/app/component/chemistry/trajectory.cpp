@@ -1,57 +1,59 @@
 #include "app/component/chemistry/trajectory.hpp"
-#include "app/application/ecs/registry_manager.hpp"
-#include "app/component/chemistry/molecule.hpp"
-#include "app/component/scene/scene_item_component.hpp"
+#include "app/component/chemistry/system.hpp"
+#include "app/component/scene/updatable.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
 	Trajectory::Trajectory()
 	{
-		_moleculePtr = &MAIN_REGISTRY().getComponent<Molecule>( *this );
+		_systemPtr = &ECS_REGISTRY().getComponent<System>( *this );
 		_referenceUpdateFunction();
 	}
 
-	Trajectory::Trajectory( Molecule * const p_molecule ) : _moleculePtr( p_molecule ) { _referenceUpdateFunction(); }
+	Trajectory::Trajectory( System * const p_system ) : _systemPtr( p_system ) { _referenceUpdateFunction(); }
 
-	size_t Trajectory::getCurrentFrame() const { return _moleculePtr->getTrajectory().currentFrameIndex; }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().currentFrameIndex; }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
+		_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
 	}
 
-	size_t Trajectory::getFrameCount() const { return _moleculePtr->getTrajectory().frames.size(); }
+	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
 
-	void Trajectory::setPlayer( std::unique_ptr<App::Core::Player::BasePlayer> & p_player )
+	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
 	{
 		const bool resetPlayer = _player == nullptr;
 
 		onFrameChange.clear();
 
-		_player = std::move( p_player );
-		_player->setCount( _moleculePtr->getTrajectory().getFrameCount() );
+		_player = p_player;
+		_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
 		_player->onFrameChange += [ this ]( const size_t p_frameIndex )
 		{
-			_moleculePtr->getTrajectory().currentFrameIndex = p_frameIndex;
+			_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
 			onFrameChange( p_frameIndex );
 		};
 
 		if ( resetPlayer )
+		{
 			_player->reset();
+		}
 	}
 
 	void Trajectory::_update( const float p_deltaTime )
 	{
 		if ( _player != nullptr )
+		{
 			_player->update( p_deltaTime );
+		}
 	}
 
 	void Trajectory::_referenceUpdateFunction()
 	{
-		Component::Scene::SceneItemComponent & sceneComponent
-			= MAIN_REGISTRY().getComponent<Component::Scene::SceneItemComponent>( *this );
-		sceneComponent.addUpdateFunction( "", [ this ]( const float p_deltaTime ) { _update( p_deltaTime ); } );
+		auto & updatable = ECS_REGISTRY().getComponent<Component::Scene::Updatable>( *this );
+		updatable.addUpdateFunction( [ this ]( const float p_deltaTime, const float ) { _update( p_deltaTime ); } );
 	}
 
 } // namespace VTX::App::Component::Chemistry

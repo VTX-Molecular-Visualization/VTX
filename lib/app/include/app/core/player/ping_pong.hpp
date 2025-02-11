@@ -9,19 +9,13 @@ namespace VTX::App::Core::Player
 	class PingPong : public BasePlayer
 	{
 	  public:
-		inline static const Util::CollectionKey COLLECTION_ID  = "PING_PONG";
-		inline static const std::string			DISPLAYED_NAME = "Ping Pong";
-
-	  private:
-		inline static const Players::Registration<PingPong> _reg { COLLECTION_ID };
+		inline static const std::string DISPLAYED_NAME = "Ping Pong";
 
 	  public:
 		PingPong()							  = default;
 		PingPong( const PingPong & p_source ) = default;
 
-		const std::string &			getDisplayName() const override { return DISPLAYED_NAME; }
-		const Util::CollectionKey & getCollectionKey() const override { return COLLECTION_ID; }
-		std::unique_ptr<BasePlayer> clone() const override { return std::make_unique<PingPong>( *this ); }
+		const std::string & getDisplayName() const override { return DISPLAYED_NAME; }
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;

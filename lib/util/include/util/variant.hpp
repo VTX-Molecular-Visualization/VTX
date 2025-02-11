@@ -22,7 +22,7 @@ namespace VTX::Util
 			|| std::same_as<Vec4f, T> );
 
 	template<typename T>
-	concept VariantPtrValue = (!VariantPlainValue<T>) && std::is_pointer<T>::value;
+	concept VariantPtrValue = ( !VariantPlainValue<T> ) && std::is_pointer<T>::value;
 
 	template<typename T>
 	concept VariantValueConcept = ( VariantPlainValue<T> || VariantPtrValue<T> );

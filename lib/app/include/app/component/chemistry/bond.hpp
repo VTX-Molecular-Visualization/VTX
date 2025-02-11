@@ -2,22 +2,23 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_BOND__
 
 #include "_fwd.hpp"
+#include "app/core/ecs/base_component.hpp"
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	class Bond
+	class Bond : public Core::ECS::BaseComponent
 	{
 	  public:
 		Bond() {}
-		Bond( Molecule * const p_moleculePtr ) : _moleculePtr( p_moleculePtr ) {}
-		Bond( Molecule * const p_moleculePtr, const size_t p_index ) : _moleculePtr( p_moleculePtr ), _index( p_index )
+		Bond( System * const p_systemPtr ) : _systemPtr( p_systemPtr ) {}
+		Bond( System * const p_systemPtr, const size_t p_index ) : _systemPtr( p_systemPtr ), _index( p_index )
 		{
 		}
 
-		const Molecule * const getMoleculePtr() const { return _moleculePtr; }
-		Molecule * const	   getMoleculePtr() { return _moleculePtr; }
+		const System * const getSystemPtr() const { return _systemPtr; }
+		System * const	   getSystemPtr() { return _systemPtr; }
 
 		atom_index_t getIndexFirstAtom() const;
 		void		 setIndexFirstAtom( const atom_index_t p_atomIndex );
@@ -29,7 +30,7 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 
 	  private:
-		Molecule * _moleculePtr = nullptr;
+		System * _systemPtr = nullptr;
 		size_t	   _index		= INVALID_INDEX;
 	};
 

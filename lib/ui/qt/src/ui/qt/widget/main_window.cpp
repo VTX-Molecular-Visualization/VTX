@@ -17,11 +17,14 @@
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
+#include <QMimeData>
+#include <app/action/application.hpp>
+#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 
-	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr ), _inputManager( App::INPUT_MANAGER() )
+	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
 	{
 		// Size.
 		resize( 1920, 1080 );
@@ -34,6 +37,7 @@ namespace VTX::UI::QT::Widget
 		setDockOptions( ForceTabbedDocks );
 		setTabPosition( Qt::AllDockWidgetAreas, QTabWidget::North );
 		setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+		setAcceptDrops( true );
 
 		//  Features.
 		setTabShape( QTabWidget::Rounded );
@@ -100,15 +104,18 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::prepare()
 	{
 		// Select default tabs.
-		WIDGETS::get().get<DockWidget::Scene *>()->raise();
-		WIDGETS::get().get<DockWidget::Inspector *>()->raise();
+		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
+		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();
+
+		// TODO: Set openGL widget as focus.
+		// centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
 		// Connect progress dialog.
-		APP::onStartBlockingOperation += [ this ]( const std::string & p_text )
+		APP::onStartBlockingOperation += [ this ]( const std::string_view p_text )
 		{
 			// TODO:: don't delete and recreate.
 			_progressDialog = new Dialog::Progress( p_text );
@@ -175,9 +182,21 @@ namespace VTX::UI::QT::Widget
 
 		if ( not _closing )
 		{
-			App::VTX_ACTION().execute<App::Action::Application::Quit>();
+			App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
 			p_event->ignore();
 		}
+	}
+
+	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event ) { p_event->acceptProposedAction(); }
+
+	void MainWindow::dropEvent( QDropEvent * p_event )
+	{
+		for ( const auto & url : p_event->mimeData()->urls() )
+		{
+			App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
+		}
+
+		p_event->acceptProposedAction();
 	}
 
 	void MainWindow::save()

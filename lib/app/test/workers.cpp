@@ -1,6 +1,6 @@
 #include "util/app.hpp"
-#include <app/application/system/threading.hpp>
-#include <app/core/worker/base_thread.hpp>
+#include <app/core/threading/base_thread.hpp>
+#include <app/core/threading/threading_system.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -17,7 +17,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 
 	App::Fixture app;
 
-	Core::Worker::BaseThread::AsyncOp asyncOp = []( Core::Worker::BaseThread & p_thread )
+	App::Core::Threading::BaseThread::AsyncOp asyncOp = []( App::Core::Threading::BaseThread & p_thread )
 	{
 		for ( int i = 0; i < 100; i++ )
 		{
@@ -26,16 +26,16 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 			p_thread.setProgress( progress );
 		}
 
-		p_thread.setData<int>( 100 );
+		p_thread.set<int>( 100 );
 
 		return 1;
 	};
 
-	Core::Worker::BaseThread & thread = THREADING().createThread(
+	App::Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
 		asyncOp,
-		[]( Core::Worker::BaseThread & p_thread, uint p_res )
+		[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
 		{
-			const int threadData = p_thread.getData<int>();
+			const int threadData = p_thread.get<int>();
 			CHECK( p_res == 1 );
 			CHECK( threadData == 100 );
 
@@ -51,7 +51,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 		lastProgress = p_progress;
 	};
 
-	Core::Worker::BaseThread & threadToWait = THREADING().createThread( asyncOp );
+	App::Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();
@@ -61,7 +61,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	CHECK( threadToWait.isFinished() );
 	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
 
-	Core::Worker::BaseThread & threadToStop = THREADING().createThread( asyncOp );
+	App::Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
 	chrono.start();

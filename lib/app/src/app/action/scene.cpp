@@ -1,28 +1,33 @@
 #include "app/action/scene.hpp"
-#include "app/application/ecs/entity_director.hpp"
+#include "app/action/animation.hpp"
 #include "app/application/scene.hpp"
-#include "app/application/system/ecs_system.hpp"
-#include "app/component/chemistry/molecule.hpp"
+#include "app/core/ecs/ecs_system.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
-#include "app/entity/all_entities.hpp"
-#include "app/entity/scene/molecule_entity.hpp"
+#include "app/core/action/action_system.hpp"
+#include "app/core/network/network_system.hpp"
+#include "app/entity/system.hpp"
+#include "app/entity/viewpoint.hpp"
+#include "app/filesystem.hpp"
+#include <util/filesystem.hpp>
 
 namespace VTX::App::Action::Scene
 {
-	void LoadMolecule::execute()
+	void LoadSystem::execute()
 	{
-		for ( const FilePath & moleculePath : _paths )
-		{
-			const std::unique_ptr<Application::ECS::Building::EntityBuilder> entityBuilder
-				= ENTITY_DIRECTOR().generateBuilder( Entity::MOLECULE_ENTITY_ID );
+		const auto entity = ECS_REGISTRY().createEntity<Entity::System>( _path.string(), _buffer );
+		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
+	}
 
-			// Possibility to thread build function
-			entityBuilder->getData()[ "scene" ]	   = Util::VTXVariant( &SCENE() );
-			entityBuilder->getData()[ "filepath" ] = Util::VTXVariant( moleculePath.string() );
-			entityBuilder->build();
-		}
+	void DownloadSystem::execute()
+	{
+		std::string	   data;
+		const FilePath cachePath = Filesystem::getCachePath( _filename );
+
+		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
+		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}
@@ -32,9 +37,9 @@ namespace VTX::App::Action::Scene
 	}
 	void CreateViewpoint::execute()
 	{
-		const Core::ECS::BaseEntity entity = ENTITY_DIRECTOR().build( Entity::VIEWPOINT_ENTITY_ID );
+		const auto entity = ECS_REGISTRY().createEntity<Entity::Viewpoint>();
 
-		Component::Render::Viewpoint & viewpoint = MAIN_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
+		auto & viewpoint = ECS_REGISTRY().getComponent<Component::Render::Viewpoint>( entity );
 		viewpoint.setPosition( _position );
 		viewpoint.setRotation( _rotation );
 	}

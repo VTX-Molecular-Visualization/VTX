@@ -21,6 +21,6 @@ namespace VTX::IO::Util::Chemfiles
 
 	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 
-} // namespace VTX::IO::Util::Chemfiles
+} // namespace VTX::IO::Util::ChemfilesTrajectory
 
 #endif

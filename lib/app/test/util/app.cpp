@@ -1,10 +1,8 @@
 #include "app.hpp"
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
-#include <app/application/system/renderer.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/component/render/proxy_camera.hpp>
-#include <app/component/render/proxy_color_layout.hpp>
+#include <app/core/renderer/renderer_system.hpp>
 #include <app/filesystem.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -13,16 +11,16 @@
 namespace VTX::App::Test::Util
 {
 
-	void App::loadMolecule( const std::string & p_moleculePath )
+	void App::loadSystem( const std::string & p_systemPath )
 	{
-		// Create MoleculeEntity
-		const FilePath				moleculePath	   = VTX::App::Filesystem::getInternalDataDir() / p_moleculePath;
-		Action::Scene::LoadMolecule loadMoleculeAction = Action::Scene::LoadMolecule( moleculePath );
-		loadMoleculeAction.execute();
+		// Create System
+		const FilePath				systemPath	   = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
+		Action::Scene::LoadSystem loadSystemAction = Action::Scene::LoadSystem( systemPath );
+		loadSystemAction.execute();
 	}
 
-	void App::loadTestMolecule() { loadMolecule( MOLECULE_TEST_NAME_EXT ); }
-	void App::loadTestTrajectoryMolecule() { loadMolecule( MOLECULE_TRAJECTORY_TEST_NAME_EXT ); }
+	void App::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
+	void App::loadTestTrajectorySystem() { loadSystem( MOLECULE_TRAJECTORY_TEST_NAME_EXT ); }
 
 	bool App::checkItemOrder(
 		const VTX::App::Application::Scene &	   p_scene,

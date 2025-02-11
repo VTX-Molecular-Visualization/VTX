@@ -1,13 +1,14 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_VIEWPOINT__
 #define __VTX_APP_COMPONENT_RENDER_VIEWPOINT__
 
+#include "app/core/ecs/base_component.hpp"
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
 {
-	class Viewpoint
+	class Viewpoint : public Core::ECS::BaseComponent
 	{
 	  public:
 		Viewpoint();

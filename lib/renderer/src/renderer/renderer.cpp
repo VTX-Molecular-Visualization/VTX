@@ -1,141 +1,113 @@
 #include "renderer/renderer.hpp"
-#include "util/math.hpp"
-#include "util/math/aabb.hpp"
-#include "util/math/grid.hpp"
-#include "util/math/range.hpp"
+#include "renderer/binary_buffer.hpp"
+#include "renderer/scheduler/depth_first_search.hpp"
+#include <execution>
+#include <util/math.hpp>
+#include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
+#include <util/math/range.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Renderer
 {
 
-	Renderer::Renderer( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_loader ) :
-		width( p_width ), height( p_height ), _shaderPath( p_shaderPath ), _loader( p_loader )
+	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
-		// Graph.
-		_renderGraph = std::make_unique<RenderGraphOpenGL45>();
-
 		// Passes.
-		Pass * const geo	   = _renderGraph->addPass( descPassGeometric );
-		Pass * const depth	   = _renderGraph->addPass( descPassDepth );
-		Pass * const ssao	   = _renderGraph->addPass( descPassSSAO );
-		Pass * const blurX	   = _renderGraph->addPass( descPassBlur );
-		Pass * const blurY	   = _renderGraph->addPass( descPassBlur );
-		Pass * const shading   = _renderGraph->addPass( descPassShading );
-		Pass * const outline   = _renderGraph->addPass( descPassOutline );
-		Pass * const selection = _renderGraph->addPass( descPassSelection );
-		Pass * const fxaa	   = _renderGraph->addPass( desPassFXAA );
-		Pass * const scale     = _renderGraph->addPass( descPassScale ); //scale ssao output up before blurring
+		_refreshGraph();
 
-		// Setup values.
-		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-		geo->programs[ 0 ].draw.value().needRenderFunc
-			= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
-		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-		geo->programs[ 1 ].draw.value().needRenderFunc
-			= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
-		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-		geo->programs[ 2 ].draw.value().needRenderFunc
-			= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
-		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-		geo->programs[ 3 ].draw.value().needRenderFunc
-			= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
-		blurX->name								 = "BlurX";
-		blurY->name								 = "BlurY";
-		blurY->programs[ 0 ].uniforms[ 0 ].value = StructUniformValue<Vec2i> { Vec2i( 0, 1 ) };
+		// Shared data.
+		addGlobalData( { "Camera",
+						 15,
+						 { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+						   { "ClipInfos", // { _near * _far, _far, _far - _near, _near }
+							 E_TYPE::VEC4F,
+							 BufferValue<Vec4f> { VEC4F_ZERO } },
+						   { "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+						   { "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+						   { "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+						 0,
+						 nullptr,
+						 false,
+						 true } );
 
-		// Links.
-		_renderGraph->addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( ssao, scale, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0);
-		_renderGraph->addLink( scale, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0);
-		_renderGraph->addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
-		_renderGraph->addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-		_renderGraph->addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		_renderGraph->addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		_renderGraph->setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		addGlobalData( { "ColorLayout",
+						 14,
+						 { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+						 4096,
+						 nullptr,
+						 false,
+						 true } );
 
-		// Shared uniforms.
-		_renderGraph->addUniforms(
-			{ "Camera",
-			  { { "Matrix view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				{ "Matrix projection", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-				{ "Camera position", E_TYPE::VEC3F, StructUniformValue<Vec3f> { VEC3F_ZERO } },
-				{ "Camera clip infos", // { _near * _far, _far, _far - _near, _near }
-				  E_TYPE::VEC4F,
-				  StructUniformValue<Vec4f> { VEC4F_ZERO } },
-				{ "Resolution", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { p_width, p_height } } },
-				{ "Mouse position", E_TYPE::VEC2I, StructUniformValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "Is perspective", E_TYPE::UINT, StructUniformValue<uint> { 1 } } },
-			  15 }
-		);
+		addGlobalData( { "Models",
+						 13,
+						 { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+						   { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+						 0,
+						 nullptr,
+						 true } );
 
-		_renderGraph->addUniforms(
-			{ "Color layout", { { "Colors", E_TYPE::COLOR4, StructUniformValue<Util::Color::Rgba> {} } }, 14, true }
-		);
+		addGlobalData( { "Representations",
+						 12,
+						 { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+						   { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+						   { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+						   { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
 
-		_renderGraph->addUniforms( { "Models",
-									 { { "Matrix model view", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } },
-									   { "Matrix normal", E_TYPE::MAT4F, StructUniformValue<Mat4f> { MAT4F_ID } } },
-									 13,
-									 true } );
-
-		_renderGraph->addUniforms( { "Representations",
-									 { { "Sphere radius fixed", E_TYPE::FLOAT, StructUniformValue<float> {} },
-									   { "Sphere radius add", E_TYPE::FLOAT, StructUniformValue<float> {} },
-									   { "Is sphere radius fixed", E_TYPE::UINT, StructUniformValue<uint> {} },
-									   { "Cylinder radius", E_TYPE::FLOAT, StructUniformValue<float> {} },
-
-									   { "Cylinder color blending", E_TYPE::UINT, StructUniformValue<uint> {} },
-									   { "Ribbon color blending", E_TYPE::UINT, StructUniformValue<uint> {} } },
-									 12,
-									 true } );
+						   { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+						   { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
+						 0,
+						 nullptr,
+						 true } );
 	}
 
-	void Renderer::build( const uint p_output, void * p_loader )
+	void Renderer::build()
 	{
-		// Build renderer graph.
-		VTX_DEBUG(
-			"Renderer graph setup total time: {}",
-			Util::CHRONO_CPU(
-				[ & ]()
-				{
-					_context = _renderGraph->setup(
-						p_loader ? p_loader : _loader,
-						width,
-						height,
-						_shaderPath,
-						_instructions,
-						_instructionsDurationRanges,
-						p_output
-					);
-				}
-			)
+		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
+
+		// Build renderer _graph.
+		float buildTime = Util::CHRONO_CPU(
+			[ & ]()
+			{
+				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
+
+				_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
+			}
 		);
 
-		onReady();
+		VTX_DEBUG( "Renderer graph setup total time: {}", Util::String::durationToStr( buildTime ) );
+	}
+
+	void Renderer::resize( const size_t p_width, const size_t p_height )
+	{
+		VTX_TRACE( "Resizing renderer to {}x{}", p_width, p_height );
+
+		_width	= p_width;
+		_height = p_height;
+
+		Vec2i size = { p_width, p_height };
+		setValue( size, "CameraResolution" );
+
+		_context.resize( _graph.getRenderQueue(), p_width, p_height );
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::clean()
 	{
-		_context = nullptr;
+		_context.clear();
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
-		_renderGraph->clean();
+		_graph.clean();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
-		_proxiesMolecules.clear();
-		_proxyCamera	  = nullptr;
-		_proxyColorLayout = nullptr;
-		_proxyRepresentations.clear();
+		_proxiesSystems.clear();
+		_proxyCamera		 = nullptr;
+		_proxyColorLayout	 = nullptr;
+		_proxyRepresentation = nullptr;
 		_proxyRenderSettings = nullptr;
 		_proxyVoxels		 = nullptr;
 
@@ -150,62 +122,205 @@ namespace VTX::Renderer
 		drawRangeRibbons.offsets.clear();
 	}
 
-#pragma region Proxy molecules
-
-	void Renderer::addProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::render( const float p_deltaTime, const float p_elapsedTime )
 	{
-		_addProxyMolecule( p_proxy );
-		_refreshDataMolecules();
-	}
-
-	void Renderer::removeProxyMolecule( Proxy::Molecule & p_proxy )
-	{
-		_removeProxyMolecule( p_proxy );
-		_refreshDataMolecules();
-	}
-
-	void Renderer::addProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
-	{
-		for ( Proxy::Molecule * proxy : p_proxies )
+		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 		{
-			_addProxyMolecule( *proxy );
+			if ( logDurations )
+			{
+				_renderLog( p_deltaTime, p_elapsedTime );
+			}
+			else
+			{
+				_render( p_deltaTime, p_elapsedTime );
+			}
+
+			if ( not forceUpdate )
+			{
+				if ( _needUpdate )
+				{
+					setNeedUpdate( false );
+				}
+				else
+				{
+					_framesRemaining--;
+				}
+			}
 		}
-		_refreshDataMolecules();
 	}
 
-	void Renderer::removeProxyMolecules( std::vector<Proxy::Molecule *> & p_proxies )
+#pragma region Proxy systems
+
+	void Renderer::addProxySystem( Proxy::System & p_proxy )
 	{
-		for ( Proxy::Molecule * proxy : p_proxies )
+		_addProxySystem( p_proxy );
+		_refreshDataSystems();
+	}
+
+	void Renderer::removeProxySystem( Proxy::System & p_proxy )
+	{
+		VTX_INFO( "Remove proxy systems" );
+		_removeProxySystem( p_proxy );
+		_refreshDataSystems();
+	}
+
+	void Renderer::addProxySystems( std::vector<Proxy::System *> & p_proxies )
+	{
+		for ( Proxy::System * proxy : p_proxies )
 		{
-			_removeProxyMolecule( *proxy );
+			_addProxySystem( *proxy );
 		}
-		_refreshDataMolecules();
+		_refreshDataSystems();
 	}
 
-	void Renderer::_addProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::removeProxySystems( std::vector<Proxy::System *> & p_proxies )
 	{
-		assert( hasContext() );
-		assert( p_proxy.idDefaultRepresentation < _proxyRepresentations.size() );
+		for ( Proxy::System * proxy : p_proxies )
+		{
+			_removeProxySystem( *proxy );
+		}
+		_refreshDataSystems();
+	}
+
+	void Renderer::_addProxySystem( Proxy::System & p_proxy )
+	{
+		assert( p_proxy.idDefaultRepresentation == 0 );
 
 		// If size max reached, do not add.
-		if ( _proxiesMolecules.size() >= UNSIGNED_SHORT_MAX )
+		if ( _proxiesSystems.size() >= UNSIGNED_SHORT_MAX )
 		{
-			throw GLException( "Max molecule count reached" );
+			throw GraphicException( "Max system count reached" );
 		}
 
-		_proxiesMolecules.push_back( &p_proxy );
+		_proxiesSystems.push_back( &p_proxy );
 		_cacheSpheresCylinders.emplace( &p_proxy, Cache::SphereCylinder() );
 		_cacheRibbons.emplace( &p_proxy, Cache::Ribbon() );
 
 		// Set up callbacks.
+		// Transform.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
 
-			setValue( _StructUBOModel { matrixModelView, matrixNormal }, "Matrix model view", _getProxyId( &p_proxy ) );
+			BinaryBuffer buffer;
+			buffer.write( matrixModelView );
+			buffer.write( matrixNormal );
+			buffer.close();
+
+			_context.setSub( buffer, "Models", _getProxyId( &p_proxy ) );
 		};
 
+		// Representation.
+		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+
+			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
+			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
+
+			_context.setSub(
+				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
+			);
+			_context.setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+		};
+
+		// Remove.
+		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxySystem( p_proxy ); };
+
+		// Positions.
+		p_proxy.onAtomPositions += [ this, &p_proxy ]()
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context.setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
+		};
+
+		// Colors.
+		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			_context.setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+		};
+
+		// Residue colors.
+		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
+		{
+			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
+			_context.setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+		};
+
+		// Selection.
+		// TODO: optimize.
+		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
+
+			for ( size_t i = 0; i < cacheSC.rangeSpheres.getCount(); ++i )
+			{
+				cacheSC.flags[ i ] &= ~mask;
+				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+
+			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
+			{
+				cacheR.flags[ i ] &= ~mask;
+				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+
+			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst(), cacheR.range.getCount() );
+		};
+
+		// TODO:
+		// - compare with map/unmap
+		// - compare with ssbo/compute shader
+		p_proxy.onAtomSelections +=
+			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_select )
+		{
+			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
+			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
+
+			const auto begin = cacheSC.flags.begin();
+			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
+			{
+				const uint first = it->getFirst();
+				const uint last	 = it->getLast();
+
+				std::for_each(
+					std::execution::par_unseq,
+					begin + first,
+					begin + last + 1,
+					[ & ]( uchar & p_flag )
+					{ p_flag = ( p_flag & ~mask ) | ( p_select << E_ELEMENT_FLAGS::SELECTION ); }
+				);
+			}
+
+			/*
+			for ( const uint i : p_atomIds )
+			{
+				cacheSC.flags[ i ] &= ~mask;
+				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+			}
+			*/
+
+			const size_t offset = cacheSC.rangeSpheres.getFirst();
+
+			_context.setSub(
+				cacheSC.flags,
+				"SpheresCylindersFlags",
+				offset + p_atomIds.getFirst(),
+				p_atomIds.getFirst(),
+				p_atomIds.getLast() - p_atomIds.getFirst() + 1
+			);
+
+			// TODO: ribbons and SES.
+		};
+
+		// Visibility.
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
 		{
 			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
@@ -230,61 +345,40 @@ namespace VTX::Renderer
 			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
 		};
 
-		p_proxy.onSelect += [ this, &p_proxy ]( const bool p_select )
+		// TODO: threshold to switch between multiple draw calls and single draw call.
+		p_proxy.onAtomVisibilities +=
+			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_visible )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
 			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
-			uchar					mask	= 1 << E_ELEMENT_FLAGS::SELECTION;
+			uchar					mask	= 1 << E_ELEMENT_FLAGS::VISIBILITY;
 
-			for ( size_t i = 0; i < cacheSC.rangeSpheres.getCount(); ++i )
+			const auto begin = cacheSC.flags.begin();
+			for ( auto it = p_atomIds.rangeBegin(); it != p_atomIds.rangeEnd(); ++it )
 			{
-				cacheSC.flags[ i ] &= ~mask;
-				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
+				const uint first = it->getFirst();
+				const uint last	 = it->getLast();
+
+				std::for_each(
+					std::execution::par_unseq,
+					begin + first,
+					begin + last + 1,
+					[ & ]( uchar & p_flag )
+					{ p_flag = ( p_flag & ~mask ) | ( p_visible << E_ELEMENT_FLAGS::VISIBILITY ); }
+				);
 			}
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
-			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
-			{
-				cacheR.flags[ i ] &= ~mask;
-				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
-			}
-			_context->setSubData( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst() );
-		};
+			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
-		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
-		{
-			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			Cache::Ribbon &			cacheR	= _cacheRibbons[ &p_proxy ];
-
-			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
-			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
-
-			_context->setSubData(
-				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
+			_context.setSub(
+				cacheSC.flags,
+				"SpheresCylindersFlags",
+				offset + p_atomIds.getFirst(),
+				p_atomIds.getFirst(),
+				p_atomIds.getLast() - p_atomIds.getFirst() + 1
 			);
-			_context->setSubData( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
-		};
 
-		p_proxy.onRemove += [ this, &p_proxy ]() { removeProxyMolecule( p_proxy ); };
-
-		p_proxy.onAtomPositions += [ this, &p_proxy ]()
-		{
-			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData(
-				*p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst()
-			);
-		};
-
-		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
-		{
-			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context->setSubData( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
-		};
-
-		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
-		{
-			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
-			_context->setSubData( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+			// TODO: ribbons.
 		};
 
 		// TODO:
@@ -306,53 +400,137 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSubData( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
+			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.offset );
 
 			for ( size_t i = 0; i < cacheR.size; ++i )
 			{
 				cacheR.bufferFlags[ i ] &= ~mask;
 				cacheR.bufferFlags[ i ] |= p_visible << E_ELEMENT_FLAGS::VISIBILITY;
 			}
-			_context->setSubData( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
+			_context.setSub( cacheR.bufferFlags, "RibbonsFlags", cacheR.offset );
 		};
 		*/
 	}
 
-	void Renderer::_removeProxyMolecule( Proxy::Molecule & p_proxy )
+	void Renderer::_removeProxySystem( Proxy::System & p_proxy )
 	{
-		std::erase( _proxiesMolecules, &p_proxy );
+		std::erase( _proxiesSystems, &p_proxy );
 		_cacheSpheresCylinders.erase( &p_proxy );
 		_cacheRibbons.erase( &p_proxy );
 	}
 
-#pragma endregion Proxy molecules
+#pragma endregion Proxy systems
 
 #pragma region Proxy representations
 
-	void Renderer::addProxyRepresentation( Proxy::Representation & p_proxy ) {}
-
-	void Renderer::removeProxyRepresentation( Proxy::Representation & p_proxy ) {}
-
-	void Renderer::addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies )
+	void Renderer::_applyRepresentationLogic( Proxy::Representation * const p_representation )
 	{
-		assert( hasContext() );
+		using namespace Proxy;
 
-		_proxyRepresentations.insert(
-			std::end( _proxyRepresentations ), std::begin( p_proxies ), std::end( p_proxies )
-		);
+		bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+		bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+		bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
 
-		std::vector<_StructUBORepresentation> representations;
-		for ( const Proxy::Representation * representation : p_proxies )
+		showAtoms	= hasSphere;
+		showBonds	= hasCylinder;
+		showRibbons = hasRibbon;
+
+		float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
+
+		// Spheres asked.
+		if ( hasSphere )
 		{
-			representations.emplace_back( _StructUBORepresentation { representation->radiusSphereFixed,
-																	 representation->radiusSphereAdd,
-																	 representation->radiusFixed,
-																	 representation->radiusCylinder,
-																	 representation->cylinderColorBlendingMode,
-																	 representation->ribbonColorBlendingMode } );
+			const bool isSphereRadiusFixed
+				= p_representation->get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED );
+			float sphereRadiusFixed = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED );
+			const float sphereRadiusAdd = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD );
+
+			// Scale sphere radius to cylinder radius.
+			if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+			{
+				sphereRadiusFixed = cylinderRadius;
+			}
+
+			setValue( sphereRadiusFixed, "RepresentationsSphereRadiusFixed", 0 );
+			setValue( sphereRadiusAdd, "RepresentationsSphereRadiusAdd", 0 );
+			setValue( uint( isSphereRadiusFixed ), "RepresentationsIsSphereRadiusFixed", 0 );
+
+			if ( not isSphereRadiusFixed )
+			{
+				showBonds	= false;
+				showRibbons = false;
+			}
+		}
+		// No spheres asked.
+		else
+		{
+			// Cylinders asked, force spheres at the same radius.
+			if ( hasCylinder )
+			{
+				showAtoms = true;
+				setValue( uint( true ), "RepresentationsIsSphereRadiusFixed", 0 );
+				setValue( cylinderRadius, "RepresentationsSphereRadiusFixed", 0 );
+			}
+			// Hide.
+			else
+			{
+				showAtoms = false;
+			}
 		}
 
-		_context->setData( representations, "Representations" );
+		if ( hasCylinder )
+		{
+			setValue( cylinderRadius, "RepresentationsCylinderRadius", 0 );
+		}
+	}
+
+	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
+	{
+		using namespace Proxy;
+
+		_proxyRepresentation = &p_proxy;
+
+		BinaryBuffer buffer;
+
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ) );
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED ) );
+		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING ) );
+		buffer.write( p_proxy.get<bool>( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING ) );
+
+		// showAtoms	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
+		// showBonds	= representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
+		// showRibbons = representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+
+		_applyRepresentationLogic( &p_proxy );
+
+		// Callbacks.
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
+
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
+			[ this, &p_proxy ]( const float p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
+			[ this ]( const bool p_value ) { setValue( uint( p_value ), "RepresentationsCylinderColorBlending", 0 ); };
+
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
+			[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		[ this, &p_proxy ]( const bool p_value ) { _applyRepresentationLogic( &p_proxy ); };
+		p_proxy.onChange<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
+			[ this ]( const bool p_value ) { setValue( uint( p_value ), "RepresentationsRibbonColorBlending", 0 ); };
+
+		buffer.close();
+
+		_context.set( buffer, "Representations" );
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -361,115 +539,230 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies ) {}
-
 #pragma endregion Proxy representations
 
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
-		assert( hasContext() );
 		assert( p_proxy.matrixView );
 		assert( p_proxy.matrixProjection );
 
 		_proxyCamera = &p_proxy;
 
-		_context->setData<_StructUBOCamera>(
-			{ { *p_proxy.matrixView,
-				*p_proxy.matrixProjection,
-				p_proxy.cameraPosition,
-				0,
-				Vec4f(
-					p_proxy.cameraNear * p_proxy.cameraFar,
-					p_proxy.cameraFar,
-					p_proxy.cameraFar - p_proxy.cameraNear,
-					p_proxy.cameraNear
-				),
-				Vec2i( width, height ),
-				p_proxy.mousePosition,
-				p_proxy.isPerspective } },
-			"Camera"
-		);
+		BinaryBuffer buffer;
+		buffer.write( *p_proxy.matrixView );
+		buffer.write( *p_proxy.matrixProjection );
+		buffer.write( p_proxy.cameraPosition );
+		buffer.write( Vec4f(
+			p_proxy.cameraNear * p_proxy.cameraFar,
+			p_proxy.cameraFar,
+			p_proxy.cameraFar - p_proxy.cameraNear,
+			p_proxy.cameraNear
+		) );
+		buffer.write( Vec2i( width(), height() ) );
+		buffer.write( p_proxy.mousePosition );
+		buffer.write( uint( p_proxy.isPerspective ) );
+		buffer.close();
+
+		_context.set( buffer, "Camera" );
 
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
-			setValue( *p_proxy.matrixView, "Matrix view" );
+			setValue( *p_proxy.matrixView, "CameraMatrixView" );
 			_refreshDataModels();
 		};
 
 		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "Matrix projection" ); };
+			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "CameraMatrixProjection" ); };
 
 		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "Camera position" ); };
+			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraPosition" ); };
 
 		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "Camera clip infos" ); };
+		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraClipInfos" ); };
 
 		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
 		{
-			// setUniform( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
+			// setValue( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
 		};
 
-		p_proxy.onPerspective +=
-			[ this, &p_proxy ]( const bool p_perspective ) { setValue( p_perspective, "Is perspective" ); };
+		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
+		{ setValue( uint( p_perspective ), "CameraIsPerspective" ); };
 	}
 
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
-		assert( hasContext() );
-
 		_proxyColorLayout = &p_proxy;
-		_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+		_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
-		p_proxy.onChange += [ this, &p_proxy ]()
+		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
-			_context->setData<Util::Color::Rgba>( *p_proxy.colors, "Color layout" );
+			_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+			setNeedUpdate( true );
+		};
+		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
+		{
+			_context.setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
 			setNeedUpdate( true );
 		};
 	}
 
 	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
 	{
-		assert( hasContext() );
+		using namespace Proxy;
 
 		_proxyRenderSettings = &p_proxy;
 
-		setValue( p_proxy.ssaoIntensity, "SSAOSSAOIntensity" );
-		setValue( p_proxy.blurSize, "BlurXBlurSize" );
-		setValue( p_proxy.blurSize, "BlurYBlurSize" );
-		setValue( p_proxy.colorBackground, "ShadingShadingBackground color" );
-		setValue( p_proxy.colorLight, "ShadingShadingLight color" );
-		setValue( p_proxy.colorFog, "ShadingShadingFog color" );
-		setValue( p_proxy.shadingMode, "ShadingShadingMode" );
-		setValue( p_proxy.specularFactor, "ShadingShadingSpecular factor" );
-		setValue( p_proxy.shininess, "ShadingShadingShininess" );
-		setValue( p_proxy.toonSteps, "ShadingShadingToon steps" );
-		setValue( p_proxy.fogNear, "ShadingShadingFog near" );
-		setValue( p_proxy.fogFar, "ShadingShadingFog far" );
-		setValue( p_proxy.fogDensity, "ShadingShadingFog density" );
-		setValue( p_proxy.colorOutline, "OutlineOutlineColor" );
-		setValue( p_proxy.outlineSensitivity, "OutlineOutlineSensitivity" );
-		setValue( p_proxy.outlineThickness, "OutlineOutlineThickness" );
-		setValue( p_proxy.colorSelection, "SelectionSelectionColor" );
+		_refreshGraph();
+		build();
 
-		// TODO: disable/enable ssao, outline, etc.
+		// Default values.
+		// Shading.
+		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::SHADING_MODE ), "ShadingShadingMode" );
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_LIGHT ), "ShadingShadingLightColor" );
+		setValue(
+			p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_BACKGROUND ), "ShadingShadingBackgroundColor"
+		);
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SPECULAR_FACTOR ), "ShadingShadingSpecularFactor" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SHININESS ), "ShadingShadingShininess" );
+		setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::TOON_STEPS ), "ShadingShadingToonSteps" );
+		// SSAO.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+		{
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::SSAO_INTENSITY ), "SSAOSSAOIntensity" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurXBlurSize" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurYBlurSize" );
+		}
+		// Outline.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+		{
+			setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_OUTLINE ), "OutlineOutlineColor" );
+			setValue( p_proxy.get<float>( E_RENDER_SETTINGS::OUTLINE_SENSITIVITY ), "OutlineOutlineSensitivity" );
+			setValue( p_proxy.get<uint>( E_RENDER_SETTINGS::OUTLINE_THICKNESS ), "OutlineOutlineThickness" );
+		}
+		// Fog.
+		setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_FOG ), "ShadingShadingFogColor" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_NEAR ), "ShadingShadingFogNear" );
+		setValue( p_proxy.get<float>( E_RENDER_SETTINGS::FOG_FAR ), "ShadingShadingFogFar" );
+		setValue(
+			p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_FOG ) ? p_proxy.get<float>( E_RENDER_SETTINGS::FOG_DENSITY )
+															   : 0.f,
+			"ShadingShadingFogDensity"
+		);
+		// Selection.
+		if ( p_proxy.get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+		{
+			setValue( p_proxy.get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_SELECTION ), "SelectionSelectionColor" );
+		}
+
+		// Callbacks.
+		// Shading.
+		p_proxy.onChange<E_RENDER_SETTINGS::SHADING_MODE, uint>() +=
+			[ this ]( const uint p_mode ) { setValue( p_mode, "ShadingShadingMode" ); };
+
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingLightColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingBackgroundColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() +=
+			[ this ]( const float p_factor ) { setValue( p_factor, "ShadingShadingSpecularFactor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::SHININESS, float>() +=
+			[ this ]( const float p_shininess ) { setValue( p_shininess, "ShadingShadingShininess" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
+			[ this ]( const uint p_steps ) { setValue( p_steps, "ShadingShadingToonSteps" ); };
+		// SSAO.
+		p_proxy.onChange<E_RENDER_SETTINGS::SSAO_INTENSITY, float>() +=
+			[ this ]( const float p_intensity ) { setValue( p_intensity, "SSAOSSAOIntensity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::BLUR_SIZE, float>() += [ this ]( const float p_size )
+		{
+			setValue( p_size, "BlurXBlurSize" );
+			setValue( p_size, "BlurYBlurSize" );
+		};
+		// Outline.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "OutlineOutlineColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() +=
+			[ this ]( const float p_sensivity ) { setValue( p_sensivity, "OutlineOutlineSensitivity" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
+			[ this ]( const uint p_thickness ) { setValue( p_thickness, "OutlineOutlineThickness" ); };
+		// Fog.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "ShadingShadingFogColor" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_NEAR, float>() +=
+			[ this ]( const float p_near ) { setValue( p_near, "ShadingShadingFogNear" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_FAR, float>() +=
+			[ this ]( const float p_far ) { setValue( p_far, "ShadingShadingFogFar" ); };
+		p_proxy.onChange<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
+			[ this ]( const float p_density ) { setValue( p_density, "ShadingShadingFogDensity" ); };
+		// Selection.
+		p_proxy.onChange<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
+			[ this ]( const Util::Color::Rgba & p_color ) { setValue( p_color, "SelectionSelectionColor" ); };
+
+		// Active.
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_FOG, bool>() += [ this ]( const bool p_active )
+		{
+			setValue(
+				p_active ? _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::FOG_DENSITY ) : 0.f,
+				"ShadingShadingFogDensity"
+			);
+		};
+
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::SSAO_INTENSITY ), "SSAOSSAOIntensity" );
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurXBlurSize" );
+				setValue( _proxyRenderSettings->get<float>( E_RENDER_SETTINGS::BLUR_SIZE ), "BlurYBlurSize" );
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue(
+					_proxyRenderSettings->get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_OUTLINE ),
+					"OutlineOutlineColor"
+				);
+				setValue(
+					_proxyRenderSettings->get<float>( E_RENDER_SETTINGS::OUTLINE_SENSITIVITY ),
+					"OutlineOutlineSensitivity"
+				);
+				setValue(
+					_proxyRenderSettings->get<uint>( E_RENDER_SETTINGS::OUTLINE_THICKNESS ), "OutlineOutlineThickness"
+				);
+			}
+		};
+		p_proxy.onChange<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() += [ this ]( const bool p_active )
+		{
+			_refreshGraph();
+			build();
+			if ( p_active )
+			{
+				setValue(
+					_proxyRenderSettings->get<Util::Color::Rgba>( E_RENDER_SETTINGS::COLOR_SELECTION ),
+					"SelectionSelectionColor"
+				);
+			}
+		};
 
 		setNeedUpdate( true );
 	}
 
 	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
 	{
-		assert( hasContext() );
-
 		_proxyVoxels = &p_proxy;
 
 		assert( p_proxy.mins );
 		assert( p_proxy.maxs );
 		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-		_context->setData( *p_proxy.mins, "VoxelsMins" );
-		_context->setData( *p_proxy.maxs, "VoxelsMaxs" );
+		_context.set( *p_proxy.mins, "VoxelsMins" );
+		_context.set( *p_proxy.maxs, "VoxelsMaxs" );
 
 		drawRangeVoxels.offsets = { 0 };
 		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
@@ -482,7 +775,7 @@ namespace VTX::Renderer
 		// Check data.
 		size_t totalAtoms = 0;
 		size_t totalBonds = 0;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			// Check sizes.
 			assert( proxy->atomPositions );
@@ -496,19 +789,19 @@ namespace VTX::Renderer
 		}
 
 		// Create buffers.
-		_context->reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
-		_context->reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
-		_context->reserveData<uint>( totalAtoms, "SpheresCylindersIds" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersFlags" );
-		_context->reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
-		_context->reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
-		_context->reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
+		_context.reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
+		_context.reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
+		_context.reserveData<uint>( totalAtoms, "SpheresCylindersIds" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersFlags" );
+		_context.reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
+		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
+		_context.reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
 
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
 		ushort modelId	   = 0;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			Cache::SphereCylinder & cache = _cacheSpheresCylinders[ proxy ];
 
@@ -516,10 +809,10 @@ namespace VTX::Renderer
 			const size_t bondCount = proxy->bonds->size();
 
 			// Fill buffers.
-			_context->setSubData( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
-			_context->setSubData( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
-			_context->setSubData( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
-			_context->setSubData( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+			_context.setSub( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
+			_context.setSub( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
+			_context.setSub( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
+			_context.setSub( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
 
 			// Flags if not cached.
 			if ( cache.flags.empty() )
@@ -541,9 +834,9 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
 			}
 
-			_context->setSubData( cache.flags, "SpheresCylindersFlags", offsetAtoms );
-			_context->setSubData( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
-			_context->setSubData( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+			_context.setSub( cache.flags, "SpheresCylindersFlags", offsetAtoms );
+			_context.setSub( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
+			_context.setSub( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
 
 			// Move bonds.
 			std::vector<uint> bonds( bondCount );
@@ -551,7 +844,7 @@ namespace VTX::Renderer
 			{
 				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 			}
-			_context->setSubData( bonds, "SpheresCylindersIdx", offsetBonds );
+			_context.setSub( bonds, "SpheresCylindersIdx", offsetBonds );
 
 			// Offsets.
 			cache.rangeSpheres	 = Util::Math::Range<size_t> { offsetAtoms, atomCount };
@@ -579,7 +872,7 @@ namespace VTX::Renderer
 		size_t totalCaPositions = 0;
 		size_t totalIndices		= 0;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			assert( proxy->atomNames );
 			assert( proxy->residueSecondaryStructureTypes );
@@ -711,7 +1004,7 @@ namespace VTX::Renderer
 			for ( uint chainIdx = 0; chainIdx < proxy->chainFirstResidues->size(); ++chainIdx )
 			{
 				/*
-				const Chain * const chain = _molecule->getChain( chainIdx );
+				const Chain * const chain = _system->getChain( chainIdx );
 				if ( chain == nullptr )
 				{
 					continue;
@@ -813,7 +1106,7 @@ namespace VTX::Renderer
 						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						colors.emplace_back( residue->getMoleculePtr()->getColor() );
+						colors.emplace_back( residue->getSystemPtr()->getColor() );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 						colors.emplace_back( residue->getRepresentation()->getColor() );
@@ -841,7 +1134,7 @@ namespace VTX::Renderer
 
 					/*
 					visibilities.emplace_back( uint(
-						_molecule->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
+						_system->isVisible() && chain->isVisible() && residue->isVisible() && CA->isVisible()
 						&& O->isVisible()
 					) );
 					*/
@@ -879,24 +1172,24 @@ namespace VTX::Renderer
 		}
 
 		size_t offsetIndices = 0;
-		if ( _proxiesMolecules.empty() || totalCaPositions == 0 )
+		if ( _proxiesSystems.empty() || totalCaPositions == 0 )
 		{
 			assert( totalIndices == 0 );
 		}
 
-		_context->reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
-		_context->reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsColors" );
-		_context->reserveData<uint>( totalCaPositions, "RibbonsIds" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsFlags" );
-		_context->reserveData<ushort>( totalCaPositions, "RibbonsModels" );
-		_context->reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
-		_context->reserveData<uint>( totalIndices, "RibbonsIdx" );
+		_context.reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
+		_context.reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsColors" );
+		_context.reserveData<uint>( totalCaPositions, "RibbonsIds" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsFlags" );
+		_context.reserveData<ushort>( totalCaPositions, "RibbonsModels" );
+		_context.reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
+		_context.reserveData<uint>( totalIndices, "RibbonsIdx" );
 
 		size_t offsetCaPositions = 0;
 		uchar  modelId			 = -1;
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			modelId++;
 			Cache::Ribbon & cache = _cacheRibbons[ proxy ];
@@ -921,17 +1214,17 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
 			}
 
-			_context->setSubData( cache.positions, "RibbonsPositions", offsetCaPositions );
-			_context->setSubData( cache.directions, "RibbonsDirections", offsetCaPositions );
-			_context->setSubData( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
-			_context->setSubData( cache.colors, "RibbonsColors", offsetCaPositions );
-			_context->setSubData( cache.ids, "RibbonsIds", offsetCaPositions );
-			_context->setSubData( cache.flags, "RibbonsFlags", offsetCaPositions );
-			_context->setSubData(
+			_context.setSub( cache.positions, "RibbonsPositions", offsetCaPositions );
+			_context.setSub( cache.directions, "RibbonsDirections", offsetCaPositions );
+			_context.setSub( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
+			_context.setSub( cache.colors, "RibbonsColors", offsetCaPositions );
+			_context.setSub( cache.ids, "RibbonsIds", offsetCaPositions );
+			_context.setSub( cache.flags, "RibbonsFlags", offsetCaPositions );
+			_context.setSub(
 				std::vector<ushort>( cache.positions.size(), modelId ), "RibbonsModels", offsetCaPositions
 			);
-			_context->setSubData( cache.representations, "RibbonsRepresentations", offsetCaPositions );
-			_context->setSubData( indices, "RibbonsIdx", offsetIndices );
+			_context.setSub( cache.representations, "RibbonsRepresentations", offsetCaPositions );
+			_context.setSub( indices, "RibbonsIdx", offsetIndices );
 
 			// Offsets.
 			cache.range = Util::Math::Range<size_t> { offsetCaPositions, cache.positions.size() };
@@ -964,7 +1257,7 @@ namespace VTX::Renderer
 									  const std::vector<size_t> * p_chainFirstResidues,
 									  const std::vector<size_t> * p_chainResidueCounts,
 									  const std::vector<Vec3f> *  p_atomPositions,
-									  const std::vector<float> &  p_atomRadii )
+									  const std::vector<float> &  p_atomRadii ) -> _InputData
 		{
 			_InputData data;
 
@@ -999,7 +1292,7 @@ namespace VTX::Renderer
 		const float PROBE_RADIUS = 1.4f;
 		const float VOXEL_SIZE	 = 0.4f;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			// TODO: asserts.
 
@@ -1036,7 +1329,7 @@ namespace VTX::Renderer
 			for ( const uint idx : data.atomList )
 			{
 				/*
-				if ( _category->getMoleculePtr()->getAtom( idx ) == nullptr )
+				if ( _category->getSystemPtr()->getAtom( idx ) == nullptr )
 				{
 					continue;
 				}
@@ -1077,8 +1370,8 @@ namespace VTX::Renderer
 
 			// Debug display.
 			auto voxels = gridAtoms.toVoxels();
-			_context->setData( voxels.first, "VoxelsMins" );
-			_context->setData( voxels.second, "VoxelsMaxs" );
+			_context.set( voxels.first, "VoxelsMins" );
+			_context.set( voxels.second, "VoxelsMaxs" );
 
 			drawRangeVoxels.offsets = { 0 };
 			drawRangeVoxels.counts	= { uint( voxels.first.size() ) };
@@ -1092,29 +1385,27 @@ namespace VTX::Renderer
 				int	  nearestAtom;
 			};
 
-			ComputePass::Data bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ), nullptr, 0 };
-			ComputePass::Data bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof( Range<uint> ),
-														 atomGridDataSorted.data(),
-														 1 };
-			ComputePass::Data bufferAtomIndexSorted { atomIndexSorted.size() * sizeof( uint ),
-													  atomIndexSorted.data(),
-													  2 };
-			ComputePass::Data bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ),
-												   atomPositionsVdW.data(),
-												   3 };
+			/*			ComputePass::BufferDraw bufferSesGridData { gridSES.getCellCount() * sizeof( SESGridData ),
+			nullptr, 0 }; ComputePass::BufferDraw bufferAtomGridDataSorted { atomGridDataSorted.size() * sizeof(
+			Range<uint> ), atomGridDataSorted.data(), 1 }; ComputePass::BufferDraw bufferAtomIndexSorted {
+			atomIndexSorted.size() * sizeof( uint ), atomIndexSorted.data(), 2 }; ComputePass::BufferDraw
+			bufferAtomPosition { atomPositionsVdW.size() * sizeof( Vec4f ), atomPositionsVdW.data(), 3 };
 
 			const size_t sizeCreateSDF = bufferSesGridData.size + bufferAtomGridDataSorted.size
 										 + bufferAtomIndexSorted.size + bufferAtomPosition.size;
 
+
 			auto computePass = ComputePass {
-				Program { "CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, Uniforms { /* TODO */ } },
+				Program {
+					"CreateSDF", std::vector<FilePath> { "ses/create_sdf.comp" }, BufferDataValues {  TODO  } },
 				{ &bufferSesGridData, &bufferAtomGridDataSorted, &bufferAtomIndexSorted, &bufferAtomPosition },
 				sizeCreateSDF
 			};
 
-			_context->compute( computePass );
+			_context.compute( computePass );
 
-			_context->clearComputeBuffers();
+			_context.clearComputeBuffers();
+			*/
 		}
 
 		chrono.stop();
@@ -1123,19 +1414,23 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
-		std::vector<_StructUBOModel> models;
+		BinaryBuffer buffer;
 
-		for ( const Proxy::Molecule * const proxy : _proxiesMolecules )
+		for ( const Proxy::System * const proxy : _proxiesSystems )
 		{
 			assert( proxy->transform );
 			assert( _proxyCamera );
 
 			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
 			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
-			models.emplace_back( _StructUBOModel { matrixModelView, matrixNormal } );
+
+			buffer.write( matrixModelView );
+			buffer.write( matrixNormal );
 		}
 
-		_context->setData( models, "Models" );
+		buffer.close();
+
+		_context.set( buffer, "Models" );
 	}
 
 	void Renderer::snapshot(
@@ -1151,9 +1446,195 @@ namespace VTX::Renderer
 		Mat4f		  matrixProjection	  = Util::Math::perspective(
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
 		   );
-		setValue( matrixProjection, "Matrix projection" );
-		_context->snapshot( p_outImage, _renderGraph->getRenderQueue(), _instructions, p_width, p_height );
-		setValue( matrixProjectionOld, "Matrix projection" );
+		setValue( matrixProjection, "CameraMatrixProjection" );
+		_context.snapshot( p_outImage, _graph.getRenderQueue(), _instructions, p_width, p_height );
+		setValue( matrixProjectionOld, "CameraMatrixProjection" );
 	}
 
+	void Renderer::_renderLog( const float p_deltaTime, const float p_elapsedTime )
+	{
+		for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
+		{
+			instructionDurationRange.duration = _context.measureTaskDuration(
+
+				[ this, &instructionDurationRange ]()
+				{
+					for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
+					{
+						_instructions[ i ]();
+					}
+				}
+			);
+		}
+	}
+
+	StructInfos Renderer::getInfos() const
+	{
+		StructInfos infos;
+		_context.fillInfos( infos );
+
+		// Compute size of cached data.
+		size_t sizeCache = 0;
+		for ( const auto & [ proxy, cache ] : _cacheSpheresCylinders )
+		{
+			sizeCache += cache.currentSize();
+		}
+		for ( const auto & [ proxy, cache ] : _cacheRibbons )
+		{
+			sizeCache += cache.currentSize();
+		}
+		infos.currentSizeCPUCache = sizeCache;
+
+		return infos;
+	}
+
+	// TODO: not the best way to do it.
+	void Renderer::_refreshGraph()
+	{
+		using namespace Proxy;
+
+		static Pass * geo;
+		static Pass * depth;
+		static Pass * ssao;
+		static Pass * blurX;
+		static Pass * blurY;
+		static Pass * shading;
+		static Pass * outline;
+		static Pass * selection;
+		static Pass * fxaa;
+
+		// Geometric.
+		if ( not geo )
+		{
+			geo									   = _graph.addPass( descPassGeometric );
+			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+			geo->programs[ 0 ].draw.value().needRenderFunc
+				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
+			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+			geo->programs[ 1 ].draw.value().needRenderFunc
+				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
+			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+			geo->programs[ 2 ].draw.value().needRenderFunc
+				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
+			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+			geo->programs[ 3 ].draw.value().needRenderFunc
+				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+		}
+
+		// Depth.
+		if ( not depth )
+		{
+			depth = _graph.addPass( descPassDepth );
+
+			_graph.addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
+		}
+
+		// SSAO.
+		if ( not ssao )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+			{
+				ssao  = _graph.addPass( descPassSSAO );
+				blurX = _graph.addPass( descPassBlur );
+				blurY = _graph.addPass( descPassBlur );
+
+				blurX->name							 = "BlurX";
+				blurY->name							 = "BlurY";
+				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
+
+				_graph.addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+				_graph.addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+				_graph.addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
+		{
+			_graph.removePass( ssao );
+			_graph.removePass( blurX );
+			_graph.removePass( blurY );
+			ssao  = nullptr;
+			blurX = nullptr;
+			blurY = nullptr;
+		}
+
+		// Shading.
+		if ( not shading )
+		{
+			shading = _graph.addPass( descPassShading );
+
+			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
+		}
+		if ( ssao )
+		{
+			_graph.addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+		}
+
+		// Outline.
+		if ( not outline )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+			{
+				outline = _graph.addPass( descPassOutline );
+
+				_graph.addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_OUTLINE ) )
+		{
+			_graph.removePass( outline );
+			outline = nullptr;
+		}
+
+		// Selection.
+		if ( not selection )
+		{
+			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+			{
+				selection = _graph.addPass( descPassSelection );
+
+				_graph.addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
+			}
+		}
+		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SELECTION ) )
+		{
+			_graph.removePass( selection );
+			selection = nullptr;
+		}
+		if ( selection )
+		{
+			if ( outline )
+			{
+				_graph.addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+			else
+			{
+				_graph.addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
+			}
+		}
+
+		// FXAA.
+		if ( not fxaa )
+		{
+			fxaa = _graph.addPass( desPassFXAA );
+			_graph.setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
+		}
+		if ( selection )
+		{
+			_graph.addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else if ( outline )
+		{
+			_graph.addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+		else
+		{
+			_graph.addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+		}
+	}
 } // namespace VTX::Renderer

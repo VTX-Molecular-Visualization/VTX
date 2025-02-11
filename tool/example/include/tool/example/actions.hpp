@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_EXAMPLE_ACTIONS_
 #define __VTX_TOOL_EXAMPLE_ACTIONS_
 
+#include "widget/my_dialog.hpp"
 #include <app/ui/concepts.hpp>
 
 namespace VTX::Tool::Example::Action
@@ -10,11 +11,13 @@ namespace VTX::Tool::Example::Action
 	{
 		MyAction1()
 		{
-			name = "Open dialog";
-			tip	 = "Demo action";
-			// icon	 = "";
-			// shortcut = "";
-			// trigger	 = []() {};
+			name	= "Open dialog";
+			tip		= "Demo action";
+			trigger = []()
+			{
+				Widget::MyDialog dialog;
+				dialog.exec();
+			};
 		}
 	};
 

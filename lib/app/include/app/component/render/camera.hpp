@@ -1,20 +1,33 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_CAMERA__
 
-#include "app/component/render/enum_camera.hpp"
 #include "app/component/scene/transform_component.hpp"
-#include "app/internal/constants.hpp"
+#include <renderer/proxy/camera.hpp>
 #include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
 {
-	class Camera
+	// Constants.
+	constexpr Vec3f CAMERA_RIGHT_DEFAULT = RIGHT_AXIS;
+	constexpr Vec3f CAMERA_UP_DEFAULT	 = UP_AXIS;
+	constexpr Vec3f CAMERA_FRONT_DEFAULT = FRONT_AXIS;
+
+	class Camera : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Camera>
 	{
 	  public:
+		// Projection enum.
+		enum class PROJECTION : int
+		{
+			PERSPECTIVE,
+			ORTHOGRAPHIC,
+
+			COUNT
+		};
+
 		Camera();
 
-		void init();
+		void setupProxy() override;
 
 		inline const Component::Scene::Transform & getTransform() const { return *_transform; }
 		inline Component::Scene::Transform &	   getTransform() { return *_transform; }
@@ -32,10 +45,10 @@ namespace VTX::App::Component::Render
 
 		inline const Vec3f & getTarget() const { return _target; }
 
-		inline const CAMERA_PROJECTION & getProjection() { return _projection; }
-		void							 setCameraProjection( const CAMERA_PROJECTION & p_projection );
+		inline const PROJECTION & getProjection() { return _projection; }
+		void					  setCameraProjection( const PROJECTION & p_projection );
 
-		const bool isPerspective() const { return _projection == CAMERA_PROJECTION::PERSPECTIVE; }
+		const bool isPerspective() const { return _projection == PROJECTION::PERSPECTIVE; }
 
 		void setScreenSize( const size_t p_width, const size_t p_height );
 
@@ -53,10 +66,10 @@ namespace VTX::App::Component::Render
 
 		void print() const;
 
-		Util::Callback<Mat4f>			  onMatrixViewChange;
-		Util::Callback<Mat4f>			  onMatrixProjectionChange;
-		Util::Callback<float, float>	  onClipInfosChange;
-		Util::Callback<CAMERA_PROJECTION> onProjectionChange;
+		Util::Callback<Mat4f &>		 onMatrixViewChange;
+		Util::Callback<Mat4f &>		 onMatrixProjectionChange;
+		Util::Callback<float, float> onClipInfosChange;
+		Util::Callback<PROJECTION>	 onProjectionChange;
 
 	  protected:
 		size_t _screenWidth	 = 0;
@@ -71,7 +84,7 @@ namespace VTX::App::Component::Render
 		Vec3f _target		 = VEC3F_ZERO;
 		bool  _targetIsLocal = false;
 
-		CAMERA_PROJECTION _projection = CAMERA_PROJECTION::PERSPECTIVE;
+		PROJECTION _projection = PROJECTION::PERSPECTIVE;
 
 		Mat4f _viewMatrix		= MAT4F_ID;
 		Mat4f _projectionMatrix = MAT4F_ID;

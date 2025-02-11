@@ -3,14 +3,14 @@
 
 #include "camera.hpp"
 #include <core/struct/color_layout.hpp>
-#include <core/struct/molecule.hpp>
+#include <core/struct/system.hpp>
 #include <renderer/proxy/camera.hpp>
 #include <renderer/proxy/color_layout.hpp>
-#include <renderer/proxy/molecule.hpp>
+#include <renderer/proxy/system.hpp>
 
 namespace VTX::Renderer
 {
-	class Renderer;
+	class Facade;
 }
 
 namespace VTX::Bench
@@ -24,11 +24,11 @@ namespace VTX::Bench
 		inline Camera &					 getCamera() { return _camera; }
 		inline Renderer::Proxy::Camera & getProxyCamera() { return _proxyCamera; }
 
-		Renderer::Proxy::Molecule & addMolecule( const std::string & p_name );
-		void						removeMolecule( const size_t p_index );
+		Renderer::Proxy::System & addSystem( const std::string & p_name );
+		void					  removeSystem( const size_t p_index );
 
 		// TODO: remove renderer from here.
-		void removeAllMolecules( Renderer::Renderer * const p_renderer );
+		void removeAllSystems( Renderer::Facade * const p_renderer );
 
 		inline void update( const float p_deltaTime )
 		{
@@ -40,28 +40,28 @@ namespace VTX::Bench
 			int i = 0;
 			// static uint currentFrame = 0;
 
-			for ( auto & molecule : _molecules )
+			for ( auto & system : _systems )
 			{
-				molecule->transform = Util::Math::rotate( molecule->transform, p_deltaTime, _directions[ i ] );
+				system->transform = Util::Math::rotate( system->transform, p_deltaTime, _directions[ i ] );
 
-				//_proxyMolecules[ i ]->atomPositions
-				//	= &molecule->trajectory.frames[ currentFrame++ % molecule->trajectory.frames.size() ];
-				//_proxyMolecules[ i ]->onAtomPositions();
+				//_proxySystems[ i ]->atomPositions
+				//	= &system->trajectory.frames[ currentFrame++ % system->trajectory.frames.size() ];
+				//_proxySystems[ i ]->onAtomPositions();
 
-				_proxyMolecules[ i++ ]->onTransform();
+				_proxySystems[ i++ ]->onTransform();
 			}
 		}
 
-		inline const std::vector<std::unique_ptr<Core::Struct::Molecule>> & getMolecules() const { return _molecules; }
-		inline const std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> & getProxiesMolecules() const
+		inline const std::vector<std::unique_ptr<Core::Struct::System>> &	 getSystems() const { return _systems; }
+		inline const std::vector<std::unique_ptr<Renderer::Proxy::System>> & getProxiesSystems() const
 		{
-			return _proxyMolecules;
+			return _proxySystems;
 		}
 		inline const Core::Struct::ColorLayout & getColorLayout() const { return _colorLayout; }
 		inline void								 setColorLayout( const Core::Struct::ColorLayout & p_colorLayout )
 		{
 			_colorLayout = p_colorLayout;
-			_proxyLayoutColor.onChange();
+			_proxyLayoutColor.onChangeAll();
 		}
 		inline Renderer::Proxy::ColorLayout & getProxyColorLayout() { return _proxyLayoutColor; }
 
@@ -71,14 +71,14 @@ namespace VTX::Bench
 		Camera					_camera;
 		Renderer::Proxy::Camera _proxyCamera;
 
-		std::vector<std::unique_ptr<Core::Struct::Molecule>>	_molecules;
-		std::vector<std::unique_ptr<Renderer::Proxy::Molecule>> _proxyMolecules;
-		std::vector<Vec3f>										_directions;
+		std::vector<std::unique_ptr<Core::Struct::System>>	  _systems;
+		std::vector<std::unique_ptr<Renderer::Proxy::System>> _proxySystems;
+		std::vector<Vec3f>									  _directions;
 
 		Core::Struct::ColorLayout	 _colorLayout;
 		Renderer::Proxy::ColorLayout _proxyLayoutColor;
 
-		std::unique_ptr<Renderer::Proxy::Molecule> _proxify( const Core::Struct::Molecule & p_molecule );
+		std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
 	};
 
 } // namespace VTX::Bench

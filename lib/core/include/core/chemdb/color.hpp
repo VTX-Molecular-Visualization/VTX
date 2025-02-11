@@ -12,10 +12,15 @@
 namespace VTX::Core::ChemDB::Color
 {
 	constexpr int LAYOUT_OFFSET_ATOMS	 = 0;
-	constexpr int LAYOUT_OFFSET_RESIDUES = 130;
-	constexpr int LAYOUT_OFFSET_CHAINS	 = 175;
-	constexpr int LAYOUT_OFFSET_RIBBONS	 = 230;
-	constexpr int LAYOUT_OFFSET_CUSTOM	 = 245;
+	constexpr int LAYOUT_COUNT_ATOMS	 = int( Atom::SYMBOL::COUNT );
+	constexpr int LAYOUT_OFFSET_RESIDUES = 121;
+	constexpr int LAYOUT_COUNT_RESIDUES	 = int( Residue::SYMBOL::COUNT );
+	constexpr int LAYOUT_OFFSET_CHAINS	 = 163;
+	constexpr int LAYOUT_COUNT_CHAINS	 = 53;
+	constexpr int LAYOUT_OFFSET_RIBBONS	 = 218;
+	constexpr int LAYOUT_COUNT_RIBBONS	 = 8;
+	constexpr int LAYOUT_OFFSET_CUSTOM	 = 228;
+	constexpr int LAYOUT_COUNT_CUSTOM	 = 14;
 
 	enum class E_LAYOUT_COLOR_INDEX : uchar
 	{
@@ -169,6 +174,7 @@ namespace VTX::Core::ChemDB::Color
 		RESIDUE_A,
 		RESIDUE_U,
 		RESIDUE_I,
+		RESIDUE_T,
 		RESIDUE_DC,
 		RESIDUE_DG,
 		RESIDUE_DA,
@@ -177,6 +183,7 @@ namespace VTX::Core::ChemDB::Color
 		RESIDUE_DI,
 		RESIDUE_WAT,
 		RESIDUE_HOH,
+		RESIDUE_SOL,
 
 		CHAIN_UNKNOWM = LAYOUT_OFFSET_CHAINS,
 		CHAIN_0,
@@ -251,6 +258,24 @@ namespace VTX::Core::ChemDB::Color
 		CUSTOM_7,
 		CUSTOM_8,
 		CUSTOM_9,
+		CUSTOM_10,
+		CUSTOM_11,
+		CUSTOM_12,
+		CUSTOM_13,
+		CUSTOM_14,
+		CUSTOM_15,
+		CUSTOM_16,
+		CUSTOM_17,
+		CUSTOM_18,
+		CUSTOM_19,
+		CUSTOM_20,
+		CUSTOM_21,
+		CUSTOM_22,
+		CUSTOM_23,
+		CUSTOM_24,
+		CUSTOM_25,
+		CUSTOM_26,
+		CUSTOM_27
 	};
 
 	inline uchar getColorIndex( const Atom::SYMBOL p_symbol ) { return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
@@ -406,15 +431,6 @@ namespace VTX::Core::ChemDB::Color
 																		 { 255, 255, 255 }, // UUO
 																		 {},
 																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
 
 																		 { 190, 160, 110 }, // UNKNOWN
 																		 { 200, 200, 200 }, // ALA
@@ -446,6 +462,7 @@ namespace VTX::Core::ChemDB::Color
 																		 { 160, 160, 255 }, // A
 																		 { 255, 128, 128 }, // U
 																		 { 128, 255, 255 }, // I
+																		 { 160, 255, 160 }, // T
 																		 { 255, 140, 75 },	// DC
 																		 { 255, 112, 112 }, // DG
 																		 { 160, 160, 255 }, // DA
@@ -454,11 +471,7 @@ namespace VTX::Core::ChemDB::Color
 																		 { 128, 255, 255 }, // DI
 																		 { 255, 105, 180 }, // WAT
 																		 { 255, 105, 180 }, // HOH
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
+																		 { 255, 255, 255 }, // SOL
 																		 {},
 																		 {},
 
@@ -528,12 +541,24 @@ namespace VTX::Core::ChemDB::Color
 																		 COLOR_WHITE,		   // COIL
 																		 {},
 																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
-																		 {},
 
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
+																		 COLOR_WHITE,
 																		 COLOR_WHITE,
 																		 COLOR_WHITE,
 																		 COLOR_WHITE,
@@ -558,7 +583,7 @@ namespace VTX::Core::ChemDB::Color
 		INHERITED
 	};
 	static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom", "Residue",
-															  "Chain",		"Molecule",	   "Custom",	  "Inherited" };
+															  "Chain",		"System",	   "Custom",	  "Inherited" };
 	enum class COLOR_BLENDING_MODE : int
 	{
 		HARD,
@@ -575,7 +600,7 @@ namespace VTX::Core::ChemDB::Color
 		CUSTOM
 	};
 	inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
-																						 "Molecule",
+																						 "System",
 																						 "Chain",
 																						 "Residue",
 																						 "Custom" };

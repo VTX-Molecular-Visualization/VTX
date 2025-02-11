@@ -4,12 +4,12 @@
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
 #include <QToolBar>
-#include <ui/qt/base_widget.hpp>
+#include <ui/qt/core/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyToolBar : public UI::QT::BaseWidget<MyToolBar, QToolBar>
+	class MyToolBar : public UI::QT::Core::BaseWidget<MyToolBar, QToolBar>
 	{
 	  public:
 		MyToolBar( QWidget * p_parent ) : BaseWidget<MyToolBar, QToolBar>( "My toolbar", p_parent )

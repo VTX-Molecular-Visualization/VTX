@@ -4,19 +4,25 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Console::Console( QWidget * p_parent ) : BaseWidget<Console, QDockWidget>( "Console", p_parent )
+	Console::Console( QWidget * p_parent ) : Core::BaseDockWidget<Console, 0, 0>( "Console", p_parent )
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
+		setMinimumHeight( 100 );
 
-		QWidget * const widget = new QWidget( this );
-		_listWidget			   = new QListWidget( this );
+		// setBaseSize( 100, 100 );
+		//  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::MinimumExpanding );
+
+		_listWidget = new QListWidget( _root );
+
+		//_listWidget->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
+		//_listWidget->setMinimumHeight( 80 );
+		//_listWidget->setSPolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
+		_listWidget->setWordWrap( true );
+		_listWidget->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
+
 		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
-		// Set widget.
-		QVBoxLayout * const mainLayout = new QVBoxLayout( widget );
-		mainLayout->setContentsMargins( 0, 0, 0, 0 );
-		mainLayout->addWidget( _listWidget );
-		setWidget( widget );
+		_layout->addWidget( _listWidget );
 
 		connect(
 			_listWidget,
@@ -35,8 +41,9 @@ namespace VTX::UI::QT::DockWidget
 		LOGGER::onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
 
 		// Command launcher.
-		_commandLauncher = new LineEdit::CommandLauncher( this );
-		mainLayout->addWidget( _commandLauncher );
+		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
+
+		_layout->addWidget( _commandLauncher );
 	}
 
 	void Console::clear()

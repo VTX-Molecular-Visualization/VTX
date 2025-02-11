@@ -3,7 +3,7 @@
 
 #include "_fwd.hpp"
 #include "python_binding/api/selection/helper.hpp"
-#include <app/application/selection/selection.hpp>
+#include <app/selection/selection.hpp>
 #include <app/component/chemistry/_fwd.hpp>
 #include <pybind11/pybind11.h>
 #include <string>
@@ -11,7 +11,7 @@
 
 namespace VTX::PythonBinding::API::Selection
 {
-	using Selection = App::Application::Selection::Selection;
+	using Selection = App::Selection::Selection;
 
 	class SelectionWrapper
 	{
@@ -34,10 +34,10 @@ namespace VTX::PythonBinding::API::Selection
 
 		void selectAll();
 
-		const std::vector<App::Component::Chemistry::Molecule *> getMolecules();
-		const std::vector<App::Component::Chemistry::Chain *>	 getChains();
-		const std::vector<App::Component::Chemistry::Residue *>	 getResidues();
-		const std::vector<App::Component::Chemistry::Atom *>	 getAtoms();
+		const std::vector<App::Component::Chemistry::System *>	getSystems();
+		const std::vector<App::Component::Chemistry::Chain *>	getChains();
+		const std::vector<App::Component::Chemistry::Residue *> getResidues();
+		const std::vector<App::Component::Chemistry::Atom *>	getAtoms();
 
 		std::string toString() const;
 

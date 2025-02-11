@@ -1,14 +1,14 @@
 #include "app/controller/picker/selection.hpp"
 #include "app/core/input/input_manager.hpp"
-#include <app/application/ecs/registry_manager.hpp>
 #include <app/application/scene_utility.hpp>
-#include <app/application/selection/selection.hpp>
-#include <app/application/selection/selection_manager.hpp>
-#include <app/application/system/action_manager.hpp>
-#include <app/application/system/renderer.hpp>
+#include <app/selection/selection.hpp>
+#include <app/selection/selection_manager.hpp>
 #include <app/component/scene/pickable.hpp>
+#include <app/core/action/action_system.hpp>
 #include <app/core/ecs/registry.hpp>
+#include <app/core/renderer/renderer_system.hpp>
 #include <optional>
+#include <util/logger.hpp>
 
 namespace
 {
@@ -19,35 +19,44 @@ namespace
 		const VTX::App::Core::ECS::BaseEntity entity = VTX::App::Application::SceneUtility::findItemByUID( p_uid );
 
 		if ( entity == VTX::App::Core::ECS::INVALID_ENTITY )
-			return std::optional<VTX::App::Component::Scene::Pickable>();
+		{
+			return std::nullopt;
+		}
 
-		const VTX::App::Component::Scene::Pickable & pickableComponent
-			= VTX::App::MAIN_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
-
-		return std::optional<const VTX::App::Component::Scene::Pickable>( pickableComponent );
+		return VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Scene::Pickable>( entity );
 	}
 } // namespace
 
 namespace VTX::App::Controller::Picker
 {
-	void Selection::init()
+	void Selection::setActive( const bool p_active )
 	{
-		INPUT_MANAGER().onMouseLeftClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
+		// Connect/disconnect mouse events.
+		if ( p_active )
+		{
+			_mouseLeftClickCallbackID = INPUT_MANAGER().onMouseLeftClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseLeftDoubleClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
+			_mouseLeftDoubleClickCallbackID = INPUT_MANAGER().onMouseLeftDoubleClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
 
-		INPUT_MANAGER().onMouseRightClicked +=
-			[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
+			_mouseRightClickCallbackID = INPUT_MANAGER().onMouseRightClicked +=
+				[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
+		}
+		else
+		{
+			INPUT_MANAGER().onMouseLeftClicked -= _mouseLeftClickCallbackID;
+			INPUT_MANAGER().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
+			INPUT_MANAGER().onMouseRightClicked -= _mouseRightClickCallbackID;
+		}
 	}
 
 	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
-		VTX_INFO( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
+		VTX_DEBUG( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
 		_performSelection( pickingInfo );
 		_lastPickingInfo = pickingInfo;
@@ -56,7 +65,7 @@ namespace VTX::App::Controller::Picker
 	void Selection::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !_isTargetSelected( pickingInfo ) )
 		{
@@ -82,10 +91,12 @@ namespace VTX::App::Controller::Picker
 	void Selection::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
 		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER().facade().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
-		if ( !pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
+		if ( not pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
+		{
 			return;
+		}
 
 		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::None ) )
 		{
@@ -96,12 +107,13 @@ namespace VTX::App::Controller::Picker
 	void Selection::_performSelection( const PickingInfo & p_pickingInfo ) const
 	{
 		// Append to selection if CTRL modifier pressed.
+		// TODO: move to action? Is input manager still needed?
 		const App::Component::Scene::Pickable::PickType pickType
 			= INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::Ctrl )
 				  ? App::Component::Scene::Pickable::PickType::TOGGLE
 				  : App::Component::Scene::Pickable::PickType::SET;
 
-		if ( !p_pickingInfo.hasValue() )
+		if ( not p_pickingInfo.hasValue() )
 		{
 			// Clear selection when the user clicks in void without modfiers.
 			if ( pickType == App::Component::Scene::Pickable::PickType::SET )

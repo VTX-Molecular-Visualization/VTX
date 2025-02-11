@@ -21,7 +21,7 @@ namespace VTX::Util
 		return std::hash<std::string_view>()( std::string_view( p_value ) );
 	}
 	// Speicalization for char*, using content instead of ptr
-	inline Hash hash( const char * p_value ) { return hash( std::string( p_value ) ); }
+	inline Hash hash( const char * p_value ) { return std::hash<std::string_view>()( std::string_view( p_value ) ); }
 
 	template<typename T>
 	using DefaultHashProcess = std::remove_pointer_t<std::decay_t<T>>;

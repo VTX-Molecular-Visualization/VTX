@@ -14,7 +14,7 @@ namespace VTX::UI::QT
 	{
 		VTX_INFO( "Saving settings: {}", fileName().toStdString() );
 
-		for ( auto & savable : _savables )
+		for ( auto * const savable : _savables )
 		{
 			savable->save();
 		}
@@ -36,7 +36,7 @@ namespace VTX::UI::QT
 			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( status() ) ) );
 		}
 
-		for ( auto & savable : _savables )
+		for ( auto * const savable : _savables )
 		{
 			savable->restore();
 		}

@@ -28,10 +28,10 @@ namespace VTX::PythonBinding
 			Module defSubmodule( const std::string & p_submoduleName, const std::string & p_submoduleDesc );
 			Module getSubmodule( const std::string & p_submoduleName );
 
-			template<typename Action, typename... Args, typename... Extras>
+			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras... p_extras )
 			{
-				std::function runActionFunc = &Module::runAction<Action, Args...>;
+				std::function runActionFunc = &Module::runAction<Action, ActionArgs...>;
 				def( p_name.c_str(), runActionFunc, p_desc.c_str(), p_extras... );
 			}
 
@@ -87,6 +87,6 @@ namespace VTX::PythonBinding
 			}
 		};
 	} // namespace Wrapper
-};	  // namespace VTX::PythonBinding
+}; // namespace VTX::PythonBinding
 
 #endif

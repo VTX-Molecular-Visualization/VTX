@@ -159,7 +159,10 @@ namespace VTX
 		= std::same_as<typename RemoveTypeAlterations<LEFT>::type, typename RemoveTypeAlterations<RIGHT>::type>;
 
 	template<typename T>
-	concept HasPointerOperator = requires( T a ) { a->bar(); };
+	concept IsSmartPtr = requires( T a ) {
+		{ a.get() } -> std::same_as<typename std::pointer_traits<T>::element_type *>;
+	};
+
 } // namespace VTX
 
 #endif

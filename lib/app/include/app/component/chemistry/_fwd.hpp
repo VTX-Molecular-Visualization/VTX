@@ -4,7 +4,7 @@ namespace VTX::App::Component::Chemistry
 	class Bond;
 	class Category;
 	class Chain;
-	class Molecule;
+	class System;
 	class Residue;
 	class Trajectory;
 } // namespace VTX::App::Component::Chemistry

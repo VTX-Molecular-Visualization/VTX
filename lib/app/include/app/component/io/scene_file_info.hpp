@@ -2,11 +2,12 @@
 #define __VTX_APP_COMPONENT_IO_SCENE_FILE_INFO__
 
 // #include <map>
+#include "app/core/ecs/base_component.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::IO
 {
-	class SceneFileInfo // : public App::Old::Core::Event::BaseEventReceiverVTX
+	class SceneFileInfo : public Core::ECS::BaseComponent
 	{
 	  public:
 		// Copy of function in VTXApp that must be here
@@ -39,7 +40,7 @@ namespace VTX::App::Component::IO
 		//	// Writer::ChemfilesWriter * const getWriter();
 		//	// void							deleteWriter();
 
-		//	bool needToSaveMolecule() const;
+		//	bool needToSaveSystem() const;
 
 		//  private:
 		//	FilePath				  _path		  = FilePath( "" );
@@ -50,16 +51,16 @@ namespace VTX::App::Component::IO
 		// ScenePathData();
 		// virtual void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		// void registerLoading( const App::Component::Chemistry::Molecule * const p_molecule,
+		// void registerLoading( const App::Component::Chemistry::System * const p_system,
 		//					  const FilePath &									p_filepath );
 
 		// inline const FilePath & getCurrentPath() const { return _currentFilePath; }
 		// void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
 		// void					clearCurrentPath();
 
-		// Data &						getData( const App::Component::Chemistry::Molecule * const p_molecule );
-		// const ScenePathData::Data & getData( const App::Component::Chemistry::Molecule * const p_molecule ) const;
-		// FilePath					getFilepath( const App::Component::Chemistry::Molecule * const p_molecule ) const;
+		// Data &						get( const App::Component::Chemistry::System * const p_system );
+		// const ScenePathData::Data & get( const App::Component::Chemistry::System * const p_system ) const;
+		// FilePath					getFilepath( const App::Component::Chemistry::System * const p_system ) const;
 
 		// void	   incrementSceneModifications();
 		// void	   decrementSceneModifications();
@@ -70,7 +71,7 @@ namespace VTX::App::Component::IO
 
 	  private:
 		FilePath _currentFilePath = FilePath();
-		// std::map<const App::Component::Chemistry::Molecule *, Data> _mapMoleculePath;
+		// std::map<const App::Component::Chemistry::System *, Data> _mapSystemPath;
 		int	 _sceneModificationsCount = 0;
 		bool _forceSceneModifications = false;
 	};
