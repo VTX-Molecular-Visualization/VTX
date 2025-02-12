@@ -100,7 +100,8 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	void writeLineToFile( const FilePath & p_filePath, const std::string & p_line ){
+	void writeLineToFile( const FilePath & p_filePath, const std::string & p_line )
+	{
 		std::ofstream file( p_filePath, std::ios::app );
 		if ( file.is_open() )
 		{
@@ -112,6 +113,19 @@ namespace VTX::Util::Filesystem
 			throw IOException( "Can not write to " + p_filePath.string() );
 		}
 	}
-	
+
+	void writeStringToFile( const FilePath & p_filePath, const std::string & p_line )
+	{
+		std::ofstream file( p_filePath, std::ios::app );
+		if ( file.is_open() )
+		{
+			file << p_line;
+			file.close();
+		}
+		else
+		{
+			throw IOException( "Can not write to " + p_filePath.string() );
+		}
+	}
 
 } // namespace VTX::Util::Filesystem

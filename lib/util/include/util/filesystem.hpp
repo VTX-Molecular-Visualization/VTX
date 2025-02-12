@@ -30,6 +30,9 @@ namespace VTX::Util::Filesystem
 
 	// Write a line to a file
 	void writeLineToFile( const FilePath & p_filePath, const std::string & p_line );
+
+	// Write an element to a file
+	void writeStringToFile( const FilePath & p_filePath, const std::string & p_element );
 } // namespace VTX::Util::Filesystem
 
 #endif

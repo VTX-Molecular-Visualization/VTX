@@ -14,7 +14,7 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 layout ( std140, binding = 3 ) uniform Uniforms
 {	
 	float intensity;
-    float radius;
+    //float radius;
 } uniforms;
 
 // Out.
@@ -45,7 +45,7 @@ const vec2[16] aoKernel = vec2[16](
 
 
 //longueur des "tubes"
-const float[16] sampleWidths = float[16](
+/* const float[16] sampleWidths = float[16](
  // 2*sqrt(1-(x^2+y^2))	
  	1.6486931439597876,
  	1.1159163688839602,
@@ -63,6 +63,26 @@ const float[16] sampleWidths = float[16](
  	1.8580980071741682,
  	0.9976141902169144,
  	0.6880182573298848
+); */
+
+const float[16] sampleWidthsInv = float[16](
+	// 1/(2*sqrt(1-(x^2+y^2)))
+	0.6065410071386762,
+	0.8961245016955085,
+	0.7953800843315306,
+	0.7382241743453847,
+	0.7330124208757883,
+	0.7915733007150487,
+	0.8576426060065658,
+	0.54762531598409,
+	0.5276382135299945,
+	0.7363290445888516,
+	0.5469042228617713,
+	0.501597055737606,
+	0.6041565594124342,
+	0.5381847438288896,
+	1.002391515484124,
+	1.4534498021620508
 );
 //volume des "tubes"
 const float[16] sphereWeights = float[16](
@@ -100,7 +120,7 @@ void main(){
     float depth = texelFetch( inTextureDepth, texPos, 0 ).x;
 
 	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
-	const float radius = uniforms.radius*1000.f/depth;
+	const float radius = 500.f/depth;
     
 	//on considère que le centre de la sphère est à 50% cachée
 	float sphereOcclusion= 0.5f*centerWeight;
@@ -111,24 +131,17 @@ void main(){
     mat2 rot = mat2(cos(angle), -sin(angle),
 					sin(angle), cos(angle));
 
-	
-   
-
      for (int i = 0 ; i < 16; i++){
 	
         //get sample position in screen space
         ivec2 samplePos_frag =  ivec2(radius * rot *aoKernel[i] + texPos);
 
-
-        
-		// on scale pas le width car on va faire une différence entre des valeurs normalisées.
-        const float sampleWidth = sampleWidths[i];
-
         //get depth (normalisée et pas linéaire)
         float sampleDepth = texelFetch( inTextureDepth, samplePos_frag, 0 ).x;
 		
-        //measure ao on the line
-		float diff = (depth-sampleDepth)/sampleWidth;
+        //measure ao on the line, 
+		//width not scaled because comparing normalized values
+		float diff = (depth-sampleDepth)*sampleWidthsInv[i];
 
         float tubeOcclusion = 0.5f+ diff; 
 		//length of line in sphere that is occluded, 
