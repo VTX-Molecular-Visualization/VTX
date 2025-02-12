@@ -16,8 +16,6 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 layout ( std140, binding = 3 ) uniform Uniforms
 {	
 	float intensity;
-	float bias;
-
 } uniforms;
 
 // Out.
@@ -25,10 +23,10 @@ layout( location = 0 ) out float outAmbientOcclusion;
 
 const int noiseTextureSize = 64;
 
-float BIAS;
+const float BIAS = 0.01f *3.1415/180.f;
 const int NUM_DIR = 4;
 const int NUM_SAMPLE = 4;
-const float threshold = 10.f;
+const float threshold = 20.f;
 
 //Directions to integrate in
 const vec2[4] dXs = vec2[4](
@@ -44,8 +42,7 @@ const float[4] radii = float[4](
 );
 
 void main(){
-	
-	BIAS = uniforms.bias *3.1415/180.f;
+
     //Get current pixel, screen space coordinates
     ivec2 texPos= ivec2(2*gl_FragCoord.xy);
 	
@@ -58,12 +55,10 @@ void main(){
 
 
 	//TODO :  Adapt radius wrt depth: the deeper the fragment is, the smaller the radius is.
-	const float radius =40.f/depth;
+	const float radius =80.f/depth;
     
 	//initialise la valeur d'occlusion
 	float sphereOcclusion= 0.f;
-	
-	float falloff  = 1.f;
 
     //calculate random rotation matrix based on noise
 	vec2 jitter = texture( inTextureNoise, texPos / float( noiseTextureSize )).xy;
@@ -72,9 +67,8 @@ void main(){
 					sin(angle), cos(angle));
 
 	
- 
 
-     for (int i = 0 ; i < 4; i++){
+     for (int i = 0 ; i < NUM_DIR; i++){
 		//Calculate pixel tangent
 
 		//get very close sample in screen space
@@ -91,24 +85,24 @@ void main(){
 		float maxAngle = 0.f;
 		
 		//TODO normalize le pixel pour calculer ta tangente avant de faire quoi que ce soit d'autre
-		for (int j = 0 ; j< 4; j++){
+		for (int j = 0 ; j< NUM_SAMPLE; j++){
 			
         	//get sample position in screen space
-        	vec2 samplePos = radius*radii[j]*(dX)+ position.xy ;
-
-		
+        	vec2 samplePos = radius*radii[j]*dX+ position.xy ;
+			samplePos = max(samplePos,vec2(0.f));
+			samplePos = min(samplePos,vec2(1024.f,2048.f)); //TODO replace with screen size
 			float depthSample = -texelFetch( inTextureDepth, ivec2(samplePos), 0 ).x;
 
-			vec3 samplePosVec3 = vec3((samplePos.x), (samplePos.y), depthSample);
+			vec3 samplePosVec3 = vec3((samplePos.x), (samplePos.y), depthSample) - position;
 
-			samplePosVec3 = samplePosVec3 - position;
+			
 			float horizAngle = atan(samplePosVec3.z/length(samplePosVec3)); 
 
-			if (horizAngle >= maxAngle && abs(depthSample-depth)<threshold) maxAngle = horizAngle;
+			if (horizAngle >= maxAngle && abs(samplePosVec3.z)<threshold) maxAngle = horizAngle;
 
     	} 
 
-		sphereOcclusion += (sin(maxAngle)-sinTan)/float(4);
+		sphereOcclusion += (sin(maxAngle)-sinTan)*0.25f; //divided by 4
 	}
 	
 	sphereOcclusion = clamp(sphereOcclusion,0.f,1.f);
