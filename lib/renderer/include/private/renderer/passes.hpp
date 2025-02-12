@@ -19,6 +19,9 @@ namespace VTX::Renderer
 	inline const Attachment imageR32F { E_FORMAT::R32F };
 	inline const Attachment imageR16F { E_FORMAT::R16F };
 	inline const Attachment imageR8 { E_FORMAT::R8 };
+	inline const Attachment imageR8_small {
+		E_FORMAT::R8, E_WRAPPING::REPEAT, E_WRAPPING::REPEAT, E_FILTERING::NEAREST, E_FILTERING::NEAREST, 0.5f, 0.5f
+	};
 
 	// BufferDraw.
 	// TODO: compress all.
@@ -101,7 +104,7 @@ namespace VTX::Renderer
 		);
 
 		return noise;
-	}
+	};
 	inline const std::vector<Vec3f> noiseTexture = createNoiseTexture();
 
 	inline Pass descPassSSAO {
@@ -119,7 +122,7 @@ namespace VTX::Renderer
 								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
-		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8_small } } },
 		Programs {
 			{ "SSAO",
 			  std::vector<FilePath> { "default.vert", "ssao.frag" },
@@ -128,6 +131,128 @@ namespace VTX::Renderer
 									 BufferValue<float> { SSAO_INTENSITY_DEFAULT,
 														  BufferValue<float>::MinMax { SSAO_INTENSITY_MIN,
 																					   SSAO_INTENSITY_MAX } } } } } } }
+	};
+
+	inline Pass descPassSSAOLine {
+		"SSAO Line",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8_small } } },
+		Programs {
+			{ "SSAO Line",
+			  std::vector<FilePath> { "default.vert", "ssao_line.frag" },
+			  BufferDataValues {
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_INTENSITY_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } } },
+					{ "Radius",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_RADIUS_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } } } } } } }
+	};
+
+	inline Pass descPassHBAO { "HBAO",
+							   Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+										{ E_CHAN_IN::_1,
+										  { "Noise",
+											Attachment { E_FORMAT::RGB16F,
+														 E_WRAPPING::REPEAT,
+														 E_WRAPPING::REPEAT,
+														 E_FILTERING::NEAREST,
+														 E_FILTERING::NEAREST,
+														 noiseTextureSize,
+														 noiseTextureSize,
+														 (void *)( noiseTexture.data() ) } } }
+										// namespace VTX::Renderer
+										,
+										{ E_CHAN_IN::_2, { "Depth", imageR32F } } },
+							   Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8_small } } },
+							   Programs {
+								   { "HBAO",
+									 std::vector<FilePath> { "default.vert", "hbao.frag" },
+									 BufferDataValues { { { "Intensity",
+															E_TYPE::FLOAT,
+															BufferValue<float> {
+																SSAO_INTENSITY_DEFAULT,
+																BufferValue<float>::MinMax { SSAO_INTENSITY_MIN,
+																							 SSAO_INTENSITY_MAX } } } /*,
+					  { "Bias",
+						E_TYPE::FLOAT,
+						BufferValue<float> { SSAO_RADIUS_DEFAULT,
+											 BufferValue<float>::MinMax { HBAO_BIAS_MIN, HBAO_BIAS_MAX } }
+					  }*/ } } } } };
+
+	inline Pass descPassSAO {
+		"SAO",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8_small } } },
+		Programs {
+			{ "SAO",
+			  std::vector<FilePath> { "default.vert", "sao.frag" },
+			  BufferDataValues {
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_INTENSITY_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } } },
+					{ "Radius",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_RADIUS_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } } } } } } }
+	};
+
+	inline Pass descPassBMGTAO {
+		"SSAO Line",
+		Inputs { { E_CHAN_IN::_0, { "Geometry", imageRGBA32UI } },
+				 { E_CHAN_IN::_1,
+				   { "Noise",
+					 Attachment { E_FORMAT::RGB16F,
+								  E_WRAPPING::REPEAT,
+								  E_WRAPPING::REPEAT,
+								  E_FILTERING::NEAREST,
+								  E_FILTERING::NEAREST,
+								  noiseTextureSize,
+								  noiseTextureSize,
+								  (void *)( noiseTexture.data() ) } } } // namespace VTX::Renderer
+				 ,
+				 { E_CHAN_IN::_2, { "Depth", imageR32F } },
+				 { E_CHAN_IN::_3, { "Color", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8_small } } },
+		Programs {
+			{ "BMGTAO",
+			  std::vector<FilePath> { "default.vert", "bmgtao.frag" },
+			  BufferDataValues {
+				  { { "Intensity",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_INTENSITY_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } } },
+					{ "Radius",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { SSAO_RADIUS_DEFAULT,
+										   BufferValue<float>::MinMax { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } } } } } } }
 	};
 
 	// Blur.
@@ -346,6 +471,13 @@ namespace VTX::Renderer
 							 BufferValue<float> { 5.f, BufferValue<float>::MinMax { 0.f, 10.f } } } } } } }
 	};
 
+	inline Pass descPassScale {
+		"Scale",
+		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
+		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
+		Programs { { "Scale", std::vector<FilePath> { "default.vert", "scale.frag" }, BufferDataValues {} } }
+	};
+
 	/*
 	enum class E_PASS : size_t
 	{
@@ -366,19 +498,11 @@ namespace VTX::Renderer
 	};
 	*/
 
-	inline std::vector<Pass *> availablePasses = { &descPassGeometric,
-												   &descPassDepth,
-												   &descPassSSAO,
-												   &descPassBlur,
-												   &descPassShading,
-												   &descPassOutline,
-												   &descPassSelection,
-												   &desPassFXAA,
-												   &descPassPixelize,
-												   &descPassCRT,
-												   &descPassChromaticAberration,
-												   &descPassColorize,
-												   &descPassDebug };
+	inline std::vector<Pass *> availablePasses
+		= { &descPassGeometric, &descPassDepth,	 &descPassSSAO,		&descPassSSAOLine, &descPassHBAO,
+			&descPassSAO,		&descPassBMGTAO, &descPassBlur,		&descPassShading,  &descPassOutline,
+			&descPassSelection, &desPassFXAA,	 &descPassPixelize, &descPassCRT,	   &descPassChromaticAberration,
+			&descPassColorize,	&descPassDebug,	 &descPassScale };
 } // namespace VTX::Renderer
 
 #endif

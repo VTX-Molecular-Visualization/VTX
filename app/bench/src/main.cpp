@@ -99,7 +99,7 @@ int main( int, char ** )
 
 				else if ( p_key == SDL_SCANCODE_P )
 				{
-					renderer.logDurations = true;
+					*( renderer.logDurations ) = true;
 					takeMeasures.start();
 				}
 			}

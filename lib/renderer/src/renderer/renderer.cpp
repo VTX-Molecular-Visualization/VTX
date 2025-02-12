@@ -1496,6 +1496,7 @@ namespace VTX::Renderer
 		static Pass * geo;
 		static Pass * depth;
 		static Pass * ssao;
+		static Pass * scale;
 		static Pass * blurX;
 		static Pass * blurY;
 		static Pass * shading;
@@ -1534,7 +1535,8 @@ namespace VTX::Renderer
 		{
 			if ( not _proxyRenderSettings or _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
 			{
-				ssao  = _graph.addPass( descPassSSAO );
+				ssao  = _graph.addPass( descPassHBAO );
+				scale = _graph.addPass( descPassScale );
 				blurX = _graph.addPass( descPassBlur );
 				blurY = _graph.addPass( descPassBlur );
 
@@ -1544,7 +1546,8 @@ namespace VTX::Renderer
 
 				_graph.addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 				_graph.addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-				_graph.addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( ssao, scale, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+				_graph.addLink( scale, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 				_graph.addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
 				_graph.addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 				_graph.addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
@@ -1553,9 +1556,11 @@ namespace VTX::Renderer
 		else if ( _proxyRenderSettings and not _proxyRenderSettings->get<bool>( E_RENDER_SETTINGS::ACTIVE_SSAO ) )
 		{
 			_graph.removePass( ssao );
+			_graph.removePass( scale );
 			_graph.removePass( blurX );
 			_graph.removePass( blurY );
 			ssao  = nullptr;
+			scale = nullptr;
 			blurX = nullptr;
 			blurY = nullptr;
 		}

@@ -28,7 +28,7 @@ const int noiseTextureSize = 64;
 float BIAS;
 const int NUM_DIR = 4;
 const int NUM_SAMPLE = 4;
-const float threshold = 100.f;
+const float threshold = 10.f;
 
 //Directions to integrate in
 const vec2[4] dXs = vec2[4](
@@ -58,7 +58,7 @@ void main(){
 
 
 	//TODO :  Adapt radius wrt depth: the deeper the fragment is, the smaller the radius is.
-	const float radius =4.f*threshold/depth;
+	const float radius =40.f/depth;
     
 	//initialise la valeur d'occlusion
 	float sphereOcclusion= 0.f;
@@ -104,10 +104,7 @@ void main(){
 			samplePosVec3 = samplePosVec3 - position;
 			float horizAngle = atan(samplePosVec3.z/length(samplePosVec3)); 
 
-			if (horizAngle >= maxAngle && length(samplePosVec3)<threshold) maxAngle = horizAngle;
-
-			//falloff = 0.03f /(max(0.03f, length(samplePosVec3/radius*20.f)));
-			//sphereOcclusion += clamp((sin(horizAngle) - sinTan),0.f,1.f)/float(16.f);
+			if (horizAngle >= maxAngle && abs(depthSample-depth)<threshold) maxAngle = horizAngle;
 
     	} 
 
