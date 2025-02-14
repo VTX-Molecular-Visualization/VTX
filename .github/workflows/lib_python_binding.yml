@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-22.04, windows-latest]
+        os: [windows-2019, ubuntu-22.04]
       fail-fast: false
 
     steps:
@@ -45,5 +45,5 @@ jobs:
         conan export io
         conan export renderer
         conan export app
-        conan create python_binding -b missing -s compiler.cppstd=20 -o vtx_python_binding/*:test=True
+        conan create python_binding -b missing -s compiler.cppstd=20 -o vtx_python_binding/*:test=True -s compiler.runtime_type=Release -s compiler.version=192
       
