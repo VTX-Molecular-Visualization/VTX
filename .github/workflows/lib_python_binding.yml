@@ -9,13 +9,15 @@ env:
   LIB_DIR: ${{github.workspace}}/lib
 
 jobs:
-  - task: UsePythonVersion@0
-    displayName: "Set Python version to 3.11"
-    inputs:
-      versionSpec: "3.11.8"
       
-  - task:
+  build:
     runs-on: ${{ matrix.os }}
+    
+    task: UsePythonVersion@0
+      displayName: "Set Python version to 3.11"
+      inputs:
+        versionSpec: "3.11.8"
+        
     strategy:
       matrix:
         os: [windows-2019, ubuntu-22.04]
