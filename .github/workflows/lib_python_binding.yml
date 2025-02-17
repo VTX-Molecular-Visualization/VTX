@@ -15,19 +15,19 @@ jobs:
       matrix:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
-    
+
     - name: Set git to use CRLF
       run: |
         git config --global core.autocrlf true
         git config --global core.eol crlf
-        
+
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-        
+
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
-      
+
     - name: Create default profile
       run: conan profile detect --force
 
@@ -35,7 +35,7 @@ jobs:
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
-        
+
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       run:  |
