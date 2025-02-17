@@ -15,13 +15,7 @@ jobs:
       matrix:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
-
-    steps:
-    - name: Some test setups
-      if: runner.os == 'Windows'
-      run: |
-        choco install -y python312 vcredist-all
-        
+      
     - name: Set git to use CRLF
       run: |
         git config --global core.autocrlf true
@@ -42,6 +36,12 @@ jobs:
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
 
+    - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.10'
+          addToPath: true
+        displayName: "make Python 3.10 the default."
+        
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       run:  |
