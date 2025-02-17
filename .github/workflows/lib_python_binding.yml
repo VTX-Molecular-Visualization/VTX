@@ -16,6 +16,7 @@ jobs:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
 
+    steps:
     - name: Set git to use CRLF
       run: |
         git config --global core.autocrlf true
