@@ -19,12 +19,10 @@ jobs:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
       
-    task: UsePythonVersion@0
-      displayName: "Set Python version to 3.11"
-      inputs:
-        versionSpec: "3.11.8"
-
-        
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.11.8"
+    
     - name: Set git to use CRLF
       run: |
         git config --global core.autocrlf true
