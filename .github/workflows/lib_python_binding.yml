@@ -13,7 +13,7 @@ jobs:
     displayName: "Set Python version to 3.11"
     inputs:
       versionSpec: "3.11.8"
-      architecture: "x64"
+      
   - build:
     runs-on: ${{ matrix.os }}
     strategy:
