@@ -17,7 +17,6 @@ jobs:
       fail-fast: false
       
     - task: UsePythonVersion@0
-      displayName: "Set Python version to 3.11"
       inputs:
         versionSpec: "3.11.8"
         architecture: "x64"
