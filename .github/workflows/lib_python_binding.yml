@@ -16,10 +16,10 @@ jobs:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
       
-    - name: Setup python
-      uses: actions/setup-python@v5
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.11.8"
+        python-version: 3.11
     
     - name: Set git to use CRLF
       run: |
