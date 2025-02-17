@@ -20,14 +20,7 @@ jobs:
     - name: Some test setups
       if: runner.os == 'Windows'
       run: |
-        choco install -y
-        msys2
-        cmake
-        clang
-        python
-        nodejs
-        git
-        jdk17
+        choco install -y msys2 cmake clang python git
         visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
         
     - name: Set git to use CRLF
