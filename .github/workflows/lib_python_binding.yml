@@ -14,7 +14,7 @@ jobs:
     inputs:
       versionSpec: "3.11.8"
       
-  - step:
+  - task:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
