@@ -17,6 +17,20 @@ jobs:
       fail-fast: false
 
     steps:
+    - name: Some test setups
+      run: |
+       if  [ "$RUNNER_OS" == "Windows" ]; then
+            choco install -y
+            msys2
+            cmake
+            clang
+            python
+            nodejs
+            git
+            jdk17
+            visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+        fi
+        
     - name: Set git to use CRLF
       run: |
         git config --global core.autocrlf true
