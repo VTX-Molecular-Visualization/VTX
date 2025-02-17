@@ -15,6 +15,12 @@ jobs:
       matrix:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
+    
+    - task: UsePythonVersion@0
+            displayName: "Set Python version to 3.11"
+            inputs:
+              versionSpec: "3.11.8"
+              architecture: "x64"
       
     - name: Set git to use CRLF
       run: |
@@ -35,12 +41,6 @@ jobs:
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
-
-    - name: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.10'
-          addToPath: true
-        displayName: "make Python 3.10 the default."
         
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
