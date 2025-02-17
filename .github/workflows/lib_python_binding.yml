@@ -19,7 +19,8 @@ jobs:
         os: [windows-2019, ubuntu-22.04]
       fail-fast: false
       
-    - uses: actions/setup-python@v5
+    - name : Setup python
+      uses: actions/setup-python@v5
       with:
         python-version: "3.11.8"
     
