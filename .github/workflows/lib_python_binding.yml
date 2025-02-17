@@ -36,7 +36,7 @@ jobs:
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
 
-    - task: UsePythonVersion@0
+    - name: UsePythonVersion@0
         inputs:
           versionSpec: '3.10'
           addToPath: true
