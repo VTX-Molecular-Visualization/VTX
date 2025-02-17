@@ -18,18 +18,17 @@ jobs:
 
     steps:
     - name: Some test setups
+      if: runner.os == 'Windows'
       run: |
-       if  [ "$RUNNER_OS" == "Windows" ]; then
-            choco install -y
-            msys2
-            cmake
-            clang
-            python
-            nodejs
-            git
-            jdk17
-            visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
-        fi
+        choco install -y
+        msys2
+        cmake
+        clang
+        python
+        nodejs
+        git
+        jdk17
+        visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
         
     - name: Set git to use CRLF
       run: |
