@@ -14,13 +14,15 @@ namespace VTX::PythonBinding
 		class Module;
 	}
 
+	/**
+	 * @brief Wrapper around the python interpretor. Meant to be a singleton.
+	 */
 	class Interpretor
 	{
 	  public:
 		Interpretor();
 		~Interpretor();
 
-		void init();
 		void addBinder( std::unique_ptr<Binder> p_binder );
 
 		template<BinderConcept BinderType>

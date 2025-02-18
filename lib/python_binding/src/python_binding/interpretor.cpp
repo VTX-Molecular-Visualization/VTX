@@ -18,10 +18,9 @@ namespace VTX::PythonBinding
 	struct Interpretor::Impl
 	{
 	  public:
-		void initializePythonModule()
+		Impl()
 		{
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
-			_vtxModule = pybind11::module_::import( vtx_module_name() );
 
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
@@ -38,29 +37,14 @@ namespace VTX::PythonBinding
 			pybind11::eval_file( initCommandsFile.string() );
 		}
 
-		void addBinder( std::unique_ptr<Binder> p_binder ) { _binders.emplace_back( std::move( p_binder ) ); }
-
-		void applyBinders()
+		void addBinder( std::unique_ptr<Binder> p_binder )
 		{
-			Wrapper::Module moduleWrapper = Wrapper::Module( _vtxModule, vtx_module_name() );
-			_pyTXModule					  = std::make_unique<PyTXModule>( moduleWrapper );
+			_binders.emplace_back( std::move( p_binder ) );
+			_binders.back()->bind( *_pyTXModule );
+			_binders.back()->importHeaders();
 
-			for ( const std::unique_ptr<Binder> & binder : _binders )
-			{
-				binder->bind( *_pyTXModule );
-			}
-		}
-
-		void importCommands()
-		{
-			//  Import all commands
+			// Put newly added command to the module global namespace
 			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
-
-			// Specific imports by binders
-			for ( const std::unique_ptr<Binder> & binder : _binders )
-			{
-				binder->importHeaders();
-			}
 		}
 
 		PyTXModule & getPyTXModule() { return *_pyTXModule; }
@@ -74,44 +58,16 @@ namespace VTX::PythonBinding
 	  private:
 		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
-		pybind11::module_			 _vtxModule;
-		std::unique_ptr<PyTXModule>	 _pyTXModule = nullptr;
+		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
+
+		std::unique_ptr<PyTXModule> _pyTXModule
+			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
 		std::vector<std::unique_ptr<Binder>> _binders = std::vector<std::unique_ptr<Binder>>();
 	};
 
-	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() )
-	{
-		try
-		{
-			_impl->initializePythonModule();
-		}
-		catch ( const std::exception & e )
-		{
-			VTX_ERROR( "{} at {}:", e.what(), std::source_location().file_name(), std::source_location().line() );
-			throw e;
-		}
-	}
-	Interpretor::~Interpretor()
-	{
-		VTX_INFO( "Destroying interpreter ..." );
-		_impl.reset();
-		VTX_INFO( "interpreter destroyed ..." );
-	}
-
-	void Interpretor::init()
-	{
-		try
-		{
-			_impl->applyBinders();
-			_impl->importCommands();
-		}
-		catch ( std::exception & e )
-		{
-			VTX_ERROR( "{}", e.what() );
-			throw e;
-		}
-	}
+	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
+	Interpretor::~Interpretor() { _impl.reset(); }
 
 	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
 	void Interpretor::clearBinders() { _impl->clearBinders(); }

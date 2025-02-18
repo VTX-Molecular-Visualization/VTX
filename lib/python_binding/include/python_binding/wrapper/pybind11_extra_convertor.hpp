@@ -5,18 +5,12 @@
 
 namespace VTX::PythonBinding::Wrapper
 {
-	// Manage Pybind11 "Extra" arguments
-	class Pybind11ExtraConvertor
+	inline pybind11::arg convertToPybind11Extra( const Wrapper::Arg & p_arg ) { return p_arg.toPybind11Extra(); }
+
+	template<typename V>
+	pybind11::arg_v convertToPybind11Extra( const Wrapper::VArg<V> & p_arg )
 	{
-	  public:
-		static pybind11::arg convertToPybind11Extra( const Wrapper::Arg & p_arg ) { return p_arg.toPybind11Extra(); };
-
-		template<typename V>
-		static pybind11::arg_v convertToPybind11Extra( const Wrapper::VArg<V> & p_arg )
-		{
-			return p_arg.toPybind11Extra();
-		}
-	};
-
+		return p_arg.toPybind11Extra();
+	}
 }; // namespace VTX::PythonBinding::Wrapper
 #endif

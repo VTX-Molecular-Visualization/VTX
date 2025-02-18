@@ -19,7 +19,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
-	interpretor.init();
 
 	const FilePath systemPath
 		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;

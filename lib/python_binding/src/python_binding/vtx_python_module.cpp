@@ -4,8 +4,8 @@
 
 namespace VTX::PythonBinding
 {
-	PyTXModule::PyTXModule( Wrapper::Module & p_mainModule ) :
-		_mainModule( p_mainModule ), _coreModule( p_mainModule.getSubmodule( "Core" ) ),
+	PyTXModule::PyTXModule( Wrapper::Module p_mainModule ) :
+		_mainModule( std::move( p_mainModule ) ), _coreModule( p_mainModule.getSubmodule( "Core" ) ),
 		_commandModule( p_mainModule.getSubmodule( "Command" ) )
 	{
 	}

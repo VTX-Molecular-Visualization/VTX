@@ -15,6 +15,9 @@ namespace VTX::PythonBinding
 	{
 		class Module;
 
+		/**
+		 * @brief Class responsible for providing read/write access to a generic python object
+		 */
 		class Object
 		{
 			friend Module;
@@ -54,9 +57,10 @@ namespace VTX::PythonBinding
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException( "Error when setting member "
-												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-												  + " - " + e.what() );
+					throw PythonWrapperException(
+						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+						+ " - " + e.what()
+					);
 				}
 			}
 			template<typename T>
@@ -68,9 +72,10 @@ namespace VTX::PythonBinding
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException( "Error when setting member "
-												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-												  + " - " + e.what() );
+					throw PythonWrapperException(
+						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+						+ " - " + e.what()
+					);
 				}
 			}
 
@@ -81,5 +86,5 @@ namespace VTX::PythonBinding
 			pybind11::object _pyObject;
 		};
 	}; // namespace Wrapper
-};	   // namespace VTX::PythonBinding
+}; // namespace VTX::PythonBinding
 #endif

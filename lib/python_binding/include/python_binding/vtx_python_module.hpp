@@ -5,10 +5,13 @@
 
 namespace VTX::PythonBinding
 {
+	/**
+	 * @brief Class responsible for holding VTX python modules declared within the binary
+	 */
 	class PyTXModule final
 	{
 	  public:
-		PyTXModule( Wrapper::Module & p_mainModule );
+		PyTXModule( Wrapper::Module  p_mainModule );
 
 		const Wrapper::Module & core() const;
 		Wrapper::Module &		core();

@@ -16,6 +16,9 @@ namespace VTX::PythonBinding
 
 	namespace Wrapper
 	{
+		/**
+		 * @brief Class providing usage and edition on a python module.
+		 */
 		class Module
 		{
 			friend PythonBinding::Interpretor;
@@ -47,7 +50,7 @@ namespace VTX::PythonBinding
 					p_name.c_str(),
 					p_function,
 					p_desc.c_str(),
-					Pybind11ExtraConvertor::convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
+					convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
 				);
 			}
 

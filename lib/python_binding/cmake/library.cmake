@@ -27,6 +27,7 @@ if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)
 	target_link_libraries(vtx_python_api PUBLIC vtx_util)
 	target_link_libraries(vtx_python_api PUBLIC vtx_core)
 	target_link_libraries(vtx_python_api PUBLIC vtx_app)
+	target_link_libraries(vtx_python_api PUBLIC vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app)
@@ -49,9 +50,10 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 endif()
 
-target_link_libraries(vtx_python_binding PRIVATE pybind11::pybind11)
-target_link_libraries(vtx_python_binding PRIVATE pybind11::embed)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::pybind11)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
 
+# TODO remove both following lines maybe ?
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::pybind11)
 target_link_libraries(vtx_python_binding_test PRIVATE pybind11::embed)
 

@@ -6,6 +6,9 @@
 
 namespace VTX::PythonBinding::Binding
 {
+	/**
+	 * @brief Class responsible for binding vanilla actions to python commands
+	 */
 	class VTXAppBinder final : public Binder
 	{
 		void bind( PyTXModule & p_vtxmodule ) override;
