@@ -45,6 +45,7 @@ jobs:
         conan export io
         conan export renderer
         conan export app
+        conan export python_binding
         conan create ui/qt -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
     
     - name: Upload dependencies
