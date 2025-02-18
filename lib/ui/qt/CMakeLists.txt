@@ -1,7 +1,7 @@
 message("vtx_ui_qt")
 cmake_minimum_required(VERSION 3.23)
 project(vtx_ui_qt)
-
+ 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)

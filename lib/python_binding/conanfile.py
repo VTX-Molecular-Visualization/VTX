@@ -62,8 +62,6 @@ class VTXPythonBindingRecipe(ConanFile):
         self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
          
         self.cpp_info.components["vtx_python_api"].libs = ["vtx_python_api"]
-
-        self.cpp_info.components["vtx_python_binding_test"].libs = ["vtx_python_binding_test"] 
   
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)
