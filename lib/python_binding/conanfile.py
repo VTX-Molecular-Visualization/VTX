@@ -14,8 +14,7 @@ class VTXPythonBindingRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps"#, "CMakeToolchain"
-    # generators =  "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
     
@@ -44,10 +43,6 @@ class VTXPythonBindingRecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
 
-        # self.cpp.build.components["vtx_python_binding"].libdirs = self.cpp.build.libdirs
-        # self.cpp.build.components["vtx_python_api"].libdirs = self.cpp.build.libdirs
-        # self.cpp.build.components["vtx_python_binding_test"].libdirs = self.cpp.build.libdirs
-
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -60,10 +55,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
-         
-        # self.cpp_info.components["vtx_python_binding"].libs = ["vtx_python_binding"]
-        # self.cpp_info.components["vtx_python_api"].libs = ["vtx_python_api"]
-  
+        
         filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
         path_python_module = os.path.join(self.package_folder, "**", filename)
         files = glob.glob(path_python_module, recursive=True)
