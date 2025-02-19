@@ -37,19 +37,16 @@ namespace VTX::Renderer
 		void clean();
 		void render( const float p_deltaTime, const float p_elapsedTime );
 
-		void setOutput( const uint p_output );
-		void addProxySystem( Proxy::System & p_proxy );
-		void removeProxySystem( Proxy::System & p_proxy );
-		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void addProxyRepresentation( Proxy::Representation & p_proxy );
-		void removeProxyRepresentation( Proxy::Representation & p_proxy );
-		void addProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
-		void removeProxyRepresentations( std::vector<Proxy::Representation *> & p_proxies );
-		void setProxyCamera( Proxy::Camera & p_proxy );
-		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
-		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
-		void setProxyVoxels( Proxy::Voxels & p_proxy );
+		void setOutput( const uint );
+		void addProxySystem( Proxy::System & );
+		void removeProxySystem( Proxy::System & );
+		void addProxySystems( std::vector<Proxy::System *> & );
+		void removeProxySystems( std::vector<Proxy::System *> & );
+		void setProxyRepresentation( Proxy::Representation & );
+		void setProxyCamera( Proxy::Camera & );
+		void setProxyColorLayout( Proxy::ColorLayout & );
+		void setProxyRenderSettings( Proxy::RenderSettings & );
+		void setProxyVoxels( Proxy::Voxels & );
 		void snapshot(
 			std::vector<uchar> & p_image,
 			const size_t		 p_width,

@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_WRAPPER__
 
 #include "concept.hpp"
+#include "renderer/binary_buffer.hpp"
 
 namespace VTX::Renderer::Context
 {
@@ -143,18 +144,33 @@ namespace VTX::Renderer::Context
 			_set( p_key, static_cast<const void * const>( p_data.data() ), size );
 		}
 
+		inline void set( const BinaryBuffer & p_buffer, const Key & p_key )
+		{
+			_set( p_key, p_buffer.data(), p_buffer.size() );
+		}
+
 		template<typename T>
 		inline void setSub(
 			const std::vector<T> & p_data,
 			const Key &			   p_key,
-			const size_t		   p_offset = 0,
-			const size_t		   p_size	= 0
-
+			const size_t		   p_offset	   = 0,
+			const size_t		   p_offsetSrc = 0,
+			const size_t		   p_size	   = 0
 		)
 		{
 			size_t size	  = sizeof( T ) * ( p_size ? p_size : p_data.size() );
 			size_t offset = sizeof( T ) * p_offset;
-			_setSub( p_key, static_cast<const void * const>( p_data.data() ), size, offset );
+			_setSub( p_key, static_cast<const void * const>( p_data.data() + p_offsetSrc ), size, offset );
+		}
+
+		inline void setSub(
+			const BinaryBuffer & p_buffer,
+			const Key &			 p_key,
+			const size_t		 p_index = 0
+
+		)
+		{
+			_setSub( p_key, p_buffer.data(), p_buffer.size(), p_buffer.size() * p_index );
 		}
 
 		template<typename T>

@@ -36,4 +36,20 @@ namespace VTX::App::Component::Representation
 		onChangeAll();
 	}
 
+	const Util::Color::Rgba & ColorLayout::getChainColor( const size_t p_index ) const
+	{
+		assert( p_index >= 0 );
+		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_CHAINS );
+
+		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_CHAINS + p_index ];
+	}
+
+	const Util::Color::Rgba & ColorLayout::getResidueColor( const size_t p_index ) const
+	{
+		assert( p_index >= 0 );
+		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_RESIDUES );
+
+		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_RESIDUES + p_index ];
+	}
+
 } // namespace VTX::App::Component::Representation

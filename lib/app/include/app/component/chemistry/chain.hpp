@@ -22,9 +22,9 @@ namespace VTX::App::Component::Chemistry
 		const size_t getIndex() const { return _index; }
 		void		 setIndex( const size_t p_index ) { _index = p_index; }
 
-		System * const	   getSystemPtr() const { return _systemPtr; };
+		System * const		 getSystemPtr() const { return _systemPtr; };
 		const System * const getConstSystemPtr() const { return _systemPtr; };
-		void				   setSystemPtr( System * const p_systemPtr ) { _systemPtr = p_systemPtr; };
+		void				 setSystemPtr( System * const p_systemPtr ) { _systemPtr = p_systemPtr; };
 
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
@@ -42,8 +42,8 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }
 
-		const Util::Color::Rgba & getColor() const { return _defaultColor; };
-		void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
+		// const Util::Color::Rgba & getColor() const { return _defaultColor; };
+		// void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
 
 		ResidueIndexRange getResidueRange() const;
 		AtomIndexRange	  getAtomRange() const;

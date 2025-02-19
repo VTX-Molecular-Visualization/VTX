@@ -53,7 +53,9 @@ namespace VTX::App::Component
 
 			// Not created.
 			if ( not _controllers.has<C>() )
+			{
 				return;
+			}
 
 			assert( _activeCallbacks.contains( hash ) );
 

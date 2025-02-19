@@ -59,8 +59,8 @@ int main( int, char ** )
 		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
 		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
 		{
-			Vec2i ids = renderer.getPickedIds( p_x, p_y );
-			VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			// Vec2i ids = renderer.getPickedIds( p_x, p_y );
+			// VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
 		inputManager.onMouseMotion +=
 			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
@@ -136,31 +136,30 @@ int main( int, char ** )
 
 		renderer.setProxyColorLayout( scene.getProxyColorLayout() );
 
-		Renderer::Proxy::Representation representation1, representation2, representation3;
+		// Quickfix.
+		bool  bTrue		= true;
+		bool  bFalse	= false;
+		float fZero		= 0.f;
+		float fZeroOne	= 0.1f;
+		float fZeroFive = 0.5f;
 
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SPHERE, true );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, 0.5f );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, 0.f );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, true );
+		Renderer::Proxy::Representation representation;
 
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_CYLINDER, true );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, 0.1f );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, false );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SPHERE, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, fZeroFive );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, fZero );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bTrue );
 
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_RIBBON, true );
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, true );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, fZeroOne );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bFalse );
 
-		representation1.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SES, false );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_RIBBON, bTrue );
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bTrue );
 
-		representation2 = representation1;
-		representation3 = representation1;
+		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SES, bFalse );
 
-		representation2.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, false );
-		representation3.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, 1.5f );
-
-		std::vector<Renderer::Proxy::Representation *> representations
-			= { &representation1, &representation2, &representation3 };
-		renderer.addProxyRepresentations( representations );
+		renderer.setProxyRepresentation( representation );
 
 		// Renderer::Proxy::RenderSettings renderSettings
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,

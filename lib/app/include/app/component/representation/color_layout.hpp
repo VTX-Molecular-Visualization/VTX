@@ -16,10 +16,13 @@ namespace VTX::App::Component::Representation
 
 		void setupProxy() override;
 
-		const VTX::Core::Struct::ColorLayout & getLayout() const { return _layout; }
+		inline const VTX::Core::Struct::ColorLayout & getLayout() const { return _layout; }
 
 		void setColor( const size_t p_index, const Util::Color::Rgba & p_color );
 		void setColors( const std::vector<Util::Color::Rgba> & p_colors );
+
+		const Util::Color::Rgba & getChainColor( const size_t p_index ) const;
+		const Util::Color::Rgba & getResidueColor( const size_t p_index ) const;
 
 		Util::Callback<const size_t> onChange;
 		Util::Callback<>			 onChangeAll;

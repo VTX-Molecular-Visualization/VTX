@@ -1,10 +1,10 @@
 #include "app/component/render/proxy_system.hpp"
+#include "app/component/chemistry/trajectory.hpp"
+#include "app/component/scene/transform_component.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/selection/selection.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/selection/system_data.hpp"
-#include "app/core/ecs/ecs_system.hpp"
-#include "app/component/chemistry/trajectory.hpp"
-#include "app/component/scene/transform_component.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/color.hpp>
 #include <io/util/secondary_structure.hpp>
@@ -148,7 +148,7 @@ namespace VTX::App::Component::Render
 		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxy->onAtomVisibilities( p_rangeList, false ); break;
 
 		case App::Core::VISIBILITY_APPLY_MODE::SET:
-			_proxy->onVisible( false );
+			//_proxy->onVisible( false );
 			_proxy->onAtomVisibilities( p_rangeList, true );
 			break;
 

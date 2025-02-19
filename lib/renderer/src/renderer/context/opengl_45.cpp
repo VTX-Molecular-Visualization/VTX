@@ -37,6 +37,10 @@ namespace VTX::Renderer::Context
 			_openglInfos.print();
 		}
 
+		// Default output.
+		glGetIntegerv( GL_FRAMEBUFFER_BINDING, reinterpret_cast<int *>( &_output ) );
+		VTX_TRACE( "Default framebuffer: {}", _output );
+
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
@@ -867,25 +871,14 @@ namespace VTX::Renderer::Context
 
 			for ( const BufferDataValue & value : p_bufferData.values )
 			{
-				size_t		size	 = _mapTypeSizes[ value.type ];
+				size_t size		 = _mapTypeSizes[ value.type ];
+				size_t alignment = _mapTypeAlignments[ value.type ];
+
 				std::string keyValue = keyBuffer + value.name;
 
 				assert( not _bufferValueEntries.contains( keyValue ) );
 
-				// Auto padding to 4, 8 or 16 bytes.
-				size_t padding = 0;
-				if ( size % 4 != 0 )
-				{
-					padding = 4 - ( size % 4 );
-				}
-				else if ( size > 4 && size % 8 != 0 )
-				{
-					padding = 8 - ( size % 8 );
-				}
-				else if ( size > 8 && size % 16 != 0 )
-				{
-					padding = 16 - ( size % 16 );
-				}
+				size_t padding = ( alignment - ( offset % alignment ) ) % alignment;
 
 				assert( size > 0 );
 
@@ -896,12 +889,17 @@ namespace VTX::Renderer::Context
 
 				createdValueKeys.push_back( keyValue );
 
-				offset += size;
-				offset += padding;
+				offset += size + padding;
 			}
+
+			// Final padding.
+			const size_t paddingFinal = ( 16 - ( offset % 16 ) ) % 16;
+			offset += paddingFinal;
 
 			// Set total size.
 			const size_t totalSize = offset;
+			VTX_TRACE( "Buffer total size: {}", totalSize );
+
 			assert( totalSize > 0 || p_bufferData.size > 0 );
 
 			for ( const Key & key : createdValueKeys )
@@ -1209,6 +1207,12 @@ namespace VTX::Renderer::Context
 		{ E_TYPE::VEC2F, sizeof( Vec2f ) }, { E_TYPE::VEC3F, sizeof( Vec3f ) },	  { E_TYPE::VEC4F, sizeof( Vec4f ) },
 		{ E_TYPE::MAT3F, sizeof( Mat3f ) }, { E_TYPE::MAT4F, sizeof( Mat4f ) },	  { E_TYPE::COLOR4, sizeof( Vec4f ) }
 	};
+
+	std::map<const E_TYPE, const size_t> OpenGL45::_mapTypeAlignments
+		= { { E_TYPE::BOOL, 4 },   { E_TYPE::BYTE, 4 },	  { E_TYPE::UBYTE, 4 },	 { E_TYPE::SHORT, 4 },
+			{ E_TYPE::USHORT, 4 }, { E_TYPE::INT, 4 },	  { E_TYPE::UINT, 4 },	 { E_TYPE::FLOAT, 4 },
+			{ E_TYPE::VEC2I, 8 },  { E_TYPE::VEC2F, 8 },  { E_TYPE::VEC3F, 16 }, { E_TYPE::VEC4F, 16 },
+			{ E_TYPE::MAT3F, 16 }, { E_TYPE::MAT4F, 16 }, { E_TYPE::COLOR4, 16 } };
 
 	std::map<const E_FORMAT, const E_TYPE> OpenGL45::_mapFormatTypes = { { E_FORMAT::RG32UI, E_TYPE::UINT } };
 

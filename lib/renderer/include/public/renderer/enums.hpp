@@ -7,15 +7,6 @@
 namespace VTX::Renderer
 {
 	/**
-	 * @brief All graphic API implementations.
-	 */
-	enum struct E_GRAPHIC_API
-	{
-		DEFAULT,
-		OPENGL45
-	};
-
-	/**
 	 * @brief All shading modes.
 	 */
 	enum struct E_SHADING
