@@ -21,6 +21,11 @@ jobs:
       run: |
         git config --global core.autocrlf true
         git config --global core.eol crlf
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.11
         
     - uses: actions/checkout@v4
       with:
@@ -45,6 +50,7 @@ jobs:
         conan export lib/io
         conan export lib/renderer
         conan export lib/app
+        conan export lib/python_binding
         conan export lib/ui/qt
         conan create tool/mdprep -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True -o vtx_tool_mdprep/*:test=True
  
