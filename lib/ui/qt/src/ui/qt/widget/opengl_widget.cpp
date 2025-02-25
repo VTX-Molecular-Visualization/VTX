@@ -69,8 +69,9 @@ namespace VTX::UI::QT::Widget
 		_window->resize( p_event->size() );
 		_container->resize( p_event->size() );
 
-		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>(
-			p_event->size().width(), p_event->size().height()
+		QSize scaledSize  = p_event->size() * devicePixelRatioF();
+
+		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height()
 		);
 	}
 
