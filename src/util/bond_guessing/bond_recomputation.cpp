@@ -276,12 +276,31 @@ namespace VTX::Util::BondGuessing
 					if ( sulfurAtom1 <= sulfurAtom2 )
 						continue;
 
-					const double sqrDist = _sqrDistance( p_frame.positions()[ sulfurAtom1], p_frame.positions()[ sulfurAtom2 ]);
+					const double sqrDist
+						= _sqrDistance( p_frame.positions()[ sulfurAtom1 ], p_frame.positions()[ sulfurAtom2 ] );
 
 					if ( sqrDist < MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND )
 						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
 				}
 			}
+		}
+	}
+
+	// The idea is to hard code a list of exceptions for atoms that are most of the time dissolved ions iin biological
+	// context
+	bool isUnbondingAtoms( const int & p_atomNumber )
+	{
+		using namespace VTX::Model;
+		const Atom::SYMBOL atomSymbol = static_cast<Atom::SYMBOL>( p_atomNumber );
+		switch ( atomSymbol )
+		{
+		case Atom::SYMBOL::A_NA: return true;
+		case Atom::SYMBOL::A_K: return true;
+		// case Atom::SYMBOL::A_CL: return false;
+		case Atom::SYMBOL::A_MG: return true;
+		case Atom::SYMBOL::A_ZN: return true;
+		case Atom::SYMBOL::A_MN: return true;
+		default: return false;
 		}
 	}
 
@@ -311,6 +330,9 @@ namespace VTX::Util::BondGuessing
 					const chemfiles::Atom & atom1		= frame.topology()[ indexAtom1 ];
 					const int				symbolAtom1 = atom1.atomic_number().value_or( 0 );
 
+					if ( isUnbondingAtoms( symbolAtom1 ) )
+						continue;
+
 					for ( size_t j = 0; j < atomNumInCell; j++ )
 					{
 						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
@@ -326,6 +348,9 @@ namespace VTX::Util::BondGuessing
 
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
 						const int				symbolAtom2 = atom2.atomic_number().value_or( 0 );
+
+						if ( isUnbondingAtoms( symbolAtom2 ) )
+							continue;
 
 						const float atom1Radius		  = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
 						const float atom2Radius		  = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
@@ -348,8 +373,9 @@ namespace VTX::Util::BondGuessing
 
 	double BondRecomputation::_sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs )
 	{
-		return (p_rhs - p_lhs).sqrNorm();
+		return ( p_rhs - p_lhs ).sqrNorm();
 	}
 
+	bool shouldRecomputeBonds( const chemfiles::Frame & p_frame ) { return not p_frame.has_bond(); }
 
 } // namespace VTX::Util::BondGuessing

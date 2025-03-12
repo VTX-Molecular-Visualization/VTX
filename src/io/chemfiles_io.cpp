@@ -14,7 +14,8 @@ namespace VTX::IO
 #else
 		chemfiles::warning_callback_t callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
 #endif
-		chemfiles::set_warning_callback( callback );
+		chemfiles::set_warning_callback( [ & ]( const std::string & ) {} );
+		// chemfiles::set_warning_callback( callback ); // Nuke perfs in debug. temporary commented
 	}
 
 	void ChemfilesIO::_logError( const std::string & p_log ) const

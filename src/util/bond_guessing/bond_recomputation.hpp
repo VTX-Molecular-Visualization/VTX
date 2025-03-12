@@ -88,6 +88,8 @@ namespace VTX::Util::BondGuessing
 
 		static double _sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs );
 	};
+
+	bool shouldRecomputeBonds( const chemfiles::Frame & p_frame );
 } // namespace VTX::Util::BondGuessing
 
 #endif

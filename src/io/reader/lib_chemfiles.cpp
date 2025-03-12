@@ -12,6 +12,7 @@
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/bond_guessing/bond_order_guessing.hpp"
+#include "util/bond_guessing/bond_recomputation.hpp"
 #include "util/chemfiles.hpp"
 #include "util/molecule.hpp"
 #include "worker/base_thread.hpp"
@@ -597,8 +598,9 @@ namespace VTX::IO::Reader
 		Tool::Chrono bondComputationChrono = Tool::Chrono();
 		if ( frame.size() > 0 && not frame.has_bond() )
 		{
-			if ( p_recomputeBonds )
+			if ( p_recomputeBonds || Util::BondGuessing::shouldRecomputeBonds( frame ) )
 			{
+				VTX_INFO( "Bond information not found if file. Recomputing atom bonding ... " );
 				bondComputationChrono.start();
 				Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
 				bondComputationChrono.stop();
