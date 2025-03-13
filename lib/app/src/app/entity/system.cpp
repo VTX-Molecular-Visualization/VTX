@@ -9,9 +9,9 @@
 #include "app/component/scene/selectable.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
-#include "app/component/scene/updatable.hpp"
+// #include "app/component/scene/updatable.hpp"
+#include "app/core/player/circular_buffer.hpp"
 #include "app/core/player/loop.hpp"
-#include "app/core/player/players.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
@@ -44,6 +44,7 @@ namespace VTX::App::Entity
 		// Load system.
 		IO::Reader::System		  loader;
 		VTX::Core::Struct::System systemStruct;
+		// systemStruct.trajectory.setOptimized();
 
 		if ( _buffer ) // From buffer.
 		{
@@ -91,20 +92,19 @@ namespace VTX::App::Entity
 			}
 		);
 
-		// Proxy.
-		proxy.setup( App::RENDERER_SYSTEM() );
-
 		// Trajectory.
 		if ( system.hasTrajectory() )
 		{
-			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system );
+			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
-			// TODO: set from settings.
-			auto * const defaultPlayMode
-				= Util::Singleton<Core::Player::Players>::get().getOrCreate<Core::Player::Loop>();
-
-			trajectory.setPlayer( defaultPlayMode );
+			if ( trajectory.getSystemPtr()->getTrajectory().isOptimized() )
+				trajectory.setPlayer<Core::Player::CircularBuffer>();
+			else
+				trajectory.setPlayer<Core::Player::Loop>();
 		}
+
+		// Proxy.
+		proxy.setup( App::RENDERER_SYSTEM() );
 
 		// Picking.
 		pickable.setPickingFunction(
@@ -129,9 +129,7 @@ namespace VTX::App::Entity
 
 						if ( atomPtr != nullptr )
 						{
-							molData.set(
-								Selection::SystemGranularity::getSelectionData( *atomPtr, granularity )
-							);
+							molData.set( Selection::SystemGranularity::getSelectionData( *atomPtr, granularity ) );
 						}
 					}
 					else if ( system.getResidueUIDs().contains( p_pickingInfo.getFirst() ) )
@@ -142,9 +140,7 @@ namespace VTX::App::Entity
 
 						if ( residuePtr != nullptr )
 						{
-							molData.set(
-								Selection::SystemGranularity::getSelectionData( *residuePtr, granularity )
-							);
+							molData.set( Selection::SystemGranularity::getSelectionData( *residuePtr, granularity ) );
 						}
 					}
 				}
@@ -161,13 +157,10 @@ namespace VTX::App::Entity
 
 						if ( firstAtomPtr != nullptr && secondAtomPtr != nullptr )
 						{
-							molData.set( Selection::SystemGranularity::getSelectionData(
-								*firstAtomPtr, granularity
-							) );
+							molData.set( Selection::SystemGranularity::getSelectionData( *firstAtomPtr, granularity ) );
 
-							molData.add( Selection::SystemGranularity::getSelectionData(
-								*secondAtomPtr, granularity
-							) );
+							molData.add( Selection::SystemGranularity::getSelectionData( *secondAtomPtr, granularity )
+							);
 						}
 					}
 				}

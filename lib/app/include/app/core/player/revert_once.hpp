@@ -2,7 +2,7 @@
 #define __VTX_APP_CORE_PLAYER_REVERT_ONCE__
 
 #include "app/core/player/base_player.hpp"
-#include "app/core/player/players.hpp"
+
 
 namespace VTX::App::Core::Player
 {
@@ -19,6 +19,8 @@ namespace VTX::App::Core::Player
 
 		void reset() override;
 		void nextFrame( const size_t frameCount = 1 ) override;
+
+		void stackFrame( Frame elem ) override {}; // FIXME
 	};
 } // namespace VTX::App::Core::Player
 #endif

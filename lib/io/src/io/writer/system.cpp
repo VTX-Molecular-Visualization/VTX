@@ -130,16 +130,19 @@ namespace VTX::IO::Writer
 		}
 		inline void fillFrames( const VTX::Core::Struct::System & p_mol, System & p_system )
 		{
+			// in case of optimized trajectory we did not store the full trajectory
+			if ( p_mol.trajectory.isOptimized() )
+				return;
 			for ( size_t frameIdx = 0; frameIdx < p_mol.trajectory.getFrameCount(); frameIdx++ )
 			{
 				Frame w_frame = p_system.newFrame();
-				for ( size_t atomIdx = 0; atomIdx < p_mol.trajectory.frames[ frameIdx ].size(); atomIdx++ )
+				for ( size_t atomIdx = 0; atomIdx < p_mol.trajectory.getFrameFromIndex( frameIdx ).size(); atomIdx++ )
 				{
 					Atom w_atom;
 					// if the atom doesn't exist for some reason, we skip to the next
 					if ( p_system.fetch( w_atom, { atomIdx } ) )
 					{
-						const VTX::Vec3f & coords = p_mol.trajectory.frames[ frameIdx ][ atomIdx ];
+						const VTX::Vec3f & coords = p_mol.trajectory.getFrameFromIndex( frameIdx )[ atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
 					}
 				}

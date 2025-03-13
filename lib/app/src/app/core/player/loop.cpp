@@ -1,4 +1,5 @@
 #include "app/core/player/loop.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::App::Core::Player
 {

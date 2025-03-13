@@ -88,8 +88,12 @@ int main( int p_argc, char * p_argv[] )
 		app->init();
 
 		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
-		const FilePath molPath = "1AGA";
+		// const FilePath molPath = "1AGA";
 		// args.add( molPath.string() );
+		const std::string					 moleculeName	  = "2ama_1_npt";
+		const std::string					 moleculePathname = moleculeName + ".trr";
+		const VTX::FilePath moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
+		args.add( moleculePath.string() );
 
 		app->start( args );
 

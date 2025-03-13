@@ -41,11 +41,11 @@ namespace VTX::IO::Reader
 
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
-		p_system.trajectory.frames.resize( p_chemfileStruct.getFrameCount() );
+		p_system.trajectory.setTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.frames[ 0 ];
+		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( size_t residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
@@ -75,7 +75,7 @@ namespace VTX::IO::Reader
 				p_system.appendNewChain();
 				currentChainIndex++;
 
-				p_system.chainNames[ currentChainIndex ]		   = chainName;
+				p_system.chainNames[ currentChainIndex ]		 = chainName;
 				p_system.chainFirstResidues[ currentChainIndex ] = residueIdx;
 
 				currentChainResidueCount = 0;
@@ -96,10 +96,10 @@ namespace VTX::IO::Reader
 				VTX_WARNING( "Empty residue found" );
 			}
 
-			p_system.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
+			p_system.residueChainIndexes[ residueIdx ]	   = currentChainIndex;
 			p_system.residueFirstAtomIndexes[ residueIdx ] = p_chemfileStruct.getCurrentResidueFirstAtomIndex();
-			p_system.residueAtomCounts[ residueIdx ]		 = atomCount;
-			p_system.residueOriginalIds[ residueIdx ]		 = residueId;
+			p_system.residueAtomCounts[ residueIdx ]	   = atomCount;
+			p_system.residueOriginalIds[ residueIdx ]	   = residueId;
 
 			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 			p_system.residueSymbols[ residueIdx ]		= residueSymbol;
@@ -132,8 +132,8 @@ namespace VTX::IO::Reader
 				p_chemfileStruct.setCurrentAtom( atomIndex );
 
 				p_system.atomResidueIndexes[ atomIndex ] = residueIdx;
-				p_system.atomNames[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomName();
-				p_system.atomSymbols[ atomIndex ]		   = p_chemfileStruct.getCurrentAtomSymbol();
+				p_system.atomNames[ atomIndex ]			 = p_chemfileStruct.getCurrentAtomName();
+				p_system.atomSymbols[ atomIndex ]		 = p_chemfileStruct.getCurrentAtomSymbol();
 
 				const ChemDB::Atom::TYPE atomType = _getTypeInConfiguration( p_chemfileStruct );
 				switch ( atomType )
@@ -164,7 +164,7 @@ namespace VTX::IO::Reader
 		if ( currentChainResidueCount != 0 )
 		{
 			p_system.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
-			currentChainResidueCount						   = 0;
+			currentChainResidueCount						 = 0;
 		}
 
 		if ( p_chemfileStruct.getFrameCount() > 1 )
@@ -218,13 +218,13 @@ namespace VTX::IO::Reader
 			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
 			p_system.residueFirstBondIndexes[ residueIdx ] = counter;
-			p_system.residueBondCounts[ residueIdx ]		 = vectorBonds.size() + vectorExtraBonds.size();
+			p_system.residueBondCounts[ residueIdx ]	   = vectorBonds.size() + vectorExtraBonds.size();
 
 			for ( size_t i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				p_chemfileStruct.setCurrentBond( vectorBonds[ i ] );
 
-				p_system.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_system.bondPairAtomIndexes[ counter * 2 ]		= p_chemfileStruct.getCurrentBondFirstAtomIndex();
 				p_system.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
 
 				p_system.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
@@ -234,7 +234,7 @@ namespace VTX::IO::Reader
 			{
 				p_chemfileStruct.setCurrentBond( vectorExtraBonds[ i ] );
 
-				p_system.bondPairAtomIndexes[ counter * 2 ]	  = p_chemfileStruct.getCurrentBondFirstAtomIndex();
+				p_system.bondPairAtomIndexes[ counter * 2 ]		= p_chemfileStruct.getCurrentBondFirstAtomIndex();
 				p_system.bondPairAtomIndexes[ counter * 2 + 1 ] = p_chemfileStruct.getCurrentBondSecondAtomIndex();
 
 				p_system.bondOrders[ counter ] = p_chemfileStruct.getCurrentBondOrder();
@@ -285,7 +285,7 @@ namespace VTX::IO::Reader
 
 			for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemStartFrame : p_targets )
 			{
-				VTX::Core::Struct::System & system   = *pairSystemStartFrame.first;
+				VTX::Core::Struct::System & system	   = *pairSystemStartFrame.first;
 				const size_t				frameIndex = pairSystemStartFrame.second + validFrameCount;
 				system.trajectory.fillFrame( frameIndex, atomPositions );
 
@@ -302,23 +302,19 @@ namespace VTX::IO::Reader
 			}
 #endif // DEBUG
 		}
+
 		timeReadingFrames.stop();
 		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
 		// Erase supernumeraries frames
+		// do we need to erase potential empty frames at the end of the circular buffer?
+		// for now eraseEmptyFrames targets only plain vector buffers
 		for ( const std::pair<VTX::Core::Struct::System *, size_t> & pairSystemFirstFrame : p_targets )
 		{
-			VTX::Core::Struct::System &		system   = *( pairSystemFirstFrame.first );
+			VTX::Core::Struct::System &		system	   = *( pairSystemFirstFrame.first );
 			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
-			if ( trajectory.frames.back().size() == 0 )
-			{
-				do
-				{
-					trajectory.frames.pop_back();
-				} while ( trajectory.frames.back().size() == 0 );
 
-				trajectory.frames.shrink_to_fit();
-			}
+			trajectory.eraseEmptyFrames();
 		}
 	}
 

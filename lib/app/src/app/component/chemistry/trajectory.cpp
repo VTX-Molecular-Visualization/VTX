@@ -11,49 +11,22 @@ namespace VTX::App::Component::Chemistry
 		_referenceUpdateFunction();
 	}
 
-	Trajectory::Trajectory( System * const p_system ) : _systemPtr( p_system ) { _referenceUpdateFunction(); }
+	Trajectory::Trajectory( System * const p_system, const FilePath & p_path ) : _systemPtr( p_system ), _path( p_path )
+	{
+		_referenceUpdateFunction();
+	}
 
-	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().currentFrameIndex; }
+	size_t Trajectory::getCurrentFrame() const { return _systemPtr->getTrajectory().getCurrentFrameIndex(); }
 	void   Trajectory::setCurrentFrame( const size_t p_frameIndex )
 	{
-		_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
+		_systemPtr->getTrajectory().setCurrentFrameIndex( p_frameIndex );
 	}
 
-	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().frames.size(); }
-
-	void Trajectory::setPlayer( App::Core::Player::BasePlayer * const p_player )
-	{
-		const bool resetPlayer = _player == nullptr;
-
-		onFrameChange.clear();
-
-		_player = p_player;
-		_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
-
-		_player->onFrameChange += [ this ]( const size_t p_frameIndex )
-		{
-			_systemPtr->getTrajectory().currentFrameIndex = p_frameIndex;
-			onFrameChange( p_frameIndex );
-		};
-
-		if ( resetPlayer )
-		{
-			_player->reset();
-		}
-	}
-
-	void Trajectory::_update( const float p_deltaTime )
-	{
-		if ( _player != nullptr )
-		{
-			_player->update( p_deltaTime );
-		}
-	}
+	size_t Trajectory::getFrameCount() const { return _systemPtr->getTrajectory().getFrameCount(); }
 
 	void Trajectory::_referenceUpdateFunction()
 	{
 		auto & updatable = ECS_REGISTRY().getComponent<Component::Scene::Updatable>( *this );
-		updatable.addUpdateFunction( [ this ]( const float p_deltaTime, const float ) { _update( p_deltaTime ); } );
 	}
 
 } // namespace VTX::App::Component::Chemistry

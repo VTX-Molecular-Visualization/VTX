@@ -1,4 +1,7 @@
 #include "app/core/player/base_player.hpp"
+#include <app/component/chemistry/trajectory.hpp>
+#include <app/component/render/proxy_system.hpp>
+#include <app/core/ecs/registry.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Core::Player
@@ -10,7 +13,23 @@ namespace VTX::App::Core::Player
 		if ( _current >= p_count )
 		{
 			_current = p_count - 1;
-			onFrameChange( _current );
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
+				  ++iter )
+			{
+				auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
+
+				if ( &( trajectory.getPlayer() ) == this )
+				{
+					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
+					VTX::App::Component::Render::ProxySystem & proxy
+						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
+
+					molecule.getTrajectory().setCurrentFrameIndex( _current );
+					onFrameChange( molecule.getTrajectory().getCurrentFrame() );
+				}
+			}
 		}
 	}
 
@@ -20,7 +39,23 @@ namespace VTX::App::Core::Player
 		if ( _current != p_frameIndex )
 		{
 			_current = p_frameIndex;
-			onFrameChange( p_frameIndex );
+			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();
+				  iter != App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().end();
+				  ++iter )
+			{
+				auto & trajectory = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *iter );
+
+				if ( &( trajectory.getPlayer() ) == this )
+				{
+					auto   entity	= App::ECS_REGISTRY().getEntity( trajectory );
+					auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::System>( entity );
+					VTX::App::Component::Render::ProxySystem & proxy
+						= App::ECS_REGISTRY().getComponent<App::Component::Render::ProxySystem>( entity );
+
+					molecule.getTrajectory().setCurrentFrameIndex( p_frameIndex );
+					onFrameChange( molecule.getTrajectory().getCurrentFrame() );
+				}
+			}
 		}
 	}
 
@@ -41,10 +76,12 @@ namespace VTX::App::Core::Player
 		onStop();
 	}
 
-	void BasePlayer::update( const float p_deltaTime )
+	void BasePlayer::update( const float p_deltaTime, const float p_elapsedTime )
 	{
-		if ( !isPlaying() )
+		if ( not isPlaying() )
+		{
 			return;
+		}
 
 		_trajectoryTimer += p_deltaTime;
 
@@ -57,7 +94,7 @@ namespace VTX::App::Core::Player
 			const size_t previousCurrent = _current;
 			size_t		 nextIndex		 = _current;
 
-			const float offset = 1.f / float( _fps );
+			const float offset = ( 1.f / float( _fps ) ) * 1000.f;
 			while ( _trajectoryTimer >= offset )
 			{
 				nextIndex++;

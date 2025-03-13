@@ -32,21 +32,10 @@ namespace VTX::App::Component::Chemistry
 		return ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( _systemPtr->_systemStruct.atomSymbols[ _index ] ) ];
 	}
 
-	const Vec3f & Atom::getLocalPosition() const
-	{
-		return getLocalPosition( _systemPtr->_systemStruct.trajectory.currentFrameIndex );
-	}
-	const Vec3f & Atom::getLocalPosition( const size_t & p_frameIndex ) const
-	{
-		return _systemPtr->getTrajectory().frames[ p_frameIndex ][ _index ];
-	}
-	Vec3f Atom::getWorldPosition() const
+	const Vec3f & Atom::getLocalPosition() const { return _systemPtr->getTrajectory().getCurrentFrame()[ _index ]; }
+	Vec3f		  Atom::getWorldPosition() const
 	{
 		return Vec3f( Vec4f( getLocalPosition(), 0 ) * _systemPtr->getTransform().get() );
-	}
-	Vec3f Atom::getWorldPosition( const size_t & p_frameIndex ) const
-	{
-		return Vec3f( Vec4f( getLocalPosition( p_frameIndex ), 0 ) * _systemPtr->getTransform().get() );
 	}
 
 	const ChemDB::Atom::SYMBOL & Atom::getSymbol() const { return _systemPtr->_systemStruct.atomSymbols[ _index ]; }
