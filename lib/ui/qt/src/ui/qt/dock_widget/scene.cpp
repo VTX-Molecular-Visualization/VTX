@@ -12,6 +12,7 @@
 #include <app/selection/system_data.hpp>
 #include <unordered_set>
 #include <util/string.hpp>
+#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -27,8 +28,8 @@ namespace VTX::UI::QT::DockWidget
 		topLineSeparator->setFrameShadow( QFrame::Plain );
 		_layout->addWidget( topLineSeparator );
 
-		//auto * trajManager = new Widget::TrajectoryManager( this );
-		//_layout->addWidget( trajManager );
+		auto * trajManager = new Widget::TrajectoryManager( this );
+		_layout->addWidget( trajManager );
 
 		// add an horizontal line as separator
 		auto * bottomLineSeparator = new QFrame( this );
