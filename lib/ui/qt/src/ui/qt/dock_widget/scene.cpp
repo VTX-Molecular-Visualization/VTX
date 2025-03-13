@@ -27,8 +27,8 @@ namespace VTX::UI::QT::DockWidget
 		topLineSeparator->setFrameShadow( QFrame::Plain );
 		_layout->addWidget( topLineSeparator );
 
-		auto * trajManager = new Widget::TrajectoryManager( this );
-		_layout->addWidget( trajManager );
+		//auto * trajManager = new Widget::TrajectoryManager( this );
+		//_layout->addWidget( trajManager );
 
 		// add an horizontal line as separator
 		auto * bottomLineSeparator = new QFrame( this );
