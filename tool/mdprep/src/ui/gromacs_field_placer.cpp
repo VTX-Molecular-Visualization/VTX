@@ -51,7 +51,7 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects._fieldConc->setValue( p_.system.saltConcentration );
 		_uiObjects._labelConc = VTX::UI::QT::Util::LabelWithHelper(
 			"Target Salt concentration (mol/L)",
-			"If not null, the system will be added ions until the targeted concentration is reached.",
+			"If the value is not null, ions will be added to the system until the targeted concentration is reached.",
 			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 		);
 		_toDeleteObjects[ 1 ] = _uiObjects._labelConc;
