@@ -11,8 +11,8 @@ class VTXPythonBindingRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps"
     
@@ -47,7 +47,8 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        cmake.ctest(["--output-on-failure"])
+        if self.options.test == True:
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)

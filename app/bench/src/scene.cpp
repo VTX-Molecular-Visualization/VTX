@@ -79,7 +79,7 @@ namespace VTX::Bench
 
 	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )
 	{
-		const size_t									sizeAtoms	= p_system.trajectory.frames.front().size();
+		const size_t									sizeAtoms	= p_system.trajectory.getCurrentFrame().size();
 		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_system.atomSymbols;
 		const size_t									sizeResidue = p_system.residueOriginalIds.size();
 
@@ -118,9 +118,11 @@ namespace VTX::Bench
 		const std::vector<size_t> & polymerChainIds		 = categoryPolymer.getLinkedChains();
 		const std::vector<size_t> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
 
+		const std::vector<Vec3f> *atomsPositions = &p_system.trajectory.getCurrentFrame();
+
 		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
 			&p_system.transform,
-			&p_system.trajectory.frames.front(),
+			atomsPositions,
 			&p_system.bondPairAtomIndexes,
 			&p_system.atomNames,
 			reinterpret_cast<const std::vector<uchar> *>( &p_system.residueSecondaryStructureTypes ),

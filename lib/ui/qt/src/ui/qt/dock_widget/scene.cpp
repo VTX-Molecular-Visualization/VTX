@@ -12,6 +12,7 @@
 #include <app/selection/system_data.hpp>
 #include <unordered_set>
 #include <util/string.hpp>
+#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -19,6 +20,22 @@ namespace VTX::UI::QT::DockWidget
 	Scene::Scene( QWidget * p_parent ) : Core::BaseDockWidget<Scene>( "Scene", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
+		// trajectories
+		// add an horizontal line as separator
+		auto * topLineSeparator = new QFrame( this );
+		topLineSeparator->setFrameShape( QFrame::HLine );
+		topLineSeparator->setFrameShadow( QFrame::Plain );
+		_layout->addWidget( topLineSeparator );
+
+		auto * trajManager = new Widget::TrajectoryManager( this );
+		_layout->addWidget( trajManager );
+
+		// add an horizontal line as separator
+		auto * bottomLineSeparator = new QFrame( this );
+		bottomLineSeparator->setFrameShape( QFrame::HLine );
+		bottomLineSeparator->setFrameShadow( QFrame::Plain );
+		_layout->addWidget( bottomLineSeparator );
 
 		// Search bar.
 		/*

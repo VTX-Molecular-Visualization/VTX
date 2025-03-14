@@ -2,8 +2,11 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_TRAJECTORY__
 
 #include "_fwd.hpp"
+#include "app/component/chemistry/system.hpp"
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/core/player/base_player.hpp"
+#include "app/core/player/concepts.hpp"
+#include "app/vtx_app.hpp"
 #include "enum_trajectory.hpp"
 #include <util/callback.hpp>
 
@@ -13,7 +16,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Trajectory();
-		Trajectory( System * const p_system );
+		Trajectory( System * const p_system, const FilePath & p_path );
 
 		const System * const getConstSystemPtr() const { return _systemPtr; }
 		System * const		 getSystemPtr() const { return _systemPtr; }
@@ -24,16 +27,42 @@ namespace VTX::App::Component::Chemistry
 		size_t getFrameCount() const;
 
 		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
-		void							setPlayer( App::Core::Player::BasePlayer * const p_player );
 
-		Util::Callback<size_t> onFrameChange;
+		template<Core::Player::ConceptPlayer P>
+		void setPlayer()
+		{
+			// Delete old player.
+			if ( _player )
+			{
+				_player.reset();
+				APP::onUpdate -= _currentUpdateCallback;
+			}
+
+			// Create and connect new player.
+			_player				   = std::make_unique<P>();
+			_currentUpdateCallback = APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime )
+			{ static_cast<P *>( _player.get() )->update( p_deltaTime, p_elapsedTime ); };
+
+			_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
+
+			_player->onFrameChange +=
+				[ this ]( const VTX::Core::Struct::Frame & p_frame ) { onFrameChange( p_frame ); };
+		}
+
+		Util::Callback<const std::vector<Vec3f> &> onFrameChange;
+		// TODO:
+		// Util::Callback<> onPlayerChange;
+
+		const FilePath & getPath() const { return _path; }
 
 	  private:
-		void _update( const float p_deltaTime );
 		void _referenceUpdateFunction();
 
-		System *						_systemPtr = nullptr;
-		App::Core::Player::BasePlayer * _player	   = nullptr;
+		System *								  _systemPtr = nullptr;
+		std::unique_ptr<Core::Player::BasePlayer> _player;
+		Util::CallbackId						  _currentUpdateCallback;
+
+		const FilePath _path;
 	};
 } // namespace VTX::App::Component::Chemistry
 #endif

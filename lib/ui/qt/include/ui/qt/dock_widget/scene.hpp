@@ -5,6 +5,8 @@
 #include <QPointer>
 #include <QTreeWidget>
 #include <app/component/chemistry/system.hpp>
+/*#include <app/component/scene/scene_item_component.hpp>
+*/
 
 namespace VTX::UI::QT::DockWidget
 {

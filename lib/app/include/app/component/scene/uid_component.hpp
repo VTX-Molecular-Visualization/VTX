@@ -21,6 +21,7 @@ namespace VTX::App::Component::Scene
 		void referenceUID( const Core::UID::UIDRange & p_range );
 
 		bool contains( const App::Core::UID::uid & p_uid ) const;
+		bool contains( const App::Core::UID::UIDRange & p_uidRange ) const;
 
 	  private:
 		Util::Math::RangeList<App::Core::UID::uid> _uids = Util::Math::RangeList<App::Core::UID::uid>();

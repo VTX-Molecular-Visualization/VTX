@@ -6,7 +6,6 @@
 #include <app/core/player/loop.hpp>
 #include <app/core/player/once.hpp>
 #include <app/core/player/ping_pong.hpp>
-#include <app/core/player/players.hpp>
 #include <app/core/player/revert_loop.hpp>
 #include <app/core/player/revert_once.hpp>
 #include <app/core/player/stop.hpp>
@@ -31,13 +30,9 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	const size_t frameCount1NIM = 25;
 
-	App::Core::Player::BasePlayer * playmode = nullptr;
-
 	SECTION( "Stop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Stop>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::Stop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -52,9 +47,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Once>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::Once>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -70,9 +63,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert once playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::RevertOnce>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::RevertOnce>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -88,9 +79,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::Loop>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::Loop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -106,9 +95,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Revert loop playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::RevertLoop>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::RevertLoop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -124,9 +111,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration]" )
 
 	SECTION( "Ping Pong playmode" )
 	{
-		playmode = Util::Singleton<App::Core::Player::Players>::get().getOrCreate<App::Core::Player::PingPong>();
-
-		trajectoryComponent.setPlayer( playmode );
+		trajectoryComponent.setPlayer<App::Core::Player::PingPong>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 

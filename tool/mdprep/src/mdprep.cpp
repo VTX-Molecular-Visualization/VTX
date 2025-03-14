@@ -26,7 +26,6 @@
 #include <app/tool/base_tool.hpp>
 #include <ui/qt/application.hpp>
 #include <ui/qt/core/base_dock_widget.hpp>
-#include <ui/qt/dock_widget/inspector.hpp>
 #include <ui/qt/util.hpp>
 #include <util/logger.hpp>
 //

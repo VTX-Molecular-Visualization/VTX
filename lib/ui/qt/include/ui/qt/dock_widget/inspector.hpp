@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
 
 #include "ui/qt/core/base_dock_widget.hpp"
-#include <QDockWidget>
 
 namespace VTX::UI::QT::DockWidget
 {

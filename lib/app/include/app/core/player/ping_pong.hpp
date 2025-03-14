@@ -2,7 +2,6 @@
 #define __VTX_APP_CORE_PLAYER_PING_PONG__
 
 #include "app/core/player/base_player.hpp"
-#include "app/core/player/players.hpp"
 
 namespace VTX::App::Core::Player
 {
@@ -22,6 +21,8 @@ namespace VTX::App::Core::Player
 
 		bool isPlayingForward() const { return _forward; }
 		void setPlayingForward( const bool p_forward ) { _forward = p_forward; }
+
+		void stackFrame( Frame elem ) override {}; // FIXME
 
 	  private:
 		bool _forward = true;
