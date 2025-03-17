@@ -1,3 +1,4 @@
+include(CheckLanguage)
 include("${CMAKE_CURRENT_LIST_DIR}/copy_shaders.cmake")
 
 # Lib.
@@ -7,17 +8,29 @@ configure_target(vtx_renderer)
 file(GLOB_RECURSE HEADERS_PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../include/public/*")
 file(GLOB_RECURSE HEADERS_PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include/private/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
-#file(GLOB_RECURSE GLAD_HEADERS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include/*")
-#file(GLOB_RECURSE GLAD_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/src/*")
+file(GLOB_RECURSE HEADERS_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*.h")
+file(GLOB_RECURSE SOURCES_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*.c")
 file(GLOB_RECURSE SHADERS "${CMAKE_CURRENT_LIST_DIR}/../shaders/*")
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES}
-	#PRIVATE ${GLAD_SOURCES}
+	PRIVATE ${SOURCES_VENDORS}
 	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/public" FILES ${HEADERS_PUBLIC}
 	PRIVATE FILE_SET private_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/private" FILES ${HEADERS_PRIVATE}
-	#PUBLIC FILE_SET public_headers_glad TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/include" FILES ${GLAD_HEADERS}
+	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
+
+# Cuda.
+# Print message if CUDA is not found.
+check_language(CUDA)
+if (CMAKE_CUDA_COMPILER)
+	message(STATUS "CUDA found")
+	enable_language(CUDA)
+	#file(GLOB_RECURSE CUDA_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/cuda/*")
+	#target_sources(vtx_renderer PRIVATE ${CUDA_SOURCES})
+else()
+	message(STATUS "CUDA not found")
+endif()
 
 # Tests.
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
