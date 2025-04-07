@@ -75,5 +75,9 @@ namespace VTX::App::Component::Chemistry
 	bool Atom::isVisible() const { return _systemPtr->_visibleAtomIds.contains( _index ); }
 	void Atom::setVisible( const bool p_visible ) { _systemPtr->setVisible( _index, p_visible ); }
 
-	void Atom::remove() { _systemPtr->remove( _index ); }
+	void Atom::remove()
+	{
+		const VTX::atom_index_t index = _index;
+		_systemPtr->remove( index );
+	}
 } // namespace VTX::App::Component::Chemistry
