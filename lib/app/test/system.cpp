@@ -8,7 +8,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE( "VTX_APP - System - Remove", "[unit]" )
+TEST_CASE( "VTX_APP - System - Remove", "[unit][remove]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
