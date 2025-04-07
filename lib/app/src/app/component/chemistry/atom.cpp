@@ -77,6 +77,8 @@ namespace VTX::App::Component::Chemistry
 
 	void Atom::remove()
 	{
+		// I think the design of having an object remove itself by calling a method from another object is fragile
+		// design that led to 9aa18d50c29192684ab96892e9c8f0b7f31e7003 commit bug already.
 		const VTX::atom_index_t index = _index;
 		_systemPtr->remove( index );
 	}
