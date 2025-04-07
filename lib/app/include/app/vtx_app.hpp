@@ -34,7 +34,7 @@ namespace VTX::App
 
 		/**
 		 * @brief Main loop update function.
-		 * @param p_deltaTime the time since the last frame.
+		 * @param p_deltaTime the time since the last frame. In milliseconds ?
 		 * @param p_elapsedTime the time since the start of the application.
 		 */
 		static void update( const float p_deltaTime, const float p_elapsedTime );
