@@ -165,7 +165,7 @@ namespace VTX::App::Application
 
 		size_t itemMovedCounter = 0;
 
-		for ( int i = int( _itemIndexes.size() ) - 1; i > p_position; i-- )
+		for ( size_t i = _itemIndexes.size() - 1; i > p_position; i-- )
 		{
 			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemIndexes[ i ] ) != p_items.end();
 

@@ -4,6 +4,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/core/player/concepts.hpp"
 #include <app/component/chemistry/system.hpp>
+#include <app/component/chemistry/trajectory.hpp>
 #include <app/component/scene/uid_component.hpp>
 #include <app/core/ecs/registry.hpp>
 #include <app/entity/system.hpp>
@@ -63,15 +64,15 @@ namespace VTX::App::Action::Trajectory
 	class SetTrajectoryCurrentFrame final : public App::Core::Action::BaseAction
 	{
 	  public:
-		SetTrajectoryCurrentFrame( const App::Component::Chemistry::System * p_system, const int p_value ) :
-			_system( p_system ), _value( p_value )
+		SetTrajectoryCurrentFrame( const App::Component::Chemistry::System * p_system, const size_t p_value ) :
+			_system( p_system ), _value( std::move( p_value ) )
 		{
 		}
 		void execute() override;
 
 	  private:
 		const App::Component::Chemistry::System * _system;
-		const int								  _value;
+		const size_t							  _value;
 	};
 
 	template<Core::Player::ConceptPlayer P>
@@ -82,12 +83,13 @@ namespace VTX::App::Action::Trajectory
 
 		void execute() override
 		{
-			auto & traj = ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
+			App::Component::Chemistry::Trajectory & traj
+				= ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *_system );
 
 			bool previousState = traj.getPlayer().isPlaying();
 
 			traj.getPlayer().stop();
-			traj.template setPlayer<P>();
+			traj.setPlayer<P>();
 			traj.getPlayer().reset();
 
 			if ( previousState )
