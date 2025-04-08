@@ -125,7 +125,7 @@ namespace VTX::App::Application
 		}
 		else
 		{
-			for ( int i = int( _itemIndexes.size() - 1 ); i > p_position; i-- )
+			for ( size_t i = _itemIndexes.size() - 1; i > p_position; i-- )
 			{
 				if ( _itemIndexes[ i ] == p_entity )
 					changeHasStarted = true;
