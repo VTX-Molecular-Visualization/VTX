@@ -12,7 +12,7 @@ namespace VTX::PythonBinding::API
 	class System;
 
 	/**
-	 * @brief Class responsible for defining an facade for Python for an atom.
+	 * @brief Class responsible for defining an atom's facade from Python's perspective.
 	 */
 	class Atom
 	{
@@ -223,6 +223,17 @@ namespace VTX::PythonBinding::API
 			requires( not std::same_as<std::remove_cvref<T>, Atom> )
 		Atom( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
+			static_assert(
+				requires( const T t ) {
+					{ t.getIndex() } -> std::same_as<atom_index_t>;
+				}, "Missing |atom_index_t getIndex() const| class method."
+			);
+			static_assert(
+				requires( const T t, const atom_index_t & idx ) {
+					{ t.setIndex( idx ) };
+				}, "Missing |void setIndex( const atom_index_t p_index )| class method."
+			);
+			// TODO : The rest of the static assertion to help maintainance, when we're sure this design works
 		}
 	};
 } // namespace VTX::PythonBinding::API
