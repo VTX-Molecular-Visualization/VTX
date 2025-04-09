@@ -4,7 +4,6 @@
 #include "python_binding/log_redirection.hpp"
 #include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
-#include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <source_location>
