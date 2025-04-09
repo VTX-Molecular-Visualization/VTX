@@ -19,6 +19,7 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
+        self.requires("vtx_python_binding/1.0")
         self.requires("entt/3.13.2", transitive_headers=True)
         self.requires("catch2/3.7.1")
         

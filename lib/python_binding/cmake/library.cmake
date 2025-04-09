@@ -21,33 +21,27 @@ pybind11_add_module(vtx_python_api SHARED "${CMAKE_CURRENT_LIST_DIR}/../module/v
 if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)
 	target_link_libraries(vtx_python_binding PUBLIC vtx_util)
 	target_link_libraries(vtx_python_binding PUBLIC vtx_core)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_app)
 	target_link_libraries(vtx_python_binding PUBLIC vtx_io)
 
 	target_link_libraries(vtx_python_api PUBLIC vtx_util)
 	target_link_libraries(vtx_python_api PUBLIC vtx_core)
-	target_link_libraries(vtx_python_api PUBLIC vtx_app)
 	target_link_libraries(vtx_python_api PUBLIC vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io)
 else()
 	target_link_libraries(vtx_python_binding PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_binding PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_python_binding PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_python_binding PRIVATE vtx_io::vtx_io)
 	
 	target_link_libraries(vtx_python_api PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_api PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_python_api PRIVATE vtx_app::vtx_app)
 	target_link_libraries(vtx_python_api PRIVATE vtx_io::vtx_io)
 
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_app::vtx_app)
 endif()
 
 target_link_libraries(vtx_python_binding PUBLIC pybind11::pybind11)
