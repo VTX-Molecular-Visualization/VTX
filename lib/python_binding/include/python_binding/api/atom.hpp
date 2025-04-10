@@ -180,40 +180,43 @@ namespace VTX::PythonBinding::API
 		};
 
 		template<class T>
-		class _wrapper final
+		class _wrapper final : public _interface
 		{
 			T & _obj;
 
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			atom_index_t		  getIndex() const { return _obj.getIndex(); }
-			void				  setIndex( const atom_index_t p_index ) { _obj.setIndex( p_index ); }
-			Residue *			  getResiduePtr() const { return _obj.getResiduePtr(); }
-			const Residue *		  getConstResiduePtr() const { return _obj.getConstResiduePtr(); }
-			void				  setResiduePtr( Residue * const p_residue ) { _obj.setResiduePtr( p_residue ); }
-			Chain *				  getChainPtr() const { return _obj.getChainPtr(); }
-			const Chain *		  getConstChainPtr() const { return _obj.getConstChainPtr(); }
-			inline System *		  getSystemPtr() const { return _obj.getSystemPtr(); }
-			inline const System * getConstSystemPtr() const { return _obj.getConstSystemPtr(); }
+			virtual atom_index_t	getIndex() const override { return _obj.getIndex(); }
+			virtual void			setIndex( const atom_index_t p_index ) override { _obj.setIndex( p_index ); }
+			virtual Residue *		getResiduePtr() const override { return _obj.getResiduePtr(); }
+			virtual const Residue * getConstResiduePtr() const override { return _obj.getConstResiduePtr(); }
+			virtual void	setResiduePtr( Residue * const p_residue ) override { _obj.setResiduePtr( p_residue ); }
+			virtual Chain * getChainPtr() const override { return _obj.getChainPtr(); }
+			virtual const Chain *		  getConstChainPtr() const override { return _obj.getConstChainPtr(); }
+			virtual inline System *		  getSystemPtr() const override { return _obj.getSystemPtr(); }
+			virtual inline const System * getConstSystemPtr() const override { return _obj.getConstSystemPtr(); }
 
-			const std::string &				   getName() const { return _obj.getName(); }
-			void							   setName( const std::string & p_name ) { _obj.setName( p_name ); }
-			const Core::ChemDB::Atom::SYMBOL & getSymbol() const { return _obj.getSymbol(); }
-			void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) { _obj.setSymbol( p_symbol ); }
+			virtual const std::string & getName() const override { return _obj.getName(); }
+			virtual void				setName( const std::string & p_name ) override { _obj.setName( p_name ); }
+			virtual const Core::ChemDB::Atom::SYMBOL & getSymbol() const override { return _obj.getSymbol(); }
+			virtual void							   setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) override
+			{
+				_obj.setSymbol( p_symbol );
+			}
 
-			Core::ChemDB::Atom::TYPE getType() const { return _obj.getType(); }
-			void					 setType( const Core::ChemDB::Atom::TYPE p_type ) { _obj.setType( p_type ); }
+			virtual Core::ChemDB::Atom::TYPE getType() const override { return _obj.getType(); }
+			virtual void setType( const Core::ChemDB::Atom::TYPE p_type ) override { _obj.setType( p_type ); }
 
-			float getVdwRadius() const { return _obj.getVdwRadius(); }
+			virtual float getVdwRadius() const override { return _obj.getVdwRadius(); }
 
-			const Vec3f & getLocalPosition() const { return _obj.getLocalPosition(); }
-			Vec3f		  getWorldPosition() const { return _obj.getWorldPosition(); }
+			virtual const Vec3f & getLocalPosition() const override { return _obj.getLocalPosition(); }
+			virtual Vec3f		  getWorldPosition() const override { return _obj.getWorldPosition(); }
 
-			bool isVisible() const { return _obj.isVisible(); }
-			void setVisible( const bool p_visible ) { _obj.setVisible( p_visible ); }
+			virtual bool isVisible() const override { return _obj.isVisible(); }
+			virtual void setVisible( const bool p_visible ) override { _obj.setVisible( p_visible ); }
 
-			void remove() { _obj.remove(); }
+			virtual void remove() override { _obj.remove(); }
 		};
 
 		std::shared_ptr<_interface> _ptr
