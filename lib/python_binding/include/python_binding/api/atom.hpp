@@ -19,41 +19,41 @@ namespace VTX::PythonBinding::API
 	  public:
 		Atom() = default;
 
-		atom_index_t getIndex() const
+		inline atom_index_t getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
 			return 0xffffffff;
 		}
-		void setIndex( const atom_index_t p_index )
+		inline void setIndex( const atom_index_t p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
 		}
-		Residue * getResiduePtr() const
+		inline Residue * getResiduePtr() const
 		{
 			if ( _ptr )
 				return _ptr->getResiduePtr();
 			return nullptr;
 		}
-		const Residue * getConstResiduePtr() const
+		inline const Residue * getConstResiduePtr() const
 		{
 			if ( _ptr )
 				return _ptr->getConstResiduePtr();
 			return nullptr;
 		}
-		void setResiduePtr( Residue * const p_residue )
+		inline void setResiduePtr( Residue * const p_residue )
 		{
 			if ( _ptr )
 				_ptr->setResiduePtr( p_residue );
 		}
-		Chain * getChainPtr() const
+		inline Chain * getChainPtr() const
 		{
 			if ( _ptr )
 				return _ptr->getChainPtr();
 			return nullptr;
 		}
-		const Chain * getConstChainPtr() const
+		inline const Chain * getConstChainPtr() const
 		{
 			if ( _ptr )
 				return _ptr->getConstChainPtr();
@@ -72,74 +72,74 @@ namespace VTX::PythonBinding::API
 			return nullptr;
 		}
 
-		const std::string & getName() const
+		inline const std::string & getName() const
 		{
 			if ( _ptr )
 				return _ptr->getName();
 			return {};
 		}
-		void setName( const std::string & p_name )
+		inline void setName( const std::string & p_name )
 		{
 			if ( _ptr )
 				_ptr->setName( p_name );
 		}
-		const Core::ChemDB::Atom::SYMBOL & getSymbol() const
+		inline const Core::ChemDB::Atom::SYMBOL & getSymbol() const
 		{
 			if ( _ptr )
 				return _ptr->getSymbol();
 			return Core::ChemDB::Atom::SYMBOL::UNKNOWN;
 		}
-		void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol )
+		inline void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol )
 		{
 			if ( _ptr )
 				_ptr->setSymbol( p_symbol );
 		}
 
-		Core::ChemDB::Atom::TYPE getType() const
+		inline Core::ChemDB::Atom::TYPE getType() const
 		{
 			if ( _ptr )
 				return _ptr->getType();
 			return Core::ChemDB::Atom::TYPE::NORMAL; // Not a huge fan of returning NORMAL by default, but heh
 		}
-		void setType( const Core::ChemDB::Atom::TYPE p_type )
+		inline void setType( const Core::ChemDB::Atom::TYPE p_type )
 		{
 			if ( _ptr )
 				_ptr->setType( p_type );
 		}
 
-		float getVdwRadius() const
+		inline float getVdwRadius() const
 		{
 			if ( _ptr )
 				return _ptr->getVdwRadius();
 			return 0.f;
 		}
 
-		const Vec3f & getLocalPosition() const
+		inline const Vec3f & getLocalPosition() const
 		{
 			if ( _ptr )
 				return _ptr->getLocalPosition();
 			return {};
 		}
-		Vec3f getWorldPosition() const
+		inline Vec3f getWorldPosition() const
 		{
 			if ( _ptr )
 				return _ptr->getWorldPosition();
 			return {};
 		}
 
-		bool isVisible() const
+		inline bool isVisible() const
 		{
 			if ( _ptr )
 				return _ptr->isVisible();
 			return false;
 		}
-		void setVisible( const bool p_visible )
+		inline void setVisible( const bool p_visible )
 		{
 			if ( _ptr )
 				_ptr->setVisible( p_visible );
 		}
 
-		void remove()
+		inline void remove()
 		{
 			if ( _ptr )
 				_ptr->remove();

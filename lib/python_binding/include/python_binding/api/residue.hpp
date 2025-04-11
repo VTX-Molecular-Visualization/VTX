@@ -12,116 +12,116 @@ namespace VTX::PythonBinding::API
 	  public:
 		Residue() = default;
 
-		size_t getIndex() const
+		inline size_t getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
 			return 0;
 		}
-		void setIndex( const size_t p_index )
+		inline void setIndex( const size_t p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
 		}
 
-		atom_index_t getIndexFirstAtom() const
+		inline atom_index_t getIndexFirstAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstAtom();
 			return 0;
 		}
-		void setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
+		inline void setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstAtom( p_indexFirstAtom );
 		}
-		atom_index_t getIndexLastAtom() const
+		inline atom_index_t getIndexLastAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastAtom();
 			return 0;
 		}
 
-		atom_index_t getAtomCount() const
+		inline atom_index_t getAtomCount() const
 		{
 			if ( _ptr )
 				return _ptr->getAtomCount();
 			return 0;
 		}
-		void setAtomCount( const atom_index_t p_atomCount )
+		inline void setAtomCount( const atom_index_t p_atomCount )
 		{
 			if ( _ptr )
 				_ptr->setAtomCount( p_atomCount );
 		}
 
-		size_t getIndexFirstBond() const
+		inline size_t getIndexFirstBond() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstBond();
 			return 0;
 		}
-		void setIndexFirstBond( const size_t p_indexFirstBond )
+		inline void setIndexFirstBond( const size_t p_indexFirstBond )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstBond( p_indexFirstBond );
 		}
 
-		size_t getBondCount() const
+		inline size_t getBondCount() const
 		{
 			if ( _ptr )
 				return _ptr->getBondCount();
 			return 0;
 		}
-		void setBondCount( const size_t p_bondCount )
+		inline void setBondCount( const size_t p_bondCount )
 		{
 			if ( _ptr )
 				_ptr->setBondCount( p_bondCount );
 		}
 
-		size_t getIndexInOriginalChain() const
+		inline size_t getIndexInOriginalChain() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexInOriginalChain();
 			return 0;
 		}
 
-		const std::string_view getShortName() const
+		inline const std::string_view getShortName() const
 		{
 			if ( _ptr )
 				return _ptr->getShortName();
 			return {};
 		}
-		const std::string_view getName() const
+		inline const std::string_view getName() const
 		{
 			if ( _ptr )
 				return _ptr->getName();
 			return {};
 		}
-		const std::string_view getLongName() const
+		inline const std::string_view getLongName() const
 		{
 			if ( _ptr )
 				return _ptr->getLongName();
 			return {};
 		}
 
-		void setIndexInOriginalChain( const size_t p_index )
+		inline void setIndexInOriginalChain( const size_t p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndexInOriginalChain( p_index );
 		}
 
-		void setVisible( const bool p_visible )
+		inline void setVisible( const bool p_visible )
 		{
 			if ( _ptr )
 				_ptr->setVisible( p_visible );
 		}
-		bool isVisible() const
+		inline bool isVisible() const
 		{
 			if ( _ptr )
 				return _ptr->isVisible();
 			return 0;
 		}
-		bool isFullyVisible() const
+		inline bool isFullyVisible() const
 		{
 			if ( _ptr )
 				return _ptr->isFullyVisible();

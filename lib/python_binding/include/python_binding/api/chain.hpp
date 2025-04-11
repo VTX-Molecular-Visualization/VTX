@@ -12,105 +12,105 @@ namespace VTX::PythonBinding::API
 	  public:
 		Chain() = default;
 
-		const size_t getIndex() const
+		inline const size_t getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
 			return 0;
 		}
-		void setIndex( const size_t p_index )
+		inline void setIndex( const size_t p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
 		}
 
-		const std::string & getName() const
+		inline const std::string & getName() const
 		{
 			if ( _ptr )
 				return _ptr->getName();
 			return 0;
 		}
-		void setName( const std::string & p_name )
+		inline void setName( const std::string & p_name )
 		{
 			if ( _ptr )
 				_ptr->setName( p_name );
 		}
 
-		size_t getIndexFirstResidue() const
+		inline size_t getIndexFirstResidue() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstResidue();
 			return 0;
 		}
-		size_t getIndexLastResidue() const
+		inline size_t getIndexLastResidue() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastResidue();
 			return 0;
 		}
-		void setIndexFirstResidue( const size_t p_residueIndex )
+		inline void setIndexFirstResidue( const size_t p_residueIndex )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstResidue( p_residueIndex );
 		}
 
-		size_t getResidueCount() const
+		inline size_t getResidueCount() const
 		{
 			if ( _ptr )
 				return _ptr->getResidueCount();
 			return 0;
 		}
-		void setResidueCount( const size_t p_residueCount )
+		inline void setResidueCount( const size_t p_residueCount )
 		{
 			if ( _ptr )
 				_ptr->setResidueCount( p_residueCount );
 		}
 
-		atom_index_t getIndexFirstAtom() const
+		inline atom_index_t getIndexFirstAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstAtom();
 			return 0;
 		}
-		atom_index_t getIndexLastAtom() const
+		inline atom_index_t getIndexLastAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastAtom();
 			return 0;
 		}
 
-		const std::string & getOriginalChainID() const
+		inline const std::string & getOriginalChainID() const
 		{
 			if ( _ptr )
 				return _ptr->getOriginalChainID();
 			return 0;
 		}
-		void setOriginalChainID( const std::string & p_chainId )
+		inline void setOriginalChainID( const std::string & p_chainId )
 		{
 			if ( _ptr )
 				_ptr->setOriginalChainID( p_chainId );
 		}
 
-		bool isVisible() const
+		inline bool isVisible() const
 		{
 			if ( _ptr )
 				return _ptr->isVisible();
 			return 0;
 		}
-		bool isFullyVisible() const
+		inline bool isFullyVisible() const
 		{
 			if ( _ptr )
 				return _ptr->isFullyVisible();
 			return 0;
 		}
 
-		void setVisible( const bool p_visible )
+		inline void setVisible( const bool p_visible )
 		{
 			if ( _ptr )
 				_ptr->setVisible( p_visible );
 		}
 
-		void remove()
+		inline void remove()
 		{
 			if ( _ptr )
 				_ptr->remove();
