@@ -1,5 +1,10 @@
 #include "python_binding/api/selection/system_interpretor.hpp"
 #include "python_binding/api/selection/helper.hpp"
+
+#ifdef JEVEUPAS
+
+
+
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
@@ -400,3 +405,4 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 } // namespace VTX::PythonBinding::API::Selection
+#endif // JEVEUPAS

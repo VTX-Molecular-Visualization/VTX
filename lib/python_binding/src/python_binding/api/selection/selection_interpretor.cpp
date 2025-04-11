@@ -3,6 +3,8 @@
 
 namespace VTX::PythonBinding::API::Selection
 {
+#ifdef JEVEUPAS
+
 	void SelectionInterpretor::addInterpretor( const InterpretArgFunc & p_interpretor )
 	{
 		_selectionInterpretors.emplace_back( p_interpretor );
@@ -27,5 +29,6 @@ namespace VTX::PythonBinding::API::Selection
 
 		return res;
 	};
+#endif // JEVEUPAS
 
 } // namespace VTX::PythonBinding::API::Selection

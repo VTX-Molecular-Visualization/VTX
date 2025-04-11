@@ -2,12 +2,13 @@
 #define __VTX_PYTHON_API_SELECTION_SELECTION_INTERPRETOR__
 
 #include "_fwd.hpp"
-#include <app/component/chemistry/_fwd.hpp>
-#include <app/selection/selection.hpp>
 #include <pybind11/pybind11.h>
+#include <vector>
 
 namespace VTX::PythonBinding::API::Selection
 {
+#ifdef JEVEUPAS
+
 	using Selection = App::Selection::Selection;
 
 	class SelectionInterpretor
@@ -24,6 +25,7 @@ namespace VTX::PythonBinding::API::Selection
 	  private:
 		inline static std::vector<InterpretArgFunc> _selectionInterpretors = std::vector<InterpretArgFunc>();
 	};
+#endif
 
 } // namespace VTX::PythonBinding::API::Selection
 #endif

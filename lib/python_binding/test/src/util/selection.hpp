@@ -1,16 +1,14 @@
 #ifndef __VTX_APP_TEST_UTIL_SELECTION__
 #define __VTX_APP_TEST_UTIL_SELECTION__
 
-#include <app/selection/concepts.hpp>
-#include <app/selection/selection.hpp>
-#include <app/selection/selection_data.hpp>
-#include <app/selection/system_data.hpp>
 #include <string>
 #include <util/concepts.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::Test::Util
 {
+#ifdef JEVEUPAS
+
 	class Selection
 	{
 		using SystemData	= VTX::App::Selection::SystemData;
@@ -64,5 +62,6 @@ namespace VTX::App::Test::Util
 			const std::vector<atom_index_t> & p_atoms	 = {}
 		);
 	};
+#endif // JEVEUPAS
 } // namespace VTX::App::Test::Util
 #endif

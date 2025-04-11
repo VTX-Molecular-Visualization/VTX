@@ -1,8 +1,6 @@
 #ifndef __VTX_PYTHON_API_SELECTION_MOLECULE_INTERPRETOR__
 #define __VTX_PYTHON_API_SELECTION_MOLECULE_INTERPRETOR__
 
-#include <app/selection/selection.hpp>
-#include <app/selection/system_data.hpp>
 #include <core/chemdb/atom.hpp>
 #include <pybind11/pybind11.h>
 #include <set>
@@ -49,33 +47,35 @@ namespace VTX::PythonBinding::API::Selection
 		};
 
 	  public:
+#ifdef JEVEUPAS
 		static void interpretSystems( App::Selection::Selection &, const pybind11::kwargs & );
 
 	  private:
 		static std::set<App::Component::Chemistry::System *> _getSystems( const InterpretedKwargs & p_kwargs );
 
 		static void _selectChains(
-			const InterpretedKwargs &				  p_kwargs,
+			const InterpretedKwargs &	 p_kwargs,
 			App::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _selectResidues(
-			const InterpretedKwargs &				  p_kwargs,
+			const InterpretedKwargs &	 p_kwargs,
 			App::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _selectAtoms(
-			const InterpretedKwargs &				  p_kwargs,
+			const InterpretedKwargs &	 p_kwargs,
 			App::Selection::SystemData & p_systemSelectionData
 		);
 
 		static void _addAtomsFollowingKwargs(
-			const atom_index_t						  p_firstAtom,
-			const atom_index_t						  p_lastAtom,
-			App::Component::Chemistry::System &		  p_system,
-			App::Selection::SystemData & p_systemSelectionData,
-			const InterpretedKwargs &				  p_kwargs
+			const atom_index_t					p_firstAtom,
+			const atom_index_t					p_lastAtom,
+			App::Component::Chemistry::System & p_system,
+			App::Selection::SystemData &		p_systemSelectionData,
+			const InterpretedKwargs &			p_kwargs
 		);
+#endif // !JEVEUPAS
 	};
 
 } // namespace VTX::PythonBinding::API::Selection

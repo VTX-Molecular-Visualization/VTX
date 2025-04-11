@@ -22,6 +22,7 @@ namespace VTX::PythonBinding::API
 			if ( _ptr )
 				_ptr->initChains( p_chainCount );
 		}
+		/*
 		inline Chain getChain( const size_t p_index )
 		{
 			if ( _ptr )
@@ -33,12 +34,6 @@ namespace VTX::PythonBinding::API
 			if ( _ptr )
 				return _ptr->getChain( p_index );
 			return 0;
-		}
-
-		inline void initResidues( const size_t p_residueCount )
-		{
-			if ( _ptr )
-				_ptr->initResidues( p_residueCount );
 		}
 		inline Residue getResidue( const size_t p_index )
 		{
@@ -52,12 +47,6 @@ namespace VTX::PythonBinding::API
 				return _ptr->getResidue( p_index );
 			return 0;
 		}
-
-		inline void initAtoms( const size_t p_atomCount )
-		{
-			if ( _ptr )
-				_ptr->initAtoms( p_atomCount );
-		}
 		inline Atom getAtom( const atom_index_t p_index )
 		{
 			if ( _ptr )
@@ -69,6 +58,19 @@ namespace VTX::PythonBinding::API
 			if ( _ptr )
 				return _ptr->getAtom( p_index );
 			return 0;
+		}
+		*/
+
+		inline void initResidues( const size_t p_residueCount )
+		{
+			if ( _ptr )
+				_ptr->initResidues( p_residueCount );
+		}
+
+		inline void initAtoms( const size_t p_atomCount )
+		{
+			if ( _ptr )
+				_ptr->initAtoms( p_atomCount );
 		}
 
 		inline void initBonds( const size_t p_bondCount )
@@ -269,6 +271,14 @@ namespace VTX::PythonBinding::API
 		};
 
 		std::shared_ptr<_interface> _ptr = nullptr;
+
+	  public:
+	  public:
+		template<class T>
+			requires( not std::same_as<std::remove_cv<T>, System> )
+		System( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
+		{
+		}
 	};
 } // namespace VTX::PythonBinding::API
 

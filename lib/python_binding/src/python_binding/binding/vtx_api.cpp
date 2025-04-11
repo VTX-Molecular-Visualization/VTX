@@ -1,12 +1,6 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/binding/helper.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
-#include <app/vtx_app.hpp>
 #include <core/struct/system.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
@@ -15,12 +9,13 @@
 #include <util/types.hpp>
 
 // Skip automatic copy of vectors in pybind.
-PYBIND11_MAKE_OPAQUE( std::vector<VTX::App::Component::Chemistry::Atom *> );
+// PYBIND11_MAKE_OPAQUE( std::vector<VTX::App::Component::Chemistry::Atom *> );
 
 namespace VTX::PythonBinding
 {
 	void apiModule( pybind11::module_ & p_apiModule )
 	{
+#ifdef JEVEUPA
 		using namespace App;
 
 		p_apiModule.doc() = "VTX API module."; // optional module docstring
@@ -122,5 +117,6 @@ namespace VTX::PythonBinding
 					->setName( p_name );
 			}
 		);
+#endif // JEVEUPA
 	}
 } // namespace VTX::PythonBinding

@@ -1,4 +1,6 @@
 #include "python_binding/api/selection/selection_wrapper.hpp"
+#ifdef JEVEUPAS
+
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
@@ -13,6 +15,7 @@
 
 namespace VTX::PythonBinding::API::Selection
 {
+
 	SelectionWrapper::SelectionWrapper() = default;
 	SelectionWrapper::SelectionWrapper( const Selection & p_selection ) :
 		_selection( std::make_unique<Selection>( p_selection ) )
@@ -147,3 +150,4 @@ namespace VTX::PythonBinding::API::Selection
 	std::string SelectionWrapper::toString() const { return _selection->toString(); }
 
 } // namespace VTX::PythonBinding::API::Selection
+#endif // JEVEUPAS

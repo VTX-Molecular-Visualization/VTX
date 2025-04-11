@@ -3,14 +3,14 @@
 
 #include "_fwd.hpp"
 #include "python_binding/api/selection/helper.hpp"
-#include <app/selection/selection.hpp>
-#include <app/component/chemistry/_fwd.hpp>
 #include <pybind11/pybind11.h>
 #include <string>
 #include <vector>
 
 namespace VTX::PythonBinding::API::Selection
 {
+#ifdef JEVEUPAS
+
 	using Selection = App::Selection::Selection;
 
 	class SelectionWrapper
@@ -44,6 +44,7 @@ namespace VTX::PythonBinding::API::Selection
 	  private:
 		std::unique_ptr<Selection> _selection = std::make_unique<Selection>();
 	};
+#endif // JEVEUPAS
 
 } // namespace VTX::PythonBinding::API::Selection
 #endif

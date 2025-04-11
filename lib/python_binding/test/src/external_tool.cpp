@@ -1,6 +1,8 @@
 #include "external_tool/action.hpp"
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
+#ifdef JEVEUPAS
+
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -134,3 +136,4 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 		CHECK( false );
 	}
 };
+#endif // JEVEUPAS

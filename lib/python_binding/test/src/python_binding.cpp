@@ -1,4 +1,6 @@
 #include "util/app.hpp"
+#ifdef JEVEUPAS
+
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
@@ -162,3 +164,4 @@ TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
 	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };
 	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", interpretor ); };
 };
+#endif // JEVEUPAS

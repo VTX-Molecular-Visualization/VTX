@@ -1,9 +1,6 @@
 #ifndef __VTX_APP_TEST_UTIL_APP__
 #define __VTX_APP_TEST_UTIL_APP__
 
-#include <app/application/scene.hpp>
-#include <app/fixture.hpp>
-#include <app/vtx_app.hpp>
 #include <io/internal/filesystem.hpp>
 #include <memory>
 #include <python_binding/interpretor.hpp>
@@ -25,7 +22,7 @@ namespace VTX::App::Test::Util
 
 		void resetInterpretor();
 
-		Fixture f;
+		// Fixture f;
 	};
 } // namespace VTX::App::Test::Util
 #endif

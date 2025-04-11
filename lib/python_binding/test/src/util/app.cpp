@@ -1,4 +1,6 @@
 #include "app.hpp"
+#ifdef JEVEUPAS
+
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/filesystem.hpp>
@@ -44,3 +46,4 @@ namespace VTX::App::Test::Util
 	void PythonFixture::loadTestSystem() { loadSystem( MOLECULE_TEST_NAME_EXT ); }
 
 } // namespace VTX::App::Test::Util
+#endif // JEVEUPAS

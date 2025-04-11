@@ -2,11 +2,13 @@
 #include "python_binding/api/selection/selection_interpretor.hpp"
 #include "python_binding/api/selection/selection_wrapper.hpp"
 #include "python_binding/api/selection/system_interpretor.hpp"
-#include <app/selection/selection.hpp>
+#ifdef JEVEUPAS
+
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/chemistry/system.hpp>
+#include <app/selection/selection.hpp>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
 #include <string>
@@ -35,9 +37,7 @@ namespace VTX::PythonBinding::Binding::Binders
 		p_apiModule.def( "intersect", &API::Selection::SelectionWrapper::intersect );
 		p_apiModule.def( "exclusive", &API::Selection::SelectionWrapper::exclusive );
 
-		pybind11::class_<App::Selection::Selection>(
-			p_apiModule, "_VTXSelection", pybind11::module_local()
-		);
+		pybind11::class_<App::Selection::Selection>( p_apiModule, "_VTXSelection", pybind11::module_local() );
 
 		pybind11::class_<API::Selection::SelectionWrapper>( p_apiModule, "Selection", pybind11::module_local() )
 			.def( "__str__", &API::Selection::SelectionWrapper::toString )
@@ -50,3 +50,4 @@ namespace VTX::PythonBinding::Binding::Binders
 			.def( "getAtoms", &API::Selection::SelectionWrapper::getAtoms );
 	}
 } // namespace VTX::PythonBinding::Binding::Binders
+#endif // JEVEUPAS

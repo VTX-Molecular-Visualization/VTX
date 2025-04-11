@@ -1,8 +1,10 @@
 #include "selection.hpp"
+#ifdef JEVEUPAS
+
 #include <app/application/scene.hpp>
-#include <app/selection/selection_manager.hpp>
 #include <app/core/ecs/base_entity.hpp>
 #include <app/core/ecs/registry.hpp>
+#include <app/selection/selection_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <python_binding/interpretor.hpp>
 #include <sstream>
@@ -67,4 +69,6 @@ namespace VTX::App::Test::Util
 		return std::move( res );
 	}
 
-} // namespace VTX::PythonFixture::Test::Util
+} // namespace VTX::App::Test::Util
+
+#endif // JEVEUPAS

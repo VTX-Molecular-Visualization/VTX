@@ -1,4 +1,6 @@
 #include "util/app.hpp"
+#ifdef JEVEUPAS
+
 #include <app/action/scene.hpp>
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
@@ -62,3 +64,4 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Tests", "[python][integration][api]" )
 		CHECK( false );
 	}
 };
+#endif // JEVEUPAS

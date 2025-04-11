@@ -3,14 +3,14 @@
 #include "python_binding/binder.hpp"
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/wrapper/arg.hpp"
-#include <app/action/application.hpp>
-#include <app/action/scene.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::PythonBinding::Binding
 {
 	void VTXAppBinder::bind( PyTXModule & p_vtxmodule )
 	{
+#ifdef JEVEUPAS
+
 		Wrapper::Module commands = p_vtxmodule.commands();
 		VTX::VTX_INFO( "Applying binding on module." );
 		commands.bindAction<App::Action::Application::Open, const std::string &>(
@@ -33,6 +33,7 @@ namespace VTX::PythonBinding::Binding
 		commands.bindAction<PythonBinding::Action::RunScript, const std::string &>(
 			"runScript", "Run a Python script at given path.", Wrapper::Arg( "path" )
 		);
+#endif // JEVEUPAS
 	}
 
 	void VTXAppBinder::importHeaders()

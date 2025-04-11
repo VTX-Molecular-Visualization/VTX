@@ -1,7 +1,6 @@
 #ifndef __VTX_PYTHON_API_SELECTION_HELPER__
 #define __VTX_PYTHON_API_SELECTION_HELPER__
 
-#include <app/selection/selection.hpp>
 #include <functional>
 #include <optional>
 #include <pybind11/pybind11.h>
@@ -13,7 +12,10 @@
 
 namespace VTX::PythonBinding::API::Selection
 {
+#ifdef JEVEUPAS
+
 	using SelectionObj = App::Selection::Selection;
+#endif // JEVEUPAS
 
 	// Function that manage a param that can be a single T1 or a list of T1 and convert it into a vector of str
 	template<typename T1, typename T2>
