@@ -18,6 +18,12 @@ namespace VTX::PythonBinding::API
 	  public:
 		Collection() = default;
 
+	  private:
+		struct _incrementer
+		{
+			virtual T at( const size_t & p_idx ) = 0;
+		};
+
 	  public:
 		struct Iterator
 		{
@@ -26,10 +32,53 @@ namespace VTX::PythonBinding::API
 			using value_type		= T;
 			using pointer			= value_type *; // or also value_type*
 			using reference			= value_type &; // or also value_type&
+
+			reference operator*() { return _obj; }
+			pointer	  operator->() { return &_obj; }
+
+			// Prefix increment
+			Iterator & operator++()
+			{
+				_idx++;
+				_obj = _incr->at( _idx );
+				return *this;
+			}
+
+			// Postfix increment
+			Iterator operator++( int )
+			{
+				Iterator tmp = *this;
+				++( *this );
+				return tmp;
+			}
+
+			friend bool operator==( const Iterator & a, const Iterator & b ) { return a._idx == b._idx; };
+			friend bool operator!=( const Iterator & a, const Iterator & b ) { return a._idx != b._idx; };
+
+			Iterator() = default;
+			Iterator( T p_obj, size_t p_idx, _incrementer & p_incr ) :
+				_obj( std::move( p_obj ) ), _idx( std::move( p_idx ) ), _incr( &p_incr )
+			{
+			}
+
+		  private:
+			T			   _obj;
+			size_t		   _idx	 = 0;
+			_incrementer * _incr = nullptr;
 		};
 
-		inline Iterator begin() {}
-		inline Iterator end() {}
+		inline Iterator begin()
+		{
+			if ( _ptr )
+				_ptr->begin();
+			return {};
+		}
+		inline Iterator end()
+		{
+			if ( _ptr )
+				_ptr->end();
+			return {};
+		}
 
 		T operator[]( const size_t & p_ ) noexcept
 		{
@@ -44,16 +93,21 @@ namespace VTX::PythonBinding::API
 			~_interface() = default;
 
 			virtual T at( const size_t & ) = 0;
+
+			virtual Iterator begin() = 0;
+			virtual Iterator end()	 = 0;
 		};
 
 		template<class TT>
-		class _wrapper final : public _interface
+		class _wrapper final : public _interface, private _incrementer
 		{
 			TT & _obj;
 
 		  public:
 			_wrapper( TT & p_ ) : _obj( p_ ) {}
-			virtual T at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
+			virtual T		 at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
+			virtual Iterator begin() override { return Iterator( { _obj[ 0 ] }, 0, *this ); }
+			virtual Iterator end() override { return Iterator( {}, _obj.size(), *this ); }
 		};
 		std::shared_ptr<_interface> _ptr = nullptr;
 

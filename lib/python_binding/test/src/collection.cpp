@@ -38,4 +38,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 	CHECK( collec[ 0 ].geti() == 1 );
 	CHECK( collec[ 1 ].geti() == 2 );
 	CHECK( collec[ 2 ].geti() == 3 );
+
+	{
+		int expected_i = 1;
+		for ( auto & it : collec )
+		{
+			CHECK( it.geti() == expected_i );
+			expected_i++;
+		}
+	}
 }
