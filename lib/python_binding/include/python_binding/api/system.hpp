@@ -1,5 +1,6 @@
 #ifndef __VTX_PYTHON_API_SYSTEM__
 
+#include "python_binding/api/collection.hpp"
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
@@ -22,45 +23,6 @@ namespace VTX::PythonBinding::API
 			if ( _ptr )
 				_ptr->initChains( p_chainCount );
 		}
-		/*
-		inline Chain getChain( const size_t p_index )
-		{
-			if ( _ptr )
-				return _ptr->getChain( p_index );
-			return 0;
-		}
-		inline const Chain getChain( const size_t p_index ) const
-		{
-			if ( _ptr )
-				return _ptr->getChain( p_index );
-			return 0;
-		}
-		inline Residue getResidue( const size_t p_index )
-		{
-			if ( _ptr )
-				return _ptr->getResidue( p_index );
-			return 0;
-		}
-		inline const Residue getResidue( const size_t p_index ) const
-		{
-			if ( _ptr )
-				return _ptr->getResidue( p_index );
-			return 0;
-		}
-		inline Atom getAtom( const atom_index_t p_index )
-		{
-			if ( _ptr )
-				return _ptr->getAtom( p_index );
-			return 0;
-		}
-		inline const Atom getAtom( const atom_index_t p_index ) const
-		{
-			if ( _ptr )
-				return _ptr->getAtom( p_index );
-			return 0;
-		}
-		*/
-
 		inline void initResidues( const size_t p_residueCount )
 		{
 			if ( _ptr )
@@ -152,6 +114,55 @@ namespace VTX::PythonBinding::API
 			return 0;
 		}
 
+		inline Collection<Chain> getChains()
+		{
+			if ( _ptr )
+				return _ptr->getChains();
+			return {};
+		}
+		inline const Collection<Chain> getChains() const
+		{
+			if ( _ptr )
+				return _ptr->getChains();
+			return {};
+		}
+		inline Collection<Residue> getResidues()
+		{
+			if ( _ptr )
+				return _ptr->getResidues();
+			return {};
+		}
+		inline const Collection<Residue> getResidues() const
+		{
+			if ( _ptr )
+				return _ptr->getResidues();
+			return {};
+		}
+		inline Collection<Atom> getAtoms()
+		{
+			if ( _ptr )
+				return _ptr->getAtoms();
+			return {};
+		}
+		inline const Collection<Atom> getAtoms() const
+		{
+			if ( _ptr )
+				return _ptr->getAtoms();
+			return {};
+		}
+		inline Atom getAtom( const atom_index_t p_index )
+		{
+			if ( _ptr )
+				return _ptr->getAtom( p_index );
+			return {};
+		}
+		inline const Atom getAtom( const atom_index_t p_index ) const
+		{
+			if ( _ptr )
+				return _ptr->getAtom( p_index );
+			return {};
+		}
+
 	  private:
 		struct _interface
 		{
@@ -189,18 +200,19 @@ namespace VTX::PythonBinding::API
 			virtual size_t getRealResidueCount() const = 0;
 			virtual size_t getRealAtomCount() const	   = 0;
 
+			virtual Collection<Chain>		  getChains()		  = 0;
+			virtual const Collection<Chain>	  getChains() const	  = 0;
+			virtual Collection<Residue>		  getResidues()		  = 0;
+			virtual const Collection<Residue> getResidues() const = 0;
+			virtual Collection<Atom>		  getAtoms()		  = 0;
+			virtual const Collection<Atom>	  getAtoms() const	  = 0;
+
 			/*
 			// TODO : Implement it
-			std::vector<std::unique_ptr<Chain>> &		getChains() ;
-			const std::vector<std::unique_ptr<Chain>> & getChains() const ;
-			std::vector<std::unique_ptr<Residue>> &		  getResidues() ;
-			const std::vector<std::unique_ptr<Residue>> & getResidues() const ;
-			std::vector<std::unique_ptr<Atom>> &	   getAtoms() ;
-			const std::vector<std::unique_ptr<Atom>> & getAtoms() const ;
-			std::vector<std::unique_ptr<Bond>> &	   getBonds() ;
-			const std::vector<std::unique_ptr<Bond>> & getBonds() const ;
-
 			// Is it necessary ?
+			std::vector<std::unique_ptr<Bond>> &	   getBonds();
+			const std::vector<std::unique_ptr<Bond>> & getBonds() const;
+
 			bool							hasTrajectory();
 			VTX::Core::Struct::Trajectory & getTrajectory();
 			const Atom * getAtomFromUID( Core::UID::uid p_uid ) const;
@@ -268,6 +280,13 @@ namespace VTX::PythonBinding::API
 			virtual size_t getRealChainCount() const override { _obj.getRealChainCount(); }
 			virtual size_t getRealResidueCount() const override { _obj.getRealResidueCount(); }
 			virtual size_t getRealAtomCount() const override { _obj.getRealAtomCount(); }
+
+			Collection<Chain>		  getChains() override { return _obj.getChains(); }
+			const Collection<Chain>	  getChains() const override { return _obj.getChains(); }
+			Collection<Residue>		  getResidues() override return { _obj.getResidues(); }
+			const Collection<Residue> getResidues() const override { return _obj.getResidues(); }
+			Collection<Atom>		  getAtoms() override { return _obj.getAtoms(); }
+			const Collection<Atom>	  getAtoms() const override { return _obj.getAtoms(); }
 		};
 
 		std::shared_ptr<_interface> _ptr = nullptr;
