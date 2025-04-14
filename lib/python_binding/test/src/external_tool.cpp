@@ -1,16 +1,15 @@
 #include "external_tool/action.hpp"
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
-#ifdef JEVEUPAS
 
-#include <app/filesystem.hpp>
-#include <app/fixture.hpp>
+// #include <app/filesystem.hpp>
+// #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
 #include <source_location>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 std::string src_info( const std::source_location location = std::source_location::current() )
@@ -35,7 +34,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 	interpretor.runCommand( "ToolActionExecute()" );
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == true );
 
-	const FilePath scriptPath = App::Filesystem::getInternalDataDir() / "custom_module.py";
+	const FilePath scriptPath
+		= VTX::Util::Filesystem::getExecutableDir()
+		  / "data" // This one is technically a constant duplication, but it is placed at a sub-optimal location
+				   // throughout VTX (i.e. App) and is not accessible. Maybe this shall be moved toward Util instead.
+		  / "custom_module.py";
 	REQUIRE( std::filesystem::exists( scriptPath ) == true );
 	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
@@ -136,4 +139,3 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 		CHECK( false );
 	}
 };
-#endif // JEVEUPAS
