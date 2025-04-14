@@ -77,7 +77,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getName();
-			return {};
+			static const std::string _; // Ugly af but does the job
+			return _;
 		}
 		inline void setName( const std::string & p_name )
 		{
@@ -88,7 +89,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getSymbol();
-			return Core::ChemDB::Atom::SYMBOL::UNKNOWN;
+			static const Core::ChemDB::Atom::SYMBOL _ = Core::ChemDB::Atom::SYMBOL::UNKNOWN;
+			return _;
 		}
 		inline void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol )
 		{
@@ -119,7 +121,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getLocalPosition();
-			return {};
+			static const Vec3f _ { 0.f, 0.f, 0.f };
+			return _;
 		}
 		inline Vec3f getWorldPosition() const
 		{

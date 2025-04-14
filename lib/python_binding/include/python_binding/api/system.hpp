@@ -46,7 +46,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getName();
-			return 0;
+			static const std::string _; // Ugly af but does the job
+			return _;
 		}
 		inline void setName( const std::string & p_name )
 		{
@@ -249,15 +250,18 @@ namespace VTX::PythonBinding::API
 
 			virtual void		initChains( const size_t p_chainCount ) override { _obj.initChains( p_chainCount ); }
 			virtual Chain		getChain( const size_t p_index ) override { return _obj.getChain( p_index ); }
-			virtual const Chain getChain( const size_t p_index ) override { return _obj.getChain( p_index ); }
+			virtual const Chain getChain( const size_t p_index ) const override { return _obj.getChain( p_index ); }
 
 			virtual void initResidues( const size_t p_residueCount ) override { _obj.initResidues( p_residueCount ); }
 			virtual Residue		  getResidue( const size_t p_index ) override { return _obj.getResidue( p_index ); }
-			virtual const Residue getResidue( const size_t p_index ) override { return _obj.getResidue( p_index ); }
+			virtual const Residue getResidue( const size_t p_index ) const override
+			{
+				return _obj.getResidue( p_index );
+			}
 
 			virtual void	   initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
 			virtual Atom	   getAtom( const atom_index_t p_index ) override { return _obj.getAtom( p_index ); }
-			virtual const Atom getAtom( const atom_index_t p_index ) override { return _obj.getAtom( p_index ); }
+			virtual const Atom getAtom( const atom_index_t p_index ) const override { return _obj.getAtom( p_index ); }
 
 			virtual void initBonds( const size_t p_bondCount ) override { _obj.initBonds( p_bondCount ); }
 
@@ -284,7 +288,7 @@ namespace VTX::PythonBinding::API
 
 			Collection<Chain>		  getChains() override { return _obj.getChains(); }
 			const Collection<Chain>	  getChains() const override { return _obj.getChains(); }
-			Collection<Residue>		  getResidues() override return { _obj.getResidues(); }
+			Collection<Residue>		  getResidues() override { return _obj.getResidues(); }
 			const Collection<Residue> getResidues() const override { return _obj.getResidues(); }
 			Collection<Atom>		  getAtoms() override { return _obj.getAtoms(); }
 			const Collection<Atom>	  getAtoms() const override { return _obj.getAtoms(); }
