@@ -21,8 +21,6 @@ namespace VTX::App::Test::Util
 		~PythonFixture();
 
 		void resetInterpretor();
-
-		// Fixture f;
 	};
 } // namespace VTX::App::Test::Util
 #endif

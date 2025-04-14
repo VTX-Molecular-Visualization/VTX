@@ -9,15 +9,10 @@
 #include <string>
 #include <util/types.hpp>
 
-// Skip automatic copy of vectors in pybind.
-// PYBIND11_MAKE_OPAQUE( std::vector<VTX::App::API::Atom *> );
-
 namespace VTX::PythonBinding
 {
 	void apiModule( pybind11::module_ & p_apiModule )
 	{
-		using namespace App;
-
 		p_apiModule.doc() = "VTX API module."; // optional module docstring
 
 		// Check PYBIND11_MAKE_OPAQUE
