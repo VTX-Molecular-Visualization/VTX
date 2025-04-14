@@ -51,6 +51,9 @@ namespace VTX::PythonBinding::API
 				++( *this );
 				return tmp;
 			}
+			size_t operator-(const Iterator& p_other) const noexcept
+			{ return _idx - p_other._idx;
+			}
 
 			friend bool operator==( const Iterator & a, const Iterator & b ) { return a._idx == b._idx; };
 			friend bool operator!=( const Iterator & a, const Iterator & b ) { return a._idx != b._idx; };

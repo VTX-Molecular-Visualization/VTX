@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/api/collection.hpp>
@@ -45,6 +46,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 		{
 			CHECK( it.geti() == expected_i );
 			expected_i++;
+		}
+		size_t it_idx = 0;
+		for ( auto it = collec.begin(); it != collec.end(); it++ )
+		{
+			CHECK( ( std::distance( collec.begin(), it ) == it_idx ) );
+			it_idx++;
 		}
 	}
 }
