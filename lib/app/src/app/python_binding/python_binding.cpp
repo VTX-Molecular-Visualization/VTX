@@ -3,7 +3,6 @@
 #include "app/action/application.hpp"
 #include <python_binding/action.hpp>
 #include <python_binding/binder.hpp>
-#include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/wrapper/arg.hpp>
 #include <util/logger.hpp>
