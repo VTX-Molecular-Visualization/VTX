@@ -1,4 +1,5 @@
 #ifndef __VTX_PYTHON_API_RESIDUE__
+#define __VTX_PYTHON_API_RESIDUE__
 
 #include <util/types.hpp>
 

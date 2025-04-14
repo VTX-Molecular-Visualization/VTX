@@ -1,4 +1,5 @@
 #ifndef __VTX_PYTHON_API_SYSTEM__
+#define __VTX_PYTHON_API_SYSTEM__
 
 #include "python_binding/api/collection.hpp"
 #include <util/types.hpp>

@@ -1,4 +1,5 @@
 #ifndef __VTX_PYTHON_API_ATOM__
+#define __VTX_PYTHON_API_ATOM__
 
 #include <concepts>
 #include <core/chemdb/atom.hpp>

@@ -1,4 +1,5 @@
 #ifndef __VTX_PYTHON_API_CHAIN__
+#define __VTX_PYTHON_API_CHAIN__
 
 #include <util/types.hpp>
 
