@@ -18,10 +18,9 @@ std::string src_info( const std::source_location location = std::source_location
 		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
 }
 
-TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action]" )
 {
 	using namespace VTX;
-
 	App::Test::Util::PythonFixture f;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
@@ -33,6 +32,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 	Test::ExternalTool::Action::ToolAction::reset();
 	interpretor.runCommand( "ToolActionExecute()" );
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == true );
+}
+
+TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding]" )
+{
+	using namespace VTX;
+
+	App::Test::Util::PythonFixture f;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
 	const FilePath scriptPath
 		= VTX::Util::Filesystem::getExecutableDir()
@@ -139,3 +147,68 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[python][binding]" )
 		CHECK( false );
 	}
 };
+
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution ", "[python][binding][script]" )
+{
+	using namespace VTX;
+
+	App::Test::Util::PythonFixture f;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "script_test.py";
+
+
+	try
+	{
+		interpretor.runScript( scriptPath );
+		CHECK( true );
+	}
+	catch ( const CommandException & e )
+	{
+		CHECK( false );
+		VTX_ERROR( "{}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		CHECK( false );
+		VTX_ERROR( "{}", e.what() );
+	}
+
+	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
+
+	try
+	{
+		interpretor.runScript( badScriptPath );
+		CHECK( false );
+	}
+	catch ( const ScriptException & )
+	{
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		REQUIRE( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
+
+	std::stringstream ssCommandRun = std::stringstream();
+	ssCommandRun << "runScript(" << scriptPath << " )";
+
+	try
+	{
+		interpretor.runCommand( ssCommandRun.str() );
+		CHECK( true );
+	}
+	catch ( const ScriptException & e )
+	{
+		CHECK( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
+	catch ( const std::exception & e )
+	{
+		REQUIRE( false );
+		VTX_ERROR( "bad exception catch : {}", e.what() );
+	}
+}
