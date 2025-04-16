@@ -110,6 +110,10 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
+### Tutorial
+
+A step-by-step tutorial is available on [vtx.drugdesign.fr](https://vtx.drugdesign.fr/assets/VTX_basics_tutorial_en.pdf)
+
 ## BUILD FROM SOURCE (Available soon)
 
 ### Prerequisites
