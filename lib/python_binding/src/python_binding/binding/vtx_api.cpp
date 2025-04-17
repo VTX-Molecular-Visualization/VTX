@@ -60,13 +60,6 @@ namespace VTX::PythonBinding
 
 		// Molecule
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )
-			/*
-			.def(
-				"molStruct",
-				&API::System::getSystemStruct,
-				pybind11::return_value_policy::reference_internal
-			)*/
-
 			.def( "getName", &API::System::getName )
 			.def( "setName", &API::System::setName )
 			.def(

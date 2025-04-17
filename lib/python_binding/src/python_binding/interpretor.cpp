@@ -53,6 +53,7 @@ namespace VTX::PythonBinding
 			_binders.clear();
 			_binders.shrink_to_fit();
 		}
+		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
 
 	  private:
 		LogRedirection				 _logger;
@@ -125,5 +126,7 @@ namespace VTX::PythonBinding
 	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
 
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
+
+	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) { _impl->getPythonModule( p_modulePtr ); }
 
 } // namespace VTX::PythonBinding

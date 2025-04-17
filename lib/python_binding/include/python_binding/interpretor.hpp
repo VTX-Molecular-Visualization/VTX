@@ -45,6 +45,8 @@ namespace VTX::PythonBinding
 
 		void print( const std::string & p_line ) const;
 
+		void getPythonModule( pybind11::module_ ** );
+
 	  private:
 		struct Impl;
 		std::unique_ptr<Impl> _impl;

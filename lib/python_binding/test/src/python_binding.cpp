@@ -1,72 +1,183 @@
+#include "external_tool/action.hpp"
+#include "external_tool/binding.hpp"
 #include "util/app.hpp"
-#ifdef JEVEUPAS
 
-#include <app/action/application.hpp>
-#include <app/action/scene.hpp>
-#include <app/application/scene.hpp>
-#include <app/filesystem.hpp>
-#include <app/fixture.hpp>
-#include <app/vtx_app.hpp>
+// #include <app/filesystem.hpp>
+// #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <exception>
-#include <python_binding/binding/vtx_app_binder.hpp>
 #include <python_binding/interpretor.hpp>
-#include <sstream>
-#include <string>
+#include <python_binding/wrapper/object.hpp>
+#include <source_location>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
-#include <util/types.hpp>
 
-void runScript( const std::string & p_scriptName, const VTX::PythonBinding::Interpretor & p_interpretor )
+std::string src_info( const std::source_location location = std::source_location::current() )
+{
+	return std::string( "[" ) + location.file_name() + '(' + std::to_string( location.line() ) + ':'
+		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
+}
+
+TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action]" )
 {
 	using namespace VTX;
+	App::Test::Util::PythonFixture f;
 
-	const FilePath	  scriptPath   = App::Filesystem::getInternalDataDir() / ( p_scriptName + ".py" );
-	std::stringstream ssCommandRun = std::stringstream();
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
-	ssCommandRun << "runScript(" << scriptPath << " )";
-	p_interpretor.runCommand( ssCommandRun.str() );
-};
+	Test::ExternalTool::Action::ToolAction::reset();
+	interpretor.addBinder<VTX::Test::ExternalTool::Binder>();
+	CHECK( Test::ExternalTool::Action::ToolAction::executed() == false );
 
-TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
+	Test::ExternalTool::Action::ToolAction::reset();
+	interpretor.runCommand( "ToolActionExecute()" );
+	CHECK( Test::ExternalTool::Action::ToolAction::executed() == true );
+}
+
+namespace VTX::Test
+{
+	struct MockAtom
+	{
+	};
+} // namespace VTX::Test
+
+TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][api]" )
+{
+	using namespace VTX;
+	App::Test::Util::PythonFixture f;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+
+	pybind11::module_ * vtxModule = nullptr;
+	interpretor.getPythonModule( &vtxModule );
+
+	// vtxModule->def( "TEST_getSampleAtom", []() { return } )
+}
+
+TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 {
 	using namespace VTX;
 
 	App::Test::Util::PythonFixture f;
-	PythonBinding::Interpretor &   interpretor = INTERPRETOR();
 
-	REQUIRE( App::SCENE().getItemCount() == 0 );
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
-	const FilePath systemPath
-		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
+	const FilePath scriptPath
+		= VTX::Util::Filesystem::getExecutableDir()
+		  / "data" // This one is technically a constant duplication, but it is placed at a sub-optimal location
+				   // throughout VTX (i.e. App) and is not accessible. Maybe this shall be moved toward Util instead.
+		  / "custom_module.py";
+	REQUIRE( std::filesystem::exists( scriptPath ) == true );
+	const PythonBinding::Wrapper::Module customModule = interpretor.loadModule( scriptPath );
 
-	App::Action::Application::Open openAction = App::Action::Application::Open( systemPath );
-	openAction.execute();
-
-	std::stringstream ssCommandOpen = std::stringstream();
-	ssCommandOpen << "openFile( path=" << systemPath << " )";
-
-	interpretor.runCommand( ssCommandOpen.str() );
-	REQUIRE( App::SCENE().getItemCount() == 2 );
+	customModule.displayInfo();
 
 	try
 	{
-		std::stringstream ssBadCommandOpen = std::stringstream();
-		ssBadCommandOpen << "openFile( tirelipimpon=" << systemPath << " )";
-		interpretor.runCommand( ssBadCommandOpen.str() );
+		customModule.runFunction<std::string>( "testStr" );
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 		CHECK( false );
 	}
-	catch ( const CommandException & )
+
+	try
+	{
+		customModule.runFunction<std::string>( "testStr", "VTX" );
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
+		CHECK( false );
+	}
+
+	try
+	{
+		customModule.runFunction<int>( "iDontExist", "from VTX" );
+		CHECK( false );
+	}
+	catch ( const PythonWrapperException & )
 	{
 		CHECK( true );
 	}
 	catch ( const std::exception & e )
 	{
-		REQUIRE( false );
-		VTX_ERROR( "bad exception catch : {}", e.what() );
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
+		CHECK( false );
 	}
 
-	const FilePath scriptPath = App::Filesystem::getInternalDataDir() / "script_test.py";
+	try
+	{
+		customModule.runFunction<int, int>( "testStr", 182, std::pair<std::string, float>( "false signature", 4.f ) );
+		CHECK( false );
+	}
+	catch ( const PythonWrapperException & )
+	{
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
+		CHECK( false );
+	}
+
+	try
+	{
+		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
+		CHECK( false );
+	}
+	catch ( const pybind11::cast_error & )
+	{
+		CHECK( true );
+	}
+	catch ( const std::exception & e )
+	{
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
+		CHECK( false );
+	}
+
+	try
+	{
+		PythonBinding::Wrapper::Object pythonObj
+			= customModule.runFunction<PythonBinding::Wrapper::Object>( "generatePythonTestClass" );
+
+		pythonObj.call( "print" );
+
+		int value = pythonObj.call<int>( "get" );
+		CHECK( value == 10 );
+
+		pythonObj.call( "set", 5 );
+		CHECK( pythonObj.call<int>( "get" ) == 5 );
+
+		value = pythonObj.call<int, int>( "add", 7 );
+		CHECK( value == 12 );
+		CHECK( pythonObj.call<int>( "get" ) == 12 );
+
+		CHECK( pythonObj.getMember<int>( "value" ) == 12 );
+
+		pythonObj.setMember( "value", 33 );
+		CHECK( pythonObj.getMember<int>( "value" ) == 33 );
+	}
+	catch ( PythonWrapperException & e )
+	{
+		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
+		CHECK( false );
+	}
+};
+
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution ", "[python][binding][script]" )
+{
+	using namespace VTX;
+
+	App::Test::Util::PythonFixture f;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
 	try
 	{
@@ -84,7 +195,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
 		VTX_ERROR( "{}", e.what() );
 	}
 
-	const FilePath badScriptPath = App::Filesystem::getInternalDataDir() / "bad_script_test.py";
+	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	try
 	{
@@ -119,49 +230,4 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script test", "[python][script][print]" )
 		REQUIRE( false );
 		VTX_ERROR( "bad exception catch : {}", e.what() );
 	}
-
-	return; // TODO : put these bellow back once the serialization is up and running
-
-	const FilePath scenePath = App::Filesystem::getInternalDataDir() / "scene_test.vtx";
-
-	if ( std::filesystem::exists( scenePath ) )
-		std::filesystem::remove( scenePath );
-
-	CHECK( !std::filesystem::exists( scenePath ) );
-	std::stringstream ssCommandSaveScene = std::stringstream();
-	ssCommandSaveScene << "save(" << scenePath << " )";
-	interpretor.runCommand( ssCommandSaveScene.str() );
-	CHECK( std::filesystem::exists( scenePath ) );
-
-	CHECK( App::SCENE().getItemCount() > 0 );
-	interpretor.runCommand( "newScene()" );
-	CHECK( App::SCENE().getItemCount() == 0 );
-
-	std::stringstream ssCommandLoadScene = std::stringstream();
-	ssCommandLoadScene << "openScene(" << scenePath << " )";
-	interpretor.runCommand( ssCommandLoadScene.str() );
-	CHECK( App::SCENE().getItemCount() > 0 );
-
-	interpretor.runCommand( "saveSettings()" );
-	interpretor.runCommand( "resetSettings()" );
-	interpretor.runCommand( "reloadSettings()" );
-};
-
-TEST_CASE( "VTX_PYTHON_BINDING - External tool benchmark", "[.][integration]" )
-{
-	using namespace VTX;
-
-	App::Test::Util::PythonFixture f;
-
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
-
-	const FilePath systemPath
-		= App::Filesystem::getInternalDataDir() / App::Test::Util::PythonFixture::MOLECULE_TEST_NAME_EXT;
-
-	VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
-	openAction.execute();
-
-	BENCHMARK( "atom_name_access_1" ) { runScript( "atom_name_access_1", interpretor ); };
-	BENCHMARK( "atom_name_access_2" ) { runScript( "atom_name_access_2", interpretor ); };
-};
-#endif // JEVEUPAS
+}

@@ -2,6 +2,9 @@
 #define __VTX_PYTHON_API_SYSTEM__
 
 #include "python_binding/api/collection.hpp"
+#include <format>
+#include <memory>
+#include <typeinfo>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
@@ -152,18 +155,8 @@ namespace VTX::PythonBinding::API
 				return _ptr->getAtoms();
 			return {};
 		}
-		inline Atom getAtom( const atom_index_t p_index )
-		{
-			if ( _ptr )
-				return _ptr->getAtom( p_index );
-			return {};
-		}
-		inline const Atom getAtom( const atom_index_t p_index ) const
-		{
-			if ( _ptr )
-				return _ptr->getAtom( p_index );
-			return {};
-		}
+		Atom	   getAtom( const atom_index_t p_index );
+		const Atom getAtom( const atom_index_t p_index ) const;
 
 	  private:
 		struct _interface
@@ -240,7 +233,7 @@ namespace VTX::PythonBinding::API
 			*/
 		};
 
-		template<class T>
+		template<class T, typename AtomType>
 		class _wrapper final : public _interface
 		{
 			T & _obj;
@@ -259,9 +252,12 @@ namespace VTX::PythonBinding::API
 				return _obj.getResidue( p_index );
 			}
 
-			virtual void	   initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
-			virtual Atom	   getAtom( const atom_index_t p_index ) override { return _obj.getAtom( p_index ); }
-			virtual const Atom getAtom( const atom_index_t p_index ) const override { return _obj.getAtom( p_index ); }
+			virtual void	 initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
+			virtual AtomType getAtom( const atom_index_t p_index ) override { return { *_obj.getAtom( p_index ) }; }
+			virtual const AtomType getAtom( const atom_index_t p_index ) const override
+			{
+				return { *_obj.getAtom( p_index ) };
+			}
 
 			virtual void initBonds( const size_t p_bondCount ) override { _obj.initBonds( p_bondCount ); }
 
@@ -297,11 +293,13 @@ namespace VTX::PythonBinding::API
 		std::shared_ptr<_interface> _ptr = nullptr;
 
 	  public:
-	  public:
 		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, System> )
-		System( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
+			requires( not std::same_as<std::remove_cv<T>, System> ) and ( not std::same_as<T, void> )
+		System( T & p_ ) : _ptr( new _wrapper<T, Atom>( p_ ) )
 		{
+			// static_assert( false, "std::format( " {} ", typeid( T ).name() ) " );
+			// static_assert( false, std::format( "{}", typeid( T ).name() ) );
+			//_ptr = ( new _wrapper<T>( p_ ) );
 		}
 	};
 } // namespace VTX::PythonBinding::API
