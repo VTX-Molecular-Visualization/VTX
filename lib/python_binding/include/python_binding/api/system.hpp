@@ -233,7 +233,11 @@ namespace VTX::PythonBinding::API
 			*/
 		};
 
-		template<class T, typename AtomType>
+		template<
+			class T,
+			typename Atom	 = Atom, // This allow the system class to be compiled without knowing the Atom in advance
+			typename Residue = Residue,
+			typename Chain	 = Chain>
 		class _wrapper final : public _interface
 		{
 			T & _obj;
@@ -242,19 +246,22 @@ namespace VTX::PythonBinding::API
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
 			virtual void		initChains( const size_t p_chainCount ) override { _obj.initChains( p_chainCount ); }
-			virtual Chain		getChain( const size_t p_index ) override { return _obj.getChain( p_index ); }
-			virtual const Chain getChain( const size_t p_index ) const override { return _obj.getChain( p_index ); }
-
-			virtual void initResidues( const size_t p_residueCount ) override { _obj.initResidues( p_residueCount ); }
-			virtual Residue		  getResidue( const size_t p_index ) override { return _obj.getResidue( p_index ); }
-			virtual const Residue getResidue( const size_t p_index ) const override
+			virtual Chain		getChain( const size_t p_index ) override { return { *_obj.getChain( p_index ) }; }
+			virtual const Chain getChain( const size_t p_index ) const override
 			{
-				return _obj.getResidue( p_index );
+				return { *_obj.getChain( p_index ) };
 			}
 
-			virtual void	 initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
-			virtual AtomType getAtom( const atom_index_t p_index ) override { return { *_obj.getAtom( p_index ) }; }
-			virtual const AtomType getAtom( const atom_index_t p_index ) const override
+			virtual void initResidues( const size_t p_residueCount ) override { _obj.initResidues( p_residueCount ); }
+			virtual Residue getResidue( const size_t p_index ) override { return { *_obj.getResidue( p_index ) }; }
+			virtual const Residue getResidue( const size_t p_index ) const override
+			{
+				return { *_obj.getResidue( p_index ) };
+			}
+
+			virtual void	   initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
+			virtual Atom	   getAtom( const atom_index_t p_index ) override { return { *_obj.getAtom( p_index ) }; }
+			virtual const Atom getAtom( const atom_index_t p_index ) const override
 			{
 				return { *_obj.getAtom( p_index ) };
 			}
@@ -295,11 +302,8 @@ namespace VTX::PythonBinding::API
 	  public:
 		template<class T>
 			requires( not std::same_as<std::remove_cv<T>, System> ) and ( not std::same_as<T, void> )
-		System( T & p_ ) : _ptr( new _wrapper<T, Atom>( p_ ) )
+		System( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
-			// static_assert( false, "std::format( " {} ", typeid( T ).name() ) " );
-			// static_assert( false, std::format( "{}", typeid( T ).name() ) );
-			//_ptr = ( new _wrapper<T>( p_ ) );
 		}
 	};
 } // namespace VTX::PythonBinding::API

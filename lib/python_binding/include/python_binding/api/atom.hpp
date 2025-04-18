@@ -146,8 +146,8 @@ namespace VTX::PythonBinding::API
 
 			virtual void remove() = 0;
 		};
-		/*
-		template<class T>
+
+		template<class T, typename Residue = Residue, typename Chain = Chain, typename System = System>
 		class _wrapper final : public _interface
 		{
 			T & _obj;
@@ -185,7 +185,6 @@ namespace VTX::PythonBinding::API
 
 			virtual void remove() override { _obj.remove(); }
 		};
-		*/
 
 		std::shared_ptr<_interface> _ptr
 			= nullptr; // We want the atom to be copyable at it will point toward the same entity eventually

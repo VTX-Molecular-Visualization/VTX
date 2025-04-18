@@ -5,6 +5,9 @@
 
 namespace VTX::PythonBinding::API
 {
+	class System;
+	class Chain;
+	class Atom;
 	/**
 	 * @brief Class responsible for defining an facade for Python for a residue.
 	 */
@@ -129,6 +132,11 @@ namespace VTX::PythonBinding::API
 			return 0;
 		}
 
+		const Chain	 getChain() const;
+		Chain		 getChain();
+		const System getSystem() const;
+		System		 getSystem();
+
 	  private:
 		struct _interface
 		{
@@ -161,9 +169,14 @@ namespace VTX::PythonBinding::API
 			virtual void setVisible( const bool p_visible ) = 0;
 			virtual bool isVisible() const					= 0;
 			virtual bool isFullyVisible() const				= 0;
+
+			virtual const Chain	 getChain() const  = 0;
+			virtual Chain		 getChain()		   = 0;
+			virtual const System getSystem() const = 0;
+			virtual System		 getSystem()	   = 0;
 		};
 
-		template<class T>
+		template<class T, typename System = System, typename Chain = Chain>
 		class _wrapper final : public _interface
 		{
 			T & _obj;
@@ -208,6 +221,10 @@ namespace VTX::PythonBinding::API
 			virtual bool isVisible() const override { return _obj.isVisible(); }
 			virtual bool isFullyVisible() const override { return _obj.isFullyVisible(); }
 
+			virtual const Chain	 getChain() const override { return { *_obj.getChain() }; }
+			virtual Chain		 getChain() override { return { *_obj.getChain() }; }
+			virtual const System getSystem() const override { return { *_obj.getSystem() }; }
+			virtual System		 getSystem() override { return { *_obj.getSystem() }; }
 			/*
 			//  TODO
 			AtomIndexRange			getAtomRange() const { return _obj.getAtomRange(); }
@@ -221,12 +238,8 @@ namespace VTX::PythonBinding::API
 			ChemDB::Atom::TYPE getAtomType() const;
 			void			   setAtomType( const ChemDB::Atom::TYPE p_type );
 
-			const Chain * const getConstChainPtr() const;
-			Chain * const		getChainPtr() const;
 			void				setChainPtr( Chain * const p_chainPtr );
 
-			const System * const getConstSystemPtr() const { return _systemPtr; }
-			System * const		 getSystemPtr() const { return _systemPtr; }
 			*/
 		};
 
