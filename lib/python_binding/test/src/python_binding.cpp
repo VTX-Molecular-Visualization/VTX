@@ -1,6 +1,7 @@
 #include "external_tool/action.hpp"
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
+#include <python_binding/api/api.hpp>
 
 // #include <app/filesystem.hpp>
 // #include <app/fixture.hpp>
@@ -36,8 +37,47 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 
 namespace VTX::Test
 {
+	using namespace VTX::PythonBinding::API;
 	struct MockAtom
 	{
+		atom_index_t			   index = 0;
+		Residue					   residue;
+		Chain					   chain;
+		System					   system;
+		std::string				   name;
+		Core::ChemDB::Atom::SYMBOL symbol = Core::ChemDB::Atom::SYMBOL::UNKNOWN;
+		Core::ChemDB::Atom::TYPE   type	  = Core::ChemDB::Atom::TYPE::NORMAL;
+		Vec3f					   position { 0.f, 0.f, 0.f };
+		bool					   visible	 = false;
+		bool					   removed	 = false;
+		float					   vdwRadius = 1.5f;
+
+		atom_index_t  getIndex() const { return index; }
+		void		  setIndex( const atom_index_t p_index ) { index = p_index; }
+		Residue		  getResidue() { return residue; }
+		const Residue getResidue() const { return residue; }
+		Chain		  getChain() { return chain; }
+		const Chain	  getChain() const { return chain; }
+		System		  getSystem() { return system; }
+		const System  getSystem() const { return system; }
+
+		const std::string &				   getName() const { return name; }
+		void							   setName( const std::string & p_name ) { name = p_name; }
+		const Core::ChemDB::Atom::SYMBOL & getSymbol() const { return symbol; }
+		void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) { symbol = p_symbol; }
+
+		Core::ChemDB::Atom::TYPE getType() const { return type; }
+		void					 setType( const Core::ChemDB::Atom::TYPE p_type ) { type = p_type; }
+
+		float getVdwRadius() const { return vdwRadius; }
+
+		const Vec3f & getLocalPosition() const { return position; }
+		Vec3f		  getWorldPosition() const { return position - Vec3f { 1.f, 1.f, 1.f }; }
+
+		bool isVisible() const { return visible; }
+		void setVisible( const bool p_visible ) { visible = p_visible; }
+
+		void remove() { removed = true; }
 	};
 } // namespace VTX::Test
 

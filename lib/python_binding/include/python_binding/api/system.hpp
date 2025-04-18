@@ -62,7 +62,7 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getPdbIdCode();
-			return 0;
+			return {};
 		}
 		inline void setPdbIdCode( const std::string & p_pdbIdCode )
 		{
