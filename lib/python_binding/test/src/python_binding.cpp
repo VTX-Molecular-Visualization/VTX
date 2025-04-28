@@ -44,11 +44,61 @@ namespace VTX::Test
 	struct MockSystem;
 	struct MockChain;
 	struct MockAtom;
+	struct MockChain
+	{
+		size_t		 index = 0;
+		std::string	 name { "el Chainos" };
+		size_t		 indexFirstResidue = 0;
+		size_t		 indexLastResidue  = 0;
+		size_t		 residueCount	   = 0;
+		atom_index_t indexFirstAtom	   = 0;
+		atom_index_t indexLastAtom	   = 0;
+		std::string	 chainId { "el identifios" };
+		bool		 visible	  = true;
+		bool		 fullyVisible = true;
+		bool		 removed	  = false;
+
+		size_t getIndex() const { return index; }
+		void   setIndex( const size_t p_index ) { index = p_index; }
+
+		const std::string & getName() const { return name; }
+		void				setName( const std::string & p_name ) { name = p_name; }
+
+		size_t getIndexFirstResidue() const { return indexFirstResidue; }
+		size_t getIndexLastResidue() const { return indexLastResidue; }
+		void   setIndexFirstResidue( const size_t p_residueIndex ) { indexFirstResidue = p_residueIndex; }
+
+		size_t getResidueCount() const { return residueCount; }
+		void   setResidueCount( const size_t p_residueCount ) { residueCount = p_residueCount; }
+
+		atom_index_t getIndexFirstAtom() const { return indexFirstAtom; }
+		atom_index_t getIndexLastAtom() const { return indexLastAtom; }
+
+		const std::string & getOriginalChainID() const { return chainId; }
+		void				setOriginalChainID( const std::string & p_chainId ) { chainId = p_chainId; }
+
+		bool isVisible() const { return visible; }
+		bool isFullyVisible() const { return fullyVisible; }
+
+		void setVisible( const bool p_visible ) { visible = p_visible }
+
+		void remove() { removed = true; }
+	};
+
 	struct MockResidue
 	{
-		uint64_t	 index			 = 0;
-		atom_index_t index_firstAtom = 0;
-		atom_index_t index_lastAtom	 = 0;
+		uint64_t	 index				  = 0;
+		atom_index_t indexFirstAtom		  = 0;
+		atom_index_t indexLastAtom		  = 0;
+		uint64_t	 atomCount			  = 0;
+		size_t		 indexFirstBond		  = 0;
+		size_t		 bondCount			  = 0;
+		size_t		 indexInOriginalChain = 0;
+		std::string	 name { "el Residos" };
+		bool		 visible	  = true;
+		bool		 fullyVisible = true;
+		MockChain *	 chain		  = nullptr;
+		MockSystem * system		  = nullptr;
 
 		size_t getIndex() const { return index; }
 		void   setIndex( const size_t p_index ) { index = p_index; }
@@ -57,31 +107,30 @@ namespace VTX::Test
 		void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) { index_firstAtom = p_indexFirstAtom; }
 		atom_index_t getIndexLastAtom() const { return index_lastAtom; }
 
-		atom_index_t getAtomCount() const							= 0;
-		void		 setAtomCount( const atom_index_t p_atomCount ) = 0;
+		atom_index_t getAtomCount() const { return atomCount; }
+		void		 setAtomCount( const atom_index_t p_atomCount ) { atomCount = p_atomCount; }
 
-		size_t getIndexFirstBond() const						  = 0;
-		void   setIndexFirstBond( const size_t p_indexFirstBond ) = 0;
+		size_t getIndexFirstBond() const { return index_firstBond; }
+		void   setIndexFirstBond( const size_t p_indexFirstBond ) { index_firstBond = p_indexFirstBond; }
 
-		size_t getBondCount() const						= 0;
-		void   setBondCount( const size_t p_bondCount ) = 0;
+		size_t getBondCount() const { return bondCount; }
+		void   setBondCount( const size_t p_bondCount ) { bondCount = p_bondCount; }
 
-		size_t getIndexInOriginalChain() const = 0;
+		size_t getIndexInOriginalChain() const { return indexInOriginalChain; }
+		void   setIndexInOriginalChain( const size_t p_index ) { indexInOriginalChain = p_index; }
 
-		const std::string_view getShortName() const = 0;
-		const std::string_view getName() const		= 0;
-		const std::string_view getLongName() const	= 0;
+		const std::string_view getShortName() const { return name; }
+		const std::string_view getName() const { return name; }
+		const std::string_view getLongName() const { return name; }
 
-		void setIndexInOriginalChain( const size_t p_index ) = 0;
+		void setVisible( const bool p_visible ) { visible = p_visible; }
+		bool isVisible() const { return visible; }
+		bool isFullyVisible() const { return fullyVisible; }
 
-		void setVisible( const bool p_visible ) = 0;
-		bool isVisible() const					= 0;
-		bool isFullyVisible() const				= 0;
-
-		const Chain	 getChain() const  = 0;
-		Chain		 getChain()		   = 0;
-		const System getSystem() const = 0;
-		System		 getSystem()	   = 0;
+		const Chain	 getChain() const { return { *chain }; }
+		Chain		 getChain() { return { *chain }; }
+		const System getSystem() const { return { *system }; }
+		System		 getSystem() { return { *system }; }
 	};
 
 	struct MockAtom
@@ -98,12 +147,7 @@ namespace VTX::Test
 		bool					   removed	 = false;
 		float					   vdwRadius = 1.5f;
 
-		atom_index_t getIndex() const
-		{
-			//
-			return index;
-			//
-		}
+		atom_index_t		getIndex() const { return index; }
 		void				setIndex( const atom_index_t p_index ) { index = p_index; }
 		MockResidue *		getResiduePtr() { return residue; }
 		const MockResidue * getConstResiduePtr() const { return residue; }
