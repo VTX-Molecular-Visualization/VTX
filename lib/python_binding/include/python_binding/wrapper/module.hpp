@@ -74,6 +74,8 @@ namespace VTX::PythonBinding
 
 			std::vector<std::string> getFunctionList() const;
 
+			inline void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
+
 		  private:
 			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :
 				_pyModule( p_module ), _modulePath( p_modulePath )

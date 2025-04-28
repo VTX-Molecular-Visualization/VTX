@@ -191,7 +191,7 @@ namespace VTX::PythonBinding::API
 	  public:
 		template<class T>
 			requires( not std::same_as<std::remove_cvref<T>, Atom> ) and ( not std::same_as<T, void> )
-		Atom( T & p_ ) // : _ptr( new _wrapper<T>( p_ ) )
+		Atom( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 			static_assert(
 				requires( const T t ) {
@@ -199,7 +199,7 @@ namespace VTX::PythonBinding::API
 				}, "Missing |atom_index_t getIndex() const| class method."
 			);
 			static_assert(
-				requires( const T t, const atom_index_t & idx ) {
+				requires( T t, const atom_index_t idx ) {
 					{ t.setIndex( idx ) };
 				}, "Missing |void setIndex( const atom_index_t p_index )| class method."
 			);

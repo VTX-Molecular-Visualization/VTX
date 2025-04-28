@@ -125,6 +125,8 @@ namespace VTX::PythonBinding
 
 	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
 
+	PyTXModule & Interpretor::getModule() { return _impl->getPyTXModule(); }
+
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
 
 	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) { _impl->getPythonModule( p_modulePtr ); }

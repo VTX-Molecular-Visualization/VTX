@@ -7,6 +7,8 @@
 // #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <memory>
+#include <pybind11/embed.h>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
 #include <source_location>
@@ -38,12 +40,56 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 namespace VTX::Test
 {
 	using namespace VTX::PythonBinding::API;
+	struct MockResidue;
+	struct MockSystem;
+	struct MockChain;
+	struct MockAtom;
+	struct MockResidue
+	{
+		uint64_t	 index			 = 0;
+		atom_index_t index_firstAtom = 0;
+		atom_index_t index_lastAtom	 = 0;
+
+		size_t getIndex() const { return index; }
+		void   setIndex( const size_t p_index ) { index = p_index; }
+
+		atom_index_t getIndexFirstAtom() const { return index_firstAtom; }
+		void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) { index_firstAtom = p_indexFirstAtom; }
+		atom_index_t getIndexLastAtom() const { return index_lastAtom; }
+
+		atom_index_t getAtomCount() const							= 0;
+		void		 setAtomCount( const atom_index_t p_atomCount ) = 0;
+
+		size_t getIndexFirstBond() const						  = 0;
+		void   setIndexFirstBond( const size_t p_indexFirstBond ) = 0;
+
+		size_t getBondCount() const						= 0;
+		void   setBondCount( const size_t p_bondCount ) = 0;
+
+		size_t getIndexInOriginalChain() const = 0;
+
+		const std::string_view getShortName() const = 0;
+		const std::string_view getName() const		= 0;
+		const std::string_view getLongName() const	= 0;
+
+		void setIndexInOriginalChain( const size_t p_index ) = 0;
+
+		void setVisible( const bool p_visible ) = 0;
+		bool isVisible() const					= 0;
+		bool isFullyVisible() const				= 0;
+
+		const Chain	 getChain() const  = 0;
+		Chain		 getChain()		   = 0;
+		const System getSystem() const = 0;
+		System		 getSystem()	   = 0;
+	};
+
 	struct MockAtom
 	{
-		atom_index_t			   index = 0;
-		Residue					   residue;
-		Chain					   chain;
-		System					   system;
+		atom_index_t			   index   = 0;
+		MockResidue *			   residue = nullptr;
+		MockChain *				   chain   = nullptr;
+		MockSystem *			   system  = nullptr;
 		std::string				   name;
 		Core::ChemDB::Atom::SYMBOL symbol = Core::ChemDB::Atom::SYMBOL::UNKNOWN;
 		Core::ChemDB::Atom::TYPE   type	  = Core::ChemDB::Atom::TYPE::NORMAL;
@@ -52,14 +98,19 @@ namespace VTX::Test
 		bool					   removed	 = false;
 		float					   vdwRadius = 1.5f;
 
-		atom_index_t  getIndex() const { return index; }
-		void		  setIndex( const atom_index_t p_index ) { index = p_index; }
-		Residue		  getResidue() { return residue; }
-		const Residue getResidue() const { return residue; }
-		Chain		  getChain() { return chain; }
-		const Chain	  getChain() const { return chain; }
-		System		  getSystem() { return system; }
-		const System  getSystem() const { return system; }
+		atom_index_t getIndex() const
+		{
+			//
+			return index;
+			//
+		}
+		void				setIndex( const atom_index_t p_index ) { index = p_index; }
+		MockResidue *		getResiduePtr() { return residue; }
+		const MockResidue * getConstResiduePtr() const { return residue; }
+		MockChain *			getChainPtr() { return chain; }
+		const MockChain *	getConstChainPtr() const { return chain; }
+		MockSystem *		getSystemPtr() { return system; }
+		const MockSystem *	getConstSystemPtr() const { return system; }
 
 		const std::string &				   getName() const { return name; }
 		void							   setName( const std::string & p_name ) { name = p_name; }
@@ -90,8 +141,29 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][api]" 
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
+	Test::MockAtom mockedAtom {};
 
-	// vtxModule->def( "TEST_getSampleAtom", []() { return } )
+	interpretor.getModule().api().getPythonModule( &vtxModule );
+	vtxModule->def(
+		"TEST_getSampleAtom",
+		[ & ]()
+		{
+			return PythonBinding::API::Atom( mockedAtom );
+			/*
+			pybind11::object rr {
+				pybind11::cast( PythonBinding::API::Atom( mockedAtom ), pybind11::return_value_policy::move )
+			};
+			return rr;
+			*/
+		}
+		//{ return std::make_unique<PythonBinding::API::Atom>( mockedAtom ); }
+		,
+		pybind11::return_value_policy::move
+	);
+	pybind11::exec( "from vtx_python_api.API import *" );
+	pybind11::exec( "print(dir(vtx_python_api.API))" );
+	auto returnedAtom = pybind11::eval( "vtx_python_api.API.TEST_getSampleAtom()" );
+	CHECK( returnedAtom.attr( "getIndex" )().cast<uint64_t>() == mockedAtom.index );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )

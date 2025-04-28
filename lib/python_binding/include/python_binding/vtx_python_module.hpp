@@ -11,7 +11,7 @@ namespace VTX::PythonBinding
 	class PyTXModule final
 	{
 	  public:
-		PyTXModule( Wrapper::Module  p_mainModule );
+		PyTXModule( Wrapper::Module p_mainModule );
 
 		const Wrapper::Module & core() const;
 		Wrapper::Module &		core();
@@ -19,10 +19,14 @@ namespace VTX::PythonBinding
 		const Wrapper::Module & commands() const;
 		Wrapper::Module &		commands();
 
+		const Wrapper::Module & api() const;
+		Wrapper::Module &		api();
+
 	  private:
 		Wrapper::Module _mainModule;
 		Wrapper::Module _coreModule;
 		Wrapper::Module _commandModule;
+		Wrapper::Module _apiModule;
 	};
 }; // namespace VTX::PythonBinding
 #endif
