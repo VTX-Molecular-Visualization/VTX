@@ -155,25 +155,56 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual atom_index_t  getIndex() const override { return _obj.getIndex(); }
-			virtual void		  setIndex( const atom_index_t p_index ) override { _obj.setIndex( p_index ); }
-			virtual Residue		  getResidue() override { return { *_obj.getResiduePtr() }; }
-			virtual const Residue getResidue() const override { return { *_obj.getResiduePtr() }; }
-			virtual Chain		  getChain() override { return { *_obj.getChainPtr() }; }
-			virtual const Chain	  getChain() const override { return { *_obj.getChainPtr() }; }
-			virtual System		  getSystem() override { return { *_obj.getSystemPtr() }; }
-			virtual const System  getSystem() const override { return { *_obj.getSystemPtr() }; }
+			virtual atom_index_t getIndex() const override { return _obj.getIndex(); }
+			virtual void		 setIndex( const atom_index_t p_index ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndex( p_index );
+			}
+			virtual Residue getResidue() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getResiduePtr() };
+				else
+					return {};
+			}
+			virtual const Residue getResidue() const override { return { *_obj.getConstResiduePtr() }; }
+			virtual Chain		  getChain() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getChainPtr() };
+				else
+					return {};
+			}
+			virtual const Chain getChain() const override { return { *_obj.getConstChainPtr() }; }
+			virtual System		getSystem() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getSystemPtr() };
+				else
+					return {};
+			}
+			virtual const System getSystem() const override { return { *_obj.getConstSystemPtr() }; }
 
 			virtual const std::string & getName() const override { return _obj.getName(); }
-			virtual void				setName( const std::string & p_name ) override { _obj.setName( p_name ); }
+			virtual void				setName( const std::string & p_name ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setName( p_name );
+			}
 			virtual const Core::ChemDB::Atom::SYMBOL & getSymbol() const override { return _obj.getSymbol(); }
 			virtual void							   setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) override
 			{
-				_obj.setSymbol( p_symbol );
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setSymbol( p_symbol );
 			}
 
 			virtual Core::ChemDB::Atom::TYPE getType() const override { return _obj.getType(); }
-			virtual void setType( const Core::ChemDB::Atom::TYPE p_type ) override { _obj.setType( p_type ); }
+			virtual void					 setType( const Core::ChemDB::Atom::TYPE p_type ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setType( p_type );
+			}
 
 			virtual float getVdwRadius() const override { return _obj.getVdwRadius(); }
 
@@ -181,9 +212,17 @@ namespace VTX::PythonBinding::API
 			virtual Vec3f		  getWorldPosition() const override { return _obj.getWorldPosition(); }
 
 			virtual bool isVisible() const override { return _obj.isVisible(); }
-			virtual void setVisible( const bool p_visible ) override { _obj.setVisible( p_visible ); }
+			virtual void setVisible( const bool p_visible ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setVisible( p_visible );
+			}
 
-			virtual void remove() override { _obj.remove(); }
+			virtual void remove() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.remove();
+			}
 		};
 
 		std::shared_ptr<_interface> _ptr
@@ -193,17 +232,17 @@ namespace VTX::PythonBinding::API
 			requires( not std::same_as<std::remove_cvref<T>, Atom> ) and ( not std::same_as<T, void> )
 		Atom( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
-			static_assert(
-				requires( const T t ) {
-					{ t.getIndex() } -> std::same_as<atom_index_t>;
-				}, "Missing |atom_index_t getIndex() const| class method."
-			);
-			static_assert(
-				requires( T t, const atom_index_t idx ) {
-					{ t.setIndex( idx ) };
-				}, "Missing |void setIndex( const atom_index_t p_index )| class method."
-			);
-			// TODO : The rest of the static assertion to help maintainance, when we're sure this design works
+			// static_assert(
+			//	requires( const T t ) {
+			//		{ t.getIndex() } -> std::same_as<atom_index_t>;
+			//	}, "Missing |atom_index_t getIndex() const| class method."
+			//);
+			// static_assert(
+			//	requires( T t, const atom_index_t idx ) {
+			//		{ t.setIndex( idx ) };
+			//	}, "Missing |void setIndex( const atom_index_t p_index )| class method."
+			//);
+			//  TODO : The rest of the static assertion to help maintainance, when we're sure this design works
 		}
 	};
 } // namespace VTX::PythonBinding::API

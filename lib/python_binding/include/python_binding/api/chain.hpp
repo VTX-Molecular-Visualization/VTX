@@ -157,31 +157,59 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			const size_t getIndex() const override { _obj.getIndex(); }
-			void		 setIndex( const size_t p_index ) { _obj.setIndex( p_index ); }
+			const size_t getIndex() const override { return _obj.getIndex(); }
+			void		 setIndex( const size_t p_index )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndex( p_index );
+			}
 
-			const std::string & getName() const override { _obj.getName(); }
-			void				setName( const std::string & p_name ) { _obj.setName( p_name ); }
+			const std::string & getName() const override { return _obj.getName(); }
+			void				setName( const std::string & p_name )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setName( p_name );
+			}
 
-			size_t getIndexFirstResidue() const override { _obj.getIndexFirstResidue(); }
-			size_t getIndexLastResidue() const override { _obj.getIndexLastResidue(); }
-			void   setIndexFirstResidue( const size_t p_residueIndex ) { _obj.setIndexFirstResidue( p_residueIndex ); }
+			size_t getIndexFirstResidue() const override { return _obj.getIndexFirstResidue(); }
+			size_t getIndexLastResidue() const override { return _obj.getIndexLastResidue(); }
+			void   setIndexFirstResidue( const size_t p_residueIndex )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndexFirstResidue( p_residueIndex );
+			}
 
-			size_t getResidueCount() const override { _obj.getResidueCount(); }
-			void   setResidueCount( const size_t p_residueCount ) { _obj.setResidueCount( p_residueCount ); }
+			size_t getResidueCount() const override { return _obj.getResidueCount(); }
+			void   setResidueCount( const size_t p_residueCount )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setResidueCount( p_residueCount );
+			}
 
-			atom_index_t getIndexFirstAtom() const override { _obj.getIndexFirstAtom(); }
-			atom_index_t getIndexLastAtom() const override { _obj.getIndexLastAtom(); }
+			atom_index_t getIndexFirstAtom() const override { return _obj.getIndexFirstAtom(); }
+			atom_index_t getIndexLastAtom() const override { return _obj.getIndexLastAtom(); }
 
-			const std::string & getOriginalChainID() const override { _obj.getOriginalChainID(); }
-			void setOriginalChainID( const std::string & p_chainId ) { _obj.setOriginalChainID( p_chainId ); }
+			const std::string & getOriginalChainID() const override { return _obj.getOriginalChainID(); }
+			void				setOriginalChainID( const std::string & p_chainId )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setOriginalChainID( p_chainId );
+			}
 
-			bool isVisible() const override { _obj.isVisible(); }
-			bool isFullyVisible() const override { _obj.isFullyVisible(); }
+			bool isVisible() const override { return _obj.isVisible(); }
+			bool isFullyVisible() const override { return _obj.isFullyVisible(); }
 
-			void setVisible( const bool p_visible ) { _obj.setVisible( p_visible ); }
+			void setVisible( const bool p_visible )
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setVisible( p_visible );
+			}
 
-			void remove() override { _obj.remove(); }
+			void remove() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.remove();
+			}
 
 			/*
 			// TODO

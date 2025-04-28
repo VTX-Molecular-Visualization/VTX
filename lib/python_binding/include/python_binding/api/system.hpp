@@ -245,49 +245,88 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual void		initChains( const size_t p_chainCount ) override { _obj.initChains( p_chainCount ); }
+			virtual void initChains( const size_t p_chainCount ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.initChains( p_chainCount );
+			}
 			virtual Chain		getChain( const size_t p_index ) override { return { *_obj.getChain( p_index ) }; }
 			virtual const Chain getChain( const size_t p_index ) const override
 			{
 				return { *_obj.getChain( p_index ) };
 			}
 
-			virtual void initResidues( const size_t p_residueCount ) override { _obj.initResidues( p_residueCount ); }
+			virtual void initResidues( const size_t p_residueCount ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.initResidues( p_residueCount );
+			}
 			virtual Residue getResidue( const size_t p_index ) override { return { *_obj.getResidue( p_index ) }; }
 			virtual const Residue getResidue( const size_t p_index ) const override
 			{
 				return { *_obj.getResidue( p_index ) };
 			}
 
-			virtual void	   initAtoms( const size_t p_atomCount ) override { _obj.initAtoms( p_atomCount ); }
-			virtual Atom	   getAtom( const atom_index_t p_index ) override { return { *_obj.getAtom( p_index ) }; }
+			virtual void initAtoms( const size_t p_atomCount ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.initAtoms( p_atomCount );
+			}
+			virtual Atom getAtom( const atom_index_t p_index ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getAtom( p_index ) };
+				else
+					return const_cast<const _wrapper<T> *>( this )->getAtom( p_index );
+			}
 			virtual const Atom getAtom( const atom_index_t p_index ) const override
 			{
 				return { *_obj.getAtom( p_index ) };
 			}
 
-			virtual void initBonds( const size_t p_bondCount ) override { _obj.initBonds( p_bondCount ); }
-
-			virtual const std::string & getName() const override { _obj.getName(); }
-			virtual void				setName( const std::string & p_name ) override { _obj.setName( p_name ); }
-
-			virtual const std::string & getPdbIdCode() const override { _obj.getPdbIdCode(); }
-			virtual void setPdbIdCode( const std::string & p_pdbIdCode ) override { _obj.setPdbIdCode( p_pdbIdCode ); }
-
-			virtual bool isVisible() const override { _obj.isVisible(); }
-			virtual bool isFullyVisible() const override { _obj.isFullyVisible(); }
-
-			virtual void setVisible( const bool p_visible ) override { _obj.setVisible( p_visible ); }
-			virtual void setVisible( const atom_index_t & p_atomId, bool p_visible ) override
+			virtual void initBonds( const size_t p_bondCount ) override
 			{
-				_obj.setVisible( p_visible );
+				if constexpr ( not std::is_const<T>::value )
+					_obj.initBonds( p_bondCount );
 			}
 
-			virtual void remove( const atom_index_t & p_atomIndex ) override { _obj.remove( p_atomIndex ); }
+			virtual const std::string & getName() const override { return _obj.getName(); }
+			virtual void				setName( const std::string & p_name ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setName( p_name );
+			}
 
-			virtual size_t getRealChainCount() const override { _obj.getRealChainCount(); }
-			virtual size_t getRealResidueCount() const override { _obj.getRealResidueCount(); }
-			virtual size_t getRealAtomCount() const override { _obj.getRealAtomCount(); }
+			virtual const std::string & getPdbIdCode() const override { return _obj.getPdbIdCode(); }
+			virtual void				setPdbIdCode( const std::string & p_pdbIdCode ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setPdbIdCode( p_pdbIdCode );
+			}
+
+			virtual bool isVisible() const override { return _obj.isVisible(); }
+			virtual bool isFullyVisible() const override { return _obj.isFullyVisible(); }
+
+			virtual void setVisible( const bool p_visible ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setVisible( p_visible );
+			}
+			virtual void setVisible( const atom_index_t & p_atomId, bool p_visible ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setVisible( p_visible );
+			}
+
+			virtual void remove( const atom_index_t & p_atomIndex ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.remove( p_atomIndex );
+			}
+
+			virtual size_t getRealChainCount() const override { return _obj.getRealChainCount(); }
+			virtual size_t getRealResidueCount() const override { return _obj.getRealResidueCount(); }
+			virtual size_t getRealAtomCount() const override { return _obj.getRealAtomCount(); }
 
 			Collection<Chain>		  getChains() override { return _obj.getChains(); }
 			const Collection<Chain>	  getChains() const override { return _obj.getChains(); }

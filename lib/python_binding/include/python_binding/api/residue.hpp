@@ -46,7 +46,7 @@ namespace VTX::PythonBinding::API
 			return 0;
 		}
 
-		inline atom_index_t getAtomCount() const
+		inline uint64_t getAtomCount() const
 		{
 			if ( _ptr )
 				return _ptr->getAtomCount();
@@ -149,8 +149,8 @@ namespace VTX::PythonBinding::API
 			virtual void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) = 0;
 			virtual atom_index_t getIndexLastAtom() const								  = 0;
 
-			virtual atom_index_t getAtomCount() const							= 0;
-			virtual void		 setAtomCount( const atom_index_t p_atomCount ) = 0;
+			virtual uint64_t getAtomCount() const							= 0;
+			virtual void	 setAtomCount( const atom_index_t p_atomCount ) = 0;
 
 			virtual size_t getIndexFirstBond() const						  = 0;
 			virtual void   setIndexFirstBond( const size_t p_indexFirstBond ) = 0;
@@ -185,26 +185,40 @@ namespace VTX::PythonBinding::API
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
 			virtual size_t getIndex() const override { return _obj.getIndex(); }
-			virtual void   setIndex( const size_t p_index ) override { _obj.setIndex( p_index ); }
+			virtual void   setIndex( const size_t p_index ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndex( p_index );
+			}
 
 			virtual atom_index_t getIndexFirstAtom() const override { return _obj.getIndexFirstAtom(); }
 			virtual void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
 			{
-				_obj.setIndexFirstAtom( p_indexFirstAtom );
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndexFirstAtom( p_indexFirstAtom );
 			}
 			virtual atom_index_t getIndexLastAtom() const override { return _obj.getIndexLastAtom(); }
 
-			virtual atom_index_t getAtomCount() const override { return _obj.getAtomCount(); }
-			virtual void setAtomCount( const atom_index_t p_atomCount ) override { _obj.setAtomCount( p_atomCount ); }
+			virtual uint64_t getAtomCount() const override { return _obj.getAtomCount(); }
+			virtual void	 setAtomCount( const atom_index_t p_atomCount ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setAtomCount( p_atomCount );
+			}
 
 			virtual size_t getIndexFirstBond() const override { return _obj.getIndexFirstBond(); }
 			virtual void   setIndexFirstBond( const size_t p_indexFirstBond ) override
 			{
-				_obj.setIndexFirstBond( p_indexFirstBond );
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndexFirstBond( p_indexFirstBond );
 			}
 
 			virtual size_t getBondCount() const override { return _obj.getBondCount(); }
-			virtual void   setBondCount( const size_t p_bondCount ) override { _obj.setBondCount( p_bondCount ); }
+			virtual void   setBondCount( const size_t p_bondCount ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setBondCount( p_bondCount );
+			}
 
 			virtual size_t getIndexInOriginalChain() const override { return _obj.getIndexInOriginalChain(); }
 
@@ -214,17 +228,34 @@ namespace VTX::PythonBinding::API
 
 			virtual void setIndexInOriginalChain( const size_t p_index ) override
 			{
-				_obj.setIndexInOriginalChain( p_index );
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setIndexInOriginalChain( p_index );
 			}
 
-			virtual void setVisible( const bool p_visible ) override { _obj.setVisible( p_visible ); }
+			virtual void setVisible( const bool p_visible ) override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					_obj.setVisible( p_visible );
+			}
 			virtual bool isVisible() const override { return _obj.isVisible(); }
 			virtual bool isFullyVisible() const override { return _obj.isFullyVisible(); }
 
-			virtual const Chain	 getChain() const override { return { *_obj.getChain() }; }
-			virtual Chain		 getChain() override { return { *_obj.getChain() }; }
-			virtual const System getSystem() const override { return { *_obj.getSystem() }; }
-			virtual System		 getSystem() override { return { *_obj.getSystem() }; }
+			virtual const Chain getChain() const override { return { *_obj.getConstChainPtr() }; }
+			virtual Chain		getChain() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getChainPtr() };
+				else
+					return {};
+			}
+			virtual const System getSystem() const override { return { *_obj.getConstSystemPtr() }; }
+			virtual System		 getSystem() override
+			{
+				if constexpr ( not std::is_const<T>::value )
+					return { *_obj.getSystemPtr() };
+				else
+					return {};
+			}
 			/*
 			//  TODO
 			AtomIndexRange			getAtomRange() const { return _obj.getAtomRange(); }

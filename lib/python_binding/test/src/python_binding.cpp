@@ -44,6 +44,71 @@ namespace VTX::Test
 	struct MockSystem;
 	struct MockChain;
 	struct MockAtom;
+
+	struct MockSystem
+	{
+		size_t						 initializedChainCount	 = 0;
+		MockChain *					 chain					 = nullptr;
+		size_t						 initializedResidueCount = 0;
+		MockResidue *				 residue				 = nullptr;
+		size_t						 initializedAtomCount	 = 0;
+		MockAtom *					 atom					 = nullptr;
+		size_t						 initializedBondCount	 = 0;
+		std::string					 name { "el Systemos" };
+		std::string					 pdbIdCode { "el pdb Codos" };
+		bool						 visible	  = true;
+		bool						 fullyVisible = true;
+		std::map<atom_index_t, bool> atomVisibility;
+		std::vector<atom_index_t>	 atomRemoved;
+		size_t						 realChainCount	  = 0;
+		size_t						 realResidueCount = 0;
+		size_t						 realAtomCount	  = 0;
+		std::vector<MockChain>		 chains;
+		std::vector<MockResidue>	 residues;
+		std::vector<MockAtom>		 atoms;
+
+		void			  initChains( const size_t p_chainCount ) { initializedChainCount = p_chainCount; }
+		MockChain *		  getChain( const size_t p_index ) { return chain; }
+		const MockChain * getChain( const size_t p_index ) const { return chain; }
+
+		void				initResidues( const size_t p_residueCount ) { initializedResidueCount = p_residueCount; }
+		MockResidue *		getResidue( const size_t p_index ) { return residue; }
+		const MockResidue * getResidue( const size_t p_index ) const { return residue; }
+
+		void			 initAtoms( const size_t p_atomCount ) { initializedAtomCount = p_atomCount; }
+		MockAtom *		 getAtom( const atom_index_t p_index ) { return atom; }
+		const MockAtom * getAtom( const atom_index_t p_index ) const { return atom; }
+
+		void initBonds( const size_t p_bondCount ) { initializedBondCount = p_bondCount; }
+
+		const std::string & getName() const { return name; }
+		void				setName( const std::string & p_name ) { name = p_name; }
+
+		const std::string & getPdbIdCode() const { return pdbIdCode; }
+		void				setPdbIdCode( const std::string & p_pdbIdCode ) { pdbIdCode = p_pdbIdCode; }
+
+		bool isVisible() const { return visible; }
+		bool isFullyVisible() const { return fullyVisible; }
+
+		void setVisible( const bool p_visible ) { visible = p_visible; }
+		void setVisible( const atom_index_t & p_atomId, bool p_visible )
+		{
+			atomVisibility.emplace( p_atomId, p_visible );
+		}
+
+		void remove( const atom_index_t & p_atomIndex ) { atomRemoved.push_back( p_atomIndex ); }
+
+		size_t getRealChainCount() const { return realChainCount; }
+		size_t getRealResidueCount() const { return realResidueCount; }
+		size_t getRealAtomCount() const { return realAtomCount; }
+
+		std::vector<MockChain> &		 getChains() { return chains; }
+		const std::vector<MockChain> &	 getChains() const { return chains; }
+		std::vector<MockResidue> &		 getResidues() { return residues; }
+		const std::vector<MockResidue> & getResidues() const { return residues; }
+		std::vector<MockAtom> &			 getAtoms() { return atoms; }
+		const std::vector<MockAtom> &	 getAtoms() const { return atoms; }
+	};
 	struct MockChain
 	{
 		size_t		 index = 0;
@@ -80,7 +145,7 @@ namespace VTX::Test
 		bool isVisible() const { return visible; }
 		bool isFullyVisible() const { return fullyVisible; }
 
-		void setVisible( const bool p_visible ) { visible = p_visible }
+		void setVisible( const bool p_visible ) { visible = p_visible; }
 
 		void remove() { removed = true; }
 	};
@@ -103,15 +168,15 @@ namespace VTX::Test
 		size_t getIndex() const { return index; }
 		void   setIndex( const size_t p_index ) { index = p_index; }
 
-		atom_index_t getIndexFirstAtom() const { return index_firstAtom; }
-		void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) { index_firstAtom = p_indexFirstAtom; }
-		atom_index_t getIndexLastAtom() const { return index_lastAtom; }
+		atom_index_t getIndexFirstAtom() const { return indexFirstAtom; }
+		void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) { indexFirstAtom = p_indexFirstAtom; }
+		atom_index_t getIndexLastAtom() const { return indexLastAtom; }
 
-		atom_index_t getAtomCount() const { return atomCount; }
-		void		 setAtomCount( const atom_index_t p_atomCount ) { atomCount = p_atomCount; }
+		uint64_t getAtomCount() const { return atomCount; }
+		void	 setAtomCount( const atom_index_t p_atomCount ) { atomCount = p_atomCount; }
 
-		size_t getIndexFirstBond() const { return index_firstBond; }
-		void   setIndexFirstBond( const size_t p_indexFirstBond ) { index_firstBond = p_indexFirstBond; }
+		size_t getIndexFirstBond() const { return indexFirstBond; }
+		void   setIndexFirstBond( const size_t p_indexFirstBond ) { indexFirstBond = p_indexFirstBond; }
 
 		size_t getBondCount() const { return bondCount; }
 		void   setBondCount( const size_t p_bondCount ) { bondCount = p_bondCount; }
@@ -127,10 +192,10 @@ namespace VTX::Test
 		bool isVisible() const { return visible; }
 		bool isFullyVisible() const { return fullyVisible; }
 
-		const Chain	 getChain() const { return { *chain }; }
-		Chain		 getChain() { return { *chain }; }
-		const System getSystem() const { return { *system }; }
-		System		 getSystem() { return { *system }; }
+		const MockChain *  getConstChainPtr() const { return chain; }
+		MockChain *		   getChainPtr() { return chain; }
+		const MockSystem * getConstSystemPtr() const { return system; }
+		MockSystem *	   getSystemPtr() { return system; }
 	};
 
 	struct MockAtom
@@ -190,9 +255,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][api]" 
 	interpretor.getModule().api().getPythonModule( &vtxModule );
 	vtxModule->def(
 		"TEST_getSampleAtom",
-		[ & ]()
+		[ mockedAtom = &mockedAtom ]()
 		{
-			return PythonBinding::API::Atom( mockedAtom );
+			return PythonBinding::API::Atom( *mockedAtom );
 			/*
 			pybind11::object rr {
 				pybind11::cast( PythonBinding::API::Atom( mockedAtom ), pybind11::return_value_policy::move )
