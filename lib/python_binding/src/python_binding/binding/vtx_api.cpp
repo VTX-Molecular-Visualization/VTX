@@ -93,6 +93,10 @@ namespace VTX::PythonBinding::Binding
 			.def( "getName", &API::Atom::getName )
 			.def( "setName", &API::Atom::setName )
 			.def( "getIndex", &API::Atom::getIndex )
-			.def( "getSymbol", &API::Atom::getSymbol );
+			.def( "setIndex", &API::Atom::setIndex )
+			.def( "getSymbol", &API::Atom::getSymbol )
+			.def( "setSymbol", &API::Atom::setSymbol )
+
+			;
 	}
 } // namespace VTX::PythonBinding::Binding

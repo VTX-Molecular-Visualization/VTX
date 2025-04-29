@@ -150,7 +150,6 @@ namespace VTX::Test
 
 		void remove() { removed = true; }
 	};
-
 	struct MockResidue
 	{
 		uint64_t	 index				  = 0;
@@ -198,7 +197,6 @@ namespace VTX::Test
 		const MockSystem * getConstSystemPtr() const { return system; }
 		MockSystem *	   getSystemPtr() { return system; }
 	};
-
 	struct MockAtom
 	{
 		atom_index_t			   index   = 0;
@@ -242,7 +240,7 @@ namespace VTX::Test
 	};
 } // namespace VTX::Test
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding", "[python][binding][api][class]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][api][class]" )
 {
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
@@ -254,6 +252,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding", "[python][binding][api][cla
 	PythonBinding::Binding::applyVtxBinding( *vtxModule ); // Allows to return VTX types
 
 	Test::MockAtom mockedAtom {};
+	mockedAtom.symbol	= VTX::Core::ChemDB::Atom::SYMBOL::A_HE;
+	mockedAtom.position = Vec3f( 5.f, 5.f, 5.f );
+	mockedAtom.index	= 18;
+
 	interpretor.getModule().api().getPythonModule( &vtxModule );
 	vtxModule->def(
 		"TEST_getSampleAtom",
@@ -262,13 +264,28 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding", "[python][binding][api][cla
 	);
 	pybind11::exec( "from vtx_python_api.API import *" );
 
+	// index
 	auto returnedAtom = pybind11::eval( "TEST_getSampleAtom()" );
 	CHECK( returnedAtom.attr( "getIndex" )().cast<uint64_t>() == mockedAtom.index );
+	pybind11::exec( "TEST_getSampleAtom().setIndex(22)" );
+	CHECK( mockedAtom.index == 22 );
 
+	// Name
 	pybind11::exec( "TEST_getSampleAtom().setName('perlimpimpin')" );
 	CHECK( mockedAtom.name == "perlimpimpin" );
-
 	CHECK( pybind11::eval( "TEST_getSampleAtom().getName()" ).cast<std::string>() == "perlimpimpin" );
+
+	// Symbol
+	CHECK(
+		pybind11::eval( "TEST_getSampleAtom().getSymbol()" ).cast<VTX::Core::ChemDB::Atom::SYMBOL>()
+		== mockedAtom.symbol
+	);
+	pybind11::exec( "TEST_getSampleAtom().setSymbol(ATOM_SYMBOL.A_V)" );
+	CHECK( mockedAtom.symbol == VTX::Core::ChemDB::Atom::SYMBOL::A_V );
+
+	// positions
+	CHECK( pybind11::eval( "TEST_getSampleAtom().getLocalPosition()" ).cast<Vec3f>() == mockedAtom.getLocalPosition() );
+	CHECK( pybind11::eval( "TEST_getSampleAtom().getWorldPosition()" ).cast<Vec3f>() == mockedAtom.getWorldPosition() );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
