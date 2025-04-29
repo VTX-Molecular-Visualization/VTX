@@ -9,6 +9,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <pybind11/embed.h>
+#include <python_binding/binding/vtx_api.hpp>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
 #include <source_location>
@@ -241,7 +242,7 @@ namespace VTX::Test
 	};
 } // namespace VTX::Test
 
-TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][api]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding", "[python][binding][api][class]" )
 {
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
@@ -250,29 +251,24 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][api]" 
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
-	Test::MockAtom mockedAtom {};
+	PythonBinding::Binding::applyVtxBinding( *vtxModule ); // Allows to return VTX types
 
+	Test::MockAtom mockedAtom {};
 	interpretor.getModule().api().getPythonModule( &vtxModule );
 	vtxModule->def(
 		"TEST_getSampleAtom",
-		[ mockedAtom = &mockedAtom ]()
-		{
-			return PythonBinding::API::Atom( *mockedAtom );
-			/*
-			pybind11::object rr {
-				pybind11::cast( PythonBinding::API::Atom( mockedAtom ), pybind11::return_value_policy::move )
-			};
-			return rr;
-			*/
-		}
-		//{ return std::make_unique<PythonBinding::API::Atom>( mockedAtom ); }
-		,
+		[ mockedAtom = &mockedAtom ]() { return PythonBinding::API::Atom( *mockedAtom ); },
 		pybind11::return_value_policy::move
 	);
 	pybind11::exec( "from vtx_python_api.API import *" );
-	pybind11::exec( "print(dir(vtx_python_api.API))" );
-	auto returnedAtom = pybind11::eval( "vtx_python_api.API.TEST_getSampleAtom()" );
+
+	auto returnedAtom = pybind11::eval( "TEST_getSampleAtom()" );
 	CHECK( returnedAtom.attr( "getIndex" )().cast<uint64_t>() == mockedAtom.index );
+
+	pybind11::exec( "TEST_getSampleAtom().setName('perlimpimpin')" );
+	CHECK( mockedAtom.name == "perlimpimpin" );
+
+	CHECK( pybind11::eval( "TEST_getSampleAtom().getName()" ).cast<std::string>() == "perlimpimpin" );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )

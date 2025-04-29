@@ -9,12 +9,10 @@
 #include <string>
 #include <util/types.hpp>
 
-namespace VTX::PythonBinding
+namespace VTX::PythonBinding::Binding
 {
-	void apiModule( pybind11::module_ & p_apiModule )
+	void applyVtxBinding( pybind11::module_ & p_apiModule )
 	{
-		p_apiModule.doc() = "VTX API module."; // optional module docstring
-
 		// Check PYBIND11_MAKE_OPAQUE
 		// Util
 		pybind11::class_<Vec3f>( p_apiModule, "Vec3f", pybind11::module_local() )
@@ -89,7 +87,7 @@ namespace VTX::PythonBinding
 		// Atom
 		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL", pybind11::module_local() );
 
-		pybind11::class_<API::Atom>( p_apiModule, "Atom" /*, pybind11::module_local()*/ )
+		pybind11::class_<API::Atom>( p_apiModule, "Atom", pybind11::module_local() )
 			.def( "getLocalPosition", []( const API::Atom & p_atom ) { return p_atom.getLocalPosition(); } )
 			.def( "getWorldPosition", []( const API::Atom & p_atom ) { return p_atom.getWorldPosition(); } )
 			.def( "getName", &API::Atom::getName )
@@ -97,4 +95,4 @@ namespace VTX::PythonBinding
 			.def( "getIndex", &API::Atom::getIndex )
 			.def( "getSymbol", &API::Atom::getSymbol );
 	}
-} // namespace VTX::PythonBinding
+} // namespace VTX::PythonBinding::Binding
