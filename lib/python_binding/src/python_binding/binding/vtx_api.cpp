@@ -86,6 +86,7 @@ namespace VTX::PythonBinding::Binding
 
 		// Atom
 		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL", pybind11::module_local() );
+		Helper::declareEnum<VTX::Core::ChemDB::Atom::TYPE>( p_apiModule, "ATOM_TYPE", pybind11::module_local() );
 
 		pybind11::class_<API::Atom>( p_apiModule, "Atom", pybind11::module_local() )
 			.def( "getLocalPosition", []( const API::Atom & p_atom ) { return p_atom.getLocalPosition(); } )
@@ -96,6 +97,12 @@ namespace VTX::PythonBinding::Binding
 			.def( "setIndex", &API::Atom::setIndex )
 			.def( "getSymbol", &API::Atom::getSymbol )
 			.def( "setSymbol", &API::Atom::setSymbol )
+			.def( "getType", &API::Atom::getType )
+			.def( "setType", &API::Atom::setType )
+			.def( "getVdwRadius", &API::Atom::getVdwRadius )
+			.def( "isVisible", &API::Atom::isVisible )
+			.def( "setVisible", &API::Atom::setVisible )
+			.def( "remove", &API::Atom::remove )
 
 			;
 	}

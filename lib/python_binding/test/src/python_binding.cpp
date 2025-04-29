@@ -247,22 +247,23 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
-	pybind11::module_ * vtxModule = nullptr;
-	interpretor.getPythonModule( &vtxModule );
-	PythonBinding::Binding::applyVtxBinding( *vtxModule ); // Allows to return VTX types
-
 	Test::MockAtom mockedAtom {};
 	mockedAtom.symbol	= VTX::Core::ChemDB::Atom::SYMBOL::A_HE;
 	mockedAtom.position = Vec3f( 5.f, 5.f, 5.f );
 	mockedAtom.index	= 18;
+	mockedAtom.type		= Core::ChemDB::Atom::TYPE::SOLVENT;
 
-	interpretor.getModule().api().getPythonModule( &vtxModule );
+	pybind11::module_ * vtxModule = nullptr;
+	interpretor.getPythonModule( &vtxModule );
+	// interpretor.getModule().api().getPythonModule( &vtxModule );
+	PythonBinding::Binding::applyVtxBinding( *vtxModule ); // Allows to return VTX types
 	vtxModule->def(
 		"TEST_getSampleAtom",
 		[ mockedAtom = &mockedAtom ]() { return PythonBinding::API::Atom( *mockedAtom ); },
 		pybind11::return_value_policy::move
 	);
-	pybind11::exec( "from vtx_python_api.API import *" );
+	// pybind11::exec( "from vtx_python_api.API import *" );
+	pybind11::exec( "from vtx_python_api import *" );
 
 	// index
 	auto returnedAtom = pybind11::eval( "TEST_getSampleAtom()" );
@@ -283,9 +284,30 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 	pybind11::exec( "TEST_getSampleAtom().setSymbol(ATOM_SYMBOL.A_V)" );
 	CHECK( mockedAtom.symbol == VTX::Core::ChemDB::Atom::SYMBOL::A_V );
 
+	// Type
+	CHECK(
+		pybind11::eval( "TEST_getSampleAtom().getType()" ).cast<VTX::Core::ChemDB::Atom::TYPE>() == mockedAtom.type
+	);
+	pybind11::exec( "TEST_getSampleAtom().setType(ATOM_TYPE.NORMAL)" );
+	CHECK( mockedAtom.type == Core::ChemDB::Atom::TYPE::NORMAL );
+
+	// VdW
+	CHECK( pybind11::eval( "TEST_getSampleAtom().getVdwRadius()" ).cast<float>() == mockedAtom.vdwRadius );
+
 	// positions
 	CHECK( pybind11::eval( "TEST_getSampleAtom().getLocalPosition()" ).cast<Vec3f>() == mockedAtom.getLocalPosition() );
 	CHECK( pybind11::eval( "TEST_getSampleAtom().getWorldPosition()" ).cast<Vec3f>() == mockedAtom.getWorldPosition() );
+
+	// Visibility
+	CHECK( pybind11::eval( "TEST_getSampleAtom().isVisible()" ).cast<bool>() == mockedAtom.isVisible() );
+	mockedAtom.visible = false;
+	pybind11::exec( "TEST_getSampleAtom().setVisible(True)" );
+	CHECK( mockedAtom.visible == true );
+
+	// remove
+	mockedAtom.removed = false;
+	pybind11::exec( "TEST_getSampleAtom().remove()" );
+	CHECK( mockedAtom.removed == true );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
