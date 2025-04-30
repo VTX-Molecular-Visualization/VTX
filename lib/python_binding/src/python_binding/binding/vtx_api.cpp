@@ -56,7 +56,7 @@ namespace VTX::PythonBinding::Binding
 				[]( VTX::Core::Struct::System & p_system, const std::string & p_name ) { p_system.name = p_name; }
 			);
 
-		// Molecule
+		// System
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )
 			.def( "getName", &API::System::getName )
 			.def( "setName", &API::System::setName )
@@ -84,17 +84,47 @@ namespace VTX::PythonBinding::Binding
 			p_apiModule, "RESIDUE_SYMBOL", pybind11::module_local()
 		);
 
+		pybind11::class_<API::Residue>( p_apiModule, "Residue", pybind11::module_local() )
+			.def( "getShortName", &API::Residue::getShortName )
+			.def( "getName", &API::Residue::getName )
+			.def( "getLongName", &API::Residue::getLongName )
+			.def( "getIndex", &API::Residue::getIndex )
+			.def( "setIndex", &API::Residue::setIndex )
+			.def( "getIndexFirstAtom", &API::Residue::getIndexFirstAtom )
+			.def( "setIndexFirstAtom", &API::Residue::setIndexFirstAtom )
+			.def( "getIndexLastAtom", &API::Residue::getIndexLastAtom )
+			.def( "getIndexLastAtom", &API::Residue::getIndexLastAtom )
+			.def( "getAtomCount", &API::Residue::getAtomCount )
+			.def( "setAtomCount", &API::Residue::setAtomCount )
+			.def( "getIndexFirstBond", &API::Residue::getIndexFirstBond )
+			.def( "setIndexFirstBond", &API::Residue::setIndexFirstBond )
+			.def( "getBondCount", &API::Residue::getBondCount )
+			.def( "setBondCount", &API::Residue::setBondCount )
+			.def( "getIndexInOriginalChain", &API::Residue::getIndexInOriginalChain )
+			.def( "setIndexInOriginalChain", &API::Residue::setIndexInOriginalChain )
+			.def( "setVisible", &API::Residue::setVisible )
+			.def( "isVisible", &API::Residue::isVisible )
+			.def( "isFullyVisible", &API::Residue::isFullyVisible )
+			.def(
+				"getChain", []( API::Residue & r ) { return r.getChain(); }, pybind11::return_value_policy::move
+			)
+			.def(
+				"getSystem", []( API::Residue & r ) { return r.getSystem(); }, pybind11::return_value_policy::move
+			)
+
+			;
+
 		// Atom
 		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL", pybind11::module_local() );
 		Helper::declareEnum<VTX::Core::ChemDB::Atom::TYPE>( p_apiModule, "ATOM_TYPE", pybind11::module_local() );
 
 		pybind11::class_<API::Atom>( p_apiModule, "Atom", pybind11::module_local() )
-			.def( "getLocalPosition", []( const API::Atom & p_atom ) { return p_atom.getLocalPosition(); } )
-			.def( "getWorldPosition", []( const API::Atom & p_atom ) { return p_atom.getWorldPosition(); } )
-			.def( "getName", &API::Atom::getName )
-			.def( "setName", &API::Atom::setName )
+			.def( "getLocalPosition", &API::Atom::getLocalPosition )
+			.def( "getWorldPosition", &API::Atom::getWorldPosition )
 			.def( "getIndex", &API::Atom::getIndex )
 			.def( "setIndex", &API::Atom::setIndex )
+			.def( "getName", &API::Atom::getName )
+			.def( "setName", &API::Atom::setName )
 			.def( "getSymbol", &API::Atom::getSymbol )
 			.def( "setSymbol", &API::Atom::setSymbol )
 			.def( "getType", &API::Atom::getType )
@@ -102,7 +132,11 @@ namespace VTX::PythonBinding::Binding
 			.def( "getVdwRadius", &API::Atom::getVdwRadius )
 			.def( "isVisible", &API::Atom::isVisible )
 			.def( "setVisible", &API::Atom::setVisible )
-			.def( "remove", &API::Atom::remove )
+			.def( "remove", &API::Atom::remove );
+
+		pybind11::class_<API::Chain>( p_apiModule, "Chain", pybind11::module_local() )
+			.def( "getIndex", &API::Chain::getIndex )
+			.def( "setIndex", &API::Chain::setIndex )
 
 			;
 	}

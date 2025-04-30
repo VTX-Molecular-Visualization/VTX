@@ -17,7 +17,7 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
-			return 0;
+			return 0xffffffffffffffff;
 		}
 		inline void setIndex( const size_t p_index )
 		{
@@ -29,7 +29,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getName();
-			return 0;
+			static const std::string _;
+			return _;
 		}
 		inline void setName( const std::string & p_name )
 		{
@@ -84,7 +85,8 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getOriginalChainID();
-			return 0;
+			static const std::string _;
+			return _;
 		}
 		inline void setOriginalChainID( const std::string & p_chainId )
 		{

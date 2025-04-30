@@ -7,6 +7,8 @@
 #include <app/vtx_app.hpp>
 #endif // JEVEUPAS
 #include <memory>
+#include <python_binding/binding/vtx_api.hpp>
+#include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/interpretor.hpp>
 #include <string>
 #include <util/filesystem.hpp>
@@ -21,6 +23,20 @@ namespace VTX::App::Test::Util
 		const FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 		std::filesystem::create_directory( path );
 		LOGGER::init( path );
+
+		try
+		{
+			// We intend to load API into the test executable interpretor. This has to be done once per process, so if
+			// multiple UT are running from the same process, the frist will be able to appl the binding, and the
+			// following will throw harmlessly
+			pybind11::module_ * modul = nullptr;
+			INTERPRETOR().getPythonModule( &modul );
+
+			VTX::PythonBinding::Binding::applyVtxBinding( *modul );
+		}
+		catch ( ... )
+		{
+		}
 
 		// SCENE().reset();
 	}

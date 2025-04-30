@@ -10,25 +10,25 @@ namespace VTX::PythonBinding::API
 	const Chain Residue::getChain() const
 	{
 		if ( _ptr )
-			_ptr->getChain();
+			return _ptr->getChain();
 		return Chain();
 	}
 	Chain Residue::getChain()
 	{
 		if ( _ptr )
-			_ptr->getChain();
+			return _ptr->getChain();
 		return Chain();
 	}
 	const System Residue::getSystem() const
 	{
 		if ( _ptr )
-			_ptr->getSystem();
+			return _ptr->getSystem();
 		return System();
 	}
 	System Residue::getSystem()
 	{
 		if ( _ptr )
-			_ptr->getSystem();
+			return _ptr->getSystem();
 		return System();
 	}
 } // namespace VTX::PythonBinding::API
