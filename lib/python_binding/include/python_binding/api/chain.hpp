@@ -72,13 +72,13 @@ namespace VTX::PythonBinding::API
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstAtom();
-			return 0;
+			return 0xffffffff;
 		}
 		inline atom_index_t getIndexLastAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastAtom();
-			return 0;
+			return 0xffffffff;
 		}
 
 		inline const std::string & getOriginalChainID() const

@@ -125,13 +125,8 @@ namespace VTX::Test
 		bool		 fullyVisible = true;
 		bool		 removed	  = false;
 
-		size_t getIndex() const
-		{
-			//
-			return index;
-			//
-		}
-		void setIndex( const size_t p_index ) { index = p_index; }
+		size_t getIndex() const { return index; }
+		void   setIndex( const size_t p_index ) { index = p_index; }
 
 		const std::string & getName() const { return name; }
 		void				setName( const std::string & p_name ) { name = p_name; }
@@ -244,9 +239,53 @@ namespace VTX::Test
 
 		void remove() { removed = true; }
 	};
+
+	struct Tester
+	{
+		const char * factoryName = nullptr;
+		int			 num		 = 42;
+		std::string	 str { "Polom polom" };
+
+		template<typename CLASS, typename NUM>
+			requires std::is_integral<NUM>::value
+		void testMethod_set( const char * p_method_set, CLASS & p_classRef, NUM( CLASS::* p_attribute ) )
+		{
+			pybind11::exec( fmt::format( "{}().{}({})", factoryName, p_method_set, num ) );
+			CHECK( p_classRef.*( p_attribute ) == static_cast<NUM>( num ) );
+		}
+		template<typename CLASS, typename NUM>
+			requires std::is_integral<NUM>::value
+		void testMethod_get( const char * p_method_get, CLASS & p_classRef, NUM ( CLASS::*p_method )() const )
+		{
+			// CHECK(
+			pybind11::eval( fmt::format( "{}().{}()", factoryName, p_method_get ) ).cast<NUM>()
+				== p_classRef.*p_method()
+				//)
+				;
+		}
+		/*
+		template<typename CLASS, typename STRING>
+			requires std::is_convertible<STRING, std::string>::value
+		void testMethod_set( const char * p_method_set, CLASS & p_classRef, STRING( CLASS::* p_attribute ) )
+		{
+			pybind11::exec( fmt::format( "{}().{}('{}')", factoryName, p_method_set, num ) );
+			CHECK( p_classRef.*( p_attribute ) == str );
+		}
+		template<typename CLASS, typename STRING>
+			requires std::is_convertible<STRING, std::string>::value
+		void testMethod_get( const char * p_method_get, CLASS & p_classRef, STRING ( CLASS::*p_method )() const )
+		{
+			CHECK(
+				pybind11::eval( fmt::format( "{}().{}()", factoryName, p_method_get ) ).cast<const std::string>()
+				== p_classRef.*p_method()
+			);
+		}
+		*/
+	};
+
 } // namespace VTX::Test
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][api][class]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][api][class][atom]" )
 {
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
@@ -314,7 +353,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 	pybind11::exec( "TEST_getSampleAtom().remove()" );
 	CHECK( mockedAtom.removed == true );
 }
-TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding][api][class]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding][api][class][residue]" )
 {
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
@@ -409,6 +448,45 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 	// API Objects
 	CHECK( pybind11::eval( "TEST_getSampleResidue().getChain().getIndex()" ).cast<uint64_t>() == mockedChain.index );
 	CHECK( pybind11::eval( "TEST_getSampleResidue().getSystem().getName()" ).cast<std::string>() == mockedSystem.name );
+}
+TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Chain", "[python][binding][api][class][chain]" )
+{
+	using namespace VTX;
+	App::Test::Util::PythonFixture f;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+
+	pybind11::module_ * vtxModule = nullptr;
+	interpretor.getPythonModule( &vtxModule );
+
+	Test::MockChain mockedChain;
+	mockedChain.indexLastResidue = 999872;
+
+	vtxModule->def(
+		"TEST_getSampleChain",
+		[ mockedChain = &mockedChain ]() { return PythonBinding::API::Chain( *mockedChain ); },
+		pybind11::return_value_policy::move
+	);
+	pybind11::exec( fmt::format( "from {} import *", PythonBinding::vtx_module_name() ) );
+
+	Test::Tester tester { "TEST_getSampleChain" };
+
+	// Index
+	tester.testMethod_set( "setIndex", mockedChain, &Test::MockChain::index );
+	tester.testMethod_get( "getIndex", mockedChain, &Test::MockChain::getIndex );
+
+	/*
+	// Name
+	tester.testMethod_get( "getName", mockedChain, &Test::MockChain::getName );
+	tester.testMethod_set( "setName", mockedChain, &Test::MockChain::name );
+
+	// Residue
+	tester.testMethod_set( "setIndexFirstResidue", mockedChain, &Test::MockChain::indexFirstResidue );
+	tester.testMethod_get( "getIndexFirstResidue", mockedChain, &Test::MockChain::getIndexFirstResidue );
+	tester.testMethod_get( "getIndexLastResidue", mockedChain, &Test::MockChain::getIndexLastResidue );
+	tester.testMethod_get( "getResidueCount", mockedChain, &Test::MockChain::getResidueCount );
+	tester.testMethod_set( "setResidueCount", mockedChain, &Test::MockChain::residueCount );
+	*/
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )

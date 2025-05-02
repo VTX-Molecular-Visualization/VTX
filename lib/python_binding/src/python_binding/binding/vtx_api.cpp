@@ -137,6 +137,13 @@ namespace VTX::PythonBinding::Binding
 		pybind11::class_<API::Chain>( p_apiModule, "Chain", pybind11::module_local() )
 			.def( "getIndex", &API::Chain::getIndex )
 			.def( "setIndex", &API::Chain::setIndex )
+			.def( "getName", &API::Chain::getName )
+			.def( "setName", &API::Chain::setName )
+			.def( "getIndexFirstResidue", &API::Chain::getIndexFirstResidue )
+			.def( "getIndexLastResidue", &API::Chain::getIndexLastResidue )
+			.def( "setIndexFirstResidue", &API::Chain::setIndexFirstResidue )
+			.def( "getResidueCount", &API::Chain::getResidueCount )
+			.def( "setResidueCount", &API::Chain::setResidueCount )
 
 			;
 	}
