@@ -22,7 +22,8 @@ namespace VTX::PythonBinding::API
 	  private:
 		struct _incrementer
 		{
-			virtual T at( const size_t & p_idx ) = 0;
+			virtual T	   at( const size_t & p_idx ) = 0;
+			virtual size_t size()					  = 0;
 		};
 
 	  public:
@@ -41,7 +42,10 @@ namespace VTX::PythonBinding::API
 			Iterator & operator++()
 			{
 				_idx++;
-				_obj = _incr->at( _idx );
+				if ( _idx < _incr->size() )
+					_obj = _incr->at( _idx );
+				else
+					_obj = T();
 				return *this;
 			}
 
@@ -72,14 +76,21 @@ namespace VTX::PythonBinding::API
 		inline Iterator begin()
 		{
 			if ( _ptr )
-				_ptr->begin();
+				return _ptr->begin();
 			return {};
 		}
 		inline Iterator end()
 		{
 			if ( _ptr )
-				_ptr->end();
+				return _ptr->end();
 			return {};
+		}
+
+		inline size_t size()
+		{
+			if ( _ptr )
+				return _ptr->size();
+			return 0xffffffffffffffff;
 		}
 
 		T operator[]( const size_t & p_ ) noexcept
@@ -98,6 +109,7 @@ namespace VTX::PythonBinding::API
 
 			virtual Iterator begin() = 0;
 			virtual Iterator end()	 = 0;
+			virtual size_t	 size()	 = 0;
 		};
 
 		template<class TT>
@@ -110,6 +122,7 @@ namespace VTX::PythonBinding::API
 			virtual T		 at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
 			virtual Iterator begin() override { return Iterator( { _obj[ 0 ] }, 0, *this ); }
 			virtual Iterator end() override { return Iterator( {}, _obj.size(), *this ); }
+			virtual size_t	 size() override { return _obj.size(); }
 		};
 		std::shared_ptr<_interface> _ptr = nullptr;
 

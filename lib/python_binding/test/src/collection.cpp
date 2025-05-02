@@ -40,6 +40,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 	CHECK( collec[ 1 ].geti() == 2 );
 	CHECK( collec[ 2 ].geti() == 3 );
 
+	auto a = collec.end();
 	{
 		int expected_i = 1;
 		for ( auto & it : collec )
@@ -53,5 +54,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 			CHECK( ( std::distance( collec.begin(), it ) == it_idx ) );
 			it_idx++;
 		}
+		CHECK( it_idx == collec.size() );
 	}
 }
