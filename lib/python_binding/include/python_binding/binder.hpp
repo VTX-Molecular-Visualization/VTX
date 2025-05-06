@@ -23,7 +23,7 @@ namespace VTX::PythonBinding
 		Binder() = default;
 
 		/**
-		 * @brief Method to reimplement to bind actions to commands.
+		 * @brief Method to implement to bind actions to commands.
 		 * @param p_pytxModule Module provided by the interpretor to bind actions into.
 		 */
 		inline void bind( PyTXModule & p_ )
@@ -33,8 +33,8 @@ namespace VTX::PythonBinding
 		}
 
 		/**
-		 * @brief Children class can optionally re-implement this method to add module import instructions (e.g. when
-		 * dealing with package dependancies )
+		 * @brief [Optional] Submitted class can optionally re-implement this method to add module import instructions
+		 * (e.g. when dealing with package dependancies )
 		 */
 		inline void importHeaders()
 		{
@@ -70,7 +70,7 @@ namespace VTX::PythonBinding
 	  public:
 		template<typename T>
 			requires( not std::same_as<std::remove_cv<T>, Binder> )
-		Binder( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
+		explicit Binder( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 		}
 	};

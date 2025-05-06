@@ -35,12 +35,11 @@ namespace VTX::PythonBinding
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
 		}
-
-		void addBinder( std::unique_ptr<Binder> p_binder )
+		void add( Binder p_binder )
 		{
-			_binders.emplace_back( std::move( p_binder ) );
-			_binders.back()->bind( *_pyTXModule );
-			_binders.back()->importHeaders();
+			_binders.push_back( std::move( p_binder ) );
+			_binders.back().bind( *_pyTXModule );
+			_binders.back().importHeaders();
 
 			// Put newly added command to the module global namespace
 			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
@@ -63,11 +62,13 @@ namespace VTX::PythonBinding
 		std::unique_ptr<PyTXModule> _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
-		std::vector<std::unique_ptr<Binder>> _binders = std::vector<std::unique_ptr<Binder>>();
+		std::vector<Binder> _binders;
 	};
 
 	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
 	Interpretor::~Interpretor() { _impl.reset(); }
+
+	void Interpretor::add( Binder p_binder ) { _impl.add( std::move( p_binder ) ); }
 
 	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
 	void Interpretor::clearBinders() { _impl->clearBinders(); }
