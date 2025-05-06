@@ -26,7 +26,8 @@ namespace VTX::PythonBinding::Binding
 			;
 	}
 
-	void applyVtxBinding( pybind11::module_ & p_apiModule )
+	void applyVtxCommandBinding( pybind11::module_ & p_commandModule ) {}
+	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{
 		// Check PYBIND11_MAKE_OPAQUE
 		// Util

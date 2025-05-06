@@ -56,7 +56,7 @@ namespace VTX::PythonBinding
 
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
-			virtual void bind( PyTXModule & p_ ) override { p_.bind( p_ ); }
+			virtual void bind( PyTXModule & p_ ) override { _obj.bind( p_ ); }
 			virtual void importHeaders()
 			{
 				if constexpr ( requires( T & o ) {

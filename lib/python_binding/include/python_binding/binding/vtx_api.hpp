@@ -7,5 +7,6 @@ namespace VTX::PythonBinding::Binding
 	 * custom module.
 	 * @param p_apiModule : Module that'll recieve VTX API declarations
 	 */
-	void applyVtxBinding( pybind11::module_ & p_apiModule );
+	void applyVtxApiBinding( pybind11::module_ & p_apiModule );
+	void applyVtxCommandBinding( pybind11::module_ & p_apiModule );
 } // namespace VTX::PythonBinding::Binding

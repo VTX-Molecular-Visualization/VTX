@@ -6,14 +6,6 @@
 #include <string>
 #include <util/logger.hpp>
 
-namespace VTX
-{
-	// void _init( std::shared_ptr<PythonFixture::Core::System::SystemHandler> p_system )
-	//{
-	//  APP::referenceSystemHandler( p_system );
-	//}
-} // namespace VTX
-
 namespace VTX::PythonBinding
 {
 	const char * vtx_module_name() { return "vtx_python_api"; }
