@@ -118,7 +118,8 @@ namespace VTX::PythonBinding::API
 				return _ptr->getRealAtomCount();
 			return 0;
 		}
-
+		Chain					 getChain( const size_t p_index );
+		const Chain				 getChain( const size_t p_index ) const;
 		inline Collection<Chain> getChains()
 		{
 			if ( _ptr )
@@ -143,6 +144,8 @@ namespace VTX::PythonBinding::API
 				return _ptr->getResidues();
 			return {};
 		}
+		Residue					getResidue( const size_t p_index );
+		const Residue			getResidue( const size_t p_index ) const;
 		inline Collection<Atom> getAtoms()
 		{
 			if ( _ptr )

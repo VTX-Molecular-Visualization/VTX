@@ -11,6 +11,21 @@
 
 namespace VTX::PythonBinding::Binding
 {
+	template<typename ITEM>
+	void registerCollection( pybind11::module_ & p_apiModule, const char * p_pythonClassName )
+	{
+		pybind11::class_<API::Collection<ITEM>>( p_apiModule, p_pythonClassName, pybind11::module_local() )
+			.def(
+				"__iter__",
+				[]( API::Collection<API::Atom> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
+				pybind11::keep_alive<0, 1>()
+			)
+			.def( "__getitem__", []( API::Collection<API::Atom> & c, const size_t & idx ) { return c[ idx ]; } )
+			.def( "__len__", []( API::Collection<API::Atom> & c ) { return c.size(); } )
+
+			;
+	}
+
 	void applyVtxBinding( pybind11::module_ & p_apiModule )
 	{
 		// Check PYBIND11_MAKE_OPAQUE
@@ -55,19 +70,17 @@ namespace VTX::PythonBinding::Binding
 				[]( const VTX::Core::Struct::System & p_system ) { return p_system.name; },
 				[]( VTX::Core::Struct::System & p_system, const std::string & p_name ) { p_system.name = p_name; }
 			);
+		// Collections
+		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );
+		registerCollection<API::Residue>( p_apiModule, "CollectionResidue" );
+		registerCollection<API::Chain>( p_apiModule, "CollectionResidue" );
 
 		// System
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )
 			.def( "getName", &API::System::getName )
 			.def( "setName", &API::System::setName )
-			.def(
-				"getAtoms", []( API::System & p_mol ) { return p_mol.getAtoms(); }, pybind11::return_value_policy::move
-			)
-			.def(
-				"getAtoms",
-				[]( const API::System & p_mol ) { return p_mol.getAtoms(); },
-				pybind11::return_value_policy::move
-			)
+			.def( "getChains", []( API::System & p_mol ) { return p_mol.getChains(); } )
+			.def( "getChains", []( const API::System & p_mol ) { return p_mol.getChains(); } )
 			.def(
 				"getAtom",
 				[]( const API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); },
@@ -77,7 +90,18 @@ namespace VTX::PythonBinding::Binding
 				"getAtom",
 				[]( API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); },
 				pybind11::return_value_policy::move
-			);
+			)
+			.def( "initAtoms", &API::System::initAtoms )
+			.def( "initBonds", &API::System::initBonds )
+			.def( "initChains", &API::System::initChains )
+			.def( "initResidues", &API::System::initResidues )
+			.def( "getRealAtomCount", &API::System::getRealAtomCount )
+			.def( "getRealChainCount", &API::System::getRealChainCount )
+			.def( "getRealResidueCount", &API::System::getRealResidueCount )
+			.def( "getResidues", []( const API::System & p_mol ) { return p_mol.getResidues(); } )
+			.def( "getResidues", []( API::System & p_mol ) { return p_mol.getResidues(); } )
+
+			;
 
 		// Residue
 		Helper::declareEnum<VTX::Core::ChemDB::Residue::SYMBOL>(
@@ -144,7 +168,13 @@ namespace VTX::PythonBinding::Binding
 			.def( "setIndexFirstResidue", &API::Chain::setIndexFirstResidue )
 			.def( "getResidueCount", &API::Chain::getResidueCount )
 			.def( "setResidueCount", &API::Chain::setResidueCount )
-
-			;
+			.def( "getIndexFirstAtom", &API::Chain::getIndexFirstAtom )
+			.def( "getIndexLastAtom", &API::Chain::getIndexLastAtom )
+			.def( "getOriginalChainID", &API::Chain::getOriginalChainID )
+			.def( "setOriginalChainID", &API::Chain::setOriginalChainID )
+			.def( "isVisible", &API::Chain::isVisible )
+			.def( "isFullyVisible", &API::Chain::isFullyVisible )
+			.def( "setVisible", &API::Chain::setVisible )
+			.def( "remove", &API::Chain::remove );
 	}
 } // namespace VTX::PythonBinding::Binding
