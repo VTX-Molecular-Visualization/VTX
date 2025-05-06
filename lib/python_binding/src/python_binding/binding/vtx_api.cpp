@@ -12,16 +12,16 @@
 namespace VTX::PythonBinding::Binding
 {
 	template<typename ITEM>
-	void registerCollection( pybind11::module_ & p_apiModule, const char * p_pythonClassName )
+	inline void registerCollection( pybind11::module_ & p_apiModule, const char * p_pythonClassName )
 	{
 		pybind11::class_<API::Collection<ITEM>>( p_apiModule, p_pythonClassName, pybind11::module_local() )
 			.def(
 				"__iter__",
-				[]( API::Collection<API::Atom> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
+				[]( API::Collection<ITEM> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
 				pybind11::keep_alive<0, 1>()
 			)
-			.def( "__getitem__", []( API::Collection<API::Atom> & c, const size_t & idx ) { return c[ idx ]; } )
-			.def( "__len__", []( API::Collection<API::Atom> & c ) { return c.size(); } )
+			.def( "__getitem__", []( API::Collection<ITEM> & c, const size_t & idx ) { return c[ idx ]; } )
+			.def( "__len__", []( API::Collection<ITEM> & c ) { return c.size(); } )
 
 			;
 	}
@@ -73,7 +73,7 @@ namespace VTX::PythonBinding::Binding
 		// Collections
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );
 		registerCollection<API::Residue>( p_apiModule, "CollectionResidue" );
-		registerCollection<API::Chain>( p_apiModule, "CollectionResidue" );
+		registerCollection<API::Chain>( p_apiModule, "CollectionChain" );
 
 		// System
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )
@@ -81,15 +81,19 @@ namespace VTX::PythonBinding::Binding
 			.def( "setName", &API::System::setName )
 			.def( "getChains", []( API::System & p_mol ) { return p_mol.getChains(); } )
 			.def( "getChains", []( const API::System & p_mol ) { return p_mol.getChains(); } )
+			.def( "getAtoms", []( API::System & p_mol ) { return p_mol.getAtoms(); } )
+			.def( "getAtoms", []( const API::System & p_mol ) { return p_mol.getAtoms(); } )
+			.def(
+				"getChain",
+				[]( const API::System & p_mol, const size_t & p_index ) { return p_mol.getChain( p_index ); }
+			)
+			.def( "getChain", []( API::System & p_mol, const size_t & p_index ) { return p_mol.getChain( p_index ); } )
 			.def(
 				"getAtom",
-				[]( const API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); },
-				pybind11::return_value_policy::move
+				[]( const API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); }
 			)
 			.def(
-				"getAtom",
-				[]( API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); },
-				pybind11::return_value_policy::move
+				"getAtom", []( API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); }
 			)
 			.def( "initAtoms", &API::System::initAtoms )
 			.def( "initBonds", &API::System::initBonds )
@@ -100,6 +104,13 @@ namespace VTX::PythonBinding::Binding
 			.def( "getRealResidueCount", &API::System::getRealResidueCount )
 			.def( "getResidues", []( const API::System & p_mol ) { return p_mol.getResidues(); } )
 			.def( "getResidues", []( API::System & p_mol ) { return p_mol.getResidues(); } )
+			.def(
+				"getResidue",
+				[]( const API::System & p_mol, const size_t & p_index ) { return p_mol.getResidue( p_index ); }
+			)
+			.def(
+				"getResidue", []( API::System & p_mol, const size_t & p_index ) { return p_mol.getResidue( p_index ); }
+			)
 
 			;
 

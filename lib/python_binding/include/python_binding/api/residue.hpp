@@ -132,10 +132,10 @@ namespace VTX::PythonBinding::API
 			return 0;
 		}
 
-		const Chain	 getChain() const;
-		Chain		 getChain();
-		const System getSystem() const;
-		System		 getSystem();
+		 const Chain	 getChain() const;
+		 Chain		 getChain();
+		 const System getSystem() const;
+		 System		 getSystem();
 
 	  private:
 		struct _interface
