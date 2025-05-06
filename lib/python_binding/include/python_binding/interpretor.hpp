@@ -23,18 +23,8 @@ namespace VTX::PythonBinding
 		Interpretor();
 		~Interpretor();
 
-		void addBinder( std::unique_ptr<Binder> p_binder );
+		void add( Binder p_binder );
 
-		template<BinderConcept BinderType>
-		void addBinder()
-		{
-			addBinder( std::make_unique<BinderType>() );
-		}
-		template<BinderConcept BinderType, typename... BinderArgs>
-		void addBinder( BinderArgs... args )
-		{
-			addBinder( std::make_unique<BinderType>( args... ) );
-		}
 		void clearBinders();
 
 		void			runCommand( const std::string & p_line ) const;

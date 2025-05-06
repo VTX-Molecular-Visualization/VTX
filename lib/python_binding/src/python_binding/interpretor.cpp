@@ -68,9 +68,8 @@ namespace VTX::PythonBinding
 	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
 	Interpretor::~Interpretor() { _impl.reset(); }
 
-	void Interpretor::add( Binder p_binder ) { _impl.add( std::move( p_binder ) ); }
+	void Interpretor::add( Binder p_binder ) { _impl->add( std::move( p_binder ) ); }
 
-	void Interpretor::addBinder( std::unique_ptr<Binder> p_binder ) { _impl->addBinder( std::move( p_binder ) ); }
 	void Interpretor::clearBinders() { _impl->clearBinders(); }
 
 	void Interpretor::runCommand( const std::string & p_line ) const
