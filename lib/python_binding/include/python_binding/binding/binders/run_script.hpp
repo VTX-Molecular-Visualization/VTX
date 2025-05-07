@@ -12,6 +12,9 @@ namespace VTX::PythonBinding::Binding::Binders
 	  public:
 		explicit RunScript( FilePath );
 		void bind( PythonBinding::PyTXModule & p_vtxModule );
+
+	  private:
+		FilePath _path;
 	};
 
 } // namespace VTX::PythonBinding::Binding::Binders

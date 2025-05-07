@@ -31,7 +31,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
 	Test::ExternalTool::Action::ToolAction::reset();
-	interpretor.addBinder<VTX::Test::ExternalTool::Binder>();
+	interpretor.add( VTX::PythonBinding::Binder( VTX::Test::ExternalTool::Binder() ) );
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == false );
 
 	Test::ExternalTool::Action::ToolAction::reset();
@@ -766,7 +766,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution ", "[python][binding][script]"
 		VTX_ERROR( "bad exception catch : {}", e.what() );
 	}
 
-	pybind11::exec( fmt::format( "from {}.Command import *", VTX::PythonBinding::vtx_module_name() ) );
 	std::stringstream ssCommandRun = std::stringstream();
 	ssCommandRun << "runScript(" << scriptPath << " )";
 
