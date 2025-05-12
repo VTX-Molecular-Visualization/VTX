@@ -32,7 +32,7 @@ namespace VTX::App::Test::Util
 			pybind11::module_ * modul = nullptr;
 			INTERPRETOR().getPythonModule( &modul );
 
-			VTX::PythonBinding::Binding::applyVtxBinding( *modul );
+			VTX::PythonBinding::Binding::applyVtxApiBinding( *modul );
 		}
 		catch ( ... )
 		{

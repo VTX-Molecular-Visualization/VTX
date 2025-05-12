@@ -2,6 +2,7 @@
 #include "python_binding/api/api.hpp"
 #include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/binding/helper.hpp"
+#include "python_binding/interpretor.hpp"
 #include <core/struct/system.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
@@ -26,12 +27,16 @@ namespace VTX::PythonBinding::Binding
 			;
 	}
 
-	void applyVtxCommandBinding( pybind11::module_ & p_commandModule ) {}
+	void applyVtxLocalCommandBinding( pybind11::module_ & p_commandModule )
+	{
+		p_commandModule.def( "runScript", []( const std::string & r ) { INTERPRETOR().runScript( r ); } );
+	}
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{
 		// Check PYBIND11_MAKE_OPAQUE
 		// Util
 		pybind11::class_<Vec3f>( p_apiModule, "Vec3f", pybind11::module_local() )
+			.def( pybind11::init<>() )
 			.def_readwrite( "x", &Vec3f::x )
 			.def_readwrite( "y", &Vec3f::y )
 			.def_readwrite( "z", &Vec3f::z );
