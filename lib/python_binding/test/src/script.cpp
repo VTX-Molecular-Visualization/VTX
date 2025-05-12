@@ -1,8 +1,6 @@
 #include "external_tool/action.hpp"
 #include "external_tool/binding.hpp"
 #include "util/app.hpp"
-#include <python_binding/api/api.hpp>
-
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
@@ -36,7 +34,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 	interpretor.runCommand( "ToolActionExecute()" );
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == true );
 }
-
 
 TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 {

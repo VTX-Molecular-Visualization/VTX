@@ -1,4 +1,3 @@
-
 #include "util/app.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -75,6 +74,8 @@ namespace VTX::Test
 		bool		 fullyVisible = true;
 		MockChain *	 chain		  = nullptr;
 		MockSystem * system		  = nullptr;
+		size_t		 test_getChainIndex() const { return chain->index; }
+		std::string	 test_getSystemName() const;
 
 		size_t getIndex() const { return index; }
 		void   setIndex( const size_t p_index ) { index = p_index; }
@@ -220,6 +221,13 @@ namespace VTX::Test
 		std::vector<MockAtom> &			 getAtoms() { return atoms; }
 		const std::vector<MockAtom> &	 getAtoms() const { return atoms; }
 	};
+
+	std::string MockResidue::test_getSystemName() const { return system->getName(); }
+
+	template<typename STRING>
+	concept StringLike = requires( STRING s ) {
+		{ std::string( s ) };
+	};
 	struct Tester
 	{
 		const char * factoryName = nullptr;
@@ -234,7 +242,6 @@ namespace VTX::Test
 			return ( p_classRef.*( p_attribute ) == static_cast<NUM>( num ) );
 		}
 		template<typename CLASS, typename NUM>
-			requires std::is_integral<NUM>::value
 		bool testMethod_get( const char * p_method_get, CLASS & p_classRef, NUM ( CLASS::*p_method )() const )
 		{
 			return (
@@ -266,13 +273,12 @@ namespace VTX::Test
 			pybind11::exec( fmt::format( "{}().{}('{}')", factoryName, p_method_set, str ) );
 			return ( p_classRef.*( p_attribute ) == str );
 		}
-		template<typename CLASS, typename STRING>
-			requires std::is_convertible<STRING, std::string>::value
+		template<typename CLASS, StringLike STRING>
 		bool testMethod_get( const char * p_method_get, CLASS & p_classRef, STRING ( CLASS::*p_method )() const )
 		{
 			return (
 				pybind11::eval( fmt::format( "{}().{}()", factoryName, p_method_get ) ).cast<const std::string>()
-				== ( p_classRef.*p_method )()
+				== std::string( ( p_classRef.*p_method )() )
 			);
 		}
 	};
@@ -294,25 +300,23 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
-	// pybind11::module_ test_module = vtxModule->def_submodule( "TEST_Atom" );
-	// PythonBinding::Binding::applyVtxBinding( test_module ); // Allows to return VTX types
+	const char * factoryName = "TEST_getSampleAtom";
 	vtxModule->def(
-		"TEST_getSampleAtom",
+		factoryName,
 		[ mockedAtom = &mockedAtom ]() { return PythonBinding::API::Atom( *mockedAtom ); },
 		pybind11::return_value_policy::move
 	);
 	pybind11::exec( fmt::format( "from {} import *", PythonBinding::vtx_module_name() ) );
 
+	Test::Tester tester { factoryName };
+
 	// index
-	auto returnedAtom = pybind11::eval( "TEST_getSampleAtom()" );
-	CHECK( returnedAtom.attr( "getIndex" )().cast<uint64_t>() == mockedAtom.index );
-	pybind11::exec( "TEST_getSampleAtom().setIndex(22)" );
-	CHECK( mockedAtom.index == 22 );
+	tester.testMethod_get( "getIndex", mockedAtom, &Test::MockAtom::getIndex );
+	tester.testMethod_set( "setIndex", mockedAtom, &Test::MockAtom::index );
 
 	// Name
-	pybind11::exec( "TEST_getSampleAtom().setName('perlimpimpin')" );
-	CHECK( mockedAtom.name == "perlimpimpin" );
-	CHECK( pybind11::eval( "TEST_getSampleAtom().getName()" ).cast<std::string>() == "perlimpimpin" );
+	tester.testMethod_get( "getName", mockedAtom, &Test::MockAtom::getName );
+	tester.testMethod_set( "setName", mockedAtom, &Test::MockAtom::name );
 
 	// Symbol
 	CHECK(
@@ -330,17 +334,16 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 	CHECK( mockedAtom.type == Core::ChemDB::Atom::TYPE::NORMAL );
 
 	// VdW
-	CHECK( pybind11::eval( "TEST_getSampleAtom().getVdwRadius()" ).cast<float>() == mockedAtom.vdwRadius );
+	tester.testMethod_get( "getVdwRadius", mockedAtom, &Test::MockAtom::getVdwRadius );
 
 	// positions
-	CHECK( pybind11::eval( "TEST_getSampleAtom().getLocalPosition()" ).cast<Vec3f>() == mockedAtom.getLocalPosition() );
-	CHECK( pybind11::eval( "TEST_getSampleAtom().getWorldPosition()" ).cast<Vec3f>() == mockedAtom.getWorldPosition() );
+	tester.testMethod_get( "getLocalPosition", mockedAtom, &Test::MockAtom::getLocalPosition );
+	tester.testMethod_get( "getWorldPosition", mockedAtom, &Test::MockAtom::getWorldPosition );
 
 	// Visibility
-	CHECK( pybind11::eval( "TEST_getSampleAtom().isVisible()" ).cast<bool>() == mockedAtom.isVisible() );
+	tester.testMethod_get( "isVisible", mockedAtom, &Test::MockAtom::isVisible );
 	mockedAtom.visible = false;
-	pybind11::exec( "TEST_getSampleAtom().setVisible(True)" );
-	CHECK( mockedAtom.visible == true );
+	tester.testMethod_set( "setVisible", mockedAtom, &Test::MockAtom::visible );
 
 	// remove
 	mockedAtom.removed = false;
@@ -356,9 +359,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
-	// pybind11::module_ test_module = vtxModule->def_submodule( "TEST_Residue" );
-	//  auto test_module = pybind11::module_::create_extension_module( "TEST_Residue", "", );
-	//  PythonBinding::Binding::applyVtxBinding( test_module ); // Allows to return VTX types
 
 	Test::MockResidue mockedResidue;
 	Test::MockChain	  mockedChain;
@@ -369,79 +369,54 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 	mockedResidue.chain	 = &mockedChain;
 	mockedResidue.system = &mockedSystem;
 
+	const char * factoryName = "TEST_getSampleResidue";
 	vtxModule->def(
-		"TEST_getSampleResidue",
+		factoryName,
 		[ mockedResidue = &mockedResidue ]() { return PythonBinding::API::Residue( *mockedResidue ); },
 		pybind11::return_value_policy::move
 	);
 	pybind11::exec( fmt::format( "from {} import *", PythonBinding::vtx_module_name() ) );
 
+	Test::Tester tester { factoryName };
+
 	// Name
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getShortName()" ).cast<std::string>() == mockedResidue.getShortName()
-	);
-	CHECK( pybind11::eval( "TEST_getSampleResidue().getName()" ).cast<std::string>() == mockedResidue.getName() );
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getLongName()" ).cast<std::string>() == mockedResidue.getLongName()
-	);
+	CHECK( tester.testMethod_get( "getShortName", mockedResidue, &Test::MockResidue::getShortName ) );
+	CHECK( tester.testMethod_get( "getName", mockedResidue, &Test::MockResidue::getName ) );
+	CHECK( tester.testMethod_get( "getLongName", mockedResidue, &Test::MockResidue::getLongName ) );
 
 	// Index
-	CHECK( pybind11::eval( "TEST_getSampleResidue().getIndex()" ).cast<size_t>() == mockedResidue.getIndex() );
-	pybind11::exec( "TEST_getSampleResidue().setIndex(88)" );
-	CHECK( mockedResidue.index == 88 );
-	pybind11::exec( "TEST_getSampleResidue().setIndexFirstAtom(456)" );
-	CHECK( mockedResidue.indexFirstAtom == 456 );
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getIndexFirstAtom()" ).cast<size_t>()
-		== mockedResidue.getIndexFirstAtom()
-	);
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getIndexLastAtom()" ).cast<size_t>()
-		== mockedResidue.getIndexLastAtom()
-	);
+	CHECK( tester.testMethod_get( "getIndex", mockedResidue, &Test::MockResidue::getIndex ) );
+	CHECK( tester.testMethod_set( "setIndex", mockedResidue, &Test::MockResidue::index ) );
+	CHECK( tester.testMethod_set( "setIndexFirstAtom", mockedResidue, &Test::MockResidue::indexFirstAtom ) );
+	CHECK( tester.testMethod_get( "getIndexLastAtom", mockedResidue, &Test::MockResidue::getIndexLastAtom ) );
 
-	pybind11::exec( "TEST_getSampleResidue().setIndexFirstBond(86)" );
-	CHECK( mockedResidue.indexFirstBond == 86 );
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getIndexFirstBond()" ).cast<size_t>()
-		== mockedResidue.getIndexFirstBond()
-	);
+	CHECK( tester.testMethod_set( "setIndexFirstBond", mockedResidue, &Test::MockResidue::indexFirstBond ) );
 
 	// Atom
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getAtomCount()" ).cast<uint64_t>() == mockedResidue.getAtomCount()
-	);
-	pybind11::exec( "TEST_getSampleResidue().setAtomCount(3)" );
-	CHECK( mockedResidue.atomCount == 3 );
+	CHECK( tester.testMethod_get( "getAtomCount", mockedResidue, &Test::MockResidue::getAtomCount ) );
+	CHECK( tester.testMethod_set( "setAtomCount", mockedResidue, &Test::MockResidue::atomCount ) );
 
 	// Bond
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getBondCount()" ).cast<uint64_t>() == mockedResidue.getBondCount()
-	);
-	pybind11::exec( "TEST_getSampleResidue().setBondCount(12)" );
-	CHECK( mockedResidue.bondCount == 12 );
+	CHECK( tester.testMethod_get( "getBondCount", mockedResidue, &Test::MockResidue::getBondCount ) );
+	CHECK( tester.testMethod_set( "setBondCount", mockedResidue, &Test::MockResidue::bondCount ) );
 
 	// Chain
 	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().getIndexInOriginalChain()" ).cast<uint64_t>()
-		== mockedResidue.getIndexInOriginalChain()
+		tester.testMethod_get( "getIndexInOriginalChain", mockedResidue, &Test::MockResidue::getIndexInOriginalChain )
 	);
-	pybind11::exec( "TEST_getSampleResidue().setIndexInOriginalChain(87)" );
-	CHECK( mockedResidue.indexInOriginalChain == 87 );
+	CHECK( tester.testMethod_set( "setIndexInOriginalChain", mockedResidue, &Test::MockResidue::indexInOriginalChain )
+	);
 
 	// Visibility
 	mockedResidue.visible = false;
 	mockedResidue.fullyVisible ^= false;
-	CHECK( pybind11::eval( "TEST_getSampleResidue().isVisible()" ).cast<bool>() == mockedResidue.isVisible() );
-	CHECK(
-		pybind11::eval( "TEST_getSampleResidue().isFullyVisible()" ).cast<bool>() == mockedResidue.isFullyVisible()
-	);
-	pybind11::exec( "TEST_getSampleResidue().setVisible(True)" );
-	CHECK( mockedResidue.visible == true );
+	CHECK( tester.testMethod_get( "isVisible", mockedResidue, &Test::MockResidue::isVisible ) );
+	CHECK( tester.testMethod_get( "isFullyVisible", mockedResidue, &Test::MockResidue::isFullyVisible ) );
+	CHECK( tester.testMethod_set( "setVisible", mockedResidue, &Test::MockResidue::visible ) );
 
 	// API Objects
-	CHECK( pybind11::eval( "TEST_getSampleResidue().getChain().getIndex()" ).cast<uint64_t>() == mockedChain.index );
-	CHECK( pybind11::eval( "TEST_getSampleResidue().getSystem().getName()" ).cast<std::string>() == mockedSystem.name );
+	CHECK( tester.testMethod_get( "getChain().getIndex", mockedResidue, &Test::MockResidue::test_getChainIndex ) );
+	CHECK( tester.testMethod_get( "getSystem().getName", mockedResidue, &Test::MockResidue::test_getSystemName ) );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Chain", "[python][binding][api][class][chain]" )
 {
