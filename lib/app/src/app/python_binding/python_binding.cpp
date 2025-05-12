@@ -29,17 +29,13 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::Application::SaveSettings>( "saveSettings", "Save settings." );
 		commands.bindAction<App::Action::Application::ReloadSettings>( "reloadSettings", "Reload settings." );
 		commands.bindAction<App::Action::Application::ResetSettings>( "resetSettings", "Reset settings." );
-
-		commands.bindAction<VTX::PythonBinding::Action::RunScript, const std::string &>(
-			"runScript", "Run a Python script at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
-		);
 	}
 
 	void VTXAppBinder::importHeaders()
 	{
-		_importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "select" );
-		_importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "intersect" );
-		_importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "exclusive" );
+		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "select" );
+		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "intersect" );
+		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "exclusive" );
 	}
 
 } // namespace VTX::App::PythonBinding

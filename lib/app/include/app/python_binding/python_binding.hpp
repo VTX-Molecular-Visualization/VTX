@@ -8,10 +8,11 @@ namespace VTX::App::PythonBinding
 	/**
 	 * @brief Class responsible for binding vanilla actions to python commands
 	 */
-	class VTXAppBinder final : public VTX::PythonBinding::Binder
+	class VTXAppBinder
 	{
-		void bind( VTX::PythonBinding::PyTXModule & p_vtxmodule ) override;
-		void importHeaders() override;
+	  public:
+		void bind( VTX::PythonBinding::PyTXModule & p_vtxmodule );
+		void importHeaders();
 	};
 } // namespace VTX::App::PythonBinding
 
