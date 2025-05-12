@@ -1,13 +1,14 @@
 #ifndef __VTX_APP_TEST_UTIL_SELECTION__
 #define __VTX_APP_TEST_UTIL_SELECTION__
 
+#include <app/selection/selection.hpp>
+#include <app/selection/system_data.hpp>
 #include <string>
 #include <util/concepts.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::Test::Util
 {
-#ifdef JEVEUPAS
 
 	class Selection
 	{
@@ -25,7 +26,7 @@ namespace VTX::App::Test::Util
 		static SelectionObj createSelection( const SelectionData & p_item );
 		static SelectionObj createSelection( const std::unique_ptr<SelectionData> & p_itemPtr );
 
-		template<App::Selection::SelectionDataConcept T>
+		template<::VTX::App::Selection::SelectionDataConcept T>
 		static SelectionObj createSelection( const std::initializer_list<T> & p_items )
 		{
 			SelectionObj res = SelectionObj();
@@ -62,6 +63,5 @@ namespace VTX::App::Test::Util
 			const std::vector<atom_index_t> & p_atoms	 = {}
 		);
 	};
-#endif // JEVEUPAS
 } // namespace VTX::App::Test::Util
 #endif
