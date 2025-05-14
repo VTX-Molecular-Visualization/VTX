@@ -1,9 +1,8 @@
-#include "python_binding/api/selection/selection_interpretor.hpp"
-#include "python_binding/api/selection/selection_wrapper.hpp"
+#include "app/python_binding/selection/selection_interpretor.hpp"
+#include "app/python_binding/selection/selection_wrapper.hpp"
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::Selection
 {
-#ifdef JEVEUPAS
 
 	void SelectionInterpretor::addInterpretor( const InterpretArgFunc & p_interpretor )
 	{
@@ -12,11 +11,11 @@ namespace VTX::PythonBinding::API::Selection
 	void SelectionInterpretor::clear() { _selectionInterpretors.clear(); }
 
 	// Function that manage a param that can be a single str or a list of str and convert it into a vector of str
-	SelectionWrapper SelectionInterpretor::select( const pybind11::kwargs & kwargs )
+	SelectionWrapper SelectionInterpretor::select( const PythonKwargs & kwargs )
 	{
 		SelectionWrapper res = SelectionWrapper();
 
-		if ( pybind11::len( kwargs ) == 0 )
+		if ( kwargs.size() == 0 )
 			return res;
 
 		for ( const InterpretArgFunc & p_func : _selectionInterpretors )
@@ -24,11 +23,12 @@ namespace VTX::PythonBinding::API::Selection
 
 		if ( kwargs.contains( "name" ) )
 		{
-			res.save( pybind11::str( kwargs[ "name" ] ) );
+			std::string value;
+			kwargs.get( "name", value );
+			res.save( value );
 		}
 
 		return res;
 	};
-#endif // JEVEUPAS
 
-} // namespace VTX::PythonBinding::API::Selection
+} // namespace VTX::App::PythonBinding::Selection

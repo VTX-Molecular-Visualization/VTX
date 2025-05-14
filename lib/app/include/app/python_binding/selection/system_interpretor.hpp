@@ -1,21 +1,25 @@
-#ifndef __VTX_PYTHON_API_SELECTION_MOLECULE_INTERPRETOR__
-#define __VTX_PYTHON_API_SELECTION_MOLECULE_INTERPRETOR__
+#ifndef __VTX_APP_PYTHON_BINDING_SELECTION_MOLECULE_INTERPRETOR__
+#define __VTX_APP_PYTHON_BINDING_SELECTION_MOLECULE_INTERPRETOR__
 
+#include "app/selection/selection.hpp"
+#include "app/selection/system_data.hpp"
 #include <core/chemdb/atom.hpp>
-#include <pybind11/pybind11.h>
+#include <python_binding/api/arguments.hpp>
 #include <set>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::Selection
 {
+	using PythonKwargs = VTX::PythonBinding::API::PythonKwargs;
+
 	class SystemInterpretor
 	{
 	  private:
 		struct InterpretedKwargs
 		{
-			InterpretedKwargs( const pybind11::kwargs & p_kwargs );
+			InterpretedKwargs( const PythonKwargs & p_kwargs );
 
 			bool isValid() const;
 
@@ -43,12 +47,11 @@ namespace VTX::PythonBinding::API::Selection
 			bool _hasResidueParams;
 			bool _hasAtomParams;
 
-			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> _interpretAtomSymbols( const pybind11::kwargs & p_kwargs );
+			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> _interpretAtomSymbols( const PythonKwargs & p_kwargs );
 		};
 
 	  public:
-#ifdef JEVEUPAS
-		static void interpretSystems( App::Selection::Selection &, const pybind11::kwargs & );
+		static void interpretSystems( App::Selection::Selection &, const PythonKwargs & );
 
 	  private:
 		static std::set<App::Component::Chemistry::System *> _getSystems( const InterpretedKwargs & p_kwargs );
@@ -75,8 +78,7 @@ namespace VTX::PythonBinding::API::Selection
 			App::Selection::SystemData &		p_systemSelectionData,
 			const InterpretedKwargs &			p_kwargs
 		);
-#endif // !JEVEUPAS
 	};
 
-} // namespace VTX::PythonBinding::API::Selection
+} // namespace VTX::App::PythonBinding::Selection
 #endif

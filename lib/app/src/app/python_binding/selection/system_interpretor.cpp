@@ -1,10 +1,5 @@
-#include "python_binding/api/selection/system_interpretor.hpp"
-#include "python_binding/api/selection/helper.hpp"
-
-#ifdef JEVEUPAS
-
-
-
+#include "app/python_binding/selection/system_interpretor.hpp"
+#include "app/python_binding/selection/helper.hpp"
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
@@ -15,39 +10,38 @@
 #include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::Selection
 {
 	using namespace App::Component::Chemistry;
 
-	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const pybind11::kwargs & p_kwargs )
+	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const PythonKwargs & p_kwargs )
 	{
 		_hasSystemParams = p_kwargs.contains( "mol_n" ) || p_kwargs.contains( "mol_i" );
-		systemNames	 = _getStringListInKwargs( p_kwargs, "mol_n" );
-		systemIndexes	 = _getIndexListInKwargs( p_kwargs, "mol_i" );
+		p_kwargs.get( "mol_n", systemNames );
+		p_kwargs.get( "mol_i", systemIndexes );
 
 		_hasChainParams = p_kwargs.contains( "chain_n" ) || p_kwargs.contains( "chain_i" );
-		chainNames		= _getStringListInKwargs( p_kwargs, "chain_n" );
-		chainIndexes	= _getIndexListInKwargs( p_kwargs, "chain_i" );
+		p_kwargs.get( "chain_n", chainNames );
+		p_kwargs.get( "chain_i", chainIndexes );
 
 		_hasResidueParams = p_kwargs.contains( "res_n" ) || p_kwargs.contains( "res_i" );
-		residueNames	  = _getStringListInKwargs( p_kwargs, "res_n" );
-		residueIndexes	  = _getIndexListInKwargs( p_kwargs, "res_i" );
+		p_kwargs.get( "res_n", residueNames );
+		p_kwargs.get( "res_i", residueIndexes );
 
 		_hasAtomParams
 			= p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" ) || p_kwargs.contains( "atom_t" );
-		atomNames	= _getStringListInKwargs( p_kwargs, "atom_n" );
-		atomIndexes = _getAtomIndexListInKwargs( p_kwargs, "atom_i" );
-		atomSymbols = _getEnumListFromStrInKwargs<VTX::Core::ChemDB::Atom::SYMBOL>(
-			p_kwargs, "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, VTX::Core::ChemDB::Atom::SYMBOL::UNKNOWN
-		);
+		p_kwargs.get( "atom_n", atomNames );
+		p_kwargs.get( "atom_i", atomIndexes );
+		p_kwargs.get( "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, atomSymbols );
 	}
 
 	std::vector<VTX::Core::ChemDB::Atom::SYMBOL> SystemInterpretor::InterpretedKwargs::_interpretAtomSymbols(
-		const pybind11::kwargs & p_kwargs
+		const PythonKwargs & p_kwargs
 	)
 	{
-		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols	= std::vector<VTX::Core::ChemDB::Atom::SYMBOL>();
-		const std::vector<std::string>				 atomSymbolsStr = _getStringListInKwargs( p_kwargs, "atom_t" );
+		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols = std::vector<VTX::Core::ChemDB::Atom::SYMBOL>();
+		std::vector<std::string>					 atomSymbolsStr;
+		p_kwargs.get( "atom_t", atomSymbolsStr );
 
 		atomSymbols.reserve( atomSymbolsStr.size() );
 
@@ -76,10 +70,7 @@ namespace VTX::PythonBinding::API::Selection
 	bool SystemInterpretor::InterpretedKwargs::hasSpecifyResidue() const { return _hasResidueParams; }
 	bool SystemInterpretor::InterpretedKwargs::hasSpecifyAtom() const { return _hasAtomParams; }
 
-	void SystemInterpretor::interpretSystems(
-		App::Selection::Selection & p_selection,
-		const pybind11::kwargs &				 p_kwargs
-	)
+	void SystemInterpretor::interpretSystems( App::Selection::Selection & p_selection, const PythonKwargs & p_kwargs )
 	{
 		InterpretedKwargs kwargs = InterpretedKwargs( p_kwargs );
 
@@ -97,10 +88,9 @@ namespace VTX::PythonBinding::API::Selection
 			App::Component::Scene::Selectable & selectableComponent
 				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Selectable>( *system );
 
-			App::Selection::SystemData & systemSelectionData
-				= p_selection.select<App::Selection::SystemData>(
-					selectableComponent, App::Selection::AssignmentType::APPEND
-				);
+			App::Selection::SystemData & systemSelectionData = p_selection.select<App::Selection::SystemData>(
+				selectableComponent, App::Selection::AssignmentType::APPEND
+			);
 
 			if ( !selectFullSystem )
 			{
@@ -118,7 +108,7 @@ namespace VTX::PythonBinding::API::Selection
 
 		if ( p_kwargs.hasSpecifySystem() )
 		{
-			const std::vector<std::string> & systemNames	 = p_kwargs.systemNames;
+			const std::vector<std::string> & systemNames   = p_kwargs.systemNames;
 			const std::vector<size_t>		 systemIndexes = p_kwargs.systemIndexes;
 
 			for ( const std::string & molName : systemNames )
@@ -128,8 +118,7 @@ namespace VTX::PythonBinding::API::Selection
 				if ( !ECS_REGISTRY().isValid( systemEntity ) )
 					continue;
 
-				Component::Chemistry::System & systemComponent
-					= ECS_REGISTRY().getComponent<System>( systemEntity );
+				Component::Chemistry::System & systemComponent = ECS_REGISTRY().getComponent<System>( systemEntity );
 
 				systems.emplace( &systemComponent );
 			}
@@ -140,8 +129,7 @@ namespace VTX::PythonBinding::API::Selection
 				if ( !ECS_REGISTRY().isValid( systemEntity ) )
 					continue;
 
-				Component::Chemistry::System & systemComponent
-					= ECS_REGISTRY().getComponent<System>( systemEntity );
+				Component::Chemistry::System & systemComponent = ECS_REGISTRY().getComponent<System>( systemEntity );
 
 				systems.emplace( &systemComponent );
 			}
@@ -162,7 +150,7 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 	void SystemInterpretor::_selectChains(
-		const InterpretedKwargs &				  p_kwargs,
+		const InterpretedKwargs &	 p_kwargs,
 		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
@@ -207,13 +195,12 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 	void SystemInterpretor::_selectResidues(
-		const InterpretedKwargs &				  p_kwargs,
+		const InterpretedKwargs &	 p_kwargs,
 		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
-		const System &													system = p_systemSelectionData.getSystem();
-		const App::Selection::SystemData::IndexRangeList & chainIDs
-			= p_systemSelectionData.getChainIds();
+		const System &									   system	= p_systemSelectionData.getSystem();
+		const App::Selection::SystemData::IndexRangeList & chainIDs = p_systemSelectionData.getChainIds();
 
 		const bool selectFullResidue = !p_kwargs.hasSpecifyAtom();
 
@@ -307,19 +294,17 @@ namespace VTX::PythonBinding::API::Selection
 	}
 
 	void SystemInterpretor::_selectAtoms(
-		const InterpretedKwargs &				  p_kwargs,
+		const InterpretedKwargs &	 p_kwargs,
 		App::Selection::SystemData & p_systemSelectionData
 	)
 	{
 		System & system = p_systemSelectionData.getSystem();
 
-		const App::Selection::SystemData::IndexRangeList & residueIDs
-			= p_systemSelectionData.getResidueIds();
+		const App::Selection::SystemData::IndexRangeList & residueIDs = p_systemSelectionData.getResidueIds();
 
 		if ( residueIDs.isEmpty() )
 		{
-			const App::Selection::SystemData::IndexRangeList & chainIDs
-				= p_systemSelectionData.getChainIds();
+			const App::Selection::SystemData::IndexRangeList & chainIDs = p_systemSelectionData.getChainIds();
 
 			if ( chainIDs.isEmpty() )
 			{
@@ -337,19 +322,14 @@ namespace VTX::PythonBinding::API::Selection
 						continue;
 
 					_addAtomsFollowingKwargs(
-						chain->getIndexFirstAtom(),
-						chain->getIndexLastAtom(),
-						system,
-						p_systemSelectionData,
-						p_kwargs
+						chain->getIndexFirstAtom(), chain->getIndexLastAtom(), system, p_systemSelectionData, p_kwargs
 					);
 				}
 			}
 		}
 		else
 		{
-			const App::Selection::SystemData::IndexRangeList & residueIDs
-				= p_systemSelectionData.getResidueIds();
+			const App::Selection::SystemData::IndexRangeList & residueIDs = p_systemSelectionData.getResidueIds();
 
 			for ( const size_t residueID : residueIDs )
 			{
@@ -359,22 +339,18 @@ namespace VTX::PythonBinding::API::Selection
 					continue;
 
 				_addAtomsFollowingKwargs(
-					residue->getIndexFirstAtom(),
-					residue->getIndexLastAtom(),
-					system,
-					p_systemSelectionData,
-					p_kwargs
+					residue->getIndexFirstAtom(), residue->getIndexLastAtom(), system, p_systemSelectionData, p_kwargs
 				);
 			}
 		}
 	}
 
 	void SystemInterpretor::_addAtomsFollowingKwargs(
-		const atom_index_t						  p_firstAtom,
-		const atom_index_t						  p_lastAtom,
-		System &								  p_system,
+		const atom_index_t			 p_firstAtom,
+		const atom_index_t			 p_lastAtom,
+		System &					 p_system,
 		App::Selection::SystemData & p_systemSelectionData,
-		const InterpretedKwargs &				  p_kwargs
+		const InterpretedKwargs &	 p_kwargs
 	)
 	{
 		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
@@ -404,5 +380,4 @@ namespace VTX::PythonBinding::API::Selection
 		}
 	}
 
-} // namespace VTX::PythonBinding::API::Selection
-#endif // JEVEUPAS
+} // namespace VTX::App::PythonBinding::Selection

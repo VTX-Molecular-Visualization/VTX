@@ -1,19 +1,17 @@
-#include "python_binding/api/selection/selection_wrapper.hpp"
-#ifdef JEVEUPAS
-
-#include <app/application/scene.hpp>
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
-#include <app/component/scene/selectable.hpp>
-#include <app/helper/chemistry.hpp>
-#include <app/selection/selection_manager.hpp>
-#include <app/selection/system_data.hpp>
-#include <app/vtx_app.hpp>
+#include "app/python_binding/selection/selection_wrapper.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
+#include "app/component/scene/selectable.hpp"
+#include "app/helper/chemistry.hpp"
+#include "app/selection/selection_manager.hpp"
+#include "app/selection/system_data.hpp"
+#include "app/vtx_app.hpp"
 #include <sstream>
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::Selection
 {
 
 	SelectionWrapper::SelectionWrapper() = default;
@@ -149,5 +147,4 @@ namespace VTX::PythonBinding::API::Selection
 
 	std::string SelectionWrapper::toString() const { return _selection->toString(); }
 
-} // namespace VTX::PythonBinding::API::Selection
-#endif // JEVEUPAS
+} // namespace VTX::App::PythonBinding::Selection

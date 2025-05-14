@@ -1,6 +1,6 @@
-#include "python_binding/api/selection/helper.hpp"
+#include "app/python_binding/selection/helper.hpp"
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::API::Selection
 {
 	std::vector<std::string> _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param )
 	{
@@ -38,4 +38,4 @@ namespace VTX::PythonBinding::API::Selection
 
 		return res;
 	}
-} // namespace VTX::PythonBinding::API::Selection
+} // namespace VTX::App::PythonBinding::API::Selection

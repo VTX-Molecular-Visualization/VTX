@@ -1,15 +1,18 @@
-#ifndef __VTX_PYTHON_API_SELECTION_SELECTION_WRAPPER__
-#define __VTX_PYTHON_API_SELECTION_SELECTION_WRAPPER__
+#ifndef __VTX_APP_PYTHON_BINDING_SELECTION_SELECTION_WRAPPER__
+#define __VTX_APP_PYTHON_BINDING_SELECTION_SELECTION_WRAPPER__
 
 #include "_fwd.hpp"
-#include "python_binding/api/selection/helper.hpp"
-#include <pybind11/pybind11.h>
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/system.hpp"
+#include "app/python_binding/selection/helper.hpp"
+#include "app/selection/selection.hpp"
 #include <string>
 #include <vector>
 
-namespace VTX::PythonBinding::API::Selection
+namespace VTX::App::PythonBinding::Selection
 {
-#ifdef JEVEUPAS
 
 	using Selection = App::Selection::Selection;
 
@@ -44,7 +47,6 @@ namespace VTX::PythonBinding::API::Selection
 	  private:
 		std::unique_ptr<Selection> _selection = std::make_unique<Selection>();
 	};
-#endif // JEVEUPAS
 
-} // namespace VTX::PythonBinding::API::Selection
+} // namespace VTX::App::PythonBinding::Selection
 #endif
