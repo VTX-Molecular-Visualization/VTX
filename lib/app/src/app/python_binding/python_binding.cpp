@@ -31,9 +31,9 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::Application::ReloadSettings>( "reloadSettings", "Reload settings." );
 		commands.bindAction<App::Action::Application::ResetSettings>( "resetSettings", "Reset settings." );
 
-		pybind11::module_ * commandModulePtr = nullptr;
-		p_vtxmodule.api().getPythonModule( &commandModulePtr );
-		Selection::bind_selection( *commandModulePtr );
+		pybind11::module_ * apiModulePtr = nullptr;
+		p_vtxmodule.api().getPythonModule( &apiModulePtr );
+		Selection::bind_selection( *apiModulePtr );
 	}
 
 	void VTXAppBinder::importHeaders()
