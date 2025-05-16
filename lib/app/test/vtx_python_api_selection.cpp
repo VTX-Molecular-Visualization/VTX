@@ -1,7 +1,7 @@
 #include "util/app.hpp"
+#include "util/filesystem.hpp"
 #include "util/selection.hpp"
-#ifdef JEVEUPAS
-
+#include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/fixture.hpp>
 #include <app/selection/selection_manager.hpp>
@@ -12,18 +12,29 @@
 #include <python_binding/interpretor.hpp>
 #include <util/math/range_list.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[python][integration][selection]" )
+namespace Test
+{
+	void loadSystem( const char * p_filename )
+	{
+		using namespace VTX;
+		const FilePath systemPath = VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename;
+		VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
+		openAction.execute();
+	}
+} // namespace Test
+
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
-	return; // TODO : when selection save is restored
-	App::Test::Util::PythonFixture f;
+	// return; // TODO : when selection save is restored
+	App::Fixture app;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
-	App::Test::Util::PythonFixture::loadSystem( "1AGA.mmtf" );
-	App::Test::Util::PythonFixture::loadSystem( "4HHB.pdb" );
-	App::Test::Util::PythonFixture::loadSystem( "8QHQ.pdb" );
+	Test::loadSystem( "1AGA.mmtf" );
+	Test::loadSystem( "4HHB.pdb" );
+	Test::loadSystem( "8QHQ.pdb" );
 
 	App::Component::Chemistry::System & mol4hhb
 		= App::SCENE().getComponentByName<App::Component::Chemistry::System>( "4HHB" );
@@ -227,4 +238,3 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[python][integration
 
 	// interpretor.runCommand( "select( mol_n='4HHB', res_i=range(0, 100) )" );
 };
-#endif // JEVEUPAS
