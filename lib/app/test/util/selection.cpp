@@ -1,6 +1,4 @@
 #include "selection.hpp"
-#ifdef JEVEUPAS
-
 #include <app/application/scene.hpp>
 #include <app/core/ecs/base_entity.hpp>
 #include <app/core/ecs/registry.hpp>
@@ -61,14 +59,15 @@ namespace VTX::App::Test::Util
 		{
 			res->clear();
 
-			res->selectFullChains( VTX::Util::Math::RangeList<size_t>::fromList( p_chains ) );
-			res->selectFullResidues( VTX::Util::Math::RangeList<size_t>::fromList( p_residues ) );
-			res->selectAtoms( VTX::Util::Math::RangeList<atom_index_t>::fromList( p_atoms ) );
+			if ( not p_chains.empty() )
+				res->selectFullChains( VTX::Util::Math::RangeList<size_t>::fromList( p_chains ) );
+			if ( not p_residues.empty() )
+				res->selectFullResidues( VTX::Util::Math::RangeList<size_t>::fromList( p_residues ) );
+			if ( not p_atoms.empty() )
+				res->selectAtoms( VTX::Util::Math::RangeList<atom_index_t>::fromList( p_atoms ) );
 		}
 
 		return std::move( res );
 	}
 
 } // namespace VTX::App::Test::Util
-
-#endif // JEVEUPAS
