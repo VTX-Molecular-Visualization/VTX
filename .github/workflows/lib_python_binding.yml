@@ -49,5 +49,4 @@ jobs:
         conan export core
         conan export io
         conan export renderer
-        conan export app
         conan create python_binding -b missing -s compiler.cppstd=20 -o vtx_python_binding/*:test=True

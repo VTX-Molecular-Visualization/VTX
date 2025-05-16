@@ -44,6 +44,7 @@ jobs:
         conan export core
         conan export io
         conan export renderer
+        conan export python_binding
         conan create app -b missing -s compiler.cppstd=20 -o vtx_app/*:test=True
       
     - name: Upload dependencies
