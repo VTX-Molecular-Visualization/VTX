@@ -20,17 +20,6 @@ namespace VTX::PythonBinding::Wrapper
 		return Module( module, submodulePath );
 	}
 
-	void Module::def(
-		const std::string &								 p_name,
-		std::function<void( const API::PythonKwargs & )> p_function,
-		const std::string &								 p_desc
-	)
-	{
-		_pyModule.def(
-			p_name.c_str(), [ f = std::move( p_function ) ]( const pybind11::kwargs & kw ) { f( kw ); }, p_desc.c_str()
-		);
-	}
-
 	void Module::displayInfo() const
 	{
 		try

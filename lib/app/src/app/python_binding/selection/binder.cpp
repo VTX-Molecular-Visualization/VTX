@@ -32,7 +32,8 @@ namespace VTX::App::PythonBinding::Selection
 
 		p_apiModule.def(
 			"select",
-			&VTX::App::PythonBinding::Selection::SelectionInterpretor::select,
+			[]( const pybind11::kwargs & kw )
+			{ return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw ); },
 			pybind11::return_value_policy::reference
 		);
 

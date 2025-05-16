@@ -44,11 +44,6 @@ namespace VTX::PythonBinding
 			{
 				_pyModule.def( p_name.c_str(), p_function, p_desc.c_str() );
 			}
-			void def(
-				const std::string &								 p_name,
-				std::function<void( const API::PythonKwargs & )> p_function,
-				const std::string &								 p_desc
-			);
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func p_function, const std::string & p_desc, Extra... p_extra )
 			{
