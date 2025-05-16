@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 #define __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 
+#include "python_binding/api/arguments.hpp"
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/object.hpp"
 #include "python_binding/wrapper/pybind11_extra_convertor.hpp"
@@ -43,6 +44,11 @@ namespace VTX::PythonBinding
 			{
 				_pyModule.def( p_name.c_str(), p_function, p_desc.c_str() );
 			}
+			void def(
+				const std::string &								 p_name,
+				std::function<void( const API::PythonKwargs & )> p_function,
+				const std::string &								 p_desc
+			);
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func p_function, const std::string & p_desc, Extra... p_extra )
 			{

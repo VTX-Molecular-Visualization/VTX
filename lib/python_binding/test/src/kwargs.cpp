@@ -39,7 +39,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 
 	Test::TestStruct test;
 
-	mod->def(
+	VTX::INTERPRETOR().getModule().commands().def(
 		"test_kwargs",
 		[ & ]( const pybind11::kwargs & p_kwargs )
 		{
@@ -51,7 +51,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 			kwargs.get( "numbers", test.uint32s );
 			kwargs.get( "bigNumbers", test.uint64s );
 			kwargs.get( "weird", &Test::convert, test.items );
-		}
+		},
+		"Test for keyword arguments"
 	);
 
 	pybind11::exec( fmt::format( "from {}.Command import *", VTX::PythonBinding::vtx_module_name() ) );
