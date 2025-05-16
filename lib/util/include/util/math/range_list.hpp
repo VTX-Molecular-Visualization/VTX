@@ -405,7 +405,16 @@ namespace VTX::Util::Math
 			return false;
 		}
 
+		/**
+		 * @brief Assumes the list is not empty
+		 * @return First range of the list
+		 */
 		inline T getFirst() const { return _ranges.cbegin()->getFirst(); }
+
+		/**
+		 * @brief Assumes the list is not empty
+		 * @return Last range of the list
+		 */
 		inline T getLast() const { return _ranges.crbegin()->getLast(); }
 
 		void clear() { _ranges.clear(); }
