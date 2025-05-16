@@ -1,6 +1,5 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/api/api.hpp"
-#include "python_binding/binding/binders/selection.hpp"
 #include "python_binding/binding/helper.hpp"
 #include "python_binding/interpretor.hpp"
 #include <core/struct/system.hpp>

@@ -12,17 +12,41 @@ namespace pybind11
 
 namespace VTX::PythonBinding::API
 {
+	/**
+	 * @brief Class wrapping python keyword arguments
+	 */
 	class PythonKwargs
 	{
 	  public:
+		PythonKwargs( const pybind11::kwargs & );
+
+		/**
+		 * @brief Returns the number of arguments
+		 */
 		size_t size() const;
 
+		/**
+		 * @brief Returns whether the provided key is contained within the kwargs
+		 */
 		bool contains( const char * ) const;
 
+		/**
+		 * @brief Fills the last argument with the content of the kwargs
+		 * @param p_key Name of the python argument
+		 * @param p_value Output value
+		 */
 		void get( const char * p_key, std::string & p_value ) const;
 		void get( const char * p_key, std::vector<std::string> & p_value ) const;
 		void get( const char * p_key, std::vector<size_t> & p_value ) const;
 		void get( const char * p_key, std::vector<uint32_t> & p_value ) const;
+
+		/**
+		 * @brief Helper template to fill a vector of type converted from a string.
+		 * @tparam T Type to be converted to
+		 * @param p_key Name of the kwarg
+		 * @param p_conversionFunction Pointer for the conversion function
+		 * @param p_value Output value
+		 */
 		template<typename T>
 		void get(
 			const char * p_key,
@@ -32,6 +56,8 @@ namespace VTX::PythonBinding::API
 		{
 			std::vector<std::string> strValues;
 			get( p_key, strValues );
+			p_value.clear();
+			p_value.reserve( strValues.size() );
 			for ( auto & strValue : strValues )
 				p_value.push_back( ( *p_conversionFunction )( strValue ) );
 		}

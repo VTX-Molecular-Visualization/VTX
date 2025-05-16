@@ -1,6 +1,7 @@
 
 #include "app/python_binding/python_binding.hpp"
 #include "app/action/application.hpp"
+#include "app/python_binding/selection/binder.hpp"
 #include <python_binding/action.hpp>
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/vtx_module.hpp>
@@ -29,6 +30,10 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::Application::SaveSettings>( "saveSettings", "Save settings." );
 		commands.bindAction<App::Action::Application::ReloadSettings>( "reloadSettings", "Reload settings." );
 		commands.bindAction<App::Action::Application::ResetSettings>( "resetSettings", "Reset settings." );
+
+		pybind11::module_ * commandModulePtr = nullptr;
+		commands.getPythonModule( &commandModulePtr );
+		Selection::bind_selection( *commandModulePtr );
 	}
 
 	void VTXAppBinder::importHeaders()
