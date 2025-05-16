@@ -4,7 +4,7 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <filesystem>
-#include <format>
+#include <fmt/format.h>
 #include <fstream>
 #include <io/reader/system.hpp>
 #include <io/writer/system.hpp>
@@ -81,11 +81,13 @@ namespace
 
 		fs::remove( structureFile );
 
-		writeFile( WriteArgs {
-			.destination = structureFile,
-			.format		 = E_FILE_FORMATS::none,
-			.system		 = &system,
-		} );
+		writeFile(
+			WriteArgs {
+				.destination = structureFile,
+				.format		 = E_FILE_FORMATS::none,
+				.system		 = &system,
+			}
+		);
 
 		VTX::Core::Struct::System system_reread		  = VTX::Core::Struct::System();
 		IO::Reader::System		  systemReader_reread = IO::Reader::System();

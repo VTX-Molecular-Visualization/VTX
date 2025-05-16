@@ -2,7 +2,7 @@
 #define __VTX_PYTHON_API_SYSTEM__
 
 #include "python_binding/api/collection.hpp"
-#include <format>
+#include <fmt/format.h>
 #include <memory>
 #include <typeinfo>
 #include <util/types.hpp>
