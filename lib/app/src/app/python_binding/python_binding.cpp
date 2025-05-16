@@ -32,7 +32,7 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::Application::ResetSettings>( "resetSettings", "Reset settings." );
 
 		pybind11::module_ * commandModulePtr = nullptr;
-		commands.getPythonModule( &commandModulePtr );
+		p_vtxmodule.api().getPythonModule( &commandModulePtr );
 		Selection::bind_selection( *commandModulePtr );
 	}
 
