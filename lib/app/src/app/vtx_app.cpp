@@ -49,7 +49,7 @@ namespace VTX::App
 		// Register loop events.
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
-		// Initialize python interpretor
+		// Initialize python interpretor.
 		INTERPRETOR().add( VTX::PythonBinding::Binder( VTX::App::PythonBinding::VTXAppBinder() ) );
 
 		// Create Databases
