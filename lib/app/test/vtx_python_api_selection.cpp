@@ -78,7 +78,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 			SelectionUtil::createSelection(
 				{ *SelectionUtil::generateSystemData( "4HHB", { 0 } ),
 				  *SelectionUtil::generateSystemData( "1AGA", { 0 } ),
-				  *SelectionUtil::generateSystemData( "8QHQ", { 0, 6 } ) }
+				  *SelectionUtil::generateSystemData( "8QHQ", { 0 } ) }
 			)
 		)
 	);
