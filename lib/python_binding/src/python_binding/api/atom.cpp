@@ -36,12 +36,12 @@ namespace VTX::PythonBinding::API
 	{
 		if ( _ptr )
 			return _ptr->getSystem();
-		return System::System();
+		return System();
 	}
 	const System Atom::getSystem() const
 	{
 		if ( _ptr )
 			return _ptr->getSystem();
-		return System::System();
+		return System();
 	}
 } // namespace VTX::PythonBinding::API

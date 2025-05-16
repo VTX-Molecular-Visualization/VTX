@@ -127,9 +127,9 @@ namespace VTX::PythonBinding::API
 		std::shared_ptr<_interface> _ptr = nullptr;
 
 	  public:
-		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, Collection> )
-		Collection( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
+		template<class COLLECTION>
+			requires( not std::same_as<std::remove_cv<COLLECTION>, Collection> )
+		Collection( COLLECTION & p_ ) : _ptr( new _wrapper<COLLECTION>( p_ ) )
 		{
 		}
 	};
