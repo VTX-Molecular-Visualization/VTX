@@ -27,7 +27,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 {
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
-	// return; // TODO : when selection save is restored
 	App::Fixture app;
 
 	PythonBinding::Interpretor & interpretor = INTERPRETOR();
