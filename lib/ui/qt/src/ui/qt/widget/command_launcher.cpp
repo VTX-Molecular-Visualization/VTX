@@ -1,6 +1,7 @@
 #include <python_binding/interpretor.hpp>
 // pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
+#include <qevent.h>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -14,21 +15,55 @@ namespace VTX::UI::QT::Widget
 
 		connect( this, &QLineEdit::textChanged, this, &CommandLauncher::_updateCompleter );
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
+		// connect( this, &CommandLauncher::keyPressEvent, this, &CommandLauncher::_launchCommand );
+	}
+
+	void CommandLauncher::keyPressEvent( QKeyEvent * event )
+	{
+		if ( not _history.empty() )
+		{
+			switch ( event->key() )
+			{
+			case Qt::Key_Up:
+				if ( _browsingHistory )
+				{
+					_historyIdx = std::min( _history.size() - 1, _historyIdx + 1 );
+				}
+				goto browsing;
+				break;
+			case Qt::Key_Down:
+				if ( _browsingHistory )
+				{
+					_historyIdx = _historyIdx == 0 ? 0 : _historyIdx - 1;
+				}
+				goto browsing;
+				break;
+			default: break;
+			}
+		}
+
+		BaseWidget::keyPressEvent( event );
+		return;
+	browsing:
+		_browsingHistory = true;
+		setText( QString::fromStdString( _history.at( _history.size() - 1 - _historyIdx ) ) );
 	}
 
 	void CommandLauncher::_launchCommand()
 	{
+		_browsingHistory = false;
+		_historyIdx		 = 0;
 		if ( text().isEmpty() )
 		{
 			return;
 		}
 
-		const std::string command = text().toStdString();
+		_history.push_back( text().toStdString() );
 
 		try
 		{
-			VTX_INFO( "CommandLauncher: {}", command );
-			INTERPRETOR().runCommand( command );
+			VTX_INFO( "CommandLauncher: {}", _history.back() );
+			INTERPRETOR().runCommand( _history.back() );
 		}
 		catch ( CommandException & p_e )
 		{
