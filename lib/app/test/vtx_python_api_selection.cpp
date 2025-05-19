@@ -162,7 +162,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_mol_chain_res_atom_1",
-			"select( system_names='4HHB', chain_names='A', residue_indexes=10, atom_t='C')",
+			"select( system_names='4HHB', chain_names='A', residue_indexes=10, atom_types='C')",
 			SelectionUtil::createSelection(
 				SelectionUtil::generateSystemData( "4HHB", {}, {}, { 66, 67, 69, 70, 71 } )
 			)

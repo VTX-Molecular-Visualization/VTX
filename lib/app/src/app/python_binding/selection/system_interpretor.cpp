@@ -28,11 +28,11 @@ namespace VTX::App::PythonBinding::Selection
 		p_kwargs.get( "residue_names", residueNames );
 		p_kwargs.get( "residue_indexes", residueIndexes );
 
-		_hasAtomParams
-			= p_kwargs.contains( "atom_names" ) || p_kwargs.contains( "atom_indexes" ) || p_kwargs.contains( "atom_t" );
+		_hasAtomParams = p_kwargs.contains( "atom_names" ) || p_kwargs.contains( "atom_indexes" )
+						 || p_kwargs.contains( "atom_types" );
 		p_kwargs.get( "atom_names", atomNames );
 		p_kwargs.get( "atom_indexes", atomIndexes );
-		p_kwargs.get( "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, atomSymbols );
+		p_kwargs.get( "atom_types", &VTX::Core::ChemDB::Atom::getSymbolFromString, atomSymbols );
 	}
 
 	std::vector<VTX::Core::ChemDB::Atom::SYMBOL> SystemInterpretor::InterpretedKwargs::_interpretAtomSymbols(
@@ -41,7 +41,7 @@ namespace VTX::App::PythonBinding::Selection
 	{
 		std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols = std::vector<VTX::Core::ChemDB::Atom::SYMBOL>();
 		std::vector<std::string>					 atomSymbolsStr;
-		p_kwargs.get( "atom_t", atomSymbolsStr );
+		p_kwargs.get( "atom_types", atomSymbolsStr );
 
 		atomSymbols.reserve( atomSymbolsStr.size() );
 
