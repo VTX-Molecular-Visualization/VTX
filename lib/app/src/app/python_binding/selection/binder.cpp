@@ -33,7 +33,11 @@ namespace VTX::App::PythonBinding::Selection
 		p_apiModule.def(
 			"select",
 			[]( const pybind11::kwargs & kw )
-			{ return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw ); },
+			{
+				//
+				return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw );
+				//
+			},
 			pybind11::return_value_policy::reference
 		);
 
@@ -59,6 +63,7 @@ namespace VTX::App::PythonBinding::Selection
 			.def( "save", &VTX::App::PythonBinding::Selection::SelectionWrapper::save )
 			.def( "getSystems", &VTX::App::PythonBinding::Selection::SelectionWrapper::getSystems )
 			.def( "getChains", &VTX::App::PythonBinding::Selection::SelectionWrapper::getChains )
+
 			.def( "getResidues", &VTX::App::PythonBinding::Selection::SelectionWrapper::getResidues )
 			.def( "getAtoms", &VTX::App::PythonBinding::Selection::SelectionWrapper::getAtoms );
 	}
