@@ -6,6 +6,7 @@
 
 namespace VTX::UI::QT::Widget
 {
+
 	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		setPlaceholderText( "/command" );
@@ -25,45 +26,35 @@ namespace VTX::UI::QT::Widget
 			switch ( event->key() )
 			{
 			case Qt::Key_Up:
-				if ( _browsingHistory )
-				{
-					_historyIdx = std::min( _history.size() - 1, _historyIdx + 1 );
-				}
-				goto browsing;
-				break;
+				_history.tryMoveBackward();
+				setText( QString::fromStdString( _history.currentString() ) );
+				return;
 			case Qt::Key_Down:
-				if ( _browsingHistory )
-				{
-					_historyIdx = _historyIdx == 0 ? 0 : _historyIdx - 1;
-				}
-				goto browsing;
-				break;
+				_history.tryMoveForward();
+				setText( QString::fromStdString( _history.currentString() ) );
+				return;
 			default: break;
 			}
 		}
 
 		BaseWidget::keyPressEvent( event );
 		return;
-	browsing:
-		_browsingHistory = true;
-		setText( QString::fromStdString( _history.at( _history.size() - 1 - _historyIdx ) ) );
 	}
 
 	void CommandLauncher::_launchCommand()
 	{
-		_browsingHistory = false;
-		_historyIdx		 = 0;
+		_history.resetBrowsing();
 		if ( text().isEmpty() )
 		{
 			return;
 		}
 
-		_history.push_back( text().toStdString() );
+		_history.add( text().toStdString() );
 
 		try
 		{
-			VTX_INFO( "CommandLauncher: {}", _history.back() );
-			INTERPRETOR().runCommand( _history.back() );
+			VTX_INFO( "CommandLauncher: {}", _history.last() );
+			INTERPRETOR().runCommand( _history.last() );
 		}
 		catch ( CommandException & p_e )
 		{

@@ -5,6 +5,7 @@
 #include <QCompleter>
 #include <QLineEdit>
 #include <QPointer>
+#include <util/history_browser.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -21,11 +22,9 @@ namespace VTX::UI::QT::Widget
 		void _setupCompleter();
 		void _launchCommand();
 
-		bool					 _completerUpdated = false;
-		QPointer<QCompleter>	 _completer;
-		std::vector<std::string> _history;
-		bool					 _browsingHistory = false;
-		size_t					 _historyIdx	  = 0;
+		bool				 _completerUpdated = false;
+		QPointer<QCompleter> _completer;
+		Util::HistoryBrowser _history;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif
