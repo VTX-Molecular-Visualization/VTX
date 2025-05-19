@@ -25,10 +25,10 @@ namespace VTX::App::PythonBinding::Selection
 			&VTX::App::PythonBinding::Selection::SystemInterpretor::interpretSystems
 		);
 
-		pybind11::bind_vector<std::vector<Component::Chemistry::System *>>( p_apiModule, "MolPtrVector" );
-		pybind11::bind_vector<std::vector<Component::Chemistry::Chain *>>( p_apiModule, "ChainPtrVector" );
-		pybind11::bind_vector<std::vector<Component::Chemistry::Residue *>>( p_apiModule, "ResPtrVector" );
-		pybind11::bind_vector<std::vector<Component::Chemistry::Atom *>>( p_apiModule, "AtomPtrVector" );
+		// pybind11::bind_vector<std::vector<Component::Chemistry::System *>>( p_apiModule, "MolPtrVector" );
+		// pybind11::bind_vector<std::vector<Component::Chemistry::Chain *>>( p_apiModule, "ChainPtrVector" );
+		// pybind11::bind_vector<std::vector<Component::Chemistry::Residue *>>( p_apiModule, "ResPtrVector" );
+		// pybind11::bind_vector<std::vector<Component::Chemistry::Atom *>>( p_apiModule, "AtomPtrVector" );
 
 		p_apiModule.def(
 			"select",

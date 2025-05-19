@@ -16,7 +16,6 @@ namespace VTX::UI::QT::Widget
 
 		connect( this, &QLineEdit::textChanged, this, &CommandLauncher::_updateCompleter );
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
-		// connect( this, &CommandLauncher::keyPressEvent, this, &CommandLauncher::_launchCommand );
 	}
 
 	void CommandLauncher::keyPressEvent( QKeyEvent * event )
@@ -51,15 +50,36 @@ namespace VTX::UI::QT::Widget
 
 		_history.add( text().toStdString() );
 
-		try
+		if ( _history.last() == "/command" )
 		{
-			VTX_INFO( "CommandLauncher: {}", _history.last() );
-			INTERPRETOR().runCommand( _history.last() );
+			try
+			{
+				auto			  functions = INTERPRETOR().getModule().commands().getFunctionList();
+				std::stringstream out;
+				out << "Here is the list of the functions : " << std::endl;
+				for ( auto & function : functions )
+					out << function << ", ";
+				out << std::endl;
+
+				VTX_INFO( "{}", out.str() );
+			}
+			catch ( CommandException & p_e )
+			{
+				clear();
+				throw p_e;
+			}
 		}
-		catch ( CommandException & p_e )
+		else
 		{
-			clear();
-			throw p_e;
+			try
+			{
+				INTERPRETOR().runCommand( _history.last() );
+			}
+			catch ( CommandException & p_e )
+			{
+				clear();
+				throw p_e;
+			}
 		}
 
 		clear();
