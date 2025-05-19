@@ -70,7 +70,7 @@ namespace VTX::PythonBinding
 	  public:
 		template<typename T>
 			requires( not std::same_as<std::remove_cv<T>, Binder> )
-		explicit Binder( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
+		Binder( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 		}
 	};
