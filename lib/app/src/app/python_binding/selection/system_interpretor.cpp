@@ -16,22 +16,22 @@ namespace VTX::App::PythonBinding::Selection
 
 	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const PythonKwargs & p_kwargs )
 	{
-		_hasSystemParams = p_kwargs.contains( "system_names" ) || p_kwargs.contains( "mol_i" );
+		_hasSystemParams = p_kwargs.contains( "system_names" ) || p_kwargs.contains( "system_indexes" );
 		p_kwargs.get( "system_names", systemNames );
-		p_kwargs.get( "mol_i", systemIndexes );
+		p_kwargs.get( "system_indexes", systemIndexes );
 
-		_hasChainParams = p_kwargs.contains( "chain_n" ) || p_kwargs.contains( "chain_i" );
-		p_kwargs.get( "chain_n", chainNames );
-		p_kwargs.get( "chain_i", chainIndexes );
+		_hasChainParams = p_kwargs.contains( "chain_names" ) || p_kwargs.contains( "chain_indexes" );
+		p_kwargs.get( "chain_names", chainNames );
+		p_kwargs.get( "chain_indexes", chainIndexes );
 
-		_hasResidueParams = p_kwargs.contains( "res_n" ) || p_kwargs.contains( "res_i" );
-		p_kwargs.get( "res_n", residueNames );
-		p_kwargs.get( "res_i", residueIndexes );
+		_hasResidueParams = p_kwargs.contains( "residue_names" ) || p_kwargs.contains( "residue_indexes" );
+		p_kwargs.get( "residue_names", residueNames );
+		p_kwargs.get( "residue_indexes", residueIndexes );
 
 		_hasAtomParams
-			= p_kwargs.contains( "atom_n" ) || p_kwargs.contains( "atom_i" ) || p_kwargs.contains( "atom_t" );
-		p_kwargs.get( "atom_n", atomNames );
-		p_kwargs.get( "atom_i", atomIndexes );
+			= p_kwargs.contains( "atom_names" ) || p_kwargs.contains( "atom_indexes" ) || p_kwargs.contains( "atom_t" );
+		p_kwargs.get( "atom_names", atomNames );
+		p_kwargs.get( "atom_indexes", atomIndexes );
 		p_kwargs.get( "atom_t", &VTX::Core::ChemDB::Atom::getSymbolFromString, atomSymbols );
 	}
 

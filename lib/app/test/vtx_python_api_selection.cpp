@@ -48,32 +48,32 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_mol_i_1",
-			"select( mol_i=0 )",
+			"test_system_indexes_1",
+			"select( system_indexes=0 )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "1AGA" ) )
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_system_names_chain_n_1",
-			"select( system_names='4HHB', chain_n='A' )",
+			"test_system_names_chain_names_1",
+			"select( system_names='4HHB', chain_names='A' )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", { 0 } ) )
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_system_names_chain_i_1",
-			"select( system_names='4HHB', chain_i=1 )",
+			"test_system_names_chain_indexes_1",
+			"select( system_names='4HHB', chain_indexes=1 )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", { 1 } ) )
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_chain_n_1",
-			"select( chain_n='A' )",
+			"test_chain_names_1",
+			"select( chain_names='A' )",
 			SelectionUtil::createSelection(
 				{ *SelectionUtil::generateSystemData( "4HHB", { 0 } ),
 				  *SelectionUtil::generateSystemData( "1AGA", { 0 } ),
@@ -129,24 +129,24 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_system_names_res_n_1",
-			"select( system_names='4HHB', res_n='HIS' )",
+			"test_system_names_residue_names_1",
+			"select( system_names='4HHB', residue_names='HIS' )",
 			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_system_names_res_n_1",
-			"select( system_names='4HHB', res_n='H' )",
+			"test_system_names_residue_names_1",
+			"select( system_names='4HHB', residue_names='H' )",
 			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_system_names_res_n_1",
-			"select( system_names='4HHB', res_n='Histidine' )",
+			"test_system_names_residue_names_1",
+			"select( system_names='4HHB', residue_names='Histidine' )",
 			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
@@ -154,7 +154,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_system_names_chain_res_1",
-			"select( system_names='4HHB', chain_n='B', res_i=4 )",
+			"select( system_names='4HHB', chain_names='B', residue_indexes=4 )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", {}, { 144 } ) )
 		)
 	);
@@ -162,7 +162,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_mol_chain_res_atom_1",
-			"select( system_names='4HHB', chain_n='A', res_i=10, atom_t='C')",
+			"select( system_names='4HHB', chain_names='A', residue_indexes=10, atom_t='C')",
 			SelectionUtil::createSelection(
 				SelectionUtil::generateSystemData( "4HHB", {}, {}, { 66, 67, 69, 70, 71 } )
 			)
@@ -172,7 +172,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_mol_chain_res_atom_2",
-			"select( system_names='4HHB', chain_n='A', res_i=10, atom_n='C')",
+			"select( system_names='4HHB', chain_names='A', residue_indexes=10, atom_names='C')",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", {}, {}, { 67 } ) )
 		)
 	);
@@ -180,7 +180,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_addition_1",
-			"select( system_names='4HHB', chain_n='A' ) + select( system_names='4HHB', chain_n='C')",
+			"select( system_names='4HHB', chain_names='A' ) + select( system_names='4HHB', chain_names='C')",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", { 0, 2 } ) )
 		)
 	);
@@ -188,7 +188,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_substract_1",
-			"select(system_names='4HHB', chain_n='A' ) - select( system_names='4HHB', chain_n='B')",
+			"select(system_names='4HHB', chain_names='A' ) - select( system_names='4HHB', chain_names='B')",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", { 0 } ) )
 		)
 	);
@@ -196,7 +196,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_intersect_1",
-			"intersect(select( system_names='4HHB' ), select( chain_n='A' ))",
+			"intersect(select( system_names='4HHB' ), select( chain_names='A' ))",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB", { 0 } ) )
 		)
 	);
@@ -204,7 +204,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_intersect_1",
-			"intersect(select( system_names='4HHB' ), select( res_n='HIS' ))",
+			"intersect(select( system_names='4HHB' ), select( residue_names='HIS' ))",
 			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
@@ -212,8 +212,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_exclusive_1",
-			"exclusive( (select( system_names='4HHB' ) - select(  system_names='4HHB', res_n='HIS' )), select( system_names='4HHB', "
-			"res_n='HIS' "
+			"exclusive( (select( system_names='4HHB' ) - select(  system_names='4HHB', residue_names='HIS' )), select( system_names='4HHB', "
+			"residue_names='HIS' "
 			") )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB" ) )
 		)
@@ -221,19 +221,19 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_empty_1", "select( system_names='Nimportequoi', chain_i=1 )", App::Selection::Selection()
+			"test_empty_1", "select( system_names='Nimportequoi', chain_indexes=1 )", App::Selection::Selection()
 		)
 	);
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_empty_2", "select( system_names='4HHB', res_n='his' )", SelectionUtil::createSelection( allHistidineOn4HHB )
+			"test_empty_2", "select( system_names='4HHB', residue_names='his' )", SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
 
 	// CHECK( SelectionUtil::checkSelection(
-	//	"test_system_names_chain_str_i_1", "select( system_names='4HHB', chain_i='1' )",
+	//	"test_system_names_chain_str_i_1", "select( system_names='4HHB', chain_indexes='1' )",
 	// PythonFixture::Application::Selection::Selection() ) ); // NO => manage param as str
 
-	// interpretor.runCommand( "select( system_names='4HHB', res_i=range(0, 100) )" );
+	// interpretor.runCommand( "select( system_names='4HHB', residue_indexes=range(0, 100) )" );
 };
