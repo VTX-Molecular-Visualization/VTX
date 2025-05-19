@@ -16,8 +16,8 @@ namespace VTX::App::PythonBinding::Selection
 
 	SystemInterpretor::InterpretedKwargs::InterpretedKwargs( const PythonKwargs & p_kwargs )
 	{
-		_hasSystemParams = p_kwargs.contains( "system_name" ) || p_kwargs.contains( "mol_i" );
-		p_kwargs.get( "system_name", systemNames );
+		_hasSystemParams = p_kwargs.contains( "system_names" ) || p_kwargs.contains( "mol_i" );
+		p_kwargs.get( "system_names", systemNames );
 		p_kwargs.get( "mol_i", systemIndexes );
 
 		_hasChainParams = p_kwargs.contains( "chain_n" ) || p_kwargs.contains( "chain_i" );
