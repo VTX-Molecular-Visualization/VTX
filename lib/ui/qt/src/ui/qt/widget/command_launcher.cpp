@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Widget
 			{
 				auto			  functions = INTERPRETOR().getModule().commands().getFunctionList();
 				std::stringstream out;
-				out << "Here is the list of the functions : " << std::endl;
+				out << "Here is the list of the functions : " << std::endl; // TODO : Do it better
 				for ( auto & function : functions )
 					out << function << ", ";
 				out << std::endl;
@@ -73,6 +73,7 @@ namespace VTX::UI::QT::Widget
 		{
 			try
 			{
+				VTX_PYTHON( "{}", _history.last() );
 				INTERPRETOR().runCommand( _history.last() );
 			}
 			catch ( CommandException & p_e )

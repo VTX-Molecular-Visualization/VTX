@@ -22,9 +22,9 @@ namespace VTX::UI::QT::Widget
 		void _setupCompleter();
 		void _launchCommand();
 
-		bool				 _completerUpdated = false;
-		QPointer<QCompleter> _completer;
-		Util::HistoryBrowser _history;
+		bool						_completerUpdated = false;
+		QPointer<QCompleter>		_completer;
+		::VTX::Util::HistoryBrowser _history;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

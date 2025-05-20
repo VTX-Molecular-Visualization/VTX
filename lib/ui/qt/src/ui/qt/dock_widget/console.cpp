@@ -81,7 +81,12 @@ namespace VTX::UI::QT::DockWidget
 		}
 		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
 		{
-			return; // Debug shall be seen in the terminal instead of flooding the Qt console
+			return; // Debug shall be seen in the terminal instead of flooding the Qt console. Also using green for
+					// python exclusively is nice.
+			newItem->setForeground( Qt::green );
+		}
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON )
+		{
 			newItem->setForeground( Qt::green );
 		}
 
