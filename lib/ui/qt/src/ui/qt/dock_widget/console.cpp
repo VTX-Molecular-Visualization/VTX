@@ -1,4 +1,6 @@
 #include "ui/qt/dock_widget/console.hpp"
+#include "ui/qt/util.hpp"
+#include <QApplication>
 #include <QToolBar>
 
 namespace VTX::UI::QT::DockWidget
@@ -38,12 +40,14 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		LOGGER::onPrintLog += [ this ]( const Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
+		LOGGER::onPrintLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
 
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
 
 		_layout->addWidget( _commandLauncher );
+
+		this->installEventFilter( _filter );
 	}
 
 	void Console::clear()
@@ -53,23 +57,31 @@ namespace VTX::UI::QT::DockWidget
 		_listWidgetMutex.unlock();
 	}
 
-	void Console::_appendLog( const Util::LogInfo & p_logInfo )
+	void Console::scrollToBottom() noexcept
+	{
+		_listWidgetMutex.lock();
+		_listWidget->scrollToBottom();
+		_listWidgetMutex.unlock();
+	}
+
+	void Console::_appendLog( const ::VTX::Util::LogInfo & p_logInfo )
 	{
 		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
 
 		QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
 
 		// TODO: Use palette color?
-		if ( p_logInfo.level == Util::LOG_LEVEL::LOG_ERROR )
+		if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
 		{
 			newItem->setForeground( Qt::red );
 		}
-		else if ( p_logInfo.level == Util::LOG_LEVEL::LOG_WARNING )
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
 		{
 			newItem->setForeground( Qt::yellow );
 		}
-		else if ( p_logInfo.level == Util::LOG_LEVEL::LOG_DEBUG )
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
 		{
+			return; // Debug shall be seen in the terminal instead of flooding the Qt console
 			newItem->setForeground( Qt::green );
 		}
 
@@ -84,16 +96,7 @@ namespace VTX::UI::QT::DockWidget
 			_flush();
 		}
 
-		// _appendLog can be called from a different thread
-		// Qt events are not thread safe and need to be called from the main thread
-		// We delayed the scrollToBottom on main thread at the end of frame.
-
-		APP::onEndOfFrameOneShot += [ this ]()
-		{
-			_listWidgetMutex.lock();
-			_listWidget->scrollToBottom();
-			_listWidgetMutex.unlock();
-		};
+		QApplication::postEvent( this, new QEvent( QT::Util::CustomEvent::ConsoleScrollToBottom ) );
 	}
 
 	void Console::_flush()
@@ -103,6 +106,19 @@ namespace VTX::UI::QT::DockWidget
 		_listWidget->removeItemWidget( itemToRemove );
 		_listWidgetMutex.unlock();
 		delete itemToRemove;
+	}
+
+	Console::ScrollToBottomFilter::ScrollToBottomFilter( Console & p_ ) : _console( &p_ ) {}
+
+	bool Console::ScrollToBottomFilter::eventFilter( QObject * object, QEvent * event )
+	{
+		if ( reinterpret_cast<uint64_t>( object ) == reinterpret_cast<uint64_t>( _console )
+			 and event->type() == QT::Util::CustomEvent::ConsoleScrollToBottom )
+		{
+			_console->scrollToBottom();
+			return false;
+		}
+		return true;
 	}
 
 } // namespace VTX::UI::QT::DockWidget

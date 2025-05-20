@@ -163,6 +163,19 @@ namespace VTX::UI::QT::Util
 	// Extract uint64 number from input textbox, or UINT64_MAX if the number couldn't be red. Do nothing if src is
 	// nullptr.
 	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept;
+
+	/**
+	 * @brief Namespace containing event types that are defined by VTX for diverse purpose. Having all custom events
+	 * here allows to quickly see if two values overlap so nothing clashes.
+	 */
+	namespace CustomEvent
+	{
+		/**
+		 * @brief Event type used by the console so post an event responsible for scrolling down to the bottom.
+		 */
+		const QEvent::Type ConsoleScrollToBottom = static_cast<QEvent::Type>( 1001 );
+	} // namespace CustomEvent
+
 } // namespace VTX::UI::QT::Util
 
 #endif
