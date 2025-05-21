@@ -7,6 +7,7 @@
 #include "python_binding/wrapper/module.hpp"
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
+#include <pybind11/eval.h>
 #include <source_location>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -76,17 +77,27 @@ namespace VTX::PythonBinding
 
 	void Interpretor::clearBinders() { _impl->clearBinders(); }
 
-	void Interpretor::runCommand( const std::string & p_line ) const
+	std::string Interpretor::runCommand( const std::string & p_line ) const
 	{
 		try
 		{
-			VTX_DEBUG( "Run Command : {}", p_line );
-			pybind11::exec( p_line );
+			VTX_DEBUG( "Run Python Command : {}", p_line );
+			auto result = pybind11::eval( p_line );
+			if ( not result.is_none() )
+				return result.attr( "__repr__" )().cast<std::string>();
 		}
-		catch ( const pybind11::error_already_set & e )
+		catch ( const pybind11::error_already_set & )
 		{
-			throw( VTX::CommandException( p_line, e.what() ) );
+			try
+			{
+				pybind11::exec( p_line );
+			}
+			catch ( const pybind11::error_already_set & ee )
+			{
+				throw( VTX::CommandException( p_line, ee.what() ) );
+			}
 		}
+		return {};
 	}
 	void Interpretor::runScript( const FilePath & p_path ) const
 	{

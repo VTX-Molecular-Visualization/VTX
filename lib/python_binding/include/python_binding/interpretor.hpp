@@ -23,12 +23,33 @@ namespace VTX::PythonBinding
 		Interpretor();
 		~Interpretor();
 
+		/**
+		 * @brief Register a binder. This allow external code to bind python function and classes to c++ code.
+		 * @param p_binder
+		 */
 		void add( Binder p_binder );
 
 		void clearBinders();
 
-		void			runCommand( const std::string & p_line ) const;
-		void			runScript( const FilePath & p_path ) const;
+		/**
+		 * @brief Run the input command and return its result's repr() (i.e. string representation of the instance) or
+		 * an empty string if there is no return value.
+		 * @param p_line
+		 * @return
+		 */
+		std::string runCommand( const std::string & p_line ) const;
+
+		/**
+		 * @brief Run the script located in the path in argument.
+		 * @param p_path
+		 */
+		void runScript( const FilePath & p_path ) const;
+
+		/**
+		 * @brief Load python script from input path as a module and return it.
+		 * @param p_path
+		 * @return
+		 */
 		Wrapper::Module loadModule( const FilePath & p_path ) const;
 
 		const PyTXModule & getModule() const;
