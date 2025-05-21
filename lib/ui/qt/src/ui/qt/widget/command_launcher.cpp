@@ -11,10 +11,8 @@ namespace VTX::UI::QT::Widget
 	{
 		setPlaceholderText( "/command" );
 		_setupCompleter();
-		setCompleter( _completer );
 		setClearButtonEnabled( true );
 
-		connect( this, &QLineEdit::textChanged, this, &CommandLauncher::_updateCompleter );
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
 	}
 
@@ -88,39 +86,23 @@ namespace VTX::UI::QT::Widget
 		clear();
 	}
 
-	void CommandLauncher::_updateCompleter()
+	void CommandLauncher::_setupCompleter()
 	{
-		if ( _completerUpdated )
-			return;
-
-		_completerUpdated					 = true;
 		std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
 
 		QStringList strList;
 
-		strList.emplaceBack( "resetCamera()" );
-		strList.emplaceBack( "quit()" );
-
+		VTX_INFO( "Found functions :" );
 		for ( auto & it_cmd : allCommands )
+		{
+			VTX_INFO( "{}", it_cmd );
 			strList.emplaceBack();
+		}
 
 		_completer = new QCompleter( strList, this );
 		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
 		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
 		setCompleter( _completer );
-	}
-	void CommandLauncher::_setupCompleter()
-	{
-		// This method wont be looking for the list of available functions as they are unavailable when the
-		// command_launcher is created
-		QStringList strList = QStringList();
-
-		strList.emplaceBack( "resetCamera()" );
-		strList.emplaceBack( "quit()" );
-
-		_completer = new QCompleter( strList, this );
-		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
-		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
 	}
 
 } // namespace VTX::UI::QT::Widget

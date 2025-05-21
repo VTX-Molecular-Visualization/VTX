@@ -18,11 +18,9 @@ namespace VTX::UI::QT::Widget
 		virtual void keyPressEvent( QKeyEvent * event ) override;
 
 	  private:
-		void _updateCompleter();
 		void _setupCompleter();
 		void _launchCommand();
 
-		bool						_completerUpdated = false;
 		QPointer<QCompleter>		_completer;
 		::VTX::Util::HistoryBrowser _history;
 	};
