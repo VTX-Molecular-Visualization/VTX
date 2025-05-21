@@ -79,10 +79,14 @@ namespace VTX::PythonBinding
 
 	std::string Interpretor::runCommand( const std::string & p_line ) const
 	{
+		// The idea is to try to execute the command as if we expected a return value. If an exception is thrown, then
+		// it might mean that we shouldn't expect a return value. So we execute it as is. If it cashes again, it means
+		// that the command isn't viable at all.
+
 		try
 		{
 			VTX_DEBUG( "Run Python Command : {}", p_line );
-			auto result = pybind11::eval( p_line );
+			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
 			if ( not result.is_none() )
 				return result.attr( "__repr__" )().cast<std::string>();
 		}
