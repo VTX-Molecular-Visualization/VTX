@@ -15,7 +15,7 @@ namespace VTX::PythonBinding
 	};
 
 	/**
-	 * @brief Class responsible for associating actions with python commands
+	 * @brief Generic class responsible for associating actions with python commands
 	 */
 	class Binder
 	{
