@@ -73,8 +73,10 @@ namespace VTX::UI::QT::Widget
 		{
 			try
 			{
-				VTX_PYTHON( "{}", _history.last() );
-				INTERPRETOR().runCommand( _history.last() );
+				VTX_PYTHON_IN( "{}", _history.last() );
+				std::string rslt = INTERPRETOR().runCommand( _history.last() );
+				if ( not rslt.empty() )
+					VTX_PYTHON_OUT( "{}", rslt );
 			}
 			catch ( CommandException & p_e )
 			{

@@ -85,9 +85,13 @@ namespace VTX::UI::QT::DockWidget
 					// python exclusively is nice.
 			newItem->setForeground( Qt::green );
 		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON )
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_IN )
 		{
 			newItem->setForeground( Qt::green );
+		}
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_OUT )
+		{
+			newItem->setForeground( Qt::darkGreen );
 		}
 
 		newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );

@@ -22,7 +22,8 @@ namespace VTX
 			LOG_WARNING	 = spdlog::level::warn,
 			LOG_ERROR	 = spdlog::level::err,
 			LOG_CRITICAL = spdlog::level::critical,
-			LOG_PYTHON
+			LOG_PYTHON_IN,
+			LOG_PYTHON_OUT
 		};
 
 		// Log info sent by callback
@@ -96,9 +97,15 @@ namespace VTX
 	}
 
 	template<typename... Args>
-	inline void VTX_PYTHON( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
+	inline void VTX_PYTHON_IN( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON, p_fmt, std::forward<Args>( p_args )... );
+		LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON_IN, p_fmt, std::forward<Args>( p_args )... );
+	}
+
+	template<typename... Args>
+	inline void VTX_PYTHON_OUT( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
+	{
+		LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON_OUT, p_fmt, std::forward<Args>( p_args )... );
 	}
 } // namespace VTX
 
