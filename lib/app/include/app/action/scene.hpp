@@ -11,6 +11,7 @@
 
 namespace VTX::App::Action::Scene
 {
+
 	class LoadSystem final : public App::Core::Action::BaseAction
 	{
 	  public:
@@ -27,22 +28,6 @@ namespace VTX::App::Action::Scene
 		std::string * const _buffer = nullptr;
 
 		std::vector<Component::Chemistry::System *> _trajectoryTargets;
-	};
-
-	// TODO: move to other file?
-	class DownloadSystem final : public App::Core::Action::BaseAction
-	{
-	  public:
-		explicit DownloadSystem( const std::string_view p_url, const FilePath & p_filename ) :
-			_url( p_url ), _filename( p_filename.filename() )
-		{
-		}
-
-		void execute() override;
-
-	  private:
-		const std::string_view _url;
-		const FilePath		   _filename;
 	};
 
 	class CreateViewpoint final : public App::Core::Action::BaseAction
@@ -62,5 +47,10 @@ namespace VTX::App::Action::Scene
 		Quatf _rotation;
 	};
 
+	class ClearScene final : public Core::Action::BaseAction
+	{
+	  public:
+		void execute() override;
+	};
 } // namespace VTX::App::Action::Scene
 #endif

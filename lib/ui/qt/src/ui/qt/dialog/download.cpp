@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QVBoxLayout>
 #include <app/action/scene.hpp>
+#include <app/action/io.hpp>
 #include <app/core/network/network_system.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -132,7 +133,7 @@ namespace VTX::UI::QT::Dialog
 						urlReplaced = urlReplaced.replace( _PDB_ID_TEMPLATE, _pdb );
 					}
 
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+					App::ACTION_SYSTEM().execute<App::Action::Io::DownloadSystem>(
 						urlReplaced.toStdString(), _pdb.toStdString() + ".pdb"
 					);
 				}
