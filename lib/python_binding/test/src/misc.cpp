@@ -4,7 +4,7 @@
 #include <pybind11/embed.h>
 #include <python_binding/interpretor.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][interpretor]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding][interpretor]" )
 {
 	VTX::App::Test::Util::PythonFixture f;
 

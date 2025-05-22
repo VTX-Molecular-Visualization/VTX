@@ -6,8 +6,8 @@
 
 namespace VTX::PythonBinding
 {
-	FilterResult::FilterResult( bool p_pass, std::string p_why ) : _harmful( true ), _why(std::move( p_why )) {}
-	FilterResult::FilterResult( bool p_pass ) : _harmful( true ) {}
+	FilterResult::FilterResult( bool p_pass, std::string p_why ) : _harmful( p_pass ), _why( std::move( p_why ) ) {}
+	FilterResult::FilterResult( bool p_pass ) : _harmful( p_pass ) {}
 	FilterResult::operator bool() const noexcept { return _harmful; }
 	bool				FilterResult::isHarmful() const noexcept { return _harmful; }
 	const std::string & FilterResult::why() const noexcept
