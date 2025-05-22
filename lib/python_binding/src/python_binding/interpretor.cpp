@@ -3,6 +3,7 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/log_redirection.hpp"
+#include "python_binding/command_filter.hpp"
 #include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <io/internal/filesystem.hpp>
@@ -82,6 +83,9 @@ namespace VTX::PythonBinding
 		// The idea is to try to execute the command as if we expected a return value. If an exception is thrown, then
 		// it might mean that we shouldn't expect a return value. So we execute it as is. If it cashes again, it means
 		// that the command isn't viable at all.
+
+		if ( FilterResult isHarmful = filter(p_line) )
+			return isHarmful.why();
 
 		try
 		{
