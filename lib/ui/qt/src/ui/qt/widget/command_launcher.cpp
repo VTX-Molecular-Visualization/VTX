@@ -9,12 +9,17 @@ namespace VTX::UI::QT::Widget
 
 	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
-		setPlaceholderText( "/command" );
+		setPlaceholderText( "help()" );
 		_setupCompleter();
 		setClearButtonEnabled( true );
 
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
 	}
+
+	void CommandLauncher::launchCommand( std::string p_) { 
+		_history.add( std::move(p_) );
+		_executeLastHistoryEntry();
+			}
 
 	void CommandLauncher::keyPressEvent( QKeyEvent * event )
 	{
@@ -40,50 +45,31 @@ namespace VTX::UI::QT::Widget
 
 	void CommandLauncher::_launchCommand()
 	{
-		_history.resetBrowsing();
 		if ( text().isEmpty() )
 		{
 			return;
 		}
 
 		_history.add( text().toStdString() );
-
-		if ( _history.last() == "/command" )
-		{
-			try
-			{
-				auto			  functions = INTERPRETOR().getModule().commands().getFunctionList();
-				std::stringstream out;
-				out << "Here is the list of the functions : " << std::endl; // TODO : Do it better
-				for ( auto & function : functions )
-					out << function << ", ";
-				out << std::endl;
-
-				VTX_INFO( "{}", out.str() );
-			}
-			catch ( CommandException & p_e )
-			{
-				clear();
-				throw p_e;
-			}
-		}
-		else
-		{
-			try
-			{
-				VTX_PYTHON_IN( "{}", _history.last() );
-				std::string rslt = INTERPRETOR().runCommand( _history.last() );
-				if ( not rslt.empty() )
-					VTX_PYTHON_OUT( "{}", rslt );
-			}
-			catch ( CommandException & p_e )
-			{
-				clear();
-				throw p_e;
-			}
-		}
-
 		clear();
+		_executeLastHistoryEntry();
+	}
+
+	void CommandLauncher::_executeLastHistoryEntry() {
+		_history.resetBrowsing();
+
+		try
+		{
+			VTX_PYTHON_IN( "{}", _history.last() );
+			std::string rslt = INTERPRETOR().runCommand( _history.last() );
+			if ( not rslt.empty() )
+				VTX_PYTHON_OUT( "{}", rslt );
+		}
+		catch ( CommandException & p_e )
+		{
+			throw p_e;
+		}
+
 	}
 
 	void CommandLauncher::_setupCompleter()
