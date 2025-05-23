@@ -12,7 +12,6 @@
 
 namespace VTX::UI::QT::Dialog
 {
-
 	Download::Download()
 	{
 		setWindowTitle( "Download" );

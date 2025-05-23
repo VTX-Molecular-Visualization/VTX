@@ -8,7 +8,6 @@
 
 namespace VTX::App::Action::Io
 {
-
 	void Open::execute()
 	{
 		FilePath scenePath = "";
