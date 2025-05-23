@@ -16,12 +16,17 @@ namespace VTX::Util::Url
 		{
 			using namespace std;
 			array<char, g_urlSize> ret { '\0' };
-			string				   buf { g_rcsbUrl };
+			size_t				   idx = 0, offset = 0;
 
-			buf += g_systemReplacementToken;
-			buf += g_systemExtension;
-			for ( int idx = 0; idx < buf.size(); idx++ )
-				ret[ idx ] = buf[ idx ];
+			for ( ; idx < sizeof( g_rcsbUrl ) - 1; idx++ )
+				ret[ idx ] = g_rcsbUrl[ idx ];
+			offset = idx;
+			for ( ; idx - offset < sizeof( g_systemReplacementToken ) - 1; idx++ )
+				ret[ idx ] = g_systemReplacementToken[ idx - offset ];
+			offset = idx;
+			for ( ; idx - offset < sizeof( g_systemExtension ) - 1; idx++ )
+				ret[ idx ] = g_systemExtension[ idx - offset ];
+
 			return ret;
 		}
 		constexpr const std::array<char, g_urlSize> g_fullRcsbUrl { _compileUrl() };
