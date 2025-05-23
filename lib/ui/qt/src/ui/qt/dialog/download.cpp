@@ -123,16 +123,16 @@ namespace VTX::UI::QT::Dialog
 						return;
 					}
 					Util::Url::UrlTemplate urlReplaced { _url.toStdString().data() };
-					if ( not urlReplaced.hasReplacementToken() )
-					{
-						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
-					}
-					else
+					if ( urlReplaced.hasReplacementToken() )
 					{
 						App::ACTION_SYSTEM().execute<App::Action::Io::DownloadSystem>(
 							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
 							_pdb.toStdString() + ".pdb"
 						);
+					}
+					else
+					{
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
 					}
 				}
 

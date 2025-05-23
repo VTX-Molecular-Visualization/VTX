@@ -48,18 +48,21 @@ namespace VTX::App::Action::Io
 	class DownloadSystem final : public App::Core::Action::BaseAction
 	{
 	  public:
+		DownloadSystem( VTX::Util::Url::SystemId );
 		DownloadSystem( VTX::Util::Url::SystemId, FilePath );
 		DownloadSystem( VTX::Util::Url::UrlFull, FilePath );
-		explicit DownloadSystem( const std::string_view p_url, const FilePath & p_filename ) :
-			_url( p_url ), _filename( p_filename.filename() )
-		{
-		}
+
+		/**
+		 * @brief This ctor stands for python binding purpose and need the system ID as an input
+		 * @param p_systemId
+		 */
+		DownloadSystem( const char * p_systemId );
 
 		void execute() override;
 
 	  private:
-		const std::string_view _url;
-		const FilePath		   _filename;
+		const VTX::Util::Url::UrlFull _url;
+		const FilePath				  _filename;
 	};
 
 	class SaveScene final : public Core::Action::BaseAction

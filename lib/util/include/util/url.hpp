@@ -16,7 +16,7 @@ namespace VTX::Util::Url
 	class SystemId
 	{
 	  public:
-		explicit inline SystemId( const char * p_ ) : str( p_ ) {}
+		/*explicit*/ inline SystemId( const char * p_ ) : str( p_ ) {}
 
 		std::string str;
 		inline		operator std::string() noexcept { return str; }

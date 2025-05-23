@@ -36,13 +36,20 @@ namespace VTX::App::Action::Io
 		}
 	}
 
+	DownloadSystem::DownloadSystem( VTX::Util::Url::SystemId p_id ) :
+		_url( std::move( p_id ) ), _filename( p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() )
+	{
+	}
+
+	DownloadSystem::DownloadSystem( const char * p_systemId ) : DownloadSystem( Util::Url::SystemId( p_systemId ) ) {}
+
 	DownloadSystem::DownloadSystem( VTX::Util::Url::SystemId p_id, FilePath p_path ) :
 		DownloadSystem( VTX::Util::Url::UrlFull( p_id ), p_path )
 	{
 	}
 
 	DownloadSystem::DownloadSystem( VTX::Util::Url::UrlFull p_url, FilePath p_path ) :
-		_url( p_url.str.data() ), _filename( p_path )
+		_url( std::move( p_url ) ), _filename( p_path )
 	{
 	}
 
@@ -51,7 +58,7 @@ namespace VTX::App::Action::Io
 		std::string	   data;
 		const FilePath cachePath = Filesystem::getCachePath( _filename );
 
-		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
+		NETWORK_SYSTEM().downloadFile( _url.str.data(), _filename.string(), &data, true );
 		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
 	}
 

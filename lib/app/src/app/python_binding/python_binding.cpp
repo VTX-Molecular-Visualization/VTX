@@ -1,10 +1,10 @@
 
 #include "app/python_binding/python_binding.hpp"
 #include "app/action/application.hpp"
-#include "app/python_binding/selection/binder.hpp"
-#include <python_binding/action.hpp>
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
+#include "app/python_binding/selection/binder.hpp"
+#include <python_binding/action.hpp>
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/wrapper/arg.hpp>
@@ -23,6 +23,9 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::Application::NewScene>( "newScene", "Clear scene." );
 		commands.bindAction<App::Action::Io::OpenScene, const std::string &>(
 			"openScene", "Open scene at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
+		);
+		commands.bindAction<App::Action::Io::DownloadSystem, const char *>(
+			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
 		commands.bindAction<App::Action::Io::SaveScene, const std::string &>(
 			"save", "Save scene.", VTX::PythonBinding::Wrapper::VArg<std::string>( "path", "" )
