@@ -1,12 +1,10 @@
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
-#include "app/core/network/network_system.hpp"
-#include "app/filesystem.hpp"
 #include "app/core/action/action_system.hpp"
+#include "app/core/network/network_system.hpp"
 #include "app/core/settings/settings_system.hpp"
-
+#include "app/filesystem.hpp"
 #include <util/filesystem.hpp>
-
 
 namespace VTX::App::Action::Io
 {
@@ -38,6 +36,16 @@ namespace VTX::App::Action::Io
 		}
 	}
 
+	DownloadSystem::DownloadSystem( VTX::Util::Url::SystemId p_id, FilePath p_path ) :
+		DownloadSystem( VTX::Util::Url::UrlFull( p_id ), p_path )
+	{
+	}
+
+	DownloadSystem::DownloadSystem( VTX::Util::Url::UrlFull p_url, FilePath p_path ) :
+		_url( p_url.str.data() ), _filename( p_path )
+	{
+	}
+
 	void DownloadSystem::execute()
 	{
 		std::string	   data;
@@ -46,8 +54,6 @@ namespace VTX::App::Action::Io
 		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
 		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
 	}
-
-	
 
 	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void LoadSettings::execute() {}
@@ -58,4 +64,4 @@ namespace VTX::App::Action::Io
 	void SaveScene::execute() {}
 
 	void OpenScene::execute() {}
-}
+} // namespace VTX::App::Action::Io

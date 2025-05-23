@@ -2,8 +2,17 @@
 #define __VTX_APP_ACTION_IO__
 
 #include "app/core/action/base_action.hpp"
+#include <util/filesystem.hpp>
 #include <util/types.hpp>
+#include <util/url.hpp>
 #include <vector>
+
+namespace VTX::Util::Url
+{
+
+	class SystemId;
+	class UrlFull;
+} // namespace VTX::Util::Url
 
 namespace VTX::App::Action::Io
 {
@@ -36,11 +45,11 @@ namespace VTX::App::Action::Io
 		//	= std::vector<Component::Chemistry::System *>();
 	};
 
-	
-
 	class DownloadSystem final : public App::Core::Action::BaseAction
 	{
 	  public:
+		DownloadSystem( VTX::Util::Url::SystemId, FilePath );
+		DownloadSystem( VTX::Util::Url::UrlFull, FilePath );
 		explicit DownloadSystem( const std::string_view p_url, const FilePath & p_filename ) :
 			_url( p_url ), _filename( p_filename.filename() )
 		{
@@ -115,5 +124,5 @@ namespace VTX::App::Action::Io
 		FilePath _path = FilePath();
 	};
 
-} // namespace VTX::App::Action::Application
+} // namespace VTX::App::Action::Io
 #endif
