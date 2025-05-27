@@ -34,7 +34,7 @@ namespace VTX::App::PythonBinding
 			const std::string &,
 			Util::Image::E_FORMAT,
 			const size_t &,
-			const size_t>(
+			const size_t &>(
 			"makeSnapshot",
 			"Take a snapshot and generate a file at [arg1] location of [arg2] format with dimension of [arg3]x[arg4].",
 			VTX::PythonBinding::Wrapper::Arg( "path" ),
