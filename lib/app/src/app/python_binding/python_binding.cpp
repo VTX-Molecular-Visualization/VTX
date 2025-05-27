@@ -70,6 +70,31 @@ namespace VTX::App::PythonBinding
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
 		commands.bindAction<App::Action::Camera::Reset>( "resetCamera", "Put the camera back in the initial space." );
+		commands.bindAction<
+			App::Action::Camera::MoveCamera,
+			float,
+			float,
+			float,
+			float,
+			float,
+			float,
+			float,
+			float,
+			float,
+			float>(
+			"test",
+			"???",
+			VTX::PythonBinding::Wrapper::Arg( "translation_x" ),
+			VTX::PythonBinding::Wrapper::Arg( "translation_y" ),
+			VTX::PythonBinding::Wrapper::Arg( "translation_z" ),
+			VTX::PythonBinding::Wrapper::Arg( "rotation_x" ),
+			VTX::PythonBinding::Wrapper::Arg( "rotation_y" ),
+			VTX::PythonBinding::Wrapper::Arg( "rotation_z" ),
+			VTX::PythonBinding::Wrapper::Arg( "rotation_w" ),
+			VTX::PythonBinding::Wrapper::Arg( "scale_x" ),
+			VTX::PythonBinding::Wrapper::Arg( "scale_y" ),
+			VTX::PythonBinding::Wrapper::Arg( "scale_z" )
+		);
 	}
 
 	void VTXAppBinder::importHeaders()

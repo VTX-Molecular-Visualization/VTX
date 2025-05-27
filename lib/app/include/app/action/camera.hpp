@@ -38,20 +38,42 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Move the camera in a straight line from the current position to the one in arguments
 	 */
-	class MoveCameraPosition final : public Core::Action::BaseAction
+	class MoveCamera final : public Core::Action::BaseAction
 	{
 	  public:
-		inline MoveCameraPosition( float p_x, float p_y, float p_z, float p_tmp = 1.f ) :
-			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) ), _tmp( std::move( p_tmp ) )
+		inline MoveCamera(
+			float p_translationX,
+			float p_translationY,
+			float p_translationZ,
+			float p_rotationW,
+			float p_rotationX,
+			float p_rotationY,
+			float p_rotationZ,
+			float p_scaleX,
+			float p_scaleY,
+			float p_scaleZ
+		) :
+			_translationX( std::move( p_translationX ) ), _translationY( std::move( p_translationY ) ),
+			_translationZ( std::move( p_translationZ ) ), _rotationW( std::move( p_rotationW ) ),
+			_rotationX( std::move( p_rotationX ) ), _rotationY( std::move( p_rotationY ) ),
+			_rotationZ( std::move( p_rotationZ ) ), _scaleX( std::move( p_scaleX ) ), _scaleY( std::move( p_scaleY ) ),
+			_scaleZ( std::move( p_scaleZ ) )
+
 		{
 		}
 		void execute() override;
 
 	  private:
-		float _x   = 0.f;
-		float _y   = 0.f;
-		float _z   = 0.f;
-		float _tmp = 1.f; // Idk yet if this should be a speed, a movement per frame, an animation time ...
+		float _translationX = 0.f;
+		float _translationY = 0.f;
+		float _translationZ = 0.f;
+		float _rotationW	= 0.f;
+		float _rotationX	= 0.f;
+		float _rotationY	= 0.f;
+		float _rotationZ	= 0.f;
+		float _scaleX		= 0.f;
+		float _scaleY		= 0.f;
+		float _scaleZ		= 0.f;
 	};
 
 	/**

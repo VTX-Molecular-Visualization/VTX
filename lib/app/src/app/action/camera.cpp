@@ -58,4 +58,18 @@ namespace VTX::App::Action::Camera
 	}
 	Orient::Orient() : _target( App::SCENE().getAABB() ) {}
 
+	void MoveCamera::execute()
+	{
+		auto & camera = SCENE().getCamera();
+		camera.getTransform().applyTransform(
+			VTX::Util::Math::Transform(
+				Vec3f( _translationX, _translationY, _translationZ ),
+				Quatf( _rotationX, _rotationY, _rotationZ, _rotationW ),
+				Vec3f( _scaleX, _scaleY, _scaleZ )
+			)
+		);
+	}
+
+	void SetCameraPosition::execute() {}
+
 } // namespace VTX::App::Action::Camera
