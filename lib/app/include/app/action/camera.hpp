@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_CAMERA__
 
 #include <app/core/action/base_action.hpp>
+#include <util/math/aabb.hpp>
 
 namespace VTX::App::Action::Camera
 {
@@ -69,6 +70,19 @@ namespace VTX::App::Action::Camera
 		float _x = 0.f;
 		float _y = 0.f;
 		float _z = 0.f;
+	};
+
+	class Orient final : public App::Core::Action::BaseAction
+	{
+	  public:
+		inline Orient( const float & p_x, const float & p_y, const float & p_z ) : _target( Vec3f { p_x, p_y, p_z } ) {}
+		inline Orient( const VTX::Util::Math::AABB & p_target ) : _target( p_target ) {}
+		Orient();
+
+		void execute() override;
+
+	  private:
+		const Util::Math::AABB _target;
 	};
 } // namespace VTX::App::Action::Camera
 #endif

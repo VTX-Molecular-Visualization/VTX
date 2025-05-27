@@ -2,6 +2,10 @@
 #include "app/animation/orient.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
+#include <app/application/scene.hpp>
+#include <app/component/controller.hpp>
+#include <app/component/render/camera.hpp>
+#include <util/collection.hpp>
 
 namespace VTX::App::Action::Camera
 {
@@ -47,5 +51,11 @@ namespace VTX::App::Action::Camera
 		camera.getTransform().setRotation( QUATF_ID );
 		camera.setTargetWorld( App::SCENE().getAABB().centroid() );
 	}
+	void Orient::execute()
+	{
+		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
+		component.launchAnimation<App::Animation::Orient>( App::SCENE().getCamera(), _target );
+	}
+	Orient::Orient() : _target( App::SCENE().getAABB() ) {}
 
 } // namespace VTX::App::Action::Camera

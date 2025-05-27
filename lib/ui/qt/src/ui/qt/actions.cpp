@@ -2,7 +2,6 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
-#include <app/action/animation.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/controller.hpp>
@@ -281,7 +280,7 @@ namespace VTX::UI::QT::Action
 			name	= "Orient";
 			tip		= "Orient camera on selection";
 			icon	= "sprite/camera/orient.png";
-			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Animation::Orient>(); };
+			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::Orient>(); };
 		}
 
 		Reset::Reset()

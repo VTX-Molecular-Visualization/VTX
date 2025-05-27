@@ -1,5 +1,4 @@
 #include "app/vtx_app.hpp"
-#include "app/action/animation.hpp"
 #include "app/action/application.hpp"
 #include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
