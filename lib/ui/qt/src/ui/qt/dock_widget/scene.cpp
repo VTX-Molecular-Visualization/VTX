@@ -1,7 +1,7 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include <QAbstractItemModel>
 #include <QHeaderView>
-#include <app/action/animation.hpp>
+#include <app/action/camera.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/visibility.hpp>
 #include <app/application/scene.hpp>
@@ -10,9 +10,9 @@
 #include <app/component/chemistry/residue.hpp>
 #include <app/component/scene/scene_item_component.hpp>
 #include <app/selection/system_data.hpp>
+#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 #include <unordered_set>
 #include <util/string.hpp>
-#include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -326,7 +326,7 @@ namespace VTX::UI::QT::DockWidget
 
 				assert( _systemComponents.contains( topLevelWidget ) );
 
-				using namespace App::Action::Animation;
+				using namespace App::Action::Camera;
 				switch ( depth )
 				{
 				case E_DEPTH::SYSTEM:

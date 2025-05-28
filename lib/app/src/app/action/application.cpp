@@ -10,44 +10,8 @@ namespace VTX::App::Action::Application
 {
 	void NewScene::execute() { SCENE().reset(); }
 
-	void OpenScene::execute() {}
 
-	void SaveScene::execute() {}
-	void ClearScene::execute() { SCENE().reset(); }
 
-	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
-	void LoadSettings::execute() {}
-	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
-	void SaveSettings::execute() {}
-	void ReloadSettings::execute() {}
-	void ResetSettings::execute() { SETTINGS_SYSTEM().reset(); }
-
-	void Open::execute()
-	{
-		FilePath scenePath = "";
-		for ( const FilePath & path : _paths )
-		{
-			if ( path.extension() == "vtx" )
-			{
-				scenePath = path;
-				break;
-			}
-		}
-
-		if ( not scenePath.empty() )
-		{
-			Action::Application::OpenScene openSceneAction = Action::Application::OpenScene( scenePath );
-			openSceneAction.execute();
-		}
-		else
-		{
-			for ( const FilePath & systemPath : _paths )
-			{
-				Action::Scene::LoadSystem loadSystemAction = Action::Scene::LoadSystem( systemPath );
-				loadSystemAction.execute();
-			}
-		}
-	}
 
 	void Quit::execute()
 	{

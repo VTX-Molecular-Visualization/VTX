@@ -88,7 +88,7 @@ namespace VTX::Tool::Mdprep::ui
 			"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system to "
 			"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
 			"doesn't support "
-			"yet</i> automatic MD preparation for <b>small organic systems</b>. Hence, any visible "
+			"yet</i> automatic MD preparation for <b>small organic molecule</b>. Hence, any visible "
 			"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
 			buttonLabel
 		) );

@@ -1,13 +1,8 @@
-import vtx_python_api.Command
-import os
+import vtx_python_api.API as api
 
-def openMultipleFile(p_folder, prefix):
+print("Creating a Vec3f but using it wrong")
+c1 = api.Vec3f()
+c1.x = 13.0
+c1.y = 14.0
+c1.zz = 15.0
 
-    for filename in os.listdir(p_folder):
-        fullpath = os.path.join(p_folder, filename)
-        if os.path.isfile(fullpath) and filename.startswith(prefix) :
-            vtx_python_api.Command.openFile(fullpath)
-
-
-print("Open all files in data starting with 7R7P")
-openMultipleFile("./data", "7R7P", gnangnangipgez$)

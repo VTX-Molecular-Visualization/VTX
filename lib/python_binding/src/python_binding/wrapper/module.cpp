@@ -1,4 +1,5 @@
 #include "python_binding/wrapper/module.hpp"
+#include "python_binding/binding/vtx_module.hpp"
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 #include <util/logger.hpp>
@@ -38,13 +39,20 @@ namespace VTX::PythonBinding::Wrapper
 
 		try
 		{
-			auto				 dirObj		 = _pyModule.attr( "dir" );
-			auto				 direReturn	 = dirObj();
-			const pybind11::list commandList = direReturn.cast<pybind11::list>();
+			pybind11::list pyList
+				= pybind11::eval( fmt::format( "dir({}.Command)", vtx_module_name() ) ).cast<pybind11::list>();
 
-			res.reserve( commandList.size() );
+			res.reserve( pyList.size() );
 
-			for ( const auto & value : commandList )
+			for ( const auto & value : pyList )
+			{
+				res.emplace_back( value.cast<std::string>() );
+			}
+			pyList = pybind11::eval( fmt::format( "dir({}.API)", vtx_module_name() ) ).cast<pybind11::list>();
+
+			res.reserve( res.size() + pyList.size() );
+
+			for ( const auto & value : pyList )
 			{
 				res.emplace_back( value.cast<std::string>() );
 			}

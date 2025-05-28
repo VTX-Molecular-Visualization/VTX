@@ -6,12 +6,12 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 #include <app/core/network/network_system.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
-
 	Download::Download()
 	{
 		setWindowTitle( "Download" );
@@ -121,20 +121,18 @@ namespace VTX::UI::QT::Dialog
 						VTX_ERROR( "PDB id must be 4 characters" );
 						return;
 					}
-
-					QString urlReplaced = _url;
-					if ( not urlReplaced.contains( _PDB_ID_TEMPLATE ) )
+					Util::Url::UrlTemplate urlReplaced { _url.toStdString().data() };
+					if ( urlReplaced.hasReplacementToken() )
 					{
-						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
+						App::ACTION_SYSTEM().execute<App::Action::Io::DownloadSystem>(
+							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
+							_pdb.toStdString() + ".pdb"
+						);
 					}
 					else
 					{
-						urlReplaced = urlReplaced.replace( _PDB_ID_TEMPLATE, _pdb );
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
 					}
-
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
-						urlReplaced.toStdString(), _pdb.toStdString() + ".pdb"
-					);
 				}
 
 				save();

@@ -3,8 +3,8 @@
 
 #include "app/component/scene/selectable.hpp"
 #include "app/core/ecs/ecs_system.hpp"
-#include "concepts.hpp"
-#include "selection_data.hpp"
+#include "app/selection/concepts.hpp"
+#include "app/selection/selection_data.hpp"
 #include <concepts>
 #include <map>
 #include <set>
@@ -367,7 +367,8 @@ namespace VTX::App::Selection
 		SelectionDataSet	  _items				= SelectionDataSet();
 		const SelectionData * _currentSelectionData = nullptr;
 
-		const std::unique_ptr<SelectionData> & _getSelectionDataPtr( const Component::Scene::Selectable & p_selectable
+		const std::unique_ptr<SelectionData> & _getSelectionDataPtr(
+			const Component::Scene::Selectable & p_selectable
 		) const;
 
 		void _setCurrentObject( const SelectionData * const p_model );

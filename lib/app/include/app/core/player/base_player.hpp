@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_CORE_PLAYER_BASE_PLAYER__
 #define __VTX_APP_CORE_PLAYER_BASE_PLAYER__
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <util/callback.hpp>

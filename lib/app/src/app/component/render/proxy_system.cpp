@@ -44,7 +44,7 @@ namespace VTX::App::Component::Render
 		const std::vector<uchar> residueColors = _generateResidueColors( molStruct );
 		const std::vector<uint>	 residueIds	   = _generateResidueUids( molComp );
 
-		std::vector<Vec3f> trajFrame = molStruct.trajectory.getCurrentFrame();
+		std::vector<Vec3f> & trajFrame = molStruct.trajectory.getCurrentFrame();
 
 		_proxy = std::make_unique<VTX::Renderer::Proxy::System>( VTX::Renderer::Proxy::System {
 			&transformComp.getTransform().get(),

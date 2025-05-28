@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 #define __VTX_PYTHON_BINDING_WRAPPER_MODULE__
 
+#include "python_binding/api/arguments.hpp"
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/object.hpp"
 #include "python_binding/wrapper/pybind11_extra_convertor.hpp"
@@ -73,6 +74,8 @@ namespace VTX::PythonBinding
 			const std::string & getModulePath() const { return _modulePath; }
 
 			std::vector<std::string> getFunctionList() const;
+
+			inline void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
 
 		  private:
 			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :

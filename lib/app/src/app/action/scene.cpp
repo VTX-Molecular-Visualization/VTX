@@ -1,12 +1,12 @@
 #include "app/action/scene.hpp"
-#include "app/action/animation.hpp"
+#include "app/action/camera.hpp"
 #include "app/application/scene.hpp"
-#include "app/core/ecs/ecs_system.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/action/action_system.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/core/network/network_system.hpp"
 #include "app/entity/system.hpp"
 #include "app/entity/viewpoint.hpp"
@@ -15,19 +15,11 @@
 
 namespace VTX::App::Action::Scene
 {
+
 	void LoadSystem::execute()
 	{
 		const auto entity = ECS_REGISTRY().createEntity<Entity::System>( _path.string(), _buffer );
-		ACTION_SYSTEM().execute<App::Action::Animation::Orient>( App::SCENE().getAABB() );
-	}
-
-	void DownloadSystem::execute()
-	{
-		std::string	   data;
-		const FilePath cachePath = Filesystem::getCachePath( _filename );
-
-		NETWORK_SYSTEM().downloadFile( _url, _filename.string(), &data, true );
-		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
+		ACTION_SYSTEM().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
 	}
 
 	CreateViewpoint::CreateViewpoint() : CreateViewpoint( SCENE().getCamera() ) {}
@@ -43,5 +35,7 @@ namespace VTX::App::Action::Scene
 		viewpoint.setPosition( _position );
 		viewpoint.setRotation( _rotation );
 	}
+
+	void ClearScene::execute() { SCENE().reset(); }
 
 } // namespace VTX::App::Action::Scene

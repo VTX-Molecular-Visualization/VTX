@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_EXCEPTIONS__
 #define __VTX_UTIL_EXCEPTIONS__
 
-// #include <format>
 #include <fmt/format.h>
 #include <stdexcept>
 #include <string>

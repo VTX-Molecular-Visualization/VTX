@@ -7,10 +7,10 @@
 #include <QPointer>
 #include <QRadioButton>
 #include <util/string.hpp>
+#include <util/url.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
-
 	class Download : public Core::BaseDialog<Download>, public Savable
 	{
 	  public:
@@ -23,8 +23,9 @@ namespace VTX::UI::QT::Dialog
 		// TODO: check if file exists in cache.
 
 		// TODO: move to json.
-		inline static const QString _PDB_ID_TEMPLATE = "[PDB_ID]";
-		inline static const QString _DEFAULT_URL	 = "https://files.rcsb.org/download/" + _PDB_ID_TEMPLATE + ".pdb ";
+		inline static const QString _PDB_ID_TEMPLATE = VTX::Util::Url::systemReplacementToken();
+		inline static const QString _DEFAULT_URL
+			= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb ";
 		inline static const QString _SETTING_KEY_URL = "dialog/download/history/url";
 		inline static const QString _SETTING_KEY_PDB = "dialog/download/history/pdb";
 		// TODO: move to settings.

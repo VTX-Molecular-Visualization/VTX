@@ -7,10 +7,10 @@
 namespace VTX::Test::ExternalTool
 {
 
-	class Binder : public PythonBinding::Binder
+	class Binder
 	{
 	  public:
-		void bind( PythonBinding::PyTXModule & p_vtxModule ) override;
+		void bind( PythonBinding::PyTXModule & p_vtxModule );
 	};
 }; // namespace VTX::Test::ExternalTool
 

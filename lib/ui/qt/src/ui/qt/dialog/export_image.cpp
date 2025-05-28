@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QToolTip>
 #include <QVBoxLayout>
-#include <app/action/export.hpp>
+#include <app/action/io.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/core/renderer/renderer_system.hpp>
@@ -177,7 +177,7 @@ namespace VTX::UI::QT::Dialog
 					return;
 				}
 
-				App::ACTION_SYSTEM().execute<App::Action::Export::Snapshot>(
+				App::ACTION_SYSTEM().execute<App::Action::Io::Snapshot>(
 					path.toStdString(),
 					_comboBoxFormat->currentIndex() == 0 ? Util::Image::E_FORMAT::PNG : Util::Image::E_FORMAT::JPEG,
 					_spinBoxWidth->value(),

@@ -22,6 +22,11 @@ jobs:
         git config --global core.autocrlf true
         git config --global core.eol crlf
         
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.11
+        
     - uses: actions/checkout@v4
       with:
         submodules: recursive
@@ -44,6 +49,7 @@ jobs:
         conan export core
         conan export io
         conan export renderer
+        conan export python_binding
         conan create app -b missing -s compiler.cppstd=20 -o vtx_app/*:test=True
       
     - name: Upload dependencies

@@ -1,5 +1,4 @@
 #include "app/vtx_app.hpp"
-#include "app/action/animation.hpp"
 #include "app/action/application.hpp"
 #include "app/action/mode.hpp"
 #include "app/action/scene.hpp"
@@ -17,10 +16,12 @@
 #include "app/filesystem.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
+#include "app/python_binding/python_binding.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
+#include <python_binding/interpretor.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -46,6 +47,9 @@ namespace VTX::App
 
 		// Register loop events.
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
+
+		// Initialize python interpretor.
+		INTERPRETOR().add( VTX::App::PythonBinding::VTXAppBinder() );
 
 		// Create Databases
 		//_representationLibrary

@@ -10,33 +10,72 @@ namespace VTX::PythonBinding
 	class Binder;
 
 	template<typename BinderType>
-	concept BinderConcept = std::derived_from<BinderType, Binder>;
+	concept BinderConcept = requires( BinderType & o, PyTXModule & p ) {
+		{ o.bind( p ) };
+	};
 
 	/**
-	 * @brief Class responsible for associating actions with python commands
+	 * @brief Generic class responsible for associating actions with python commands
 	 */
 	class Binder
 	{
 	  public:
-		Binder()		  = default;
-		virtual ~Binder() = default;
+		Binder() = default;
 
 		/**
-		 * @brief Method to reimplement to bind actions to commands.
+		 * @brief Method to implement to bind actions to commands.
 		 * @param p_pytxModule Module provided by the interpretor to bind actions into.
 		 */
-		virtual void bind( PyTXModule & p_pytxModule ) = 0;
+		inline void bind( PyTXModule & p_ )
+		{
+			if ( _ptr )
+				_ptr->bind( p_ );
+		}
 
 		/**
-		 * @brief Children class can optionally re-implement this method to add module import instructions (e.g. when
-		 * dealing with package dependancies )
+		 * @brief [Optional] Submitted class can optionally re-implement this method to add module import instructions
+		 * (e.g. when dealing with package dependancies )
 		 */
-		virtual void importHeaders() {};
+		inline void importHeaders()
+		{
+			if ( _ptr )
+				_ptr->importHeaders();
+		}
 
-	  protected:
-		void _importFullModule( const std::string & p_module );
-		void _importObject( const std::string & p_module, const std::string & p_object );
+	  private:
+		struct _interface
+		{
+			virtual ~_interface()				 = default;
+			virtual void bind( PyTXModule & p_ ) = 0;
+			virtual void importHeaders()		 = 0;
+		};
+		template<typename T>
+		class _wrapper final : public _interface
+		{
+			T _obj;
+
+		  public:
+			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
+			virtual void bind( PyTXModule & p_ ) override { _obj.bind( p_ ); }
+			virtual void importHeaders()
+			{
+				if constexpr ( requires( T & o ) {
+								   { o.importHeaders() };
+							   } )
+					_obj.importHeaders();
+			}
+		};
+		std::unique_ptr<_interface> _ptr = nullptr;
+
+	  public:
+		template<typename T>
+			requires( not std::same_as<std::remove_cv<T>, Binder> )
+		Binder( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
+		{
+		}
 	};
+	void importFullModule( const std::string & p_moduleName ) noexcept;
+	void importObject( const std::string & p_moduleName, const std::string & p_objectName ) noexcept;
 } // namespace VTX::PythonBinding
 
 #endif

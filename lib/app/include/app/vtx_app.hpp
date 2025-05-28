@@ -34,7 +34,7 @@ namespace VTX::App
 
 		/**
 		 * @brief Main loop update function.
-		 * @param p_deltaTime the time since the last frame.
+		 * @param p_deltaTime the time since the last frame. In milliseconds ?
 		 * @param p_elapsedTime the time since the start of the application.
 		 */
 		static void update( const float p_deltaTime, const float p_elapsedTime );
@@ -60,7 +60,8 @@ namespace VTX::App
 		// inline static Util::Callback<float> onRender;
 		inline static Util::Callback<float> onPostRender;
 		inline static Util::Callback<>		onEndOfFrameOneShot;
-		inline static Util::Callback<>		onStop;
+		inline static Util::Callback<>
+			onStop; // TODO : Clarify : Is this the application stop ? So it will execute once ?
 
 		// Progress dialog callbacks.
 		inline static Util::Callback<std::string_view> onStartBlockingOperation;

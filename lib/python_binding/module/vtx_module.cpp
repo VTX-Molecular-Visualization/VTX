@@ -1,7 +1,6 @@
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/log_redirection.hpp"
-#include <app/vtx_app.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <string>
@@ -24,10 +23,13 @@ namespace VTX::PythonBinding
 		vtxCoreModule.doc()				= "Contains some core functions which must be hidden for users.";
 
 		// Command module : Contains all commands accessible to user via command line.
+		// Keep in mind that some command won't be accessible from the external module, such as "runscript" which needs
+		// the interpreter in the external binary extension.
 		pybind11::module_ vtxCommandModule = m.def_submodule( "Command", "VTX Python command interface" );
 		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
 
 		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
-		apiModule( vtxAPIModule );
+		vtxAPIModule.doc()			   = "VTX API module."; // optional module docstring
+		Binding::applyVtxApiBinding( vtxAPIModule );
 	}
 } // namespace VTX::PythonBinding
