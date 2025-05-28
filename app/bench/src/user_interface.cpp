@@ -18,7 +18,7 @@ namespace VTX::Bench
 	UserInterface::UserInterface( const size_t p_width, const size_t p_height )
 	{
 		// Init SDL2.
-		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
+		if ( not SDL_Init( SDL_INIT_VIDEO ) )
 		{
 			throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 		}
@@ -33,11 +33,9 @@ namespace VTX::Bench
 
 		_window = SDL_CreateWindow(
 			"VTX_RENDERER_BENCH",
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
 			int( p_width ),
 			int( p_height ),
-			SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
 		);
 
 		if ( _window == nullptr )
@@ -53,8 +51,8 @@ namespace VTX::Bench
 
 		SDL_GL_MakeCurrent( _window, _glContext );
 		SDL_GL_SetSwapInterval( _vsync );
-
-		SDL_EventState( SDL_DROPFILE, SDL_ENABLE );
+		SDL_SetWindowPosition( _window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED );
+		SDL_ShowWindow( _window );
 
 		// Init ImGui.
 		if ( not IMGUI_CHECKVERSION() )
@@ -65,7 +63,7 @@ namespace VTX::Bench
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
 
-		if ( not ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) )
+		if ( not ImGui_ImplSDL3_InitForOpenGL( _window, _glContext ) )
 		{
 			throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
 		}
@@ -81,7 +79,7 @@ namespace VTX::Bench
 	UserInterface::~UserInterface()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
+		ImGui_ImplSDL3_Shutdown();
 		if ( ImGui::GetCurrentContext() != nullptr )
 		{
 			ImNodes::DestroyContext();
@@ -89,7 +87,7 @@ namespace VTX::Bench
 		}
 		if ( _glContext )
 		{
-			SDL_GL_DeleteContext( _glContext );
+			SDL_GL_DestroyContext( _glContext );
 		}
 		if ( _window )
 		{
@@ -101,7 +99,7 @@ namespace VTX::Bench
 	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Facade * const p_renderer )
 	{
 		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 
 		// Menu bar.
@@ -353,19 +351,24 @@ namespace VTX::Bench
 					.c_str()
 			);
 
-			ImGui::Text( fmt::format(
-							 "Buffers: {} ({})",
-							 Util::String::memSizeToStr( infos.currentSizeBuffers ),
-							 infos.currentCountBuffers
-			)
-							 .c_str() );
-			ImGui::Text( fmt::format(
-							 "Textures: {} ({})",
-							 Util::String::memSizeToStr( infos.currentSizeTextures ),
-							 infos.currentCountTextures
-			)
-							 .c_str() );
-			ImGui::Text( fmt::format( "CPU cache: {}", Util::String::memSizeToStr( infos.currentSizeCPUCache ) ).c_str()
+			ImGui::Text(
+				fmt::format(
+					"Buffers: {} ({})",
+					Util::String::memSizeToStr( infos.currentSizeBuffers ),
+					infos.currentCountBuffers
+				)
+					.c_str()
+			);
+			ImGui::Text(
+				fmt::format(
+					"Textures: {} ({})",
+					Util::String::memSizeToStr( infos.currentSizeTextures ),
+					infos.currentCountTextures
+				)
+					.c_str()
+			);
+			ImGui::Text(
+				fmt::format( "CPU cache: {}", Util::String::memSizeToStr( infos.currentSizeCPUCache ) ).c_str()
 			);
 		}
 		ImGui::End();

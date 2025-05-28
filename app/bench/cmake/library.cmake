@@ -24,8 +24,7 @@ else()
 	target_link_libraries(vtx_renderer_bench PRIVATE vtx_io::vtx_io)
 endif()
 
-target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2-static)
-target_link_libraries(vtx_renderer_bench PRIVATE SDL2::SDL2main)
+target_link_libraries(vtx_renderer_bench PRIVATE SDL3::SDL3)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 	
 #vtx_copy_registered_data(vtx_renderer_bench)

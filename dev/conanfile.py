@@ -19,7 +19,7 @@ class VTXRecipe(ConanFile):
         self.requires("cpr/1.11.2")
         self.requires("catch2/3.8.1")
         self.requires("chemfiles/0.10.4.2")
-        self.requires("sdl/2.32.2")
+        self.requires("sdl/3.2.14")
         self.requires("imgui/1.91.8")
         self.requires("stb/cci.20240531")
         self.requires("entt/3.14.0")
@@ -123,7 +123,7 @@ class VTXRecipe(ConanFile):
         tc = CMakeToolchain(self)        
         tc.generate()
 
-        copy(self, "*sdl2*", os.path.join(self.dependencies["imgui"].package_folder,
+        copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))

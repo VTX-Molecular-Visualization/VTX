@@ -7,7 +7,7 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui REQUIRED)
 #find_package(assimp CONFIG REQUIRED)
 

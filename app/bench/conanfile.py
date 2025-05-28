@@ -19,7 +19,7 @@ class VTXRendererBenchRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
-        self.requires("sdl/2.32.2")
+        self.requires("sdl/3.2.14")
         self.requires("imgui/1.91.8")        
         #self.requires("assimp/5.2.2") 
     
@@ -29,7 +29,7 @@ class VTXRendererBenchRecipe(ConanFile):
         tc.cache_variables["DIR_SHADERS"] = dir_shaders
         tc.generate()
         
-        copy(self, "*sdl2*", os.path.join(self.dependencies["imgui"].package_folder,
+        copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))      
