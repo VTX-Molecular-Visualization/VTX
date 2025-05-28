@@ -23,7 +23,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("magic_enum/0.9.7", transitive_headers=True)
         self.requires("cpr/1.11.1")
         self.requires("stb/cci.20240531")
-        self.requires("catch2/3.7.1")
+        self.requires("catch2/3.8.1")
         
     def config_options(self):
         if self.settings.os == "Windows":

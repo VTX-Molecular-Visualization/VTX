@@ -27,9 +27,9 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_io/1.0")
-        self.requires("re2/20231101")
+        self.requires("re2/20240702")
         self.requires("gromacs/2024.0")
-        self.requires("catch2/3.7.1") 
+        self.requires("catch2/3.8.1") 
 
     def generate(self):
         copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
