@@ -16,7 +16,7 @@ class VTXRecipe(ConanFile):
         self.requires("glm/1.0.1")
         self.requires("spdlog/1.15.1")
         self.requires("magic_enum/0.9.7")
-        self.requires("cpr/1.11.1")
+        self.requires("cpr/1.11.2")
         self.requires("catch2/3.8.1")
         self.requires("chemfiles/0.10.4.2")
         self.requires("sdl/2.32.2")
@@ -27,8 +27,8 @@ class VTXRecipe(ConanFile):
         self.requires("qt/6.6.3")
         self.requires("gromacs/2024.0")
         self.requires("re2/20240702")
-        #self.requires("libarchive/3.7.9")
-        #self.requires("boost/1.88.0")
+        self.requires("libarchive/3.7.9")
+        self.requires("boost/1.88.0")
 
     def config_options(self):        
         # Package options.

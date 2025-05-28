@@ -29,7 +29,7 @@ namespace VTX::Util::Network
 		}
 		else
 		{
-			throw HTTPException( "Protocol error: " + std::to_string( response.status_code ) );
+			throw HTTPException( "Protocol error: " +  response.error.message );
 		}
 	}
 } // namespace VTX::Util::Network
