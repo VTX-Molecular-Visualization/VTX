@@ -3,7 +3,7 @@
 
 ![VTX Image](https://vtx.drugdesign.fr/assets/snapshots/2.png)
 
-Maxime Maria, Simon Guionnière, Nicolas Dacquay, Cyprien Plateau–Holleville, Valentin Guillaume, Vincent Larroque, Jean Lardé, Yassine Naimi, Jean-Philip Piquemal, Guillaume Levieux, Nathalie Lagarde, Stéphane Mérillou, Matthieu Montes, VTX: Real-time high-performance molecular structure and dynamics visualization software, *Bioinformatics*, 2025; btaf295, [https://doi.org/10.1093/bioinformatics/btaf295]{https://doi.org/10.1093/bioinformatics/btaf295}
+Maxime Maria, Simon Guionnière, Nicolas Dacquay, Cyprien Plateau–Holleville, Valentin Guillaume, Vincent Larroque, Jean Lardé, Yassine Naimi, Jean-Philip Piquemal, Guillaume Levieux, Nathalie Lagarde, Stéphane Mérillou, Matthieu Montes, VTX: Real-time high-performance molecular structure and dynamics visualization software, *Bioinformatics*, 2025; btaf295, [https://doi.org/10.1093/bioinformatics/btaf295](https://doi.org/10.1093/bioinformatics/btaf295)
 
 ## USER GUIDE
 
