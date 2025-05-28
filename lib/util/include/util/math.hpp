@@ -2,6 +2,7 @@
 #define __VTX_UTIL_MATH__
 
 #define GLM_FORCE_INLINE
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include "constants.hpp"
 #include "types.hpp"

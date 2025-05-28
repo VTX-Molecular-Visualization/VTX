@@ -13,7 +13,7 @@ class VTXRecipe(ConanFile):
     generators = "CMakeDeps"
         
     def requirements(self):
-        self.requires("glm/0.9.9.8")
+        self.requires("glm/1.0.1")
         self.requires("spdlog/1.15.0")
         self.requires("magic_enum/0.9.7")
         self.requires("cpr/1.10.5")
