@@ -21,7 +21,7 @@ The Licensee shall not use the Software (or any part thereof) for a research pro
 
     8.  The user agrees that any reports or published results obtained with the Software will acknowledge its use by the appropriate citation. Considering the use of VTX, any published work which utilizes VTX shall give appropriate acknowledgement to the VTX developer community's contribution by including the following main reference:
 
-“VTX : a high performance molecular visualization and simulation suite. Matthieu Montes, Guillaume Levieux, Jean-Philippe Piquemal, Maxime Maria, 2020”
+“Maxime Maria, Simon Guionnière, Nicolas Dacquay, Cyprien Plateau–Holleville, Valentin Guillaume, Vincent Larroque, Jean Lardé, Yassine Naimi, Jean-Philip Piquemal, Guillaume Levieux, Nathalie Lagarde, Stéphane Mérillou, Matthieu Montes, VTX: Real-time high-performance molecular structure and dynamics visualization software, Bioinformatics, 2025; btaf295, https://doi.org/10.1093/bioinformatics/btaf295”
 
 8.	This license may be terminated upon twenty days’ notice for any breach of this Agreement, provided that that breach has not been corrected prior to the expiry of such notice.
 
