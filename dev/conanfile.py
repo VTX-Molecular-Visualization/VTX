@@ -25,11 +25,10 @@ class VTXRecipe(ConanFile):
         self.requires("entt/3.14.0")
         self.requires("pybind11/2.13.6")
         self.requires("qt/6.6.3")
-        self.requires("eigen/3.4.0") 
         self.requires("gromacs/2024.0")
         self.requires("re2/20240702")
-        self.requires("libarchive/3.7.9")
-        self.requires("boost/1.88.0")
+        #self.requires("libarchive/3.7.9")
+        #self.requires("boost/1.88.0")
 
     def config_options(self):        
         # Package options.
