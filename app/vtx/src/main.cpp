@@ -49,7 +49,7 @@ int main( int p_argc, char * p_argv[] )
 
 		const FilePath logDir = VTX::App::Filesystem::getLogsDir();
 
-		bool debug = args.has( "-debug" );
+		bool debug = args.has( App::DEBUG );
 #ifdef _DEBUG
 		debug = true;
 #endif
@@ -58,7 +58,7 @@ int main( int p_argc, char * p_argv[] )
 
 		std::unique_ptr<App::VTXApp> app;
 #ifdef VTX_UI_QT
-		if ( not args.has( "-no-gui" ) )
+		if ( not args.has( App::NO_GUI ) )
 		{
 			UI::QT::Application::configure();
 			app = std::make_unique<UI::QT::Application>();
@@ -90,9 +90,9 @@ int main( int p_argc, char * p_argv[] )
 		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 		// const FilePath molPath = "1AGA";
 		// args.add( molPath.string() );
-		const std::string					 moleculeName	  = "2ama_1_npt";
-		const std::string					 moleculePathname = moleculeName + ".trr";
-		const VTX::FilePath moleculePath = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
+		const std::string	moleculeName	 = "2ama_1_npt";
+		const std::string	moleculePathname = moleculeName + ".trr";
+		const VTX::FilePath moleculePath	 = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
 		args.add( moleculePath.string() );
 
 		app->start( args );

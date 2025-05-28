@@ -65,7 +65,7 @@ namespace VTX::App
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		if ( p_args.has( Args::NO_GRAPHICS ) )
+		if ( p_args.has( NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();

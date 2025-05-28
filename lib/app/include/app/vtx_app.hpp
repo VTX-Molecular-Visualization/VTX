@@ -15,6 +15,10 @@
 
 namespace VTX::App
 {
+	constexpr Arg DEBUG = "-debug";
+	constexpr Arg NO_GUI { "-no-gui" };
+	constexpr Arg NO_GRAPHICS { "-no-graphics" };
+	constexpr Arg NO_UPDATE { "-no-update" };
 
 	class VTXApp
 	{

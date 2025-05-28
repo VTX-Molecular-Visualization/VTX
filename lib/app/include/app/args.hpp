@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_ARGS__
 #define __VTX_APP_ARGS__
 
+#include <algorithm>
 #include <numeric>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 namespace VTX::App
 {
@@ -13,8 +13,6 @@ namespace VTX::App
 	class Args
 	{
 	  public:
-		static inline Arg NO_GRAPHICS { "--no-graphics" };
-
 		Args( const int p_argc, const char * const p_argv[] ) : _args( { p_argv, p_argv + p_argc } ) {}
 		Args( const std::vector<Arg> & p_args ) : _args( p_args ) {}
 
