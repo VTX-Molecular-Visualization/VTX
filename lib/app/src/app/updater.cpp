@@ -1,5 +1,5 @@
 #include "app/updater.hpp"
-#include <util/json/json.hpp>
+#include <util/exceptions.hpp>
 #include <util/string.hpp>
 
 namespace VTX::App
@@ -8,29 +8,26 @@ namespace VTX::App
 	void Updater::checkForUpdate()
 	{
 		// TODO: use network manager?
-		const std::string_view url = "https://api.github.com/repos/VTX-Molecular-Visualization/VTX/releases/latest";
 
 		Util::Network::httpRequestGetAsync(
-			url,
-			[]( const std::string & p_text )
+			UPDATER_URL,
+			[ this ]( const std::string & p_text )
 			{
-				Util::JSon::Document doc = Util::JSon::Document::createFromString( p_text );
+				_document = Util::JSon::Document::createFromString( p_text );
 
-				if ( not doc.json().contains( "tag_name" ) )
+				if ( not _document.json().contains( "tag_name" ) )
 				{
-					VTX_ERROR( "[UPDATER] Tag name not found" );
-					return;
+					throw VTXException( "Updater can not retrieve last version." );
 				}
 
-				std::string tagName = doc.json()[ "tag_name" ].getString();
+				std::string tagName = _document.json()[ "tag_name" ].getString();
 				VTX_INFO( "[UPDATER] Last version found: {}", tagName );
 
 				std::vector<std::string> versionParts = Util::String::split( tagName, '.' );
 
 				if ( versionParts.size() < 3 )
 				{
-					VTX_ERROR( "[UPDATER] Invalid version format: {}", tagName );
-					return;
+					throw VTXException( "Updater can not deduce last version." );
 				}
 
 				try
@@ -38,14 +35,26 @@ namespace VTX::App
 					uint major = std::stoul( versionParts[ 0 ] );
 					uint minor = std::stoul( versionParts[ 1 ] );
 					uint patch = std::stoul( versionParts[ 2 ] );
+
+					// Check if new version is available.
+					onUpdateAvailable( major, minor, patch );
 				}
-				catch ( const std::exception & p_e )
+				catch ( const std::exception & )
 				{
-					VTX_ERROR( "[UPDATER] Error parsing version numbers: {}", p_e.what() );
-					return;
+					throw VTXException( "Updater can not deduce last version." );
 				}
 			}
 		);
+	}
+
+	void Updater::downloadUpdate()
+	{
+		if ( not _document.json().contains( "assets" ) )
+		{
+			throw VTXException( "Updater can not retrieve assets." );
+		}
+
+		Util::JSon::Array assets = _document.json()[ "assets" ].getArray();
 	}
 
 } // namespace VTX::App

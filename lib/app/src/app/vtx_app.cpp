@@ -98,6 +98,8 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
+		// Updater.
+		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 		UPDATER().checkForUpdate();
 
 		_handleArgs( p_args );
