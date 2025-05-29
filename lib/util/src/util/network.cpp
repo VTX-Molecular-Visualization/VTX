@@ -7,13 +7,11 @@ namespace
 	cpr::SslOptions sslOpts = cpr::Ssl( cpr::ssl::MaxTLSVersion {} );
 
 	cpr::ProgressCallback progressCallback = cpr::ProgressCallback(
-		[ & ](
-			cpr::cpr_off_t downloadTotal,
+		[]( cpr::cpr_off_t downloadTotal,
 			cpr::cpr_off_t downloadNow,
 			cpr::cpr_off_t uploadTotal,
 			cpr::cpr_off_t uploadNow,
-			intptr_t	   userdata
-		) -> bool
+			intptr_t	   userdata ) -> bool
 		{
 			VTX::VTX_DEBUG( "Downloaded {} / {} bytes", downloadNow, downloadTotal );
 			return true;
