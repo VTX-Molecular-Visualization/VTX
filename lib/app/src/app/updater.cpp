@@ -17,17 +17,17 @@ namespace VTX::App
 
 				if ( not _document.json().contains( "tag_name" ) )
 				{
-					throw VTXException( "Updater can not retrieve last version." );
+					throw VTXException( "Updater can not retrieve last version" );
 				}
 
 				std::string tagName = _document.json()[ "tag_name" ].getString();
-				VTX_INFO( "[UPDATER] Last version found: {}", tagName );
+				VTX_INFO( "Last version found: {}", tagName );
 
 				std::vector<std::string> versionParts = Util::String::split( tagName, '.' );
 
 				if ( versionParts.size() < 3 )
 				{
-					throw VTXException( "Updater can not deduce last version." );
+					throw VTXException( "Updater can not deduce last version" );
 				}
 
 				try
@@ -41,7 +41,7 @@ namespace VTX::App
 				}
 				catch ( const std::exception & )
 				{
-					throw VTXException( "Updater can not deduce last version." );
+					throw VTXException( "Updater can not deduce last version" );
 				}
 			}
 		);
@@ -51,10 +51,35 @@ namespace VTX::App
 	{
 		if ( not _document.json().contains( "assets" ) )
 		{
-			throw VTXException( "Updater can not retrieve assets." );
+			throw VTXException( "Updater can not retrieve assets" );
 		}
 
 		Util::JSon::Array assets = _document.json()[ "assets" ].getArray();
-	}
 
+#ifdef _WIN32
+		const FilePath extension = ".exe";
+#else
+		const FilePath extension = ".gz";
+#endif
+
+		for ( const auto & asset : assets )
+		{
+			if ( not asset.contains( "name" ) || not asset.contains( "browser_download_url" ) )
+			{
+				continue;
+			}
+
+			const FilePath filename = asset[ "name" ].getString();
+
+			if ( filename.extension() == extension )
+			{
+				const std::string_view url = asset[ "browser_download_url" ].getString();
+				VTX_INFO( "New version found: {}", url );
+
+				return;
+			}
+		}
+
+		throw VTXException( "Updater can not retrieve file to download" );
+	}
 } // namespace VTX::App

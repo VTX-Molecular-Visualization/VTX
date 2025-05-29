@@ -100,7 +100,11 @@ namespace VTX::App
 
 		// Updater.
 		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
-		UPDATER().checkForUpdate();
+
+		if ( not p_args.has( ARG_NO_UPDATE ) )
+		{
+			UPDATER().checkForUpdate();
+		}
 
 		_handleArgs( p_args );
 	}
