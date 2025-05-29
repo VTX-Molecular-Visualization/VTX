@@ -8,13 +8,7 @@ namespace VTX::App
 	class Updater
 	{
 	  public:
-		void checkForUpdate()
-		{
-			// TODO: use network manager?
-			const std::string_view url = "https://api.github.com/repos/VTX-Molecular-Visualization/VTX/releases/latest";
-
-			Util::Network::httpRequestGetAsync( url, []( const std::string & p_text ) { VTX_INFO( "{}", p_text ); } );
-		}
+		void checkForUpdate();
 
 		Util::Callback<> onUpdateAvailable;
 	};

@@ -98,6 +98,8 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
+		UPDATER().checkForUpdate();
+
 		_handleArgs( p_args );
 	}
 
