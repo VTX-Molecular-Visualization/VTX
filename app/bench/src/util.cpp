@@ -18,11 +18,11 @@ namespace VTX::Bench
 	{
 		IO::Reader::System	 reader;
 		Core::Struct::System system;
-		std::string			 data;
 
-		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", &data );
-		reader.readBuffer( data, p_pdb + ".pdb", system );
+		std::string text;
+		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", text );
 
+		reader.readBuffer( text, p_pdb + ".pdb", system );
 		return system;
 	}
 

@@ -5,6 +5,7 @@
 
 namespace VTX::App::Info
 {
+	// TODO: propagate from CMake?
 	constexpr int VERSION_MAJOR	   = 1;
 	constexpr int VERSION_MINOR	   = 0;
 	constexpr int VERSION_REVISION = 0;

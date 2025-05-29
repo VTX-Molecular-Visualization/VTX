@@ -16,7 +16,7 @@ namespace VTX::App::Action::Scene
 	{
 	  public:
 		explicit LoadSystem( const FilePath & p_path ) : _path( p_path ) {}
-		explicit LoadSystem( const FilePath & p_path, std::string * const p_buffer ) :
+		explicit LoadSystem( const FilePath & p_path, const std::string * const p_buffer ) :
 			_path( p_path ), _buffer( p_buffer )
 		{
 		}
@@ -24,8 +24,8 @@ namespace VTX::App::Action::Scene
 		void execute() override;
 
 	  private:
-		const FilePath		_path;
-		std::string * const _buffer = nullptr;
+		const FilePath			  _path;
+		const std::string * const _buffer = nullptr;
 
 		std::vector<Component::Chemistry::System *> _trajectoryTargets;
 	};

@@ -36,20 +36,20 @@ TEST_CASE( "VTX_IO - Test buffer", "[integration]" )
 	return;
 
 	using namespace VTX;
-	using namespace VTX::IO;
+	using namespace IO;
+	using namespace Util::Network;
 
 	const std::string url = "https://files.rcsb.org/download/4hhb.pdb";
 
-	std::string data;
-	Util::Network::httpRequestGet( url, &data );
+	std::string text;
+	Util::Network::httpRequestGet( url, text );
 
 	VTX_INFO( "Test on {}", url );
 
 	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
 	IO::Reader::System		  systemReader = IO::Reader::System();
 
-	systemReader.readBuffer( data, "4hhb.mmtf", system );
-
+	systemReader.readBuffer( text, "4hhb.mmtf", system );
 	CHECK( system.getChainCount() == 14 );
 	CHECK( system.getResidueCount() == 801 );
 	CHECK( system.getAtomCount() == 4779 );

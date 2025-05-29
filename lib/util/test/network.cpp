@@ -2,11 +2,12 @@
 #include <util/network.hpp>
 
 // network.cpp
-TEST_CASE( "Util::Newtork", "[unit]" )
+TEST_CASE( "Util::Network", "[unit]" )
 {
 	using namespace VTX;
+	using namespace Util::Network;
 
-	std::string data;
-	VTX::Util::Network::httpRequestGet( "https://vtx.drugdesign.fr/vtx.json", &data );
-	CHECK( data.size() == 96 );
+	std::string text;
+	httpRequestGet( "https://vtx.drugdesign.fr/vtx.json", text );
+	CHECK( text.size() == 96 );
 }

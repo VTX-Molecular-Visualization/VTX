@@ -19,6 +19,7 @@
 #include "app/python_binding/python_binding.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
+#include "app/updater.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
@@ -33,6 +34,8 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
+		// TODO: move to start to handle gui dialog?
+		Updater::check();
 		Settings::initSettings();
 
 		// Create scene.

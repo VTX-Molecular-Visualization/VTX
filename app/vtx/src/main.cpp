@@ -33,28 +33,28 @@ extern "C"
 }
 #endif
 
-//  Hide console.
-// #ifdef VTX_PRODUCTION
-// #pragma comment( linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup" )
-// #endif
-
 int main( int p_argc, char * p_argv[] )
 {
-	//::ShowWindow( ::GetConsoleWindow(), SW_HIDE );
 	using namespace VTX;
 
 	try
 	{
 		App::Args args( p_argc, p_argv );
 
-		const FilePath logDir = VTX::App::Filesystem::getLogsDir();
-
 		bool debug = args.has( App::DEBUG );
 #ifdef _DEBUG
 		debug = true;
 #endif
 
-		LOGGER::init( logDir, debug );
+#ifdef _WIN32
+		//  Hide console.
+		if ( not debug )
+		{
+			FreeConsole();
+		}
+#endif
+
+		LOGGER::init( VTX::App::Filesystem::getLogsDir(), debug );
 
 		std::unique_ptr<App::VTXApp> app;
 #ifdef VTX_UI_QT
@@ -95,6 +95,7 @@ int main( int p_argc, char * p_argv[] )
 		const VTX::FilePath moleculePath	 = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
 		args.add( moleculePath.string() );
 
+		// Starting main application loop.
 		app->start( args );
 
 		LOGGER::stop();

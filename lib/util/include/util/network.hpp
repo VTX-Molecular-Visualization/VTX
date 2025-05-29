@@ -8,7 +8,8 @@ namespace VTX::Util::Network
 {
 	using CallbackHttpGet = std::function<void( const std::string & )>;
 
-	void httpRequestGet( const std::string_view & p_url, std::string * const p_data );
+	void httpRequestGet( const std::string_view & p_url, std::string & p_text );
+	void httpRequestGetAsync( const std::string_view & p_url, const CallbackHttpGet & p_callback );
 
 } // namespace VTX::Util::Network
 
