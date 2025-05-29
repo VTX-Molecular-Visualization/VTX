@@ -26,6 +26,7 @@
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/monitoring/stats.hpp>
 
 namespace VTX::App
 {
@@ -35,7 +36,6 @@ namespace VTX::App
 		VTX_DEBUG( "Init application" );
 
 		// TODO: move to start to handle gui dialog?
-		Updater::check();
 		Settings::initSettings();
 
 		// Create scene.
@@ -68,7 +68,7 @@ namespace VTX::App
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		if ( p_args.has( NO_GRAPHICS ) )
+		if ( p_args.has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();
@@ -265,5 +265,6 @@ namespace VTX::App
 	// TODO.
 	Application::Scene &	  SCENE() { return APP::getScene(); }
 	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
+	Updater &				  UPDATER() { return Util::Singleton<Updater>::get(); }
 
 } // namespace VTX::App

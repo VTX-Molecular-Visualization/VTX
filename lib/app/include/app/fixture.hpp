@@ -16,7 +16,7 @@ namespace VTX::App
 				APP::init();
 			}
 
-			Args args( { NO_GRAPHICS } );
+			Args args( { ARG_NO_GRAPHICS } );
 			_app->start( args );
 		}
 

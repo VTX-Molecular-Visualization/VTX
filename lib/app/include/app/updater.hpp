@@ -3,16 +3,21 @@
 
 #include <util/network.hpp>
 
-namespace VTX::App::Updater
+namespace VTX::App
 {
-	void check()
+	class Updater
 	{
-		// TODO: use network manager?
-		const std::string_view url = "https://api.github.com/repos/VTX-Molecular-Visualization/VTX/releases/latest";
+	  public:
+		void checkForUpdate()
+		{
+			// TODO: use network manager?
+			const std::string_view url = "https://api.github.com/repos/VTX-Molecular-Visualization/VTX/releases/latest";
 
-		Util::Network::httpRequestGetAsync( url, []( const std::string & p_text ) { VTX_INFO( "{}", p_text ); } );
-	}
+			Util::Network::httpRequestGetAsync( url, []( const std::string & p_text ) { VTX_INFO( "{}", p_text ); } );
+		}
 
-} // namespace VTX::App::Updater
+		Util::Callback<> onUpdateAvailable;
+	};
+} // namespace VTX::App
 
 #endif

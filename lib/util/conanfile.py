@@ -21,6 +21,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("glm/1.0.1", transitive_headers=True)
         self.requires("spdlog/1.15.1", transitive_headers=True)
         self.requires("magic_enum/0.9.7", transitive_headers=True)
+        self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.11.2")
         self.requires("stb/cci.20240531")
         self.requires("catch2/3.8.1")

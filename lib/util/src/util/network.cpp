@@ -22,7 +22,7 @@ namespace
 	{
 		if ( p_response.status_code != 200 )
 		{
-			throw VTX::HTTPException( "Protocol error: " + p_response.error.message );
+			throw VTX::HTTPException( p_response.error.message );
 		}
 	}
 

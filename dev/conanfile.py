@@ -16,6 +16,7 @@ class VTXRecipe(ConanFile):
         self.requires("glm/1.0.1")
         self.requires("spdlog/1.15.1")
         self.requires("magic_enum/0.9.7")
+        self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.11.2")
         self.requires("catch2/3.8.1")
         self.requires("chemfiles/0.10.4.2")

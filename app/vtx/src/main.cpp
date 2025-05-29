@@ -41,7 +41,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		App::Args args( p_argc, p_argv );
 
-		bool debug = args.has( App::DEBUG );
+		bool debug = args.has( App::ARG_DEBUG );
 #ifdef _DEBUG
 		debug = true;
 #endif
@@ -58,7 +58,7 @@ int main( int p_argc, char * p_argv[] )
 
 		std::unique_ptr<App::VTXApp> app;
 #ifdef VTX_UI_QT
-		if ( not args.has( App::NO_GUI ) )
+		if ( not args.has( App::ARG_NO_GUI ) )
 		{
 			UI::QT::Application::configure();
 			app = std::make_unique<UI::QT::Application>();

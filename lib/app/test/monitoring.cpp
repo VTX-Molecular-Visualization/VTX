@@ -8,6 +8,7 @@
 #include <thread>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/monitoring/stats.hpp>
 
 void displaySimpleInfo()
 {

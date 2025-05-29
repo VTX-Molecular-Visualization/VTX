@@ -10,15 +10,21 @@
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
-#include <util/monitoring/stats.hpp>
 #include <vector>
+
+namespace VTX::Util::Monitoring
+{
+	class Stats;
+}
 
 namespace VTX::App
 {
-	constexpr Arg DEBUG		  = "-debug";
-	constexpr Arg NO_GUI	  = "-no-gui";
-	constexpr Arg NO_GRAPHICS = "-no-graphics";
-	constexpr Arg NO_UPDATE	  = "-no-update";
+	class Updater;
+
+	constexpr Arg ARG_DEBUG		  = "-debug";
+	constexpr Arg ARG_NO_GUI	  = "-no-gui";
+	constexpr Arg ARG_NO_GRAPHICS = "-no-graphics";
+	constexpr Arg ARG_NO_UPDATE	  = "-no-update";
 
 	class VTXApp
 	{
@@ -86,6 +92,7 @@ namespace VTX::App
 
 	Application::Scene &	  SCENE();
 	Util::Monitoring::Stats & STATS();
+	Updater &				  UPDATER();
 } // namespace VTX::App
 
 namespace VTX
