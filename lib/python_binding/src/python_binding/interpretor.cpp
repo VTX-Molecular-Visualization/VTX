@@ -2,8 +2,8 @@
 #include "python_binding/binder.hpp"
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/binding/vtx_module.hpp"
-#include "python_binding/log_redirection.hpp"
 #include "python_binding/command_filter.hpp"
+#include "python_binding/log_redirection.hpp"
 #include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <io/internal/filesystem.hpp>
@@ -29,6 +29,9 @@ namespace VTX::PythonBinding
 
 			pybind11::module_ vtxCoreModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
+			pybind11::module_ vtxApiModule
+				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".API" ).c_str() );
+			Binding::applyVtxApiBinding( _vtxModule );
 			pybind11::module_ vtxCommandModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
 			Binding::applyVtxLocalCommandBinding( vtxCommandModule );
@@ -84,7 +87,7 @@ namespace VTX::PythonBinding
 		// it might mean that we shouldn't expect a return value. So we execute it as is. If it cashes again, it means
 		// that the command isn't viable at all.
 
-		if ( FilterResult isHarmful = filter(p_line) )
+		if ( FilterResult isHarmful = filter( p_line ) )
 			return isHarmful.why();
 
 		try

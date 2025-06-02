@@ -9,6 +9,7 @@
 #include <app/selection/selection.hpp>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
+#include <python_binding/api/api.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <vector>

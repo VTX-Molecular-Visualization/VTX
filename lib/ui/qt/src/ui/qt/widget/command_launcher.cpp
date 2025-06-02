@@ -16,10 +16,11 @@ namespace VTX::UI::QT::Widget
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
 	}
 
-	void CommandLauncher::launchCommand( std::string p_) { 
-		_history.add( std::move(p_) );
+	void CommandLauncher::launchCommand( std::string p_ )
+	{
+		_history.add( std::move( p_ ) );
 		_executeLastHistoryEntry();
-			}
+	}
 
 	void CommandLauncher::keyPressEvent( QKeyEvent * event )
 	{
@@ -55,7 +56,8 @@ namespace VTX::UI::QT::Widget
 		_executeLastHistoryEntry();
 	}
 
-	void CommandLauncher::_executeLastHistoryEntry() {
+	void CommandLauncher::_executeLastHistoryEntry()
+	{
 		_history.resetBrowsing();
 
 		try
@@ -69,7 +71,6 @@ namespace VTX::UI::QT::Widget
 		{
 			throw p_e;
 		}
-
 	}
 
 	void CommandLauncher::_setupCompleter()
@@ -78,10 +79,8 @@ namespace VTX::UI::QT::Widget
 
 		QStringList strList;
 
-		VTX_INFO( "Found functions :" );
 		for ( auto & it_cmd : allCommands )
 		{
-			VTX_INFO( "{}", it_cmd );
 			strList.emplaceBack();
 		}
 

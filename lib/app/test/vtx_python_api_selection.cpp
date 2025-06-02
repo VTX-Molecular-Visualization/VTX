@@ -1,5 +1,6 @@
 #include "util/app.hpp"
 #include "util/filesystem.hpp"
+#include "util/logger.hpp"
 #include "util/selection.hpp"
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
@@ -23,6 +24,24 @@ namespace Test
 	}
 } // namespace Test
 
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][types]" )
+{
+	using namespace VTX;
+	using SelectionUtil = App::Test::Util::Selection;
+	App::Fixture app;
+
+	Test::loadSystem( "1AGA.mmtf" );
+	try
+	{
+		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()" );
+		CHECK( str.find( "Collection" ) != str.npos );
+	}
+	catch ( CommandException & e )
+	{
+		VTX_ERROR( "{}", e.what() );
+		CHECK( false );
+	}
+}
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
 	using namespace VTX;
@@ -212,7 +231,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	CHECK(
 		SelectionUtil::checkSelection(
 			"test_exclusive_1",
-			"exclusive( (select( system_names='4HHB' ) - select(  system_names='4HHB', residue_names='HIS' )), select( system_names='4HHB', "
+			"exclusive( (select( system_names='4HHB' ) - select(  system_names='4HHB', residue_names='HIS' )), "
+			"select( system_names='4HHB', "
 			"residue_names='HIS' "
 			") )",
 			SelectionUtil::createSelection( SelectionUtil::generateSystemData( "4HHB" ) )
@@ -227,7 +247,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 	CHECK(
 		SelectionUtil::checkSelection(
-			"test_empty_2", "select( system_names='4HHB', residue_names='his' )", SelectionUtil::createSelection( allHistidineOn4HHB )
+			"test_empty_2",
+			"select( system_names='4HHB', residue_names='his' )",
+			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
 

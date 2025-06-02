@@ -22,12 +22,12 @@ namespace VTX::App::PythonBinding
 
 		pybind11::module_ * apiModulePtr = nullptr;
 		p_vtxmodule.api().getPythonModule( &apiModulePtr );
-		Selection::bind_selection( *apiModulePtr );
 
 		commands.bindAction<App::Action::Application::NewScene>( "newScene", "Clear scene." );
 
 		pybind11::module_ * commandModulePtr = nullptr;
 		p_vtxmodule.commands().getPythonModule( &commandModulePtr );
+		Selection::bind_selection( *commandModulePtr );
 		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( *commandModulePtr, "IMAGE_FORMAT" );
 		commands.bindAction<
 			App::Action::Io::Snapshot,
@@ -99,9 +99,15 @@ namespace VTX::App::PythonBinding
 
 	void VTXAppBinder::importHeaders()
 	{
-		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "select" );
-		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "intersect" );
-		VTX::PythonBinding::importObject( fmt::format( "{}.API", VTX::PythonBinding::vtx_module_name() ), "exclusive" );
+		VTX::PythonBinding::importObject(
+			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "select"
+		);
+		VTX::PythonBinding::importObject(
+			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "intersect"
+		);
+		VTX::PythonBinding::importObject(
+			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "exclusive"
+		);
 	}
 
 } // namespace VTX::App::PythonBinding
