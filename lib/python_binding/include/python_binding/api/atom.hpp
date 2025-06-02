@@ -151,77 +151,92 @@ namespace VTX::PythonBinding::API
 		class _wrapper final : public _interface
 		{
 			T & _obj;
+			using Obj = std::remove_pointer<T>::type;
+			inline Obj & obj()
+			{
+				if constexpr ( std::is_pointer<T>::value )
+					return *_obj;
+				else
+					return _obj;
+			}
+			inline const Obj & obj() const
+			{
+				if constexpr ( std::is_pointer<T>::value )
+					return *_obj;
+				else
+					return _obj;
+			}
 
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual atom_index_t getIndex() const override { return _obj.getIndex(); }
+			virtual atom_index_t getIndex() const override { return obj().getIndex(); }
 			virtual void		 setIndex( const atom_index_t p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setIndex( p_index );
+					obj().setIndex( p_index );
 			}
 			virtual Residue getResidue() override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					return { *_obj.getResiduePtr() };
+					return { *obj().getResiduePtr() };
 				else
 					return {};
 			}
-			virtual const Residue getResidue() const override { return { *_obj.getConstResiduePtr() }; }
+			virtual const Residue getResidue() const override { return { *obj().getConstResiduePtr() }; }
 			virtual Chain		  getChain() override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					return { *_obj.getChainPtr() };
+					return { *obj().getChainPtr() };
 				else
 					return {};
 			}
-			virtual const Chain getChain() const override { return { *_obj.getConstChainPtr() }; }
+			virtual const Chain getChain() const override { return { *obj().getConstChainPtr() }; }
 			virtual System		getSystem() override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					return { *_obj.getSystemPtr() };
+					return { *obj().getSystemPtr() };
 				else
 					return {};
 			}
-			virtual const System getSystem() const override { return { *_obj.getConstSystemPtr() }; }
+			virtual const System getSystem() const override { return { *obj().getConstSystemPtr() }; }
 
-			virtual const std::string & getName() const override { return _obj.getName(); }
+			virtual const std::string & getName() const override { return obj().getName(); }
 			virtual void				setName( const std::string & p_name ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setName( p_name );
+					obj().setName( p_name );
 			}
-			virtual const Core::ChemDB::Atom::SYMBOL & getSymbol() const override { return _obj.getSymbol(); }
+			virtual const Core::ChemDB::Atom::SYMBOL & getSymbol() const override { return obj().getSymbol(); }
 			virtual void							   setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setSymbol( p_symbol );
+					obj().setSymbol( p_symbol );
 			}
 
-			virtual Core::ChemDB::Atom::TYPE getType() const override { return _obj.getType(); }
+			virtual Core::ChemDB::Atom::TYPE getType() const override { return obj().getType(); }
 			virtual void					 setType( const Core::ChemDB::Atom::TYPE p_type ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setType( p_type );
+					obj().setType( p_type );
 			}
 
-			virtual float getVdwRadius() const override { return _obj.getVdwRadius(); }
+			virtual float getVdwRadius() const override { return obj().getVdwRadius(); }
 
-			virtual const Vec3f & getLocalPosition() const override { return _obj.getLocalPosition(); }
-			virtual Vec3f		  getWorldPosition() const override { return _obj.getWorldPosition(); }
+			virtual const Vec3f & getLocalPosition() const override { return obj().getLocalPosition(); }
+			virtual Vec3f		  getWorldPosition() const override { return obj().getWorldPosition(); }
 
-			virtual bool isVisible() const override { return _obj.isVisible(); }
+			virtual bool isVisible() const override { return obj().isVisible(); }
 			virtual void setVisible( const bool p_visible ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setVisible( p_visible );
+					obj().setVisible( p_visible );
 			}
 
 			virtual void remove() override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.remove();
+					obj().remove();
 			}
 		};
 

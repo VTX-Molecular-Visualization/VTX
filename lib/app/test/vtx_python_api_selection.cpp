@@ -41,6 +41,36 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 		VTX_ERROR( "{}", e.what() );
 		CHECK( false );
 	}
+	try
+	{
+		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()" );
+		CHECK( str.find( "Collection" ) != str.npos );
+	}
+	catch ( CommandException & e )
+	{
+		VTX_ERROR( "{}", e.what() );
+		CHECK( false );
+	}
+	try
+	{
+		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()" );
+		CHECK( str.find( "Collection" ) != str.npos );
+	}
+	catch ( CommandException & e )
+	{
+		VTX_ERROR( "{}", e.what() );
+		CHECK( false );
+	}
+	try
+	{
+		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()" );
+		CHECK( str.find( "Collection" ) != str.npos );
+	}
+	catch ( CommandException & e )
+	{
+		VTX_ERROR( "{}", e.what() );
+		CHECK( false );
+	}
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
