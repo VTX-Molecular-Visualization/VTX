@@ -23,11 +23,7 @@ namespace VTX::PythonBinding::API
 		Collection() = default;
 
 	  private:
-		struct _incrementer
-		{
-			virtual T	   at( const size_t & p_idx ) = 0;
-			virtual size_t size()					  = 0;
-		};
+		struct _interface;
 
 	  public:
 		struct Iterator
@@ -65,15 +61,15 @@ namespace VTX::PythonBinding::API
 			friend bool operator!=( const Iterator & a, const Iterator & b ) { return a._idx != b._idx; };
 
 			Iterator() = default;
-			Iterator( T p_obj, size_t p_idx, _incrementer & p_incr ) :
+			Iterator( T p_obj, size_t p_idx, _interface & p_incr ) :
 				_obj( std::move( p_obj ) ), _idx( std::move( p_idx ) ), _incr( &p_incr )
 			{
 			}
 
 		  private:
-			T			   _obj;
-			size_t		   _idx	 = 0;
-			_incrementer * _incr = nullptr;
+			T			 _obj;
+			size_t		 _idx  = 0;
+			_interface * _incr = nullptr;
 		};
 
 		inline Iterator begin()
@@ -89,6 +85,10 @@ namespace VTX::PythonBinding::API
 			return {};
 		}
 
+		/**
+		 * @brief Return the size of the collection or the max uint64 value if the collection is defaulted
+		 * @return
+		 */
 		inline size_t size()
 		{
 			if ( _ptr )
@@ -96,6 +96,10 @@ namespace VTX::PythonBinding::API
 			return 0xffffffffffffffff;
 		}
 
+		/**
+		 * @brief Return the element at given position or default constructed element if the collection is defaulted.
+		 * Assumes the index is within [0,size).
+		 */
 		T operator[]( const size_t & p_ ) noexcept
 		{
 			if ( _ptr )
@@ -116,19 +120,13 @@ namespace VTX::PythonBinding::API
 		};
 
 		template<class TT>
-		class _wrapper final : public _interface, private _incrementer
+		class _wrapper final : public _interface
 		{
 			TT _obj;
 
 		  public:
 			_wrapper( TT && p_ ) : _obj( std::forward<TT>( p_ ) ) {}
-			virtual T at( const size_t & p_idx ) override
-			{
-				// if ( size() > p_idx )
-				return { _obj.at( p_idx ) };
-				// else
-				// pybind11::set_error( pybind11::index_error() );
-			}
+			virtual T		 at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
 			virtual Iterator begin() override { return Iterator( T( _obj[ 0 ] ), 0, *this ); }
 			virtual Iterator end() override { return Iterator( T(), _obj.size(), *this ); }
 			virtual size_t	 size() override { return _obj.size(); }

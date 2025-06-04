@@ -20,11 +20,6 @@ namespace VTX::PythonBinding::Binding
 				[]( API::Collection<ITEM> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
 				pybind11::keep_alive<0, 1>()
 			)
-			//.def(
-			//	"__getitem__",
-			//	(ITEM ( API::Collection<ITEM>::* )( const size_t & ))&API::Collection<ITEM>::operator[],
-			//	pybind11::keep_alive<0, 1>()
-			//)
 			.def(
 				"__getitem__",
 				[]( API::Collection<ITEM> & _, const size_t & idx )
@@ -34,7 +29,8 @@ namespace VTX::PythonBinding::Binding
 					else
 						throw pybind11::index_error(
 							"Provided index is greater than or equal to the size of the list."
-						);
+						); // At first I put it in the Collection operator[] method directly but I couldn't catch the
+						   // exception from the interpretor code. So I putted it here instead and it works.
 				}
 			)
 			.def(
