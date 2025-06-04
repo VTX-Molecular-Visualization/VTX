@@ -33,11 +33,7 @@ namespace VTX::PythonBinding::Binding
 						   // exception from the interpretor code. So I putted it here instead and it works.
 				}
 			)
-			.def(
-				"__len__",
-				(size_t ( API::Collection<ITEM>::* )())&API::Collection<ITEM>::size,
-				pybind11::keep_alive<0, 1>()
-			)
+			.def( "__len__", (size_t ( API::Collection<ITEM>::* )())&API::Collection<ITEM>::size )
 
 			;
 	}
