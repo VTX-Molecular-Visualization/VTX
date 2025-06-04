@@ -24,8 +24,12 @@ namespace Test
 	}
 } // namespace Test
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][types]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types]" )
 {
+	/**
+	 * @brief We check that the python return types of the select return object are those expected (those from the
+	 * PythonBinding::API)
+	 */
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
@@ -34,7 +38,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	try
 	{
 		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()" );
-		CHECK( str.find( "Collection" ) != str.npos );
+		CHECK( str.find( "CollectionAtom" ) != str.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -44,7 +48,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	try
 	{
 		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()" );
-		CHECK( str.find( "Collection" ) != str.npos );
+		CHECK( str.find( "CollectionResidue" ) != str.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -54,7 +58,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	try
 	{
 		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()" );
-		CHECK( str.find( "Collection" ) != str.npos );
+		CHECK( str.find( "CollectionChain" ) != str.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -64,12 +68,37 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	try
 	{
 		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()" );
-		CHECK( str.find( "Collection" ) != str.npos );
+		CHECK( str.find( "CollectionSystem" ) != str.npos );
 	}
 	catch ( CommandException & e )
 	{
 		VTX_ERROR( "{}", e.what() );
 		CHECK( false );
+	}
+}
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integration][collection]" )
+{
+	using namespace VTX;
+	using SelectionUtil = App::Test::Util::Selection;
+	App::Fixture app;
+
+	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	Test::loadSystem( "1AGA.mmtf" );
+
+	try
+	{
+		{
+			auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]" );
+		}
+		CHECK( true );
+		{
+			auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]" );
+		}
+		CHECK( false );
+	}
+	catch ( VTX::CommandException & )
+	{
+		CHECK( true );
 	}
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )

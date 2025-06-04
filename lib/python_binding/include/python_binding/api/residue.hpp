@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_API_RESIDUE__
 #define __VTX_PYTHON_API_RESIDUE__
 
+#include <concepts>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
@@ -291,7 +292,17 @@ namespace VTX::PythonBinding::API
 
 	  public:
 		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, Residue> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Residue> )
+		Residue( std::unique_ptr<T> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
+		template<class T>
+			requires( not std::same_as<std::remove_cvref_t<T>, Residue> )
+		Residue( const std::unique_ptr<T> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
+		template<class T>
+			requires( not std::same_as<std::remove_cvref_t<T>, Residue> )
 		Residue( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 		}

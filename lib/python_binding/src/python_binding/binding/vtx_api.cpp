@@ -20,8 +20,28 @@ namespace VTX::PythonBinding::Binding
 				[]( API::Collection<ITEM> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
 				pybind11::keep_alive<0, 1>()
 			)
-			.def( "__getitem__", []( API::Collection<ITEM> & c, const size_t & idx ) { return c[ idx ]; } )
-			.def( "__len__", []( API::Collection<ITEM> & c ) { return c.size(); } )
+			//.def(
+			//	"__getitem__",
+			//	(ITEM ( API::Collection<ITEM>::* )( const size_t & ))&API::Collection<ITEM>::operator[],
+			//	pybind11::keep_alive<0, 1>()
+			//)
+			.def(
+				"__getitem__",
+				[]( API::Collection<ITEM> & _, const size_t & idx )
+				{
+					if ( _.size() > idx )
+						return _[ idx ];
+					else
+						throw pybind11::index_error(
+							"Provided index is greater than or equal to the size of the list."
+						);
+				}
+			)
+			.def(
+				"__len__",
+				(size_t ( API::Collection<ITEM>::* )())&API::Collection<ITEM>::size,
+				pybind11::keep_alive<0, 1>()
+			)
 
 			;
 	}
@@ -79,6 +99,7 @@ namespace VTX::PythonBinding::Binding
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );
 		registerCollection<API::Residue>( p_apiModule, "CollectionResidue" );
 		registerCollection<API::Chain>( p_apiModule, "CollectionChain" );
+		registerCollection<API::System>( p_apiModule, "CollectionSystem" );
 
 		// System
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )

@@ -69,7 +69,7 @@ namespace VTX::UI::QT::Widget
 		}
 		catch ( CommandException & p_e )
 		{
-			throw p_e;
+			VTX_PYTHON_OUT( "{}", p_e.what() );
 		}
 	}
 

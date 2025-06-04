@@ -1,9 +1,12 @@
 #ifndef __VTX_PYTHON_API_COLECTION__
 #define __VTX_PYTHON_API_COLECTION__
 
+#include <concepts>
 #include <cstddef>
 #include <iterator>
 #include <memory>
+#include <pybind11/embed.h>
+#include <util/exceptions.hpp>
 
 namespace VTX::PythonBinding::API
 {
@@ -115,21 +118,27 @@ namespace VTX::PythonBinding::API
 		template<class TT>
 		class _wrapper final : public _interface, private _incrementer
 		{
-			TT & _obj;
+			TT _obj;
 
 		  public:
-			_wrapper( TT & p_ ) : _obj( p_ ) {}
-			virtual T		 at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
-			virtual Iterator begin() override { return Iterator( { _obj[ 0 ] }, 0, *this ); }
-			virtual Iterator end() override { return Iterator( {}, _obj.size(), *this ); }
+			_wrapper( TT && p_ ) : _obj( std::forward<TT>( p_ ) ) {}
+			virtual T at( const size_t & p_idx ) override
+			{
+				// if ( size() > p_idx )
+				return { _obj.at( p_idx ) };
+				// else
+				// pybind11::set_error( pybind11::index_error() );
+			}
+			virtual Iterator begin() override { return Iterator( T( _obj[ 0 ] ), 0, *this ); }
+			virtual Iterator end() override { return Iterator( T(), _obj.size(), *this ); }
 			virtual size_t	 size() override { return _obj.size(); }
 		};
 		std::shared_ptr<_interface> _ptr = nullptr;
 
 	  public:
 		template<class COLLECTION>
-			requires( not std::same_as<std::remove_cv<COLLECTION>, Collection> )
-		Collection( COLLECTION & p_ ) : _ptr( new _wrapper<COLLECTION>( p_ ) )
+			requires( not std::same_as<std::remove_cvref_t<COLLECTION>, Collection<T>> )
+		Collection( COLLECTION && p_ ) : _ptr( new _wrapper<COLLECTION>( std::forward<COLLECTION>( p_ ) ) )
 		{
 		}
 	};

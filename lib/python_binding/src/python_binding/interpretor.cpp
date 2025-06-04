@@ -105,8 +105,17 @@ namespace VTX::PythonBinding
 			}
 			catch ( const pybind11::error_already_set & ee )
 			{
+
 				throw( VTX::CommandException( p_line, ee.what() ) );
 			}
+			catch ( VTX::CommandException & p_e )
+			{
+				VTX_PYTHON_OUT( "{}", p_e.what() );
+			}
+		}
+		catch ( VTX::CommandException & p_e )
+		{
+			VTX_PYTHON_OUT( "{}", p_e.what() );
 		}
 		return {};
 	}

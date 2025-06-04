@@ -1,13 +1,27 @@
 #ifndef __VTX_PYTHON_API_ATOM__
 #define __VTX_PYTHON_API_ATOM__
 
-#include <concepts>
 #include <core/chemdb/atom.hpp>
 #include <memory>
+#include <util/concepts.hpp>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
 {
+
+	template<class T>
+	struct is_unique_ptr : std::false_type
+	{
+	};
+	template<class T, class D>
+	struct is_unique_ptr<std::unique_ptr<T, D>> : std::true_type
+	{
+	};
+	template<class T>
+	struct is_unique_ptr<std::unique_ptr<T>> : std::true_type
+	{
+	};
+
 	class Residue;
 	class Chain;
 	class System;
@@ -243,8 +257,18 @@ namespace VTX::PythonBinding::API
 		std::shared_ptr<_interface> _ptr
 			= nullptr; // We want the atom to be copyable at it will point toward the same entity eventually
 	  public:
+		template<class T, typename D>
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
+		Atom( std::unique_ptr<T, D> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
+		template<class T, typename D>
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
+		Atom( const std::unique_ptr<T, D> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
 		template<class T>
-			requires( not std::same_as<std::remove_cvref<T>, Atom> ) and ( not std::same_as<T, void> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
 		Atom( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 			// static_assert(

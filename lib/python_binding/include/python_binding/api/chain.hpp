@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_API_CHAIN__
 #define __VTX_PYTHON_API_CHAIN__
 
+#include <concepts>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
@@ -250,7 +251,17 @@ namespace VTX::PythonBinding::API
 
 	  public:
 		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, Chain> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Chain> )
+		Chain( std::unique_ptr<T> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
+		template<class T>
+			requires( not std::same_as<std::remove_cvref_t<T>, Chain> )
+		Chain( const std::unique_ptr<T> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
+		{
+		}
+		template<class T>
+			requires( not std::same_as<std::remove_cvref_t<T>, Chain> )
 		Chain( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 		}

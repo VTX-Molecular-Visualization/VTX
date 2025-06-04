@@ -2,6 +2,7 @@
 #define __VTX_PYTHON_API_SYSTEM__
 
 #include "python_binding/api/collection.hpp"
+#include <concepts>
 #include <fmt/format.h>
 #include <memory>
 #include <typeinfo>
@@ -358,7 +359,7 @@ namespace VTX::PythonBinding::API
 
 	  public:
 		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, System> ) and ( not std::same_as<T, void> )
+			requires( not std::same_as<std::remove_cvref_t<T>, System> )
 		System( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 		}
