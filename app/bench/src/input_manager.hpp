@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_BENCH_INPUT_MANAGER__
 #define __VTX_RENDERER_BENCH_INPUT_MANAGER__
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <functional>
 #include <util/callback.hpp>
 #include <util/constants.hpp>
@@ -20,40 +20,34 @@ namespace VTX::Bench
 		{
 			switch ( p_event.type )
 			{
-			case SDL_QUIT: onClose(); break;
-			case SDL_KEYDOWN:
-				_keys[ p_event.key.keysym.scancode ] = true;
-				onKeyPressed( p_event.key.keysym.scancode );
+			case SDL_EVENT_QUIT: onClose(); break;
+			case SDL_EVENT_KEY_DOWN:
+				_keys[ p_event.key.scancode ] = true;
+				onKeyPressed( p_event.key.scancode );
 				break;
-			case SDL_KEYUP: _keys[ p_event.key.keysym.scancode ] = false; break;
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_KEY_UP: _keys[ p_event.key.scancode ] = false; break;
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				_mouseButtons[ p_event.button.button - 1 ] = true;
 				if ( p_event.button.button == SDL_BUTTON_LEFT )
-					onMousePick( p_event.button.x, p_event.button.y );
+					onMousePick( uint( p_event.button.x ), uint( p_event.button.y ) );
 				break;
-			case SDL_MOUSEBUTTONUP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_BUTTON_UP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
+			case SDL_EVENT_MOUSE_MOTION:
 				if ( _mouseButtons[ 2 ] )
 				{
-					_deltaMouse.x += p_event.motion.xrel;
-					_deltaMouse.y += p_event.motion.yrel;
+					_deltaMouse.x += int( p_event.motion.xrel );
+					_deltaMouse.y += int( p_event.motion.yrel );
 				}
-				int x, y;
+				float x, y;
 				SDL_GetMouseState( &x, &y );
 				onMouseMotion( { x, y } );
 				break;
-			case SDL_MOUSEWHEEL: _deltaWheel += p_event.wheel.y; break;
-			case SDL_WINDOWEVENT:
-				switch ( p_event.window.event )
-				{
-				case SDL_WINDOWEVENT_SIZE_CHANGED:
-				case SDL_WINDOWEVENT_RESIZED: onResize( p_event.window.data1, p_event.window.data2 ); break;
-				case SDL_WINDOWEVENT_RESTORED: onRestore(); break;
-				}
-				break;
-			case SDL_DROPFILE:
-				onFileDrop( p_event.drop.file );
-				SDL_free( p_event.drop.file );
+			case SDL_EVENT_MOUSE_WHEEL: _deltaWheel += int( p_event.wheel.y ); break;
+			case SDL_EVENT_WINDOW_RESIZED: onResize( p_event.window.data1, p_event.window.data2 ); break;
+			case SDL_EVENT_WINDOW_RESTORED: onRestore(); break;
+			case SDL_EVENT_DROP_FILE:
+				onFileDrop( p_event.drop.data );
+				// SDL_free( p_event.drop.data );
 				break;
 
 			default: break;
@@ -121,13 +115,13 @@ namespace VTX::Bench
 		Util::Callback<int>			   onZoom;
 		Util::Callback<const Vec2i &>  onMouseMotion;
 		Util::Callback<>			   onRestore;
-		Util::Callback<size_t, size_t> onMousePick;
+		Util::Callback<uint, uint>	   onMousePick;
 		Util::Callback<SDL_Scancode>   onKeyPressed;
 		Util::Callback<FilePath>	   onFileDrop;
 
 	  private:
-		bool _keys[ SDL_NUM_SCANCODES ] = { false };
-		bool _mouseButtons[ 3 ]			= { false };
+		bool _keys[ SDL_SCANCODE_COUNT ] = { false };
+		bool _mouseButtons[ 3 ]			 = { false };
 
 		Vec3i _deltaMoveInputs = { 0, 0, 0 };
 		Vec2i _deltaMouse	   = { 0, 0 };

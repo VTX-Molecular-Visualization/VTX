@@ -13,23 +13,22 @@ class VTXRecipe(ConanFile):
     generators = "CMakeDeps"
         
     def requirements(self):
-        self.requires("glm/0.9.9.8")
-        self.requires("spdlog/1.15.0")
+        self.requires("glm/1.0.1")
+        self.requires("spdlog/1.15.1")
         self.requires("magic_enum/0.9.7")
-        self.requires("cpr/1.10.5")
-        self.requires("catch2/3.7.1")
+        self.requires("cpr/1.11.2")
+        self.requires("catch2/3.8.1")
         self.requires("chemfiles/0.10.4.2")
-        self.requires("sdl/2.30.2")
-        self.requires("imgui/1.90.5")
-        self.requires("stb/cci.20230920")
-        self.requires("entt/3.13.2")
-        self.requires("pybind11/2.12.0")
+        self.requires("sdl/3.2.14")
+        self.requires("imgui/1.91.8")
+        self.requires("stb/cci.20240531")
+        self.requires("entt/3.14.0")
+        self.requires("pybind11/2.13.6")
         self.requires("qt/6.6.3")
-        self.requires("eigen/3.4.0") 
         self.requires("gromacs/2024.0")
-        self.requires("re2/20231101")
-        self.requires("libarchive/3.7.6")
-        self.requires("boost/1.86.0")
+        self.requires("re2/20240702")
+        self.requires("libarchive/3.7.9")
+        self.requires("boost/1.88.0")
 
     def config_options(self):        
         # Package options.
@@ -124,7 +123,7 @@ class VTXRecipe(ConanFile):
         tc = CMakeToolchain(self)        
         tc.generate()
 
-        copy(self, "*sdl2*", os.path.join(self.dependencies["imgui"].package_folder,
+        copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))

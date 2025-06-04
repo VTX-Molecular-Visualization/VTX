@@ -1,8 +1,8 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
-#include <SDL.h>
-#include <imgui/imgui_impl_sdl2.h>
+#include <SDL3/SDL.h>
+#include <imgui/imgui_impl_sdl3.h>
 #include <renderer/descriptors.hpp>
 #include <renderer/facade.hpp>
 #include <util/type_traits.hpp>
@@ -18,7 +18,7 @@ namespace VTX::Bench
 		UserInterface( const size_t p_width, const size_t p_height );
 		~UserInterface();
 
-		inline double getTime() const { return SDL_GetTicks(); }
+		inline double getTime() const { return double( SDL_GetTicks() ); }
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
 		inline void * getProcAddress() { return reinterpret_cast<void *>( SDL_GL_GetProcAddress ); }
 		inline void	  setVSync( const bool p_vsync )
@@ -35,7 +35,7 @@ namespace VTX::Bench
 
 			if ( hasEvent )
 			{
-				ImGui_ImplSDL2_ProcessEvent( &p_event );
+				ImGui_ImplSDL3_ProcessEvent( &p_event );
 			}
 
 			return hasEvent;
