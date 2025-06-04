@@ -8,7 +8,7 @@ namespace VTX::App
 	class Fixture
 	{
 	  public:
-		Fixture()
+		inline Fixture()
 		{
 			if ( not _app )
 			{
@@ -20,7 +20,7 @@ namespace VTX::App
 			_app->start( args );
 		}
 
-		~Fixture() { _app->stop(); }
+		inline ~Fixture() { _app->stop(); }
 
 	  private:
 		inline static std::unique_ptr<APP> _app;

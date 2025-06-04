@@ -87,6 +87,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 
 	try
 	{
+		auto str = INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())" );
+		CHECK( str == "126" );
+	}
+	catch ( ... )
+	{
+		CHECK( false );
+	}
+	try
+	{
 		{
 			auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]" );
 		}
