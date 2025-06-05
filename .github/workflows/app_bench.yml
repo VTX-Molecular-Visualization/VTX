@@ -62,5 +62,5 @@ jobs:
       env:
         PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
       with:
-        name: VTXRendererBench_${{runner.os}}
+        name: VTXRendererBench_${{matrix.os}}
         path: ${{env.PACKAGE_PATH}}
