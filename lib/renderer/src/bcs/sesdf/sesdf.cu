@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 #include <glm/common.hpp>
-#include <helper_cuda.h>
+#include <cuda_helper/helper_cuda.h>
 
 #include "bcs/core/molecule.hpp"
 #include "bcs/cuda/grid.cuh"

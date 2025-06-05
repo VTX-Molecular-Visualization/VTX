@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include <device_types.h>
-#include <helper_math.h>
+#include <cuda_helper/helper_math.h>
 
 #include "bcs/core/math.hpp"
 
