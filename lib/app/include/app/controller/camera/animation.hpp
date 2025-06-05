@@ -31,5 +31,87 @@ namespace VTX::App::Controller::Camera
 	  private:
 		std::unique_ptr<A> _animation;
 	};
+
+	/**
+	 * @brief Class responsible allowing animation manipulation to consumers
+	 */
+	class GenericAnimation : public Core::Controller::BaseController
+	{
+	  public:
+		GenericAnimation() = default;
+
+		/**
+		 * @brief TODO
+		 */
+		inline void play()
+		{
+			if ( _ptr )
+				_ptr->play();
+		}
+
+		/**
+		 * @brief Make the animation move forward.
+		 * @param p_deltaTime time since last call
+		 * @param p_elapsedTime time since the start of the process ( TODO : confirm that)
+		 */
+		inline void update( const float p_deltaTime, const float p_elapsedTime )
+		{
+			if ( _ptr )
+				_ptr->update( std::move( p_deltaTime ), std::move( p_elapsedTime ) );
+		}
+
+		/**
+		 * @brief TODO
+		 */
+		inline void enter()
+		{
+			if ( _ptr )
+				_ptr->enter();
+		}
+
+		/**
+		 * @brief TODO
+		 */
+		inline void exit()
+		{
+			if ( _ptr )
+				_ptr->exit();
+		}
+
+	  private:
+		struct _interface
+		{
+			virtual ~_interface()							= default;
+			virtual void play()								= 0;
+			virtual void update( const float, const float ) = 0;
+			virtual void enter()							= 0;
+			virtual void exit()								= 0;
+		};
+		template<typename T>
+		class _wrapper final : public _interface
+		{
+			T _obj;
+
+		  public:
+			_wrapper( T && p_obj ) : _obj( std::forward<T>( p_obj ) ) {}
+
+			virtual void play() override { _obj.play(); }
+			virtual void update( const float p_deltaTime, const float p_elapsedTime ) override
+			{
+				_obj.update( std::move( p_deltaTime ), std::move( p_elapsedTime ) );
+			}
+			virtual void enter() override { _obj.enter(); }
+			virtual void exit() override { _obj.exit(); }
+		};
+
+		std::unique_ptr<_interface> _ptr = nullptr;
+
+	  public:
+		template<typename T>
+			requires( not std::same_as<std::remove_cvref_t<T>, GenericAnimation> )
+		GenericAnimation( T && _ ) : _ptr( new _wrapper<T>( std::forward<T>( _ ) ) )
+		{
+		}
+	};
 } // namespace VTX::App::Controller::Camera
 #endif

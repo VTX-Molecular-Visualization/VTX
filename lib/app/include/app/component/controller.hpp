@@ -66,6 +66,7 @@ namespace VTX::App::Component
 			_activeCallbacks.erase( hash );
 		}
 
+		void launchAnimation( App::Controller::Camera::GenericAnimation p_animation );
 		template<Core::Animation::ConceptAnimation A, typename... Args>
 		void launchAnimation( Args &&... p_args )
 		{
