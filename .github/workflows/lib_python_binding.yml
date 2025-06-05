@@ -50,3 +50,8 @@ jobs:
         conan export io
         conan export renderer
         conan create python_binding -b missing -s compiler.cppstd=20 -o vtx_python_binding/*:test=True
+
+    - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload pybind11 -r=cano7782
