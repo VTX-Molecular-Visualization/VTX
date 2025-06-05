@@ -22,6 +22,9 @@ namespace VTX::App::Component
 		Controller()					 = default;
 		Controller( const Controller & ) = delete;
 
+		App::Controller::Camera::GenericAnimation * const enableController(
+			App::Controller::Camera::GenericAnimation p_animation
+		);
 		template<Core::Controller::ConceptController C, typename... Args>
 		C * const enableController( Args &&... p_args )
 		{
@@ -46,6 +49,7 @@ namespace VTX::App::Component
 			return controller;
 		}
 
+		void disableController( Hash );
 		template<Core::Controller::ConceptController C>
 		void disableController()
 		{
@@ -99,6 +103,7 @@ namespace VTX::App::Component
 			controller->play();
 		}
 
+		inline bool isControllerEnabled( Hash p_hash ) const { return _activeCallbacks.contains( p_hash ); }
 		template<Core::Controller::ConceptController C>
 		bool isControllerEnabled() const
 		{

@@ -35,6 +35,9 @@ namespace VTX::App::Core::Animation
 		Util::Callback<const Vec3f &, const Quatf &> onProgress;
 		Util::Callback<const Vec3f &>				 onEnd;
 
+		inline void setPositionFunc( InterpolationPositionFunc p_fn ) { _positionFunc = std::move( p_fn ); }
+		inline void setRotationFunc( InterpolationRotationFunc p_fn ) { _rotationFunc = std::move( p_fn ); }
+
 	  protected:
 		float _duration	   = DEFAULT_DURATION;
 		float _currentTime = 0.f;

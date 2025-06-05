@@ -10,7 +10,7 @@
 namespace VTX::App::Animation
 {
 
-	class Orient : public Core::Animation::BaseAnimation
+	class Orient
 	{
 	  public:
 		inline static const float ORIENT_ZOOM_FACTOR = 0.666f;
@@ -23,6 +23,17 @@ namespace VTX::App::Animation
 			const Util::Math::AABB & p_target,
 			const float				 p_orientZoomFactor = ORIENT_ZOOM_FACTOR
 		);
+
+		void  update( const float p_delta, const float p_elasped );
+		void  play();
+		void  stop();
+		float getRatio() const;
+
+		inline Util::Callback<const Vec3f &, const Quatf &> & onProgress() { return _animation.onProgress; }
+		inline Util::Callback<const Vec3f &> &				  onEnd() { return _animation.onEnd; }
+
+	  private:
+		Core::Animation::BaseAnimation _animation;
 	};
 } // namespace VTX::App::Animation
 #endif

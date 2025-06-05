@@ -5,7 +5,7 @@
 namespace VTX::App::Animation
 {
 	Orient::Orient( const App::Component::Render::Camera & p_camera, const Util::Math::AABB & p_aabb ) :
-		BaseAnimation(
+		_animation(
 			App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera ).getTransform(),
 			Orient::computeCameraOrientPosition(
 				p_camera.getTransform().getFront(),
@@ -13,19 +13,21 @@ namespace VTX::App::Animation
 				p_aabb,
 				ORIENT_ZOOM_FACTOR
 			),
-			Util::Math::toQuat( App::ECS_REGISTRY()
-									.getComponent<App::Component::Scene::Transform>( p_camera )
-									.getTransform()
-									.getRotation() ),
+			Util::Math::toQuat(
+				App::ECS_REGISTRY()
+					.getComponent<App::Component::Scene::Transform>( p_camera )
+					.getTransform()
+					.getRotation()
+			),
 			p_aabb.centroid()
 		)
 	{
 		// Set interpolation functions.
-		_positionFunc = []( const Vec3f & lhs, const Vec3f & rhs, float value )
-		{ return Util::Math::easeInOutInterpolation<Vec3f, float>( lhs, rhs, value ); };
+		_animation.setPositionFunc( []( const Vec3f & lhs, const Vec3f & rhs, float value )
+									{ return Util::Math::easeInOutInterpolation<Vec3f, float>( lhs, rhs, value ); } );
 
-		_rotationFunc = []( const Quatf & lhs, const Quatf & rhs, float value )
-		{ return Util::Math::easeInOutInterpolation<Quatf, float>( lhs, rhs, value ); };
+		_animation.setRotationFunc( []( const Quatf & lhs, const Quatf & rhs, float value )
+									{ return Util::Math::easeInOutInterpolation<Quatf, float>( lhs, rhs, value ); } );
 	}
 
 	Vec3f Orient::computeCameraOrientPosition(
@@ -38,5 +40,18 @@ namespace VTX::App::Animation
 		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
 		return p_target.centroid() - ( p_forward * orientTargetDistance );
 	}
+
+	void Orient::update( const float p_delta, const float p_elasped )
+	{
+		//
+		_animation.update( p_delta, p_elasped );
+		//
+	}
+
+	void Orient::play() { _animation.play(); }
+
+	void Orient::stop() { _animation.stop(); }
+
+	float Orient::getRatio() const { return _animation.getRatio(); }
 
 } // namespace VTX::App::Animation

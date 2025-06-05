@@ -54,7 +54,7 @@ namespace VTX::App::Action::Camera
 	void Orient::execute()
 	{
 		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-		component.launchAnimation<App::Animation::Orient>( App::SCENE().getCamera(), _target );
+		component.launchAnimation( App::Animation::Orient( App::SCENE().getCamera(), _target ) );
 	}
 	Orient::Orient() : _target( App::SCENE().getAABB() ) {}
 
