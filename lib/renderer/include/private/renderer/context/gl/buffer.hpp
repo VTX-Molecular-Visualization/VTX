@@ -1,9 +1,9 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_BUFFER__
 #define __VTX_RENDERER_CONTEXT_GL_BUFFER__
 
+#include "include_opengl.hpp"
 #include <cassert>
 #include <cstddef>
-#include <glad/glad.h>
 #include <iostream>
 #include <util/logger.hpp>
 #include <vector>

@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_VERTEX_ARRAY__
 #define __VTX_RENDERER_CONTEXT_GL_VERTEX_ARRAY__
 
-#include <glad/glad.h>
+#include "include_opengl.hpp"
 #include <type_traits>
 
 namespace VTX::Renderer::Context::GL

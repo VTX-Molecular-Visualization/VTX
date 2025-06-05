@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_ENUM_SHADER_TYPE__
 #define __VTX_RENDERER_CONTEXT_GL_ENUM_SHADER_TYPE__
 
-#include <glad/glad.h>
+#include "include_opengl.hpp"
 
 namespace VTX::Renderer::Context::GL
 {

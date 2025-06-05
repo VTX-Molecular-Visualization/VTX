@@ -5,11 +5,11 @@
 #include "gl/buffer.hpp"
 #include "gl/chrono.hpp"
 #include "gl/framebuffer.hpp"
+#include "gl/include_opengl.hpp"
 #include "gl/program_manager.hpp"
 #include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
-#include <glad/glad.h>
 #include <set>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>

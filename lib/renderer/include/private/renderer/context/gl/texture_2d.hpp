@@ -1,8 +1,8 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
 #define __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
 
+#include "include_opengl.hpp"
 #include <cassert>
-#include <glad/glad.h>
 
 namespace VTX::Renderer::Context::GL
 {
