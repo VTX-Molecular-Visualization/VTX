@@ -1,8 +1,9 @@
+#include "renderer/context/gl/include_opengl.hpp"
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif // _WIN32
 
-#include <GL/gl3w.h>
 #include <cuda_gl_interop.h>
 
 #include "bcs/cuda/memory.cuh"
