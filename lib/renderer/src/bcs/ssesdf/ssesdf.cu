@@ -4,7 +4,6 @@
 #include <glm/common.hpp>
 #include <cuda_helper/helper_cuda.h>
 
-//#include "bcs/core/molecule.hpp"
 #include "bcs/cuda/grid.cuh"
 #include "bcs/ssesdf/data.cuh"
 #include "bcs/ssesdf/operations.cuh"

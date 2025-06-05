@@ -1,7 +1,6 @@
 #ifndef BCS_SESDF_SESDF_HPP
 #define BCS_SESDF_SESDF_HPP
 
-// #include "bcs/core/molecule.hpp"
 #include "bcs/core/type.hpp"
 #include "bcs/cuda/grid.cuh"
 #include "bcs/sesdf/graphics.hpp"
