@@ -58,3 +58,4 @@ jobs:
       working-directory: ${{env.ROOT_DIR}}
       run: |
         conan upload gromacs -r=cano7782
+        conan upload re2 -r=cano7782
