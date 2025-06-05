@@ -1,21 +1,21 @@
 function(configure_target p_target)
 	if(CMAKE_COMPILER_IS_GNUCC)
-		target_compile_options(${p_target} PRIVATE "-Wpedantic")
-		target_compile_options(${p_target} PRIVATE "-Wall")
+		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
 	elseif(MSVC)
 		# General.
-		target_compile_options(${p_target} PRIVATE "/W3")  # Warning level 3.
-		target_compile_options(${p_target} PRIVATE "/WX")  # Warnings as errors.
-		target_compile_options(${p_target} PRIVATE "/MP")  # Multicore compilation.
-		target_compile_options(${p_target} PRIVATE "/sdl") # Additional Security Checks.	
-		target_compile_options(${p_target} PRIVATE "/utf-8")
-		target_compile_options(${p_target} PRIVATE "/fp:fast") # Floating Point Model.
-		target_compile_options(${p_target} PRIVATE "/Zc:__cplusplus")
+		target_compile_options(${p_target} PRIVATE 
+			$<$<COMPILE_LANGUAGE:CXX>:/W3>            # Warning level 3
+			$<$<COMPILE_LANGUAGE:CXX>:/WX>            # Warnings as errors
+			$<$<COMPILE_LANGUAGE:CXX>:/MP>		      # Multicore compilation.
+			$<$<COMPILE_LANGUAGE:CXX>:/sdl>           # Security Checks
+			$<$<COMPILE_LANGUAGE:CXX>:/utf-8>         # UTF-8 encoding
+			$<$<COMPILE_LANGUAGE:CXX>:/fp:fast>       # Floating Point
+			$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
+		)
 		# Optimization.
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/O2>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ob2>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Ot>")
-		target_compile_options(${p_target} PRIVATE "$<$<CONFIG:Release>:/Oi>")
+		target_compile_options(${p_target} PRIVATE 
+			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi>
+		)
 	endif()
 	# Force _DEBUG preprocessor on all plateforms.
 	if(DEFINED CMAKE_BUILD_TYPE)

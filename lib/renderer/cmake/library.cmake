@@ -21,13 +21,30 @@ target_sources(vtx_renderer
 )
 
 # Cuda.
-# Print message if CUDA is not found.
 check_language(CUDA)
 if (CMAKE_CUDA_COMPILER)
 	message(STATUS "CUDA found")
 	enable_language(CUDA)
-	#file(GLOB_RECURSE CUDA_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/cuda/*")
-	#target_sources(vtx_renderer PRIVATE ${CUDA_SOURCES})
+	find_package(CUDAToolkit)
+	set_target_properties(vtx_renderer PROPERTIES
+		CUDA_ARCHITECTURES "native"
+		CUDA_SEPARABLE_COMPILATION ON
+		CUDA_RESOLVE_DEVICE_SYMBOLS ON
+		CUDA_STANDARD 20
+	)
+	target_compile_options(vtx_renderer PRIVATE 
+		$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:
+			--generate-line-info
+		>
+		$<$<COMPILE_LANGUAGE:CUDA>:
+			--use_fast_math
+			--relocatable-device-code=true
+			--extended-lambda
+			-Xcudafe
+			--diag_suppress=esa_on_defaulted_function_ignored
+			-Wno-deprecated-gpu-targets
+		>
+	)
 else()
 	message(STATUS "CUDA not found")
 endif()
