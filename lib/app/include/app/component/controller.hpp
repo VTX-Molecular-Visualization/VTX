@@ -71,37 +71,6 @@ namespace VTX::App::Component
 		}
 
 		void launchAnimation( App::Controller::Camera::GenericAnimation p_animation );
-		template<Core::Animation::ConceptAnimation A, typename... Args>
-		void launchAnimation( Args &&... p_args )
-		{
-			// Already running.
-			if ( _controllers.has<App::Controller::Camera::Animation<A>>() )
-			{
-				return;
-			}
-
-			auto * controller
-				= enableController<App::Controller::Camera::Animation<A>>( std::forward<Args>( p_args )... );
-
-			auto & transformComponent
-				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( SCENE().getCamera() );
-
-			// Connect animation callbacks.
-			controller->onAnimationProgress() +=
-				[ &transformComponent ]( const Vec3f & p_position, const Quatf & p_rotation )
-			{
-				transformComponent.setPosition( p_position );
-				transformComponent.setRotation( p_rotation );
-			};
-
-			controller->onAnimationEnd() += [ this ]( const Vec3f & p_target )
-			{
-				SCENE().getCamera().setTargetWorld( p_target );
-				APP::onEndOfFrameOneShot += [ this ]() { disableController<App::Controller::Camera::Animation<A>>(); };
-			};
-
-			controller->play();
-		}
 
 		inline bool isControllerEnabled( Hash p_hash ) const { return _activeCallbacks.contains( p_hash ); }
 		template<Core::Controller::ConceptController C>
