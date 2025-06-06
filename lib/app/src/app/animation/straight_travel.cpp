@@ -29,6 +29,7 @@ namespace VTX::App::Animation
 		case TravelRythm::easeInOut:
 			posFunc = &Util ::Math ::easeInOutInterpolation<Vec3f, float>;
 			rotFunc = &Util ::Math ::easeInOutInterpolation<Quatf, float>;
+			break;
 		default: break;
 		}
 
