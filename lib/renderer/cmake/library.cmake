@@ -27,6 +27,9 @@ if (CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
 	find_package(CUDAToolkit)
 	set_target_properties(vtx_renderer PROPERTIES
+		#https://en.wikipedia.org/wiki/CUDA
+		#CUDA_ARCHITECTURES "50;52;60;61;70;75;80;86;89;90"
+		#CUDA_ARCHITECTURES "120-real" 
 		CUDA_ARCHITECTURES "native"
 		CUDA_SEPARABLE_COMPILATION ON
 		CUDA_RESOLVE_DEVICE_SYMBOLS ON

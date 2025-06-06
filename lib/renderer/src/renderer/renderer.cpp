@@ -1,4 +1,5 @@
 #include "renderer/renderer.hpp"
+#include "bcs/sesdf/sesdf.hpp"
 #include "renderer/binary_buffer.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
@@ -17,50 +18,58 @@ namespace VTX::Renderer
 		_refreshGraph();
 
 		// Shared data.
-		addGlobalData( { "Camera",
-						 15,
-						 { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-						   { "ClipInfos", // { _near * _far, _far, _far - _near, _near }
-							 E_TYPE::VEC4F,
-							 BufferValue<Vec4f> { VEC4F_ZERO } },
-						   { "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-						   { "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-						   { "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
-						 0,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "Camera",
+			  15,
+			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
+				  E_TYPE::VEC4F,
+				  BufferValue<Vec4f> { VEC4F_ZERO } },
+				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+			  0,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "ColorLayout",
-						 14,
-						 { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-						 4096,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "ColorLayout",
+			  14,
+			  { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+			  4096,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "Models",
-						 13,
-						 { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
-						 0,
-						 nullptr,
-						 true } );
+		addGlobalData(
+			{ "Models",
+			  13,
+			  { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
+			  0,
+			  nullptr,
+			  true }
+		);
 
-		addGlobalData( { "Representations",
-						 12,
-						 { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+		addGlobalData(
+			{ "Representations",
+			  12,
+			  { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+				{ "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+				{ "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+				{ "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
 
-						   { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
-						 0,
-						 nullptr,
-						 true } );
+				{ "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+				{ "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
+			  0,
+			  nullptr,
+			  true }
+		);
 	}
 
 	void Renderer::build()
@@ -78,6 +87,13 @@ namespace VTX::Renderer
 		);
 
 		VTX_DEBUG( "Renderer graph setup total time: {}", Util::String::durationToStr( buildTime ) );
+
+		// TEST: BCS SESDF
+		if ( isFirstBuild )
+		{
+			// Add SESDF data.
+			// bcs::SESDF sesdf( _context.getRenderQueue(), _graph.getLinks() );
+		}
 	}
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
