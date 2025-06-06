@@ -1,31 +1,28 @@
-#ifndef __VTX_APP_ANIMATION_ORIENT__
-#define __VTX_APP_ANIMATION_ORIENT__
+#ifndef __VTX_APP_ANIMATION_STRAIGHT_TRAVEL__
+#define __VTX_APP_ANIMATION_STRAIGHT_TRAVEL__
 
-#include "app/component/render/camera.hpp"
 #include "app/core/animation/concepts.hpp"
 #include "app/core/animation/travel_manager.hpp"
-#include <util/hashing.hpp>
-#include <util/math/aabb.hpp>
-#include <util/types.hpp>
 
 namespace VTX::App::Animation
 {
-
 	/**
-	 * @brief Class responsible for managing the animation of focusing the camera on a target space
+	 * @brief Class responsible for managing the animation of going to a certain point in a straight line.
 	 */
-	class Orient
+	class StraightTravel
 	{
 	  public:
-		inline static const float ORIENT_ZOOM_FACTOR = 0.666f;
+		enum class TravelRythm
+		{
+			linear,
+			easeInOut
+		};
 
-		Orient( const App::Component::Render::Camera &, const Util::Math::AABB & );
-
-		static Vec3f computeCameraOrientPosition(
-			const Vec3f				 p_forward,
-			const float				 p_fov,
-			const Util::Math::AABB & p_target,
-			const float				 p_orientZoomFactor = ORIENT_ZOOM_FACTOR
+		StraightTravel(
+			const Vec3f &		p_finalPostion,
+			const Quatf &		p_finalRotation,
+			const float &		p_duration,
+			const TravelRythm & p_rythm = TravelRythm::linear
 		);
 
 		inline void	 update( const float p_delta, const float p_elasped ) { _animation.update( p_delta, p_elasped ); }

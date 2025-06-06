@@ -41,17 +41,4 @@ namespace VTX::App::Animation
 		return p_target.centroid() - ( p_forward * orientTargetDistance );
 	}
 
-	void Orient::update( const float p_delta, const float p_elasped )
-	{
-		//
-		_animation.update( p_delta, p_elasped );
-		//
-	}
-
-	void Orient::play() { _animation.play(); }
-
-	void Orient::stop() { _animation.stop(); }
-
-	float Orient::getRatio() const { return _animation.getRatio(); }
-
 } // namespace VTX::App::Animation
