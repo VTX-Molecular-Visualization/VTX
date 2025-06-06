@@ -1,4 +1,4 @@
-#include "app/core/animation/base_animation.hpp"
+#include "app/core/animation/travel_manager.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Core::Animation

@@ -2,8 +2,8 @@
 #define __VTX_APP_ANIMATION_ORIENT__
 
 #include "app/component/render/camera.hpp"
-#include "app/core/animation/base_animation.hpp"
 #include "app/core/animation/concepts.hpp"
+#include "app/core/animation/travel_manager.hpp"
 #include <util/hashing.hpp>
 #include <util/math/aabb.hpp>
 #include <util/types.hpp>

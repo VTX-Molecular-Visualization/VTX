@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CORE_ANIMATION_CONCEPTS__
 #define __VTX_APP_CORE_ANIMATION_CONCEPTS__
 
-#include "base_animation.hpp"
+#include "app/core/animation/travel_manager.hpp"
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/math.hpp>
