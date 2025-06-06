@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_ANIMATION_BASE_ANIMATION__
-#define __VTX_APP_CORE_ANIMATION_BASE_ANIMATION__
+#ifndef __VTX_APP_CORE_ANIMATION_TRAVEL_MANAGER__
+#define __VTX_APP_CORE_ANIMATION_TRAVEL_MANAGER__
 
 #include <util/callback.hpp>
 #include <util/math/transform.hpp>
