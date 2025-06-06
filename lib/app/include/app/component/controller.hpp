@@ -22,9 +22,6 @@ namespace VTX::App::Component
 		Controller()					 = default;
 		Controller( const Controller & ) = delete;
 
-		App::Controller::Camera::GenericAnimation * const enableController(
-			App::Controller::Camera::GenericAnimation p_animation
-		);
 		template<Core::Controller::ConceptController C, typename... Args>
 		C * const enableController( Args &&... p_args )
 		{
@@ -82,6 +79,10 @@ namespace VTX::App::Component
 		Util::Callback<Hash> onControllerEnabled;
 
 	  private:
+		App::Controller::Camera::GenericAnimation * const enableController(
+			App::Controller::Camera::GenericAnimation p_animation
+		);
+
 		Util::Collection<std::unique_ptr<Core::Controller::BaseController>> _controllers;
 		//    TODO: improve collection to handle basic types.
 		std::unordered_map<Hash, Util::CallbackId> _activeCallbacks;

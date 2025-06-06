@@ -41,7 +41,7 @@ namespace VTX::App::Controller::Camera
 		GenericAnimation() = default;
 
 		/**
-		 * @brief TODO
+		 * @brief Allows the animation to unfold.
 		 */
 		inline void play() { _ptr->play(); }
 
@@ -61,7 +61,14 @@ namespace VTX::App::Controller::Camera
 		 */
 		friend Hash hash( const GenericAnimation & p_animation ) { return p_animation._ptr->hash(); }
 
+		/**
+		 * @brief Add a callback that will be called at each step of the animation
+		 */
 		inline void subscribe( Core::Animation::ProgressCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
+
+		/**
+		 * @brief Add a callback that will be called at the end of the animation
+		 */
 		inline void subscribe( Core::Animation::EndCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
 
 	  private:
@@ -75,7 +82,8 @@ namespace VTX::App::Controller::Camera
 			virtual void subscribe( Core::Animation::ProgressCallback ) = 0;
 			virtual void subscribe( Core::Animation::EndCallback )		= 0;
 		};
-		struct _void
+		struct _void // Small trick that allow GenericAnimation to be default constructible (requirement for being
+					 // stored in some standard collections for instance)
 		{
 		};
 		template<typename T>
