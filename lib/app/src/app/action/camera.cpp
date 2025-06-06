@@ -1,5 +1,6 @@
 #include "app/action/camera.hpp"
 #include "app/animation/orient.hpp"
+#include "app/animation/straight_travel.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
 #include <app/application/scene.hpp>
@@ -60,12 +61,10 @@ namespace VTX::App::Action::Camera
 
 	void MoveCamera::execute()
 	{
-		auto & camera = SCENE().getCamera();
-		camera.getTransform().applyTransform(
-			VTX::Util::Math::Transform(
-				Vec3f( _translationX, _translationY, _translationZ ),
-				Quatf( _rotationX, _rotationY, _rotationZ, _rotationW ),
-				Vec3f( _scaleX, _scaleY, _scaleZ )
+		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
+		component.launchAnimation(
+			Animation::StraightTravel(
+				{ _positionX, _positionY, _positionZ }, { _rotationX, _rotationY, _rotationZ, _rotationW }, _duration
 			)
 		);
 	}
