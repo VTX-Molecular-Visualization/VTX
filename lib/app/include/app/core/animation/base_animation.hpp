@@ -7,7 +7,7 @@
 namespace VTX::App::Core::Animation
 {
 
-	class BaseAnimation
+	class TravelManager
 	{
 	  public:
 		using InterpolationPositionFunc = std::function<Vec3f( const Vec3f &, const Vec3f &, const float )>;
@@ -16,14 +16,13 @@ namespace VTX::App::Core::Animation
 		inline static const float TRANSLATION_THRESHOLD = 0.1f;
 		inline static const float DEFAULT_DURATION		= 500.f;
 
-		BaseAnimation(
+		TravelManager(
 			const Util::Math::Transform &,
 			const Vec3f &,
 			const Quatf &,
 			const Vec3f &,
 			const float = DEFAULT_DURATION
 		);
-		virtual ~BaseAnimation() = default;
 
 		void update( const float p_delta, const float p_elasped );
 

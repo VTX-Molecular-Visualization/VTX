@@ -43,11 +43,7 @@ namespace VTX::App::Controller::Camera
 		/**
 		 * @brief TODO
 		 */
-		inline void play()
-		{
-			if ( _ptr )
-				_ptr->play();
-		}
+		inline void play() { _ptr->play(); }
 
 		/**
 		 * @brief Make the animation move forward.
@@ -56,51 +52,17 @@ namespace VTX::App::Controller::Camera
 		 */
 		inline void update( const float p_deltaTime, const float p_elapsedTime )
 		{
-			if ( _ptr )
-				_ptr->update( p_deltaTime, p_elapsedTime );
+			_ptr->update( p_deltaTime, p_elapsedTime );
 		}
-
-		///**
-		// * @brief TODO
-		// */
-		// inline void enter()
-		//{
-		//	if ( _ptr )
-		//		_ptr->enter();
-		//}
-
-		///**
-		// * @brief TODO
-		// */
-		// inline void exit()
-		//{
-		//	if ( _ptr )
-		//		_ptr->exit();
-		//}
 
 		/**
 		 * @brief Returns an hash unique to the type of animation played.
 		 * @return
 		 */
-		friend Hash hash( const GenericAnimation & p_animation )
-		{
-			if ( p_animation._ptr )
-				return p_animation._ptr->hash();
-			return 0;
-		}
+		friend Hash hash( const GenericAnimation & p_animation ) { return p_animation._ptr->hash(); }
 
-		inline Util::Callback<const Vec3f &, const Quatf &> & onAnimationProgress()
-		{
-			if ( _ptr )
-				return _ptr->onAnimationProgress();
-			throw VTX::VTXException( "Tried to see onAnimationProgress callbacks of an empty animation" );
-		}
-		inline Util::Callback<const Vec3f &> & onAnimationEnd()
-		{
-			if ( _ptr )
-				return _ptr->onAnimationEnd();
-			throw VTX::VTXException( "Tried to see onAnimationEnd callbacks of an empty animation" );
-		}
+		inline void subscribe( Core::Animation::ProgressCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
+		inline void subscribe( Core::Animation::EndCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
 
 	  private:
 		struct _interface
@@ -108,12 +70,13 @@ namespace VTX::App::Controller::Camera
 			virtual ~_interface()							= default;
 			virtual void play()								= 0;
 			virtual void update( const float, const float ) = 0;
-			// virtual void enter()							= 0;
-			// virtual void exit()								= 0;
-			virtual Hash hash() = 0;
+			virtual Hash hash() const						= 0;
 
-			virtual Util::Callback<const Vec3f &, const Quatf &> & onAnimationProgress() = 0;
-			virtual Util::Callback<const Vec3f &> &				   onAnimationEnd()		 = 0;
+			virtual void subscribe( Core::Animation::ProgressCallback ) = 0;
+			virtual void subscribe( Core::Animation::EndCallback )		= 0;
+		};
+		struct _void
+		{
 		};
 		template<typename T>
 		class _wrapper final : public _interface
@@ -123,23 +86,31 @@ namespace VTX::App::Controller::Camera
 		  public:
 			_wrapper( T && p_obj ) : _obj( std::forward<T>( p_obj ) ) {}
 
-			virtual void play() override { _obj.play(); }
+			virtual void play() override
+			{
+				if constexpr ( not std::same_as<T, _void> )
+					_obj.play();
+			}
 			virtual void update( const float p_deltaTime, const float p_elapsedTime ) override
 			{
-				_obj.update( p_deltaTime, p_elapsedTime );
+				if constexpr ( not std::same_as<T, _void> )
+					_obj.update( p_deltaTime, p_elapsedTime );
 			}
-			// virtual void enter() override { _obj.enter(); }
-			// virtual void exit() override { _obj.exit(); }
-			virtual Hash hash() override { return Util::hash<T>(); }
+			virtual Hash hash() const override { return Util::hash<T>(); }
 
-			virtual Util::Callback<const Vec3f &, const Quatf &> & onAnimationProgress() override
+			virtual void subscribe( Core::Animation::EndCallback p_ ) override
 			{
-				return _obj.onProgress();
+				if constexpr ( not std::same_as<T, _void> )
+					_obj.subscribe( std::move( p_ ) );
 			}
-			virtual Util::Callback<const Vec3f &> & onAnimationEnd() override { return _obj.onEnd(); }
+			virtual void subscribe( Core::Animation::ProgressCallback p_ ) override
+			{
+				if constexpr ( not std::same_as<T, _void> )
+					_obj.subscribe( std::move( p_ ) );
+			}
 		};
 
-		std::unique_ptr<_interface> _ptr = nullptr;
+		std::unique_ptr<_interface> _ptr = std::unique_ptr<_wrapper<_void>>();
 
 	  public:
 		template<typename T>

@@ -4,7 +4,7 @@
 namespace VTX::App::Core::Animation
 {
 
-	BaseAnimation::BaseAnimation(
+	TravelManager::TravelManager(
 		const Util::Math::Transform & p_source,
 		const Vec3f &				  p_finalPosition,
 		const Quatf &				  p_finalRotation,
@@ -18,7 +18,7 @@ namespace VTX::App::Core::Animation
 		_startRotation = p_source.getRotation();
 	}
 
-	void BaseAnimation::update( const float p_delta, const float p_elapsed )
+	void TravelManager::update( const float p_delta, const float p_elapsed )
 	{
 		if ( not _isRunning )
 		{
@@ -39,7 +39,7 @@ namespace VTX::App::Core::Animation
 		onProgress( position, rotation );
 	}
 
-	void BaseAnimation::play()
+	void TravelManager::play()
 	{
 		_currentTime = 0.f;
 		_isRunning	 = true;
@@ -53,7 +53,7 @@ namespace VTX::App::Core::Animation
 		}
 	}
 
-	void BaseAnimation::stop()
+	void TravelManager::stop()
 	{
 		_isRunning = false;
 

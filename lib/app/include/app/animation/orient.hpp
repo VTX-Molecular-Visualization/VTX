@@ -3,6 +3,7 @@
 
 #include "app/component/render/camera.hpp"
 #include "app/core/animation/base_animation.hpp"
+#include "app/core/animation/concepts.hpp"
 #include <util/hashing.hpp>
 #include <util/math/aabb.hpp>
 #include <util/types.hpp>
@@ -29,11 +30,11 @@ namespace VTX::App::Animation
 		void  stop();
 		float getRatio() const;
 
-		inline Util::Callback<const Vec3f &, const Quatf &> & onProgress() { return _animation.onProgress; }
-		inline Util::Callback<const Vec3f &> &				  onEnd() { return _animation.onEnd; }
+		inline void subscribe( Core::Animation::ProgressCallback p_ ) { _animation.onProgress += std::move( p_ ); }
+		inline void subscribe( Core::Animation::EndCallback p_ ) { _animation.onEnd += std::move( p_ ); }
 
 	  private:
-		Core::Animation::BaseAnimation _animation;
+		Core::Animation::TravelManager _animation;
 	};
 } // namespace VTX::App::Animation
 #endif

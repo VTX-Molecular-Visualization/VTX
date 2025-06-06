@@ -62,18 +62,20 @@ namespace VTX::App::Component
 			= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( SCENE().getCamera() );
 
 		// Connect animation callbacks.
-		controller->onAnimationProgress() +=
+		controller->subscribe(
 			[ &transformComponent ]( const Vec3f & p_position, const Quatf & p_rotation )
-		{
-			transformComponent.setPosition( p_position );
-			transformComponent.setRotation( p_rotation );
-		};
-
-		controller->onAnimationEnd() += [ this, controller_hash ]( const Vec3f & p_target )
-		{
-			SCENE().getCamera().setTargetWorld( p_target );
-			APP::onEndOfFrameOneShot += [ this, controller_hash ]() { disableController( controller_hash ); };
-		};
+			{
+				transformComponent.setPosition( p_position );
+				transformComponent.setRotation( p_rotation );
+			}
+		);
+		controller->subscribe(
+			[ this, controller_hash ]( const Vec3f & p_target )
+			{
+				SCENE().getCamera().setTargetWorld( p_target );
+				APP::onEndOfFrameOneShot += [ this, controller_hash ]() { disableController( controller_hash ); };
+			}
+		);
 
 		controller->play();
 	}
