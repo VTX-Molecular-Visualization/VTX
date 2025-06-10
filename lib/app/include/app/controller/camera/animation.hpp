@@ -71,6 +71,12 @@ namespace VTX::App::Controller::Camera
 		 */
 		inline void subscribe( Core::Animation::EndCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
 
+		/**
+		 * @brief Return wether the animation is still active or not.
+		 * @return
+		 */
+		inline virtual bool isActive() const { return _ptr->isActive(); }
+
 	  private:
 		struct _interface
 		{
@@ -78,6 +84,7 @@ namespace VTX::App::Controller::Camera
 			virtual void play()								= 0;
 			virtual void update( const float, const float ) = 0;
 			virtual Hash hash() const						= 0;
+			virtual bool isActive() const					= 0;
 
 			virtual void subscribe( Core::Animation::ProgressCallback ) = 0;
 			virtual void subscribe( Core::Animation::EndCallback )		= 0;
@@ -115,6 +122,13 @@ namespace VTX::App::Controller::Camera
 			{
 				if constexpr ( not std::same_as<T, _void> )
 					_obj.subscribe( std::move( p_ ) );
+			}
+			virtual bool isActive() const
+			{
+				if constexpr ( not std::same_as<T, _void> )
+					return _obj.isActive();
+				else
+					return false;
 			}
 		};
 

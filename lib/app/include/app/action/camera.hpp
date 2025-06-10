@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ACTION_CAMERA__
 #define __VTX_APP_ACTION_CAMERA__
 
+#include "app/python_binding/viewpoint_manager.hpp"
 #include <app/core/action/base_action.hpp>
 #include <util/math/aabb.hpp>
 
@@ -51,24 +52,30 @@ namespace VTX::App::Action::Camera
 			float p_rotationZ,
 			float p_duration
 		) :
-			_positionX( std::move( p_positionX ) ), _positionY( std::move( p_positionY ) ),
-			_positionZ( std::move( p_positionZ ) ), _rotationW( std::move( p_rotationW ) ),
-			_rotationX( std::move( p_rotationX ) ), _rotationY( std::move( p_rotationY ) ),
-			_rotationZ( std::move( p_rotationZ ) ), _duration( std::move( p_duration ) )
-
+			_position( std::move( p_positionX ), std::move( p_positionY ), std::move( p_positionZ ) ),
+			_rotation(
+				std::move( p_rotationW ),
+				{ std::move( p_rotationX ), std::move( p_rotationY ), std::move( p_rotationZ ) }
+			),
+			_duration( std::move( p_duration ) )
+		{
+		}
+		inline MoveCamera( Vec3f p_position, Quatf p_rotation, float p_duration ) :
+			_position( std::move( p_position ) ), _rotation( std::move( p_rotation ) ),
+			_duration( std::move( p_duration ) )
+		{
+		}
+		inline MoveCamera( VTX::App::PythonBinding::TravelViewpoint p_viewpoint ) :
+			_position( std::move( p_viewpoint.position ) ), _rotation( std::move( p_viewpoint.rotation ) ),
+			_duration( std::move( p_viewpoint.travelTime ) )
 		{
 		}
 		void execute() override;
 
 	  private:
-		float _positionX = 0.f;
-		float _positionY = 0.f;
-		float _positionZ = 0.f;
-		float _rotationW = 0.f;
-		float _rotationX = 0.f;
-		float _rotationY = 0.f;
-		float _rotationZ = 0.f;
-		float _duration	 = 0.f;
+		Vec3f _position;
+		Quatf _rotation;
+		float _duration = 0.f;
 	};
 
 	/**

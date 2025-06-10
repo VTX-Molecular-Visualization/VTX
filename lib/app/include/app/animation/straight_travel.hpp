@@ -29,6 +29,7 @@ namespace VTX::App::Animation
 		inline void	 play() { _animation.play(); }
 		inline void	 stop() { _animation.stop(); }
 		inline float getRatio() const { return _animation.getRatio(); }
+		inline bool	 isActive() const { return _animation.isActive(); }
 
 		inline void subscribe( Core::Animation::ProgressCallback p_ ) { _animation.onProgress += std::move( p_ ); }
 		inline void subscribe( Core::Animation::EndCallback p_ ) { _animation.onEnd += std::move( p_ ); }

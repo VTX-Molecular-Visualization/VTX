@@ -29,6 +29,8 @@ namespace VTX::App::Core::Animation
 		void play();
 		void stop();
 
+		inline bool isActive() const { return _isRunning; }
+
 		inline float getRatio() const { return Util::Math::clamp( 0.f, 1.f, _currentTime / _duration ); }
 
 		Util::Callback<const Vec3f &, const Quatf &> onProgress;

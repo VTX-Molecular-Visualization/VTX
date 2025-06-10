@@ -4,7 +4,10 @@
 #include "app/action/camera.hpp"
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/python_binding/selection/binder.hpp"
+#include "app/python_binding/viewpoint_manager.hpp"
 #include <python_binding/action.hpp>
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/helper.hpp>
@@ -70,9 +73,23 @@ namespace VTX::App::PythonBinding
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
 		commands.bindAction<App::Action::Camera::Reset>( "resetCamera", "Put the camera back in the initial space." );
+
+		// TODO : test the stuff below after threading
+		commands.bindAction<App::Action::Camera::MoveCamera, TravelViewpoint>(
+			"travelTo",
+			"Travel to a point in space and rotate the camera within the travel time window.",
+			VTX::PythonBinding::Wrapper::Arg( "travelViewpoint" )
+		);
+		commands.bindAction<App::Action::Camera::MoveCamera, Vec3f, Quatf, float>(
+			"travelTo",
+			"Travel to a point in space and rotate the camera within the travel time window.",
+			VTX::PythonBinding::Wrapper::Arg( "position" ),
+			VTX::PythonBinding::Wrapper::Arg( "rotation" ),
+			VTX::PythonBinding::Wrapper::Arg( "travelTime" )
+		);
 		commands.bindAction<App::Action::Camera::MoveCamera, float, float, float, float, float, float, float, float>(
-			"test",
-			"???",
+			"travelTo",
+			"Travel to a point in space and rotate the camera within the travel time window.",
 			VTX::PythonBinding::Wrapper::Arg( "position_x" ),
 			VTX::PythonBinding::Wrapper::Arg( "position_y" ),
 			VTX::PythonBinding::Wrapper::Arg( "position_z" ),
@@ -80,8 +97,48 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "rotation_y" ),
 			VTX::PythonBinding::Wrapper::Arg( "rotation_z" ),
 			VTX::PythonBinding::Wrapper::Arg( "rotation_w" ),
-			VTX::PythonBinding::Wrapper::Arg( "duration" )
+			VTX::PythonBinding::Wrapper::Arg( "travelTime" )
 		);
+		commands.def(
+			"getCameraPosition",
+			[]() { return SCENE().getCamera().getTransform().getPosition(); },
+			"Return current camera position"
+		);
+		commands.def(
+			"getCameraRotation",
+			[]() { return SCENE().getCamera().getTransform().getRotation(); },
+			"Return current camera position"
+		);
+		pybind11::class_<TravelViewpointManager>( *commandModulePtr, "TravelViewpointManager" )
+			.def( pybind11::init<>() )
+			.def<void ( TravelViewpointManager::* )()>( "registerCurrent", &TravelViewpointManager::registerCurrent )
+			.def<void ( TravelViewpointManager::* )( float )>(
+				"registerCurrent", &TravelViewpointManager::registerCurrent
+			)
+			.def( "setDefaultTravelTime", &TravelViewpointManager::setDefaultTravelTime )
+			.def(
+				"__getitem__",
+				[]( TravelViewpointManager & _, const size_t & idx )
+				{
+					if ( _.size() > idx )
+						return _[ idx ];
+					else
+						throw pybind11::index_error(
+							"Provided index is greater than or equal to the size of the list."
+						);
+				}
+			)
+			.def( "__len__", &TravelViewpointManager::size )
+			.def(
+				"__iter__",
+				[]( TravelViewpointManager & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
+				pybind11::keep_alive<0, 1>()
+			);
+		pybind11::class_<TravelViewpoint>( *commandModulePtr, "TravelViewpoint" )
+			.def( pybind11::init<>() )
+			.def_readwrite( "position", &TravelViewpoint::position )
+			.def_readwrite( "rotation", &TravelViewpoint::rotation )
+			.def_readwrite( "travelTime", &TravelViewpoint::travelTime );
 	}
 
 	void VTXAppBinder::importHeaders()

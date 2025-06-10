@@ -62,11 +62,7 @@ namespace VTX::App::Action::Camera
 	void MoveCamera::execute()
 	{
 		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-		component.launchAnimation(
-			Animation::StraightTravel(
-				{ _positionX, _positionY, _positionZ }, { _rotationX, _rotationY, _rotationZ, _rotationW }, _duration
-			)
-		);
+		component.launchAnimation( Animation::StraightTravel( _position, _rotation, _duration ) );
 	}
 
 	void SetCameraPosition::execute() {}
