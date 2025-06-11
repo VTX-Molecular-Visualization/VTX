@@ -102,12 +102,12 @@ namespace VTX::App::PythonBinding
 		commands.def(
 			"getCameraPosition",
 			[]() { return SCENE().getCamera().getTransform().getPosition(); },
-			"Return current camera position"
+			"Return current camera position vector"
 		);
 		commands.def(
 			"getCameraRotation",
 			[]() { return SCENE().getCamera().getTransform().getRotation(); },
-			"Return current camera position"
+			"Return current camera rotation vector"
 		);
 		pybind11::class_<TravelViewpointManager>( *commandModulePtr, "TravelViewpointManager" )
 			.def( pybind11::init<>() )

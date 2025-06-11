@@ -12,6 +12,10 @@ namespace VTX::App::PythonBinding
 		float travelTime;
 	};
 
+	// TODO : This is a draft feature, we need to change it. The goal is to be able to register the type of travel along
+	// with its duration and geometrical details in a viewpoint manager. And we need to be able to start the travel
+	// sequence so it unfold one after another.
+
 	/**
 	 * @brief Class responsible for Gathering viewpoints, storing them and exposing them for straight travel purpose.
 	 */
