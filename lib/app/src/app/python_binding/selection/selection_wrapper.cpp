@@ -60,7 +60,7 @@ namespace VTX::App::PythonBinding::Selection
 
 	void SelectionWrapper::selectAll() {}
 
-	const std::vector<App::Component::Chemistry::System *> SelectionWrapper::getSystems()
+	std::vector<App::Component::Chemistry::System *> SelectionWrapper::getSystems()
 	{
 		std::vector<App::Component::Chemistry::System *> res = std::vector<App::Component::Chemistry::System *>();
 
@@ -75,7 +75,7 @@ namespace VTX::App::PythonBinding::Selection
 
 		return res;
 	}
-	const std::vector<App::Component::Chemistry::Chain *> SelectionWrapper::getChains()
+	std::vector<App::Component::Chemistry::Chain *> SelectionWrapper::getChains()
 	{
 		std::vector<App::Component::Chemistry::Chain *> res = std::vector<App::Component::Chemistry::Chain *>();
 
@@ -99,7 +99,7 @@ namespace VTX::App::PythonBinding::Selection
 
 		return res;
 	}
-	const std::vector<App::Component::Chemistry::Residue *> SelectionWrapper::getResidues()
+	std::vector<App::Component::Chemistry::Residue *> SelectionWrapper::getResidues()
 	{
 		std::vector<App::Component::Chemistry::Residue *> res = std::vector<App::Component::Chemistry::Residue *>();
 
@@ -123,7 +123,7 @@ namespace VTX::App::PythonBinding::Selection
 
 		return res;
 	}
-	const std::vector<App::Component::Chemistry::Atom *> SelectionWrapper::getAtoms()
+	std::vector<App::Component::Chemistry::Atom *> SelectionWrapper::getAtoms()
 	{
 		std::vector<App::Component::Chemistry::Atom *> res = std::vector<App::Component::Chemistry::Atom *>();
 

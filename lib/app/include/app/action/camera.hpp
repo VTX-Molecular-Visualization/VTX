@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ACTION_CAMERA__
 #define __VTX_APP_ACTION_CAMERA__
 
+#include "app/python_binding/viewpoint_manager.hpp"
 #include <app/core/action/base_action.hpp>
 #include <util/math/aabb.hpp>
 
@@ -42,38 +43,39 @@ namespace VTX::App::Action::Camera
 	{
 	  public:
 		inline MoveCamera(
-			float p_translationX,
-			float p_translationY,
-			float p_translationZ,
+			float p_positionX,
+			float p_positionY,
+			float p_positionZ,
 			float p_rotationW,
 			float p_rotationX,
 			float p_rotationY,
 			float p_rotationZ,
-			float p_scaleX,
-			float p_scaleY,
-			float p_scaleZ
+			float p_duration
 		) :
-			_translationX( std::move( p_translationX ) ), _translationY( std::move( p_translationY ) ),
-			_translationZ( std::move( p_translationZ ) ), _rotationW( std::move( p_rotationW ) ),
-			_rotationX( std::move( p_rotationX ) ), _rotationY( std::move( p_rotationY ) ),
-			_rotationZ( std::move( p_rotationZ ) ), _scaleX( std::move( p_scaleX ) ), _scaleY( std::move( p_scaleY ) ),
-			_scaleZ( std::move( p_scaleZ ) )
-
+			_position( std::move( p_positionX ), std::move( p_positionY ), std::move( p_positionZ ) ),
+			_rotation(
+				std::move( p_rotationW ),
+				{ std::move( p_rotationX ), std::move( p_rotationY ), std::move( p_rotationZ ) }
+			),
+			_duration( std::move( p_duration ) )
+		{
+		}
+		inline MoveCamera( Vec3f p_position, Quatf p_rotation, float p_duration ) :
+			_position( std::move( p_position ) ), _rotation( std::move( p_rotation ) ),
+			_duration( std::move( p_duration ) )
+		{
+		}
+		inline MoveCamera( VTX::App::PythonBinding::TravelViewpoint p_viewpoint ) :
+			_position( std::move( p_viewpoint.position ) ), _rotation( std::move( p_viewpoint.rotation ) ),
+			_duration( std::move( p_viewpoint.travelTime ) )
 		{
 		}
 		void execute() override;
 
 	  private:
-		float _translationX = 0.f;
-		float _translationY = 0.f;
-		float _translationZ = 0.f;
-		float _rotationW	= 0.f;
-		float _rotationX	= 0.f;
-		float _rotationY	= 0.f;
-		float _rotationZ	= 0.f;
-		float _scaleX		= 0.f;
-		float _scaleY		= 0.f;
-		float _scaleZ		= 0.f;
+		Vec3f _position;
+		Quatf _rotation;
+		float _duration = 0.f;
 	};
 
 	/**

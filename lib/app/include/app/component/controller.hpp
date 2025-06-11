@@ -46,6 +46,7 @@ namespace VTX::App::Component
 			return controller;
 		}
 
+		void disableController( Hash );
 		template<Core::Controller::ConceptController C>
 		void disableController()
 		{
@@ -66,38 +67,9 @@ namespace VTX::App::Component
 			_activeCallbacks.erase( hash );
 		}
 
-		template<Core::Animation::ConceptAnimation A, typename... Args>
-		void launchAnimation( Args &&... p_args )
-		{
-			// Already running.
-			if ( _controllers.has<App::Controller::Camera::Animation<A>>() )
-			{
-				return;
-			}
+		void launchAnimation( App::Controller::Camera::GenericAnimation p_animation );
 
-			auto * controller
-				= enableController<App::Controller::Camera::Animation<A>>( std::forward<Args>( p_args )... );
-
-			auto & transformComponent
-				= App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( SCENE().getCamera() );
-
-			// Connect animation callbacks.
-			controller->onAnimationProgress() +=
-				[ &transformComponent ]( const Vec3f & p_position, const Quatf & p_rotation )
-			{
-				transformComponent.setPosition( p_position );
-				transformComponent.setRotation( p_rotation );
-			};
-
-			controller->onAnimationEnd() += [ this ]( const Vec3f & p_target )
-			{
-				SCENE().getCamera().setTargetWorld( p_target );
-				APP::onEndOfFrameOneShot += [ this ]() { disableController<App::Controller::Camera::Animation<A>>(); };
-			};
-
-			controller->play();
-		}
-
+		inline bool isControllerEnabled( Hash p_hash ) const { return _activeCallbacks.contains( p_hash ); }
 		template<Core::Controller::ConceptController C>
 		bool isControllerEnabled() const
 		{
@@ -107,6 +79,10 @@ namespace VTX::App::Component
 		Util::Callback<Hash> onControllerEnabled;
 
 	  private:
+		App::Controller::Camera::GenericAnimation * const enableController(
+			App::Controller::Camera::GenericAnimation p_animation
+		);
+
 		Util::Collection<std::unique_ptr<Core::Controller::BaseController>> _controllers;
 		//    TODO: improve collection to handle basic types.
 		std::unordered_map<Hash, Util::CallbackId> _activeCallbacks;

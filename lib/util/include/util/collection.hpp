@@ -22,7 +22,7 @@ namespace VTX::Util
 	*/
 
 	/**
-	 * @brief A utility class to store a collecion of objects, mapped on a given hash, or generated hash from typename.
+	 * @brief A utility class to store a collection of objects, mapped on a given hash, or generated hash from typename.
 	 * @tparam C is the stored objects type.
 	 */
 	template<typename C>

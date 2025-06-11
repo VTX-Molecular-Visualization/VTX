@@ -2,6 +2,7 @@
 #define __VTX_PYTHON_API_SYSTEM__
 
 #include "python_binding/api/collection.hpp"
+#include <concepts>
 #include <fmt/format.h>
 #include <memory>
 #include <typeinfo>
@@ -244,6 +245,21 @@ namespace VTX::PythonBinding::API
 		class _wrapper final : public _interface
 		{
 			T & _obj;
+			using Obj = std::remove_pointer<T>::type;
+			inline Obj & obj()
+			{
+				if constexpr ( std::is_pointer<T>::value )
+					return *_obj;
+				else
+					return _obj;
+			}
+			inline const Obj & obj() const
+			{
+				if constexpr ( std::is_pointer<T>::value )
+					return *_obj;
+				else
+					return _obj;
+			}
 
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
@@ -251,99 +267,99 @@ namespace VTX::PythonBinding::API
 			virtual void initChains( const size_t p_chainCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.initChains( p_chainCount );
+					obj().initChains( p_chainCount );
 			}
-			virtual Chain		getChain( const size_t p_index ) override { return { *_obj.getChain( p_index ) }; }
+			virtual Chain		getChain( const size_t p_index ) override { return { *obj().getChain( p_index ) }; }
 			virtual const Chain getChain( const size_t p_index ) const override
 			{
-				return { *_obj.getChain( p_index ) };
+				return { *obj().getChain( p_index ) };
 			}
 
 			virtual void initResidues( const size_t p_residueCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.initResidues( p_residueCount );
+					obj().initResidues( p_residueCount );
 			}
-			virtual Residue getResidue( const size_t p_index ) override { return { *_obj.getResidue( p_index ) }; }
+			virtual Residue getResidue( const size_t p_index ) override { return { *obj().getResidue( p_index ) }; }
 			virtual const Residue getResidue( const size_t p_index ) const override
 			{
-				return { *_obj.getResidue( p_index ) };
+				return { *obj().getResidue( p_index ) };
 			}
 
 			virtual void initAtoms( const size_t p_atomCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.initAtoms( p_atomCount );
+					obj().initAtoms( p_atomCount );
 			}
 			virtual Atom getAtom( const atom_index_t p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					return { *_obj.getAtom( p_index ) };
+					return { *obj().getAtom( p_index ) };
 				else
 					return const_cast<const _wrapper<T> *>( this )->getAtom( p_index );
 			}
 			virtual const Atom getAtom( const atom_index_t p_index ) const override
 			{
-				return { *_obj.getAtom( p_index ) };
+				return { *obj().getAtom( p_index ) };
 			}
 
 			virtual void initBonds( const size_t p_bondCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.initBonds( p_bondCount );
+					obj().initBonds( p_bondCount );
 			}
 
-			virtual const std::string & getName() const override { return _obj.getName(); }
+			virtual const std::string & getName() const override { return obj().getName(); }
 			virtual void				setName( const std::string & p_name ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setName( p_name );
+					obj().setName( p_name );
 			}
 
-			virtual const std::string & getPdbIdCode() const override { return _obj.getPdbIdCode(); }
+			virtual const std::string & getPdbIdCode() const override { return obj().getPdbIdCode(); }
 			virtual void				setPdbIdCode( const std::string & p_pdbIdCode ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setPdbIdCode( p_pdbIdCode );
+					obj().setPdbIdCode( p_pdbIdCode );
 			}
 
-			virtual bool isVisible() const override { return _obj.isVisible(); }
-			virtual bool isFullyVisible() const override { return _obj.isFullyVisible(); }
+			virtual bool isVisible() const override { return obj().isVisible(); }
+			virtual bool isFullyVisible() const override { return obj().isFullyVisible(); }
 
 			virtual void setVisible( const bool p_visible ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setVisible( p_visible );
+					obj().setVisible( p_visible );
 			}
 			virtual void setVisible( const atom_index_t & p_atomId, bool p_visible ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.setVisible( p_visible );
+					obj().setVisible( p_visible );
 			}
 
 			virtual void remove( const atom_index_t & p_atomIndex ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
-					_obj.remove( p_atomIndex );
+					obj().remove( p_atomIndex );
 			}
 
-			virtual size_t getRealChainCount() const override { return _obj.getRealChainCount(); }
-			virtual size_t getRealResidueCount() const override { return _obj.getRealResidueCount(); }
-			virtual size_t getRealAtomCount() const override { return _obj.getRealAtomCount(); }
+			virtual size_t getRealChainCount() const override { return obj().getRealChainCount(); }
+			virtual size_t getRealResidueCount() const override { return obj().getRealResidueCount(); }
+			virtual size_t getRealAtomCount() const override { return obj().getRealAtomCount(); }
 
-			Collection<Chain>		  getChains() override { return _obj.getChains(); }
-			const Collection<Chain>	  getChains() const override { return _obj.getChains(); }
-			Collection<Residue>		  getResidues() override { return _obj.getResidues(); }
-			const Collection<Residue> getResidues() const override { return _obj.getResidues(); }
-			Collection<Atom>		  getAtoms() override { return _obj.getAtoms(); }
-			const Collection<Atom>	  getAtoms() const override { return _obj.getAtoms(); }
+			Collection<Chain>		  getChains() override { return obj().getChains(); }
+			const Collection<Chain>	  getChains() const override { return obj().getChains(); }
+			Collection<Residue>		  getResidues() override { return obj().getResidues(); }
+			const Collection<Residue> getResidues() const override { return obj().getResidues(); }
+			Collection<Atom>		  getAtoms() override { return obj().getAtoms(); }
+			const Collection<Atom>	  getAtoms() const override { return obj().getAtoms(); }
 		};
 
 		std::shared_ptr<_interface> _ptr = nullptr;
 
 	  public:
 		template<class T>
-			requires( not std::same_as<std::remove_cv<T>, System> ) and ( not std::same_as<T, void> )
+			requires( not std::same_as<std::remove_cvref_t<T>, System> )
 		System( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 		}

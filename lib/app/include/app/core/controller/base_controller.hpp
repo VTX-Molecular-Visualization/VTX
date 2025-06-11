@@ -12,6 +12,8 @@ namespace VTX::App::Core::Controller
 		virtual ~BaseController() = default;
 		void setCamera( Component::Render::Camera * const p_camera ) { _camera = p_camera; }
 
+		virtual bool isActive() { return true; }
+
 	  protected:
 		Component::Render::Camera * _camera;
 		Core::Input::KeyMapping		_mapping;

@@ -168,15 +168,15 @@ namespace VTX::Test
 		size_t						 realChainCount	  = 0;
 		size_t						 realResidueCount = 0;
 		size_t						 realAtomCount	  = 0;
-		std::vector<MockChain>		 chains;
-		std::vector<MockResidue>	 residues;
-		std::vector<MockAtom>		 atoms;
+		std::vector<MockChain *>	 chains;
+		std::vector<MockResidue *>	 residues;
+		std::vector<MockAtom *>		 atoms;
 
-		atom_index_t getFirstAtomIndex() const { return atoms[ 0 ].index; }
+		atom_index_t getFirstAtomIndex() const { return atoms[ 0 ]->index; }
 		atom_index_t getAtomIndex() const { return atom->index; }
-		uint64_t	 getFirstChainIndex() const { return chains[ 0 ].index; }
+		uint64_t	 getFirstChainIndex() const { return chains[ 0 ]->index; }
 		uint64_t	 getChainIndex() const { return chain->index; }
-		uint64_t	 getFirstResidueIndex() const { return chains[ 0 ].index; }
+		uint64_t	 getFirstResidueIndex() const { return chains[ 0 ]->index; }
 		uint64_t	 getResidueIndex() const { return chain->index; }
 
 		void			  initChains( const size_t p_chainCount ) { initializedChainCount = p_chainCount; }
@@ -214,12 +214,12 @@ namespace VTX::Test
 		size_t getRealResidueCount() const { return realResidueCount; }
 		size_t getRealAtomCount() const { return realAtomCount; }
 
-		std::vector<MockChain> &		 getChains() { return chains; }
-		const std::vector<MockChain> &	 getChains() const { return chains; }
-		std::vector<MockResidue> &		 getResidues() { return residues; }
-		const std::vector<MockResidue> & getResidues() const { return residues; }
-		std::vector<MockAtom> &			 getAtoms() { return atoms; }
-		const std::vector<MockAtom> &	 getAtoms() const { return atoms; }
+		std::vector<MockChain *> &		   getChains() { return chains; }
+		const std::vector<MockChain *> &   getChains() const { return chains; }
+		std::vector<MockResidue *> &	   getResidues() { return residues; }
+		const std::vector<MockResidue *> & getResidues() const { return residues; }
+		std::vector<MockAtom *> &		   getAtoms() { return atoms; }
+		const std::vector<MockAtom *> &	   getAtoms() const { return atoms; }
 	};
 
 	std::string MockResidue::test_getSystemName() const { return system->getName(); }
@@ -494,14 +494,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding]
 	Test::MockResidue res { .index = 10 };
 
 	Test::MockSystem mockedSystem;
-	mockedSystem.atoms.push_back( a1 );
-	mockedSystem.atoms.push_back( a2 );
+	mockedSystem.atoms.push_back( &a1 );
+	mockedSystem.atoms.push_back( &a2 );
 	mockedSystem.atom = &atom;
-	mockedSystem.chains.push_back( c1 );
-	mockedSystem.chains.push_back( c2 );
+	mockedSystem.chains.push_back( &c1 );
+	mockedSystem.chains.push_back( &c2 );
 	mockedSystem.chain = &chain;
-	mockedSystem.residues.push_back( r1 );
-	mockedSystem.residues.push_back( r2 );
+	mockedSystem.residues.push_back( &r1 );
+	mockedSystem.residues.push_back( &r2 );
 	mockedSystem.residue	 = &res;
 	const char * factoryName = "TEST_getSampleSystem";
 	vtxModule->def(

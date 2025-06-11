@@ -30,6 +30,7 @@ namespace VTX::PythonBinding
 
 		pybind11::module_ vtxAPIModule = m.def_submodule( "API", "VTX API." );
 		vtxAPIModule.doc()			   = "VTX API module."; // optional module docstring
+
 		Binding::applyVtxApiBinding( vtxAPIModule );
 	}
 } // namespace VTX::PythonBinding

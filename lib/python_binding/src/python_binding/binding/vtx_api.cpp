@@ -20,8 +20,20 @@ namespace VTX::PythonBinding::Binding
 				[]( API::Collection<ITEM> & c ) { return pybind11::make_iterator( c.begin(), c.end() ); },
 				pybind11::keep_alive<0, 1>()
 			)
-			.def( "__getitem__", []( API::Collection<ITEM> & c, const size_t & idx ) { return c[ idx ]; } )
-			.def( "__len__", []( API::Collection<ITEM> & c ) { return c.size(); } )
+			.def(
+				"__getitem__",
+				[]( API::Collection<ITEM> & _, const size_t & idx )
+				{
+					if ( _.size() > idx )
+						return _[ idx ];
+					else
+						throw pybind11::index_error(
+							"Provided index is greater than or equal to the size of the list."
+						); // At first I put it in the Collection operator[] method directly but I couldn't catch the
+						   // exception from the interpretor code. So I putted it here instead and it works.
+				}
+			)
+			.def( "__len__", (size_t ( API::Collection<ITEM>::* )())&API::Collection<ITEM>::size )
 
 			;
 	}
@@ -38,36 +50,18 @@ namespace VTX::PythonBinding::Binding
 			.def( pybind11::init<>() )
 			.def_readwrite( "x", &Vec3f::x )
 			.def_readwrite( "y", &Vec3f::y )
-			.def_readwrite( "z", &Vec3f::z );
-
-#ifdef JEVEUPA
-		// Global
-		p_apiModule.def( "getScene", []() { return SCENE(); }, pybind11::return_value_policy::reference );
-
-		// Global
-		p_apiModule.def(
-			"setAtomName",
-			[]( const std::string & p_systemName, const atom_index_t p_atomIndex, const std::string & p_name )
-			{
-				return SCENE()
-					.getComponentByName<App::API::System>( p_systemName )
-					.getAtom( p_atomIndex )
-					->setName( p_name );
-			}
-		);
-
-		// Selection
-		Binding::Binders::bind_selection( p_apiModule );
-
-		// Scene
-		pybind11::class_<Application::Scene>( p_apiModule, "Scene", pybind11::module_local() )
+			.def_readwrite( "z", &Vec3f::z )
+			.def( "__repr__", []( Vec3f & _ ) { return fmt::format( "Vec3f(x={}, y={}, z={})", _.x, _.y, _.z ); } );
+		pybind11::class_<Quatf>( p_apiModule, "Quatf", pybind11::module_local() )
+			.def( pybind11::init<>() )
+			.def_readwrite( "x", &Quatf::x )
+			.def_readwrite( "y", &Quatf::y )
+			.def_readwrite( "z", &Quatf::z )
+			.def_readwrite( "w", &Quatf::w )
 			.def(
-				"getSystem",
-				[]( const Application::Scene & p_scene, const std::string & p_name ) -> const API::System &
-				{ return p_scene.getComponentByName<API::System>( p_name ); },
-				pybind11::return_value_policy::reference
+				"__repr__",
+				[]( Quatf & _ ) { return fmt::format( "Quatf(x={}, y={}, z={}, w={})", _.x, _.y, _.z, _.w ); }
 			);
-#endif // JEVEUPA
 
 		pybind11::class_<VTX::Core::Struct::System>( p_apiModule, "SystemStruct", pybind11::module_local() )
 			.def_property(
@@ -79,6 +73,7 @@ namespace VTX::PythonBinding::Binding
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );
 		registerCollection<API::Residue>( p_apiModule, "CollectionResidue" );
 		registerCollection<API::Chain>( p_apiModule, "CollectionChain" );
+		registerCollection<API::System>( p_apiModule, "CollectionSystem" );
 
 		// System
 		pybind11::class_<API::System>( p_apiModule, "System", pybind11::module_local() )
