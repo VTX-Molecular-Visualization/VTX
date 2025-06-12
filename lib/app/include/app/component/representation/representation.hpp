@@ -67,6 +67,14 @@ namespace VTX::App::Component::Representation
 			{
 				_representation.hasSes = p_value;
 			}
+			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS )
+			{
+				_representation.sesProbeRadius = p_value;
+			}
+			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_EXTERIOR )
+			{
+				_representation.sesIsExterior = p_value;
+			}
 			else
 			{
 				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );

@@ -4,7 +4,7 @@
 #include "enums.hpp"
 #include <util/constants.hpp>
 
-namespace VTX::Renderer
+namespace VTX::Renderer::Settings
 {
 
 	const std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ] = { "Diffuse", "Glossy", "Toon", "Flat" };
@@ -55,6 +55,6 @@ namespace VTX::Renderer
 	constexpr bool			ACTIVE_SELECTION_DEFAULT = true;
 	const Util::Color::Rgba COLOR_SELECTION_DEFAULT	 = Util::Color::Rgba( 45, 243, 26 );
 
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Settings
 
 #endif

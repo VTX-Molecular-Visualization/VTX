@@ -1,5 +1,6 @@
 #include "app/component/representation/representation.hpp"
 #include "app/core/renderer/renderer_system.hpp"
+#include "app/settings.hpp"
 #include <vector>
 
 namespace VTX::App::Component::Representation
@@ -19,7 +20,9 @@ namespace VTX::App::Component::Representation
 		_representation.hasRibbon			= true;
 		_representation.ribbonColorBlending = true;
 
-		_representation.hasSes = false;
+		_representation.hasSes		   = false;
+		_representation.sesProbeRadius = Settings::Representation::SES_PROBE_RADIUS_DEFAULT;
+		_representation.sesIsExterior  = Settings::Representation::SES_IS_EXTERIOR_DEFAULT;
 	}
 
 	void Representation::setupProxy()
@@ -41,6 +44,8 @@ namespace VTX::App::Component::Representation
 		_proxy->set( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, _representation.ribbonColorBlending );
 
 		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SES, _representation.hasSes );
+		_proxy->set( E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, _representation.sesProbeRadius );
+		_proxy->set( E_REPRESENTATION_SETTINGS::SES_EXTERIOR, _representation.sesIsExterior );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRepresentation( *_proxy ); };
 	}

@@ -7,6 +7,7 @@
 #include <app/action/representation.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/representation/representation.hpp>
+#include <app/settings.hpp>
 #include <core/chemdb/atom.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -25,12 +26,13 @@ namespace VTX::UI::QT::DockWidget
 		_gbCylinder = _createGroupBoxCylinder( component );
 		_gbRibbon	= _createGroupBoxRibbon( component );
 		_gbSphere	= _createGroupBoxSphere( component ); // Last because need others in the callback.
+		_gbSES		= _createGroupBoxSES( component );
 
 		_layout->addWidget( _gbSphere );
 		_layout->addWidget( _gbCylinder );
 		_layout->addWidget( _gbRibbon );
+		_layout->addWidget( _gbSES );
 
-		// _gbSES = _createGroupBoxSES( component );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}
 
@@ -316,11 +318,50 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
+		// Probe Radius.
+		auto * labelRadius = new QLabel( "Probe radius", groupBox );
+		auto * slider	   = new QSlider( Qt::Orientation::Horizontal, groupBox );
+		layout->addWidget( labelRadius );
+		layout->addWidget( slider );
+		slider->setMinimum( App::Settings::Representation::SES_PROBE_RADIUS_MIN * 100 );
+		slider->setMaximum( App::Settings::Representation::SES_PROBE_RADIUS_MAX * 100 );
+		slider->setValue( p_component->getRepresentation().sesProbeRadius * 100 );
+		connect(
+			slider,
+			&QSlider::valueChanged,
+			[]( const int p_value )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::Representation::
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
+						static_cast<float>( p_value ) / 100.f
+					);
+			}
+		);
+
+		// Is exterior.
+		auto * checkBox = new QCheckBox( "Exterior only", groupBox );
+		layout->addWidget( checkBox );
+		checkBox->setChecked( p_component->getRepresentation().sesIsExterior );
+		connect(
+			checkBox,
+			&QCheckBox::toggled,
+			[]( const bool p_checked )
+			{
+				App::ACTION_SYSTEM()
+					.execute<App::Action::Representation::
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_EXTERIOR, bool>>( p_checked );
+			}
+		);
+
 		// Callbacks.
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SES, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-
+		p_component->callback<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>() +=
+			[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
 		return groupBox;
+		p_component->callback<E_REPRESENTATION_SETTINGS::SES_EXTERIOR, bool>() +=
+			[ checkBox ]( const bool p_value ) { checkBox->setChecked( p_value ); };
 	}
 
 } // namespace VTX::UI::QT::DockWidget

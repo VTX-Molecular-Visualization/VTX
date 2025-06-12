@@ -19,7 +19,9 @@ namespace VTX::Renderer::Proxy
 		HAS_RIBBON,
 		RIBBON_COLOR_BLENDING,
 
-		HAS_SES
+		HAS_SES,
+		SES_PROBE_RADIUS,
+		SES_EXTERIOR
 	};
 
 	/**

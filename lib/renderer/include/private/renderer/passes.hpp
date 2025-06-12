@@ -120,14 +120,14 @@ namespace VTX::Renderer
 				 ,
 				 { E_CHAN_IN::_2, { "Depth", imageR32F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR8 } } },
-		Programs {
-			{ "SSAO",
-			  std::vector<FilePath> { "default.vert", "ssao.frag" },
-			  BufferDataValues { { { "Intensity",
-									 E_TYPE::FLOAT,
-									 BufferValue<float> { SSAO_INTENSITY_DEFAULT,
-														  BufferValue<float>::MinMax { SSAO_INTENSITY_MIN,
-																					   SSAO_INTENSITY_MAX } } } } } } }
+		Programs { { "SSAO",
+					 std::vector<FilePath> { "default.vert", "ssao.frag" },
+					 BufferDataValues { { { "Intensity",
+											E_TYPE::FLOAT,
+											BufferValue<float> {
+												Settings::SSAO_INTENSITY_DEFAULT,
+												BufferValue<float>::MinMax { Settings::SSAO_INTENSITY_MIN,
+																			 Settings::SSAO_INTENSITY_MAX } } } } } } }
 	};
 
 	// Blur.
@@ -137,12 +137,13 @@ namespace VTX::Renderer
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageR16F } } },
 		Programs { { "Blur",
 					 std::vector<FilePath> { "default.vert", "blur.frag" },
-					 BufferDataValues { { { "Direction", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i( 1, 0 ) } },
-										  { "Size",
-											E_TYPE::FLOAT,
-											BufferValue<float> {
-												BLUR_SIZE_DEFAULT,
-												BufferValue<float>::MinMax { BLUR_SIZE_MIN, BLUR_SIZE_MAX } } } } } } }
+					 BufferDataValues {
+						 { { "Direction", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i( 1, 0 ) } },
+						   { "Size",
+							 E_TYPE::FLOAT,
+							 BufferValue<float> { Settings::BLUR_SIZE_DEFAULT,
+												  BufferValue<float>::MinMax { Settings::BLUR_SIZE_MIN,
+																			   Settings::BLUR_SIZE_MAX } } } } } } }
 	};
 
 	// Shading.
@@ -167,37 +168,46 @@ namespace VTX::Renderer
 			{ "Shading",
 			  std::vector<FilePath> { "default.vert", "shading.frag" },
 			  BufferDataValues { {
-				  { "BackgroundColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_BACKGROUND_DEFAULT } },
-				  { "LightColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_LIGHT_DEFAULT } },
-				  { "FogColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_FOG_DEFAULT } },
+				  { "BackgroundColor",
+					E_TYPE::COLOR4,
+					BufferValue<Util::Color::Rgba> { Settings::COLOR_BACKGROUND_DEFAULT } },
+				  { "LightColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { Settings::COLOR_LIGHT_DEFAULT } },
+				  { "FogColor", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { Settings::COLOR_FOG_DEFAULT } },
 				  { "Mode",
 					E_TYPE::UINT,
 					BufferValue<uint> {
-						uint( SHADING_MODE_DEFAULT ),
+						uint( Settings::SHADING_MODE_DEFAULT ),
 						BufferValue<uint>::MinMax { uint( E_SHADING::DIFFUSE ), uint( E_SHADING::COUNT ) - 1 } } },
 				  { "SpecularFactor",
 					E_TYPE::FLOAT,
-					BufferValue<float> { SPECULAR_FACTOR_DEFAULT,
-										 BufferValue<float>::MinMax { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } } },
+					BufferValue<float> {
+						Settings::SPECULAR_FACTOR_DEFAULT,
+						BufferValue<float>::MinMax { Settings::SPECULAR_FACTOR_MIN, Settings::SPECULAR_FACTOR_MAX } } },
 				  { "Shininess",
 					E_TYPE::FLOAT,
-					BufferValue<float> { SHININESS_DEFAULT,
-										 BufferValue<float>::MinMax { SHININESS_MIN, SHININESS_MAX } } },
+					BufferValue<float> {
+						Settings::SHININESS_DEFAULT,
+						BufferValue<float>::MinMax { Settings::SHININESS_MIN, Settings::SHININESS_MAX } } },
 				  { "ToonSteps",
 					E_TYPE::UINT,
-					BufferValue<uint> { TOON_STEPS_DEFAULT,
-										BufferValue<uint>::MinMax { TOON_STEPS_MIN, TOON_STEPS_MAX } } },
+					BufferValue<uint> {
+						Settings::TOON_STEPS_DEFAULT,
+						BufferValue<uint>::MinMax { Settings::TOON_STEPS_MIN, Settings::TOON_STEPS_MAX } } },
 				  { "FogNear",
 					E_TYPE::FLOAT,
-					BufferValue<float> { FOG_NEAR_DEFAULT,
-										 BufferValue<float>::MinMax { FOG_NEAR_MIN, FOG_NEAR_MAX } } },
+					BufferValue<float> {
+						Settings::FOG_NEAR_DEFAULT,
+						BufferValue<float>::MinMax { Settings::FOG_NEAR_MIN, Settings::FOG_NEAR_MAX } } },
 				  { "FogFar",
 					E_TYPE::FLOAT,
-					BufferValue<float> { FOG_FAR_DEFAULT, BufferValue<float>::MinMax { FOG_FAR_MIN, FOG_FAR_MAX } } },
+					BufferValue<float> {
+						Settings::FOG_FAR_DEFAULT,
+						BufferValue<float>::MinMax { Settings::FOG_FAR_MIN, Settings::FOG_FAR_MAX } } },
 				  { "FogDensity",
 					E_TYPE::FLOAT,
-					BufferValue<float> { FOG_DENSITY_DEFAULT,
-										 BufferValue<float>::MinMax { FOG_DENSITY_MIN, FOG_DENSITY_MAX } } },
+					BufferValue<float> {
+						Settings::FOG_DENSITY_DEFAULT,
+						BufferValue<float>::MinMax { Settings::FOG_DENSITY_MIN, Settings::FOG_DENSITY_MAX } } },
 			  } } } }
 	};
 
@@ -209,17 +219,18 @@ namespace VTX::Renderer
 		Programs {
 			{ "Outline",
 			  std::vector<FilePath> { "default.vert", "outline.frag" },
-			  BufferDataValues { { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_WHITE } },
-								   { "Sensitivity",
-									 E_TYPE::FLOAT,
-									 BufferValue<float> { OUTLINE_SENSITIVITY_DEFAULT,
-														  BufferValue<float>::MinMax { OUTLINE_SENSITIVITY_MIN,
-																					   OUTLINE_SENSITIVITY_MAX } } },
-								   { "Thickness",
-									 E_TYPE::UINT,
-									 BufferValue<uint> { OUTLINE_THICKNESS_DEFAULT,
-														 BufferValue<uint>::MinMax { OUTLINE_THICKNESS_MIN,
-																					 OUTLINE_THICKNESS_MAX } } } } } } }
+			  BufferDataValues {
+				  { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_WHITE } },
+					{ "Sensitivity",
+					  E_TYPE::FLOAT,
+					  BufferValue<float> { Settings::OUTLINE_SENSITIVITY_DEFAULT,
+										   BufferValue<float>::MinMax { Settings::OUTLINE_SENSITIVITY_MIN,
+																		Settings::OUTLINE_SENSITIVITY_MAX } } },
+					{ "Thickness",
+					  E_TYPE::UINT,
+					  BufferValue<uint> { Settings::OUTLINE_THICKNESS_DEFAULT,
+										  BufferValue<uint>::MinMax { Settings::OUTLINE_THICKNESS_MIN,
+																	  Settings::OUTLINE_THICKNESS_MAX } } } } } } }
 	};
 
 	// Glow.
@@ -247,8 +258,9 @@ namespace VTX::Renderer
 		Programs {
 			{ "Selection",
 			  std::vector<FilePath> { "default.vert", "selection.frag" },
-			  BufferDataValues {
-				  { { "Color", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> { COLOR_SELECTION_DEFAULT } } } } } }
+			  BufferDataValues { { { "Color",
+									 E_TYPE::COLOR4,
+									 BufferValue<Util::Color::Rgba> { Settings::COLOR_SELECTION_DEFAULT } } } } } }
 	};
 
 	// FXAA.

@@ -61,9 +61,8 @@ namespace VTX::App::Settings
 
 	namespace Selection
 	{
-		const std::string							   MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
-		const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT
-			= App::Selection::Granularity::RESIDUE;
+		const std::string				  MOLECULE_GRANULARITY_KEY	   = "MOLECULE_GRANULARITY";
+		const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT = App::Selection::Granularity::RESIDUE;
 	} // namespace Selection
 
 	namespace Network
@@ -71,6 +70,15 @@ namespace VTX::App::Settings
 		const std::string URL_API_KEY	  = "URL_API";
 		const std::string URL_API_DEFAULT = "URL_API";
 	} // namespace Network
+
+	namespace Representation
+	{
+		constexpr float SES_PROBE_RADIUS_DEFAULT = 1.5f;
+		constexpr float SES_PROBE_RADIUS_MIN	 = 0.2f;
+		constexpr float SES_PROBE_RADIUS_MAX	 = 3.f;
+
+		constexpr bool SES_IS_EXTERIOR_DEFAULT = false;
+	} // namespace Representation
 
 	void initSettings();
 } // namespace VTX::App::Settings

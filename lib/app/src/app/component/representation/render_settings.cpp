@@ -8,33 +8,33 @@ namespace VTX::App::Component::Representation
 {
 	RenderSettings::RenderSettings()
 	{
-		using namespace Renderer;
+		using namespace Renderer::Settings;
 
 		// TODO: move default layout.
-		_representation.shadingMode	  = uint( SHADING_MODE_DEFAULT );
-		_representation.colorLight	  = COLOR_LIGHT_DEFAULT;
+		_representation.shadingMode		= uint( SHADING_MODE_DEFAULT );
+		_representation.colorLight		= COLOR_LIGHT_DEFAULT;
 		_representation.colorBackground = COLOR_BACKGROUND_DEFAULT;
-		_representation.specularFactor  = SPECULAR_FACTOR_DEFAULT;
-		_representation.shininess		  = SHININESS_DEFAULT;
-		_representation.toonSteps		  = TOON_STEPS_DEFAULT;
+		_representation.specularFactor	= SPECULAR_FACTOR_DEFAULT;
+		_representation.shininess		= SHININESS_DEFAULT;
+		_representation.toonSteps		= TOON_STEPS_DEFAULT;
 
-		_representation.activeSSAO	= ACTIVE_SSAO_DEFAULT;
+		_representation.activeSSAO	  = ACTIVE_SSAO_DEFAULT;
 		_representation.ssaoIntensity = SSAO_INTENSITY_DEFAULT;
-		_representation.blurSize		= BLUR_SIZE_DEFAULT;
+		_representation.blurSize	  = BLUR_SIZE_DEFAULT;
 
-		_representation.activeOutline		 = ACTIVE_OUTLINE_DEFAULT;
-		_representation.colorOutline		 = COLOR_OUTLINE_DEFAULT;
+		_representation.activeOutline	   = ACTIVE_OUTLINE_DEFAULT;
+		_representation.colorOutline	   = COLOR_OUTLINE_DEFAULT;
 		_representation.outlineSensitivity = OUTLINE_SENSITIVITY_DEFAULT;
-		_representation.outlineThickness	 = OUTLINE_THICKNESS_DEFAULT;
+		_representation.outlineThickness   = OUTLINE_THICKNESS_DEFAULT;
 
-		_representation.activeFog	 = ACTIVE_FOG_DEFAULT;
-		_representation.colorFog	 = COLOR_FOG_DEFAULT;
-		_representation.fogNear	 = FOG_NEAR_DEFAULT;
-		_representation.fogFar	 = FOG_FAR_DEFAULT;
+		_representation.activeFog  = ACTIVE_FOG_DEFAULT;
+		_representation.colorFog   = COLOR_FOG_DEFAULT;
+		_representation.fogNear	   = FOG_NEAR_DEFAULT;
+		_representation.fogFar	   = FOG_FAR_DEFAULT;
 		_representation.fogDensity = FOG_DENSITY_DEFAULT;
 
 		_representation.activeSelection = ACTIVE_SELECTION_DEFAULT;
-		_representation.colorSelection  = COLOR_SELECTION_DEFAULT;
+		_representation.colorSelection	= COLOR_SELECTION_DEFAULT;
 	}
 
 	void RenderSettings::setupProxy()
