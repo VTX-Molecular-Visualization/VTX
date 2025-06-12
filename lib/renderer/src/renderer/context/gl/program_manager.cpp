@@ -74,7 +74,7 @@ namespace VTX::Renderer::Context::GL
 
 			for ( const FilePath & shader : paths )
 			{
-				uint32_t id = _createShader( shader, p_toInject, p_suffix );
+				GLuint id = _createShader( shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )
 				{
 					program.attachShader( id );
@@ -115,7 +115,7 @@ namespace VTX::Renderer::Context::GL
 		return nullptr;
 	}
 
-	uint32_t ProgramManager::_createShader(
+	GLuint ProgramManager::_createShader(
 		const FilePath &	p_path,
 		const std::string & p_toInject,
 		const std::string & p_suffix
@@ -125,12 +125,12 @@ namespace VTX::Renderer::Context::GL
 
 		const ENUM_SHADER_TYPE type = getShaderType( p_path );
 
-		uint32_t shaderId = getShader( name );
+		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			VTX_TRACE( "Creating shader: {}", name );
 
-			shaderId		 = glCreateShader( (int)type );
+			shaderId		 = glCreateShader( (GLenum)type );
 			FilePath	path = p_path.is_relative() ? _shaderPath / p_path : p_path;
 			std::string src	 = Util::Filesystem::readPath( path );
 			if ( src.empty() )
@@ -171,7 +171,7 @@ namespace VTX::Renderer::Context::GL
 			const char * shaderCode = src.c_str();
 			glShaderSource( shaderId, 1, &shaderCode, 0 );
 			glCompileShader( shaderId );
-			int32_t compiled;
+			GLint compiled;
 			glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{
@@ -194,7 +194,7 @@ namespace VTX::Renderer::Context::GL
 		return shaderId;
 	}
 
-	uint32_t ProgramManager::getShader( const std::string & p_name ) const
+	GLuint ProgramManager::getShader( const std::string & p_name ) const
 	{
 		if ( _shaders.find( p_name ) != _shaders.end() )
 		{
@@ -204,9 +204,9 @@ namespace VTX::Renderer::Context::GL
 		return GL_INVALID_INDEX;
 	}
 
-	std::string ProgramManager::_getShaderErrors( const uint32_t p_shader )
+	std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
 	{
-		int32_t length;
+		GLint length;
 		glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
@@ -237,7 +237,7 @@ namespace VTX::Renderer::Context::GL
 		{
 			for ( const FilePath & shader : pair.second->getShaderPaths() )
 			{
-				uint32_t id = _createShader( shader, pair.second->getToInject() );
+				GLuint id = _createShader( shader, pair.second->getToInject() );
 				if ( id != GL_INVALID_INDEX )
 				{
 					pair.second->attachShader( id );

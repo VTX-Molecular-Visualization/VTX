@@ -31,9 +31,9 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline uint32_t getId() const { return _id; }
+		inline GLuint getId() const { return _id; }
 
-		inline void bind( const uint32_t p_target = GL_FRAMEBUFFER )
+		inline void bind( const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( glIsFramebuffer( _id ) );
 			assert( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
@@ -44,7 +44,7 @@ namespace VTX::Renderer::Context::GL
 			glBindFramebuffer( _target, _id );
 		}
 
-		inline static void bindDefault( const uint32_t p_id, const uint32_t p_target = GL_FRAMEBUFFER )
+		inline static void bindDefault( const GLuint p_id, const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( p_target != 0 );
 
@@ -59,31 +59,29 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline static void unbindDefault( const uint32_t p_target = GL_FRAMEBUFFER )
+		inline static void unbindDefault( const GLenum p_target = GL_FRAMEBUFFER )
 		{
 			assert( p_target != 0 );
 
 			glBindFramebuffer( p_target, 0 );
 		}
 
-		inline void attachTexture( const Texture2D & p_texture, const uint32_t p_attachment, const int32_t p_level = 0 )
+		inline void attachTexture( const Texture2D & p_texture, const GLenum p_attachment, const GLint p_level = 0 )
 		{
 			assert( glIsFramebuffer( _id ) );
-			assert( glIsTexture( p_texture.getId() ) );
+			assert( glIsTexture( static_cast<GLuint>( p_texture.getId() ) ) );
 
-			glNamedFramebufferTexture( _id, p_attachment, p_texture.getId(), p_level );
+			glNamedFramebufferTexture( _id, p_attachment, static_cast<GLuint>( p_texture.getId() ), p_level );
 		}
 
-		inline void setDrawBuffers( const std::vector<uint32_t> & p_drawBuffers )
+		inline void setDrawBuffers( const std::vector<GLenum> & p_drawBuffers )
 		{
 			assert( glIsFramebuffer( _id ) );
 
-			glNamedFramebufferDrawBuffers(
-				_id, int32_t( p_drawBuffers.size() ), static_cast<const uint32_t *>( p_drawBuffers.data() )
-			);
+			glNamedFramebufferDrawBuffers( _id, static_cast<GLsizei>( p_drawBuffers.size() ), p_drawBuffers.data() );
 		}
 
-		inline void setReadBuffer( const uint32_t p_readBuffer )
+		inline void setReadBuffer( const GLenum p_readBuffer )
 		{
 			assert( glIsFramebuffer( _id ) );
 
@@ -91,8 +89,8 @@ namespace VTX::Renderer::Context::GL
 		}
 
 	  private:
-		uint32_t _id	 = GL_INVALID_INDEX;
-		uint32_t _target = 0;
+		GLuint _id	   = GL_INVALID_INDEX;
+		GLenum _target = 0;
 	};
 } // namespace VTX::Renderer::Context::GL
 

@@ -350,7 +350,7 @@ namespace VTX::UI::QT::DockWidget
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_EXTERIOR, bool>>( p_checked );
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR, bool>>( p_checked );
 			}
 		);
 
@@ -360,7 +360,7 @@ namespace VTX::UI::QT::DockWidget
 		p_component->callback<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>() +=
 			[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
 		return groupBox;
-		p_component->callback<E_REPRESENTATION_SETTINGS::SES_EXTERIOR, bool>() +=
+		p_component->callback<E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR, bool>() +=
 			[ checkBox ]( const bool p_value ) { checkBox->setChecked( p_value ); };
 	}
 

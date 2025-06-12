@@ -55,6 +55,14 @@ namespace VTX::Renderer
 
 	inline const BufferDraw dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
+	inline const BufferDraw dataSESSegment;
+
+	inline const BufferDraw dataSESCircle;
+
+	inline const BufferDraw dataSESConvex;
+
+	inline const BufferDraw dataSESConcave;
+
 	// Passes.
 
 	// Geometric.

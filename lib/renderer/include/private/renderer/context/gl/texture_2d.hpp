@@ -10,13 +10,13 @@ namespace VTX::Renderer::Context::GL
 	{
 	  public:
 		Texture2D(
-			const int32_t  p_width,
-			const int32_t  p_height,
-			const uint32_t p_format,
-			const int32_t  p_wrappingS,
-			const int32_t  p_wrappingT,
-			const int32_t  p_minFilter,
-			const int32_t  p_magFilter
+			const GLsizei p_width,
+			const GLsizei p_height,
+			const GLenum  p_format,
+			const GLint	  p_wrappingS,
+			const GLint	  p_wrappingT,
+			const GLint	  p_minFilter,
+			const GLint	  p_magFilter
 		)
 		{
 			assert( p_width > 0 && p_height > 0 );
@@ -34,44 +34,44 @@ namespace VTX::Renderer::Context::GL
 
 		~Texture2D() { _destroy(); }
 
-		inline int getId() const { return _id; }
+		inline GLuint getId() const { return _id; }
 
 		inline void clear(
-			const void *   p_data,
-			const uint32_t p_format,
-			const uint32_t p_type,
-			const int32_t  p_level = 0
+			const void * p_data,
+			const GLenum p_format,
+			const GLenum p_type,
+			const GLint	 p_level = 0
 		) const
 		{
 			glClearTexImage( _id, p_level, p_format, p_type, p_data );
 		}
 
-		inline void resize( const size_t p_width, const size_t p_height )
+		inline void resize( const GLsizei p_width, const GLsizei p_height )
 		{
 			_destroy();
-			_width	= int32_t( p_width );
-			_height = int32_t( p_height );
+			_width	= p_width;
+			_height = p_height;
 			_create();
 		}
 
 		inline void fill(
-			const void *   p_pixels,
-			const uint32_t p_format	 = GL_RGB,
-			const uint32_t p_type	 = GL_FLOAT,
-			const int32_t  p_level	 = 0,
-			const int32_t  p_offsetX = 0,
-			const int32_t  p_offsetY = 0,
-			const int32_t  p_width	 = -1,
-			const int32_t  p_height	 = -1
+			const void *  p_pixels,
+			const GLenum  p_format	= GL_RGB,
+			const GLenum  p_type	= GL_FLOAT,
+			const GLint	  p_level	= 0,
+			const GLint	  p_offsetX = 0,
+			const GLint	  p_offsetY = 0,
+			const GLsizei p_width	= -1,
+			const GLsizei p_height	= -1
 		) const
 		{
-			const int width	 = p_width == -1 ? _width : p_width;
-			const int height = p_height == -1 ? _height : p_height;
+			const GLsizei width	 = p_width == -1 ? _width : p_width;
+			const GLsizei height = p_height == -1 ? _height : p_height;
 
 			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
 		}
 
-		inline void bind( const uint32_t p_target )
+		inline void bind( const GLenum p_target )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -81,7 +81,7 @@ namespace VTX::Renderer::Context::GL
 			glBindTexture( p_target, _id );
 		}
 
-		inline void bindToUnit( const uint32_t p_index ) { glBindTextureUnit( p_index, _id ); }
+		inline void bindToUnit( const GLuint p_index ) { glBindTextureUnit( p_index, _id ); }
 
 		inline void unbind()
 		{
@@ -91,34 +91,34 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline void unbindFromUnit( const uint32_t p_index ) { glBindTextureUnit( p_index, 0 ); }
+		inline void unbindFromUnit( const GLuint p_index ) { glBindTextureUnit( p_index, 0 ); }
 
 		inline void getImage(
-			const int32_t  p_level,
-			const uint32_t p_format,
-			const uint32_t p_type,
-			const int32_t  p_bufSize,
-			void * const   p_pixels
+			const GLint	  p_level,
+			const GLenum  p_format,
+			const GLenum  p_type,
+			const GLsizei p_bufSize,
+			void * const  p_pixels
 		) const
 		{
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}
 
-		inline const int32_t  getWidth() const { return _width; }
-		inline const int32_t  getHeight() const { return _height; }
-		inline const uint32_t getFormat() const { return _format; }
+		inline GLsizei getWidth() const { return _width; }
+		inline GLsizei getHeight() const { return _height; }
+		inline GLenum  getFormat() const { return _format; }
 
 	  private:
-		uint32_t _id	 = GL_INVALID_INDEX;
-		uint32_t _target = 0;
+		GLuint _id	   = GL_INVALID_INDEX;
+		GLenum _target = 0;
 
-		int32_t	 _width		= 0;
-		int32_t	 _height	= 0;
-		uint32_t _format	= GL_RGBA32F;
-		int32_t	 _wrappingS = GL_REPEAT;
-		int32_t	 _wrappingT = GL_REPEAT;
-		int32_t	 _minFilter = GL_NEAREST_MIPMAP_LINEAR;
-		int32_t	 _magFilter = GL_LINEAR;
+		GLsizei _width	   = 0;
+		GLsizei _height	   = 0;
+		GLenum	_format	   = GL_RGBA32F;
+		GLint	_wrappingS = GL_REPEAT;
+		GLint	_wrappingT = GL_REPEAT;
+		GLint	_minFilter = GL_NEAREST_MIPMAP_LINEAR;
+		GLint	_magFilter = GL_LINEAR;
 
 		inline void _create()
 		{

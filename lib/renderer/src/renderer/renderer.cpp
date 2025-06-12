@@ -17,59 +17,71 @@ namespace VTX::Renderer
 		_refreshGraph();
 
 		// Shared data.
-		addGlobalData( { "Camera",
-						 15,
-						 { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-						   { "ClipInfos", // { _near * _far, _far, _far - _near, _near }
-							 E_TYPE::VEC4F,
-							 BufferValue<Vec4f> { VEC4F_ZERO } },
-						   { "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-						   { "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-						   { "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
-						 0,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "Camera",
+			  15,
+			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
+				  E_TYPE::VEC4F,
+				  BufferValue<Vec4f> { VEC4F_ZERO } },
+				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+			  0,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "ColorLayout",
-						 14,
-						 { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-						 4096,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "ColorLayout",
+			  14,
+			  { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+			  4096,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "Models",
-						 13,
-						 { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
-						 0,
-						 nullptr,
-						 true } );
+		addGlobalData(
+			{ "Models",
+			  13,
+			  {
+				  { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				  { "MatrixModelViewInv", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				  { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+			  },
+			  0,
+			  nullptr,
+			  true }
+		);
 
-		addGlobalData( { "Representations",
-						 12,
-						 { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
-
-						   { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
-						 0,
-						 nullptr,
-						 true } );
+		addGlobalData(
+			{ "Representations",
+			  12,
+			  {
+				  { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "SESProbeRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "SESMaxProbeNeighborNb", E_TYPE::UINT, BufferValue<uint> {} },
+			  },
+			  0,
+			  nullptr,
+			  true }
+		);
 	}
 
 	void Renderer::build()
 	{
-		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
-
 		// Build renderer _graph.
 		float buildTime = Util::CHRONO_CPU(
-			[ & ]()
+			[ this ]()
 			{
 				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
 
@@ -200,11 +212,13 @@ namespace VTX::Renderer
 		// Transform.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
-			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *p_proxy.transform;
+			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
 			BinaryBuffer buffer;
 			buffer.write( matrixModelView );
+			buffer.write( matrixModelViewInv );
 			buffer.write( matrixNormal );
 			buffer.close();
 
@@ -430,13 +444,16 @@ namespace VTX::Renderer
 		bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
 		bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
 		bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+		bool hasSES		 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SES );
 
 		showAtoms	= hasSphere;
 		showBonds	= hasCylinder;
 		showRibbons = hasRibbon;
+		showSES		= hasSES;
 
 		float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
 
+		// Optimizations for renderer primitives.
 		// Spheres asked.
 		if ( hasSphere )
 		{
@@ -1421,10 +1438,12 @@ namespace VTX::Renderer
 			assert( proxy->transform );
 			assert( _proxyCamera );
 
-			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *proxy->transform;
+			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
 			buffer.write( matrixModelView );
+			buffer.write( matrixModelViewInv );
 			buffer.write( matrixNormal );
 		}
 

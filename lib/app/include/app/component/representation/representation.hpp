@@ -71,7 +71,7 @@ namespace VTX::App::Component::Representation
 			{
 				_representation.sesProbeRadius = p_value;
 			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_EXTERIOR )
+			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR )
 			{
 				_representation.sesIsExterior = p_value;
 			}

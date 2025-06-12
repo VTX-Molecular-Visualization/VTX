@@ -24,5 +24,9 @@ namespace VTX::App::Settings
 
 		// Selection.
 		settings.referenceSetting( Selection::MOLECULE_GRANULARITY_KEY, Selection::MOLECULE_GRANULARITY_DEFAULT );
+
+		// Representation.
+		settings.referenceSetting( Representation::SES_PROBE_RADIUS_KEY, Representation::SES_PROBE_RADIUS_DEFAULT );
+		settings.referenceSetting( Representation::SES_IS_EXTERIOR_KEY, Representation::SES_IS_EXTERIOR_DEFAULT );
 	}
 } // namespace VTX::App::Settings

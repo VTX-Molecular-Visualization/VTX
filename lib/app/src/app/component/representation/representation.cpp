@@ -45,7 +45,7 @@ namespace VTX::App::Component::Representation
 
 		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SES, _representation.hasSes );
 		_proxy->set( E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, _representation.sesProbeRadius );
-		_proxy->set( E_REPRESENTATION_SETTINGS::SES_EXTERIOR, _representation.sesIsExterior );
+		_proxy->set( E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR, _representation.sesIsExterior );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRepresentation( *_proxy ); };
 	}

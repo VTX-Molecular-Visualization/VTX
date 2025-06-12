@@ -55,9 +55,7 @@ namespace VTX::Renderer::Context
 			assert( _bufferValueEntries.contains( p_key ) );
 
 			auto & entry = _bufferValueEntries[ p_key ];
-			entry->buffer->setSub(
-				p_value, int32_t( entry->size ), int32_t( entry->offset + p_index * entry->totalSize )
-			);
+			entry->buffer->setSub( p_value, entry->size, entry->offset + p_index * entry->totalSize );
 		}
 
 		/**
@@ -81,7 +79,7 @@ namespace VTX::Renderer::Context
 					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
 					Util::String::memSizeToStr( size )
 				);
-				_buffers[ p_key ]->set( nullptr, int32_t( size ), false, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( nullptr, GLsizei( size ), false, GL_STATIC_DRAW );
 			}
 		}
 
@@ -106,11 +104,11 @@ namespace VTX::Renderer::Context
 					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
 					Util::String::memSizeToStr( p_size )
 				);
-				_buffers[ p_key ]->set( p_data, int32_t( p_size ), false, GL_STATIC_DRAW );
+				_buffers[ p_key ]->set( p_data, GLsizei( p_size ), false, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_buffers[ p_key ]->setSub( p_data, int32_t( p_size ) );
+				_buffers[ p_key ]->setSub( p_data, p_size );
 			}
 		}
 
@@ -127,7 +125,7 @@ namespace VTX::Renderer::Context
 			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->setSub( p_data, int32_t( p_size ), int32_t( p_offset ) );
+			_buffers[ p_key ]->setSub( p_data, p_size, p_offset );
 		}
 
 		/**
@@ -137,7 +135,7 @@ namespace VTX::Renderer::Context
 		{
 			assert( _buffers.contains( p_key ) );
 
-			_buffers[ p_key ]->get( p_data, int32_t( p_size ) );
+			_buffers[ p_key ]->get( p_data, p_size );
 		}
 
 		// TODDO: send data to buffer by map()?
@@ -197,17 +195,17 @@ namespace VTX::Renderer::Context
 		/////////////////// TODO: use collection util class
 		//
 		// TODO: find a better solution (magic enum explodes compile time).
-		static std::map<const E_CHAN_OUT, const uint32_t>  _mapAttachments;
-		static std::map<const E_PRIMITIVE, const uint32_t> _mapPrimitives;
-		static std::map<const E_FORMAT, const uint32_t>	   _mapFormats;
-		static std::map<const uint32_t, const size_t>	   _mapFormatSizes;
-		static std::map<const E_WRAPPING, const int32_t>   _mapWrappings;
-		static std::map<const E_FILTERING, const int32_t>  _mapFilterings;
-		static std::map<const E_TYPE, const uint32_t>	   _mapTypes;
-		static std::map<const E_TYPE, const size_t>		   _mapTypeSizes;
-		static std::map<const E_TYPE, const size_t>		   _mapTypeAlignments;
-		static std::map<const E_FORMAT, const E_TYPE>	   _mapFormatTypes;
-		static std::map<const E_FORMAT, const uint32_t>	   _mapFormatInternalTypes;
+		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
+		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
+		static std::map<const E_FORMAT, const GLenum>	 _mapFormats;
+		static std::map<const GLenum, const GLsizei>	 _mapFormatSizes;
+		static std::map<const E_WRAPPING, const GLint>	 _mapWrappings;
+		static std::map<const E_FILTERING, const GLint>	 _mapFilterings;
+		static std::map<const E_TYPE, const GLenum>		 _mapTypes;
+		static std::map<const E_TYPE, const GLsizeiptr>	 _mapTypeSizes;
+		static std::map<const E_TYPE, const GLuint>		 _mapTypeAlignments;
+		static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
+		static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
 
 		const Key _KEY_QUAD_VAO	   = "VAO_QUAD";
 		const Key _KEY_QUAD_BUFFER = "BUFFER_QUAD";
@@ -326,12 +324,12 @@ namespace VTX::Renderer::Context
 
 		void				 _getOpenglInfos();
 		static void APIENTRY _debugMessageCallback(
-			const uint32_t p_source,
-			const uint32_t p_type,
-			const uint32_t p_id,
-			const uint32_t p_severity,
-			const int32_t  p_length,
-			const char *   p_msg,
+			const GLenum   p_source,
+			const GLenum   p_type,
+			const GLuint   p_id,
+			const GLenum   p_severity,
+			const GLsizei  p_length,
+			const GLchar * p_msg,
 			const void *   p_data
 		);
 	};

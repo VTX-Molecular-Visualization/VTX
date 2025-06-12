@@ -24,7 +24,7 @@ namespace VTX::Renderer::Context::GL
 		assert( _id != GL_INVALID_INDEX );
 	}
 
-	void Program::attachShader( const uint32_t p_shaderId )
+	void Program::attachShader( const GLuint p_shaderId )
 	{
 		assert( _id != GL_INVALID_INDEX );
 
@@ -35,7 +35,7 @@ namespace VTX::Renderer::Context::GL
 	{
 		assert( _id != GL_INVALID_INDEX );
 
-		int32_t linked;
+		GLint linked;
 		glLinkProgram( _id );
 		glGetProgramiv( _id, GL_LINK_STATUS, &linked );
 		if ( linked == GL_FALSE )
@@ -53,11 +53,11 @@ namespace VTX::Renderer::Context::GL
 	{
 		assert( _id != GL_INVALID_INDEX );
 
-		int32_t nbShaders = 0;
+		GLint nbShaders = 0;
 		glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
-		std::vector<uint32_t> shaders( nbShaders );
+		std::vector<GLuint> shaders( nbShaders );
 		glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
-		for ( uint32_t shader : shaders )
+		for ( GLuint shader : shaders )
 		{
 			glDetachShader( _id, shader );
 		}
@@ -65,7 +65,7 @@ namespace VTX::Renderer::Context::GL
 
 	std::string Program::_getProgramErrors()
 	{
-		int32_t length;
+		GLint length;
 		glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{

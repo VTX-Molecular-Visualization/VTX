@@ -154,14 +154,19 @@ namespace VTX::Renderer
 		/**
 		 * @brief Buffer swapping count.
 		 */
-		static const size_t BUFFER_COUNT = 2;
+		static constexpr size_t BUFFER_COUNT = 2;
 
 		/**
 		 * @brief Primitives to show.
 		 */
+
+		// TODO: facto geometries with RL, DR and cache?
+		// TODO: facto proxies in enumed collection?
+
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
+		bool showSES	 = true;
 		bool showVoxels	 = true;
 
 		/**

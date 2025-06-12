@@ -73,11 +73,13 @@ namespace VTX::App::Settings
 
 	namespace Representation
 	{
-		constexpr float SES_PROBE_RADIUS_DEFAULT = 1.5f;
-		constexpr float SES_PROBE_RADIUS_MIN	 = 0.2f;
-		constexpr float SES_PROBE_RADIUS_MAX	 = 3.f;
+		const std::string SES_PROBE_RADIUS_KEY	   = "REPRESENTATION_SES_PROBE_RADIUS";
+		constexpr float	  SES_PROBE_RADIUS_DEFAULT = 1.5f;
+		constexpr float	  SES_PROBE_RADIUS_MIN	   = 0.2f;
+		constexpr float	  SES_PROBE_RADIUS_MAX	   = 3.f;
 
-		constexpr bool SES_IS_EXTERIOR_DEFAULT = false;
+		const std::string SES_IS_EXTERIOR_KEY	  = "REPRESENTATION_SES_IS_EXTERIOR";
+		constexpr bool	  SES_IS_EXTERIOR_DEFAULT = false;
 	} // namespace Representation
 
 	void initSettings();

@@ -21,7 +21,7 @@ namespace VTX::Renderer::Proxy
 
 		HAS_SES,
 		SES_PROBE_RADIUS,
-		SES_EXTERIOR
+		SES_IS_EXTERIOR
 	};
 
 	/**

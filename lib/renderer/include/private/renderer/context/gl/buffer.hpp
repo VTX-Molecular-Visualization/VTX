@@ -17,9 +17,9 @@ namespace VTX::Renderer::Context::GL
 
 		explicit Buffer(
 			const void * const p_data,
-			const int32_t	   p_size,
-			const bool		   p_immutable = false,
-			const uint32_t	   p_flags	   = 0
+			const GLsizei	   p_size,
+			const GLboolean	   p_immutable = GL_FALSE,
+			const GLbitfield   p_flags	   = 0
 		)
 		{
 			_create();
@@ -28,7 +28,7 @@ namespace VTX::Renderer::Context::GL
 
 		~Buffer() { destroy(); }
 
-		inline uint32_t getId() const { return _id; }
+		inline GLuint getId() const { return _id; }
 
 		inline void destroy()
 		{
@@ -41,7 +41,7 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline void bind( const uint32_t p_target )
+		inline void bind( const GLenum p_target )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -51,7 +51,7 @@ namespace VTX::Renderer::Context::GL
 			glBindBuffer( p_target, _id );
 		}
 
-		inline void bind( const uint32_t p_target, const uint32_t p_index )
+		inline void bind( const GLenum p_target, const GLuint p_index )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -59,6 +59,22 @@ namespace VTX::Renderer::Context::GL
 
 			_target = p_target;
 			glBindBufferBase( _target, p_index, _id );
+		}
+
+		inline void bind(
+			const GLenum	 p_target,
+			const GLuint	 p_index,
+			const GLsizeiptr p_size,
+			const GLintptr	 p_offset = 0
+		)
+		{
+			assert( glIsBuffer( _id ) );
+			assert( _target == 0 );
+			assert( p_target != 0 );
+			assert( p_size > 0 );
+
+			_target = p_target;
+			glBindBufferRange( _target, p_index, _id, p_offset, p_size );
 		}
 
 		inline void unbind()
@@ -69,7 +85,7 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline void unbind( const uint32_t p_index )
+		inline void unbind( const GLuint p_index )
 		{
 			assert( _target != 0 );
 
@@ -79,9 +95,9 @@ namespace VTX::Renderer::Context::GL
 
 		inline void set(
 			const void * const p_data,
-			const int32_t	   p_size,
-			const bool		   p_immutable = false,
-			const uint32_t	   p_flags	   = 0
+			const GLsizei	   p_size,
+			const GLboolean	   p_immutable = GL_FALSE,
+			const GLbitfield   p_flags	   = 0
 		)
 		{
 			assert( glIsBuffer( _id ) );
@@ -99,7 +115,7 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline void setSub( const void * const p_data, const int32_t p_size, const int32_t p_offset = 0 ) const
+		inline void setSub( const void * const p_data, const GLsizeiptr p_size, const GLintptr p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _size > 0 );
@@ -108,7 +124,7 @@ namespace VTX::Renderer::Context::GL
 			glNamedBufferSubData( _id, p_offset, p_size, p_data );
 		}
 
-		inline void const get( void * const p_data, const int32_t p_size, const int64_t p_offset = 0 ) const
+		inline void get( void * const p_data, const GLsizeiptr p_size, const GLintptr p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _size > 0 );
@@ -117,14 +133,14 @@ namespace VTX::Renderer::Context::GL
 			glGetNamedBufferSubData( _id, p_offset, p_size, p_data );
 		}
 
-		inline void * const map( const uint32_t p_access ) const
+		inline void * map( const GLbitfield p_access ) const
 		{
 			assert( glIsBuffer( _id ) );
 
 			return glMapNamedBuffer( _id, p_access );
 		}
 
-		inline void * const map( const uint32_t p_access, const int32_t p_length, const int64_t p_offset = 0 ) const
+		inline void * map( const GLbitfield p_access, const GLsizeiptr p_length, const GLintptr p_offset = 0 ) const
 		{
 			assert( glIsBuffer( _id ) );
 
@@ -138,12 +154,12 @@ namespace VTX::Renderer::Context::GL
 			glUnmapNamedBuffer( _id );
 		}
 
-		inline const int32_t size() const { return _size; }
+		inline GLsizei size() const { return _size; }
 
 	  private:
-		uint32_t _id	 = GL_INVALID_INDEX;
-		uint32_t _target = 0;
-		int32_t	 _size	 = 0;
+		GLuint	_id		= GL_INVALID_INDEX;
+		GLenum	_target = 0;
+		GLsizei _size	= 0;
 
 		inline void _create()
 		{

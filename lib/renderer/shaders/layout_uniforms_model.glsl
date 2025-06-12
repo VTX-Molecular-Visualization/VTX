@@ -1,6 +1,7 @@
 struct Model
 {
 	mat4 matrixModelView;
+	mat4 matrixModelViewInv;
 	mat4 matrixNormal;
 };
 

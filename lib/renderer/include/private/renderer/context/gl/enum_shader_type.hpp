@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer::Context::GL
 {
-	enum class ENUM_SHADER_TYPE : uint32_t
+	enum class ENUM_SHADER_TYPE : GLenum
 	{
 		VERTEX			= GL_VERTEX_SHADER,
 		FRAGMENT		= GL_FRAGMENT_SHADER,
