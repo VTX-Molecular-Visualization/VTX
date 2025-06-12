@@ -7,6 +7,7 @@
 #include <optional>
 #include <thread>
 #include <util/callback.hpp>
+#include <util/thread.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Threading
@@ -19,7 +20,7 @@ namespace VTX::App::Core::Threading
 	class BaseThread
 	{
 	  public:
-		using AsyncOp	  = std::function<uint( BaseThread & )>;
+		using AsyncOp	  = std::function<uint( Util::StopToken, BaseThread & )>;
 		using EndCallback = std::function<void( BaseThread &, uint )>;
 
 	  public:
@@ -66,13 +67,14 @@ namespace VTX::App::Core::Threading
 	  private:
 		ThreadingSystem & _manager;
 
-		std::thread _thread;
-		float		_progress = 0.f;
-		bool		_stopped  = false;
+		std::jthread _thread;
+		float		 _progress = 0.f;
+		bool		 _stopped  = false;
 
 		std::any _data;
 
-		void _finish();
+		Util::StopToken _stopToken;
+		void			_finish();
 	};
 } // namespace VTX::App::Core::Threading
 #endif

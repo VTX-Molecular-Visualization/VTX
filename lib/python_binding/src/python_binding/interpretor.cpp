@@ -1,3 +1,4 @@
+#include "interpretor.hpp"
 #include "python_binding/interpretor.hpp"
 #include "python_binding/binder.hpp"
 #include "python_binding/binding/vtx_api.hpp"
@@ -93,6 +94,7 @@ namespace VTX::PythonBinding
 		try
 		{
 			VTX_DEBUG( "Run Python Command : {}", p_line );
+			return "paf";
 			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
 			if ( not result.is_none() )
 				return result.attr( "__repr__" )().cast<std::string>();
@@ -105,7 +107,6 @@ namespace VTX::PythonBinding
 			}
 			catch ( const pybind11::error_already_set & ee )
 			{
-
 				throw( VTX::CommandException( p_line, ee.what() ) );
 			}
 			catch ( VTX::CommandException & p_e )

@@ -1,6 +1,7 @@
 #include <python_binding/interpretor.hpp>
 // pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
+#include <app/core/threading/threading_system.hpp>
 #include <qevent.h>
 #include <util/logger.hpp>
 
@@ -51,7 +52,12 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		_history.add( text().toStdString() );
+		// We do not want to register the same command over and over as it give the impression that the browsing doesn't
+		// work from the user perspective.
+		std::string command = text().toStdString();
+		if ( _history.empty() || command != _history.last() )
+			_history.add( text().toStdString() );
+
 		clear();
 		_executeLastHistoryEntry();
 	}
@@ -60,17 +66,25 @@ namespace VTX::UI::QT::Widget
 	{
 		_history.resetBrowsing();
 
-		try
-		{
-			VTX_PYTHON_IN( "{}", _history.last() );
-			std::string rslt = INTERPRETOR().runCommand( _history.last() );
-			if ( not rslt.empty() )
-				VTX_PYTHON_OUT( "{}", rslt );
-		}
-		catch ( CommandException & p_e )
-		{
-			VTX_PYTHON_OUT( "{}", p_e.what() );
-		}
+		App::THREADING_SYSTEM().createThread(
+			[ command = _history.last() ]( App::Core::Threading::BaseThread & )
+			{
+				try
+				{
+					VTX_PYTHON_IN( "{}", command );
+					std::string rslt = INTERPRETOR().runCommand( command );
+					if ( not rslt.empty() )
+						VTX_PYTHON_OUT( "{}", rslt );
+				}
+				catch ( CommandException & p_e )
+				{
+					VTX_PYTHON_OUT( "{}", p_e.what() );
+					return 1;
+				}
+
+				return 0;
+			}
+		);
 	}
 
 	void CommandLauncher::_setupCompleter()
