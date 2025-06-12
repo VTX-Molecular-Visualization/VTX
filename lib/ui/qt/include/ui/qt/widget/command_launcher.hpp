@@ -20,12 +20,14 @@ namespace VTX::UI::QT::Widget
 
 		/**
 		 * @brief Send a commmand to the command launcher, as if some user would have typed it and hit enter.
-		 * @param  
+		 * @param
 		 */
 		void launchCommand( std::string );
 
 	  protected:
 		virtual void keyPressEvent( QKeyEvent * event ) override;
+		virtual void focusInEvent( QFocusEvent * event ) override;
+		virtual void focusOutEvent( QFocusEvent * event ) override;
 
 	  private:
 		void _setupCompleter();

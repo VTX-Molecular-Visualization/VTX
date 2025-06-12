@@ -45,6 +45,10 @@ namespace VTX::UI::QT::Widget
 		return;
 	}
 
+	void CommandLauncher::focusInEvent( QFocusEvent * event ) {}
+
+	void CommandLauncher::focusOutEvent( QFocusEvent * event ) {}
+
 	void CommandLauncher::_launchCommand()
 	{
 		if ( text().isEmpty() )
@@ -66,25 +70,8 @@ namespace VTX::UI::QT::Widget
 	{
 		_history.resetBrowsing();
 
-		App::THREADING_SYSTEM().createThread(
-			[ command = _history.last() ]( App::Core::Threading::BaseThread & )
-			{
-				try
-				{
-					VTX_PYTHON_IN( "{}", command );
-					std::string rslt = INTERPRETOR().runCommand( command );
-					if ( not rslt.empty() )
-						VTX_PYTHON_OUT( "{}", rslt );
-				}
-				catch ( CommandException & p_e )
-				{
-					VTX_PYTHON_OUT( "{}", p_e.what() );
-					return 1;
-				}
-
-				return 0;
-			}
-		);
+		// TODO
+		_history.last();
 	}
 
 	void CommandLauncher::_setupCompleter()

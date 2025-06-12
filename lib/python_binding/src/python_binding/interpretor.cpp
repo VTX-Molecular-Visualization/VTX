@@ -1,4 +1,3 @@
-#include "interpretor.hpp"
 #include "python_binding/interpretor.hpp"
 #include "python_binding/binder.hpp"
 #include "python_binding/binding/vtx_api.hpp"
