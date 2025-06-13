@@ -12,6 +12,10 @@ namespace VTX::Util
 
 	using CallbackId = size_t;
 
+	/**
+	 * @brief Class responsible for holding a collection of callbacks to call them in subscription order.
+	 * @tparam ...Args
+	 */
 	template<typename... Args>
 	class Callback
 	{
