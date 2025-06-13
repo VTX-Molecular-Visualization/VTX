@@ -66,10 +66,4 @@ namespace VTX::PythonBinding
 
 } // namespace VTX::PythonBinding
 
-namespace VTX
-{
-	inline PythonBinding::Interpretor & INTERPRETOR() { return Util::Singleton<PythonBinding::Interpretor>::get(); }
-
-} // namespace VTX
-
 #endif

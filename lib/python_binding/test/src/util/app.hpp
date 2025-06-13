@@ -5,9 +5,18 @@
 #include <memory>
 #include <python_binding/interpretor.hpp>
 #include <string>
+#include <util/singleton.hpp>
 
+namespace VTX
+{
+	inline VTX::PythonBinding::Interpretor & INTERPRETOR()
+	{
+		return Util::Singleton<VTX::PythonBinding::Interpretor>::get();
+	}
+} // namespace VTX
 namespace VTX::App::Test::Util
 {
+
 	class PythonFixture
 	{
 	  public:

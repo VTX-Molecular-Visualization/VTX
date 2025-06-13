@@ -4,19 +4,19 @@
 #include <python_binding/vtx_python_module.hpp>
 #include <util/filesystem.hpp>
 
-namespace VTX::PythonBinding::Binding::Binders
+namespace VTX::App::PythonBinding
 {
 
 	class RunScript
 	{
 	  public:
 		explicit RunScript( FilePath );
-		void bind( PythonBinding::PyTXModule & p_vtxModule );
+		void bind( VTX::PythonBinding::PyTXModule & p_vtxModule );
 
 	  private:
 		FilePath _path;
 	};
 
-} // namespace VTX::PythonBinding::Binding::Binders
+} // namespace VTX::App::PythonBinding
 
 #endif

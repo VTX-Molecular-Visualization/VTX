@@ -3,6 +3,6 @@
 
 namespace VTX::PythonBinding::Action
 {
-	void RunScript::execute() { INTERPRETOR().runScript( _path ); }
+	// void RunScript::execute() { INTERPRETOR().runScript( _path ); }
 
 } // namespace VTX::PythonBinding::Action

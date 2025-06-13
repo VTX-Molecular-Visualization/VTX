@@ -20,8 +20,9 @@ namespace VTX::App::Core::Threading
 	class BaseThread
 	{
 	  public:
-		using AsyncOp	  = std::function<uint( Util::StopToken, BaseThread & )>;
-		using EndCallback = std::function<void( BaseThread &, uint )>;
+		using AsyncOp		   = std::function<uint( BaseThread & )>;
+		using StoppableAsyncOp = std::function<uint( Util::StopToken, BaseThread & )>;
+		using EndCallback	   = std::function<void( BaseThread &, uint )>;
 
 	  public:
 		/**
@@ -36,12 +37,14 @@ namespace VTX::App::Core::Threading
 		 * The thread is ended by the manager in the _finish method.
 		 */
 		void start( const AsyncOp & p_function );
+		void start( const StoppableAsyncOp & p_function );
 		/**
 		 * @brief Starts the content of the function in a new thread.
 		 * Once the function returns p_callback is called.
 		 * The thread is ended by the manager in the _finish method.
 		 */
 		void start( const AsyncOp & p_function, const EndCallback & p_callback );
+		void start( const StoppableAsyncOp & p_function, const EndCallback & p_callback );
 
 		void wait();
 		void stop();

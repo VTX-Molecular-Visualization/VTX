@@ -25,6 +25,8 @@
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+//
+#include "app/python_binding/interpretor.hpp"
 
 namespace VTX::App
 {
@@ -49,7 +51,8 @@ namespace VTX::App
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
 		// Initialize python interpretor.
-		INTERPRETOR().add( VTX::App::PythonBinding::VTXAppBinder() );
+		INTERPRETOR().subscribe( []( VTX::PythonBinding::Interpretor & p_interpretor )
+								 { p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() ); } );
 
 		// Create Databases
 		//_representationLibrary

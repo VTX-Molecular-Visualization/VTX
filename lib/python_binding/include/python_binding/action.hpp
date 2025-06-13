@@ -5,15 +5,15 @@
 
 namespace VTX::PythonBinding::Action
 {
-	class RunScript //: public App::Core::Action::BaseAction
-	{
-	  public:
-		explicit RunScript( const FilePath & p_path ) : _path( p_path ) {}
-		void execute();
+	//class RunScript 
+	//{
+	//  public:
+	//	explicit RunScript( const FilePath & p_path ) : _path( p_path ) {}
+	//	void execute();
 
-	  private:
-		FilePath _path;
-	};
+	//  private:
+	//	FilePath _path;
+	//};
 
 } // namespace VTX::PythonBinding::Action
 #endif

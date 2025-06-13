@@ -2,9 +2,15 @@
 #define __VTX_APP_PYTHONBINDING_INTERPRETOR__
 
 #include <functional>
+#include <future>
 #include <memory>
 #include <string>
 #include <util/singleton.hpp>
+
+namespace VTX::PythonBinding
+{
+	class Interpretor;
+}
 
 namespace VTX::App::PythonBinding
 {
@@ -24,6 +30,17 @@ namespace VTX::App::PythonBinding
 		 * @param
 		 */
 		void runCommand( const std::string & ) noexcept;
+
+		/**
+		 * @brief Run input python command and fill the future value with its result.
+		 */
+		void runCommand( const std::string &, std::future<std::string> & ) noexcept;
+
+		/**
+		 * @brief Return whether the last command failed or not.
+		 * @return
+		 */
+		bool lastCommandFailed() const;
 
 		/**
 		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up

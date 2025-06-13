@@ -13,6 +13,16 @@ namespace VTX::App::Core::Threading
 	void BaseThread::start( const AsyncOp & p_function )
 	{
 		_thread = std::jthread(
+			[ this, p_function ]()
+			{
+				p_function( *this );
+				_finish();
+			}
+		);
+	}
+	void BaseThread::start( const StoppableAsyncOp & p_function )
+	{
+		_thread = std::jthread(
 			[ this, p_function ]( std::stop_token p_stopToken )
 			{
 				p_function( p_stopToken, *this );
@@ -21,6 +31,23 @@ namespace VTX::App::Core::Threading
 		);
 	}
 	void BaseThread::start( const AsyncOp & p_function, const EndCallback & p_callback )
+	{
+		_thread = std::jthread(
+			[ this, p_function, p_callback ]()
+			{
+				const uint res = p_function( *this );
+
+				if ( _stopped )
+				{
+					p_callback( *this, res );
+				}
+
+				_finish();
+			}
+		);
+	}
+
+	void BaseThread::start( const StoppableAsyncOp & p_function, const EndCallback & p_callback )
 	{
 		_thread = std::jthread(
 			[ this, p_function, p_callback ]( std::stop_token p_stopToken )

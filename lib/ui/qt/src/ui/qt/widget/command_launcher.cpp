@@ -76,19 +76,20 @@ namespace VTX::UI::QT::Widget
 
 	void CommandLauncher::_setupCompleter()
 	{
-		std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
+		// TODO : Do it nicely
+		//  std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
 
-		QStringList strList;
+		// QStringList strList;
 
-		for ( auto & it_cmd : allCommands )
-		{
-			strList.emplaceBack();
-		}
+		// for ( auto & it_cmd : allCommands )
+		//{
+		//	strList.emplaceBack();
+		// }
 
-		_completer = new QCompleter( strList, this );
-		_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
-		_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
-		setCompleter( _completer );
+		//_completer = new QCompleter( strList, this );
+		//_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
+		//_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
+		// setCompleter( _completer );
 	}
 
 } // namespace VTX::UI::QT::Widget

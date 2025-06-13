@@ -1,8 +1,9 @@
-#include "app/python_binding/interpretor.hpp"
+#include <python_binding/interpretor.hpp>
+//
 #include "app/core/threading/threading_system.hpp"
+#include "app/python_binding/interpretor.hpp"
 #include <atomic>
 #include <optional>
-#include <python_binding/interpretor.hpp>
 #include <queue>
 #include <util/callback.hpp>
 #include <util/datalocker.hpp>
@@ -26,7 +27,7 @@ namespace VTX::App::PythonBinding
 		{
 		}
 
-		void runCommand( const std::string & p_command )
+		void runCommand( const std::string & p_command ) noexcept
 		{
 			auto queue = _lockedCmdQueue.open();
 			queue->push( p_command );
@@ -68,35 +69,60 @@ namespace VTX::App::PythonBinding
 		{
 			_instructions += std::move( p_instruction );
 		}
+		void runCommand( const std::string & p_command, std::future<std::string> & p_ret ) noexcept
+		{
+			_commandReturnValue.emplace();
+			p_ret = _commandReturnValue->get_future();
+			runCommand( p_command );
+		}
+		bool lastCommandFailed() const { return _lastCommandFailed.load(); }
 
 	  private:
 		void _actuallyRunCommand( const std::string & p_command )
 		{
+			std::string rslt;
 			try
 			{
 				VTX_PYTHON_IN( "{}", p_command );
-				std::string rslt = _interpretor->runCommand( p_command );
+				rslt			   = _interpretor->runCommand( p_command );
+				_lastCommandFailed = false;
 				if ( not rslt.empty() )
 					VTX_PYTHON_OUT( "{}", rslt );
 			}
 			catch ( CommandException & p_e )
 			{
+				_lastCommandFailed = true;
 				VTX_PYTHON_OUT( "{}", p_e.what() );
 			}
+
+			if ( _commandReturnValue )
+				_commandReturnValue->set_value( rslt );
+			_commandReturnValue.reset();
 		}
 
 		std::atomic<std::chrono::milliseconds>			  _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
+		std::atomic_bool								  _lastCommandFailed = false;
 		std::optional<VTX::PythonBinding::Interpretor>	  _interpretor;
 		Util::DataLocker<std::queue<std::string>>		  _lockedCmdQueue;
 		App::Core::Threading::BaseThread *				  _thread = nullptr;
 		Util::StopToken									  _stopToken;
 		Util::Callback<VTX::PythonBinding::Interpretor &> _instructions;
+		std::optional<std::promise<std::string>>		  _commandReturnValue;
 	};
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
-	void Interpretor::runCommand( const std::string & p_ ) { _impl->runCommand( p_ ); }
+	void Interpretor::runCommand( const std::string & p_ ) noexcept { _impl->runCommand( p_ ); }
+	void Interpretor::runCommand( const std::string & p_cmd, std::future<std::string> & p_ret ) noexcept
+	{
+		_impl->runCommand( p_cmd, p_ret );
+	}
+	bool Interpretor::lastCommandFailed() const
+	{
+		return _impl->lastCommandFailed();
+		;
+	}
 	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
 	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) noexcept { _impl->subscribe( std::move( _ ) ); }
-	void Interpretor::Del::operator()( Interpretor::_Impl * p_ ) { delete p_; }
+	void Interpretor::Del::operator()( Interpretor::_Impl * p_ ) noexcept { delete p_; }
 } // namespace VTX::App::PythonBinding

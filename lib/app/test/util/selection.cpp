@@ -2,9 +2,9 @@
 #include <app/application/scene.hpp>
 #include <app/core/ecs/base_entity.hpp>
 #include <app/core/ecs/registry.hpp>
+#include <app/python_binding/interpretor.hpp>
 #include <app/selection/selection_manager.hpp>
 #include <app/vtx_app.hpp>
-#include <python_binding/interpretor.hpp>
 #include <sstream>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -20,7 +20,9 @@ namespace VTX::App::Test::Util
 		std::stringstream command = std::stringstream();
 		command << "(" << p_command << ").save('" << p_selName << "')";
 
-		INTERPRETOR().runCommand( command.str() );
+		std::future<std::string> ret;
+		INTERPRETOR().runCommand( command.str(), ret );
+		ret.wait();
 
 		const SelectionObj & result = App::SELECTION_MANAGER().getSaved( p_selName );
 

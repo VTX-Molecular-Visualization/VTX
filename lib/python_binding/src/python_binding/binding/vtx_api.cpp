@@ -38,9 +38,13 @@ namespace VTX::PythonBinding::Binding
 			;
 	}
 
-	void applyVtxLocalCommandBinding( pybind11::module_ & p_commandModule )
+	void applyVtxLocalCommandBinding( VTX::PythonBinding::Interpretor & p_interpretor )
 	{
-		p_commandModule.def( "runScript", []( const std::string & r ) { INTERPRETOR().runScript( r ); } );
+		pybind11::module_ * commandModule = nullptr;
+		p_interpretor.getPythonModule( &commandModule );
+		commandModule->def(
+			"runScript", [ &interpretor = p_interpretor ]( const std::string & r ) { interpretor.runScript( r ); }
+		);
 	}
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{

@@ -34,7 +34,7 @@ namespace VTX::PythonBinding
 			Binding::applyVtxApiBinding( _vtxModule );
 			pybind11::module_ vtxCommandModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
-			Binding::applyVtxLocalCommandBinding( vtxCommandModule );
+			// Binding::applyVtxLocalCommandBinding( p_interpretor );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
@@ -93,7 +93,6 @@ namespace VTX::PythonBinding
 		try
 		{
 			VTX_DEBUG( "Run Python Command : {}", p_line );
-			return "paf";
 			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
 			if ( not result.is_none() )
 				return result.attr( "__repr__" )().cast<std::string>();
