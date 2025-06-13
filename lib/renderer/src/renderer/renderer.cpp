@@ -168,6 +168,7 @@ namespace VTX::Renderer
 		_addProxySystem( p_proxy );
 		_refreshDataSystems();
 
+#ifdef WITH_CUDA
 		std::vector<Vec4f> molecule( p_proxy.atomPositions->size() );
 		Util::Math::AABB   aabb;
 		// Fill molecule with atom positions and radius in the last component.
@@ -180,6 +181,7 @@ namespace VTX::Renderer
 		data	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
 		surface = data->getGraphics();
 		VTX_DEBUG( "CUDA DONE" );
+#endif
 	}
 
 	void Renderer::removeProxySystem( Proxy::System & p_proxy )

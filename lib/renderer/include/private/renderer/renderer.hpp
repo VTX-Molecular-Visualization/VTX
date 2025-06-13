@@ -1,7 +1,9 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#ifdef WITH_CUDA
 #include "bcs/sesdf/sesdf.hpp"
+#endif
 #include "caches.hpp"
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
@@ -201,8 +203,10 @@ namespace VTX::Renderer
 		Draw::Range drawRangeSESConvexes;
 		Draw::Range drawRangeSESSegments;
 
+#ifdef WITH_CUDA
 		std::unique_ptr<bcs::Sesdf> data;
 		bcs::sesdf::SesdfGraphics	surface {};
+#endif
 
 		/**
 		 * @brief Callback triggered when the renderering context is ready and _graph built (first time only).
