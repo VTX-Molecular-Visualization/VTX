@@ -23,9 +23,9 @@ target_sources(vtx_renderer
 # Cuda.
 check_language(CUDA)
 if (CMAKE_CUDA_COMPILER)
-	message(STATUS "CUDA found")
 	enable_language(CUDA)
 	find_package(CUDAToolkit)
+	target_link_libraries(vtx_renderer PRIVATE CUDA::toolkit)
 	set_target_properties(vtx_renderer PROPERTIES
 		#https://en.wikipedia.org/wiki/CUDA
 		#CUDA_ARCHITECTURES "50;52;60;61;70;75;80;86;89;90"

@@ -74,7 +74,7 @@ namespace VTX::App::Settings
 	namespace Representation
 	{
 		const std::string SES_PROBE_RADIUS_KEY	   = "REPRESENTATION_SES_PROBE_RADIUS";
-		constexpr float	  SES_PROBE_RADIUS_DEFAULT = 1.5f;
+		constexpr float	  SES_PROBE_RADIUS_DEFAULT = 1.4f;
 		constexpr float	  SES_PROBE_RADIUS_MIN	   = 0.2f;
 		constexpr float	  SES_PROBE_RADIUS_MAX	   = 3.f;
 
