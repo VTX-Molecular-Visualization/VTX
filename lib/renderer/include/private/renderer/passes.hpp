@@ -55,13 +55,10 @@ namespace VTX::Renderer
 
 	inline const BufferDraw dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
-	inline const BufferDraw dataSESSegment;
-
-	inline const BufferDraw dataSESCircle;
-
-	inline const BufferDraw dataSESConvex;
-
-	inline const BufferDraw dataSESConcave;
+	inline const BufferDraw dataSESCircles;
+	inline const BufferDraw dataSESConvexes;
+	inline const BufferDraw dataSESConcaves;
+	inline const BufferDraw dataSESSegments;
 
 	// Passes.
 
@@ -71,7 +68,11 @@ namespace VTX::Renderer
 		Inputs { { E_CHAN_IN::_0, { "SpheresCylinders", dataSpheresCylinders } },
 				 { E_CHAN_IN::_1, { "Ribbons", dataRibbons } },
 				 { E_CHAN_IN::_2, { "Triangles", dataTriangles } },
-				 { E_CHAN_IN::_3, { "Voxels", dataVoxels } } },
+				 { E_CHAN_IN::_3, { "Voxels", dataVoxels } },
+				 { E_CHAN_IN::_4, { "SESCircles", dataSESCircles } },
+				 { E_CHAN_IN::_5, { "SESConcaves", dataSESConvexes } },
+				 { E_CHAN_IN::_6, { "SESConvexes", dataSESConcaves } },
+				 { E_CHAN_IN::_7, { "SESSegments", dataSESSegments } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "Geometry", imageRGBA32UI } },
 				  { E_CHAN_OUT::COLOR_1, { "Color", imageRGBA16F } },
 				  { E_CHAN_OUT::COLOR_2, { "Picking", imageRG32UI } },
@@ -80,7 +81,11 @@ namespace VTX::Renderer
 			{ "Sphere", "sphere", BufferDataValues {}, Draw { "SpheresCylinders", E_PRIMITIVE::POINTS } },
 			{ "Cylinder", "cylinder", BufferDataValues {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
 			{ "Ribbon", "ribbon", BufferDataValues {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
-			{ "Voxel", "voxel", BufferDataValues {}, Draw { "Voxels", E_PRIMITIVE::POINTS } } },
+			{ "Voxel", "voxel", BufferDataValues {}, Draw { "Voxels", E_PRIMITIVE::POINTS } },
+			{ "SESCircle", "ses/sesdf/circle", BufferDataValues {}, Draw { "SESCircles", E_PRIMITIVE::POINTS } },
+			{ "SESConcave", "ses/sesdf/concave", BufferDataValues {}, Draw { "SESConcaves", E_PRIMITIVE::POINTS } },
+			{ "SESConvex", "ses/sesdf/convex", BufferDataValues {}, Draw { "SESConvexes", E_PRIMITIVE::POINTS } },
+			{ "SESSegment", "ses/sesdf/segment", BufferDataValues {}, Draw { "SESSegments", E_PRIMITIVE::POINTS } } },
 		{ E_SETTING::CLEAR }
 	};
 

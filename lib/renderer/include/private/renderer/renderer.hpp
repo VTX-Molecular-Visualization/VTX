@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#include "bcs/sesdf/sesdf.hpp"
 #include "caches.hpp"
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
@@ -163,11 +164,14 @@ namespace VTX::Renderer
 		// TODO: facto geometries with RL, DR and cache?
 		// TODO: facto proxies in enumed collection?
 
-		bool showAtoms	 = true;
-		bool showBonds	 = true;
-		bool showRibbons = true;
-		bool showSES	 = true;
-		bool showVoxels	 = true;
+		bool showAtoms		 = true;
+		bool showBonds		 = true;
+		bool showRibbons	 = true;
+		bool showVoxels		 = true;
+		bool showSESCircles	 = true;
+		bool showSESConcaves = true;
+		bool showSESConvexes = true;
+		bool showSESSegments = true;
 
 		/**
 		 * @brief Force update each frame.
@@ -179,13 +183,26 @@ namespace VTX::Renderer
 		 */
 		// TODO: test render time with/without ranges/multidraw.
 		using RangeList = Util::Math::RangeList<size_t>;
-		RangeList	drawRangeSpheresRL;
-		RangeList	drawRangeCylindersRL;
-		RangeList	drawRangeRibbonsRL;
+		RangeList drawRangeSpheresRL;
+		RangeList drawRangeCylindersRL;
+		RangeList drawRangeRibbonsRL;
+		// RangeList	drawRangeVoxelsRL;
+		RangeList drawRangeSESCirclesRL;
+		RangeList drawRangeSESConcavesRL;
+		RangeList drawRangeSESConvexesRL;
+		RangeList drawRangeSESSegmentsRL;
+
 		Draw::Range drawRangeSpheres;
 		Draw::Range drawRangeCylinders;
 		Draw::Range drawRangeRibbons;
 		Draw::Range drawRangeVoxels;
+		Draw::Range drawRangeSESCircles;
+		Draw::Range drawRangeSESConcaves;
+		Draw::Range drawRangeSESConvexes;
+		Draw::Range drawRangeSESSegments;
+
+		std::unique_ptr<bcs::Sesdf> data;
+		bcs::sesdf::SesdfGraphics	surface {};
 
 		/**
 		 * @brief Callback triggered when the renderering context is ready and _graph built (first time only).

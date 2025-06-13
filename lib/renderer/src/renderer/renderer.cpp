@@ -167,6 +167,19 @@ namespace VTX::Renderer
 	{
 		_addProxySystem( p_proxy );
 		_refreshDataSystems();
+
+		std::vector<Vec4f> molecule( p_proxy.atomPositions->size() );
+		Util::Math::AABB   aabb;
+		// Fill molecule with atom positions and radius in the last component.
+		for ( size_t i = 0; i < p_proxy.atomPositions->size(); ++i )
+		{
+			molecule[ i ] = Vec4f( ( *p_proxy.atomPositions )[ i ], p_proxy.atomRadii[ i ] );
+			aabb.extend( ( *p_proxy.atomPositions )[ i ] );
+		}
+		bcs::Aabb aabbBCS( aabb.getMin(), aabb.getMax() );
+		data	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
+		surface = data->getGraphics();
+		VTX_DEBUG( "CUDA DONE" );
 	}
 
 	void Renderer::removeProxySystem( Proxy::System & p_proxy )
@@ -449,7 +462,6 @@ namespace VTX::Renderer
 		showAtoms	= hasSphere;
 		showBonds	= hasCylinder;
 		showRibbons = hasRibbon;
-		showSES		= hasSES;
 
 		float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
 
@@ -1525,6 +1537,7 @@ namespace VTX::Renderer
 		// Geometric.
 		if ( not geo )
 		{
+			// TODO: refacto!
 			geo									   = _graph.addPass( descPassGeometric );
 			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
 			geo->programs[ 0 ].draw.value().needRenderFunc
@@ -1538,6 +1551,19 @@ namespace VTX::Renderer
 			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
 			geo->programs[ 3 ].draw.value().needRenderFunc
 				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+			// TODO: add SES range.
+			geo->programs[ 4 ].draw.value().ranges = &drawRangeSESCircles;
+			geo->programs[ 4 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESCircles && drawRangeSESCircles.counts.size() > 0; };
+			geo->programs[ 5 ].draw.value().ranges = &drawRangeSESConcaves;
+			geo->programs[ 5 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESConcaves && drawRangeSESConcaves.counts.size() > 0; };
+			geo->programs[ 6 ].draw.value().ranges = &drawRangeSESConvexes;
+			geo->programs[ 6 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESConvexes && drawRangeSESConvexes.counts.size() > 0; };
+			geo->programs[ 7 ].draw.value().ranges = &drawRangeSESSegments;
+			geo->programs[ 7 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
 		}
 
 		// Depth.
