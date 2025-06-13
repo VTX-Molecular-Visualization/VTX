@@ -4,6 +4,7 @@
 #include <optional>
 #include <python_binding/interpretor.hpp>
 #include <queue>
+#include <util/callback.hpp>
 #include <util/datalocker.hpp>
 #include <util/logger.hpp>
 
@@ -36,21 +37,23 @@ namespace VTX::App::PythonBinding
 			std::string command;
 			while ( true )
 			{
-			queue_check:
-			{
-				auto queue = _lockedCmdQueue.open();
-				if ( not queue->empty() )
+			loop_beginning:
+				_instructions( *_interpretor );
+				_instructions.clear();
 				{
-					command = queue->front();
-					queue->pop();
+					auto queue = _lockedCmdQueue.open();
+					if ( not queue->empty() )
+					{
+						command = queue->front();
+						queue->pop();
+					}
 				}
-			}
 				if ( not command.empty() )
 				{
 					_actuallyRunCommand( command );
 					command.clear();
-					goto queue_check; // If there was a command in the queue, maybe there is others as well so we don't
-									  // want to wait the time interval before executing it.
+					goto loop_beginning; // If there was a command in the queue, maybe there is others as well so we
+										 // don't want to wait the time interval before executing it.
 				}
 
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
@@ -61,6 +64,10 @@ namespace VTX::App::PythonBinding
 		VTX::PythonBinding::Interpretor & pythonInterpretor() { return *_interpretor; }
 		inline void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
 		inline void fasterResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 100 ); }
+		inline void subscribe( InterpretorInstructionsOneShot p_instruction ) noexcept
+		{
+			_instructions += std::move( p_instruction );
+		}
 
 	  private:
 		void _actuallyRunCommand( const std::string & p_command )
@@ -78,16 +85,18 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		std::atomic<std::chrono::milliseconds>		   _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
-		std::optional<VTX::PythonBinding::Interpretor> _interpretor;
-		Util::DataLocker<std::queue<std::string>>	   _lockedCmdQueue;
-		App::Core::Threading::BaseThread *			   _thread = nullptr;
-		Util::StopToken								   _stopToken;
+		std::atomic<std::chrono::milliseconds>			  _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
+		std::optional<VTX::PythonBinding::Interpretor>	  _interpretor;
+		Util::DataLocker<std::queue<std::string>>		  _lockedCmdQueue;
+		App::Core::Threading::BaseThread *				  _thread = nullptr;
+		Util::StopToken									  _stopToken;
+		Util::Callback<VTX::PythonBinding::Interpretor &> _instructions;
 	};
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
 	void Interpretor::runCommand( const std::string & p_ ) { _impl->runCommand( p_ ); }
 	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
+	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) noexcept { _impl->subscribe( std::move( _ ) ); }
 	void Interpretor::Del::operator()( Interpretor::_Impl * p_ ) { delete p_; }
 } // namespace VTX::App::PythonBinding

@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_PYTHONBINDING_INTERPRETOR__
 #define __VTX_APP_PYTHONBINDING_INTERPRETOR__
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <util/singleton.hpp>
@@ -14,6 +15,8 @@ namespace VTX::App::PythonBinding
 	class Interpretor
 	{
 	  public:
+		using InterpretorInstructionsOneShot = std::function<void( VTX::PythonBinding::Interpretor & )>;
+
 		Interpretor();
 
 		/**
@@ -36,11 +39,10 @@ namespace VTX::App::PythonBinding
 		void fasterResponseTime() noexcept;
 
 		/**
-		 * @brief Provide with the actual non-threaded interpretor
-		 * BUT MAYBE THIS DESIGN IS SHIT. Should subscribe callbacks to actually execute bindings on the python threads.
+		 * @brief Give instructions to execute code on the python thread
 		 * @param
 		 */
-		void get( VTX::PythonBinding::Interpretor ** ) noexcept;
+		void subscribe( InterpretorInstructionsOneShot ) noexcept;
 
 	  private:
 		class _Impl;
