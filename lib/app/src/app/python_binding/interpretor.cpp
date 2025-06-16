@@ -19,12 +19,20 @@ namespace VTX::App::PythonBinding
 				[ this ]( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & _ )
 				{
 					_interpretor.emplace();
-					this->_stopToken = std::move( p_stopToken );
-					this->listenQueue( _ );
+					_stopToken = std::move( p_stopToken );
+					_thread	   = &_;
+					this->listenQueue();
+					_interpretor.reset();
 					return 0;
 				}
 			) )
 		{
+		}
+		~_Impl()
+		{
+			_thread->stop();
+			while ( not _threadedLoopFinished )
+				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 		}
 
 		void runCommand( const std::string & p_command ) noexcept
@@ -33,7 +41,7 @@ namespace VTX::App::PythonBinding
 			queue->push( p_command );
 		}
 
-		void listenQueue( App::Core::Threading::BaseThread & p_vtxThread )
+		void listenQueue()
 		{
 			std::string command;
 			while ( true )
@@ -61,6 +69,7 @@ namespace VTX::App::PythonBinding
 				if ( _stopToken.stop_requested() )
 					break;
 			}
+			_threadedLoopFinished = true;
 		}
 		VTX::PythonBinding::Interpretor & pythonInterpretor() { return *_interpretor; }
 		inline void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
@@ -100,9 +109,11 @@ namespace VTX::App::PythonBinding
 			_commandReturnValue.reset();
 		}
 
-		std::atomic<std::chrono::milliseconds>			  _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
-		std::atomic_bool								  _lastCommandFailed = false;
-		std::optional<VTX::PythonBinding::Interpretor>	  _interpretor;
+		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
+		std::atomic_bool					   _lastCommandFailed	 = false;
+		std::atomic_bool					   _threadedLoopFinished = false;
+		std::optional<VTX::PythonBinding::Interpretor>
+			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<std::string>>		  _lockedCmdQueue;
 		App::Core::Threading::BaseThread *				  _thread = nullptr;
 		Util::StopToken									  _stopToken;

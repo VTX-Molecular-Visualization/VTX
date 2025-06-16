@@ -333,41 +333,18 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	using namespace VTX;
 	App::Fixture app;
 
-	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
-	const FilePath scriptPath	   = internalDataDir / "script_test.py";
-
-	try
-	{
-		INTERPRETOR().runCommand( fmt::format( "runScript('{}')", scriptPath.generic_string() ) );
-		CHECK( true );
-	}
-	catch ( const CommandException & e )
-	{
-		CHECK( false );
-		VTX_ERROR( "{}", e.what() );
-	}
-	catch ( const std::exception & e )
-	{
-		CHECK( false );
-		VTX_ERROR( "{}", e.what() );
-	}
+	const FilePath			 internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath			 scriptPath		 = internalDataDir / "script_test.py";
+	std::future<std::string> _future;
+	INTERPRETOR().runCommand( fmt::format( "runScript('{}')", scriptPath.generic_string() ), _future );
+	_future.wait();
+	CHECK( INTERPRETOR().lastCommandFailed() == false );
 
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
-	try
-	{
-		INTERPRETOR().runCommand( fmt::format( "runScript('{}')", badScriptPath.generic_string() ) );
-		CHECK( false );
-	}
-	catch ( const ScriptException & )
-	{
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		CHECK( false );
-		VTX_ERROR( "bad exception catch : {}", e.what() );
-	}
+	INTERPRETOR().runCommand( fmt::format( "runScript('{}')", badScriptPath.generic_string() ), _future );
+	_future.wait();
+	CHECK( INTERPRETOR().lastCommandFailed() == true );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
@@ -379,20 +356,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	std::stringstream ssCommandRun = std::stringstream();
 	ssCommandRun << "runScript(" << scriptPath << " )";
 	INTERPRETOR().runCommand( "from vtx_python_api.Command import *" );
-
-	try
-	{
-		INTERPRETOR().runCommand( ssCommandRun.str() );
-		CHECK( true );
-	}
-	catch ( const ScriptException & e )
-	{
-		CHECK( false );
-		VTX_ERROR( "bad exception catch : {}", e.what() );
-	}
-	catch ( const std::exception & e )
-	{
-		CHECK( false );
-		VTX_ERROR( "bad exception catch : {}", e.what() );
-	}
+	std::future<std::string> _future;
+	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
+	_future.wait();
+	CHECK( INTERPRETOR().lastCommandFailed() == false );
 }

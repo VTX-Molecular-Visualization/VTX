@@ -25,7 +25,7 @@ namespace VTX::App::Core::Threading
 		_thread = std::jthread(
 			[ this, p_function ]( std::stop_token p_stopToken )
 			{
-				p_function( p_stopToken, *this );
+				p_function( std::move( p_stopToken ), *this );
 				_finish();
 			}
 		);
@@ -52,7 +52,7 @@ namespace VTX::App::Core::Threading
 		_thread = std::jthread(
 			[ this, p_function, p_callback ]( std::stop_token p_stopToken )
 			{
-				const uint res = p_function( p_stopToken, *this );
+				const uint res = p_function( std::move( p_stopToken ), *this );
 
 				if ( _stopped )
 				{
@@ -74,7 +74,7 @@ namespace VTX::App::Core::Threading
 		onProgress.clear();
 
 		if ( _thread.joinable() )
-			_thread.detach();
+			_thread.request_stop();
 
 		_stopped = true;
 	}
