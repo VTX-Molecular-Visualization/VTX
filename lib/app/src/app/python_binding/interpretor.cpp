@@ -16,15 +16,8 @@ namespace VTX::App::PythonBinding
 	  public:
 		_Impl() :
 			_thread( &THREADING_SYSTEM().createThread(
-				[ this ]( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & _ )
-				{
-					_interpretor.emplace();
-					_stopToken = std::move( p_stopToken );
-					_thread	   = &_;
-					this->listenQueue();
-					_interpretor.reset();
-					return 0;
-				}
+				[ this ]( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & p_thread )
+				{ return startPythonThread( p_stopToken, p_thread ); }
 			) )
 		{
 		}
@@ -32,13 +25,24 @@ namespace VTX::App::PythonBinding
 		{
 			_thread->stop();
 			while ( not _threadedLoopFinished )
-				std::this_thread::sleep_for( _inactivitySleepTime.load() );
+				;
 		}
 
 		void runCommand( const std::string & p_command ) noexcept
 		{
 			auto queue = _lockedCmdQueue.open();
 			queue->push( p_command );
+		}
+
+		int startPythonThread( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & _ )
+		{
+			_interpretor.emplace();
+			_stopToken = std::move( p_stopToken );
+			_thread	   = &_;
+			this->listenQueue();
+			_interpretor.reset();
+			_threadedLoopFinished = true;
+			return 0;
 		}
 
 		void listenQueue()
@@ -69,7 +73,26 @@ namespace VTX::App::PythonBinding
 				if ( _stopToken.stop_requested() )
 					break;
 			}
-			_threadedLoopFinished = true;
+		}
+		inline void runScript( const FilePath & p_path, std::future<bool> & p_future )
+		{
+			// This method can be called from python thread directly. In this specific scenario, we don't need to use
+			// the subscription/callback infrastructure.
+			_scriptReturn.emplace();
+			p_future = _scriptReturn->get_future();
+			runScript( p_path );
+		}
+		inline void runScript( const FilePath & p_path )
+		{
+			if ( std::this_thread::get_id() != _thread->getId() )
+			{
+				subscribe( [ this, path = p_path ]( VTX::PythonBinding::Interpretor & ) { _actuallyRunScript( path ); }
+				);
+			}
+			else
+			{
+				_actuallyRunScript( p_path );
+			}
 		}
 		VTX::PythonBinding::Interpretor & pythonInterpretor() { return *_interpretor; }
 		inline void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
@@ -78,13 +101,14 @@ namespace VTX::App::PythonBinding
 		{
 			_instructions += std::move( p_instruction );
 		}
-		void runCommand( const std::string & p_command, std::future<std::string> & p_ret ) noexcept
+		inline void runCommand( const std::string & p_command, std::future<std::string> & p_ret ) noexcept
 		{
 			_commandReturnValue.emplace();
 			p_ret = _commandReturnValue->get_future();
 			runCommand( p_command );
 		}
-		bool lastCommandFailed() const { return _lastCommandFailed.load(); }
+		inline bool lastCommandFailed() const { return _lastCommandFailed.load(); }
+		inline bool lastScriptFailed() const { return false; }
 
 	  private:
 		void _actuallyRunCommand( const std::string & p_command )
@@ -103,22 +127,45 @@ namespace VTX::App::PythonBinding
 				_lastCommandFailed = true;
 				VTX_PYTHON_OUT( "{}", p_e.what() );
 			}
+			catch ( ScriptException & p_e )
+			{
+				_lastCommandFailed = true;
+				VTX_PYTHON_OUT( "{}", p_e.what() );
+			}
 
 			if ( _commandReturnValue )
 				_commandReturnValue->set_value( rslt );
 			_commandReturnValue.reset();
 		}
+		void _actuallyRunScript( const FilePath & p_path )
+		{
+			try
+			{
+				_interpretor->runScript( p_path );
+				if ( _scriptReturn )
+					_scriptReturn->set_value( true );
+			}
+			catch ( VTX::ScriptException & e )
+			{
+				if ( _scriptReturn )
+					_scriptReturn->set_value( false );
+				VTX_ERROR( "Error while running script : {}", e.what() );
+			}
+			if ( _scriptReturn )
+				_scriptReturn.reset();
+		}
 
 		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
-		std::atomic_bool					   _lastCommandFailed	 = false;
-		std::atomic_bool					   _threadedLoopFinished = false;
+		std::atomic_bool					   _lastCommandFailed = false;
+		std::atomic_bool _threadedLoopFinished = false; // Used to inform the main thread that the python thread has
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<std::string>>		  _lockedCmdQueue;
 		App::Core::Threading::BaseThread *				  _thread = nullptr;
 		Util::StopToken									  _stopToken;
-		Util::Callback<VTX::PythonBinding::Interpretor &> _instructions;
 		std::optional<std::promise<std::string>>		  _commandReturnValue;
+		std::optional<std::promise<bool>>				  _scriptReturn;
+		Util::Callback<VTX::PythonBinding::Interpretor &> _instructions;
 	};
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
@@ -127,11 +174,17 @@ namespace VTX::App::PythonBinding
 	{
 		_impl->runCommand( p_cmd, p_ret );
 	}
+	void Interpretor::runScript( const FilePath & p_path ) noexcept { _impl->runScript( p_path ); }
+	void Interpretor::runScript( const FilePath & p_path, std::future<bool> & p_future ) noexcept
+	{
+		_impl->runScript( p_path, p_future );
+	}
 	bool Interpretor::lastCommandFailed() const
 	{
 		return _impl->lastCommandFailed();
 		;
 	}
+	// bool Interpretor::lastScriptFailed() const { return _impl->lastScriptFailed(); }
 	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
 	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) noexcept { _impl->subscribe( std::move( _ ) ); }

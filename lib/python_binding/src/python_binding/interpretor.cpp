@@ -133,6 +133,10 @@ namespace VTX::PythonBinding
 		{
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
+		catch ( const std::exception & e )
+		{
+			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
+		}
 	}
 	Wrapper::Module Interpretor::loadModule( const FilePath & p_path ) const
 	{

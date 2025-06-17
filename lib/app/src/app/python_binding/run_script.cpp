@@ -2,6 +2,7 @@
 #include "app/python_binding/interpretor.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/interpretor.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::PythonBinding
 {
@@ -12,18 +13,13 @@ namespace VTX::App::PythonBinding
 		  public:
 			RunScriptAction( std::string p_path ) : _path( std::move( p_path ) ) {}
 
-			void execute()
-			{
-				INTERPRETOR().subscribe( [ &path = _path ]( VTX::PythonBinding::Interpretor & p_interpretor )
-										 { p_interpretor.runScript( path ); } );
-			}
+			void execute() { INTERPRETOR().runScript( _path ); }
 
 		  private:
 			std::string _path;
 		};
 	} // namespace
 
-	RunScript::RunScript( FilePath p_ ) : _path( std::move( p_ ) ) {}
 	void RunScript::bind( VTX::PythonBinding::PyTXModule & p_vtxModule )
 	{
 		p_vtxModule.commands().bindAction<RunScriptAction, std::string>(

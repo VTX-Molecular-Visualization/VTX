@@ -10,11 +10,7 @@ namespace VTX::App::PythonBinding
 	class RunScript
 	{
 	  public:
-		explicit RunScript( FilePath );
 		void bind( VTX::PythonBinding::PyTXModule & p_vtxModule );
-
-	  private:
-		FilePath _path;
 	};
 
 } // namespace VTX::App::PythonBinding

@@ -37,6 +37,18 @@ namespace VTX::App::PythonBinding
 		void runCommand( const std::string &, std::future<std::string> & ) noexcept;
 
 		/**
+		 * @brief Run python script located in the input file.
+		 */
+		void runScript( const FilePath & ) noexcept;
+
+		/**
+		 * @brief Run python script located in the input file and fill the future with success status
+		 * @param
+		 * @param  Will be true if the script was a success
+		 */
+		void runScript( const FilePath &, std::future<bool> & ) noexcept;
+
+		/**
 		 * @brief Return whether the last command failed or not.
 		 * @return
 		 */

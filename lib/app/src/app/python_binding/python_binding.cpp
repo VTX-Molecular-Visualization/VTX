@@ -8,7 +8,6 @@
 #include "app/component/render/camera.hpp"
 #include "app/python_binding/selection/binder.hpp"
 #include "app/python_binding/viewpoint_manager.hpp"
-#include <python_binding/action.hpp>
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/binding/vtx_module.hpp>

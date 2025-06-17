@@ -333,18 +333,19 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	using namespace VTX;
 	App::Fixture app;
 
-	const FilePath			 internalDataDir = Util::Filesystem::getExecutableDir() / "data";
-	const FilePath			 scriptPath		 = internalDataDir / "script_test.py";
-	std::future<std::string> _future;
-	INTERPRETOR().runCommand( fmt::format( "runScript('{}')", scriptPath.generic_string() ), _future );
-	_future.wait();
-	CHECK( INTERPRETOR().lastCommandFailed() == false );
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "script_test.py";
+
+	std::future<bool> _ret;
+	INTERPRETOR().runScript( scriptPath, _ret );
+	_ret.wait();
+	CHECK( _ret.get() == true );
 
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
-	INTERPRETOR().runCommand( fmt::format( "runScript('{}')", badScriptPath.generic_string() ), _future );
-	_future.wait();
-	CHECK( INTERPRETOR().lastCommandFailed() == true );
+	INTERPRETOR().runScript( badScriptPath, _ret );
+	_ret.wait();
+	CHECK( _ret.get() == false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
@@ -358,6 +359,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	INTERPRETOR().runCommand( "from vtx_python_api.Command import *" );
 	std::future<std::string> _future;
 	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
+	_future.wait();
+	CHECK( INTERPRETOR().lastCommandFailed() == false );
+
+	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
+	INTERPRETOR().runCommand( "runScript('bzzzz')", _future );
 	_future.wait();
 	CHECK( INTERPRETOR().lastCommandFailed() == false );
 }

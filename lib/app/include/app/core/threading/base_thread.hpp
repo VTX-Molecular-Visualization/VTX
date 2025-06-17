@@ -50,6 +50,7 @@ namespace VTX::App::Core::Threading
 		void stop();
 
 		bool isFinished() const;
+		inline std::jthread::id getId() const { return _thread.get_id(); }
 
 		inline float getProgress() const { return _progress; }
 		void		 setProgress( const float p_value );

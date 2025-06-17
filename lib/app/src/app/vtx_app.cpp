@@ -17,6 +17,7 @@
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
 #include "app/python_binding/python_binding.hpp"
+#include "app/python_binding/run_script.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include <exception>
@@ -51,8 +52,13 @@ namespace VTX::App
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
 		// Initialize python interpretor.
-		INTERPRETOR().subscribe( []( VTX::PythonBinding::Interpretor & p_interpretor )
-								 { p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() ); } );
+		INTERPRETOR().subscribe(
+			[]( VTX::PythonBinding::Interpretor & p_interpretor )
+			{
+				p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
+				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
+			}
+		);
 
 		// Create Databases
 		//_representationLibrary
