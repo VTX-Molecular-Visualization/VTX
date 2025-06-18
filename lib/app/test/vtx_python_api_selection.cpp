@@ -348,6 +348,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	_ret.wait();
 	CHECK( _ret.get().success == false );
 }
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
+{
+	using namespace VTX;
+	App::Fixture				app;
+	std::future<AsyncJobResult> _future;
+	INTERPRETOR().runCommand( "s = 1", _future );
+	_future.wait();
+	// std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+}
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
 	using namespace VTX;

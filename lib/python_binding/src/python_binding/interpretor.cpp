@@ -44,6 +44,7 @@ namespace VTX::PythonBinding
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
 		}
+		~Impl() { _vtxModule.import( "sys" ).attr( "stdout" ) = pybind11::none(); }
 		void add( Binder p_binder )
 		{
 			_binders.push_back( std::move( p_binder ) );
@@ -74,8 +75,7 @@ namespace VTX::PythonBinding
 		std::vector<Binder> _binders;
 	};
 
-	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
-	Interpretor::~Interpretor() { _impl.reset(); }
+	Interpretor::Interpretor() : _impl( new Impl() ) {}
 
 	void Interpretor::add( Binder p_binder ) { _impl->add( std::move( p_binder ) ); }
 
@@ -164,6 +164,8 @@ namespace VTX::PythonBinding
 	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
 
 	PyTXModule & Interpretor::getModule() { return _impl->getPyTXModule(); }
+
+	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
 
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
 

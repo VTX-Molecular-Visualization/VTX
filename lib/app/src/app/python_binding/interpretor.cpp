@@ -23,6 +23,8 @@ namespace VTX::App::PythonBinding
 		}
 		~_Impl()
 		{
+			while ( not _threadedLoopStarted )
+				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 			_thread->stop();
 			while ( not _threadedLoopFinished )
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
@@ -70,9 +72,10 @@ namespace VTX::App::PythonBinding
 
 		inline int runPythonThread( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & _ )
 		{
-			_interpretor.emplace();
 			_stopToken = std::move( p_stopToken );
 			_thread	   = &_;
+			_interpretor.emplace();
+			_threadedLoopStarted = true;
 			this->_listenQueue();
 			_interpretor.reset();
 			_threadedLoopFinished = true;
@@ -155,6 +158,7 @@ namespace VTX::App::PythonBinding
 		}
 
 		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
+		std::atomic_bool					   _threadedLoopStarted = false;
 		std::atomic_bool					   _threadedLoopFinished
 			= false; // Used to inform the main thread that the python thread has finished
 		std::optional<VTX::PythonBinding::Interpretor>

@@ -21,7 +21,6 @@ namespace VTX::PythonBinding
 	{
 	  public:
 		Interpretor();
-		~Interpretor();
 
 		/**
 		 * @brief Register a binder. This allow external code to bind python function and classes to c++ code.
@@ -61,7 +60,11 @@ namespace VTX::PythonBinding
 
 	  private:
 		struct Impl;
-		std::unique_ptr<Impl> _impl;
+		struct Del
+		{
+			void operator()( Impl * ) const noexcept;
+		};
+		std::unique_ptr<Impl, Del> _impl;
 	};
 
 } // namespace VTX::PythonBinding
