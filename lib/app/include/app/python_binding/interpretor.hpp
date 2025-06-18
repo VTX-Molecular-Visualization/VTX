@@ -23,36 +23,36 @@ namespace VTX::App::PythonBinding
 	  public:
 		using InterpretorInstructionsOneShot = std::function<void( VTX::PythonBinding::Interpretor & )>;
 
+		struct AsyncJobResult
+		{
+			bool		success = false;
+			std::string resultStr;
+		};
+
 		Interpretor();
 
 		/**
-		 * @brief Run input python command. Doesn't block the thread while command is running
+		 * @brief Run input python command asynchronously.
 		 * @param
 		 */
 		void runCommand( const std::string & ) noexcept;
 
 		/**
-		 * @brief Run input python command and fill the future value with its result.
+		 * @brief Run input python command asynchronously and fill the future value with its result.
 		 */
-		void runCommand( const std::string &, std::future<std::string> & ) noexcept;
+		void runCommand( const std::string &, std::future<AsyncJobResult> & ) noexcept;
 
 		/**
-		 * @brief Run python script located in the input file.
+		 * @brief Run python script located in the input file asynchronously.
 		 */
 		void runScript( const FilePath & ) noexcept;
 
 		/**
-		 * @brief Run python script located in the input file and fill the future with success status
+		 * @brief Run python script located in the input file asynchronously and fill the future with success status
 		 * @param
-		 * @param  Will be true if the script was a success
+		 * @param  Will be true if the script was successfuly executed
 		 */
-		void runScript( const FilePath &, std::future<bool> & ) noexcept;
-
-		/**
-		 * @brief Return whether the last command failed or not.
-		 * @return
-		 */
-		bool lastCommandFailed() const;
+		void runScript( const FilePath &, std::future<AsyncJobResult> & ) noexcept;
 
 		/**
 		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up

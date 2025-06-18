@@ -24,6 +24,7 @@ namespace Test
 		openAction.execute();
 	}
 } // namespace Test
+using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types]" )
 {
@@ -35,13 +36,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
-	std::future<std::string> futureStr;
+	std::future<AsyncJobResult> _future;
 	Test::loadSystem( "1AGA.mmtf" );
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", futureStr );
-		auto str = futureStr.get();
-		CHECK( str.find( "CollectionAtom" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionAtom" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -50,9 +51,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", futureStr );
-		auto str = futureStr.get();
-		CHECK( str.find( "CollectionResidue" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionResidue" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -61,9 +62,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", futureStr );
-		auto str = futureStr.get();
-		CHECK( str.find( "CollectionChain" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionChain" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -72,9 +73,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", futureStr );
-		auto str = futureStr.get();
-		CHECK( str.find( "CollectionSystem" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionSystem" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -89,28 +90,28 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	App::Fixture app;
 
 	Test::loadSystem( "1AGA.mmtf" );
-	std::future<std::string> futureStr;
+	std::future<AsyncJobResult> _future;
 
 	try
 	{
-		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", futureStr );
-		auto str = futureStr.get();
-		CHECK( str == "126" );
+		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr == "126" );
 	}
 	catch ( ... )
 	{
 		CHECK( false );
 	}
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]", futureStr );
-		futureStr.wait();
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]", _future );
+		_future.wait();
 	}
-	CHECK( INTERPRETOR().lastCommandFailed() == false );
+	CHECK( _future.get().success == true );
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", futureStr );
-		futureStr.wait();
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", _future );
+		_future.wait();
 	}
-	CHECK( INTERPRETOR().lastCommandFailed() == true );
+	CHECK( _future.get().success == false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
@@ -328,7 +329,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	// interpretor.runCommand( "select( system_names='4HHB', residue_indexes=range(0, 100) )" );
 };
 
-TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][binding][script]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][binding][script][method]" )
 {
 	using namespace VTX;
 	App::Fixture app;
@@ -336,34 +337,33 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
-	std::future<bool> _ret;
+	std::future<AsyncJobResult> _ret;
 	INTERPRETOR().runScript( scriptPath, _ret );
 	_ret.wait();
-	CHECK( _ret.get() == true );
+	CHECK( _ret.get().success == true );
 
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	INTERPRETOR().runScript( badScriptPath, _ret );
 	_ret.wait();
-	CHECK( _ret.get() == false );
+	CHECK( _ret.get().success == false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
 	using namespace VTX;
+	App::Fixture app;
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
-	std::stringstream ssCommandRun = std::stringstream();
+	std::future<AsyncJobResult> _future;
+	std::stringstream			ssCommandRun = std::stringstream();
 	ssCommandRun << "runScript(" << scriptPath << " )";
-	INTERPRETOR().runCommand( "from vtx_python_api.Command import *" );
-	std::future<std::string> _future;
 	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
 	_future.wait();
-	CHECK( INTERPRETOR().lastCommandFailed() == false );
+	CHECK( _future.get().success == true );
 
-	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 	INTERPRETOR().runCommand( "runScript('bzzzz')", _future );
 	_future.wait();
-	CHECK( INTERPRETOR().lastCommandFailed() == false );
+	CHECK( _future.get().success == false );
 }

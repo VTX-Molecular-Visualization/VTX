@@ -20,7 +20,7 @@ namespace VTX::App::Test::Util
 		std::stringstream command = std::stringstream();
 		command << "(" << p_command << ").save('" << p_selName << "')";
 
-		std::future<std::string> ret;
+		std::future<VTX::App::PythonBinding::Interpretor::AsyncJobResult> ret;
 		INTERPRETOR().runCommand( command.str(), ret );
 		ret.wait();
 

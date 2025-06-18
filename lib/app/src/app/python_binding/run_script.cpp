@@ -13,7 +13,13 @@ namespace VTX::App::PythonBinding
 		  public:
 			RunScriptAction( std::string p_path ) : _path( std::move( p_path ) ) {}
 
-			void execute() { INTERPRETOR().runScript( _path ); }
+			void execute()
+			{
+				std::future<VTX::App::PythonBinding::Interpretor::AsyncJobResult> ret;
+				INTERPRETOR().runScript( _path, ret );
+				if ( ret.get().success == false )
+					throw pybind11::value_error( ret.get().resultStr );
+			}
 
 		  private:
 			std::string _path;
