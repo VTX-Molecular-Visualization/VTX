@@ -44,7 +44,11 @@ namespace VTX::PythonBinding
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
 		}
-		~Impl() { _vtxModule.import( "sys" ).attr( "stdout" ) = pybind11::none(); }
+		~Impl()
+		{
+			// Pretty dirty fix to python treadown hang caused by non-existing log trying to be flushed
+			_vtxModule.import( "sys" ).attr( "stdout" ) = pybind11::none();
+		}
 		void add( Binder p_binder )
 		{
 			_binders.push_back( std::move( p_binder ) );
