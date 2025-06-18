@@ -10,7 +10,7 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-TEST_CASE( "VTX_APP - Workers", "[integration]" )
+TEST_CASE( "VTX_APP - Workers", "[integration][workers]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -64,6 +64,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration]" )
 	App::Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
+	// TODO : rewrite this part to accomodate jthread stop mechanisme
 	chrono.start();
 	threadToStop.stop();
 	CHECK( threadToStop.isFinished() );
