@@ -12,7 +12,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/interpretor.hpp>
 #include <util/math/range_list.hpp>
-
+//
+#include <app/python_binding/interpretor.hpp>
 namespace Test
 {
 	void loadSystem( const char * p_filename )
@@ -23,6 +24,7 @@ namespace Test
 		openAction.execute();
 	}
 } // namespace Test
+using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types]" )
 {
@@ -34,11 +36,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
+	std::future<AsyncJobResult> _future;
 	Test::loadSystem( "1AGA.mmtf" );
 	try
 	{
-		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()" );
-		CHECK( str.find( "CollectionAtom" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionAtom" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -47,8 +51,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()" );
-		CHECK( str.find( "CollectionResidue" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionResidue" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -57,8 +62,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()" );
-		CHECK( str.find( "CollectionChain" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionChain" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -67,8 +73,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	try
 	{
-		auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()" );
-		CHECK( str.find( "CollectionSystem" ) != str.npos );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr.find( "CollectionSystem" ) != str.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -82,41 +89,35 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 	Test::loadSystem( "1AGA.mmtf" );
+	std::future<AsyncJobResult> _future;
 
 	try
 	{
-		auto str = INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())" );
-		CHECK( str == "126" );
+		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", _future );
+		auto str = _future.get();
+		CHECK( str.resultStr == "126" );
 	}
 	catch ( ... )
 	{
 		CHECK( false );
 	}
-	try
 	{
-		{
-			auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]" );
-		}
-		CHECK( true );
-		{
-			auto str = INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]" );
-		}
-		CHECK( false );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]", _future );
+		_future.wait();
 	}
-	catch ( VTX::CommandException & )
+	CHECK( _future.get().success == true );
 	{
-		CHECK( true );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", _future );
+		_future.wait();
 	}
+	CHECK( _future.get().success == false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
-
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
 
 	Test::loadSystem( "1AGA.mmtf" );
 	Test::loadSystem( "4HHB.pdb" );
@@ -327,3 +328,51 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 	// interpretor.runCommand( "select( system_names='4HHB', residue_indexes=range(0, 100) )" );
 };
+
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][binding][script][method]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "script_test.py";
+
+	std::future<AsyncJobResult> _ret;
+	INTERPRETOR().runScript( scriptPath, _ret );
+	_ret.wait();
+	CHECK( _ret.get().success == true );
+
+	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
+
+	INTERPRETOR().runScript( badScriptPath, _ret );
+	_ret.wait();
+	CHECK( _ret.get().success == false );
+}
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
+{
+	using namespace VTX;
+	App::Fixture				app;
+	std::future<AsyncJobResult> _future;
+	INTERPRETOR().runCommand( "s = 1", _future );
+	_future.wait();
+	// std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+}
+TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "script_test.py";
+
+	std::future<AsyncJobResult> _future;
+	std::stringstream			ssCommandRun = std::stringstream();
+	ssCommandRun << "runScript(" << scriptPath << " )";
+	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
+	_future.wait();
+	CHECK( _future.get().success == true );
+
+	INTERPRETOR().runCommand( "runScript('bzzzz')", _future );
+	_future.wait();
+	CHECK( _future.get().success == false );
+}

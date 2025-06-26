@@ -14,6 +14,16 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
+PYBIND11_EMBEDDED_MODULE( vtx_python_api, m )
+{
+	// At first we were building an external python binary (.pyd or .so) and we imported that module to bind commands,
+	// classes and all ... However, because of the separate binary thing and how we use global variables such as the
+	// logger makes it weird at app teardown. To solve this behavior without changing how VTX implements singletons, we
+	// integrated the module into the python_binding binary (which is in the main executable binary at the time I write
+	// this contextuel comment)
+	VTX::PythonBinding::Binding::applyModuleCustomization( m );
+}
+
 namespace VTX::PythonBinding
 {
 
@@ -31,10 +41,8 @@ namespace VTX::PythonBinding
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
 			pybind11::module_ vtxApiModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".API" ).c_str() );
-			Binding::applyVtxApiBinding( _vtxModule );
 			pybind11::module_ vtxCommandModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
-			Binding::applyVtxLocalCommandBinding( vtxCommandModule );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
@@ -43,6 +51,11 @@ namespace VTX::PythonBinding
 			if ( not std::filesystem::exists( initCommandsFile ) )
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
+		}
+		~Impl()
+		{
+			// Pretty dirty fix to python treadown hang caused by non-existing log trying to be flushed
+			_vtxModule.import( "sys" ).attr( "stdout" ) = pybind11::none();
 		}
 		void add( Binder p_binder )
 		{
@@ -74,8 +87,7 @@ namespace VTX::PythonBinding
 		std::vector<Binder> _binders;
 	};
 
-	Interpretor::Interpretor() : _impl( std::make_unique<Interpretor::Impl>() ) {}
-	Interpretor::~Interpretor() { _impl.reset(); }
+	Interpretor::Interpretor() : _impl( new Impl() ) {}
 
 	void Interpretor::add( Binder p_binder ) { _impl->add( std::move( p_binder ) ); }
 
@@ -84,7 +96,7 @@ namespace VTX::PythonBinding
 	std::string Interpretor::runCommand( const std::string & p_line ) const
 	{
 		// The idea is to try to execute the command as if we expected a return value. If an exception is thrown, then
-		// it might mean that we shouldn't expect a return value. So we execute it as is. If it cashes again, it means
+		// it might mean that we shouldn't expect a return value. So we execute it as is. If it crashes again, it means
 		// that the command isn't viable at all.
 
 		if ( FilterResult isHarmful = filter( p_line ) )
@@ -105,7 +117,6 @@ namespace VTX::PythonBinding
 			}
 			catch ( const pybind11::error_already_set & ee )
 			{
-
 				throw( VTX::CommandException( p_line, ee.what() ) );
 			}
 			catch ( VTX::CommandException & p_e )
@@ -131,6 +142,10 @@ namespace VTX::PythonBinding
 			pybind11::eval_file( p_path.string() );
 		}
 		catch ( const pybind11::error_already_set & e )
+		{
+			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
+		}
+		catch ( const std::exception & e )
 		{
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
@@ -161,6 +176,8 @@ namespace VTX::PythonBinding
 	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
 
 	PyTXModule & Interpretor::getModule() { return _impl->getPyTXModule(); }
+
+	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
 
 	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
 

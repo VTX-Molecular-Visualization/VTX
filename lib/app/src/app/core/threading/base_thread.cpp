@@ -12,7 +12,7 @@ namespace VTX::App::Core::Threading
 
 	void BaseThread::start( const AsyncOp & p_function )
 	{
-		_thread = std::thread(
+		_thread = std::jthread(
 			[ this, p_function ]()
 			{
 				p_function( *this );
@@ -20,12 +20,39 @@ namespace VTX::App::Core::Threading
 			}
 		);
 	}
+	void BaseThread::start( const StoppableAsyncOp & p_function )
+	{
+		_thread = std::jthread(
+			[ this, p_function ]( std::stop_token p_stopToken )
+			{
+				p_function( std::move( p_stopToken ), *this );
+				_finish();
+			}
+		);
+	}
 	void BaseThread::start( const AsyncOp & p_function, const EndCallback & p_callback )
 	{
-		_thread = std::thread(
+		_thread = std::jthread(
 			[ this, p_function, p_callback ]()
 			{
 				const uint res = p_function( *this );
+
+				if ( _stopped )
+				{
+					p_callback( *this, res );
+				}
+
+				_finish();
+			}
+		);
+	}
+
+	void BaseThread::start( const StoppableAsyncOp & p_function, const EndCallback & p_callback )
+	{
+		_thread = std::jthread(
+			[ this, p_function, p_callback ]( std::stop_token p_stopToken )
+			{
+				const uint res = p_function( std::move( p_stopToken ), *this );
 
 				if ( _stopped )
 				{
@@ -47,7 +74,7 @@ namespace VTX::App::Core::Threading
 		onProgress.clear();
 
 		if ( _thread.joinable() )
-			_thread.detach();
+			_thread.request_stop();
 
 		_stopped = true;
 	}
@@ -66,4 +93,4 @@ namespace VTX::App::Core::Threading
 
 	void BaseThread::_finish() { _manager._killThread( *this ); }
 
-} // namespace VTX::App::Core::Worker
+} // namespace VTX::App::Core::Threading

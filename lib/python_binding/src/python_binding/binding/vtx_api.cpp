@@ -2,6 +2,7 @@
 #include "python_binding/api/api.hpp"
 #include "python_binding/binding/helper.hpp"
 #include "python_binding/interpretor.hpp"
+#include "python_binding/log_redirection.hpp"
 #include <core/struct/system.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
@@ -38,9 +39,37 @@ namespace VTX::PythonBinding::Binding
 			;
 	}
 
-	void applyVtxLocalCommandBinding( pybind11::module_ & p_commandModule )
+	void applyVtxLocalCommandBinding( VTX::PythonBinding::Interpretor & p_interpretor )
 	{
-		p_commandModule.def( "runScript", []( const std::string & r ) { INTERPRETOR().runScript( r ); } );
+		pybind11::module_ * commandModule = nullptr;
+		p_interpretor.getPythonModule( &commandModule );
+		commandModule->def(
+			"runScript", [ &interpretor = p_interpretor ]( const std::string & r ) { interpretor.runScript( r ); }
+		);
+	}
+	void applyModuleCustomization( pybind11::module_ & p_module )
+	{
+		p_module.doc() = "VTX Python module."; // optional module docstring
+
+		// Class to redirect Python prints
+		pybind11::class_<LogRedirection>( p_module, "LogRedirection", pybind11::module_local() )
+			.def_static( "write", &LogRedirection::write )
+			.def_static( "flush", &LogRedirection::flush );
+
+		// Core module : Contains some core functions which must be hidden for users
+		pybind11::module_ vtxCoreModule = p_module.def_submodule( "Core", "VTX Python core functions" );
+		vtxCoreModule.doc()				= "Contains some core functions which must be hidden for users.";
+
+		// Command module : Contains all commands accessible to user via command line.
+		// Keep in mind that some command won't be accessible from the external module, such as "runscript" which needs
+		// the interpreter in the external binary extension.
+		pybind11::module_ vtxCommandModule = p_module.def_submodule( "Command", "VTX Python command interface" );
+		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
+
+		pybind11::module_ vtxAPIModule = p_module.def_submodule( "API", "VTX API." );
+		vtxAPIModule.doc()			   = "VTX API module."; // optional module docstring
+
+		Binding::applyVtxApiBinding( vtxAPIModule );
 	}
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{

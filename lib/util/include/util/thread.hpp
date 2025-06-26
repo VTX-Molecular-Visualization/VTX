@@ -14,14 +14,22 @@ namespace VTX::Util
 			virtual ~_model()			  = default;
 			virtual bool stop_requested() = 0;
 		};
-
+		struct _void
+		{
+		};
 		template<typename T>
 		struct _wrapper final : public _model
 		{
 			T obj;
 			_wrapper( T && p_ ) : obj( std::forward<T>( p_ ) ) {}
 
-			virtual bool stop_requested() override { return obj.stop_requested(); }
+			virtual bool stop_requested() override
+			{
+				if constexpr ( not std::same_as<T, _void> )
+					return obj.stop_requested();
+				else
+					return false;
+			}
 		};
 
 	  public:
@@ -36,10 +44,10 @@ namespace VTX::Util
 			);
 		}
 
-		bool stop_requested() { return ( _ptr != nullptr ) && _ptr->stop_requested(); }
+		bool stop_requested() { return _ptr->stop_requested(); }
 
 	  private:
-		std::unique_ptr<_model> _ptr = nullptr;
+		std::unique_ptr<_model> _ptr = std::unique_ptr<_wrapper<_void>>();
 	};
 } // namespace VTX::Util
 #endif

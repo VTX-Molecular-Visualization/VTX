@@ -7,6 +7,7 @@
 #include <optional>
 #include <thread>
 #include <util/callback.hpp>
+#include <util/thread.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Threading
@@ -19,8 +20,9 @@ namespace VTX::App::Core::Threading
 	class BaseThread
 	{
 	  public:
-		using AsyncOp	  = std::function<uint( BaseThread & )>;
-		using EndCallback = std::function<void( BaseThread &, uint )>;
+		using AsyncOp		   = std::function<uint( BaseThread & )>;
+		using StoppableAsyncOp = std::function<uint( Util::StopToken, BaseThread & )>;
+		using EndCallback	   = std::function<void( BaseThread &, uint )>;
 
 	  public:
 		/**
@@ -35,17 +37,20 @@ namespace VTX::App::Core::Threading
 		 * The thread is ended by the manager in the _finish method.
 		 */
 		void start( const AsyncOp & p_function );
+		void start( const StoppableAsyncOp & p_function );
 		/**
 		 * @brief Starts the content of the function in a new thread.
 		 * Once the function returns p_callback is called.
 		 * The thread is ended by the manager in the _finish method.
 		 */
 		void start( const AsyncOp & p_function, const EndCallback & p_callback );
+		void start( const StoppableAsyncOp & p_function, const EndCallback & p_callback );
 
 		void wait();
 		void stop();
 
 		bool isFinished() const;
+		inline std::jthread::id getId() const { return _thread.get_id(); }
 
 		inline float getProgress() const { return _progress; }
 		void		 setProgress( const float p_value );
@@ -66,13 +71,14 @@ namespace VTX::App::Core::Threading
 	  private:
 		ThreadingSystem & _manager;
 
-		std::thread _thread;
-		float		_progress = 0.f;
-		bool		_stopped  = false;
+		std::jthread _thread;
+		float		 _progress = 0.f;
+		bool		 _stopped  = false;
 
 		std::any _data;
 
-		void _finish();
+		Util::StopToken _stopToken;
+		void			_finish();
 	};
 } // namespace VTX::App::Core::Threading
 #endif

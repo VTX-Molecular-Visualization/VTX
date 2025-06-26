@@ -12,27 +12,61 @@ namespace VTX::App::Core::Threading
 		_threads.clear();
 		_stoppingThreads.clear();
 	}
+	namespace
+	{
+		template<typename callable>
+		BaseThread & _createThread(
+			ThreadingSystem *						 p_system,
+			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
+			callable								 p_func
+		)
+		{
+			std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *p_system );
+			p_threadCollection.emplace_back( threadPtr );
 
+			threadPtr->start( p_func );
+
+			return *threadPtr;
+		}
+
+		template<typename callable>
+		BaseThread & _createThread(
+			ThreadingSystem *						 p_system,
+			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
+			callable								 p_asyncOp,
+			const BaseThread::EndCallback &			 p_callback
+		)
+		{
+			std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *p_system );
+			p_threadCollection.emplace_back( threadPtr );
+
+			threadPtr->start( p_asyncOp, p_callback );
+
+			return *threadPtr;
+		}
+	} // namespace
 	BaseThread & ThreadingSystem::createThread( const BaseThread::AsyncOp & p_asyncOp )
 	{
-		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *this );
-		_threads.emplace_back( threadPtr );
-
-		threadPtr->start( p_asyncOp );
-
-		return *threadPtr;
+		return _createThread( this, _threads, p_asyncOp );
+	}
+	BaseThread & ThreadingSystem::createThread( const BaseThread::StoppableAsyncOp & p_asyncOp )
+	{
+		return _createThread( this, _threads, p_asyncOp );
 	}
 	BaseThread & ThreadingSystem::createThread(
 		const BaseThread::AsyncOp &		p_asyncOp,
 		const BaseThread::EndCallback & p_callback
 	)
 	{
-		std::shared_ptr<BaseThread> threadPtr = std::make_shared<BaseThread>( *this );
-		_threads.emplace_back( threadPtr );
+		return _createThread( this, _threads, p_asyncOp, p_callback );
+	}
 
-		threadPtr->start( p_asyncOp, p_callback );
-
-		return *threadPtr;
+	BaseThread & ThreadingSystem::createThread(
+		const BaseThread::StoppableAsyncOp & p_asyncOp,
+		const BaseThread::EndCallback &		 p_callback
+	)
+	{
+		return _createThread( this, _threads, p_asyncOp, p_callback );
 	}
 
 	void ThreadingSystem::lateUpdate() { _clearStoppedThreads(); }

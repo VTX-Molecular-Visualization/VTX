@@ -1,11 +1,4 @@
 #include "app.hpp"
-#ifdef JEVEUPAS
-
-#include <app/action/scene.hpp>
-#include <app/application/scene.hpp>
-#include <app/filesystem.hpp>
-#include <app/vtx_app.hpp>
-#endif // JEVEUPAS
 #include <memory>
 #include <python_binding/binding/vtx_api.hpp>
 #include <python_binding/binding/vtx_module.hpp>

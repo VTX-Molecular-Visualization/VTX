@@ -82,7 +82,7 @@ TEST_CASE( "VTX_APP - Selection", "[unit]" )
 	}
 }
 
-TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
+TEST_CASE( "VTX_APP - Selection - Systems", "[unit][systems]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
@@ -94,11 +94,13 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 
 	App::Fixture app;
 
+	VTX_INFO( "Loading 1AGA.mmtf" );
 	Test::Util::App::loadSystem( "1AGA.mmtf" );
 	const Component::Chemistry::System & mol1 = SCENE().getComponentByName<Component::Chemistry::System>( "1AGA" );
 	const Component::Scene::Selectable & selectableMol1
 		= SCENE().getComponentByName<Component::Scene::Selectable>( "1AGA" );
 
+	VTX_INFO( "Stating checks" );
 	SystemData & molSelData1 = CURRENT_SELECTION().select<SystemData>( selectableMol1 );
 	CHECK( CURRENT_SELECTION().isSelected( selectableMol1 ) );
 	CHECK( molSelData1.isFullySelected() );
@@ -116,6 +118,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::Chain );
 	CHECK( &molSelData1.getCurrentObjectAsChain() == mol1.getChain( 0 ) );
 
+	VTX_INFO( "Checkpoint 1" );
 	molSelData1.unselectAtom( *mol1.getAtom( 0 ) );
 	CHECK( molSelData1.isChainSelected( 0 ) );
 	CHECK( !molSelData1.isChainFullySelected( 0 ) );
@@ -132,6 +135,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	CHECK( molSelData1.isResidueFullySelected( 0 ) );
 	CHECK( molSelData1.isAtomSelected( 0 ) );
 
+	VTX_INFO( "Checkpoint 2" );
 	molSelData1.setCurrentObject( *mol1.getResidue( 0 ) );
 	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::Residue );
 	CHECK( &molSelData1.getCurrentObjectAsResidue() == mol1.getResidue( 0 ) );
@@ -145,9 +149,11 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	CHECK( !molSelData1.areResiduesFullySelected(
 		IndexRange( mol1.getChain( 0 )->getIndexFirstResidue(), mol1.getChain( 0 )->getResidueCount() )
 	) );
-	CHECK( !molSelData1.areAtomsSelected( AtomIndexRange::createFirstLast(
-		mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom()
-	) ) );
+	CHECK( !molSelData1.areAtomsSelected(
+		AtomIndexRange::createFirstLast(
+			mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom()
+		)
+	) );
 
 	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::None );
 
@@ -155,6 +161,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	molSelData1.clear();
 	molData2.clear();
 
+	VTX_INFO( "Checkpoint 3" );
 	molData2.selectFullResidue( *mol1.getResidue( 0 ) );
 	CHECK( !molSelData1.contains( molData2 ) );
 	CHECK( molData2.contains( molSelData1 ) );
@@ -174,6 +181,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit]" )
 	molData2.selectFullChain( *mol1.getChain( 1 ) );
 	CHECK( !molSelData1.contains( molData2 ) );
 	CHECK( !molData2.contains( molSelData1 ) );
+	VTX_INFO( "Checkpoint 4" );
 }
 
 TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )

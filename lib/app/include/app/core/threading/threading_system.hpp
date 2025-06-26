@@ -28,17 +28,22 @@ namespace VTX::App::Core::Threading
 		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
 		 */
 		BaseThread & createThread( const BaseThread::AsyncOp & p_asyncOp );
+		BaseThread & createThread( const BaseThread::StoppableAsyncOp & p_asyncOp );
 		/*
 		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
 		 * Once the p_asyncOp has returned, p_callback is executed.
 		 */
 		BaseThread & createThread( const BaseThread::AsyncOp & p_asyncOp, const BaseThread::EndCallback & p_callback );
+		BaseThread & createThread(
+			const BaseThread::StoppableAsyncOp & p_asyncOp,
+			const BaseThread::EndCallback &		 p_callback
+		);
 
 		void lateUpdate();
 
 	  private:
-		std::list<std::shared_ptr<BaseThread>> _threads			= std::list<std::shared_ptr<BaseThread>>();
-		std::list<std::shared_ptr<BaseThread>> _stoppingThreads = std::list<std::shared_ptr<BaseThread>>();
+		std::list<std::shared_ptr<BaseThread>> _threads;
+		std::list<std::shared_ptr<BaseThread>> _stoppingThreads;
 
 		/*
 		 * @brief Called by an ending thread so that the manager can erase the thread from the _threads member and put

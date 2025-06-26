@@ -55,30 +55,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
-        
-        filename = "*.pyd" if self.settings.os == "Windows" else "*.so"        
-        path_python_module = os.path.join(self.package_folder, "**", filename)
-        files = glob.glob(path_python_module, recursive=True)
-        
         cmake_file_list = ["cmake/vtx_python_binding_copy_files.cmake"]
         
-        if len(files) > 0:
-            print("Found python module: " + files[0])
-            self.conf_info.define("user.myconf:path_python_module", files[0])
-            
-            cmake_dir = os.path.join(self.recipe_folder, "cmake")
-            if not Path(cmake_dir).exists():
-                Path(cmake_dir).mkdir()
-            cmake_dir = os.path.join(cmake_dir, "out")
-            if not Path(cmake_dir).exists():
-                Path(cmake_dir).mkdir()
-            
-            cmake_file_name = f"{self._generated_cmake_prefix()}{self.settings.build_type}.cmake"
-            cmake_file_path = os.path.join(cmake_dir, cmake_file_name)
-            
-            cmake_file_content = """vtx_register_build_file_copy("%s" ".")""" % ((Path(files[0])).as_posix())
-            Path(cmake_file_path).write_text(cmake_file_content)
-            cmake_file_list.append(cmake_file_path)
-            
         # Give away cmake code to be executed by the consumer of this package
-        self.cpp_info.set_property("cmake_build_modules", cmake_file_list)
+        self.cpp_info.set_property("cmake_build_modules", cmake_file_list) 
