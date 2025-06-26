@@ -58,4 +58,4 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake_file_list = ["cmake/vtx_python_binding_copy_files.cmake"]
         
         # Give away cmake code to be executed by the consumer of this package
-        self.cpp_info.set_property("cmake_build_modules", cmake_file_list)
+        self.cpp_info.set_property("cmake_build_modules", cmake_file_list) 
