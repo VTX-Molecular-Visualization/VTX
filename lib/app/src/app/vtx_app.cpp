@@ -27,6 +27,7 @@
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/monitoring/stats.hpp>
 //
 #include "app/python_binding/interpretor.hpp"
 
