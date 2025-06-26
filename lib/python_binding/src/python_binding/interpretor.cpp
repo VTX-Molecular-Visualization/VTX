@@ -14,16 +14,18 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
-PYBIND11_EMBEDDED_MODULE( vtx_python_api, m ) { VTX::PythonBinding::Binding::applyModuleCustomization( m ); }
+PYBIND11_EMBEDDED_MODULE( vtx_python_api, m )
+{
+	// At first we were building an external python binary (.pyd or .so) and we imported that module to bind commands,
+	// classes and all ... However, because of the separate binary thing and how we use global variables such as the
+	// logger makes it weird at app teardown. To solve this behavior without changing how VTX implements singletons, we
+	// integrated the module into the python_binding binary (which is in the main executable binary at the time I write
+	// this contextuel comment)
+	VTX::PythonBinding::Binding::applyModuleCustomization( m );
+}
 
 namespace VTX::PythonBinding
 {
-
-	pybind11::module_ createModule()
-	{
-		pybind11::module_ ret = pybind11::module_::import( "vtx_python_api" );
-		return ret;
-	}
 
 	struct Interpretor::Impl
 	{
@@ -39,10 +41,8 @@ namespace VTX::PythonBinding
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
 			pybind11::module_ vtxApiModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".API" ).c_str() );
-			// Binding::applyVtxApiBinding( _vtxModule );
 			pybind11::module_ vtxCommandModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
-			// Binding::applyVtxLocalCommandBinding( p_interpretor );
 
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
@@ -79,8 +79,7 @@ namespace VTX::PythonBinding
 	  private:
 		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
-		pybind11::module_			 _vtxModule = createModule();
-		// pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
+		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
 
 		std::unique_ptr<PyTXModule> _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
