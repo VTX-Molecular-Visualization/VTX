@@ -16,17 +16,9 @@ namespace
 	const int MANUALLY_STOPPED_THREAD = 666;
 	const int FINISHED_THREAD		  = 100;
 	const int THREAD_NUM_STEPS		  = 100;
-} // namespace
 
-TEST_CASE( "VTX_APP - Workers", "[integration][workers]" )
-{
-	using namespace VTX;
-	using namespace VTX::App;
-
-	App::Fixture app;
-
-	App::Core::Threading::BaseThread::StoppableAsyncOp asyncOp
-		= []( VTX::Util::StopToken p_token, App::Core::Threading::BaseThread & p_thread )
+	VTX::App::Core::Threading::BaseThread::StoppableAsyncOp asyncOp
+		= []( VTX::Util::StopToken p_token, VTX::App::Core::Threading::BaseThread & p_thread )
 	{
 		for ( int i = 0; i < THREAD_NUM_STEPS; i++ )
 		{
@@ -45,31 +37,14 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers]" )
 		return 1;
 	};
 
-	{
-		App::Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
-			asyncOp,
-			[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
-			{
-				const int threadData = p_thread.get<int>();
-				CHECK( p_res == 1 );
-				CHECK( threadData == FINISHED_THREAD );
+} // namespace
 
-				VTX_INFO( "AsyncOp finish with data {} and result {}", threadData, p_res );
-			}
-		);
+TEST_CASE( "VTX_APP - Workers", "[integration][workers][wait]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
 
-		int	 onProgressCallNum	= 0;
-		bool progressAsExpected = true;
-		thread.onProgress += [ &onProgressCallNum, &progressAsExpected ]( const float p_progress ) mutable
-		{
-			onProgressCallNum++;
-			const float expectedProgress = ( static_cast<float>( onProgressCallNum ) ) / 100.f;
-			progressAsExpected &= expectedProgress == p_progress;
-		};
-		thread.wait();
-		CHECK( progressAsExpected == true );
-		CHECK( onProgressCallNum == 100 );
-	}
+	App::Fixture app;
 
 	App::Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
@@ -80,7 +55,15 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers]" )
 	chrono.stop();
 	CHECK( threadToWait.isFinished() );
 	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
+}
+TEST_CASE( "VTX_APP - Workers", "[integration][workers][stop]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
 
+	App::Fixture app;
+
+	Util::Chrono					   chrono		= Util::Chrono();
 	App::Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
@@ -94,3 +77,33 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers]" )
 	// Flush WorkerManager
 	// APP::update( 0.f );
 };
+TEST_CASE( "VTX_APP - Workers", "[integration][workers][progress]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	App::Fixture					   app;
+	App::Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
+		asyncOp,
+		[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
+		{
+			const int threadData = p_thread.get<int>();
+			CHECK( p_res == 1 );
+			CHECK( threadData == FINISHED_THREAD );
+
+			VTX_INFO( "AsyncOp finish with data {} and result {}", threadData, p_res );
+		}
+	);
+
+	int	 onProgressCallNum	= 0;
+	bool progressAsExpected = true;
+	thread.onProgress += [ &onProgressCallNum, &progressAsExpected ]( const float p_progress ) mutable
+	{
+		onProgressCallNum++;
+		const float expectedProgress = ( static_cast<float>( onProgressCallNum ) ) / 100.f;
+		progressAsExpected &= expectedProgress == p_progress;
+	};
+	thread.wait();
+	CHECK( progressAsExpected == true );
+	CHECK( onProgressCallNum == 100 );
+}
