@@ -55,24 +55,26 @@ namespace VTX::Renderer
 
 	inline const BufferDraw dataVoxels { { { "Mins", E_TYPE::FLOAT, 3 }, { "Maxs", E_TYPE::FLOAT, 3 } } };
 
-	inline const BufferDraw dataSESCircles;
-	inline const BufferDraw dataSESConvexes;
-	inline const BufferDraw dataSESConcaves;
-	inline const BufferDraw dataSESSegments;
+	// inline const BufferDraw dataSESCircles;
+	// inline const BufferDraw dataSESConvexes;
+	// inline const BufferDraw dataSESConcaves;
+	// inline const BufferDraw dataSESSegments;
 
 	// Passes.
 
 	// Geometric.
 	inline Pass descPassGeometric {
 		"Geometric",
-		Inputs { { E_CHAN_IN::_0, { "SpheresCylinders", dataSpheresCylinders } },
-				 { E_CHAN_IN::_1, { "Ribbons", dataRibbons } },
-				 { E_CHAN_IN::_2, { "Triangles", dataTriangles } },
-				 { E_CHAN_IN::_3, { "Voxels", dataVoxels } },
-				 { E_CHAN_IN::_4, { "SESCircles", dataSESCircles } },
-				 { E_CHAN_IN::_5, { "SESConcaves", dataSESConvexes } },
-				 { E_CHAN_IN::_6, { "SESConvexes", dataSESConcaves } },
-				 { E_CHAN_IN::_7, { "SESSegments", dataSESSegments } } },
+		Inputs {
+			{ E_CHAN_IN::_0, { "SpheresCylinders", dataSpheresCylinders } },
+			{ E_CHAN_IN::_1, { "Ribbons", dataRibbons } },
+			{ E_CHAN_IN::_2, { "Triangles", dataTriangles } },
+			{ E_CHAN_IN::_3, { "Voxels", dataVoxels } },
+			//{ E_CHAN_IN::_4, { "SESCircles", dataSESCircles } },
+			//{ E_CHAN_IN::_5, { "SESConcaves", dataSESConvexes } },
+			//{ E_CHAN_IN::_6, { "SESConvexes", dataSESConcaves } },
+			//{ E_CHAN_IN::_7, { "SESSegments", dataSESSegments } }
+		},
 		Outputs { { E_CHAN_OUT::COLOR_0, { "Geometry", imageRGBA32UI } },
 				  { E_CHAN_OUT::COLOR_1, { "Color", imageRGBA16F } },
 				  { E_CHAN_OUT::COLOR_2, { "Picking", imageRG32UI } },
@@ -82,10 +84,11 @@ namespace VTX::Renderer
 			{ "Cylinder", "cylinder", BufferDataValues {}, Draw { "SpheresCylinders", E_PRIMITIVE::LINES, true } },
 			{ "Ribbon", "ribbon", BufferDataValues {}, Draw { "Ribbons", E_PRIMITIVE::PATCHES, true } },
 			{ "Voxel", "voxel", BufferDataValues {}, Draw { "Voxels", E_PRIMITIVE::POINTS } },
-			{ "SESCircle", "ses/sesdf/circle", BufferDataValues {}, Draw { "SESCircles", E_PRIMITIVE::POINTS } },
-			{ "SESConcave", "ses/sesdf/concave", BufferDataValues {}, Draw { "SESConcaves", E_PRIMITIVE::POINTS } },
-			{ "SESConvex", "ses/sesdf/convex", BufferDataValues {}, Draw { "SESConvexes", E_PRIMITIVE::POINTS } },
-			{ "SESSegment", "ses/sesdf/segment", BufferDataValues {}, Draw { "SESSegments", E_PRIMITIVE::POINTS } } },
+			//{ "SESCircle", "ses/sesdf/circle", BufferDataValues {}, Draw { "SESCircles", E_PRIMITIVE::POINTS } },
+			//{ "SESConcave", "ses/sesdf/concave", BufferDataValues {}, Draw { "SESConcaves", E_PRIMITIVE::POINTS } },
+			//{ "SESConvex", "ses/sesdf/convex", BufferDataValues {}, Draw { "SESConvexes", E_PRIMITIVE::POINTS } },
+			//{ "SESSegment", "ses/sesdf/segment", BufferDataValues {}, Draw { "SESSegments", E_PRIMITIVE::POINTS } }
+		},
 		{ E_SETTING::CLEAR }
 	};
 
@@ -306,16 +309,16 @@ namespace VTX::Renderer
 
 				  { { "Curvature", E_TYPE::VEC2F, BufferValue<Vec2f> { Vec2f( 3.f, 3.f ) } },
 					{ "Ratio", E_TYPE::FLOAT, BufferValue<float> { 0.25f, BufferValue<float>::MinMax { 0.1f, 1.f } } },
-					{ "Graniness X",
+					{ "GraninessX",
 					  E_TYPE::FLOAT,
 					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
-					{ "Graniness Y",
+					{ "GraninessY",
 					  E_TYPE::FLOAT,
 					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
-					{ "Vignette roundness",
+					{ "VignetteRoundness",
 					  E_TYPE::FLOAT,
 					  BufferValue<float> { 100.f, BufferValue<float>::MinMax { 1.f, 1000.f } } },
-					{ "Vignette intensity",
+					{ "VignetteIntensity",
 					  E_TYPE::FLOAT,
 					  BufferValue<float> { 0.5f, BufferValue<float>::MinMax { 0.f, 5.f } } },
 					{ "Brightness",
@@ -325,10 +328,10 @@ namespace VTX::Renderer
 
 	// Chromatic aberration.
 	inline Pass descPassChromaticAberration {
-		"Chromatic aberration",
+		"ChromaticAberration",
 		Inputs { { E_CHAN_IN::_0, { "", imageRGBA16F } } },
 		Outputs { { E_CHAN_OUT::COLOR_0, { "", imageRGBA16F } } },
-		Programs { { "Chromatic aberration",
+		Programs { { "ChromaticAberration",
 					 std::vector<FilePath> { "default.vert", "chromatic_aberration.frag" },
 					 BufferDataValues {
 

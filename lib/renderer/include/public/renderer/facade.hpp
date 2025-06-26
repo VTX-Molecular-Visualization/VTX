@@ -8,6 +8,7 @@
 
 namespace VTX::Renderer
 {
+
 	class Renderer;
 	namespace Proxy
 	{
@@ -83,14 +84,14 @@ namespace VTX::Renderer
 		const InstructionsDurationRanges & getInstructionsDurationRanges() const;
 		const std::vector<Pass *> &		   getAvailablePasses() const;
 
-		void setValue( const float p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const int p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const uint p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const bool p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const Vec2f & p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const Vec2i & p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const Vec3f & p_value, const std::string & p_key, const size_t p_index = 0 );
-		void setValue( const Vec4f & p_value, const std::string & p_key, const size_t p_index = 0 );
+		void setValue( const float p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const int p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const uint p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const bool p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const Vec2f & p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const Vec2i & p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const Vec3f & p_value, const Key & p_key, const size_t p_index = 0 );
+		void setValue( const Vec4f & p_value, const Key & p_key, const size_t p_index = 0 );
 
 		// TODO: accessors.
 		bool * showAtoms;

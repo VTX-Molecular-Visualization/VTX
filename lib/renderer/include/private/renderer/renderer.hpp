@@ -43,7 +43,7 @@ namespace VTX::Renderer
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
 		template<typename T>
-		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
+		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
 			_context.setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
@@ -189,23 +189,31 @@ namespace VTX::Renderer
 		RangeList drawRangeCylindersRL;
 		RangeList drawRangeRibbonsRL;
 		// RangeList	drawRangeVoxelsRL;
+		/*
 		RangeList drawRangeSESCirclesRL;
 		RangeList drawRangeSESConcavesRL;
 		RangeList drawRangeSESConvexesRL;
 		RangeList drawRangeSESSegmentsRL;
+		*/
 
 		Draw::Range drawRangeSpheres;
 		Draw::Range drawRangeCylinders;
 		Draw::Range drawRangeRibbons;
 		Draw::Range drawRangeVoxels;
+		/*
 		Draw::Range drawRangeSESCircles;
 		Draw::Range drawRangeSESConcaves;
 		Draw::Range drawRangeSESConvexes;
 		Draw::Range drawRangeSESSegments;
+		*/
 
 #ifdef WITH_CUDA
 		std::unique_ptr<bcs::Sesdf> data;
 		bcs::sesdf::SesdfGraphics	surface {};
+		GLuint						m_vao	   = GL_INVALID_VALUE;
+		GLuint						segmentVao = GL_INVALID_VALUE;
+		GLuint						circleVao  = GL_INVALID_VALUE;
+		GLuint						convexVao  = GL_INVALID_VALUE;
 #endif
 
 		/**

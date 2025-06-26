@@ -52,9 +52,10 @@ namespace VTX::Renderer::Context
 		 */
 		inline void setValue( const Key & p_key, const void * const p_value, const size_t p_index = 0 )
 		{
-			assert( _bufferValueEntries.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _bufferValueEntries.contains( hash ) );
 
-			auto & entry = _bufferValueEntries[ p_key ];
+			auto & entry = _bufferValueEntries[ hash ];
 			entry->buffer->setSub( p_value, entry->size, entry->offset + p_index * entry->totalSize );
 		}
 
@@ -65,21 +66,22 @@ namespace VTX::Renderer::Context
 		 */
 		inline void reserveData( const Key & p_key, const size_t p_size )
 		{
-			assert( _buffers.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _buffers.contains( hash ) );
 
 			// Set dummy size (size 0 prohibited).
 			const size_t size = p_size > 0 ? p_size : 1;
 
 			// Scale if needed.
-			if ( _buffers[ p_key ]->size() != size )
+			if ( _buffers[ hash ]->size() != size )
 			{
 				VTX_TRACE(
 					"Resizing buffer {} : {} -> {}",
 					p_key,
-					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
+					Util::String::memSizeToStr( _buffers[ hash ]->size() ),
 					Util::String::memSizeToStr( size )
 				);
-				_buffers[ p_key ]->set( nullptr, GLsizei( size ), false, GL_STATIC_DRAW );
+				_buffers[ hash ]->set( nullptr, GLsizei( size ), false, GL_STATIC_DRAW );
 			}
 		}
 
@@ -88,7 +90,8 @@ namespace VTX::Renderer::Context
 		 */
 		inline void set( const Key & p_key, const void * const p_data, const size_t p_size )
 		{
-			assert( _buffers.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _buffers.contains( hash ) );
 
 			// Set dummy.
 			if ( p_size == 0 )
@@ -96,19 +99,19 @@ namespace VTX::Renderer::Context
 				reserveData( p_key, 0 );
 			}
 			// Auto scale.
-			else if ( _buffers[ p_key ]->size() != p_size )
+			else if ( _buffers[ hash ]->size() != p_size )
 			{
 				VTX_TRACE(
 					"Resizing buffer {} : {} -> {}",
 					p_key,
-					Util::String::memSizeToStr( _buffers[ p_key ]->size() ),
+					Util::String::memSizeToStr( _buffers[ hash ]->size() ),
 					Util::String::memSizeToStr( p_size )
 				);
-				_buffers[ p_key ]->set( p_data, GLsizei( p_size ), false, GL_STATIC_DRAW );
+				_buffers[ hash ]->set( p_data, GLsizei( p_size ), false, GL_STATIC_DRAW );
 			}
 			else
 			{
-				_buffers[ p_key ]->setSub( p_data, p_size );
+				_buffers[ hash ]->setSub( p_data, p_size );
 			}
 		}
 
@@ -122,10 +125,11 @@ namespace VTX::Renderer::Context
 			const size_t	   p_offset = 0
 		)
 		{
-			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
-			assert( _buffers.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _buffers.contains( hash ) );
 
-			_buffers[ p_key ]->setSub( p_data, p_size, p_offset );
+			VTX_DEBUG( "Set sub buffer {} : {} -> {}", p_key, p_offset, p_size );
+			_buffers[ hash ]->setSub( p_data, p_size, p_offset );
 		}
 
 		/**
@@ -133,9 +137,10 @@ namespace VTX::Renderer::Context
 		 */
 		inline void get( const Key & p_key, void * const p_data, const size_t p_size )
 		{
-			assert( _buffers.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _buffers.contains( hash ) );
 
-			_buffers[ p_key ]->get( p_data, p_size );
+			_buffers[ hash ]->get( p_data, p_size );
 		}
 
 		// TODDO: send data to buffer by map()?
@@ -162,10 +167,11 @@ namespace VTX::Renderer::Context
 			const E_CHAN_OUT p_channel
 		)
 		{
-			assert( _framebuffers.contains( p_key ) );
+			const Hash hash = Util::hash( p_key );
+			assert( _framebuffers.contains( hash ) );
 
-			auto &			   fbo	  = _framebuffers[ p_key ];
-			const Pass * const pass	  = _descPasses[ p_key ];
+			auto &			   fbo	  = _framebuffers[ hash ];
+			const Pass * const pass	  = _descPasses[ hash ];
 			const IO &		   descIO = pass->outputs.at( p_channel ).desc;
 
 			assert( std::holds_alternative<Attachment>( descIO ) );
@@ -213,10 +219,11 @@ namespace VTX::Renderer::Context
 		const Key _KEY_OUT		   = "Out";
 		const Key _KEY_EBO		   = "Idx";
 
+		// TODO: use Util::Collection instead?
 		template<typename T>
-		using Collection = std::unordered_map<Key, std::unique_ptr<T>>;
+		using Collection = std::unordered_map<Hash, std::unique_ptr<T>>;
 		template<typename T>
-		using CollectionPtr = std::unordered_map<Key, const T * const>;
+		using CollectionPtr = std::unordered_map<Hash, const T * const>;
 
 		CollectionPtr<Pass>			_descPasses;
 		Collection<GL::VertexArray> _vertexArrays;
@@ -251,47 +258,11 @@ namespace VTX::Renderer::Context
 		// Specs.
 		GL::StructOpenglInfos _openglInfos;
 
-		/////////////////////////////////////
-		// TODO: rework.
-		/*
-		inline Key _getKey( const BufferData & p_buffer ) const { return p_buffer.name; }
-		inline Key _getKey( const Pass & p_pass ) const { return p_pass.name; }
-		inline Key _getKey( const Pass * const p_pass, const Program & p_program ) const
-		{
-			return ( p_pass ? p_pass->name : "" ) + p_program.name;
-		}
-		inline Key _getKey( const Draw & p_draw, const bool p_isIndice = false ) const
-		{
-			return p_draw.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
-		}
-		inline Key _getKey( const Pass & p_pass, const bool p_isInput, const uint p_chan ) const
-		{
-			return p_pass.name + ( p_isInput ? "In" : "Out" ) + std::to_string( p_chan );
-		}
-		inline Key _getKey( const Input & p_input, const bool p_isIndice = false ) const
-		{
-			return p_input.name + ( p_isIndice ? _KEY_EBO_SUFFIX : "" );
-		}
-		inline Key _getKey( const Input & p_input, const BufferDraw::Entry & p_entry ) const
-		{
-			return p_input.name + p_entry.name;
-		}
-		inline Key _getKey(
-			const Pass * const		p_pass,
-			const Program * const	p_program,
-			const BufferDataValue & p_bufferDataValue
-		) const
-		{
-			return ( p_pass ? p_pass->name : "" ) + ( p_program ? p_program->name : "" ) + p_bufferDataValue.name;
-		}
-		*/
-		//////////////////////////////////////////
+		void _createInputs( const Links &, const Pass * const, const Key &, Keys & );
 
-		void _createInputs( const Links &, const Pass * const, const Key, Keys & );
+		void _createOuputs( const Pass * const, std::set<uint32_t> & p_drawBuffers, const Key &, Keys & );
 
-		void _createOuputs( const Pass * const, std::set<uint32_t> & p_drawBuffers, const Key, Keys & );
-
-		const GL::Program * const _createProgram( const Program &, const Key, Keys & );
+		const GL::Program * const _createProgram( const Program &, const Key &, Keys & );
 
 		std::optional<std::pair<const Output * const, const Key>> _getInputTextureKey(
 			const Links &,
@@ -301,7 +272,7 @@ namespace VTX::Renderer::Context
 
 		bool _hasDepthComponent( const Pass * const ) const;
 
-		GL::Texture2D * const _createTexture( const IO &, const Key &, Keys & );
+		GL::Texture2D * const _createTexture( const Attachment & p_attachment, const Key & p_key, Keys & );
 
 		Vec2i _getTextureSize( const Attachment & ) const;
 
@@ -311,7 +282,10 @@ namespace VTX::Renderer::Context
 		void _setBufferDataDefaultValue( const BufferDataValue & p_value, const Key & p_key )
 		{
 			assert( std::holds_alternative<BufferValue<T>>( p_value.value ) );
-			assert( _bufferValueEntries.contains( p_key ) );
+
+			const Hash hashValue = Util::hash( p_key );
+
+			assert( _bufferValueEntries.contains( hashValue ) );
 
 			setValue( p_key, &( std::get<BufferValue<T>>( p_value.value ).value ) );
 		}

@@ -618,7 +618,7 @@ namespace VTX::Bench
 					// Uniforms.
 					for ( const BufferDataValue & uniform : program.data )
 					{
-						std::string key = pass->name + program.name + uniform.name;
+						const Key key = pass->name + program.name + uniform.name;
 
 						// ImGui::Text( uniform.name.c_str() );
 						ImGui::SetNextItemWidth( 150 );

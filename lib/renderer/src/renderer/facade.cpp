@@ -134,42 +134,42 @@ namespace VTX::Renderer
 
 	Util::Callback<> & Facade::onReady() { return _renderer->onReady; }
 
-	void Facade::setValue( const float p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const float p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const uint p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const uint p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const int p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const int p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const bool p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const bool p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const Vec2f & p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const Vec2f & p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const Vec2i & p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const Vec2i & p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const Vec3f & p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const Vec3f & p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}
 
-	void Facade::setValue( const Vec4f & p_value, const std::string & p_key, const size_t p_index )
+	void Facade::setValue( const Vec4f & p_value, const Key & p_key, const size_t p_index )
 	{
 		_renderer->setValue( p_value, p_key, p_index );
 	}

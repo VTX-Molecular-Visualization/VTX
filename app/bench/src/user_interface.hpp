@@ -59,13 +59,13 @@ namespace VTX::Bench
 		void _drawWidget(
 			Renderer::Facade * const		  p_renderer,
 			const Renderer::BufferDataValue & p_uniform,
-			const std::string &				  p_key
+			const Renderer::Key &			  p_key
 		) const
 		{
 			using namespace Renderer;
 			const BufferValue<T> descValue = std::get<BufferValue<T>>( p_uniform.value );
 
-			static std::map<std::string, T> values;
+			static std::map<Key, T> values;
 			if ( values.find( p_key ) == values.end() )
 			{
 				values.emplace( p_key, descValue.value );

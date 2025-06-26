@@ -181,6 +181,48 @@ namespace VTX::Renderer
 		data	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
 		surface = data->getGraphics();
 		VTX_DEBUG( "CUDA DONE" );
+
+		glCreateVertexArrays( 1, &m_vao );
+		if ( surface.segmentPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &segmentVao );
+
+			glBindVertexArray( segmentVao );
+			glBindBuffer( GL_ARRAY_BUFFER, surface.segmentPatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = surface.segmentPatches.offset;
+			glVertexAttribIPointer( 0, 4, GL_UNSIGNED_INT, sizeof( glm::uvec4 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		if ( surface.convexPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &circleVao );
+			glBindVertexArray( circleVao );
+
+			glBindBuffer( GL_ARRAY_BUFFER, surface.circlePatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = surface.circlePatches.offset;
+			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		if ( surface.convexPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &convexVao );
+			glBindVertexArray( convexVao );
+
+			glBindBuffer( GL_ARRAY_BUFFER, surface.convexPatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = surface.convexPatches.offset;
+			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		glBindVertexArray( 0 );
 #endif
 	}
 
@@ -1554,6 +1596,7 @@ namespace VTX::Renderer
 			geo->programs[ 3 ].draw.value().needRenderFunc
 				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
 			// TODO: add SES range.
+			/*
 			geo->programs[ 4 ].draw.value().ranges = &drawRangeSESCircles;
 			geo->programs[ 4 ].draw.value().needRenderFunc
 				= [ this ]() { return showSESCircles && drawRangeSESCircles.counts.size() > 0; };
@@ -1566,6 +1609,7 @@ namespace VTX::Renderer
 			geo->programs[ 7 ].draw.value().ranges = &drawRangeSESSegments;
 			geo->programs[ 7 ].draw.value().needRenderFunc
 				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
+				*/
 		}
 
 		// Depth.

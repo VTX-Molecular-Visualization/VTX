@@ -17,6 +17,10 @@
  */
 namespace VTX::Renderer
 {
+
+	using Key  = std::string;
+	using Keys = std::vector<Key>;
+
 	using Size = std::optional<std::variant<size_t, float>>;
 	struct Attachment
 	{
@@ -34,9 +38,9 @@ namespace VTX::Renderer
 	{
 		struct Entry
 		{
-			std::string name;
-			E_TYPE		nativeType;
-			size_t		components;
+			Key	   name;
+			E_TYPE nativeType;
+			size_t components;
 		};
 		std::vector<Entry> entries;
 	};
@@ -74,7 +78,7 @@ namespace VTX::Renderer
 
 	struct BufferDataValue
 	{
-		std::string			   name;
+		Key					   name;
 		E_TYPE				   type;
 		BufferDataValueVariant value;
 	};
@@ -83,7 +87,7 @@ namespace VTX::Renderer
 
 	struct BufferData
 	{
-		std::string		 name;
+		Key				 name;
 		char			 binding;
 		BufferDataValues values;
 		size_t			 size		 = 0;
@@ -105,8 +109,8 @@ namespace VTX::Renderer
 
 	struct Input
 	{
-		std::string name;
-		IO			desc;
+		Key name;
+		IO	desc;
 	};
 
 	struct Output : public Input
@@ -114,9 +118,10 @@ namespace VTX::Renderer
 	};
 
 	using NeedRenderFunc = std::function<bool()>;
+	using RenderFunc	 = std::function<void()>;
 	struct Draw
 	{
-		std::string name;
+		Key			name;
 		E_PRIMITIVE primitive;
 		bool		useIndices = false;
 
@@ -127,7 +132,8 @@ namespace VTX::Renderer
 		};
 		Range * ranges = nullptr;
 
-		NeedRenderFunc needRenderFunc;
+		NeedRenderFunc			  needRenderFunc;
+		std::optional<RenderFunc> renderFunc;
 	};
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
@@ -136,12 +142,12 @@ namespace VTX::Renderer
 
 	struct Program
 	{
-		std::string			name;
+		Key					name;
 		Files				shaders;
 		BufferDataValues	data;
 		std::optional<Draw> draw;
-		std::string			toInject;
-		std::string			suffix;
+		Key					toInject;
+		Key					suffix;
 	};
 
 	using Inputs   = std::unordered_map<E_CHAN_IN, Input>;
@@ -150,7 +156,7 @@ namespace VTX::Renderer
 
 	struct Pass
 	{
-		std::string			   name;
+		Key					   name;
 		Inputs				   inputs;
 		Outputs				   outputs;
 		Programs			   programs;
@@ -163,8 +169,8 @@ namespace VTX::Renderer
 
 	struct ComputePass
 	{
-		std::string name;
-		Program		program;
+		Key		name;
+		Program program;
 
 		std::vector<BufferData>		data;
 		std::variant<Vec3i, size_t> size;
@@ -188,10 +194,10 @@ namespace VTX::Renderer
 
 	struct InstructionsDurationRange
 	{
-		std::string name;
-		size_t		first;
-		size_t		last;
-		float		duration;
+		Key	   name;
+		size_t first;
+		size_t last;
+		float  duration;
 	};
 
 	using InstructionsDurationRanges = std::vector<InstructionsDurationRange>;
