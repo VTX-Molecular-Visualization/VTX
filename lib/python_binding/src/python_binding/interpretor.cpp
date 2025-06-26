@@ -14,8 +14,16 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
+PYBIND11_EMBEDDED_MODULE( vtx_python_api, m ) { VTX::PythonBinding::Binding::applyModuleCustomization( m ); }
+
 namespace VTX::PythonBinding
 {
+
+	pybind11::module_ createModule()
+	{
+		pybind11::module_ ret = pybind11::module_::import( "vtx_python_api" );
+		return ret;
+	}
 
 	struct Interpretor::Impl
 	{
@@ -31,7 +39,7 @@ namespace VTX::PythonBinding
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
 			pybind11::module_ vtxApiModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".API" ).c_str() );
-			Binding::applyVtxApiBinding( _vtxModule );
+			// Binding::applyVtxApiBinding( _vtxModule );
 			pybind11::module_ vtxCommandModule
 				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
 			// Binding::applyVtxLocalCommandBinding( p_interpretor );
@@ -71,7 +79,8 @@ namespace VTX::PythonBinding
 	  private:
 		LogRedirection				 _logger;
 		pybind11::scoped_interpreter _interpretor {};
-		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
+		pybind11::module_			 _vtxModule = createModule();
+		// pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
 
 		std::unique_ptr<PyTXModule> _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
