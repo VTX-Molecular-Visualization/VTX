@@ -11,7 +11,8 @@
 namespace VTX::Renderer
 {
 
-	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
+	Renderer::Renderer( const size_t p_width, const size_t p_height ) :
+		_width( p_width ), _height( p_height ), _pm( VTX::Util::Filesystem::getExecutableDir() / "shaders" )
 	{
 		// Passes.
 		_refreshGraph();
@@ -178,46 +179,51 @@ namespace VTX::Renderer
 			aabb.extend( ( *p_proxy.atomPositions )[ i ] );
 		}
 		bcs::Aabb aabbBCS( aabb.getMin(), aabb.getMax() );
-		data	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
-		surface = data->getGraphics();
+		_sesData	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
+		_sesSurface = _sesData->getGraphics();
 		VTX_DEBUG( "CUDA DONE" );
 
-		glCreateVertexArrays( 1, &m_vao );
-		if ( surface.segmentPatches.size > 0 )
-		{
-			glCreateVertexArrays( 1, &segmentVao );
+		_sesProgramConcave = _pm.createProgram( "SESConcave", "ses/sesdf/concave" );
+		_sesProgramSegment = _pm.createProgram( "SESSegment", "ses/sesdf/segment" );
+		_sesProgramCircle  = _pm.createProgram( "SESCircle", "ses/sesdf/circle" );
+		_sesProgramConvex  = _pm.createProgram( "SESConvex", "ses/sesdf/convex" );
 
-			glBindVertexArray( segmentVao );
-			glBindBuffer( GL_ARRAY_BUFFER, surface.segmentPatches.handle );
+		glCreateVertexArrays( 1, &_sesVao );
+		if ( _sesSurface.segmentPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &_sesSegmentVao );
+
+			glBindVertexArray( _sesSegmentVao );
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.segmentPatches.handle );
 			glEnableVertexAttribArray( 0 );
 
-			const std::size_t offset = surface.segmentPatches.offset;
+			const std::size_t offset = _sesSurface.segmentPatches.offset;
 			glVertexAttribIPointer( 0, 4, GL_UNSIGNED_INT, sizeof( glm::uvec4 ), reinterpret_cast<void *>( offset ) );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
-		if ( surface.convexPatches.size > 0 )
+		if ( _sesSurface.convexPatches.size > 0 )
 		{
-			glCreateVertexArrays( 1, &circleVao );
-			glBindVertexArray( circleVao );
+			glCreateVertexArrays( 1, &_sesCircleVao );
+			glBindVertexArray( _sesCircleVao );
 
-			glBindBuffer( GL_ARRAY_BUFFER, surface.circlePatches.handle );
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.circlePatches.handle );
 			glEnableVertexAttribArray( 0 );
 
-			const std::size_t offset = surface.circlePatches.offset;
+			const std::size_t offset = _sesSurface.circlePatches.offset;
 			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
-		if ( surface.convexPatches.size > 0 )
+		if ( _sesSurface.convexPatches.size > 0 )
 		{
-			glCreateVertexArrays( 1, &convexVao );
-			glBindVertexArray( convexVao );
+			glCreateVertexArrays( 1, &_sesConvexVao );
+			glBindVertexArray( _sesConvexVao );
 
-			glBindBuffer( GL_ARRAY_BUFFER, surface.convexPatches.handle );
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.convexPatches.handle );
 			glEnableVertexAttribArray( 0 );
 
-			const std::size_t offset = surface.convexPatches.offset;
+			const std::size_t offset = _sesSurface.convexPatches.offset;
 			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
@@ -1610,6 +1616,54 @@ namespace VTX::Renderer
 			geo->programs[ 7 ].draw.value().needRenderFunc
 				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
 				*/
+
+			geo->renderFunc = [ & ]()
+			{
+				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
+				{
+					if ( buffer.size > 0 )
+						glBindBufferRange(
+							GL_SHADER_STORAGE_BUFFER, bindingPoint, buffer.handle, buffer.offset, buffer.size
+						);
+				};
+
+				bindBuffer( 1, _sesSurface.atoms );
+				bindBuffer( 2, _sesSurface.segmentPatches );
+				bindBuffer( 3, _sesSurface.concavePatchesPosition );
+				bindBuffer( 4, _sesSurface.concavePatchesId );
+				bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
+				bindBuffer( 6, _sesSurface.sectors );
+
+				if ( _sesSurface.concavePatchNb > 0 )
+				{
+					_sesProgramConcave->use();
+					glBindVertexArray( _sesVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
+				}
+
+				if ( _sesSurface.circlePatchNb )
+				{
+					_sesProgramCircle->use();
+					glBindVertexArray( _sesCircleVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
+				}
+
+				if ( _sesSurface.convexPatchNb > 0 )
+				{
+					_sesProgramConvex->use();
+					glBindVertexArray( _sesConvexVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
+				}
+
+				if ( _sesSurface.segmentPatchNb > 0 )
+				{
+					_sesProgramSegment->use();
+					glBindVertexArray( _sesSegmentVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
+				}
+
+				glBindVertexArray( 0 );
+			};
 		}
 
 		// Depth.

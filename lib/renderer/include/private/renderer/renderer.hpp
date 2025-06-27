@@ -166,14 +166,14 @@ namespace VTX::Renderer
 		// TODO: facto geometries with RL, DR and cache?
 		// TODO: facto proxies in enumed collection?
 
-		bool showAtoms		 = true;
-		bool showBonds		 = true;
-		bool showRibbons	 = true;
-		bool showVoxels		 = true;
-		bool showSESCircles	 = true;
-		bool showSESConcaves = true;
-		bool showSESConvexes = true;
-		bool showSESSegments = true;
+		bool showAtoms	 = true;
+		bool showBonds	 = true;
+		bool showRibbons = true;
+		bool showVoxels	 = true;
+		// bool showSESCircles	 = true;
+		// bool showSESConcaves = true;
+		// bool showSESConvexes = true;
+		// bool showSESSegments = true;
 
 		/**
 		 * @brief Force update each frame.
@@ -208,12 +208,18 @@ namespace VTX::Renderer
 		*/
 
 #ifdef WITH_CUDA
-		std::unique_ptr<bcs::Sesdf> data;
-		bcs::sesdf::SesdfGraphics	surface {};
-		GLuint						m_vao	   = GL_INVALID_VALUE;
-		GLuint						segmentVao = GL_INVALID_VALUE;
-		GLuint						circleVao  = GL_INVALID_VALUE;
-		GLuint						convexVao  = GL_INVALID_VALUE;
+		std::unique_ptr<bcs::Sesdf> _sesData;
+		bcs::sesdf::SesdfGraphics	_sesSurface {};
+		GLuint						_sesVao		   = GL_INVALID_VALUE;
+		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
+		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
+		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
+		Context::GL::ProgramManager _pm;
+		Context::GL::Program *		_sesProgramConcave;
+		Context::GL::Program *		_sesProgramSegment;
+		Context::GL::Program *		_sesProgramCircle;
+		Context::GL::Program *		_sesProgramConvex;
+
 #endif
 
 		/**

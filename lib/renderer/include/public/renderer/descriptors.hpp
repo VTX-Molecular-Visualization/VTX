@@ -118,7 +118,7 @@ namespace VTX::Renderer
 	};
 
 	using NeedRenderFunc = std::function<bool()>;
-	using RenderFunc	 = std::function<void()>;
+
 	struct Draw
 	{
 		Key			name;
@@ -132,8 +132,7 @@ namespace VTX::Renderer
 		};
 		Range * ranges = nullptr;
 
-		NeedRenderFunc			  needRenderFunc;
-		std::optional<RenderFunc> renderFunc;
+		NeedRenderFunc needRenderFunc;
 	};
 
 	using Files = std::variant<FilePath, std::vector<FilePath>>;
@@ -154,13 +153,16 @@ namespace VTX::Renderer
 	using Outputs  = std::unordered_map<E_CHAN_OUT, Output>;
 	using Programs = std::vector<Program>;
 
+	using RenderFunc = std::function<void()>;
+
 	struct Pass
 	{
-		Key					   name;
-		Inputs				   inputs;
-		Outputs				   outputs;
-		Programs			   programs;
-		std::vector<E_SETTING> settings;
+		Key						  name;
+		Inputs					  inputs;
+		Outputs					  outputs;
+		Programs				  programs;
+		std::vector<E_SETTING>	  settings;
+		std::optional<RenderFunc> renderFunc;
 	};
 
 	constexpr int LOCAL_SIZE_X = 256;

@@ -390,6 +390,14 @@ namespace VTX::Renderer::Context
 				}
 			}
 
+			///////////////////////
+			if ( descPassPtr->renderFunc.has_value() )
+			{
+				const RenderFunc & renderFunc = descPassPtr->renderFunc.value();
+				p_outInstructions.emplace_back( [ renderFunc ]() { renderFunc(); } );
+			}
+			///////////////////////
+
 			// Unbind inputs.
 			for ( const auto & [ channel, keyTexture ] : mapBoundAttachments )
 			{
