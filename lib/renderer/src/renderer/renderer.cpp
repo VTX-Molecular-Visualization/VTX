@@ -12,7 +12,11 @@ namespace VTX::Renderer
 {
 
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) :
-		_width( p_width ), _height( p_height ), _pm( VTX::Util::Filesystem::getExecutableDir() / "shaders" )
+		_width( p_width ), _height( p_height )
+#ifdef WITH_CUDA
+		,
+		_pm( VTX::Util::Filesystem::getExecutableDir() / "shaders" )
+#endif
 	{
 		// Passes.
 		_refreshGraph();
