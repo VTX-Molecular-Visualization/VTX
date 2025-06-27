@@ -1616,7 +1616,7 @@ namespace VTX::Renderer
 			geo->programs[ 7 ].draw.value().needRenderFunc
 				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
 				*/
-
+#ifdef WITH_CUDA
 			geo->renderFunc = [ & ]()
 			{
 				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
@@ -1665,6 +1665,7 @@ namespace VTX::Renderer
 				glBindVertexArray( 0 );
 			};
 		}
+#endif
 
 		// Depth.
 		if ( not depth )
