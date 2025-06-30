@@ -10,13 +10,7 @@
 
 namespace VTX::Renderer
 {
-
-	Renderer::Renderer( const size_t p_width, const size_t p_height ) :
-		_width( p_width ), _height( p_height )
-#ifdef WITH_CUDA
-		,
-		_pm( VTX::Util::Filesystem::getExecutableDir() / "shaders" )
-#endif
+	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
 		_refreshGraph();
@@ -1668,8 +1662,8 @@ namespace VTX::Renderer
 
 				glBindVertexArray( 0 );
 			};
-		}
 #endif
+		}
 
 		// Depth.
 		if ( not depth )

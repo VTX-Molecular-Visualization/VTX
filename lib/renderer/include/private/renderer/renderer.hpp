@@ -1,6 +1,8 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+// #undef WITH_CUDA
+
 #ifdef WITH_CUDA
 #include "bcs/sesdf/sesdf.hpp"
 #endif
@@ -214,11 +216,12 @@ namespace VTX::Renderer
 		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
 		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
 		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
-		Context::GL::ProgramManager _pm;
-		Context::GL::Program *		_sesProgramConcave;
-		Context::GL::Program *		_sesProgramSegment;
-		Context::GL::Program *		_sesProgramCircle;
-		Context::GL::Program *		_sesProgramConvex;
+		Context::GL::ProgramManager _pm
+			= Context::GL::ProgramManager( VTX::Util::Filesystem::getExecutableDir() / "shaders" );
+		Context::GL::Program * _sesProgramConcave;
+		Context::GL::Program * _sesProgramSegment;
+		Context::GL::Program * _sesProgramCircle;
+		Context::GL::Program * _sesProgramConvex;
 
 #endif
 
